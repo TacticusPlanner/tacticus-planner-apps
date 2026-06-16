@@ -7,13 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint",
+    "lint:fsd": "steiger ./src/fsd",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource-variable/dm-sans": "^5.2.8",
-    "@fontsource-variable/raleway": "^5.2.8",
     "@workspace/ui": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -27,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10",
+    "@feature-sliced/steiger-plugin": "^0.6.0",
     "@tailwindcss/vite": "^4",
     "@types/node": "^24",
     "@types/react": "^19",
@@ -36,6 +36,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17",
+    "steiger": "^0.5.13",
     "typescript": "~6",
     "typescript-eslint": "^8",
     "vite": "^8"

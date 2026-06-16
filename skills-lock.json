@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "feature-sliced-design": {
+      "source": "feature-sliced/skills",
+      "sourceType": "github",
+      "skillPath": "feature-sliced-design/SKILL.md",
+      "computedHash": "d4eaefe92df4439ffa8c6c06762047f0fc3aeb5ffc620d5239dce8d95592fe60"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",

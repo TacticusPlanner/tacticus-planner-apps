@@ -8,6 +8,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
+      "@/app": path.resolve(__dirname, "./src/fsd/app"),
+      "@/pages": path.resolve(__dirname, "./src/fsd/pages"),
+      "@/widgets": path.resolve(__dirname, "./src/fsd/widgets"),
+      "@/features": path.resolve(__dirname, "./src/fsd/features"),
+      "@/entities": path.resolve(__dirname, "./src/fsd/entities"),
+      "@/shared": path.resolve(__dirname, "./src/fsd/shared"),
       "@": path.resolve(__dirname, "./src"),
     },
   },

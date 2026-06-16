@@ -22,6 +22,13 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@/app": ["./src/fsd/app/index.tsx"],
+      "@/app/*": ["./src/fsd/app/*"],
+      "@/pages/*": ["./src/fsd/pages/*"],
+      "@/widgets/*": ["./src/fsd/widgets/*"],
+      "@/features/*": ["./src/fsd/features/*"],
+      "@/entities/*": ["./src/fsd/entities/*"],
+      "@/shared/*": ["./src/fsd/shared/*"],
       "@/*": ["./src/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     }

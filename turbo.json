@@ -10,6 +10,9 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
+    "lint:fsd": {
+      "dependsOn": ["^lint:fsd"]
+    },
     "format": {
       "dependsOn": ["^format"]
     },
