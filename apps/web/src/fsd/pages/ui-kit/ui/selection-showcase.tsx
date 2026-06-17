@@ -10,7 +10,10 @@ import {
   FieldLegend,
   FieldSet,
 } from "@workspace/ui/components/field"
-import { RadioGroup, RadioGroupItem } from "@workspace/ui/components/radio-group"
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group"
 import {
   Select,
   SelectContent,
@@ -58,15 +61,21 @@ export function SelectionShowcase() {
               </Field>
               <Field orientation="horizontal">
                 <RadioGroupItem id="density-comfortable" value="comfortable" />
-                <FieldLabel htmlFor="density-comfortable">Comfortable</FieldLabel>
+                <FieldLabel htmlFor="density-comfortable">
+                  Comfortable
+                </FieldLabel>
               </Field>
             </RadioGroup>
           </FieldSet>
           <Field orientation="horizontal">
             <Switch id="ui-kit-switch" defaultChecked />
             <FieldContent>
-              <FieldLabel htmlFor="ui-kit-switch">Show completed items</FieldLabel>
-              <FieldDescription>Applies to list and table examples.</FieldDescription>
+              <FieldLabel htmlFor="ui-kit-switch">
+                Show completed items
+              </FieldLabel>
+              <FieldDescription>
+                Applies to list and table examples.
+              </FieldDescription>
             </FieldContent>
           </Field>
         </FieldGroup>
@@ -118,4 +127,3 @@ export function SelectionShowcase() {
     </div>
   )
 }
-

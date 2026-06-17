@@ -58,7 +58,10 @@ export function FormsShowcase() {
               <InputGroupAddon>
                 <Search />
               </InputGroupAddon>
-              <InputGroupInput id="ui-kit-search" placeholder="Search components" />
+              <InputGroupInput
+                id="ui-kit-search"
+                placeholder="Search components"
+              />
               <InputGroupAddon align="inline-end">
                 <InputGroupButton>Go</InputGroupButton>
               </InputGroupAddon>
@@ -79,4 +82,3 @@ export function FormsShowcase() {
     </div>
   )
 }
-

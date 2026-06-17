@@ -15,7 +15,12 @@ import {
 } from "@workspace/ui/components/card"
 import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import { Separator } from "@workspace/ui/components/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs"
 
 import { UiKitShowcaseCard } from "./ui-kit-showcase-card"
 
@@ -26,7 +31,9 @@ export function LayoutShowcase() {
         <Card data-testid="layout-card">
           <CardHeader>
             <CardTitle>Daily Raids</CardTitle>
-            <CardDescription>Header, content, and footer slots.</CardDescription>
+            <CardDescription>
+              Header, content, and footer slots.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
@@ -79,7 +86,10 @@ export function LayoutShowcase() {
       </UiKitShowcaseCard>
 
       <UiKitShowcaseCard title="Scroll area">
-        <ScrollArea className="h-40 rounded-2xl border" data-testid="layout-scroll-area">
+        <ScrollArea
+          className="h-40 rounded-2xl border"
+          data-testid="layout-scroll-area"
+        >
           <div className="flex flex-col gap-3 p-4">
             {Array.from({ length: 12 }, (_, index) => (
               <p className="text-sm text-muted-foreground" key={index}>
@@ -92,4 +102,3 @@ export function LayoutShowcase() {
     </div>
   )
 }
-

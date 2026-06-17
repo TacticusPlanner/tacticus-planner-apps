@@ -21,7 +21,10 @@ type UiKitPageProps = {
 export function UiKitPage({ headerAction }: UiKitPageProps) {
   return (
     <TooltipProvider>
-      <main className="min-h-svh bg-background text-foreground" data-testid="ui-kit-page">
+      <main
+        className="min-h-svh bg-background text-foreground"
+        data-testid="ui-kit-page"
+      >
         <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-8">
           <div className="flex flex-col gap-2">
             <p className="text-sm font-medium text-muted-foreground">

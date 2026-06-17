@@ -19,4 +19,3 @@ export function UiKitNav() {
     </nav>
   )
 }
-

@@ -16,9 +16,12 @@ export function ThemeSwitcher() {
       size="sm"
       variant="outline"
     >
-      {isDark ? <Sun data-icon="inline-start" /> : <Moon data-icon="inline-start" />}
+      {isDark ? (
+        <Sun data-icon="inline-start" />
+      ) : (
+        <Moon data-icon="inline-start" />
+      )}
       {isDark ? "Light" : "Dark"}
     </Button>
   )
 }
-

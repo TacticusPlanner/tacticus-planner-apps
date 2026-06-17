@@ -19,7 +19,10 @@ export function ButtonsShowcase() {
       </UiKitShowcaseCard>
 
       <UiKitShowcaseCard title="Sizes and icons">
-        <div className="flex flex-wrap items-center gap-3" data-testid="button-sizes">
+        <div
+          className="flex flex-wrap items-center gap-3"
+          data-testid="button-sizes"
+        >
           <Button size="xs">Extra small</Button>
           <Button size="sm">Small</Button>
           <Button size="lg">Large</Button>
@@ -44,4 +47,3 @@ export function ButtonsShowcase() {
     </div>
   )
 }
-

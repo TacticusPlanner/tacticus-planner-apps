@@ -1,6 +1,10 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react"
 
-import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
 import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -40,7 +44,9 @@ export function FeedbackShowcase() {
         <div className="flex flex-col gap-4" data-testid="feedback-loading">
           <div className="flex items-center gap-3">
             <Spinner />
-            <span className="text-sm text-muted-foreground">Loading preview</span>
+            <span className="text-sm text-muted-foreground">
+              Loading preview
+            </span>
           </div>
           <Progress value={72} />
           <div className="flex flex-col gap-2">
@@ -53,4 +59,3 @@ export function FeedbackShowcase() {
     </div>
   )
 }
-

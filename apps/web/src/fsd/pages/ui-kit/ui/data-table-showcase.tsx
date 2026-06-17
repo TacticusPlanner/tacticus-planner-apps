@@ -111,7 +111,11 @@ export function DataTableShowcase() {
         cell: ({ row }) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button aria-label="Open row actions" size="icon-sm" variant="ghost">
+              <Button
+                aria-label="Open row actions"
+                size="icon-sm"
+                variant="ghost"
+              >
                 <MoreHorizontal />
               </Button>
             </DropdownMenuTrigger>
@@ -215,14 +219,20 @@ export function DataTableShowcase() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell className="h-24 text-center" colSpan={columns.length}>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
                   No results.
                 </TableCell>
               </TableRow>

@@ -23,4 +23,3 @@ const toggleVariants = cva(
 )
 
 export { toggleVariants }
-

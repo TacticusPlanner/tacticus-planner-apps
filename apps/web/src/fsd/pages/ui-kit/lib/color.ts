@@ -40,10 +40,15 @@ export function oklchToHex(value: string) {
   const m = mPrime ** 3
   const s = sPrime ** 3
 
-  const red = linearToSrgb(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s)
-  const green = linearToSrgb(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s)
-  const blue = linearToSrgb(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s)
+  const red = linearToSrgb(
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s
+  )
+  const green = linearToSrgb(
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s
+  )
+  const blue = linearToSrgb(
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s
+  )
 
   return `#${channelToHex(red)}${channelToHex(green)}${channelToHex(blue)}`.toUpperCase()
 }
-
