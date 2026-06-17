@@ -61,7 +61,7 @@ export const colorTokens = [
   },
 ] satisfies ColorToken[]
 
-export const colorTokenGroups = [
+export const colorTokenGroups: ColorTokenGroup[] = [
   {
     name: "Theme",
     description: "shadcn semantic tokens used by shared UI components.",
@@ -118,7 +118,7 @@ export const colorTokenGroups = [
       { name: "Event challenge", cssVariable: "--diff-event-chal" },
     ],
   },
-] satisfies ColorTokenGroup[]
+]
 
 export const tableRows = [
   { component: "Button", status: "Installed", owner: "Shared UI" },
