@@ -31,3 +31,12 @@ dist-ssr
 
 # typescript
 *.tsbuildinfo
+
+# design-sync (claude.ai/design)
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+# synthesized bundle entry barrel (build artifact)
+/packages/ui/index.d.ts
