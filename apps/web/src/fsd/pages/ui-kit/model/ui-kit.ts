@@ -11,50 +11,114 @@ export const uiKitSections = [
 
 export type UiKitSectionId = (typeof uiKitSections)[number]["id"]
 
+export type ColorToken = {
+  cssVariable: string
+  name: string
+  utility?: string
+}
+
+export type ColorTokenGroup = {
+  description: string
+  name: string
+  tokens: ColorToken[]
+}
+
 export const colorTokens = [
   {
     name: "Background",
-    className: "bg-background",
     cssVariable: "--background",
-    textClassName: "text-foreground",
+    utility: "bg-background",
   },
   {
     name: "Foreground",
-    className: "bg-foreground",
     cssVariable: "--foreground",
-    textClassName: "text-background",
+    utility: "bg-foreground",
   },
   {
     name: "Primary",
-    className: "bg-primary",
     cssVariable: "--primary",
-    textClassName: "text-primary-foreground",
+    utility: "bg-primary",
   },
   {
     name: "Secondary",
-    className: "bg-secondary",
     cssVariable: "--secondary",
-    textClassName: "text-secondary-foreground",
+    utility: "bg-secondary",
   },
   {
     name: "Muted",
-    className: "bg-muted",
     cssVariable: "--muted",
-    textClassName: "text-muted-foreground",
+    utility: "bg-muted",
   },
   {
     name: "Accent",
-    className: "bg-accent",
     cssVariable: "--accent",
-    textClassName: "text-accent-foreground",
+    utility: "bg-accent",
   },
   {
     name: "Destructive",
-    className: "bg-destructive",
     cssVariable: "--destructive",
-    textClassName: "text-white",
+    utility: "bg-destructive",
   },
-] as const
+] satisfies ColorToken[]
+
+export const colorTokenGroups = [
+  {
+    name: "Theme",
+    description: "shadcn semantic tokens used by shared UI components.",
+    tokens: colorTokens,
+  },
+  {
+    name: "Rarity",
+    description: "Character and item rarity colors carried forward from V1.",
+    tokens: [
+      { name: "Common", cssVariable: "--rarity-common" },
+      { name: "Uncommon", cssVariable: "--rarity-uncommon" },
+      { name: "Rare", cssVariable: "--rarity-rare" },
+      { name: "Epic", cssVariable: "--rarity-epic" },
+      { name: "Legendary", cssVariable: "--rarity-legendary" },
+      { name: "Mythic", cssVariable: "--rarity-mythic" },
+    ],
+  },
+  {
+    name: "Ranks",
+    description: "Rank material colors for upgrade planning views.",
+    tokens: [
+      { name: "Stone 1", cssVariable: "--rank-stone1" },
+      { name: "Stone 2", cssVariable: "--rank-stone2" },
+      { name: "Stone 3", cssVariable: "--rank-stone3" },
+      { name: "Iron 1", cssVariable: "--rank-iron1" },
+      { name: "Iron 2", cssVariable: "--rank-iron2" },
+      { name: "Iron 3", cssVariable: "--rank-iron3" },
+      { name: "Bronze 1", cssVariable: "--rank-bronze1" },
+      { name: "Bronze 2", cssVariable: "--rank-bronze2" },
+      { name: "Bronze 3", cssVariable: "--rank-bronze3" },
+      { name: "Silver 1", cssVariable: "--rank-silver1" },
+      { name: "Silver 2", cssVariable: "--rank-silver2" },
+      { name: "Silver 3", cssVariable: "--rank-silver3" },
+      { name: "Gold 1", cssVariable: "--rank-gold1" },
+      { name: "Gold 2", cssVariable: "--rank-gold2" },
+      { name: "Gold 3", cssVariable: "--rank-gold3" },
+      { name: "Diamond 1", cssVariable: "--rank-diamond1" },
+      { name: "Diamond 2", cssVariable: "--rank-diamond2" },
+      { name: "Diamond 3", cssVariable: "--rank-diamond3" },
+      { name: "Adamantine 1", cssVariable: "--rank-adamantine1" },
+      { name: "Adamantine 2", cssVariable: "--rank-adamantine2" },
+      { name: "Adamantine 3", cssVariable: "--rank-adamantine3" },
+    ],
+  },
+  {
+    name: "Difficulty",
+    description: "Campaign and event difficulty colors.",
+    tokens: [
+      { name: "Standard", cssVariable: "--diff-standard" },
+      { name: "Mirror", cssVariable: "--diff-mirror" },
+      { name: "Elite", cssVariable: "--diff-elite" },
+      { name: "Event standard", cssVariable: "--diff-event-std" },
+      { name: "Event extreme", cssVariable: "--diff-event-ext" },
+      { name: "Event challenge", cssVariable: "--diff-event-chal" },
+    ],
+  },
+] satisfies ColorTokenGroup[]
 
 export const tableRows = [
   { component: "Button", status: "Installed", owner: "Shared UI" },
