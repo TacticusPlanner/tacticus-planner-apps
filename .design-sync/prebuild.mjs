@@ -30,13 +30,21 @@ writeFileSync(
 console.error(`» barrels: ${files.length} component modules`);
 
 // ── Tailwind CSS + fonts ─────────────────────────────────────────────────────
-const IN = join(ROOT, 'packages/ui/src/styles/globals.css');
+// Compile from the design-sync wrapper entry (NOT globals.css directly): the
+// wrapper @imports globals.css verbatim and adds .design-sync/previews/ as a
+// content source, so utility classes used only in the preview .tsx files are
+// emitted. Imports declared inside globals.css still resolve relative to
+// globals.css, so tokens/fonts are byte-identical to production.
+const IN = join(ROOT, '.design-sync/_ds_styles_entry.css');
 const OUT = join(ROOT, 'packages/ui/dist/_ds_styles.css');
 const CLI = join(ROOT, '.ds-sync/node_modules/@tailwindcss/cli/dist/index.mjs');
 execFileSync(process.execPath, [CLI, '-i', IN, '-o', OUT], { stdio: 'inherit' });
 
-const FONT_PKGS = ['inter', 'dm-sans', 'raleway'].map((f) =>
-  join(ROOT, 'packages/ui/node_modules/@fontsource-variable', f, 'files'));
+// Search every installed @fontsource-variable package — the kit's font set
+// changes with the theme (currently noto-sans + inter), so don't hard-code it.
+const FS_ROOT = join(ROOT, 'packages/ui/node_modules/@fontsource-variable');
+const FONT_PKGS = (existsSync(FS_ROOT) ? readdirSync(FS_ROOT) : [])
+  .map((f) => join(FS_ROOT, f, 'files'));
 const FILES_OUT = join(ROOT, 'packages/ui/dist/files');
 const css = readFileSync(OUT, 'utf8');
 const wanted = [...new Set([...css.matchAll(/url\(\.\/files\/([^)'"?#]+\.woff2)\)/g)].map((m) => m[1]))];

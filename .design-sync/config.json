@@ -7,6 +7,8 @@
   "entry": "./packages/ui/dist/index.es.js",
   "tsconfig": "../../.design-sync/tsconfig.bundle.json",
   "cssEntry": "dist/_ds_styles.css",
+  "extraEntries": ["../../.design-sync/ds-theme-root.tsx", "sonner"],
+  "provider": { "component": "DsThemeRoot" },
   "componentSrcMap": {
     "AccordionContent": null,
     "AccordionItem": null,
@@ -37,6 +39,46 @@
     "DialogPortal": null,
     "DialogTitle": null,
     "DialogTrigger": null,
+    "DrawerClose": null,
+    "DrawerContent": null,
+    "DrawerDescription": null,
+    "DrawerFooter": null,
+    "DrawerHeader": null,
+    "DrawerOverlay": null,
+    "DrawerPortal": null,
+    "DrawerTitle": null,
+    "DrawerTrigger": null,
+    "SheetClose": null,
+    "SheetContent": null,
+    "SheetDescription": null,
+    "SheetFooter": null,
+    "SheetHeader": null,
+    "SheetOverlay": null,
+    "SheetPortal": null,
+    "SheetTitle": null,
+    "SheetTrigger": null,
+    "SidebarContent": null,
+    "SidebarFooter": null,
+    "SidebarGroup": null,
+    "SidebarGroupAction": null,
+    "SidebarGroupContent": null,
+    "SidebarGroupLabel": null,
+    "SidebarHeader": null,
+    "SidebarInput": null,
+    "SidebarInset": null,
+    "SidebarMenu": null,
+    "SidebarMenuAction": null,
+    "SidebarMenuBadge": null,
+    "SidebarMenuButton": null,
+    "SidebarMenuItem": null,
+    "SidebarMenuSkeleton": null,
+    "SidebarMenuSub": null,
+    "SidebarMenuSubButton": null,
+    "SidebarMenuSubItem": null,
+    "SidebarProvider": null,
+    "SidebarRail": null,
+    "SidebarSeparator": null,
+    "SidebarTrigger": null,
     "DropdownMenuCheckboxItem": null,
     "DropdownMenuContent": null,
     "DropdownMenuGroup": null,
@@ -121,6 +163,22 @@
     "Command": {
       "cardMode": "single",
       "viewport": "460x440"
+    },
+    "Drawer": {
+      "cardMode": "single",
+      "viewport": "520x600"
+    },
+    "Sheet": {
+      "cardMode": "single",
+      "viewport": "700x520"
+    },
+    "Sidebar": {
+      "cardMode": "single",
+      "viewport": "420x460"
+    },
+    "Toaster": {
+      "cardMode": "single",
+      "viewport": "520x460"
     },
     "Table": {
       "cardMode": "column"

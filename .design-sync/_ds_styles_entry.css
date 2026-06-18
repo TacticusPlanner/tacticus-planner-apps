@@ -1,0 +1,8 @@
+/* design-sync Tailwind entry. Re-imports the package's real globals.css
+   (so all tokens, fonts, @theme, and the app's own @source globs are honored
+   exactly as in production) and ADDS the preview dir as a content source, so
+   utility classes used only in .design-sync/previews/*.tsx (e.g. the Skeleton
+   line/avatar sizing that mirrors the ui-kit showcase) are present in the
+   compiled stylesheet. globals.css is left untouched. */
+@import "../packages/ui/src/styles/globals.css";
+@source "./previews/**/*.tsx";

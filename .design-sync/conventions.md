@@ -9,9 +9,10 @@ everything from the package root: `import { Button, Card, CardHeader } from '@wo
 - **No global provider is required** — components are self-contained.
 - **`Tooltip` is the one exception**: wrap it (or your app) in `<TooltipProvider>`.
 - **Dark mode**: add `className="dark"` to any ancestor element. All color tokens
-  flip automatically. The default (no `.dark`) is the light theme.
-- **Fonts** ship with the kit: body text is **DM Sans**; use the `font-heading`
-  utility for **Raleway** headings.
+  flip automatically. The CSS default (no `.dark`) is the light theme; the
+  design-system preview cards are rendered on the dark theme by default.
+- **Fonts** ship with the kit: body text is **Noto Sans** (the default
+  `font-sans`); use the `font-heading` utility for **Inter** headings.
 
 ## Styling idiom — Tailwind utility classes with semantic tokens
 
