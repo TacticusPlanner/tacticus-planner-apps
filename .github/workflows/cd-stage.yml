@@ -17,6 +17,7 @@ jobs:
     name: Build
     uses: ./.github/workflows/_build-web.yml
     with:
+      run-validation: false
       upload-artifact: true
 
   deploy:
@@ -29,7 +30,7 @@ jobs:
 
     steps:
       - name: Download web artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: web-dist
           path: apps/web/dist

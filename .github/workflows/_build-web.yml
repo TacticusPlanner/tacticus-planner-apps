@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ""
+      run-validation:
+        description: Run formatting, linting, FSD linting, and typechecking.
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -24,26 +29,26 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 2
           ref: ${{ inputs.ref || github.ref }}
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.7.0
           run_install: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24.15.0
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Cache Turbo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-${{ github.sha }}
@@ -53,10 +58,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check formatting
+        if: ${{ inputs.run-validation }}
+        run: pnpm exec prettier --check "**/*.{ts,tsx}"
+
       - name: Lint
+        if: ${{ inputs.run-validation }}
         run: pnpm lint
 
+      - name: Lint FSD
+        if: ${{ inputs.run-validation }}
+        run: pnpm lint:fsd
+
       - name: Typecheck
+        if: ${{ inputs.run-validation }}
         run: pnpm typecheck
 
       - name: Build
@@ -64,7 +79,7 @@ jobs:
 
       - name: Upload web artifact
         if: ${{ inputs.upload-artifact }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-dist
           path: apps/web/dist
