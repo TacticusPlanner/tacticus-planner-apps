@@ -20,6 +20,16 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@workspace/ui/components/drawer"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -96,6 +106,42 @@ export function OverlaysShowcase() {
             </Command>
           </PopoverContent>
         </Popover>
+      </UiKitShowcaseCard>
+
+      <UiKitShowcaseCard title="Drawer">
+        <div className="flex flex-col gap-3" data-testid="overlay-drawer">
+          <p className="text-sm text-muted-foreground">
+            Drawers work well for mobile-first task panels.
+          </p>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button data-testid="drawer-trigger" variant="outline">
+                Open drawer
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent data-testid="drawer-content">
+              <DrawerHeader>
+                <DrawerTitle>Plan campaign energy</DrawerTitle>
+                <DrawerDescription>
+                  Review daily energy allocation before saving the run plan.
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="flex flex-col gap-3 px-4 pb-2 text-sm text-muted-foreground">
+                <p>Indomitus: 120 energy</p>
+                <p>Octarius Mirror: 60 energy</p>
+                <p>Event nodes: 50 energy</p>
+              </div>
+              <DrawerFooter>
+                <DrawerClose asChild>
+                  <Button>Save plan</Button>
+                </DrawerClose>
+                <DrawerClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        </div>
       </UiKitShowcaseCard>
     </div>
   )

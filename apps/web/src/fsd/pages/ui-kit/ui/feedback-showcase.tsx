@@ -1,4 +1,5 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react"
+import { toast } from "sonner"
 
 import {
   Alert,
@@ -6,6 +7,7 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -54,6 +56,45 @@ export function FeedbackShowcase() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-2/3" />
           </div>
+        </div>
+      </UiKitShowcaseCard>
+
+      <UiKitShowcaseCard title="Toast notifications">
+        <div className="flex flex-wrap gap-2" data-testid="feedback-toasts">
+          <Button
+            data-testid="toast-default-trigger"
+            onClick={() => toast("Upgrade plan saved.")}
+            variant="outline"
+          >
+            Default toast
+          </Button>
+          <Button
+            data-testid="toast-success-trigger"
+            onClick={() => toast.success("Roster sync complete.")}
+            variant="outline"
+          >
+            Success toast
+          </Button>
+          <Button
+            data-testid="toast-error-trigger"
+            onClick={() => toast.error("Battle import failed.")}
+            variant="outline"
+          >
+            Error toast
+          </Button>
+          <Button
+            data-testid="toast-action-trigger"
+            onClick={() =>
+              toast("Inventory item archived.", {
+                action: {
+                  label: "Undo",
+                  onClick: () => toast("Archive undone."),
+                },
+              })
+            }
+          >
+            Action toast
+          </Button>
         </div>
       </UiKitShowcaseCard>
     </div>

@@ -1,3 +1,5 @@
+import { BookOpen, Box, Swords } from "lucide-react"
+
 import {
   Accordion,
   AccordionContent,
@@ -15,6 +17,18 @@ import {
 } from "@workspace/ui/components/card"
 import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import { Separator } from "@workspace/ui/components/separator"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "@workspace/ui/components/sidebar"
 import {
   Tabs,
   TabsContent,
@@ -98,6 +112,59 @@ export function LayoutShowcase() {
             ))}
           </div>
         </ScrollArea>
+      </UiKitShowcaseCard>
+
+      <UiKitShowcaseCard title="Sidebar composition">
+        <div
+          className="max-w-sm overflow-hidden rounded-2xl border"
+          data-testid="layout-sidebar"
+        >
+          <SidebarProvider className="min-h-0">
+            <Sidebar collapsible="none">
+              <SidebarHeader>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton isActive>
+                      <Swords />
+                      <span>Tacticus Planner</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupLabel>Planning</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive>
+                          <a
+                            data-testid="sidebar-preview-planner"
+                            href="#layout"
+                          >
+                            <BookOpen />
+                            <span>Campaigns</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <a
+                            data-testid="sidebar-preview-inventory"
+                            href="#layout"
+                          >
+                            <Box />
+                            <span>Inventory</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+          </SidebarProvider>
+        </div>
       </UiKitShowcaseCard>
     </div>
   )
