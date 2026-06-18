@@ -10,6 +10,9 @@
     "lint:fsd": "steiger ./src/fsd",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -30,17 +33,23 @@
     "@eslint/js": "catalog:",
     "@feature-sliced/steiger-plugin": "^0.6.0",
     "@tailwindcss/vite": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
     "eslint-plugin-react-refresh": "catalog:",
     "globals": "catalog:",
+    "jsdom": "catalog:",
     "steiger": "^0.5.13",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "vitest": "catalog:"
   }
 }
