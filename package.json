@@ -5,15 +5,19 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "lefthook:validate": "lefthook validate",
     "lint": "turbo lint",
     "lint:fsd": "turbo lint:fsd",
     "format": "turbo format",
+    "precommit": "lefthook run pre-commit",
+    "prepare": "lefthook install",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "test:run": "turbo test:run",
     "test:coverage": "turbo test:coverage"
   },
   "devDependencies": {
+    "lefthook": "^2.1.9",
     "prettier": "^3.8.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "turbo": "^2.9.18",

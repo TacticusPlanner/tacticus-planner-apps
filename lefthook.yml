@@ -1,0 +1,7 @@
+pre-commit:
+  jobs:
+    - name: format-and-lint-staged
+      glob:
+        - "*.{ts,tsx,js,jsx,json,css,md,yml,yaml}"
+      run: node scripts/pre-commit-staged.mjs
+      stage_fixed: true
