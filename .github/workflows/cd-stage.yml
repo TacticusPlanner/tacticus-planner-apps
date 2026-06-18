@@ -1,0 +1,45 @@
+name: CD Stage
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-stage
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    uses: ./.github/workflows/_build-web.yml
+    with:
+      upload-artifact: true
+
+  deploy:
+    name: Deploy Stage
+    needs: build
+    runs-on: ubuntu-latest
+    environment: stage
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+
+      - name: Deploy to Azure Static Web Apps stage
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGE }}
+          action: upload
+          app_location: apps/web/dist
+          api_location: ""
+          skip_app_build: true
+          production_branch: main
