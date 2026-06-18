@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ""
+      run-validation:
+        description: Run formatting, linting, FSD linting, and typechecking.
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -53,10 +58,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check formatting
+        if: ${{ inputs.run-validation }}
+        run: pnpm exec prettier --check "**/*.{ts,tsx}"
+
       - name: Lint
+        if: ${{ inputs.run-validation }}
         run: pnpm lint
 
+      - name: Lint FSD
+        if: ${{ inputs.run-validation }}
+        run: pnpm lint:fsd
+
       - name: Typecheck
+        if: ${{ inputs.run-validation }}
         run: pnpm typecheck
 
       - name: Build

@@ -17,6 +17,7 @@ jobs:
     name: Build
     uses: ./.github/workflows/_build-web.yml
     with:
+      run-validation: false
       upload-artifact: true
 
   deploy:
