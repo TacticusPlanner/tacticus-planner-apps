@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "Tacticus Planner"
+  },
+  "language": {
+    "label": "Language",
+    "options": {
+      "de": "Deutsch",
+      "en": "English",
+      "es": "Español",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
+  },
+  "uiKit": {
+    "navLabel": "UI kit sections",
+    "subtitle": "Focused shadcn component catalog for the v2 planner app.",
+    "title": "UI Kit",
+    "sections": {
+      "buttons": {
+        "description": "Core action styles, sizes, disabled states, and icon composition.",
+        "label": "Buttons"
+      },
+      "colors": {
+        "description": "Semantic colors from the active shadcn preset.",
+        "label": "Colors"
+      },
+      "dataDisplay": {
+        "description": "Basic table usage and a TanStack data table composition.",
+        "label": "Data Display"
+      },
+      "feedback": {
+        "description": "Alerts, badges, progress, skeletons, and loading indicators.",
+        "label": "Feedback"
+      },
+      "forms": {
+        "description": "Field layout, descriptions, validation, disabled states, and grouped inputs.",
+        "label": "Forms"
+      },
+      "layout": {
+        "description": "Cards, separators, accordions, tabs, and scrollable regions.",
+        "label": "Layout"
+      },
+      "overlays": {
+        "description": "Tooltip, dialog, popover, and command composition.",
+        "label": "Overlays"
+      },
+      "selection": {
+        "description": "Checkboxes, radios, switches, selects, sliders, and segmented controls.",
+        "label": "Selection"
+      }
+    }
+  }
+}

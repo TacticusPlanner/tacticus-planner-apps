@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "Tacticus Planner"
+  },
+  "language": {
+    "label": "Idioma",
+    "options": {
+      "de": "Deutsch",
+      "en": "English",
+      "es": "Español",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "dark": "Oscuro",
+    "light": "Claro",
+    "switchToDark": "Cambiar al modo oscuro",
+    "switchToLight": "Cambiar al modo claro"
+  },
+  "uiKit": {
+    "navLabel": "Secciones del kit UI",
+    "subtitle": "Catalogo enfocado de componentes shadcn para la app planner v2.",
+    "title": "Kit UI",
+    "sections": {
+      "buttons": {
+        "description": "Estilos de accion principales, tamanos, estados desactivados y composicion con iconos.",
+        "label": "Botones"
+      },
+      "colors": {
+        "description": "Colores semanticos del preset shadcn activo.",
+        "label": "Colores"
+      },
+      "dataDisplay": {
+        "description": "Uso basico de tablas y una composicion de tabla con TanStack.",
+        "label": "Visualizacion de datos"
+      },
+      "feedback": {
+        "description": "Alertas, insignias, progreso, esqueletos e indicadores de carga.",
+        "label": "Respuesta"
+      },
+      "forms": {
+        "description": "Diseno de campos, descripciones, validacion, estados desactivados y entradas agrupadas.",
+        "label": "Formularios"
+      },
+      "layout": {
+        "description": "Tarjetas, separadores, acordeones, pestanas y regiones desplazables.",
+        "label": "Diseno"
+      },
+      "overlays": {
+        "description": "Composicion de tooltips, dialogos, popovers y comandos.",
+        "label": "Superposiciones"
+      },
+      "selection": {
+        "description": "Casillas, radios, interruptores, selects, sliders y controles segmentados.",
+        "label": "Seleccion"
+      }
+    }
+  }
+}

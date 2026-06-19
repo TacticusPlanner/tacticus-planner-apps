@@ -1,9 +1,13 @@
+import { useTranslation } from "react-i18next"
+
 import { uiKitSections } from "../model/ui-kit"
 
 export function UiKitNav() {
+  const { t } = useTranslation()
+
   return (
     <nav
-      aria-label="UI kit sections"
+      aria-label={t("uiKit.navLabel")}
       className="sticky top-0 flex flex-wrap items-center gap-2 border-b bg-background/95 px-6 py-3 backdrop-blur"
       data-testid="ui-kit-nav"
     >
@@ -13,7 +17,7 @@ export function UiKitNav() {
           href={`#${section.id}`}
           key={section.id}
         >
-          {section.label}
+          {t(section.labelKey)}
         </a>
       ))}
     </nav>

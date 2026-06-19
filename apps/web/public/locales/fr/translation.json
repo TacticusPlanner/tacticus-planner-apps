@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "Tacticus Planner"
+  },
+  "language": {
+    "label": "Langue",
+    "options": {
+      "de": "Deutsch",
+      "en": "English",
+      "es": "Español",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "dark": "Sombre",
+    "light": "Clair",
+    "switchToDark": "Passer au mode sombre",
+    "switchToLight": "Passer au mode clair"
+  },
+  "uiKit": {
+    "navLabel": "Sections du kit UI",
+    "subtitle": "Catalogue cible de composants shadcn pour l'application planner v2.",
+    "title": "Kit UI",
+    "sections": {
+      "buttons": {
+        "description": "Styles d'actions, tailles, etats desactives et composition avec icones.",
+        "label": "Boutons"
+      },
+      "colors": {
+        "description": "Couleurs semantiques du preset shadcn actuellement actif.",
+        "label": "Couleurs"
+      },
+      "dataDisplay": {
+        "description": "Utilisation de base des tableaux et composition de table TanStack.",
+        "label": "Affichage des donnees"
+      },
+      "feedback": {
+        "description": "Alertes, badges, progression, squelettes et indicateurs de chargement.",
+        "label": "Retour d'etat"
+      },
+      "forms": {
+        "description": "Disposition des champs, descriptions, validation, etats desactives et entrees groupees.",
+        "label": "Formulaires"
+      },
+      "layout": {
+        "description": "Cartes, separateurs, accordions, onglets et zones defilables.",
+        "label": "Mise en page"
+      },
+      "overlays": {
+        "description": "Composition d'infobulles, boites de dialogue, popovers et commandes.",
+        "label": "Superpositions"
+      },
+      "selection": {
+        "description": "Cases a cocher, boutons radio, interrupteurs, selects, curseurs et controles segmentes.",
+        "label": "Selection"
+      }
+    }
+  }
+}

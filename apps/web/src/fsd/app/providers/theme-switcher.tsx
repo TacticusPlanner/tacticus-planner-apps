@@ -1,16 +1,18 @@
 import { Moon, Sun } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@workspace/ui/components/button"
 
 import { useTheme } from "./theme-provider"
 
 export function ThemeSwitcher() {
+  const { t } = useTranslation()
   const { theme, setTheme } = useTheme()
   const isDark = theme === "dark"
 
   return (
     <Button
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
       data-testid="theme-switcher"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       size="sm"
@@ -21,7 +23,7 @@ export function ThemeSwitcher() {
       ) : (
         <Moon data-icon="inline-start" />
       )}
-      {isDark ? "Light" : "Dark"}
+      {isDark ? t("theme.light") : t("theme.dark")}
     </Button>
   )
 }
