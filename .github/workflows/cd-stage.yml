@@ -43,4 +43,3 @@ jobs:
           app_location: apps/web/dist
           api_location: ""
           skip_app_build: true
-          production_branch: main

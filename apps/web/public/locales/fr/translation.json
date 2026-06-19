@@ -17,6 +17,39 @@
     "switchToDark": "Passer au mode sombre",
     "switchToLight": "Passer au mode clair"
   },
+  "tour": {
+    "start": "Visite guidée",
+    "controls": {
+      "back": "Précédent",
+      "close": "Fermer",
+      "last": "Terminer",
+      "next": "Suivant",
+      "nextWithProgress": "Suivant ({current} sur {total})",
+      "skip": "Passer"
+    },
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue sur Tacticus Planner",
+        "content": "Faites une visite rapide pour découvrir les éléments clés de l'interface."
+      },
+      "language": {
+        "title": "Choisissez votre langue",
+        "content": "Changez la langue de l'interface à tout moment depuis ce menu."
+      },
+      "theme": {
+        "title": "Clair ou sombre",
+        "content": "Basculez entre les thèmes clair et sombre. Astuce : appuyez sur « D » pour changer rapidement."
+      },
+      "replay": {
+        "title": "Revoir la visite",
+        "content": "Cliquez ici dès que vous souhaitez relancer cette visite."
+      },
+      "navigation": {
+        "title": "Naviguez facilement",
+        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."
+      }
+    }
+  },
   "uiKit": {
     "navLabel": "Sections du kit UI",
     "subtitle": "Catalogue cible de composants shadcn pour l'application planner v2.",

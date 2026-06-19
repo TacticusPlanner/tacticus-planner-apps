@@ -13,6 +13,12 @@
       "skillPath": "skills/react-i18next/SKILL.md",
       "computedHash": "d925b8f583576bb059c943c3f6a3b77b5b98fcec3a87b9bdffa7b6e1e69dcf47"
     },
+    "react-joyride": {
+      "source": "gilbarbara/react-joyride",
+      "sourceType": "github",
+      "skillPath": "skills/react-joyride/SKILL.md",
+      "computedHash": "824724c51142bb67d7dfc5aee3cbabb4a28195fe429cc00a19d0b062fa3c1f60"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
