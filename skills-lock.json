@@ -7,6 +7,12 @@
       "skillPath": "feature-sliced-design/SKILL.md",
       "computedHash": "d4eaefe92df4439ffa8c6c06762047f0fc3aeb5ffc620d5239dce8d95592fe60"
     },
+    "react-i18next": {
+      "source": "yildizberkay/skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-i18next/SKILL.md",
+      "computedHash": "d925b8f583576bb059c943c3f6a3b77b5b98fcec3a87b9bdffa7b6e1e69dcf47"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",

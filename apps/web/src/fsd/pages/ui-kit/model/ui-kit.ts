@@ -1,12 +1,44 @@
 export const uiKitSections = [
-  { id: "colors", label: "Colors" },
-  { id: "buttons", label: "Buttons" },
-  { id: "forms", label: "Forms" },
-  { id: "selection", label: "Selection" },
-  { id: "feedback", label: "Feedback" },
-  { id: "overlays", label: "Overlays" },
-  { id: "layout", label: "Layout" },
-  { id: "data-display", label: "Data Display" },
+  {
+    descriptionKey: "uiKit.sections.colors.description",
+    id: "colors",
+    labelKey: "uiKit.sections.colors.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.buttons.description",
+    id: "buttons",
+    labelKey: "uiKit.sections.buttons.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.forms.description",
+    id: "forms",
+    labelKey: "uiKit.sections.forms.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.selection.description",
+    id: "selection",
+    labelKey: "uiKit.sections.selection.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.feedback.description",
+    id: "feedback",
+    labelKey: "uiKit.sections.feedback.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.overlays.description",
+    id: "overlays",
+    labelKey: "uiKit.sections.overlays.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.layout.description",
+    id: "layout",
+    labelKey: "uiKit.sections.layout.label",
+  },
+  {
+    descriptionKey: "uiKit.sections.dataDisplay.description",
+    id: "data-display",
+    labelKey: "uiKit.sections.dataDisplay.label",
+  },
 ] as const
 
 export type UiKitSectionId = (typeof uiKitSections)[number]["id"]

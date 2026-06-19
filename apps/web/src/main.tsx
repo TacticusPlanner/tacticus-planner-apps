@@ -3,12 +3,14 @@ import { createRoot } from "react-dom/client"
 
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
-import { ThemeProvider } from "@/app/providers"
+import { I18nProvider, ThemeProvider } from "@/app/providers"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
+    <I18nProvider>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </I18nProvider>
   </StrictMode>
 )

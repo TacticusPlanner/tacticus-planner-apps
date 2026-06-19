@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 
+import { useTranslation } from "react-i18next"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 import { uiKitSections } from "../model/ui-kit"
@@ -19,6 +20,8 @@ type UiKitPageProps = {
 }
 
 export function UiKitPage({ headerAction }: UiKitPageProps) {
+  const { t } = useTranslation()
+
   return (
     <TooltipProvider>
       <main
@@ -28,13 +31,13 @@ export function UiKitPage({ headerAction }: UiKitPageProps) {
         <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-8">
           <div className="flex flex-col gap-2">
             <p className="text-sm font-medium text-muted-foreground">
-              Tacticus Planner
+              {t("app.name")}
             </p>
             <div className="flex max-w-4xl flex-col gap-3">
-              <h1 className="text-3xl font-semibold tracking-tight">UI Kit</h1>
-              <p className="text-muted-foreground">
-                Focused shadcn component catalog for the v2 planner app.
-              </p>
+              <h1 className="text-3xl font-semibold tracking-tight">
+                {t("uiKit.title")}
+              </h1>
+              <p className="text-muted-foreground">{t("uiKit.subtitle")}</p>
             </div>
           </div>
           {headerAction}
@@ -43,69 +46,23 @@ export function UiKitPage({ headerAction }: UiKitPageProps) {
         <UiKitNav />
 
         <div className="flex flex-col gap-10 px-6 py-8">
-          <UiKitSection
-            description="Semantic colors from the active shadcn preset."
-            id={uiKitSections[0].id}
-            title={uiKitSections[0].label}
-          >
-            <ColorsShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Core action styles, sizes, disabled states, and icon composition."
-            id={uiKitSections[1].id}
-            title={uiKitSections[1].label}
-          >
-            <ButtonsShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Field layout, descriptions, validation, disabled states, and grouped inputs."
-            id={uiKitSections[2].id}
-            title={uiKitSections[2].label}
-          >
-            <FormsShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Checkboxes, radios, switches, selects, sliders, and segmented controls."
-            id={uiKitSections[3].id}
-            title={uiKitSections[3].label}
-          >
-            <SelectionShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Alerts, badges, progress, skeletons, and loading indicators."
-            id={uiKitSections[4].id}
-            title={uiKitSections[4].label}
-          >
-            <FeedbackShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Tooltip, dialog, popover, and command composition."
-            id={uiKitSections[5].id}
-            title={uiKitSections[5].label}
-          >
-            <OverlaysShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Cards, separators, accordions, tabs, and scrollable regions."
-            id={uiKitSections[6].id}
-            title={uiKitSections[6].label}
-          >
-            <LayoutShowcase />
-          </UiKitSection>
-
-          <UiKitSection
-            description="Basic table usage and a TanStack data table composition."
-            id={uiKitSections[7].id}
-            title={uiKitSections[7].label}
-          >
-            <DataDisplayShowcase />
-          </UiKitSection>
+          {uiKitSections.map((section) => (
+            <UiKitSection
+              description={t(section.descriptionKey)}
+              id={section.id}
+              key={section.id}
+              title={t(section.labelKey)}
+            >
+              {section.id === "colors" ? <ColorsShowcase /> : null}
+              {section.id === "buttons" ? <ButtonsShowcase /> : null}
+              {section.id === "forms" ? <FormsShowcase /> : null}
+              {section.id === "selection" ? <SelectionShowcase /> : null}
+              {section.id === "feedback" ? <FeedbackShowcase /> : null}
+              {section.id === "overlays" ? <OverlaysShowcase /> : null}
+              {section.id === "layout" ? <LayoutShowcase /> : null}
+              {section.id === "data-display" ? <DataDisplayShowcase /> : null}
+            </UiKitSection>
+          ))}
         </div>
       </main>
     </TooltipProvider>
