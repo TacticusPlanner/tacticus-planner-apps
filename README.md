@@ -7,14 +7,15 @@ This is a Vite monorepo template with shadcn/ui.
 Create a Microsoft Entra External ID single-page application registration and
 register these redirect URIs:
 
-- Local: `http://localhost:5173/redirect`
-- Production: `<production-origin>/redirect`
+- Local: `http://localhost:5173/auth/callback`
+- Staging: `<staging-origin>/auth/callback`
+- Production: `<production-origin>/auth/callback`
 
 Copy `apps/web/.env.example` to `apps/web/.env.local`, then replace the sample
-values with the new registration's application ID, tenant ID, and CIAM
-authority. The authority must use the form
-`https://<tenant-subdomain>.ciamlogin.com/`. The tenant ID is used to trust
-the GUID-based issuer returned by CIAM metadata.
+values with the API base URL, delegated `access_as_user` scope, SPA application
+ID, tenant ID, and CIAM authority. Grant the SPA registration delegated access
+to the scope exposed by the matching API registration. The tenant ID is used to
+trust the GUID-based issuer returned by CIAM metadata.
 
 For deployments, define these public configuration values under **Settings →
 Secrets and variables → Actions → Variables** in GitHub:
@@ -22,9 +23,13 @@ Secrets and variables → Actions → Variables** in GitHub:
 - `STAGE_MSAL_AUTHORITY`
 - `STAGE_MSAL_CLIENT_ID`
 - `STAGE_MSAL_TENANT_ID`
+- `STAGE_API_BASE_URL`
+- `STAGE_API_SCOPE`
 - `PROD_MSAL_AUTHORITY`
 - `PROD_MSAL_CLIENT_ID`
 - `PROD_MSAL_TENANT_ID`
+- `PROD_API_BASE_URL`
+- `PROD_API_SCOPE`
 
 The CD workflows pass the appropriate values into Vite before building the
 stage or production artifact. These values are embedded in browser JavaScript

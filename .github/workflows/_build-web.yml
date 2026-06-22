@@ -18,6 +18,16 @@ on:
         required: false
         type: boolean
         default: true
+      vite-api-base-url:
+        description: Tacticus Planner API base URL embedded by Vite.
+        required: false
+        type: string
+        default: ""
+      vite-api-scope:
+        description: Microsoft Entra delegated API scope embedded by Vite.
+        required: false
+        type: string
+        default: ""
       vite-msal-authority:
         description: Microsoft Entra External ID authority embedded by Vite.
         required: false
@@ -40,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
+      VITE_API_BASE_URL: ${{ inputs.vite-api-base-url }}
+      VITE_API_SCOPE: ${{ inputs.vite-api-scope }}
       VITE_MSAL_AUTHORITY: ${{ inputs.vite-msal-authority }}
       VITE_MSAL_CLIENT_ID: ${{ inputs.vite-msal-client-id }}
       VITE_MSAL_TENANT_ID: ${{ inputs.vite-msal-tenant-id }}
@@ -84,6 +96,8 @@ jobs:
         if: ${{ inputs.upload-artifact }}
         shell: bash
         run: |
+          : "${VITE_API_BASE_URL:?Missing API base URL build variable}"
+          : "${VITE_API_SCOPE:?Missing API scope build variable}"
           : "${VITE_MSAL_AUTHORITY:?Missing MSAL authority build variable}"
           : "${VITE_MSAL_CLIENT_ID:?Missing MSAL client ID build variable}"
           : "${VITE_MSAL_TENANT_ID:?Missing MSAL tenant ID build variable}"

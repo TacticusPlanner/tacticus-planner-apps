@@ -4,7 +4,13 @@
   },
   "auth": {
     "account": "Angemeldetes Konto",
+    "accountConsentRequired": "API-Zugriff erforderlich",
+    "accountForbidden": "API-Zugriff verweigert",
+    "accountLoadError": "Konto nicht verfügbar",
+    "accountLoading": "Konto wird geladen",
     "error": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
+    "grantAccess": "API-Zugriff gewähren",
+    "retry": "Konto erneut laden",
     "signIn": "Anmelden",
     "signOut": "Abmelden"
   },

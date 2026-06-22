@@ -9,17 +9,7 @@ import {
   type RedirectRequest,
 } from "@azure/msal-browser"
 
-function getRequiredEnvironmentValue(
-  name: "VITE_MSAL_AUTHORITY" | "VITE_MSAL_CLIENT_ID" | "VITE_MSAL_TENANT_ID"
-) {
-  const value = import.meta.env[name]?.trim()
-
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
-  }
-
-  return value
-}
+import { getRequiredEnvironmentValue } from "@/shared/config"
 
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
@@ -35,7 +25,7 @@ function createMsalConfig(): Configuration {
         `https://${tenantId}.ciamlogin.com`,
       ],
       postLogoutRedirectUri: window.location.origin,
-      redirectUri: new URL("/redirect", window.location.origin).href,
+      redirectUri: new URL("/auth/callback", window.location.origin).href,
     },
     cache: {
       cacheLocation: BrowserCacheLocation.SessionStorage,
@@ -72,7 +62,7 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
-  scopes: [],
+  scopes: [getRequiredEnvironmentValue("VITE_API_SCOPE")],
 }
 
 export async function initializeAuthentication() {
