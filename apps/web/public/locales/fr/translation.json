@@ -2,6 +2,12 @@
   "app": {
     "name": "Tacticus Planner"
   },
+  "auth": {
+    "account": "Compte connecté",
+    "error": "L’authentification n’a pas pu aboutir. Veuillez réessayer.",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter"
+  },
   "language": {
     "label": "Langue",
     "options": {

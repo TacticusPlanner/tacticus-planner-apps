@@ -16,6 +16,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.14.0",
+    "@azure/msal-react": "^5.4.5",
     "@tanstack/react-table": "^8.21.3",
     "@workspace/ui": "workspace:*",
     "class-variance-authority": "catalog:",

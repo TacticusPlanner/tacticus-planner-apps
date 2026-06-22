@@ -18,12 +18,31 @@ on:
         required: false
         type: boolean
         default: true
+      vite-msal-authority:
+        description: Microsoft Entra External ID authority embedded by Vite.
+        required: false
+        type: string
+        default: ""
+      vite-msal-client-id:
+        description: Microsoft Entra SPA client ID embedded by Vite.
+        required: false
+        type: string
+        default: ""
+      vite-msal-tenant-id:
+        description: Microsoft Entra External ID tenant ID embedded by Vite.
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
     name: Build Web
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      VITE_MSAL_AUTHORITY: ${{ inputs.vite-msal-authority }}
+      VITE_MSAL_CLIENT_ID: ${{ inputs.vite-msal-client-id }}
+      VITE_MSAL_TENANT_ID: ${{ inputs.vite-msal-tenant-id }}
     permissions:
       contents: read
 
@@ -60,6 +79,14 @@ jobs:
 
       - name: Set app version
         run: echo "VITE_APP_VERSION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Validate deployment configuration
+        if: ${{ inputs.upload-artifact }}
+        shell: bash
+        run: |
+          : "${VITE_MSAL_AUTHORITY:?Missing MSAL authority build variable}"
+          : "${VITE_MSAL_CLIENT_ID:?Missing MSAL client ID build variable}"
+          : "${VITE_MSAL_TENANT_ID:?Missing MSAL tenant ID build variable}"
 
       - name: Check formatting
         if: ${{ inputs.run-validation }}
