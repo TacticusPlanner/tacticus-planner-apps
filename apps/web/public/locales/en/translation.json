@@ -2,6 +2,12 @@
   "app": {
     "name": "Tacticus Planner"
   },
+  "auth": {
+    "account": "Signed-in account",
+    "error": "Authentication could not be completed. Please try again.",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
   "language": {
     "label": "Language",
     "options": {
