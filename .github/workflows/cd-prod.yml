@@ -19,9 +19,9 @@ concurrency:
 jobs:
   build:
     name: Build
-    environment: production
     uses: ./.github/workflows/_build-web.yml
     with:
+      environment-name: production
       run-validation: false
       upload-artifact: true
       ref: ${{ inputs.ref }}

@@ -3,6 +3,9 @@ name: Build Web
 on:
   workflow_call:
     inputs:
+      environment-name:
+        required: true
+        type: string
       upload-artifact:
         description: Upload the built web app artifact for deployment.
         required: false
@@ -38,6 +41,7 @@ jobs:
   build:
     name: Build Web
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-name }}
     timeout-minutes: 15
     env:
       VITE_MSAL_AUTHORITY: ${{ inputs.vite-msal-authority }}
