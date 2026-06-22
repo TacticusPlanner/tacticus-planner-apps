@@ -4,18 +4,19 @@ This is a Vite monorepo template with shadcn/ui.
 
 ## Authentication configuration
 
-Create a Microsoft Entra External ID single-page application registration and
-register these redirect URIs:
+Use the dedicated Microsoft Entra External ID single-page application
+registration for each environment and register its matching redirect URI:
 
 - Local: `http://localhost:5173/auth/callback`
 - Staging: `<staging-origin>/auth/callback`
 - Production: `<production-origin>/auth/callback`
 
 Copy `apps/web/.env.example` to `apps/web/.env.local`, then replace the sample
-values with the API base URL, delegated `access_as_user` scope, SPA application
-ID, tenant ID, and CIAM authority. Grant the SPA registration delegated access
-to the scope exposed by the matching API registration. The tenant ID is used to
-trust the GUID-based issuer returned by CIAM metadata.
+values with the local API base URL, local delegated `access_as_user` scope,
+dedicated local SPA application ID, tenant ID, and CIAM authority. Grant each
+SPA registration delegated access to the scope exposed by its matching API
+registration. The tenant ID is used to trust the GUID-based issuer returned by
+CIAM metadata.
 
 For deployments, define these public configuration values under **Settings →
 Secrets and variables → Actions → Variables** in GitHub:
