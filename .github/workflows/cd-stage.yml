@@ -17,9 +17,11 @@ jobs:
     name: Build
     uses: ./.github/workflows/_build-web.yml
     with:
-      environment-name: stage
       run-validation: false
       upload-artifact: true
+      vite-msal-authority: ${{ vars.STAGE_MSAL_AUTHORITY }}
+      vite-msal-client-id: ${{ vars.STAGE_MSAL_CLIENT_ID }}
+      vite-msal-tenant-id: ${{ vars.STAGE_MSAL_TENANT_ID }}
 
   deploy:
     name: Deploy Stage
