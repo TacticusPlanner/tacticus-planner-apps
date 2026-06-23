@@ -28,7 +28,7 @@ function createMsalConfig(): Configuration {
       redirectUri: new URL("/auth/callback", window.location.origin).href,
     },
     cache: {
-      cacheLocation: BrowserCacheLocation.SessionStorage,
+      cacheLocation: BrowserCacheLocation.LocalStorage,
     },
     system: {
       loggerOptions: {

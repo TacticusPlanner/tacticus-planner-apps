@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { LoaderCircle, LogIn, LogOut, RefreshCw, UserRound } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -57,6 +57,8 @@ export function AuthControl() {
   const isAuthenticated = useIsAuthenticated()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
   const account = instance.getActiveAccount() ?? accounts[0]
+  const accountId = account?.homeAccountId
+  const currentUserRequestRef = useRef<string | null>(null)
   const [currentUserState, setCurrentUserState] = useState<CurrentUserState>({
     status: "idle",
   })
@@ -85,16 +87,33 @@ export function AuthControl() {
   )
 
   useEffect(() => {
-    if (!isAuthenticated || !account) {
+    if (!isAuthenticated || !account || !accountId) {
+      return
+    }
+
+    if (currentUserRequestRef.current === accountId) {
+      return
+    }
+
+    if (
+      currentUserState.status !== "idle" &&
+      currentUserState.accountId === accountId
+    ) {
       return
     }
 
     const controller = new AbortController()
-    const accountId = account.homeAccountId
+
+    currentUserRequestRef.current = accountId
 
     void getCurrentUser(instance, account, controller.signal).then(
-      (user) => setCurrentUserState({ accountId, status: "success", user }),
+      (user) => {
+        currentUserRequestRef.current = null
+        setCurrentUserState({ accountId, status: "success", user })
+      },
       (error: unknown) => {
+        currentUserRequestRef.current = null
+
         if (controller.signal.aborted) {
           return
         }
@@ -105,7 +124,7 @@ export function AuthControl() {
     )
 
     return () => controller.abort()
-  }, [account, instance, isAuthenticated])
+  }, [account, accountId, currentUserState, instance, isAuthenticated])
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {

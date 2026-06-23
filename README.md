@@ -18,6 +18,36 @@ SPA registration delegated access to the scope exposed by its matching API
 registration. The tenant ID is used to trust the GUID-based issuer returned by
 CIAM metadata.
 
+When the local stack is started from the API repository's Aspire AppHost,
+Aspire provides `VITE_API_BASE_URL` to the Vite dev server automatically. In
+that flow, keep using `.env.local` for the remaining public local authentication
+values such as `VITE_API_SCOPE`, `VITE_MSAL_CLIENT_ID`,
+`VITE_MSAL_AUTHORITY`, and `VITE_MSAL_TENANT_ID`.
+
+The Aspire AppHost follows the Turborepo workflow by running the root
+`dev:web` script, which delegates to the `apps/web` `dev:aspire` task through
+Turbo. The regular `pnpm dev` and app-level `pnpm --dir apps/web dev`
+commands remain unchanged for standalone client development.
+
+The Aspire workflow expects the API and client repositories to be checked out
+as sibling folders:
+
+```text
+/tacticus/v2
+  /tacticus-planner-api
+  /tacticus-planner-apps
+```
+
+Start the full local stack from `tacticus-planner-api`:
+
+```powershell
+dotnet run --project orchestration/TacticusPlanner.AppHost
+```
+
+This Aspire integration is for local development only. It does not replace the
+standalone client development workflow, Turborepo commands, staging deployment,
+production deployment, or CI/CD workflows.
+
 For deployments, define these public configuration values under **Settings →
 Secrets and variables → Actions → Variables** in GitHub:
 

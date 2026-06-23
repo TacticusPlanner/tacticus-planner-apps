@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "dev:aspire": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint",
     "lint:fsd": "steiger ./src/fsd",
