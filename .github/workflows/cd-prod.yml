@@ -24,6 +24,8 @@ jobs:
       run-validation: false
       upload-artifact: true
       ref: ${{ inputs.ref }}
+      vite-api-base-url: ${{ vars.PROD_API_BASE_URL }}
+      vite-api-scope: ${{ vars.PROD_API_SCOPE }}
       vite-msal-authority: ${{ vars.PROD_MSAL_AUTHORITY }}
       vite-msal-client-id: ${{ vars.PROD_MSAL_CLIENT_ID }}
       vite-msal-tenant-id: ${{ vars.PROD_MSAL_TENANT_ID }}

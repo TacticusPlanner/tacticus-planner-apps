@@ -1,4 +1,6 @@
 export { AuthProvider } from "./auth-provider"
+export { CatalogProvider } from "./catalog-provider"
+export { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 export { I18nProvider } from "./i18n-provider"
 export { ThemeProvider, useTheme } from "./theme-provider"
 export { TourProvider, useTour } from "./tour-provider"

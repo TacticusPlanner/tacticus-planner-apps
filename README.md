@@ -16,13 +16,21 @@ authority. The authority must use the form
 `https://<tenant-subdomain>.ciamlogin.com/`. The tenant ID is used to trust
 the GUID-based issuer returned by CIAM metadata.
 
+Set `VITE_API_BASE_URL` to the planner API origin and `VITE_API_SCOPE` to the
+API permission scope used by the SPA, for example
+`api://<api-application-id>/access_as_user`.
+
 For deployments, define these public configuration values under **Settings →
 Secrets and variables → Actions → Variables** in GitHub:
 
 - `STAGE_MSAL_AUTHORITY`
+- `STAGE_API_BASE_URL`
+- `STAGE_API_SCOPE`
 - `STAGE_MSAL_CLIENT_ID`
 - `STAGE_MSAL_TENANT_ID`
 - `PROD_MSAL_AUTHORITY`
+- `PROD_API_BASE_URL`
+- `PROD_API_SCOPE`
 - `PROD_MSAL_CLIENT_ID`
 - `PROD_MSAL_TENANT_ID`
 

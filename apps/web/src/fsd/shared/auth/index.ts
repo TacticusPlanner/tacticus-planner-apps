@@ -1,1 +1,6 @@
-export { initializeAuthentication, loginRequest } from "./authentication"
+export {
+  acquireApiAccessToken,
+  getApiScope,
+  initializeAuthentication,
+  loginRequest,
+} from "./authentication"

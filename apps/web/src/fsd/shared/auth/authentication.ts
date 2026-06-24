@@ -6,11 +6,16 @@ import {
   type AuthenticationResult,
   type Configuration,
   type EventMessage,
+  type IPublicClientApplication,
   type RedirectRequest,
 } from "@azure/msal-browser"
 
 function getRequiredEnvironmentValue(
-  name: "VITE_MSAL_AUTHORITY" | "VITE_MSAL_CLIENT_ID" | "VITE_MSAL_TENANT_ID"
+  name:
+    | "VITE_API_SCOPE"
+    | "VITE_MSAL_AUTHORITY"
+    | "VITE_MSAL_CLIENT_ID"
+    | "VITE_MSAL_TENANT_ID"
 ) {
   const value = import.meta.env[name]?.trim()
 
@@ -19,6 +24,10 @@ function getRequiredEnvironmentValue(
   }
 
   return value
+}
+
+export function getApiScope() {
+  return getRequiredEnvironmentValue("VITE_API_SCOPE")
 }
 
 function createMsalConfig(): Configuration {
@@ -72,7 +81,25 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
-  scopes: [],
+  scopes: [getApiScope()],
+}
+
+export async function acquireApiAccessToken(
+  msalInstance: IPublicClientApplication
+) {
+  const account =
+    msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0]
+
+  if (!account) {
+    throw new Error("An authenticated account is required to call the API.")
+  }
+
+  const result = await msalInstance.acquireTokenSilent({
+    account,
+    scopes: [getApiScope()],
+  })
+
+  return result.accessToken
 }
 
 export async function initializeAuthentication() {

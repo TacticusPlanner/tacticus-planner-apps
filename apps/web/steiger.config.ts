@@ -6,6 +6,7 @@ export default defineConfig([
   {
     files: [
       "./src/fsd/entities/upgrade/**",
+      "./src/fsd/entities/catalog/**",
       "./src/fsd/features/view-settings/**",
       "./src/fsd/widgets/sidebar/**",
     ],
