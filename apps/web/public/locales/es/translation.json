@@ -14,6 +14,19 @@
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión"
   },
+  "catalog": {
+    "init": {
+      "firstTimeTitle": "Configurando los datos del juego",
+      "firstTimeDescription": "Primer uso en este dispositivo — esto puede tardar un poco más.",
+      "updatingTitle": "Actualizando el catálogo del juego",
+      "updatingDescription": "Actualizando los datos del catálogo del juego a la versión {{version}}.",
+      "preparing": "Preparando el catálogo del juego…",
+      "progress": "Descargando {{done}} / {{total}}…",
+      "errorTitle": "No se pudieron cargar los datos del juego",
+      "errorDescription": "Algo salió mal al cargar el catálogo del juego.",
+      "retry": "Reintentar"
+    }
+  },
   "language": {
     "label": "Idioma",
     "options": {

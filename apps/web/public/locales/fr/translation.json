@@ -14,6 +14,19 @@
     "signIn": "Se connecter",
     "signOut": "Se déconnecter"
   },
+  "catalog": {
+    "init": {
+      "firstTimeTitle": "Configuration des données de jeu",
+      "firstTimeDescription": "Première utilisation sur cet appareil — cela peut prendre un peu plus de temps.",
+      "updatingTitle": "Mise à jour du catalogue de jeu",
+      "updatingDescription": "Mise à jour des données du catalogue de jeu vers la version {{version}}.",
+      "preparing": "Préparation du catalogue de jeu…",
+      "progress": "Téléchargement de {{done}} / {{total}}…",
+      "errorTitle": "Impossible de charger les données de jeu",
+      "errorDescription": "Une erreur s'est produite lors du chargement du catalogue de jeu.",
+      "retry": "Réessayer"
+    }
+  },
   "language": {
     "label": "Langue",
     "options": {

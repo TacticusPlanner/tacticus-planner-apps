@@ -13,9 +13,9 @@ vi.mock("@workspace/game-catalog", () => ({
   useGameCatalogStatus: () => status(),
 }))
 
-import { CatalogInitGate } from "./catalog-init-gate"
+import { GameCatalogInitGate } from "./game-catalog-init-gate"
 
-function setStatus(value: Partial<CatalogContextValue>) {
+function setStatus(value: Partial<GameCatalogContextValue>) {
   status.mockReturnValue({
     status: "idle",
     progress: null,
@@ -27,7 +27,7 @@ function setStatus(value: Partial<CatalogContextValue>) {
   })
 }
 
-describe("CatalogInitGate", () => {
+describe("GameCatalogInitGate", () => {
   it("shows the blocking overlay while syncing", () => {
     setStatus({
       status: "syncing",
@@ -36,9 +36,9 @@ describe("CatalogInitGate", () => {
     })
 
     render(
-      <CatalogInitGate>
+      <GameCatalogInitGate>
         <div data-testid="home-content" />
-      </CatalogInitGate>
+      </GameCatalogInitGate>
     )
 
     expect(screen.getByTestId("catalog-init-overlay")).toBeVisible()
@@ -49,9 +49,9 @@ describe("CatalogInitGate", () => {
     setStatus({ status: "ready" })
 
     render(
-      <CatalogInitGate>
+      <GameCatalogInitGate>
         <div data-testid="home-content" />
-      </CatalogInitGate>
+      </GameCatalogInitGate>
     )
 
     expect(screen.queryByTestId("catalog-init-overlay")).not.toBeInTheDocument()
@@ -62,9 +62,9 @@ describe("CatalogInitGate", () => {
     setStatus({ status: "error", error: "boom" })
 
     render(
-      <CatalogInitGate>
+      <GameCatalogInitGate>
         <div data-testid="home-content" />
-      </CatalogInitGate>
+      </GameCatalogInitGate>
     )
 
     expect(screen.getByTestId("catalog-init-retry")).toBeVisible()

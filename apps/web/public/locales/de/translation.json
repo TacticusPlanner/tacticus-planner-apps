@@ -14,6 +14,19 @@
     "signIn": "Anmelden",
     "signOut": "Abmelden"
   },
+  "catalog": {
+    "init": {
+      "firstTimeTitle": "Spieldaten werden eingerichtet",
+      "firstTimeDescription": "Erste Verwendung auf diesem Gerät — das kann etwas länger dauern.",
+      "updatingTitle": "Spielkatalog wird aktualisiert",
+      "updatingDescription": "Spielkatalogdaten werden auf Version {{version}} aktualisiert.",
+      "preparing": "Spielkatalog wird vorbereitet…",
+      "progress": "{{done}} / {{total}} werden heruntergeladen…",
+      "errorTitle": "Spieldaten konnten nicht geladen werden",
+      "errorDescription": "Beim Laden des Spielkatalogs ist ein Fehler aufgetreten.",
+      "retry": "Erneut versuchen"
+    }
+  },
   "language": {
     "label": "Sprache",
     "options": {

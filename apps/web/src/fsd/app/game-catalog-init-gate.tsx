@@ -9,7 +9,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
  * Blocks the home content with a full-screen overlay while the game catalog initializes/syncs. Shows
  * first-use vs update messaging (with the game version) and download progress; offers retry on error.
  */
-export function CatalogInitGate({ children }: { children: ReactNode }) {
+export function GameCatalogInitGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { status, progress, gameVersion, firstTime, error, retry } =
     useGameCatalogStatus()
