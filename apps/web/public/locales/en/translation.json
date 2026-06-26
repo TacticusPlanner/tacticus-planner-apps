@@ -4,7 +4,13 @@
   },
   "auth": {
     "account": "Signed-in account",
+    "accountConsentRequired": "API access required",
+    "accountForbidden": "API access denied",
+    "accountLoadError": "Account unavailable",
+    "accountLoading": "Loading account",
     "error": "Authentication could not be completed. Please try again.",
+    "grantAccess": "Grant API access",
+    "retry": "Retry loading account",
     "signIn": "Sign in",
     "signOut": "Sign out"
   },

@@ -6,29 +6,10 @@ import {
   type AuthenticationResult,
   type Configuration,
   type EventMessage,
-  type IPublicClientApplication,
   type RedirectRequest,
 } from "@azure/msal-browser"
 
-function getRequiredEnvironmentValue(
-  name:
-    | "VITE_API_SCOPE"
-    | "VITE_MSAL_AUTHORITY"
-    | "VITE_MSAL_CLIENT_ID"
-    | "VITE_MSAL_TENANT_ID"
-) {
-  const value = import.meta.env[name]?.trim()
-
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
-  }
-
-  return value
-}
-
-export function getApiScope() {
-  return getRequiredEnvironmentValue("VITE_API_SCOPE")
-}
+import { getRequiredEnvironmentValue } from "@/shared/config"
 
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
@@ -44,10 +25,10 @@ function createMsalConfig(): Configuration {
         `https://${tenantId}.ciamlogin.com`,
       ],
       postLogoutRedirectUri: window.location.origin,
-      redirectUri: new URL("/redirect", window.location.origin).href,
+      redirectUri: new URL("/auth/callback", window.location.origin).href,
     },
     cache: {
-      cacheLocation: BrowserCacheLocation.SessionStorage,
+      cacheLocation: BrowserCacheLocation.LocalStorage,
     },
     system: {
       loggerOptions: {
@@ -81,25 +62,7 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
-  scopes: [getApiScope()],
-}
-
-export async function acquireApiAccessToken(
-  msalInstance: IPublicClientApplication
-) {
-  const account =
-    msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0]
-
-  if (!account) {
-    throw new Error("An authenticated account is required to call the API.")
-  }
-
-  const result = await msalInstance.acquireTokenSilent({
-    account,
-    scopes: [getApiScope()],
-  })
-
-  return result.accessToken
+  scopes: [getRequiredEnvironmentValue("VITE_API_SCOPE")],
 }
 
 export async function initializeAuthentication() {

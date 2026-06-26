@@ -1,51 +1,40 @@
-import type { IPublicClientApplication } from "@azure/msal-browser"
+import { getRequiredEnvironmentValue } from "@/shared/config"
 
-import { acquireApiAccessToken } from "@/shared/auth"
+const apiBaseUrl = getRequiredEnvironmentValue("VITE_API_BASE_URL").replace(
+  /\/$/,
+  ""
+)
 
-export class ApiHttpError extends Error {
-  readonly response: Response
+export class ApiError extends Error {
   readonly status: number
 
-  constructor(message: string, status: number, response: Response) {
+  constructor(status: number, message: string) {
     super(message)
-    this.name = "ApiHttpError"
-    this.response = response
+    this.name = "ApiError"
     this.status = status
   }
 }
 
-function getApiBaseUrl() {
-  const value = import.meta.env.VITE_API_BASE_URL.trim()
-
-  if (!value) {
-    throw new Error("Missing required environment variable: VITE_API_BASE_URL")
-  }
-
-  return value
+type ApiGetOptions = {
+  accessToken: string
+  signal?: AbortSignal
 }
 
-export async function fetchApi(
-  msalInstance: IPublicClientApplication,
-  path: string,
-  init: RequestInit = {}
-) {
-  const accessToken = await acquireApiAccessToken(msalInstance)
-  const headers = new Headers(init.headers)
-
-  headers.set("Authorization", `Bearer ${accessToken}`)
-
-  const response = await fetch(new URL(path, getApiBaseUrl()), {
-    ...init,
-    headers,
+export async function apiGet<T>(path: string, options: ApiGetOptions) {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${options.accessToken}`,
+    },
+    signal: options.signal,
   })
 
-  if (!response.ok && response.status !== 304) {
-    throw new ApiHttpError(
-      `API request failed with status ${response.status}.`,
+  if (!response.ok) {
+    throw new ApiError(
       response.status,
-      response
+      `API request failed: ${response.status}`
     )
   }
 
-  return response
+  return (await response.json()) as T
 }

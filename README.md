@@ -4,17 +4,49 @@ This is a Vite monorepo template with shadcn/ui.
 
 ## Authentication configuration
 
-Create a Microsoft Entra External ID single-page application registration and
-register these redirect URIs:
+Use the dedicated Microsoft Entra External ID single-page application
+registration for each environment and register its matching redirect URI:
 
-- Local: `http://localhost:5173/redirect`
-- Production: `<production-origin>/redirect`
+- Local: `http://localhost:5173/auth/callback`
+- Staging: `<staging-origin>/auth/callback`
+- Production: `<production-origin>/auth/callback`
 
 Copy `apps/web/.env.example` to `apps/web/.env.local`, then replace the sample
-values with the new registration's application ID, tenant ID, and CIAM
-authority. The authority must use the form
-`https://<tenant-subdomain>.ciamlogin.com/`. The tenant ID is used to trust
-the GUID-based issuer returned by CIAM metadata.
+values with the local API base URL, local delegated `access_as_user` scope,
+dedicated local SPA application ID, tenant ID, and CIAM authority. Grant each
+SPA registration delegated access to the scope exposed by its matching API
+registration. The tenant ID is used to trust the GUID-based issuer returned by
+CIAM metadata.
+
+When the local stack is started from the API repository's Aspire AppHost,
+Aspire provides `VITE_API_BASE_URL` to the Vite dev server automatically. In
+that flow, keep using `.env.local` for the remaining public local authentication
+values such as `VITE_API_SCOPE`, `VITE_MSAL_CLIENT_ID`,
+`VITE_MSAL_AUTHORITY`, and `VITE_MSAL_TENANT_ID`.
+
+The Aspire AppHost follows the Turborepo workflow by running the root
+`dev:web` script, which delegates to the `apps/web` `dev:aspire` task through
+Turbo. The regular `pnpm dev` and app-level `pnpm --dir apps/web dev`
+commands remain unchanged for standalone client development.
+
+The Aspire workflow expects the API and client repositories to be checked out
+as sibling folders:
+
+```text
+/tacticus/v2
+  /tacticus-planner-api
+  /tacticus-planner-apps
+```
+
+Start the full local stack from `tacticus-planner-api`:
+
+```powershell
+dotnet run --project orchestration/TacticusPlanner.AppHost
+```
+
+This Aspire integration is for local development only. It does not replace the
+standalone client development workflow, Turborepo commands, staging deployment,
+production deployment, or CI/CD workflows.
 
 Set `VITE_API_BASE_URL` to the planner API origin and `VITE_API_SCOPE` to the
 API permission scope used by the SPA, for example
@@ -28,11 +60,15 @@ Secrets and variables → Actions → Variables** in GitHub:
 - `STAGE_API_SCOPE`
 - `STAGE_MSAL_CLIENT_ID`
 - `STAGE_MSAL_TENANT_ID`
+- `STAGE_API_BASE_URL`
+- `STAGE_API_SCOPE`
 - `PROD_MSAL_AUTHORITY`
 - `PROD_API_BASE_URL`
 - `PROD_API_SCOPE`
 - `PROD_MSAL_CLIENT_ID`
 - `PROD_MSAL_TENANT_ID`
+- `PROD_API_BASE_URL`
+- `PROD_API_SCOPE`
 
 The CD workflows pass the appropriate values into Vite before building the
 stage or production artifact. These values are embedded in browser JavaScript

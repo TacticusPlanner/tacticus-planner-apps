@@ -5,9 +5,17 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
+const aspirePort = process.env.PORT ? Number(process.env.PORT) : undefined
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: aspirePort
+    ? {
+        port: aspirePort,
+        strictPort: true,
+      }
+    : undefined,
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],

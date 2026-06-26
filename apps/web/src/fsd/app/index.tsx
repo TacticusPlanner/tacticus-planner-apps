@@ -40,7 +40,8 @@ function LandingRoute() {
   return <LandingPage />
 }
 
-function RedirectRoute() {
+// MSAL redirects back to /auth/callback (see shared/auth redirectUri); resolve auth then route on.
+function AuthCallbackRoute() {
   const isAuthenticated = useIsAuthenticated()
   const { inProgress } = useMsal()
 
@@ -84,7 +85,7 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<LandingRoute />} path="/" />
-        <Route element={<RedirectRoute />} path="/redirect" />
+        <Route element={<AuthCallbackRoute />} path="/auth/callback" />
         <Route
           element={
             <ProtectedRoute>

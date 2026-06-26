@@ -1,6 +1,7 @@
+export { initializeAuthentication, loginRequest } from "./authentication"
 export {
-  acquireApiAccessToken,
-  getApiScope,
-  initializeAuthentication,
-  loginRequest,
-} from "./authentication"
+  getCurrentUser,
+  isInteractionRequired,
+  requestApiAccess,
+  type CurrentUser,
+} from "./current-user"

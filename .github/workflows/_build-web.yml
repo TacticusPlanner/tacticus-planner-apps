@@ -19,12 +19,12 @@ on:
         type: boolean
         default: true
       vite-api-base-url:
-        description: Planner API base URL embedded by Vite.
+        description: Tacticus Planner API base URL embedded by Vite.
         required: false
         type: string
         default: ""
       vite-api-scope:
-        description: Planner API access scope embedded by Vite.
+        description: Microsoft Entra delegated API scope embedded by Vite.
         required: false
         type: string
         default: ""
