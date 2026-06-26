@@ -6,7 +6,7 @@ import type { CatalogManifestDataset } from "./types"
 const charactersDataset: CatalogManifestDataset = {
   key: "characters",
   hash: "characters-h1",
-  url: "/api/v1/catalog/characters",
+  url: "/api/v1/game-catalog/characters",
 }
 
 const validCharacter = {

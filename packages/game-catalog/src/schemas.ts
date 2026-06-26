@@ -239,10 +239,13 @@ export const equipmentSchema = z.looseObject({
   allowedUnits: z.array(z.string()),
   allowedFactions: z.array(z.string()),
   levels: z.array(z.unknown()),
+  // The matched per-rarity upgrade-cost ladder, inlined server-side (no shared extras table).
+  upgradeLevels: z.array(equipmentUpgradeLevelSchema),
 })
 
 export const campaignBattleViewSchema = z.looseObject({
   id: z.string(),
+  campaignGroupId: z.string(),
   difficulty: z.string(),
   energyCost: z.number(),
   nodeNumber: z.number(),
@@ -256,18 +259,19 @@ export const campaignBattleViewSchema = z.looseObject({
   detailedEnemyTypes: z.array(campaignDetailedEnemySchema),
 })
 
-export const campaignGroupViewSchema = z.looseObject({
+// A campaign group's definition: metadata plus the ids of the battles in the campaign-battles dataset.
+export const campaignDefinitionSchema = z.looseObject({
   groupId: z.string(),
   faction: z.string(),
   releaseType: z.string(),
   coreCharacters: z.array(z.string()),
   difficulties: z.array(z.string()),
-  battles: z.array(campaignBattleViewSchema),
+  battleIds: z.array(z.string()),
 })
 
 export const lreViewSchema = z.looseObject({
-  id: z.number(),
-  unitSnowprintId: z.string(),
+  // The event's unit snowprint id (e.g. "emperLucius") — the stable string id of the LRE.
+  id: z.string(),
   name: z.string(),
   wikiLink: z.string(),
   eventStage: z.number(),
@@ -288,23 +292,17 @@ export const lreViewSchema = z.looseObject({
 })
 
 // ---- dataset payloads (the envelope `data`) --------------------------------------------------
-export const mowDatasetSchema = z.looseObject({
-  items: z.array(mowSchema),
-  upgradeCosts: z.array(mowUpgradeCostSchema),
-})
-
-export const equipmentDatasetSchema = z.looseObject({
-  items: z.array(equipmentSchema),
-  upgradeCostsByRarity: z.array(equipmentUpgradeCostSchema),
-})
-
+// Every served dataset is now a plain array of records (reference tables inlined or split out as their
+// own dataset), so there are no wrapper/extras shapes.
 export const datasetPayloadSchemas = {
   characters: z.array(characterViewSchema),
   npcs: z.array(npcSchema),
-  mows: mowDatasetSchema,
+  mows: z.array(mowSchema),
+  "mow-upgrade-costs": z.array(mowUpgradeCostSchema),
   upgrades: z.array(upgradeViewSchema),
-  equipment: equipmentDatasetSchema,
-  "campaign-battles": z.array(campaignGroupViewSchema),
+  equipment: z.array(equipmentSchema),
+  "campaign-battles": z.array(campaignBattleViewSchema),
+  "campaign-definitions": z.array(campaignDefinitionSchema),
   lres: z.array(lreViewSchema),
 } satisfies Record<CatalogDatasetKey, z.ZodType>
 
@@ -334,13 +332,16 @@ export const datasetEnvelopeMetaSchema = z.looseObject({
   data: z.unknown(),
 })
 
-// Record (per-item) type for each dataset, after the wrapper datasets are unwrapped to their items.
+// Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
+// element type of its payload.
 export type CatalogRecordByKey = {
   characters: z.infer<typeof characterViewSchema>
   npcs: z.infer<typeof npcSchema>
   mows: z.infer<typeof mowSchema>
+  "mow-upgrade-costs": z.infer<typeof mowUpgradeCostSchema>
   upgrades: z.infer<typeof upgradeViewSchema>
   equipment: z.infer<typeof equipmentSchema>
-  "campaign-battles": z.infer<typeof campaignGroupViewSchema>
+  "campaign-battles": z.infer<typeof campaignBattleViewSchema>
+  "campaign-definitions": z.infer<typeof campaignDefinitionSchema>
   lres: z.infer<typeof lreViewSchema>
 }

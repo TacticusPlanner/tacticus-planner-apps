@@ -1,6 +1,7 @@
 import type { z } from "zod"
 
 import {
+  catalogManifestBodyKey,
   catalogManifestMetadataKey,
   type CatalogDatasetKey,
 } from "./dataset-keys"
@@ -14,6 +15,7 @@ export {
   servedDatasetKeys,
   isServedDatasetKey,
   catalogManifestMetadataKey,
+  catalogManifestBodyKey,
   type CatalogDatasetKey,
 } from "./dataset-keys"
 
@@ -24,10 +26,9 @@ export type {
   CatalogMow,
   CatalogUpgradeView,
   CatalogEquipment,
-  CatalogCampaignGroupView,
+  CatalogCampaignBattleView,
+  CatalogCampaignDefinitionView,
   CatalogLreView,
-  CatalogMowDataset,
-  CatalogEquipmentDataset,
 } from "./record-types"
 
 // All catalog API shapes are inferred from the zod schemas that validate them at runtime.
@@ -35,7 +36,7 @@ export type CatalogManifest = z.infer<typeof manifestSchema>
 export type CatalogManifestDataset = z.infer<typeof manifestDatasetSchema>
 export type CatalogDatasetEnvelope = z.infer<typeof datasetEnvelopeMetaSchema>
 
-// Internal IndexedDB metadata (not an API shape).
+// Internal IndexedDB metadata (not an API shape): per-dataset rows + the manifest sync-metadata row.
 export type CatalogDatasetMetadata = {
   key: CatalogDatasetKey | typeof catalogManifestMetadataKey
   hash: string
@@ -45,4 +46,11 @@ export type CatalogDatasetMetadata = {
   updatedAt: string
   etag?: string | null
   url?: string
+}
+
+// The full manifest body, persisted in the metadata store for inspection/offline diffing.
+export type StoredCatalogManifest = {
+  key: typeof catalogManifestBodyKey
+  manifest: CatalogManifest
+  updatedAt: string
 }

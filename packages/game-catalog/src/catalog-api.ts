@@ -21,7 +21,7 @@ export type CatalogClient = {
   ) => Promise<CatalogDatasetEnvelope>
 }
 
-const manifestPath = "/api/v1/catalog/manifest"
+const manifestPath = "/api/v1/game-catalog/manifest"
 
 /**
  * Anonymous HTTP client for the catalog API. The catalog endpoints are public, so no auth token is

@@ -2,10 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import type { CatalogClient, CatalogManifestResult } from "./catalog-api"
 import {
-  getDatasetExtras,
   getDatasetRecords,
+  getStoredManifest,
   hasCompleteCatalogCache,
-  searchDataset,
 } from "./catalog-storage"
 import { syncCatalog } from "./catalog-sync"
 import {
@@ -15,6 +14,8 @@ import {
   type CatalogManifestDataset,
 } from "./types"
 
+// The fake client bypasses zod (the real CatalogHttpClient validates); these records only need the shape
+// the storage adapters key on (an id, a groupId, etc.), not the full served schema.
 const datasetData: Record<string, unknown> = {
   characters: [
     {
@@ -26,53 +27,47 @@ const datasetData: Record<string, unknown> = {
     },
   ],
   npcs: [{ id: "n1", name: "Drone" }],
-  mows: {
-    items: [
-      {
-        id: "m1",
-        name: "Stomper",
-        faction: "Orks",
-        alliance: "Xenos",
-        unitKind: "mow",
-      },
-    ],
-    upgradeCosts: [{ gold: 10, salvage: 5 }],
-  },
+  mows: [{ id: "m1", name: "Stomper", faction: "Orks", unitKind: "mow" }],
+  "mow-upgrade-costs": [
+    { gold: 10, salvage: 5 },
+    { gold: 20, salvage: 8 },
+  ],
   upgrades: [
+    { id: "u1", material: "Seal", rarity: "Common", craftable: false },
+  ],
+  equipment: [
     {
-      id: "u1",
-      material: "Seal",
+      id: "e1",
+      name: "Field",
       rarity: "Common",
-      stat: "Armour",
-      craftable: false,
-      recipe: [],
+      type: "I_Crit",
+      upgradeLevels: [{ goldCost: 0, salvageCost: 10, mythicSalvageCost: 0 }],
     },
   ],
-  equipment: {
-    items: [{ id: "e1", name: "Field", rarity: "Common", type: "I_Crit" }],
-    upgradeCostsByRarity: [{ rarity: "Common", levels: [] }],
-  },
   "campaign-battles": [
+    { id: "I01", campaignGroupId: "g1", difficulty: "standard" },
+  ],
+  "campaign-definitions": [
     {
       groupId: "g1",
       faction: "Ultramarines",
       releaseType: "standard",
-      battles: [],
+      battleIds: ["I01"],
     },
   ],
-  lres: [{ id: 12, unitSnowprintId: "emperLucius", name: "Lucius" }],
+  lres: [{ id: "emperLucius", name: "Lucius" }],
 }
 
 function createManifest(hashes: Record<string, string> = {}): CatalogManifest {
   return {
     version: "dev-1",
-    schemaVersion: 9,
+    schemaVersion: 11,
     gameVersion: "1.40",
     sourceHash: `source-${Object.values(hashes).join("-") || "base"}`,
     datasets: servedDatasetKeys.map((key) => ({
       key,
       hash: hashes[key] ?? `${key}-h1`,
-      url: `/api/v1/catalog/${key}`,
+      url: `/api/v1/game-catalog/${key}`,
     })),
   }
 }
@@ -83,7 +78,8 @@ class FakeCatalogClient implements CatalogClient {
   constructor(
     private readonly manifest: CatalogManifest,
     private readonly notModified = false,
-    private readonly dataOverride: Record<string, unknown> = {}
+    private readonly dataOverride: Record<string, unknown> = {},
+    private readonly failKeys: ReadonlySet<string> = new Set()
   ) {}
 
   getManifest(): Promise<CatalogManifestResult> {
@@ -99,6 +95,10 @@ class FakeCatalogClient implements CatalogClient {
   }
 
   getDataset(dataset: CatalogManifestDataset): Promise<CatalogDatasetEnvelope> {
+    if (this.failKeys.has(dataset.key)) {
+      return Promise.reject(new Error(`boom for ${dataset.key}`))
+    }
+
     this.downloaded.push(dataset.key)
 
     return Promise.resolve({
@@ -115,7 +115,7 @@ class FakeCatalogClient implements CatalogClient {
 
 function resetDb() {
   return new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase("tacticus-planner-catalog")
+    const request = indexedDB.deleteDatabase("tacticus-planner-game-catalog")
 
     request.onsuccess = () => resolve()
     request.onerror = () => resolve()
@@ -140,26 +140,27 @@ describe("syncCatalog", () => {
     const characters = await getDatasetRecords("characters")
     expect(characters).toHaveLength(1)
     expect(characters[0]?.id).toBe("c1")
-    expect(characters[0]?.searchText).toContain("ultramarines")
 
-    // campaign-battles groups key on groupId; lres ids are coerced to strings.
-    expect((await getDatasetRecords("campaign-battles"))[0]?.id).toBe("g1")
-    expect((await getDatasetRecords("lres"))[0]?.id).toBe("12")
+    // campaign-battles key on battle id (carrying campaignGroupId); campaign-definitions key on groupId.
+    const battles = await getDatasetRecords("campaign-battles")
+    expect(battles[0]?.id).toBe("I01")
+    expect(battles[0]?.campaignGroupId).toBe("g1")
+    expect((await getDatasetRecords("campaign-definitions"))[0]?.id).toBe("g1")
 
-    // Wrapper datasets store their shared tables as extras, not as records.
-    expect(await getDatasetExtras("mows")).toEqual({
-      upgradeCosts: [{ gold: 10, salvage: 5 }],
-    })
-    expect(await getDatasetExtras("equipment")).toEqual({
-      upgradeCostsByRarity: [{ rarity: "Common", levels: [] }],
-    })
+    // The mow upgrade-cost ladder is its own dataset, keyed by zero-padded level index.
+    const ladder = await getDatasetRecords("mow-upgrade-costs")
+    expect(ladder.map((row) => row.id)).toEqual(["0000", "0001"])
+
+    // lres key on the snowprint string id.
+    expect((await getDatasetRecords("lres"))[0]?.id).toBe("emperLucius")
   })
 
-  it("searches a dataset via the normalized searchText", async () => {
+  it("persists the full manifest body in the metadata store", async () => {
     await syncCatalog(new FakeCatalogClient(createManifest()))
 
-    expect(await searchDataset("characters", "apoth")).toHaveLength(1)
-    expect(await searchDataset("characters", "nope")).toHaveLength(0)
+    const stored = await getStoredManifest()
+    expect(stored?.datasets).toHaveLength(servedDatasetKeys.length)
+    expect(stored?.gameVersion).toBe("1.40")
   })
 
   it("treats a 304 with a complete cache as ready and a later sync as not first-time", async () => {
@@ -207,5 +208,21 @@ describe("syncCatalog", () => {
     expect(
       (await getDatasetRecords("characters")).map((record) => record.id)
     ).toEqual(["c2"])
+  })
+
+  it("surfaces an error naming a failed dataset without wedging the cache", async () => {
+    const client = new FakeCatalogClient(
+      createManifest(),
+      false,
+      {},
+      new Set(["mows"])
+    )
+
+    await expect(syncCatalog(client)).rejects.toThrow(/mows/)
+
+    // The failed dataset is incomplete (so a retry re-downloads it); the others still landed.
+    expect(await hasCompleteCatalogCache()).toBe(false)
+    expect(await getDatasetRecords("mows")).toHaveLength(0)
+    expect(await getDatasetRecords("characters")).toHaveLength(1)
   })
 })

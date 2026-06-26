@@ -4,18 +4,14 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
   type ReactNode,
 } from "react"
 
 import { CatalogHttpClient } from "./catalog-api"
 import {
-  getDatasetExtras,
   getDatasetRecords,
   hasCompleteCatalogCache,
-  searchDataset,
-  type CatalogExtrasByKey,
   type StoredRecord,
 } from "./catalog-storage"
 import { syncCatalog, type CatalogSyncProgress } from "./catalog-sync"
@@ -46,14 +42,11 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
   const [firstTime, setFirstTime] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
-  const runningRef = useRef(false)
 
   useEffect(() => {
-    if (runningRef.current) {
-      return
-    }
-
-    runningRef.current = true
+    // Each run owns its own `cancelled` flag; a superseded run (StrictMode remount, baseUrl/attempt
+    // change) bails before touching state, while the live run always lands its result — so the init gate
+    // can never get wedged on "syncing".
     let cancelled = false
 
     async function runSync() {
@@ -86,8 +79,6 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
 
         setError(caught instanceof Error ? caught.message : String(caught))
         setStatus(canUseStaleCache ? "stale" : "error")
-      } finally {
-        runningRef.current = false
       }
     }
 
@@ -99,9 +90,7 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
   }, [baseUrl, attempt])
 
   const retry = useCallback(() => {
-    if (!runningRef.current) {
-      setAttempt((value) => value + 1)
-    }
+    setAttempt((value) => value + 1)
   }, [])
 
   return (
@@ -155,83 +144,6 @@ export function useDatasetRecords<K extends CatalogDatasetKey>(datasetKey: K) {
         if (!cancelled) {
           setState({
             data: [],
-            loading: false,
-            error: caught instanceof Error ? caught.message : String(caught),
-          })
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [datasetKey, status])
-
-  return state
-}
-
-/** Searches a dataset's `searchText` index (substring match), refreshing when the catalog is ready. */
-export function useDatasetSearch<K extends CatalogDatasetKey>(
-  datasetKey: K,
-  term: string
-) {
-  const status = useCatalogReady()
-  const [state, setState] = useState<DatasetState<StoredRecord<K>[]>>({
-    data: [],
-    loading: true,
-    error: null,
-  })
-
-  useEffect(() => {
-    let cancelled = false
-
-    void searchDataset(datasetKey, term)
-      .then((records) => {
-        if (!cancelled) {
-          setState({ data: records, loading: false, error: null })
-        }
-      })
-      .catch((caught: unknown) => {
-        if (!cancelled) {
-          setState({
-            data: [],
-            loading: false,
-            error: caught instanceof Error ? caught.message : String(caught),
-          })
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [datasetKey, term, status])
-
-  return state
-}
-
-/** Loads a dataset's shared tables (e.g. mow/equipment cost ladders) from IndexedDB. */
-export function useDatasetExtras<K extends CatalogDatasetKey>(datasetKey: K) {
-  const status = useCatalogReady()
-  const [state, setState] = useState<
-    DatasetState<CatalogExtrasByKey[K] | undefined>
-  >({
-    data: undefined,
-    loading: true,
-    error: null,
-  })
-
-  useEffect(() => {
-    let cancelled = false
-
-    void getDatasetExtras(datasetKey)
-      .then((extras) => {
-        if (!cancelled) {
-          setState({ data: extras, loading: false, error: null })
-        }
-      })
-      .catch((caught: unknown) => {
-        if (!cancelled) {
-          setState({
-            data: undefined,
             loading: false,
             error: caught instanceof Error ? caught.message : String(caught),
           })

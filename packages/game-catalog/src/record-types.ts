@@ -2,9 +2,8 @@ import type { z } from "zod"
 
 import type {
   campaignBattleViewSchema,
-  campaignGroupViewSchema,
+  campaignDefinitionSchema,
   characterViewSchema,
-  equipmentDatasetSchema,
   equipmentSchema,
   equipmentUpgradeCostSchema,
   farmLocationSchema,
@@ -13,7 +12,6 @@ import type {
   lreTrackViewSchema,
   lreViewSchema,
   lreWaveSchema,
-  mowDatasetSchema,
   mowSchema,
   mowUpgradeCostSchema,
   npcSchema,
@@ -27,8 +25,10 @@ export type CatalogNpc = z.infer<typeof npcSchema>
 export type CatalogMow = z.infer<typeof mowSchema>
 export type CatalogUpgradeView = z.infer<typeof upgradeViewSchema>
 export type CatalogEquipment = z.infer<typeof equipmentSchema>
-export type CatalogCampaignGroupView = z.infer<typeof campaignGroupViewSchema>
 export type CatalogCampaignBattleView = z.infer<typeof campaignBattleViewSchema>
+export type CatalogCampaignDefinitionView = z.infer<
+  typeof campaignDefinitionSchema
+>
 export type CatalogLreView = z.infer<typeof lreViewSchema>
 export type CatalogLreTrackView = z.infer<typeof lreTrackViewSchema>
 export type CatalogLreBattle = z.infer<typeof lreBattleSchema>
@@ -40,6 +40,3 @@ export type CatalogMowUpgradeCost = z.infer<typeof mowUpgradeCostSchema>
 export type CatalogEquipmentUpgradeCost = z.infer<
   typeof equipmentUpgradeCostSchema
 >
-
-export type CatalogMowDataset = z.infer<typeof mowDatasetSchema>
-export type CatalogEquipmentDataset = z.infer<typeof equipmentDatasetSchema>

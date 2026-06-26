@@ -5,6 +5,7 @@ import {
   hasCompleteCatalogCache,
   replaceCatalogDataset,
   saveManifestMetadata,
+  saveStoredManifest,
 } from "./catalog-storage"
 import {
   catalogManifestMetadataKey,
@@ -75,9 +76,15 @@ export async function syncCatalog(
   }
 
   const { manifest, etag } = manifestResult
+
+  // Persist the full manifest body up front (for inspection / offline diffing) — independent of which
+  // datasets end up changing.
+  await saveStoredManifest(manifest)
+
   const changedDatasets = selectChangedDatasets(manifest, metadata)
   const total = changedDatasets.length
   const downloaded: CatalogDatasetKey[] = []
+  const failures: { key: CatalogDatasetKey; error: unknown }[] = []
 
   options.onProgress?.({ downloaded: 0, total })
 
@@ -90,24 +97,43 @@ export async function syncCatalog(
       current: datasetKey,
     })
 
-    const envelope = await client.getDataset(dataset)
+    // Per-dataset resilience: a single bad dataset is collected and surfaced after the loop instead of
+    // aborting the rest — so one failure can no longer wedge the init loader with a partial cache.
+    try {
+      const envelope = await client.getDataset(dataset)
 
-    await replaceCatalogDataset(datasetKey, envelope.data, {
-      key: datasetKey,
-      hash: envelope.datasetHash,
-      catalogVersion: envelope.version,
-      gameVersion: envelope.gameVersion,
-      schemaVersion: envelope.schemaVersion,
-      updatedAt: new Date().toISOString(),
-      url: dataset.url,
-    })
+      await replaceCatalogDataset(datasetKey, envelope.data, {
+        key: datasetKey,
+        hash: envelope.datasetHash,
+        catalogVersion: envelope.version,
+        gameVersion: envelope.gameVersion,
+        schemaVersion: envelope.schemaVersion,
+        updatedAt: new Date().toISOString(),
+        url: dataset.url,
+      })
 
-    downloaded.push(datasetKey)
+      downloaded.push(datasetKey)
+    } catch (error) {
+      failures.push({ key: datasetKey, error })
+    }
+
     options.onProgress?.({
       downloaded: downloaded.length,
       total,
       current: datasetKey,
     })
+  }
+
+  if (failures.length > 0) {
+    // Do not advance the manifest sync metadata: the failed datasets (whose per-dataset metadata was not
+    // written) will be re-selected on the next sync/retry.
+    const detail = failures
+      .map((failure) => `${failure.key}: ${describeError(failure.error)}`)
+      .join("; ")
+
+    throw new Error(
+      `Failed to sync ${failures.length} catalog dataset(s) — ${detail}`
+    )
   }
 
   await saveManifestMetadata({
@@ -128,4 +154,8 @@ export async function syncCatalog(
     firstTime,
     downloaded,
   }
+}
+
+function describeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
 }
