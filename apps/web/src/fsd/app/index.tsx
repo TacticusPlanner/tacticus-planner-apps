@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"
-import { CatalogProvider } from "@workspace/game-catalog"
+import { GameCatalogProvider } from "@workspace/game-catalog"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Toaster } from "@workspace/ui/components/sonner"
 
@@ -70,11 +70,11 @@ function HomeHeaderActions() {
 
 function HomeRoute() {
   return (
-    <CatalogProvider baseUrl={apiBaseUrl}>
+    <GameCatalogProvider baseUrl={apiBaseUrl}>
       <CatalogInitGate>
         <UiKitPage headerAction={<HomeHeaderActions />} />
       </CatalogInitGate>
-    </CatalogProvider>
+    </GameCatalogProvider>
   )
 }
 

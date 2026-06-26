@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { useCatalogStatus } from "@workspace/game-catalog"
+import { useGameCatalogStatus } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -12,7 +12,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 export function CatalogInitGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { status, progress, gameVersion, firstTime, error, retry } =
-    useCatalogStatus()
+    useGameCatalogStatus()
 
   // The error detail (e.g. a multi-record zod dump) is too long for the UI — log it for debugging and
   // show only a short message on screen.

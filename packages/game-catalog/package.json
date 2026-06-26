@@ -4,17 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch --preserveWatchOutput",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
-  "files": [
-    "dist"
-  ],
   "dependencies": {
     "idb": "^8.0.3",
     "react": "catalog:",
@@ -36,9 +31,6 @@
     "vitest": "catalog:"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts"
   }
 }

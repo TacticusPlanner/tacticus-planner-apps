@@ -5,20 +5,20 @@ import {
   manifestSchema,
 } from "./schemas"
 import type {
-  CatalogDatasetEnvelope,
-  CatalogManifest,
-  CatalogManifestDataset,
+  GameCatalogDatasetEnvelope,
+  GameCatalogManifest,
+  GameCatalogManifestDataset,
 } from "./types"
 
-export type CatalogManifestResult =
-  | { status: "ok"; etag: string | null; manifest: CatalogManifest }
+export type GameCatalogManifestResult =
+  | { status: "ok"; etag: string | null; manifest: GameCatalogManifest }
   | { status: "not-modified" }
 
-export type CatalogClient = {
-  getManifest: (etag?: string) => Promise<CatalogManifestResult>
+export type GameCatalogClient = {
+  getManifest: (etag?: string) => Promise<GameCatalogManifestResult>
   getDataset: (
-    dataset: CatalogManifestDataset
-  ) => Promise<CatalogDatasetEnvelope>
+    dataset: GameCatalogManifestDataset
+  ) => Promise<GameCatalogDatasetEnvelope>
 }
 
 const manifestPath = "/api/v1/game-catalog/manifest"
@@ -28,20 +28,20 @@ const manifestPath = "/api/v1/game-catalog/manifest"
  * attached. Every response is validated against its zod schema at this (untrusted) boundary; a
  * malformed payload throws, which surfaces as a sync error in the init loader.
  */
-export class CatalogHttpClient implements CatalogClient {
+export class GameCatalogHttpClient implements GameCatalogClient {
   private readonly baseUrl: string
 
   constructor(baseUrl: string) {
     const trimmed = baseUrl.trim()
 
     if (!trimmed) {
-      throw new Error("CatalogHttpClient requires a non-empty base URL.")
+      throw new Error("GameCatalogHttpClient requires a non-empty base URL.")
     }
 
     this.baseUrl = trimmed
   }
 
-  async getManifest(etag?: string): Promise<CatalogManifestResult> {
+  async getManifest(etag?: string): Promise<GameCatalogManifestResult> {
     const headers = new Headers()
 
     if (etag) {
@@ -58,7 +58,7 @@ export class CatalogHttpClient implements CatalogClient {
 
     if (!response.ok) {
       throw new Error(
-        `Catalog manifest request failed with status ${response.status}.`
+        `GameCatalog manifest request failed with status ${response.status}.`
       )
     }
 
@@ -66,7 +66,7 @@ export class CatalogHttpClient implements CatalogClient {
 
     if (!parsed.success) {
       throw new Error(
-        `Catalog manifest failed validation: ${parsed.error.message}`
+        `GameCatalog manifest failed validation: ${parsed.error.message}`
       )
     }
 
@@ -78,13 +78,13 @@ export class CatalogHttpClient implements CatalogClient {
   }
 
   async getDataset(
-    dataset: CatalogManifestDataset
-  ): Promise<CatalogDatasetEnvelope> {
+    dataset: GameCatalogManifestDataset
+  ): Promise<GameCatalogDatasetEnvelope> {
     const response = await fetch(new URL(dataset.url, this.baseUrl))
 
     if (!response.ok) {
       throw new Error(
-        `Catalog dataset '${dataset.key}' request failed with status ${response.status}.`
+        `GameCatalog dataset '${dataset.key}' request failed with status ${response.status}.`
       )
     }
 
@@ -92,19 +92,19 @@ export class CatalogHttpClient implements CatalogClient {
 
     if (!envelope.success) {
       throw new Error(
-        `Catalog dataset '${dataset.key}' envelope failed validation: ${envelope.error.message}`
+        `GameCatalog dataset '${dataset.key}' envelope failed validation: ${envelope.error.message}`
       )
     }
 
     if (envelope.data.datasetKey !== dataset.key) {
       throw new Error(
-        `Catalog dataset response key '${envelope.data.datasetKey}' did not match requested key '${dataset.key}'.`
+        `GameCatalog dataset response key '${envelope.data.datasetKey}' did not match requested key '${dataset.key}'.`
       )
     }
 
     if (!isServedDatasetKey(dataset.key)) {
       throw new Error(
-        `Catalog dataset '${dataset.key}' is not a known served dataset.`
+        `GameCatalog dataset '${dataset.key}' is not a known served dataset.`
       )
     }
 
@@ -114,7 +114,7 @@ export class CatalogHttpClient implements CatalogClient {
 
     if (!payload.success) {
       throw new Error(
-        `Catalog dataset '${dataset.key}' failed validation: ${payload.error.message}`
+        `GameCatalog dataset '${dataset.key}' failed validation: ${payload.error.message}`
       )
     }
 

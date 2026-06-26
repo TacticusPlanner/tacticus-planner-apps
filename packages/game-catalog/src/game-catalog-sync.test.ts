@@ -1,16 +1,22 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
-import type { CatalogClient, CatalogManifestResult } from "./catalog-api"
-import { getDatasetRecords, hasCompleteCatalogCache } from "./catalog-storage"
-import { syncCatalog } from "./catalog-sync"
+import type {
+  GameCatalogClient,
+  GameCatalogManifestResult,
+} from "./game-catalog-api"
+import {
+  getDatasetRecords,
+  hasCompleteGameCatalogCache,
+} from "./game-catalog-storage"
+import { syncGameCatalog } from "./game-catalog-sync"
 import {
   servedDatasetKeys,
-  type CatalogDatasetEnvelope,
-  type CatalogManifest,
-  type CatalogManifestDataset,
+  type GameCatalogDatasetEnvelope,
+  type GameCatalogManifest,
+  type GameCatalogManifestDataset,
 } from "./types"
 
-// The fake client bypasses zod (the real CatalogHttpClient validates); these records only need the shape
+// The fake client bypasses zod (the real GameCatalogHttpClient validates); these records only need the shape
 // the storage adapters key on (an id, a groupId, etc.), not the full served schema.
 const datasetData: Record<string, unknown> = {
   characters: [
@@ -54,7 +60,9 @@ const datasetData: Record<string, unknown> = {
   lres: [{ id: "emperLucius", name: "Lucius" }],
 }
 
-function createManifest(hashes: Record<string, string> = {}): CatalogManifest {
+function createManifest(
+  hashes: Record<string, string> = {}
+): GameCatalogManifest {
   return {
     version: "dev-1",
     schemaVersion: 11,
@@ -68,17 +76,17 @@ function createManifest(hashes: Record<string, string> = {}): CatalogManifest {
   }
 }
 
-class FakeCatalogClient implements CatalogClient {
+class FakeGameCatalogClient implements GameCatalogClient {
   readonly downloaded: string[] = []
 
   constructor(
-    private readonly manifest: CatalogManifest,
+    private readonly manifest: GameCatalogManifest,
     private readonly notModified = false,
     private readonly dataOverride: Record<string, unknown> = {},
     private readonly failKeys: ReadonlySet<string> = new Set()
   ) {}
 
-  getManifest(): Promise<CatalogManifestResult> {
+  getManifest(): Promise<GameCatalogManifestResult> {
     if (this.notModified) {
       return Promise.resolve({ status: "not-modified" })
     }
@@ -90,7 +98,9 @@ class FakeCatalogClient implements CatalogClient {
     })
   }
 
-  getDataset(dataset: CatalogManifestDataset): Promise<CatalogDatasetEnvelope> {
+  getDataset(
+    dataset: GameCatalogManifestDataset
+  ): Promise<GameCatalogDatasetEnvelope> {
     if (this.failKeys.has(dataset.key)) {
       return Promise.reject(new Error(`boom for ${dataset.key}`))
     }
@@ -121,17 +131,17 @@ function resetDb() {
 
 beforeEach(resetDb)
 
-describe("syncCatalog", () => {
+describe("syncGameCatalog", () => {
   it("downloads every dataset on first sync and stores denormalized records", async () => {
-    const client = new FakeCatalogClient(createManifest())
+    const client = new FakeGameCatalogClient(createManifest())
 
-    const result = await syncCatalog(client)
+    const result = await syncGameCatalog(client)
 
     expect(result.status).toBe("ready")
     expect(result.firstTime).toBe(true)
     expect(result.gameVersion).toBe("1.40")
     expect(result.downloaded.sort()).toEqual([...servedDatasetKeys].sort())
-    expect(await hasCompleteCatalogCache()).toBe(true)
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
 
     const characters = await getDatasetRecords("characters")
     expect(characters).toHaveLength(1)
@@ -152,10 +162,10 @@ describe("syncCatalog", () => {
   })
 
   it("treats a 304 with a complete cache as ready and a later sync as not first-time", async () => {
-    await syncCatalog(new FakeCatalogClient(createManifest()))
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
 
-    const result = await syncCatalog(
-      new FakeCatalogClient(createManifest(), true)
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest(), true)
     )
 
     expect(result.status).toBe("ready")
@@ -164,12 +174,12 @@ describe("syncCatalog", () => {
   })
 
   it("only downloads datasets whose hash changed", async () => {
-    await syncCatalog(new FakeCatalogClient(createManifest()))
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
 
-    const client = new FakeCatalogClient(
+    const client = new FakeGameCatalogClient(
       createManifest({ upgrades: "upgrades-h2" })
     )
-    const result = await syncCatalog(client)
+    const result = await syncGameCatalog(client)
 
     expect(client.downloaded).toEqual(["upgrades"])
     expect(result.downloaded).toEqual(["upgrades"])
@@ -177,20 +187,20 @@ describe("syncCatalog", () => {
   })
 
   it("wipes and replaces a changed chunk's store (stale records removed)", async () => {
-    await syncCatalog(new FakeCatalogClient(createManifest()))
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
     expect(
       (await getDatasetRecords("characters")).map((record) => record.id)
     ).toEqual(["c1"])
 
     // Re-sync with a changed characters hash and a different record set.
-    const client = new FakeCatalogClient(
+    const client = new FakeGameCatalogClient(
       createManifest({ characters: "characters-h2" }),
       false,
       {
         characters: [{ id: "c2", name: "Replacement" }],
       }
     )
-    await syncCatalog(client)
+    await syncGameCatalog(client)
 
     expect(client.downloaded).toEqual(["characters"])
     expect(
@@ -199,17 +209,17 @@ describe("syncCatalog", () => {
   })
 
   it("surfaces an error naming a failed dataset without wedging the cache", async () => {
-    const client = new FakeCatalogClient(
+    const client = new FakeGameCatalogClient(
       createManifest(),
       false,
       {},
       new Set(["mows"])
     )
 
-    await expect(syncCatalog(client)).rejects.toThrow(/mows/)
+    await expect(syncGameCatalog(client)).rejects.toThrow(/mows/)
 
     // The failed dataset is incomplete (so a retry re-downloads it); the others still landed.
-    expect(await hasCompleteCatalogCache()).toBe(false)
+    expect(await hasCompleteGameCatalogCache()).toBe(false)
     expect(await getDatasetRecords("mows")).toHaveLength(0)
     expect(await getDatasetRecords("characters")).toHaveLength(1)
   })

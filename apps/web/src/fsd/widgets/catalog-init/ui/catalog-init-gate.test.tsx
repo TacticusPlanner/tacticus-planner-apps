@@ -1,16 +1,16 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import type { CatalogContextValue } from "@workspace/game-catalog"
+import type { GameCatalogContextValue } from "@workspace/game-catalog"
 
-const status = vi.fn<() => CatalogContextValue>()
+const status = vi.fn<() => GameCatalogContextValue>()
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
 vi.mock("@workspace/game-catalog", () => ({
-  useCatalogStatus: () => status(),
+  useGameCatalogStatus: () => status(),
 }))
 
 import { CatalogInitGate } from "./catalog-init-gate"

@@ -12,11 +12,13 @@ export const servedDatasetKeys = [
   "lres",
 ] as const
 
-export type CatalogDatasetKey = (typeof servedDatasetKeys)[number]
+export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.
 export const catalogManifestMetadataKey = "__manifest"
 
-export function isServedDatasetKey(value: string): value is CatalogDatasetKey {
+export function isServedDatasetKey(
+  value: string
+): value is GameCatalogDatasetKey {
   return (servedDatasetKeys as readonly string[]).includes(value)
 }

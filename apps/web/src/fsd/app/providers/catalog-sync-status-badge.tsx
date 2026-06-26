@@ -1,7 +1,10 @@
-import { useCatalogStatus, type CatalogStatus } from "@workspace/game-catalog"
+import {
+  useGameCatalogStatus,
+  type GameCatalogStatus,
+} from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 
-const statusLabels: Record<CatalogStatus, string> = {
+const statusLabels: Record<GameCatalogStatus, string> = {
   error: "Catalog error",
   idle: "Catalog idle",
   ready: "Catalog ready",
@@ -10,7 +13,7 @@ const statusLabels: Record<CatalogStatus, string> = {
 }
 
 export function CatalogSyncStatusBadge() {
-  const { error, status } = useCatalogStatus()
+  const { error, status } = useGameCatalogStatus()
   const variant = status === "error" ? "destructive" : "outline"
 
   return (

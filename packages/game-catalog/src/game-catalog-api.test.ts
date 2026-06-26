@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { CatalogHttpClient } from "./catalog-api"
-import type { CatalogManifestDataset } from "./types"
+import { GameCatalogHttpClient } from "./game-catalog-api"
+import type { GameCatalogManifestDataset } from "./types"
 
-const charactersDataset: CatalogManifestDataset = {
+const charactersDataset: GameCatalogManifestDataset = {
   key: "characters",
   hash: "characters-h1",
   url: "/api/v1/game-catalog/characters",
@@ -55,10 +55,10 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-describe("CatalogHttpClient", () => {
+describe("GameCatalogHttpClient", () => {
   it("returns typed, validated dataset data", async () => {
     stubFetch(envelope([validCharacter]))
-    const client = new CatalogHttpClient("http://localhost")
+    const client = new GameCatalogHttpClient("http://localhost")
 
     const result = await client.getDataset(charactersDataset)
     const characters = result.data as (typeof validCharacter)[]
@@ -68,7 +68,7 @@ describe("CatalogHttpClient", () => {
 
   it("throws when a dataset payload fails validation", async () => {
     stubFetch(envelope([{ id: "c1" }]))
-    const client = new CatalogHttpClient("http://localhost")
+    const client = new GameCatalogHttpClient("http://localhost")
 
     await expect(client.getDataset(charactersDataset)).rejects.toThrow(
       /failed validation/
@@ -77,7 +77,7 @@ describe("CatalogHttpClient", () => {
 
   it("throws when the response key does not match the request", async () => {
     stubFetch({ ...envelope([validCharacter]), datasetKey: "npcs" })
-    const client = new CatalogHttpClient("http://localhost")
+    const client = new GameCatalogHttpClient("http://localhost")
 
     await expect(client.getDataset(charactersDataset)).rejects.toThrow(
       /did not match/
@@ -92,7 +92,7 @@ describe("CatalogHttpClient", () => {
       sourceHash: "abc",
       datasets: [charactersDataset],
     })
-    const client = new CatalogHttpClient("http://localhost")
+    const client = new GameCatalogHttpClient("http://localhost")
 
     const result = await client.getManifest()
 

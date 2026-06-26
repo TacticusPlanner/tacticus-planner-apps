@@ -2,31 +2,31 @@ export {
   servedDatasetKeys,
   isServedDatasetKey,
   catalogManifestMetadataKey,
-  type CatalogDatasetKey,
-  type CatalogManifest,
-  type CatalogManifestDataset,
-  type CatalogDatasetEnvelope,
-  type CatalogDatasetMetadata,
-  type CatalogRecordByKey,
-  type CatalogCharacterView,
-  type CatalogNpc,
-  type CatalogMow,
-  type CatalogUpgradeView,
-  type CatalogEquipment,
-  type CatalogCampaignDefinitionView,
-  type CatalogLreView,
+  type GameCatalogDatasetKey,
+  type GameCatalogManifest,
+  type GameCatalogManifestDataset,
+  type GameCatalogDatasetEnvelope,
+  type GameCatalogDatasetMetadata,
+  type GameCatalogRecordByKey,
+  type GameCatalogCharacterView,
+  type GameCatalogNpc,
+  type GameCatalogMow,
+  type GameCatalogUpgradeView,
+  type GameCatalogEquipment,
+  type GameCatalogCampaignDefinitionView,
+  type GameCatalogLreView,
 } from "./types"
 
 export type {
-  CatalogCampaignBattleView,
-  CatalogLreTrackView,
-  CatalogLreBattle,
-  CatalogLreWave,
-  CatalogLreEnemy,
-  CatalogFarmLocation,
-  CatalogUpgradeRecipeIngredient,
-  CatalogMowUpgradeCost,
-  CatalogEquipmentUpgradeCost,
+  GameCatalogCampaignBattleView,
+  GameCatalogLreTrackView,
+  GameCatalogLreBattle,
+  GameCatalogLreWave,
+  GameCatalogLreEnemy,
+  GameCatalogFarmLocation,
+  GameCatalogUpgradeRecipeIngredient,
+  GameCatalogMowUpgradeCost,
+  GameCatalogEquipmentUpgradeCost,
 } from "./record-types"
 
 export {
@@ -36,35 +36,35 @@ export {
 } from "./schemas"
 
 export {
-  CatalogHttpClient,
-  type CatalogClient,
-  type CatalogManifestResult,
-} from "./catalog-api"
+  GameCatalogHttpClient,
+  type GameCatalogClient,
+  type GameCatalogManifestResult,
+} from "./game-catalog-api"
 
 export {
-  syncCatalog,
+  syncGameCatalog,
   selectChangedDatasets,
-  type CatalogSyncResult,
-  type CatalogSyncProgress,
-  type CatalogSyncOptions,
-} from "./catalog-sync"
+  type GameCatalogSyncResult,
+  type GameCatalogSyncProgress,
+  type GameCatalogSyncOptions,
+} from "./game-catalog-sync"
 
 export {
-  getCatalogMetadata,
+  getGameCatalogMetadata,
   getManifestMetadata,
-  hasCompleteCatalogCache,
+  hasCompleteGameCatalogCache,
   getDatasetRecords,
   getDatasetRecord,
-  clearCatalogDb,
-  type CatalogStoredRecord,
+  clearGameCatalogDb,
+  type GameCatalogStoredRecord,
   type StoredRecord,
-} from "./catalog-storage"
+} from "./game-catalog-storage"
 
 export {
-  CatalogProvider,
-  useCatalogStatus,
+  GameCatalogProvider,
+  useGameCatalogStatus,
   useDatasetRecords,
-  type CatalogStatus,
-  type CatalogContextValue,
-  type CatalogProviderProps,
-} from "./catalog-context"
+  type GameCatalogStatus,
+  type GameCatalogContextValue,
+  type GameCatalogProviderProps,
+} from "./game-catalog-context"

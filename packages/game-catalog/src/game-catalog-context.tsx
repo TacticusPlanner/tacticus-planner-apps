@@ -8,18 +8,18 @@ import {
   type ReactNode,
 } from "react"
 
-import { CatalogHttpClient } from "./catalog-api"
+import { GameCatalogHttpClient } from "./game-catalog-api"
 import {
   getDatasetRecords,
-  hasCompleteCatalogCache,
+  hasCompleteGameCatalogCache,
   type StoredRecord,
-} from "./catalog-storage"
+} from "./game-catalog-storage"
 import {
-  syncCatalog,
-  type CatalogSyncProgress,
-  type CatalogSyncResult,
-} from "./catalog-sync"
-import type { CatalogDatasetKey } from "./types"
+  syncGameCatalog,
+  type GameCatalogSyncProgress,
+  type GameCatalogSyncResult,
+} from "./game-catalog-sync"
+import type { GameCatalogDatasetKey } from "./types"
 
 // StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
 // in quick succession — without this guard each mount would issue its own manifest request (the source of
@@ -27,18 +27,18 @@ import type { CatalogDatasetKey } from "./types"
 // baseUrl into a single in-flight request; it clears once settled so a later sync still runs.
 let inFlightSync: {
   baseUrl: string
-  promise: Promise<CatalogSyncResult>
+  promise: Promise<GameCatalogSyncResult>
 } | null = null
 
 function runSharedSync(
   baseUrl: string,
-  onProgress: (progress: CatalogSyncProgress) => void
-): Promise<CatalogSyncResult> {
+  onProgress: (progress: GameCatalogSyncProgress) => void
+): Promise<GameCatalogSyncResult> {
   if (inFlightSync && inFlightSync.baseUrl === baseUrl) {
     return inFlightSync.promise
   }
 
-  const promise = syncCatalog(new CatalogHttpClient(baseUrl), {
+  const promise = syncGameCatalog(new GameCatalogHttpClient(baseUrl), {
     onProgress,
   }).finally(() => {
     if (inFlightSync?.promise === promise) {
@@ -51,27 +51,32 @@ function runSharedSync(
   return promise
 }
 
-export type CatalogStatus = "idle" | "syncing" | "ready" | "stale" | "error"
+export type GameCatalogStatus = "idle" | "syncing" | "ready" | "stale" | "error"
 
-export type CatalogContextValue = {
-  status: CatalogStatus
-  progress: CatalogSyncProgress | null
+export type GameCatalogContextValue = {
+  status: GameCatalogStatus
+  progress: GameCatalogSyncProgress | null
   gameVersion: string | null
   firstTime: boolean
   error: string | null
   retry: () => void
 }
 
-const CatalogContext = createContext<CatalogContextValue | undefined>(undefined)
+const GameCatalogContext = createContext<GameCatalogContextValue | undefined>(
+  undefined
+)
 
-export type CatalogProviderProps = {
+export type GameCatalogProviderProps = {
   baseUrl: string
   children: ReactNode
 }
 
-export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
-  const [status, setStatus] = useState<CatalogStatus>("idle")
-  const [progress, setProgress] = useState<CatalogSyncProgress | null>(null)
+export function GameCatalogProvider({
+  baseUrl,
+  children,
+}: GameCatalogProviderProps) {
+  const [status, setStatus] = useState<GameCatalogStatus>("idle")
+  const [progress, setProgress] = useState<GameCatalogSyncProgress | null>(null)
   const [gameVersion, setGameVersion] = useState<string | null>(null)
   const [firstTime, setFirstTime] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -104,7 +109,7 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
         setFirstTime(result.firstTime)
         setStatus(result.status)
       } catch (caught) {
-        const canUseStaleCache = await hasCompleteCatalogCache()
+        const canUseStaleCache = await hasCompleteGameCatalogCache()
 
         if (!active) {
           return
@@ -127,19 +132,21 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
   }, [])
 
   return (
-    <CatalogContext.Provider
+    <GameCatalogContext.Provider
       value={{ status, progress, gameVersion, firstTime, error, retry }}
     >
       {children}
-    </CatalogContext.Provider>
+    </GameCatalogContext.Provider>
   )
 }
 
-export function useCatalogStatus() {
-  const context = useContext(CatalogContext)
+export function useGameCatalogStatus() {
+  const context = useContext(GameCatalogContext)
 
   if (!context) {
-    throw new Error("useCatalogStatus must be used within CatalogProvider.")
+    throw new Error(
+      "useGameCatalogStatus must be used within GameCatalogProvider."
+    )
   }
 
   return context
@@ -151,13 +158,15 @@ type DatasetState<TValue> = {
   error: string | null
 }
 
-function useCatalogReady() {
-  return useContext(CatalogContext)?.status ?? "idle"
+function useGameCatalogReady() {
+  return useContext(GameCatalogContext)?.status ?? "idle"
 }
 
 /** Loads all records for a dataset from IndexedDB, refreshing when the catalog becomes ready. */
-export function useDatasetRecords<K extends CatalogDatasetKey>(datasetKey: K) {
-  const status = useCatalogReady()
+export function useDatasetRecords<K extends GameCatalogDatasetKey>(
+  datasetKey: K
+) {
+  const status = useGameCatalogReady()
   const [state, setState] = useState<DatasetState<StoredRecord<K>[]>>({
     data: [],
     loading: true,

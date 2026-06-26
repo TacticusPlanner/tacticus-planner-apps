@@ -1,41 +1,41 @@
-import type { CatalogClient } from "./catalog-api"
+import type { GameCatalogClient } from "./game-catalog-api"
 import {
-  getCatalogMetadata,
+  getGameCatalogMetadata,
   getManifestMetadata,
-  hasCompleteCatalogCache,
-  replaceCatalogDataset,
+  hasCompleteGameCatalogCache,
+  replaceGameCatalogDataset,
   saveManifestMetadata,
-} from "./catalog-storage"
+} from "./game-catalog-storage"
 import {
   catalogManifestMetadataKey,
   isServedDatasetKey,
-  type CatalogDatasetKey,
-  type CatalogManifest,
-  type CatalogManifestDataset,
-  type CatalogDatasetMetadata,
+  type GameCatalogDatasetKey,
+  type GameCatalogManifest,
+  type GameCatalogManifestDataset,
+  type GameCatalogDatasetMetadata,
 } from "./types"
 
-export type CatalogSyncProgress = {
+export type GameCatalogSyncProgress = {
   downloaded: number
   total: number
-  current?: CatalogDatasetKey
+  current?: GameCatalogDatasetKey
 }
 
-export type CatalogSyncResult = {
+export type GameCatalogSyncResult = {
   status: "ready" | "stale"
   gameVersion: string
   firstTime: boolean
-  downloaded: CatalogDatasetKey[]
+  downloaded: GameCatalogDatasetKey[]
 }
 
-export type CatalogSyncOptions = {
-  onProgress?: (progress: CatalogSyncProgress) => void
+export type GameCatalogSyncOptions = {
+  onProgress?: (progress: GameCatalogSyncProgress) => void
 }
 
 export function selectChangedDatasets(
-  manifest: CatalogManifest,
-  metadata: ReadonlyMap<string, CatalogDatasetMetadata>
-): CatalogManifestDataset[] {
+  manifest: GameCatalogManifest,
+  metadata: ReadonlyMap<string, GameCatalogDatasetMetadata>
+): GameCatalogManifestDataset[] {
   return manifest.datasets.filter((dataset) => {
     if (!isServedDatasetKey(dataset.key)) {
       return false
@@ -51,11 +51,11 @@ export function selectChangedDatasets(
  * Manifest-driven delta sync: downloads only the served datasets whose hash changed, replaces them in
  * IndexedDB, and persists manifest metadata. Reports per-dataset progress for the init loader.
  */
-export async function syncCatalog(
-  client: CatalogClient,
-  options: CatalogSyncOptions = {}
-): Promise<CatalogSyncResult> {
-  const metadata = await getCatalogMetadata()
+export async function syncGameCatalog(
+  client: GameCatalogClient,
+  options: GameCatalogSyncOptions = {}
+): Promise<GameCatalogSyncResult> {
+  const metadata = await getGameCatalogMetadata()
   const manifestMetadata = getManifestMetadata(metadata)
   const firstTime = !manifestMetadata
 
@@ -64,7 +64,7 @@ export async function syncCatalog(
   )
 
   if (manifestResult.status === "not-modified") {
-    const ready = await hasCompleteCatalogCache()
+    const ready = await hasCompleteGameCatalogCache()
 
     return {
       status: ready ? "ready" : "stale",
@@ -78,13 +78,13 @@ export async function syncCatalog(
 
   const changedDatasets = selectChangedDatasets(manifest, metadata)
   const total = changedDatasets.length
-  const downloaded: CatalogDatasetKey[] = []
-  const failures: { key: CatalogDatasetKey; error: unknown }[] = []
+  const downloaded: GameCatalogDatasetKey[] = []
+  const failures: { key: GameCatalogDatasetKey; error: unknown }[] = []
 
   options.onProgress?.({ downloaded: 0, total })
 
   for (const dataset of changedDatasets) {
-    const datasetKey = dataset.key as CatalogDatasetKey
+    const datasetKey = dataset.key as GameCatalogDatasetKey
 
     options.onProgress?.({
       downloaded: downloaded.length,
@@ -97,7 +97,7 @@ export async function syncCatalog(
     try {
       const envelope = await client.getDataset(dataset)
 
-      await replaceCatalogDataset(datasetKey, envelope.data, {
+      await replaceGameCatalogDataset(datasetKey, envelope.data, {
         key: datasetKey,
         hash: envelope.datasetHash,
         catalogVersion: envelope.version,
@@ -141,7 +141,7 @@ export async function syncCatalog(
     etag,
   })
 
-  const ready = await hasCompleteCatalogCache()
+  const ready = await hasCompleteGameCatalogCache()
 
   return {
     status: ready ? "ready" : "stale",

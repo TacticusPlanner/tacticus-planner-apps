@@ -3,19 +3,19 @@ import { openDB, type IDBPDatabase } from "idb"
 import {
   catalogManifestMetadataKey,
   servedDatasetKeys,
-  type CatalogDatasetKey,
-  type CatalogDatasetMetadata,
+  type GameCatalogDatasetKey,
+  type GameCatalogDatasetMetadata,
 } from "./types"
-import type { CatalogRecordByKey } from "./schemas"
+import type { GameCatalogRecordByKey } from "./schemas"
 
-export type CatalogStoredRecord = {
+export type GameCatalogStoredRecord = {
   id: string
   [key: string]: unknown
 }
 
 // A stored row: the validated record for the dataset plus the storage-managed string id.
-export type StoredRecord<K extends CatalogDatasetKey> =
-  CatalogRecordByKey[K] & {
+export type StoredRecord<K extends GameCatalogDatasetKey> =
+  GameCatalogRecordByKey[K] & {
     id: string
   }
 
@@ -43,7 +43,7 @@ function byLevel(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.level, ...row }))
 }
 
-const datasetToRecords: Record<CatalogDatasetKey, DatasetToRecords> = {
+const datasetToRecords: Record<GameCatalogDatasetKey, DatasetToRecords> = {
   characters: asArray,
   npcs: asArray,
   mows: asArray,
@@ -55,7 +55,7 @@ const datasetToRecords: Record<CatalogDatasetKey, DatasetToRecords> = {
   lres: asArray,
 }
 
-export async function openCatalogDb() {
+export async function openGameCatalogDb() {
   return openDB(catalogDbName, catalogDbVersion, {
     upgrade(db) {
       if (!db.objectStoreNames.contains(metadataStore)) {
@@ -82,11 +82,13 @@ export async function openCatalogDb() {
   })
 }
 
-export async function getCatalogMetadata() {
-  const db = await openCatalogDb()
+export async function getGameCatalogMetadata() {
+  const db = await openGameCatalogDb()
 
   try {
-    const values = (await db.getAll(metadataStore)) as CatalogDatasetMetadata[]
+    const values = (await db.getAll(
+      metadataStore
+    )) as GameCatalogDatasetMetadata[]
 
     return new Map(values.map((metadata) => [metadata.key, metadata]))
   } finally {
@@ -95,13 +97,13 @@ export async function getCatalogMetadata() {
 }
 
 export function getManifestMetadata(
-  metadata: ReadonlyMap<string, CatalogDatasetMetadata>
+  metadata: ReadonlyMap<string, GameCatalogDatasetMetadata>
 ) {
   return metadata.get(catalogManifestMetadataKey)
 }
 
-export async function hasCompleteCatalogCache() {
-  const metadata = await getCatalogMetadata()
+export async function hasCompleteGameCatalogCache() {
+  const metadata = await getGameCatalogMetadata()
 
   return servedDatasetKeys.every((datasetKey) => metadata.has(datasetKey))
 }
@@ -110,14 +112,14 @@ export async function hasCompleteCatalogCache() {
  * Replaces a changed dataset on re-sync: empties its store (`clear()` — full wipe, no merge) and re-adds
  * all records, plus its metadata, in one transaction. Stale rows are removed.
  */
-export async function replaceCatalogDataset(
-  datasetKey: CatalogDatasetKey,
+export async function replaceGameCatalogDataset(
+  datasetKey: GameCatalogDatasetKey,
   data: unknown,
-  metadata: CatalogDatasetMetadata
+  metadata: GameCatalogDatasetMetadata
 ) {
   const records = datasetToRecords[datasetKey](data).map(toStoredRecord)
 
-  const db = await openCatalogDb()
+  const db = await openGameCatalogDb()
   const transaction = db.transaction([datasetKey, metadataStore], "readwrite")
 
   await transaction.objectStore(datasetKey).clear()
@@ -132,8 +134,10 @@ export async function replaceCatalogDataset(
   db.close()
 }
 
-export async function saveManifestMetadata(metadata: CatalogDatasetMetadata) {
-  const db = await openCatalogDb()
+export async function saveManifestMetadata(
+  metadata: GameCatalogDatasetMetadata
+) {
+  const db = await openGameCatalogDb()
 
   try {
     await db.put(metadataStore, metadata)
@@ -142,10 +146,10 @@ export async function saveManifestMetadata(metadata: CatalogDatasetMetadata) {
   }
 }
 
-export async function getDatasetRecords<K extends CatalogDatasetKey>(
+export async function getDatasetRecords<K extends GameCatalogDatasetKey>(
   datasetKey: K
 ): Promise<StoredRecord<K>[]> {
-  const db = await openCatalogDb()
+  const db = await openGameCatalogDb()
 
   try {
     return (await db.getAll(datasetKey)) as StoredRecord<K>[]
@@ -154,11 +158,11 @@ export async function getDatasetRecords<K extends CatalogDatasetKey>(
   }
 }
 
-export async function getDatasetRecord<K extends CatalogDatasetKey>(
+export async function getDatasetRecord<K extends GameCatalogDatasetKey>(
   datasetKey: K,
   id: string
 ): Promise<StoredRecord<K> | undefined> {
-  const db = await openCatalogDb()
+  const db = await openGameCatalogDb()
 
   try {
     return (await db.get(datasetKey, id)) as StoredRecord<K> | undefined
@@ -167,8 +171,8 @@ export async function getDatasetRecord<K extends CatalogDatasetKey>(
   }
 }
 
-export async function clearCatalogDb() {
-  const db = await openCatalogDb()
+export async function clearGameCatalogDb() {
+  const db = await openGameCatalogDb()
   const storeNames = [metadataStore, ...servedDatasetKeys]
   const transaction = db.transaction(storeNames, "readwrite")
 
@@ -180,14 +184,16 @@ export async function clearCatalogDb() {
   db.close()
 }
 
-function toStoredRecord(item: Record<string, unknown>): CatalogStoredRecord {
+function toStoredRecord(
+  item: Record<string, unknown>
+): GameCatalogStoredRecord {
   const id = item.id
 
   if (typeof id !== "string" && typeof id !== "number") {
-    throw new Error("Catalog records must include a string or numeric id.")
+    throw new Error("GameCatalog records must include a string or numeric id.")
   }
 
   return { ...item, id: String(id) }
 }
 
-export type CatalogDb = IDBPDatabase
+export type GameCatalogDb = IDBPDatabase
