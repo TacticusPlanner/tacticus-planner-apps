@@ -1,11 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
 import type { CatalogClient, CatalogManifestResult } from "./catalog-api"
-import {
-  getDatasetRecords,
-  getStoredManifest,
-  hasCompleteCatalogCache,
-} from "./catalog-storage"
+import { getDatasetRecords, hasCompleteCatalogCache } from "./catalog-storage"
 import { syncCatalog } from "./catalog-sync"
 import {
   servedDatasetKeys,
@@ -29,8 +25,8 @@ const datasetData: Record<string, unknown> = {
   npcs: [{ id: "n1", name: "Drone" }],
   mows: [{ id: "m1", name: "Stomper", faction: "Orks", unitKind: "mow" }],
   "mow-upgrade-costs": [
-    { gold: 10, salvage: 5 },
-    { gold: 20, salvage: 8 },
+    { level: 2, gold: 10, salvage: 5 },
+    { level: 3, gold: 20, salvage: 8 },
   ],
   upgrades: [
     { id: "u1", material: "Seal", rarity: "Common", craftable: false },
@@ -147,20 +143,12 @@ describe("syncCatalog", () => {
     expect(battles[0]?.campaignGroupId).toBe("g1")
     expect((await getDatasetRecords("campaign-definitions"))[0]?.id).toBe("g1")
 
-    // The mow upgrade-cost ladder is its own dataset, keyed by zero-padded level index.
+    // The mow upgrade-cost ladder is its own dataset, keyed by the ability level it raises a MoW to.
     const ladder = await getDatasetRecords("mow-upgrade-costs")
-    expect(ladder.map((row) => row.id)).toEqual(["0000", "0001"])
+    expect(ladder.map((row) => row.id)).toEqual(["2", "3"])
 
     // lres key on the snowprint string id.
     expect((await getDatasetRecords("lres"))[0]?.id).toBe("emperLucius")
-  })
-
-  it("persists the full manifest body in the metadata store", async () => {
-    await syncCatalog(new FakeCatalogClient(createManifest()))
-
-    const stored = await getStoredManifest()
-    expect(stored?.datasets).toHaveLength(servedDatasetKeys.length)
-    expect(stored?.gameVersion).toBe("1.40")
   })
 
   it("treats a 304 with a complete cache as ready and a later sync as not first-time", async () => {

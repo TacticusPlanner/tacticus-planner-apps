@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useCatalogStatus } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
@@ -13,6 +13,14 @@ export function CatalogInitGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { status, progress, gameVersion, firstTime, error, retry } =
     useCatalogStatus()
+
+  // The error detail (e.g. a multi-record zod dump) is too long for the UI — log it for debugging and
+  // show only a short message on screen.
+  useEffect(() => {
+    if (status === "error" && error) {
+      console.error("Game catalog initialization failed:", error)
+    }
+  }, [status, error])
 
   // Ready or stale (a usable cache exists) → reveal the app.
   if (status === "ready" || status === "stale") {
@@ -40,7 +48,7 @@ export function CatalogInitGate({ children }: { children: ReactNode }) {
                 {t("catalog.init.errorTitle")}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {error ?? t("catalog.init.errorDescription")}
+                {t("catalog.init.errorDescription")}
               </p>
               <Button data-testid="catalog-init-retry" onClick={retry}>
                 {t("catalog.init.retry")}

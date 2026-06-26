@@ -81,6 +81,7 @@ describe("catalog schemas", () => {
   it("validates the mow-upgrade-costs ladder as its own dataset", () => {
     const result = datasetPayloadSchemas["mow-upgrade-costs"].safeParse([
       {
+        level: 2,
         gold: 10,
         salvage: 5,
         badges: { rarity: "Common", amount: 1 },

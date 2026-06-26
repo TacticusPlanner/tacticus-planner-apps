@@ -15,9 +15,10 @@ import type {
   mowSchema,
   mowUpgradeCostSchema,
   npcSchema,
-  upgradeExpansionSchema,
   upgradeViewSchema,
 } from "./schemas"
+
+export type { CatalogUpgradeRecipeIngredient } from "./schemas"
 
 // Named types inferred from the validating schemas, for ergonomic consumption across the app.
 export type CatalogCharacterView = z.infer<typeof characterViewSchema>
@@ -35,7 +36,6 @@ export type CatalogLreBattle = z.infer<typeof lreBattleSchema>
 export type CatalogLreWave = z.infer<typeof lreWaveSchema>
 export type CatalogLreEnemy = z.infer<typeof lreEnemySchema>
 export type CatalogFarmLocation = z.infer<typeof farmLocationSchema>
-export type CatalogUpgradeExpansion = z.infer<typeof upgradeExpansionSchema>
 export type CatalogMowUpgradeCost = z.infer<typeof mowUpgradeCostSchema>
 export type CatalogEquipmentUpgradeCost = z.infer<
   typeof equipmentUpgradeCostSchema

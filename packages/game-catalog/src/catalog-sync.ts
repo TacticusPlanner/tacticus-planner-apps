@@ -5,7 +5,6 @@ import {
   hasCompleteCatalogCache,
   replaceCatalogDataset,
   saveManifestMetadata,
-  saveStoredManifest,
 } from "./catalog-storage"
 import {
   catalogManifestMetadataKey,
@@ -76,10 +75,6 @@ export async function syncCatalog(
   }
 
   const { manifest, etag } = manifestResult
-
-  // Persist the full manifest body up front (for inspection / offline diffing) — independent of which
-  // datasets end up changing.
-  await saveStoredManifest(manifest)
 
   const changedDatasets = selectChangedDatasets(manifest, metadata)
   const total = changedDatasets.length

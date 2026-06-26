@@ -14,9 +14,8 @@ export const servedDatasetKeys = [
 
 export type CatalogDatasetKey = (typeof servedDatasetKeys)[number]
 
-// Metadata-store keys for the persisted manifest: sync metadata (etag/version) and the full body.
+// Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.
 export const catalogManifestMetadataKey = "__manifest"
-export const catalogManifestBodyKey = "__manifest-body"
 
 export function isServedDatasetKey(value: string): value is CatalogDatasetKey {
   return (servedDatasetKeys as readonly string[]).includes(value)

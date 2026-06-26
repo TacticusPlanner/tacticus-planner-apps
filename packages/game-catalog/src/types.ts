@@ -1,7 +1,6 @@
 import type { z } from "zod"
 
 import {
-  catalogManifestBodyKey,
   catalogManifestMetadataKey,
   type CatalogDatasetKey,
 } from "./dataset-keys"
@@ -15,7 +14,6 @@ export {
   servedDatasetKeys,
   isServedDatasetKey,
   catalogManifestMetadataKey,
-  catalogManifestBodyKey,
   type CatalogDatasetKey,
 } from "./dataset-keys"
 
@@ -46,11 +44,4 @@ export type CatalogDatasetMetadata = {
   updatedAt: string
   etag?: string | null
   url?: string
-}
-
-// The full manifest body, persisted in the metadata store for inspection/offline diffing.
-export type StoredCatalogManifest = {
-  key: typeof catalogManifestBodyKey
-  manifest: CatalogManifest
-  updatedAt: string
 }

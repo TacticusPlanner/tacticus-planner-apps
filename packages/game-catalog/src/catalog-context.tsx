@@ -14,8 +14,42 @@ import {
   hasCompleteCatalogCache,
   type StoredRecord,
 } from "./catalog-storage"
-import { syncCatalog, type CatalogSyncProgress } from "./catalog-sync"
+import {
+  syncCatalog,
+  type CatalogSyncProgress,
+  type CatalogSyncResult,
+} from "./catalog-sync"
 import type { CatalogDatasetKey } from "./types"
+
+// StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
+// in quick succession — without this guard each mount would issue its own manifest request (the source of
+// the "manifest fetched four times on refresh" behaviour). Coalesce overlapping syncs for the same
+// baseUrl into a single in-flight request; it clears once settled so a later sync still runs.
+let inFlightSync: {
+  baseUrl: string
+  promise: Promise<CatalogSyncResult>
+} | null = null
+
+function runSharedSync(
+  baseUrl: string,
+  onProgress: (progress: CatalogSyncProgress) => void
+): Promise<CatalogSyncResult> {
+  if (inFlightSync && inFlightSync.baseUrl === baseUrl) {
+    return inFlightSync.promise
+  }
+
+  const promise = syncCatalog(new CatalogHttpClient(baseUrl), {
+    onProgress,
+  }).finally(() => {
+    if (inFlightSync?.promise === promise) {
+      inFlightSync = null
+    }
+  })
+
+  inFlightSync = { baseUrl, promise }
+
+  return promise
+}
 
 export type CatalogStatus = "idle" | "syncing" | "ready" | "stale" | "error"
 
@@ -44,10 +78,11 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
-    // Each run owns its own `cancelled` flag; a superseded run (StrictMode remount, baseUrl/attempt
-    // change) bails before touching state, while the live run always lands its result — so the init gate
-    // can never get wedged on "syncing".
-    let cancelled = false
+    // Each run owns its own `active` flag; a superseded run (StrictMode remount, baseUrl/attempt change)
+    // bails before touching state, while the live run always lands its result — so the init gate can
+    // never get wedged on "syncing". The underlying sync is shared via runSharedSync so overlapping mounts
+    // don't each hit the network.
+    let active = true
 
     async function runSync() {
       setStatus("syncing")
@@ -55,15 +90,13 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
       setProgress(null)
 
       try {
-        const result = await syncCatalog(new CatalogHttpClient(baseUrl), {
-          onProgress: (value) => {
-            if (!cancelled) {
-              setProgress(value)
-            }
-          },
+        const result = await runSharedSync(baseUrl, (value) => {
+          if (active) {
+            setProgress(value)
+          }
         })
 
-        if (cancelled) {
+        if (!active) {
           return
         }
 
@@ -73,7 +106,7 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
       } catch (caught) {
         const canUseStaleCache = await hasCompleteCatalogCache()
 
-        if (cancelled) {
+        if (!active) {
           return
         }
 
@@ -85,7 +118,7 @@ export function CatalogProvider({ baseUrl, children }: CatalogProviderProps) {
     void runSync()
 
     return () => {
-      cancelled = true
+      active = false
     }
   }, [baseUrl, attempt])
 

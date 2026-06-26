@@ -1,13 +1,10 @@
 import { openDB, type IDBPDatabase } from "idb"
 
 import {
-  catalogManifestBodyKey,
   catalogManifestMetadataKey,
   servedDatasetKeys,
   type CatalogDatasetKey,
   type CatalogDatasetMetadata,
-  type CatalogManifest,
-  type StoredCatalogManifest,
 } from "./types"
 import type { CatalogRecordByKey } from "./schemas"
 
@@ -40,20 +37,17 @@ function groupsWithId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((group) => ({ id: group.groupId, ...group }))
 }
 
-// The mow upgrade-cost ladder has no natural id; key each level by its (zero-padded, so getAll returns
-// them in ladder order) index.
-function laddered(data: unknown): Record<string, unknown>[] {
-  return asArray(data).map((row, index) => ({
-    id: String(index).padStart(4, "0"),
-    ...row,
-  }))
+// The mow upgrade-cost ladder is keyed by the ability level it raises a MoW to (server-provided), so the
+// store id correlates with the in-game level rather than an opaque array index.
+function byLevel(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.level, ...row }))
 }
 
 const datasetToRecords: Record<CatalogDatasetKey, DatasetToRecords> = {
   characters: asArray,
   npcs: asArray,
   mows: asArray,
-  "mow-upgrade-costs": laddered,
+  "mow-upgrade-costs": byLevel,
   upgrades: asArray,
   equipment: asArray,
   "campaign-battles": asArray,
@@ -143,39 +137,6 @@ export async function saveManifestMetadata(metadata: CatalogDatasetMetadata) {
 
   try {
     await db.put(metadataStore, metadata)
-  } finally {
-    db.close()
-  }
-}
-
-/** Persists the full manifest body in the metadata store (for inspection / offline diffing). */
-export async function saveStoredManifest(manifest: CatalogManifest) {
-  const db = await openCatalogDb()
-  const entry: StoredCatalogManifest = {
-    key: catalogManifestBodyKey,
-    manifest,
-    updatedAt: new Date().toISOString(),
-  }
-
-  try {
-    await db.put(metadataStore, entry)
-  } finally {
-    db.close()
-  }
-}
-
-/** Reads the persisted manifest body, if any. */
-export async function getStoredManifest(): Promise<
-  CatalogManifest | undefined
-> {
-  const db = await openCatalogDb()
-
-  try {
-    const entry = (await db.get(metadataStore, catalogManifestBodyKey)) as
-      | StoredCatalogManifest
-      | undefined
-
-    return entry?.manifest
   } finally {
     db.close()
   }

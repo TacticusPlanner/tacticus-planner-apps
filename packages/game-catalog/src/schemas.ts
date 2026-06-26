@@ -26,17 +26,22 @@ export const characterRankUpSchema = z.looseObject({
   upgradeIds: z.array(z.string()),
 })
 
-export const upgradeRecipeIngredientSchema = z.looseObject({
-  material: z.string(),
-  count: z.number(),
-})
+// A recipe ingredient. Craftable ingredients carry their own nested recipe (recursively); base materials
+// have no nested recipe. Typed explicitly because the schema is self-referential.
+export type CatalogUpgradeRecipeIngredient = {
+  material: string
+  count: number
+  recipe?: CatalogUpgradeRecipeIngredient[] | null
+}
 
-export const upgradeExpansionSchema = z.looseObject({
-  baseUpgrades: z.record(z.string(), z.number()),
-  craftedUpgrades: z.record(z.string(), z.number()),
-  totalBaseCount: z.number(),
-  totalCraftedCount: z.number(),
-})
+export const upgradeRecipeIngredientSchema: z.ZodType<CatalogUpgradeRecipeIngredient> =
+  z.lazy(() =>
+    z.looseObject({
+      material: z.string(),
+      count: z.number(),
+      recipe: z.array(upgradeRecipeIngredientSchema).nullish(),
+    })
+  )
 
 export const amountByRaritySchema = z.looseObject({
   rarity: z.string(),
@@ -49,6 +54,8 @@ export const mowAbilitySchema = z.looseObject({
 })
 
 export const mowUpgradeCostSchema = z.looseObject({
+  // The ability level this rung raises a MoW to (the ladder starts at level 2).
+  level: z.number(),
   gold: z.number(),
   salvage: z.number(),
   badges: amountByRaritySchema,
@@ -225,7 +232,6 @@ export const upgradeViewSchema = z.looseObject({
   craftable: z.boolean(),
   recipe: z.array(upgradeRecipeIngredientSchema),
   farmLocations: z.array(farmLocationSchema),
-  expanded: upgradeExpansionSchema.nullish(),
 })
 
 export const equipmentSchema = z.looseObject({
