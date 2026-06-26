@@ -8,6 +8,24 @@
     "signIn": "Sign in",
     "signOut": "Sign out"
   },
+  "catalog": {
+    "init": {
+      "firstTimeTitle": "Setting up game data",
+      "firstTimeDescription": "First use on this device — this can take a little longer.",
+      "updatingTitle": "Updating game catalog",
+      "updatingDescription": "Updating game catalog data to version {{version}}.",
+      "preparing": "Preparing game catalog…",
+      "progress": "Downloading {{done}} / {{total}}…",
+      "errorTitle": "Could not load game data",
+      "errorDescription": "Something went wrong while loading the game catalog.",
+      "retry": "Retry"
+    }
+  },
+  "landing": {
+    "title": "Plan your Tacticus roster",
+    "subtitle": "Track characters, upgrades, equipment, campaigns, and legendary events — all in one place.",
+    "getStarted": "Sign in / Get started"
+  },
   "language": {
     "label": "Language",
     "options": {

@@ -6,9 +6,10 @@ export default defineConfig([
   {
     files: [
       "./src/fsd/entities/upgrade/**",
-      "./src/fsd/entities/catalog/**",
       "./src/fsd/features/view-settings/**",
       "./src/fsd/widgets/sidebar/**",
+      "./src/fsd/widgets/catalog-init/**",
+      "./src/fsd/pages/landing/**",
     ],
     rules: {
       "fsd/insignificant-slice": "off",

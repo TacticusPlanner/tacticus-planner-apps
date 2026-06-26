@@ -5,7 +5,6 @@ import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import {
   AuthProvider,
-  CatalogProvider,
   I18nProvider,
   ThemeProvider,
   TourProvider,
@@ -19,13 +18,11 @@ async function bootstrap() {
     <StrictMode>
       <I18nProvider>
         <AuthProvider instance={msalInstance}>
-          <CatalogProvider>
-            <ThemeProvider>
-              <TourProvider>
-                <App />
-              </TourProvider>
-            </ThemeProvider>
-          </CatalogProvider>
+          <ThemeProvider>
+            <TourProvider>
+              <App />
+            </TourProvider>
+          </ThemeProvider>
         </AuthProvider>
       </I18nProvider>
     </StrictMode>
