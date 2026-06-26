@@ -11,6 +11,13 @@ export const equipmentUpgradeCostSchema = z.looseObject({
   levels: z.array(equipmentUpgradeLevelSchema),
 })
 
+// A single equipment level: the per-level stat block keyed by stat name (armor/hp, blockChance/
+// blockDamage, critChance/critDamage, …). The stat keys vary by equipment type, so this is a string→
+// number map rather than a fixed shape.
+export const equipmentLevelSchema = z.looseObject({
+  stats: z.record(z.string(), z.number()),
+})
+
 export const equipmentSchema = z.looseObject({
   id: z.string(),
   name: z.string(),
@@ -21,7 +28,7 @@ export const equipmentSchema = z.looseObject({
   isUniqueRelic: z.boolean(),
   allowedUnits: z.array(z.string()),
   allowedFactions: z.array(z.string()),
-  levels: z.array(z.unknown()),
+  levels: z.array(equipmentLevelSchema),
   // The matched per-rarity upgrade-cost ladder, inlined server-side (no shared extras table).
   upgradeLevels: z.array(equipmentUpgradeLevelSchema),
 })

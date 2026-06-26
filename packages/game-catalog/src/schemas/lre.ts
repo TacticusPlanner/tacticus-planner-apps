@@ -40,6 +40,29 @@ export const lreBattleSchema = z.looseObject({
   waves: z.array(lreWaveSchema),
 })
 
+// A point-reward milestone: the cumulative points to reach it and the engram payout it grants.
+export const lrePointsMilestoneSchema = z.looseObject({
+  milestone: z.number(),
+  cumulativePoints: z.number(),
+  engramPayout: z.number(),
+})
+
+// A chest rung: the chest level and the engram cost to open it.
+export const lreChestsMilestoneSchema = z.looseObject({
+  chestLevel: z.number(),
+  engramCost: z.number(),
+})
+
+// Points awarded for reaching each character progression tier during the event.
+export const lreProgressionSchema = z.looseObject({
+  unlock: z.number(),
+  fourStars: z.number(),
+  fiveStars: z.number(),
+  blueStar: z.number(),
+  mythic: z.number(),
+  twoBlueStars: z.number(),
+})
+
 export const lreTrackViewSchema = z.looseObject({
   name: z.string(),
   enemies: lreTrackEnemiesSchema,
@@ -68,8 +91,8 @@ export const lreViewSchema = z.looseObject({
   alpha: lreTrackViewSchema,
   beta: lreTrackViewSchema,
   gamma: lreTrackViewSchema,
-  pointsMilestones: z.array(z.unknown()),
-  chestsMilestones: z.array(z.unknown()),
+  pointsMilestones: z.array(lrePointsMilestoneSchema),
+  chestsMilestones: z.array(lreChestsMilestoneSchema),
   shardsPerChest: z.number(),
-  progression: z.unknown(),
+  progression: lreProgressionSchema,
 })

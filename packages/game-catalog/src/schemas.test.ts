@@ -32,6 +32,44 @@ const validCharacter = {
   eligibleEquipment: [{ slot: "I_Crit", equipmentIds: ["I_Crit_C001"] }],
 }
 
+const lreTrack = {
+  name: "Alpha",
+  enemies: { label: "Enemies", link: "https://example.com" },
+  killPoints: 10,
+  battlesPoints: [1, 2],
+  defeatAll: [3],
+  allowedUnitsFilter: [],
+  unitsRestrictions: [],
+  battles: [],
+  availableUnitIds: [],
+}
+
+const baseLre = {
+  id: "emperLucius",
+  name: "Lucius",
+  wikiLink: "https://example.com",
+  eventStage: 1,
+  finished: false,
+  battlesCount: 0,
+  constraintsCount: 0,
+  regularMissions: [],
+  premiumMissions: [],
+  alpha: lreTrack,
+  beta: lreTrack,
+  gamma: lreTrack,
+  pointsMilestones: [{ milestone: 1, cumulativePoints: 100, engramPayout: 25 }],
+  chestsMilestones: [{ chestLevel: 1, engramCost: 60 }],
+  shardsPerChest: 1,
+  progression: {
+    unlock: 400,
+    fourStars: 120,
+    fiveStars: 180,
+    blueStar: 200,
+    mythic: 250,
+    twoBlueStars: 150,
+  },
+}
+
 describe("catalog schemas", () => {
   it("parses a valid character", () => {
     expect(characterViewSchema.parse(validCharacter).id).toBe("ultraApothecary")
@@ -103,12 +141,31 @@ describe("catalog schemas", () => {
         isUniqueRelic: false,
         allowedUnits: [],
         allowedFactions: [],
-        levels: [],
+        levels: [{ stats: { armor: 476, hp: 892 } }],
         upgradeLevels: [{ goldCost: 0, salvageCost: 10, mythicSalvageCost: 0 }],
       },
     ])
 
     expect(result.success).toBe(true)
+  })
+
+  it("validates an LRE with typed milestones and progression", () => {
+    const result = datasetPayloadSchemas.lres.safeParse([baseLre])
+
+    expect(result.success).toBe(true)
+  })
+
+  it("rejects an LRE points milestone of the wrong type", () => {
+    const result = datasetPayloadSchemas.lres.safeParse([
+      {
+        ...baseLre,
+        pointsMilestones: [
+          { milestone: "one", cumulativePoints: 100, engramPayout: 25 },
+        ],
+      },
+    ])
+
+    expect(result.success).toBe(false)
   })
 
   it("validates the split campaign-battles and campaign-definitions payloads", () => {
