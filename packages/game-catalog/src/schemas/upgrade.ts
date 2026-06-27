@@ -7,7 +7,7 @@ import { farmLocationSchema } from "./shared"
 export type GameCatalogUpgradeRecipeIngredient = {
   material: string
   count: number
-  recipe?: GameCatalogUpgradeRecipeIngredient[] | null
+  recipe: GameCatalogUpgradeRecipeIngredient[] | null
 }
 
 export const upgradeRecipeIngredientSchema: z.ZodType<GameCatalogUpgradeRecipeIngredient> =
@@ -15,7 +15,7 @@ export const upgradeRecipeIngredientSchema: z.ZodType<GameCatalogUpgradeRecipeIn
     z.looseObject({
       material: z.string(),
       count: z.number(),
-      recipe: z.array(upgradeRecipeIngredientSchema).nullish(),
+      recipe: z.array(upgradeRecipeIngredientSchema).nullable(),
     })
   )
 
@@ -26,7 +26,6 @@ export const upgradeViewSchema = z.looseObject({
   label: z.string(),
   rarity: z.string(),
   stat: z.string(),
-  icon: z.string().nullish(),
   craftable: z.boolean(),
   recipe: z.array(upgradeRecipeIngredientSchema),
   farmLocations: z.array(farmLocationSchema),

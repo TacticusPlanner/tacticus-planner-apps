@@ -13,8 +13,6 @@ export const mowSchema = z.looseObject({
   unitKind: z.string(),
   faction: z.string(),
   alliance: z.string(),
-  icon: z.string(),
-  roundIcon: z.string(),
   primaryAbility: mowAbilitySchema,
   secondaryAbility: mowAbilitySchema,
 })
@@ -25,6 +23,6 @@ export const mowUpgradeCostSchema = z.looseObject({
   gold: z.number(),
   salvage: z.number(),
   badges: amountByRaritySchema,
-  forgeBadges: amountByRaritySchema.nullish(),
+  forgeBadges: amountByRaritySchema.nullable(),
   components: z.number(),
 })

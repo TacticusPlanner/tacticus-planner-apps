@@ -9,7 +9,6 @@ export const lreFilterSchema = z.looseObject({
 export const lreRestrictionSchema = z.looseObject({
   name: z.string(),
   points: z.number(),
-  iconId: z.string().nullish(),
   index: z.number(),
   filter: lreFilterSchema,
 })
@@ -79,11 +78,9 @@ export const lreViewSchema = z.looseObject({
   // The event's unit snowprint id (e.g. "emperLucius") — the stable string id of the LRE.
   id: z.string(),
   name: z.string(),
-  wikiLink: z.string(),
-  eventStage: z.number(),
   finished: z.boolean(),
-  nextEventDate: z.string().nullish(),
-  nextEventDateUtc: z.string().nullish(),
+  // Per-event-stage start dates in ISO 8601 UTC; the client derives the current stage from this array.
+  eventStageStartDatesUtc: z.array(z.string()),
   battlesCount: z.number(),
   constraintsCount: z.number(),
   regularMissions: z.array(z.string()),

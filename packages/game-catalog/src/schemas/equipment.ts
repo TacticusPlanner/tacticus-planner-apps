@@ -23,7 +23,7 @@ export const equipmentSchema = z.looseObject({
   name: z.string(),
   rarity: z.string(),
   type: z.string(),
-  abilityId: z.string().nullish(),
+  abilityId: z.string(),
   isRelic: z.boolean(),
   isUniqueRelic: z.boolean(),
   allowedUnits: z.array(z.string()),

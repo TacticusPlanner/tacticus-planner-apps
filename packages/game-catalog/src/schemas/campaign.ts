@@ -2,17 +2,17 @@ import { z } from "zod"
 
 export const campaignGuaranteedRewardSchema = z.looseObject({
   id: z.string(),
-  min: z.number().nullish(),
-  max: z.number().nullish(),
+  min: z.number(),
+  max: z.number(),
 })
 
 export const campaignPotentialRewardViewSchema = z.looseObject({
   id: z.string(),
-  chanceId: z.string().nullish(),
-  rewardKind: z.string().nullish(),
-  numerator: z.number().nullish(),
-  denominator: z.number().nullish(),
-  effectiveRate: z.number().nullish(),
+  chanceId: z.string().nullable(),
+  rewardKind: z.string().nullable(),
+  numerator: z.number().nullable(),
+  denominator: z.number().nullable(),
+  effectiveRate: z.number().nullable(),
 })
 
 export const campaignRewardsViewSchema = z.looseObject({
