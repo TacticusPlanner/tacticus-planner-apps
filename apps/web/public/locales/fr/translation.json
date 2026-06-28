@@ -27,6 +27,29 @@
       "retry": "Réessayer"
     }
   },
+  "rankLookup": {
+    "title": "Recherche de rangs",
+    "subtitle": "Choisissez un personnage et une plage de rangs pour voir les améliorations requises, les matériaux et où les farmer.",
+    "character": "Personnage",
+    "characterPlaceholder": "Sélectionnez un personnage",
+    "noCharacter": "Aucun personnage trouvé.",
+    "rankRange": "Plage de rangs",
+    "start": "De",
+    "end": "À",
+    "pointFive": "Inclure les améliorations « point cinq »",
+    "pointFiveShort": "Point cinq",
+    "pointFiveHint": "En atteignant le rang cible, vous pouvez appliquer immédiatement la première amélioration de chaque statistique. Activez ceci pour inclure cette première rangée.",
+    "materials": "Matériaux nécessaires",
+    "distinctMaterials": "Matériaux distincts",
+    "totalMaterials": "Total des matériaux",
+    "material": "Objet",
+    "name": "Nom",
+    "count": "Quantité",
+    "rarity": "Rareté",
+    "locations": "Lieux de farm",
+    "byRank": "Améliorations par rang",
+    "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires."
+  },
   "language": {
     "label": "Langue",
     "options": {

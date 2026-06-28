@@ -27,6 +27,29 @@
       "retry": "Erneut versuchen"
     }
   },
+  "rankLookup": {
+    "title": "Rang-Nachschlag",
+    "subtitle": "Wähle einen Charakter und einen Rangbereich, um die nötigen Verbesserungen, Materialien und Farm-Orte zu sehen.",
+    "character": "Charakter",
+    "characterPlaceholder": "Charakter auswählen",
+    "noCharacter": "Kein Charakter gefunden.",
+    "rankRange": "Rangbereich",
+    "start": "Von",
+    "end": "Bis",
+    "pointFive": "Point-Five-Verbesserungen einbeziehen",
+    "pointFiveShort": "Point Five",
+    "pointFiveHint": "Beim Erreichen des Zielrangs kannst du sofort die erste Verbesserung jedes Werts anwenden. Aktiviere dies, um diese oberste Reihe einzubeziehen.",
+    "materials": "Benötigte Materialien",
+    "distinctMaterials": "Verschiedene Materialien",
+    "totalMaterials": "Materialien gesamt",
+    "material": "Gegenstand",
+    "name": "Name",
+    "count": "Anzahl",
+    "rarity": "Seltenheit",
+    "locations": "Farm-Orte",
+    "byRank": "Verbesserungen nach Rang",
+    "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen."
+  },
   "language": {
     "label": "Sprache",
     "options": {

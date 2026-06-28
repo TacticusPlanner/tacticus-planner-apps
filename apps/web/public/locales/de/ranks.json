@@ -1,1 +1,23 @@
-{}
+{
+  "Adamantine1": "Adamantin I",
+  "Adamantine2": "Adamantin II",
+  "Adamantine3": "Adamantin III",
+  "Bronze1": "Bronze I",
+  "Bronze2": "Bronze II",
+  "Bronze3": "Bronze III",
+  "Diamond1": "Diamant I",
+  "Diamond2": "Diamant II",
+  "Diamond3": "Diamant III",
+  "Gold1": "Gold I",
+  "Gold2": "Gold II",
+  "Gold3": "Gold III",
+  "Iron1": "Eisen I",
+  "Iron2": "Eisen II",
+  "Iron3": "Eisen III",
+  "Silver1": "Silber I",
+  "Silver2": "Silber II",
+  "Silver3": "Silber III",
+  "Stone1": "Stein I",
+  "Stone2": "Stein II",
+  "Stone3": "Stein III"
+}

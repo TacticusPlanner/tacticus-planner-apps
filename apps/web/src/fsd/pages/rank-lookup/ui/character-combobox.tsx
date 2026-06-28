@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -17,26 +17,32 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { characterIcon } from "@/entities/character"
+import type { FactionGroup } from "@/entities/faction"
 
 import { EntityIcon } from "./entity-icon"
 
-export type CharacterOption = { id: string; name: string }
-
 export function CharacterCombobox({
-  options,
+  groups,
   value,
   onChange,
   placeholder,
   emptyText,
 }: {
-  options: CharacterOption[]
+  groups: FactionGroup[]
   value?: string
   onChange: (id: string) => void
   placeholder: string
   emptyText: string
 }) {
   const [open, setOpen] = useState(false)
-  const selected = options.find((option) => option.id === value)
+
+  const selected = useMemo(() => {
+    for (const group of groups) {
+      const member = group.members.find((m) => m.id === value)
+      if (member) return member
+    }
+    return undefined
+  }, [groups, value])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -68,32 +74,35 @@ export function CharacterCombobox({
           <CommandInput placeholder={placeholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.id}
-                  value={option.name}
-                  onSelect={() => {
-                    onChange(option.id)
-                    setOpen(false)
-                  }}
-                  className="gap-2"
-                >
-                  <EntityIcon
-                    src={characterIcon(option.id)}
-                    alt=""
-                    className="size-6 shrink-0 rounded-full"
-                  />
-                  <span className="truncate">{option.name}</span>
-                  <Check
-                    className={cn(
-                      "ml-auto shrink-0",
-                      value === option.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {groups.map((group) => (
+              <CommandGroup key={group.factionId} heading={group.factionName}>
+                {group.members.map((member) => (
+                  <CommandItem
+                    key={member.id}
+                    // cmdk filters by `value`; include the faction so typing a faction also matches.
+                    value={`${member.name} ${group.factionName}`}
+                    onSelect={() => {
+                      onChange(member.id)
+                      setOpen(false)
+                    }}
+                    className="gap-2"
+                  >
+                    <EntityIcon
+                      src={characterIcon(member.id)}
+                      alt=""
+                      className="size-6 shrink-0 rounded-full"
+                    />
+                    <span className="truncate">{member.name}</span>
+                    <Check
+                      className={cn(
+                        "ml-auto shrink-0",
+                        value === member.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
           </CommandList>
         </Command>
       </PopoverContent>

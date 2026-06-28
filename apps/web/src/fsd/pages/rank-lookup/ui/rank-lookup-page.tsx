@@ -6,6 +6,7 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { campaignIcon } from "@/entities/campaign"
+import { groupByFaction } from "@/entities/faction"
 import { firstRank, rankAt, type RankId } from "@/entities/rank"
 import { rarityRank } from "@/entities/upgrade"
 import {
@@ -31,6 +32,7 @@ export function RankLookupPage() {
     "translation",
     "ranks",
     "characters",
+    "factions",
     "upgrades",
     "campaignLocations",
   ])
@@ -67,14 +69,17 @@ export function RankLookupPage() {
     [battles.data]
   )
 
-  const characterOptions = useMemo(
+  const characterGroups = useMemo(
     () =>
-      characters.data
-        .map((c) => ({
+      groupByFaction(
+        characters.data.map((c) => ({
           id: c.id,
           name: t(`characters:${c.id}`, { defaultValue: c.name }),
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
+          faction: c.faction,
+          alliance: c.alliance,
+        })),
+        (factionId) => t(`factions:${factionId}`, { defaultValue: factionId })
+      ),
     [characters.data, t]
   )
 
@@ -84,7 +89,7 @@ export function RankLookupPage() {
   const [pointFive, setPointFive] = useState(false)
 
   // Default to the first character (derived, not stored) until the user picks one.
-  const characterId = selectedCharacterId ?? characterOptions[0]?.id
+  const characterId = selectedCharacterId ?? characterGroups[0]?.members[0]?.id
 
   const character = characters.data.find((c) => c.id === characterId) as
     | CharacterLike
@@ -207,7 +212,7 @@ export function RankLookupPage() {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
             <div className="lg:sticky lg:top-6 lg:w-80 lg:shrink-0">
               <RankLookupControls
-                characters={characterOptions}
+                characterGroups={characterGroups}
                 characterId={characterId}
                 onCharacterChange={setSelectedCharacterId}
                 rankStart={rankStart}

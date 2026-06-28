@@ -16,7 +16,9 @@ import { useMsal } from "@azure/msal-react"
 import { loginRequest } from "@/shared/auth"
 
 export function LandingPage() {
-  const { t } = useTranslation()
+  // Landing-specific copy lives in its own lightweight "landing" namespace; shared keys (app name, auth
+  // error) stay in the default "translation" namespace and are referenced with an explicit prefix.
+  const { t } = useTranslation(["landing", "translation"])
   const { inProgress, instance } = useMsal()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
 
@@ -31,7 +33,7 @@ export function LandingPage() {
         console.error("[MSAL] sign-in failed", error)
       }
 
-      toast.error(t("auth.error"))
+      toast.error(t("translation:auth.error"))
     })
   }
 
@@ -42,12 +44,12 @@ export function LandingPage() {
     >
       <div className="flex max-w-2xl flex-col gap-4">
         <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-          {t("app.name")}
+          {t("translation:app.name")}
         </p>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-          {t("landing.title")}
+          {t("title")}
         </h1>
-        <p className="text-lg text-muted-foreground">{t("landing.subtitle")}</p>
+        <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <Button
@@ -57,7 +59,7 @@ export function LandingPage() {
         size="lg"
       >
         <LogIn data-icon="inline-start" />
-        {t("landing.getStarted")}
+        {t("getStarted")}
       </Button>
 
       <section
@@ -65,11 +67,9 @@ export function LandingPage() {
         data-testid="landing-lookups"
       >
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">
-            {t("landing.lookups.title")}
-          </h2>
+          <h2 className="text-lg font-semibold">{t("lookups.title")}</h2>
           <p className="text-sm text-muted-foreground">
-            {t("landing.lookups.subtitle")}
+            {t("lookups.subtitle")}
           </p>
         </div>
         {/* Public reference pages. Add future lookups (MoW, NPC, Upgrades, Equipment, …) here. */}
@@ -83,11 +83,11 @@ export function LandingPage() {
               <CardHeader>
                 <ListChecks className="size-5 text-primary" />
                 <CardTitle className="flex items-center justify-between gap-2">
-                  {t("landing.lookups.ranks.title")}
+                  {t("lookups.ranks.title")}
                   <ArrowRight className="size-4 text-muted-foreground" />
                 </CardTitle>
                 <CardDescription>
-                  {t("landing.lookups.ranks.description")}
+                  {t("lookups.ranks.description")}
                 </CardDescription>
               </CardHeader>
             </Card>

@@ -27,6 +27,29 @@
       "retry": "Reintentar"
     }
   },
+  "rankLookup": {
+    "title": "Consulta de rangos",
+    "subtitle": "Elige un personaje y un intervalo de rangos para ver las mejoras necesarias, los materiales y dónde conseguirlos.",
+    "character": "Personaje",
+    "characterPlaceholder": "Selecciona un personaje",
+    "noCharacter": "No se encontró ningún personaje.",
+    "rankRange": "Intervalo de rangos",
+    "start": "Desde",
+    "end": "Hasta",
+    "pointFive": "Incluir mejoras de medio rango",
+    "pointFiveShort": "Medio rango",
+    "pointFiveHint": "Al alcanzar el rango objetivo puedes aplicar de inmediato la primera mejora de cada estadística. Activa esto para incluir esa fila superior.",
+    "materials": "Materiales necesarios",
+    "distinctMaterials": "Materiales distintos",
+    "totalMaterials": "Materiales totales",
+    "material": "Objeto",
+    "name": "Nombre",
+    "count": "Cantidad",
+    "rarity": "Rareza",
+    "locations": "Lugares de farmeo",
+    "byRank": "Mejoras por rango",
+    "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias."
+  },
   "language": {
     "label": "Idioma",
     "options": {

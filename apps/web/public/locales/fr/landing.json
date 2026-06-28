@@ -1,0 +1,13 @@
+{
+  "title": "Planifiez votre effectif Tacticus",
+  "subtitle": "Suivez personnages, améliorations, équipement, campagnes et événements légendaires — le tout au même endroit.",
+  "getStarted": "Se connecter / Commencer",
+  "lookups": {
+    "title": "Références & recherches",
+    "subtitle": "Parcourez les données du jeu sans compte.",
+    "ranks": {
+      "title": "Recherche de rangs",
+      "description": "Découvrez les améliorations et les matériaux nécessaires pour faire monter un personnage en rang."
+    }
+  }
+}

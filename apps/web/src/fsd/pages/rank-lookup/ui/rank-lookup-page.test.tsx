@@ -17,6 +17,8 @@ const records: Record<string, unknown[]> = {
     {
       id: "hero1",
       name: "Hero One",
+      faction: "Ultramarines",
+      alliance: "Imperial",
       rankUpUpgrades: [
         { rank: "Stone1", upgradeIds: ["h1", "h2", "d1", "d2", "a1", "a2"] },
       ],

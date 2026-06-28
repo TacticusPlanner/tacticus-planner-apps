@@ -1,0 +1,13 @@
+{
+  "title": "Planifica tu plantilla de Tacticus",
+  "subtitle": "Controla personajes, mejoras, equipo, campañas y eventos legendarios — todo en un solo lugar.",
+  "getStarted": "Iniciar sesión / Empezar",
+  "lookups": {
+    "title": "Consulta y referencia",
+    "subtitle": "Explora los datos del juego sin una cuenta.",
+    "ranks": {
+      "title": "Consulta de rangos",
+      "description": "Consulta las mejoras y los materiales necesarios para subir de rango a cualquier personaje."
+    }
+  }
+}

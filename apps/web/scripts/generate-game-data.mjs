@@ -84,6 +84,13 @@ for (const tier of tiers) {
   for (let i = 0; i < 3; i++) ranks[`${tier}${i + 1}`] = `${tier} ${romans[i]}`
 }
 
+// ---- factions: id -> display name (from the reference enums file) -----------------------------
+const enums = JSON.parse(readFileSync(join(dataRoot, "enums.json"), "utf8"))
+const factions = {}
+for (const faction of enums.factions ?? []) {
+  factions[faction.id] = faction.displayName
+}
+
 // ---- write -----------------------------------------------------------------------------------
 const sortKeys = (obj) =>
   Object.fromEntries(Object.keys(obj).sort().map((k) => [k, obj[k]]))
@@ -95,13 +102,15 @@ function writeJson(rel, obj) {
   console.log("wrote", rel, "(" + Object.keys(obj).length + " keys)")
 }
 
-const enNamespaces = { characters, upgrades, campaignLocations, ranks }
+const enNamespaces = { characters, upgrades, campaignLocations, ranks, factions }
 for (const [ns, data] of Object.entries(enNamespaces)) {
   writeJson(`public/locales/en/${ns}.json`, sortKeys(data))
 }
-// Other languages: empty namespaces that fall back to en per i18next fallbackLng.
+// Proper-noun namespaces are intentionally not translated (the game localizes them separately); write
+// empty de/es/fr placeholders that fall back to en. `ranks`/`factions` are hand-translated, so this script
+// must NOT touch their de/es/fr files.
 for (const lng of ["de", "es", "fr"]) {
-  for (const ns of Object.keys(enNamespaces)) {
+  for (const ns of ["characters", "upgrades", "campaignLocations"]) {
     writeJson(`public/locales/${lng}/${ns}.json`, {})
   }
 }

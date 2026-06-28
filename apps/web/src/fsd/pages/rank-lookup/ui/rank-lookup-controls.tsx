@@ -16,15 +16,16 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
+import type { FactionGroup } from "@/entities/faction"
 import { rankAt, rankIndex, rankOrder, type RankId } from "@/entities/rank"
 
-import { CharacterCombobox, type CharacterOption } from "./character-combobox"
+import { CharacterCombobox } from "./character-combobox"
 import { RankBadge } from "./rank-badge"
 
 const maxIndex = rankOrder.length - 1
 
 export function RankLookupControls({
-  characters,
+  characterGroups,
   characterId,
   onCharacterChange,
   rankStart,
@@ -34,7 +35,7 @@ export function RankLookupControls({
   onPointFiveChange,
   isMobile,
 }: {
-  characters: CharacterOption[]
+  characterGroups: FactionGroup[]
   characterId?: string
   onCharacterChange: (id: string) => void
   rankStart: RankId
@@ -67,7 +68,7 @@ export function RankLookupControls({
       <div className="grid gap-2">
         <Label>{t("rankLookup.character")}</Label>
         <CharacterCombobox
-          options={characters}
+          groups={characterGroups}
           value={characterId}
           onChange={onCharacterChange}
           placeholder={t("rankLookup.characterPlaceholder")}
