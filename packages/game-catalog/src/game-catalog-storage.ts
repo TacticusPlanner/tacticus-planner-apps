@@ -53,6 +53,8 @@ const datasetToRecords: Record<GameCatalogDatasetKey, DatasetToRecords> = {
   "campaign-battles": asArray,
   "campaign-definitions": groupsWithId,
   lres: asArray,
+  "lre-battles": asArray,
+  "lre-common": asArray,
 }
 
 export async function openGameCatalogDb() {

@@ -70,7 +70,8 @@ export const lreTrackViewSchema = z.looseObject({
   defeatAll: z.array(z.number()),
   allowedUnitsFilter: z.array(lreFilterSchema),
   unitsRestrictions: z.array(lreRestrictionSchema),
-  battles: z.array(lreBattleSchema),
+  // Ids of this track's battles in the lre-battles dataset (ordered); the battle bodies live there.
+  battleIds: z.array(z.string()),
   availableUnitIds: z.array(z.string()),
 })
 
@@ -88,8 +89,28 @@ export const lreViewSchema = z.looseObject({
   alpha: lreTrackViewSchema,
   beta: lreTrackViewSchema,
   gamma: lreTrackViewSchema,
+})
+
+// A served LRE battle (lre-battles dataset): the battle body plus its composite id and owning event/track,
+// so the bulky wave data is fetched independently of the lightweight lres list.
+export const lreBattleViewSchema = z.looseObject({
+  // The composite id "{lreId}-{track}-{number}" that a track's battleIds resolve to.
+  id: z.string(),
+  lreId: z.string(),
+  track: z.string(),
+  mapId: z.string(),
+  number: z.number(),
+  power: z.number(),
+  tier: z.number(),
+  disallowedFactions: z.array(z.string()),
+  waves: z.array(lreWaveSchema),
+})
+
+// The shared, event-independent LRE reward ladder (lre-common dataset): a single record.
+export const lreCommonSchema = z.looseObject({
+  id: z.string(),
   pointsMilestones: z.array(lrePointsMilestoneSchema),
   chestsMilestones: z.array(lreChestsMilestoneSchema),
-  shardsPerChest: z.number(),
   progression: lreProgressionSchema,
+  shardsPerChest: z.number(),
 })

@@ -58,6 +58,10 @@ const datasetData: Record<string, unknown> = {
     },
   ],
   lres: [{ id: "emperLucius", name: "Lucius" }],
+  "lre-battles": [
+    { id: "emperLucius-alpha-1", lreId: "emperLucius", track: "alpha" },
+  ],
+  "lre-common": [{ id: "lre-common", shardsPerChest: 1 }],
 }
 
 function createManifest(

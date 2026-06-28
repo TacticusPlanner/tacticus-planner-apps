@@ -21,6 +21,8 @@ export type {
   GameCatalogCampaignBattleView,
   GameCatalogLreTrackView,
   GameCatalogLreBattle,
+  GameCatalogLreBattleView,
+  GameCatalogLreCommon,
   GameCatalogLreWave,
   GameCatalogLreEnemy,
   GameCatalogFarmLocation,

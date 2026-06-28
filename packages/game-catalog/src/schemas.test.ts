@@ -38,7 +38,7 @@ const lreTrack = {
   defeatAll: [3],
   allowedUnitsFilter: [],
   unitsRestrictions: [],
-  battles: [],
+  battleIds: ["emperLucius-alpha-1"],
   availableUnitIds: [],
 }
 
@@ -54,9 +54,12 @@ const baseLre = {
   alpha: lreTrack,
   beta: lreTrack,
   gamma: lreTrack,
+}
+
+const lreCommon = {
+  id: "lre-common",
   pointsMilestones: [{ milestone: 1, cumulativePoints: 100, engramPayout: 25 }],
   chestsMilestones: [{ chestLevel: 1, engramCost: 60 }],
-  shardsPerChest: 1,
   progression: {
     unlock: 400,
     fourStars: 120,
@@ -65,6 +68,19 @@ const baseLre = {
     mythic: 250,
     twoBlueStars: 150,
   },
+  shardsPerChest: 1,
+}
+
+const lreBattle = {
+  id: "emperLucius-alpha-1",
+  lreId: "emperLucius",
+  track: "alpha",
+  mapId: "map1",
+  number: 1,
+  power: 1000,
+  tier: 1,
+  disallowedFactions: [],
+  waves: [{ round: 1, power: 500, enemies: [] }],
 }
 
 describe("catalog schemas", () => {
@@ -148,16 +164,20 @@ describe("catalog schemas", () => {
     expect(result.success).toBe(true)
   })
 
-  it("validates an LRE with typed milestones and progression", () => {
-    const result = datasetPayloadSchemas.lres.safeParse([baseLre])
-
-    expect(result.success).toBe(true)
+  it("validates the split lres, lre-battles, and lre-common payloads", () => {
+    expect(datasetPayloadSchemas.lres.safeParse([baseLre]).success).toBe(true)
+    expect(
+      datasetPayloadSchemas["lre-battles"].safeParse([lreBattle]).success
+    ).toBe(true)
+    expect(
+      datasetPayloadSchemas["lre-common"].safeParse([lreCommon]).success
+    ).toBe(true)
   })
 
-  it("rejects an LRE points milestone of the wrong type", () => {
-    const result = datasetPayloadSchemas.lres.safeParse([
+  it("rejects an lre-common points milestone of the wrong type", () => {
+    const result = datasetPayloadSchemas["lre-common"].safeParse([
       {
-        ...baseLre,
+        ...lreCommon,
         pointsMilestones: [
           { milestone: "one", cumulativePoints: 100, engramPayout: 25 },
         ],

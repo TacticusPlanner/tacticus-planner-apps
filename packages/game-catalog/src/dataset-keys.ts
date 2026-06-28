@@ -10,6 +10,8 @@ export const servedDatasetKeys = [
   "campaign-battles",
   "campaign-definitions",
   "lres",
+  "lre-battles",
+  "lre-common",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
