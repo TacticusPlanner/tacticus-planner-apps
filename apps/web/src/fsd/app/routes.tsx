@@ -1,8 +1,8 @@
 // This is the route-config module (it exports the `routes` array, not a component), so Fast Refresh's
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
-import type { ReactNode } from "react"
-import { Navigate, type RouteObject } from "react-router"
+import { Suspense, type ReactNode } from "react"
+import { Link, Navigate, Outlet, type RouteObject } from "react-router"
 import { GameCatalogProvider } from "@workspace/game-catalog"
 import { Spinner } from "@workspace/ui/components/spinner"
 
@@ -11,6 +11,7 @@ import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { UiKitPage } from "@/pages/ui-kit"
 import { LandingPage } from "@/pages/landing"
+import { RankLookupPage } from "@/pages/rank-lookup"
 
 import { GameCatalogInitGate } from "./game-catalog-init-gate"
 import { AuthControl } from "./providers/auth-control"
@@ -79,6 +80,39 @@ function HomeRoute() {
   )
 }
 
+// Public, no-auth layout for the /lookup/* reference pages. Provides the (anonymous) catalog and a light
+// header; the init gate covers the first catalog sync, Suspense covers lazy i18n namespace loading.
+function PublicLookupLayout() {
+  return (
+    <GameCatalogProvider baseUrl={apiBaseUrl}>
+      <GameCatalogInitGate>
+        <div className="flex min-h-svh flex-col bg-background text-foreground">
+          <header className="flex items-center justify-between border-b px-4 py-3 sm:px-6">
+            <Link to="/" className="font-semibold tracking-tight">
+              {/* app name from the translation namespace is loaded on the page; keep the chrome simple */}
+              Tacticus Planner
+            </Link>
+            <div className="flex items-center gap-2">
+              <AuthControl />
+              <LanguageSwitcher />
+              <ThemeSwitcher />
+            </div>
+          </header>
+          <Suspense
+            fallback={
+              <div className="flex flex-1 items-center justify-center">
+                <Spinner className="size-8 text-primary" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
+        </div>
+      </GameCatalogInitGate>
+    </GameCatalogProvider>
+  )
+}
+
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
 // are plain element wrappers — no loaders are needed yet.
 export const routes: RouteObject[] = [
@@ -91,6 +125,11 @@ export const routes: RouteObject[] = [
         <HomeRoute />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: "/lookup",
+    element: <PublicLookupLayout />,
+    children: [{ path: "ranks", element: <RankLookupPage /> }],
   },
   { path: "*", element: <Navigate replace to="/" /> },
 ]

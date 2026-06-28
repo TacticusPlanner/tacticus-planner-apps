@@ -30,7 +30,38 @@
   "landing": {
     "title": "Plan your Tacticus roster",
     "subtitle": "Track characters, upgrades, equipment, campaigns, and legendary events — all in one place.",
-    "getStarted": "Sign in / Get started"
+    "getStarted": "Sign in / Get started",
+    "lookups": {
+      "title": "Reference & lookups",
+      "subtitle": "Browse game data without an account.",
+      "ranks": {
+        "title": "Rank Lookup",
+        "description": "See the upgrades and materials needed to rank up any character."
+      }
+    }
+  },
+  "rankLookup": {
+    "title": "Rank Lookup",
+    "subtitle": "Pick a character and a rank range to see the required upgrades, materials, and where to farm them.",
+    "character": "Character",
+    "characterPlaceholder": "Select a character",
+    "noCharacter": "No character found.",
+    "rankRange": "Rank range",
+    "start": "From",
+    "end": "To",
+    "pointFive": "Include point-five upgrades",
+    "pointFiveShort": "Point five",
+    "pointFiveHint": "On reaching the target rank you can immediately apply the first upgrade of each stat. Enable this to include that top row.",
+    "materials": "Materials needed",
+    "distinctMaterials": "Distinct materials",
+    "totalMaterials": "Total materials",
+    "material": "Item",
+    "name": "Name",
+    "count": "Count",
+    "rarity": "Rarity",
+    "locations": "Farm locations",
+    "byRank": "Upgrades by rank",
+    "noUpgrades": "Select a character and a valid rank range to see required upgrades."
   },
   "language": {
     "label": "Language",

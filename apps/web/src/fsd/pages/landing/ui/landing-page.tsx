@@ -1,6 +1,13 @@
-import { LogIn } from "lucide-react"
+import { ArrowRight, ListChecks, LogIn } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
@@ -52,6 +59,41 @@ export function LandingPage() {
         <LogIn data-icon="inline-start" />
         {t("landing.getStarted")}
       </Button>
+
+      <section
+        className="flex w-full max-w-2xl flex-col gap-4"
+        data-testid="landing-lookups"
+      >
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold">
+            {t("landing.lookups.title")}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {t("landing.lookups.subtitle")}
+          </p>
+        </div>
+        {/* Public reference pages. Add future lookups (MoW, NPC, Upgrades, Equipment, …) here. */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            to="/lookup/ranks"
+            data-testid="landing-rank-lookup-link"
+            className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            <Card className="h-full text-left transition-colors hover:border-primary/50 hover:bg-accent/40">
+              <CardHeader>
+                <ListChecks className="size-5 text-primary" />
+                <CardTitle className="flex items-center justify-between gap-2">
+                  {t("landing.lookups.ranks.title")}
+                  <ArrowRight className="size-4 text-muted-foreground" />
+                </CardTitle>
+                <CardDescription>
+                  {t("landing.lookups.ranks.description")}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        </div>
+      </section>
     </main>
   )
 }
