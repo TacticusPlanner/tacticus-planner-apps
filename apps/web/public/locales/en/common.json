@@ -50,6 +50,11 @@
     "byRank": "Upgrades by rank",
     "noUpgrades": "Select a character and a valid rank range to see required upgrades."
   },
+  "nav": {
+    "home": "Home",
+    "rankLookup": "Rank Lookup",
+    "createGoal": "Create Goal"
+  },
   "language": {
     "label": "Language",
     "options": {

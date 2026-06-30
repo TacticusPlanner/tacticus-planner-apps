@@ -1,9 +1,8 @@
 // This is the route-config module (it exports the `routes` array, not a component), so Fast Refresh's
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
-import { Suspense, type ReactNode } from "react"
-import { Link, Navigate, Outlet, type RouteObject } from "react-router"
-import { GameCatalogProvider } from "@workspace/game-catalog"
+import type { ReactNode } from "react"
+import { Navigate, type RouteObject } from "react-router"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { InteractionStatus } from "@azure/msal-browser"
@@ -13,14 +12,7 @@ import { UiKitPage } from "@/pages/ui-kit"
 import { LandingPage } from "@/pages/landing"
 import { RankLookupPage } from "@/pages/rank-lookup"
 
-import { GameCatalogInitGate } from "./game-catalog-init-gate"
-import { AuthControl } from "./providers/auth-control"
-import { CatalogSyncStatusBadge } from "./providers/catalog-sync-status-badge"
-import { LanguageSwitcher } from "./providers/language-switcher"
-import { ThemeSwitcher } from "./providers/theme-switcher"
-import { TourButton } from "./providers/tour-button"
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+import { AppShell } from "./layout/app-shell"
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
@@ -58,78 +50,24 @@ function AuthCallbackRoute() {
   return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
 }
 
-function HomeHeaderActions() {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <CatalogSyncStatusBadge />
-      <AuthControl />
-      <TourButton />
-      <LanguageSwitcher />
-      <ThemeSwitcher />
-    </div>
-  )
-}
-
-function HomeRoute() {
-  return (
-    <GameCatalogProvider baseUrl={apiBaseUrl}>
-      <GameCatalogInitGate>
-        <UiKitPage headerAction={<HomeHeaderActions />} />
-      </GameCatalogInitGate>
-    </GameCatalogProvider>
-  )
-}
-
-// Public, no-auth layout for the /lookup/* reference pages. Provides the (anonymous) catalog and a light
-// header; the init gate covers the first catalog sync, Suspense covers lazy i18n namespace loading.
-function PublicLookupLayout() {
-  return (
-    <GameCatalogProvider baseUrl={apiBaseUrl}>
-      <GameCatalogInitGate>
-        <div className="flex min-h-svh flex-col bg-background text-foreground">
-          <header className="flex items-center justify-between border-b px-4 py-3 sm:px-6">
-            <Link to="/" className="font-semibold tracking-tight">
-              {/* app name from the translation namespace is loaded on the page; keep the chrome simple */}
-              Tacticus Planner
-            </Link>
-            <div className="flex items-center gap-2">
-              <AuthControl />
-              <LanguageSwitcher />
-              <ThemeSwitcher />
-            </div>
-          </header>
-          <Suspense
-            fallback={
-              <div className="flex flex-1 items-center justify-center">
-                <Spinner className="size-8 text-primary" />
-              </div>
-            }
-          >
-            <Outlet />
-          </Suspense>
-        </div>
-      </GameCatalogInitGate>
-    </GameCatalogProvider>
-  )
-}
-
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
 // are plain element wrappers — no loaders are needed yet.
 export const routes: RouteObject[] = [
   { path: "/", element: <LandingRoute /> },
   { path: "/auth/callback", element: <AuthCallbackRoute /> },
   {
-    path: "/home",
-    element: (
-      <ProtectedRoute>
-        <HomeRoute />
-      </ProtectedRoute>
-    ),
+    element: <AppShell />,
+    children: [
+      {
+        path: "/home",
+        element: (
+          <ProtectedRoute>
+            <UiKitPage />
+          </ProtectedRoute>
+        ),
+      },
+      { path: "/lookup/ranks", element: <RankLookupPage /> },
+      { path: "*", element: <Navigate replace to="/" /> },
+    ],
   },
-  {
-    path: "/lookup",
-    element: <PublicLookupLayout />,
-    children: [{ path: "ranks", element: <RankLookupPage /> }],
-  },
-  { path: "*", element: <Navigate replace to="/" /> },
 ]

@@ -1,19 +1,6 @@
-// Catalog rarity values, lowest → highest. Used for ordering and colour.
-export const rarityOrder = [
-  "Common",
-  "Uncommon",
-  "Rare",
-  "Epic",
-  "Legendary",
-  "Mythic",
-] as const
+export { Rarity, rarityOrder, rarityRank } from "@workspace/game-catalog"
 
-export const rarityRank = (rarity: string): number => {
-  const index = (rarityOrder as readonly string[]).indexOf(rarity)
-  return index === -1 ? 0 : index
-}
-
-// Tailwind text-colour class per rarity (works in light/dark via the configured palette).
+// Tailwind text-colour class per rarity (app-specific UI, not a game concept).
 const rarityTextClass: Record<string, string> = {
   Common: "text-zinc-500 dark:text-zinc-400",
   Uncommon: "text-green-600 dark:text-green-400",

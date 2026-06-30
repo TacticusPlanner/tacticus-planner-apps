@@ -1,4 +1,6 @@
 {
+  "appName": "Tacticus Planner",
+  "authError": "No se pudo completar la autenticación. Inténtalo de nuevo.",
   "title": "Planifica tu plantilla de Tacticus",
   "subtitle": "Controla personajes, mejoras, equipo, campañas y eventos legendarios — todo en un solo lugar.",
   "getStarted": "Iniciar sesión / Empezar",

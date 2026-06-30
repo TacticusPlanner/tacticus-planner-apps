@@ -19,8 +19,9 @@ import {
 import type { FactionGroup } from "@/entities/faction"
 import { rankAt, rankIndex, rankOrder, type RankId } from "@/entities/rank"
 
+import { RankBadge } from "@/shared/ui"
+
 import { CharacterCombobox } from "./character-combobox"
-import { RankBadge } from "./rank-badge"
 
 const maxIndex = rankOrder.length - 1
 

@@ -38,19 +38,30 @@ from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adama
    cases (invalid ranges, missing data, special toggles). Note which inputs are **user state** vs **static
    catalog data**.
 3. **Separate behavior from UI** — list what must be preserved vs the V1 UI choices that should be redesigned.
-4. **Auth boundary** — if the page needs no user data, make it **public**: add it under a no-auth layout
-   route (e.g. `/lookup/*`) that provides `GameCatalogProvider` (the catalog endpoints are anonymous). Only
-   gate behind `ProtectedRoute` if it reads user state.
+4. **Auth boundary** — if the page needs no user data, make it **public**: add it as a child of the shared
+   `AppShell` layout route in `app/routes.tsx` (the shell wraps `GameCatalogProvider`). Only gate behind
+   `ProtectedRoute` if it reads user state. The shell handles both anonymous and signed-in users.
 5. **Design desktop & mobile separately** — wider/denser tables, sliders, side-by-side panels on desktop;
-   step-flow with selects/steppers, cards, and accordions on mobile. Switch with `useIsMobile()`.
+   step-flow with selects/steppers, cards, and accordions on mobile. Implement with the **orchestrator +
+   sub-page pattern**:
+   - `pages/<page>/ui/<page>-page.tsx` — business logic only (data hooks, calc, derived state); renders
+     `isMobile ? <PageMobilePage {...props}/> : <PageDesktopPage {...props}/>`
+   - `pages/<page>/ui/desktop/<page>-desktop-page.tsx` — desktop layout (sticky sidebar controls, tables, etc.)
+   - `pages/<page>/ui/mobile/<page>-mobile-page.tsx` — mobile layout (stacked, accordions, cards)
+     Each sub-page receives a flat props interface with computed data and callbacks — no `isMobile` prop.
 6. **Map game entities to i18n namespaces** — dedicated namespaces keyed by **entity id**: `characters:<id>`,
-   `ranks:<id>`, `upgrades:<id>`, `campaignLocations:<id>`, … Generate the `en` JSON from the catalog source
-   (`scripts/generate-game-data.mjs` reads the sibling API `Data/**`); other languages can be empty `{}`
-   files that fall back to `en`. Resolve with `t('ns:'+id, { defaultValue: catalogName })`. Load namespaces
-   lazily via `useTranslation([...])` (don't bloat the global `ns`).
-7. **Map icons/assets by entity id** — derive where possible (`upgrade` → `ui_icon_upgrade_{id}.png`); for
-   non-derivable ids generate a map from the catalog (`characterId → roundIcon`). Put helpers in the entity
-   slices (`entities/<x>/lib/<x>-icon.ts`). Use an `<img onError>` fallback component.
+   `ranks:<id>`, `upgrades:<id>`, `campaignLocations:<id>`, … Generate the `en` JSON from the catalog source;
+   other languages can be empty `{}` files that fall back to `en`. Resolve with
+   `t('ns:'+id, { defaultValue: catalogName })`. Load namespaces lazily via `useTranslation([...])`.
+7. **Map icons/assets by entity id** — all icon-helper functions live in **`@workspace/game-catalog`**
+   (`packages/game-catalog/src/game-entities/icons.ts`); entity slices re-export them. Rules:
+   - Upgrade icons: `upgradeIcon(id)` → derives path directly from id; always valid.
+   - Rank icons: `rankIcon(id)` → `id.toLowerCase() + ".png"` — rename V1 Mythical assets to `Adamantine*.png`.
+   - Character icons: `characterIcon(id)` → derives `camelCase→snake_case` slug; 32/112 characters diverge and
+     need an overrides map (`character-icon-overrides.ts`). No generator script — commit the overrides once.
+   - Campaign icons: `campaignIcon(groupId, difficulty)` → standard and event campaigns both covered; event
+     images show the defending faction (Y in X-vs-Y groupId).
+   - Use `<EntityIcon src fallback>` (`shared/ui/entity-icon.tsx`) to handle missing assets gracefully.
 8. **Identify gaps** — copy missing assets from V1 `src/assets/images/**` into `public/snowprint_assets/**`;
    document anything genuinely missing and choose the cleanest fallback (text badge, generic icon).
 9. **Implement with FSD + reuse** — pure calc in `features/<page>/lib` (decoupled from catalog types via
@@ -86,9 +97,11 @@ from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adama
   show campaign **farm locations**. The catalog (`characters[].rankUpUpgrades`, `upgrades[].recipe`/
   `farmLocations`, `campaign-battles`) supplies all of it → **public, no user data**. V1's user
   `campaignsProgress` (unlocked-location highlighting / farm-time estimates) is intentionally **dropped**.
-- **Code**: calc in `features/rank-lookup/lib/rank-lookup-calc.ts`; rank model + icons in `entities/rank`;
-  icon helpers in `entities/{character,upgrade,campaign}`; page in `pages/rank-lookup` (desktop range
-  **slider** + table; mobile selects + accordion/cards); public `/lookup` layout in `app/routes.tsx`.
-- **i18n/assets**: `scripts/generate-game-data.mjs` writes `characters/upgrades/campaignLocations/ranks`
-  namespaces + `entities/character/model/character-icons.json`; copied V1 `ranks/` (incl. Adamantine
-  mythical) and `campaigns/` into `public/snowprint_assets/`.
+- **Code**: calc in `features/rank-lookup/lib/rank-lookup-calc.ts`; game enums + icon helpers in
+  `@workspace/game-catalog` (`game-entities/`), re-exported from entity slices; page in `pages/rank-lookup`
+  with orchestrator `rank-lookup-page.tsx` → `desktop/rank-lookup-desktop-page.tsx` (slider + table) and
+  `mobile/rank-lookup-mobile-page.tsx` (selects + accordion/cards); wired via `AppShell` in `app/routes.tsx`.
+- **i18n/assets**: `en/` locale files for `characters/upgrades/campaignLocations/ranks/factions` generated
+  manually from catalog; other languages are empty `{}` (en fallback). Rank assets renamed to `{RankId}.png`
+  (e.g. `adamantine1.png`). Character icons derived from camelCase id → snake_case with `character-icon-overrides.ts`
+  for the 32 divergent slugs.

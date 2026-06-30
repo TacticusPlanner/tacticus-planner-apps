@@ -19,7 +19,7 @@ void i18n
     backend: {
       loadPath: translationLoadPath,
     },
-    defaultNS: "translation",
+    defaultNS: "common",
     detection: {
       caches: ["localStorage"],
       lookupLocalStorage: "i18nextLng",
@@ -30,7 +30,7 @@ void i18n
       escapeValue: false,
     },
     load: "languageOnly",
-    ns: ["translation"],
+    ns: ["common"],
     react: {
       useSuspense: true,
     },

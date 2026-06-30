@@ -1,36 +1,20 @@
-import { rankIndex, rankOrder, type RankId } from "@/entities/rank"
+import { rankIndex, rankOrder, type RankId } from "@workspace/game-catalog"
 
-// Structural shapes (a subset of the catalog records) so the calc is decoupled from the exact
-// @workspace/game-catalog types and trivially testable.
-export type RankUpEntry = { rank: string; upgradeIds: string[] }
-export type CharacterLike = {
-  id: string
-  name: string
-  rankUpUpgrades: RankUpEntry[]
-}
-export type RecipeIngredient = {
-  material: string
-  count: number
-  recipe?: RecipeIngredient[] | null
-}
-export type UpgradeLike = {
-  id: string
-  label: string
-  rarity: string
-  stat: string
-  craftable: boolean
-  recipe: RecipeIngredient[]
-}
+import type {
+  BaseMaterialNeed,
+  CharacterLike,
+  RankUpGroup,
+  UpgradeLike,
+} from "./rank-lookup-calc.types"
 
-export type RankUpGroup = {
-  fromRank: RankId
-  toRank: RankId
-  upgradeIds: string[]
-  /** True for the extra "point five" group shown at the target rank. */
-  pointFive?: boolean
-}
-
-export type BaseMaterialNeed = { id: string; count: number }
+export type {
+  BaseMaterialNeed,
+  CharacterLike,
+  RecipeIngredient,
+  RankUpEntry,
+  RankUpGroup,
+  UpgradeLike,
+} from "./rank-lookup-calc.types"
 
 const rankUpgradeMap = (character: CharacterLike): Map<string, string[]> =>
   new Map(

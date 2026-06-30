@@ -1,8 +1,8 @@
-import { upgradeIcon, upgradeIconFallback } from "@/entities/upgrade"
+import { upgradeIcon, upgradeIconFallback } from "@workspace/game-catalog"
 
 import { EntityIcon } from "./entity-icon"
 
-export function MaterialIcon({
+export function UpgradeIcon({
   id,
   className = "size-8",
 }: {

@@ -19,7 +19,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { characterIcon } from "@/entities/character"
 import type { FactionGroup } from "@/entities/faction"
 
-import { EntityIcon } from "./entity-icon"
+import { EntityIcon } from "@/shared/ui"
 
 export function CharacterCombobox({
   groups,

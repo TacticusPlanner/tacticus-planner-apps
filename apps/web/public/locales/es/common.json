@@ -50,6 +50,11 @@
     "byRank": "Mejoras por rango",
     "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias."
   },
+  "nav": {
+    "home": "Inicio",
+    "rankLookup": "Consulta de rango",
+    "createGoal": "Crear objetivo"
+  },
   "language": {
     "label": "Idioma",
     "options": {

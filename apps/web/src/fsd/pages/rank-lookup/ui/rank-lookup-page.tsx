@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useDatasetRecords } from "@workspace/game-catalog"
-import { Skeleton } from "@workspace/ui/components/skeleton"
-import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { campaignIcon } from "@/entities/campaign"
@@ -18,18 +16,18 @@ import {
   type UpgradeLike,
 } from "@/features/rank-lookup"
 
-import { RankLookupControls } from "./rank-lookup-controls"
-import {
-  RankLookupResults,
-  type MaterialView,
-  type RankGroupView,
-  type RecipeView,
-  type UpgradeView,
+import { RankLookupDesktopPage } from "./desktop/rank-lookup-desktop-page"
+import { RankLookupMobilePage } from "./mobile/rank-lookup-mobile-page"
+import type {
+  MaterialView,
+  RankGroupView,
+  RecipeView,
+  UpgradeView,
 } from "./rank-lookup-results"
 
 export function RankLookupPage() {
   const { t } = useTranslation([
-    "translation",
+    "common",
     "ranks",
     "characters",
     "factions",
@@ -88,7 +86,6 @@ export function RankLookupPage() {
   const [rankEnd, setRankEnd] = useState<RankId>(rankAt(1))
   const [pointFive, setPointFive] = useState(false)
 
-  // Default to the first character (derived, not stored) until the user picks one.
   const characterId = selectedCharacterId ?? characterGroups[0]?.members[0]?.id
 
   const character = characters.data.find((c) => c.id === characterId) as
@@ -193,58 +190,37 @@ export function RankLookupPage() {
     (characters.loading && characters.data.length === 0) ||
     (upgrades.loading && upgrades.data.length === 0)
 
-  return (
-    <TooltipProvider>
-      <main
-        className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 sm:py-10"
-        data-testid="rank-lookup-page"
-      >
-        <header className="flex flex-col gap-1">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {t("rankLookup.title")}
-          </h1>
-          <p className="text-muted-foreground">{t("rankLookup.subtitle")}</p>
-        </header>
+  const sharedProps = {
+    characterGroups,
+    characterId,
+    rankStart,
+    rankEnd,
+    pointFive,
+    loading,
+    materials,
+    groups,
+    onCharacterChange: setSelectedCharacterId,
+    onRangeChange: setRange,
+    onPointFiveChange: setPointFive,
+  }
 
-        {loading ? (
-          <RankLookupSkeleton />
-        ) : (
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-            <div className="lg:sticky lg:top-6 lg:w-80 lg:shrink-0">
-              <RankLookupControls
-                characterGroups={characterGroups}
-                characterId={characterId}
-                onCharacterChange={setSelectedCharacterId}
-                rankStart={rankStart}
-                rankEnd={rankEnd}
-                onRangeChange={setRange}
-                pointFive={pointFive}
-                onPointFiveChange={setPointFive}
-                isMobile={isMobile}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <RankLookupResults
-                materials={materials}
-                groups={groups}
-                isMobile={isMobile}
-              />
-            </div>
-          </div>
-        )}
-      </main>
-    </TooltipProvider>
-  )
-}
-
-function RankLookupSkeleton() {
   return (
-    <div className="flex flex-col gap-8 lg:flex-row">
-      <Skeleton className="h-48 lg:w-80" />
-      <div className="flex flex-1 flex-col gap-4">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    </div>
+    <main
+      className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 sm:py-10"
+      data-testid="rank-lookup-page"
+    >
+      <header className="flex flex-col gap-1">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          {t("rankLookup.title")}
+        </h1>
+        <p className="text-muted-foreground">{t("rankLookup.subtitle")}</p>
+      </header>
+
+      {isMobile ? (
+        <RankLookupMobilePage {...sharedProps} />
+      ) : (
+        <RankLookupDesktopPage {...sharedProps} />
+      )}
+    </main>
   )
 }

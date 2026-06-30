@@ -16,9 +16,7 @@ import { useMsal } from "@azure/msal-react"
 import { loginRequest } from "@/shared/auth"
 
 export function LandingPage() {
-  // Landing-specific copy lives in its own lightweight "landing" namespace; shared keys (app name, auth
-  // error) stay in the default "translation" namespace and are referenced with an explicit prefix.
-  const { t } = useTranslation(["landing", "translation"])
+  const { t } = useTranslation("landing")
   const { inProgress, instance } = useMsal()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
 
@@ -33,7 +31,7 @@ export function LandingPage() {
         console.error("[MSAL] sign-in failed", error)
       }
 
-      toast.error(t("translation:auth.error"))
+      toast.error(t("authError"))
     })
   }
 
@@ -44,7 +42,7 @@ export function LandingPage() {
     >
       <div className="flex max-w-2xl flex-col gap-4">
         <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-          {t("translation:app.name")}
+          {t("appName")}
         </p>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           {t("title")}

@@ -29,10 +29,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { rarityClass } from "@/entities/upgrade"
 import type { RankId } from "@/entities/rank"
-
-import { EntityIcon } from "./entity-icon"
-import { MaterialIcon } from "./material-icon"
-import { RankBadge } from "./rank-badge"
+import { EntityIcon, RankBadge, UpgradeIcon } from "@/shared/ui"
 
 export type LocationView = { battleId: string; label: string; icon?: string }
 export type MaterialView = {
@@ -176,7 +173,7 @@ function MaterialsTable({ materials }: { materials: MaterialView[] }) {
           {materials.map((material) => (
             <TableRow key={material.id}>
               <TableCell>
-                <MaterialIcon id={material.id} />
+                <UpgradeIcon id={material.id} />
               </TableCell>
               <TableCell className="font-medium">{material.label}</TableCell>
               <TableCell className="text-right tabular-nums">
@@ -205,7 +202,7 @@ function MaterialsCards({ materials }: { materials: MaterialView[] }) {
         <Card key={material.id} className="gap-2 py-3">
           <CardContent className="flex flex-col gap-2 px-3">
             <div className="flex items-center gap-3">
-              <MaterialIcon id={material.id} className="size-10" />
+              <UpgradeIcon id={material.id} className="size-10" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{material.label}</p>
                 <p className={cn("text-sm", rarityClass(material.rarity))}>
@@ -303,7 +300,7 @@ function StatColumn({
 
 function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
   if (upgrade.recipe.length === 0) {
-    return <MaterialIcon id={upgrade.id} />
+    return <UpgradeIcon id={upgrade.id} />
   }
   return (
     <Popover>
@@ -313,12 +310,12 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
           aria-label={upgrade.label}
           className="rounded-sm ring-offset-background hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
-          <MaterialIcon id={upgrade.id} />
+          <UpgradeIcon id={upgrade.id} />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
         <div className="flex items-center gap-2 pb-2">
-          <MaterialIcon id={upgrade.id} />
+          <UpgradeIcon id={upgrade.id} />
           <span className={cn("font-medium", rarityClass(upgrade.rarity))}>
             {upgrade.label}
           </span>
@@ -346,7 +343,7 @@ function RecipeTree({
       {items.map((item) => (
         <li key={item.id} className="flex flex-col gap-1">
           <div className="flex items-center gap-2 text-sm">
-            <MaterialIcon id={item.id} className="size-6" />
+            <UpgradeIcon id={item.id} className="size-6" />
             <span className={rarityClass(item.rarity)}>{item.label}</span>
             <span className="text-muted-foreground tabular-nums">
               ×{item.count}

@@ -50,6 +50,11 @@
     "byRank": "Verbesserungen nach Rang",
     "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen."
   },
+  "nav": {
+    "home": "Startseite",
+    "rankLookup": "Rang-Nachschlag",
+    "createGoal": "Ziel erstellen"
+  },
   "language": {
     "label": "Sprache",
     "options": {

@@ -50,6 +50,11 @@
     "byRank": "Améliorations par rang",
     "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires."
   },
+  "nav": {
+    "home": "Accueil",
+    "rankLookup": "Recherche de rang",
+    "createGoal": "Créer un objectif"
+  },
   "language": {
     "label": "Langue",
     "options": {

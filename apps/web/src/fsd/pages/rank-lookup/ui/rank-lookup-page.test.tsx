@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 // The page must work for unauthenticated users with no user data — it reads only the public catalog.
 // (No MSAL / user-state mocks are needed, which is the point: nothing user-specific is imported.)
@@ -83,19 +84,28 @@ const records: Record<string, unknown[]> = {
   "campaign-battles": [],
 }
 
-vi.mock("@workspace/game-catalog", () => ({
-  useDatasetRecords: (key: string) => ({
-    data: records[key] ?? [],
-    loading: false,
-    error: null,
-  }),
-}))
+vi.mock("@workspace/game-catalog", async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import("@workspace/game-catalog")>()
+  return {
+    ...original,
+    useDatasetRecords: (key: string) => ({
+      data: records[key] ?? [],
+      loading: false,
+      error: null,
+    }),
+  }
+})
 
 import { RankLookupPage } from "./rank-lookup-page"
 
 describe("RankLookupPage", () => {
   it("renders publicly and lists the required base materials for the default range", () => {
-    render(<RankLookupPage />)
+    render(
+      <TooltipProvider>
+        <RankLookupPage />
+      </TooltipProvider>
+    )
 
     expect(screen.getByTestId("rank-lookup-page")).toBeInTheDocument()
     // Default character + the Stone1 → Stone2 range surfaces that rank's upgrades as base materials.

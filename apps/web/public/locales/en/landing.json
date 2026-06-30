@@ -1,4 +1,6 @@
 {
+  "appName": "Tacticus Planner",
+  "authError": "Authentication could not be completed. Please try again.",
   "title": "Plan your Tacticus roster",
   "subtitle": "Track characters, upgrades, equipment, campaigns, and legendary events — all in one place.",
   "getStarted": "Sign in / Get started",
