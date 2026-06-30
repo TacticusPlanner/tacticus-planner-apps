@@ -54,11 +54,13 @@ from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adama
    other languages can be empty `{}` files that fall back to `en`. Resolve with
    `t('ns:'+id, { defaultValue: catalogName })`. Load namespaces lazily via `useTranslation([...])`.
 7. **Map icons/assets by entity id** — all icon-helper functions live in **`@workspace/game-catalog`**
-   (`packages/game-catalog/src/game-entities/icons.ts`); entity slices re-export them. Rules:
+   (`packages/game-catalog/src/game-entities/icons.ts`). Import them directly from `@workspace/game-catalog`
+   in consuming code (pages, features, shared). Do **not** create entity slices that are pure re-exports — if
+   an entity slice has no app-specific logic, delete it and point consumers at the package. Rules:
    - Upgrade icons: `upgradeIcon(id)` → derives path directly from id; always valid.
    - Rank icons: `rankIcon(id)` → `id.toLowerCase() + ".png"` — rename V1 Mythical assets to `Adamantine*.png`.
-   - Character icons: `characterIcon(id)` → derives `camelCase→snake_case` slug; 32/112 characters diverge and
-     need an overrides map (`character-icon-overrides.ts`). No generator script — commit the overrides once.
+   - Character icons: `characterIcon(id)` → derives `camelCase→snake_case` slug; ~30 characters diverge and
+     need an overrides map (`character-icon-overrides.ts`); commit the overrides once.
    - Campaign icons: `campaignIcon(groupId, difficulty)` → standard and event campaigns both covered; event
      images show the defending faction (Y in X-vs-Y groupId).
    - Use `<EntityIcon src fallback>` (`shared/ui/entity-icon.tsx`) to handle missing assets gracefully.
@@ -98,7 +100,7 @@ from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adama
   `farmLocations`, `campaign-battles`) supplies all of it → **public, no user data**. V1's user
   `campaignsProgress` (unlocked-location highlighting / farm-time estimates) is intentionally **dropped**.
 - **Code**: calc in `features/rank-lookup/lib/rank-lookup-calc.ts`; game enums + icon helpers in
-  `@workspace/game-catalog` (`game-entities/`), re-exported from entity slices; page in `pages/rank-lookup`
+  `@workspace/game-catalog` (`game-entities/`), imported directly (no entity re-export shims); page in `pages/rank-lookup`
   with orchestrator `rank-lookup-page.tsx` → `desktop/rank-lookup-desktop-page.tsx` (slider + table) and
   `mobile/rank-lookup-mobile-page.tsx` (selects + accordion/cards); wired via `AppShell` in `app/routes.tsx`.
 - **i18n/assets**: `en/` locale files for `characters/upgrades/campaignLocations/ranks/factions` generated

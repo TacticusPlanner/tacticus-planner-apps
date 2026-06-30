@@ -27,12 +27,13 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 
+import type { RankId } from "@workspace/game-catalog"
+
 import { rarityClass } from "@/entities/upgrade"
-import type { RankId } from "@/entities/rank"
 import { EntityIcon, RankBadge, UpgradeIcon } from "@/shared/ui"
 
 export type LocationView = { battleId: string; label: string; icon?: string }
-export type MaterialView = {
+export type BaseUpgradeView = {
   id: string
   count: number
   label: string
@@ -62,17 +63,17 @@ export type RankGroupView = {
 }
 
 export function RankLookupResults({
-  materials,
+  baseUpgrades,
   groups,
   isMobile,
 }: {
-  materials: MaterialView[]
+  baseUpgrades: BaseUpgradeView[]
   groups: RankGroupView[]
   isMobile: boolean
 }) {
   const { t } = useTranslation()
 
-  if (materials.length === 0) {
+  if (baseUpgrades.length === 0) {
     return (
       <p className="py-10 text-center text-muted-foreground">
         {t("rankLookup.noUpgrades")}
@@ -80,27 +81,29 @@ export function RankLookupResults({
     )
   }
 
-  const totalCount = materials.reduce((sum, m) => sum + m.count, 0)
+  const totalCount = baseUpgrades.reduce((sum, m) => sum + m.count, 0)
 
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-3 sm:max-w-md">
         <SummaryCard
-          label={t("rankLookup.distinctMaterials")}
-          value={materials.length}
+          label={t("rankLookup.distinctBaseUpgrades")}
+          value={baseUpgrades.length}
         />
         <SummaryCard
-          label={t("rankLookup.totalMaterials")}
+          label={t("rankLookup.totalBaseUpgrades")}
           value={totalCount}
         />
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{t("rankLookup.materials")}</h2>
+        <h2 className="text-lg font-semibold">
+          {t("rankLookup.baseUpgrades")}
+        </h2>
         {isMobile ? (
-          <MaterialsCards materials={materials} />
+          <BaseUpgradesCards baseUpgrades={baseUpgrades} />
         ) : (
-          <MaterialsTable materials={materials} />
+          <BaseUpgradesTable baseUpgrades={baseUpgrades} />
         )}
       </section>
 
@@ -153,14 +156,20 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
   )
 }
 
-function MaterialsTable({ materials }: { materials: MaterialView[] }) {
+function BaseUpgradesTable({
+  baseUpgrades,
+}: {
+  baseUpgrades: BaseUpgradeView[]
+}) {
   const { t } = useTranslation()
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">{t("rankLookup.material")}</TableHead>
+            <TableHead className="w-12">
+              {t("rankLookup.baseUpgrade")}
+            </TableHead>
             <TableHead>{t("rankLookup.name")}</TableHead>
             <TableHead className="w-20 text-right">
               {t("rankLookup.count")}
@@ -170,22 +179,22 @@ function MaterialsTable({ materials }: { materials: MaterialView[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {materials.map((material) => (
-            <TableRow key={material.id}>
+          {baseUpgrades.map((upgrade) => (
+            <TableRow key={upgrade.id}>
               <TableCell>
-                <UpgradeIcon id={material.id} />
+                <UpgradeIcon id={upgrade.id} />
               </TableCell>
-              <TableCell className="font-medium">{material.label}</TableCell>
+              <TableCell className="font-medium">{upgrade.label}</TableCell>
               <TableCell className="text-right tabular-nums">
-                {material.count}
+                {upgrade.count}
               </TableCell>
               <TableCell
-                className={cn("font-medium", rarityClass(material.rarity))}
+                className={cn("font-medium", rarityClass(upgrade.rarity))}
               >
-                {material.rarity}
+                {upgrade.rarity}
               </TableCell>
               <TableCell>
-                <LocationChips locations={material.locations} />
+                <LocationChips locations={upgrade.locations} />
               </TableCell>
             </TableRow>
           ))}
@@ -195,25 +204,29 @@ function MaterialsTable({ materials }: { materials: MaterialView[] }) {
   )
 }
 
-function MaterialsCards({ materials }: { materials: MaterialView[] }) {
+function BaseUpgradesCards({
+  baseUpgrades,
+}: {
+  baseUpgrades: BaseUpgradeView[]
+}) {
   return (
     <div className="flex flex-col gap-2">
-      {materials.map((material) => (
-        <Card key={material.id} className="gap-2 py-3">
+      {baseUpgrades.map((upgrade) => (
+        <Card key={upgrade.id} className="gap-2 py-3">
           <CardContent className="flex flex-col gap-2 px-3">
             <div className="flex items-center gap-3">
-              <UpgradeIcon id={material.id} className="size-10" />
+              <UpgradeIcon id={upgrade.id} className="size-10" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{material.label}</p>
-                <p className={cn("text-sm", rarityClass(material.rarity))}>
-                  {material.rarity}
+                <p className="truncate font-medium">{upgrade.label}</p>
+                <p className={cn("text-sm", rarityClass(upgrade.rarity))}>
+                  {upgrade.rarity}
                 </p>
               </div>
               <span className="text-lg font-semibold tabular-nums">
-                ×{material.count}
+                ×{upgrade.count}
               </span>
             </div>
-            <LocationChips locations={material.locations} />
+            <LocationChips locations={upgrade.locations} />
           </CardContent>
         </Card>
       ))}

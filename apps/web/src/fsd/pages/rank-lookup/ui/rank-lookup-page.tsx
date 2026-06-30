@@ -1,14 +1,18 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useDatasetRecords } from "@workspace/game-catalog"
+import {
+  campaignIcon,
+  firstRank,
+  rankAt,
+  type RankId,
+  useDatasetRecords,
+} from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { campaignIcon } from "@/entities/campaign"
 import { groupByFaction } from "@/entities/faction"
-import { firstRank, rankAt, type RankId } from "@/entities/rank"
 import { rarityRank } from "@/entities/upgrade"
 import {
-  aggregateBaseMaterials,
+  aggregateBaseUpgrades,
   groupUpgradesByRank,
   rankUpUpgradeIds,
   type CharacterLike,
@@ -19,7 +23,7 @@ import {
 import { RankLookupDesktopPage } from "./desktop/rank-lookup-desktop-page"
 import { RankLookupMobilePage } from "./mobile/rank-lookup-mobile-page"
 import type {
-  MaterialView,
+  BaseUpgradeView,
   RankGroupView,
   RecipeView,
   UpgradeView,
@@ -43,12 +47,16 @@ export function RankLookupPage() {
   const upgradesById = useMemo(
     () =>
       new Map(
-        upgrades.data.map((u) => [
-          u.id,
-          u as unknown as UpgradeLike & {
-            farmLocations?: { battleId: string }[]
-          },
-        ])
+        upgrades.data.map((u) => {
+          const raw = u as unknown as Record<string, unknown>
+          return [
+            u.id,
+            {
+              ...raw,
+              composite: raw["craftable"] as boolean,
+            } as UpgradeLike & { farmLocations?: { battleId: string }[] },
+          ]
+        })
       ),
     [upgrades.data]
   )
@@ -145,7 +153,7 @@ export function RankLookupPage() {
     )
   }, [character, rankStart, rankEnd, pointFive, upgradesById, t, resolveRecipe])
 
-  const materials = useMemo<MaterialView[]>(() => {
+  const baseUpgrades = useMemo<BaseUpgradeView[]>(() => {
     if (!character) return []
     const upgradeIds = rankUpUpgradeIds(
       character,
@@ -153,7 +161,7 @@ export function RankLookupPage() {
       rankEnd,
       pointFive
     )
-    const needs = aggregateBaseMaterials(upgradeIds, upgradesById)
+    const needs = aggregateBaseUpgrades(upgradeIds, upgradesById)
 
     return needs
       .map((need) => {
@@ -197,7 +205,7 @@ export function RankLookupPage() {
     rankEnd,
     pointFive,
     loading,
-    materials,
+    baseUpgrades,
     groups,
     onCharacterChange: setSelectedCharacterId,
     onRangeChange: setRange,
@@ -209,12 +217,7 @@ export function RankLookupPage() {
       className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 sm:py-10"
       data-testid="rank-lookup-page"
     >
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {t("rankLookup.title")}
-        </h1>
-        <p className="text-muted-foreground">{t("rankLookup.subtitle")}</p>
-      </header>
+      <p className="text-muted-foreground">{t("rankLookup.subtitle")}</p>
 
       {isMobile ? (
         <RankLookupMobilePage {...sharedProps} />

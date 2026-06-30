@@ -1,11 +1,11 @@
 export {
   rankUpUpgradeIds,
   groupUpgradesByRank,
-  aggregateBaseMaterials,
+  aggregateBaseUpgrades,
   type CharacterLike,
   type UpgradeLike,
   type RecipeIngredient,
   type RankUpEntry,
   type RankUpGroup,
-  type BaseMaterialNeed,
+  type BaseUpgradeNeed,
 } from "./lib/rank-lookup-calc"

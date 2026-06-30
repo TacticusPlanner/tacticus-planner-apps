@@ -100,7 +100,7 @@ vi.mock("@workspace/game-catalog", async (importOriginal) => {
 import { RankLookupPage } from "./rank-lookup-page"
 
 describe("RankLookupPage", () => {
-  it("renders publicly and lists the required base materials for the default range", () => {
+  it("renders publicly and lists the required base upgrades for the default range", () => {
     render(
       <TooltipProvider>
         <RankLookupPage />

@@ -22,7 +22,8 @@ export interface UpgradeLike {
   label: string
   rarity: string
   stat: string
-  craftable: boolean
+  /** True for composite upgrades that require crafting from ingredient upgrades. */
+  composite: boolean
   recipe: RecipeIngredient[]
 }
 
@@ -34,7 +35,7 @@ export interface RankUpGroup {
   pointFive?: boolean
 }
 
-export interface BaseMaterialNeed {
+export interface BaseUpgradeNeed {
   id: string
   count: number
 }

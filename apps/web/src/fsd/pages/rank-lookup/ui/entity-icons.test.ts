@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { campaignIcon } from "@/entities/campaign"
-import { characterIcon } from "@/entities/character"
-import { rankIcon } from "@/entities/rank"
+import { campaignIcon, characterIcon, rankIcon } from "@workspace/game-catalog"
+
 import { upgradeIcon } from "@/entities/upgrade"
 
 describe("entity icon mapping", () => {

@@ -16,8 +16,14 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
+import {
+  rankAt,
+  rankIndex,
+  rankOrder,
+  type RankId,
+} from "@workspace/game-catalog"
+
 import type { FactionGroup } from "@/entities/faction"
-import { rankAt, rankIndex, rankOrder, type RankId } from "@/entities/rank"
 
 import { RankBadge } from "@/shared/ui"
 

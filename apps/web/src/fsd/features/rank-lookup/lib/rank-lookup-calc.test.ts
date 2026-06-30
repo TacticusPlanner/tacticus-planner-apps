@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  aggregateBaseMaterials,
+  aggregateBaseUpgrades,
   groupUpgradesByRank,
   rankUpUpgradeIds,
   type CharacterLike,
@@ -79,7 +79,7 @@ describe("groupUpgradesByRank", () => {
   })
 })
 
-describe("aggregateBaseMaterials", () => {
+describe("aggregateBaseUpgrades", () => {
   const upgrades = new Map<string, UpgradeLike>([
     [
       "base1",
@@ -88,7 +88,7 @@ describe("aggregateBaseMaterials", () => {
         label: "Base 1",
         rarity: "Common",
         stat: "Health",
-        craftable: false,
+        composite: false,
         recipe: [],
       },
     ],
@@ -99,7 +99,7 @@ describe("aggregateBaseMaterials", () => {
         label: "Base 2",
         rarity: "Common",
         stat: "Damage",
-        craftable: false,
+        composite: false,
         recipe: [],
       },
     ],
@@ -110,7 +110,7 @@ describe("aggregateBaseMaterials", () => {
         label: "Craft 1",
         rarity: "Rare",
         stat: "Health",
-        craftable: true,
+        composite: true,
         recipe: [
           { material: "base1", count: 2 },
           { material: "craft2", count: 1 },
@@ -124,21 +124,21 @@ describe("aggregateBaseMaterials", () => {
         label: "Craft 2",
         rarity: "Uncommon",
         stat: "Health",
-        craftable: true,
+        composite: true,
         recipe: [{ material: "base2", count: 3 }],
       },
     ],
   ])
 
-  it("expands craftables recursively and sums base counts", () => {
+  it("expands composite upgrades recursively and sums base counts", () => {
     // craft1 = 2×base1 + 1×craft2(=3×base2); plus a standalone base1.
-    const result = aggregateBaseMaterials(["craft1", "base1"], upgrades)
+    const result = aggregateBaseUpgrades(["craft1", "base1"], upgrades)
     const byId = Object.fromEntries(result.map((r) => [r.id, r.count]))
     expect(byId).toEqual({ base1: 3, base2: 3 })
   })
 
-  it("treats unknown ids as base materials", () => {
-    expect(aggregateBaseMaterials(["mystery"], upgrades)).toEqual([
+  it("treats unknown ids as base upgrades", () => {
+    expect(aggregateBaseUpgrades(["mystery"], upgrades)).toEqual([
       { id: "mystery", count: 1 },
     ])
   })

@@ -1,14 +1,14 @@
 import { rankIndex, rankOrder, type RankId } from "@workspace/game-catalog"
 
 import type {
-  BaseMaterialNeed,
+  BaseUpgradeNeed,
   CharacterLike,
   RankUpGroup,
   UpgradeLike,
 } from "./rank-lookup-calc.types"
 
 export type {
-  BaseMaterialNeed,
+  BaseUpgradeNeed,
   CharacterLike,
   RecipeIngredient,
   RankUpEntry,
@@ -81,19 +81,19 @@ export function groupUpgradesByRank(
 }
 
 /**
- * Reduce a flat list of applied upgrade ids to the uncraftable **base** materials needed, summing counts.
- * Craftable upgrades are expanded through their recipe (recursively, multiplying ingredient counts);
- * uncraftable upgrades (and unknown ids) are counted as base materials.
+ * Reduce a flat list of applied upgrade ids to the non-composite **base** upgrades needed, summing counts.
+ * Composite upgrades are expanded through their recipe (recursively, multiplying ingredient counts);
+ * base upgrades (and unknown ids) are counted directly.
  */
-export function aggregateBaseMaterials(
+export function aggregateBaseUpgrades(
   upgradeIds: string[],
   upgradesById: ReadonlyMap<string, UpgradeLike>
-): BaseMaterialNeed[] {
+): BaseUpgradeNeed[] {
   const counts = new Map<string, number>()
 
   const add = (id: string, multiplier: number) => {
     const upgrade = upgradesById.get(id)
-    if (upgrade?.craftable && upgrade.recipe.length > 0) {
+    if (upgrade?.composite && upgrade.recipe.length > 0) {
       for (const ingredient of upgrade.recipe) {
         add(ingredient.material, multiplier * ingredient.count)
       }

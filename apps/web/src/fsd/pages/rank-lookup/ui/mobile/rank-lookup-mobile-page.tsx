@@ -1,12 +1,13 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
+import type { RankId } from "@workspace/game-catalog"
+
 import type { FactionGroup } from "@/entities/faction"
-import type { RankId } from "@/entities/rank"
 
 import { RankLookupControls } from "../rank-lookup-controls"
 import {
   RankLookupResults,
-  type MaterialView,
+  type BaseUpgradeView,
   type RankGroupView,
 } from "../rank-lookup-results"
 
@@ -17,7 +18,7 @@ export interface RankLookupMobilePageProps {
   rankEnd: RankId
   pointFive: boolean
   loading: boolean
-  materials: MaterialView[]
+  baseUpgrades: BaseUpgradeView[]
   groups: RankGroupView[]
   onCharacterChange: (id: string) => void
   onRangeChange: (start: RankId, end: RankId) => void
@@ -31,7 +32,7 @@ export function RankLookupMobilePage({
   rankStart,
   rankEnd,
   pointFive,
-  materials,
+  baseUpgrades,
   groups,
   onCharacterChange,
   onRangeChange,
@@ -61,7 +62,7 @@ export function RankLookupMobilePage({
         isMobile={true}
       />
       <RankLookupResults
-        materials={materials}
+        baseUpgrades={baseUpgrades}
         groups={groups}
         isMobile={true}
       />

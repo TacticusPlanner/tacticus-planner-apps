@@ -16,7 +16,8 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { characterIcon } from "@/entities/character"
+import { characterIcon } from "@workspace/game-catalog"
+
 import type { FactionGroup } from "@/entities/faction"
 
 import { EntityIcon } from "@/shared/ui"
