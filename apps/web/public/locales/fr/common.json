@@ -27,6 +27,36 @@
       "retry": "Réessayer"
     }
   },
+  "rankLookup": {
+    "subtitle": "Choisissez un personnage et une plage de rangs pour voir les améliorations requises et où les farmer.",
+    "character": "Personnage",
+    "characterPlaceholder": "Sélectionnez un personnage",
+    "noCharacter": "Aucun personnage trouvé.",
+    "rankRange": "Plage de rangs",
+    "start": "De",
+    "end": "À",
+    "pointFive": "Inclure les améliorations « point cinq »",
+    "pointFiveShort": "Point cinq",
+    "pointFiveHint": "En atteignant le rang cible, vous pouvez appliquer immédiatement la première amélioration de chaque statistique. Activez ceci pour inclure cette première rangée.",
+    "pointFiveAdamantineDisabled": "Les améliorations « point cinq » ne s'appliquent pas aux rangs Adamantine.",
+    "apply": "Appliquer",
+    "baseUpgrades": "Améliorations de base nécessaires",
+    "distinctBaseUpgrades": "Améliorations de base distinctes",
+    "totalBaseUpgrades": "Total des améliorations de base",
+    "baseUpgrade": "Amélioration",
+    "name": "Nom",
+    "count": "Quantité",
+    "rarity": "Rareté",
+    "campaignLocations": "Lieux de campagne",
+    "eventLocations": "Lieux d'événements de campagne",
+    "byRank": "Améliorations par rang",
+    "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires."
+  },
+  "nav": {
+    "home": "Accueil",
+    "rankLookup": "Recherche de rang",
+    "createGoal": "Créer un objectif"
+  },
   "language": {
     "label": "Langue",
     "options": {

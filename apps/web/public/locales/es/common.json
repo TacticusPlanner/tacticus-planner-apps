@@ -27,6 +27,36 @@
       "retry": "Reintentar"
     }
   },
+  "rankLookup": {
+    "subtitle": "Elige un personaje y un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
+    "character": "Personaje",
+    "characterPlaceholder": "Selecciona un personaje",
+    "noCharacter": "No se encontró ningún personaje.",
+    "rankRange": "Intervalo de rangos",
+    "start": "Desde",
+    "end": "Hasta",
+    "pointFive": "Incluir mejoras de medio rango",
+    "pointFiveShort": "Medio rango",
+    "pointFiveHint": "Al alcanzar el rango objetivo puedes aplicar de inmediato la primera mejora de cada estadística. Activa esto para incluir esa fila superior.",
+    "pointFiveAdamantineDisabled": "Las mejoras de medio rango no aplican a los rangos Adamantine.",
+    "apply": "Aplicar",
+    "baseUpgrades": "Mejoras base necesarias",
+    "distinctBaseUpgrades": "Mejoras base distintas",
+    "totalBaseUpgrades": "Mejoras base totales",
+    "baseUpgrade": "Mejora",
+    "name": "Nombre",
+    "count": "Cantidad",
+    "rarity": "Rareza",
+    "campaignLocations": "Lugares de campaña",
+    "eventLocations": "Lugares de eventos de campaña",
+    "byRank": "Mejoras por rango",
+    "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias."
+  },
+  "nav": {
+    "home": "Inicio",
+    "rankLookup": "Consulta de rango",
+    "createGoal": "Crear objetivo"
+  },
   "language": {
     "label": "Idioma",
     "options": {

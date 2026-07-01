@@ -1,0 +1,38 @@
+import type { CharacterId } from "./ids"
+
+// Slugs that diverge from the default camelCase→snake_case derivation.
+// All other character ids derive cleanly as camelCase→snake_case.
+export const characterIconOverrides: Readonly<Record<CharacterId, string>> = {
+  astraPrimarisPsy: "astra_psyker",
+  bloodDeathCompany: "blood_deathcompany",
+  custoBladeChampion: "custo_bladechampion",
+  custoVexilusPraetor: "custo_vexilus",
+  eldarAutarch: "aelda_autarch",
+  eldarFarseer: "aelda_farseer",
+  eldarJainZar: "aelda_jainzar",
+  eldarMauganRa: "aelda_maugan",
+  eldarRanger: "aelda_ranger",
+  emperFlawlessBlade: "emper_blade",
+  emperNoiseMarine: "emper_noisemarine",
+  necroDestroyer: "necro_hexmark",
+  orksBigMek: "orkss_mek",
+  orksKillaKan: "orkss_killakan",
+  orksNob: "orkss_nob",
+  orksRuntherd: "orkss_runtherd",
+  orksWarboss: "orkss_warboss",
+  spaceBlackmane: "space_ragnar",
+  spaceRockfist: "space_arjac",
+  spaceWolfPriest: "space_wolfpriest",
+  tauAunShi: "tauta_aunshi",
+  tauCrisis: "tauta_crisis",
+  tauDarkstrider: "tauta_darkstrider",
+  tauFarsight: "tauta_farsight",
+  tauMarksman: "tauta_marksman",
+  tauShadowsun: "tauta_shadowsun",
+  templSwordBrother: "templ_brother",
+  thousInfernalMaster: "thous_infernal",
+  tyranTyrantGuard: "tyran_tyrantguard",
+  tyranWingedPrime: "tyran_wingedprime",
+  ultraEliminatorSgt: "ultra_eliminator",
+  ultraInceptorSgt: "ultra_inceptor",
+}

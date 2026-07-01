@@ -1,5 +1,6 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
@@ -20,7 +21,9 @@ async function bootstrap() {
         <AuthProvider instance={msalInstance}>
           <ThemeProvider>
             <TourProvider>
-              <App />
+              <TooltipProvider>
+                <App />
+              </TooltipProvider>
             </TourProvider>
           </ThemeProvider>
         </AuthProvider>

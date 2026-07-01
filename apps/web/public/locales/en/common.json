@@ -27,10 +27,35 @@
       "retry": "Retry"
     }
   },
-  "landing": {
-    "title": "Plan your Tacticus roster",
-    "subtitle": "Track characters, upgrades, equipment, campaigns, and legendary events — all in one place.",
-    "getStarted": "Sign in / Get started"
+  "rankLookup": {
+    "subtitle": "Pick a character and a rank range to see the required upgrades and where to farm them.",
+    "character": "Character",
+    "characterPlaceholder": "Select a character",
+    "noCharacter": "No character found.",
+    "rankRange": "Rank range",
+    "start": "From",
+    "end": "To",
+    "pointFive": "Include point-five upgrades",
+    "pointFiveShort": "Point five",
+    "pointFiveHint": "On reaching the target rank you can immediately apply the first upgrade of each stat. Enable this to include that top row.",
+    "pointFiveAdamantineDisabled": "Point-five upgrades don't apply to Adamantine ranks.",
+    "apply": "Apply",
+    "baseUpgrades": "Base upgrades needed",
+    "distinctBaseUpgrades": "Distinct base upgrades",
+    "totalBaseUpgrades": "Total base upgrades",
+    "baseUpgrade": "Upgrade",
+    "name": "Name",
+    "count": "Count",
+    "rarity": "Rarity",
+    "campaignLocations": "Campaign locations",
+    "eventLocations": "Campaign Event Locations",
+    "byRank": "Upgrades by rank",
+    "noUpgrades": "Select a character and a valid rank range to see required upgrades."
+  },
+  "nav": {
+    "home": "Home",
+    "rankLookup": "Rank Lookup",
+    "createGoal": "Create Goal"
   },
   "language": {
     "label": "Language",
