@@ -39,6 +39,26 @@ const records: Record<string, unknown[]> = {
         { rank: "Stone2", upgradeIds: ["h3"] },
       ],
     },
+    {
+      id: "hero2",
+      name: "Hero Two",
+      faction: "Ultramarines",
+      alliance: "Imperial",
+      health: 200,
+      damage: 40,
+      armour: 20,
+      meleeDamage: "Power",
+      meleeHits: 2,
+      rangedDamage: null,
+      rangedHits: null,
+      rangeDistance: null,
+      movement: 5,
+      traits: [],
+      activeAbilityDamage: [],
+      passiveAbilityDamage: [],
+      equipmentSlots: [],
+      rankUpUpgrades: [],
+    },
   ],
   upgrades: [
     {
@@ -146,9 +166,9 @@ vi.mock("@workspace/game-catalog", async (importOriginal) => {
 
 import { CharacterLookupPage } from "./character-lookup-page"
 
-function renderPage() {
+function renderPage(initialEntries = ["/"]) {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
       <TooltipProvider>
         <CharacterLookupPage />
       </TooltipProvider>
@@ -176,6 +196,59 @@ describe("CharacterLookupPage", () => {
     // Health at Stone1 (current, 100 * 1.25205^0) and Stone2 (target, 100 * 1.25205^1), no progression.
     expect(profile.getByText("100")).toBeInTheDocument()
     expect(profile.getByText("125")).toBeInTheDocument()
+  })
+
+  it("computes current/target Health from independent from/to progression values", () => {
+    renderPage(["/?progressionStart=Common:None&progressionEnd=Common:OneStar"])
+
+    const profile = within(screen.getByTestId("unit-profile"))
+    // Current: Stone1 at "None" progression → 100 (unchanged).
+    expect(profile.getByText("100")).toBeInTheDocument()
+    // Target: Stone2 at "OneStar" progression → floor(100 * 1.25205 * 1.1) = 137, not the 125
+    // it would be if both ends shared a single progression value.
+    expect(profile.getByText("137")).toBeInTheDocument()
+    expect(profile.queryByText("125")).not.toBeInTheDocument()
+  })
+
+  it("clamps a rank down when its progression is lowered below what the rank requires", () => {
+    // Diamond1 needs at least Legendary rarity; Mythic:MythicWings covers it, so it loads as-is
+    // (selectionFromParams doesn't itself clamp — only the interactive setters do).
+    renderPage([
+      "/?rankStart=Stone1&rankEnd=Diamond1&progressionStart=Common:None&progressionEnd=Mythic:MythicWings",
+    ])
+    expect(screen.getByText("Diamond1")).toBeInTheDocument()
+
+    // Selects, in DOM order: character combobox, progression "From", progression "To".
+    const [, , progressionToTrigger] = screen.getAllByRole("combobox")
+    fireEvent.click(progressionToTrigger)
+    fireEvent.click(screen.getByRole("option", { name: /None/ }))
+
+    // "To" progression is now Common:None, which only unlocks up to Iron1 — rankEnd is pulled
+    // back down to it rather than staying at an unreachable Diamond1.
+    expect(screen.queryByText("Diamond1")).not.toBeInTheDocument()
+    expect(screen.getByText("Iron1")).toBeInTheDocument()
+  })
+
+  it("auto-applies immediately when a new character is selected, without needing Apply", () => {
+    renderPage()
+
+    const applyButton = screen.getByRole("button", { name: "unitLookup.apply" })
+    expect(applyButton).toBeDisabled()
+    expect(
+      within(screen.getByTestId("unit-profile")).getByText("Hero One")
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
+    )
+    fireEvent.click(screen.getByText("Hero Two"))
+
+    // Results update immediately for the newly selected character...
+    expect(
+      within(screen.getByTestId("unit-profile")).getByText("Hero Two")
+    ).toBeInTheDocument()
+    // ...and Apply stays disabled since nothing else is dirty.
+    expect(applyButton).toBeDisabled()
   })
 
   it("gates recomputation behind the Apply button", () => {

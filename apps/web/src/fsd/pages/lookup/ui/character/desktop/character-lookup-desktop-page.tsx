@@ -1,6 +1,6 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type { FactionGroup, Rank, RarityStars } from "@workspace/game-catalog"
+import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
 
 import { CharacterLookupControls } from "../character-lookup-controls"
 import {
@@ -15,7 +15,8 @@ export interface CharacterLookupDesktopPageProps {
   characterId: string | undefined
   rankStart: Rank
   rankEnd: Rank
-  progression: RarityStars
+  progressionStart: Progression
+  progressionEnd: Progression
   pointFive: boolean
   pointFiveDisabled: boolean
   loading: boolean
@@ -24,7 +25,7 @@ export interface CharacterLookupDesktopPageProps {
   groups: RankGroupView[]
   onCharacterChange: (id: string) => void
   onRangeChange: (start: Rank, end: Rank) => void
-  onProgressionChange: (value: RarityStars) => void
+  onProgressionRangeChange: (start: Progression, end: Progression) => void
   onPointFiveChange: (value: boolean) => void
   onApply: () => void
   applyDisabled: boolean
@@ -36,7 +37,8 @@ export function CharacterLookupDesktopPage({
   characterId,
   rankStart,
   rankEnd,
-  progression,
+  progressionStart,
+  progressionEnd,
   pointFive,
   pointFiveDisabled,
   profile,
@@ -44,7 +46,7 @@ export function CharacterLookupDesktopPage({
   groups,
   onCharacterChange,
   onRangeChange,
-  onProgressionChange,
+  onProgressionRangeChange,
   onPointFiveChange,
   onApply,
   applyDisabled,
@@ -71,8 +73,9 @@ export function CharacterLookupDesktopPage({
           rankStart={rankStart}
           rankEnd={rankEnd}
           onRangeChange={onRangeChange}
-          progression={progression}
-          onProgressionChange={onProgressionChange}
+          progressionStart={progressionStart}
+          progressionEnd={progressionEnd}
+          onProgressionRangeChange={onProgressionRangeChange}
           pointFive={pointFive}
           pointFiveDisabled={pointFiveDisabled}
           onPointFiveChange={onPointFiveChange}

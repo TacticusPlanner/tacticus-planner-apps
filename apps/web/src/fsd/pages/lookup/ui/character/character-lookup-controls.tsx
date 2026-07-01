@@ -18,16 +18,20 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import {
+  progressionOrder,
+  progressionRarity,
+  progressionStars,
+  progressionVisual,
   rankAt,
   rankIndex,
   rankOrder,
-  rarityStarsOrder,
   type FactionGroup,
+  type Progression,
   type Rank,
   type RarityStars,
 } from "@workspace/game-catalog"
 
-import { RankBadge } from "@/shared/ui"
+import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import { CharacterCombobox } from "./character-combobox"
 
@@ -47,8 +51,9 @@ export function CharacterLookupControls({
   rankStart,
   rankEnd,
   onRangeChange,
-  progression,
-  onProgressionChange,
+  progressionStart,
+  progressionEnd,
+  onProgressionRangeChange,
   pointFive,
   pointFiveDisabled,
   onPointFiveChange,
@@ -62,8 +67,9 @@ export function CharacterLookupControls({
   rankStart: Rank
   rankEnd: Rank
   onRangeChange: (start: Rank, end: Rank) => void
-  progression: RarityStars
-  onProgressionChange: (value: RarityStars) => void
+  progressionStart: Progression
+  progressionEnd: Progression
+  onProgressionRangeChange: (start: Progression, end: Progression) => void
   pointFive: boolean
   pointFiveDisabled: boolean
   onPointFiveChange: (value: boolean) => void
@@ -82,6 +88,14 @@ export function CharacterLookupControls({
   const endOptions = rankOrder.filter(
     (_, index) => index > rankIndex(rankStart)
   )
+
+  // Unlike the rank range, "from" and "to" progression are allowed to be equal (e.g. checking
+  // stats across a rank change alone, without also changing rarity/stars), so both selects offer
+  // the full ladder.
+  const selectProgressionStart = (next: Progression) =>
+    onProgressionRangeChange(next, progressionEnd)
+  const selectProgressionEnd = (next: Progression) =>
+    onProgressionRangeChange(progressionStart, next)
 
   return (
     <div className="flex flex-col gap-5">
@@ -139,21 +153,18 @@ export function CharacterLookupControls({
 
       <div className="grid gap-2">
         <Label>{t("unitLookup.progression")}</Label>
-        <Select
-          value={progression}
-          onValueChange={(v) => onProgressionChange(v as RarityStars)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {rarityStarsOrder.map((value) => (
-              <SelectItem key={value} value={value}>
-                {progressionLabel(value)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <ProgressionSelect
+            label={t("unitLookup.start")}
+            value={progressionStart}
+            onChange={selectProgressionStart}
+          />
+          <ProgressionSelect
+            label={t("unitLookup.end")}
+            value={progressionEnd}
+            onChange={selectProgressionEnd}
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -186,6 +197,71 @@ export function CharacterLookupControls({
         {t("unitLookup.apply")}
       </Button>
     </div>
+  )
+}
+
+function ProgressionSelect({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: Progression
+  onChange: (value: Progression) => void
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Select value={value} onValueChange={(v) => onChange(v as Progression)}>
+        <SelectTrigger className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {progressionOrder.map((option) => (
+            <SelectItem key={option} value={option}>
+              <ProgressionBadge value={option} />
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  )
+}
+
+// Renders a progression step as its rarity badge + star/wings icon(s) — the rarity badge makes
+// the rank/rarity correlation visible (the same star count repeats at two different rarities
+// around a promotion boundary, e.g. "Common:TwoStars" then "Uncommon:TwoStars"). Stars match V1's
+// stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step) —
+// except "None", which has nothing to show an icon for and stays as plain text.
+function ProgressionBadge({ value }: { value: Progression }) {
+  const rarity = progressionRarity(value)
+  const stars = progressionStars(value)
+  const visual = progressionVisual(stars)
+
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <RarityIcon rarity={rarity} className="size-4" />
+      {visual.kind === "none" ? (
+        <span className="text-sm">{progressionLabel(stars)}</span>
+      ) : visual.kind === "wings" ? (
+        <EntityIcon
+          src={visual.icon}
+          alt={progressionLabel(stars)}
+          className="h-4 w-auto"
+        />
+      ) : (
+        <span className="inline-flex items-center gap-0.5">
+          {Array.from({ length: visual.count }, (_, index) => (
+            <EntityIcon
+              key={index}
+              src={visual.icon}
+              alt={index === 0 ? progressionLabel(stars) : ""}
+              className="size-3.5"
+            />
+          ))}
+        </span>
+      )}
+    </span>
   )
 }
 

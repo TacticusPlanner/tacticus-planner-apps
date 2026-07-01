@@ -7,6 +7,7 @@ import {
   damageTypeLabel,
   equipmentSlotIcon,
   equipmentSlotLabel,
+  progressionVisual,
   statIcon,
   traitIcon,
 } from "./icons"
@@ -176,5 +177,57 @@ describe("statIcon", () => {
     expect(statIcon("movement")).toBe(
       "/snowprint_assets/stat_icons/ui_icon_stat_move_01.png"
     )
+  })
+})
+
+describe("progressionVisual", () => {
+  it("renders no icon for None", () => {
+    expect(progressionVisual("None")).toEqual({ kind: "none" })
+  })
+
+  it("renders gold stars for the first five steps", () => {
+    expect(progressionVisual("OneStar")).toEqual({
+      kind: "stars",
+      icon: "/icons/stars/gold.png",
+      count: 1,
+    })
+    expect(progressionVisual("FiveStars")).toEqual({
+      kind: "stars",
+      icon: "/icons/stars/gold.png",
+      count: 5,
+    })
+  })
+
+  it("renders red stars for the next five steps", () => {
+    expect(progressionVisual("RedOneStar")).toEqual({
+      kind: "stars",
+      icon: "/icons/stars/red.png",
+      count: 1,
+    })
+    expect(progressionVisual("RedFiveStars")).toEqual({
+      kind: "stars",
+      icon: "/icons/stars/red.png",
+      count: 5,
+    })
+  })
+
+  it("renders blue stars for the next three steps", () => {
+    expect(progressionVisual("OneBlueStar")).toEqual({
+      kind: "stars",
+      icon: "/snowprint_assets/stars/ui_icon_star_legendary_large.png",
+      count: 1,
+    })
+    expect(progressionVisual("ThreeBlueStars")).toEqual({
+      kind: "stars",
+      icon: "/snowprint_assets/stars/ui_icon_star_legendary_large.png",
+      count: 3,
+    })
+  })
+
+  it("renders a single wings icon for the max step", () => {
+    expect(progressionVisual("MythicWings")).toEqual({
+      kind: "wings",
+      icon: "/snowprint_assets/stars/ui_icon_star_mythic.png",
+    })
   })
 })

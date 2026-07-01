@@ -2,6 +2,7 @@ import type { CharacterId, CampaignGroupId, UpgradeId } from "./ids"
 import type { Rank } from "./rank"
 import type { Rarity } from "./rarity"
 import { characterIconOverrides } from "./character-icon-overrides"
+import { rarityStarsIndex, type RarityStars } from "./unit-stats"
 
 // All asset paths are relative to the web app's /public/snowprint_assets/ root.
 // These helpers return URL strings; the actual files live in apps/web/public/snowprint_assets/.
@@ -215,6 +216,36 @@ export type StatIconKind = keyof typeof statIconFile
 
 export function statIcon(kind: StatIconKind): string {
   return `/snowprint_assets/stat_icons/${statIconFile[kind]}`
+}
+
+// ---- Progression (rarity + stars) icons -----------------------------------------------------
+
+// Gold/red stars aren't Snowprint assets (V1 sources them from its own app icon set); the blue
+// star and mythic wings are (V1's `snowprintIcons.blueStar`/`.mythicWings`).
+const goldStarIcon = "/icons/stars/gold.png"
+const redStarIcon = "/icons/stars/red.png"
+const blueStarIcon = "/snowprint_assets/stars/ui_icon_star_legendary_large.png"
+const mythicWingsIcon = "/snowprint_assets/stars/ui_icon_star_mythic.png"
+
+export type ProgressionVisual =
+  | { kind: "none" }
+  | { kind: "stars"; icon: string; count: number }
+  | { kind: "wings"; icon: string }
+
+// Ported from V1's stars.icon.tsx: None renders as plain text (no icon); 1-5 stars are gold,
+// 6-10 are red, 11-13 are blue, and the max step (14) renders as a single wings image instead of
+// 14 individual stars.
+export function progressionVisual(value: RarityStars): ProgressionVisual {
+  const index = rarityStarsIndex(value)
+  if (index === 0) return { kind: "none" }
+  if (index <= 5) return { kind: "stars", icon: goldStarIcon, count: index }
+  if (index <= 10) {
+    return { kind: "stars", icon: redStarIcon, count: index - 5 }
+  }
+  if (index <= 13) {
+    return { kind: "stars", icon: blueStarIcon, count: index - 10 }
+  }
+  return { kind: "wings", icon: mythicWingsIcon }
 }
 
 export type CampaignShortLabel = {

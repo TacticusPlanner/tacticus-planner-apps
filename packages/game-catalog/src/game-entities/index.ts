@@ -37,14 +37,28 @@ export {
   equipmentSlotIcon,
   equipmentSlotLabel,
   statIcon,
+  progressionVisual,
 } from "./icons"
-export type { CampaignShortLabel, StatIconKind } from "./icons"
+export type {
+  CampaignShortLabel,
+  StatIconKind,
+  ProgressionVisual,
+} from "./icons"
 export {
   rarityStarsOrder,
   firstRarityStars,
   lastRarityStars,
   rarityStarsIndex,
   isRarityStars,
+  progressionOrder,
+  firstProgression,
+  lastProgression,
+  progressionIndex,
+  isProgression,
+  progressionRarity,
+  progressionStars,
   statAtRank,
+  maxRankForProgression,
+  minProgressionForRank,
 } from "./unit-stats"
-export type { RarityStars } from "./unit-stats"
+export type { RarityStars, Progression } from "./unit-stats"

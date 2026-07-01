@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest"
 
-import { statAtRank } from "./unit-stats"
+import {
+  maxRankForProgression,
+  minProgressionForRank,
+  progressionOrder,
+  progressionRarity,
+  progressionStars,
+  statAtRank,
+} from "./unit-stats"
 
 describe("statAtRank", () => {
   it("returns the base stat unchanged at Stone1 with no progression", () => {
@@ -31,5 +38,86 @@ describe("statAtRank", () => {
 
   it("clamps the previous-rank lookup at Stone1 (no rank below it)", () => {
     expect(() => statAtRank(100, "Stone1", "None", 1)).not.toThrow()
+  })
+})
+
+describe("maxRankForProgression", () => {
+  it("caps a fresh Common unit (None/OneStar) at Iron1", () => {
+    expect(maxRankForProgression("Common:None")).toBe("Iron1")
+    expect(maxRankForProgression("Common:OneStar")).toBe("Iron1")
+  })
+
+  it("distinguishes the same star count at two different rarities (rank/rarity correlation)", () => {
+    // "TwoStars" is both Common's max and Uncommon's min star count (V1's OrbAscensionCalculator
+    // promotes Common:TwoStars → Uncommon:TwoStars at zero added stars) — because Progression
+    // carries rarity explicitly, these are two distinct steps with two different max ranks.
+    expect(maxRankForProgression("Common:TwoStars")).toBe("Iron1")
+    expect(maxRankForProgression("Uncommon:TwoStars")).toBe("Bronze1")
+
+    // Same pattern at the Epic/Legendary boundary ("RedThreeStars").
+    expect(maxRankForProgression("Epic:RedThreeStars")).toBe("Gold1")
+    expect(maxRankForProgression("Legendary:RedThreeStars")).toBe("Diamond3")
+  })
+
+  it("caps a maxed Mythic unit at Adamantine2, one below the absolute max rank", () => {
+    expect(maxRankForProgression("Mythic:MythicWings")).toBe("Adamantine2")
+  })
+})
+
+describe("minProgressionForRank", () => {
+  it("is the inverse of maxRankForProgression at each of its output ranks", () => {
+    for (const rank of [
+      "Iron1",
+      "Bronze1",
+      "Silver1",
+      "Gold1",
+      "Diamond3",
+      "Adamantine2",
+    ] as const) {
+      const progression = minProgressionForRank(rank)
+      expect(maxRankForProgression(progression)).toBe(rank)
+    }
+  })
+
+  it("requires no progression for a rank Common already covers", () => {
+    expect(minProgressionForRank("Stone1")).toBe("Common:None")
+  })
+
+  it("falls back to the max progression for a rank beyond Adamantine2", () => {
+    expect(minProgressionForRank("Adamantine3")).toBe("Mythic:MythicWings")
+  })
+})
+
+describe("progressionRarity / progressionStars", () => {
+  it("splits a progression step back into its rarity and stars parts", () => {
+    expect(progressionRarity("Legendary:RedThreeStars")).toBe("Legendary")
+    expect(progressionStars("Legendary:RedThreeStars")).toBe("RedThreeStars")
+  })
+})
+
+describe("progressionOrder", () => {
+  it("walks the same 20-step ascension path as V1's OrbAscensionCalculator.UPGRADE_PATH", () => {
+    expect(progressionOrder).toEqual([
+      "Common:None",
+      "Common:OneStar",
+      "Common:TwoStars",
+      "Uncommon:TwoStars",
+      "Uncommon:ThreeStars",
+      "Uncommon:FourStars",
+      "Rare:FourStars",
+      "Rare:FiveStars",
+      "Rare:RedOneStar",
+      "Epic:RedOneStar",
+      "Epic:RedTwoStars",
+      "Epic:RedThreeStars",
+      "Legendary:RedThreeStars",
+      "Legendary:RedFourStars",
+      "Legendary:RedFiveStars",
+      "Legendary:OneBlueStar",
+      "Mythic:OneBlueStar",
+      "Mythic:TwoBlueStars",
+      "Mythic:ThreeBlueStars",
+      "Mythic:MythicWings",
+    ])
   })
 })
