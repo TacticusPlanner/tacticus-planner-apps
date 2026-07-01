@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { campaignLabel } from "./icons"
+import { campaignLabel, campaignShortLabel } from "./icons"
 
 describe("campaignLabel", () => {
   it("labels standard campaigns with an explicit difficulty word", () => {
@@ -49,5 +49,56 @@ describe("campaignLabel", () => {
   it("returns undefined for an unrecognized group or difficulty", () => {
     expect(campaignLabel("unknown-group", "standard")).toBeUndefined()
     expect(campaignLabel("death-guard-vs-admech", "unknown")).toBeUndefined()
+  })
+})
+
+describe("campaignShortLabel", () => {
+  it("codes standard campaign tiers as S/E", () => {
+    expect(campaignShortLabel("fall-of-cadia", "standard")).toEqual({
+      name: "Fall of Cadia",
+      code: "S",
+      challenge: false,
+    })
+    expect(campaignShortLabel("fall-of-cadia", "elite")).toEqual({
+      name: "Fall of Cadia",
+      code: "E",
+      challenge: false,
+    })
+  })
+
+  it("prefixes mirror groups with M, dropping the redundant 'Mirror' word from the name", () => {
+    expect(campaignShortLabel("indomitus-mirror", "standard")).toEqual({
+      name: "Indomitus",
+      code: "MS",
+      challenge: false,
+    })
+    expect(campaignShortLabel("indomitus-mirror", "elite")).toEqual({
+      name: "Indomitus",
+      code: "ME",
+      challenge: false,
+    })
+  })
+
+  it("codes event tiers as S/Ext and flags Challenge difficulties", () => {
+    expect(
+      campaignShortLabel("death-guard-vs-admech", "eventStandard")
+    ).toEqual({
+      name: "Adeptus Mechanicus",
+      code: "S",
+      challenge: false,
+    })
+    expect(
+      campaignShortLabel("death-guard-vs-admech", "eventStandardChallenge")
+    ).toEqual({ name: "Adeptus Mechanicus", code: "S", challenge: true })
+    expect(
+      campaignShortLabel("death-guard-vs-admech", "eventExtremisChallenge")
+    ).toEqual({ name: "Adeptus Mechanicus", code: "Ext", challenge: true })
+  })
+
+  it("returns undefined for an unrecognized group or difficulty", () => {
+    expect(campaignShortLabel("unknown-group", "standard")).toBeUndefined()
+    expect(
+      campaignShortLabel("death-guard-vs-admech", "unknown")
+    ).toBeUndefined()
   })
 })

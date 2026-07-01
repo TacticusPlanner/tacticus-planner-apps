@@ -3,19 +3,18 @@ import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 import {
   campaignIcon,
-  campaignLabel,
+  campaignShortLabel,
   firstRank,
+  groupByFaction,
   isAdamantineRank,
   isRank,
   rankAt,
-  type Alliance,
+  rarityRank,
   type Rank,
   useDatasetRecords,
 } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { groupByFaction } from "@/entities/faction"
-import { rarityRank } from "@/entities/upgrade"
 import {
   aggregateBaseUpgrades,
   groupUpgradesByRank,
@@ -111,7 +110,6 @@ export function RankLookupPage() {
           id: c.id,
           name: t(`characters:${c.id}`, { defaultValue: c.name }),
           faction: c.faction,
-          alliance: c.alliance as Alliance,
         })),
         (factionId) => t(`factions:${factionId}`, { defaultValue: factionId })
       ),
@@ -254,7 +252,9 @@ export function RankLookupPage() {
           string,
           {
             id: string
-            label: string
+            name: string
+            code: string
+            challenge: boolean
             icon?: string
             isEvent: boolean
             nodeNumbers: Set<number>
@@ -266,14 +266,16 @@ export function RankLookupPage() {
           const key = `${battle.campaignGroupId}:${battle.difficulty}`
           let entry = locationsByKey.get(key)
           if (!entry) {
-            const label = campaignLabel(
+            const short = campaignShortLabel(
               battle.campaignGroupId,
               battle.difficulty
             )
-            if (!label) continue
+            if (!short) continue
             entry = {
               id: key,
-              label,
+              name: short.name,
+              code: short.code,
+              challenge: short.challenge,
               icon: campaignIcon(battle.campaignGroupId, battle.difficulty),
               isEvent:
                 releaseTypeByGroupId.get(battle.campaignGroupId) === "event",
@@ -283,12 +285,20 @@ export function RankLookupPage() {
           }
           entry.nodeNumbers.add(battle.nodeNumber)
         }
-        const locations = [...locationsByKey.values()].map((entry) => ({
-          id: entry.id,
-          label: `${entry.label} (${[...entry.nodeNumbers].sort((a, b) => a - b).join(", ")})`,
-          icon: entry.icon,
-          isEvent: entry.isEvent,
-        }))
+        // "{Campaign name} {short code} {node numbers}", e.g. "Fall of Cadia S 13, 15" or
+        // "Adeptus Mechanicus Ext 13B" (event "Challenge" tiers suffix each node with "B").
+        const locations = [...locationsByKey.values()].map((entry) => {
+          const nodes = [...entry.nodeNumbers]
+            .sort((a, b) => a - b)
+            .map((n) => (entry.challenge ? `${n}B` : `${n}`))
+            .join(", ")
+          return {
+            id: entry.id,
+            label: `${entry.name} ${entry.code} ${nodes}`,
+            icon: entry.icon,
+            isEvent: entry.isEvent,
+          }
+        })
 
         return {
           id: need.id,
@@ -344,7 +354,7 @@ export function RankLookupPage() {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 sm:py-10"
+      className="mx-auto flex w-full max-w-400 flex-col gap-8 px-4 py-6 sm:px-6 sm:py-10"
       data-testid="rank-lookup-page"
     >
       <p className="text-muted-foreground">{t("rankLookup.subtitle")}</p>

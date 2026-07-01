@@ -12,9 +12,17 @@
     "grantAccess": "Conceder acceso a la API",
     "retry": "Volver a cargar la cuenta",
     "signIn": "Iniciar sesión",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "userMenu": "Menú de la cuenta"
   },
   "catalog": {
+    "badge": {
+      "error": "Error del catálogo",
+      "idle": "Catálogo inactivo",
+      "ready": "Catálogo del juego versión {{version}}",
+      "stale": "Catálogo desactualizado",
+      "syncing": "Sincronizando catálogo"
+    },
     "init": {
       "firstTimeTitle": "Configurando los datos del juego",
       "firstTimeDescription": "Primer uso en este dispositivo — esto puede tardar un poco más.",
@@ -66,8 +74,12 @@
       "fr": "Français"
     }
   },
+  "settings": {
+    "label": "Configuración"
+  },
   "theme": {
     "dark": "Oscuro",
+    "label": "Tema",
     "light": "Claro",
     "switchToDark": "Cambiar al modo oscuro",
     "switchToLight": "Cambiar al modo claro"

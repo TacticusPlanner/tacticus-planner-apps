@@ -60,10 +60,21 @@ function Tooltip({
 function TooltipTrigger({
   onClick,
   onPointerDown,
+  onFocus,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
   const context = React.useContext(TooltipTouchContext)
   const isTouchRef = React.useRef(false)
+  // Our own record of whether a tap opened the tooltip, kept independent of Radix's internal
+  // `open` — a tap also focuses the trigger, and Radix's trigger opens on focus and closes again
+  // on every click (regardless of pointer type) as its normal hover/keyboard behavior. Reading its
+  // `open` back inside our own click handler would fight those, since they run as separate events
+  // around ours: it's what causes the tooltip to flash open then immediately close on the first
+  // tap, only "sticking" on a second tap.
+  const tapOpenedRef = React.useRef(false)
+  // Set when this same tap's focus event lands (see onFocus below), consumed by the click that
+  // ends the tap — that click should just confirm the auto-opened state instead of toggling it.
+  const openedByFocusRef = React.useRef(false)
 
   return (
     <TooltipPrimitive.Trigger
@@ -71,11 +82,32 @@ function TooltipTrigger({
       onPointerDown={(event) => {
         onPointerDown?.(event)
         isTouchRef.current = event.pointerType === "touch"
+        if (isTouchRef.current && !context?.open) {
+          // Tapping elsewhere may have closed the tooltip since our last tap on this trigger —
+          // resync before Radix's own pointerdown handler (which can also close it) runs.
+          tapOpenedRef.current = false
+        }
+      }}
+      onFocus={(event) => {
+        onFocus?.(event)
+        if (isTouchRef.current) {
+          openedByFocusRef.current = true
+        }
       }}
       onClick={(event) => {
         onClick?.(event)
-        // Radix ignores touch pointers when deciding whether hover opened it — toggle ourselves.
-        if (isTouchRef.current) context?.setOpen(!context.open)
+        if (!isTouchRef.current) return
+        // Stop Radix's own click handler from closing what we're about to open/toggle.
+        event.preventDefault()
+        if (openedByFocusRef.current) {
+          openedByFocusRef.current = false
+          tapOpenedRef.current = true
+          context?.setOpen(true)
+          return
+        }
+        const next = !tapOpenedRef.current
+        tapOpenedRef.current = next
+        context?.setOpen(next)
       }}
       {...props}
     />

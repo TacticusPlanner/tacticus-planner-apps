@@ -54,16 +54,10 @@ export function DesktopShell({
       />
       <SidebarInset>
         <header className="flex items-center gap-2 border-b px-6 py-4">
-          {/* The sidebar fully hides off-canvas when collapsed, taking its own trigger with it —
-              this one stays put so it can always be expanded again. */}
-          <SidebarTrigger />
           {pageTitle ? (
-            <div className="flex min-w-0 items-center gap-3">
-              <AppLogo className="size-8 shrink-0" />
-              <h1 className="truncate text-2xl font-semibold tracking-tight">
-                {pageTitle}
-              </h1>
-            </div>
+            <h1 className="truncate text-2xl font-semibold tracking-tight">
+              {pageTitle}
+            </h1>
           ) : null}
         </header>
         <Suspense fallback={<LoadingFill />}>
@@ -89,15 +83,18 @@ function AppSidebar({
   }
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center justify-between px-2 py-1">
-          <span className="text-sm font-semibold tracking-tight">
-            {t("app.name")}
-          </span>
+          <div className="flex min-w-0 items-center gap-2">
+            <AppLogo className="size-6 shrink-0" />
+            <span className="truncate text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+              {t("app.name")}
+            </span>
+          </div>
           <SidebarTrigger />
         </div>
-        <div className="px-2 pb-1">
+        <div className="px-2 pb-1 group-data-[collapsible=icon]:hidden">
           {isAuthenticated ? (
             <Button className="w-full" disabled size="sm" variant="outline">
               <PlusCircle />
@@ -124,15 +121,17 @@ function AppSidebar({
 
       <SidebarFooter>
         <div className="flex flex-col gap-2 px-2 py-1">
-          <CatalogSyncStatusBadge />
+          <div className="group-data-[collapsible=icon]:hidden">
+            <CatalogSyncStatusBadge />
+          </div>
           {isAuthenticated ? (
             <>
               <Separator />
               <AuthControl />
             </>
           ) : null}
-          <Separator />
-          <div className="flex flex-wrap items-center gap-2">
+          <Separator className="group-data-[collapsible=icon]:hidden" />
+          <div className="flex flex-wrap items-center gap-2 group-data-[collapsible=icon]:hidden">
             <ThemeSwitcher />
             <LanguageSwitcher />
           </div>
@@ -150,7 +149,7 @@ function NavMenuItem({ item }: { item: NavItem }) {
 
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={isActive}>
+      <SidebarMenuButton asChild isActive={isActive} tooltip={t(item.labelKey)}>
         <Link to={item.path}>
           <item.icon />
           <span>{t(item.labelKey)}</span>

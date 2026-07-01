@@ -70,4 +70,38 @@ describe("Tooltip", () => {
 
     expect(document.querySelector('[data-slot="tooltip-content"]')).toBeNull()
   })
+
+  it("stays open through the focus event a real touch tap also fires, instead of flashing closed", () => {
+    // On real devices tapping a button fires pointerdown → pointerup → focus → click. Radix's own
+    // trigger opens the tooltip on that focus event (it can't tell a tap's focus from a keyboard
+    // one) — the click ending the same tap must not then toggle that back closed.
+    renderTooltip()
+    const trigger = screen.getByText("Hover me")
+
+    fireEvent.pointerDown(trigger, { pointerType: "touch" })
+    fireEvent.focus(trigger)
+    fireEvent.click(trigger)
+
+    expect(
+      document.querySelector('[data-slot="tooltip-content"]')
+    ).toBeVisible()
+  })
+
+  it("closes on a second tap of the same trigger", () => {
+    renderTooltip()
+    const trigger = screen.getByText("Hover me")
+
+    fireEvent.pointerDown(trigger, { pointerType: "touch" })
+    fireEvent.focus(trigger)
+    fireEvent.click(trigger)
+    expect(
+      document.querySelector('[data-slot="tooltip-content"]')
+    ).toBeVisible()
+
+    // The trigger stays focused across taps (focus doesn't fire again), matching real devices.
+    fireEvent.pointerDown(trigger, { pointerType: "touch" })
+    fireEvent.click(trigger)
+
+    expect(document.querySelector('[data-slot="tooltip-content"]')).toBeNull()
+  })
 })

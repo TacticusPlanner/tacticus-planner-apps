@@ -1,8 +1,13 @@
 import { Suspense } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn } from "lucide-react"
+import { LogIn, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
@@ -69,17 +74,49 @@ function MobileHeader({
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {!isAuthenticated ? (
-          <Button size="sm" onClick={handleSignIn}>
-            <LogIn />
-            {t("auth.signIn")}
-          </Button>
+          <>
+            <Button size="sm" onClick={handleSignIn}>
+              <LogIn />
+              {t("auth.signIn")}
+            </Button>
+            <MobileGuestSettings />
+          </>
         ) : (
           <AuthControl />
         )}
-        <ThemeSwitcher />
-        <LanguageSwitcher />
       </div>
     </header>
+  )
+}
+
+// Signed-out mobile users have no user-profile menu to host the theme/language switchers, so they
+// get their own compact popover instead — keeps the header from needing two full-width controls.
+function MobileGuestSettings() {
+  const { t } = useTranslation()
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          aria-label={t("settings.label")}
+          data-testid="mobile-guest-settings"
+          size="icon"
+          variant="outline"
+        >
+          <Settings />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-56 gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm">{t("theme.label")}</span>
+          <ThemeSwitcher />
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm">{t("language.label")}</span>
+          <LanguageSwitcher />
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
 

@@ -1,8 +1,6 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type { Rank } from "@workspace/game-catalog"
-
-import type { FactionGroup } from "@/entities/faction"
+import type { FactionGroup, Rank } from "@workspace/game-catalog"
 
 import { RankLookupControls } from "../rank-lookup-controls"
 import {

@@ -27,9 +27,8 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { Rank, Rarity } from "@workspace/game-catalog"
+import { rarityClass, type Rank, type Rarity } from "@workspace/game-catalog"
 
-import { rarityClass } from "@/entities/upgrade"
 import { EntityIcon, RankBadge, RarityIcon, UpgradeIcon } from "@/shared/ui"
 
 export type LocationView = { id: string; label: string; icon?: string }
@@ -116,11 +115,11 @@ export function RankLookupResults({
             ))}
           </Accordion>
         ) : (
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             {groups.map((group, index) => (
-              <Card key={index} className="min-w-52 shrink-0 gap-3 py-4">
-                <CardHeader className="px-4">
-                  <RankGroupHeader group={group} />
+              <Card key={index} className="gap-3 py-4">
+                <CardHeader className="flex justify-center px-4">
+                  <RankGroupHeader group={group} compact />
                 </CardHeader>
                 <CardContent className="px-4">
                   <RankGroupBody group={group} />
@@ -195,6 +194,7 @@ function BaseUpgradesTable({
                   id={upgrade.id}
                   rarity={upgrade.rarity}
                   crafted={upgrade.crafted}
+                  className="size-12"
                 />
               </TableCell>
               <TableCell className="font-medium">{upgrade.label}</TableCell>
@@ -234,11 +234,11 @@ function BaseUpgradesCards({
                 id={upgrade.id}
                 rarity={upgrade.rarity}
                 crafted={upgrade.crafted}
-                className="size-10"
+                className="size-15"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{upgrade.label}</p>
-                <RarityIcon rarity={upgrade.rarity} className="size-5" />
+                <RarityIcon rarity={upgrade.rarity} className="size-8" />
               </div>
               <span className="text-lg font-semibold tabular-nums">
                 ×{upgrade.count}
@@ -295,11 +295,21 @@ function LocationChips({ locations }: { locations: LocationView[] }) {
   )
 }
 
-function RankGroupHeader({ group }: { group: RankGroupView }) {
+function RankGroupHeader({
+  group,
+  compact = false,
+}: {
+  group: RankGroupView
+  compact?: boolean
+}) {
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-2">
-      <RankBadge rank={group.fromRank} />
+      <RankBadge
+        rank={group.fromRank}
+        iconClassName="size-8"
+        showLabel={!compact}
+      />
       {group.pointFive ? (
         <Badge variant="secondary">{t("rankLookup.pointFiveShort")}</Badge>
       ) : (
@@ -307,7 +317,11 @@ function RankGroupHeader({ group }: { group: RankGroupView }) {
           <span aria-hidden className="text-muted-foreground">
             →
           </span>
-          <RankBadge rank={group.toRank} />
+          <RankBadge
+            rank={group.toRank}
+            iconClassName="size-8"
+            showLabel={!compact}
+          />
         </>
       )}
     </div>
@@ -316,7 +330,7 @@ function RankGroupHeader({ group }: { group: RankGroupView }) {
 
 function RankGroupBody({ group }: { group: RankGroupView }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex justify-center gap-4">
       <StatColumn stat="health" upgrades={group.health} />
       <StatColumn stat="damage" upgrades={group.damage} />
       <StatColumn stat="armour" upgrades={group.armour} />
@@ -343,7 +357,7 @@ function StatColumn({
       <EntityIcon
         src={statIcon[stat]}
         alt={stat}
-        className="size-5 opacity-80"
+        className="size-8 opacity-80"
       />
       {upgrades.map((upgrade) => (
         <UpgradeCell key={upgrade.id} upgrade={upgrade} />
@@ -353,32 +367,26 @@ function StatColumn({
 }
 
 function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
-  if (upgrade.recipe.length === 0) {
-    return (
-      <UpgradeIcon
-        id={upgrade.id}
-        rarity={upgrade.rarity}
-        crafted={upgrade.crafted}
-      />
-    )
-  }
+  const hasRecipe = upgrade.recipe.length > 0
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
           aria-label={upgrade.label}
-          className="rounded-sm ring-offset-background hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="rounded-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
         >
           <UpgradeIcon
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
+            className="size-12"
           />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
-        <div className="flex items-center gap-2 pb-2">
+        <div className={cn("flex items-center gap-2", hasRecipe && "pb-2")}>
           <UpgradeIcon
             id={upgrade.id}
             rarity={upgrade.rarity}
@@ -388,7 +396,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
             {upgrade.label}
           </span>
         </div>
-        <RecipeTree items={upgrade.recipe} />
+        {hasRecipe ? <RecipeTree items={upgrade.recipe} /> : null}
       </PopoverContent>
     </Popover>
   )
@@ -415,7 +423,7 @@ function RecipeTree({
               id={item.id}
               rarity={item.rarity}
               crafted={item.crafted}
-              className="size-6"
+              className="size-9"
             />
             <span className={rarityClass(item.rarity)}>{item.label}</span>
             <span className="text-muted-foreground tabular-nums">

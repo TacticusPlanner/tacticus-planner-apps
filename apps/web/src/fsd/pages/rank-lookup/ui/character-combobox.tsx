@@ -16,9 +16,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { characterIcon } from "@workspace/game-catalog"
-
-import type { FactionGroup } from "@/entities/faction"
+import { characterIcon, type FactionGroup } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -36,6 +34,7 @@ export function CharacterCombobox({
   emptyText: string
 }) {
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("")
 
   const selected = useMemo(() => {
     for (const group of groups) {
@@ -45,8 +44,37 @@ export function CharacterCombobox({
     return undefined
   }, [groups, value])
 
+  // cmdk's default filter fuzzy-scores every item on each keystroke and reorders the DOM to match
+  // (it's built for VSCode-style command palettes) — for a plain "find this character" list that
+  // reshuffles items unpredictably as you type and breaks the curated faction order. Filtering
+  // ourselves with a stable, case-insensitive substring match (and `shouldFilter={false}` below to
+  // stop cmdk from doing its own pass) keeps groups/members in a fixed order and only hides
+  // non-matches.
+  const filteredGroups = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return groups
+
+    return groups
+      .map((group) => {
+        const factionMatches = group.factionName.toLowerCase().includes(query)
+        const members = factionMatches
+          ? group.members
+          : group.members.filter((member) =>
+              member.name.toLowerCase().includes(query)
+            )
+        return { ...group, members }
+      })
+      .filter((group) => group.members.length > 0)
+  }, [groups, search])
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next)
+        if (!next) setSearch("")
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -60,7 +88,7 @@ export function CharacterCombobox({
               <EntityIcon
                 src={characterIcon(selected.id)}
                 alt=""
-                className="size-6 shrink-0 rounded-full"
+                className="size-9 shrink-0 rounded-full"
               />
             )}
             <span className="truncate">
@@ -71,27 +99,31 @@ export function CharacterCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-0">
-        <Command>
-          <CommandInput placeholder={placeholder} />
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder={placeholder}
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-            {groups.map((group) => (
+            {filteredGroups.map((group) => (
               <CommandGroup key={group.factionId} heading={group.factionName}>
                 {group.members.map((member) => (
                   <CommandItem
                     key={member.id}
-                    // cmdk filters by `value`; include the faction so typing a faction also matches.
-                    value={`${member.name} ${group.factionName}`}
+                    value={member.id}
                     onSelect={() => {
                       onChange(member.id)
                       setOpen(false)
+                      setSearch("")
                     }}
                     className="gap-2"
                   >
                     <EntityIcon
                       src={characterIcon(member.id)}
                       alt=""
-                      className="size-6 shrink-0 rounded-full"
+                      className="size-9 shrink-0 rounded-full"
                     />
                     <span className="truncate">{member.name}</span>
                     <Check

@@ -27,6 +27,13 @@ export function GameCatalogInitGate({ children }: { children: ReactNode }) {
     return <>{children}</>
   }
 
+  // `progress` stays null until dataset files actually start downloading (see syncGameCatalog) —
+  // while it's null we're still just checking the manifest (often a fast 304), so don't block the
+  // app on that. Errors always block, even if they happened before any file download started.
+  if (status !== "error" && !progress) {
+    return <>{children}</>
+  }
+
   const percent =
     progress && progress.total > 0
       ? Math.round((progress.downloaded / progress.total) * 100)

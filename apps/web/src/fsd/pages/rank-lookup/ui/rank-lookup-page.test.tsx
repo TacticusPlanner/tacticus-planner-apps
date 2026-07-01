@@ -174,7 +174,7 @@ describe("RankLookupPage", () => {
     expect(applyButton).toBeDisabled()
   })
 
-  it("splits farm locations into campaign and campaign-event columns, labeled by campaign + difficulty + node numbers", () => {
+  it("splits farm locations into campaign and campaign-event columns, labeled by campaign + short code + node numbers", () => {
     renderPage()
 
     // h1 farms from two nodes (3 and 7) on "indomitus"/"standard", a "standard"
@@ -182,14 +182,14 @@ describe("RankLookupPage", () => {
     // node numbers, not the event column.
     const healthRow = screen.getByText("Health Base").closest("tr")
     expect(healthRow).not.toBeNull()
-    expect(healthRow?.textContent).toContain("Indomitus Standard (3, 7)")
+    expect(healthRow?.textContent).toContain("Indomitus S 3, 7")
     expect(healthRow?.textContent).not.toContain("Adeptus Mechanicus")
 
     // a1's location is on "death-guard-vs-admech"/"eventStandard" node 5, an "event"
     // campaign-definition, so the reverse must hold.
     const armourRow = screen.getByText("Armour Base").closest("tr")
     expect(armourRow).not.toBeNull()
-    expect(armourRow?.textContent).toContain("Adeptus Mechanicus Standard (5)")
+    expect(armourRow?.textContent).toContain("Adeptus Mechanicus S 5")
     expect(armourRow?.textContent).not.toContain("Indomitus")
   })
 })

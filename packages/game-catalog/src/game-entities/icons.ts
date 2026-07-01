@@ -125,3 +125,39 @@ export function campaignLabel(
   }
   return undefined
 }
+
+export type CampaignShortLabel = {
+  /** Campaign/event name, without any difficulty wording. */
+  name: string
+  /** Short difficulty code: Standard/Elite are "S"/"E", mirror groups prefix "M", events use
+   *  "S"/"Ext" for Standard/Extremis. */
+  code: string
+  /** Event "Challenge" tiers — the caller appends a "B" to each node number for these. */
+  challenge: boolean
+}
+
+/**
+ * Compact form of `campaignLabel` for farm-location chips, e.g. "Fall of Cadia S", "Indomitus ME",
+ * "Adeptus Mechanicus Ext" (+ node numbers, "B"-suffixed when `challenge`). Same group/difficulty
+ * matching as `campaignLabel` — returns undefined for the same unrecognized inputs.
+ */
+export function campaignShortLabel(
+  groupId: CampaignGroupId,
+  difficulty: string
+): CampaignShortLabel | undefined {
+  const standardName = standardCampaigns[groupId]
+  if (standardName) {
+    const isMirror = groupId.endsWith("-mirror")
+    const name = isMirror ? standardName.replace(/ Mirror$/, "") : standardName
+    const code = `${isMirror ? "M" : ""}${difficulty === "elite" ? "E" : "S"}`
+    return { name, code, challenge: false }
+  }
+  const faction = eventCampaignDisplayFaction[groupId]
+  if (faction) {
+    const difficultyWord = eventDifficultySuffix[difficulty]
+    if (!difficultyWord) return undefined
+    const code = difficultyWord.startsWith("Extremis") ? "Ext" : "S"
+    return { name: faction, code, challenge: difficulty.endsWith("Challenge") }
+  }
+  return undefined
+}

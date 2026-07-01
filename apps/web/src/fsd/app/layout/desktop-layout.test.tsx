@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 import { InteractionStatus } from "@azure/msal-browser"
 
@@ -31,27 +32,35 @@ import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 
 describe("DesktopShell", () => {
-  it("keeps a sidebar trigger in the persistent header, outside the collapsible sidebar", () => {
+  it("has a single sidebar trigger, living inside the collapsible sidebar itself", () => {
     render(
       <MemoryRouter>
-        <DesktopShell
-          isAuthenticated={false}
-          visibleItems={navItems as NavItem[]}
-          pageTitle="Home"
-        />
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated={false}
+            visibleItems={navItems as NavItem[]}
+            pageTitle="Home"
+          />
+        </TooltipProvider>
       </MemoryRouter>
     )
 
-    // The sidebar collapses fully off-canvas (see sidebar.tsx's "offcanvas" mode), taking any
-    // trigger inside it out of reach. A trigger must also live in the always-visible content
-    // header so the sidebar can be re-expanded after collapsing it.
+    // The sidebar collapses to an icon rail rather than going off-canvas (see sidebar.tsx's "icon"
+    // mode), so it stays reachable while collapsed — only one trigger is needed, and it lives in
+    // the sidebar itself rather than being duplicated in the persistent content header.
+    const sidebar = document.querySelector('[data-slot="sidebar"]')
+    expect(sidebar).not.toBeNull()
+    const sidebarTrigger = sidebar?.querySelector(
+      '[data-slot="sidebar-trigger"]'
+    )
+    expect(sidebarTrigger).not.toBeNull()
+
     const inset = document.querySelector('[data-slot="sidebar-inset"]')
     expect(inset).not.toBeNull()
-    const headerTrigger = inset?.querySelector('[data-slot="sidebar-trigger"]')
-    expect(headerTrigger).not.toBeNull()
+    expect(inset?.querySelector('[data-slot="sidebar-trigger"]')).toBeNull()
 
     expect(
-      screen.getAllByRole("button", { name: "Toggle Sidebar" }).length
-    ).toBeGreaterThanOrEqual(1)
+      screen.getAllByRole("button", { name: "Toggle Sidebar" })
+    ).toHaveLength(1)
   })
 })

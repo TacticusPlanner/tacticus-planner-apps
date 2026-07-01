@@ -9,10 +9,12 @@ export function RankBadge({
   rank,
   className,
   iconClassName,
+  showLabel = true,
 }: {
   rank: Rank
   className?: string
   iconClassName?: string
+  showLabel?: boolean
 }) {
   const { t } = useTranslation("ranks")
 
@@ -22,10 +24,12 @@ export function RankBadge({
     >
       <EntityIcon
         src={rankIcon(rank)}
-        alt=""
+        alt={showLabel ? "" : t(rank)}
         className={cn("size-5 shrink-0", iconClassName)}
       />
-      <span className="text-sm font-medium whitespace-nowrap">{t(rank)}</span>
+      {showLabel ? (
+        <span className="text-sm font-medium whitespace-nowrap">{t(rank)}</span>
+      ) : null}
     </span>
   )
 }

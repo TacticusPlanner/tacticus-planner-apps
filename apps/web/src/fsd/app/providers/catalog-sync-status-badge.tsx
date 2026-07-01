@@ -1,28 +1,20 @@
-import {
-  useGameCatalogStatus,
-  type GameCatalogStatus,
-} from "@workspace/game-catalog"
+import { useTranslation } from "react-i18next"
+import { useGameCatalogStatus } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 
-const statusLabels: Record<GameCatalogStatus, string> = {
-  error: "Catalog error",
-  idle: "Catalog idle",
-  ready: "Catalog ready",
-  stale: "Catalog stale",
-  syncing: "Catalog sync",
-}
-
 export function CatalogSyncStatusBadge() {
-  const { error, status } = useGameCatalogStatus()
+  const { t } = useTranslation()
+  const { error, gameVersion, status } = useGameCatalogStatus()
   const variant = status === "error" ? "destructive" : "outline"
+  const label = t(`catalog.badge.${status}`, { version: gameVersion ?? "" })
 
   return (
     <Badge
       data-testid="catalog-sync-status"
-      title={error ?? statusLabels[status]}
+      title={error ?? label}
       variant={variant}
     >
-      {statusLabels[status]}
+      {label}
     </Badge>
   )
 }

@@ -12,9 +12,17 @@
     "grantAccess": "API-Zugriff gewähren",
     "retry": "Konto erneut laden",
     "signIn": "Anmelden",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "userMenu": "Kontomenü"
   },
   "catalog": {
+    "badge": {
+      "error": "Katalogfehler",
+      "idle": "Katalog inaktiv",
+      "ready": "Spielkatalog Version {{version}}",
+      "stale": "Katalog veraltet",
+      "syncing": "Katalog wird synchronisiert"
+    },
     "init": {
       "firstTimeTitle": "Spieldaten werden eingerichtet",
       "firstTimeDescription": "Erste Verwendung auf diesem Gerät — das kann etwas länger dauern.",
@@ -66,8 +74,12 @@
       "fr": "Français"
     }
   },
+  "settings": {
+    "label": "Einstellungen"
+  },
   "theme": {
     "dark": "Dunkel",
+    "label": "Design",
     "light": "Hell",
     "switchToDark": "Zum dunklen Modus wechseln",
     "switchToLight": "Zum hellen Modus wechseln"

@@ -12,9 +12,17 @@
     "grantAccess": "Grant API access",
     "retry": "Retry loading account",
     "signIn": "Sign in",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "userMenu": "Account menu"
   },
   "catalog": {
+    "badge": {
+      "error": "Catalog error",
+      "idle": "Catalog idle",
+      "ready": "Game Catalog version {{version}}",
+      "stale": "Catalog stale",
+      "syncing": "Catalog sync"
+    },
     "init": {
       "firstTimeTitle": "Setting up game data",
       "firstTimeDescription": "First use on this device — this can take a little longer.",
@@ -66,8 +74,12 @@
       "fr": "Français"
     }
   },
+  "settings": {
+    "label": "Settings"
+  },
   "theme": {
     "dark": "Dark",
+    "label": "Theme",
     "light": "Light",
     "switchToDark": "Switch to dark mode",
     "switchToLight": "Switch to light mode"

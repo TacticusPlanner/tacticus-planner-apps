@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { campaignIcon, characterIcon, rankIcon } from "@workspace/game-catalog"
-
-import { upgradeIcon } from "@/entities/upgrade"
+import {
+  campaignIcon,
+  characterIcon,
+  rankIcon,
+  upgradeIcon,
+} from "@workspace/game-catalog"
 
 describe("entity icon mapping", () => {
   it("maps rank ids to asset paths using lowercase Rank filenames", () => {

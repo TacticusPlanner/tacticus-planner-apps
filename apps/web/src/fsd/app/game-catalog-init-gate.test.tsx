@@ -45,6 +45,21 @@ describe("GameCatalogInitGate", () => {
     expect(screen.getByTestId("home-content")).toBeInTheDocument()
   })
 
+  it("reveals the app without overlay while only the manifest is being checked", () => {
+    // No dataset downloads have started yet (progress is still null) — e.g. a fast 304 on the
+    // manifest — so the app shouldn't be blocked just because a sync is technically in flight.
+    setStatus({ status: "syncing", progress: null })
+
+    render(
+      <GameCatalogInitGate>
+        <div data-testid="home-content" />
+      </GameCatalogInitGate>
+    )
+
+    expect(screen.queryByTestId("catalog-init-overlay")).not.toBeInTheDocument()
+    expect(screen.getByTestId("home-content")).toBeVisible()
+  })
+
   it("reveals the app without overlay when ready", () => {
     setStatus({ status: "ready" })
 

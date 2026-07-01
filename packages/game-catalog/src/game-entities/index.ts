@@ -1,4 +1,4 @@
-export { Rarity, rarityOrder, rarityRank } from "./rarity"
+export { Rarity, rarityOrder, rarityRank, rarityClass } from "./rarity"
 export {
   Rank,
   rankOrder,
@@ -10,6 +10,8 @@ export {
   isAdamantineRank,
 } from "./rank"
 export { Alliance, allianceOrder, allianceRank } from "./alliance"
+export { factionOrder, factionRank, groupByFaction } from "./faction"
+export type { FactionGroup, FactionGroupMember } from "./faction"
 export type {
   CharacterId,
   UpgradeId,
@@ -28,4 +30,6 @@ export {
   characterIcon,
   campaignIcon,
   campaignLabel,
+  campaignShortLabel,
 } from "./icons"
+export type { CampaignShortLabel } from "./icons"

@@ -21,10 +21,9 @@ import {
   rankAt,
   rankIndex,
   rankOrder,
+  type FactionGroup,
   type Rank,
 } from "@workspace/game-catalog"
-
-import type { FactionGroup } from "@/entities/faction"
 
 import { RankBadge } from "@/shared/ui"
 
@@ -104,11 +103,11 @@ export function RankLookupControls({
         ) : (
           <div className="flex flex-col gap-3 pt-1">
             <div className="flex items-center justify-between gap-2">
-              <RankBadge rank={rankStart} />
+              <RankBadge rank={rankStart} iconClassName="size-8" />
               <span aria-hidden className="text-muted-foreground">
                 →
               </span>
-              <RankBadge rank={rankEnd} />
+              <RankBadge rank={rankEnd} iconClassName="size-8" />
             </div>
             <Slider
               value={[rankIndex(rankStart), rankIndex(rankEnd)]}
