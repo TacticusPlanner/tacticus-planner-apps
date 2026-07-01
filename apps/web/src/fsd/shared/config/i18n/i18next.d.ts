@@ -12,7 +12,6 @@ declare module "i18next" {
       // Dynamic game-data namespaces (character/upgrade/faction ids as keys).
       characters: Record<string, string>
       upgrades: Record<string, string>
-      campaignLocations: Record<string, string>
       factions: Record<string, string>
     }
   }

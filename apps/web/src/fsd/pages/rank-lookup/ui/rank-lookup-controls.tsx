@@ -1,5 +1,6 @@
 import { Info } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
@@ -20,7 +21,7 @@ import {
   rankAt,
   rankIndex,
   rankOrder,
-  type RankId,
+  type Rank,
 } from "@workspace/game-catalog"
 
 import type { FactionGroup } from "@/entities/faction"
@@ -39,36 +40,36 @@ export function RankLookupControls({
   rankEnd,
   onRangeChange,
   pointFive,
+  pointFiveDisabled,
   onPointFiveChange,
+  onApply,
+  applyDisabled,
   isMobile,
 }: {
   characterGroups: FactionGroup[]
   characterId?: string
   onCharacterChange: (id: string) => void
-  rankStart: RankId
-  rankEnd: RankId
-  onRangeChange: (start: RankId, end: RankId) => void
+  rankStart: Rank
+  rankEnd: Rank
+  onRangeChange: (start: Rank, end: Rank) => void
   pointFive: boolean
+  pointFiveDisabled: boolean
   onPointFiveChange: (value: boolean) => void
+  onApply: () => void
+  applyDisabled: boolean
   isMobile: boolean
 }) {
   const { t } = useTranslation()
 
-  // Mobile selects clamp to keep start < end (mirrors V1's auto-correction).
-  const selectStart = (next: RankId) =>
-    onRangeChange(
-      next,
-      rankIndex(rankEnd) > rankIndex(next)
-        ? rankEnd
-        : rankAt(rankIndex(next) + 1)
-    )
-  const selectEnd = (next: RankId) =>
-    onRangeChange(
-      rankIndex(rankStart) < rankIndex(next)
-        ? rankStart
-        : rankAt(rankIndex(next) - 1),
-      next
-    )
+  // The other select's options are pre-filtered to keep start < end, so a plain set suffices.
+  const selectStart = (next: Rank) => onRangeChange(next, rankEnd)
+  const selectEnd = (next: Rank) => onRangeChange(rankStart, next)
+  const startOptions = rankOrder.filter(
+    (_, index) => index < rankIndex(rankEnd)
+  )
+  const endOptions = rankOrder.filter(
+    (_, index) => index > rankIndex(rankStart)
+  )
 
   return (
     <div className="flex flex-col gap-5">
@@ -90,11 +91,13 @@ export function RankLookupControls({
             <RankSelect
               label={t("rankLookup.start")}
               value={rankStart}
+              options={startOptions}
               onChange={selectStart}
             />
             <RankSelect
               label={t("rankLookup.end")}
               value={rankEnd}
+              options={endOptions}
               onChange={selectEnd}
             />
           </div>
@@ -126,6 +129,7 @@ export function RankLookupControls({
         <Switch
           id="point-five"
           checked={pointFive}
+          disabled={pointFiveDisabled}
           onCheckedChange={onPointFiveChange}
         />
         <Label htmlFor="point-five">{t("rankLookup.pointFive")}</Label>
@@ -140,10 +144,16 @@ export function RankLookupControls({
             </button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            {t("rankLookup.pointFiveHint")}
+            {pointFiveDisabled
+              ? t("rankLookup.pointFiveAdamantineDisabled")
+              : t("rankLookup.pointFiveHint")}
           </TooltipContent>
         </Tooltip>
       </div>
+
+      <Button onClick={onApply} disabled={applyDisabled}>
+        {t("rankLookup.apply")}
+      </Button>
     </div>
   )
 }
@@ -151,21 +161,23 @@ export function RankLookupControls({
 function RankSelect({
   label,
   value,
+  options,
   onChange,
 }: {
   label: string
-  value: RankId
-  onChange: (rank: RankId) => void
+  value: Rank
+  options: Rank[]
+  onChange: (rank: Rank) => void
 }) {
   return (
     <div className="grid gap-1.5">
       <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Select value={value} onValueChange={(v) => onChange(v as RankId)}>
+      <Select value={value} onValueChange={(v) => onChange(v as Rank)}>
         <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {rankOrder.map((rank) => (
+          {options.map((rank) => (
             <SelectItem key={rank} value={rank}>
               <RankBadge rank={rank} />
             </SelectItem>

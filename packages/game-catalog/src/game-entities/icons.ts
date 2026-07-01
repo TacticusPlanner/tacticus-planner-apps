@@ -1,5 +1,6 @@
 import type { CharacterId, CampaignGroupId, UpgradeId } from "./ids"
-import type { RankId } from "./rank"
+import type { Rank } from "./rank"
+import type { Rarity } from "./rarity"
 import { characterIconOverrides } from "./character-icon-overrides"
 
 // All asset paths are relative to the web app's /public/snowprint_assets/ root.
@@ -12,8 +13,25 @@ export function upgradeIcon(id: UpgradeId): string {
   return `/snowprint_assets/upgrade_materials/ui_icon_upgrade_${id}.png`
 }
 
-// All rank assets are named by RankId (lowercase): stone1.png … adamantine3.png.
-export function rankIcon(id: RankId): string {
+// Background plate rendered behind every upgrade material icon (see V1's upgrade-image.tsx).
+export const upgradeUnderlay =
+  "/snowprint_assets/frames/ui_underlay_upgrades.png"
+
+// Rarity-colored border rendered on top of the upgrade material icon.
+export function upgradeFrameIcon(rarity: Rarity): string {
+  return `/snowprint_assets/frames/ui_frame_upgrades_${rarity.toLowerCase()}.png`
+}
+
+// Badge overlaid on the bottom-left corner of a crafted (non-base) upgrade's icon.
+export const craftedUpgradeBadge = "/icons/upgrade-crafted-badge.png"
+
+// Rarity badge icon (not a Snowprint asset — a custom app icon, same as V1's rarity/resized/*.png).
+export function rarityIcon(rarity: Rarity): string {
+  return `/icons/rarity/${rarity.toLowerCase()}.png`
+}
+
+// All rank assets are named by Rank value (lowercase): stone1.png … adamantine3.png.
+export function rankIcon(id: Rank): string {
   return `/snowprint_assets/ranks/${id.toLowerCase()}.png`
 }
 
@@ -70,6 +88,40 @@ export function campaignIcon(
     const difficultySuffix = eventDifficultySuffix[difficulty]
     if (!difficultySuffix) return undefined
     return `/snowprint_assets/campaigns/${faction} ${difficultySuffix}.png`
+  }
+  return undefined
+}
+
+// Display names for campaign group + difficulty (farm-location labels). These intentionally
+// differ from the filename maps above in a couple of spots — e.g. "T'au" not "T'au Empire",
+// "Adepta Sororitas" not "Adeptus Sororitas" — matching the in-game campaign names rather than
+// the shipped asset filenames.
+const eventCampaignDisplayFaction: Record<CampaignGroupId, string> = {
+  "adepta-sororitas-vs-death-guard": "Death Guard",
+  "death-guard-vs-admech": "Adeptus Mechanicus",
+  "genestealers-vs-tau-empire": "T'au",
+  "necrons-vs-dark-angels": "Dark Angels",
+  "ultramarines-vs-tyranids": "Tyranids",
+  "world-eaters-vs-adepta-sororitas": "Adepta Sororitas",
+}
+
+export function campaignLabel(
+  groupId: CampaignGroupId,
+  difficulty: string
+): string | undefined {
+  const standardName = standardCampaigns[groupId]
+  if (standardName) {
+    if (difficulty === "elite") return `${standardName} Elite`
+    // The "-mirror" groups are already distinguished by name; the base group needs "Standard"
+    // spelled out to distinguish it from its own Elite tier.
+    return groupId.endsWith("-mirror")
+      ? standardName
+      : `${standardName} Standard`
+  }
+  const faction = eventCampaignDisplayFaction[groupId]
+  if (faction) {
+    const difficultyWord = eventDifficultySuffix[difficulty]
+    return difficultyWord ? `${faction} ${difficultyWord}` : undefined
   }
   return undefined
 }

@@ -1,6 +1,6 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type { RankId } from "@workspace/game-catalog"
+import type { Rank } from "@workspace/game-catalog"
 
 import type { FactionGroup } from "@/entities/faction"
 
@@ -14,15 +14,18 @@ import {
 export interface RankLookupDesktopPageProps {
   characterGroups: FactionGroup[]
   characterId: string | undefined
-  rankStart: RankId
-  rankEnd: RankId
+  rankStart: Rank
+  rankEnd: Rank
   pointFive: boolean
+  pointFiveDisabled: boolean
   loading: boolean
   baseUpgrades: BaseUpgradeView[]
   groups: RankGroupView[]
   onCharacterChange: (id: string) => void
-  onRangeChange: (start: RankId, end: RankId) => void
+  onRangeChange: (start: Rank, end: Rank) => void
   onPointFiveChange: (value: boolean) => void
+  onApply: () => void
+  applyDisabled: boolean
 }
 
 export function RankLookupDesktopPage({
@@ -32,11 +35,14 @@ export function RankLookupDesktopPage({
   rankStart,
   rankEnd,
   pointFive,
+  pointFiveDisabled,
   baseUpgrades,
   groups,
   onCharacterChange,
   onRangeChange,
   onPointFiveChange,
+  onApply,
+  applyDisabled,
 }: RankLookupDesktopPageProps) {
   if (loading) {
     return (
@@ -61,7 +67,10 @@ export function RankLookupDesktopPage({
           rankEnd={rankEnd}
           onRangeChange={onRangeChange}
           pointFive={pointFive}
+          pointFiveDisabled={pointFiveDisabled}
           onPointFiveChange={onPointFiveChange}
+          onApply={onApply}
+          applyDisabled={applyDisabled}
           isMobile={false}
         />
       </div>

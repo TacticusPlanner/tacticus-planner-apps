@@ -26,6 +26,7 @@ import { AuthControl } from "../providers/auth-control"
 import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
+import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 
 function LoadingFill() {
@@ -52,13 +53,19 @@ export function DesktopShell({
         visibleItems={visibleItems}
       />
       <SidebarInset>
-        {pageTitle ? (
-          <header className="flex items-center border-b px-6 py-4">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {pageTitle}
-            </h1>
-          </header>
-        ) : null}
+        <header className="flex items-center gap-2 border-b px-6 py-4">
+          {/* The sidebar fully hides off-canvas when collapsed, taking its own trigger with it —
+              this one stays put so it can always be expanded again. */}
+          <SidebarTrigger />
+          {pageTitle ? (
+            <div className="flex min-w-0 items-center gap-3">
+              <AppLogo className="size-8 shrink-0" />
+              <h1 className="truncate text-2xl font-semibold tracking-tight">
+                {pageTitle}
+              </h1>
+            </div>
+          ) : null}
+        </header>
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
         </Suspense>

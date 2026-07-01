@@ -38,6 +38,8 @@
     "pointFive": "Inclure les améliorations « point cinq »",
     "pointFiveShort": "Point cinq",
     "pointFiveHint": "En atteignant le rang cible, vous pouvez appliquer immédiatement la première amélioration de chaque statistique. Activez ceci pour inclure cette première rangée.",
+    "pointFiveAdamantineDisabled": "Les améliorations « point cinq » ne s'appliquent pas aux rangs Adamantine.",
+    "apply": "Appliquer",
     "baseUpgrades": "Améliorations de base nécessaires",
     "distinctBaseUpgrades": "Améliorations de base distinctes",
     "totalBaseUpgrades": "Total des améliorations de base",
@@ -45,7 +47,8 @@
     "name": "Nom",
     "count": "Quantité",
     "rarity": "Rareté",
-    "locations": "Lieux de farm",
+    "campaignLocations": "Lieux de campagne",
+    "eventLocations": "Lieux d'événements de campagne",
     "byRank": "Améliorations par rang",
     "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires."
   },

@@ -38,6 +38,8 @@
     "pointFive": "Include point-five upgrades",
     "pointFiveShort": "Point five",
     "pointFiveHint": "On reaching the target rank you can immediately apply the first upgrade of each stat. Enable this to include that top row.",
+    "pointFiveAdamantineDisabled": "Point-five upgrades don't apply to Adamantine ranks.",
+    "apply": "Apply",
     "baseUpgrades": "Base upgrades needed",
     "distinctBaseUpgrades": "Distinct base upgrades",
     "totalBaseUpgrades": "Total base upgrades",
@@ -45,7 +47,8 @@
     "name": "Name",
     "count": "Count",
     "rarity": "Rarity",
-    "locations": "Farm locations",
+    "campaignLocations": "Campaign locations",
+    "eventLocations": "Campaign Event Locations",
     "byRank": "Upgrades by rank",
     "noUpgrades": "Select a character and a valid rank range to see required upgrades."
   },

@@ -12,6 +12,7 @@ import { loginRequest } from "@/shared/auth"
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
+import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 
 function LoadingFill() {
@@ -59,11 +60,14 @@ function MobileHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between border-b bg-background px-4 py-2">
-      <span className="text-sm font-semibold tracking-tight">
-        {pageTitle ?? t("app.name")}
-      </span>
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-background px-4 py-2">
+      <div className="flex min-w-0 items-center gap-2">
+        <AppLogo className="size-7 shrink-0" />
+        <span className="truncate text-sm font-semibold tracking-tight">
+          {pageTitle ?? t("app.name")}
+        </span>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
         {!isAuthenticated ? (
           <Button size="sm" onClick={handleSignIn}>
             <LogIn />

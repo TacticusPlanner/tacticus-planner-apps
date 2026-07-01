@@ -1,7 +1,7 @@
-import type { RankId } from "@workspace/game-catalog"
+import type { Rank, Rarity } from "@workspace/game-catalog"
 
 export interface RankUpEntry {
-  rank: string
+  rank: Rank
   upgradeIds: string[]
 }
 
@@ -20,16 +20,16 @@ export interface RecipeIngredient {
 export interface UpgradeLike {
   id: string
   label: string
-  rarity: string
+  rarity: Rarity
   stat: string
-  /** True for composite upgrades that require crafting from ingredient upgrades. */
-  composite: boolean
+  /** True for crafted upgrades that require crafting from ingredient upgrades. */
+  crafted: boolean
   recipe: RecipeIngredient[]
 }
 
 export interface RankUpGroup {
-  fromRank: RankId
-  toRank: RankId
+  fromRank: Rank
+  toRank: Rank
   upgradeIds: string[]
   /** True for the extra "point five" group shown at the target rank. */
   pointFive?: boolean

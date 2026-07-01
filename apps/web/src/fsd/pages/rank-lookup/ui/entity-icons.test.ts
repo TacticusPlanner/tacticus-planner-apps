@@ -5,7 +5,7 @@ import { campaignIcon, characterIcon, rankIcon } from "@workspace/game-catalog"
 import { upgradeIcon } from "@/entities/upgrade"
 
 describe("entity icon mapping", () => {
-  it("maps rank ids to asset paths using lowercase RankId filenames", () => {
+  it("maps rank ids to asset paths using lowercase Rank filenames", () => {
     expect(rankIcon("Stone1")).toBe("/snowprint_assets/ranks/stone1.png")
     expect(rankIcon("Diamond3")).toBe("/snowprint_assets/ranks/diamond3.png")
     expect(rankIcon("Adamantine1")).toBe(

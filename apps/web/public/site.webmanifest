@@ -1,0 +1,24 @@
+{
+  "id": "tacticusplannerv2",
+  "name": "Tacticus Planner",
+  "short_name": "The Planner",
+  "description": "Companion app for Tacticus WH40K mobile game",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#005E9C",
+  "background_color": "#EEF0F4",
+  "display": "standalone",
+  "categories": ["entertainment", "games", "productivity"]
+}

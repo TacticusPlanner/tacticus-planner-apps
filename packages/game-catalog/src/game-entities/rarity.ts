@@ -18,7 +18,5 @@ export const rarityOrder: readonly Rarity[] = [
   Rarity.Mythic,
 ]
 
-export const rarityRank = (rarity: string): number => {
-  const index = rarityOrder.indexOf(rarity as Rarity)
-  return index === -1 ? 0 : index
-}
+export const rarityRank = (rarity: Rarity): number =>
+  rarityOrder.indexOf(rarity)

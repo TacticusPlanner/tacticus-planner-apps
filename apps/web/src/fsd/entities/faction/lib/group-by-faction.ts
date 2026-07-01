@@ -1,4 +1,4 @@
-import { allianceRank } from "../model/faction"
+import { allianceRank, type Alliance } from "../model/faction"
 
 export type FactionGroupMember = { id: string; name: string }
 export type FactionGroup = {
@@ -16,13 +16,13 @@ export function groupByFaction(
     id: string
     name: string
     faction: string
-    alliance: string
+    alliance: Alliance
   }[],
   factionName: (factionId: string) => string
 ): FactionGroup[] {
   const byFaction = new Map<
     string,
-    { alliance: string; members: FactionGroupMember[] }
+    { alliance: Alliance; members: FactionGroupMember[] }
   >()
 
   for (const character of characters) {

@@ -1,3 +1,4 @@
+import type { Rarity } from "@workspace/game-catalog"
 export { Rarity, rarityOrder, rarityRank } from "@workspace/game-catalog"
 
 const rarityTextClass: Record<string, string> = {
@@ -9,5 +10,5 @@ const rarityTextClass: Record<string, string> = {
   Mythic: "text-[var(--rarity-mythic)]",
 }
 
-export const rarityClass = (rarity: string): string =>
+export const rarityClass = (rarity: Rarity): string =>
   rarityTextClass[rarity] ?? rarityTextClass.Common

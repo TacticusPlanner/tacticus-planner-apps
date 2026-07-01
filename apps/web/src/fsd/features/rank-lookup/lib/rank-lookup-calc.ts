@@ -1,4 +1,4 @@
-import { rankIndex, rankOrder, type RankId } from "@workspace/game-catalog"
+import { rankIndex, rankOrder, type Rank } from "@workspace/game-catalog"
 
 import type {
   BaseUpgradeNeed,
@@ -28,8 +28,8 @@ const rankUpgradeMap = (character: CharacterLike): Map<string, string[]> =>
  */
 export function rankUpUpgradeIds(
   character: CharacterLike,
-  rankStart: RankId,
-  rankEnd: RankId,
+  rankStart: Rank,
+  rankEnd: Rank,
   pointFive: boolean
 ): string[] {
   if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
@@ -49,8 +49,8 @@ export function rankUpUpgradeIds(
 /** Per rank-step grouping for the "rank → rank" sections, plus an optional point-five group at the end. */
 export function groupUpgradesByRank(
   character: CharacterLike,
-  rankStart: RankId,
-  rankEnd: RankId,
+  rankStart: Rank,
+  rankEnd: Rank,
   pointFive: boolean
 ): RankUpGroup[] {
   if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
@@ -81,8 +81,8 @@ export function groupUpgradesByRank(
 }
 
 /**
- * Reduce a flat list of applied upgrade ids to the non-composite **base** upgrades needed, summing counts.
- * Composite upgrades are expanded through their recipe (recursively, multiplying ingredient counts);
+ * Reduce a flat list of applied upgrade ids to the non-crafted **base** upgrades needed, summing counts.
+ * Crafted upgrades are expanded through their recipe (recursively, multiplying ingredient counts);
  * base upgrades (and unknown ids) are counted directly.
  */
 export function aggregateBaseUpgrades(
@@ -93,7 +93,7 @@ export function aggregateBaseUpgrades(
 
   const add = (id: string, multiplier: number) => {
     const upgrade = upgradesById.get(id)
-    if (upgrade?.composite && upgrade.recipe.length > 0) {
+    if (upgrade?.crafted && upgrade.recipe.length > 0) {
       for (const ingredient of upgrade.recipe) {
         add(ingredient.material, multiplier * ingredient.count)
       }

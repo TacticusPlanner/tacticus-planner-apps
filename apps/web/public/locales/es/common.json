@@ -38,6 +38,8 @@
     "pointFive": "Incluir mejoras de medio rango",
     "pointFiveShort": "Medio rango",
     "pointFiveHint": "Al alcanzar el rango objetivo puedes aplicar de inmediato la primera mejora de cada estadística. Activa esto para incluir esa fila superior.",
+    "pointFiveAdamantineDisabled": "Las mejoras de medio rango no aplican a los rangos Adamantine.",
+    "apply": "Aplicar",
     "baseUpgrades": "Mejoras base necesarias",
     "distinctBaseUpgrades": "Mejoras base distintas",
     "totalBaseUpgrades": "Mejoras base totales",
@@ -45,7 +47,8 @@
     "name": "Nombre",
     "count": "Cantidad",
     "rarity": "Rareza",
-    "locations": "Lugares de farmeo",
+    "campaignLocations": "Lugares de campaña",
+    "eventLocations": "Lugares de eventos de campaña",
     "byRank": "Mejoras por rango",
     "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias."
   },

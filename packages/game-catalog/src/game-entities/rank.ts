@@ -23,9 +23,8 @@ export const Rank = {
 } as const
 
 export type Rank = (typeof Rank)[keyof typeof Rank]
-export type RankId = Rank
 
-export const rankOrder: readonly RankId[] = [
+export const rankOrder: readonly Rank[] = [
   Rank.Stone1,
   Rank.Stone2,
   Rank.Stone3,
@@ -49,13 +48,17 @@ export const rankOrder: readonly RankId[] = [
   Rank.Adamantine3,
 ]
 
-export const firstRank: RankId = rankOrder[0]
-export const lastRank: RankId = rankOrder[rankOrder.length - 1]
+export const firstRank: Rank = rankOrder[0]
+export const lastRank: Rank = rankOrder[rankOrder.length - 1]
 
-export const rankIndex = (id: RankId): number => rankOrder.indexOf(id)
+export const rankIndex = (id: Rank): number => rankOrder.indexOf(id)
 
-export const isRankId = (value: string): value is RankId =>
+export const isRank = (value: string): value is Rank =>
   (rankOrder as readonly string[]).includes(value)
 
-export const rankAt = (index: number): RankId =>
+// Adamantine1-3 don't have a "point five" step (see rank-lookup's Point Five toggle).
+export const isAdamantineRank = (rank: Rank): boolean =>
+  rank.startsWith("Adamantine")
+
+export const rankAt = (index: number): Rank =>
   rankOrder[Math.min(Math.max(index, 0), rankOrder.length - 1)]

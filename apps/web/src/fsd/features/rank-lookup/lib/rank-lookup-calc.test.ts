@@ -88,7 +88,7 @@ describe("aggregateBaseUpgrades", () => {
         label: "Base 1",
         rarity: "Common",
         stat: "Health",
-        composite: false,
+        crafted: false,
         recipe: [],
       },
     ],
@@ -99,7 +99,7 @@ describe("aggregateBaseUpgrades", () => {
         label: "Base 2",
         rarity: "Common",
         stat: "Damage",
-        composite: false,
+        crafted: false,
         recipe: [],
       },
     ],
@@ -110,7 +110,7 @@ describe("aggregateBaseUpgrades", () => {
         label: "Craft 1",
         rarity: "Rare",
         stat: "Health",
-        composite: true,
+        crafted: true,
         recipe: [
           { material: "base1", count: 2 },
           { material: "craft2", count: 1 },
@@ -124,13 +124,13 @@ describe("aggregateBaseUpgrades", () => {
         label: "Craft 2",
         rarity: "Uncommon",
         stat: "Health",
-        composite: true,
+        crafted: true,
         recipe: [{ material: "base2", count: 3 }],
       },
     ],
   ])
 
-  it("expands composite upgrades recursively and sums base counts", () => {
+  it("expands crafted upgrades recursively and sums base counts", () => {
     // craft1 = 2×base1 + 1×craft2(=3×base2); plus a standalone base1.
     const result = aggregateBaseUpgrades(["craft1", "base1"], upgrades)
     const byId = Object.fromEntries(result.map((r) => [r.id, r.count]))

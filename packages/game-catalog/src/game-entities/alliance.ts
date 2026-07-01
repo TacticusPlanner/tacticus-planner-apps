@@ -14,7 +14,7 @@ export const allianceOrder: readonly Alliance[] = [
   Alliance.Neutral,
 ]
 
-export const allianceRank = (alliance: string): number => {
-  const index = allianceOrder.indexOf(alliance as Alliance)
+export const allianceRank = (alliance: Alliance): number => {
+  const index = allianceOrder.indexOf(alliance)
   return index === -1 ? allianceOrder.length : index
 }

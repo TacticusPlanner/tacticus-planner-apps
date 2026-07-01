@@ -27,35 +27,39 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { RankId } from "@workspace/game-catalog"
+import type { Rank, Rarity } from "@workspace/game-catalog"
 
 import { rarityClass } from "@/entities/upgrade"
-import { EntityIcon, RankBadge, UpgradeIcon } from "@/shared/ui"
+import { EntityIcon, RankBadge, RarityIcon, UpgradeIcon } from "@/shared/ui"
 
-export type LocationView = { battleId: string; label: string; icon?: string }
+export type LocationView = { id: string; label: string; icon?: string }
 export type BaseUpgradeView = {
   id: string
   count: number
   label: string
-  rarity: string
-  locations: LocationView[]
+  rarity: Rarity
+  crafted: boolean
+  campaignLocations: LocationView[]
+  eventLocations: LocationView[]
 }
 export type RecipeView = {
   id: string
   label: string
   count: number
-  rarity: string
+  rarity: Rarity
+  crafted: boolean
   children: RecipeView[]
 }
 export type UpgradeView = {
   id: string
   label: string
-  rarity: string
+  rarity: Rarity
+  crafted: boolean
   recipe: RecipeView[]
 }
 export type RankGroupView = {
-  fromRank: RankId
-  toRank: RankId
+  fromRank: Rank
+  toRank: Rank
   pointFive?: boolean
   health: UpgradeView[]
   damage: UpgradeView[]
@@ -97,17 +101,6 @@ export function RankLookupResults({
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">
-          {t("rankLookup.baseUpgrades")}
-        </h2>
-        {isMobile ? (
-          <BaseUpgradesCards baseUpgrades={baseUpgrades} />
-        ) : (
-          <BaseUpgradesTable baseUpgrades={baseUpgrades} />
-        )}
-      </section>
-
-      <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">{t("rankLookup.byRank")}</h2>
         {isMobile ? (
           <Accordion type="multiple" className="w-full">
@@ -125,7 +118,7 @@ export function RankLookupResults({
         ) : (
           <div className="flex flex-wrap gap-3">
             {groups.map((group, index) => (
-              <Card key={index} className="min-w-52 gap-3 py-4">
+              <Card key={index} className="min-w-52 shrink-0 gap-3 py-4">
                 <CardHeader className="px-4">
                   <RankGroupHeader group={group} />
                 </CardHeader>
@@ -135,6 +128,17 @@ export function RankLookupResults({
               </Card>
             ))}
           </div>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">
+          {t("rankLookup.baseUpgrades")}
+        </h2>
+        {isMobile ? (
+          <BaseUpgradesCards baseUpgrades={baseUpgrades} />
+        ) : (
+          <BaseUpgradesTable baseUpgrades={baseUpgrades} />
         )}
       </section>
     </div>
@@ -175,26 +179,36 @@ function BaseUpgradesTable({
               {t("rankLookup.count")}
             </TableHead>
             <TableHead className="w-28">{t("rankLookup.rarity")}</TableHead>
-            <TableHead>{t("rankLookup.locations")}</TableHead>
+            <TableHead className="max-w-48">
+              {t("rankLookup.campaignLocations")}
+            </TableHead>
+            <TableHead className="max-w-48">
+              {t("rankLookup.eventLocations")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {baseUpgrades.map((upgrade) => (
             <TableRow key={upgrade.id}>
               <TableCell>
-                <UpgradeIcon id={upgrade.id} />
+                <UpgradeIcon
+                  id={upgrade.id}
+                  rarity={upgrade.rarity}
+                  crafted={upgrade.crafted}
+                />
               </TableCell>
               <TableCell className="font-medium">{upgrade.label}</TableCell>
               <TableCell className="text-right tabular-nums">
                 {upgrade.count}
               </TableCell>
-              <TableCell
-                className={cn("font-medium", rarityClass(upgrade.rarity))}
-              >
-                {upgrade.rarity}
-              </TableCell>
               <TableCell>
-                <LocationChips locations={upgrade.locations} />
+                <RarityIcon rarity={upgrade.rarity} />
+              </TableCell>
+              <TableCell className="max-w-48 whitespace-normal">
+                <LocationChips locations={upgrade.campaignLocations} />
+              </TableCell>
+              <TableCell className="max-w-48 whitespace-normal">
+                <LocationChips locations={upgrade.eventLocations} />
               </TableCell>
             </TableRow>
           ))}
@@ -209,27 +223,54 @@ function BaseUpgradesCards({
 }: {
   baseUpgrades: BaseUpgradeView[]
 }) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-col gap-2">
       {baseUpgrades.map((upgrade) => (
         <Card key={upgrade.id} className="gap-2 py-3">
           <CardContent className="flex flex-col gap-2 px-3">
             <div className="flex items-center gap-3">
-              <UpgradeIcon id={upgrade.id} className="size-10" />
+              <UpgradeIcon
+                id={upgrade.id}
+                rarity={upgrade.rarity}
+                crafted={upgrade.crafted}
+                className="size-10"
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{upgrade.label}</p>
-                <p className={cn("text-sm", rarityClass(upgrade.rarity))}>
-                  {upgrade.rarity}
-                </p>
+                <RarityIcon rarity={upgrade.rarity} className="size-5" />
               </div>
               <span className="text-lg font-semibold tabular-nums">
                 ×{upgrade.count}
               </span>
             </div>
-            <LocationChips locations={upgrade.locations} />
+            <LocationSection
+              label={t("rankLookup.campaignLocations")}
+              locations={upgrade.campaignLocations}
+            />
+            <LocationSection
+              label={t("rankLookup.eventLocations")}
+              locations={upgrade.eventLocations}
+            />
           </CardContent>
         </Card>
       ))}
+    </div>
+  )
+}
+
+function LocationSection({
+  label,
+  locations,
+}: {
+  label: string
+  locations: LocationView[]
+}) {
+  if (locations.length === 0) return null
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <LocationChips locations={locations} />
     </div>
   )
 }
@@ -240,7 +281,7 @@ function LocationChips({ locations }: { locations: LocationView[] }) {
     <div className="flex flex-wrap gap-1.5">
       {locations.map((location) => (
         <Badge
-          key={location.battleId}
+          key={location.id}
           variant="outline"
           className="gap-1 font-normal"
         >
@@ -313,7 +354,13 @@ function StatColumn({
 
 function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
   if (upgrade.recipe.length === 0) {
-    return <UpgradeIcon id={upgrade.id} />
+    return (
+      <UpgradeIcon
+        id={upgrade.id}
+        rarity={upgrade.rarity}
+        crafted={upgrade.crafted}
+      />
+    )
   }
   return (
     <Popover>
@@ -323,12 +370,20 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
           aria-label={upgrade.label}
           className="rounded-sm ring-offset-background hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
-          <UpgradeIcon id={upgrade.id} />
+          <UpgradeIcon
+            id={upgrade.id}
+            rarity={upgrade.rarity}
+            crafted={upgrade.crafted}
+          />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
         <div className="flex items-center gap-2 pb-2">
-          <UpgradeIcon id={upgrade.id} />
+          <UpgradeIcon
+            id={upgrade.id}
+            rarity={upgrade.rarity}
+            crafted={upgrade.crafted}
+          />
           <span className={cn("font-medium", rarityClass(upgrade.rarity))}>
             {upgrade.label}
           </span>
@@ -356,7 +411,12 @@ function RecipeTree({
       {items.map((item) => (
         <li key={item.id} className="flex flex-col gap-1">
           <div className="flex items-center gap-2 text-sm">
-            <UpgradeIcon id={item.id} className="size-6" />
+            <UpgradeIcon
+              id={item.id}
+              rarity={item.rarity}
+              crafted={item.crafted}
+              className="size-6"
+            />
             <span className={rarityClass(item.rarity)}>{item.label}</span>
             <span className="text-muted-foreground tabular-nums">
               ×{item.count}

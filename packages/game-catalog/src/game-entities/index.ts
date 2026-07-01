@@ -6,9 +6,9 @@ export {
   lastRank,
   rankIndex,
   rankAt,
-  isRankId,
+  isRank,
+  isAdamantineRank,
 } from "./rank"
-export type { RankId } from "./rank"
 export { Alliance, allianceOrder, allianceRank } from "./alliance"
 export type {
   CharacterId,
@@ -20,7 +20,12 @@ export type {
 export {
   upgradeIcon,
   upgradeIconFallback,
+  upgradeUnderlay,
+  upgradeFrameIcon,
+  craftedUpgradeBadge,
+  rarityIcon,
   rankIcon,
   characterIcon,
   campaignIcon,
+  campaignLabel,
 } from "./icons"
