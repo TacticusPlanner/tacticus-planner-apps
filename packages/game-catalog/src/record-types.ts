@@ -1,0 +1,48 @@
+import type { z } from "zod"
+
+import type {
+  campaignBattleViewSchema,
+  campaignDefinitionSchema,
+  characterViewSchema,
+  equipmentSchema,
+  equipmentUpgradeCostSchema,
+  farmLocationSchema,
+  lreBattleSchema,
+  lreBattleViewSchema,
+  lreCommonSchema,
+  lreEnemySchema,
+  lreTrackViewSchema,
+  lreViewSchema,
+  lreWaveSchema,
+  mowSchema,
+  mowUpgradeCostSchema,
+  npcSchema,
+  upgradeViewSchema,
+} from "./schemas"
+
+export type { GameCatalogUpgradeRecipeIngredient } from "./schemas"
+
+// Named types inferred from the validating schemas, for ergonomic consumption across the app.
+export type GameCatalogCharacterView = z.infer<typeof characterViewSchema>
+export type GameCatalogNpc = z.infer<typeof npcSchema>
+export type GameCatalogMow = z.infer<typeof mowSchema>
+export type GameCatalogUpgradeView = z.infer<typeof upgradeViewSchema>
+export type GameCatalogEquipment = z.infer<typeof equipmentSchema>
+export type GameCatalogCampaignBattleView = z.infer<
+  typeof campaignBattleViewSchema
+>
+export type GameCatalogCampaignDefinitionView = z.infer<
+  typeof campaignDefinitionSchema
+>
+export type GameCatalogLreView = z.infer<typeof lreViewSchema>
+export type GameCatalogLreTrackView = z.infer<typeof lreTrackViewSchema>
+export type GameCatalogLreBattle = z.infer<typeof lreBattleSchema>
+export type GameCatalogLreBattleView = z.infer<typeof lreBattleViewSchema>
+export type GameCatalogLreCommon = z.infer<typeof lreCommonSchema>
+export type GameCatalogLreWave = z.infer<typeof lreWaveSchema>
+export type GameCatalogLreEnemy = z.infer<typeof lreEnemySchema>
+export type GameCatalogFarmLocation = z.infer<typeof farmLocationSchema>
+export type GameCatalogMowUpgradeCost = z.infer<typeof mowUpgradeCostSchema>
+export type GameCatalogEquipmentUpgradeCost = z.infer<
+  typeof equipmentUpgradeCostSchema
+>

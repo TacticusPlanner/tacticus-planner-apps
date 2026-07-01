@@ -4,11 +4,7 @@ import fsd from "@feature-sliced/steiger-plugin"
 export default defineConfig([
   ...fsd.configs.recommended,
   {
-    files: [
-      "./src/fsd/entities/upgrade/**",
-      "./src/fsd/features/view-settings/**",
-      "./src/fsd/widgets/sidebar/**",
-    ],
+    files: ["./src/fsd/**"],
     rules: {
       "fsd/insignificant-slice": "off",
     },

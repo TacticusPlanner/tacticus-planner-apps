@@ -1,0 +1,15 @@
+{
+  "appName": "Tacticus Planner",
+  "authError": "Authentication could not be completed. Please try again.",
+  "title": "Plan your Tacticus roster",
+  "subtitle": "Track characters, upgrades, equipment, campaigns, and legendary events — all in one place.",
+  "getStarted": "Sign in / Get started",
+  "lookups": {
+    "title": "Reference & lookups",
+    "subtitle": "Browse game data without an account.",
+    "ranks": {
+      "title": "Rank Lookup",
+      "description": "See the upgrades and materials needed to rank up any character."
+    }
+  }
+}

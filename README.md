@@ -48,15 +48,23 @@ This Aspire integration is for local development only. It does not replace the
 standalone client development workflow, Turborepo commands, staging deployment,
 production deployment, or CI/CD workflows.
 
+Set `VITE_API_BASE_URL` to the planner API origin and `VITE_API_SCOPE` to the
+API permission scope used by the SPA, for example
+`api://<api-application-id>/access_as_user`.
+
 For deployments, define these public configuration values under **Settings →
 Secrets and variables → Actions → Variables** in GitHub:
 
 - `STAGE_MSAL_AUTHORITY`
+- `STAGE_API_BASE_URL`
+- `STAGE_API_SCOPE`
 - `STAGE_MSAL_CLIENT_ID`
 - `STAGE_MSAL_TENANT_ID`
 - `STAGE_API_BASE_URL`
 - `STAGE_API_SCOPE`
 - `PROD_MSAL_AUTHORITY`
+- `PROD_API_BASE_URL`
+- `PROD_API_SCOPE`
 - `PROD_MSAL_CLIENT_ID`
 - `PROD_MSAL_TENANT_ID`
 - `PROD_API_BASE_URL`

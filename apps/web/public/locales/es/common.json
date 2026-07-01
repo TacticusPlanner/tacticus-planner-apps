@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "Tacticus Planner"
+  },
+  "auth": {
+    "account": "Cuenta conectada",
+    "accountConsentRequired": "Se requiere acceso a la API",
+    "accountForbidden": "Acceso a la API denegado",
+    "accountLoadError": "Cuenta no disponible",
+    "accountLoading": "Cargando cuenta",
+    "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
+    "grantAccess": "Conceder acceso a la API",
+    "retry": "Volver a cargar la cuenta",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión"
+  },
+  "catalog": {
+    "init": {
+      "firstTimeTitle": "Configurando los datos del juego",
+      "firstTimeDescription": "Primer uso en este dispositivo — esto puede tardar un poco más.",
+      "updatingTitle": "Actualizando el catálogo del juego",
+      "updatingDescription": "Actualizando los datos del catálogo del juego a la versión {{version}}.",
+      "preparing": "Preparando el catálogo del juego…",
+      "progress": "Descargando {{done}} / {{total}}…",
+      "errorTitle": "No se pudieron cargar los datos del juego",
+      "errorDescription": "Algo salió mal al cargar el catálogo del juego.",
+      "retry": "Reintentar"
+    }
+  },
+  "rankLookup": {
+    "subtitle": "Elige un personaje y un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
+    "character": "Personaje",
+    "characterPlaceholder": "Selecciona un personaje",
+    "noCharacter": "No se encontró ningún personaje.",
+    "rankRange": "Intervalo de rangos",
+    "start": "Desde",
+    "end": "Hasta",
+    "pointFive": "Incluir mejoras de medio rango",
+    "pointFiveShort": "Medio rango",
+    "pointFiveHint": "Al alcanzar el rango objetivo puedes aplicar de inmediato la primera mejora de cada estadística. Activa esto para incluir esa fila superior.",
+    "pointFiveAdamantineDisabled": "Las mejoras de medio rango no aplican a los rangos Adamantine.",
+    "apply": "Aplicar",
+    "baseUpgrades": "Mejoras base necesarias",
+    "distinctBaseUpgrades": "Mejoras base distintas",
+    "totalBaseUpgrades": "Mejoras base totales",
+    "baseUpgrade": "Mejora",
+    "name": "Nombre",
+    "count": "Cantidad",
+    "rarity": "Rareza",
+    "campaignLocations": "Lugares de campaña",
+    "eventLocations": "Lugares de eventos de campaña",
+    "byRank": "Mejoras por rango",
+    "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias."
+  },
+  "nav": {
+    "home": "Inicio",
+    "rankLookup": "Consulta de rango",
+    "createGoal": "Crear objetivo"
+  },
+  "language": {
+    "label": "Idioma",
+    "options": {
+      "de": "Deutsch",
+      "en": "English",
+      "es": "Español",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "dark": "Oscuro",
+    "light": "Claro",
+    "switchToDark": "Cambiar al modo oscuro",
+    "switchToLight": "Cambiar al modo claro"
+  },
+  "tour": {
+    "start": "Hacer un recorrido",
+    "controls": {
+      "back": "Atrás",
+      "close": "Cerrar",
+      "last": "Listo",
+      "next": "Siguiente",
+      "nextWithProgress": "Siguiente ({current} de {total})",
+      "skip": "Omitir"
+    },
+    "steps": {
+      "welcome": {
+        "title": "Bienvenido a Tacticus Planner",
+        "content": "Haz un recorrido rápido para descubrir las partes clave de la interfaz."
+      },
+      "language": {
+        "title": "Elige tu idioma",
+        "content": "Cambia el idioma de la interfaz en cualquier momento desde este menú."
+      },
+      "theme": {
+        "title": "Claro u oscuro",
+        "content": "Alterna entre los temas claro y oscuro. Consejo: pulsa «D» para cambiar rápidamente."
+      },
+      "replay": {
+        "title": "Repetir el recorrido",
+        "content": "Haz clic aquí cuando quieras volver a ver este recorrido."
+      },
+      "navigation": {
+        "title": "Desplázate con facilidad",
+        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."
+      }
+    }
+  },
+  "uiKit": {
+    "navLabel": "Secciones del kit UI",
+    "subtitle": "Catalogo enfocado de componentes shadcn para la app planner v2.",
+    "title": "Kit UI",
+    "sections": {
+      "buttons": {
+        "description": "Estilos de accion principales, tamanos, estados desactivados y composicion con iconos.",
+        "label": "Botones"
+      },
+      "colors": {
+        "description": "Colores semanticos del preset shadcn activo.",
+        "label": "Colores"
+      },
+      "dataDisplay": {
+        "description": "Uso basico de tablas y una composicion de tabla con TanStack.",
+        "label": "Visualizacion de datos"
+      },
+      "feedback": {
+        "description": "Alertas, insignias, progreso, esqueletos e indicadores de carga.",
+        "label": "Respuesta"
+      },
+      "forms": {
+        "description": "Diseno de campos, descripciones, validacion, estados desactivados y entradas agrupadas.",
+        "label": "Formularios"
+      },
+      "layout": {
+        "description": "Tarjetas, separadores, acordeones, pestanas y regiones desplazables.",
+        "label": "Diseno"
+      },
+      "overlays": {
+        "description": "Composicion de tooltips, dialogos, popovers y comandos.",
+        "label": "Superposiciones"
+      },
+      "selection": {
+        "description": "Casillas, radios, interruptores, selects, sliders y controles segmentados.",
+        "label": "Seleccion"
+      }
+    }
+  }
+}
