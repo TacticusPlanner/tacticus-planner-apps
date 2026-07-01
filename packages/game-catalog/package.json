@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint",
+    "knip": "knip",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
@@ -17,7 +18,6 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
@@ -26,6 +26,7 @@
     "fake-indexeddb": "^6.2.5",
     "globals": "catalog:",
     "jsdom": "catalog:",
+    "knip": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"

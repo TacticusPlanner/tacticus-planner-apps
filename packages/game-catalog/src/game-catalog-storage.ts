@@ -197,5 +197,3 @@ function toStoredRecord(
 
   return { ...item, id: String(id) }
 }
-
-export type GameCatalogDb = IDBPDatabase
