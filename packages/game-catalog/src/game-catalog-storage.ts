@@ -1,4 +1,4 @@
-import { openDB, type IDBPDatabase } from "idb"
+import { openDB } from "idb"
 
 import {
   catalogManifestMetadataKey,

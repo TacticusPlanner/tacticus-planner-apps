@@ -73,19 +73,19 @@ export function LandingPage() {
         {/* Public reference pages. Add future lookups (MoW, NPC, Upgrades, Equipment, …) here. */}
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
-            to="/lookup/ranks"
-            data-testid="landing-rank-lookup-link"
+            to="/lookup"
+            data-testid="landing-unit-lookup-link"
             className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             <Card className="h-full text-left transition-colors hover:border-primary/50 hover:bg-accent/40">
               <CardHeader>
                 <ListChecks className="size-5 text-primary" />
                 <CardTitle className="flex items-center justify-between gap-2">
-                  {t("lookups.ranks.title")}
+                  {t("lookups.character.title")}
                   <ArrowRight className="size-4 text-muted-foreground" />
                 </CardTitle>
                 <CardDescription>
-                  {t("lookups.ranks.description")}
+                  {t("lookups.character.description")}
                 </CardDescription>
               </CardHeader>
             </Card>

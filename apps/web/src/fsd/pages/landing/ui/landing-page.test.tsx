@@ -40,10 +40,10 @@ describe("LandingPage", () => {
     expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
   })
 
-  it("links to the public Rank Lookup page", () => {
+  it("links to the public Unit Lookup page", () => {
     renderLanding()
 
-    const link = screen.getByTestId("landing-rank-lookup-link")
-    expect(link).toHaveAttribute("href", "/lookup/ranks")
+    const link = screen.getByTestId("landing-unit-lookup-link")
+    expect(link).toHaveAttribute("href", "/lookup")
   })
 })

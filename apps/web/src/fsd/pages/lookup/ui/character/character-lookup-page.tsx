@@ -358,8 +358,11 @@ export function CharacterLookupPage() {
         [
           character.meleeDamage,
           character.rangedDamage ?? undefined,
-          ...character.activeAbilityDamage,
-          ...character.passiveAbilityDamage,
+          // Zod's `.default([])` only backfills these on freshly-parsed network responses; catalog
+          // data cached in IndexedDB before this schema change won't have gone through that parse,
+          // so the field can still be `undefined` on an already-synced device.
+          ...(character.activeAbilityDamage ?? []),
+          ...(character.passiveAbilityDamage ?? []),
         ].filter((type): type is string => Boolean(type))
       ),
     ]
