@@ -5,13 +5,17 @@ import {
   campaignIcon,
   campaignShortLabel,
   firstRank,
+  firstRarityStars,
   groupByFaction,
   isAdamantineRank,
   isRank,
+  isRarityStars,
   rankAt,
   rarityRank,
-  type Rank,
+  statAtRank,
   useDatasetRecords,
+  type Rank,
+  type RarityStars,
 } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -24,40 +28,48 @@ import {
   type UpgradeLike,
 } from "@/features/rank-lookup"
 
-import { RankLookupDesktopPage } from "./desktop/rank-lookup-desktop-page"
-import { RankLookupMobilePage } from "./mobile/rank-lookup-mobile-page"
+import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
+import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
 import type {
   BaseUpgradeView,
   RankGroupView,
   RecipeView,
   UpgradeView,
-} from "./rank-lookup-results"
+} from "./character-lookup-results"
+import type { UnitProfileView } from "./unit-profile"
 
-interface RankSelection {
+interface LookupSelection {
   characterId?: string
   rankStart: Rank
   rankEnd: Rank
+  progression: RarityStars
   pointFive: boolean
 }
 
-function selectionFromParams(params: URLSearchParams): RankSelection {
+function selectionFromParams(params: URLSearchParams): LookupSelection {
   const start = params.get("rankStart")
   const end = params.get("rankEnd")
+  const progression = params.get("progression")
   return {
     characterId: params.get("character") ?? undefined,
     rankStart: start && isRank(start) ? start : firstRank,
     rankEnd: end && isRank(end) ? end : rankAt(1),
+    progression:
+      progression && isRarityStars(progression)
+        ? progression
+        : firstRarityStars,
     pointFive: params.get("pointFive") === "true",
   }
 }
 
-export function RankLookupPage() {
+export function CharacterLookupPage() {
   const { t } = useTranslation([
     "common",
     "ranks",
     "characters",
     "factions",
     "upgrades",
+    "traits",
   ])
   const isMobile = useIsMobile()
 
@@ -117,21 +129,23 @@ export function RankLookupPage() {
   )
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const [applied, setApplied] = useState<RankSelection>(() =>
+  const [applied, setApplied] = useState<LookupSelection>(() =>
     selectionFromParams(searchParams)
   )
   // Draft mirrors what the controls show; applied drives computation below. They only
   // reconcile on Apply, so dragging the rank slider (or picking a character) doesn't
   // recompute + re-render the whole results tree on every intermediate value.
-  const [draft, setDraft] = useState<RankSelection>(applied)
+  const [draft, setDraft] = useState<LookupSelection>(applied)
 
   const draftCharacterId =
     draft.characterId ?? characterGroups[0]?.members[0]?.id
   const characterId = applied.characterId ?? characterGroups[0]?.members[0]?.id
 
-  const character = characters.data.find((c) => c.id === characterId) as
-    | CharacterLike
-    | undefined
+  const character = characters.data.find((c) => c.id === characterId)
+  // rank-lookup-calc only reads id/name/rankUpUpgrades; a full catalog record is structurally
+  // compatible (rankUpUpgrades[].rank is a validated Rank string at runtime, just typed loosely
+  // by the schema), matching this codebase's existing cast-at-the-boundary pattern.
+  const characterForCalc = character as CharacterLike | undefined
 
   const setDraftCharacterId = (id: string) =>
     setDraft((prev) => ({ ...prev, characterId: id }))
@@ -145,6 +159,9 @@ export function RankLookupPage() {
       pointFive: isAdamantineRank(end) ? false : prev.pointFive,
     }))
 
+  const setDraftProgression = (value: RarityStars) =>
+    setDraft((prev) => ({ ...prev, progression: value }))
+
   const setDraftPointFive = (value: boolean) =>
     setDraft((prev) => ({ ...prev, pointFive: value }))
 
@@ -152,6 +169,7 @@ export function RankLookupPage() {
     draft.characterId !== applied.characterId ||
     draft.rankStart !== applied.rankStart ||
     draft.rankEnd !== applied.rankEnd ||
+    draft.progression !== applied.progression ||
     draft.pointFive !== applied.pointFive
 
   const handleApply = () => {
@@ -163,6 +181,7 @@ export function RankLookupPage() {
         else next.delete("character")
         next.set("rankStart", draft.rankStart)
         next.set("rankEnd", draft.rankEnd)
+        next.set("progression", draft.progression)
         next.set("pointFive", String(draft.pointFive))
         return next
       },
@@ -189,9 +208,9 @@ export function RankLookupPage() {
   }, [upgradesById, t])
 
   const groups = useMemo<RankGroupView[]>(() => {
-    if (!character) return []
+    if (!characterForCalc) return []
     return groupUpgradesByRank(
-      character,
+      characterForCalc,
       applied.rankStart,
       applied.rankEnd,
       applied.pointFive
@@ -222,7 +241,7 @@ export function RankLookupPage() {
       }
     })
   }, [
-    character,
+    characterForCalc,
     applied.rankStart,
     applied.rankEnd,
     applied.pointFive,
@@ -232,9 +251,9 @@ export function RankLookupPage() {
   ])
 
   const baseUpgrades = useMemo<BaseUpgradeView[]>(() => {
-    if (!character) return []
+    if (!characterForCalc) return []
     const upgradeIds = rankUpUpgradeIds(
-      character,
+      characterForCalc,
       applied.rankStart,
       applied.rankEnd,
       applied.pointFive
@@ -321,7 +340,7 @@ export function RankLookupPage() {
           rarityRank(b.rarity) - rarityRank(a.rarity) || b.count - a.count
       )
   }, [
-    character,
+    characterForCalc,
     applied.rankStart,
     applied.rankEnd,
     applied.pointFive,
@@ -330,6 +349,46 @@ export function RankLookupPage() {
     releaseTypeByGroupId,
     t,
   ])
+
+  const profile = useMemo<UnitProfileView | undefined>(() => {
+    if (!character) return undefined
+
+    const damageTypes = [
+      ...new Set(
+        [
+          character.meleeDamage,
+          character.rangedDamage ?? undefined,
+          ...character.activeAbilityDamage,
+          ...character.passiveAbilityDamage,
+        ].filter((type): type is string => Boolean(type))
+      ),
+    ]
+
+    const statPair = (base: number) => ({
+      current: statAtRank(base, applied.rankStart, applied.progression),
+      target: statAtRank(base, applied.rankEnd, applied.progression),
+    })
+
+    return {
+      id: character.id,
+      name: t(`characters:${character.id}`, { defaultValue: character.name }),
+      faction: t(`factions:${character.faction}`, {
+        defaultValue: character.faction,
+      }),
+      movement: character.movement,
+      meleeHits: character.meleeHits,
+      meleeDamageType: character.meleeDamage,
+      rangedHits: character.rangedHits ?? undefined,
+      rangedDamageType: character.rangedDamage ?? undefined,
+      rangeDistance: character.rangeDistance ?? undefined,
+      damageTypes,
+      equipmentSlots: character.equipmentSlots,
+      traits: character.traits,
+      health: statPair(character.health),
+      damage: statPair(character.damage),
+      armour: statPair(character.armour),
+    }
+  }, [character, applied.rankStart, applied.rankEnd, applied.progression, t])
 
   const loading =
     (characters.loading && characters.data.length === 0) ||
@@ -340,30 +399,30 @@ export function RankLookupPage() {
     characterId: draftCharacterId,
     rankStart: draft.rankStart,
     rankEnd: draft.rankEnd,
+    progression: draft.progression,
     pointFive: draft.pointFive,
     pointFiveDisabled: isAdamantineRank(draft.rankEnd),
     loading,
+    profile,
     baseUpgrades,
     groups,
     onCharacterChange: setDraftCharacterId,
     onRangeChange: setDraftRange,
+    onProgressionChange: setDraftProgression,
     onPointFiveChange: setDraftPointFive,
     onApply: handleApply,
     applyDisabled: !isDirty,
   }
 
   return (
-    <main
-      className="mx-auto flex w-full max-w-400 flex-col gap-8 px-4 py-6 sm:px-6 sm:py-10"
-      data-testid="rank-lookup-page"
-    >
-      <p className="text-muted-foreground">{t("rankLookup.subtitle")}</p>
+    <div className="flex flex-col gap-8" data-testid="character-lookup-page">
+      <p className="text-muted-foreground">{t("unitLookup.subtitle")}</p>
 
       {isMobile ? (
-        <RankLookupMobilePage {...sharedProps} />
+        <CharacterLookupMobilePage {...sharedProps} />
       ) : (
-        <RankLookupDesktopPage {...sharedProps} />
+        <CharacterLookupDesktopPage {...sharedProps} />
       )}
-    </main>
+    </div>
   )
 }

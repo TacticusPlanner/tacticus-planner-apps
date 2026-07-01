@@ -24,6 +24,11 @@ export const characterViewSchema = z.looseObject({
   traits: z.array(z.string()),
   activeAbilityNames: z.array(z.string()),
   passiveAbilityNames: z.array(z.string()),
+  // Damage type(s) each ability can deal. Not yet populated server-side for characters (unlike
+  // npcSchema's activeAbilityDamage/passiveAbilityDamage) — default to [] so older/interim
+  // payloads still validate; the unit-lookup UI renders nothing for an empty array.
+  activeAbilityDamage: z.array(z.string()).default([]),
+  passiveAbilityDamage: z.array(z.string()).default([]),
   equipmentSlots: z.array(z.string()),
   rankUpUpgrades: z.array(characterRankUpSchema),
   shardLocations: z.array(farmLocationSchema),

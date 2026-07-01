@@ -126,6 +126,97 @@ export function campaignLabel(
   return undefined
 }
 
+// ---- Trait icons ------------------------------------------------------------------------------
+
+// Trait ids come off the characters dataset as PascalCase keys (e.g. "ActOfFaith",
+// "TeleportStrike"), while the shipped asset filenames are snake_case — mostly a direct
+// transliteration, but a handful carry irregular names/spellings from Snowprint's own files and
+// need an explicit override (ported from V1's trait-image.tsx traitFileOverrides).
+const traitIconOverrides: Record<string, string> = {
+  BeastSnagga: "beast_slayer",
+  BlessingsOfKhorne: "blessing_of_khorne",
+  CloseCombatWeakness: "combat_weakness",
+  ContagionsOfNurgle: "contagions",
+  Daemon: "daemonic",
+  TeleportStrike: "teleport_strike",
+  Diminutive: "diminuitive",
+  FinalJustice: "only_in_death",
+  LivingMetal: "livingmetall",
+  MartialKatah: "martial_katah",
+  MkXGravis: "mk_gravis",
+  Psyker: "psychic",
+  SuppressiveFire: "supressive_fire",
+  TerminatorArmour: "terminator_amour",
+  TwoManTeam: "2_man_team",
+  WeaverOfFate: "weavers_of_fate",
+  Unstoppable: "unknown",
+  GetStuckIn: "unknown",
+}
+
+function pascalToSnake(id: string): string {
+  return id.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase()
+}
+
+export function traitIcon(id: string): string {
+  const slug = traitIconOverrides[id] ?? pascalToSnake(id)
+  return `/snowprint_assets/traits/ui_icon_trait_${slug}_01.png`
+}
+
+// ---- Damage type icons --------------------------------------------------------------------------
+
+// Damage type strings on characters (meleeDamage/rangedDamage/activeAbilityDamage/
+// passiveAbilityDamage) already match the shipped asset filenames verbatim (PascalCase), so — unlike
+// traits/equipment — no override map is needed here.
+export function damageTypeIcon(type: string): string {
+  return `/snowprint_assets/damage_icons/ui_icon_damage_profile2_${type}.png`
+}
+
+// Derives a readable label from the PascalCase damage type id, e.g. "HeavyRound" → "Heavy Round".
+export function damageTypeLabel(type: string): string {
+  return type.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+}
+
+// ---- Equipment slot icons -----------------------------------------------------------------------
+
+// Slot codes are free-form strings on the character record (e.g. "I_Crit") — there is no closed
+// enum server-side, so unrecognized codes fall back to `undefined`/the raw code rather than throwing.
+const equipmentSlotInfo: Record<string, { slug: string; label: string }> = {
+  I_Crit: { slug: "crit", label: "Crit" },
+  I_Block: { slug: "block", label: "Block" },
+  I_Booster_Crit: { slug: "booster_crit", label: "Crit Booster" },
+  I_Booster_Block: { slug: "booster_block", label: "Block Booster" },
+  I_Defensive: { slug: "defensive", label: "Defensive" },
+}
+
+export function equipmentSlotIcon(slot: string): string | undefined {
+  const info = equipmentSlotInfo[slot]
+  return info
+    ? `/snowprint_assets/equipment/ui_icon_itemtype_${info.slug}.png`
+    : undefined
+}
+
+export function equipmentSlotLabel(slot: string): string {
+  return equipmentSlotInfo[slot]?.label ?? slot
+}
+
+// ---- Stat icons ----------------------------------------------------------------------------------
+
+const statIconFile = {
+  health: "ui_icon_stat_health_01.png",
+  damage: "ui_icon_stat_dmg_01.png",
+  armour: "ui_icon_stat_armor_01.png",
+  movement: "ui_icon_stat_move_01.png",
+  melee: "ui_icon_stat_melee_01.png",
+  ranged: "ui_icon_stat_rangedattack_01.png",
+  hits: "ui_icon_stat_hit_01.png",
+} satisfies Record<string, string>
+
+export type StatIconKind = keyof typeof statIconFile
+
+export function statIcon(kind: StatIconKind): string {
+  return `/snowprint_assets/stat_icons/${statIconFile[kind]}`
+}
+
 export type CampaignShortLabel = {
   /** Campaign/event name, without any difficulty wording. */
   name: string

@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest"
 
-import { campaignLabel, campaignShortLabel } from "./icons"
+import {
+  campaignLabel,
+  campaignShortLabel,
+  damageTypeIcon,
+  damageTypeLabel,
+  equipmentSlotIcon,
+  equipmentSlotLabel,
+  statIcon,
+  traitIcon,
+} from "./icons"
 
 describe("campaignLabel", () => {
   it("labels standard campaigns with an explicit difficulty word", () => {
@@ -100,5 +109,72 @@ describe("campaignShortLabel", () => {
     expect(
       campaignShortLabel("death-guard-vs-admech", "unknown")
     ).toBeUndefined()
+  })
+})
+
+describe("traitIcon", () => {
+  it("converts a simple PascalCase trait id to its snake_case filename", () => {
+    expect(traitIcon("Healer")).toBe(
+      "/snowprint_assets/traits/ui_icon_trait_healer_01.png"
+    )
+    expect(traitIcon("ActOfFaith")).toBe(
+      "/snowprint_assets/traits/ui_icon_trait_act_of_faith_01.png"
+    )
+    expect(traitIcon("ShadowInTheWarp")).toBe(
+      "/snowprint_assets/traits/ui_icon_trait_shadow_in_the_warp_01.png"
+    )
+  })
+
+  it("uses the override map for irregular trait filenames", () => {
+    expect(traitIcon("Psyker")).toBe(
+      "/snowprint_assets/traits/ui_icon_trait_psychic_01.png"
+    )
+    expect(traitIcon("LivingMetal")).toBe(
+      "/snowprint_assets/traits/ui_icon_trait_livingmetall_01.png"
+    )
+    expect(traitIcon("Unstoppable")).toBe(
+      "/snowprint_assets/traits/ui_icon_trait_unknown_01.png"
+    )
+  })
+})
+
+describe("damageTypeIcon / damageTypeLabel", () => {
+  it("builds the icon path directly from the PascalCase damage type id", () => {
+    expect(damageTypeIcon("Physical")).toBe(
+      "/snowprint_assets/damage_icons/ui_icon_damage_profile2_Physical.png"
+    )
+    expect(damageTypeIcon("HeavyRound")).toBe(
+      "/snowprint_assets/damage_icons/ui_icon_damage_profile2_HeavyRound.png"
+    )
+  })
+
+  it("derives a spaced label from the PascalCase id", () => {
+    expect(damageTypeLabel("HeavyRound")).toBe("Heavy Round")
+    expect(damageTypeLabel("Physical")).toBe("Physical")
+  })
+})
+
+describe("equipmentSlotIcon / equipmentSlotLabel", () => {
+  it("maps known slot codes to their icon and label", () => {
+    expect(equipmentSlotIcon("I_Crit")).toBe(
+      "/snowprint_assets/equipment/ui_icon_itemtype_crit.png"
+    )
+    expect(equipmentSlotLabel("I_Booster_Crit")).toBe("Crit Booster")
+  })
+
+  it("falls back to the raw code for an unrecognized slot", () => {
+    expect(equipmentSlotIcon("I_Unknown")).toBeUndefined()
+    expect(equipmentSlotLabel("I_Unknown")).toBe("I_Unknown")
+  })
+})
+
+describe("statIcon", () => {
+  it("returns a stat_icons path for each known stat kind", () => {
+    expect(statIcon("health")).toBe(
+      "/snowprint_assets/stat_icons/ui_icon_stat_health_01.png"
+    )
+    expect(statIcon("movement")).toBe(
+      "/snowprint_assets/stat_icons/ui_icon_stat_move_01.png"
+    )
   })
 })

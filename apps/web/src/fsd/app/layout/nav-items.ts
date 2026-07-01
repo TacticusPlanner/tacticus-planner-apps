@@ -3,7 +3,7 @@ import { Home, Search } from "lucide-react"
 
 export interface NavItem {
   path: string
-  labelKey: "nav.home" | "nav.rankLookup" | "nav.createGoal"
+  labelKey: "nav.home" | "nav.lookup" | "nav.createGoal"
   icon: LucideIcon
   anonymousAllowed: boolean
 }
@@ -11,8 +11,8 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { path: "/home", labelKey: "nav.home", icon: Home, anonymousAllowed: false },
   {
-    path: "/lookup/ranks",
-    labelKey: "nav.rankLookup",
+    path: "/lookup",
+    labelKey: "nav.lookup",
     icon: Search,
     anonymousAllowed: true,
   },

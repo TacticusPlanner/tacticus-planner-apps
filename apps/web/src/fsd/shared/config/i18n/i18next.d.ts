@@ -9,10 +9,11 @@ declare module "i18next" {
       common: typeof enCommon
       landing: typeof enLanding
       ranks: typeof enRanks
-      // Dynamic game-data namespaces (character/upgrade/faction ids as keys).
+      // Dynamic game-data namespaces (character/upgrade/faction/trait ids as keys).
       characters: Record<string, string>
       upgrades: Record<string, string>
       factions: Record<string, string>
+      traits: Record<string, string>
     }
   }
 }

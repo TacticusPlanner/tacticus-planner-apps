@@ -27,7 +27,13 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { rarityClass, type Rank, type Rarity } from "@workspace/game-catalog"
+import {
+  rarityClass,
+  statIcon,
+  type Rank,
+  type Rarity,
+  type StatIconKind,
+} from "@workspace/game-catalog"
 
 import { EntityIcon, RankBadge, RarityIcon, UpgradeIcon } from "@/shared/ui"
 
@@ -65,7 +71,7 @@ export type RankGroupView = {
   armour: UpgradeView[]
 }
 
-export function RankLookupResults({
+export function CharacterLookupResults({
   baseUpgrades,
   groups,
   isMobile,
@@ -79,7 +85,7 @@ export function RankLookupResults({
   if (baseUpgrades.length === 0) {
     return (
       <p className="py-10 text-center text-muted-foreground">
-        {t("rankLookup.noUpgrades")}
+        {t("unitLookup.noUpgrades")}
       </p>
     )
   }
@@ -90,17 +96,17 @@ export function RankLookupResults({
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-3 sm:max-w-md">
         <SummaryCard
-          label={t("rankLookup.distinctBaseUpgrades")}
+          label={t("unitLookup.distinctBaseUpgrades")}
           value={baseUpgrades.length}
         />
         <SummaryCard
-          label={t("rankLookup.totalBaseUpgrades")}
+          label={t("unitLookup.totalBaseUpgrades")}
           value={totalCount}
         />
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{t("rankLookup.byRank")}</h2>
+        <h2 className="text-lg font-semibold">{t("unitLookup.byRank")}</h2>
         {isMobile ? (
           <Accordion type="multiple" className="w-full">
             {groups.map((group, index) => (
@@ -132,7 +138,7 @@ export function RankLookupResults({
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">
-          {t("rankLookup.baseUpgrades")}
+          {t("unitLookup.baseUpgrades")}
         </h2>
         {isMobile ? (
           <BaseUpgradesCards baseUpgrades={baseUpgrades} />
@@ -171,18 +177,18 @@ function BaseUpgradesTable({
         <TableHeader>
           <TableRow>
             <TableHead className="w-12">
-              {t("rankLookup.baseUpgrade")}
+              {t("unitLookup.baseUpgrade")}
             </TableHead>
-            <TableHead>{t("rankLookup.name")}</TableHead>
+            <TableHead>{t("unitLookup.name")}</TableHead>
             <TableHead className="w-20 text-right">
-              {t("rankLookup.count")}
+              {t("unitLookup.count")}
             </TableHead>
-            <TableHead className="w-28">{t("rankLookup.rarity")}</TableHead>
+            <TableHead className="w-28">{t("unitLookup.rarity")}</TableHead>
             <TableHead className="max-w-48">
-              {t("rankLookup.campaignLocations")}
+              {t("unitLookup.campaignLocations")}
             </TableHead>
             <TableHead className="max-w-48">
-              {t("rankLookup.eventLocations")}
+              {t("unitLookup.eventLocations")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -245,11 +251,11 @@ function BaseUpgradesCards({
               </span>
             </div>
             <LocationSection
-              label={t("rankLookup.campaignLocations")}
+              label={t("unitLookup.campaignLocations")}
               locations={upgrade.campaignLocations}
             />
             <LocationSection
-              label={t("rankLookup.eventLocations")}
+              label={t("unitLookup.eventLocations")}
               locations={upgrade.eventLocations}
             />
           </CardContent>
@@ -311,7 +317,7 @@ function RankGroupHeader({
         showLabel={!compact}
       />
       {group.pointFive ? (
-        <Badge variant="secondary">{t("rankLookup.pointFiveShort")}</Badge>
+        <Badge variant="secondary">{t("unitLookup.pointFiveShort")}</Badge>
       ) : (
         <>
           <span aria-hidden className="text-muted-foreground">
@@ -338,24 +344,18 @@ function RankGroupBody({ group }: { group: RankGroupView }) {
   )
 }
 
-const statIcon: Record<string, string> = {
-  health: "/snowprint_assets/stat_icons/ui_icon_stat_health_01.png",
-  damage: "/snowprint_assets/stat_icons/ui_icon_stat_dmg_01.png",
-  armour: "/snowprint_assets/stat_icons/ui_icon_stat_armor_01.png",
-}
-
 function StatColumn({
   stat,
   upgrades,
 }: {
-  stat: string
+  stat: StatIconKind
   upgrades: UpgradeView[]
 }) {
   if (upgrades.length === 0) return null
   return (
     <div className="flex flex-col items-center gap-1.5">
       <EntityIcon
-        src={statIcon[stat]}
+        src={statIcon(stat)}
         alt={stat}
         className="size-8 opacity-80"
       />

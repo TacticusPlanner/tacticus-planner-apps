@@ -31,5 +31,20 @@ export {
   campaignIcon,
   campaignLabel,
   campaignShortLabel,
+  traitIcon,
+  damageTypeIcon,
+  damageTypeLabel,
+  equipmentSlotIcon,
+  equipmentSlotLabel,
+  statIcon,
 } from "./icons"
-export type { CampaignShortLabel } from "./icons"
+export type { CampaignShortLabel, StatIconKind } from "./icons"
+export {
+  rarityStarsOrder,
+  firstRarityStars,
+  lastRarityStars,
+  rarityStarsIndex,
+  isRarityStars,
+  statAtRank,
+} from "./unit-stats"
+export type { RarityStars } from "./unit-stats"

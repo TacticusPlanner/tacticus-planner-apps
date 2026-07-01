@@ -1,47 +1,54 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type { FactionGroup, Rank } from "@workspace/game-catalog"
+import type { FactionGroup, Rank, RarityStars } from "@workspace/game-catalog"
 
-import { RankLookupControls } from "../rank-lookup-controls"
+import { CharacterLookupControls } from "../character-lookup-controls"
 import {
-  RankLookupResults,
+  CharacterLookupResults,
   type BaseUpgradeView,
   type RankGroupView,
-} from "../rank-lookup-results"
+} from "../character-lookup-results"
+import { UnitProfile, type UnitProfileView } from "../unit-profile"
 
-export interface RankLookupDesktopPageProps {
+export interface CharacterLookupDesktopPageProps {
   characterGroups: FactionGroup[]
   characterId: string | undefined
   rankStart: Rank
   rankEnd: Rank
+  progression: RarityStars
   pointFive: boolean
   pointFiveDisabled: boolean
   loading: boolean
+  profile: UnitProfileView | undefined
   baseUpgrades: BaseUpgradeView[]
   groups: RankGroupView[]
   onCharacterChange: (id: string) => void
   onRangeChange: (start: Rank, end: Rank) => void
+  onProgressionChange: (value: RarityStars) => void
   onPointFiveChange: (value: boolean) => void
   onApply: () => void
   applyDisabled: boolean
 }
 
-export function RankLookupDesktopPage({
+export function CharacterLookupDesktopPage({
   loading,
   characterGroups,
   characterId,
   rankStart,
   rankEnd,
+  progression,
   pointFive,
   pointFiveDisabled,
+  profile,
   baseUpgrades,
   groups,
   onCharacterChange,
   onRangeChange,
+  onProgressionChange,
   onPointFiveChange,
   onApply,
   applyDisabled,
-}: RankLookupDesktopPageProps) {
+}: CharacterLookupDesktopPageProps) {
   if (loading) {
     return (
       <div className="flex gap-8">
@@ -57,13 +64,15 @@ export function RankLookupDesktopPage({
   return (
     <div className="flex items-start gap-8">
       <div className="sticky top-6 w-80 shrink-0">
-        <RankLookupControls
+        <CharacterLookupControls
           characterGroups={characterGroups}
           characterId={characterId}
           onCharacterChange={onCharacterChange}
           rankStart={rankStart}
           rankEnd={rankEnd}
           onRangeChange={onRangeChange}
+          progression={progression}
+          onProgressionChange={onProgressionChange}
           pointFive={pointFive}
           pointFiveDisabled={pointFiveDisabled}
           onPointFiveChange={onPointFiveChange}
@@ -72,8 +81,9 @@ export function RankLookupDesktopPage({
           isMobile={false}
         />
       </div>
-      <div className="min-w-0 flex-1">
-        <RankLookupResults
+      <div className="flex min-w-0 flex-1 flex-col gap-6">
+        {profile ? <UnitProfile profile={profile} /> : null}
+        <CharacterLookupResults
           baseUpgrades={baseUpgrades}
           groups={groups}
           isMobile={false}

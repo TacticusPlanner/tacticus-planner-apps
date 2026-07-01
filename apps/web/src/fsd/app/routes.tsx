@@ -10,7 +10,11 @@ import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { UiKitPage } from "@/pages/ui-kit"
 import { LandingPage } from "@/pages/landing"
-import { RankLookupPage } from "@/pages/rank-lookup"
+import {
+  CharacterLookupPage,
+  LookupPage,
+  LookupPlaceholder,
+} from "@/pages/lookup"
 
 import { AppShell } from "./layout/app-shell"
 
@@ -66,7 +70,16 @@ export const routes: RouteObject[] = [
           </ProtectedRoute>
         ),
       },
-      { path: "/lookup/ranks", element: <RankLookupPage /> },
+      {
+        path: "/lookup",
+        element: <LookupPage />,
+        children: [
+          { index: true, element: <Navigate replace to="/lookup/character" /> },
+          { path: "character", element: <CharacterLookupPage /> },
+          { path: "mow", element: <LookupPlaceholder tab="mow" /> },
+          { path: "npc", element: <LookupPlaceholder tab="npc" /> },
+        ],
+      },
       { path: "*", element: <Navigate replace to="/" /> },
     ],
   },

@@ -21,8 +21,10 @@ import {
   rankAt,
   rankIndex,
   rankOrder,
+  rarityStarsOrder,
   type FactionGroup,
   type Rank,
+  type RarityStars,
 } from "@workspace/game-catalog"
 
 import { RankBadge } from "@/shared/ui"
@@ -31,13 +33,22 @@ import { CharacterCombobox } from "./character-combobox"
 
 const maxIndex = rankOrder.length - 1
 
-export function RankLookupControls({
+// V1 displays a RarityStars step by its own enum-key text (e.g. "RedOneStar", "MythicWings")
+// rather than a fabricated rarity/star-count label, so this mirrors that: split the PascalCase id
+// into words, e.g. "RedOneStar" → "Red One Star".
+function progressionLabel(value: RarityStars): string {
+  return value.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+}
+
+export function CharacterLookupControls({
   characterGroups,
   characterId,
   onCharacterChange,
   rankStart,
   rankEnd,
   onRangeChange,
+  progression,
+  onProgressionChange,
   pointFive,
   pointFiveDisabled,
   onPointFiveChange,
@@ -51,6 +62,8 @@ export function RankLookupControls({
   rankStart: Rank
   rankEnd: Rank
   onRangeChange: (start: Rank, end: Rank) => void
+  progression: RarityStars
+  onProgressionChange: (value: RarityStars) => void
   pointFive: boolean
   pointFiveDisabled: boolean
   onPointFiveChange: (value: boolean) => void
@@ -73,28 +86,28 @@ export function RankLookupControls({
   return (
     <div className="flex flex-col gap-5">
       <div className="grid gap-2">
-        <Label>{t("rankLookup.character")}</Label>
+        <Label>{t("unitLookup.character")}</Label>
         <CharacterCombobox
           groups={characterGroups}
           value={characterId}
           onChange={onCharacterChange}
-          placeholder={t("rankLookup.characterPlaceholder")}
-          emptyText={t("rankLookup.noCharacter")}
+          placeholder={t("unitLookup.characterPlaceholder")}
+          emptyText={t("unitLookup.noCharacter")}
         />
       </div>
 
       <div className="grid gap-2">
-        <Label>{t("rankLookup.rankRange")}</Label>
+        <Label>{t("unitLookup.rankRange")}</Label>
         {isMobile ? (
           <div className="grid grid-cols-2 gap-3">
             <RankSelect
-              label={t("rankLookup.start")}
+              label={t("unitLookup.start")}
               value={rankStart}
               options={startOptions}
               onChange={selectStart}
             />
             <RankSelect
-              label={t("rankLookup.end")}
+              label={t("unitLookup.end")}
               value={rankEnd}
               options={endOptions}
               onChange={selectEnd}
@@ -118,10 +131,29 @@ export function RankLookupControls({
               onValueChange={([start, end]) =>
                 onRangeChange(rankAt(start), rankAt(end))
               }
-              aria-label={t("rankLookup.rankRange")}
+              aria-label={t("unitLookup.rankRange")}
             />
           </div>
         )}
+      </div>
+
+      <div className="grid gap-2">
+        <Label>{t("unitLookup.progression")}</Label>
+        <Select
+          value={progression}
+          onValueChange={(v) => onProgressionChange(v as RarityStars)}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {rarityStarsOrder.map((value) => (
+              <SelectItem key={value} value={value}>
+                {progressionLabel(value)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex items-center gap-2">
@@ -131,12 +163,12 @@ export function RankLookupControls({
           disabled={pointFiveDisabled}
           onCheckedChange={onPointFiveChange}
         />
-        <Label htmlFor="point-five">{t("rankLookup.pointFive")}</Label>
+        <Label htmlFor="point-five">{t("unitLookup.pointFive")}</Label>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               type="button"
-              aria-label={t("rankLookup.pointFive")}
+              aria-label={t("unitLookup.pointFive")}
               className="text-muted-foreground hover:text-foreground"
             >
               <Info className="size-4" />
@@ -144,14 +176,14 @@ export function RankLookupControls({
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
             {pointFiveDisabled
-              ? t("rankLookup.pointFiveAdamantineDisabled")
-              : t("rankLookup.pointFiveHint")}
+              ? t("unitLookup.pointFiveAdamantineDisabled")
+              : t("unitLookup.pointFiveHint")}
           </TooltipContent>
         </Tooltip>
       </div>
 
       <Button onClick={onApply} disabled={applyDisabled}>
-        {t("rankLookup.apply")}
+        {t("unitLookup.apply")}
       </Button>
     </div>
   )

@@ -35,7 +35,7 @@
       "retry": "Retry"
     }
   },
-  "rankLookup": {
+  "unitLookup": {
     "subtitle": "Pick a character and a rank range to see the required upgrades and where to farm them.",
     "character": "Character",
     "characterPlaceholder": "Select a character",
@@ -43,6 +43,7 @@
     "rankRange": "Rank range",
     "start": "From",
     "end": "To",
+    "progression": "Progression",
     "pointFive": "Include point-five upgrades",
     "pointFiveShort": "Point five",
     "pointFiveHint": "On reaching the target rank you can immediately apply the first upgrade of each stat. Enable this to include that top row.",
@@ -58,11 +59,29 @@
     "campaignLocations": "Campaign locations",
     "eventLocations": "Campaign Event Locations",
     "byRank": "Upgrades by rank",
-    "noUpgrades": "Select a character and a valid rank range to see required upgrades."
+    "noUpgrades": "Select a character and a valid rank range to see required upgrades.",
+    "movement": "Movement",
+    "melee": "Melee",
+    "ranged": "Ranged",
+    "damageTypes": "Damage types",
+    "equipment": "Equipment",
+    "traits": "Traits",
+    "health": "Health",
+    "damage": "Damage",
+    "armour": "Armour",
+    "current": "Current",
+    "target": "Target",
+    "tabs": {
+      "character": "Character",
+      "mow": "Machines of War",
+      "npc": "NPC",
+      "mowComingSoon": "Machines of War lookup is coming soon.",
+      "npcComingSoon": "NPC lookup is coming soon."
+    }
   },
   "nav": {
     "home": "Home",
-    "rankLookup": "Rank Lookup",
+    "lookup": "Lookup",
     "createGoal": "Create Goal"
   },
   "language": {

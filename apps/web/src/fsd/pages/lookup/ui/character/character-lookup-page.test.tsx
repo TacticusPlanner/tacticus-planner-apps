@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
@@ -21,6 +21,19 @@ const records: Record<string, unknown[]> = {
       name: "Hero One",
       faction: "Ultramarines",
       alliance: "Imperial",
+      health: 100,
+      damage: 20,
+      armour: 10,
+      meleeDamage: "Physical",
+      meleeHits: 3,
+      rangedDamage: null,
+      rangedHits: null,
+      rangeDistance: null,
+      movement: 4,
+      traits: ["Healer"],
+      activeAbilityDamage: [],
+      passiveAbilityDamage: [],
+      equipmentSlots: ["I_Crit"],
       rankUpUpgrades: [
         { rank: "Stone1", upgradeIds: ["h1", "h2", "d1", "d2", "a1", "a2"] },
         { rank: "Stone2", upgradeIds: ["h3"] },
@@ -131,26 +144,38 @@ vi.mock("@workspace/game-catalog", async (importOriginal) => {
   }
 })
 
-import { RankLookupPage } from "./rank-lookup-page"
+import { CharacterLookupPage } from "./character-lookup-page"
 
 function renderPage() {
   return render(
     <MemoryRouter>
       <TooltipProvider>
-        <RankLookupPage />
+        <CharacterLookupPage />
       </TooltipProvider>
     </MemoryRouter>
   )
 }
 
-describe("RankLookupPage", () => {
+describe("CharacterLookupPage", () => {
   it("renders publicly and lists the required base upgrades for the default range", () => {
     renderPage()
 
-    expect(screen.getByTestId("rank-lookup-page")).toBeInTheDocument()
+    expect(screen.getByTestId("character-lookup-page")).toBeInTheDocument()
     // Default character + the Stone1 → Stone2 range surfaces that rank's upgrades as base materials.
     expect(screen.getByText("Health Base")).toBeInTheDocument()
     expect(screen.getByText("Armour Base")).toBeInTheDocument()
+  })
+
+  it("renders the unit profile with movement, melee hits, and current/target Health for the default character", () => {
+    renderPage()
+
+    const profile = within(screen.getByTestId("unit-profile"))
+    expect(profile.getByText("Hero One")).toBeInTheDocument()
+    expect(profile.getByText("4")).toBeInTheDocument() // movement
+    expect(profile.getByText("3")).toBeInTheDocument() // melee hits
+    // Health at Stone1 (current, 100 * 1.25205^0) and Stone2 (target, 100 * 1.25205^1), no progression.
+    expect(profile.getByText("100")).toBeInTheDocument()
+    expect(profile.getByText("125")).toBeInTheDocument()
   })
 
   it("gates recomputation behind the Apply button", () => {
@@ -159,7 +184,7 @@ describe("RankLookupPage", () => {
     // Stone2's upgrade only surfaces via the point-five toggle, which starts off.
     expect(screen.queryByText("Point Five Upgrade")).not.toBeInTheDocument()
 
-    const applyButton = screen.getByRole("button", { name: "rankLookup.apply" })
+    const applyButton = screen.getByRole("button", { name: "unitLookup.apply" })
     expect(applyButton).toBeDisabled()
 
     fireEvent.click(screen.getByRole("switch"))
