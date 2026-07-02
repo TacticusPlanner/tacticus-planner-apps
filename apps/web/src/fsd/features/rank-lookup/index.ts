@@ -9,3 +9,13 @@ export {
   type RankUpGroup,
   type BaseUpgradeNeed,
 } from "./lib/rank-lookup-calc"
+export {
+  computeCampaignInsights,
+  dropRate,
+  type FarmLocationLike,
+  type BattleLike,
+  type UpgradeWithFarmLocations,
+  type CampaignInsight,
+  type CampaignInsightContribution,
+  type CampaignInsightTierScore,
+} from "./lib/campaign-insights"

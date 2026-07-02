@@ -25,11 +25,13 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   aggregateBaseUpgrades,
+  computeCampaignInsights,
   groupUpgradesByRank,
   rankUpUpgradeIds,
+  type BattleLike,
   type CharacterLike,
   type RecipeIngredient,
-  type UpgradeLike,
+  type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
@@ -98,7 +100,7 @@ export function CharacterLookupPage() {
             {
               ...raw,
               crafted: raw["craftable"] as boolean,
-            } as UpgradeLike & { farmLocations?: { battleId: string }[] },
+            } as UpgradeWithFarmLocations,
           ]
         })
       ),
@@ -109,12 +111,7 @@ export function CharacterLookupPage() {
       new Map(
         battles.data.map((b) => [
           b.id,
-          b as unknown as {
-            id: string
-            campaignGroupId: string
-            difficulty: string
-            nodeNumber: number
-          },
+          b as unknown as BattleLike & { id: string },
         ])
       ),
     [battles.data]
@@ -308,7 +305,9 @@ export function CharacterLookupPage() {
     resolveRecipe,
   ])
 
-  const baseUpgrades = useMemo<BaseUpgradeView[]>(() => {
+  // Shared by baseUpgrades and campaignInsights below so the upgrade-id → count aggregation only
+  // runs once per rank/point-five change.
+  const needs = useMemo(() => {
     if (!characterForCalc) return []
     const upgradeIds = rankUpUpgradeIds(
       characterForCalc,
@@ -316,8 +315,16 @@ export function CharacterLookupPage() {
       applied.rankEnd,
       applied.pointFive
     )
-    const needs = aggregateBaseUpgrades(upgradeIds, upgradesById)
+    return aggregateBaseUpgrades(upgradeIds, upgradesById)
+  }, [
+    characterForCalc,
+    applied.rankStart,
+    applied.rankEnd,
+    applied.pointFive,
+    upgradesById,
+  ])
 
+  const baseUpgrades = useMemo<BaseUpgradeView[]>(() => {
     return needs
       .map((need) => {
         const up = upgradesById.get(need.id)
@@ -397,16 +404,18 @@ export function CharacterLookupPage() {
         (a, b) =>
           rarityRank(b.rarity) - rarityRank(a.rarity) || b.count - a.count
       )
-  }, [
-    characterForCalc,
-    applied.rankStart,
-    applied.rankEnd,
-    applied.pointFive,
-    upgradesById,
-    battlesById,
-    releaseTypeByGroupId,
-    t,
-  ])
+  }, [needs, upgradesById, battlesById, releaseTypeByGroupId, t])
+
+  const { campaignInsights, eventInsights } = useMemo(
+    () =>
+      computeCampaignInsights(
+        needs,
+        upgradesById,
+        battlesById,
+        (groupId) => releaseTypeByGroupId.get(groupId) === "event"
+      ),
+    [needs, upgradesById, battlesById, releaseTypeByGroupId]
+  )
 
   const profile = useMemo<UnitProfileView | undefined>(() => {
     if (!character) return undefined
@@ -483,6 +492,8 @@ export function CharacterLookupPage() {
     profile,
     baseUpgrades,
     groups,
+    campaignInsights,
+    eventInsights,
     onCharacterChange: setDraftCharacterId,
     onRangeChange: setDraftRange,
     onProgressionRangeChange: setDraftProgressionRange,

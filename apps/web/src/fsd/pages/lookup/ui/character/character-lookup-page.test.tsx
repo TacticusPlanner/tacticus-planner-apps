@@ -35,7 +35,10 @@ const records: Record<string, unknown[]> = {
       passiveAbilityDamage: [],
       equipmentSlots: ["I_Crit"],
       rankUpUpgrades: [
-        { rank: "Stone1", upgradeIds: ["h1", "h2", "d1", "d2", "a1", "a2"] },
+        {
+          rank: "Stone1",
+          upgradeIds: ["h1", "h2", "d1", "d2", "a1", "a2", "l1"],
+        },
         { rank: "Stone2", upgradeIds: ["h3"] },
       ],
     },
@@ -68,7 +71,22 @@ const records: Record<string, unknown[]> = {
       stat: "Health",
       craftable: false,
       recipe: [],
-      farmLocations: [{ battleId: "STD01" }, { battleId: "STD02" }],
+      farmLocations: [
+        {
+          battleId: "STD01",
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+        },
+        {
+          battleId: "STD02",
+          guaranteed: false,
+          effectiveRate: 0.2,
+          numerator: null,
+          denominator: null,
+        },
+      ],
     },
     {
       id: "h2",
@@ -104,7 +122,22 @@ const records: Record<string, unknown[]> = {
       stat: "Armour",
       craftable: false,
       recipe: [],
-      farmLocations: [{ battleId: "EVT01" }],
+      farmLocations: [
+        {
+          battleId: "EVT01",
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+        },
+        {
+          battleId: "EVT02",
+          guaranteed: false,
+          effectiveRate: 0.5,
+          numerator: null,
+          denominator: null,
+        },
+      ],
     },
     {
       id: "a2",
@@ -124,6 +157,23 @@ const records: Record<string, unknown[]> = {
       recipe: [],
       farmLocations: [],
     },
+    {
+      id: "l1",
+      label: "Legendary Base",
+      rarity: "Legendary",
+      stat: "Damage",
+      craftable: false,
+      recipe: [],
+      farmLocations: [
+        {
+          battleId: "STD01",
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+        },
+      ],
+    },
   ],
   "campaign-battles": [
     {
@@ -131,18 +181,28 @@ const records: Record<string, unknown[]> = {
       campaignGroupId: "indomitus",
       difficulty: "standard",
       nodeNumber: 3,
+      energyCost: 6,
     },
     {
       id: "STD02",
       campaignGroupId: "indomitus",
       difficulty: "standard",
       nodeNumber: 7,
+      energyCost: 6,
     },
     {
       id: "EVT01",
       campaignGroupId: "death-guard-vs-admech",
       difficulty: "eventStandard",
       nodeNumber: 5,
+      energyCost: 5,
+    },
+    {
+      id: "EVT02",
+      campaignGroupId: "death-guard-vs-admech",
+      difficulty: "eventExtremis",
+      nodeNumber: 6,
+      energyCost: 7,
     },
   ],
   "campaign-definitions": [
@@ -181,9 +241,12 @@ describe("CharacterLookupPage", () => {
     renderPage()
 
     expect(screen.getByTestId("character-lookup-page")).toBeInTheDocument()
-    // Default character + the Stone1 → Stone2 range surfaces that rank's upgrades as base materials.
-    expect(screen.getByText("Health Base")).toBeInTheDocument()
-    expect(screen.getByText("Armour Base")).toBeInTheDocument()
+    // Default character + the Stone1 → Stone2 range surfaces that rank's upgrades as base
+    // materials. Scoped to the table since the same labels may also appear in the Insights
+    // top-upgrade-by-rarity chips above it.
+    const table = within(screen.getByRole("table"))
+    expect(table.getByText("Health Base")).toBeInTheDocument()
+    expect(table.getByText("Armour Base")).toBeInTheDocument()
   })
 
   it("renders the unit profile with movement, melee hits, and current/target Health for the default character", () => {
@@ -268,8 +331,108 @@ describe("CharacterLookupPage", () => {
 
     fireEvent.click(applyButton)
 
-    expect(screen.getByText("Point Five Upgrade")).toBeInTheDocument()
+    // Scoped to the table since Legendary-rarity "Point Five Upgrade" also becomes the Insights
+    // top-upgrade-by-rarity chip for Legendary once it's included.
+    expect(
+      within(screen.getByRole("table")).getByText("Point Five Upgrade")
+    ).toBeInTheDocument()
     expect(applyButton).toBeDisabled()
+  })
+
+  it("renders a top-upgrade-by-rarity chip and ranked useful-campaign insights", () => {
+    renderPage()
+
+    // a1 (Rare) is the only base upgrade at that rarity for the default range, so its name shows
+    // once in the insights chip and again in the base-upgrades table row.
+    expect(screen.getAllByText("Armour Base")).toHaveLength(2)
+
+    // h1 farms from Indomitus (standard, a regular campaign); a1 farms from the
+    // death-guard-vs-admech event — each should surface in its own ranked insight list, by full
+    // campaign name (distinct from the "Indomitus S 3, 7" short-code location chip text below).
+    expect(screen.getByText("Indomitus Standard")).toBeInTheDocument()
+    expect(screen.getByText("Adeptus Mechanicus")).toBeInTheDocument()
+  })
+
+  it("shows separate Standard/Extremis scores for an event insight merging both tiers", () => {
+    renderPage()
+
+    // a1 (Armour Base) drops from both EVT01 (eventStandard) and EVT02 (eventExtremis), so the
+    // "Adeptus Mechanicus" event chip merges both tiers and should display two scores.
+    const trigger = screen.getByRole("button", { name: /Adeptus Mechanicus/ })
+    expect(within(trigger).getByText(/^S /)).toBeInTheDocument()
+    expect(within(trigger).getByText(/^Ext /)).toBeInTheDocument()
+  })
+
+  it("lists multiple distinct locations for an upgrade without duplicating any", () => {
+    renderPage()
+
+    fireEvent.click(screen.getByRole("button", { name: /Adeptus Mechanicus/ }))
+
+    const item = screen
+      .getByText("Adeptus Mechanicus")
+      .closest('[data-slot="accordion-item"]')
+    expect(item).not.toBeNull()
+    // Armour Base appears once (deduped) with both of its distinct locations listed.
+    expect(
+      within(item as HTMLElement).getAllByText(/Armour Base/)
+    ).toHaveLength(1)
+    expect(
+      within(item as HTMLElement).getByText("Adeptus Mechanicus S 5")
+    ).toBeInTheDocument()
+    expect(
+      within(item as HTMLElement).getByText("Adeptus Mechanicus Ext 6")
+    ).toBeInTheDocument()
+  })
+
+  it("expands a campaign insight row to show the contributing upgrades and locations", () => {
+    renderPage()
+
+    fireEvent.click(screen.getByRole("button", { name: /Indomitus Standard/ }))
+
+    // h1 (Health Base) drops from both STD01 and STD02, both grouped under this Indomitus
+    // Standard chip — it should appear once (deduped), listing both locations.
+    const item = screen
+      .getByText("Indomitus Standard")
+      .closest('[data-slot="accordion-item"]')
+    expect(item).not.toBeNull()
+    expect(
+      within(item as HTMLElement).getAllByText(/Health Base/)
+    ).toHaveLength(1)
+    // "Indomitus S 3" (STD01) is shared by both Health Base and Legendary Base; "Indomitus S 7"
+    // (STD02) belongs only to Health Base.
+    expect(
+      within(item as HTMLElement).getAllByText("Indomitus S 3")
+    ).toHaveLength(2)
+    expect(
+      within(item as HTMLElement).getByText("Indomitus S 7")
+    ).toBeInTheDocument()
+
+    // Legendary Base (l1) also drops from STD01 in this chip. Rows are ordered Mythic → Common, so
+    // the Legendary upgrade must precede the Common "Health Base" row, and no drop-chance
+    // percentage should be shown.
+    const rows = within(item as HTMLElement).getAllByText(/Base$/)
+    expect(rows).toHaveLength(2)
+    expect(rows[0].textContent).toContain("Legendary Base")
+    expect(rows[1].textContent).toContain("Health Base")
+    expect(within(item as HTMLElement).queryByText(/%/)).not.toBeInTheDocument()
+  })
+
+  it("scrolls to and highlights the matching base-upgrade row when a top-rarity chip is clicked", () => {
+    renderPage()
+    const scrollIntoView = window.HTMLElement.prototype
+      .scrollIntoView as ReturnType<typeof vi.fn>
+    scrollIntoView.mockClear()
+
+    // The insight chip is rendered before the table, so it's the first "Armour Base" match.
+    fireEvent.click(screen.getAllByText("Armour Base")[0])
+
+    const targetRow = document.getElementById("base-upgrade-a1")
+    expect(targetRow).not.toBeNull()
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "center",
+    })
+    expect(scrollIntoView.mock.instances[0]).toBe(targetRow)
   })
 
   it("splits farm locations into campaign and campaign-event columns, labeled by campaign + short code + node numbers", () => {
@@ -277,15 +440,17 @@ describe("CharacterLookupPage", () => {
 
     // h1 farms from two nodes (3 and 7) on "indomitus"/"standard", a "standard"
     // campaign-definition, so it must land in the campaign column as a single chip listing both
-    // node numbers, not the event column.
-    const healthRow = screen.getByText("Health Base").closest("tr")
+    // node numbers, not the event column. Scoped to the table since the Insights chips above it
+    // repeat the same upgrade labels.
+    const table = within(screen.getByRole("table"))
+    const healthRow = table.getByText("Health Base").closest("tr")
     expect(healthRow).not.toBeNull()
     expect(healthRow?.textContent).toContain("Indomitus S 3, 7")
     expect(healthRow?.textContent).not.toContain("Adeptus Mechanicus")
 
     // a1's location is on "death-guard-vs-admech"/"eventStandard" node 5, an "event"
     // campaign-definition, so the reverse must hold.
-    const armourRow = screen.getByText("Armour Base").closest("tr")
+    const armourRow = table.getByText("Armour Base").closest("tr")
     expect(armourRow).not.toBeNull()
     expect(armourRow?.textContent).toContain("Adeptus Mechanicus S 5")
     expect(armourRow?.textContent).not.toContain("Indomitus")

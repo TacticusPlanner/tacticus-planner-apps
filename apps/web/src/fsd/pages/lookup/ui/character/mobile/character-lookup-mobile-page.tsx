@@ -2,6 +2,8 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
 
+import type { CampaignInsight } from "@/features/rank-lookup"
+
 import { CharacterLookupControls } from "../character-lookup-controls"
 import {
   CharacterLookupResults,
@@ -23,6 +25,8 @@ export interface CharacterLookupMobilePageProps {
   profile: UnitProfileView | undefined
   baseUpgrades: BaseUpgradeView[]
   groups: RankGroupView[]
+  campaignInsights: CampaignInsight[]
+  eventInsights: CampaignInsight[]
   onCharacterChange: (id: string) => void
   onRangeChange: (start: Rank, end: Rank) => void
   onProgressionRangeChange: (start: Progression, end: Progression) => void
@@ -44,6 +48,8 @@ export function CharacterLookupMobilePage({
   profile,
   baseUpgrades,
   groups,
+  campaignInsights,
+  eventInsights,
   onCharacterChange,
   onRangeChange,
   onProgressionRangeChange,
@@ -84,6 +90,8 @@ export function CharacterLookupMobilePage({
       <CharacterLookupResults
         baseUpgrades={baseUpgrades}
         groups={groups}
+        campaignInsights={campaignInsights}
+        eventInsights={eventInsights}
         isMobile={true}
       />
     </div>
