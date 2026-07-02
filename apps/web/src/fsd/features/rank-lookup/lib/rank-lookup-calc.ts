@@ -11,7 +11,6 @@ export type {
   BaseUpgradeNeed,
   CharacterLike,
   RecipeIngredient,
-  RankUpEntry,
   RankUpGroup,
   UpgradeLike,
 } from "./rank-lookup-calc.types"

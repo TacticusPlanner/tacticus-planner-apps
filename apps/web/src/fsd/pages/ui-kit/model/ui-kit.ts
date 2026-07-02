@@ -41,9 +41,7 @@ export const uiKitSections = [
   },
 ] as const
 
-export type UiKitSectionId = (typeof uiKitSections)[number]["id"]
-
-export type ColorToken = {
+type ColorToken = {
   cssVariable: string
   name: string
   utility?: string
@@ -55,7 +53,7 @@ export type ColorTokenGroup = {
   tokens: ColorToken[]
 }
 
-export const colorTokens = [
+const colorTokens = [
   {
     name: "Background",
     cssVariable: "--background",

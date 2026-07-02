@@ -19,6 +19,9 @@
     "lint:fsd": {
       "dependsOn": ["^lint:fsd"]
     },
+    "knip": {
+      "dependsOn": ["^build"]
+    },
     "format": {
       "dependsOn": ["^format"]
     },

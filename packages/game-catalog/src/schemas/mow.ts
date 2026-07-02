@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { amountByRaritySchema } from "./shared"
 
-export const mowAbilitySchema = z.looseObject({
+const mowAbilitySchema = z.looseObject({
   name: z.string(),
   recipes: z.array(z.array(z.string())),
 })

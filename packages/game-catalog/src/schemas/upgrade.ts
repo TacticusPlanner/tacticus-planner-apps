@@ -10,7 +10,7 @@ export type GameCatalogUpgradeRecipeIngredient = {
   recipe: GameCatalogUpgradeRecipeIngredient[] | null
 }
 
-export const upgradeRecipeIngredientSchema: z.ZodType<GameCatalogUpgradeRecipeIngredient> =
+const upgradeRecipeIngredientSchema: z.ZodType<GameCatalogUpgradeRecipeIngredient> =
   z.lazy(() =>
     z.looseObject({
       material: z.string(),

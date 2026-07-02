@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const equipmentUpgradeLevelSchema = z.looseObject({
+const equipmentUpgradeLevelSchema = z.looseObject({
   goldCost: z.number(),
   salvageCost: z.number(),
   mythicSalvageCost: z.number(),
@@ -14,7 +14,7 @@ export const equipmentUpgradeCostSchema = z.looseObject({
 // A single equipment level: the per-level stat block keyed by stat name (armor/hp, blockChance/
 // blockDamage, critChance/critDamage, …). The stat keys vary by equipment type, so this is a string→
 // number map rather than a fixed shape.
-export const equipmentLevelSchema = z.looseObject({
+const equipmentLevelSchema = z.looseObject({
   stats: z.record(z.string(), z.number()),
 })
 

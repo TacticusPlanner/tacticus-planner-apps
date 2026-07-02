@@ -46,7 +46,7 @@ import type {
 } from "@/features/rank-lookup"
 import { EntityIcon, RankBadge, RarityIcon, UpgradeIcon } from "@/shared/ui"
 
-export type LocationView = { id: string; label: string; icon?: string }
+type LocationView = { id: string; label: string; icon?: string }
 export type BaseUpgradeView = {
   id: string
   count: number

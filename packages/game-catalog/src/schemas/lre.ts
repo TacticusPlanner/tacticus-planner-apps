@@ -1,19 +1,19 @@
 import { z } from "zod"
 
-export const lreFilterSchema = z.looseObject({
+const lreFilterSchema = z.looseObject({
   kind: z.string(),
   target: z.string(),
   exclude: z.boolean(),
 })
 
-export const lreRestrictionSchema = z.looseObject({
+const lreRestrictionSchema = z.looseObject({
   name: z.string(),
   points: z.number(),
   index: z.number(),
   filter: lreFilterSchema,
 })
 
-export const lreTrackEnemiesSchema = z.looseObject({
+const lreTrackEnemiesSchema = z.looseObject({
   label: z.string(),
   link: z.string(),
 })
@@ -40,20 +40,20 @@ export const lreBattleSchema = z.looseObject({
 })
 
 // A point-reward milestone: the cumulative points to reach it and the engram payout it grants.
-export const lrePointsMilestoneSchema = z.looseObject({
+const lrePointsMilestoneSchema = z.looseObject({
   milestone: z.number(),
   cumulativePoints: z.number(),
   engramPayout: z.number(),
 })
 
 // A chest rung: the chest level and the engram cost to open it.
-export const lreChestsMilestoneSchema = z.looseObject({
+const lreChestsMilestoneSchema = z.looseObject({
   chestLevel: z.number(),
   engramCost: z.number(),
 })
 
 // Points awarded for reaching each character progression tier during the event.
-export const lreProgressionSchema = z.looseObject({
+const lreProgressionSchema = z.looseObject({
   unlock: z.number(),
   fourStars: z.number(),
   fiveStars: z.number(),

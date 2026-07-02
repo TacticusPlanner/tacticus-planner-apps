@@ -1,0 +1,5 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["steiger.config.ts", "src/fsd/shared/config/i18n/i18next.d.ts"],
+  "ignoreDependencies": ["@testing-library/user-event"]
+}

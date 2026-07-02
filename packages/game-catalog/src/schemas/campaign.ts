@@ -1,12 +1,12 @@
 import { z } from "zod"
 
-export const campaignGuaranteedRewardSchema = z.looseObject({
+const campaignGuaranteedRewardSchema = z.looseObject({
   id: z.string(),
   min: z.number(),
   max: z.number(),
 })
 
-export const campaignPotentialRewardViewSchema = z.looseObject({
+const campaignPotentialRewardViewSchema = z.looseObject({
   id: z.string(),
   chanceId: z.string().nullable(),
   rewardKind: z.string().nullable(),
@@ -15,12 +15,12 @@ export const campaignPotentialRewardViewSchema = z.looseObject({
   effectiveRate: z.number().nullable(),
 })
 
-export const campaignRewardsViewSchema = z.looseObject({
+const campaignRewardsViewSchema = z.looseObject({
   guaranteed: z.array(campaignGuaranteedRewardSchema),
   potential: z.array(campaignPotentialRewardViewSchema),
 })
 
-export const campaignDetailedEnemySchema = z.looseObject({
+const campaignDetailedEnemySchema = z.looseObject({
   id: z.string(),
   name: z.string(),
   count: z.number(),

@@ -14,7 +14,7 @@ on:
         type: string
         default: ""
       run-validation:
-        description: Run formatting, linting, FSD linting, and typechecking.
+        description: Run formatting, linting, FSD linting, typechecking, and knip.
         required: false
         type: boolean
         default: true
@@ -117,6 +117,10 @@ jobs:
       - name: Typecheck
         if: ${{ inputs.run-validation }}
         run: pnpm typecheck
+
+      - name: Knip
+        if: ${{ inputs.run-validation }}
+        run: pnpm knip
 
       - name: Build
         run: pnpm build

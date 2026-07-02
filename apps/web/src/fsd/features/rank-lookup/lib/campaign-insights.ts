@@ -39,7 +39,7 @@ export interface CampaignInsightContribution {
 }
 
 /** An event insight's score, broken down by its "Standard" vs "Extremis" difficulty tier. */
-export interface CampaignInsightTierScore {
+interface CampaignInsightTierScore {
   tier: "standard" | "extremis"
   score: number
 }

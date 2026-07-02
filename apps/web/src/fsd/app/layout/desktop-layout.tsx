@@ -26,6 +26,7 @@ import { AuthControl } from "../providers/auth-control"
 import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
+import { TourButton } from "../providers/tour-button"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 
@@ -134,6 +135,7 @@ function AppSidebar({
           <div className="flex flex-wrap items-center gap-2 group-data-[collapsible=icon]:hidden">
             <ThemeSwitcher />
             <LanguageSwitcher />
+            <TourButton />
           </div>
         </div>
       </SidebarFooter>

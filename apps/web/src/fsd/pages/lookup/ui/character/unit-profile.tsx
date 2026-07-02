@@ -15,7 +15,7 @@ import {
 
 import { EntityIcon } from "@/shared/ui"
 
-export type UnitStatPair = { current: number; target: number }
+type UnitStatPair = { current: number; target: number }
 
 export type UnitProfileView = {
   id: string

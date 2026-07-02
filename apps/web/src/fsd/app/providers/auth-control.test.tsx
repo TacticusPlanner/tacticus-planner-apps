@@ -57,6 +57,9 @@ vi.mock("./theme-switcher", () => ({
 vi.mock("./language-switcher", () => ({
   LanguageSwitcher: () => <div data-testid="language-switcher" />,
 }))
+vi.mock("./tour-button", () => ({
+  TourButton: () => <div data-testid="tour-button" />,
+}))
 
 import { AuthControl } from "./auth-control"
 

@@ -1,6 +1,6 @@
 import type { Rank, Rarity } from "@workspace/game-catalog"
 
-export interface RankUpEntry {
+interface RankUpEntry {
   rank: Rank
   upgradeIds: string[]
 }

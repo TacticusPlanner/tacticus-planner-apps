@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const npcStatSchema = z.looseObject({
+const npcStatSchema = z.looseObject({
   abilityLevel: z.number(),
   damage: z.number(),
   armour: z.number(),

@@ -25,6 +25,7 @@ import {
 
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
+import { TourButton } from "./tour-button"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
 
@@ -256,6 +257,7 @@ export function AuthControl() {
                 <span className="text-sm">{t("language.label")}</span>
                 <LanguageSwitcher />
               </div>
+              <TourButton />
               <Separator />
             </>
           ) : null}

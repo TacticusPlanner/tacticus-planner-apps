@@ -24,7 +24,6 @@ export type {
   GameCatalogMow,
   GameCatalogUpgradeView,
   GameCatalogEquipment,
-  GameCatalogCampaignBattleView,
   GameCatalogCampaignDefinitionView,
   GameCatalogLreView,
 } from "./record-types"

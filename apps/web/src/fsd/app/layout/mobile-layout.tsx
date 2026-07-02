@@ -17,6 +17,7 @@ import { loginRequest } from "@/shared/auth"
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
+import { TourButton } from "../providers/tour-button"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 
@@ -115,6 +116,7 @@ function MobileGuestSettings() {
           <span className="text-sm">{t("language.label")}</span>
           <LanguageSwitcher />
         </div>
+        <TourButton />
       </PopoverContent>
     </Popover>
   )

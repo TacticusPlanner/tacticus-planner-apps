@@ -57,7 +57,7 @@ const datasetToRecords: Record<GameCatalogDatasetKey, DatasetToRecords> = {
   "lre-common": asArray,
 }
 
-export async function openGameCatalogDb() {
+async function openGameCatalogDb() {
   return openDB(catalogDbName, catalogDbVersion, {
     upgrade(db) {
       if (!db.objectStoreNames.contains(metadataStore)) {
