@@ -1,6 +1,6 @@
 import type { Rank, Rarity } from "@workspace/game-catalog"
 
-export type LocationView = { id: string; label: string; icon?: string }
+import type { LocationView } from "@/shared/ui"
 
 export type BaseUpgradeView = {
   id: string

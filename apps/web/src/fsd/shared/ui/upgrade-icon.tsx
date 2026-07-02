@@ -1,11 +1,4 @@
-import {
-  craftedUpgradeBadge,
-  upgradeFrameIcon,
-  upgradeIcon,
-  upgradeIconFallback,
-  upgradeUnderlay,
-  type Rarity,
-} from "@workspace/game-catalog"
+import { UpgradeIcons, type Rarity } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "./entity-icon"
@@ -25,26 +18,26 @@ export function UpgradeIcon({
   return (
     <span className={cn("relative inline-block", className)}>
       <img
-        src={upgradeUnderlay}
+        src={UpgradeIcons.underlay}
         alt=""
         className="absolute inset-0 size-full object-contain"
       />
       <EntityIcon
-        src={upgradeIcon(id)}
-        fallback={upgradeIconFallback}
+        src={UpgradeIcons.icon(id)}
+        fallback={UpgradeIcons.fallback}
         alt=""
         className="absolute top-1/2 left-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 object-contain"
       />
       {rarity ? (
         <img
-          src={upgradeFrameIcon(rarity)}
+          src={UpgradeIcons.frame(rarity)}
           alt=""
           className="absolute inset-0 size-full object-contain"
         />
       ) : null}
       {crafted ? (
         <img
-          src={craftedUpgradeBadge}
+          src={UpgradeIcons.craftedBadge}
           alt=""
           className="absolute bottom-0 left-0 size-2/5 object-contain"
         />

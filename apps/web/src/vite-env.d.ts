@@ -2,7 +2,6 @@
 
 interface ImportMetaEnv {
   readonly VITE_APP_VERSION?: string
-  readonly VITE_APP_ENV?: "local" | "staging" | "production"
   readonly VITE_API_BASE_URL: string
   readonly VITE_API_SCOPE: string
   readonly VITE_MSAL_AUTHORITY: string

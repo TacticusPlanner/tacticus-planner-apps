@@ -16,12 +16,7 @@ import { EntityIcon } from "@/shared/ui"
 import type { UnitProfileView, UnitStatPair } from "./unit-profile.types"
 
 export function UnitProfile({ profile }: { profile: UnitProfileView }) {
-  const { t } = useTranslation([
-    "common",
-    "traits",
-    "damageTypes",
-    "equipmentSlots",
-  ])
+  const { t } = useTranslation(["common", "traits", "damageTypes", "equipment"])
 
   return (
     <Card className="gap-4 py-4" data-testid="unit-profile">
@@ -91,7 +86,7 @@ export function UnitProfile({ profile }: { profile: UnitProfileView }) {
                   alt=""
                   className="size-4"
                 />
-                {t(`equipmentSlots:${slot}`, { defaultValue: slot })}
+                {t(`equipment:slots.${slot}`, { defaultValue: slot })}
               </Badge>
             ))}
           </ProfileSection>

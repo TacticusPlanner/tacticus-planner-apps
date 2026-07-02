@@ -4,31 +4,32 @@ import type { Rarity } from "./rarity"
 import { characterIconOverrides } from "./character-icon-overrides"
 import { rarityStarsIndex, type RarityStars } from "./unit-stats"
 
-// All asset paths are relative to the web app's /public/snowprint_assets/ root.
-// These helpers return URL strings; the actual files live in apps/web/public/snowprint_assets/.
+// All asset paths (including the app's own custom icons — rarity badges, gold/red stars, the
+// crafted-upgrade badge) are relative to the web app's /public/snowprint_assets/ root. These
+// helpers return URL strings; the actual files live in apps/web/public/snowprint_assets/.
 // ASSET_BASE_PATH is the single source of truth for that root — change it here to relocate assets.
 export const ASSET_BASE_PATH = "/snowprint_assets"
 
-export const upgradeIconFallback = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_unknown.png`
+// ---- Upgrade icons ------------------------------------------------------------------------------
 
-export function upgradeIcon(id: UpgradeId): string {
-  return `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_${id}.png`
-}
-
-// Background plate rendered behind every upgrade material icon (see V1's upgrade-image.tsx).
-export const upgradeUnderlay = `${ASSET_BASE_PATH}/frames/ui_underlay_upgrades.png`
-
-// Rarity-colored border rendered on top of the upgrade material icon.
-export function upgradeFrameIcon(rarity: Rarity): string {
-  return `${ASSET_BASE_PATH}/frames/ui_frame_upgrades_${rarity.toLowerCase()}.png`
-}
-
-// Badge overlaid on the bottom-left corner of a crafted (non-base) upgrade's icon.
-export const craftedUpgradeBadge = "/icons/upgrade-crafted-badge.png"
+export const UpgradeIcons = {
+  fallback: `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_unknown.png`,
+  // Background plate rendered behind every upgrade material icon (see V1's upgrade-image.tsx).
+  underlay: `${ASSET_BASE_PATH}/frames/ui_underlay_upgrades.png`,
+  // Badge overlaid on the bottom-left corner of a crafted (non-base) upgrade's icon.
+  craftedBadge: `${ASSET_BASE_PATH}/upgrade-crafted-badge.png`,
+  icon(id: UpgradeId): string {
+    return `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_${id}.png`
+  },
+  // Rarity-colored border rendered on top of the upgrade material icon.
+  frame(rarity: Rarity): string {
+    return `${ASSET_BASE_PATH}/frames/ui_frame_upgrades_${rarity.toLowerCase()}.png`
+  },
+} as const
 
 // Rarity badge icon (not a Snowprint asset — a custom app icon, same as V1's rarity/resized/*.png).
 export function rarityIcon(rarity: Rarity): string {
-  return `/icons/rarity/${rarity.toLowerCase()}.png`
+  return `${ASSET_BASE_PATH}/rarity/${rarity.toLowerCase()}.png`
 }
 
 // All rank assets are named by Rank value (lowercase): stone1.png … adamantine3.png.
@@ -45,86 +46,30 @@ export function characterIcon(id: CharacterId): string | undefined {
   return `${ASSET_BASE_PATH}/characters/ui_image_RoundPortrait_${slug}_01.png`
 }
 
-// Standard campaign name map: groupId → display name used in the filename.
-const standardCampaigns: Record<CampaignGroupId, string> = {
-  indomitus: "Indomitus",
-  "indomitus-mirror": "Indomitus Mirror",
-  octarius: "Octarius",
-  "octarius-mirror": "Octarius Mirror",
-  "saim-hann": "Saim-Hann",
-  "saim-hann-mirror": "Saim-Hann Mirror",
-  "fall-of-cadia": "Fall of Cadia",
-  "fall-of-cadia-mirror": "Fall of Cadia Mirror",
-}
+// ---- Campaign icon + descriptor -------------------------------------------------------------
 
-// Event campaign image shows the defending (second) faction. Difficulty maps to image suffix.
-// Format: "{FactionName} {Standard|Extremis} {Challenge}.png"
-const eventCampaignFaction: Record<CampaignGroupId, string> = {
-  "adepta-sororitas-vs-death-guard": "Death Guard",
-  "death-guard-vs-admech": "Adeptus Mechanicus",
-  "genestealers-vs-tau-empire": "T'au Empire",
-  "necrons-vs-dark-angels": "Dark Angels",
-  "ultramarines-vs-tyranids": "Tyranids",
-  "world-eaters-vs-adepta-sororitas": "Adeptus Sororitas",
-}
-
-const eventDifficultySuffix: Record<string, string> = {
-  eventStandard: "Standard",
-  eventStandardChallenge: "Standard Challenge",
-  eventExtremis: "Extremis",
-  eventExtremisChallenge: "Extremis Challenge",
-}
-
-export function campaignIcon(
-  groupId: CampaignGroupId,
-  difficulty: string
-): string | undefined {
-  const standardName = standardCampaigns[groupId]
-  if (standardName) {
-    const suffix = difficulty === "elite" ? " Elite" : ""
-    return `${ASSET_BASE_PATH}/campaigns/${standardName}${suffix}.png`
-  }
-  const faction = eventCampaignFaction[groupId]
-  if (faction) {
-    const difficultySuffix = eventDifficultySuffix[difficulty]
-    if (!difficultySuffix) return undefined
-    return `${ASSET_BASE_PATH}/campaigns/${faction} ${difficultySuffix}.png`
-  }
-  return undefined
-}
-
-// Display names for campaign group + difficulty (farm-location labels). These intentionally
-// differ from the filename maps above in a couple of spots — e.g. "T'au" not "T'au Empire",
-// "Adepta Sororitas" not "Adeptus Sororitas" — matching the in-game campaign names rather than
-// the shipped asset filenames.
-const eventCampaignDisplayFaction: Record<CampaignGroupId, string> = {
-  "adepta-sororitas-vs-death-guard": "Death Guard",
-  "death-guard-vs-admech": "Adeptus Mechanicus",
-  "genestealers-vs-tau-empire": "T'au",
-  "necrons-vs-dark-angels": "Dark Angels",
-  "ultramarines-vs-tyranids": "Tyranids",
-  "world-eaters-vs-adepta-sororitas": "Adepta Sororitas",
-}
+// Base group ids (mirror variants reuse the same base id with a "-mirror" suffix on the actual
+// groupId, not listed separately here). Event group ids follow a "{attacker}-vs-{defender}" shape.
+const knownCampaignGroups = new Set<string>([
+  "indomitus",
+  "octarius",
+  "saim-hann",
+  "fall-of-cadia",
+  "adepta-sororitas-vs-death-guard",
+  "death-guard-vs-admech",
+  "genestealers-vs-tau-empire",
+  "necrons-vs-dark-angels",
+  "ultramarines-vs-tyranids",
+  "world-eaters-vs-adepta-sororitas",
+])
 
 export type CampaignDifficultyToken =
-  | "standard"
-  | "elite"
-  | "eventStandard"
-  | "eventStandardChallenge"
-  | "eventExtremis"
-  | "eventExtremisChallenge"
-
-const eventDifficultyToken: Record<string, CampaignDifficultyToken> = {
-  eventStandard: "eventStandard",
-  eventStandardChallenge: "eventStandardChallenge",
-  eventExtremis: "eventExtremis",
-  eventExtremisChallenge: "eventExtremisChallenge",
-}
+  "standard" | "elite" | "eventStandard" | "eventExtremis"
 
 /**
  * Ids/tokens describing a campaign group + difficulty, for the caller to resolve into translated
- * display text (`campaigns`/`campaignDifficulties`/`campaignDifficultyCodes` i18n namespaces) — this
- * package holds no display strings, only the game-data structure.
+ * display text (`campaigns` i18n namespace) — this package holds no display strings, only the
+ * game-data structure.
  */
 export interface CampaignDescriptor {
   /** Key into the `campaigns` i18n namespace for the campaign/event's base display name. */
@@ -141,30 +86,55 @@ export function campaignDescriptor(
   groupId: CampaignGroupId,
   difficulty: string
 ): CampaignDescriptor | undefined {
-  if (standardCampaigns[groupId]) {
-    const isMirror = groupId.endsWith("-mirror")
-    const nameKey = isMirror ? groupId.slice(0, -"-mirror".length) : groupId
+  const isMirror = groupId.endsWith("-mirror")
+  const nameKey = isMirror ? groupId.slice(0, -"-mirror".length) : groupId
+  if (!knownCampaignGroups.has(nameKey)) return undefined
+
+  const isEvent = nameKey.includes("-vs-")
+  const challenge = difficulty.endsWith("Challenge")
+  const baseDifficulty = challenge
+    ? difficulty.slice(0, -"Challenge".length)
+    : difficulty
+
+  if (isEvent) {
+    if (isMirror) return undefined // events have no mirror variant
+    if (
+      baseDifficulty !== "eventStandard" &&
+      baseDifficulty !== "eventExtremis"
+    ) {
+      return undefined
+    }
     return {
       nameKey,
-      difficultyToken: difficulty === "elite" ? "elite" : "standard",
+      difficultyToken: baseDifficulty,
       isMirror,
-      isEvent: false,
-      challenge: false,
+      isEvent,
+      challenge,
     }
   }
-  const faction = eventCampaignDisplayFaction[groupId]
-  if (faction) {
-    const difficultyToken = eventDifficultyToken[difficulty]
-    if (!difficultyToken) return undefined
-    return {
-      nameKey: groupId,
-      difficultyToken,
-      isMirror: false,
-      isEvent: true,
-      challenge: difficulty.endsWith("Challenge"),
-    }
+
+  if (challenge) return undefined // standard campaigns have no "Challenge" tiers
+  if (baseDifficulty !== "standard" && baseDifficulty !== "elite")
+    return undefined
+  return {
+    nameKey,
+    difficultyToken: baseDifficulty,
+    isMirror,
+    isEvent,
+    challenge,
   }
-  return undefined
+}
+
+// Filenames follow "{groupId}-{difficultyToken}.png" directly (e.g. "indomitus-standard.png",
+// "indomitus-mirror-elite.png", "death-guard-vs-admech-eventExtremis.png"); challenge tiers reuse
+// their base Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
+export function campaignIcon(
+  groupId: CampaignGroupId,
+  difficulty: string
+): string | undefined {
+  const descriptor = campaignDescriptor(groupId, difficulty)
+  if (!descriptor) return undefined
+  return `${ASSET_BASE_PATH}/campaigns/${groupId}-${descriptor.difficultyToken}.png`
 }
 
 // ---- Trait icons ------------------------------------------------------------------------------
@@ -253,8 +223,8 @@ export function statIcon(kind: StatIconKind): string {
 
 // Gold/red stars aren't Snowprint assets (V1 sources them from its own app icon set); the blue
 // star and mythic wings are (V1's `snowprintIcons.blueStar`/`.mythicWings`).
-const goldStarIcon = "/icons/stars/gold.png"
-const redStarIcon = "/icons/stars/red.png"
+const goldStarIcon = `${ASSET_BASE_PATH}/stars/gold.png`
+const redStarIcon = `${ASSET_BASE_PATH}/stars/red.png`
 const blueStarIcon = `${ASSET_BASE_PATH}/stars/ui_icon_star_legendary_large.png`
 const mythicWingsIcon = `${ASSET_BASE_PATH}/stars/ui_icon_star_mythic.png`
 

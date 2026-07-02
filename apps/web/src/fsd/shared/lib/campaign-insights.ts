@@ -3,9 +3,13 @@ import {
   campaignIcon,
   rarityRank,
   type CampaignDescriptor,
+  type Rarity,
 } from "@workspace/game-catalog"
 
-import type { BaseUpgradeNeed, UpgradeLike } from "./rank-lookup-calc.types"
+export interface CampaignInsightNeed {
+  id: string
+  count: number
+}
 
 export interface FarmLocationLike {
   battleId: string
@@ -22,7 +26,11 @@ export interface BattleLike {
   energyCost: number
 }
 
-export interface UpgradeWithFarmLocations extends UpgradeLike {
+/** The minimal shape `computeCampaignInsights` needs from an upgrade record — any richer record
+ *  type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`) satisfies this structurally. */
+export interface CampaignInsightUpgrade {
+  id: string
+  rarity: Rarity
   farmLocations: FarmLocationLike[]
 }
 
@@ -70,15 +78,16 @@ export function dropRate(location: FarmLocationLike): number {
   return 0
 }
 
-// Event difficulties fold into two tiers for scoring purposes: "eventStandard"/"eventStandardChallenge"
-// are "standard", "eventExtremis"/"eventExtremisChallenge" are "extremis".
+// Event difficulties fold into two tiers for scoring purposes: "eventStandard" is "standard",
+// "eventExtremis" is "extremis" (challenge tiers already normalize to their base token in
+// `campaignDescriptor`).
 function eventTier(
   campaignGroupId: string,
   difficulty: string
 ): "standard" | "extremis" | undefined {
   const descriptor = campaignDescriptor(campaignGroupId, difficulty)
   if (!descriptor) return undefined
-  return descriptor.difficultyToken.startsWith("eventExtremis")
+  return descriptor.difficultyToken === "eventExtremis"
     ? "extremis"
     : "standard"
 }
@@ -111,12 +120,11 @@ interface ChipAccumulator {
  *
  * `resolveLabel` translates a chip's `CampaignDescriptor` into display text — kept as a callback
  * (rather than importing react-i18next here) so this calc function stays pure/i18n-free and
- * testable without a translation setup; callers pass e.g. `campaignDisplayFullLabel`/
- * `campaignDisplayName` from `./campaign-display`, bound to their own `t`.
+ * testable without a translation setup; callers pass `useCampaignDisplay()`'s bound resolvers.
  */
-export function computeCampaignInsights(
-  needs: BaseUpgradeNeed[],
-  upgradesById: ReadonlyMap<string, UpgradeWithFarmLocations>,
+export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
+  needs: CampaignInsightNeed[],
+  upgradesById: ReadonlyMap<string, U>,
   battlesById: ReadonlyMap<string, BattleLike>,
   isEventGroup: (campaignGroupId: string) => boolean,
   resolveLabel: (descriptor: CampaignDescriptor, isEvent: boolean) => string,

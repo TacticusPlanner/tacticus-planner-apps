@@ -8,11 +8,6 @@ import {
 } from "./types"
 import type { GameCatalogRecordByKey } from "./schemas"
 
-export type GameCatalogStoredRecord = {
-  id: string
-  [key: string]: unknown
-}
-
 // A stored row: the validated record for the dataset plus the storage-managed string id.
 export type StoredRecord<K extends GameCatalogDatasetKey> =
   GameCatalogRecordByKey[K] & {
@@ -194,9 +189,9 @@ export async function clearGameCatalogDb() {
   db.close()
 }
 
-function toStoredRecord(
-  item: Record<string, unknown>
-): GameCatalogStoredRecord {
+function toStoredRecord<T extends Record<string, unknown>>(
+  item: T
+): T & { id: string } {
   const id = item.id
 
   if (typeof id !== "string" && typeof id !== "number") {

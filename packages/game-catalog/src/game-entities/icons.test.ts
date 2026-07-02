@@ -61,11 +61,13 @@ describe("campaignDescriptor", () => {
       isEvent: true,
       challenge: false,
     })
+    // Challenge tiers normalize to their base token; the caller uses the separate `challenge`
+    // flag to append "B" to node numbers, and both tiers reuse the base Standard/Extremis asset.
     expect(
       campaignDescriptor("death-guard-vs-admech", "eventExtremisChallenge")
     ).toEqual({
       nameKey: "death-guard-vs-admech",
-      difficultyToken: "eventExtremisChallenge",
+      difficultyToken: "eventExtremis",
       isMirror: false,
       isEvent: true,
       challenge: true,
@@ -148,12 +150,12 @@ describe("progressionVisual", () => {
   it("renders gold stars for the first five steps", () => {
     expect(progressionVisual("OneStar")).toEqual({
       kind: "stars",
-      icon: "/icons/stars/gold.png",
+      icon: "/snowprint_assets/stars/gold.png",
       count: 1,
     })
     expect(progressionVisual("FiveStars")).toEqual({
       kind: "stars",
-      icon: "/icons/stars/gold.png",
+      icon: "/snowprint_assets/stars/gold.png",
       count: 5,
     })
   })
@@ -161,12 +163,12 @@ describe("progressionVisual", () => {
   it("renders red stars for the next five steps", () => {
     expect(progressionVisual("RedOneStar")).toEqual({
       kind: "stars",
-      icon: "/icons/stars/red.png",
+      icon: "/snowprint_assets/stars/red.png",
       count: 1,
     })
     expect(progressionVisual("RedFiveStars")).toEqual({
       kind: "stars",
-      icon: "/icons/stars/red.png",
+      icon: "/snowprint_assets/stars/red.png",
       count: 5,
     })
   })

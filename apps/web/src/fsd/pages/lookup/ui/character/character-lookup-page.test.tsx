@@ -8,20 +8,19 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
 // Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
-// difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json,
-// campaignDifficulties.json, campaignDifficultyCodes.json — so this small in-test dictionary
-// stands in for those files, kept in sync with their content for the fixtures used below).
+// difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json —
+// so this small in-test dictionary stands in for that file, kept in sync with its content for
+// the fixtures used below).
 const translations: Record<string, string> = {
-  "campaigns:indomitus": "Indomitus",
-  "campaigns:death-guard-vs-admech": "Adeptus Mechanicus",
-  "campaignDifficulties:standard": "Standard",
-  "campaignDifficulties:elite": "Elite",
-  "campaignDifficultyCodes:standard": "S",
-  "campaignDifficultyCodes:elite": "E",
-  "campaignDifficultyCodes:eventStandard": "S",
-  "campaignDifficultyCodes:eventStandardChallenge": "S",
-  "campaignDifficultyCodes:eventExtremis": "Ext",
-  "campaignDifficultyCodes:eventExtremisChallenge": "Ext",
+  "campaigns:names.indomitus": "Indomitus",
+  "campaigns:names.death-guard-vs-admech": "Adeptus Mechanicus",
+  "campaigns:difficulties.standard": "Standard",
+  "campaigns:difficulties.elite": "Elite",
+  "campaigns:codes.standard": "S",
+  "campaigns:codes.elite": "E",
+  "campaigns:codes.eventStandard": "S",
+  "campaigns:codes.eventExtremis": "Ext",
+  "campaigns:codes.mirror": "M",
 }
 
 vi.mock("react-i18next", () => ({
@@ -223,14 +222,31 @@ const records: Record<string, unknown[]> = {
     },
   ],
   "campaign-definitions": [
-    { groupId: "indomitus", releaseType: "standard" },
-    { groupId: "death-guard-vs-admech", releaseType: "event" },
+    { id: "indomitus", groupId: "indomitus", releaseType: "standard" },
+    {
+      id: "death-guard-vs-admech",
+      groupId: "death-guard-vs-admech",
+      releaseType: "event",
+    },
   ],
 }
 
 vi.mock("@/shared/game-catalog", () => ({
   useDatasetRecords: (key: string) => ({
     data: records[key] ?? [],
+    loading: false,
+    error: null,
+  }),
+  useDatasetRecordsMap: (
+    key: string,
+    mapRecord: (record: Record<string, unknown>) => unknown = (record) => record
+  ) => ({
+    data: new Map(
+      (records[key] ?? []).map((record) => [
+        (record as { id: string }).id,
+        mapRecord(record as Record<string, unknown>),
+      ])
+    ),
     loading: false,
     error: null,
   }),

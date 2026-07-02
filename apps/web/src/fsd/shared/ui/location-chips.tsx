@@ -1,8 +1,8 @@
 import { Badge } from "@workspace/ui/components/badge"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon } from "./entity-icon"
 
-import type { LocationView } from "./character-lookup-results.types"
+export type LocationView = { id: string; label: string; icon?: string }
 
 export function LocationSection({
   label,

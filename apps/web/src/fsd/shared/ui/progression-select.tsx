@@ -57,7 +57,7 @@ function ProgressionBadge({ value }: { value: Progression }) {
   const rarity = progressionRarity(value)
   const stars = progressionStars(value)
   const visual = progressionVisual(stars)
-  const starsLabel = t(`progression:${stars}`, { defaultValue: stars })
+  const starsLabel = t(`stars.${stars}`, { defaultValue: stars })
 
   return (
     <span className="inline-flex items-center gap-1.5">

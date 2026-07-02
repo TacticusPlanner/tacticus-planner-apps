@@ -21,11 +21,7 @@ export type {
 } from "./ids"
 export {
   ASSET_BASE_PATH,
-  upgradeIcon,
-  upgradeIconFallback,
-  upgradeUnderlay,
-  upgradeFrameIcon,
-  craftedUpgradeBadge,
+  UpgradeIcons,
   rarityIcon,
   rankIcon,
   characterIcon,

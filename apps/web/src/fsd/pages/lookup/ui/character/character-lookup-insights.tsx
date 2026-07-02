@@ -17,18 +17,20 @@ import {
   campaignDescriptor,
   campaignIcon,
   rarityRank,
+  type CampaignDescriptor,
 } from "@workspace/game-catalog"
 
 import {
-  campaignDisplayShortLabel,
+  useCampaignDisplay,
   type CampaignInsight,
   type CampaignInsightContribution,
-  type CampaignTFunction,
-} from "@/features/rank-lookup"
-import { EntityIcon, RarityIcon, UpgradeIcon } from "@/shared/ui"
+  type CampaignShortLabel,
+} from "@/shared/lib"
+import { EntityIcon, LocationChips, RarityIcon, UpgradeIcon } from "@/shared/ui"
 
-import { LocationChips } from "./character-lookup-location-chips"
 import type { BaseUpgradeView } from "./character-lookup-results.types"
+
+type ShortLabelResolver = (descriptor: CampaignDescriptor) => CampaignShortLabel
 
 export function TopRarityChip({
   upgrade,
@@ -108,16 +110,8 @@ export function CampaignInsightList({
   insights: CampaignInsight[]
   upgradeById: ReadonlyMap<string, BaseUpgradeView>
 }) {
-  const { t } = useTranslation([
-    "common",
-    "campaigns",
-    "campaignDifficulties",
-    "campaignDifficultyCodes",
-  ])
-  // See the matching comment in character-lookup-page.tsx: `t` is branded by "common" (its first
-  // namespace here), so it isn't nominally assignable to `groupContributionsByUpgrade`'s
-  // differently-branded parameter type even though it resolves every key that function needs.
-  const campaignT = t as CampaignTFunction
+  const { t } = useTranslation(["common"])
+  const { shortLabel, tierCode } = useCampaignDisplay()
   if (insights.length === 0) return null
   return (
     <div className="flex flex-col gap-1.5">
@@ -156,10 +150,7 @@ export function CampaignInsightList({
                   <span className="flex shrink-0 gap-2 text-xs text-muted-foreground tabular-nums">
                     {insight.tierScores.map(({ tier, score }) => (
                       <span key={tier}>
-                        {t(
-                          `campaignDifficultyCodes:${tier === "standard" ? "standard" : "eventExtremis"}`
-                        )}{" "}
-                        {score.toFixed(2)}
+                        {tierCode(tier)} {score.toFixed(2)}
                       </span>
                     ))}
                   </span>
@@ -175,7 +166,7 @@ export function CampaignInsightList({
                 {groupContributionsByUpgrade(
                   insight.contributions,
                   upgradeById,
-                  campaignT
+                  shortLabel
                 ).map((group) => (
                   <li
                     key={group.upgradeId}
@@ -228,7 +219,7 @@ interface UpgradeContributionGroup {
 function groupContributionsByUpgrade(
   contributions: CampaignInsightContribution[],
   upgradeById: ReadonlyMap<string, BaseUpgradeView>,
-  t: CampaignTFunction
+  shortLabel: ShortLabelResolver
 ): UpgradeContributionGroup[] {
   const groups = new Map<string, UpgradeContributionGroup>()
   for (const contribution of contributions) {
@@ -247,7 +238,7 @@ function groupContributionsByUpgrade(
     // A given battle can appear more than once in the raw contributions (e.g. a location listed
     // twice in the catalog) — dedupe so it isn't shown as a repeated location badge.
     if (!group.locations.some((l) => l.id === contribution.battleId)) {
-      group.locations.push(buildLocation(contribution, t))
+      group.locations.push(buildLocation(contribution, shortLabel))
     }
   }
   return [...groups.values()].sort(
@@ -259,13 +250,13 @@ function groupContributionsByUpgrade(
 
 function buildLocation(
   contribution: CampaignInsightContribution,
-  t: CampaignTFunction
+  shortLabel: ShortLabelResolver
 ): ContributionLocation {
   const descriptor = campaignDescriptor(
     contribution.campaignGroupId,
     contribution.difficulty
   )
-  const short = descriptor ? campaignDisplayShortLabel(t, descriptor) : null
+  const short = descriptor ? shortLabel(descriptor) : null
   return {
     id: contribution.battleId,
     label: short

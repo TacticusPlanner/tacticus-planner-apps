@@ -10,12 +10,13 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { RarityIcon, UpgradeIcon } from "@/shared/ui"
-
 import {
   LocationChips,
   LocationSection,
-} from "./character-lookup-location-chips"
+  RarityIcon,
+  UpgradeIcon,
+} from "@/shared/ui"
+
 import type { BaseUpgradeView } from "./character-lookup-results.types"
 
 export function BaseUpgradesTable({

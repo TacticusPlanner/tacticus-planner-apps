@@ -2,7 +2,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
 
-import type { CampaignInsight } from "@/features/rank-lookup"
+import type { CampaignInsight } from "@/shared/lib"
 
 import { CharacterLookupControls } from "../character-lookup-controls"
 import { CharacterLookupResults } from "../character-lookup-results"

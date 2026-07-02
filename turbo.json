@@ -13,6 +13,32 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
+    "build:staging": {
+      "dependsOn": ["^build"],
+      "env": [
+        "VITE_APP_VERSION",
+        "VITE_API_BASE_URL",
+        "VITE_API_SCOPE",
+        "VITE_MSAL_AUTHORITY",
+        "VITE_MSAL_CLIENT_ID",
+        "VITE_MSAL_TENANT_ID"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
+    "build:production": {
+      "dependsOn": ["^build"],
+      "env": [
+        "VITE_APP_VERSION",
+        "VITE_API_BASE_URL",
+        "VITE_API_SCOPE",
+        "VITE_MSAL_AUTHORITY",
+        "VITE_MSAL_CLIENT_ID",
+        "VITE_MSAL_TENANT_ID"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

@@ -14,13 +14,13 @@ import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
 import { TourButton } from "@/shared/tour"
-import { ScrollToTopButton } from "@/shared/ui"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
+import { ScrollToTopButton } from "./scroll-to-top-button"
 
 function LoadingFill() {
   return (

@@ -5,4 +5,8 @@ export { RarityIcon } from "./rarity-icon"
 export { CharacterCombobox } from "./character-combobox"
 export { ProgressionSelect } from "./progression-select"
 export { RankSelect } from "./rank-select"
-export { ScrollToTopButton } from "./scroll-to-top-button"
+export {
+  LocationChips,
+  LocationSection,
+  type LocationView,
+} from "./location-chips"
