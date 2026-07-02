@@ -29,7 +29,7 @@ import { useDatasetRecords } from "@/shared/game-catalog"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
-import { useLookupSelection } from "./model/use-lookup-selection"
+import { useLookupSelection } from "./hooks/use-lookup-selection"
 import type {
   BaseUpgradeView,
   RankGroupView,
