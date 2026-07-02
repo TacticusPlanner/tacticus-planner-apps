@@ -5,14 +5,15 @@ import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
 import type { CampaignInsight } from "@/features/rank-lookup"
 
 import { CharacterLookupControls } from "../character-lookup-controls"
-import {
-  CharacterLookupResults,
-  type BaseUpgradeView,
-  type RankGroupView,
-} from "../character-lookup-results"
-import { UnitProfile, type UnitProfileView } from "../unit-profile"
+import { CharacterLookupResults } from "../character-lookup-results"
+import type {
+  BaseUpgradeView,
+  RankGroupView,
+} from "../character-lookup-results.types"
+import { UnitProfile } from "../unit-profile"
+import type { UnitProfileView } from "../unit-profile.types"
 
-export interface CharacterLookupMobilePageProps {
+interface CharacterLookupMobilePageProps {
   characterGroups: FactionGroup[]
   characterId: string | undefined
   rankStart: Rank

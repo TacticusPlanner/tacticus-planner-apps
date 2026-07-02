@@ -60,16 +60,11 @@ export {
   clearGameCatalogDb,
   type GameCatalogStoredRecord,
   type StoredRecord,
+  type CharacterRecord,
+  type UpgradeRecord,
+  type CampaignBattleRecord,
+  type CampaignDefinitionRecord,
 } from "./game-catalog-storage"
-
-export {
-  GameCatalogProvider,
-  useGameCatalogStatus,
-  useDatasetRecords,
-  type GameCatalogStatus,
-  type GameCatalogContextValue,
-  type GameCatalogProviderProps,
-} from "./game-catalog-context"
 
 export {
   Rarity,
@@ -97,6 +92,7 @@ export {
   type FactionId,
   type BattleId,
   type CampaignGroupId,
+  ASSET_BASE_PATH,
   upgradeIcon,
   upgradeIconFallback,
   upgradeUnderlay,
@@ -106,14 +102,12 @@ export {
   rankIcon,
   characterIcon,
   campaignIcon,
-  campaignLabel,
-  campaignShortLabel,
-  type CampaignShortLabel,
+  campaignDescriptor,
+  type CampaignDescriptor,
+  type CampaignDifficultyToken,
   traitIcon,
   damageTypeIcon,
-  damageTypeLabel,
   equipmentSlotIcon,
-  equipmentSlotLabel,
   statIcon,
   type StatIconKind,
   progressionVisual,

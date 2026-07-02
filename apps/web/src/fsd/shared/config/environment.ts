@@ -14,3 +14,15 @@ export function getRequiredEnvironmentValue(name: EnvironmentVariableName) {
 
   return value
 }
+
+type AppEnvironment = "local" | "staging" | "production"
+
+// Distinct from Vite's built-in MODE/PROD (both "staging" and "production" are plain `vite build`
+// output — Vite can't tell them apart). Each deployment sets VITE_APP_ENV explicitly; defaults to
+// "local" so plain `vite dev` with no env override behaves like a local environment.
+function getAppEnvironment(): AppEnvironment {
+  return import.meta.env.VITE_APP_ENV ?? "local"
+}
+
+// The UI Kit showcase page is a dev/QA aid — available locally and on staging, hidden in production.
+export const isUiKitEnabled = getAppEnvironment() !== "production"

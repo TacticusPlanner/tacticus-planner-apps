@@ -57,7 +57,7 @@ vi.mock("./theme-switcher", () => ({
 vi.mock("./language-switcher", () => ({
   LanguageSwitcher: () => <div data-testid="language-switcher" />,
 }))
-vi.mock("./tour-button", () => ({
+vi.mock("@/shared/tour", () => ({
   TourButton: () => <div data-testid="tour-button" />,
 }))
 

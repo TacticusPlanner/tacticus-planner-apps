@@ -7,10 +7,27 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 // (No MSAL / user-state mocks are needed, which is the point: nothing user-specific is imported.)
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
+// Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
+// difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json,
+// campaignDifficulties.json, campaignDifficultyCodes.json — so this small in-test dictionary
+// stands in for those files, kept in sync with their content for the fixtures used below).
+const translations: Record<string, string> = {
+  "campaigns:indomitus": "Indomitus",
+  "campaigns:death-guard-vs-admech": "Adeptus Mechanicus",
+  "campaignDifficulties:standard": "Standard",
+  "campaignDifficulties:elite": "Elite",
+  "campaignDifficultyCodes:standard": "S",
+  "campaignDifficultyCodes:elite": "E",
+  "campaignDifficultyCodes:eventStandard": "S",
+  "campaignDifficultyCodes:eventStandardChallenge": "S",
+  "campaignDifficultyCodes:eventExtremis": "Ext",
+  "campaignDifficultyCodes:eventExtremisChallenge": "Ext",
+}
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
+      translations[key] ?? opts?.defaultValue ?? key,
   }),
 }))
 
@@ -211,18 +228,13 @@ const records: Record<string, unknown[]> = {
   ],
 }
 
-vi.mock("@workspace/game-catalog", async (importOriginal) => {
-  const original =
-    await importOriginal<typeof import("@workspace/game-catalog")>()
-  return {
-    ...original,
-    useDatasetRecords: (key: string) => ({
-      data: records[key] ?? [],
-      loading: false,
-      error: null,
-    }),
-  }
-})
+vi.mock("@/shared/game-catalog", () => ({
+  useDatasetRecords: (key: string) => ({
+    data: records[key] ?? [],
+    loading: false,
+    error: null,
+  }),
+}))
 
 import { CharacterLookupPage } from "./character-lookup-page"
 

@@ -13,11 +13,12 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
+import { TourButton } from "@/shared/tour"
+import { ScrollToTopButton } from "@/shared/ui"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
-import { TourButton } from "../providers/tour-button"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 
@@ -46,6 +47,7 @@ export function MobileShell({
           <Outlet />
         </Suspense>
       </div>
+      <ScrollToTopButton />
       <MobileBottomNav items={visibleItems} />
     </div>
   )
@@ -127,7 +129,10 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
   const { pathname } = useLocation()
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-40 flex h-16 border-t bg-background">
+    <nav
+      className="fixed right-0 bottom-0 left-0 z-40 flex h-16 border-t bg-background"
+      data-testid="primary-nav"
+    >
       {items.map((item) => {
         const isActive =
           pathname === item.path || pathname.startsWith(item.path + "/")

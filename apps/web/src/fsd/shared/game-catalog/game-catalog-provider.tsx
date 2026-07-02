@@ -8,18 +8,16 @@ import {
   type ReactNode,
 } from "react"
 
-import { GameCatalogHttpClient } from "./game-catalog-api"
 import {
+  GameCatalogHttpClient,
   getDatasetRecords,
   hasCompleteGameCatalogCache,
-  type StoredRecord,
-} from "./game-catalog-storage"
-import {
   syncGameCatalog,
+  type GameCatalogDatasetKey,
   type GameCatalogSyncProgress,
   type GameCatalogSyncResult,
-} from "./game-catalog-sync"
-import type { GameCatalogDatasetKey } from "./types"
+  type StoredRecord,
+} from "@workspace/game-catalog"
 
 // StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
 // in quick succession — without this guard each mount would issue its own manifest request (the source of

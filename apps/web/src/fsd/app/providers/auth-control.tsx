@@ -22,10 +22,10 @@ import {
   requestApiAccess,
   type CurrentUser,
 } from "@/shared/auth"
+import { TourButton } from "@/shared/tour"
 
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
-import { TourButton } from "./tour-button"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
 

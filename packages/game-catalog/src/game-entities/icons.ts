@@ -6,21 +6,21 @@ import { rarityStarsIndex, type RarityStars } from "./unit-stats"
 
 // All asset paths are relative to the web app's /public/snowprint_assets/ root.
 // These helpers return URL strings; the actual files live in apps/web/public/snowprint_assets/.
+// ASSET_BASE_PATH is the single source of truth for that root — change it here to relocate assets.
+export const ASSET_BASE_PATH = "/snowprint_assets"
 
-export const upgradeIconFallback =
-  "/snowprint_assets/upgrade_materials/ui_icon_upgrade_unknown.png"
+export const upgradeIconFallback = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_unknown.png`
 
 export function upgradeIcon(id: UpgradeId): string {
-  return `/snowprint_assets/upgrade_materials/ui_icon_upgrade_${id}.png`
+  return `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_${id}.png`
 }
 
 // Background plate rendered behind every upgrade material icon (see V1's upgrade-image.tsx).
-export const upgradeUnderlay =
-  "/snowprint_assets/frames/ui_underlay_upgrades.png"
+export const upgradeUnderlay = `${ASSET_BASE_PATH}/frames/ui_underlay_upgrades.png`
 
 // Rarity-colored border rendered on top of the upgrade material icon.
 export function upgradeFrameIcon(rarity: Rarity): string {
-  return `/snowprint_assets/frames/ui_frame_upgrades_${rarity.toLowerCase()}.png`
+  return `${ASSET_BASE_PATH}/frames/ui_frame_upgrades_${rarity.toLowerCase()}.png`
 }
 
 // Badge overlaid on the bottom-left corner of a crafted (non-base) upgrade's icon.
@@ -33,7 +33,7 @@ export function rarityIcon(rarity: Rarity): string {
 
 // All rank assets are named by Rank value (lowercase): stone1.png … adamantine3.png.
 export function rankIcon(id: Rank): string {
-  return `/snowprint_assets/ranks/${id.toLowerCase()}.png`
+  return `${ASSET_BASE_PATH}/ranks/${id.toLowerCase()}.png`
 }
 
 function camelToSnake(id: string): string {
@@ -42,7 +42,7 @@ function camelToSnake(id: string): string {
 
 export function characterIcon(id: CharacterId): string | undefined {
   const slug = characterIconOverrides[id] ?? camelToSnake(id)
-  return `/snowprint_assets/characters/ui_image_RoundPortrait_${slug}_01.png`
+  return `${ASSET_BASE_PATH}/characters/ui_image_RoundPortrait_${slug}_01.png`
 }
 
 // Standard campaign name map: groupId → display name used in the filename.
@@ -82,13 +82,13 @@ export function campaignIcon(
   const standardName = standardCampaigns[groupId]
   if (standardName) {
     const suffix = difficulty === "elite" ? " Elite" : ""
-    return `/snowprint_assets/campaigns/${standardName}${suffix}.png`
+    return `${ASSET_BASE_PATH}/campaigns/${standardName}${suffix}.png`
   }
   const faction = eventCampaignFaction[groupId]
   if (faction) {
     const difficultySuffix = eventDifficultySuffix[difficulty]
     if (!difficultySuffix) return undefined
-    return `/snowprint_assets/campaigns/${faction} ${difficultySuffix}.png`
+    return `${ASSET_BASE_PATH}/campaigns/${faction} ${difficultySuffix}.png`
   }
   return undefined
 }
@@ -106,23 +106,63 @@ const eventCampaignDisplayFaction: Record<CampaignGroupId, string> = {
   "world-eaters-vs-adepta-sororitas": "Adepta Sororitas",
 }
 
-export function campaignLabel(
+export type CampaignDifficultyToken =
+  | "standard"
+  | "elite"
+  | "eventStandard"
+  | "eventStandardChallenge"
+  | "eventExtremis"
+  | "eventExtremisChallenge"
+
+const eventDifficultyToken: Record<string, CampaignDifficultyToken> = {
+  eventStandard: "eventStandard",
+  eventStandardChallenge: "eventStandardChallenge",
+  eventExtremis: "eventExtremis",
+  eventExtremisChallenge: "eventExtremisChallenge",
+}
+
+/**
+ * Ids/tokens describing a campaign group + difficulty, for the caller to resolve into translated
+ * display text (`campaigns`/`campaignDifficulties`/`campaignDifficultyCodes` i18n namespaces) — this
+ * package holds no display strings, only the game-data structure.
+ */
+export interface CampaignDescriptor {
+  /** Key into the `campaigns` i18n namespace for the campaign/event's base display name. */
+  nameKey: string
+  difficultyToken: CampaignDifficultyToken
+  /** True for the "-mirror" variant of a standard campaign. */
+  isMirror: boolean
+  isEvent: boolean
+  /** Event "Challenge" tiers — the caller appends a "B" to each node number for these. */
+  challenge: boolean
+}
+
+export function campaignDescriptor(
   groupId: CampaignGroupId,
   difficulty: string
-): string | undefined {
-  const standardName = standardCampaigns[groupId]
-  if (standardName) {
-    if (difficulty === "elite") return `${standardName} Elite`
-    // The "-mirror" groups are already distinguished by name; the base group needs "Standard"
-    // spelled out to distinguish it from its own Elite tier.
-    return groupId.endsWith("-mirror")
-      ? standardName
-      : `${standardName} Standard`
+): CampaignDescriptor | undefined {
+  if (standardCampaigns[groupId]) {
+    const isMirror = groupId.endsWith("-mirror")
+    const nameKey = isMirror ? groupId.slice(0, -"-mirror".length) : groupId
+    return {
+      nameKey,
+      difficultyToken: difficulty === "elite" ? "elite" : "standard",
+      isMirror,
+      isEvent: false,
+      challenge: false,
+    }
   }
   const faction = eventCampaignDisplayFaction[groupId]
   if (faction) {
-    const difficultyWord = eventDifficultySuffix[difficulty]
-    return difficultyWord ? `${faction} ${difficultyWord}` : undefined
+    const difficultyToken = eventDifficultyToken[difficulty]
+    if (!difficultyToken) return undefined
+    return {
+      nameKey: groupId,
+      difficultyToken,
+      isMirror: false,
+      isEvent: true,
+      challenge: difficulty.endsWith("Challenge"),
+    }
   }
   return undefined
 }
@@ -160,7 +200,7 @@ function pascalToSnake(id: string): string {
 
 export function traitIcon(id: string): string {
   const slug = traitIconOverrides[id] ?? pascalToSnake(id)
-  return `/snowprint_assets/traits/ui_icon_trait_${slug}_01.png`
+  return `${ASSET_BASE_PATH}/traits/ui_icon_trait_${slug}_01.png`
 }
 
 // ---- Damage type icons --------------------------------------------------------------------------
@@ -169,35 +209,26 @@ export function traitIcon(id: string): string {
 // passiveAbilityDamage) already match the shipped asset filenames verbatim (PascalCase), so — unlike
 // traits/equipment — no override map is needed here.
 export function damageTypeIcon(type: string): string {
-  return `/snowprint_assets/damage_icons/ui_icon_damage_profile2_${type}.png`
-}
-
-// Derives a readable label from the PascalCase damage type id, e.g. "HeavyRound" → "Heavy Round".
-export function damageTypeLabel(type: string): string {
-  return type.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+  return `${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_${type}.png`
 }
 
 // ---- Equipment slot icons -----------------------------------------------------------------------
 
 // Slot codes are free-form strings on the character record (e.g. "I_Crit") — there is no closed
-// enum server-side, so unrecognized codes fall back to `undefined`/the raw code rather than throwing.
-const equipmentSlotInfo: Record<string, { slug: string; label: string }> = {
-  I_Crit: { slug: "crit", label: "Crit" },
-  I_Block: { slug: "block", label: "Block" },
-  I_Booster_Crit: { slug: "booster_crit", label: "Crit Booster" },
-  I_Booster_Block: { slug: "booster_block", label: "Block Booster" },
-  I_Defensive: { slug: "defensive", label: "Defensive" },
+// enum server-side, so unrecognized codes fall back to `undefined` rather than throwing.
+const equipmentSlotInfo: Record<string, { slug: string }> = {
+  I_Crit: { slug: "crit" },
+  I_Block: { slug: "block" },
+  I_Booster_Crit: { slug: "booster_crit" },
+  I_Booster_Block: { slug: "booster_block" },
+  I_Defensive: { slug: "defensive" },
 }
 
 export function equipmentSlotIcon(slot: string): string | undefined {
   const info = equipmentSlotInfo[slot]
   return info
-    ? `/snowprint_assets/equipment/ui_icon_itemtype_${info.slug}.png`
+    ? `${ASSET_BASE_PATH}/equipment/ui_icon_itemtype_${info.slug}.png`
     : undefined
-}
-
-export function equipmentSlotLabel(slot: string): string {
-  return equipmentSlotInfo[slot]?.label ?? slot
 }
 
 // ---- Stat icons ----------------------------------------------------------------------------------
@@ -215,7 +246,7 @@ const statIconFile = {
 export type StatIconKind = keyof typeof statIconFile
 
 export function statIcon(kind: StatIconKind): string {
-  return `/snowprint_assets/stat_icons/${statIconFile[kind]}`
+  return `${ASSET_BASE_PATH}/stat_icons/${statIconFile[kind]}`
 }
 
 // ---- Progression (rarity + stars) icons -----------------------------------------------------
@@ -224,8 +255,8 @@ export function statIcon(kind: StatIconKind): string {
 // star and mythic wings are (V1's `snowprintIcons.blueStar`/`.mythicWings`).
 const goldStarIcon = "/icons/stars/gold.png"
 const redStarIcon = "/icons/stars/red.png"
-const blueStarIcon = "/snowprint_assets/stars/ui_icon_star_legendary_large.png"
-const mythicWingsIcon = "/snowprint_assets/stars/ui_icon_star_mythic.png"
+const blueStarIcon = `${ASSET_BASE_PATH}/stars/ui_icon_star_legendary_large.png`
+const mythicWingsIcon = `${ASSET_BASE_PATH}/stars/ui_icon_star_mythic.png`
 
 export type ProgressionVisual =
   | { kind: "none" }
@@ -246,40 +277,4 @@ export function progressionVisual(value: RarityStars): ProgressionVisual {
     return { kind: "stars", icon: blueStarIcon, count: index - 10 }
   }
   return { kind: "wings", icon: mythicWingsIcon }
-}
-
-export type CampaignShortLabel = {
-  /** Campaign/event name, without any difficulty wording. */
-  name: string
-  /** Short difficulty code: Standard/Elite are "S"/"E", mirror groups prefix "M", events use
-   *  "S"/"Ext" for Standard/Extremis. */
-  code: string
-  /** Event "Challenge" tiers — the caller appends a "B" to each node number for these. */
-  challenge: boolean
-}
-
-/**
- * Compact form of `campaignLabel` for farm-location chips, e.g. "Fall of Cadia S", "Indomitus ME",
- * "Adeptus Mechanicus Ext" (+ node numbers, "B"-suffixed when `challenge`). Same group/difficulty
- * matching as `campaignLabel` — returns undefined for the same unrecognized inputs.
- */
-export function campaignShortLabel(
-  groupId: CampaignGroupId,
-  difficulty: string
-): CampaignShortLabel | undefined {
-  const standardName = standardCampaigns[groupId]
-  if (standardName) {
-    const isMirror = groupId.endsWith("-mirror")
-    const name = isMirror ? standardName.replace(/ Mirror$/, "") : standardName
-    const code = `${isMirror ? "M" : ""}${difficulty === "elite" ? "E" : "S"}`
-    return { name, code, challenge: false }
-  }
-  const faction = eventCampaignDisplayFaction[groupId]
-  if (faction) {
-    const difficultyWord = eventDifficultySuffix[difficulty]
-    if (!difficultyWord) return undefined
-    const code = difficultyWord.startsWith("Extremis") ? "Ext" : "S"
-    return { name: faction, code, challenge: difficulty.endsWith("Challenge") }
-  }
-  return undefined
 }

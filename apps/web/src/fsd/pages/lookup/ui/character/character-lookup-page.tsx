@@ -1,27 +1,31 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import {
+  campaignDescriptor,
   campaignIcon,
-  campaignShortLabel,
   groupByFaction,
   isAdamantineRank,
   progressionStars,
   rarityRank,
   statAtRank,
-  useDatasetRecords,
 } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   aggregateBaseUpgrades,
+  campaignDisplayFullLabel,
+  campaignDisplayName,
+  campaignDisplayShortLabel,
   computeCampaignInsights,
   groupUpgradesByRank,
   rankUpUpgradeIds,
-  type BattleLike,
-  type CharacterLike,
+  toBattleLike,
+  toCharacterLike,
+  toUpgradeWithFarmLocations,
+  type CampaignTFunction,
   type RecipeIngredient,
-  type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
+import { useDatasetRecords } from "@/shared/game-catalog"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
@@ -31,8 +35,8 @@ import type {
   RankGroupView,
   RecipeView,
   UpgradeView,
-} from "./character-lookup-results"
-import type { UnitProfileView } from "./unit-profile"
+} from "./character-lookup-results.types"
+import type { UnitProfileView } from "./unit-profile.types"
 
 export function CharacterLookupPage() {
   const { t } = useTranslation([
@@ -42,7 +46,17 @@ export function CharacterLookupPage() {
     "factions",
     "upgrades",
     "traits",
+    "campaigns",
+    "campaignDifficulties",
+    "campaignDifficultyCodes",
   ])
+  // i18next's `TFunction` is branded by the *first* namespace in the `useTranslation` array (its
+  // "default" namespace) — `t` above is perfectly capable of resolving every `campaigns:`/
+  // `campaignDifficulties:`/`campaignDifficultyCodes:`-prefixed key used by `campaignDisplay*`
+  // below, but isn't nominally assignable to their (differently-branded) parameter type. Every key
+  // they build is a runtime template literal anyway (not a static one i18next could validate), so
+  // this cast doesn't give anything up.
+  const campaignT = t as CampaignTFunction
   const isMobile = useIsMobile()
 
   const characters = useDatasetRecords("characters")
@@ -52,28 +66,11 @@ export function CharacterLookupPage() {
 
   const upgradesById = useMemo(
     () =>
-      new Map(
-        upgrades.data.map((u) => {
-          const raw = u as unknown as Record<string, unknown>
-          return [
-            u.id,
-            {
-              ...raw,
-              crafted: raw["craftable"] as boolean,
-            } as UpgradeWithFarmLocations,
-          ]
-        })
-      ),
+      new Map(upgrades.data.map((u) => [u.id, toUpgradeWithFarmLocations(u)])),
     [upgrades.data]
   )
   const battlesById = useMemo(
-    () =>
-      new Map(
-        battles.data.map((b) => [
-          b.id,
-          b as unknown as BattleLike & { id: string },
-        ])
-      ),
+    () => new Map(battles.data.map((b) => [b.id, toBattleLike(b)])),
     [battles.data]
   )
   const releaseTypeByGroupId = useMemo(
@@ -111,10 +108,7 @@ export function CharacterLookupPage() {
   const characterId = applied.characterId ?? characterGroups[0]?.members[0]?.id
 
   const character = characters.data.find((c) => c.id === characterId)
-  // rank-lookup-calc only reads id/name/rankUpUpgrades; a full catalog record is structurally
-  // compatible (rankUpUpgrades[].rank is a validated Rank string at runtime, just typed loosely
-  // by the schema), matching this codebase's existing cast-at-the-boundary pattern.
-  const characterForCalc = character as CharacterLike | undefined
+  const characterForCalc = character ? toCharacterLike(character) : undefined
 
   const resolveRecipe = useMemo(() => {
     const resolve = (ingredients: RecipeIngredient[]): RecipeView[] =>
@@ -222,11 +216,12 @@ export function CharacterLookupPage() {
           const key = `${battle.campaignGroupId}:${battle.difficulty}`
           let entry = locationsByKey.get(key)
           if (!entry) {
-            const short = campaignShortLabel(
+            const descriptor = campaignDescriptor(
               battle.campaignGroupId,
               battle.difficulty
             )
-            if (!short) continue
+            if (!descriptor) continue
+            const short = campaignDisplayShortLabel(campaignT, descriptor)
             entry = {
               id: key,
               name: short.name,
@@ -276,7 +271,7 @@ export function CharacterLookupPage() {
         (a, b) =>
           rarityRank(b.rarity) - rarityRank(a.rarity) || b.count - a.count
       )
-  }, [needs, upgradesById, battlesById, releaseTypeByGroupId, t])
+  }, [needs, upgradesById, battlesById, releaseTypeByGroupId, t, campaignT])
 
   const { campaignInsights, eventInsights } = useMemo(
     () =>
@@ -284,9 +279,13 @@ export function CharacterLookupPage() {
         needs,
         upgradesById,
         battlesById,
-        (groupId) => releaseTypeByGroupId.get(groupId) === "event"
+        (groupId) => releaseTypeByGroupId.get(groupId) === "event",
+        (descriptor, isEvent) =>
+          isEvent
+            ? campaignDisplayName(campaignT, descriptor)
+            : campaignDisplayFullLabel(campaignT, descriptor)
       ),
-    [needs, upgradesById, battlesById, releaseTypeByGroupId]
+    [needs, upgradesById, battlesById, releaseTypeByGroupId, campaignT]
   )
 
   const profile = useMemo<UnitProfileView | undefined>(() => {

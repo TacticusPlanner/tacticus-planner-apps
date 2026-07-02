@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest"
 import { InteractionStatus } from "@azure/msal-browser"
 
 const loginRedirect = vi.fn().mockResolvedValue(undefined)
+const isUiKitEnabled = vi.fn(() => true)
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -18,6 +19,15 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 vi.mock("@/shared/auth", () => ({ loginRequest: { scopes: ["api"] } }))
+
+// The real module re-exports `@/shared/config`'s i18n setup, which calls `initReactI18next` at
+// import time — incompatible with the plain `useTranslation` mock above (see auth-control.test.tsx
+// for the same issue). Only `isUiKitEnabled`'s value is used by the component under test.
+vi.mock("@/shared/config", () => ({
+  get isUiKitEnabled() {
+    return isUiKitEnabled()
+  },
+}))
 
 import { LandingPage } from "./landing-page"
 
@@ -45,5 +55,20 @@ describe("LandingPage", () => {
 
     const link = screen.getByTestId("landing-unit-lookup-link")
     expect(link).toHaveAttribute("href", "/lookup")
+  })
+
+  it("links to the UI Kit when enabled for this environment", () => {
+    isUiKitEnabled.mockReturnValue(true)
+    renderLanding()
+
+    const link = screen.getByTestId("landing-ui-kit-link")
+    expect(link).toHaveAttribute("href", "/ui-kit")
+  })
+
+  it("hides the UI Kit link when disabled for this environment (e.g. production)", () => {
+    isUiKitEnabled.mockReturnValue(false)
+    renderLanding()
+
+    expect(screen.queryByTestId("landing-ui-kit-link")).not.toBeInTheDocument()
   })
 })

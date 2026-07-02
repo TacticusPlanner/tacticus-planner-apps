@@ -13,7 +13,7 @@ import {
   useJoyride,
 } from "react-joyride"
 
-import { useTheme } from "./theme-provider"
+import { useTheme } from "../theme/theme-provider"
 
 type TourContextValue = {
   isRunning: boolean
@@ -139,7 +139,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
         content: t("tour.steps.replay.content"),
       },
       {
-        target: '[data-testid="ui-kit-nav"]',
+        target: '[data-testid="primary-nav"]',
         placement: "bottom",
         title: t("tour.steps.navigation.title"),
         content: t("tour.steps.navigation.content"),

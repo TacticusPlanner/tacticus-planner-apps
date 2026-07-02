@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router"
 import { Toaster } from "@workspace/ui/components/sonner"
 
-import { useTheme } from "./providers/theme-provider"
+import { useTheme } from "@/shared/theme"
 import { routes } from "./routes"
 
 const router = createBrowserRouter(routes)

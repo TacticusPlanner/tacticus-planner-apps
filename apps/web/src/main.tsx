@@ -4,13 +4,10 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
-import {
-  AuthProvider,
-  I18nProvider,
-  ThemeProvider,
-  TourProvider,
-} from "@/app/providers"
+import { AuthProvider, I18nProvider } from "@/app/providers"
 import { initializeAuthentication } from "@/shared/auth"
+import { ThemeProvider } from "@/shared/theme"
+import { TourProvider } from "@/shared/tour"
 
 async function bootstrap() {
   const msalInstance = await initializeAuthentication()

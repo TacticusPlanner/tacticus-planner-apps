@@ -14,6 +14,7 @@ import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
+import { isUiKitEnabled } from "@/shared/config"
 
 export function LandingPage() {
   const { t } = useTranslation("landing")
@@ -92,6 +93,16 @@ export function LandingPage() {
           </Link>
         </div>
       </section>
+
+      {isUiKitEnabled ? (
+        <Link
+          to="/ui-kit"
+          data-testid="landing-ui-kit-link"
+          className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        >
+          {t("uiKitLink")}
+        </Link>
+      ) : null}
     </main>
   )
 }

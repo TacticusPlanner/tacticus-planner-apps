@@ -19,6 +19,14 @@ export type StoredRecord<K extends GameCatalogDatasetKey> =
     id: string
   }
 
+// Named aliases for the datasets consumers most commonly read via `useDatasetRecords`/
+// `getDatasetRecords`, so call sites can name the record type instead of re-deriving it from
+// `StoredRecord<"...">` each time.
+export type CharacterRecord = StoredRecord<"characters">
+export type UpgradeRecord = StoredRecord<"upgrades">
+export type CampaignBattleRecord = StoredRecord<"campaign-battles">
+export type CampaignDefinitionRecord = StoredRecord<"campaign-definitions">
+
 const catalogDbName = "tacticus-planner-game-catalog"
 // v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
 // served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.

@@ -10,11 +10,13 @@ import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { UiKitPage } from "@/pages/ui-kit"
 import { LandingPage } from "@/pages/landing"
+import { HomePage } from "@/pages/home"
 import {
   CharacterLookupPage,
   LookupPage,
   LookupPlaceholder,
 } from "@/pages/lookup"
+import { isUiKitEnabled } from "@/shared/config"
 
 import { AppShell } from "./layout/app-shell"
 
@@ -66,7 +68,7 @@ export const routes: RouteObject[] = [
         path: "/home",
         element: (
           <ProtectedRoute>
-            <UiKitPage />
+            <HomePage />
           </ProtectedRoute>
         ),
       },
@@ -80,6 +82,10 @@ export const routes: RouteObject[] = [
           { path: "npc", element: <LookupPlaceholder tab="npc" /> },
         ],
       },
+      // Public component showcase for local/QA use — never registered in production (see
+      // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
+      // there regardless of how someone reaches the URL.
+      ...(isUiKitEnabled ? [{ path: "/ui-kit", element: <UiKitPage /> }] : []),
       { path: "*", element: <Navigate replace to="/" /> },
     ],
   },

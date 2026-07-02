@@ -99,6 +99,16 @@ describe("computeCampaignInsights", () => {
   ])
 
   const isEventGroup = (groupId: string) => groupId === "death-guard-vs-admech"
+  // Stand-in for the real i18n-driven resolver (`campaignDisplayFullLabel`/`campaignDisplayName`)
+  // — computeCampaignInsights only needs *some* string back, so this keeps the test decoupled
+  // from translation content and just echoes the descriptor's nameKey/difficultyToken.
+  const resolveLabel = (
+    descriptor: { nameKey: string; difficultyToken: string },
+    isEvent: boolean
+  ) =>
+    isEvent
+      ? descriptor.nameKey
+      : `${descriptor.nameKey}:${descriptor.difficultyToken}`
 
   it("dedups energy cost per distinct battle within a chip (two upgrades, same node)", () => {
     const upgradesById = new Map<string, UpgradeWithFarmLocations>([
@@ -140,7 +150,8 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights).toHaveLength(1)
@@ -148,7 +159,7 @@ describe("computeCampaignInsights", () => {
     // once for the shared battle (6), not twice (12).
     expect(campaignInsights[0]).toMatchObject({
       id: "indomitus:standard",
-      label: "Indomitus Standard",
+      label: "indomitus:standard",
       score: 1,
     })
     expect(campaignInsights[0].contributions).toHaveLength(2)
@@ -199,7 +210,8 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights.map((c) => c.id)).toEqual([
@@ -231,14 +243,15 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights).toEqual([])
     expect(eventInsights).toHaveLength(1)
     expect(eventInsights[0]).toMatchObject({
       id: "death-guard-vs-admech",
-      label: "Adeptus Mechanicus",
+      label: "death-guard-vs-admech",
     })
   })
 
@@ -266,7 +279,8 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(eventInsights).toHaveLength(1)
@@ -309,7 +323,8 @@ describe("computeCampaignInsights", () => {
       [{ id: "rare1", count: 1 }],
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights[0].tierScores).toBeUndefined()
@@ -356,6 +371,7 @@ describe("computeCampaignInsights", () => {
       upgradesById,
       battlesById,
       isEventGroup,
+      resolveLabel,
       1
     )
 
@@ -385,7 +401,8 @@ describe("computeCampaignInsights", () => {
       [{ id: "orphan", count: 1 }],
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights).toEqual([])

@@ -1,9 +1,10 @@
 import { useEffect, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { useGameCatalogStatus } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
+
+import { useGameCatalogStatus } from "@/shared/game-catalog"
 
 /**
  * Blocks the home content with a full-screen overlay while the game catalog initializes/syncs. Shows
