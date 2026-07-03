@@ -20,11 +20,7 @@ jobs:
       run-validation: false
       upload-artifact: true
       vite-mode: staging
-      vite-api-base-url: ${{ vars.STAGE_API_BASE_URL }}
-      vite-api-scope: ${{ vars.STAGE_API_SCOPE }}
-      vite-msal-authority: ${{ vars.STAGE_MSAL_AUTHORITY }}
-      vite-msal-client-id: ${{ vars.STAGE_MSAL_CLIENT_ID }}
-      vite-msal-tenant-id: ${{ vars.STAGE_MSAL_TENANT_ID }}
+      require-deployment-vars: false
 
   deploy:
     name: Deploy Stage

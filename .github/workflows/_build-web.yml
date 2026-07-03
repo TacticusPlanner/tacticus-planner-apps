@@ -54,12 +54,6 @@ jobs:
     name: Build Web
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      VITE_API_BASE_URL: ${{ inputs.vite-api-base-url }}
-      VITE_API_SCOPE: ${{ inputs.vite-api-scope }}
-      VITE_MSAL_AUTHORITY: ${{ inputs.vite-msal-authority }}
-      VITE_MSAL_CLIENT_ID: ${{ inputs.vite-msal-client-id }}
-      VITE_MSAL_TENANT_ID: ${{ inputs.vite-msal-tenant-id }}
     permissions:
       contents: read
 
@@ -97,15 +91,20 @@ jobs:
       - name: Set app version
         run: echo "VITE_APP_VERSION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
-      - name: Validate deployment configuration
+      - name: Apply deployment variable overrides
         if: ${{ inputs.upload-artifact }}
         shell: bash
         run: |
-          : "${VITE_API_BASE_URL:?Missing API base URL build variable}"
-          : "${VITE_API_SCOPE:?Missing API scope build variable}"
-          : "${VITE_MSAL_AUTHORITY:?Missing MSAL authority build variable}"
-          : "${VITE_MSAL_CLIENT_ID:?Missing MSAL client ID build variable}"
-          : "${VITE_MSAL_TENANT_ID:?Missing MSAL tenant ID build variable}"
+          set_if_present() {
+            if [ -n "$2" ]; then
+              echo "$1=$2" >> "$GITHUB_ENV"
+            fi
+          }
+          set_if_present VITE_API_BASE_URL "${{ inputs.vite-api-base-url }}"
+          set_if_present VITE_API_SCOPE "${{ inputs.vite-api-scope }}"
+          set_if_present VITE_MSAL_AUTHORITY "${{ inputs.vite-msal-authority }}"
+          set_if_present VITE_MSAL_CLIENT_ID "${{ inputs.vite-msal-client-id }}"
+          set_if_present VITE_MSAL_TENANT_ID "${{ inputs.vite-msal-tenant-id }}"
 
       - name: Check formatting
         if: ${{ inputs.run-validation }}
