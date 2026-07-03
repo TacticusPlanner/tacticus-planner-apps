@@ -20,7 +20,6 @@ jobs:
       run-validation: false
       upload-artifact: true
       vite-mode: staging
-      require-deployment-vars: false
 
   deploy:
     name: Deploy Stage
