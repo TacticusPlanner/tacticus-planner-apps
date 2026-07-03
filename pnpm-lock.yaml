@@ -234,9 +234,6 @@ importers:
       idb:
         specifier: ^8.0.3
         version: 8.0.3
-      react:
-        specifier: 'catalog:'
-        version: 19.2.7
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -244,21 +241,12 @@ importers:
       '@eslint/js':
         specifier: 'catalog:'
         version: 10.0.1(eslint@10.6.0(jiti@2.7.0))
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.17
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.1.9(vitest@4.1.9)
       eslint:
         specifier: 'catalog:'
         version: 10.6.0(jiti@2.7.0)
-      eslint-plugin-react-hooks:
-        specifier: 'catalog:'
-        version: 7.1.1(eslint@10.6.0(jiti@2.7.0))
-      eslint-plugin-react-refresh:
-        specifier: 'catalog:'
-        version: 0.5.3(eslint@10.6.0(jiti@2.7.0))
       fake-indexeddb:
         specifier: ^6.2.5
         version: 6.2.5

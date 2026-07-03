@@ -2,13 +2,6 @@ import { Info } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Slider } from "@workspace/ui/components/slider"
 import { Switch } from "@workspace/ui/components/switch"
 import {
@@ -18,31 +11,22 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import {
-  progressionOrder,
-  progressionRarity,
-  progressionStars,
-  progressionVisual,
   rankAt,
   rankIndex,
   rankOrder,
   type FactionGroup,
   type Progression,
   type Rank,
-  type RarityStars,
 } from "@workspace/game-catalog"
 
-import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
-
-import { CharacterCombobox } from "./character-combobox"
+import {
+  CharacterCombobox,
+  ProgressionSelect,
+  RankBadge,
+  RankSelect,
+} from "@/shared/ui"
 
 const maxIndex = rankOrder.length - 1
-
-// V1 displays a RarityStars step by its own enum-key text (e.g. "RedOneStar", "MythicWings")
-// rather than a fabricated rarity/star-count label, so this mirrors that: split the PascalCase id
-// into words, e.g. "RedOneStar" → "Red One Star".
-function progressionLabel(value: RarityStars): string {
-  return value.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-}
 
 export function CharacterLookupControls({
   characterGroups,
@@ -196,101 +180,6 @@ export function CharacterLookupControls({
       <Button onClick={onApply} disabled={applyDisabled}>
         {t("unitLookup.apply")}
       </Button>
-    </div>
-  )
-}
-
-function ProgressionSelect({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: Progression
-  onChange: (value: Progression) => void
-}) {
-  return (
-    <div className="grid gap-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Select value={value} onValueChange={(v) => onChange(v as Progression)}>
-        <SelectTrigger className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {progressionOrder.map((option) => (
-            <SelectItem key={option} value={option}>
-              <ProgressionBadge value={option} />
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  )
-}
-
-// Renders a progression step as its rarity badge + star/wings icon(s) — the rarity badge makes
-// the rank/rarity correlation visible (the same star count repeats at two different rarities
-// around a promotion boundary, e.g. "Common:TwoStars" then "Uncommon:TwoStars"). Stars match V1's
-// stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step) —
-// except "None", which has nothing to show an icon for and stays as plain text.
-function ProgressionBadge({ value }: { value: Progression }) {
-  const rarity = progressionRarity(value)
-  const stars = progressionStars(value)
-  const visual = progressionVisual(stars)
-
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <RarityIcon rarity={rarity} className="size-4" />
-      {visual.kind === "none" ? (
-        <span className="text-sm">{progressionLabel(stars)}</span>
-      ) : visual.kind === "wings" ? (
-        <EntityIcon
-          src={visual.icon}
-          alt={progressionLabel(stars)}
-          className="h-4 w-auto"
-        />
-      ) : (
-        <span className="inline-flex items-center gap-0.5">
-          {Array.from({ length: visual.count }, (_, index) => (
-            <EntityIcon
-              key={index}
-              src={visual.icon}
-              alt={index === 0 ? progressionLabel(stars) : ""}
-              className="size-3.5"
-            />
-          ))}
-        </span>
-      )}
-    </span>
-  )
-}
-
-function RankSelect({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: Rank
-  options: Rank[]
-  onChange: (rank: Rank) => void
-}) {
-  return (
-    <div className="grid gap-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Select value={value} onValueChange={(v) => onChange(v as Rank)}>
-        <SelectTrigger className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((rank) => (
-            <SelectItem key={rank} value={rank}>
-              <RankBadge rank={rank} />
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </div>
   )
 }

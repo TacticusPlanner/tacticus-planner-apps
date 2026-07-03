@@ -21,12 +21,12 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
+import { TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
-import { TourButton } from "../providers/tour-button"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 
@@ -110,7 +110,7 @@ function AppSidebar({
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent data-testid="primary-nav">
         <SidebarGroup>
           <SidebarMenu>
             {visibleItems.map((item) => (

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { useGameCatalogStatus } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
+
+import { useGameCatalogStatus } from "@/shared/game-catalog"
 
 export function CatalogSyncStatusBadge() {
   const { t } = useTranslation()

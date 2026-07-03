@@ -4,8 +4,8 @@ import {
   computeCampaignInsights,
   dropRate,
   type BattleLike,
+  type CampaignInsightUpgrade,
   type FarmLocationLike,
-  type UpgradeWithFarmLocations,
 } from "./campaign-insights"
 
 function location(overrides: Partial<FarmLocationLike>): FarmLocationLike {
@@ -99,18 +99,24 @@ describe("computeCampaignInsights", () => {
   ])
 
   const isEventGroup = (groupId: string) => groupId === "death-guard-vs-admech"
+  // Stand-in for the real i18n-driven resolver (`useCampaignDisplay()`'s bound resolvers) —
+  // computeCampaignInsights only needs *some* string back, so this keeps the test decoupled from
+  // translation content and just echoes the descriptor's nameKey/difficultyToken.
+  const resolveLabel = (
+    descriptor: { nameKey: string; difficultyToken: string },
+    isEvent: boolean
+  ) =>
+    isEvent
+      ? descriptor.nameKey
+      : `${descriptor.nameKey}:${descriptor.difficultyToken}`
 
   it("dedups energy cost per distinct battle within a chip (two upgrades, same node)", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "rare1",
         {
           id: "rare1",
-          label: "Rare 1",
           rarity: "Rare",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "std-node-1", guaranteed: true }),
           ],
@@ -120,11 +126,7 @@ describe("computeCampaignInsights", () => {
         "rare2",
         {
           id: "rare2",
-          label: "Rare 2",
           rarity: "Rare",
-          stat: "Damage",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "std-node-1", guaranteed: true }),
           ],
@@ -140,7 +142,8 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights).toHaveLength(1)
@@ -148,7 +151,7 @@ describe("computeCampaignInsights", () => {
     // once for the shared battle (6), not twice (12).
     expect(campaignInsights[0]).toMatchObject({
       id: "indomitus:standard",
-      label: "Indomitus Standard",
+      label: "indomitus:standard",
       score: 1,
     })
     expect(campaignInsights[0].contributions).toHaveLength(2)
@@ -160,16 +163,12 @@ describe("computeCampaignInsights", () => {
   })
 
   it("ranks a guaranteed high-rarity/cheap-energy node above a low-rarity/expensive, low-chance one", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "legendary1",
         {
           id: "legendary1",
-          label: "Legendary 1",
           rarity: "Legendary",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "std-node-1", guaranteed: true }),
           ],
@@ -179,11 +178,7 @@ describe("computeCampaignInsights", () => {
         "common1",
         {
           id: "common1",
-          label: "Common 1",
           rarity: "Common",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "elite-node", effectiveRate: 0.05 }),
           ],
@@ -199,7 +194,8 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights.map((c) => c.id)).toEqual([
@@ -209,16 +205,12 @@ describe("computeCampaignInsights", () => {
   })
 
   it("splits event campaigns into a separate ranked list", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "eventMat",
         {
           id: "eventMat",
-          label: "Event Material",
           rarity: "Epic",
-          stat: "Armour",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "event-node", guaranteed: true }),
           ],
@@ -231,28 +223,25 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights).toEqual([])
     expect(eventInsights).toHaveLength(1)
     expect(eventInsights[0]).toMatchObject({
       id: "death-guard-vs-admech",
-      label: "Adeptus Mechanicus",
+      label: "death-guard-vs-admech",
     })
   })
 
   it("merges an event's difficulty tiers (Standard + Extremis) into one chip and sums their scores", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "eventMat",
         {
           id: "eventMat",
-          label: "Event Material",
           rarity: "Epic",
-          stat: "Armour",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "event-node", guaranteed: true }),
             location({ battleId: "event-node-extremis", guaranteed: true }),
@@ -266,7 +255,8 @@ describe("computeCampaignInsights", () => {
       needs,
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(eventInsights).toHaveLength(1)
@@ -289,16 +279,12 @@ describe("computeCampaignInsights", () => {
   })
 
   it("leaves tierScores unset for a regular (non-event) campaign chip", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "rare1",
         {
           id: "rare1",
-          label: "Rare 1",
           rarity: "Rare",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "std-node-1", guaranteed: true }),
           ],
@@ -309,23 +295,20 @@ describe("computeCampaignInsights", () => {
       [{ id: "rare1", count: 1 }],
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights[0].tierScores).toBeUndefined()
   })
 
   it("truncates to the requested top-N, sorted by score descending", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "legendary1",
         {
           id: "legendary1",
-          label: "Legendary 1",
           rarity: "Legendary",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "std-node-1", guaranteed: true }),
           ],
@@ -335,11 +318,7 @@ describe("computeCampaignInsights", () => {
         "common1",
         {
           id: "common1",
-          label: "Common 1",
           rarity: "Common",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "elite-node", effectiveRate: 0.5 }),
           ],
@@ -356,6 +335,7 @@ describe("computeCampaignInsights", () => {
       upgradesById,
       battlesById,
       isEventGroup,
+      resolveLabel,
       1
     )
 
@@ -364,16 +344,12 @@ describe("computeCampaignInsights", () => {
   })
 
   it("skips a location whose battle id isn't in the catalog", () => {
-    const upgradesById = new Map<string, UpgradeWithFarmLocations>([
+    const upgradesById = new Map<string, CampaignInsightUpgrade>([
       [
         "orphan",
         {
           id: "orphan",
-          label: "Orphan",
           rarity: "Common",
-          stat: "Health",
-          crafted: false,
-          recipe: [],
           farmLocations: [
             location({ battleId: "unknown-battle", guaranteed: true }),
           ],
@@ -385,7 +361,8 @@ describe("computeCampaignInsights", () => {
       [{ id: "orphan", count: 1 }],
       upgradesById,
       battlesById,
-      isEventGroup
+      isEventGroup,
+      resolveLabel
     )
 
     expect(campaignInsights).toEqual([])

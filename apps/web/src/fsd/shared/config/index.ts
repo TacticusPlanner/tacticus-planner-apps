@@ -1,3 +1,3 @@
 export { getSupportedLanguage, i18n, supportedLocales } from "./i18n"
 export type { SupportedLanguage } from "./i18n"
-export { getRequiredEnvironmentValue } from "./environment"
+export { getRequiredEnvironmentValue, isUiKitEnabled } from "./environment"

@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { Rarity } from "../game-entities/rarity"
 import { farmLocationSchema } from "./shared"
 
 // A recipe ingredient. Craftable ingredients carry their own nested recipe (recursively); base materials
@@ -24,7 +25,7 @@ export const upgradeViewSchema = z.looseObject({
   material: z.string(),
   snowprintId: z.string(),
   label: z.string(),
-  rarity: z.string(),
+  rarity: z.enum(Rarity),
   stat: z.string(),
   craftable: z.boolean(),
   recipe: z.array(upgradeRecipeIngredientSchema),

@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: true
+      vite-mode:
+        description: Vite build mode — selects apps/web's build:<mode> script, which loads the matching .env.<mode> file (see shared/config/environment.ts).
+        required: false
+        type: string
+        default: production
       vite-api-base-url:
         description: Tacticus Planner API base URL embedded by Vite.
         required: false
@@ -123,7 +128,7 @@ jobs:
         run: pnpm knip
 
       - name: Build
-        run: pnpm build
+        run: pnpm build:${{ inputs.vite-mode }}
 
       - name: Upload web artifact
         if: ${{ inputs.upload-artifact }}

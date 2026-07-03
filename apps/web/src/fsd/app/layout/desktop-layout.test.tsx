@@ -26,7 +26,7 @@ vi.mock("../providers/language-switcher", () => ({
   LanguageSwitcher: () => null,
 }))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
-vi.mock("../providers/tour-button", () => ({ TourButton: () => null }))
+vi.mock("@/shared/tour", () => ({ TourButton: () => null }))
 
 import { DesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"

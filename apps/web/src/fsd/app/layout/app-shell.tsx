@@ -1,8 +1,9 @@
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
-import { GameCatalogProvider } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
+
+import { GameCatalogProvider } from "@/shared/game-catalog"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"

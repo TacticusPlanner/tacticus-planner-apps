@@ -17,6 +17,8 @@ coverage
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!.env.staging
+!.env.production
 
 # turbo
 .turbo

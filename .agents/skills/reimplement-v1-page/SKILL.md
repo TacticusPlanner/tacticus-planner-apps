@@ -22,13 +22,15 @@ pages that must preserve existing calculations but improve design, accessibility
   summary + "Evidence" pointing at the exact V1 files).
 - **Rewrite conventions**: `apps/web/src/fsd/**` (FSD layers app→pages→widgets→features→entities→shared),
   `app/routes.tsx` (routing + auth guards), `shared/config/i18n` (i18next), `@workspace/ui` components, the
-  `@workspace/game-catalog` package (`useDatasetRecords(key)` + the served dataset shapes).
+  `@workspace/game-catalog` package for the served dataset shapes/schemas, and `shared/game-catalog`
+  (`useDatasetRecords(key)`, `GameCatalogProvider`) for the React data-fetching layer — game-catalog
+  itself is pure TS with no React/JSX.
 - **V1 implementation**: the page component + its `*.service.ts` (the real calculation), and the V1 models
   (`v1/.../src/fsd/4-entities/*`, `5-shared/model/*` — e.g. enums like `Rank`).
 - **Assets**: rewrite `apps/web/public/snowprint_assets/**` (characters, upgrade_materials, stat_icons, …),
   V1 `public/`, and especially **V1 `src/assets/images/**`** (ranks, campaigns, factions, … often missing
-from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adamantine ranks are
-`ui_icon_rank_mythical_0{n}.png`).
+  from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adamantine ranks are
+  `ui_icon_rank_mythical_0{n}.png`).
 - **i18n + routing + tests** that already exist, to match conventions.
 
 ## Migration process

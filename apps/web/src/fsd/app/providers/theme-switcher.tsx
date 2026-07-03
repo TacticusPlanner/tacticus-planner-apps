@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { Button } from "@workspace/ui/components/button"
 
-import { useTheme } from "./theme-provider"
+import { useTheme } from "@/shared/theme"
 
 export function ThemeSwitcher() {
   const { t } = useTranslation()

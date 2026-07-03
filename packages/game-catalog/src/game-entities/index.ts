@@ -20,27 +20,22 @@ export type {
   CampaignGroupId,
 } from "./ids"
 export {
-  upgradeIcon,
-  upgradeIconFallback,
-  upgradeUnderlay,
-  upgradeFrameIcon,
-  craftedUpgradeBadge,
+  ASSET_BASE_PATH,
+  UpgradeIcons,
   rarityIcon,
   rankIcon,
   characterIcon,
   campaignIcon,
-  campaignLabel,
-  campaignShortLabel,
+  campaignDescriptor,
   traitIcon,
   damageTypeIcon,
-  damageTypeLabel,
   equipmentSlotIcon,
-  equipmentSlotLabel,
   statIcon,
   progressionVisual,
 } from "./icons"
 export type {
-  CampaignShortLabel,
+  CampaignDescriptor,
+  CampaignDifficultyToken,
   StatIconKind,
   ProgressionVisual,
 } from "./icons"

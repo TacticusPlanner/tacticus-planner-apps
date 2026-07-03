@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import type { GameCatalogContextValue } from "@workspace/game-catalog"
+import type { GameCatalogContextValue } from "@/shared/game-catalog"
 
 const status = vi.fn<() => GameCatalogContextValue>()
 
@@ -9,7 +9,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock("@workspace/game-catalog", () => ({
+vi.mock("@/shared/game-catalog", () => ({
   useGameCatalogStatus: () => status(),
 }))
 

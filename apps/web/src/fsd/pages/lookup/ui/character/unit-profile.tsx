@@ -6,45 +6,17 @@ import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import {
   characterIcon,
   damageTypeIcon,
-  damageTypeLabel,
   equipmentSlotIcon,
-  equipmentSlotLabel,
   statIcon,
   traitIcon,
 } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
-type UnitStatPair = { current: number; target: number }
-
-export type UnitProfileView = {
-  id: string
-  name: string
-  faction: string
-  movement: number
-  meleeHits: number
-  meleeDamageType: string
-  rangedHits?: number
-  rangedDamageType?: string
-  rangeDistance?: number
-  /** Deduped union of melee, ranged, and ability damage types (abilities empty until the server
-   *  populates activeAbilityDamage/passiveAbilityDamage). */
-  damageTypes: string[]
-  equipmentSlots: string[]
-  traits: string[]
-  health: UnitStatPair
-  damage: UnitStatPair
-  armour: UnitStatPair
-}
-
-// Derives a readable label from a PascalCase trait id, e.g. "ShadowInTheWarp" → "Shadow In The
-// Warp", used as a fallback when the `traits` i18n namespace has no entry for the id.
-function prettifyId(id: string): string {
-  return id.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-}
+import type { UnitProfileView, UnitStatPair } from "./unit-profile.types"
 
 export function UnitProfile({ profile }: { profile: UnitProfileView }) {
-  const { t } = useTranslation(["common", "traits"])
+  const { t } = useTranslation(["common", "traits", "damageTypes", "equipment"])
 
   return (
     <Card className="gap-4 py-4" data-testid="unit-profile">
@@ -114,7 +86,7 @@ export function UnitProfile({ profile }: { profile: UnitProfileView }) {
                   alt=""
                   className="size-4"
                 />
-                {equipmentSlotLabel(slot)}
+                {t(`equipment:slots.${slot}`, { defaultValue: slot })}
               </Badge>
             ))}
           </ProfileSection>
@@ -129,7 +101,7 @@ export function UnitProfile({ profile }: { profile: UnitProfileView }) {
                 className="gap-1 font-normal"
               >
                 <EntityIcon src={traitIcon(trait)} alt="" className="size-4" />
-                {t(`traits:${trait}`, { defaultValue: prettifyId(trait) })}
+                {t(`traits:${trait}`, { defaultValue: trait })}
               </Badge>
             ))}
           </ProfileSection>
@@ -179,10 +151,11 @@ function StatRow({
 }
 
 function DamageTypeChip({ type }: { type: string }) {
+  const { t } = useTranslation(["damageTypes"])
   return (
     <Badge variant="outline" className="gap-1 font-normal">
       <EntityIcon src={damageTypeIcon(type)} alt="" className="size-4" />
-      {damageTypeLabel(type)}
+      {t(`damageTypes:${type}`, { defaultValue: type })}
     </Badge>
   )
 }

@@ -8,16 +8,19 @@ import {
 } from "./types"
 import type { GameCatalogRecordByKey } from "./schemas"
 
-export type GameCatalogStoredRecord = {
-  id: string
-  [key: string]: unknown
-}
-
 // A stored row: the validated record for the dataset plus the storage-managed string id.
 export type StoredRecord<K extends GameCatalogDatasetKey> =
   GameCatalogRecordByKey[K] & {
     id: string
   }
+
+// Named aliases for the datasets consumers most commonly read via `useDatasetRecords`/
+// `getDatasetRecords`, so call sites can name the record type instead of re-deriving it from
+// `StoredRecord<"...">` each time.
+export type CharacterRecord = StoredRecord<"characters">
+export type UpgradeRecord = StoredRecord<"upgrades">
+export type CampaignBattleRecord = StoredRecord<"campaign-battles">
+export type CampaignDefinitionRecord = StoredRecord<"campaign-definitions">
 
 const catalogDbName = "tacticus-planner-game-catalog"
 // v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
@@ -186,9 +189,9 @@ export async function clearGameCatalogDb() {
   db.close()
 }
 
-function toStoredRecord(
-  item: Record<string, unknown>
-): GameCatalogStoredRecord {
+function toStoredRecord<T extends Record<string, unknown>>(
+  item: T
+): T & { id: string } {
   const id = item.id
 
   if (typeof id !== "string" && typeof id !== "number") {

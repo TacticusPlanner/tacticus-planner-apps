@@ -87,6 +87,10 @@
     "lookup": "Lookup",
     "createGoal": "Create Goal"
   },
+  "home": {
+    "subtitle": "This page is still under construction.",
+    "tourButton": "Show me around"
+  },
   "language": {
     "label": "Language",
     "options": {
@@ -96,6 +100,7 @@
       "fr": "Français"
     }
   },
+  "scrollToTop": "Scroll to top",
   "settings": {
     "label": "Settings"
   },
@@ -134,8 +139,8 @@
         "content": "Click here whenever you want to run this tour again."
       },
       "navigation": {
-        "title": "Jump around",
-        "content": "Use this navigation bar to move between the UI sections."
+        "title": "Find your way around",
+        "content": "This menu groups the app's sections — use it to navigate between them at any time."
       }
     }
   },

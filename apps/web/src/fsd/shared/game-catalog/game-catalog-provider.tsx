@@ -4,22 +4,21 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react"
 
-import { GameCatalogHttpClient } from "./game-catalog-api"
 import {
+  GameCatalogHttpClient,
   getDatasetRecords,
   hasCompleteGameCatalogCache,
-  type StoredRecord,
-} from "./game-catalog-storage"
-import {
   syncGameCatalog,
+  type GameCatalogDatasetKey,
   type GameCatalogSyncProgress,
   type GameCatalogSyncResult,
-} from "./game-catalog-sync"
-import type { GameCatalogDatasetKey } from "./types"
+  type StoredRecord,
+} from "@workspace/game-catalog"
 
 // StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
 // in quick succession — without this guard each mount would issue its own manifest request (the source of
@@ -198,4 +197,27 @@ export function useDatasetRecords<K extends GameCatalogDatasetKey>(
   }, [datasetKey, status])
 
   return state
+}
+
+/**
+ * Like `useDatasetRecords`, but indexes the dataset by `id` (mapped through `mapRecord`, which
+ * defaults to the identity function) — the shape most call sites actually want when joining a
+ * dataset against another by id, instead of re-deriving the same `Map` via `useMemo` at each
+ * call site.
+ */
+export function useDatasetRecordsMap<
+  K extends GameCatalogDatasetKey,
+  V = StoredRecord<K>,
+>(
+  datasetKey: K,
+  mapRecord: (record: StoredRecord<K>) => V = (record) => record as unknown as V
+) {
+  const { data, loading, error } = useDatasetRecords(datasetKey)
+
+  const map = useMemo(
+    () => new Map(data.map((record) => [record.id, mapRecord(record)])),
+    [data, mapRecord]
+  )
+
+  return { data: map, loading, error }
 }

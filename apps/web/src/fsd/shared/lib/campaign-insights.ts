@@ -1,11 +1,15 @@
 import {
+  campaignDescriptor,
   campaignIcon,
-  campaignLabel,
-  campaignShortLabel,
   rarityRank,
+  type CampaignDescriptor,
+  type Rarity,
 } from "@workspace/game-catalog"
 
-import type { BaseUpgradeNeed, UpgradeLike } from "./rank-lookup-calc.types"
+export interface CampaignInsightNeed {
+  id: string
+  count: number
+}
 
 export interface FarmLocationLike {
   battleId: string
@@ -22,7 +26,11 @@ export interface BattleLike {
   energyCost: number
 }
 
-export interface UpgradeWithFarmLocations extends UpgradeLike {
+/** The minimal shape `computeCampaignInsights` needs from an upgrade record — any richer record
+ *  type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`) satisfies this structurally. */
+export interface CampaignInsightUpgrade {
+  id: string
+  rarity: Rarity
   farmLocations: FarmLocationLike[]
 }
 
@@ -70,16 +78,18 @@ export function dropRate(location: FarmLocationLike): number {
   return 0
 }
 
-// Event difficulties fold into two tiers for scoring purposes: "eventStandard"/"eventStandardChallenge"
-// are "standard", "eventExtremis"/"eventExtremisChallenge" are "extremis" — the same split
-// `campaignShortLabel` already uses for its "S"/"Ext" short codes.
+// Event difficulties fold into two tiers for scoring purposes: "eventStandard" is "standard",
+// "eventExtremis" is "extremis" (challenge tiers already normalize to their base token in
+// `campaignDescriptor`).
 function eventTier(
   campaignGroupId: string,
   difficulty: string
 ): "standard" | "extremis" | undefined {
-  const short = campaignShortLabel(campaignGroupId, difficulty)
-  if (!short) return undefined
-  return short.code === "Ext" ? "extremis" : "standard"
+  const descriptor = campaignDescriptor(campaignGroupId, difficulty)
+  if (!descriptor) return undefined
+  return descriptor.difficultyToken === "eventExtremis"
+    ? "extremis"
+    : "standard"
 }
 
 interface TierAccumulator {
@@ -107,12 +117,17 @@ interface ChipAccumulator {
  * each event insight also carries a `tierScores` breakdown so the Standard and Extremis portions of
  * that combined score stay visible. Regular campaigns and events are ranked and returned separately
  * since events are time-limited and shouldn't compete with standing campaigns.
+ *
+ * `resolveLabel` translates a chip's `CampaignDescriptor` into display text — kept as a callback
+ * (rather than importing react-i18next here) so this calc function stays pure/i18n-free and
+ * testable without a translation setup; callers pass `useCampaignDisplay()`'s bound resolvers.
  */
-export function computeCampaignInsights(
-  needs: BaseUpgradeNeed[],
-  upgradesById: ReadonlyMap<string, UpgradeWithFarmLocations>,
+export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
+  needs: CampaignInsightNeed[],
+  upgradesById: ReadonlyMap<string, U>,
   battlesById: ReadonlyMap<string, BattleLike>,
   isEventGroup: (campaignGroupId: string) => boolean,
+  resolveLabel: (descriptor: CampaignDescriptor, isEvent: boolean) => string,
   topN = 3
 ): { campaignInsights: CampaignInsight[]; eventInsights: CampaignInsight[] } {
   const chips = new Map<string, ChipAccumulator>()
@@ -132,12 +147,13 @@ export function computeCampaignInsights(
         : `${battle.campaignGroupId}:${battle.difficulty}`
       let chip = chips.get(key)
       if (!chip) {
-        const label = isEvent
-          ? campaignShortLabel(battle.campaignGroupId, battle.difficulty)?.name
-          : campaignLabel(battle.campaignGroupId, battle.difficulty)
-        if (!label) continue
+        const descriptor = campaignDescriptor(
+          battle.campaignGroupId,
+          battle.difficulty
+        )
+        if (!descriptor) continue
         chip = {
-          label,
+          label: resolveLabel(descriptor, isEvent),
           icon: campaignIcon(battle.campaignGroupId, battle.difficulty),
           isEvent,
           value: 0,

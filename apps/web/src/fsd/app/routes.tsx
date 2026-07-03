@@ -1,22 +1,36 @@
 // This is the route-config module (it exports the `routes` array, not a component), so Fast Refresh's
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
-import type { ReactNode } from "react"
+import { lazy, type ReactNode } from "react"
 import { Navigate, type RouteObject } from "react-router"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
-import { UiKitPage } from "@/pages/ui-kit"
 import { LandingPage } from "@/pages/landing"
-import {
-  CharacterLookupPage,
-  LookupPage,
-  LookupPlaceholder,
-} from "@/pages/lookup"
+import { isUiKitEnabled } from "@/shared/config"
 
 import { AppShell } from "./layout/app-shell"
+
+// Everything but the landing page (the one route an unauthenticated first-time visitor always
+// hits) is lazy-loaded — each becomes its own chunk, fetched only when its route is entered
+// (the layout's <Suspense fallback={<LoadingFill />}> around <Outlet /> covers the wait).
+const HomePage = lazy(() =>
+  import("@/pages/home").then((m) => ({ default: m.HomePage }))
+)
+const LookupPage = lazy(() =>
+  import("@/pages/lookup").then((m) => ({ default: m.LookupPage }))
+)
+const CharacterLookupPage = lazy(() =>
+  import("@/pages/lookup").then((m) => ({ default: m.CharacterLookupPage }))
+)
+const LookupPlaceholder = lazy(() =>
+  import("@/pages/lookup").then((m) => ({ default: m.LookupPlaceholder }))
+)
+const UiKitPage = lazy(() =>
+  import("@/pages/ui-kit").then((m) => ({ default: m.UiKitPage }))
+)
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
@@ -66,7 +80,7 @@ export const routes: RouteObject[] = [
         path: "/home",
         element: (
           <ProtectedRoute>
-            <UiKitPage />
+            <HomePage />
           </ProtectedRoute>
         ),
       },
@@ -80,6 +94,10 @@ export const routes: RouteObject[] = [
           { path: "npc", element: <LookupPlaceholder tab="npc" /> },
         ],
       },
+      // Public component showcase for local/QA use — never registered in production (see
+      // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
+      // there regardless of how someone reaches the URL.
+      ...(isUiKitEnabled ? [{ path: "/ui-kit", element: <UiKitPage /> }] : []),
       { path: "*", element: <Navigate replace to="/" /> },
     ],
   },

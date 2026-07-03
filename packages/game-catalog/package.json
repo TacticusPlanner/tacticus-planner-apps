@@ -13,16 +13,12 @@
   },
   "dependencies": {
     "idb": "^8.0.3",
-    "react": "catalog:",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
-    "eslint-plugin-react-hooks": "catalog:",
-    "eslint-plugin-react-refresh": "catalog:",
     "fake-indexeddb": "^6.2.5",
     "globals": "catalog:",
     "jsdom": "catalog:",

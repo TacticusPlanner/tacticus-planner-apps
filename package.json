@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:staging": "turbo run build:staging --filter=web",
+    "build:production": "turbo run build:production --filter=web",
     "dev": "turbo dev",
     "dev:web": "turbo run dev:aspire --filter=./apps/web",
     "lefthook:validate": "lefthook validate",

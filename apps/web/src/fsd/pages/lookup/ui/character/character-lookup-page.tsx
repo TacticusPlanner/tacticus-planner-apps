@@ -1,85 +1,74 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import {
+  campaignDescriptor,
   campaignIcon,
-  campaignShortLabel,
   groupByFaction,
   isAdamantineRank,
   progressionStars,
   rarityRank,
   statAtRank,
-  useDatasetRecords,
+  type CampaignDefinitionRecord,
 } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   aggregateBaseUpgrades,
-  computeCampaignInsights,
   groupUpgradesByRank,
   rankUpUpgradeIds,
-  type BattleLike,
-  type CharacterLike,
+  toBattleLike,
+  toCharacterLike,
+  toUpgradeWithFarmLocations,
   type RecipeIngredient,
-  type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
+import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
+import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
-import { useLookupSelection } from "./model/use-lookup-selection"
+import { useLookupSelection } from "./hooks/use-lookup-selection"
 import type {
   BaseUpgradeView,
   RankGroupView,
   RecipeView,
   UpgradeView,
-} from "./character-lookup-results"
-import type { UnitProfileView } from "./unit-profile"
+} from "./character-lookup-results.types"
+import type { UnitProfileView } from "./unit-profile.types"
+
+const toReleaseType = (definition: CampaignDefinitionRecord) =>
+  definition.releaseType
 
 export function CharacterLookupPage() {
   const { t } = useTranslation([
     "common",
-    "ranks",
+    "progression",
     "characters",
     "factions",
     "upgrades",
     "traits",
   ])
+  const {
+    name: campaignName,
+    fullLabel: campaignFullLabel,
+    shortLabel: campaignShortLabel,
+  } = useCampaignDisplay()
   const isMobile = useIsMobile()
 
   const characters = useDatasetRecords("characters")
-  const upgrades = useDatasetRecords("upgrades")
-  const battles = useDatasetRecords("campaign-battles")
-  const campaignDefinitions = useDatasetRecords("campaign-definitions")
-
-  const upgradesById = useMemo(
-    () =>
-      new Map(
-        upgrades.data.map((u) => {
-          const raw = u as unknown as Record<string, unknown>
-          return [
-            u.id,
-            {
-              ...raw,
-              crafted: raw["craftable"] as boolean,
-            } as UpgradeWithFarmLocations,
-          ]
-        })
-      ),
-    [upgrades.data]
+  const { data: charactersById } = useDatasetRecordsMap("characters")
+  const { data: upgradesById, loading: upgradesLoading } = useDatasetRecordsMap(
+    "upgrades",
+    toUpgradeWithFarmLocations
   )
-  const battlesById = useMemo(
-    () =>
-      new Map(
-        battles.data.map((b) => [
-          b.id,
-          b as unknown as BattleLike & { id: string },
-        ])
-      ),
-    [battles.data]
+  const { data: battlesById } = useDatasetRecordsMap(
+    "campaign-battles",
+    toBattleLike
   )
-  const releaseTypeByGroupId = useMemo(
-    () =>
-      new Map(campaignDefinitions.data.map((d) => [d.groupId, d.releaseType])),
-    [campaignDefinitions.data]
+  // A campaign-definition's `id` is already its `groupId` (see `groupsWithId` in
+  // game-catalog-storage.ts), so indexing by `id` here doubles as indexing by `groupId`.
+  const { data: releaseTypeByGroupId } = useDatasetRecordsMap(
+    "campaign-definitions",
+    toReleaseType
   )
 
   const characterGroups = useMemo(
@@ -110,11 +99,8 @@ export function CharacterLookupPage() {
     draft.characterId ?? characterGroups[0]?.members[0]?.id
   const characterId = applied.characterId ?? characterGroups[0]?.members[0]?.id
 
-  const character = characters.data.find((c) => c.id === characterId)
-  // rank-lookup-calc only reads id/name/rankUpUpgrades; a full catalog record is structurally
-  // compatible (rankUpUpgrades[].rank is a validated Rank string at runtime, just typed loosely
-  // by the schema), matching this codebase's existing cast-at-the-boundary pattern.
-  const characterForCalc = character as CharacterLike | undefined
+  const character = characterId ? charactersById.get(characterId) : undefined
+  const characterForCalc = character ? toCharacterLike(character) : undefined
 
   const resolveRecipe = useMemo(() => {
     const resolve = (ingredients: RecipeIngredient[]): RecipeView[] =>
@@ -222,11 +208,12 @@ export function CharacterLookupPage() {
           const key = `${battle.campaignGroupId}:${battle.difficulty}`
           let entry = locationsByKey.get(key)
           if (!entry) {
-            const short = campaignShortLabel(
+            const descriptor = campaignDescriptor(
               battle.campaignGroupId,
               battle.difficulty
             )
-            if (!short) continue
+            if (!descriptor) continue
+            const short = campaignShortLabel(descriptor)
             entry = {
               id: key,
               name: short.name,
@@ -276,7 +263,14 @@ export function CharacterLookupPage() {
         (a, b) =>
           rarityRank(b.rarity) - rarityRank(a.rarity) || b.count - a.count
       )
-  }, [needs, upgradesById, battlesById, releaseTypeByGroupId, t])
+  }, [
+    needs,
+    upgradesById,
+    battlesById,
+    releaseTypeByGroupId,
+    t,
+    campaignShortLabel,
+  ])
 
   const { campaignInsights, eventInsights } = useMemo(
     () =>
@@ -284,9 +278,18 @@ export function CharacterLookupPage() {
         needs,
         upgradesById,
         battlesById,
-        (groupId) => releaseTypeByGroupId.get(groupId) === "event"
+        (groupId) => releaseTypeByGroupId.get(groupId) === "event",
+        (descriptor, isEvent) =>
+          isEvent ? campaignName(descriptor) : campaignFullLabel(descriptor)
       ),
-    [needs, upgradesById, battlesById, releaseTypeByGroupId]
+    [
+      needs,
+      upgradesById,
+      battlesById,
+      releaseTypeByGroupId,
+      campaignName,
+      campaignFullLabel,
+    ]
   )
 
   const profile = useMemo<UnitProfileView | undefined>(() => {
@@ -349,7 +352,7 @@ export function CharacterLookupPage() {
 
   const loading =
     (characters.loading && characters.data.length === 0) ||
-    (upgrades.loading && upgrades.data.length === 0)
+    (upgradesLoading && upgradesById.size === 0)
 
   const sharedProps = {
     characterGroups,

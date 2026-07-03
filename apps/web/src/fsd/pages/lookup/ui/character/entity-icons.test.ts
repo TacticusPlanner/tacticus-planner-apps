@@ -4,7 +4,7 @@ import {
   campaignIcon,
   characterIcon,
   rankIcon,
-  upgradeIcon,
+  UpgradeIcons,
 } from "@workspace/game-catalog"
 
 describe("entity icon mapping", () => {
@@ -20,34 +20,34 @@ describe("entity icon mapping", () => {
   })
 
   it("derives the upgrade-material icon from the upgrade id", () => {
-    expect(upgradeIcon("upgArmC001")).toBe(
+    expect(UpgradeIcons.icon("upgArmC001")).toBe(
       "/snowprint_assets/upgrade_materials/ui_icon_upgrade_upgArmC001.png"
     )
   })
 
   it("maps standard campaigns by id+difficulty", () => {
     expect(campaignIcon("indomitus", "standard")).toBe(
-      "/snowprint_assets/campaigns/Indomitus.png"
+      "/snowprint_assets/campaigns/indomitus-standard.png"
     )
     expect(campaignIcon("indomitus", "elite")).toBe(
-      "/snowprint_assets/campaigns/Indomitus Elite.png"
+      "/snowprint_assets/campaigns/indomitus-elite.png"
     )
-    expect(campaignIcon("indomitus-mirror", "mirror")).toBe(
-      "/snowprint_assets/campaigns/Indomitus Mirror.png"
+    expect(campaignIcon("indomitus-mirror", "standard")).toBe(
+      "/snowprint_assets/campaigns/indomitus-mirror-standard.png"
     )
   })
 
-  it("maps event campaigns to the defending-faction asset", () => {
+  it("maps event campaigns to the defending-faction asset, challenge tiers reuse the base image", () => {
     expect(campaignIcon("death-guard-vs-admech", "eventStandard")).toBe(
-      "/snowprint_assets/campaigns/Adeptus Mechanicus Standard.png"
+      "/snowprint_assets/campaigns/death-guard-vs-admech-eventStandard.png"
     )
     expect(campaignIcon("death-guard-vs-admech", "eventExtremis")).toBe(
-      "/snowprint_assets/campaigns/Adeptus Mechanicus Extremis.png"
+      "/snowprint_assets/campaigns/death-guard-vs-admech-eventExtremis.png"
     )
     expect(
       campaignIcon("death-guard-vs-admech", "eventStandardChallenge")
     ).toBe(
-      "/snowprint_assets/campaigns/Adeptus Mechanicus Standard Challenge.png"
+      "/snowprint_assets/campaigns/death-guard-vs-admech-eventStandard.png"
     )
     expect(campaignIcon("unknown-event", "eventStandard")).toBeUndefined()
   })
