@@ -1,9 +1,8 @@
 import { Suspense } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, PlusCircle } from "lucide-react"
+import { LogIn, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { Separator } from "@workspace/ui/components/separator"
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +17,11 @@ import {
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar"
 import { Spinner } from "@workspace/ui/components/spinner"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
@@ -54,12 +58,20 @@ export function DesktopShell({
         visibleItems={visibleItems}
       />
       <SidebarInset>
-        <header className="flex items-center gap-2 border-b px-6 py-4">
+        <header className="flex items-center gap-3 border-b px-6 py-4">
           {pageTitle ? (
             <h1 className="truncate text-2xl font-semibold tracking-tight">
               {pageTitle}
             </h1>
           ) : null}
+          <div
+            className="ml-auto flex shrink-0 items-center gap-2"
+            data-testid="desktop-header-actions"
+          >
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+            <TourButton />
+          </div>
         </header>
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
@@ -86,28 +98,56 @@ function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center justify-between px-2 py-1">
-          <div className="flex min-w-0 items-center gap-2">
+        <div className="flex items-center px-2 py-1 group-data-[collapsible=icon]:justify-center">
+          <div className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:justify-center">
             <AppLogo className="size-6 shrink-0" />
             <span className="truncate text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
               {t("app.name")}
             </span>
           </div>
-          <SidebarTrigger />
         </div>
-        <div className="px-2 pb-1 group-data-[collapsible=icon]:hidden">
-          {isAuthenticated ? (
-            <Button className="w-full" disabled size="sm" variant="outline">
-              <PlusCircle />
-              {t("nav.createGoal")}
-            </Button>
-          ) : (
-            <Button className="w-full" size="sm" onClick={handleSignIn}>
-              <LogIn />
-              {t("auth.signIn")}
-            </Button>
-          )}
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="block">
+                  <SidebarMenuButton
+                    className="bg-primary text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground disabled:opacity-80"
+                    data-testid="sidebar-create-goal"
+                    disabled
+                    size="default"
+                  >
+                    <Plus />
+                    <span>{t("nav.createGoal")}</span>
+                  </SidebarMenuButton>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {t("nav.createGoal")}
+              </TooltipContent>
+            </Tooltip>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="block">
+                  <SidebarMenuButton
+                    className="border border-sidebar-border bg-background hover:bg-sidebar-accent disabled:opacity-80"
+                    data-testid="sidebar-sync-tacticus"
+                    disabled
+                    size="default"
+                  >
+                    <RefreshCw />
+                    <span>{t("nav.syncWithTacticus")}</span>
+                  </SidebarMenuButton>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {t("nav.syncWithTacticus")}
+              </TooltipContent>
+            </Tooltip>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent data-testid="primary-nav">
@@ -122,21 +162,41 @@ function AppSidebar({
 
       <SidebarFooter>
         <div className="flex flex-col gap-2 px-2 py-1">
-          <div className="group-data-[collapsible=icon]:hidden">
-            <CatalogSyncStatusBadge />
-          </div>
+          <CatalogSyncStatusBadge />
           {isAuthenticated ? (
-            <>
-              <Separator />
-              <AuthControl />
-            </>
-          ) : null}
-          <Separator className="group-data-[collapsible=icon]:hidden" />
-          <div className="flex flex-wrap items-center gap-2 group-data-[collapsible=icon]:hidden">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <TourButton />
-          </div>
+            <div
+              className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col"
+              data-testid="sidebar-profile-row"
+            >
+              <AuthControl className="min-w-0 flex-1" variant="sidebar" />
+              <SidebarTrigger className="shrink-0" />
+            </div>
+          ) : (
+            <div
+              className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col"
+              data-testid="sidebar-profile-row"
+            >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    aria-label={t("auth.signIn")}
+                    className="min-w-0 flex-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:px-0"
+                    data-testid="auth-sign-in"
+                    onClick={handleSignIn}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <LogIn />
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {t("auth.signIn")}
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">{t("auth.signIn")}</TooltipContent>
+              </Tooltip>
+              <SidebarTrigger className="shrink-0" />
+            </div>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

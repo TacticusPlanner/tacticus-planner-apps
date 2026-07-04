@@ -82,7 +82,10 @@ export function CharacterLookupControls({
     onProgressionRangeChange(progressionStart, next)
 
   return (
-    <div className="flex flex-col gap-5">
+    <div
+      className="flex flex-col gap-5"
+      data-testid="character-lookup-controls"
+    >
       <div className="grid gap-2">
         <Label>{t("unitLookup.character")}</Label>
         <CharacterCombobox

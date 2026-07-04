@@ -22,7 +22,8 @@
       "idle": "Catálogo inactivo",
       "ready": "Catálogo del juego versión {{version}}",
       "stale": "Catálogo desactualizado",
-      "syncing": "Sincronizando catálogo"
+      "syncing": "Sincronizando catálogo",
+      "progress": "{{done}}/{{total}}"
     },
     "init": {
       "firstTimeTitle": "Configurando los datos del juego",
@@ -114,8 +115,12 @@
   },
   "nav": {
     "home": "Inicio",
+    "lookup": "Consulta",
     "rankLookup": "Consulta de rango",
-    "createGoal": "Crear objetivo"
+    "createGoal": "Crear objetivo",
+    "menu": "Menú",
+    "syncWithTacticus": "Sincronizar con Tacticus",
+    "uiKit": "Kit UI"
   },
   "language": {
     "label": "Idioma",
@@ -133,6 +138,7 @@
     "dark": "Oscuro",
     "label": "Tema",
     "light": "Claro",
+    "system": "Predeterminado del sistema",
     "switchToDark": "Cambiar al modo oscuro",
     "switchToLight": "Cambiar al modo claro"
   },
@@ -166,6 +172,30 @@
       "navigation": {
         "title": "Desplázate con facilidad",
         "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."
+      }
+    },
+    "characterLookup": {
+      "steps": {
+        "welcome": {
+          "title": "Consulta de personaje",
+          "content": "Compara rangos, estadísticas, mejoras y prioridades de farmeo para un personaje."
+        },
+        "controls": {
+          "title": "Elige criterios",
+          "content": "Selecciona personaje, rango, progresión y la opción de medio rango antes de aplicar."
+        },
+        "share": {
+          "title": "Compartir consulta",
+          "content": "Copia o comparte la URL actual con los criterios aplicados."
+        },
+        "profile": {
+          "title": "Estadísticas",
+          "content": "Revisa las estadísticas actuales y objetivo del personaje elegido."
+        },
+        "results": {
+          "title": "Resultados",
+          "content": "Usa los resúmenes, grupos de rango y mejoras base para planificar el farmeo."
+        }
       }
     }
   },

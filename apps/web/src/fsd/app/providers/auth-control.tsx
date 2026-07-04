@@ -1,12 +1,5 @@
 import { useState } from "react"
-import {
-  LoaderCircle,
-  LogIn,
-  LogOut,
-  RefreshCw,
-  Settings,
-  UserRound,
-} from "lucide-react"
+import { LoaderCircle, LogIn, LogOut, RefreshCw, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -15,7 +8,13 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { cn } from "@workspace/ui/lib/utils"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
@@ -35,6 +34,19 @@ import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
+type AuthControlVariant = "default" | "sidebar"
+
+function accountInitials(name: string) {
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+
+  return initials || "TP"
+}
 
 function logAuthenticationError(operation: AuthOperation, error: unknown) {
   const message = `[MSAL] ${operation} failed`
@@ -63,7 +75,13 @@ function logAuthenticationError(operation: AuthOperation, error: unknown) {
   console.error(message, { value: String(error) })
 }
 
-export function AuthControl() {
+export function AuthControl({
+  className,
+  variant = "default",
+}: {
+  className?: string
+  variant?: AuthControlVariant
+}) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const { accounts, inProgress, instance } = useMsal()
@@ -126,52 +144,78 @@ export function AuthControl() {
     t("auth.account")
   const accountEmail = account.username
 
-  return (
-    <div className="flex items-center gap-1" data-testid="auth-account">
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            aria-label={t("auth.userMenu")}
-            className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
-            data-testid="auth-account-trigger"
+  const isSidebar = variant === "sidebar"
+  const trigger = (
+    <button
+      type="button"
+      aria-label={t("auth.userMenu")}
+      className={cn(
+        "flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
+        isSidebar &&
+          "max-w-none flex-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+      )}
+      data-testid="auth-account-trigger"
+      title={accountName}
+    >
+      <span
+        aria-hidden="true"
+        className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+        data-testid="auth-account-avatar"
+      >
+        {accountInitials(accountName)}
+      </span>
+      <div
+        className={cn(
+          "min-w-0 text-left leading-tight",
+          isSidebar && "group-data-[collapsible=icon]:hidden"
+        )}
+        data-testid="auth-account-panel"
+      >
+        <div
+          className="truncate"
+          data-testid="auth-account-name"
+          title={accountName}
+        >
+          {accountName}
+        </div>
+        {accountState.status === "loading" ? (
+          <div
+            className="flex items-center gap-1 text-xs"
+            data-testid="auth-account-loading"
           >
-            <UserRound className="size-4 shrink-0" aria-hidden="true" />
-            <div
-              className="min-w-0 text-left leading-tight"
-              data-testid="auth-account-panel"
-            >
-              <div
-                className="truncate"
-                data-testid="auth-account-name"
-                title={accountName}
-              >
-                {accountName}
-              </div>
-              {accountState.status === "loading" ? (
-                <div
-                  className="flex items-center gap-1 text-xs"
-                  data-testid="auth-account-loading"
-                >
-                  <LoaderCircle
-                    className="size-3 animate-spin"
-                    aria-hidden="true"
-                  />
-                  {t("auth.accountLoading")}
-                </div>
-              ) : null}
-              {accountState.status === "success" && accountEmail ? (
-                <div
-                  className="truncate text-xs"
-                  data-testid="auth-account-email"
-                  title={accountEmail}
-                >
-                  {accountEmail}
-                </div>
-              ) : null}
-            </div>
-          </button>
-        </PopoverTrigger>
+            <LoaderCircle className="size-3 animate-spin" aria-hidden="true" />
+            {t("auth.accountLoading")}
+          </div>
+        ) : null}
+        {!isSidebar && accountState.status === "success" && accountEmail ? (
+          <div
+            className="truncate text-xs"
+            data-testid="auth-account-email"
+            title={accountEmail}
+          >
+            {accountEmail}
+          </div>
+        ) : null}
+      </div>
+    </button>
+  )
+
+  return (
+    <div
+      className={cn("flex items-center gap-1", className)}
+      data-testid="auth-account"
+    >
+      <Popover>
+        {isSidebar ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="right">{accountName}</TooltipContent>
+          </Tooltip>
+        ) : (
+          <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+        )}
         <PopoverContent align="start" className="w-56 gap-2">
           {isMobile ? (
             <>
@@ -214,7 +258,10 @@ export function AuthControl() {
       </Popover>
       {accountState.status === "error" ? (
         <div
-          className="flex items-center gap-1"
+          className={cn(
+            "flex items-center gap-1",
+            isSidebar && "group-data-[collapsible=icon]:hidden"
+          )}
           data-testid="auth-account-error"
         >
           <span className="truncate text-xs text-destructive">

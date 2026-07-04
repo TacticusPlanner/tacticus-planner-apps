@@ -22,7 +22,8 @@
       "idle": "Katalog inaktiv",
       "ready": "Spielkatalog Version {{version}}",
       "stale": "Katalog veraltet",
-      "syncing": "Katalog wird synchronisiert"
+      "syncing": "Katalog wird synchronisiert",
+      "progress": "{{done}}/{{total}}"
     },
     "init": {
       "firstTimeTitle": "Spieldaten werden eingerichtet",
@@ -114,8 +115,12 @@
   },
   "nav": {
     "home": "Startseite",
+    "lookup": "Nachschlag",
     "rankLookup": "Rang-Nachschlag",
-    "createGoal": "Ziel erstellen"
+    "createGoal": "Ziel erstellen",
+    "menu": "Menü",
+    "syncWithTacticus": "Mit Tacticus synchronisieren",
+    "uiKit": "UI Kit"
   },
   "language": {
     "label": "Sprache",
@@ -133,6 +138,7 @@
     "dark": "Dunkel",
     "label": "Design",
     "light": "Hell",
+    "system": "Systemstandard",
     "switchToDark": "Zum dunklen Modus wechseln",
     "switchToLight": "Zum hellen Modus wechseln"
   },
@@ -166,6 +172,30 @@
       "navigation": {
         "title": "Schnell navigieren",
         "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."
+      }
+    },
+    "characterLookup": {
+      "steps": {
+        "welcome": {
+          "title": "Charakter-Nachschlag",
+          "content": "Vergleiche Ränge, Werte, Upgrades und Farm-Prioritäten für einen Charakter."
+        },
+        "controls": {
+          "title": "Suchkriterien wählen",
+          "content": "Wähle Charakter, Rangbereich, Fortschritt und Point-Five-Option vor dem Anwenden."
+        },
+        "share": {
+          "title": "Nachschlag teilen",
+          "content": "Kopiere oder teile die aktuelle URL mit den angewendeten Kriterien."
+        },
+        "profile": {
+          "title": "Charakterwerte",
+          "content": "Prüfe die aktuellen und Zielwerte des ausgewählten Charakters."
+        },
+        "results": {
+          "title": "Upgrade-Ergebnisse",
+          "content": "Nutze Einblicke, Ranggruppen und Basis-Upgrades für die nächste Farm-Planung."
+        }
       }
     }
   },

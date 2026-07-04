@@ -22,7 +22,8 @@
       "idle": "Catalog idle",
       "ready": "Game Catalog version {{version}}",
       "stale": "Catalog stale",
-      "syncing": "Catalog sync"
+      "syncing": "Catalog sync",
+      "progress": "{{done}}/{{total}}"
     },
     "init": {
       "firstTimeTitle": "Setting up game data",
@@ -101,6 +102,11 @@
     "pointFiveHint": "On reaching the target rank you can immediately apply the first upgrade of each stat. Enable this to include that top row.",
     "pointFiveAdamantineDisabled": "Point-five upgrades don't apply to Adamantine ranks.",
     "apply": "Apply",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "shareTitle": "Character Lookup",
+    "copySuccess": "Character Lookup link copied.",
+    "copyError": "Could not copy the link.",
     "baseUpgrades": "Base upgrades needed",
     "insights": "Insights",
     "topUpgradesByRarity": "Top upgrade by rarity",
@@ -137,7 +143,10 @@
   "nav": {
     "home": "Home",
     "lookup": "Lookup",
-    "createGoal": "Create Goal"
+    "createGoal": "Create Goal",
+    "menu": "Menu",
+    "syncWithTacticus": "Sync with Tacticus",
+    "uiKit": "UI Kit"
   },
   "home": {
     "subtitle": "This page is still under construction.",
@@ -160,6 +169,7 @@
     "dark": "Dark",
     "label": "Theme",
     "light": "Light",
+    "system": "System default",
     "switchToDark": "Switch to dark mode",
     "switchToLight": "Switch to light mode"
   },
@@ -193,6 +203,30 @@
       "navigation": {
         "title": "Find your way around",
         "content": "This menu groups the app's sections — use it to navigate between them at any time."
+      }
+    },
+    "characterLookup": {
+      "steps": {
+        "welcome": {
+          "title": "Character Lookup",
+          "content": "Use Character Lookup to compare ranks, stats, upgrades, and farming priorities for one character."
+        },
+        "controls": {
+          "title": "Choose search criteria",
+          "content": "Pick a character, rank range, progression range, and point-five preference before applying the search."
+        },
+        "share": {
+          "title": "Share this lookup",
+          "content": "Copy or share the current URL, including the applied lookup criteria."
+        },
+        "profile": {
+          "title": "Character stats",
+          "content": "Review the selected character's current and target stats for the applied range."
+        },
+        "results": {
+          "title": "Upgrade results",
+          "content": "Use insights, rank groups, and base upgrades to plan what to farm next."
+        }
       }
     }
   },

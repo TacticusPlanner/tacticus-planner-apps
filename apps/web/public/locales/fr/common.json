@@ -22,7 +22,8 @@
       "idle": "Catalogue inactif",
       "ready": "Catalogue de jeu version {{version}}",
       "stale": "Catalogue obsolète",
-      "syncing": "Synchronisation du catalogue"
+      "syncing": "Synchronisation du catalogue",
+      "progress": "{{done}}/{{total}}"
     },
     "init": {
       "firstTimeTitle": "Configuration des données de jeu",
@@ -114,8 +115,12 @@
   },
   "nav": {
     "home": "Accueil",
+    "lookup": "Recherche",
     "rankLookup": "Recherche de rang",
-    "createGoal": "Créer un objectif"
+    "createGoal": "Créer un objectif",
+    "menu": "Menu",
+    "syncWithTacticus": "Synchroniser avec Tacticus",
+    "uiKit": "Kit UI"
   },
   "language": {
     "label": "Langue",
@@ -133,6 +138,7 @@
     "dark": "Sombre",
     "label": "Thème",
     "light": "Clair",
+    "system": "Par défaut système",
     "switchToDark": "Passer au mode sombre",
     "switchToLight": "Passer au mode clair"
   },
@@ -166,6 +172,30 @@
       "navigation": {
         "title": "Naviguez facilement",
         "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."
+      }
+    },
+    "characterLookup": {
+      "steps": {
+        "welcome": {
+          "title": "Recherche de personnage",
+          "content": "Comparez les rangs, statistiques, améliorations et priorités de farm d'un personnage."
+        },
+        "controls": {
+          "title": "Choisir les critères",
+          "content": "Sélectionnez le personnage, les rangs, la progression et l'option point cinq avant d'appliquer."
+        },
+        "share": {
+          "title": "Partager la recherche",
+          "content": "Copiez ou partagez l'URL actuelle avec les critères appliqués."
+        },
+        "profile": {
+          "title": "Statistiques",
+          "content": "Consultez les statistiques actuelles et cibles du personnage sélectionné."
+        },
+        "results": {
+          "title": "Résultats",
+          "content": "Utilisez les aperçus, groupes de rang et améliorations de base pour planifier le farm."
+        }
       }
     }
   },

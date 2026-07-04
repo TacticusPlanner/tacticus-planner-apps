@@ -1,3 +1,4 @@
+import type { RefObject } from "react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
@@ -34,6 +35,7 @@ interface CharacterLookupMobilePageProps {
   onPointFiveChange: (value: boolean) => void
   onApply: () => void
   applyDisabled: boolean
+  resultsRef?: RefObject<HTMLDivElement | null>
 }
 
 export function CharacterLookupMobilePage({
@@ -57,6 +59,7 @@ export function CharacterLookupMobilePage({
   onPointFiveChange,
   onApply,
   applyDisabled,
+  resultsRef,
 }: CharacterLookupMobilePageProps) {
   if (loading) {
     return (
@@ -87,14 +90,22 @@ export function CharacterLookupMobilePage({
         applyDisabled={applyDisabled}
         isMobile={true}
       />
-      {profile ? <UnitProfile profile={profile} /> : null}
-      <CharacterLookupResults
-        baseUpgrades={baseUpgrades}
-        groups={groups}
-        campaignInsights={campaignInsights}
-        eventInsights={eventInsights}
-        isMobile={true}
-      />
+      <div
+        ref={resultsRef}
+        className="scroll-mt-[calc(var(--mobile-header-height)+1rem)]"
+        data-testid="character-lookup-results-region"
+      >
+        <div className="flex flex-col gap-6">
+          {profile ? <UnitProfile profile={profile} /> : null}
+          <CharacterLookupResults
+            baseUpgrades={baseUpgrades}
+            groups={groups}
+            campaignInsights={campaignInsights}
+            eventInsights={eventInsights}
+            isMobile={true}
+          />
+        </div>
+      </div>
     </div>
   )
 }

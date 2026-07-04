@@ -1,29 +1,53 @@
-import { Moon, Sun } from "lucide-react"
+import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@workspace/ui/components/button"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
-import { useTheme } from "@/shared/theme"
+import { useTheme, type Theme } from "@/shared/theme"
+
+const themeOptions: {
+  value: Theme
+  icon: LucideIcon
+  labelKey: "theme.light" | "theme.dark" | "theme.system"
+}[] = [
+  { value: "light", icon: Sun, labelKey: "theme.light" },
+  { value: "dark", icon: Moon, labelKey: "theme.dark" },
+  { value: "system", icon: Monitor, labelKey: "theme.system" },
+]
 
 export function ThemeSwitcher() {
   const { t } = useTranslation()
   const { theme, setTheme } = useTheme()
-  const isDark = theme === "dark"
+  const ActiveIcon =
+    themeOptions.find((option) => option.value === theme)?.icon ?? Monitor
 
   return (
-    <Button
-      aria-label={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
-      data-testid="theme-switcher"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      size="sm"
-      variant="outline"
-    >
-      {isDark ? (
-        <Sun data-icon="inline-start" />
-      ) : (
-        <Moon data-icon="inline-start" />
-      )}
-      {isDark ? t("theme.light") : t("theme.dark")}
-    </Button>
+    <Select onValueChange={(value) => setTheme(value as Theme)} value={theme}>
+      <SelectTrigger
+        aria-label={t("theme.label")}
+        data-testid="theme-switcher"
+        size="sm"
+      >
+        <ActiveIcon data-icon="inline-start" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {themeOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              <option.icon />
+              {t(option.labelKey)}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   )
 }

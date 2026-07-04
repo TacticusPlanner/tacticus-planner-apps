@@ -1,2 +1,2 @@
-export { TourProvider, useTour } from "./tour-provider"
+export { TourProvider, usePageTour, useTour } from "./tour-provider"
 export { TourButton } from "./tour-button"

@@ -12,11 +12,19 @@ import {
   type Styles,
   useJoyride,
 } from "react-joyride"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useTheme } from "../theme/theme-provider"
 
+type TourPlatform = "desktop" | "mobile"
+type TourStepFactory = (context: {
+  platform: TourPlatform
+  t: ReturnType<typeof useTranslation>["t"]
+}) => Step[]
+
 type TourContextValue = {
   isRunning: boolean
+  registerPageTour: (factory: TourStepFactory) => () => void
   startTour: () => void
   stopTour: () => void
 }
@@ -86,10 +94,14 @@ const tourStyles: Partial<Styles> = {
 export function TourProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const isMobile = useIsMobile()
   const [run, setRun] = React.useState(false)
+  const [pageTourFactory, setPageTourFactory] =
+    React.useState<TourStepFactory | null>(null)
 
   const isDark = theme === "dark" || (theme === "system" && prefersDark())
   const surface = isDark ? tourSurface.dark : tourSurface.light
+  const platform: TourPlatform = isMobile ? "mobile" : "desktop"
 
   const options = React.useMemo<Partial<Options>>(
     () => ({
@@ -112,7 +124,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
     [surface]
   )
 
-  const steps = React.useMemo<Step[]>(
+  const fallbackSteps = React.useMemo<Step[]>(
     () => [
       {
         target: "body",
@@ -148,6 +160,11 @@ export function TourProvider({ children }: { children: ReactNode }) {
     [t]
   )
 
+  const steps = React.useMemo<Step[]>(
+    () => pageTourFactory?.({ platform, t }) ?? fallbackSteps,
+    [fallbackSteps, pageTourFactory, platform, t]
+  )
+
   const locale = React.useMemo<Locale>(
     () => ({
       back: t("tour.controls.back"),
@@ -176,10 +193,19 @@ export function TourProvider({ children }: { children: ReactNode }) {
 
   const startTour = React.useCallback(() => setRun(true), [])
   const stopTour = React.useCallback(() => setRun(false), [])
+  const registerPageTour = React.useCallback((factory: TourStepFactory) => {
+    setPageTourFactory(() => factory)
+
+    return () => {
+      setPageTourFactory((current: TourStepFactory | null) =>
+        current === factory ? null : current
+      )
+    }
+  }, [])
 
   const value = React.useMemo<TourContextValue>(
-    () => ({ isRunning: run, startTour, stopTour }),
-    [run, startTour, stopTour]
+    () => ({ isRunning: run, registerPageTour, startTour, stopTour }),
+    [run, registerPageTour, startTour, stopTour]
   )
 
   return (
@@ -198,4 +224,10 @@ export const useTour = () => {
   }
 
   return context
+}
+
+export function usePageTour(factory: TourStepFactory) {
+  const { registerPageTour } = useTour()
+
+  React.useEffect(() => registerPageTour(factory), [factory, registerPageTour])
 }

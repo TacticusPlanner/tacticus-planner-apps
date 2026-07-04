@@ -1,5 +1,7 @@
-import { useMemo } from "react"
+import { useCallback, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
+import { Share2 } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import {
   campaignDescriptor,
   campaignIcon,
@@ -23,6 +25,8 @@ import {
 } from "@/features/rank-lookup"
 import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
 import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
+import { usePageTour } from "@/shared/tour"
+import { toast } from "sonner"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
@@ -94,6 +98,45 @@ export function CharacterLookupPage() {
     setDraftPointFive,
     handleApply,
   } = useLookupSelection()
+  const mobileResultsRef = useRef<HTMLDivElement | null>(null)
+
+  usePageTour(
+    useCallback(
+      ({ platform, t }) => [
+        {
+          target: "body",
+          placement: "center",
+          title: t("tour.characterLookup.steps.welcome.title"),
+          content: t("tour.characterLookup.steps.welcome.content"),
+        },
+        {
+          target: '[data-testid="character-lookup-controls"]',
+          placement: platform === "mobile" ? "bottom" : "right",
+          title: t("tour.characterLookup.steps.controls.title"),
+          content: t("tour.characterLookup.steps.controls.content"),
+        },
+        {
+          target: '[data-testid="character-lookup-share"]',
+          placement: "bottom",
+          title: t("tour.characterLookup.steps.share.title"),
+          content: t("tour.characterLookup.steps.share.content"),
+        },
+        {
+          target: '[data-testid="unit-profile"]',
+          placement: "bottom",
+          title: t("tour.characterLookup.steps.profile.title"),
+          content: t("tour.characterLookup.steps.profile.content"),
+        },
+        {
+          target: '[data-testid="character-lookup-results-region"]',
+          placement: "top",
+          title: t("tour.characterLookup.steps.results.title"),
+          content: t("tour.characterLookup.steps.results.content"),
+        },
+      ],
+      []
+    )
+  )
 
   const draftCharacterId =
     draft.characterId ?? characterGroups[0]?.members[0]?.id
@@ -354,6 +397,41 @@ export function CharacterLookupPage() {
     (characters.loading && characters.data.length === 0) ||
     (upgradesLoading && upgradesById.size === 0)
 
+  const handleMobileApply = () => {
+    handleApply()
+    window.requestAnimationFrame(() => {
+      mobileResultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+    })
+  }
+
+  const copyLookupUrl = async () => {
+    const url = window.location.href
+
+    if (isMobile && navigator.share) {
+      try {
+        await navigator.share({
+          title: t("unitLookup.shareTitle"),
+          url,
+        })
+        return
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return
+        }
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success(t("unitLookup.copySuccess"))
+    } catch {
+      toast.error(t("unitLookup.copyError"))
+    }
+  }
+
   const sharedProps = {
     characterGroups,
     characterId: draftCharacterId,
@@ -373,16 +451,31 @@ export function CharacterLookupPage() {
     onRangeChange: setDraftRange,
     onProgressionRangeChange: setDraftProgressionRange,
     onPointFiveChange: setDraftPointFive,
-    onApply: handleApply,
+    onApply: isMobile ? handleMobileApply : handleApply,
     applyDisabled: !isDirty,
   }
 
   return (
     <div className="flex flex-col gap-8" data-testid="character-lookup-page">
-      <p className="text-muted-foreground">{t("unitLookup.subtitle")}</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <p className="text-muted-foreground">{t("unitLookup.subtitle")}</p>
+        <Button
+          className="w-fit"
+          data-testid="character-lookup-share"
+          onClick={() => void copyLookupUrl()}
+          size="sm"
+          variant="outline"
+        >
+          <Share2 data-icon="inline-start" />
+          {isMobile ? t("unitLookup.share") : t("unitLookup.copyLink")}
+        </Button>
+      </div>
 
       {isMobile ? (
-        <CharacterLookupMobilePage {...sharedProps} />
+        <CharacterLookupMobilePage
+          {...sharedProps}
+          resultsRef={mobileResultsRef}
+        />
       ) : (
         <CharacterLookupDesktopPage {...sharedProps} />
       )}
