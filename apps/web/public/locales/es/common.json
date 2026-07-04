@@ -10,6 +10,7 @@
     "accountLoading": "Cargando cuenta",
     "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
     "grantAccess": "Conceder acceso a la API",
+    "manageAccount": "Gestionar cuenta",
     "retry": "Volver a cargar la cuenta",
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
@@ -33,6 +34,57 @@
       "errorTitle": "No se pudieron cargar los datos del juego",
       "errorDescription": "Algo salió mal al cargar el catálogo del juego.",
       "retry": "Reintentar"
+    }
+  },
+  "manageAccount": {
+    "title": "Gestionar cuenta",
+    "tabs": {
+      "integration": "Integración con Tacticus",
+      "account": "Cuenta"
+    },
+    "integration": {
+      "currentApiKey": "Clave de API de Tacticus",
+      "currentUserId": "ID de usuario de Tacticus",
+      "notConfigured": "No configurado",
+      "apiKeyLabel": "Nueva clave de API de Tacticus",
+      "apiKeyPlaceholder": "Déjalo en blanco para mantener la clave actual",
+      "apiKeyDescription": "Obtén tu clave de API en https://api.tacticusgame.com. Compártela solo con personas de confianza.",
+      "userIdLabel": "ID de usuario de Tacticus",
+      "userIdPlaceholder": "Déjalo en blanco para mantener el valor actual",
+      "removeUserId": "Eliminar el ID de usuario de Tacticus",
+      "save": "Guardar cambios",
+      "saved": "Integración con Tacticus actualizada.",
+      "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "account": {
+      "purgeWarningTitle": "Purgar cuenta",
+      "purgeWarningDescription": "Esto elimina de inmediato todos tus datos del planificador. Esta acción no se puede deshacer.",
+      "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",
+      "purgeSubmit": "Purgar mi cuenta",
+      "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo."
+    }
+  },
+  "onboarding": {
+    "title": "Completa la configuración de tu cuenta",
+    "description": "Conecta tu cuenta de Tacticus para empezar a usar el planificador.",
+    "genericError": "Algo salió mal. Inténtalo de nuevo.",
+    "or": "O",
+    "tabs": {
+      "signUp": "Registrarse",
+      "importProfile": "Importar perfil"
+    },
+    "signUp": {
+      "apiKeyLabel": "Clave de API de Tacticus",
+      "apiKeyDescription": "Obtén tu clave de API en https://api.tacticusgame.com. Compártela solo con personas de confianza.",
+      "userIdLabel": "ID de usuario de Tacticus (opcional)",
+      "userIdDescription": "Se usa para identificar tu cuenta en los datos del gremio.",
+      "submit": "Registrarse"
+    },
+    "import": {
+      "description": "Inicia sesión con tu nombre de usuario y contraseña de V1 para importar tu clave de API de Tacticus y tu ID de usuario. Tus credenciales de V1 nunca se almacenan.",
+      "usernameLabel": "Usuario de V1",
+      "passwordLabel": "Contraseña de V1",
+      "submit": "Importar perfil"
     }
   },
   "rankLookup": {

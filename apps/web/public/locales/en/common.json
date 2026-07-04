@@ -10,6 +10,7 @@
     "accountLoading": "Loading account",
     "error": "Authentication could not be completed. Please try again.",
     "grantAccess": "Grant API access",
+    "manageAccount": "Manage Account",
     "retry": "Retry loading account",
     "signIn": "Sign in",
     "signOut": "Sign out",
@@ -33,6 +34,57 @@
       "errorTitle": "Could not load game data",
       "errorDescription": "Something went wrong while loading the game catalog.",
       "retry": "Retry"
+    }
+  },
+  "manageAccount": {
+    "title": "Manage Account",
+    "tabs": {
+      "integration": "Tacticus Integration",
+      "account": "Account"
+    },
+    "integration": {
+      "currentApiKey": "Tacticus API key",
+      "currentUserId": "Tacticus user ID",
+      "notConfigured": "Not configured",
+      "apiKeyLabel": "New Tacticus API key",
+      "apiKeyPlaceholder": "Leave blank to keep the current key",
+      "apiKeyDescription": "Acquire your API key at https://api.tacticusgame.com. Only share it with trusted parties.",
+      "userIdLabel": "Tacticus user ID",
+      "userIdPlaceholder": "Leave blank to keep the current value",
+      "removeUserId": "Remove the Tacticus user ID",
+      "save": "Save changes",
+      "saved": "Tacticus integration updated.",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "account": {
+      "purgeWarningTitle": "Purge account",
+      "purgeWarningDescription": "This permanently deletes all of your planner data immediately. This action cannot be undone.",
+      "purgeConfirmLabel": "Type \"{{word}}\" to enable the purge action",
+      "purgeSubmit": "Purge my account",
+      "purgeGenericError": "Something went wrong while purging your account. Please try again."
+    }
+  },
+  "onboarding": {
+    "title": "Complete your account setup",
+    "description": "Connect your Tacticus account to start using the planner.",
+    "genericError": "Something went wrong. Please try again.",
+    "or": "Or",
+    "tabs": {
+      "signUp": "Sign Up",
+      "importProfile": "Import Profile"
+    },
+    "signUp": {
+      "apiKeyLabel": "Tacticus API key",
+      "apiKeyDescription": "Acquire your API key at https://api.tacticusgame.com. Only share it with trusted parties.",
+      "userIdLabel": "Tacticus user ID (optional)",
+      "userIdDescription": "Used to identify your account in guild data.",
+      "submit": "Sign Up"
+    },
+    "import": {
+      "description": "Sign in with your V1 planner username and password to import your Tacticus API key and user ID. Your V1 credentials are never stored.",
+      "usernameLabel": "V1 username",
+      "passwordLabel": "V1 password",
+      "submit": "Import Profile"
     }
   },
   "unitLookup": {

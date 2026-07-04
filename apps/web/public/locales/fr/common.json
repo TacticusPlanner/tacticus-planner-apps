@@ -10,6 +10,7 @@
     "accountLoading": "Chargement du compte",
     "error": "L’authentification n’a pas pu aboutir. Veuillez réessayer.",
     "grantAccess": "Autoriser l’accès à l’API",
+    "manageAccount": "Gérer le compte",
     "retry": "Recharger le compte",
     "signIn": "Se connecter",
     "signOut": "Se déconnecter",
@@ -33,6 +34,57 @@
       "errorTitle": "Impossible de charger les données de jeu",
       "errorDescription": "Une erreur s'est produite lors du chargement du catalogue de jeu.",
       "retry": "Réessayer"
+    }
+  },
+  "manageAccount": {
+    "title": "Gérer le compte",
+    "tabs": {
+      "integration": "Intégration Tacticus",
+      "account": "Compte"
+    },
+    "integration": {
+      "currentApiKey": "Clé API Tacticus",
+      "currentUserId": "ID utilisateur Tacticus",
+      "notConfigured": "Non configuré",
+      "apiKeyLabel": "Nouvelle clé API Tacticus",
+      "apiKeyPlaceholder": "Laisser vide pour conserver la clé actuelle",
+      "apiKeyDescription": "Obtenez votre clé API sur https://api.tacticusgame.com. Ne la partagez qu’avec des personnes de confiance.",
+      "userIdLabel": "ID utilisateur Tacticus",
+      "userIdPlaceholder": "Laisser vide pour conserver la valeur actuelle",
+      "removeUserId": "Supprimer l’ID utilisateur Tacticus",
+      "save": "Enregistrer les modifications",
+      "saved": "Intégration Tacticus mise à jour.",
+      "genericError": "Une erreur s’est produite. Veuillez réessayer."
+    },
+    "account": {
+      "purgeWarningTitle": "Purger le compte",
+      "purgeWarningDescription": "Cette action supprime immédiatement et définitivement toutes vos données du planificateur. Elle est irréversible.",
+      "purgeConfirmLabel": "Saisissez « {{word}} » pour activer la purge",
+      "purgeSubmit": "Purger mon compte",
+      "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer."
+    }
+  },
+  "onboarding": {
+    "title": "Terminez la configuration de votre compte",
+    "description": "Connectez votre compte Tacticus pour commencer à utiliser le planificateur.",
+    "genericError": "Une erreur s’est produite. Veuillez réessayer.",
+    "or": "Ou",
+    "tabs": {
+      "signUp": "Inscription",
+      "importProfile": "Importer le profil"
+    },
+    "signUp": {
+      "apiKeyLabel": "Clé API Tacticus",
+      "apiKeyDescription": "Obtenez votre clé API sur https://api.tacticusgame.com. Ne la partagez qu’avec des personnes de confiance.",
+      "userIdLabel": "ID utilisateur Tacticus (facultatif)",
+      "userIdDescription": "Utilisé pour identifier votre compte dans les données de guilde.",
+      "submit": "S’inscrire"
+    },
+    "import": {
+      "description": "Connectez-vous avec votre nom d’utilisateur et votre mot de passe V1 pour importer votre clé API Tacticus et votre ID utilisateur. Vos identifiants V1 ne sont jamais stockés.",
+      "usernameLabel": "Nom d’utilisateur V1",
+      "passwordLabel": "Mot de passe V1",
+      "submit": "Importer le profil"
     }
   },
   "rankLookup": {

@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import { LoaderCircle, LogIn, LogOut, RefreshCw, UserRound } from "lucide-react"
+import { useState } from "react"
+import {
+  LoaderCircle,
+  LogIn,
+  LogOut,
+  RefreshCw,
+  Settings,
+  UserRound,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -14,13 +21,13 @@ import { toast } from "sonner"
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
+import { ManageAccountDialog } from "@/features/account-management"
+import { useCurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import {
-  getCurrentUser,
   isInteractionRequired,
   loginRequest,
   requestApiAccess,
-  type CurrentUser,
 } from "@/shared/auth"
 import { TourButton } from "@/shared/tour"
 
@@ -28,12 +35,6 @@ import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
-
-type CurrentUserState =
-  | { status: "idle" }
-  | { accountId: string; status: "loading" }
-  | { accountId: string; status: "success"; user: CurrentUser }
-  | { accountId: string; error: unknown; status: "error" }
 
 function logAuthenticationError(operation: AuthOperation, error: unknown) {
   const message = `[MSAL] ${operation} failed`
@@ -69,74 +70,8 @@ export function AuthControl() {
   const isAuthenticated = useIsAuthenticated()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
   const account = instance.getActiveAccount() ?? accounts[0]
-  const accountId = account?.homeAccountId
-  const currentUserRequestRef = useRef<string | null>(null)
-  const [currentUserState, setCurrentUserState] = useState<CurrentUserState>({
-    status: "idle",
-  })
-
-  const loadCurrentUser = useCallback(
-    async (signal?: AbortSignal) => {
-      if (!account) {
-        return
-      }
-
-      const accountId = account.homeAccountId
-
-      try {
-        const user = await getCurrentUser(instance, account, signal)
-        setCurrentUserState({ accountId, status: "success", user })
-      } catch (error) {
-        if (signal?.aborted) {
-          return
-        }
-
-        console.error("Loading the authenticated user failed", error)
-        setCurrentUserState({ accountId, error, status: "error" })
-      }
-    },
-    [account, instance]
-  )
-
-  useEffect(() => {
-    if (!isAuthenticated || !account || !accountId) {
-      return
-    }
-
-    if (currentUserRequestRef.current === accountId) {
-      return
-    }
-
-    if (
-      currentUserState.status !== "idle" &&
-      currentUserState.accountId === accountId
-    ) {
-      return
-    }
-
-    const controller = new AbortController()
-
-    currentUserRequestRef.current = accountId
-
-    void getCurrentUser(instance, account, controller.signal).then(
-      (user) => {
-        currentUserRequestRef.current = null
-        setCurrentUserState({ accountId, status: "success", user })
-      },
-      (error: unknown) => {
-        currentUserRequestRef.current = null
-
-        if (controller.signal.aborted) {
-          return
-        }
-
-        console.error("Loading the authenticated user failed", error)
-        setCurrentUserState({ accountId, error, status: "error" })
-      }
-    )
-
-    return () => controller.abort()
-  }, [account, accountId, currentUserState, instance, isAuthenticated])
+  const { refetch, state: accountState } = useCurrentUser()
+  const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {
@@ -164,11 +99,7 @@ export function AuthControl() {
       return
     }
 
-    setCurrentUserState({
-      accountId: account!.homeAccountId,
-      status: "loading",
-    })
-    void loadCurrentUser()
+    refetch()
   }
 
   if (!isAuthenticated || !account) {
@@ -186,11 +117,6 @@ export function AuthControl() {
     )
   }
 
-  const accountState =
-    currentUserState.status !== "idle" &&
-    currentUserState.accountId === account.homeAccountId
-      ? currentUserState
-      : ({ accountId: account.homeAccountId, status: "loading" } as const)
   const currentUser =
     accountState.status === "success" ? accountState.user : null
   const accountName =
@@ -198,7 +124,7 @@ export function AuthControl() {
     account.name ??
     account.username ??
     t("auth.account")
-  const accountEmail = currentUser?.email ?? account.username
+  const accountEmail = account.username
 
   return (
     <div className="flex items-center gap-1" data-testid="auth-account">
@@ -262,6 +188,17 @@ export function AuthControl() {
             </>
           ) : null}
           <Button
+            aria-label={t("auth.manageAccount")}
+            className="w-full justify-start"
+            data-testid="auth-manage-account"
+            onClick={() => setIsManageAccountOpen(true)}
+            size="sm"
+            variant="ghost"
+          >
+            <Settings data-icon="inline-start" />
+            {t("auth.manageAccount")}
+          </Button>
+          <Button
             aria-label={t("auth.signOut")}
             className="w-full justify-start"
             data-testid="auth-sign-out"
@@ -305,6 +242,10 @@ export function AuthControl() {
           </Button>
         </div>
       ) : null}
+      <ManageAccountDialog
+        onOpenChange={setIsManageAccountOpen}
+        open={isManageAccountOpen}
+      />
     </div>
   )
 }

@@ -12,6 +12,7 @@ import { LandingPage } from "@/pages/landing"
 import { isUiKitEnabled } from "@/shared/config"
 
 import { AppShell } from "./layout/app-shell"
+import { OnboardingGate } from "./onboarding-gate"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
 // hits) is lazy-loaded — each becomes its own chunk, fetched only when its route is entered
@@ -39,7 +40,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate replace to="/" />
   }
 
-  return <>{children}</>
+  return <OnboardingGate>{children}</OnboardingGate>
 }
 
 function LandingRoute() {
