@@ -12,13 +12,22 @@ import {
   type Styles,
   useJoyride,
 } from "react-joyride"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useTheme } from "../theme/theme-provider"
+
+/** Steps a page registers for its own tour, split by platform since the same target selectors
+ *  don't always exist (or make sense) on both - `mobile` falls back to `desktop` when omitted. */
+export type TourPageSteps = {
+  desktop: Step[]
+  mobile?: Step[]
+}
 
 type TourContextValue = {
   isRunning: boolean
   startTour: () => void
   stopTour: () => void
+  setPageSteps: (steps: TourPageSteps | null) => void
 }
 
 const TourContext = React.createContext<TourContextValue | undefined>(undefined)
@@ -86,7 +95,9 @@ const tourStyles: Partial<Styles> = {
 export function TourProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const isMobile = useIsMobile()
   const [run, setRun] = React.useState(false)
+  const [pageSteps, setPageSteps] = React.useState<TourPageSteps | null>(null)
 
   const isDark = theme === "dark" || (theme === "system" && prefersDark())
   const surface = isDark ? tourSurface.dark : tourSurface.light
@@ -112,14 +123,30 @@ export function TourProvider({ children }: { children: ReactNode }) {
     [surface]
   )
 
-  const steps = React.useMemo<Step[]>(
-    () => [
-      {
-        target: "body",
-        placement: "center",
-        title: t("tour.steps.welcome.title"),
-        content: t("tour.steps.welcome.content"),
-      },
+  // The general layout/navigation tutorial - used for Home and as the fallback for any page (e.g.
+  // UI Kit) that doesn't register its own steps via useTourPageSteps. On mobile, the language/theme/
+  // replay controls live inside a closed popover (see AuthControl / MobileGuestSettings) so they
+  // aren't valid spotlight targets there; only the welcome and navigation steps carry over.
+  const defaultSteps = React.useMemo<Step[]>(() => {
+    const welcome: Step = {
+      target: "body",
+      placement: "center",
+      title: t("tour.steps.welcome.title"),
+      content: t("tour.steps.welcome.content"),
+    }
+    const navigation: Step = {
+      target: '[data-testid="primary-nav"]',
+      placement: isMobile ? "top" : "bottom",
+      title: t("tour.steps.navigation.title"),
+      content: t("tour.steps.navigation.content"),
+    }
+
+    if (isMobile) {
+      return [welcome, navigation]
+    }
+
+    return [
+      welcome,
       {
         target: '[data-testid="language-switcher"]',
         placement: "bottom-end",
@@ -138,15 +165,14 @@ export function TourProvider({ children }: { children: ReactNode }) {
         title: t("tour.steps.replay.title"),
         content: t("tour.steps.replay.content"),
       },
-      {
-        target: '[data-testid="primary-nav"]',
-        placement: "bottom",
-        title: t("tour.steps.navigation.title"),
-        content: t("tour.steps.navigation.content"),
-      },
-    ],
-    [t]
-  )
+      navigation,
+    ]
+  }, [t, isMobile])
+
+  const steps = React.useMemo<Step[]>(() => {
+    if (!pageSteps) return defaultSteps
+    return (isMobile ? pageSteps.mobile : undefined) ?? pageSteps.desktop
+  }, [pageSteps, defaultSteps, isMobile])
 
   const locale = React.useMemo<Locale>(
     () => ({
@@ -178,7 +204,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const stopTour = React.useCallback(() => setRun(false), [])
 
   const value = React.useMemo<TourContextValue>(
-    () => ({ isRunning: run, startTour, stopTour }),
+    () => ({ isRunning: run, startTour, stopTour, setPageSteps }),
     [run, startTour, stopTour]
   )
 
@@ -198,4 +224,16 @@ export const useTour = () => {
   }
 
   return context
+}
+
+/** Lets a page register its own tour steps while mounted, overriding the general tutorial -
+ *  reverts to the default steps automatically on unmount. Memoize `steps` (it's an effect
+ *  dependency) so registration doesn't churn every render. */
+export function useTourPageSteps(steps: TourPageSteps) {
+  const { setPageSteps } = useTour()
+
+  React.useEffect(() => {
+    setPageSteps(steps)
+    return () => setPageSteps(null)
+  }, [steps, setPageSteps])
 }

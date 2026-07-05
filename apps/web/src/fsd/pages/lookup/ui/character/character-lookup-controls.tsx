@@ -1,5 +1,6 @@
-import { Info } from "lucide-react"
+import { Info, Share2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Slider } from "@workspace/ui/components/slider"
@@ -25,6 +26,8 @@ import {
   RankBadge,
   RankSelect,
 } from "@/shared/ui"
+
+import { shareCurrentLookupUrl } from "./character-lookup-share"
 
 const maxIndex = rankOrder.length - 1
 
@@ -63,6 +66,19 @@ export function CharacterLookupControls({
 }) {
   const { t } = useTranslation()
 
+  const handleShare = () => {
+    void shareCurrentLookupUrl(isMobile).then((result) => {
+      if (result === "shared") return
+      toast[result === "copied" ? "success" : "error"](
+        t(
+          result === "copied"
+            ? "unitLookup.share.copied"
+            : "unitLookup.share.error"
+        )
+      )
+    })
+  }
+
   // The other select's options are pre-filtered to keep start < end, so a plain set suffices.
   const selectStart = (next: Rank) => onRangeChange(next, rankEnd)
   const selectEnd = (next: Rank) => onRangeChange(rankStart, next)
@@ -83,7 +99,7 @@ export function CharacterLookupControls({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid gap-2">
+      <div className="grid gap-2" data-testid="lookup-character-select">
         <Label>{t("unitLookup.character")}</Label>
         <CharacterCombobox
           groups={characterGroups}
@@ -177,9 +193,30 @@ export function CharacterLookupControls({
         </Tooltip>
       </div>
 
-      <Button onClick={onApply} disabled={applyDisabled}>
-        {t("unitLookup.apply")}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          className="flex-1"
+          data-testid="lookup-apply-button"
+          disabled={applyDisabled}
+          onClick={onApply}
+        >
+          {t("unitLookup.apply")}
+        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              aria-label={t("unitLookup.share.action")}
+              data-testid="lookup-share-button"
+              onClick={handleShare}
+              size="icon"
+              variant="outline"
+            >
+              <Share2 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("unitLookup.share.action")}</TooltipContent>
+        </Tooltip>
+      </div>
     </div>
   )
 }

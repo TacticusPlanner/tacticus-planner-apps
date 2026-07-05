@@ -1,5 +1,6 @@
 "use client"
 
+/* eslint-disable react-refresh/only-export-components -- exports useSidebar alongside the components */
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
@@ -703,4 +704,5 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
+  useSidebar,
 }

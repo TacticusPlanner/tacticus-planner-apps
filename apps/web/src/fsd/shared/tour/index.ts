@@ -1,2 +1,3 @@
-export { TourProvider, useTour } from "./tour-provider"
+export { TourProvider, useTour, useTourPageSteps } from "./tour-provider"
+export type { TourPageSteps } from "./tour-provider"
 export { TourButton } from "./tour-button"

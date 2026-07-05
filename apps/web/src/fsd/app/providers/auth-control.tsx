@@ -160,7 +160,7 @@ export function AuthControl() {
                   {t("auth.accountLoading")}
                 </div>
               ) : null}
-              {accountState.status === "success" && accountEmail ? (
+              {isMobile && accountState.status === "success" && accountEmail ? (
                 <div
                   className="truncate text-xs"
                   data-testid="auth-account-email"
