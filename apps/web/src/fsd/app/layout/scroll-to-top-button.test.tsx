@@ -69,7 +69,12 @@ describe("ScrollToTopButton", () => {
     fireEvent.scroll(window)
 
     await waitFor(() => {
-      expect(screen.getByTestId("scroll-to-top-button")).toBeInTheDocument()
+      const button = screen.getByTestId("scroll-to-top-button")
+      expect(button).toBeInTheDocument()
+      expect(button).toHaveClass("size-12")
+      expect(button.className).toContain(
+        "bottom-[calc(var(--mobile-nav-height)+1rem)]"
+      )
     })
   })
 

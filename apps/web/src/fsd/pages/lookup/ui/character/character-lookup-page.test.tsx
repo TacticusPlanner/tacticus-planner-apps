@@ -1,11 +1,35 @@
-import { fireEvent, render, screen, within } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 // The page must work for unauthenticated users with no user data — it reads only the public catalog.
 // (No MSAL / user-state mocks are needed, which is the point: nothing user-specific is imported.)
-vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
+const isMobile = vi.fn(() => false)
+const usePageTour = vi.fn()
+const toastSuccess = vi.fn()
+const toastError = vi.fn()
+
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => isMobile(),
+}))
+
+vi.mock("@/shared/tour", () => ({
+  usePageTour: (factory: unknown) => usePageTour(factory),
+}))
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: (message: string) => toastError(message),
+    success: (message: string) => toastSuccess(message),
+  },
+}))
 
 // Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
 // difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json —
@@ -265,6 +289,20 @@ function renderPage(initialEntries = ["/"]) {
 }
 
 describe("CharacterLookupPage", () => {
+  beforeEach(() => {
+    isMobile.mockReturnValue(false)
+    usePageTour.mockClear()
+    toastSuccess.mockClear()
+    toastError.mockClear()
+    window.history.pushState({}, "", "/")
+  })
+
+  it("registers a page-specific tutorial", () => {
+    renderPage()
+
+    expect(usePageTour).toHaveBeenCalledWith(expect.any(Function))
+  })
+
   it("renders publicly and lists the required base upgrades for the default range", () => {
     renderPage()
 
@@ -367,6 +405,65 @@ describe("CharacterLookupPage", () => {
     expect(applyButton).toBeDisabled()
   })
 
+  it("copies the current URL and shows success feedback", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    })
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: undefined,
+    })
+    window.history.pushState(
+      {},
+      "",
+      "/lookup/character?character=hero1&rankStart=Stone1"
+    )
+    renderPage(["/lookup/character?character=hero1&rankStart=Stone1"])
+
+    fireEvent.click(screen.getByTestId("character-lookup-share"))
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith(
+        expect.stringContaining("character=hero1")
+      )
+    })
+    expect(toastSuccess).toHaveBeenCalledWith("unitLookup.copySuccess")
+  })
+
+  it("scrolls the mobile results region into view after applying draft criteria", () => {
+    isMobile.mockReturnValue(true)
+    const scrollIntoView = window.HTMLElement.prototype
+      .scrollIntoView as ReturnType<typeof vi.fn>
+    scrollIntoView.mockClear()
+    const originalRequestAnimationFrame = window.requestAnimationFrame
+    const requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
+      callback(0)
+      return 0
+    })
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: requestAnimationFrame,
+    })
+    renderPage()
+
+    fireEvent.click(screen.getByRole("switch"))
+    fireEvent.click(screen.getByRole("button", { name: "unitLookup.apply" }))
+
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+    })
+    expect(scrollIntoView.mock.contexts[0]).toBe(
+      screen.getByTestId("character-lookup-results-region")
+    )
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: originalRequestAnimationFrame,
+    })
+  })
+
   it("renders a top-upgrade-by-rarity chip and ranked useful-campaign insights", () => {
     renderPage()
 
@@ -460,7 +557,7 @@ describe("CharacterLookupPage", () => {
       behavior: "smooth",
       block: "center",
     })
-    expect(scrollIntoView.mock.instances[0]).toBe(targetRow)
+    expect(scrollIntoView.mock.contexts[0]).toBe(targetRow)
   })
 
   it("splits farm locations into campaign and campaign-event columns, labeled by campaign + short code + node numbers", () => {

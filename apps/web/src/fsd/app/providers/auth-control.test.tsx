@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { InteractionStatus } from "@azure/msal-browser"
 
@@ -78,8 +79,15 @@ vi.mock("@/shared/tour", () => ({
 import { AuthControl } from "./auth-control"
 
 describe("AuthControl", () => {
-  it("opens a user menu with manage-account and sign-out on desktop", () => {
+  beforeEach(() => {
     isMobile.mockReturnValue(false)
+    useCurrentUser.mockReturnValue({
+      refetch: vi.fn(),
+      state: { status: "loading" },
+    })
+  })
+
+  it("opens a user menu with manage-account and sign-out on desktop", () => {
     render(<AuthControl />)
 
     expect(screen.queryByTestId("auth-sign-out")).not.toBeInTheDocument()
@@ -104,7 +112,6 @@ describe("AuthControl", () => {
   })
 
   it("opens the manage-account dialog when the menu item is clicked", () => {
-    isMobile.mockReturnValue(false)
     useCurrentUser.mockReturnValue({
       refetch: vi.fn(),
       state: {
@@ -124,5 +131,37 @@ describe("AuthControl", () => {
     fireEvent.click(screen.getByTestId("auth-manage-account"))
 
     expect(screen.getByTestId("manage-account-dialog-stub")).toBeVisible()
+  })
+
+  it("renders the sidebar profile row with initials and display name but no email", () => {
+    useCurrentUser.mockReturnValue({
+      refetch: vi.fn(),
+      state: {
+        status: "success",
+        user: {
+          applicationUserId: "user-1",
+          displayName: "Test User",
+          hasCompletedOnboarding: true,
+          tacticusApiKeyMasked: "••••••••abcd",
+          tacticusUserIdMasked: "••••••••1234",
+        },
+      },
+    })
+
+    render(
+      <TooltipProvider>
+        <AuthControl variant="sidebar" />
+      </TooltipProvider>
+    )
+
+    expect(screen.getByTestId("auth-account-avatar")).toHaveTextContent("TU")
+    expect(screen.getByTestId("auth-account-name")).toHaveTextContent(
+      "Test User"
+    )
+    expect(screen.queryByTestId("auth-account-email")).not.toBeInTheDocument()
+    expect(screen.getByTestId("auth-account-trigger")).toHaveAttribute(
+      "title",
+      "Test User"
+    )
   })
 })
