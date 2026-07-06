@@ -1,0 +1,84 @@
+name: Coverage
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  code-quality: write
+  pull-requests: read
+
+concurrency:
+  group: coverage-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.7.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.15.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Cache Turbo
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: pnpm test:coverage
+
+      - name: Upload web coverage
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: apps/web/coverage/cobertura-coverage.xml
+          language: TypeScript
+          label: coverage/web
+
+      - name: Upload ui coverage
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: packages/ui/coverage/cobertura-coverage.xml
+          language: TypeScript
+          label: coverage/ui
+
+      - name: Upload game-catalog coverage
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: packages/game-catalog/coverage/cobertura-coverage.xml
+          language: TypeScript
+          label: coverage/game-catalog
