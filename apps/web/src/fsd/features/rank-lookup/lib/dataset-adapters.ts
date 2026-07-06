@@ -37,7 +37,8 @@ export function toBattleLike(
   return {
     id: record.id,
     campaignGroupId: record.campaignGroupId,
-    difficulty: record.difficulty,
+    type: record.type,
+    challenge: record.challenge,
     nodeNumber: record.nodeNumber,
     energyCost: record.energyCost,
   }

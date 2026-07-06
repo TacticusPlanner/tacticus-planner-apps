@@ -31,7 +31,8 @@ const campaignDetailedEnemySchema = z.looseObject({
 export const campaignBattleViewSchema = z.looseObject({
   id: z.string(),
   campaignGroupId: z.string(),
-  difficulty: z.string(),
+  type: z.string(),
+  challenge: z.boolean(),
   energyCost: z.number(),
   nodeNumber: z.number(),
   slots: z.number(),
@@ -50,6 +51,6 @@ export const campaignDefinitionSchema = z.looseObject({
   faction: z.string(),
   releaseType: z.string(),
   coreCharacters: z.array(z.string()),
-  difficulties: z.array(z.string()),
+  types: z.array(z.string()),
   battleIds: z.array(z.string()),
 })

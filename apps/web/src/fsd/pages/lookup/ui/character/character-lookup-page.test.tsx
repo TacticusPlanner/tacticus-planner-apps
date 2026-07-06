@@ -13,10 +13,12 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 // a TourProvider.
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 
+// rank/progressionIndex are already the catalog's own Rank/Progression string values on the
+// synced chunk (see @workspace/player-data's schemas) — no numeric-index fixtures needed.
 type PlayerUnitFixture = {
   unitId: string
-  rank: number
-  progressionIndex: number
+  rank: string
+  progressionIndex: string
 }
 type PlayerChunkResult = {
   data: PlayerUnitFixture[] | undefined
@@ -32,11 +34,6 @@ const { useIsAuthenticatedMock, playerChunkMocks } = vi.hoisted(() => ({
       loading: false,
       error: null,
     })),
-    mows: vi.fn<() => PlayerChunkResult>(() => ({
-      data: undefined,
-      loading: false,
-      error: null,
-    })),
   },
 }))
 
@@ -45,8 +42,7 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 vi.mock("@/shared/player-data", () => ({
-  usePlayerChunkRecords: (key: "characters" | "mows") =>
-    playerChunkMocks[key](),
+  usePlayerChunkRecords: (key: "characters") => playerChunkMocks[key](),
 }))
 
 // Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
@@ -236,38 +232,42 @@ const records: Record<string, unknown[]> = {
   "campaign-battles": [
     {
       id: "STD01",
-      campaignGroupId: "indomitus",
-      difficulty: "standard",
+      campaignGroupId: "campaign1",
+      type: "Standard",
+      challenge: false,
       nodeNumber: 3,
       energyCost: 6,
     },
     {
       id: "STD02",
-      campaignGroupId: "indomitus",
-      difficulty: "standard",
+      campaignGroupId: "campaign1",
+      type: "Standard",
+      challenge: false,
       nodeNumber: 7,
       energyCost: 6,
     },
     {
       id: "EVT01",
-      campaignGroupId: "death-guard-vs-admech",
-      difficulty: "eventStandard",
+      campaignGroupId: "eventCampaign1",
+      type: "Standard",
+      challenge: false,
       nodeNumber: 5,
       energyCost: 5,
     },
     {
       id: "EVT02",
-      campaignGroupId: "death-guard-vs-admech",
-      difficulty: "eventExtremis",
+      campaignGroupId: "eventCampaign1",
+      type: "Extremis",
+      challenge: false,
       nodeNumber: 6,
       energyCost: 7,
     },
   ],
   "campaign-definitions": [
-    { id: "indomitus", groupId: "indomitus", releaseType: "standard" },
+    { id: "campaign1", groupId: "campaign1", releaseType: "standard" },
     {
-      id: "death-guard-vs-admech",
-      groupId: "death-guard-vs-admech",
+      id: "eventCampaign1",
+      groupId: "eventCampaign1",
       releaseType: "event",
     },
   ],
@@ -310,11 +310,6 @@ describe("CharacterLookupPage", () => {
   beforeEach(() => {
     useIsAuthenticatedMock.mockReturnValue(false)
     playerChunkMocks.characters.mockReturnValue({
-      data: undefined,
-      loading: false,
-      error: null,
-    })
-    playerChunkMocks.mows.mockReturnValue({
       data: undefined,
       loading: false,
       error: null,
@@ -401,7 +396,9 @@ describe("CharacterLookupPage", () => {
   it("prefills the 'from' rank from synced player data when authenticated", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
     playerChunkMocks.characters.mockReturnValue({
-      data: [{ unitId: "hero2", rank: 5, progressionIndex: 8 }],
+      data: [
+        { unitId: "hero2", rank: "Iron3", progressionIndex: "Rare:RedOneStar" },
+      ],
       loading: false,
       error: null,
     })
@@ -413,9 +410,9 @@ describe("CharacterLookupPage", () => {
     )
     fireEvent.click(screen.getByText("Hero Two"))
 
-    // rankAt(5) is "Iron3" — the synced unit's rank, not the firstRank ("Stone1") default. The
-    // range's "to" also gets bumped up to match (it defaults below "from" otherwise), so both the
-    // "from" and "to" badges read "Iron3" here.
+    // "Iron3" is the synced unit's rank, not the firstRank ("Stone1") default. The range's "to"
+    // also gets bumped up to match (it defaults below "from" otherwise), so both the "from" and
+    // "to" badges read "Iron3" here.
     expect(screen.getAllByText("Iron3").length).toBeGreaterThan(0)
     expect(screen.queryByText("Stone1")).not.toBeInTheDocument()
     expect(screen.queryByText("Stone2")).not.toBeInTheDocument()
@@ -424,7 +421,13 @@ describe("CharacterLookupPage", () => {
   it("keeps the default 'from' rank when authenticated but the selected unit has no synced data", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
     playerChunkMocks.characters.mockReturnValue({
-      data: [{ unitId: "some-other-unit", rank: 5, progressionIndex: 8 }],
+      data: [
+        {
+          unitId: "some-other-unit",
+          rank: "Iron3",
+          progressionIndex: "Rare:RedOneStar",
+        },
+      ],
       loading: false,
       error: null,
     })

@@ -47,7 +47,7 @@ const datasetData: Record<string, unknown> = {
     },
   ],
   "campaign-battles": [
-    { id: "I01", campaignGroupId: "g1", difficulty: "standard" },
+    { id: "I01", campaignGroupId: "g1", type: "Standard", challenge: false },
   ],
   "campaign-definitions": [
     {

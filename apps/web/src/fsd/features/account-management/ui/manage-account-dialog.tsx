@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -35,20 +34,8 @@ import {
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import type { CurrentUser } from "@/shared/auth"
-import {
-  usePlayerDataStatus,
-  type PlayerDataStatus,
-} from "@/shared/player-data"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
-
-const playerDataStatusKeys = {
-  idle: "manageAccount.playerData.statusIdle",
-  syncing: "manageAccount.playerData.statusSyncing",
-  ready: "manageAccount.playerData.statusReady",
-  stale: "manageAccount.playerData.statusStale",
-  error: "manageAccount.playerData.statusError",
-} as const satisfies Record<PlayerDataStatus, string>
 
 type ManageAccountDialogProps = {
   open: boolean
@@ -136,7 +123,6 @@ function TacticusIntegrationTab({
     "idle" | "submitting" | "error" | "success"
   >("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const playerData = usePlayerDataStatus()
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -188,44 +174,6 @@ function TacticusIntegrationTab({
             {user.tacticusUserIdMasked ??
               t("manageAccount.integration.notConfigured")}
           </span>
-        </div>
-      </div>
-
-      <div className="grid gap-2 rounded-2xl border p-3 text-sm">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">
-            {t("manageAccount.playerData.title")}
-          </span>
-          <Badge
-            data-testid="manage-account-player-data-status"
-            variant={playerData.status === "error" ? "destructive" : "outline"}
-            title={playerData.error ?? undefined}
-          >
-            {t(playerDataStatusKeys[playerData.status])}
-          </Badge>
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className="text-muted-foreground"
-            data-testid="manage-account-player-data-last-synced"
-          >
-            {playerData.lastSyncedAt
-              ? t("manageAccount.playerData.lastSynced", {
-                  time: new Date(playerData.lastSyncedAt).toLocaleString(),
-                })
-              : t("manageAccount.playerData.neverSynced")}
-          </span>
-          <Button
-            data-testid="manage-account-player-data-sync-now"
-            disabled={playerData.status === "syncing"}
-            onClick={playerData.syncNow}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            {playerData.status === "syncing" ? <Spinner /> : null}
-            {t("manageAccount.playerData.syncNow")}
-          </Button>
         </div>
       </div>
 

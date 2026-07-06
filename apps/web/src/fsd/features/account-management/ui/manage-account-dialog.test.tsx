@@ -49,16 +49,6 @@ vi.mock("@/entities/account", () => ({
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
-vi.mock("@/shared/player-data", () => ({
-  usePlayerDataStatus: () => ({
-    status: "idle",
-    progress: null,
-    lastSyncedAt: null,
-    error: null,
-    syncNow: vi.fn(),
-  }),
-}))
-
 import { ManageAccountDialog } from "./manage-account-dialog"
 
 describe("ManageAccountDialog", () => {

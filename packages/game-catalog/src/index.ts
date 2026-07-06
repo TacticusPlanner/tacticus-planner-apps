@@ -117,6 +117,7 @@ export {
   lastProgression,
   progressionIndex,
   isProgression,
+  progressionAt,
   progressionRarity,
   progressionStars,
   statAtRank,

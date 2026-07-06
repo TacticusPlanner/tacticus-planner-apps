@@ -27,12 +27,24 @@ vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 vi.mock("../providers/catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => null,
 }))
+vi.mock("../providers/player-data-sync-status-badge", () => ({
+  PlayerDataSyncStatusBadge: () => null,
+}))
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
 vi.mock("../providers/language-switcher", () => ({
   LanguageSwitcher: () => null,
 }))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
 vi.mock("@/shared/tour", () => ({ TourButton: () => null }))
+vi.mock("@/shared/player-data", () => ({
+  usePlayerDataStatus: () => ({
+    status: "idle",
+    progress: null,
+    lastSyncedAt: null,
+    error: null,
+    syncNow: vi.fn(),
+  }),
+}))
 
 import { DesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"

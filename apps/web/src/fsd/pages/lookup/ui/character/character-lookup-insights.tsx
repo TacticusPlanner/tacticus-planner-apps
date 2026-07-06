@@ -254,7 +254,8 @@ function buildLocation(
 ): ContributionLocation {
   const descriptor = campaignDescriptor(
     contribution.campaignGroupId,
-    contribution.difficulty
+    contribution.type,
+    contribution.challenge
   )
   const short = descriptor ? shortLabel(descriptor) : null
   return {
@@ -262,6 +263,10 @@ function buildLocation(
     label: short
       ? `${short.name} ${short.code} ${contribution.nodeNumber}${short.challenge ? "B" : ""}`
       : contribution.campaignGroupId,
-    icon: campaignIcon(contribution.campaignGroupId, contribution.difficulty),
+    icon: campaignIcon(
+      contribution.campaignGroupId,
+      contribution.type,
+      contribution.challenge
+    ),
   }
 }

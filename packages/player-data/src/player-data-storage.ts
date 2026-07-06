@@ -14,7 +14,7 @@ const metadataStore = "metadata"
 /**
  * Unlike @workspace/game-catalog's multi-row, id-keyed dataset stores, each player-data chunk is a
  * single per-profile payload (some are arrays, some are singleton objects — e.g. `inventory` or
- * `game-mode-tokens`). Each chunk therefore gets its own object store holding exactly one row: the
+ * `live-progress`). Each chunk therefore gets its own object store holding exactly one row: the
  * whole chunk payload, stored with an out-of-line key equal to the chunk key itself.
  */
 async function openPlayerDataDb() {

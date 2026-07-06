@@ -9,25 +9,36 @@ import {
 import type { PlayerDataChunkPayload } from "./types"
 
 type CampaignProgress = PlayerDataChunkPayload<"campaign-progress">[number]
+type BattleAttempt =
+  PlayerDataChunkPayload<"live-progress">["battleAttempts"][number]
 
 function campaign(overrides: Partial<CampaignProgress> = {}): CampaignProgress {
   return {
     tacticusCampaignId: "campaign1",
-    catalogCampaignGroupId: "campaign1",
-    name: "Indomitus",
     type: "Standard",
-    battles: [
-      { battleIndex: 0, attemptsLeft: 3, attemptsUsed: 0 },
-      { battleIndex: 1, attemptsLeft: 3, attemptsUsed: 0 },
-    ],
-    highestObservedBattleIndex: 1,
+    highestCompletedBattleIndex: 1,
     ...overrides,
   }
 }
 
+function battleAttempts(
+  overrides: Partial<BattleAttempt>[] = [
+    { battleIndex: 0, attemptsLeft: 3, attemptsUsed: 0 },
+    { battleIndex: 1, attemptsLeft: 3, attemptsUsed: 0 },
+  ]
+): BattleAttempt[] {
+  return overrides.map((override) => ({
+    tacticusCampaignId: "campaign1",
+    battleIndex: 0,
+    attemptsLeft: 0,
+    attemptsUsed: 0,
+    ...override,
+  }))
+}
+
 describe("getEffectiveBattleResults", () => {
   it("defaults every battle to the maximum result when no override exists", () => {
-    const results = getEffectiveBattleResults(campaign(), [])
+    const results = getEffectiveBattleResults("campaign1", battleAttempts(), [])
 
     expect(results).toEqual([
       {
@@ -48,12 +59,18 @@ describe("getEffectiveBattleResults", () => {
   })
 
   it("defaults victoryWithoutBorrowed to true (not null) for campaign-event battles", () => {
-    const eventCampaign = campaign({
-      tacticusCampaignId: "eventCampaign6",
-      battles: [{ battleIndex: 0, attemptsLeft: 10, attemptsUsed: 0 }],
-    })
-
-    const results = getEffectiveBattleResults(eventCampaign, [])
+    const results = getEffectiveBattleResults(
+      "eventCampaign6",
+      battleAttempts([
+        {
+          tacticusCampaignId: "eventCampaign6",
+          battleIndex: 0,
+          attemptsLeft: 10,
+          attemptsUsed: 0,
+        },
+      ]),
+      []
+    )
 
     expect(results[0]?.victoryWithoutBorrowed).toBe(true)
   })
@@ -69,7 +86,11 @@ describe("getEffectiveBattleResults", () => {
       },
     ]
 
-    const results = getEffectiveBattleResults(campaign(), overrides)
+    const results = getEffectiveBattleResults(
+      "campaign1",
+      battleAttempts(),
+      overrides
+    )
 
     expect(results[0]).toEqual({
       battleIndex: 0,
@@ -98,9 +119,31 @@ describe("getEffectiveBattleResults", () => {
       },
     ]
 
-    const results = getEffectiveBattleResults(campaign(), overrides)
+    const results = getEffectiveBattleResults(
+      "campaign1",
+      battleAttempts(),
+      overrides
+    )
 
     expect(results.every((result) => !result.isOverridden)).toBe(true)
+  })
+
+  it("only returns battle attempts belonging to the requested campaign id", () => {
+    const results = getEffectiveBattleResults(
+      "campaign1",
+      battleAttempts([
+        { battleIndex: 0, attemptsLeft: 3, attemptsUsed: 0 },
+        {
+          tacticusCampaignId: "mirror1",
+          battleIndex: 0,
+          attemptsLeft: 3,
+          attemptsUsed: 0,
+        },
+      ]),
+      []
+    )
+
+    expect(results).toHaveLength(1)
   })
 })
 
@@ -120,11 +163,11 @@ describe("getEffectiveCampaignProgress", () => {
 
     expect(result).toHaveLength(2)
     const manual = result.find(
-      (entry) => entry.catalogCampaignGroupId === "mirror1"
+      (entry) => entry.tacticusCampaignId === "mirror1"
     )
     expect(manual).toMatchObject({
       source: "manual",
-      highestObservedBattleIndex: 12,
+      highestCompletedBattleIndex: 12,
     })
   })
 
@@ -137,6 +180,6 @@ describe("getEffectiveCampaignProgress", () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]?.source).toBe("synced")
-    expect(result[0]?.highestObservedBattleIndex).toBe(1)
+    expect(result[0]?.highestCompletedBattleIndex).toBe(1)
   })
 })

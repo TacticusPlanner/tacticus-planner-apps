@@ -54,8 +54,9 @@ describe("computeCampaignInsights", () => {
     [
       "std-node-1",
       {
-        campaignGroupId: "indomitus",
-        difficulty: "standard",
+        campaignGroupId: "campaign1",
+        type: "Standard",
+        challenge: false,
         nodeNumber: 1,
         energyCost: 6,
       },
@@ -63,8 +64,9 @@ describe("computeCampaignInsights", () => {
     [
       "std-node-2",
       {
-        campaignGroupId: "indomitus",
-        difficulty: "standard",
+        campaignGroupId: "campaign1",
+        type: "Standard",
+        challenge: false,
         nodeNumber: 2,
         energyCost: 6,
       },
@@ -72,8 +74,9 @@ describe("computeCampaignInsights", () => {
     [
       "elite-node",
       {
-        campaignGroupId: "fall-of-cadia",
-        difficulty: "elite",
+        campaignGroupId: "elite2",
+        type: "Elite",
+        challenge: false,
         nodeNumber: 5,
         energyCost: 12,
       },
@@ -81,8 +84,9 @@ describe("computeCampaignInsights", () => {
     [
       "event-node",
       {
-        campaignGroupId: "death-guard-vs-admech",
-        difficulty: "eventStandard",
+        campaignGroupId: "eventCampaign1",
+        type: "Standard",
+        challenge: false,
         nodeNumber: 3,
         energyCost: 5,
       },
@@ -90,15 +94,16 @@ describe("computeCampaignInsights", () => {
     [
       "event-node-extremis",
       {
-        campaignGroupId: "death-guard-vs-admech",
-        difficulty: "eventExtremis",
+        campaignGroupId: "eventCampaign1",
+        type: "Extremis",
+        challenge: false,
         nodeNumber: 3,
         energyCost: 8,
       },
     ],
   ])
 
-  const isEventGroup = (groupId: string) => groupId === "death-guard-vs-admech"
+  const isEventGroup = (groupId: string) => groupId === "eventCampaign1"
   // Stand-in for the real i18n-driven resolver (`useCampaignDisplay()`'s bound resolvers) —
   // computeCampaignInsights only needs *some* string back, so this keeps the test decoupled from
   // translation content and just echoes the descriptor's nameKey/difficultyToken.
@@ -150,7 +155,7 @@ describe("computeCampaignInsights", () => {
     // rarityWeight(Rare) = rarityRank("Rare")+1 = 3; value = 3*1*1 + 3*1*1 = 6; energy counted
     // once for the shared battle (6), not twice (12).
     expect(campaignInsights[0]).toMatchObject({
-      id: "indomitus:standard",
+      id: "campaign1:Standard",
       label: "indomitus:standard",
       score: 1,
     })
@@ -199,8 +204,8 @@ describe("computeCampaignInsights", () => {
     )
 
     expect(campaignInsights.map((c) => c.id)).toEqual([
-      "indomitus:standard",
-      "fall-of-cadia:elite",
+      "campaign1:Standard",
+      "elite2:Elite",
     ])
   })
 
@@ -230,7 +235,7 @@ describe("computeCampaignInsights", () => {
     expect(campaignInsights).toEqual([])
     expect(eventInsights).toHaveLength(1)
     expect(eventInsights[0]).toMatchObject({
-      id: "death-guard-vs-admech",
+      id: "eventCampaign1",
       label: "death-guard-vs-admech",
     })
   })
@@ -263,13 +268,14 @@ describe("computeCampaignInsights", () => {
     // rarityWeight(Epic) = 4; value = 4*1*1 (Standard) + 4*1*1 (Extremis) = 8;
     // energy = 5 (Standard node) + 8 (Extremis node) = 13.
     expect(eventInsights[0]).toMatchObject({
-      id: "death-guard-vs-admech",
+      id: "eventCampaign1",
       score: 8 / 13,
     })
     expect(eventInsights[0].contributions).toHaveLength(2)
-    expect(
-      eventInsights[0].contributions.map((c) => c.difficulty).sort()
-    ).toEqual(["eventExtremis", "eventStandard"])
+    expect(eventInsights[0].contributions.map((c) => c.type).sort()).toEqual([
+      "Extremis",
+      "Standard",
+    ])
     // Each tier keeps its own value-per-energy score: Standard = 4/5, Extremis = 4/8, independent
     // of the combined chip score above.
     expect(eventInsights[0].tierScores).toEqual([
@@ -340,7 +346,7 @@ describe("computeCampaignInsights", () => {
     )
 
     expect(campaignInsights).toHaveLength(1)
-    expect(campaignInsights[0].id).toBe("indomitus:standard")
+    expect(campaignInsights[0].id).toBe("campaign1:Standard")
   })
 
   it("skips a location whose battle id isn't in the catalog", () => {

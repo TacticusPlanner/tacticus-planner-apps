@@ -17,22 +17,22 @@ import {
 // shape the storage layer stores verbatim, not the full served schema.
 const chunkData: Record<string, unknown> = {
   "player-details": { name: "Tester", powerLevel: 100 },
-  characters: [{ unitId: "ultraTigurius", name: "Tigurius", rank: 12 }],
+  characters: [{ unitId: "ultraTigurius", rank: "Gold1" }],
   mows: [],
-  "inventory-upgrades": [{ upgradeId: "u1", name: "Health", amount: 3 }],
-  "inventory-items": [
-    { itemId: "i1", name: "Crit Booster", level: 1, amount: 2 },
-  ],
+  "inventory-upgrades": [{ upgradeId: "u1", amount: 3 }],
+  "inventory-items": [{ itemId: "i1", level: 1, amount: 2 }],
   inventory: { resetStones: 2 },
-  "campaign-progress": [
-    { tacticusCampaignId: "campaign1", catalogCampaignGroupId: "campaign1" },
-  ],
+  "campaign-progress": [{ tacticusCampaignId: "campaign1", type: "Standard" }],
   "campaign-events-progress": [],
-  "game-mode-tokens": {
-    arena: null,
-    guildRaid: null,
-    onslaught: null,
-    salvageRun: null,
+  "live-progress": {
+    battleAttempts: [],
+    activeCampaignEventId: null,
+    gameModeTokens: {
+      arena: null,
+      guildRaid: null,
+      onslaught: null,
+      salvageRun: null,
+    },
   },
   "lre-progress": [],
 }
@@ -117,9 +117,7 @@ describe("syncPlayerData", () => {
     expect(await hasCompletePlayerDataCache()).toBe(true)
 
     const characters = await getChunkData("characters")
-    expect(characters).toEqual([
-      { unitId: "ultraTigurius", name: "Tigurius", rank: 12 },
-    ])
+    expect(characters).toEqual([{ unitId: "ultraTigurius", rank: "Gold1" }])
 
     const inventory = await getChunkData("inventory")
     expect(inventory).toEqual({ resetStones: 2 })
@@ -152,17 +150,17 @@ describe("syncPlayerData", () => {
   it("replaces a changed chunk's stored payload", async () => {
     await syncPlayerData(new FakePlayerDataClient(createManifest()))
     expect(await getChunkData("characters")).toEqual([
-      { unitId: "ultraTigurius", name: "Tigurius", rank: 12 },
+      { unitId: "ultraTigurius", rank: "Gold1" },
     ])
 
     const client = new FakePlayerDataClient(
       createManifest({ characters: "characters-h2" }),
-      { characters: [{ unitId: "necroWarden", name: "Warden", rank: 5 }] }
+      { characters: [{ unitId: "necroWarden", rank: "Bronze1" }] }
     )
     await syncPlayerData(client)
 
     expect(await getChunkData("characters")).toEqual([
-      { unitId: "necroWarden", name: "Warden", rank: 5 },
+      { unitId: "necroWarden", rank: "Bronze1" },
     ])
   })
 
@@ -179,7 +177,7 @@ describe("syncPlayerData", () => {
     expect(await hasCompletePlayerDataCache()).toBe(false)
     expect(await getChunkData("mows")).toBeUndefined()
     expect(await getChunkData("characters")).toEqual([
-      { unitId: "ultraTigurius", name: "Tigurius", rank: 12 },
+      { unitId: "ultraTigurius", rank: "Gold1" },
     ])
   })
 })

@@ -27,48 +27,51 @@ export type EffectiveBattleResult = {
 }
 
 type CampaignProgress = PlayerDataChunkPayload<"campaign-progress">[number]
+type BattleAttempt =
+  PlayerDataChunkPayload<"live-progress">["battleAttempts"][number]
 
 /**
- * Resolves the effective result for every battle the player has synced progress for in one campaign,
- * applying any matching override. Per ADR 0007: absent an override, a battle assumes the maximum
- * possible result — full medals, and (for campaign-event battles) every applicable completion flag.
+ * Resolves the effective result for every synced battle attempt in one campaign (from the
+ * `live-progress` chunk's `battleAttempts` — campaign identity no longer carries its own battle
+ * list, see `CampaignProgress`), applying any matching override. Per ADR 0007: absent an override,
+ * a battle assumes the maximum possible result — full medals, and (for campaign-event battles)
+ * every applicable completion flag.
  */
 export function getEffectiveBattleResults(
-  campaign: CampaignProgress,
+  tacticusCampaignId: string,
+  battleAttempts: readonly BattleAttempt[],
   overrides: readonly BattleResultOverride[]
 ): EffectiveBattleResult[] {
-  const isEventCampaign =
-    campaign.tacticusCampaignId.startsWith("eventCampaign")
+  const isEventCampaign = tacticusCampaignId.startsWith("eventCampaign")
   const overrideByBattleIndex = new Map(
     overrides
-      .filter(
-        (override) =>
-          override.tacticusCampaignId === campaign.tacticusCampaignId
-      )
+      .filter((override) => override.tacticusCampaignId === tacticusCampaignId)
       .map((override) => [override.battleIndex, override])
   )
 
-  return campaign.battles.map((battle) => {
-    const override = overrideByBattleIndex.get(battle.battleIndex)
+  return battleAttempts
+    .filter((battle) => battle.tacticusCampaignId === tacticusCampaignId)
+    .map((battle) => {
+      const override = overrideByBattleIndex.get(battle.battleIndex)
 
-    if (override) {
+      if (override) {
+        return {
+          battleIndex: battle.battleIndex,
+          medal: override.medal,
+          lightningVictory: override.lightningVictory,
+          victoryWithoutBorrowed: override.victoryWithoutBorrowed,
+          isOverridden: true,
+        }
+      }
+
       return {
         battleIndex: battle.battleIndex,
-        medal: override.medal,
-        lightningVictory: override.lightningVictory,
-        victoryWithoutBorrowed: override.victoryWithoutBorrowed,
-        isOverridden: true,
+        medal: 3,
+        lightningVictory: true,
+        victoryWithoutBorrowed: isEventCampaign ? true : null,
+        isOverridden: false,
       }
-    }
-
-    return {
-      battleIndex: battle.battleIndex,
-      medal: 3,
-      lightningVictory: true,
-      victoryWithoutBorrowed: isEventCampaign ? true : null,
-      isOverridden: false,
-    }
-  })
+    })
 }
 
 export type EffectiveCampaignProgress = CampaignProgress & {
@@ -77,28 +80,24 @@ export type EffectiveCampaignProgress = CampaignProgress & {
 
 /**
  * Combines synced campaign progress with manual entries for campaigns the sync doesn't cover for this
- * player (e.g. a non-currently-selected campaign) — synced entries always win by catalog group id;
- * manual entries only fill gaps, never overwrite synced data.
+ * player (e.g. a non-currently-selected campaign) — synced entries always win by
+ * `tacticusCampaignId` (itself also the catalog group id, see `CampaignProgress`); manual entries
+ * only fill gaps, never overwrite synced data.
  */
 export function getEffectiveCampaignProgress(
   synced: readonly CampaignProgress[],
   overrides: readonly CampaignProgressOverride[]
 ): EffectiveCampaignProgress[] {
-  const syncedGroupIds = new Set(
-    synced
-      .map((campaign) => campaign.catalogCampaignGroupId)
-      .filter((groupId): groupId is string => groupId !== null)
+  const syncedIds = new Set(
+    synced.map((campaign) => campaign.tacticusCampaignId)
   )
 
   const manualOnly = overrides
-    .filter((override) => !syncedGroupIds.has(override.catalogCampaignGroupId))
+    .filter((override) => !syncedIds.has(override.catalogCampaignGroupId))
     .map((override): EffectiveCampaignProgress => ({
       tacticusCampaignId: override.catalogCampaignGroupId,
-      catalogCampaignGroupId: override.catalogCampaignGroupId,
-      name: "",
       type: "",
-      battles: [],
-      highestObservedBattleIndex: override.highestCompletedNodeNumber,
+      highestCompletedBattleIndex: override.highestCompletedNodeNumber,
       source: "manual",
     }))
 

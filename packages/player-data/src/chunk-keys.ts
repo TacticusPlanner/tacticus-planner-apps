@@ -10,7 +10,7 @@ export const playerDataChunkKeys = [
   "inventory",
   "campaign-progress",
   "campaign-events-progress",
-  "game-mode-tokens",
+  "live-progress",
   "lre-progress",
 ] as const
 

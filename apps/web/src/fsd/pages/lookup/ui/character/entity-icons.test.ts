@@ -25,31 +25,32 @@ describe("entity icon mapping", () => {
     )
   })
 
-  it("maps standard campaigns by id+difficulty", () => {
-    expect(campaignIcon("indomitus", "standard")).toBe(
+  it("maps storyline groups by groupId+type", () => {
+    expect(campaignIcon("campaign1", "Standard")).toBe(
       "/snowprint_assets/campaigns/indomitus-standard.png"
     )
-    expect(campaignIcon("indomitus", "elite")).toBe(
+    expect(campaignIcon("elite1", "Elite")).toBe(
       "/snowprint_assets/campaigns/indomitus-elite.png"
     )
-    expect(campaignIcon("indomitus-mirror", "standard")).toBe(
+    expect(campaignIcon("mirror1", "Mirror")).toBe(
       "/snowprint_assets/campaigns/indomitus-mirror-standard.png"
+    )
+    expect(campaignIcon("eliteMirror1", "EliteMirror")).toBe(
+      "/snowprint_assets/campaigns/indomitus-mirror-elite.png"
     )
   })
 
   it("maps event campaigns to the defending-faction asset, challenge tiers reuse the base image", () => {
-    expect(campaignIcon("death-guard-vs-admech", "eventStandard")).toBe(
+    expect(campaignIcon("eventCampaign1", "Standard")).toBe(
       "/snowprint_assets/campaigns/death-guard-vs-admech-eventStandard.png"
     )
-    expect(campaignIcon("death-guard-vs-admech", "eventExtremis")).toBe(
+    expect(campaignIcon("eventCampaign1", "Extremis")).toBe(
       "/snowprint_assets/campaigns/death-guard-vs-admech-eventExtremis.png"
     )
-    expect(
-      campaignIcon("death-guard-vs-admech", "eventStandardChallenge")
-    ).toBe(
+    expect(campaignIcon("eventCampaign1", "Standard", true)).toBe(
       "/snowprint_assets/campaigns/death-guard-vs-admech-eventStandard.png"
     )
-    expect(campaignIcon("unknown-event", "eventStandard")).toBeUndefined()
+    expect(campaignIcon("eventCampaign99", "Standard")).toBeUndefined()
   })
 
   it("derives character round-icons from camelCase id via snake_case slug", () => {

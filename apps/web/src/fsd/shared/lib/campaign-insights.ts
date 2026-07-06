@@ -21,7 +21,8 @@ export interface FarmLocationLike {
 
 export interface BattleLike {
   campaignGroupId: string
-  difficulty: string
+  type: string
+  challenge: boolean
   nodeNumber: number
   energyCost: number
 }
@@ -39,7 +40,8 @@ export interface CampaignInsightContribution {
   upgradeId: string
   battleId: string
   campaignGroupId: string
-  difficulty: string
+  type: string
+  challenge: boolean
   nodeNumber: number
   count: number
   dropRate: number
@@ -78,14 +80,14 @@ export function dropRate(location: FarmLocationLike): number {
   return 0
 }
 
-// Event difficulties fold into two tiers for scoring purposes: "eventStandard" is "standard",
-// "eventExtremis" is "extremis" (challenge tiers already normalize to their base token in
-// `campaignDescriptor`).
+// Event types fold into two tiers for scoring purposes: "eventStandard" is "standard",
+// "eventExtremis" is "extremis" (the "challenge" flag doesn't split into its own tier).
 function eventTier(
   campaignGroupId: string,
-  difficulty: string
+  type: string,
+  challenge: boolean
 ): "standard" | "extremis" | undefined {
-  const descriptor = campaignDescriptor(campaignGroupId, difficulty)
+  const descriptor = campaignDescriptor(campaignGroupId, type, challenge)
   if (!descriptor) return undefined
   return descriptor.difficultyToken === "eventExtremis"
     ? "extremis"
@@ -144,17 +146,22 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
       const isEvent = isEventGroup(battle.campaignGroupId)
       const key = isEvent
         ? battle.campaignGroupId
-        : `${battle.campaignGroupId}:${battle.difficulty}`
+        : `${battle.campaignGroupId}:${battle.type}`
       let chip = chips.get(key)
       if (!chip) {
         const descriptor = campaignDescriptor(
           battle.campaignGroupId,
-          battle.difficulty
+          battle.type,
+          battle.challenge
         )
         if (!descriptor) continue
         chip = {
           label: resolveLabel(descriptor, isEvent),
-          icon: campaignIcon(battle.campaignGroupId, battle.difficulty),
+          icon: campaignIcon(
+            battle.campaignGroupId,
+            battle.type,
+            battle.challenge
+          ),
           isEvent,
           value: 0,
           energyByBattle: new Map(),
@@ -172,7 +179,8 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
         upgradeId: upgrade.id,
         battleId: location.battleId,
         campaignGroupId: battle.campaignGroupId,
-        difficulty: battle.difficulty,
+        type: battle.type,
+        challenge: battle.challenge,
         nodeNumber: battle.nodeNumber,
         count: need.count,
         dropRate: rate,
@@ -180,7 +188,11 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
       })
 
       if (isEvent) {
-        const tier = eventTier(battle.campaignGroupId, battle.difficulty)
+        const tier = eventTier(
+          battle.campaignGroupId,
+          battle.type,
+          battle.challenge
+        )
         if (tier) {
           let tierAcc = chip.tiers.get(tier)
           if (!tierAcc) {

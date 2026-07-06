@@ -6,13 +6,10 @@ import {
   campaignIcon,
   groupByFaction,
   isAdamantineRank,
-  progressionOrder,
   progressionStars,
-  rankAt,
   rarityRank,
   statAtRank,
   type CampaignDefinitionRecord,
-  type Progression,
 } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -45,16 +42,6 @@ import type { UnitProfileView } from "./unit-profile.types"
 const toReleaseType = (definition: CampaignDefinitionRecord) =>
   definition.releaseType
 
-// The Tacticus API's raw per-unit `rank`/`progressionIndex` are themselves 0-based indices into the
-// catalog's rankOrder/progressionOrder steps (confirmed against a real player response: e.g.
-// progressionIndex 12 lands exactly on "Legendary:RedThreeStars", matching the API's own "12 =
-// Legendary" comment) — no unit conversion needed beyond a defensive clamp.
-function progressionAt(index: number): Progression {
-  return progressionOrder[
-    Math.min(Math.max(index, 0), progressionOrder.length - 1)
-  ]
-}
-
 export function CharacterLookupPage() {
   const { t } = useTranslation([
     "common",
@@ -74,11 +61,11 @@ export function CharacterLookupPage() {
 
   useTourPageSteps(useCharacterLookupTutorial())
 
-  // Synced player roster (characters + MoWs), used only to prefill the "from" rank/progression when
-  // a character is selected — see handleCharacterChange below. Falls back to the page's normal
-  // defaults whenever the user is signed out or the unit isn't in either chunk yet.
+  // Synced player roster, used only to prefill the "from" rank/progression when a character is
+  // selected — see handleCharacterChange below. Falls back to the page's normal defaults whenever
+  // the user is signed out or the unit isn't in the chunk yet. MoWs are irrelevant here — Character
+  // Lookup only ever looks up characters, which have a rank/equipment MoWs don't.
   const { data: playerCharacters } = usePlayerChunkRecords("characters")
-  const { data: playerMows } = usePlayerChunkRecords("mows")
 
   const characters = useDatasetRecords("characters")
   const { data: charactersById } = useDatasetRecordsMap("characters")
@@ -130,18 +117,18 @@ export function CharacterLookupPage() {
       return
     }
 
-    const unit =
-      playerCharacters?.find((c) => c.unitId === id) ??
-      playerMows?.find((c) => c.unitId === id)
+    const unit = playerCharacters?.find((c) => c.unitId === id)
 
     if (!unit) {
       setDraftCharacterId(id)
       return
     }
 
+    // The synced chunk's rank/progressionIndex are already the catalog's own Rank/Progression
+    // string values (see @workspace/player-data's schemas) — no numeric-index conversion needed.
     setDraftCharacterId(id, {
-      rankStart: rankAt(unit.rank),
-      progressionStart: progressionAt(unit.progressionIndex),
+      rankStart: unit.rank,
+      progressionStart: unit.progressionIndex,
     })
   }
 
@@ -237,9 +224,9 @@ export function CharacterLookupPage() {
       .map((need) => {
         const up = upgradesById.get(need.id)
 
-        // Group by campaign group + difficulty — a material can drop from many battle nodes
-        // within the same campaign, so one chip per campaign lists all their node numbers
-        // instead of repeating an near-identical chip per node.
+        // Group by campaign group + type — a material can drop from many battle nodes within the
+        // same campaign, so one chip per campaign lists all their node numbers instead of
+        // repeating an near-identical chip per node.
         const locationsByKey = new Map<
           string,
           {
@@ -255,12 +242,13 @@ export function CharacterLookupPage() {
         for (const location of up?.farmLocations ?? []) {
           const battle = battlesById.get(location.battleId)
           if (!battle) continue
-          const key = `${battle.campaignGroupId}:${battle.difficulty}`
+          const key = `${battle.campaignGroupId}:${battle.type}`
           let entry = locationsByKey.get(key)
           if (!entry) {
             const descriptor = campaignDescriptor(
               battle.campaignGroupId,
-              battle.difficulty
+              battle.type,
+              battle.challenge
             )
             if (!descriptor) continue
             const short = campaignShortLabel(descriptor)
@@ -269,7 +257,11 @@ export function CharacterLookupPage() {
               name: short.name,
               code: short.code,
               challenge: short.challenge,
-              icon: campaignIcon(battle.campaignGroupId, battle.difficulty),
+              icon: campaignIcon(
+                battle.campaignGroupId,
+                battle.type,
+                battle.challenge
+              ),
               isEvent:
                 releaseTypeByGroupId.get(battle.campaignGroupId) === "event",
               nodeNumbers: new Set(),
