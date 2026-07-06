@@ -17,7 +17,9 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "test:run": "turbo test:run",
-    "test:coverage": "turbo test:coverage"
+    "test:coverage": "turbo test:coverage",
+    "audit": "pnpm audit",
+    "outdated": "pnpm outdated -r"
   },
   "devDependencies": {
     "lefthook": "^2.1.9",
