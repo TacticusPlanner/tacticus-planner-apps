@@ -13,7 +13,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
-import { TourButton } from "@/shared/tour"
+import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
@@ -97,9 +97,10 @@ function MobileHeader({
 // get their own compact popover instead — keeps the header from needing two full-width controls.
 function MobileGuestSettings() {
   const { t } = useTranslation()
+  const [open, setOpen] = useTourControlledPopoverOpen()
 
   return (
-    <Popover>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
           aria-label={t("settings.label")}

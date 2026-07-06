@@ -170,6 +170,10 @@
         "title": "Revoir la visite",
         "content": "Cliquez ici dès que vous souhaitez relancer cette visite."
       },
+      "userMenu": {
+        "title": "Votre menu de compte",
+        "content": "Appuyez ici à tout moment pour changer le thème ou la langue, ou relancer cette visite."
+      },
       "navigation": {
         "title": "Naviguez facilement",
         "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."

@@ -170,6 +170,10 @@
         "title": "Tour wiederholen",
         "content": "Klicke hier, wenn du diese Tour erneut starten möchtest."
       },
+      "userMenu": {
+        "title": "Dein Konto-Menü",
+        "content": "Tippe hier jederzeit, um das Design oder die Sprache zu wechseln oder diese Tour erneut zu starten."
+      },
       "navigation": {
         "title": "Schnell navigieren",
         "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."

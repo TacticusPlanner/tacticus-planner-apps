@@ -170,6 +170,10 @@
         "title": "Repetir el recorrido",
         "content": "Haz clic aquí cuando quieras volver a ver este recorrido."
       },
+      "userMenu": {
+        "title": "Tu menú de cuenta",
+        "content": "Toca aquí en cualquier momento para cambiar el tema o el idioma, o repetir este recorrido."
+      },
       "navigation": {
         "title": "Desplázate con facilidad",
         "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."

@@ -35,7 +35,7 @@ import {
   loginRequest,
   requestApiAccess,
 } from "@/shared/auth"
-import { TourButton } from "@/shared/tour"
+import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
@@ -91,6 +91,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch, state: accountState } = useCurrentUser()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {
@@ -148,7 +149,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className="flex items-center gap-1" data-testid="auth-account">
-      <Popover>
+      <Popover onOpenChange={setMenuOpen} open={menuOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"

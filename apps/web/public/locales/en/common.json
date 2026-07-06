@@ -197,6 +197,10 @@
         "title": "Replay the tour",
         "content": "Click here whenever you want to run this tour again."
       },
+      "userMenu": {
+        "title": "Your account menu",
+        "content": "Tap here any time to switch the theme or language, or replay this tour."
+      },
       "navigation": {
         "title": "Find your way around",
         "content": "This menu groups the app's sections — use it to navigate between them at any time."
