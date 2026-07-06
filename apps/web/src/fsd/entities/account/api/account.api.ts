@@ -3,7 +3,7 @@ import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 import { apiDelete, apiPost, apiPut } from "@/shared/api"
 import { acquireAccessToken } from "@/shared/auth"
 
-export type UpdateTacticusIntegrationRequest = {
+type UpdateTacticusIntegrationRequest = {
   // Omit to keep the currently stored key unchanged (only valid once an integration already exists).
   tacticusApiKey?: string
   // Omit to leave the stored user id unchanged; set clearTacticusUserId to remove it instead.
@@ -11,7 +11,7 @@ export type UpdateTacticusIntegrationRequest = {
   clearTacticusUserId?: boolean
 }
 
-export type TacticusIntegrationResult = {
+type TacticusIntegrationResult = {
   profileId: string
   tacticusUserIdConfigured: boolean
   tacticusApiKeyConfigured: boolean
@@ -34,12 +34,12 @@ export function updateTacticusIntegration(
   )
 }
 
-export type ImportV1ProfileRequest = {
+type ImportV1ProfileRequest = {
   username: string
   password: string
 }
 
-export type ImportV1ProfileResult = {
+type ImportV1ProfileResult = {
   profileId: string
   playerName: string
   powerLevel: number
