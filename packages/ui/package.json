@@ -6,9 +6,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput",
-    "lint": "eslint",
+    "lint": "eslint && knip",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "knip": "knip",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",

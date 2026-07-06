@@ -122,10 +122,6 @@ jobs:
         if: ${{ inputs.run-validation }}
         run: pnpm typecheck
 
-      - name: Knip
-        if: ${{ inputs.run-validation }}
-        run: pnpm knip
-
       - name: Build
         run: pnpm build:${{ inputs.vite-mode }}
 

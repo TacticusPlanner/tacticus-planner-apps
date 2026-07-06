@@ -40,13 +40,10 @@
       "outputs": ["dist/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^build", "^lint"]
     },
     "lint:fsd": {
       "dependsOn": ["^lint:fsd"]
-    },
-    "knip": {
-      "dependsOn": ["^build"]
     },
     "format": {
       "dependsOn": ["^format"]

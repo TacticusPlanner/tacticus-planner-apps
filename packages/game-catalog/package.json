@@ -4,8 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint",
-    "knip": "knip",
+    "lint": "eslint && knip",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
