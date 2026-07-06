@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
@@ -58,6 +59,23 @@ export function CharacterLookupMobilePage({
   onApply,
   applyDisabled,
 }: CharacterLookupMobilePageProps) {
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const pendingScrollRef = useRef(false)
+
+  // Only the Apply button should trigger this scroll - picking a different character also
+  // recomputes profile/groups/baseUpgrades (it commits immediately, see useLookupSelection), but
+  // that shouldn't yank the page down, so the pending flag is only ever set from handleApply below.
+  useEffect(() => {
+    if (!pendingScrollRef.current) return
+    pendingScrollRef.current = false
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [profile, groups, baseUpgrades])
+
+  const handleApply = () => {
+    onApply()
+    pendingScrollRef.current = true
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4">
@@ -83,18 +101,24 @@ export function CharacterLookupMobilePage({
         pointFive={pointFive}
         pointFiveDisabled={pointFiveDisabled}
         onPointFiveChange={onPointFiveChange}
-        onApply={onApply}
+        onApply={handleApply}
         applyDisabled={applyDisabled}
         isMobile={true}
       />
-      {profile ? <UnitProfile profile={profile} /> : null}
-      <CharacterLookupResults
-        baseUpgrades={baseUpgrades}
-        groups={groups}
-        campaignInsights={campaignInsights}
-        eventInsights={eventInsights}
-        isMobile={true}
-      />
+      <div
+        className="flex scroll-mt-(--mobile-header-height) flex-col gap-8"
+        data-testid="lookup-results"
+        ref={resultsRef}
+      >
+        {profile ? <UnitProfile profile={profile} /> : null}
+        <CharacterLookupResults
+          baseUpgrades={baseUpgrades}
+          groups={groups}
+          campaignInsights={campaignInsights}
+          eventInsights={eventInsights}
+          isMobile={true}
+        />
+      </div>
     </div>
   )
 }

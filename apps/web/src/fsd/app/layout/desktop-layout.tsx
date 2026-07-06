@@ -1,9 +1,7 @@
 import { Suspense } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, PlusCircle } from "lucide-react"
+import { LogIn, PlusCircle, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
-import { Separator } from "@workspace/ui/components/separator"
 import {
   Sidebar,
   SidebarContent,
@@ -16,8 +14,10 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@workspace/ui/components/sidebar"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
@@ -54,12 +54,19 @@ export function DesktopShell({
         visibleItems={visibleItems}
       />
       <SidebarInset>
-        <header className="flex items-center gap-2 border-b px-6 py-4">
+        <header className="flex items-center justify-between gap-2 border-b px-6 py-4">
           {pageTitle ? (
             <h1 className="truncate text-2xl font-semibold tracking-tight">
               {pageTitle}
             </h1>
-          ) : null}
+          ) : (
+            <span />
+          )}
+          <div className="flex shrink-0 items-center gap-2">
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+            <TourButton />
+          </div>
         </header>
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
@@ -78,6 +85,8 @@ function AppSidebar({
 }) {
   const { t } = useTranslation()
   const { instance } = useMsal()
+  const { state } = useSidebar()
+  const compact = state === "collapsed"
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
@@ -86,28 +95,35 @@ function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center justify-between px-2 py-1">
+        <div className="flex items-center">
           <div className="flex min-w-0 items-center gap-2">
-            <AppLogo className="size-6 shrink-0" />
-            <span className="truncate text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
-              {t("app.name")}
-            </span>
+            <AppLogo className="size-15 shrink-0" />
+            {compact ? null : (
+              <span className="truncate text-sm font-semibold tracking-tight">
+                {t("app.name")}
+              </span>
+            )}
           </div>
-          <SidebarTrigger />
         </div>
-        <div className="px-2 pb-1 group-data-[collapsible=icon]:hidden">
-          {isAuthenticated ? (
-            <Button className="w-full" disabled size="sm" variant="outline">
+
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className="bg-primary text-primary-foreground hover:bg-primary/80"
+              disabled
+              tooltip={t("nav.createGoal")}
+            >
               <PlusCircle />
-              {t("nav.createGoal")}
-            </Button>
-          ) : (
-            <Button className="w-full" size="sm" onClick={handleSignIn}>
-              <LogIn />
-              {t("auth.signIn")}
-            </Button>
-          )}
-        </div>
+              <span>{t("nav.createGoal")}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton disabled tooltip={t("nav.syncWithTacticus")}>
+              <RefreshCw />
+              <span>{t("nav.syncWithTacticus")}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent data-testid="primary-nav">
@@ -121,21 +137,27 @@ function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="flex flex-col gap-2 px-2 py-1">
-          <div className="group-data-[collapsible=icon]:hidden">
-            <CatalogSyncStatusBadge />
-          </div>
-          {isAuthenticated ? (
-            <>
-              <Separator />
-              <AuthControl />
-            </>
-          ) : null}
-          <Separator className="group-data-[collapsible=icon]:hidden" />
-          <div className="flex flex-wrap items-center gap-2 group-data-[collapsible=icon]:hidden">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <TourButton />
+        <div className="flex flex-col gap-2">
+          <CatalogSyncStatusBadge compact={compact} />
+          <div
+            className={cn(
+              "flex items-center gap-1",
+              compact ? "flex-col" : "justify-between"
+            )}
+          >
+            {isAuthenticated ? (
+              <AuthControl compact={compact} />
+            ) : (
+              <SidebarMenuButton
+                className="bg-primary text-primary-foreground hover:bg-primary/80"
+                onClick={handleSignIn}
+                tooltip={t("auth.signIn")}
+              >
+                <LogIn />
+                {compact ? null : <span>{t("auth.signIn")}</span>}
+              </SidebarMenuButton>
+            )}
+            <SidebarTrigger />
           </div>
         </div>
       </SidebarFooter>

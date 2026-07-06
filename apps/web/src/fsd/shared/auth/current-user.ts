@@ -10,9 +10,23 @@ import { getRequiredEnvironmentValue } from "@/shared/config"
 const apiScopes = [getRequiredEnvironmentValue("VITE_API_SCOPE")]
 
 export type CurrentUser = {
-  userId: string
-  displayName: string | null
-  email: string | null
+  applicationUserId: string
+  displayName: string
+  hasCompletedOnboarding: boolean
+  tacticusApiKeyMasked: string | null
+  tacticusUserIdMasked: string | null
+}
+
+export async function acquireAccessToken(
+  instance: IPublicClientApplication,
+  account: AccountInfo
+) {
+  const authentication = await instance.acquireTokenSilent({
+    account,
+    scopes: apiScopes,
+  })
+
+  return authentication.accessToken
 }
 
 export async function getCurrentUser(
@@ -20,15 +34,9 @@ export async function getCurrentUser(
   account: AccountInfo,
   signal?: AbortSignal
 ) {
-  const authentication = await instance.acquireTokenSilent({
-    account,
-    scopes: apiScopes,
-  })
+  const accessToken = await acquireAccessToken(instance, account)
 
-  return apiGet<CurrentUser>("/api/v1/me", {
-    accessToken: authentication.accessToken,
-    signal,
-  })
+  return apiGet<CurrentUser>("/api/v1/me", { accessToken, signal })
 }
 
 export function isInteractionRequired(error: unknown) {

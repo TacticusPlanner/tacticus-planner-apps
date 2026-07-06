@@ -10,6 +10,7 @@
     "accountLoading": "Chargement du compte",
     "error": "L’authentification n’a pas pu aboutir. Veuillez réessayer.",
     "grantAccess": "Autoriser l’accès à l’API",
+    "manageAccount": "Gérer le compte",
     "retry": "Recharger le compte",
     "signIn": "Se connecter",
     "signOut": "Se déconnecter",
@@ -35,6 +36,57 @@
       "retry": "Réessayer"
     }
   },
+  "manageAccount": {
+    "title": "Gérer le compte",
+    "tabs": {
+      "integration": "Intégration Tacticus",
+      "account": "Compte"
+    },
+    "integration": {
+      "currentApiKey": "Clé API Tacticus",
+      "currentUserId": "ID utilisateur Tacticus",
+      "notConfigured": "Non configuré",
+      "apiKeyLabel": "Nouvelle clé API Tacticus",
+      "apiKeyPlaceholder": "Laisser vide pour conserver la clé actuelle",
+      "apiKeyDescription": "Obtenez votre clé API sur https://api.tacticusgame.com. Ne la partagez qu’avec des personnes de confiance.",
+      "userIdLabel": "ID utilisateur Tacticus",
+      "userIdPlaceholder": "Laisser vide pour conserver la valeur actuelle",
+      "removeUserId": "Supprimer l’ID utilisateur Tacticus",
+      "save": "Enregistrer les modifications",
+      "saved": "Intégration Tacticus mise à jour.",
+      "genericError": "Une erreur s’est produite. Veuillez réessayer."
+    },
+    "account": {
+      "purgeWarningTitle": "Purger le compte",
+      "purgeWarningDescription": "Cette action supprime immédiatement et définitivement toutes vos données du planificateur. Elle est irréversible.",
+      "purgeConfirmLabel": "Saisissez « {{word}} » pour activer la purge",
+      "purgeSubmit": "Purger mon compte",
+      "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer."
+    }
+  },
+  "onboarding": {
+    "title": "Terminez la configuration de votre compte",
+    "description": "Connectez votre compte Tacticus pour commencer à utiliser le planificateur.",
+    "genericError": "Une erreur s’est produite. Veuillez réessayer.",
+    "or": "Ou",
+    "tabs": {
+      "signUp": "Inscription",
+      "importProfile": "Importer le profil"
+    },
+    "signUp": {
+      "apiKeyLabel": "Clé API Tacticus",
+      "apiKeyDescription": "Obtenez votre clé API sur https://api.tacticusgame.com. Ne la partagez qu’avec des personnes de confiance.",
+      "userIdLabel": "ID utilisateur Tacticus (facultatif)",
+      "userIdDescription": "Utilisé pour identifier votre compte dans les données de guilde.",
+      "submit": "S’inscrire"
+    },
+    "import": {
+      "description": "Connectez-vous avec votre nom d’utilisateur et votre mot de passe V1 pour importer votre clé API Tacticus et votre ID utilisateur. Vos identifiants V1 ne sont jamais stockés.",
+      "usernameLabel": "Nom d’utilisateur V1",
+      "passwordLabel": "Mot de passe V1",
+      "submit": "Importer le profil"
+    }
+  },
   "rankLookup": {
     "subtitle": "Choisissez un personnage et une plage de rangs pour voir les améliorations requises et où les farmer.",
     "character": "Personnage",
@@ -58,12 +110,20 @@
     "campaignLocations": "Lieux de campagne",
     "eventLocations": "Lieux d'événements de campagne",
     "byRank": "Améliorations par rang",
-    "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires."
+    "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires.",
+    "share": {
+      "action": "Partager",
+      "copied": "Lien copié dans le presse-papiers.",
+      "error": "Impossible de partager ou de copier le lien."
+    }
   },
   "nav": {
     "home": "Accueil",
     "rankLookup": "Recherche de rang",
-    "createGoal": "Créer un objectif"
+    "createGoal": "Créer un objectif",
+    "uiKit": "Kit d'interface",
+    "menu": "Menu",
+    "syncWithTacticus": "Synchroniser avec Tacticus"
   },
   "language": {
     "label": "Langue",
@@ -81,8 +141,7 @@
     "dark": "Sombre",
     "label": "Thème",
     "light": "Clair",
-    "switchToDark": "Passer au mode sombre",
-    "switchToLight": "Passer au mode clair"
+    "system": "Paramètre du système"
   },
   "tour": {
     "start": "Visite guidée",
@@ -111,9 +170,33 @@
         "title": "Revoir la visite",
         "content": "Cliquez ici dès que vous souhaitez relancer cette visite."
       },
+      "userMenu": {
+        "title": "Votre menu de compte",
+        "content": "Appuyez ici à tout moment pour changer le thème ou la langue, ou relancer cette visite."
+      },
       "navigation": {
         "title": "Naviguez facilement",
         "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."
+      }
+    },
+    "lookup": {
+      "steps": {
+        "character": {
+          "title": "Choisissez un personnage",
+          "content": "Choisissez le personnage pour lequel consulter les améliorations."
+        },
+        "apply": {
+          "title": "Appliquez vos changements",
+          "content": "Ajustez la plage de rang ou de progression, puis appliquez pour mettre à jour les résultats ci-dessous."
+        },
+        "results": {
+          "title": "Améliorations et lieux de farming",
+          "content": "Consultez les améliorations nécessaires pour cette plage de rang et où les farmer."
+        },
+        "share": {
+          "title": "Partagez cette recherche",
+          "content": "Partagez ou copiez un lien vers ce personnage et cette plage de rang exacts."
+        }
       }
     }
   },

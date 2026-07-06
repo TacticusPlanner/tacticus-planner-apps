@@ -10,6 +10,7 @@
     "accountLoading": "Cargando cuenta",
     "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
     "grantAccess": "Conceder acceso a la API",
+    "manageAccount": "Gestionar cuenta",
     "retry": "Volver a cargar la cuenta",
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
@@ -35,6 +36,57 @@
       "retry": "Reintentar"
     }
   },
+  "manageAccount": {
+    "title": "Gestionar cuenta",
+    "tabs": {
+      "integration": "Integración con Tacticus",
+      "account": "Cuenta"
+    },
+    "integration": {
+      "currentApiKey": "Clave de API de Tacticus",
+      "currentUserId": "ID de usuario de Tacticus",
+      "notConfigured": "No configurado",
+      "apiKeyLabel": "Nueva clave de API de Tacticus",
+      "apiKeyPlaceholder": "Déjalo en blanco para mantener la clave actual",
+      "apiKeyDescription": "Obtén tu clave de API en https://api.tacticusgame.com. Compártela solo con personas de confianza.",
+      "userIdLabel": "ID de usuario de Tacticus",
+      "userIdPlaceholder": "Déjalo en blanco para mantener el valor actual",
+      "removeUserId": "Eliminar el ID de usuario de Tacticus",
+      "save": "Guardar cambios",
+      "saved": "Integración con Tacticus actualizada.",
+      "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "account": {
+      "purgeWarningTitle": "Purgar cuenta",
+      "purgeWarningDescription": "Esto elimina de inmediato todos tus datos del planificador. Esta acción no se puede deshacer.",
+      "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",
+      "purgeSubmit": "Purgar mi cuenta",
+      "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo."
+    }
+  },
+  "onboarding": {
+    "title": "Completa la configuración de tu cuenta",
+    "description": "Conecta tu cuenta de Tacticus para empezar a usar el planificador.",
+    "genericError": "Algo salió mal. Inténtalo de nuevo.",
+    "or": "O",
+    "tabs": {
+      "signUp": "Registrarse",
+      "importProfile": "Importar perfil"
+    },
+    "signUp": {
+      "apiKeyLabel": "Clave de API de Tacticus",
+      "apiKeyDescription": "Obtén tu clave de API en https://api.tacticusgame.com. Compártela solo con personas de confianza.",
+      "userIdLabel": "ID de usuario de Tacticus (opcional)",
+      "userIdDescription": "Se usa para identificar tu cuenta en los datos del gremio.",
+      "submit": "Registrarse"
+    },
+    "import": {
+      "description": "Inicia sesión con tu nombre de usuario y contraseña de V1 para importar tu clave de API de Tacticus y tu ID de usuario. Tus credenciales de V1 nunca se almacenan.",
+      "usernameLabel": "Usuario de V1",
+      "passwordLabel": "Contraseña de V1",
+      "submit": "Importar perfil"
+    }
+  },
   "rankLookup": {
     "subtitle": "Elige un personaje y un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
     "character": "Personaje",
@@ -58,12 +110,20 @@
     "campaignLocations": "Lugares de campaña",
     "eventLocations": "Lugares de eventos de campaña",
     "byRank": "Mejoras por rango",
-    "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias."
+    "noUpgrades": "Selecciona un personaje y un intervalo de rangos válido para ver las mejoras necesarias.",
+    "share": {
+      "action": "Compartir",
+      "copied": "Enlace copiado al portapapeles.",
+      "error": "No se pudo compartir ni copiar el enlace."
+    }
   },
   "nav": {
     "home": "Inicio",
     "rankLookup": "Consulta de rango",
-    "createGoal": "Crear objetivo"
+    "createGoal": "Crear objetivo",
+    "uiKit": "Kit de interfaz",
+    "menu": "Menú",
+    "syncWithTacticus": "Sincronizar con Tacticus"
   },
   "language": {
     "label": "Idioma",
@@ -81,8 +141,7 @@
     "dark": "Oscuro",
     "label": "Tema",
     "light": "Claro",
-    "switchToDark": "Cambiar al modo oscuro",
-    "switchToLight": "Cambiar al modo claro"
+    "system": "Predeterminado del sistema"
   },
   "tour": {
     "start": "Hacer un recorrido",
@@ -111,9 +170,33 @@
         "title": "Repetir el recorrido",
         "content": "Haz clic aquí cuando quieras volver a ver este recorrido."
       },
+      "userMenu": {
+        "title": "Tu menú de cuenta",
+        "content": "Toca aquí en cualquier momento para cambiar el tema o el idioma, o repetir este recorrido."
+      },
       "navigation": {
         "title": "Desplázate con facilidad",
         "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."
+      }
+    },
+    "lookup": {
+      "steps": {
+        "character": {
+          "title": "Elige un personaje",
+          "content": "Elige para qué personaje quieres consultar las mejoras."
+        },
+        "apply": {
+          "title": "Aplica tus cambios",
+          "content": "Ajusta el intervalo de rango o progresión y aplica los cambios para actualizar los resultados de abajo."
+        },
+        "results": {
+          "title": "Mejoras y lugares de cultivo",
+          "content": "Consulta las mejoras necesarias para este intervalo de rango y dónde conseguirlas."
+        },
+        "share": {
+          "title": "Comparte esta consulta",
+          "content": "Comparte o copia un enlace a este personaje e intervalo de rango exactos."
+        }
       }
     }
   },

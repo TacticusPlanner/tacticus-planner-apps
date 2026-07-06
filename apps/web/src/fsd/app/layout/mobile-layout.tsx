@@ -1,6 +1,6 @@
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, Settings } from "lucide-react"
+import { LogIn, Menu, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -13,12 +13,13 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
-import { TourButton } from "@/shared/tour"
+import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
+import "./mobile-layout.css"
 import type { NavItem } from "./nav-items"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 
@@ -42,7 +43,7 @@ export function MobileShell({
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
       <MobileHeader isAuthenticated={isAuthenticated} pageTitle={pageTitle} />
-      <div className="flex-1 pb-16">
+      <div className="flex-1 pb-(--mobile-nav-height)">
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
         </Suspense>
@@ -68,7 +69,7 @@ function MobileHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-background px-4 py-2">
+    <header className="sticky top-0 z-40 flex h-(--mobile-header-height) items-center justify-between gap-3 border-b bg-background px-4 pt-[env(safe-area-inset-top)]">
       <div className="flex min-w-0 items-center gap-2">
         <AppLogo className="size-7 shrink-0" />
         <span className="truncate text-sm font-semibold tracking-tight">
@@ -96,9 +97,10 @@ function MobileHeader({
 // get their own compact popover instead — keeps the header from needing two full-width controls.
 function MobileGuestSettings() {
   const { t } = useTranslation()
+  const [open, setOpen] = useTourControlledPopoverOpen()
 
   return (
-    <Popover>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
           aria-label={t("settings.label")}
@@ -124,18 +126,76 @@ function MobileGuestSettings() {
   )
 }
 
+function isItemActive(pathname: string, path: string) {
+  return pathname === path || pathname.startsWith(path + "/")
+}
+
 function MobileBottomNav({ items }: { items: NavItem[] }) {
   const { t } = useTranslation()
   const { pathname } = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const primaryItems = items.filter(
+    (item) => item.mobilePlacement === "primary"
+  )
+  const menuItems = items.filter((item) => item.mobilePlacement === "menu")
+  const isMenuItemActive = menuItems.some((item) =>
+    isItemActive(pathname, item.path)
+  )
 
   return (
     <nav
-      className="fixed right-0 bottom-0 left-0 z-40 flex h-16 border-t bg-background"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-background pb-[env(safe-area-inset-bottom)]"
       data-testid="primary-nav"
     >
-      {items.map((item) => {
-        const isActive =
-          pathname === item.path || pathname.startsWith(item.path + "/")
+      {menuItems.length > 0 ? (
+        <Popover onOpenChange={setMenuOpen} open={menuOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-label={t("nav.menu")}
+              className={cn(
+                "flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors",
+                menuOpen || isMenuItemActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              data-testid="mobile-menu-trigger"
+            >
+              <Menu className="size-5" />
+              <span>{t("nav.menu")}</span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="start"
+            className="w-48 gap-1 p-1"
+            data-testid="mobile-menu"
+            side="top"
+          >
+            {menuItems.map((item) => {
+              const isActive = isItemActive(pathname, item.path)
+              return (
+                <Link
+                  key={item.path}
+                  className={cn(
+                    "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
+                    isActive
+                      ? "bg-accent text-accent-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground"
+                  )}
+                  onClick={() => setMenuOpen(false)}
+                  to={item.path}
+                >
+                  <item.icon className="size-4" />
+                  {t(item.labelKey)}
+                </Link>
+              )
+            })}
+          </PopoverContent>
+        </Popover>
+      ) : null}
+      {primaryItems.map((item) => {
+        const isActive = isItemActive(pathname, item.path)
         return (
           <Link
             key={item.path}

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import { AuthProvider, I18nProvider } from "@/app/providers"
+import { CurrentUserProvider } from "@/entities/account"
 import { initializeAuthentication } from "@/shared/auth"
 import { ThemeProvider } from "@/shared/theme"
 import { TourProvider } from "@/shared/tour"
@@ -16,13 +17,15 @@ async function bootstrap() {
     <StrictMode>
       <I18nProvider>
         <AuthProvider instance={msalInstance}>
-          <ThemeProvider>
-            <TourProvider>
-              <TooltipProvider>
-                <App />
-              </TooltipProvider>
-            </TourProvider>
-          </ThemeProvider>
+          <CurrentUserProvider>
+            <ThemeProvider>
+              <TourProvider>
+                <TooltipProvider>
+                  <App />
+                </TooltipProvider>
+              </TourProvider>
+            </ThemeProvider>
+          </CurrentUserProvider>
         </AuthProvider>
       </I18nProvider>
     </StrictMode>

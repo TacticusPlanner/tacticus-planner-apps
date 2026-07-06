@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import { LoaderCircle, LogIn, LogOut, RefreshCw, UserRound } from "lucide-react"
+import { useState } from "react"
+import {
+  LoaderCircle,
+  LogIn,
+  LogOut,
+  RefreshCw,
+  Settings,
+  UserRound,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -8,32 +15,32 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { cn } from "@workspace/ui/lib/utils"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
+import { ManageAccountDialog } from "@/features/account-management"
+import { useCurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import {
-  getCurrentUser,
   isInteractionRequired,
   loginRequest,
   requestApiAccess,
-  type CurrentUser,
 } from "@/shared/auth"
-import { TourButton } from "@/shared/tour"
+import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
-
-type CurrentUserState =
-  | { status: "idle" }
-  | { accountId: string; status: "loading" }
-  | { accountId: string; status: "success"; user: CurrentUser }
-  | { accountId: string; error: unknown; status: "error" }
 
 function logAuthenticationError(operation: AuthOperation, error: unknown) {
   const message = `[MSAL] ${operation} failed`
@@ -62,81 +69,29 @@ function logAuthenticationError(operation: AuthOperation, error: unknown) {
   console.error(message, { value: String(error) })
 }
 
-export function AuthControl() {
+function accountErrorMessageKey(
+  error: unknown
+):
+  | "auth.accountConsentRequired"
+  | "auth.accountForbidden"
+  | "auth.accountLoadError" {
+  if (isInteractionRequired(error)) return "auth.accountConsentRequired"
+  if (error instanceof ApiError && error.status === 403) {
+    return "auth.accountForbidden"
+  }
+  return "auth.accountLoadError"
+}
+
+export function AuthControl({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const { accounts, inProgress, instance } = useMsal()
   const isAuthenticated = useIsAuthenticated()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
   const account = instance.getActiveAccount() ?? accounts[0]
-  const accountId = account?.homeAccountId
-  const currentUserRequestRef = useRef<string | null>(null)
-  const [currentUserState, setCurrentUserState] = useState<CurrentUserState>({
-    status: "idle",
-  })
-
-  const loadCurrentUser = useCallback(
-    async (signal?: AbortSignal) => {
-      if (!account) {
-        return
-      }
-
-      const accountId = account.homeAccountId
-
-      try {
-        const user = await getCurrentUser(instance, account, signal)
-        setCurrentUserState({ accountId, status: "success", user })
-      } catch (error) {
-        if (signal?.aborted) {
-          return
-        }
-
-        console.error("Loading the authenticated user failed", error)
-        setCurrentUserState({ accountId, error, status: "error" })
-      }
-    },
-    [account, instance]
-  )
-
-  useEffect(() => {
-    if (!isAuthenticated || !account || !accountId) {
-      return
-    }
-
-    if (currentUserRequestRef.current === accountId) {
-      return
-    }
-
-    if (
-      currentUserState.status !== "idle" &&
-      currentUserState.accountId === accountId
-    ) {
-      return
-    }
-
-    const controller = new AbortController()
-
-    currentUserRequestRef.current = accountId
-
-    void getCurrentUser(instance, account, controller.signal).then(
-      (user) => {
-        currentUserRequestRef.current = null
-        setCurrentUserState({ accountId, status: "success", user })
-      },
-      (error: unknown) => {
-        currentUserRequestRef.current = null
-
-        if (controller.signal.aborted) {
-          return
-        }
-
-        console.error("Loading the authenticated user failed", error)
-        setCurrentUserState({ accountId, error, status: "error" })
-      }
-    )
-
-    return () => controller.abort()
-  }, [account, accountId, currentUserState, instance, isAuthenticated])
+  const { refetch, state: accountState } = useCurrentUser()
+  const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {
@@ -164,33 +119,25 @@ export function AuthControl() {
       return
     }
 
-    setCurrentUserState({
-      accountId: account!.homeAccountId,
-      status: "loading",
-    })
-    void loadCurrentUser()
+    refetch()
   }
 
   if (!isAuthenticated || !account) {
     return (
       <Button
+        aria-label={compact ? t("auth.signIn") : undefined}
         data-testid="auth-sign-in"
         disabled={isInteractionInProgress}
         onClick={handleSignIn}
-        size="sm"
+        size={compact ? "icon" : "sm"}
         variant="outline"
       >
-        <LogIn data-icon="inline-start" />
-        {t("auth.signIn")}
+        <LogIn data-icon={compact ? undefined : "inline-start"} />
+        {compact ? null : t("auth.signIn")}
       </Button>
     )
   }
 
-  const accountState =
-    currentUserState.status !== "idle" &&
-    currentUserState.accountId === account.homeAccountId
-      ? currentUserState
-      : ({ accountId: account.homeAccountId, status: "loading" } as const)
   const currentUser =
     accountState.status === "success" ? accountState.user : null
   const accountName =
@@ -198,52 +145,59 @@ export function AuthControl() {
     account.name ??
     account.username ??
     t("auth.account")
-  const accountEmail = currentUser?.email ?? account.username
+  const accountEmail = account.username
 
   return (
     <div className="flex items-center gap-1" data-testid="auth-account">
-      <Popover>
+      <Popover onOpenChange={setMenuOpen} open={menuOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
             aria-label={t("auth.userMenu")}
-            className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              "flex min-w-0 items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
+              compact ? "size-8 justify-center" : "max-w-56 px-1.5 py-1"
+            )}
             data-testid="auth-account-trigger"
           >
             <UserRound className="size-4 shrink-0" aria-hidden="true" />
-            <div
-              className="min-w-0 text-left leading-tight"
-              data-testid="auth-account-panel"
-            >
+            {compact ? null : (
               <div
-                className="truncate"
-                data-testid="auth-account-name"
-                title={accountName}
+                className="min-w-0 text-left leading-tight"
+                data-testid="auth-account-panel"
               >
-                {accountName}
+                <div
+                  className="truncate"
+                  data-testid="auth-account-name"
+                  title={accountName}
+                >
+                  {accountName}
+                </div>
+                {accountState.status === "loading" ? (
+                  <div
+                    className="flex items-center gap-1 text-xs"
+                    data-testid="auth-account-loading"
+                  >
+                    <LoaderCircle
+                      className="size-3 animate-spin"
+                      aria-hidden="true"
+                    />
+                    {t("auth.accountLoading")}
+                  </div>
+                ) : null}
+                {isMobile &&
+                accountState.status === "success" &&
+                accountEmail ? (
+                  <div
+                    className="truncate text-xs"
+                    data-testid="auth-account-email"
+                    title={accountEmail}
+                  >
+                    {accountEmail}
+                  </div>
+                ) : null}
               </div>
-              {accountState.status === "loading" ? (
-                <div
-                  className="flex items-center gap-1 text-xs"
-                  data-testid="auth-account-loading"
-                >
-                  <LoaderCircle
-                    className="size-3 animate-spin"
-                    aria-hidden="true"
-                  />
-                  {t("auth.accountLoading")}
-                </div>
-              ) : null}
-              {accountState.status === "success" && accountEmail ? (
-                <div
-                  className="truncate text-xs"
-                  data-testid="auth-account-email"
-                  title={accountEmail}
-                >
-                  {accountEmail}
-                </div>
-              ) : null}
-            </div>
+            )}
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-56 gap-2">
@@ -261,6 +215,17 @@ export function AuthControl() {
               <Separator />
             </>
           ) : null}
+          <Button
+            aria-label={t("auth.manageAccount")}
+            className="w-full justify-start"
+            data-testid="auth-manage-account"
+            onClick={() => setIsManageAccountOpen(true)}
+            size="sm"
+            variant="ghost"
+          >
+            <Settings data-icon="inline-start" />
+            {t("auth.manageAccount")}
+          </Button>
           <Button
             aria-label={t("auth.signOut")}
             className="w-full justify-start"
@@ -280,31 +245,41 @@ export function AuthControl() {
           className="flex items-center gap-1"
           data-testid="auth-account-error"
         >
-          <span className="truncate text-xs text-destructive">
-            {isInteractionRequired(accountState.error)
-              ? t("auth.accountConsentRequired")
-              : accountState.error instanceof ApiError &&
-                  accountState.error.status === 403
-                ? t("auth.accountForbidden")
-                : t("auth.accountLoadError")}
-          </span>
-          <Button
-            aria-label={
-              isInteractionRequired(accountState.error)
-                ? t("auth.grantAccess")
-                : t("auth.retry")
-            }
-            className="size-6"
-            data-testid="auth-account-retry"
-            disabled={isInteractionInProgress}
-            onClick={handleAccountRecovery}
-            size="icon"
-            variant="ghost"
-          >
-            <RefreshCw className="size-3" />
-          </Button>
+          {compact ? null : (
+            <span className="truncate text-xs text-destructive">
+              {t(accountErrorMessageKey(accountState.error))}
+            </span>
+          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                aria-label={t(
+                  isInteractionRequired(accountState.error)
+                    ? "auth.grantAccess"
+                    : "auth.retry"
+                )}
+                className="size-6"
+                data-testid="auth-account-retry"
+                disabled={isInteractionInProgress}
+                onClick={handleAccountRecovery}
+                size="icon"
+                variant="ghost"
+              >
+                <RefreshCw className="size-3" />
+              </Button>
+            </TooltipTrigger>
+            {compact ? (
+              <TooltipContent align="center" side="right">
+                {t(accountErrorMessageKey(accountState.error))}
+              </TooltipContent>
+            ) : null}
+          </Tooltip>
         </div>
       ) : null}
+      <ManageAccountDialog
+        onOpenChange={setIsManageAccountOpen}
+        open={isManageAccountOpen}
+      />
     </div>
   )
 }

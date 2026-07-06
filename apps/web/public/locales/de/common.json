@@ -10,6 +10,7 @@
     "accountLoading": "Konto wird geladen",
     "error": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
     "grantAccess": "API-Zugriff gewähren",
+    "manageAccount": "Konto verwalten",
     "retry": "Konto erneut laden",
     "signIn": "Anmelden",
     "signOut": "Abmelden",
@@ -35,6 +36,57 @@
       "retry": "Erneut versuchen"
     }
   },
+  "manageAccount": {
+    "title": "Konto verwalten",
+    "tabs": {
+      "integration": "Tacticus-Integration",
+      "account": "Konto"
+    },
+    "integration": {
+      "currentApiKey": "Tacticus-API-Schlüssel",
+      "currentUserId": "Tacticus-Benutzer-ID",
+      "notConfigured": "Nicht konfiguriert",
+      "apiKeyLabel": "Neuer Tacticus-API-Schlüssel",
+      "apiKeyPlaceholder": "Leer lassen, um den aktuellen Schlüssel zu behalten",
+      "apiKeyDescription": "Hole deinen API-Schlüssel unter https://api.tacticusgame.com. Teile ihn nur mit vertrauenswürdigen Personen.",
+      "userIdLabel": "Tacticus-Benutzer-ID",
+      "userIdPlaceholder": "Leer lassen, um den aktuellen Wert zu behalten",
+      "removeUserId": "Tacticus-Benutzer-ID entfernen",
+      "save": "Änderungen speichern",
+      "saved": "Tacticus-Integration aktualisiert.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "account": {
+      "purgeWarningTitle": "Konto löschen",
+      "purgeWarningDescription": "Dies löscht sofort und unwiderruflich alle deine Planner-Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "purgeConfirmLabel": "Gib „{{word}}“ ein, um die Löschung zu aktivieren",
+      "purgeSubmit": "Mein Konto löschen",
+      "purgeGenericError": "Beim Löschen deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut."
+    }
+  },
+  "onboarding": {
+    "title": "Kontoeinrichtung abschließen",
+    "description": "Verbinde dein Tacticus-Konto, um den Planner zu nutzen.",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "or": "Oder",
+    "tabs": {
+      "signUp": "Registrieren",
+      "importProfile": "Profil importieren"
+    },
+    "signUp": {
+      "apiKeyLabel": "Tacticus-API-Schlüssel",
+      "apiKeyDescription": "Hole deinen API-Schlüssel unter https://api.tacticusgame.com. Teile ihn nur mit vertrauenswürdigen Personen.",
+      "userIdLabel": "Tacticus-Benutzer-ID (optional)",
+      "userIdDescription": "Wird verwendet, um dein Konto in Gilden-Daten zu identifizieren.",
+      "submit": "Registrieren"
+    },
+    "import": {
+      "description": "Melde dich mit deinem V1-Planner-Benutzernamen und -Passwort an, um deinen Tacticus-API-Schlüssel und deine Benutzer-ID zu importieren. Deine V1-Zugangsdaten werden niemals gespeichert.",
+      "usernameLabel": "V1-Benutzername",
+      "passwordLabel": "V1-Passwort",
+      "submit": "Profil importieren"
+    }
+  },
   "rankLookup": {
     "subtitle": "Wähle einen Charakter und einen Rangbereich, um die nötigen Verbesserungen und Farm-Orte zu sehen.",
     "character": "Charakter",
@@ -58,12 +110,20 @@
     "campaignLocations": "Kampagnen-Orte",
     "eventLocations": "Kampagnen-Event-Orte",
     "byRank": "Verbesserungen nach Rang",
-    "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen."
+    "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen.",
+    "share": {
+      "action": "Teilen",
+      "copied": "Link in die Zwischenablage kopiert.",
+      "error": "Der Link konnte nicht geteilt oder kopiert werden."
+    }
   },
   "nav": {
     "home": "Startseite",
     "rankLookup": "Rang-Nachschlag",
-    "createGoal": "Ziel erstellen"
+    "createGoal": "Ziel erstellen",
+    "uiKit": "UI-Kit",
+    "menu": "Menü",
+    "syncWithTacticus": "Mit Tacticus synchronisieren"
   },
   "language": {
     "label": "Sprache",
@@ -81,8 +141,7 @@
     "dark": "Dunkel",
     "label": "Design",
     "light": "Hell",
-    "switchToDark": "Zum dunklen Modus wechseln",
-    "switchToLight": "Zum hellen Modus wechseln"
+    "system": "Systemstandard"
   },
   "tour": {
     "start": "Tour starten",
@@ -111,9 +170,33 @@
         "title": "Tour wiederholen",
         "content": "Klicke hier, wenn du diese Tour erneut starten möchtest."
       },
+      "userMenu": {
+        "title": "Dein Konto-Menü",
+        "content": "Tippe hier jederzeit, um das Design oder die Sprache zu wechseln oder diese Tour erneut zu starten."
+      },
       "navigation": {
         "title": "Schnell navigieren",
         "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."
+      }
+    },
+    "lookup": {
+      "steps": {
+        "character": {
+          "title": "Charakter auswählen",
+          "content": "Wähle, für welchen Charakter du Verbesserungen nachschlagen möchtest."
+        },
+        "apply": {
+          "title": "Änderungen anwenden",
+          "content": "Passe den Rangbereich oder Fortschritt an und wende sie an, um die Ergebnisse unten zu aktualisieren."
+        },
+        "results": {
+          "title": "Verbesserungen und Fundorte",
+          "content": "Sieh die für diesen Rangbereich benötigten Verbesserungen und wo du sie farmen kannst."
+        },
+        "share": {
+          "title": "Diese Suche teilen",
+          "content": "Teile oder kopiere einen Link zu genau diesem Charakter und Rangbereich."
+        }
       }
     }
   },

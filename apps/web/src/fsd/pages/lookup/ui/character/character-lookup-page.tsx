@@ -23,7 +23,9 @@ import {
 } from "@/features/rank-lookup"
 import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
 import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
+import { useTourPageSteps } from "@/shared/tour"
 
+import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
 import { useLookupSelection } from "./hooks/use-lookup-selection"
@@ -53,6 +55,8 @@ export function CharacterLookupPage() {
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
   const isMobile = useIsMobile()
+
+  useTourPageSteps(useCharacterLookupTutorial())
 
   const characters = useDatasetRecords("characters")
   const { data: charactersById } = useDatasetRecordsMap("characters")
