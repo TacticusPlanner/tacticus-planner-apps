@@ -15,7 +15,13 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { cn } from "@workspace/ui/lib/utils"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
@@ -63,7 +69,20 @@ function logAuthenticationError(operation: AuthOperation, error: unknown) {
   console.error(message, { value: String(error) })
 }
 
-export function AuthControl() {
+function accountErrorMessageKey(
+  error: unknown
+):
+  | "auth.accountConsentRequired"
+  | "auth.accountForbidden"
+  | "auth.accountLoadError" {
+  if (isInteractionRequired(error)) return "auth.accountConsentRequired"
+  if (error instanceof ApiError && error.status === 403) {
+    return "auth.accountForbidden"
+  }
+  return "auth.accountLoadError"
+}
+
+export function AuthControl({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const { accounts, inProgress, instance } = useMsal()
@@ -105,14 +124,15 @@ export function AuthControl() {
   if (!isAuthenticated || !account) {
     return (
       <Button
+        aria-label={compact ? t("auth.signIn") : undefined}
         data-testid="auth-sign-in"
         disabled={isInteractionInProgress}
         onClick={handleSignIn}
-        size="sm"
+        size={compact ? "icon" : "sm"}
         variant="outline"
       >
-        <LogIn data-icon="inline-start" />
-        {t("auth.signIn")}
+        <LogIn data-icon={compact ? undefined : "inline-start"} />
+        {compact ? null : t("auth.signIn")}
       </Button>
     )
   }
@@ -133,43 +153,50 @@ export function AuthControl() {
           <button
             type="button"
             aria-label={t("auth.userMenu")}
-            className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              "flex min-w-0 items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
+              compact ? "size-8 justify-center" : "max-w-56 px-1.5 py-1"
+            )}
             data-testid="auth-account-trigger"
           >
             <UserRound className="size-4 shrink-0" aria-hidden="true" />
-            <div
-              className="min-w-0 text-left leading-tight"
-              data-testid="auth-account-panel"
-            >
+            {compact ? null : (
               <div
-                className="truncate"
-                data-testid="auth-account-name"
-                title={accountName}
+                className="min-w-0 text-left leading-tight"
+                data-testid="auth-account-panel"
               >
-                {accountName}
+                <div
+                  className="truncate"
+                  data-testid="auth-account-name"
+                  title={accountName}
+                >
+                  {accountName}
+                </div>
+                {accountState.status === "loading" ? (
+                  <div
+                    className="flex items-center gap-1 text-xs"
+                    data-testid="auth-account-loading"
+                  >
+                    <LoaderCircle
+                      className="size-3 animate-spin"
+                      aria-hidden="true"
+                    />
+                    {t("auth.accountLoading")}
+                  </div>
+                ) : null}
+                {isMobile &&
+                accountState.status === "success" &&
+                accountEmail ? (
+                  <div
+                    className="truncate text-xs"
+                    data-testid="auth-account-email"
+                    title={accountEmail}
+                  >
+                    {accountEmail}
+                  </div>
+                ) : null}
               </div>
-              {accountState.status === "loading" ? (
-                <div
-                  className="flex items-center gap-1 text-xs"
-                  data-testid="auth-account-loading"
-                >
-                  <LoaderCircle
-                    className="size-3 animate-spin"
-                    aria-hidden="true"
-                  />
-                  {t("auth.accountLoading")}
-                </div>
-              ) : null}
-              {isMobile && accountState.status === "success" && accountEmail ? (
-                <div
-                  className="truncate text-xs"
-                  data-testid="auth-account-email"
-                  title={accountEmail}
-                >
-                  {accountEmail}
-                </div>
-              ) : null}
-            </div>
+            )}
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-56 gap-2">
@@ -217,29 +244,35 @@ export function AuthControl() {
           className="flex items-center gap-1"
           data-testid="auth-account-error"
         >
-          <span className="truncate text-xs text-destructive">
-            {isInteractionRequired(accountState.error)
-              ? t("auth.accountConsentRequired")
-              : accountState.error instanceof ApiError &&
-                  accountState.error.status === 403
-                ? t("auth.accountForbidden")
-                : t("auth.accountLoadError")}
-          </span>
-          <Button
-            aria-label={
-              isInteractionRequired(accountState.error)
-                ? t("auth.grantAccess")
-                : t("auth.retry")
-            }
-            className="size-6"
-            data-testid="auth-account-retry"
-            disabled={isInteractionInProgress}
-            onClick={handleAccountRecovery}
-            size="icon"
-            variant="ghost"
-          >
-            <RefreshCw className="size-3" />
-          </Button>
+          {compact ? null : (
+            <span className="truncate text-xs text-destructive">
+              {t(accountErrorMessageKey(accountState.error))}
+            </span>
+          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                aria-label={t(
+                  isInteractionRequired(accountState.error)
+                    ? "auth.grantAccess"
+                    : "auth.retry"
+                )}
+                className="size-6"
+                data-testid="auth-account-retry"
+                disabled={isInteractionInProgress}
+                onClick={handleAccountRecovery}
+                size="icon"
+                variant="ghost"
+              >
+                <RefreshCw className="size-3" />
+              </Button>
+            </TooltipTrigger>
+            {compact ? (
+              <TooltipContent align="center" side="right">
+                {t(accountErrorMessageKey(accountState.error))}
+              </TooltipContent>
+            ) : null}
+          </Tooltip>
         </div>
       ) : null}
       <ManageAccountDialog

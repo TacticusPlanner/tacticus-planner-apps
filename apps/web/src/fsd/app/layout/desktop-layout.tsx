@@ -14,18 +14,17 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@workspace/ui/components/sidebar"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
 import { TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
-import {
-  CatalogSyncStatusBadge,
-  CompactCatalogSyncStatusBadge,
-} from "../providers/catalog-sync-status-badge"
+import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
@@ -86,6 +85,8 @@ function AppSidebar({
 }) {
   const { t } = useTranslation()
   const { instance } = useMsal()
+  const { state } = useSidebar()
+  const compact = state === "collapsed"
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
@@ -94,12 +95,14 @@ function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center px-2 py-1">
+        <div className="flex items-center">
           <div className="flex min-w-0 items-center gap-2">
-            <AppLogo className="size-6 shrink-0" />
-            <span className="truncate text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
-              {t("app.name")}
-            </span>
+            <AppLogo className="size-15 shrink-0" />
+            {compact ? null : (
+              <span className="truncate text-sm font-semibold tracking-tight">
+                {t("app.name")}
+              </span>
+            )}
           </div>
         </div>
 
@@ -134,23 +137,24 @@ function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="flex flex-col gap-2 px-2 py-1">
-          <div className="group-data-[collapsible=icon]:hidden">
-            <CatalogSyncStatusBadge />
-          </div>
-          <div className="hidden justify-center group-data-[collapsible=icon]:flex">
-            <CompactCatalogSyncStatusBadge />
-          </div>
-          <div className="flex items-center justify-between gap-1">
+        <div className="flex flex-col gap-2">
+          <CatalogSyncStatusBadge compact={compact} />
+          <div
+            className={cn(
+              "flex items-center gap-1",
+              compact ? "flex-col" : "justify-between"
+            )}
+          >
             {isAuthenticated ? (
-              <AuthControl />
+              <AuthControl compact={compact} />
             ) : (
               <SidebarMenuButton
+                className="bg-primary text-primary-foreground hover:bg-primary/80"
                 onClick={handleSignIn}
                 tooltip={t("auth.signIn")}
               >
                 <LogIn />
-                <span>{t("auth.signIn")}</span>
+                {compact ? null : <span>{t("auth.signIn")}</span>}
               </SidebarMenuButton>
             )}
             <SidebarTrigger />

@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import type { Step } from "react-joyride"
 import {
   campaignDescriptor,
   campaignIcon,
@@ -24,8 +23,9 @@ import {
 } from "@/features/rank-lookup"
 import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
 import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
-import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
+import { useTourPageSteps } from "@/shared/tour"
 
+import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
 import { useLookupSelection } from "./hooks/use-lookup-selection"
@@ -56,44 +56,7 @@ export function CharacterLookupPage() {
   } = useCampaignDisplay()
   const isMobile = useIsMobile()
 
-  const tourSteps = useMemo<TourPageSteps>(() => {
-    const character: Step = {
-      target: '[data-testid="lookup-character-select"]',
-      title: t("tour.lookup.steps.character.title"),
-      content: t("tour.lookup.steps.character.content"),
-    }
-    const apply: Step = {
-      target: '[data-testid="lookup-apply-button"]',
-      title: t("tour.lookup.steps.apply.title"),
-      content: t("tour.lookup.steps.apply.content"),
-    }
-    const results: Step = {
-      target: '[data-testid="lookup-results"]',
-      title: t("tour.lookup.steps.results.title"),
-      content: t("tour.lookup.steps.results.content"),
-    }
-    const share: Step = {
-      target: '[data-testid="lookup-share-button"]',
-      title: t("tour.lookup.steps.share.title"),
-      content: t("tour.lookup.steps.share.content"),
-    }
-
-    return {
-      desktop: [
-        { ...character, placement: "right" },
-        { ...apply, placement: "right" },
-        { ...results, placement: "left" },
-        { ...share, placement: "bottom-end" },
-      ],
-      mobile: [
-        { ...character, placement: "bottom" },
-        { ...apply, placement: "top" },
-        { ...results, placement: "top" },
-        { ...share, placement: "bottom" },
-      ],
-    }
-  }, [t])
-  useTourPageSteps(tourSteps)
+  useTourPageSteps(useCharacterLookupTutorial())
 
   const characters = useDatasetRecords("characters")
   const { data: charactersById } = useDatasetRecordsMap("characters")
