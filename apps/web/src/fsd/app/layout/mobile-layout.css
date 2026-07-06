@@ -1,0 +1,6 @@
+/* Shared mobile header/nav sizing - fixed spacing plus safe-area insets so content and the
+   scroll-to-top FAB never sit under the iOS/Android system inset or overlap the fixed bars. */
+:root {
+  --mobile-header-height: calc(4rem + env(safe-area-inset-top, 0px));
+  --mobile-nav-height: calc(4rem + env(safe-area-inset-bottom, 0px));
+}

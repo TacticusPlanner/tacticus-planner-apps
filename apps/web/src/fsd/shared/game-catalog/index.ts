@@ -4,4 +4,5 @@ export {
   useDatasetRecords,
   useDatasetRecordsMap,
   type GameCatalogContextValue,
+  type GameCatalogStatus,
 } from "./game-catalog-provider"

@@ -110,12 +110,20 @@
     "campaignLocations": "Kampagnen-Orte",
     "eventLocations": "Kampagnen-Event-Orte",
     "byRank": "Verbesserungen nach Rang",
-    "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen."
+    "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen.",
+    "share": {
+      "action": "Teilen",
+      "copied": "Link in die Zwischenablage kopiert.",
+      "error": "Der Link konnte nicht geteilt oder kopiert werden."
+    }
   },
   "nav": {
     "home": "Startseite",
     "rankLookup": "Rang-Nachschlag",
-    "createGoal": "Ziel erstellen"
+    "createGoal": "Ziel erstellen",
+    "uiKit": "UI-Kit",
+    "menu": "Menü",
+    "syncWithTacticus": "Mit Tacticus synchronisieren"
   },
   "language": {
     "label": "Sprache",
@@ -133,8 +141,7 @@
     "dark": "Dunkel",
     "label": "Design",
     "light": "Hell",
-    "switchToDark": "Zum dunklen Modus wechseln",
-    "switchToLight": "Zum hellen Modus wechseln"
+    "system": "Systemstandard"
   },
   "tour": {
     "start": "Tour starten",
@@ -163,9 +170,33 @@
         "title": "Tour wiederholen",
         "content": "Klicke hier, wenn du diese Tour erneut starten möchtest."
       },
+      "userMenu": {
+        "title": "Dein Konto-Menü",
+        "content": "Tippe hier jederzeit, um das Design oder die Sprache zu wechseln oder diese Tour erneut zu starten."
+      },
       "navigation": {
         "title": "Schnell navigieren",
         "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."
+      }
+    },
+    "lookup": {
+      "steps": {
+        "character": {
+          "title": "Charakter auswählen",
+          "content": "Wähle, für welchen Charakter du Verbesserungen nachschlagen möchtest."
+        },
+        "apply": {
+          "title": "Änderungen anwenden",
+          "content": "Passe den Rangbereich oder Fortschritt an und wende sie an, um die Ergebnisse unten zu aktualisieren."
+        },
+        "results": {
+          "title": "Verbesserungen und Fundorte",
+          "content": "Sieh die für diesen Rangbereich benötigten Verbesserungen und wo du sie farmen kannst."
+        },
+        "share": {
+          "title": "Diese Suche teilen",
+          "content": "Teile oder kopiere einen Link zu genau diesem Charakter und Rangbereich."
+        }
       }
     }
   },

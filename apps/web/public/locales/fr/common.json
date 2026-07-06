@@ -110,12 +110,20 @@
     "campaignLocations": "Lieux de campagne",
     "eventLocations": "Lieux d'événements de campagne",
     "byRank": "Améliorations par rang",
-    "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires."
+    "noUpgrades": "Sélectionnez un personnage et une plage de rangs valide pour voir les améliorations nécessaires.",
+    "share": {
+      "action": "Partager",
+      "copied": "Lien copié dans le presse-papiers.",
+      "error": "Impossible de partager ou de copier le lien."
+    }
   },
   "nav": {
     "home": "Accueil",
     "rankLookup": "Recherche de rang",
-    "createGoal": "Créer un objectif"
+    "createGoal": "Créer un objectif",
+    "uiKit": "Kit d'interface",
+    "menu": "Menu",
+    "syncWithTacticus": "Synchroniser avec Tacticus"
   },
   "language": {
     "label": "Langue",
@@ -133,8 +141,7 @@
     "dark": "Sombre",
     "label": "Thème",
     "light": "Clair",
-    "switchToDark": "Passer au mode sombre",
-    "switchToLight": "Passer au mode clair"
+    "system": "Paramètre du système"
   },
   "tour": {
     "start": "Visite guidée",
@@ -163,9 +170,33 @@
         "title": "Revoir la visite",
         "content": "Cliquez ici dès que vous souhaitez relancer cette visite."
       },
+      "userMenu": {
+        "title": "Votre menu de compte",
+        "content": "Appuyez ici à tout moment pour changer le thème ou la langue, ou relancer cette visite."
+      },
       "navigation": {
         "title": "Naviguez facilement",
         "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."
+      }
+    },
+    "lookup": {
+      "steps": {
+        "character": {
+          "title": "Choisissez un personnage",
+          "content": "Choisissez le personnage pour lequel consulter les améliorations."
+        },
+        "apply": {
+          "title": "Appliquez vos changements",
+          "content": "Ajustez la plage de rang ou de progression, puis appliquez pour mettre à jour les résultats ci-dessous."
+        },
+        "results": {
+          "title": "Améliorations et lieux de farming",
+          "content": "Consultez les améliorations nécessaires pour cette plage de rang et où les farmer."
+        },
+        "share": {
+          "title": "Partagez cette recherche",
+          "content": "Partagez ou copiez un lien vers ce personnage et cette plage de rang exacts."
+        }
       }
     }
   },

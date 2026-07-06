@@ -91,7 +91,10 @@ export function CharacterLookupDesktopPage({
           isMobile={false}
         />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-6">
+      <div
+        className="flex min-w-0 flex-1 flex-col gap-6"
+        data-testid="lookup-results"
+      >
         {profile ? <UnitProfile profile={profile} /> : null}
         <CharacterLookupResults
           baseUpgrades={baseUpgrades}

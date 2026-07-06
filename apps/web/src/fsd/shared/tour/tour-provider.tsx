@@ -12,13 +12,31 @@ import {
   type Styles,
   useJoyride,
 } from "react-joyride"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useTheme } from "../theme/theme-provider"
+import {
+  useDesktopTutorialSteps,
+  useMobileTutorialSteps,
+} from "./general.tutorial"
+
+/** Steps a page registers for its own tour, split by platform since the same target selectors
+ *  don't always exist (or make sense) on both - `mobile` falls back to `desktop` when omitted. */
+export type TourPageSteps = {
+  desktop: Step[]
+  mobile?: Step[]
+}
 
 type TourContextValue = {
   isRunning: boolean
   startTour: () => void
   stopTour: () => void
+  setPageSteps: (steps: TourPageSteps | null) => void
+  // Lets a mobile tutorial step force the theme/language/tour-replay Popover (AuthControl /
+  // MobileGuestSettings) open - see useTourControlledPopoverOpen - since a DOM-click simulation
+  // races with react-joyride's overlay and Radix's own outside-click dismissal.
+  mobileMenuForceOpen: boolean
+  setMobileMenuForceOpen: (open: boolean) => void
 }
 
 const TourContext = React.createContext<TourContextValue | undefined>(undefined)
@@ -86,7 +104,10 @@ const tourStyles: Partial<Styles> = {
 export function TourProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const isMobile = useIsMobile()
   const [run, setRun] = React.useState(false)
+  const [pageSteps, setPageSteps] = React.useState<TourPageSteps | null>(null)
+  const [mobileMenuForceOpen, setMobileMenuForceOpen] = React.useState(false)
 
   const isDark = theme === "dark" || (theme === "system" && prefersDark())
   const surface = isDark ? tourSurface.dark : tourSurface.light
@@ -112,41 +133,16 @@ export function TourProvider({ children }: { children: ReactNode }) {
     [surface]
   )
 
-  const steps = React.useMemo<Step[]>(
-    () => [
-      {
-        target: "body",
-        placement: "center",
-        title: t("tour.steps.welcome.title"),
-        content: t("tour.steps.welcome.content"),
-      },
-      {
-        target: '[data-testid="language-switcher"]',
-        placement: "bottom-end",
-        title: t("tour.steps.language.title"),
-        content: t("tour.steps.language.content"),
-      },
-      {
-        target: '[data-testid="theme-switcher"]',
-        placement: "bottom-end",
-        title: t("tour.steps.theme.title"),
-        content: t("tour.steps.theme.content"),
-      },
-      {
-        target: '[data-testid="tour-button"]',
-        placement: "bottom-end",
-        title: t("tour.steps.replay.title"),
-        content: t("tour.steps.replay.content"),
-      },
-      {
-        target: '[data-testid="primary-nav"]',
-        placement: "bottom",
-        title: t("tour.steps.navigation.title"),
-        content: t("tour.steps.navigation.content"),
-      },
-    ],
-    [t]
-  )
+  // The general layout/navigation tutorial - used for Home and as the fallback for any page (e.g.
+  // UI Kit) that doesn't register its own steps via useTourPageSteps.
+  const desktopDefaultSteps = useDesktopTutorialSteps()
+  const mobileDefaultSteps = useMobileTutorialSteps(setMobileMenuForceOpen)
+  const defaultSteps = isMobile ? mobileDefaultSteps : desktopDefaultSteps
+
+  const steps = React.useMemo<Step[]>(() => {
+    if (!pageSteps) return defaultSteps
+    return (isMobile ? pageSteps.mobile : undefined) ?? pageSteps.desktop
+  }, [pageSteps, defaultSteps, isMobile])
 
   const locale = React.useMemo<Locale>(
     () => ({
@@ -170,6 +166,9 @@ export function TourProvider({ children }: { children: ReactNode }) {
     onEvent: (data) => {
       if (completedStatuses.includes(data.status)) {
         setRun(false)
+        // Safety net: if the tour ends mid-way through the mobile-menu steps (e.g. Skip), don't
+        // leave the Popover stuck forced open.
+        setMobileMenuForceOpen(false)
       }
     },
   })
@@ -178,8 +177,15 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const stopTour = React.useCallback(() => setRun(false), [])
 
   const value = React.useMemo<TourContextValue>(
-    () => ({ isRunning: run, startTour, stopTour }),
-    [run, startTour, stopTour]
+    () => ({
+      isRunning: run,
+      startTour,
+      stopTour,
+      setPageSteps,
+      mobileMenuForceOpen,
+      setMobileMenuForceOpen,
+    }),
+    [run, startTour, stopTour, mobileMenuForceOpen]
   )
 
   return (
@@ -198,4 +204,28 @@ export const useTour = () => {
   }
 
   return context
+}
+
+/** Lets a page register its own tour steps while mounted, overriding the general tutorial -
+ *  reverts to the default steps automatically on unmount. Memoize `steps` (it's an effect
+ *  dependency) so registration doesn't churn every render. */
+export function useTourPageSteps(steps: TourPageSteps) {
+  const { setPageSteps } = useTour()
+
+  React.useEffect(() => {
+    setPageSteps(steps)
+    return () => setPageSteps(null)
+  }, [steps, setPageSteps])
+}
+
+/** Backs a Popover that the mobile tutorial needs to force open/closed (see general.tutorial.tsx).
+ *  Open state is the OR of independent user interaction and the tour's force-open flag, so normal
+ *  clicks (via the returned setter) and the tour's control never fight each other - once the tour
+ *  clears its flag, the popover falls back to whatever the user last set (closed, unless they
+ *  opened it themselves in the meantime). */
+export function useTourControlledPopoverOpen() {
+  const { mobileMenuForceOpen } = useTour()
+  const [userOpen, setUserOpen] = React.useState(false)
+
+  return [userOpen || mobileMenuForceOpen, setUserOpen] as const
 }

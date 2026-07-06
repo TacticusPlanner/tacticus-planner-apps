@@ -132,12 +132,20 @@
       "npc": "NPC",
       "mowComingSoon": "Machines of War lookup is coming soon.",
       "npcComingSoon": "NPC lookup is coming soon."
+    },
+    "share": {
+      "action": "Share",
+      "copied": "Link copied to clipboard.",
+      "error": "Couldn't share or copy the link."
     }
   },
   "nav": {
     "home": "Home",
     "lookup": "Lookup",
-    "createGoal": "Create Goal"
+    "createGoal": "Create Goal",
+    "uiKit": "UI Kit",
+    "menu": "Menu",
+    "syncWithTacticus": "Sync with Tacticus"
   },
   "home": {
     "subtitle": "This page is still under construction.",
@@ -160,8 +168,7 @@
     "dark": "Dark",
     "label": "Theme",
     "light": "Light",
-    "switchToDark": "Switch to dark mode",
-    "switchToLight": "Switch to light mode"
+    "system": "System default"
   },
   "tour": {
     "start": "Take a tour",
@@ -190,9 +197,33 @@
         "title": "Replay the tour",
         "content": "Click here whenever you want to run this tour again."
       },
+      "userMenu": {
+        "title": "Your account menu",
+        "content": "Tap here any time to switch the theme or language, or replay this tour."
+      },
       "navigation": {
         "title": "Find your way around",
         "content": "This menu groups the app's sections — use it to navigate between them at any time."
+      }
+    },
+    "lookup": {
+      "steps": {
+        "character": {
+          "title": "Pick a character",
+          "content": "Choose which character to look up upgrades for."
+        },
+        "apply": {
+          "title": "Apply your changes",
+          "content": "Adjust the rank range or progression, then apply to update the results below."
+        },
+        "results": {
+          "title": "Upgrades and farm locations",
+          "content": "See the upgrades needed for this rank range and where to farm them."
+        },
+        "share": {
+          "title": "Share this lookup",
+          "content": "Share or copy a link to this exact character and rank range."
+        }
       }
     }
   },
