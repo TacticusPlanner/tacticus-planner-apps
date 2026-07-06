@@ -8,6 +8,7 @@ import {
   isRank,
   maxRankForProgression,
   minProgressionForRank,
+  progressionIndex,
   rankAt,
   rankIndex,
   type Progression,
@@ -79,8 +80,33 @@ export function useLookupSelection() {
 
   // Picking a character is the primary action on this page, so it commits immediately instead of
   // waiting on Apply — Apply stays reserved for the rank range/progression/point-five tweaks.
-  const setDraftCharacterId = (id: string) => {
-    const next = { ...draft, characterId: id }
+  // `prefill` lets a caller seed the "from" rank/progression from the player's synced roster data
+  // instead of the firstRank/firstProgression defaults (see character-lookup-page.tsx); it is only
+  // ever supplied when that data is actually available, so behavior is unchanged otherwise.
+  const setDraftCharacterId = (
+    id: string,
+    prefill?: { rankStart: Rank; progressionStart: Progression }
+  ) => {
+    const next: LookupSelection = { ...draft, characterId: id }
+
+    if (prefill) {
+      next.rankStart = prefill.rankStart
+      next.progressionStart = prefill.progressionStart
+      // A prefilled "from" can exceed the range's current "to" (e.g. a highly-ranked unit selected
+      // while the range still sits at its firstRank/firstProgression default) — bump "to" up to
+      // match so start <= end always holds, the same invariant setDraftRange/
+      // setDraftProgressionRange maintain below.
+      if (rankIndex(next.rankEnd) < rankIndex(next.rankStart)) {
+        next.rankEnd = next.rankStart
+      }
+      if (
+        progressionIndex(next.progressionEnd) <
+        progressionIndex(next.progressionStart)
+      ) {
+        next.progressionEnd = next.progressionStart
+      }
+    }
+
     setDraft(next)
     commitSelection(next)
   }

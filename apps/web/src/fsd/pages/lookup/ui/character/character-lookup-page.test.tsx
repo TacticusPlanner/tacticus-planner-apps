@@ -1,15 +1,53 @@
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen, within } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
 import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
-// The page must work for unauthenticated users with no user data — it reads only the public catalog.
-// (No MSAL / user-state mocks are needed, which is the point: nothing user-specific is imported.)
+// The page must work for unauthenticated users with no user data — it reads only the public catalog
+// by default. Synced player data only ever *adds* a rank/progression prefill on character select
+// (see "prefills from synced player data" below); every other test exercises the unauthenticated /
+// no-data default path via these mocks' default return values.
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
 // The page registers its own tour steps on mount - irrelevant to these tests, which don't render
 // a TourProvider.
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
+type PlayerUnitFixture = {
+  unitId: string
+  rank: number
+  progressionIndex: number
+}
+type PlayerChunkResult = {
+  data: PlayerUnitFixture[] | undefined
+  loading: boolean
+  error: string | null
+}
+
+const { useIsAuthenticatedMock, playerChunkMocks } = vi.hoisted(() => ({
+  useIsAuthenticatedMock: vi.fn(() => false),
+  playerChunkMocks: {
+    characters: vi.fn<() => PlayerChunkResult>(() => ({
+      data: undefined,
+      loading: false,
+      error: null,
+    })),
+    mows: vi.fn<() => PlayerChunkResult>(() => ({
+      data: undefined,
+      loading: false,
+      error: null,
+    })),
+  },
+}))
+
+vi.mock("@azure/msal-react", () => ({
+  useIsAuthenticated: () => useIsAuthenticatedMock(),
+}))
+
+vi.mock("@/shared/player-data", () => ({
+  usePlayerChunkRecords: (key: "characters" | "mows") =>
+    playerChunkMocks[key](),
+}))
 
 // Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
 // difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json —
@@ -269,6 +307,20 @@ function renderPage(initialEntries = ["/"]) {
 }
 
 describe("CharacterLookupPage", () => {
+  beforeEach(() => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+    playerChunkMocks.characters.mockReturnValue({
+      data: undefined,
+      loading: false,
+      error: null,
+    })
+    playerChunkMocks.mows.mockReturnValue({
+      data: undefined,
+      loading: false,
+      error: null,
+    })
+  })
+
   it("renders publicly and lists the required base upgrades for the default range", () => {
     renderPage()
 
@@ -344,6 +396,47 @@ describe("CharacterLookupPage", () => {
     ).toBeInTheDocument()
     // ...and Apply stays disabled since nothing else is dirty.
     expect(applyButton).toBeDisabled()
+  })
+
+  it("prefills the 'from' rank from synced player data when authenticated", () => {
+    useIsAuthenticatedMock.mockReturnValue(true)
+    playerChunkMocks.characters.mockReturnValue({
+      data: [{ unitId: "hero2", rank: 5, progressionIndex: 8 }],
+      loading: false,
+      error: null,
+    })
+
+    renderPage()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
+    )
+    fireEvent.click(screen.getByText("Hero Two"))
+
+    // rankAt(5) is "Iron3" — the synced unit's rank, not the firstRank ("Stone1") default. The
+    // range's "to" also gets bumped up to match (it defaults below "from" otherwise), so both the
+    // "from" and "to" badges read "Iron3" here.
+    expect(screen.getAllByText("Iron3").length).toBeGreaterThan(0)
+    expect(screen.queryByText("Stone1")).not.toBeInTheDocument()
+    expect(screen.queryByText("Stone2")).not.toBeInTheDocument()
+  })
+
+  it("keeps the default 'from' rank when authenticated but the selected unit has no synced data", () => {
+    useIsAuthenticatedMock.mockReturnValue(true)
+    playerChunkMocks.characters.mockReturnValue({
+      data: [{ unitId: "some-other-unit", rank: 5, progressionIndex: 8 }],
+      loading: false,
+      error: null,
+    })
+
+    renderPage()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
+    )
+    fireEvent.click(screen.getByText("Hero Two"))
+
+    expect(screen.getByText("Stone1")).toBeInTheDocument()
   })
 
   it("gates recomputation behind the Apply button", () => {

@@ -4,6 +4,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { GameCatalogProvider } from "@/shared/game-catalog"
+import { PlayerDataProvider } from "@/shared/player-data"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
@@ -30,19 +31,23 @@ export function AppShell() {
   return (
     <GameCatalogProvider baseUrl={apiBaseUrl}>
       <GameCatalogInitGate>
-        {isMobile ? (
-          <MobileShell
-            isAuthenticated={isAuthenticated}
-            visibleItems={visibleItems}
-            pageTitle={pageTitle}
-          />
-        ) : (
-          <DesktopShell
-            isAuthenticated={isAuthenticated}
-            visibleItems={visibleItems}
-            pageTitle={pageTitle}
-          />
-        )}
+        {/* Unlike the catalog, player data is per-account and not required to render the shell, so it
+            is not gated behind an init screen — it syncs in the background once authenticated. */}
+        <PlayerDataProvider baseUrl={apiBaseUrl}>
+          {isMobile ? (
+            <MobileShell
+              isAuthenticated={isAuthenticated}
+              visibleItems={visibleItems}
+              pageTitle={pageTitle}
+            />
+          ) : (
+            <DesktopShell
+              isAuthenticated={isAuthenticated}
+              visibleItems={visibleItems}
+              pageTitle={pageTitle}
+            />
+          )}
+        </PlayerDataProvider>
       </GameCatalogInitGate>
     </GameCatalogProvider>
   )

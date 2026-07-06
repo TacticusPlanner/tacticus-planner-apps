@@ -56,6 +56,17 @@
       "saved": "Tacticus integration updated.",
       "genericError": "Something went wrong. Please try again."
     },
+    "playerData": {
+      "title": "Player data sync",
+      "statusIdle": "Not signed in",
+      "statusSyncing": "Syncing…",
+      "statusReady": "Up to date",
+      "statusStale": "Sync incomplete",
+      "statusError": "Sync failed",
+      "lastSynced": "Last synced {{time}}",
+      "neverSynced": "Never synced",
+      "syncNow": "Sync now"
+    },
     "account": {
       "purgeWarningTitle": "Purge account",
       "purgeWarningDescription": "This permanently deletes all of your planner data immediately. This action cannot be undone.",

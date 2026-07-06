@@ -1,14 +1,18 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { useIsAuthenticated } from "@azure/msal-react"
 import {
   campaignDescriptor,
   campaignIcon,
   groupByFaction,
   isAdamantineRank,
+  progressionOrder,
   progressionStars,
+  rankAt,
   rarityRank,
   statAtRank,
   type CampaignDefinitionRecord,
+  type Progression,
 } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -23,6 +27,7 @@ import {
 } from "@/features/rank-lookup"
 import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
 import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
+import { usePlayerChunkRecords } from "@/shared/player-data"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
@@ -40,6 +45,16 @@ import type { UnitProfileView } from "./unit-profile.types"
 const toReleaseType = (definition: CampaignDefinitionRecord) =>
   definition.releaseType
 
+// The Tacticus API's raw per-unit `rank`/`progressionIndex` are themselves 0-based indices into the
+// catalog's rankOrder/progressionOrder steps (confirmed against a real player response: e.g.
+// progressionIndex 12 lands exactly on "Legendary:RedThreeStars", matching the API's own "12 =
+// Legendary" comment) — no unit conversion needed beyond a defensive clamp.
+function progressionAt(index: number): Progression {
+  return progressionOrder[
+    Math.min(Math.max(index, 0), progressionOrder.length - 1)
+  ]
+}
+
 export function CharacterLookupPage() {
   const { t } = useTranslation([
     "common",
@@ -55,8 +70,15 @@ export function CharacterLookupPage() {
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
   const isMobile = useIsMobile()
+  const isAuthenticated = useIsAuthenticated()
 
   useTourPageSteps(useCharacterLookupTutorial())
+
+  // Synced player roster (characters + MoWs), used only to prefill the "from" rank/progression when
+  // a character is selected — see handleCharacterChange below. Falls back to the page's normal
+  // defaults whenever the user is signed out or the unit isn't in either chunk yet.
+  const { data: playerCharacters } = usePlayerChunkRecords("characters")
+  const { data: playerMows } = usePlayerChunkRecords("mows")
 
   const characters = useDatasetRecords("characters")
   const { data: charactersById } = useDatasetRecordsMap("characters")
@@ -98,6 +120,30 @@ export function CharacterLookupPage() {
     setDraftPointFive,
     handleApply,
   } = useLookupSelection()
+
+  // If the user is authenticated and has synced player data for the selected character, prefill the
+  // "from" rank/progression from their actual unit instead of the firstRank/firstProgression
+  // defaults; otherwise setDraftCharacterId falls back to its normal default behavior unchanged.
+  const handleCharacterChange = (id: string) => {
+    if (!isAuthenticated) {
+      setDraftCharacterId(id)
+      return
+    }
+
+    const unit =
+      playerCharacters?.find((c) => c.unitId === id) ??
+      playerMows?.find((c) => c.unitId === id)
+
+    if (!unit) {
+      setDraftCharacterId(id)
+      return
+    }
+
+    setDraftCharacterId(id, {
+      rankStart: rankAt(unit.rank),
+      progressionStart: progressionAt(unit.progressionIndex),
+    })
+  }
 
   const draftCharacterId =
     draft.characterId ?? characterGroups[0]?.members[0]?.id
@@ -373,7 +419,7 @@ export function CharacterLookupPage() {
     groups,
     campaignInsights,
     eventInsights,
-    onCharacterChange: setDraftCharacterId,
+    onCharacterChange: handleCharacterChange,
     onRangeChange: setDraftRange,
     onProgressionRangeChange: setDraftProgressionRange,
     onPointFiveChange: setDraftPointFive,
