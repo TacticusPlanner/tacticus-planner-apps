@@ -7,6 +7,10 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 // (No MSAL / user-state mocks are needed, which is the point: nothing user-specific is imported.)
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
+// The page registers its own tour steps on mount - irrelevant to these tests, which don't render
+// a TourProvider.
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
 // Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
 // difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json —
 // so this small in-test dictionary stands in for that file, kept in sync with its content for

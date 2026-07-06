@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
@@ -73,6 +74,10 @@ vi.mock("./language-switcher", () => ({
 }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => <div data-testid="tour-button" />,
+  useTourControlledPopoverOpen: () => {
+    const [open, setOpen] = useState(false)
+    return [open, setOpen] as const
+  },
 }))
 
 import { AuthControl } from "./auth-control"

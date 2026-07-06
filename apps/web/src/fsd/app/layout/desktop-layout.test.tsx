@@ -18,6 +18,12 @@ vi.mock("@azure/msal-react", () => ({
 
 vi.mock("@/shared/auth", () => ({ loginRequest: { scopes: ["api"] } }))
 
+// `./nav-items` reads `isUiKitEnabled` from the real module's barrel, which also re-exports the
+// i18n setup that calls `initReactI18next` at import time — incompatible with the plain
+// `useTranslation` mock above. `true` matches the non-production default so `navItems` keeps its
+// UI Kit entry.
+vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
+
 vi.mock("../providers/catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => null,
 }))
