@@ -14,8 +14,11 @@ import type {
 export {
   playerDataChunkKeys,
   isPlayerDataChunkKey,
+  isSplitPlayerDataChunkKey,
   playerDataManifestMetadataKey,
+  splitPlayerDataChunkKeys,
   type PlayerDataChunkKey,
+  type SplitPlayerDataChunkKey,
 } from "./chunk-keys"
 
 // All player-data API shapes are inferred from the zod schemas that validate them at runtime.

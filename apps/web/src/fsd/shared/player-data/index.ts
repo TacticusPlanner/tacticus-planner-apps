@@ -4,4 +4,4 @@ export {
   type PlayerDataStatus,
 } from "./player-data-provider"
 
-export { usePlayerChunkRecords } from "./use-player-chunk"
+export { usePlayerChunkRecord } from "./use-player-chunk"

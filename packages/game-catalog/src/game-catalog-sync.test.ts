@@ -5,6 +5,8 @@ import type {
   GameCatalogManifestResult,
 } from "./game-catalog-api"
 import {
+  catalogDbName,
+  catalogDbVersion,
   getDatasetRecords,
   hasCompleteGameCatalogCache,
 } from "./game-catalog-storage"
@@ -125,11 +127,37 @@ class FakeGameCatalogClient implements GameCatalogClient {
 
 function resetDb() {
   return new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase("tacticus-planner-game-catalog")
+    const request = indexedDB.deleteDatabase(catalogDbName)
 
     request.onsuccess = () => resolve()
     request.onerror = () => resolve()
     request.onblocked = () => resolve()
+  })
+}
+
+// Reproduces the real bug this regression guards against: a dataset (`missingKey`) got added to
+// `servedDatasetKeys` without a matching `catalogDbVersion` bump, so an existing client's DB — already
+// at the current version — never gets an `upgradeneeded` and is left without that store.
+function seedDbMissingStore(missingKey: string) {
+  return new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(catalogDbName, catalogDbVersion)
+
+    request.onupgradeneeded = () => {
+      const db = request.result
+      db.createObjectStore("metadata", { keyPath: "key" })
+
+      for (const key of servedDatasetKeys) {
+        if (key !== missingKey) {
+          db.createObjectStore(key, { keyPath: "id" })
+        }
+      }
+    }
+
+    request.onsuccess = () => {
+      request.result.close()
+      resolve()
+    }
+    request.onerror = () => reject(request.error as Error)
   })
 }
 
@@ -226,5 +254,17 @@ describe("syncGameCatalog", () => {
     expect(await hasCompleteGameCatalogCache()).toBe(false)
     expect(await getDatasetRecords("mows")).toHaveLength(0)
     expect(await getDatasetRecords("characters")).toHaveLength(1)
+  })
+
+  it("self-heals a store missing at the current DB version instead of wedging the sync", async () => {
+    await seedDbMissingStore("lre-common")
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+    expect((await getDatasetRecords("lre-common"))[0]?.id).toBe("lre-common")
   })
 })

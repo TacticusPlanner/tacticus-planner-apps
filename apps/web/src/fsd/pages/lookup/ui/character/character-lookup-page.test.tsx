@@ -20,8 +20,8 @@ type PlayerUnitFixture = {
   rank: string
   progressionIndex: string
 }
-type PlayerChunkResult = {
-  data: PlayerUnitFixture[] | undefined
+type PlayerChunkRecordResult = {
+  data: PlayerUnitFixture | undefined
   loading: boolean
   error: string | null
 }
@@ -29,11 +29,13 @@ type PlayerChunkResult = {
 const { useIsAuthenticatedMock, playerChunkMocks } = vi.hoisted(() => ({
   useIsAuthenticatedMock: vi.fn(() => false),
   playerChunkMocks: {
-    characters: vi.fn<() => PlayerChunkResult>(() => ({
-      data: undefined,
-      loading: false,
-      error: null,
-    })),
+    characters: vi.fn<(id: string | undefined) => PlayerChunkRecordResult>(
+      () => ({
+        data: undefined,
+        loading: false,
+        error: null,
+      })
+    ),
   },
 }))
 
@@ -42,7 +44,8 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 vi.mock("@/shared/player-data", () => ({
-  usePlayerChunkRecords: (key: "characters") => playerChunkMocks[key](),
+  usePlayerChunkRecord: (key: "characters", id: string | undefined) =>
+    playerChunkMocks[key](id),
 }))
 
 // Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
@@ -395,13 +398,19 @@ describe("CharacterLookupPage", () => {
 
   it("prefills the 'from' rank from synced player data when authenticated", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
-    playerChunkMocks.characters.mockReturnValue({
-      data: [
-        { unitId: "hero2", rank: "Iron3", progressionIndex: "Rare:RedOneStar" },
-      ],
-      loading: false,
-      error: null,
-    })
+    playerChunkMocks.characters.mockImplementation((id) =>
+      id === "hero2"
+        ? {
+            data: {
+              unitId: "hero2",
+              rank: "Iron3",
+              progressionIndex: "Rare:RedOneStar",
+            },
+            loading: false,
+            error: null,
+          }
+        : { data: undefined, loading: false, error: null }
+    )
 
     renderPage()
 
@@ -420,14 +429,10 @@ describe("CharacterLookupPage", () => {
 
   it("keeps the default 'from' rank when authenticated but the selected unit has no synced data", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
+    // The synced chunk simply has no record for "hero2" — this is the single-record read's normal
+    // "not found" outcome (`undefined`), the same shape the default mock already returns.
     playerChunkMocks.characters.mockReturnValue({
-      data: [
-        {
-          unitId: "some-other-unit",
-          rank: "Iron3",
-          progressionIndex: "Rare:RedOneStar",
-        },
-      ],
+      data: undefined,
       loading: false,
       error: null,
     })

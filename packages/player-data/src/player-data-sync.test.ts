@@ -4,9 +4,17 @@ import type {
   PlayerDataClient,
   PlayerDataManifestResult,
 } from "./player-data-api"
-import { getChunkData, hasCompletePlayerDataCache } from "./player-data-storage"
+import {
+  getChunkData,
+  getChunkRecord,
+  hasCompletePlayerDataCache,
+  playerDataDbName,
+  playerDataDbVersion,
+  splitChunkKeyPath,
+} from "./player-data-storage"
 import { syncPlayerData } from "./player-data-sync"
 import {
+  isSplitPlayerDataChunkKey,
   playerDataChunkKeys,
   type PlayerDataChunkEnvelope,
   type PlayerDataManifest,
@@ -94,11 +102,44 @@ class FakePlayerDataClient implements PlayerDataClient {
 
 function resetDb() {
   return new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase("player-data")
+    const request = indexedDB.deleteDatabase(playerDataDbName)
 
     request.onsuccess = () => resolve()
     request.onerror = () => resolve()
     request.onblocked = () => resolve()
+  })
+}
+
+// Reproduces the same class of bug @workspace/game-catalog's storage layer guards against: a chunk
+// key added to `playerDataChunkKeys` without a matching `playerDataDbVersion` bump, so an existing
+// client's DB — already at the current version — never gets an `upgradeneeded` and is left without
+// that store.
+function seedDbMissingStore(missingKey: string) {
+  return new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(playerDataDbName, playerDataDbVersion)
+
+    request.onupgradeneeded = () => {
+      const db = request.result
+      db.createObjectStore("metadata", { keyPath: "key" })
+
+      for (const key of playerDataChunkKeys) {
+        if (key === missingKey) {
+          continue
+        }
+
+        if (isSplitPlayerDataChunkKey(key)) {
+          db.createObjectStore(key, { keyPath: splitChunkKeyPath[key] })
+        } else {
+          db.createObjectStore(key)
+        }
+      }
+    }
+
+    request.onsuccess = () => {
+      request.result.close()
+      resolve()
+    }
+    request.onerror = () => reject(request.error as Error)
   })
 }
 
@@ -179,5 +220,33 @@ describe("syncPlayerData", () => {
     expect(await getChunkData("characters")).toEqual([
       { unitId: "ultraTigurius", rank: "Gold1" },
     ])
+  })
+
+  it("self-heals a store missing at the current DB version instead of wedging the sync", async () => {
+    await seedDbMissingStore("lre-progress")
+
+    const result = await syncPlayerData(
+      new FakePlayerDataClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect(await hasCompletePlayerDataCache()).toBe(true)
+    expect(await getChunkData("lre-progress")).toEqual([])
+  })
+
+  it("reads a single record from a split chunk by its natural id, without loading the whole chunk", async () => {
+    await syncPlayerData(new FakePlayerDataClient(createManifest()))
+
+    expect(await getChunkRecord("characters", "ultraTigurius")).toEqual({
+      unitId: "ultraTigurius",
+      rank: "Gold1",
+    })
+    expect(await getChunkRecord("characters", "necroWarden")).toBeUndefined()
+
+    // campaign-progress has no single natural id field — it's keyed by the
+    // [tacticusCampaignId, type] pair instead.
+    expect(
+      await getChunkRecord("campaign-progress", ["campaign1", "Standard"])
+    ).toEqual({ tacticusCampaignId: "campaign1", type: "Standard" })
   })
 })

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useSearchParams } from "react-router"
 import {
+  currentMaxRank,
   firstProgression,
   firstRank,
   isAdamantineRank,
@@ -24,6 +25,12 @@ export interface LookupSelection {
   pointFive: boolean
 }
 
+// Adamantine3 exists in the ladder but isn't fully available in-game yet (see currentMaxRank's own
+// comment in @workspace/game-catalog) — clamp any rank entering this page's selection (a shared URL,
+// a prefill from synced player data, or a range change) down to the practical ceiling.
+const clampToCurrentMax = (rank: Rank): Rank =>
+  rankIndex(rank) > rankIndex(currentMaxRank) ? currentMaxRank : rank
+
 function selectionFromParams(params: URLSearchParams): LookupSelection {
   const start = params.get("rankStart")
   const end = params.get("rankEnd")
@@ -31,8 +38,8 @@ function selectionFromParams(params: URLSearchParams): LookupSelection {
   const progressionEnd = params.get("progressionEnd")
   return {
     characterId: params.get("character") ?? undefined,
-    rankStart: start && isRank(start) ? start : firstRank,
-    rankEnd: end && isRank(end) ? end : rankAt(1),
+    rankStart: clampToCurrentMax(start && isRank(start) ? start : firstRank),
+    rankEnd: clampToCurrentMax(end && isRank(end) ? end : rankAt(1)),
     progressionStart:
       progressionStart && isProgression(progressionStart)
         ? progressionStart
@@ -90,7 +97,7 @@ export function useLookupSelection() {
     const next: LookupSelection = { ...draft, characterId: id }
 
     if (prefill) {
-      next.rankStart = prefill.rankStart
+      next.rankStart = clampToCurrentMax(prefill.rankStart)
       next.progressionStart = prefill.progressionStart
       // A prefilled "from" can exceed the range's current "to" (e.g. a highly-ranked unit selected
       // while the range still sits at its firstRank/firstProgression default) — bump "to" up to
@@ -132,15 +139,36 @@ export function useLookupSelection() {
   }
 
   const setDraftRange = (start: Rank, end: Rank) =>
-    setDraft((prev) => ({
-      ...prev,
-      rankStart: start,
-      rankEnd: end,
-      progressionStart: bumpProgressionForRank(prev.progressionStart, start),
-      progressionEnd: bumpProgressionForRank(prev.progressionEnd, end),
-      // Adamantine ranks have no point-five step.
-      pointFive: isAdamantineRank(end) ? false : prev.pointFive,
-    }))
+    setDraft((prev) => {
+      const clampedStart = clampToCurrentMax(start)
+      const clampedEnd = clampToCurrentMax(end)
+
+      // When only the "from" rank actually changed — the "to" value passed in still matches what it
+      // was before (the mobile "From" select always passes the current "to" unchanged; dragging just
+      // the slider's start thumb likewise leaves "to" as-is) — auto-advance "to" to "from" + 1 instead
+      // of leaving it wherever it was. Clamp at the practical ceiling: if "from" is already there,
+      // there's no valid "one rank up" left, so "to" just stays put (collapsing to a single rank).
+      const onlyStartChanged =
+        clampedStart !== prev.rankStart && clampedEnd === prev.rankEnd
+      const nextEnd = onlyStartChanged
+        ? rankAt(
+            Math.min(rankIndex(clampedStart) + 1, rankIndex(currentMaxRank))
+          )
+        : clampedEnd
+
+      return {
+        ...prev,
+        rankStart: clampedStart,
+        rankEnd: nextEnd,
+        progressionStart: bumpProgressionForRank(
+          prev.progressionStart,
+          clampedStart
+        ),
+        progressionEnd: bumpProgressionForRank(prev.progressionEnd, nextEnd),
+        // Adamantine ranks have no point-five step.
+        pointFive: isAdamantineRank(nextEnd) ? false : prev.pointFive,
+      }
+    })
 
   const setDraftProgressionRange = (start: Progression, end: Progression) =>
     setDraft((prev) => {

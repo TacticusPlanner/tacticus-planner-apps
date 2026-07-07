@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import {
@@ -24,7 +24,7 @@ import {
 } from "@/features/rank-lookup"
 import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
 import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
-import { usePlayerChunkRecords } from "@/shared/player-data"
+import { usePlayerChunkRecord } from "@/shared/player-data"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
@@ -60,12 +60,6 @@ export function CharacterLookupPage() {
   const isAuthenticated = useIsAuthenticated()
 
   useTourPageSteps(useCharacterLookupTutorial())
-
-  // Synced player roster, used only to prefill the "from" rank/progression when a character is
-  // selected — see handleCharacterChange below. Falls back to the page's normal defaults whenever
-  // the user is signed out or the unit isn't in the chunk yet. MoWs are irrelevant here — Character
-  // Lookup only ever looks up characters, which have a rank/equipment MoWs don't.
-  const { data: playerCharacters } = usePlayerChunkRecords("characters")
 
   const characters = useDatasetRecords("characters")
   const { data: charactersById } = useDatasetRecordsMap("characters")
@@ -108,32 +102,59 @@ export function CharacterLookupPage() {
     handleApply,
   } = useLookupSelection()
 
-  // If the user is authenticated and has synced player data for the selected character, prefill the
-  // "from" rank/progression from their actual unit instead of the firstRank/firstProgression
-  // defaults; otherwise setDraftCharacterId falls back to its normal default behavior unchanged.
   const handleCharacterChange = (id: string) => {
-    if (!isAuthenticated) {
-      setDraftCharacterId(id)
+    setDraftCharacterId(id)
+  }
+
+  const draftCharacterId =
+    draft.characterId ?? characterGroups[0]?.members[0]?.id
+
+  // Synced player record for the currently selected character only (not the whole roster) — used
+  // just to prefill the "from" rank/progression once it loads, see the effect below. MoWs are
+  // irrelevant here — Character Lookup only ever looks up characters, which have a rank/equipment
+  // MoWs don't.
+  const { data: playerCharacter, loading: playerCharacterLoading } =
+    usePlayerChunkRecord(
+      "characters",
+      isAuthenticated ? draftCharacterId : undefined
+    )
+
+  // Applies the synced rank/progression prefill once per character selection, as soon as it's
+  // available — never on a later background refresh of the same character, so it can't clobber
+  // rank/progression edits the user has since made via the slider. Falls back to
+  // setDraftCharacterId's normal default behavior whenever signed out, the record hasn't finished
+  // loading, or the unit isn't in the synced chunk at all.
+  const prefilledCharacterIdRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (
+      !isAuthenticated ||
+      !draftCharacterId ||
+      playerCharacterLoading ||
+      prefilledCharacterIdRef.current === draftCharacterId
+    ) {
       return
     }
 
-    const unit = playerCharacters?.find((c) => c.unitId === id)
+    prefilledCharacterIdRef.current = draftCharacterId
 
-    if (!unit) {
-      setDraftCharacterId(id)
+    if (!playerCharacter) {
       return
     }
 
     // The synced chunk's rank/progressionIndex are already the catalog's own Rank/Progression
     // string values (see @workspace/player-data's schemas) — no numeric-index conversion needed.
-    setDraftCharacterId(id, {
-      rankStart: unit.rank,
-      progressionStart: unit.progressionIndex,
+    setDraftCharacterId(draftCharacterId, {
+      rankStart: playerCharacter.rank,
+      progressionStart: playerCharacter.progressionIndex,
     })
-  }
-
-  const draftCharacterId =
-    draft.characterId ?? characterGroups[0]?.members[0]?.id
+  }, [
+    isAuthenticated,
+    draftCharacterId,
+    playerCharacter,
+    playerCharacterLoading,
+    setDraftCharacterId,
+  ])
   const characterId = applied.characterId ?? characterGroups[0]?.members[0]?.id
 
   const character = characterId ? charactersById.get(characterId) : undefined

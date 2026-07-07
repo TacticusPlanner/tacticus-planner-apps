@@ -1,8 +1,11 @@
 export {
   playerDataChunkKeys,
   isPlayerDataChunkKey,
+  isSplitPlayerDataChunkKey,
   playerDataManifestMetadataKey,
+  splitPlayerDataChunkKeys,
   type PlayerDataChunkKey,
+  type SplitPlayerDataChunkKey,
   type PlayerDataManifest,
   type PlayerDataManifestChunk,
   type PlayerDataChunkEnvelope,
@@ -35,6 +38,7 @@ export {
   getManifestMetadata,
   hasCompletePlayerDataCache,
   getChunkData,
+  getChunkRecord,
   clearPlayerDataDb,
 } from "./player-data-storage"
 

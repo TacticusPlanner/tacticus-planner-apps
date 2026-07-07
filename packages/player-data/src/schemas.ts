@@ -32,12 +32,6 @@ export const playerDataChunkEnvelopeMetaSchema = z.looseObject({
   data: z.unknown(),
 })
 
-const namedRarityAmountSchema = z.looseObject({
-  name: z.string(),
-  rarity: z.string(),
-  amount: z.number(),
-})
-
 const rarityAmountSchema = z.looseObject({
   rarity: z.string(),
   amount: z.number(),
@@ -101,12 +95,16 @@ const inventoryItemSchema = z.looseObject({
   amount: z.number(),
 })
 
+const componentAmountSchema = z.looseObject({
+  amount: z.number(),
+})
+
 // Mow components have no per-item identity worth tracking — just the total count per grand
 // alliance, mirroring how Orbs/AbilityBadges are already split.
 const mowComponentsSchema = z.looseObject({
-  imperial: z.number(),
-  xenos: z.number(),
-  chaos: z.number(),
+  imperial: componentAmountSchema,
+  xenos: componentAmountSchema,
+  chaos: componentAmountSchema,
 })
 
 const inventorySchema = z.looseObject({
@@ -116,12 +114,12 @@ const inventorySchema = z.looseObject({
   ),
   xpBooks: z.array(z.looseObject({ xpBookId: z.string(), amount: z.number() })),
   abilityBadges: z.looseObject({
-    imperial: z.array(namedRarityAmountSchema),
-    xenos: z.array(namedRarityAmountSchema),
-    chaos: z.array(namedRarityAmountSchema),
+    imperial: z.array(rarityAmountSchema),
+    xenos: z.array(rarityAmountSchema),
+    chaos: z.array(rarityAmountSchema),
   }),
   components: mowComponentsSchema,
-  forgeBadges: z.array(namedRarityAmountSchema),
+  forgeBadges: z.array(rarityAmountSchema),
   orbs: z.looseObject({
     imperial: z.array(rarityAmountSchema),
     xenos: z.array(rarityAmountSchema),

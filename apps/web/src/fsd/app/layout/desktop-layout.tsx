@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, PlusCircle, RefreshCw } from "lucide-react"
+import { LogIn, PlusCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   Sidebar,
@@ -21,13 +21,12 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest } from "@/shared/auth"
-import { usePlayerDataStatus } from "@/shared/player-data"
 import { TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
-import { PlayerDataSyncStatusBadge } from "../providers/player-data-sync-status-badge"
+import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
@@ -89,7 +88,6 @@ function AppSidebar({
   const { instance } = useMsal()
   const { state } = useSidebar()
   const compact = state === "collapsed"
-  const { syncNow } = usePlayerDataStatus()
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
@@ -121,13 +119,7 @@ function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={syncNow}
-              tooltip={t("nav.syncWithTacticus")}
-            >
-              <RefreshCw />
-              <span>{t("nav.syncWithTacticus")}</span>
-            </SidebarMenuButton>
+            <PlayerDataSyncButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -145,7 +137,6 @@ function AppSidebar({
       <SidebarFooter>
         <div className="flex flex-col gap-2">
           <CatalogSyncStatusBadge compact={compact} />
-          <PlayerDataSyncStatusBadge compact={compact} />
           <div
             className={cn(
               "flex items-center gap-1",

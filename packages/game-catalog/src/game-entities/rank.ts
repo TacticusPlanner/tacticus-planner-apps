@@ -51,6 +51,12 @@ export const rankOrder: readonly Rank[] = [
 export const firstRank: Rank = rankOrder[0]
 export const lastRank: Rank = rankOrder[rankOrder.length - 1]
 
+// `Adamantine3` is planned for the game but isn't fully available yet (nothing can actually reach it
+// today — even `maxRankByRarity.Mythic` in unit-stats.ts caps out at `Adamantine2`), so UI that lets a
+// player pick a rank (e.g. Character Lookup's rank range) should treat this as the practical ceiling
+// rather than `lastRank`. Revisit once Adamantine3 ships.
+export const currentMaxRank: Rank = Rank.Adamantine2
+
 export const rankIndex = (id: Rank): number => rankOrder.indexOf(id)
 
 export const isRank = (value: string): value is Rank =>

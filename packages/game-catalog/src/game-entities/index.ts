@@ -4,6 +4,7 @@ export {
   rankOrder,
   firstRank,
   lastRank,
+  currentMaxRank,
   rankIndex,
   rankAt,
   isRank,

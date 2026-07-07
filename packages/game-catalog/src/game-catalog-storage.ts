@@ -1,4 +1,4 @@
-import { openDB } from "idb"
+import { openDB, type IDBPDatabase } from "idb"
 
 import {
   catalogManifestMetadataKey,
@@ -22,10 +22,13 @@ export type UpgradeRecord = StoredRecord<"upgrades">
 export type CampaignBattleRecord = StoredRecord<"campaign-battles">
 export type CampaignDefinitionRecord = StoredRecord<"campaign-definitions">
 
-const catalogDbName = "tacticus-planner-game-catalog"
+// Exported (not just for internal use) so tests can set up a raw IndexedDB connection at the exact
+// name/version the app uses — e.g. to reproduce a store missing at the current version, see
+// game-catalog-sync.test.ts's self-healing regression test.
+export const catalogDbName = "tacticus-planner-game-catalog"
 // v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
 // served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.
-const catalogDbVersion = 3
+export const catalogDbVersion = 3
 const metadataStore = "metadata"
 
 // Maps a dataset envelope's `data` (always a plain array now) into the id-keyed rows stored per record.
@@ -60,30 +63,76 @@ const datasetToRecords: Record<GameCatalogDatasetKey, DatasetToRecords> = {
   "lre-common": asArray,
 }
 
+function upgradeGameCatalogDb(db: IDBPDatabase) {
+  if (!db.objectStoreNames.contains(metadataStore)) {
+    db.createObjectStore(metadataStore, { keyPath: "key" })
+  }
+
+  // Drop any store that is no longer part of the served catalog (old chunk/extras stores, or a
+  // dataset store carrying the old indexed schema — recreated below without indexes).
+  for (const name of Array.from(db.objectStoreNames)) {
+    if (
+      name !== metadataStore &&
+      !(servedDatasetKeys as readonly string[]).includes(name)
+    ) {
+      db.deleteObjectStore(name)
+    }
+  }
+
+  for (const datasetKey of servedDatasetKeys) {
+    if (!db.objectStoreNames.contains(datasetKey)) {
+      db.createObjectStore(datasetKey, { keyPath: "id" })
+    }
+  }
+}
+
+function hasAllRequiredStores(db: IDBPDatabase): boolean {
+  return (
+    db.objectStoreNames.contains(metadataStore) &&
+    servedDatasetKeys.every((key) => db.objectStoreNames.contains(key))
+  )
+}
+
+async function openAtDeclaredVersion(): Promise<IDBPDatabase> {
+  try {
+    return await openDB(catalogDbName, catalogDbVersion, {
+      upgrade: upgradeGameCatalogDb,
+    })
+  } catch (error) {
+    // A previous self-heal (below) may have already bumped the stored version past
+    // `catalogDbVersion` — requesting the (now stale) declared version throws a VersionError rather
+    // than downgrading. Attach at whatever version is already there instead of failing.
+    if (error instanceof DOMException && error.name === "VersionError") {
+      return openDB(catalogDbName)
+    }
+
+    throw error
+  }
+}
+
+/**
+ * Opens the catalog DB, self-healing if a required store is missing even though the DB is already at
+ * `catalogDbVersion` — this happens whenever a dataset is added to `servedDatasetKeys` without a
+ * matching version bump (an easy mistake, and the exact cause of a real bug: a client stuck at the
+ * old version silently failed to sync forever because a newly-added dataset's store never got
+ * created, see the `game-catalog-sync` header comment). Rather than relying on every future addition
+ * to remember to bump `catalogDbVersion`, detect the mismatch here and reopen one version higher —
+ * `upgradeGameCatalogDb` unconditionally creates any missing store, so this always converges (and
+ * `openAtDeclaredVersion` makes every later open work again once the stored version has moved past
+ * the hardcoded constant).
+ */
 async function openGameCatalogDb() {
-  return openDB(catalogDbName, catalogDbVersion, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(metadataStore)) {
-        db.createObjectStore(metadataStore, { keyPath: "key" })
-      }
+  const db = await openAtDeclaredVersion()
 
-      // Drop any store that is no longer part of the served catalog (old chunk/extras stores, or a
-      // dataset store carrying the old indexed schema — recreated below without indexes).
-      for (const name of Array.from(db.objectStoreNames)) {
-        if (
-          name !== metadataStore &&
-          !(servedDatasetKeys as readonly string[]).includes(name)
-        ) {
-          db.deleteObjectStore(name)
-        }
-      }
+  if (hasAllRequiredStores(db)) {
+    return db
+  }
 
-      for (const datasetKey of servedDatasetKeys) {
-        if (!db.objectStoreNames.contains(datasetKey)) {
-          db.createObjectStore(datasetKey, { keyPath: "id" })
-        }
-      }
-    },
+  const healedVersion = db.version + 1
+  db.close()
+
+  return openDB(catalogDbName, healedVersion, {
+    upgrade: upgradeGameCatalogDb,
   })
 }
 
