@@ -19,11 +19,7 @@ export {
   playerDataChunkPayloadSchemas,
 } from "./schemas"
 
-export {
-  PlayerDataHttpClient,
-  type PlayerDataClient,
-  type PlayerDataManifestResult,
-} from "./player-data-api"
+export { PlayerDataHttpClient, type PlayerDataClient } from "./player-data-api"
 
 export {
   syncPlayerData,

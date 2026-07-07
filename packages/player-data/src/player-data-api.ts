@@ -11,18 +11,12 @@ import type {
   PlayerDataManifestChunk,
 } from "./types"
 
-export type PlayerDataManifestResult =
-  | { status: "ok"; etag: string | null; manifest: PlayerDataManifest }
-  | { status: "not-modified" }
-
 export type PlayerDataClient = {
   triggerSync: () => Promise<PlayerDataManifest>
-  getManifest: (etag?: string) => Promise<PlayerDataManifestResult>
   getChunk: (chunk: PlayerDataManifestChunk) => Promise<PlayerDataChunkEnvelope>
 }
 
 const syncPath = "/api/v1/tacticus-integration/player-sync"
-const manifestPath = "/api/v1/me/player-data/manifest"
 
 /**
  * Authenticated HTTP client for the per-profile player-data API. Unlike the anonymous game-catalog
@@ -63,44 +57,6 @@ export class PlayerDataHttpClient implements PlayerDataClient {
     }
 
     return parsed.data
-  }
-
-  async getManifest(etag?: string): Promise<PlayerDataManifestResult> {
-    const headers = new Headers()
-
-    if (etag) {
-      headers.set("If-None-Match", etag)
-    }
-
-    const response = await this.authorizedFetch(manifestPath, { headers })
-
-    if (response.status === 304) {
-      return { status: "not-modified" }
-    }
-
-    if (response.status === 404) {
-      return { status: "not-modified" }
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        `PlayerData manifest request failed with status ${response.status}.`
-      )
-    }
-
-    const parsed = playerDataManifestSchema.safeParse(await response.json())
-
-    if (!parsed.success) {
-      throw new Error(
-        `PlayerData manifest failed validation: ${parsed.error.message}`
-      )
-    }
-
-    return {
-      status: "ok",
-      etag: response.headers.get("ETag"),
-      manifest: parsed.data,
-    }
   }
 
   async getChunk(

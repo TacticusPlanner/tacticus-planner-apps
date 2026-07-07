@@ -15,6 +15,7 @@ export {
   playerDataChunkKeys,
   isPlayerDataChunkKey,
   isSplitPlayerDataChunkKey,
+  isMergedPlayerDataChunkKey,
   playerDataManifestMetadataKey,
   splitPlayerDataChunkKeys,
   type PlayerDataChunkKey,

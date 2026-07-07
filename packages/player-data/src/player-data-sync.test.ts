@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
-import type {
-  PlayerDataClient,
-  PlayerDataManifestResult,
-} from "./player-data-api"
+import type { PlayerDataClient } from "./player-data-api"
 import {
   getChunkData,
   getChunkRecord,
@@ -14,26 +11,52 @@ import {
 } from "./player-data-storage"
 import { syncPlayerData } from "./player-data-sync"
 import {
+  isMergedPlayerDataChunkKey,
   isSplitPlayerDataChunkKey,
   playerDataChunkKeys,
   type PlayerDataChunkEnvelope,
+  type PlayerDataChunkKey,
   type PlayerDataManifest,
   type PlayerDataManifestChunk,
 } from "./types"
 
 // The fake client bypasses zod (the real PlayerDataHttpClient validates); these payloads only need the
-// shape the storage layer stores verbatim, not the full served schema.
+// shape the storage layer stores verbatim, not the full served schema. `inventory`/`live-progress` are
+// fully shaped (every field the real schema requires) since they're decomposed into several records
+// in the shared `profile` store — an incomplete fixture would trip over a missing sub-collection.
 const chunkData: Record<string, unknown> = {
   "player-details": { name: "Tester", powerLevel: 100 },
   characters: [{ unitId: "ultraTigurius", rank: "Gold1" }],
   mows: [],
   "inventory-upgrades": [{ upgradeId: "u1", amount: 3 }],
   "inventory-items": [{ itemId: "i1", level: 1, amount: 2 }],
-  inventory: { resetStones: 2 },
+  inventory: {
+    shards: [{ unitId: "ultraTigurius", amount: 5 }],
+    mythicShards: [],
+    xpBooks: [{ xpBookId: "bookCommon", amount: 2 }],
+    abilityBadges: { imperial: [], xenos: [], chaos: [] },
+    components: {
+      imperial: { amount: 0 },
+      xenos: { amount: 0 },
+      chaos: { amount: 0 },
+    },
+    forgeBadges: [],
+    orbs: { imperial: [], xenos: [], chaos: [] },
+    requisitionOrdersRegular: 5,
+    requisitionOrdersBlessed: 1,
+    resetStones: 2,
+  },
   "campaign-progress": [{ tacticusCampaignId: "campaign1", type: "Standard" }],
   "campaign-events-progress": [],
   "live-progress": {
-    battleAttempts: [],
+    battleAttempts: [
+      {
+        tacticusCampaignId: "campaign1",
+        battleIndex: 0,
+        attemptsLeft: 2,
+        attemptsUsed: 1,
+      },
+    ],
     activeCampaignEventId: null,
     gameModeTokens: {
       arena: null,
@@ -74,14 +97,6 @@ class FakePlayerDataClient implements PlayerDataClient {
     return Promise.resolve(this.manifest)
   }
 
-  getManifest(): Promise<PlayerDataManifestResult> {
-    return Promise.resolve({
-      status: "ok",
-      etag: null,
-      manifest: this.manifest,
-    })
-  }
-
   getChunk(chunk: PlayerDataManifestChunk): Promise<PlayerDataChunkEnvelope> {
     if (this.failKeys.has(chunk.key)) {
       return Promise.reject(new Error(`boom for ${chunk.key}`))
@@ -110,11 +125,12 @@ function resetDb() {
   })
 }
 
-// Reproduces the same class of bug @workspace/game-catalog's storage layer guards against: a chunk
-// key added to `playerDataChunkKeys` without a matching `playerDataDbVersion` bump, so an existing
-// client's DB — already at the current version — never gets an `upgradeneeded` and is left without
-// that store.
-function seedDbMissingStore(missingKey: string) {
+// Reproduces the same class of bug @workspace/game-catalog's storage layer guards against: a store
+// added to the schema without a matching `playerDataDbVersion` bump, so an existing client's DB —
+// already at the current version — never gets an `upgradeneeded` and is left without it. `missingKey`
+// may be a split chunk (skips just that chunk's own store) or one of the three merged chunks (skips
+// the shared `profile` store all three live in).
+function seedDbMissingStore(missingKey: PlayerDataChunkKey) {
   return new Promise<void>((resolve, reject) => {
     const request = indexedDB.open(playerDataDbName, playerDataDbVersion)
 
@@ -122,16 +138,16 @@ function seedDbMissingStore(missingKey: string) {
       const db = request.result
       db.createObjectStore("metadata", { keyPath: "key" })
 
+      if (!isMergedPlayerDataChunkKey(missingKey)) {
+        db.createObjectStore("profile", { keyPath: "id" })
+      }
+
       for (const key of playerDataChunkKeys) {
-        if (key === missingKey) {
+        if (key === missingKey || !isSplitPlayerDataChunkKey(key)) {
           continue
         }
 
-        if (isSplitPlayerDataChunkKey(key)) {
-          db.createObjectStore(key, { keyPath: splitChunkKeyPath[key] })
-        } else {
-          db.createObjectStore(key)
-        }
+        db.createObjectStore(key, { keyPath: splitChunkKeyPath[key] })
       }
     }
 
@@ -161,7 +177,13 @@ describe("syncPlayerData", () => {
     expect(characters).toEqual([{ unitId: "ultraTigurius", rank: "Gold1" }])
 
     const inventory = await getChunkData("inventory")
-    expect(inventory).toEqual({ resetStones: 2 })
+    expect(inventory).toEqual(chunkData.inventory)
+
+    const liveProgress = await getChunkData("live-progress")
+    expect(liveProgress).toEqual(chunkData["live-progress"])
+
+    const playerDetails = await getChunkData("player-details")
+    expect(playerDetails).toEqual(chunkData["player-details"])
   })
 
   it("treats an unchanged manifest as ready and a later sync as not first-time", async () => {
@@ -205,6 +227,38 @@ describe("syncPlayerData", () => {
     ])
   })
 
+  it("re-syncing one merged chunk never touches the other two sharing its object store", async () => {
+    await syncPlayerData(new FakePlayerDataClient(createManifest()))
+
+    const client = new FakePlayerDataClient(
+      createManifest({ inventory: "inventory-h2" }),
+      {
+        inventory: {
+          ...(chunkData.inventory as object),
+          shards: [{ unitId: "necroWarden", amount: 9 }],
+          resetStones: 99,
+        },
+      }
+    )
+    await syncPlayerData(client)
+
+    // Inventory actually changed...
+    const inventory = await getChunkData("inventory")
+    expect(inventory).toMatchObject({
+      shards: [{ unitId: "necroWarden", amount: 9 }],
+      resetStones: 99,
+    })
+
+    // ...but player-details and live-progress, sharing the same `profile` object store, are
+    // untouched — the re-sync must delete/replace only inventory's own rows.
+    expect(await getChunkData("player-details")).toEqual(
+      chunkData["player-details"]
+    )
+    expect(await getChunkData("live-progress")).toEqual(
+      chunkData["live-progress"]
+    )
+  })
+
   it("surfaces an error naming a failed chunk without wedging the cache", async () => {
     const client = new FakePlayerDataClient(
       createManifest(),
@@ -222,7 +276,7 @@ describe("syncPlayerData", () => {
     ])
   })
 
-  it("self-heals a store missing at the current DB version instead of wedging the sync", async () => {
+  it("self-heals a split chunk's store missing at the current DB version", async () => {
     await seedDbMissingStore("lre-progress")
 
     const result = await syncPlayerData(
@@ -232,6 +286,21 @@ describe("syncPlayerData", () => {
     expect(result.status).toBe("ready")
     expect(await hasCompletePlayerDataCache()).toBe(true)
     expect(await getChunkData("lre-progress")).toEqual([])
+  })
+
+  it("self-heals the shared profile store missing at the current DB version", async () => {
+    await seedDbMissingStore("inventory")
+
+    const result = await syncPlayerData(
+      new FakePlayerDataClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect(await hasCompletePlayerDataCache()).toBe(true)
+    expect(await getChunkData("inventory")).toEqual(chunkData.inventory)
+    expect(await getChunkData("player-details")).toEqual(
+      chunkData["player-details"]
+    )
   })
 
   it("reads a single record from a split chunk by its natural id, without loading the whole chunk", async () => {
