@@ -23,6 +23,8 @@ interface CharacterLookupMobilePageProps {
   progressionEnd: Progression
   pointFive: boolean
   pointFiveDisabled: boolean
+  includeOwned: boolean
+  includeOwnedDisabled: boolean
   loading: boolean
   profile: UnitProfileView | undefined
   baseUpgrades: BaseUpgradeView[]
@@ -33,6 +35,7 @@ interface CharacterLookupMobilePageProps {
   onRangeChange: (start: Rank, end: Rank) => void
   onProgressionRangeChange: (start: Progression, end: Progression) => void
   onPointFiveChange: (value: boolean) => void
+  onIncludeOwnedChange: (value: boolean) => void
   onApply: () => void
   applyDisabled: boolean
 }
@@ -47,6 +50,8 @@ export function CharacterLookupMobilePage({
   progressionEnd,
   pointFive,
   pointFiveDisabled,
+  includeOwned,
+  includeOwnedDisabled,
   profile,
   baseUpgrades,
   groups,
@@ -56,6 +61,7 @@ export function CharacterLookupMobilePage({
   onRangeChange,
   onProgressionRangeChange,
   onPointFiveChange,
+  onIncludeOwnedChange,
   onApply,
   applyDisabled,
 }: CharacterLookupMobilePageProps) {
@@ -101,6 +107,9 @@ export function CharacterLookupMobilePage({
         pointFive={pointFive}
         pointFiveDisabled={pointFiveDisabled}
         onPointFiveChange={onPointFiveChange}
+        includeOwned={includeOwned}
+        includeOwnedDisabled={includeOwnedDisabled}
+        onIncludeOwnedChange={onIncludeOwnedChange}
         onApply={handleApply}
         applyDisabled={applyDisabled}
         isMobile={true}

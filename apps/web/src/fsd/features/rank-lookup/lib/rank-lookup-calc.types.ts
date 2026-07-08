@@ -39,3 +39,9 @@ export interface BaseUpgradeNeed {
   id: string
   count: number
 }
+
+/** A single owned-inventory or applied-upgrade entry: `amount` copies of upgrade `id`. */
+export interface UpgradeAmount {
+  id: string
+  amount: number
+}

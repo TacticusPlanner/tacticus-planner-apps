@@ -48,6 +48,9 @@ export function CharacterLookupControls({
   pointFive,
   pointFiveDisabled,
   onPointFiveChange,
+  includeOwned,
+  includeOwnedDisabled,
+  onIncludeOwnedChange,
   onApply,
   applyDisabled,
   isMobile,
@@ -64,6 +67,9 @@ export function CharacterLookupControls({
   pointFive: boolean
   pointFiveDisabled: boolean
   onPointFiveChange: (value: boolean) => void
+  includeOwned: boolean
+  includeOwnedDisabled: boolean
+  onIncludeOwnedChange: (value: boolean) => void
   onApply: () => void
   applyDisabled: boolean
   isMobile: boolean
@@ -196,6 +202,34 @@ export function CharacterLookupControls({
             {pointFiveDisabled
               ? t("unitLookup.pointFiveAdamantineDisabled")
               : t("unitLookup.pointFiveHint")}
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Switch
+          id="include-owned"
+          checked={includeOwned}
+          disabled={includeOwnedDisabled}
+          onCheckedChange={onIncludeOwnedChange}
+        />
+        <Label htmlFor="include-owned">
+          {t("unitLookup.includeOwnedUpgrades")}
+        </Label>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              aria-label={t("unitLookup.includeOwnedUpgrades")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Info className="size-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            {includeOwnedDisabled
+              ? t("unitLookup.includeOwnedUpgradesSignInRequired")
+              : t("unitLookup.includeOwnedUpgradesHint")}
           </TooltipContent>
         </Tooltip>
       </div>

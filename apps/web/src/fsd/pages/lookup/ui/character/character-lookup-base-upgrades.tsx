@@ -39,6 +39,12 @@ export function BaseUpgradesTable({
             <TableHead className="w-20 text-right">
               {t("unitLookup.count")}
             </TableHead>
+            <TableHead className="w-20 text-right">
+              {t("unitLookup.owned")}
+            </TableHead>
+            <TableHead className="w-20 text-right">
+              {t("unitLookup.missing")}
+            </TableHead>
             <TableHead className="w-28">{t("unitLookup.rarity")}</TableHead>
             <TableHead className="max-w-48">
               {t("unitLookup.campaignLocations")}
@@ -69,6 +75,12 @@ export function BaseUpgradesTable({
               <TableCell className="font-medium">{upgrade.label}</TableCell>
               <TableCell className="text-right tabular-nums">
                 {upgrade.count}
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
+                {upgrade.owned}
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
+                {upgrade.missing}
               </TableCell>
               <TableCell>
                 <RarityIcon rarity={upgrade.rarity} />
@@ -120,6 +132,20 @@ export function BaseUpgradesCards({
               </div>
               <span className="text-lg font-semibold tabular-nums">
                 ×{upgrade.count}
+              </span>
+            </div>
+            <div className="flex gap-4 text-xs text-muted-foreground">
+              <span>
+                {t("unitLookup.owned")}:{" "}
+                <span className="font-medium text-foreground tabular-nums">
+                  {upgrade.owned}
+                </span>
+              </span>
+              <span>
+                {t("unitLookup.missing")}:{" "}
+                <span className="font-medium text-foreground tabular-nums">
+                  {upgrade.missing}
+                </span>
               </span>
             </div>
             <LocationSection

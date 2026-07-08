@@ -1,3 +1,4 @@
+import { CheckCircle2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -87,6 +88,7 @@ function StatColumn({
 }
 
 function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
+  const { t } = useTranslation()
   const hasRecipe = upgrade.recipe.length > 0
 
   return (
@@ -94,15 +96,25 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={upgrade.label}
-          className="rounded-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+          aria-label={
+            upgrade.owned
+              ? `${upgrade.label} (${t("unitLookup.alreadyApplied")})`
+              : upgrade.label
+          }
+          className="relative rounded-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
         >
           <UpgradeIcon
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
-            className="size-12"
+            className={cn("size-12", upgrade.owned && "opacity-50")}
           />
+          {upgrade.owned ? (
+            <CheckCircle2
+              aria-hidden="true"
+              className="absolute -right-1 -bottom-1 size-5 rounded-full bg-background text-primary"
+            />
+          ) : null}
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
@@ -115,6 +127,12 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
           <span className={cn("font-medium", rarityClass(upgrade.rarity))}>
             {upgrade.label}
           </span>
+          {upgrade.owned ? (
+            <Badge variant="secondary" className="gap-1">
+              <CheckCircle2 className="size-3" aria-hidden="true" />
+              {t("unitLookup.alreadyApplied")}
+            </Badge>
+          ) : null}
         </div>
         {hasRecipe ? <RecipeTree items={upgrade.recipe} /> : null}
       </PopoverContent>

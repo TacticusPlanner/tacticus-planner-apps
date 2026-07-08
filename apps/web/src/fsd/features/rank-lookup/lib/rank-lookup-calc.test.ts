@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import {
   aggregateBaseUpgrades,
+  aggregateOwnedBaseUpgrades,
+  appliedUpgradeIds,
   groupUpgradesByRank,
   rankUpUpgradeIds,
   type CharacterLike,
@@ -141,5 +143,46 @@ describe("aggregateBaseUpgrades", () => {
     expect(aggregateBaseUpgrades(["mystery"], upgrades)).toEqual([
       { id: "mystery", count: 1 },
     ])
+  })
+
+  it("expands a crafted inventory entry through its recipe, combined with applied ids", () => {
+    // craft2 owned ×2 = 2×3×base2 = 6×base2; plus a standalone applied base1.
+    const result = aggregateOwnedBaseUpgrades(
+      ["base1"],
+      [{ id: "craft2", amount: 2 }],
+      upgrades
+    )
+    const byId = Object.fromEntries(result.map((r) => [r.id, r.count]))
+    expect(byId).toEqual({ base1: 1, base2: 6 })
+  })
+})
+
+describe("appliedUpgradeIds", () => {
+  it("includes every upgrade for ranks strictly below the current rank", () => {
+    expect(appliedUpgradeIds(character, "Stone2", [])).toEqual([
+      "h1",
+      "h2",
+      "d1",
+      "d2",
+      "a1",
+      "a2",
+    ])
+  })
+
+  it("also includes the current rank's own upgrades at the given slot indices", () => {
+    expect(appliedUpgradeIds(character, "Stone2", [0, 2])).toEqual([
+      "h1",
+      "h2",
+      "d1",
+      "d2",
+      "a1",
+      "a2", // Stone1 fully applied
+      "h3",
+      "d3", // Stone2 slots 0 and 2
+    ])
+  })
+
+  it("returns [] when currentRank is the very first rank with no slots applied", () => {
+    expect(appliedUpgradeIds(character, "Stone1", [])).toEqual([])
   })
 })
