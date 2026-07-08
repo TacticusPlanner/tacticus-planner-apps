@@ -55,8 +55,6 @@ export {
   getGameCatalogMetadata,
   getManifestMetadata,
   hasCompleteGameCatalogCache,
-  getDatasetRecords,
-  getDatasetRecord,
   clearGameCatalogDb,
   type StoredRecord,
   type CharacterRecord,

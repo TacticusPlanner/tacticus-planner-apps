@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { GameCatalogProvider } from "@/shared/game-catalog"
-import { PlayerDataProvider } from "@/shared/player-data"
+import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"

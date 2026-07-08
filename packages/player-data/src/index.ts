@@ -33,8 +33,6 @@ export {
   getPlayerDataMetadata,
   getManifestMetadata,
   hasCompletePlayerDataCache,
-  getChunkData,
-  getChunkRecord,
   clearPlayerDataDb,
 } from "./player-data-storage"
 

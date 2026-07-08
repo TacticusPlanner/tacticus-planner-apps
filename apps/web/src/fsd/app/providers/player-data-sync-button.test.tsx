@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
-import type { PlayerDataStatus } from "@/shared/player-data"
+import type { PlayerDataStatus } from "./player-data-provider"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -13,7 +13,7 @@ const { usePlayerDataStatusMock } = vi.hoisted(() => ({
   usePlayerDataStatusMock: vi.fn(),
 }))
 
-vi.mock("@/shared/player-data", () => ({
+vi.mock("./player-data-provider", () => ({
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
 }))
 

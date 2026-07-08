@@ -36,15 +36,6 @@ vi.mock("../providers/language-switcher", () => ({
 }))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
 vi.mock("@/shared/tour", () => ({ TourButton: () => null }))
-vi.mock("@/shared/player-data", () => ({
-  usePlayerDataStatus: () => ({
-    status: "idle",
-    progress: null,
-    lastSyncedAt: null,
-    error: null,
-    syncNow: vi.fn(),
-  }),
-}))
 
 import { DesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"

@@ -8,7 +8,7 @@ import type { BattleLike, FarmLocationLike } from "@/shared/lib"
 
 import type { CharacterLike, UpgradeLike } from "./rank-lookup-calc"
 
-// Typed adapters from raw `useDatasetRecords`/`getDatasetRecords` catalog rows to this feature's
+// Typed adapters from raw `@workspace/game-catalog/queries` catalog rows to this feature's
 // narrower calc-input shapes. Every field here is read off a fully-typed record (no `unknown`),
 // so no cast is needed on either side — the only real transformation is the `craftable` →
 // `crafted` rename between the catalog schema's field name and this feature's domain vocabulary.

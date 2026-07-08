@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@workspace/game-catalog": "workspace:*",
-    "idb": "^8.0.3",
+    "dexie": "^4.4.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -28,6 +28,7 @@
     "vitest": "catalog:"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./queries": "./src/queries.ts"
   }
 }

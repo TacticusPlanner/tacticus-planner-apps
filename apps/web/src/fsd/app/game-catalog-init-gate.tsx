@@ -4,7 +4,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useGameCatalogStatus } from "@/shared/game-catalog"
+import { useGameCatalogStatus } from "@/app/providers"
 
 /**
  * Blocks the home content with a full-screen overlay while the game catalog initializes/syncs. Shows

@@ -16,7 +16,7 @@ import {
 import {
   useGameCatalogStatus,
   type GameCatalogStatus,
-} from "@/shared/game-catalog"
+} from "./game-catalog-provider"
 
 const statusIcons: Record<GameCatalogStatus, typeof CheckCircle2> = {
   idle: CircleDashed,

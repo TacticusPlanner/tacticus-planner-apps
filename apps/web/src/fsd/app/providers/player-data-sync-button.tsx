@@ -12,7 +12,7 @@ import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import {
   usePlayerDataStatus,
   type PlayerDataStatus,
-} from "@/shared/player-data"
+} from "./player-data-provider"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,

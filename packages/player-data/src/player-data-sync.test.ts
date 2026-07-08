@@ -1,3 +1,4 @@
+import Dexie from "dexie"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import type { PlayerDataClient } from "./player-data-api"
@@ -6,16 +7,11 @@ import {
   getChunkRecord,
   hasCompletePlayerDataCache,
   playerDataDbName,
-  playerDataDbVersion,
-  splitChunkKeyPath,
 } from "./player-data-storage"
 import { syncPlayerData } from "./player-data-sync"
 import {
-  isMergedPlayerDataChunkKey,
-  isSplitPlayerDataChunkKey,
   playerDataChunkKeys,
   type PlayerDataChunkEnvelope,
-  type PlayerDataChunkKey,
   type PlayerDataManifest,
   type PlayerDataManifestChunk,
 } from "./types"
@@ -116,47 +112,7 @@ class FakePlayerDataClient implements PlayerDataClient {
 }
 
 function resetDb() {
-  return new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase(playerDataDbName)
-
-    request.onsuccess = () => resolve()
-    request.onerror = () => resolve()
-    request.onblocked = () => resolve()
-  })
-}
-
-// Reproduces the same class of bug @workspace/game-catalog's storage layer guards against: a store
-// added to the schema without a matching `playerDataDbVersion` bump, so an existing client's DB —
-// already at the current version — never gets an `upgradeneeded` and is left without it. `missingKey`
-// may be a split chunk (skips just that chunk's own store) or one of the three merged chunks (skips
-// the shared `profile` store all three live in).
-function seedDbMissingStore(missingKey: PlayerDataChunkKey) {
-  return new Promise<void>((resolve, reject) => {
-    const request = indexedDB.open(playerDataDbName, playerDataDbVersion)
-
-    request.onupgradeneeded = () => {
-      const db = request.result
-      db.createObjectStore("metadata", { keyPath: "key" })
-
-      if (!isMergedPlayerDataChunkKey(missingKey)) {
-        db.createObjectStore("profile", { keyPath: "id" })
-      }
-
-      for (const key of playerDataChunkKeys) {
-        if (key === missingKey || !isSplitPlayerDataChunkKey(key)) {
-          continue
-        }
-
-        db.createObjectStore(key, { keyPath: splitChunkKeyPath[key] })
-      }
-    }
-
-    request.onsuccess = () => {
-      request.result.close()
-      resolve()
-    }
-    request.onerror = () => reject(request.error as Error)
-  })
+  return Dexie.delete(playerDataDbName)
 }
 
 beforeEach(resetDb)
@@ -276,32 +232,12 @@ describe("syncPlayerData", () => {
     ])
   })
 
-  it("self-heals a split chunk's store missing at the current DB version", async () => {
-    await seedDbMissingStore("lre-progress")
-
-    const result = await syncPlayerData(
-      new FakePlayerDataClient(createManifest())
-    )
-
-    expect(result.status).toBe("ready")
-    expect(await hasCompletePlayerDataCache()).toBe(true)
-    expect(await getChunkData("lre-progress")).toEqual([])
-  })
-
-  it("self-heals the shared profile store missing at the current DB version", async () => {
-    await seedDbMissingStore("inventory")
-
-    const result = await syncPlayerData(
-      new FakePlayerDataClient(createManifest())
-    )
-
-    expect(result.status).toBe("ready")
-    expect(await hasCompletePlayerDataCache()).toBe(true)
-    expect(await getChunkData("inventory")).toEqual(chunkData.inventory)
-    expect(await getChunkData("player-details")).toEqual(
-      chunkData["player-details"]
-    )
-  })
+  // No "client is behind on a store added later" regression test here (unlike
+  // game-catalog-sync.test.ts's equivalent): `playerDataDbVersion` is still 1, the lowest valid
+  // IndexedDB version, so there's no lower version to seed a raw pre-existing client at. The
+  // underlying mechanism being proven — Dexie's version-upgrade cascade creating a store the
+  // declared schema requires but the client's stored version predates — is exactly the same code
+  // path exercised by the game-catalog package's test, and isn't package-specific.
 
   it("reads a single record from a split chunk by its natural id, without loading the whole chunk", async () => {
     await syncPlayerData(new FakePlayerDataClient(createManifest()))

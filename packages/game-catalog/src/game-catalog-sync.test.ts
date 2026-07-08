@@ -1,3 +1,4 @@
+import Dexie from "dexie"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import type {
@@ -126,21 +127,17 @@ class FakeGameCatalogClient implements GameCatalogClient {
 }
 
 function resetDb() {
-  return new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase(catalogDbName)
-
-    request.onsuccess = () => resolve()
-    request.onerror = () => resolve()
-    request.onblocked = () => resolve()
-  })
+  return Dexie.delete(catalogDbName)
 }
 
-// Reproduces the real bug this regression guards against: a dataset (`missingKey`) got added to
-// `servedDatasetKeys` without a matching `catalogDbVersion` bump, so an existing client's DB — already
-// at the current version — never gets an `upgradeneeded` and is left without that store.
+// Simulates a real pre-existing client one version behind — missing a dataset (`missingKey`) that was
+// added in a later version. Opens the *raw* IDB API directly (not Dexie) at `catalogDbVersion - 1` to
+// set up that "before" state; the migrated storage code then opens at the current `catalogDbVersion`
+// via the app's normal path, and Dexie's own version-upgrade cascade (not a custom self-heal
+// workaround) must create the missing store so the sync proceeds normally.
 function seedDbMissingStore(missingKey: string) {
   return new Promise<void>((resolve, reject) => {
-    const request = indexedDB.open(catalogDbName, catalogDbVersion)
+    const request = indexedDB.open(catalogDbName, catalogDbVersion - 1)
 
     request.onupgradeneeded = () => {
       const db = request.result
@@ -256,7 +253,7 @@ describe("syncGameCatalog", () => {
     expect(await getDatasetRecords("characters")).toHaveLength(1)
   })
 
-  it("self-heals a store missing at the current DB version instead of wedging the sync", async () => {
+  it("uses Dexie's own version-upgrade cascade to create a store a client is behind on, instead of wedging the sync", async () => {
     await seedDbMissingStore("lre-common")
 
     const result = await syncGameCatalog(

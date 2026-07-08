@@ -1,20 +1,35 @@
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
+import { useLiveQuery } from "dexie-react-hooks"
 import {
   campaignDescriptor,
   campaignIcon,
   groupByFaction,
   isAdamantineRank,
   progressionStars,
+  rankIndex,
   rarityRank,
   statAtRank,
   type CampaignDefinitionRecord,
+  type Rank,
 } from "@workspace/game-catalog"
+import {
+  getCampaignBattles,
+  getCampaignDefinitions,
+  getCharacters,
+  getUpgrades,
+} from "@workspace/game-catalog/queries"
+import {
+  getInventoryUpgrades,
+  getPlayerCharacter,
+} from "@workspace/player-data/queries"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   aggregateBaseUpgrades,
+  aggregateOwnedBaseUpgrades,
+  appliedUpgradeIds,
   groupUpgradesByRank,
   rankUpUpgradeIds,
   toBattleLike,
@@ -22,9 +37,7 @@ import {
   toUpgradeWithFarmLocations,
   type RecipeIngredient,
 } from "@/features/rank-lookup"
-import { useDatasetRecords, useDatasetRecordsMap } from "@/shared/game-catalog"
 import { computeCampaignInsights, useCampaignDisplay } from "@/shared/lib"
-import { usePlayerChunkRecord } from "@/shared/player-data"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
@@ -41,6 +54,11 @@ import type { UnitProfileView } from "./unit-profile.types"
 
 const toReleaseType = (definition: CampaignDefinitionRecord) =>
   definition.releaseType
+
+// A unique sentinel (not a plain value) so it can be distinguished from a legitimately-resolved
+// result via reference equality — the documented Dexie pattern for detecting "still loading" with
+// useLiveQuery, since its `defaultResult` argument is only returned before the first resolution.
+const PLAYER_CHARACTER_LOADING = Symbol("loading")
 
 export function CharacterLookupPage() {
   const { t } = useTranslation([
@@ -61,34 +79,47 @@ export function CharacterLookupPage() {
 
   useTourPageSteps(useCharacterLookupTutorial())
 
-  const characters = useDatasetRecords("characters")
-  const { data: charactersById } = useDatasetRecordsMap("characters")
-  const { data: upgradesById, loading: upgradesLoading } = useDatasetRecordsMap(
-    "upgrades",
-    toUpgradeWithFarmLocations
+  const characters = useLiveQuery(() => getCharacters(), [])
+  const charactersById = useMemo(
+    () => new Map((characters ?? []).map((c) => [c.id, c])),
+    [characters]
   )
-  const { data: battlesById } = useDatasetRecordsMap(
-    "campaign-battles",
-    toBattleLike
+
+  const upgrades = useLiveQuery(() => getUpgrades(), [])
+  const upgradesById = useMemo(
+    () =>
+      new Map(
+        (upgrades ?? []).map((u) => [u.id, toUpgradeWithFarmLocations(u)])
+      ),
+    [upgrades]
   )
+
+  const campaignBattles = useLiveQuery(() => getCampaignBattles(), [])
+  const battlesById = useMemo(
+    () => new Map((campaignBattles ?? []).map((b) => [b.id, toBattleLike(b)])),
+    [campaignBattles]
+  )
+
   // A campaign-definition's `id` is already its `groupId` (see `groupsWithId` in
   // game-catalog-storage.ts), so indexing by `id` here doubles as indexing by `groupId`.
-  const { data: releaseTypeByGroupId } = useDatasetRecordsMap(
-    "campaign-definitions",
-    toReleaseType
+  const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
+  const releaseTypeByGroupId = useMemo(
+    () =>
+      new Map((campaignDefinitions ?? []).map((d) => [d.id, toReleaseType(d)])),
+    [campaignDefinitions]
   )
 
   const characterGroups = useMemo(
     () =>
       groupByFaction(
-        characters.data.map((c) => ({
+        (characters ?? []).map((c) => ({
           id: c.id,
           name: t(`characters:${c.id}`, { defaultValue: c.name }),
           faction: c.faction,
         })),
         (factionId) => t(`factions:${factionId}`, { defaultValue: factionId })
       ),
-    [characters.data, t]
+    [characters, t]
   )
 
   const {
@@ -113,11 +144,27 @@ export function CharacterLookupPage() {
   // just to prefill the "from" rank/progression once it loads, see the effect below. MoWs are
   // irrelevant here — Character Lookup only ever looks up characters, which have a rank/equipment
   // MoWs don't.
-  const { data: playerCharacter, loading: playerCharacterLoading } =
-    usePlayerChunkRecord(
-      "characters",
-      isAuthenticated ? draftCharacterId : undefined
-    )
+  const playerCharacterResult = useLiveQuery(
+    () =>
+      isAuthenticated && draftCharacterId
+        ? getPlayerCharacter(draftCharacterId).then((data) => ({
+            id: draftCharacterId,
+            data,
+          }))
+        : { id: draftCharacterId, data: undefined },
+    [isAuthenticated, draftCharacterId],
+    PLAYER_CHARACTER_LOADING
+  )
+  const playerCharacter =
+    playerCharacterResult !== PLAYER_CHARACTER_LOADING &&
+    playerCharacterResult.id === draftCharacterId
+      ? playerCharacterResult.data
+      : undefined
+  const playerCharacterLoading =
+    isAuthenticated &&
+    !!draftCharacterId &&
+    (playerCharacterResult === PLAYER_CHARACTER_LOADING ||
+      playerCharacterResult.id !== draftCharacterId)
 
   // Applies the synced rank/progression prefill once per character selection, as soon as it's
   // available — never on a later background refresh of the same character, so it can't clobber
@@ -155,6 +202,19 @@ export function CharacterLookupPage() {
     playerCharacterLoading,
     setDraftCharacterId,
   ])
+
+  // Whether to net the player's already-applied/owned upgrades out of the required totals below —
+  // deliberately local (not part of useLookupSelection's URL-synced state), since "include my
+  // personal inventory" isn't something that should travel in a shareable link. Derived (not
+  // reset via an effect) so a disabled toggle can never be shown "on": whenever signed out,
+  // `effectiveIncludeOwned` reads false regardless of the raw switch state underneath.
+  const [includeOwned, setIncludeOwned] = useState(false)
+  const effectiveIncludeOwned = includeOwned && isAuthenticated
+
+  // Whole inventory-upgrades chunk (not a single record — we don't know in advance which ids the
+  // player owns), used only once includeOwned is on; harmless/unused otherwise.
+  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+
   const characterId = applied.characterId ?? characterGroups[0]?.members[0]?.id
 
   const character = characterId ? charactersById.get(characterId) : undefined
@@ -180,6 +240,22 @@ export function CharacterLookupPage() {
 
   const groups = useMemo<RankGroupView[]>(() => {
     if (!characterForCalc) return []
+
+    // Only "already applied to this character" is marked here — a hard, positional fact. Inventory
+    // stock (not yet applied) isn't allocated across these icons: there's no non-arbitrary way to
+    // decide which future slot a stock copy "counts against", so inventory only affects the
+    // aggregate views (baseUpgrades/campaign insights below).
+    const currentRank = effectiveIncludeOwned
+      ? playerCharacter?.rank
+      : undefined
+    const appliedSlotIndices = playerCharacter?.appliedUpgradeSlots ?? []
+    const isSlotOwned = (fromRank: Rank, index: number): boolean => {
+      if (!currentRank) return false
+      if (rankIndex(fromRank) < rankIndex(currentRank)) return true
+      if (fromRank === currentRank) return appliedSlotIndices.includes(index)
+      return false
+    }
+
     return groupUpgradesByRank(
       characterForCalc,
       applied.rankStart,
@@ -191,7 +267,7 @@ export function CharacterLookupPage() {
         Damage: [],
         Armour: [],
       }
-      for (const id of group.upgradeIds) {
+      group.upgradeIds.forEach((id, index) => {
         const up = upgradesById.get(id)
         const view: UpgradeView = {
           id,
@@ -199,9 +275,10 @@ export function CharacterLookupPage() {
           rarity: up?.rarity ?? "Common",
           crafted: up?.crafted ?? false,
           recipe: resolveRecipe(up?.recipe ?? []),
+          owned: isSlotOwned(group.fromRank, index),
         }
         ;(byStat[up?.stat ?? "Health"] ??= []).push(view)
-      }
+      })
       return {
         fromRank: group.fromRank,
         toRank: group.toRank,
@@ -219,6 +296,8 @@ export function CharacterLookupPage() {
     upgradesById,
     t,
     resolveRecipe,
+    effectiveIncludeOwned,
+    playerCharacter,
   ])
 
   // Shared by baseUpgrades and campaignInsights below so the upgrade-id → count aggregation only
@@ -239,6 +318,47 @@ export function CharacterLookupPage() {
     applied.pointFive,
     upgradesById,
   ])
+
+  // Base-upgrade-id → owned amount (applied to the character + inventory, both base and crafted
+  // expanded through their recipe) — empty unless the toggle is on and there's synced player data to
+  // draw from, so every downstream read (`owned ?? 0`) is a no-op fallback to today's behavior.
+  const ownedBaseUpgrades = useMemo(() => {
+    if (!effectiveIncludeOwned || !characterForCalc || !playerCharacter) {
+      return new Map<string, number>()
+    }
+    const applied = appliedUpgradeIds(
+      characterForCalc,
+      playerCharacter.rank,
+      playerCharacter.appliedUpgradeSlots
+    )
+    const owned = aggregateOwnedBaseUpgrades(
+      applied,
+      (inventoryUpgrades ?? []).map((entry) => ({
+        id: entry.upgradeId,
+        amount: entry.amount,
+      })),
+      upgradesById
+    )
+    return new Map(owned.map((entry) => [entry.id, entry.count]))
+  }, [
+    effectiveIncludeOwned,
+    characterForCalc,
+    playerCharacter,
+    inventoryUpgrades,
+    upgradesById,
+  ])
+
+  // `needs` with owned amounts deducted (floored at 0) — feeds campaign insights so farming
+  // recommendations reflect what's actually still needed, not the raw theoretical total. Identical
+  // to `needs` whenever ownedBaseUpgrades is empty (toggle off / unauthenticated).
+  const effectiveNeeds = useMemo(
+    () =>
+      needs.map((need) => ({
+        id: need.id,
+        count: Math.max(0, need.count - (ownedBaseUpgrades.get(need.id) ?? 0)),
+      })),
+    [needs, ownedBaseUpgrades]
+  )
 
   const baseUpgrades = useMemo<BaseUpgradeView[]>(() => {
     return needs
@@ -306,9 +426,13 @@ export function CharacterLookupPage() {
           }
         })
 
+        const owned = ownedBaseUpgrades.get(need.id) ?? 0
+
         return {
           id: need.id,
           count: need.count,
+          owned,
+          missing: Math.max(0, need.count - owned),
           label: t(`upgrades:${need.id}`, {
             defaultValue: up?.label ?? need.id,
           }),
@@ -324,10 +448,11 @@ export function CharacterLookupPage() {
       })
       .sort(
         (a, b) =>
-          rarityRank(b.rarity) - rarityRank(a.rarity) || b.count - a.count
+          rarityRank(b.rarity) - rarityRank(a.rarity) || b.missing - a.missing
       )
   }, [
     needs,
+    ownedBaseUpgrades,
     upgradesById,
     battlesById,
     releaseTypeByGroupId,
@@ -338,7 +463,7 @@ export function CharacterLookupPage() {
   const { campaignInsights, eventInsights } = useMemo(
     () =>
       computeCampaignInsights(
-        needs,
+        effectiveNeeds,
         upgradesById,
         battlesById,
         (groupId) => releaseTypeByGroupId.get(groupId) === "event",
@@ -346,7 +471,7 @@ export function CharacterLookupPage() {
           isEvent ? campaignName(descriptor) : campaignFullLabel(descriptor)
       ),
     [
-      needs,
+      effectiveNeeds,
       upgradesById,
       battlesById,
       releaseTypeByGroupId,
@@ -413,9 +538,7 @@ export function CharacterLookupPage() {
     t,
   ])
 
-  const loading =
-    (characters.loading && characters.data.length === 0) ||
-    (upgradesLoading && upgradesById.size === 0)
+  const loading = characters === undefined || upgrades === undefined
 
   const sharedProps = {
     characterGroups,
@@ -426,6 +549,8 @@ export function CharacterLookupPage() {
     progressionEnd: draft.progressionEnd,
     pointFive: draft.pointFive,
     pointFiveDisabled: isAdamantineRank(draft.rankEnd),
+    includeOwned: effectiveIncludeOwned,
+    includeOwnedDisabled: !isAuthenticated,
     loading,
     profile,
     baseUpgrades,
@@ -436,6 +561,7 @@ export function CharacterLookupPage() {
     onRangeChange: setDraftRange,
     onProgressionRangeChange: setDraftProgressionRange,
     onPointFiveChange: setDraftPointFive,
+    onIncludeOwnedChange: setIncludeOwned,
     onApply: handleApply,
     applyDisabled: !isDirty,
   }

@@ -1,21 +1,20 @@
-import { openDB, type IDBPDatabase } from "idb"
+import Dexie, { type Table } from "dexie"
 
 import {
   isMergedPlayerDataChunkKey,
   isSplitPlayerDataChunkKey,
   playerDataChunkKeys,
   playerDataManifestMetadataKey,
+  splitPlayerDataChunkKeys,
   type MergedPlayerDataChunkKey,
   type PlayerDataChunkKey,
   type SplitPlayerDataChunkKey,
 } from "./chunk-keys"
 import type { PlayerDataChunkPayload, PlayerDataMetadata } from "./types"
 
-// Exported (not just for internal use) so tests can set up a raw IndexedDB connection at the exact
-// name/version the app uses — mirrors @workspace/game-catalog's storage layer.
+// Exported so tests can delete/reset the exact database the app uses (see player-data-sync.test.ts).
 export const playerDataDbName = "tacticus-planner-player-data"
-export const playerDataDbVersion = 1
-const metadataStore = "metadata"
+const playerDataDbVersion = 1
 // Shared by every "merged" chunk (see chunk-keys.ts) — holds several small records per chunk instead
 // of giving each chunk its own single-row store.
 const profileStore = "profile"
@@ -24,14 +23,8 @@ const profileStore = "profile"
  * Natural per-record key for each split chunk's own store (see `splitPlayerDataChunkKeys` in
  * chunk-keys.ts). Campaign identity has no single natural id field, so it uses a compound key instead
  * of injecting a synthetic one.
- *
- * Exported so tests can seed a raw IndexedDB connection with the exact same per-store schema this
- * module uses (see the self-healing regression test in player-data-sync.test.ts).
  */
-export const splitChunkKeyPath: Record<
-  SplitPlayerDataChunkKey,
-  string | string[]
-> = {
+const splitChunkKeyPath: Record<SplitPlayerDataChunkKey, string | string[]> = {
   characters: "unitId",
   mows: "unitId",
   "inventory-upgrades": "upgradeId",
@@ -41,15 +34,14 @@ export const splitChunkKeyPath: Record<
   "lre-progress": "id",
 }
 
-function storeNameForChunk(chunkKey: PlayerDataChunkKey): string {
-  return isMergedPlayerDataChunkKey(chunkKey) ? profileStore : chunkKey
+// Dexie's schema-string syntax for a compound primary key is "[fieldA+fieldB]"; a plain field name is
+// used as-is for a single-field key.
+function toDexieKeyPath(keyPath: string | string[]): string {
+  return Array.isArray(keyPath) ? `[${keyPath.join("+")}]` : keyPath
 }
 
-// A range covering every `profile`-store row belonging to one merged chunk — every such row's id is
-// prefixed `${chunkKey}:...`, so this both selects (getAll) and scopes a delete to exactly one
-// chunk's rows without touching the other two chunks sharing the store.
-function chunkKeyRange(chunkKey: string): IDBKeyRange {
-  return IDBKeyRange.bound(`${chunkKey}:`, `${chunkKey}:\uFFFF`)
+function storeNameForChunk(chunkKey: PlayerDataChunkKey): string {
+  return isMergedPlayerDataChunkKey(chunkKey) ? profileStore : chunkKey
 }
 
 function withoutId<T extends { id: string }>(record: T): Omit<T, "id"> {
@@ -170,84 +162,41 @@ function reassembleMergedChunk(
   }
 }
 
-function upgradePlayerDataDb(db: IDBPDatabase) {
-  if (!db.objectStoreNames.contains(metadataStore)) {
-    db.createObjectStore(metadataStore, { keyPath: "key" })
-  }
-
-  if (!db.objectStoreNames.contains(profileStore)) {
-    db.createObjectStore(profileStore, { keyPath: "id" })
-  }
-
-  for (const chunkKey of playerDataChunkKeys) {
-    if (!isSplitPlayerDataChunkKey(chunkKey)) {
-      continue
-    }
-
-    if (!db.objectStoreNames.contains(chunkKey)) {
-      db.createObjectStore(chunkKey, { keyPath: splitChunkKeyPath[chunkKey] })
-    }
-  }
-}
-
-function hasAllRequiredStores(db: IDBPDatabase): boolean {
-  return (
-    db.objectStoreNames.contains(metadataStore) &&
-    db.objectStoreNames.contains(profileStore) &&
-    playerDataChunkKeys
-      .filter(isSplitPlayerDataChunkKey)
-      .every((chunkKey) => db.objectStoreNames.contains(chunkKey))
-  )
-}
-
-async function openAtDeclaredVersion(): Promise<IDBPDatabase> {
-  try {
-    return await openDB(playerDataDbName, playerDataDbVersion, {
-      upgrade: upgradePlayerDataDb,
-    })
-  } catch (error) {
-    // A previous self-heal (below) may have already bumped the stored version past
-    // `playerDataDbVersion` — requesting the (now stale) declared version throws a VersionError
-    // rather than downgrading. Attach at whatever version is already there instead of failing.
-    if (error instanceof DOMException && error.name === "VersionError") {
-      return openDB(playerDataDbName)
-    }
-
-    throw error
-  }
-}
-
 /**
- * Opens the player-data DB, self-healing if a required store is missing even though the DB is
- * already at `playerDataDbVersion` — mirrors @workspace/game-catalog's storage layer (see its header
- * comment for the real bug this guards against): a chunk key added later without a matching version
- * bump would otherwise wedge every sync for existing clients forever.
+ * Single long-lived Dexie instance for the whole app's lifetime — idiomatic Dexie usage (repeatedly
+ * closing/reopening a connection defeats its internal optimizations and is explicitly discouraged).
+ * One complete `.version().stores()` block: this is greenfield (nothing has shipped), so there's no
+ * historical version chain to replay. Dexie's own version-upgrade cascade — each version declares its
+ * *complete* store list, and Dexie walks any older client through every version up to the latest — is
+ * what future chunk additions should rely on (bump `playerDataDbVersion`, add a new
+ * `.version(N+1).stores({...})` block here), not a custom self-heal workaround: this replaces the
+ * previous hand-rolled "detect a missing store and reopen one version higher" logic entirely.
  */
-async function openPlayerDataDb() {
-  const db = await openAtDeclaredVersion()
+class PlayerDataDb extends Dexie {
+  metadata!: Table<PlayerDataMetadata, string>
 
-  if (hasAllRequiredStores(db)) {
-    return db
+  constructor() {
+    super(playerDataDbName)
+
+    this.version(playerDataDbVersion).stores({
+      metadata: "key",
+      profile: "id",
+      ...Object.fromEntries(
+        splitPlayerDataChunkKeys.map((key) => [
+          key,
+          toDexieKeyPath(splitChunkKeyPath[key]),
+        ])
+      ),
+    })
   }
-
-  const healedVersion = db.version + 1
-  db.close()
-
-  return openDB(playerDataDbName, healedVersion, {
-    upgrade: upgradePlayerDataDb,
-  })
 }
+
+const playerDataDb = new PlayerDataDb()
 
 export async function getPlayerDataMetadata() {
-  const db = await openPlayerDataDb()
+  const values = await playerDataDb.metadata.toArray()
 
-  try {
-    const values = (await db.getAll(metadataStore)) as PlayerDataMetadata[]
-
-    return new Map(values.map((metadata) => [metadata.key, metadata]))
-  } finally {
-    db.close()
-  }
+  return new Map(values.map((metadata) => [metadata.key, metadata]))
 }
 
 export function getManifestMetadata(
@@ -264,58 +213,40 @@ export async function hasCompletePlayerDataCache() {
 
 /**
  * Replaces a changed chunk on re-sync, in one transaction: a merged chunk deletes just its own rows
- * from the shared `profile` store (not a full `clear()`, which would wipe the other two chunks
- * sharing it) and re-adds its decomposed records; a split chunk empties its own store and re-adds
- * every record. Always also writes the chunk's metadata row. `data` is `unknown` here (already
- * zod-validated by the caller against the matching per-chunk schema) so the sync loop — which is
- * necessarily heterogeneous across chunk keys — doesn't need an unsound cast to call this;
- * `getChunkData`/`getChunkRecord` below are the typed read side.
+ * from the shared `profile` store (`.where('id').startsWith(...)`, not a full `clear()`, which would
+ * wipe the other two chunks sharing it) and re-adds its decomposed records; a split chunk empties its
+ * own store and re-adds every record. Always also writes the chunk's metadata row. `data` is
+ * `unknown` here (already zod-validated by the caller against the matching per-chunk schema) so the
+ * sync loop — which is necessarily heterogeneous across chunk keys — doesn't need an unsound cast to
+ * call this; `getChunkData`/`getChunkRecord` below are the typed read side.
  */
 export async function replacePlayerDataChunk(
   chunkKey: PlayerDataChunkKey,
   data: unknown,
   metadata: PlayerDataMetadata
 ) {
-  const storeName = storeNameForChunk(chunkKey)
-  const db = await openPlayerDataDb()
+  const table = playerDataDb.table(storeNameForChunk(chunkKey))
 
-  try {
-    const transaction = db.transaction([storeName, metadataStore], "readwrite")
-    const store = transaction.objectStore(storeName)
-
-    if (isMergedPlayerDataChunkKey(chunkKey)) {
-      await store.delete(chunkKeyRange(chunkKey))
-
-      for (const record of decomposeMergedChunk(chunkKey, data)) {
-        await store.put(record)
+  await playerDataDb.transaction(
+    "rw",
+    table,
+    playerDataDb.metadata,
+    async () => {
+      if (isMergedPlayerDataChunkKey(chunkKey)) {
+        await table.where("id").startsWith(`${chunkKey}:`).delete()
+        await table.bulkPut(decomposeMergedChunk(chunkKey, data))
+      } else if (isSplitPlayerDataChunkKey(chunkKey)) {
+        await table.clear()
+        await table.bulkPut(Array.isArray(data) ? data : [])
       }
-    } else if (isSplitPlayerDataChunkKey(chunkKey)) {
-      await store.clear()
 
-      for (const record of Array.isArray(data) ? data : []) {
-        await store.put(record)
-      }
+      await playerDataDb.metadata.put(metadata)
     }
-
-    await transaction.objectStore(metadataStore).put(metadata)
-
-    await transaction.done
-  } finally {
-    // Without this, a mid-transaction failure (e.g. a record missing its keyPath field) leaks an open
-    // connection — which then blocks any later version-bumping open (including the self-heal path
-    // above) until the tab/process closes.
-    db.close()
-  }
+  )
 }
 
 export async function saveManifestMetadata(metadata: PlayerDataMetadata) {
-  const db = await openPlayerDataDb()
-
-  try {
-    await db.put(metadataStore, metadata)
-  } finally {
-    db.close()
-  }
+  await playerDataDb.metadata.put(metadata)
 }
 
 /**
@@ -328,33 +259,30 @@ export async function saveManifestMetadata(metadata: PlayerDataMetadata) {
 export async function getChunkData<K extends PlayerDataChunkKey>(
   chunkKey: K
 ): Promise<PlayerDataChunkPayload<K> | undefined> {
-  const db = await openPlayerDataDb()
+  const chunkMetadata = await playerDataDb.metadata.get(chunkKey)
 
-  try {
-    const chunkMetadata = await db.get(metadataStore, chunkKey)
-
-    if (!chunkMetadata) {
-      return undefined
-    }
-
-    if (isMergedPlayerDataChunkKey(chunkKey)) {
-      const records = (await db.getAll(
-        profileStore,
-        chunkKeyRange(chunkKey)
-      )) as { id: string }[]
-
-      return reassembleMergedChunk(chunkKey, records) as
-        PlayerDataChunkPayload<K> | undefined
-    }
-
-    if (isSplitPlayerDataChunkKey(chunkKey)) {
-      return (await db.getAll(chunkKey)) as PlayerDataChunkPayload<K>
-    }
-
+  if (!chunkMetadata) {
     return undefined
-  } finally {
-    db.close()
   }
+
+  if (isMergedPlayerDataChunkKey(chunkKey)) {
+    const records = await playerDataDb
+      .table<{ id: string }, string>(profileStore)
+      .where("id")
+      .startsWith(`${chunkKey}:`)
+      .toArray()
+
+    return reassembleMergedChunk(chunkKey, records) as
+      PlayerDataChunkPayload<K> | undefined
+  }
+
+  if (isSplitPlayerDataChunkKey(chunkKey)) {
+    return (await playerDataDb
+      .table(chunkKey)
+      .toArray()) as PlayerDataChunkPayload<K>
+  }
+
+  return undefined
 }
 
 /**
@@ -367,29 +295,15 @@ export async function getChunkRecord<K extends SplitPlayerDataChunkKey>(
   chunkKey: K,
   id: string | readonly string[]
 ): Promise<PlayerDataChunkPayload<K>[number] | undefined> {
-  const db = await openPlayerDataDb()
-
-  try {
-    return (await db.get(chunkKey, id as string | string[])) as
-      PlayerDataChunkPayload<K>[number] | undefined
-  } finally {
-    db.close()
-  }
+  return playerDataDb.table(chunkKey).get(id as string | string[])
 }
 
 export async function clearPlayerDataDb() {
-  const db = await openPlayerDataDb()
-  const storeNames = [
-    metadataStore,
-    profileStore,
-    ...playerDataChunkKeys.filter(isSplitPlayerDataChunkKey),
-  ]
-  const transaction = db.transaction(storeNames, "readwrite")
+  const tableNames = ["metadata", profileStore, ...splitPlayerDataChunkKeys]
 
-  for (const storeName of storeNames) {
-    await transaction.objectStore(storeName).clear()
-  }
-
-  await transaction.done
-  db.close()
+  await playerDataDb.transaction("rw", tableNames, async () => {
+    await Promise.all(
+      tableNames.map((name) => playerDataDb.table(name).clear())
+    )
+  })
 }
