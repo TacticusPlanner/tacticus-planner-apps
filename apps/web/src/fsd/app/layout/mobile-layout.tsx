@@ -1,6 +1,6 @@
-import { Suspense, useState } from "react"
+import { Suspense, useState, type ComponentProps } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, Menu, Settings } from "lucide-react"
+import { LogIn, Menu, PlusCircle, RefreshCw, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -17,6 +17,7 @@ import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
+import { usePlayerDataSyncStatus } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
 import "./mobile-layout.css"
@@ -130,6 +131,58 @@ function isItemActive(pathname: string, path: string) {
   return pathname === path || pathname.startsWith(path + "/")
 }
 
+// Raised, filled, circular — deliberately unlike the plain text nav links below, so these read as
+// actions rather than destinations. Mirrors the desktop sidebar's "Create Goal"/"Sync with Tacticus"
+// primary actions, positioned centered and floating above the bar (a common mobile pattern for
+// actions that aren't page navigation).
+function MobileNavActionButton({
+  className,
+  ...props
+}: ComponentProps<"button">) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-opacity disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function MobileNavActions() {
+  const { t } = useTranslation()
+  const { isSyncing, statusText, syncNow } = usePlayerDataSyncStatus()
+
+  return (
+    <div className="pointer-events-none absolute inset-x-0 -top-6 flex justify-center gap-4">
+      <MobileNavActionButton
+        aria-label={t("nav.createGoal")}
+        className="pointer-events-auto"
+        data-testid="mobile-create-goal-button"
+        disabled
+        title={t("nav.createGoal")}
+      >
+        <PlusCircle className="size-6" aria-hidden="true" />
+      </MobileNavActionButton>
+      <MobileNavActionButton
+        aria-label={t("nav.syncWithTacticus")}
+        className="pointer-events-auto"
+        data-testid="mobile-sync-button"
+        disabled={isSyncing}
+        onClick={syncNow}
+        title={`${t("nav.syncWithTacticus")} — ${statusText}`}
+      >
+        <RefreshCw
+          aria-hidden="true"
+          className={cn("size-6", isSyncing && "animate-spin")}
+        />
+      </MobileNavActionButton>
+    </div>
+  )
+}
+
 function MobileBottomNav({ items }: { items: NavItem[] }) {
   const { t } = useTranslation()
   const { pathname } = useLocation()
@@ -212,6 +265,7 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
           </Link>
         )
       })}
+      <MobileNavActions />
     </nav>
   )
 }

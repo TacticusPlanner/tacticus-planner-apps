@@ -27,7 +27,7 @@ pages that must preserve existing calculations but improve design, accessibility
   itself is pure TS with no React/JSX.
 - **V1 implementation**: the page component + its `*.service.ts` (the real calculation), and the V1 models
   (`v1/.../src/fsd/4-entities/*`, `5-shared/model/*` — e.g. enums like `Rank`).
-- **Assets**: rewrite `apps/web/public/snowprint_assets/**` (characters, upgrade_materials, stat_icons, …),
+- **Assets**: rewrite `apps/web/public/game_catalog/**` (characters, upgrade_materials, stat_icons, …),
   V1 `public/`, and especially **V1 `src/assets/images/**`** (ranks, campaigns, factions, … often missing
   from the rewrite). Note that V1 sometimes names an asset differently (e.g. Adamantine ranks are
   `ui_icon_rank_mythical_0{n}.png`).
@@ -66,7 +66,7 @@ pages that must preserve existing calculations but improve design, accessibility
    - Campaign icons: `campaignIcon(groupId, difficulty)` → standard and event campaigns both covered; event
      images show the defending faction (Y in X-vs-Y groupId).
    - Use `<EntityIcon src fallback>` (`shared/ui/entity-icon.tsx`) to handle missing assets gracefully.
-8. **Identify gaps** — copy missing assets from V1 `src/assets/images/**` into `public/snowprint_assets/**`;
+8. **Identify gaps** — copy missing assets from V1 `src/assets/images/**` into `public/game_catalog/**`;
    document anything genuinely missing and choose the cleanest fallback (text badge, generic icon).
 9. **Implement with FSD + reuse** — pure calc in `features/<page>/lib` (decoupled from catalog types via
    structural shapes); entity helpers in `entities/*`; the page in `pages/<page>`; compose in `app/routes.tsx`.

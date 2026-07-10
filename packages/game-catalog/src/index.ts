@@ -55,15 +55,16 @@ export {
   getGameCatalogMetadata,
   getManifestMetadata,
   hasCompleteGameCatalogCache,
-  getDatasetRecords,
-  getDatasetRecord,
   clearGameCatalogDb,
-  type StoredRecord,
-  type CharacterRecord,
-  type UpgradeRecord,
-  type CampaignBattleRecord,
-  type CampaignDefinitionRecord,
 } from "./game-catalog-storage"
+
+export {
+  type StorageModel,
+  type CharacterStorageModel,
+  type UpgradeStorageModel,
+  type CampaignBattleStorageModel,
+  type CampaignDefinitionStorageModel,
+} from "./game-catalog.storage"
 
 export {
   Rarity,
@@ -117,6 +118,7 @@ export {
   lastProgression,
   progressionIndex,
   isProgression,
+  progressionAt,
   progressionRarity,
   progressionStars,
   statAtRank,

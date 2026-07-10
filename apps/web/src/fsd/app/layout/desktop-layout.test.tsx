@@ -27,6 +27,9 @@ vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 vi.mock("../providers/catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => null,
 }))
+vi.mock("../providers/player-data-sync-button", () => ({
+  PlayerDataSyncButton: () => null,
+}))
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
 vi.mock("../providers/language-switcher", () => ({
   LanguageSwitcher: () => null,

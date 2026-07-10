@@ -38,10 +38,11 @@ as sibling folders:
   /tacticus-planner-apps
 ```
 
-Start the full local stack from `tacticus-planner-api`:
+Start the full local stack from `tacticus-planner-api`, using the Aspire CLI
+rather than `dotnet run` (see that repository's README for installing it):
 
 ```powershell
-dotnet run --project orchestration/TacticusPlanner.AppHost
+aspire run --project orchestration/TacticusPlanner.AppHost/TacticusPlanner.AppHost.csproj
 ```
 
 This Aspire integration is for local development only. It does not replace the

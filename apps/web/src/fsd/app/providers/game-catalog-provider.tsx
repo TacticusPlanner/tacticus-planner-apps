@@ -4,26 +4,23 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
   type ReactNode,
 } from "react"
 
 import {
   GameCatalogHttpClient,
-  getDatasetRecords,
   hasCompleteGameCatalogCache,
   syncGameCatalog,
-  type GameCatalogDatasetKey,
   type GameCatalogSyncProgress,
   type GameCatalogSyncResult,
-  type StoredRecord,
 } from "@workspace/game-catalog"
 
 // StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
 // in quick succession — without this guard each mount would issue its own manifest request (the source of
 // the "manifest fetched four times on refresh" behaviour). Coalesce overlapping syncs for the same
-// baseUrl into a single in-flight request; it clears once settled so a later sync still runs.
+// baseUrl into a single in-flight request; it clears once settled so a later sync still runs. Matches
+// @workspace/player-data's PlayerDataProvider, which has the same guard.
 let inFlightSync: {
   baseUrl: string
   promise: Promise<GameCatalogSyncResult>
@@ -149,75 +146,4 @@ export function useGameCatalogStatus() {
   }
 
   return context
-}
-
-type DatasetState<TValue> = {
-  data: TValue
-  loading: boolean
-  error: string | null
-}
-
-function useGameCatalogReady() {
-  return useContext(GameCatalogContext)?.status ?? "idle"
-}
-
-/** Loads all records for a dataset from IndexedDB, refreshing when the catalog becomes ready. */
-export function useDatasetRecords<K extends GameCatalogDatasetKey>(
-  datasetKey: K
-) {
-  const status = useGameCatalogReady()
-  const [state, setState] = useState<DatasetState<StoredRecord<K>[]>>({
-    data: [],
-    loading: true,
-    error: null,
-  })
-
-  useEffect(() => {
-    let cancelled = false
-
-    void getDatasetRecords(datasetKey)
-      .then((records) => {
-        if (!cancelled) {
-          setState({ data: records, loading: false, error: null })
-        }
-      })
-      .catch((caught: unknown) => {
-        if (!cancelled) {
-          setState({
-            data: [],
-            loading: false,
-            error: caught instanceof Error ? caught.message : String(caught),
-          })
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [datasetKey, status])
-
-  return state
-}
-
-/**
- * Like `useDatasetRecords`, but indexes the dataset by `id` (mapped through `mapRecord`, which
- * defaults to the identity function) — the shape most call sites actually want when joining a
- * dataset against another by id, instead of re-deriving the same `Map` via `useMemo` at each
- * call site.
- */
-export function useDatasetRecordsMap<
-  K extends GameCatalogDatasetKey,
-  V = StoredRecord<K>,
->(
-  datasetKey: K,
-  mapRecord: (record: StoredRecord<K>) => V = (record) => record as unknown as V
-) {
-  const { data, loading, error } = useDatasetRecords(datasetKey)
-
-  const map = useMemo(
-    () => new Map(data.map((record) => [record.id, mapRecord(record)])),
-    [data, mapRecord]
-  )
-
-  return { data: map, loading, error }
 }

@@ -19,7 +19,8 @@ export const Rank = {
   Diamond3: "Diamond3",
   Adamantine1: "Adamantine1",
   Adamantine2: "Adamantine2",
-  Adamantine3: "Adamantine3",
+  // Adamantine3 is planned but removed from the ladder for now — nothing in-game can reach it yet
+  // (see lastRank below). Add it back here (and to rankOrder) once it ships.
 } as const
 
 export type Rank = (typeof Rank)[keyof typeof Rank]
@@ -45,10 +46,15 @@ export const rankOrder: readonly Rank[] = [
   Rank.Diamond3,
   Rank.Adamantine1,
   Rank.Adamantine2,
-  Rank.Adamantine3,
 ]
 
 export const firstRank: Rank = rankOrder[0]
+
+// Adamantine3 is planned for the game but is intentionally left out of the ladder above — nothing
+// can actually reach it yet (even `maxRankByRarity.Mythic` in unit-stats.ts caps out at
+// `Adamantine2`), so `lastRank` is Adamantine2 for now. Add Adamantine3 back to `Rank`/`rankOrder`
+// once it ships, at which point this becomes Adamantine3 again with no other call-site changes
+// needed (every consumer already reads the ladder's actual end via `lastRank`, not a hardcoded value).
 export const lastRank: Rank = rankOrder[rankOrder.length - 1]
 
 export const rankIndex = (id: Rank): number => rankOrder.indexOf(id)

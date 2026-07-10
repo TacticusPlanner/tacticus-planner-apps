@@ -191,8 +191,9 @@ describe("catalog schemas", () => {
     const battles = datasetPayloadSchemas["campaign-battles"].safeParse([
       {
         id: "I01",
-        campaignGroupId: "indomitus",
-        difficulty: "standard",
+        campaignGroupId: "campaign1",
+        type: "Standard",
+        challenge: false,
         energyCost: 0,
         nodeNumber: 1,
         slots: 1,
@@ -208,11 +209,11 @@ describe("catalog schemas", () => {
     const definitions = datasetPayloadSchemas["campaign-definitions"].safeParse(
       [
         {
-          groupId: "indomitus",
+          groupId: "campaign1",
           faction: "Ultramarines",
           releaseType: "standard",
           coreCharacters: ["ultraTigurius"],
-          difficulties: ["standard"],
+          types: ["Standard"],
           battleIds: ["I01"],
         },
       ]

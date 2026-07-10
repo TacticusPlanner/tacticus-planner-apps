@@ -59,7 +59,7 @@ describe("maxRankForProgression", () => {
     expect(maxRankForProgression("Legendary:RedThreeStars")).toBe("Diamond3")
   })
 
-  it("caps a maxed Mythic unit at Adamantine2, one below the absolute max rank", () => {
+  it("caps a maxed Mythic unit at Adamantine2, the ladder's current max rank", () => {
     expect(maxRankForProgression("Mythic:MythicWings")).toBe("Adamantine2")
   })
 })
@@ -83,9 +83,9 @@ describe("minProgressionForRank", () => {
     expect(minProgressionForRank("Stone1")).toBe("Common:None")
   })
 
-  it("falls back to the max progression for a rank beyond Adamantine2", () => {
-    expect(minProgressionForRank("Adamantine3")).toBe("Mythic:MythicWings")
-  })
+  // No "falls back to the max progression for a rank beyond Adamantine2" case here: Adamantine3
+  // (the only rank that would exercise that fallback) is currently removed from the Rank ladder
+  // entirely — see rank.ts's lastRank comment. Reinstate this case once it ships.
 })
 
 describe("progressionRarity / progressionStars", () => {

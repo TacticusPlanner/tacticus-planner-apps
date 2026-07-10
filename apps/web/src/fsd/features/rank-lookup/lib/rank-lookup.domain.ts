@@ -5,7 +5,7 @@ interface RankUpEntry {
   upgradeIds: string[]
 }
 
-export interface CharacterLike {
+export interface Character {
   id: string
   name: string
   rankUpUpgrades: RankUpEntry[]
@@ -17,7 +17,7 @@ export interface RecipeIngredient {
   recipe?: RecipeIngredient[] | null
 }
 
-export interface UpgradeLike {
+export interface Upgrade {
   id: string
   label: string
   rarity: Rarity
@@ -38,4 +38,10 @@ export interface RankUpGroup {
 export interface BaseUpgradeNeed {
   id: string
   count: number
+}
+
+/** A single owned-inventory or applied-upgrade entry: `amount` copies of upgrade `id`. */
+export interface UpgradeAmount {
+  id: string
+  amount: number
 }

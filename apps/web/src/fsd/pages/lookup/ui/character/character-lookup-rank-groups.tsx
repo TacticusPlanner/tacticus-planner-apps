@@ -1,3 +1,4 @@
+import { CheckCircle2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -16,16 +17,16 @@ import {
 import { EntityIcon, RankBadge, UpgradeIcon } from "@/shared/ui"
 
 import type {
-  RankGroupView,
-  RecipeView,
-  UpgradeView,
-} from "./character-lookup-results.types"
+  RankGroupViewModel,
+  RecipeViewModel,
+  UpgradeViewModel,
+} from "./character-lookup-results.view-model"
 
 export function RankGroupHeader({
   group,
   compact = false,
 }: {
-  group: RankGroupView
+  group: RankGroupViewModel
   compact?: boolean
 }) {
   const { t } = useTranslation()
@@ -54,7 +55,7 @@ export function RankGroupHeader({
   )
 }
 
-export function RankGroupBody({ group }: { group: RankGroupView }) {
+export function RankGroupBody({ group }: { group: RankGroupViewModel }) {
   return (
     <div className="flex justify-center gap-4">
       <StatColumn stat="health" upgrades={group.health} />
@@ -69,7 +70,7 @@ function StatColumn({
   upgrades,
 }: {
   stat: StatIconKind
-  upgrades: UpgradeView[]
+  upgrades: UpgradeViewModel[]
 }) {
   if (upgrades.length === 0) return null
   return (
@@ -86,7 +87,8 @@ function StatColumn({
   )
 }
 
-function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
+function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
+  const { t } = useTranslation()
   const hasRecipe = upgrade.recipe.length > 0
 
   return (
@@ -94,15 +96,25 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={upgrade.label}
-          className="rounded-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+          aria-label={
+            upgrade.owned
+              ? `${upgrade.label} (${t("unitLookup.alreadyApplied")})`
+              : upgrade.label
+          }
+          className="relative rounded-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
         >
           <UpgradeIcon
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
-            className="size-12"
+            className={cn("size-12", upgrade.owned && "opacity-50")}
           />
+          {upgrade.owned ? (
+            <CheckCircle2
+              aria-hidden="true"
+              className="absolute -right-1 -bottom-1 size-5 rounded-full bg-background text-primary"
+            />
+          ) : null}
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
@@ -115,6 +127,12 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
           <span className={cn("font-medium", rarityClass(upgrade.rarity))}>
             {upgrade.label}
           </span>
+          {upgrade.owned ? (
+            <Badge variant="secondary" className="gap-1">
+              <CheckCircle2 className="size-3" aria-hidden="true" />
+              {t("unitLookup.alreadyApplied")}
+            </Badge>
+          ) : null}
         </div>
         {hasRecipe ? <RecipeTree items={upgrade.recipe} /> : null}
       </PopoverContent>
@@ -126,7 +144,7 @@ function RecipeTree({
   items,
   depth = 0,
 }: {
-  items: RecipeView[]
+  items: RecipeViewModel[]
   depth?: number
 }) {
   return (

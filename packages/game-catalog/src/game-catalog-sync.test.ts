@@ -1,3 +1,4 @@
+import Dexie from "dexie"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import type {
@@ -5,6 +6,8 @@ import type {
   GameCatalogManifestResult,
 } from "./game-catalog-api"
 import {
+  catalogDbName,
+  catalogDbVersion,
   getDatasetRecords,
   hasCompleteGameCatalogCache,
 } from "./game-catalog-storage"
@@ -47,7 +50,7 @@ const datasetData: Record<string, unknown> = {
     },
   ],
   "campaign-battles": [
-    { id: "I01", campaignGroupId: "g1", difficulty: "standard" },
+    { id: "I01", campaignGroupId: "g1", type: "Standard", challenge: false },
   ],
   "campaign-definitions": [
     {
@@ -124,12 +127,34 @@ class FakeGameCatalogClient implements GameCatalogClient {
 }
 
 function resetDb() {
-  return new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase("tacticus-planner-game-catalog")
+  return Dexie.delete(catalogDbName)
+}
 
-    request.onsuccess = () => resolve()
-    request.onerror = () => resolve()
-    request.onblocked = () => resolve()
+// Simulates a real pre-existing client one version behind — missing a dataset (`missingKey`) that was
+// added in a later version. Opens the *raw* IDB API directly (not Dexie) at `catalogDbVersion - 1` to
+// set up that "before" state; the migrated storage code then opens at the current `catalogDbVersion`
+// via the app's normal path, and Dexie's own version-upgrade cascade (not a custom self-heal
+// workaround) must create the missing store so the sync proceeds normally.
+function seedDbMissingStore(missingKey: string) {
+  return new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(catalogDbName, catalogDbVersion - 1)
+
+    request.onupgradeneeded = () => {
+      const db = request.result
+      db.createObjectStore("metadata", { keyPath: "key" })
+
+      for (const key of servedDatasetKeys) {
+        if (key !== missingKey) {
+          db.createObjectStore(key, { keyPath: "id" })
+        }
+      }
+    }
+
+    request.onsuccess = () => {
+      request.result.close()
+      resolve()
+    }
+    request.onerror = () => reject(request.error as Error)
   })
 }
 
@@ -226,5 +251,17 @@ describe("syncGameCatalog", () => {
     expect(await hasCompleteGameCatalogCache()).toBe(false)
     expect(await getDatasetRecords("mows")).toHaveLength(0)
     expect(await getDatasetRecords("characters")).toHaveLength(1)
+  })
+
+  it("uses Dexie's own version-upgrade cascade to create a store a client is behind on, instead of wedging the sync", async () => {
+    await seedDbMissingStore("lre-common")
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+    expect((await getDatasetRecords("lre-common"))[0]?.id).toBe("lre-common")
   })
 })

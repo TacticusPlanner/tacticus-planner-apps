@@ -1,6 +1,6 @@
 export type UnitStatPair = { current: number; target: number }
 
-export type UnitProfileView = {
+export type UnitProfileViewModel = {
   id: string
   name: string
   faction: string

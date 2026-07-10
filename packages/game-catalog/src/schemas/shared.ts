@@ -7,7 +7,8 @@ import { Rank } from "../game-entities/rank"
 
 export const farmLocationSchema = z.looseObject({
   battleId: z.string(),
-  difficulty: z.string(),
+  type: z.string(),
+  challenge: z.boolean(),
   guaranteed: z.boolean(),
   chanceId: z.string().nullable(),
   numerator: z.number().nullable(),

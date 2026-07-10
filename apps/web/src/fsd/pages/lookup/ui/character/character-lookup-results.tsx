@@ -11,18 +11,17 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { Rarity } from "@workspace/game-catalog"
 
-import type { CampaignInsight } from "@/shared/lib"
-
 import {
   BaseUpgradesCards,
   BaseUpgradesTable,
 } from "./character-lookup-base-upgrades"
+import type { CampaignInsight } from "./campaign-insights"
 import { CampaignInsightList, TopRarityChip } from "./character-lookup-insights"
 import { RankGroupBody, RankGroupHeader } from "./character-lookup-rank-groups"
 import type {
-  BaseUpgradeView,
-  RankGroupView,
-} from "./character-lookup-results.types"
+  BaseUpgradeViewModel,
+  RankGroupViewModel,
+} from "./character-lookup-results.view-model"
 
 export function CharacterLookupResults({
   baseUpgrades,
@@ -30,12 +29,17 @@ export function CharacterLookupResults({
   campaignInsights,
   eventInsights,
   isMobile,
+  showOwned,
 }: {
-  baseUpgrades: BaseUpgradeView[]
-  groups: RankGroupView[]
+  baseUpgrades: BaseUpgradeViewModel[]
+  groups: RankGroupViewModel[]
   campaignInsights: CampaignInsight[]
   eventInsights: CampaignInsight[]
   isMobile: boolean
+  /** Whether to show the Owned/Missing columns (table) or fields (cards) in the Base Upgrades
+   *  section below — hidden while signed out, since Owned is always 0 and Missing always equals
+   *  Count in that state (see character-lookup-page.tsx's effectiveIncludeOwned). */
+  showOwned: boolean
 }) {
   const { t } = useTranslation()
   // Set by clicking a "top upgrade by rarity" insight chip; briefly highlights the matching row/
@@ -52,7 +56,7 @@ export function CharacterLookupResults({
 
   // baseUpgrades is already sorted rarity desc, count desc (see character-lookup-page.tsx), so the
   // first entry seen per rarity is that rarity's highest-count need.
-  const topByRarity: BaseUpgradeView[] = []
+  const topByRarity: BaseUpgradeViewModel[] = []
   const seenRarities = new Set<Rarity>()
   for (const upgrade of baseUpgrades) {
     if (!seenRarities.has(upgrade.rarity)) {
@@ -149,11 +153,13 @@ export function CharacterLookupResults({
           <BaseUpgradesCards
             baseUpgrades={baseUpgrades}
             highlightedId={highlightedId}
+            showOwned={showOwned}
           />
         ) : (
           <BaseUpgradesTable
             baseUpgrades={baseUpgrades}
             highlightedId={highlightedId}
+            showOwned={showOwned}
           />
         )}
       </section>

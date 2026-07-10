@@ -1,4 +1,4 @@
-import { openDB } from "idb"
+import Dexie, { type Table } from "dexie"
 
 import {
   catalogManifestMetadataKey,
@@ -6,99 +6,46 @@ import {
   type GameCatalogDatasetKey,
   type GameCatalogDatasetMetadata,
 } from "./types"
-import type { GameCatalogRecordByKey } from "./schemas"
+import {
+  datasetToStorageModels,
+  mapDatasetRowToStorageModel,
+} from "./game-catalog.mapper"
+import type { StorageModel } from "./game-catalog.storage"
 
-// A stored row: the validated record for the dataset plus the storage-managed string id.
-export type StoredRecord<K extends GameCatalogDatasetKey> =
-  GameCatalogRecordByKey[K] & {
-    id: string
-  }
-
-// Named aliases for the datasets consumers most commonly read via `useDatasetRecords`/
-// `getDatasetRecords`, so call sites can name the record type instead of re-deriving it from
-// `StoredRecord<"...">` each time.
-export type CharacterRecord = StoredRecord<"characters">
-export type UpgradeRecord = StoredRecord<"upgrades">
-export type CampaignBattleRecord = StoredRecord<"campaign-battles">
-export type CampaignDefinitionRecord = StoredRecord<"campaign-definitions">
-
-const catalogDbName = "tacticus-planner-game-catalog"
+export const catalogDbName = "tacticus-planner-game-catalog"
 // v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
 // served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.
-const catalogDbVersion = 3
-const metadataStore = "metadata"
+export const catalogDbVersion = 3
 
-// Maps a dataset envelope's `data` (always a plain array now) into the id-keyed rows stored per record.
-type DatasetToRecords = (data: unknown) => Record<string, unknown>[]
+/**
+ * Single long-lived Dexie instance for the whole app's lifetime — idiomatic Dexie usage (repeatedly
+ * closing/reopening a connection defeats its internal optimizations and is explicitly discouraged).
+ * One complete `.version().stores()` block: this is greenfield (nothing has shipped), so there's no
+ * historical version chain to replay. Dexie's own version-cascade upgrade mechanism — each version
+ * declares its *complete* store list, and Dexie walks any older client through every version up to the
+ * latest — is what future dataset additions should rely on (bump `catalogDbVersion`, add a new
+ * `.version(N+1).stores({...})` block here), not a custom self-heal workaround: this replaces the
+ * previous hand-rolled "detect a missing store and reopen one version higher" logic entirely.
+ */
+class GameCatalogDb extends Dexie {
+  metadata!: Table<GameCatalogDatasetMetadata, string>
 
-function asArray(data: unknown): Record<string, unknown>[] {
-  return Array.isArray(data) ? (data as Record<string, unknown>[]) : []
+  constructor() {
+    super(catalogDbName)
+
+    this.version(catalogDbVersion).stores({
+      metadata: "key",
+      ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
+    })
+  }
 }
 
-// campaign-definitions key on `groupId`; everything else already carries an `id`.
-function groupsWithId(data: unknown): Record<string, unknown>[] {
-  return asArray(data).map((group) => ({ id: group.groupId, ...group }))
-}
-
-// The mow upgrade-cost ladder is keyed by the ability level it raises a MoW to (server-provided), so the
-// store id correlates with the in-game level rather than an opaque array index.
-function byLevel(data: unknown): Record<string, unknown>[] {
-  return asArray(data).map((row) => ({ id: row.level, ...row }))
-}
-
-const datasetToRecords: Record<GameCatalogDatasetKey, DatasetToRecords> = {
-  characters: asArray,
-  npcs: asArray,
-  mows: asArray,
-  "mow-upgrade-costs": byLevel,
-  upgrades: asArray,
-  equipment: asArray,
-  "campaign-battles": asArray,
-  "campaign-definitions": groupsWithId,
-  lres: asArray,
-  "lre-battles": asArray,
-  "lre-common": asArray,
-}
-
-async function openGameCatalogDb() {
-  return openDB(catalogDbName, catalogDbVersion, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(metadataStore)) {
-        db.createObjectStore(metadataStore, { keyPath: "key" })
-      }
-
-      // Drop any store that is no longer part of the served catalog (old chunk/extras stores, or a
-      // dataset store carrying the old indexed schema — recreated below without indexes).
-      for (const name of Array.from(db.objectStoreNames)) {
-        if (
-          name !== metadataStore &&
-          !(servedDatasetKeys as readonly string[]).includes(name)
-        ) {
-          db.deleteObjectStore(name)
-        }
-      }
-
-      for (const datasetKey of servedDatasetKeys) {
-        if (!db.objectStoreNames.contains(datasetKey)) {
-          db.createObjectStore(datasetKey, { keyPath: "id" })
-        }
-      }
-    },
-  })
-}
+const catalogDb = new GameCatalogDb()
 
 export async function getGameCatalogMetadata() {
-  const db = await openGameCatalogDb()
+  const values = await catalogDb.metadata.toArray()
 
-  try {
-    const values = (await db.getAll(
-      metadataStore
-    )) as GameCatalogDatasetMetadata[]
-
-    return new Map(values.map((metadata) => [metadata.key, metadata]))
-  } finally {
-    db.close()
-  }
+  return new Map(values.map((metadata) => [metadata.key, metadata]))
 }
 
 export function getManifestMetadata(
@@ -122,81 +69,46 @@ export async function replaceGameCatalogDataset(
   data: unknown,
   metadata: GameCatalogDatasetMetadata
 ) {
-  const records = datasetToRecords[datasetKey](data).map(toStoredRecord)
+  const records = datasetToStorageModels[datasetKey](data).map(
+    mapDatasetRowToStorageModel
+  )
+  // Typed the same way as getDatasetRecords' read path below (Dexie's `.table<T, TKey>()` overload)
+  // rather than the untyped `.table(datasetKey)` lookup — `records` themselves are already only
+  // typed as `Record<string, unknown>[]` (the per-dataset-key transform in `datasetToStorageModels`
+  // above has no way to know its own dataset's specific shape at the type level), so this is as far
+  // as this generic-over-`datasetKey` write path can be typed without hand-declaring one Dexie table
+  // property per dataset (11 of them) purely to duplicate what `datasetToStorageModels`'s keys already
+  // enumerate.
+  const table = catalogDb.table<Record<string, unknown>, string>(datasetKey)
 
-  const db = await openGameCatalogDb()
-  const transaction = db.transaction([datasetKey, metadataStore], "readwrite")
-
-  await transaction.objectStore(datasetKey).clear()
-
-  for (const record of records) {
-    await transaction.objectStore(datasetKey).put(record)
-  }
-
-  await transaction.objectStore(metadataStore).put(metadata)
-
-  await transaction.done
-  db.close()
+  await catalogDb.transaction("rw", table, catalogDb.metadata, async () => {
+    await table.clear()
+    await table.bulkPut(records)
+    await catalogDb.metadata.put(metadata)
+  })
 }
 
 export async function saveManifestMetadata(
   metadata: GameCatalogDatasetMetadata
 ) {
-  const db = await openGameCatalogDb()
-
-  try {
-    await db.put(metadataStore, metadata)
-  } finally {
-    db.close()
-  }
+  await catalogDb.metadata.put(metadata)
 }
 
 export async function getDatasetRecords<K extends GameCatalogDatasetKey>(
   datasetKey: K
-): Promise<StoredRecord<K>[]> {
-  const db = await openGameCatalogDb()
-
-  try {
-    return (await db.getAll(datasetKey)) as StoredRecord<K>[]
-  } finally {
-    db.close()
-  }
-}
-
-export async function getDatasetRecord<K extends GameCatalogDatasetKey>(
-  datasetKey: K,
-  id: string
-): Promise<StoredRecord<K> | undefined> {
-  const db = await openGameCatalogDb()
-
-  try {
-    return (await db.get(datasetKey, id)) as StoredRecord<K> | undefined
-  } finally {
-    db.close()
-  }
+): Promise<StorageModel<K>[]> {
+  return catalogDb.table<StorageModel<K>, string>(datasetKey).toArray()
 }
 
 export async function clearGameCatalogDb() {
-  const db = await openGameCatalogDb()
-  const storeNames = [metadataStore, ...servedDatasetKeys]
-  const transaction = db.transaction(storeNames, "readwrite")
-
-  for (const storeName of storeNames) {
-    await transaction.objectStore(storeName).clear()
-  }
-
-  await transaction.done
-  db.close()
-}
-
-function toStoredRecord<T extends Record<string, unknown>>(
-  item: T
-): T & { id: string } {
-  const id = item.id
-
-  if (typeof id !== "string" && typeof id !== "number") {
-    throw new Error("GameCatalog records must include a string or numeric id.")
-  }
-
-  return { ...item, id: String(id) }
+  await catalogDb.transaction(
+    "rw",
+    ["metadata", ...servedDatasetKeys],
+    async () => {
+      await catalogDb.metadata.clear()
+      await Promise.all(
+        servedDatasetKeys.map((key) => catalogDb.table(key).clear())
+      )
+    }
+  )
 }

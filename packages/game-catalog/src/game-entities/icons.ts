@@ -5,10 +5,10 @@ import { characterIconOverrides } from "./character-icon-overrides"
 import { rarityStarsIndex, type RarityStars } from "./unit-stats"
 
 // All asset paths (including the app's own custom icons — rarity badges, gold/red stars, the
-// crafted-upgrade badge) are relative to the web app's /public/snowprint_assets/ root. These
-// helpers return URL strings; the actual files live in apps/web/public/snowprint_assets/.
+// crafted-upgrade badge) are relative to the web app's /public/game_catalog/ root. These
+// helpers return URL strings; the actual files live in apps/web/public/game_catalog/.
 // ASSET_BASE_PATH is the single source of truth for that root — change it here to relocate assets.
-export const ASSET_BASE_PATH = "/snowprint_assets"
+export const ASSET_BASE_PATH = "/game_catalog"
 
 // ---- Upgrade icons ------------------------------------------------------------------------------
 
@@ -48,26 +48,38 @@ export function characterIcon(id: CharacterId): string | undefined {
 
 // ---- Campaign icon + descriptor -------------------------------------------------------------
 
-// Base group ids (mirror variants reuse the same base id with a "-mirror" suffix on the actual
-// groupId, not listed separately here). Event group ids follow a "{attacker}-vs-{defender}" shape.
-const knownCampaignGroups = new Set<string>([
-  "indomitus",
-  "octarius",
-  "saim-hann",
-  "fall-of-cadia",
-  "adepta-sororitas-vs-death-guard",
-  "death-guard-vs-admech",
-  "genestealers-vs-tau-empire",
-  "necrons-vs-dark-angels",
-  "ultramarines-vs-tyranids",
-  "world-eaters-vs-adepta-sororitas",
-])
+// Storyline base names, indexed 1-4 — the asset/i18n-name-key stem shared by all four of a
+// storyline's tiers (`campaign1`/`mirror1`/`elite1`/`eliteMirror1` all name-key to "indomitus").
+// Matches Tacticus's own campaign-progress ids (see ADR 0007 / GameCatalogDatasets in the API
+// repo); ordering confirmed against the catalog's own campaign-battles source files.
+const storylineNames: Record<string, string> = {
+  "1": "indomitus",
+  "2": "fall-of-cadia",
+  "3": "octarius",
+  "4": "saim-hann",
+}
+
+// Campaign-event group ids (one group per event, per Tacticus's own reporting model — events
+// report one id with multiple `type` values instead of separate ids per tier). Mapping confirmed
+// via V1's `campaign-mapper-service.ts` ordinal event-id mapping, cross-checked against each
+// event's own faction/enemy-faction fields.
+const eventNames: Record<string, string> = {
+  "1": "death-guard-vs-admech",
+  "2": "ultramarines-vs-tyranids",
+  "3": "genestealers-vs-tau-empire",
+  "4": "adepta-sororitas-vs-death-guard",
+  "5": "world-eaters-vs-adepta-sororitas",
+  "6": "necrons-vs-dark-angels",
+}
+
+const STORYLINE_GROUP_ID = /^(campaign|mirror|elite|eliteMirror)([1-4])$/
+const EVENT_GROUP_ID = /^eventCampaign([1-6])$/
 
 export type CampaignDifficultyToken =
   "standard" | "elite" | "eventStandard" | "eventExtremis"
 
 /**
- * Ids/tokens describing a campaign group + difficulty, for the caller to resolve into translated
+ * Ids/tokens describing a campaign group + tier, for the caller to resolve into translated
  * display text (`campaigns` i18n namespace) — this package holds no display strings, only the
  * game-data structure.
  */
@@ -75,66 +87,76 @@ export interface CampaignDescriptor {
   /** Key into the `campaigns` i18n namespace for the campaign/event's base display name. */
   nameKey: string
   difficultyToken: CampaignDifficultyToken
-  /** True for the "-mirror" variant of a standard campaign. */
+  /** True for the `mirror{n}`/`eliteMirror{n}` groups. */
   isMirror: boolean
   isEvent: boolean
   /** Event "Challenge" tiers — the caller appends a "B" to each node number for these. */
   challenge: boolean
 }
 
+/**
+ * `type`/`challenge` come off the battle record (Tacticus's own vocabulary: `Standard`/`Mirror`/
+ * `Elite`/`EliteMirror` for storylines, `Standard`/`Extremis` + a separate `challenge` flag for
+ * events — see the catalog's `campaign-battles`/`campaign-definitions` datasets). Storyline
+ * groups now carry their tier (Mirror/Elite/EliteMirror) in the groupId itself
+ * (`mirror1`/`elite1`/`eliteMirror1`), so `isMirror`/the elite-ness of the token are derived from
+ * the groupId shape rather than the battle's own `type` string.
+ */
 export function campaignDescriptor(
   groupId: CampaignGroupId,
-  difficulty: string
+  type: string,
+  challenge = false
 ): CampaignDescriptor | undefined {
-  const isMirror = groupId.endsWith("-mirror")
-  const nameKey = isMirror ? groupId.slice(0, -"-mirror".length) : groupId
-  if (!knownCampaignGroups.has(nameKey)) return undefined
-
-  const isEvent = nameKey.includes("-vs-")
-  const challenge = difficulty.endsWith("Challenge")
-  const baseDifficulty = challenge
-    ? difficulty.slice(0, -"Challenge".length)
-    : difficulty
-
-  if (isEvent) {
-    if (isMirror) return undefined // events have no mirror variant
-    if (
-      baseDifficulty !== "eventStandard" &&
-      baseDifficulty !== "eventExtremis"
-    ) {
-      return undefined
-    }
+  const storylineMatch = STORYLINE_GROUP_ID.exec(groupId)
+  if (storylineMatch) {
+    const [, kind, index] = storylineMatch
+    const nameKey = storylineNames[index]
+    if (!nameKey) return undefined
+    const isMirror = kind === "mirror" || kind === "eliteMirror"
+    const isElite = kind === "elite" || kind === "eliteMirror"
     return {
       nameKey,
-      difficultyToken: baseDifficulty,
+      difficultyToken: isElite ? "elite" : "standard",
       isMirror,
-      isEvent,
+      isEvent: false,
+      challenge: false, // storyline battles never carry the challenge tier
+    }
+  }
+
+  const eventMatch = EVENT_GROUP_ID.exec(groupId)
+  if (eventMatch) {
+    const nameKey = eventNames[eventMatch[1]]
+    if (!nameKey) return undefined
+    if (type !== "Standard" && type !== "Extremis") return undefined
+    return {
+      nameKey,
+      difficultyToken: type === "Standard" ? "eventStandard" : "eventExtremis",
+      isMirror: false,
+      isEvent: true,
       challenge,
     }
   }
 
-  if (challenge) return undefined // standard campaigns have no "Challenge" tiers
-  if (baseDifficulty !== "standard" && baseDifficulty !== "elite")
-    return undefined
-  return {
-    nameKey,
-    difficultyToken: baseDifficulty,
-    isMirror,
-    isEvent,
-    challenge,
-  }
+  return undefined
 }
 
-// Filenames follow "{groupId}-{difficultyToken}.png" directly (e.g. "indomitus-standard.png",
-// "indomitus-mirror-elite.png", "death-guard-vs-admech-eventExtremis.png"); challenge tiers reuse
-// their base Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
+// Filenames follow "{nameKey}[-mirror]-{difficultyToken}.png" for storylines (e.g.
+// "indomitus-standard.png", "indomitus-mirror-elite.png") and "{nameKey}-{difficultyToken}.png"
+// for events (e.g. "death-guard-vs-admech-eventExtremis.png"); challenge tiers reuse their base
+// Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
 export function campaignIcon(
   groupId: CampaignGroupId,
-  difficulty: string
+  type: string,
+  challenge = false
 ): string | undefined {
-  const descriptor = campaignDescriptor(groupId, difficulty)
+  const descriptor = campaignDescriptor(groupId, type, challenge)
   if (!descriptor) return undefined
-  return `${ASSET_BASE_PATH}/campaigns/${groupId}-${descriptor.difficultyToken}.png`
+  const stem = descriptor.isEvent
+    ? descriptor.nameKey
+    : descriptor.isMirror
+      ? `${descriptor.nameKey}-mirror`
+      : descriptor.nameKey
+  return `${ASSET_BASE_PATH}/campaigns/${stem}-${descriptor.difficultyToken}.png`
 }
 
 // ---- Trait icons ------------------------------------------------------------------------------

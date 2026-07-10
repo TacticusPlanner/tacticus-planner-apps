@@ -6,24 +6,15 @@ import {
   type Rarity,
 } from "@workspace/game-catalog"
 
+import type { Battle, FarmLocation } from "@/shared/lib"
+
+// Single-consumer calc (Character Lookup) — colocated here rather than in shared/lib, since nothing
+// else in the app needs it. `Battle`/`FarmLocation` stay in shared/lib: rank-lookup's
+// rank-lookup.mapper.ts also produces values shaped to them.
+
 export interface CampaignInsightNeed {
   id: string
   count: number
-}
-
-export interface FarmLocationLike {
-  battleId: string
-  guaranteed: boolean
-  effectiveRate: number | null
-  numerator: number | null
-  denominator: number | null
-}
-
-export interface BattleLike {
-  campaignGroupId: string
-  difficulty: string
-  nodeNumber: number
-  energyCost: number
 }
 
 /** The minimal shape `computeCampaignInsights` needs from an upgrade record — any richer record
@@ -31,7 +22,7 @@ export interface BattleLike {
 export interface CampaignInsightUpgrade {
   id: string
   rarity: Rarity
-  farmLocations: FarmLocationLike[]
+  farmLocations: FarmLocation[]
 }
 
 /** One upgrade+location's contribution to a campaign insight's score, for the expanded breakdown. */
@@ -39,7 +30,8 @@ export interface CampaignInsightContribution {
   upgradeId: string
   battleId: string
   campaignGroupId: string
-  difficulty: string
+  type: string
+  challenge: boolean
   nodeNumber: number
   count: number
   dropRate: number
@@ -69,7 +61,7 @@ export interface CampaignInsight {
  * precomputed `effectiveRate` when present, else the raw `numerator/denominator` fraction, else 0
  * for a location with no rate info at all.
  */
-export function dropRate(location: FarmLocationLike): number {
+export function dropRate(location: FarmLocation): number {
   if (location.guaranteed) return 1
   if (location.effectiveRate != null) return location.effectiveRate
   if (location.numerator != null && location.denominator) {
@@ -78,14 +70,14 @@ export function dropRate(location: FarmLocationLike): number {
   return 0
 }
 
-// Event difficulties fold into two tiers for scoring purposes: "eventStandard" is "standard",
-// "eventExtremis" is "extremis" (challenge tiers already normalize to their base token in
-// `campaignDescriptor`).
+// Event types fold into two tiers for scoring purposes: "eventStandard" is "standard",
+// "eventExtremis" is "extremis" (the "challenge" flag doesn't split into its own tier).
 function eventTier(
   campaignGroupId: string,
-  difficulty: string
+  type: string,
+  challenge: boolean
 ): "standard" | "extremis" | undefined {
-  const descriptor = campaignDescriptor(campaignGroupId, difficulty)
+  const descriptor = campaignDescriptor(campaignGroupId, type, challenge)
   if (!descriptor) return undefined
   return descriptor.difficultyToken === "eventExtremis"
     ? "extremis"
@@ -125,7 +117,7 @@ interface ChipAccumulator {
 export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
   needs: CampaignInsightNeed[],
   upgradesById: ReadonlyMap<string, U>,
-  battlesById: ReadonlyMap<string, BattleLike>,
+  battlesById: ReadonlyMap<string, Battle>,
   isEventGroup: (campaignGroupId: string) => boolean,
   resolveLabel: (descriptor: CampaignDescriptor, isEvent: boolean) => string,
   topN = 3
@@ -144,17 +136,22 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
       const isEvent = isEventGroup(battle.campaignGroupId)
       const key = isEvent
         ? battle.campaignGroupId
-        : `${battle.campaignGroupId}:${battle.difficulty}`
+        : `${battle.campaignGroupId}:${battle.type}`
       let chip = chips.get(key)
       if (!chip) {
         const descriptor = campaignDescriptor(
           battle.campaignGroupId,
-          battle.difficulty
+          battle.type,
+          battle.challenge
         )
         if (!descriptor) continue
         chip = {
           label: resolveLabel(descriptor, isEvent),
-          icon: campaignIcon(battle.campaignGroupId, battle.difficulty),
+          icon: campaignIcon(
+            battle.campaignGroupId,
+            battle.type,
+            battle.challenge
+          ),
           isEvent,
           value: 0,
           energyByBattle: new Map(),
@@ -172,7 +169,8 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
         upgradeId: upgrade.id,
         battleId: location.battleId,
         campaignGroupId: battle.campaignGroupId,
-        difficulty: battle.difficulty,
+        type: battle.type,
+        challenge: battle.challenge,
         nodeNumber: battle.nodeNumber,
         count: need.count,
         dropRate: rate,
@@ -180,7 +178,11 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
       })
 
       if (isEvent) {
-        const tier = eventTier(battle.campaignGroupId, battle.difficulty)
+        const tier = eventTier(
+          battle.campaignGroupId,
+          battle.type,
+          battle.challenge
+        )
         if (tier) {
           let tierAcc = chip.tiers.get(tier)
           if (!tierAcc) {

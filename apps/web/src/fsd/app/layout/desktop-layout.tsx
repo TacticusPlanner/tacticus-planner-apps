@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, PlusCircle, RefreshCw } from "lucide-react"
+import { LogIn, PlusCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   Sidebar,
@@ -26,6 +26,7 @@ import { TourButton } from "@/shared/tour"
 import { AuthControl } from "../providers/auth-control"
 import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
+import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
@@ -118,10 +119,7 @@ function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton disabled tooltip={t("nav.syncWithTacticus")}>
-              <RefreshCw />
-              <span>{t("nav.syncWithTacticus")}</span>
-            </SidebarMenuButton>
+            <PlayerDataSyncButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

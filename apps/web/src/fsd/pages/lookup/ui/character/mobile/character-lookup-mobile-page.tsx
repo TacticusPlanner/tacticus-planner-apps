@@ -3,16 +3,15 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
 
-import type { CampaignInsight } from "@/shared/lib"
-
+import type { CampaignInsight } from "../campaign-insights"
 import { CharacterLookupControls } from "../character-lookup-controls"
 import { CharacterLookupResults } from "../character-lookup-results"
 import type {
-  BaseUpgradeView,
-  RankGroupView,
-} from "../character-lookup-results.types"
+  BaseUpgradeViewModel,
+  RankGroupViewModel,
+} from "../character-lookup-results.view-model"
 import { UnitProfile } from "../unit-profile"
-import type { UnitProfileView } from "../unit-profile.types"
+import type { UnitProfileViewModel } from "../unit-profile.view-model"
 
 interface CharacterLookupMobilePageProps {
   characterGroups: FactionGroup[]
@@ -23,16 +22,19 @@ interface CharacterLookupMobilePageProps {
   progressionEnd: Progression
   pointFive: boolean
   pointFiveDisabled: boolean
+  includeOwned: boolean
+  includeOwnedDisabled: boolean
   loading: boolean
-  profile: UnitProfileView | undefined
-  baseUpgrades: BaseUpgradeView[]
-  groups: RankGroupView[]
+  profile: UnitProfileViewModel | undefined
+  baseUpgrades: BaseUpgradeViewModel[]
+  groups: RankGroupViewModel[]
   campaignInsights: CampaignInsight[]
   eventInsights: CampaignInsight[]
   onCharacterChange: (id: string) => void
   onRangeChange: (start: Rank, end: Rank) => void
   onProgressionRangeChange: (start: Progression, end: Progression) => void
   onPointFiveChange: (value: boolean) => void
+  onIncludeOwnedChange: (value: boolean) => void
   onApply: () => void
   applyDisabled: boolean
 }
@@ -47,6 +49,8 @@ export function CharacterLookupMobilePage({
   progressionEnd,
   pointFive,
   pointFiveDisabled,
+  includeOwned,
+  includeOwnedDisabled,
   profile,
   baseUpgrades,
   groups,
@@ -56,6 +60,7 @@ export function CharacterLookupMobilePage({
   onRangeChange,
   onProgressionRangeChange,
   onPointFiveChange,
+  onIncludeOwnedChange,
   onApply,
   applyDisabled,
 }: CharacterLookupMobilePageProps) {
@@ -101,6 +106,9 @@ export function CharacterLookupMobilePage({
         pointFive={pointFive}
         pointFiveDisabled={pointFiveDisabled}
         onPointFiveChange={onPointFiveChange}
+        includeOwned={includeOwned}
+        includeOwnedDisabled={includeOwnedDisabled}
+        onIncludeOwnedChange={onIncludeOwnedChange}
         onApply={handleApply}
         applyDisabled={applyDisabled}
         isMobile={true}
@@ -117,6 +125,7 @@ export function CharacterLookupMobilePage({
           campaignInsights={campaignInsights}
           eventInsights={eventInsights}
           isMobile={true}
+          showOwned={!includeOwnedDisabled}
         />
       </div>
     </div>
