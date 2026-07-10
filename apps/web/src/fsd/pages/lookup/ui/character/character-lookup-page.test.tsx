@@ -316,7 +316,9 @@ const records: Record<string, unknown[]> = {
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharacters: () => records.characters ?? [],
   getCharactersMap: () =>
-    new Map((records.characters ?? []).map((c) => [c.id, c])),
+    new Map(
+      (records.characters ?? []).map((c) => [(c as { id: string }).id, c])
+    ),
   getUpgrades: () => records.upgrades ?? [],
   getCampaignBattles: () => records["campaign-battles"] ?? [],
   getCampaignDefinitions: () => records["campaign-definitions"] ?? [],

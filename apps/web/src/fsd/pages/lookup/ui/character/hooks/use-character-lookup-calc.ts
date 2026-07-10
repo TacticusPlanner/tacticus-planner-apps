@@ -27,7 +27,7 @@ import { useCampaignDisplay, type Battle } from "@/shared/lib"
 import { computeCampaignInsights } from "../campaign-insights"
 import type { LookupSelection } from "./use-lookup-selection"
 import type {
-  BaseUpgradeViewModelModel,
+  BaseUpgradeViewModel,
   RankGroupViewModel,
   RecipeViewModel,
   UpgradeViewModel,
@@ -211,7 +211,7 @@ export function useCharacterLookupCalc({
     [needs, ownedBaseUpgrades]
   )
 
-  const baseUpgrades = useMemo<BaseUpgradeViewModelModel[]>(() => {
+  const baseUpgrades = useMemo<BaseUpgradeViewModel[]>(() => {
     return needs
       .map((need) => {
         const up = upgradesById.get(need.id)
