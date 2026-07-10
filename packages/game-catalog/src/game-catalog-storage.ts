@@ -6,58 +6,16 @@ import {
   type GameCatalogDatasetKey,
   type GameCatalogDatasetMetadata,
 } from "./types"
-import type { GameCatalogRecordByKey } from "./schemas"
-
-// A stored row: the validated record for the dataset plus the storage-managed string id.
-export type StoredRecord<K extends GameCatalogDatasetKey> =
-  GameCatalogRecordByKey[K] & {
-    id: string
-  }
-
-// Named aliases for the datasets consumers most commonly read via `@workspace/game-catalog/queries`,
-// so call sites can name the record type instead of re-deriving it from `StoredRecord<"...">` each
-// time.
-export type CharacterRecord = StoredRecord<"characters">
-export type UpgradeRecord = StoredRecord<"upgrades">
-export type CampaignBattleRecord = StoredRecord<"campaign-battles">
-export type CampaignDefinitionRecord = StoredRecord<"campaign-definitions">
+import {
+  datasetToStorageModels,
+  mapDatasetRowToStorageModel,
+} from "./game-catalog.mapper"
+import type { StorageModel } from "./game-catalog.storage"
 
 export const catalogDbName = "tacticus-planner-game-catalog"
 // v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
 // served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.
 export const catalogDbVersion = 3
-
-// Maps a dataset envelope's `data` (always a plain array now) into the id-keyed rows stored per record.
-type DatasetToRecords = (data: unknown) => Record<string, unknown>[]
-
-function asArray(data: unknown): Record<string, unknown>[] {
-  return Array.isArray(data) ? (data as Record<string, unknown>[]) : []
-}
-
-// campaign-definitions key on `groupId`; everything else already carries an `id`.
-function groupsWithId(data: unknown): Record<string, unknown>[] {
-  return asArray(data).map((group) => ({ id: group.groupId, ...group }))
-}
-
-// The mow upgrade-cost ladder is keyed by the ability level it raises a MoW to (server-provided), so the
-// store id correlates with the in-game level rather than an opaque array index.
-function byLevel(data: unknown): Record<string, unknown>[] {
-  return asArray(data).map((row) => ({ id: row.level, ...row }))
-}
-
-const datasetToRecords: Record<GameCatalogDatasetKey, DatasetToRecords> = {
-  characters: asArray,
-  npcs: asArray,
-  mows: asArray,
-  "mow-upgrade-costs": byLevel,
-  upgrades: asArray,
-  equipment: asArray,
-  "campaign-battles": asArray,
-  "campaign-definitions": groupsWithId,
-  lres: asArray,
-  "lre-battles": asArray,
-  "lre-common": asArray,
-}
 
 /**
  * Single long-lived Dexie instance for the whole app's lifetime — idiomatic Dexie usage (repeatedly
@@ -111,8 +69,17 @@ export async function replaceGameCatalogDataset(
   data: unknown,
   metadata: GameCatalogDatasetMetadata
 ) {
-  const records = datasetToRecords[datasetKey](data).map(toStoredRecord)
-  const table = catalogDb.table(datasetKey)
+  const records = datasetToStorageModels[datasetKey](data).map(
+    mapDatasetRowToStorageModel
+  )
+  // Typed the same way as getDatasetRecords' read path below (Dexie's `.table<T, TKey>()` overload)
+  // rather than the untyped `.table(datasetKey)` lookup — `records` themselves are already only
+  // typed as `Record<string, unknown>[]` (the per-dataset-key transform in `datasetToStorageModels`
+  // above has no way to know its own dataset's specific shape at the type level), so this is as far
+  // as this generic-over-`datasetKey` write path can be typed without hand-declaring one Dexie table
+  // property per dataset (11 of them) purely to duplicate what `datasetToStorageModels`'s keys already
+  // enumerate.
+  const table = catalogDb.table<Record<string, unknown>, string>(datasetKey)
 
   await catalogDb.transaction("rw", table, catalogDb.metadata, async () => {
     await table.clear()
@@ -129,8 +96,8 @@ export async function saveManifestMetadata(
 
 export async function getDatasetRecords<K extends GameCatalogDatasetKey>(
   datasetKey: K
-): Promise<StoredRecord<K>[]> {
-  return catalogDb.table<StoredRecord<K>, string>(datasetKey).toArray()
+): Promise<StorageModel<K>[]> {
+  return catalogDb.table<StorageModel<K>, string>(datasetKey).toArray()
 }
 
 export async function clearGameCatalogDb() {
@@ -144,16 +111,4 @@ export async function clearGameCatalogDb() {
       )
     }
   )
-}
-
-function toStoredRecord<T extends Record<string, unknown>>(
-  item: T
-): T & { id: string } {
-  const id = item.id
-
-  if (typeof id !== "string" && typeof id !== "number") {
-    throw new Error("GameCatalog records must include a string or numeric id.")
-  }
-
-  return { ...item, id: String(id) }
 }

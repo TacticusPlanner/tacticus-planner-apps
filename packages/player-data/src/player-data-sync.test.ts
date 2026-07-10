@@ -14,21 +14,20 @@ import {
   type PlayerDataChunkEnvelope,
   type PlayerDataManifest,
   type PlayerDataManifestChunk,
-} from "./types"
+} from "./player-data.dto"
 
 // The fake client bypasses zod (the real PlayerDataHttpClient validates); these payloads only need the
 // shape the storage layer stores verbatim, not the full served schema. `inventory`/`live-progress` are
-// fully shaped (every field the real schema requires) since they're decomposed into several records
-// in the shared `profile` store — an incomplete fixture would trip over a missing sub-collection.
+// each stored as a single whole-object row in the shared `profile` store (see chunk-keys.ts), so their
+// fixtures here are the whole payload, not split into sub-records.
 const chunkData: Record<string, unknown> = {
   "player-details": { name: "Tester", powerLevel: 100 },
   characters: [{ unitId: "ultraTigurius", rank: "Gold1" }],
   mows: [],
   "inventory-upgrades": [{ upgradeId: "u1", amount: 3 }],
   "inventory-items": [{ itemId: "i1", level: 1, amount: 2 }],
+  "inventory-shards": [{ unitId: "necroWarden", amount: 5, mythicAmount: 0 }],
   inventory: {
-    shards: [{ unitId: "ultraTigurius", amount: 5 }],
-    mythicShards: [],
     xpBooks: [{ xpBookId: "bookCommon", amount: 2 }],
     abilityBadges: { imperial: [], xenos: [], chaos: [] },
     components: {
@@ -191,7 +190,6 @@ describe("syncPlayerData", () => {
       {
         inventory: {
           ...(chunkData.inventory as object),
-          shards: [{ unitId: "necroWarden", amount: 9 }],
           resetStones: 99,
         },
       }
@@ -200,10 +198,7 @@ describe("syncPlayerData", () => {
 
     // Inventory actually changed...
     const inventory = await getChunkData("inventory")
-    expect(inventory).toMatchObject({
-      shards: [{ unitId: "necroWarden", amount: 9 }],
-      resetStones: 99,
-    })
+    expect(inventory).toMatchObject({ resetStones: 99 })
 
     // ...but player-details and live-progress, sharing the same `profile` object store, are
     // untouched — the re-sync must delete/replace only inventory's own rows.

@@ -8,5 +8,5 @@ export { RankSelect } from "./rank-select"
 export {
   LocationChips,
   LocationSection,
-  type LocationView,
+  type LocationViewModel,
 } from "./location-chips"

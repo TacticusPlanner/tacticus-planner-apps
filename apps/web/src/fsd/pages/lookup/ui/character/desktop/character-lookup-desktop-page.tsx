@@ -2,16 +2,15 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
 
-import type { CampaignInsight } from "@/shared/lib"
-
+import type { CampaignInsight } from "../campaign-insights"
 import { CharacterLookupControls } from "../character-lookup-controls"
 import { CharacterLookupResults } from "../character-lookup-results"
 import type {
-  BaseUpgradeView,
-  RankGroupView,
-} from "../character-lookup-results.types"
+  BaseUpgradeViewModel,
+  RankGroupViewModel,
+} from "../character-lookup-results.view-model"
 import { UnitProfile } from "../unit-profile"
-import type { UnitProfileView } from "../unit-profile.types"
+import type { UnitProfileViewModel } from "../unit-profile.view-model"
 
 interface CharacterLookupDesktopPageProps {
   characterGroups: FactionGroup[]
@@ -25,9 +24,9 @@ interface CharacterLookupDesktopPageProps {
   includeOwned: boolean
   includeOwnedDisabled: boolean
   loading: boolean
-  profile: UnitProfileView | undefined
-  baseUpgrades: BaseUpgradeView[]
-  groups: RankGroupView[]
+  profile: UnitProfileViewModel | undefined
+  baseUpgrades: BaseUpgradeViewModel[]
+  groups: RankGroupViewModel[]
   campaignInsights: CampaignInsight[]
   eventInsights: CampaignInsight[]
   onCharacterChange: (id: string) => void
@@ -111,6 +110,7 @@ export function CharacterLookupDesktopPage({
           campaignInsights={campaignInsights}
           eventInsights={eventInsights}
           isMobile={false}
+          showOwned={!includeOwnedDisabled}
         />
       </div>
     </div>

@@ -12,8 +12,8 @@ import {
   type PlayerDataChunkKey,
   type PlayerDataManifest,
   type PlayerDataManifestChunk,
-  type PlayerDataMetadata,
-} from "./types"
+} from "./player-data.dto"
+import type { PlayerDataMetadataStorageModel } from "./player-data.storage"
 
 export type PlayerDataSyncProgress = {
   downloaded: number
@@ -34,7 +34,7 @@ export type PlayerDataSyncOptions = {
 
 export function selectChangedChunks(
   manifest: PlayerDataManifest,
-  metadata: ReadonlyMap<string, PlayerDataMetadata>
+  metadata: ReadonlyMap<string, PlayerDataMetadataStorageModel>
 ): PlayerDataManifestChunk[] {
   return manifest.chunks.filter((chunk) => {
     if (!isPlayerDataChunkKey(chunk.key)) {

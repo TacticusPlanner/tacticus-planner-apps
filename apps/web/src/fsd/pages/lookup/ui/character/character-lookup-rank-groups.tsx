@@ -17,16 +17,16 @@ import {
 import { EntityIcon, RankBadge, UpgradeIcon } from "@/shared/ui"
 
 import type {
-  RankGroupView,
-  RecipeView,
-  UpgradeView,
-} from "./character-lookup-results.types"
+  RankGroupViewModel,
+  RecipeViewModel,
+  UpgradeViewModel,
+} from "./character-lookup-results.view-model"
 
 export function RankGroupHeader({
   group,
   compact = false,
 }: {
-  group: RankGroupView
+  group: RankGroupViewModel
   compact?: boolean
 }) {
   const { t } = useTranslation()
@@ -55,7 +55,7 @@ export function RankGroupHeader({
   )
 }
 
-export function RankGroupBody({ group }: { group: RankGroupView }) {
+export function RankGroupBody({ group }: { group: RankGroupViewModel }) {
   return (
     <div className="flex justify-center gap-4">
       <StatColumn stat="health" upgrades={group.health} />
@@ -70,7 +70,7 @@ function StatColumn({
   upgrades,
 }: {
   stat: StatIconKind
-  upgrades: UpgradeView[]
+  upgrades: UpgradeViewModel[]
 }) {
   if (upgrades.length === 0) return null
   return (
@@ -87,7 +87,7 @@ function StatColumn({
   )
 }
 
-function UpgradeCell({ upgrade }: { upgrade: UpgradeView }) {
+function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
   const { t } = useTranslation()
   const hasRecipe = upgrade.recipe.length > 0
 
@@ -144,7 +144,7 @@ function RecipeTree({
   items,
   depth = 0,
 }: {
-  items: RecipeView[]
+  items: RecipeViewModel[]
   depth?: number
 }) {
   return (

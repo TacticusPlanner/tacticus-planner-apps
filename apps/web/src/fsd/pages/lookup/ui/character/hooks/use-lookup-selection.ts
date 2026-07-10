@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useSearchParams } from "react-router"
 import {
-  currentMaxRank,
+  lastRank,
   firstProgression,
   firstRank,
   isAdamantineRank,
@@ -25,11 +25,13 @@ export interface LookupSelection {
   pointFive: boolean
 }
 
-// Adamantine3 exists in the ladder but isn't fully available in-game yet (see currentMaxRank's own
-// comment in @workspace/game-catalog) — clamp any rank entering this page's selection (a shared URL,
-// a prefill from synced player data, or a range change) down to the practical ceiling.
+// Adamantine3 is planned but currently absent from the ladder entirely (see lastRank's own comment
+// in @workspace/game-catalog) — clamp any rank entering this page's selection (a shared URL, a
+// prefill from synced player data, or a range change) down to lastRank. Currently a no-op (nothing
+// typed as Rank can exceed lastRank while Adamantine3 is absent from the ladder), kept so this file
+// needs no changes once Adamantine3 ships and could again exceed the reachable ceiling.
 const clampToCurrentMax = (rank: Rank): Rank =>
-  rankIndex(rank) > rankIndex(currentMaxRank) ? currentMaxRank : rank
+  rankIndex(rank) > rankIndex(lastRank) ? lastRank : rank
 
 function selectionFromParams(params: URLSearchParams): LookupSelection {
   const start = params.get("rankStart")
@@ -151,9 +153,7 @@ export function useLookupSelection() {
       const onlyStartChanged =
         clampedStart !== prev.rankStart && clampedEnd === prev.rankEnd
       const nextEnd = onlyStartChanged
-        ? rankAt(
-            Math.min(rankIndex(clampedStart) + 1, rankIndex(currentMaxRank))
-          )
+        ? rankAt(Math.min(rankIndex(clampedStart) + 1, rankIndex(lastRank)))
         : clampedEnd
 
       return {

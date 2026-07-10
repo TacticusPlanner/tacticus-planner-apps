@@ -1,10 +1,4 @@
-export {
-  computeCampaignInsights,
-  type BattleLike,
-  type CampaignInsight,
-  type CampaignInsightContribution,
-  type FarmLocationLike,
-} from "./campaign-insights"
+export { type Battle, type FarmLocation } from "./battle.domain"
 export {
   useCampaignDisplay,
   type CampaignShortLabel,

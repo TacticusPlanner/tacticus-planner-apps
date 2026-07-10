@@ -315,6 +315,8 @@ const records: Record<string, unknown[]> = {
 
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharacters: () => records.characters ?? [],
+  getCharactersMap: () =>
+    new Map((records.characters ?? []).map((c) => [c.id, c])),
   getUpgrades: () => records.upgrades ?? [],
   getCampaignBattles: () => records["campaign-battles"] ?? [],
   getCampaignDefinitions: () => records["campaign-definitions"] ?? [],
@@ -610,7 +612,7 @@ describe("CharacterLookupPage", () => {
   })
 
   describe("include my upgrades toggle", () => {
-    it("is visible but disabled, with owned=0/missing=count, for unauthenticated users", () => {
+    it("is visible but disabled, and hides the Owned/Missing columns entirely, for unauthenticated users", () => {
       renderPage()
 
       const toggle = screen.getByRole("switch", {
@@ -619,13 +621,17 @@ describe("CharacterLookupPage", () => {
       expect(toggle).toBeInTheDocument()
       expect(toggle).toBeDisabled()
 
+      // Owned is always 0 and Missing always equals Count while signed out, so both columns are
+      // dropped rather than showing that non-information — only Base Upgrade/Name/Count/Rarity/
+      // locations remain.
       const row = within(screen.getByRole("table"))
         .getByText("Health Base")
         .closest("tr")
       const cells = within(row as HTMLElement).getAllByRole("cell")
+      expect(cells).toHaveLength(6)
       expect(cells[2].textContent).toBe("1") // count
-      expect(cells[3].textContent).toBe("0") // owned
-      expect(cells[4].textContent).toBe("1") // missing
+      expect(screen.queryByText("unitLookup.owned")).not.toBeInTheDocument()
+      expect(screen.queryByText("unitLookup.missing")).not.toBeInTheDocument()
     })
 
     it("nets an owned inventory upgrade out of the owned/missing columns once enabled", async () => {

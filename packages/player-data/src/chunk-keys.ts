@@ -7,6 +7,7 @@ export const playerDataChunkKeys = [
   "mows",
   "inventory-upgrades",
   "inventory-items",
+  "inventory-shards",
   "inventory",
   "campaign-progress",
   "campaign-events-progress",
@@ -33,6 +34,7 @@ export const splitPlayerDataChunkKeys = [
   "mows",
   "inventory-upgrades",
   "inventory-items",
+  "inventory-shards",
   "campaign-progress",
   "campaign-events-progress",
   "lre-progress",
@@ -47,14 +49,13 @@ export function isSplitPlayerDataChunkKey(
 }
 
 // The remaining three chunks don't have one single natural per-record identity the way the chunks
-// above do, but they aren't each a single opaque blob either — `inventory` and `live-progress` both
-// bundle a couple of naturally-keyed sub-collections (shards, mythic shards, xp books; battle
-// attempts) alongside a handful of leftover scalars/small fixed-shape groups (requisition orders,
-// badges/orbs/components; the active event id, game-mode tokens). Rather than giving each of these
-// three chunks its own single-row object store, they share one "profile" store — each decomposed
-// into a small "summary" record plus one row per naturally-keyed sub-item, every id prefixed with its
-// own chunk key so a range query can address (or clear) exactly one chunk's rows. See
-// player-data-storage.ts's `decomposeMergedChunk`/`reassembleMergedChunk`.
+// above do, so rather than giving each its own single-row object store, they share one "profile"
+// store — each stored as one whole-chunk row, keyed by its own chunk key so a range query can
+// address (or clear) exactly one chunk's row. Shards were the one naturally-keyed sub-collection
+// worth splitting out into their own dedicated chunk (see `inventory-shards` above); further
+// per-id splitting of the rest (xp books, battle attempts, ...) was judged too granular for the
+// partial-update benefit it would buy. See player-data-storage.ts's
+// `decomposeMergedChunk`/`reassembleMergedChunk`.
 const mergedPlayerDataChunkKeys = [
   "player-details",
   "inventory",

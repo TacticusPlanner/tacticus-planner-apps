@@ -35,25 +35,18 @@ describe("useLookupSelection's rank range", () => {
     expect(result.current.draft.rankEnd).toBe("Gold1")
   })
 
-  it("caps the range at Adamantine2 instead of the ladder's absolute max (Adamantine3)", () => {
-    const { result } = renderSelection()
+  // No "clamps Adamantine3 down to Adamantine2" cases here for now: Adamantine3 is currently removed
+  // from the Rank ladder entirely (see rank.ts's lastRank comment), so there's no longer a rank value
+  // beyond the ceiling to clamp — `clampToCurrentMax`/lastRank-capping in useLookupSelection is a
+  // no-op today, kept so this file needs no changes once Adamantine3 ships. Reinstate cases like
+  // these (an out-of-range rank via setDraftRange, and via the URL) at that point.
 
-    act(() => {
-      result.current.setDraftRange("Adamantine3", result.current.draft.rankEnd)
-    })
-
-    // "from" itself is clamped down to the practical ceiling...
-    expect(result.current.draft.rankStart).toBe("Adamantine2")
-    // ...and since there's no valid "one rank up" left from there, "to" just stays put instead of
-    // overshooting past the ceiling.
-    expect(result.current.draft.rankEnd).toBe("Adamantine2")
-  })
-
-  it("clamps an out-of-range rank supplied via the URL down to the practical ceiling", () => {
+  it("ignores an unrecognized rank supplied via the URL and falls back to the default", () => {
     const { result } = renderSelection(
-      "/?rankStart=Adamantine2&rankEnd=Adamantine3"
+      "/?rankStart=Adamantine2&rankEnd=NotARealRank"
     )
 
-    expect(result.current.applied.rankEnd).toBe("Adamantine2")
+    expect(result.current.applied.rankStart).toBe("Adamantine2")
+    expect(result.current.applied.rankEnd).toBe("Stone2")
   })
 })

@@ -17,14 +17,16 @@ import {
   UpgradeIcon,
 } from "@/shared/ui"
 
-import type { BaseUpgradeView } from "./character-lookup-results.types"
+import type { BaseUpgradeViewModel } from "./character-lookup-results.view-model"
 
 export function BaseUpgradesTable({
   baseUpgrades,
   highlightedId,
+  showOwned,
 }: {
-  baseUpgrades: BaseUpgradeView[]
+  baseUpgrades: BaseUpgradeViewModel[]
   highlightedId: string | null
+  showOwned: boolean
 }) {
   const { t } = useTranslation()
   return (
@@ -39,12 +41,16 @@ export function BaseUpgradesTable({
             <TableHead className="w-20 text-right">
               {t("unitLookup.count")}
             </TableHead>
-            <TableHead className="w-20 text-right">
-              {t("unitLookup.owned")}
-            </TableHead>
-            <TableHead className="w-20 text-right">
-              {t("unitLookup.missing")}
-            </TableHead>
+            {showOwned ? (
+              <>
+                <TableHead className="w-20 text-right">
+                  {t("unitLookup.owned")}
+                </TableHead>
+                <TableHead className="w-20 text-right">
+                  {t("unitLookup.missing")}
+                </TableHead>
+              </>
+            ) : null}
             <TableHead className="w-28">{t("unitLookup.rarity")}</TableHead>
             <TableHead className="max-w-48">
               {t("unitLookup.campaignLocations")}
@@ -76,12 +82,16 @@ export function BaseUpgradesTable({
               <TableCell className="text-right tabular-nums">
                 {upgrade.count}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {upgrade.owned}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {upgrade.missing}
-              </TableCell>
+              {showOwned ? (
+                <>
+                  <TableCell className="text-right tabular-nums">
+                    {upgrade.owned}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {upgrade.missing}
+                  </TableCell>
+                </>
+              ) : null}
               <TableCell>
                 <RarityIcon rarity={upgrade.rarity} />
               </TableCell>
@@ -102,9 +112,11 @@ export function BaseUpgradesTable({
 export function BaseUpgradesCards({
   baseUpgrades,
   highlightedId,
+  showOwned,
 }: {
-  baseUpgrades: BaseUpgradeView[]
+  baseUpgrades: BaseUpgradeViewModel[]
   highlightedId: string | null
+  showOwned: boolean
 }) {
   const { t } = useTranslation()
   return (
@@ -134,20 +146,22 @@ export function BaseUpgradesCards({
                 ×{upgrade.count}
               </span>
             </div>
-            <div className="flex gap-4 text-xs text-muted-foreground">
-              <span>
-                {t("unitLookup.owned")}:{" "}
-                <span className="font-medium text-foreground tabular-nums">
-                  {upgrade.owned}
+            {showOwned ? (
+              <div className="flex gap-4 text-xs text-muted-foreground">
+                <span>
+                  {t("unitLookup.owned")}:{" "}
+                  <span className="font-medium text-foreground tabular-nums">
+                    {upgrade.owned}
+                  </span>
                 </span>
-              </span>
-              <span>
-                {t("unitLookup.missing")}:{" "}
-                <span className="font-medium text-foreground tabular-nums">
-                  {upgrade.missing}
+                <span>
+                  {t("unitLookup.missing")}:{" "}
+                  <span className="font-medium text-foreground tabular-nums">
+                    {upgrade.missing}
+                  </span>
                 </span>
-              </span>
-            </div>
+              </div>
+            ) : null}
             <LocationSection
               label={t("unitLookup.campaignLocations")}
               locations={upgrade.campaignLocations}

@@ -6,25 +6,15 @@ import {
   type Rarity,
 } from "@workspace/game-catalog"
 
+import type { Battle, FarmLocation } from "@/shared/lib"
+
+// Single-consumer calc (Character Lookup) — colocated here rather than in shared/lib, since nothing
+// else in the app needs it. `Battle`/`FarmLocation` stay in shared/lib: rank-lookup's
+// rank-lookup.mapper.ts also produces values shaped to them.
+
 export interface CampaignInsightNeed {
   id: string
   count: number
-}
-
-export interface FarmLocationLike {
-  battleId: string
-  guaranteed: boolean
-  effectiveRate: number | null
-  numerator: number | null
-  denominator: number | null
-}
-
-export interface BattleLike {
-  campaignGroupId: string
-  type: string
-  challenge: boolean
-  nodeNumber: number
-  energyCost: number
 }
 
 /** The minimal shape `computeCampaignInsights` needs from an upgrade record — any richer record
@@ -32,7 +22,7 @@ export interface BattleLike {
 export interface CampaignInsightUpgrade {
   id: string
   rarity: Rarity
-  farmLocations: FarmLocationLike[]
+  farmLocations: FarmLocation[]
 }
 
 /** One upgrade+location's contribution to a campaign insight's score, for the expanded breakdown. */
@@ -71,7 +61,7 @@ export interface CampaignInsight {
  * precomputed `effectiveRate` when present, else the raw `numerator/denominator` fraction, else 0
  * for a location with no rate info at all.
  */
-export function dropRate(location: FarmLocationLike): number {
+export function dropRate(location: FarmLocation): number {
   if (location.guaranteed) return 1
   if (location.effectiveRate != null) return location.effectiveRate
   if (location.numerator != null && location.denominator) {
@@ -127,7 +117,7 @@ interface ChipAccumulator {
 export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
   needs: CampaignInsightNeed[],
   upgradesById: ReadonlyMap<string, U>,
-  battlesById: ReadonlyMap<string, BattleLike>,
+  battlesById: ReadonlyMap<string, Battle>,
   isEventGroup: (campaignGroupId: string) => boolean,
   resolveLabel: (descriptor: CampaignDescriptor, isEvent: boolean) => string,
   topN = 3

@@ -2,14 +2,14 @@ import { Badge } from "@workspace/ui/components/badge"
 
 import { EntityIcon } from "./entity-icon"
 
-export type LocationView = { id: string; label: string; icon?: string }
+export type LocationViewModel = { id: string; label: string; icon?: string }
 
 export function LocationSection({
   label,
   locations,
 }: {
   label: string
-  locations: LocationView[]
+  locations: LocationViewModel[]
 }) {
   if (locations.length === 0) return null
   return (
@@ -20,7 +20,11 @@ export function LocationSection({
   )
 }
 
-export function LocationChips({ locations }: { locations: LocationView[] }) {
+export function LocationChips({
+  locations,
+}: {
+  locations: LocationViewModel[]
+}) {
   if (locations.length === 0) return null
   return (
     <div className="flex flex-wrap gap-1.5">

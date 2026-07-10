@@ -6,13 +6,13 @@ import {
   appliedUpgradeIds,
   groupUpgradesByRank,
   rankUpUpgradeIds,
-  type CharacterLike,
-  type UpgradeLike,
+  type Character,
+  type Upgrade,
 } from "./rank-lookup-calc"
 
 // 6 upgrades per rank, ordered [Health, Health, Damage, Damage, Armour, Armour] — point-five takes
 // indices 0/2/4 (the first of each stat pair).
-const character: CharacterLike = {
+const character: Character = {
   id: "astarCyrus",
   name: "Cyrus",
   rankUpUpgrades: [
@@ -82,7 +82,7 @@ describe("groupUpgradesByRank", () => {
 })
 
 describe("aggregateBaseUpgrades", () => {
-  const upgrades = new Map<string, UpgradeLike>([
+  const upgrades = new Map<string, Upgrade>([
     [
       "base1",
       {

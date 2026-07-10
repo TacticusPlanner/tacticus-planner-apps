@@ -19,24 +19,11 @@ import {
 // StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
 // in quick succession — without this guard each mount would issue its own manifest request (the source of
 // the "manifest fetched four times on refresh" behaviour). Coalesce overlapping syncs for the same
-// baseUrl into a single in-flight request; it clears once settled so a later sync still runs.
+// baseUrl into a single in-flight request; it clears once settled so a later sync still runs. Matches
+// @workspace/player-data's PlayerDataProvider, which has the same guard.
 let inFlightSync: {
   baseUrl: string
   promise: Promise<GameCatalogSyncResult>
-} | null = null
-
-// The in-flight guard above only coalesces *overlapping* syncs — remounts that happen back-to-back but
-// sequentially (each after the previous one settled) still each start a fresh sync. That sequence is
-// exactly what an auth-settling remount storm looks like, so remember the last successful result for a
-// short window and hand it back instead of hitting the network again. This only trims redundant calls
-// during that storm; it never masks a genuine catalog change, since the manifest is still re-fetched
-// (and 304s cheaply) on the very next sync once the window elapses.
-const RECENT_SYNC_WINDOW_MS = 5_000
-
-let lastSync: {
-  baseUrl: string
-  result: GameCatalogSyncResult
-  completedAt: number
 } | null = null
 
 function runSharedSync(
@@ -47,26 +34,13 @@ function runSharedSync(
     return inFlightSync.promise
   }
 
-  if (
-    lastSync &&
-    lastSync.baseUrl === baseUrl &&
-    Date.now() - lastSync.completedAt < RECENT_SYNC_WINDOW_MS
-  ) {
-    return Promise.resolve(lastSync.result)
-  }
-
   const promise = syncGameCatalog(new GameCatalogHttpClient(baseUrl), {
     onProgress,
+  }).finally(() => {
+    if (inFlightSync?.promise === promise) {
+      inFlightSync = null
+    }
   })
-    .then((result) => {
-      lastSync = { baseUrl, result, completedAt: Date.now() }
-      return result
-    })
-    .finally(() => {
-      if (inFlightSync?.promise === promise) {
-        inFlightSync = null
-      }
-    })
 
   inFlightSync = { baseUrl, promise }
 

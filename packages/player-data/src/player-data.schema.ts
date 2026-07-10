@@ -107,11 +107,18 @@ const mowComponentsSchema = z.looseObject({
   chaos: componentAmountSchema,
 })
 
+// Regular + mythic shard progress toward a unit not yet unlocked, merged into a single record keyed
+// by `unitId` (the Tacticus API returns these as two separate lists; a unit absent from one list just
+// reads back 0 for that side, rather than requiring a matching entry in both). Only covers units
+// absent from `characters`/`mows` — an already-unlocked unit's shard counts live on its own record
+// instead (see `playerUnitBaseSchema`'s `shards`/`mythicShards`), never duplicated here.
+const inventoryShardSchema = z.looseObject({
+  unitId: z.string(),
+  amount: z.number(),
+  mythicAmount: z.number(),
+})
+
 const inventorySchema = z.looseObject({
-  shards: z.array(z.looseObject({ unitId: z.string(), amount: z.number() })),
-  mythicShards: z.array(
-    z.looseObject({ unitId: z.string(), amount: z.number() })
-  ),
   xpBooks: z.array(z.looseObject({ xpBookId: z.string(), amount: z.number() })),
   abilityBadges: z.looseObject({
     imperial: z.array(rarityAmountSchema),
@@ -203,6 +210,7 @@ export const playerDataChunkPayloadSchemas = {
   mows: z.array(playerMowSchema),
   "inventory-upgrades": z.array(inventoryUpgradeSchema),
   "inventory-items": z.array(inventoryItemSchema),
+  "inventory-shards": z.array(inventoryShardSchema),
   inventory: inventorySchema,
   "campaign-progress": z.array(campaignProgressSchema),
   "campaign-events-progress": z.array(campaignProgressSchema),

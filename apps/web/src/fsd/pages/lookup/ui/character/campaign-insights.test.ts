@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest"
 
+import type { Battle, FarmLocation } from "@/shared/lib"
+
 import {
   computeCampaignInsights,
   dropRate,
-  type BattleLike,
   type CampaignInsightUpgrade,
-  type FarmLocationLike,
 } from "./campaign-insights"
 
-function location(overrides: Partial<FarmLocationLike>): FarmLocationLike {
+function location(overrides: Partial<FarmLocation>): FarmLocation {
   return {
     battleId: "battle1",
     guaranteed: false,
@@ -50,7 +50,7 @@ describe("dropRate", () => {
 })
 
 describe("computeCampaignInsights", () => {
-  const battlesById = new Map<string, BattleLike>([
+  const battlesById = new Map<string, Battle>([
     [
       "std-node-1",
       {

@@ -20,15 +20,15 @@ import {
   type CampaignDescriptor,
 } from "@workspace/game-catalog"
 
-import {
-  useCampaignDisplay,
-  type CampaignInsight,
-  type CampaignInsightContribution,
-  type CampaignShortLabel,
-} from "@/shared/lib"
+import { useCampaignDisplay, type CampaignShortLabel } from "@/shared/lib"
 import { EntityIcon, LocationChips, RarityIcon, UpgradeIcon } from "@/shared/ui"
 
-import type { BaseUpgradeView } from "./character-lookup-results.types"
+import type {
+  CampaignInsight,
+  CampaignInsightContribution,
+} from "./campaign-insights"
+
+import type { BaseUpgradeViewModel } from "./character-lookup-results.view-model"
 
 type ShortLabelResolver = (descriptor: CampaignDescriptor) => CampaignShortLabel
 
@@ -37,7 +37,7 @@ export function TopRarityChip({
   isMobile,
   onClick,
 }: {
-  upgrade: BaseUpgradeView
+  upgrade: BaseUpgradeViewModel
   isMobile: boolean
   onClick: () => void
 }) {
@@ -108,7 +108,7 @@ export function CampaignInsightList({
 }: {
   label: string
   insights: CampaignInsight[]
-  upgradeById: ReadonlyMap<string, BaseUpgradeView>
+  upgradeById: ReadonlyMap<string, BaseUpgradeViewModel>
 }) {
   const { t } = useTranslation(["common"])
   const { shortLabel, tierCode } = useCampaignDisplay()
@@ -207,7 +207,7 @@ interface ContributionLocation {
 
 interface UpgradeContributionGroup {
   upgradeId: string
-  upgrade?: BaseUpgradeView
+  upgrade?: BaseUpgradeViewModel
   count: number
   totalValue: number
   locations: ContributionLocation[]
@@ -218,7 +218,7 @@ interface UpgradeContributionGroup {
 // upgrades needed from this campaign show up first.
 function groupContributionsByUpgrade(
   contributions: CampaignInsightContribution[],
-  upgradeById: ReadonlyMap<string, BaseUpgradeView>,
+  upgradeById: ReadonlyMap<string, BaseUpgradeViewModel>,
   shortLabel: ShortLabelResolver
 ): UpgradeContributionGroup[] {
   const groups = new Map<string, UpgradeContributionGroup>()

@@ -14,8 +14,8 @@ describe("entity icon mapping", () => {
     expect(rankIcon("Adamantine1")).toBe(
       "/snowprint_assets/ranks/adamantine1.png"
     )
-    expect(rankIcon("Adamantine3")).toBe(
-      "/snowprint_assets/ranks/adamantine3.png"
+    expect(rankIcon("Adamantine2")).toBe(
+      "/snowprint_assets/ranks/adamantine2.png"
     )
   })
 

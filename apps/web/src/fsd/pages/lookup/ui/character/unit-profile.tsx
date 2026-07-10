@@ -13,9 +13,12 @@ import {
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { UnitProfileView, UnitStatPair } from "./unit-profile.types"
+import type {
+  UnitProfileViewModel,
+  UnitStatPair,
+} from "./unit-profile.view-model"
 
-export function UnitProfile({ profile }: { profile: UnitProfileView }) {
+export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
   const { t } = useTranslation(["common", "traits", "damageTypes", "equipment"])
 
   return (

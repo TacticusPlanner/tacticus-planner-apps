@@ -5,7 +5,7 @@ interface RankUpEntry {
   upgradeIds: string[]
 }
 
-export interface CharacterLike {
+export interface Character {
   id: string
   name: string
   rankUpUpgrades: RankUpEntry[]
@@ -17,7 +17,7 @@ export interface RecipeIngredient {
   recipe?: RecipeIngredient[] | null
 }
 
-export interface UpgradeLike {
+export interface Upgrade {
   id: string
   label: string
   rarity: Rarity

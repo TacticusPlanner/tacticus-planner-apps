@@ -3,13 +3,13 @@ import {
   playerDataChunkEnvelopeMetaSchema,
   playerDataChunkPayloadSchemas,
   playerDataManifestSchema,
-} from "./schemas"
+} from "./player-data.schema"
 import type {
   PlayerDataChunkEnvelope,
   PlayerDataChunkKey,
   PlayerDataManifest,
   PlayerDataManifestChunk,
-} from "./types"
+} from "./player-data.dto"
 
 export type PlayerDataClient = {
   triggerSync: () => Promise<PlayerDataManifest>

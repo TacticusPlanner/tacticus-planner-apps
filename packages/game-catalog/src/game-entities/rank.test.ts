@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { currentMaxRank, isAdamantineRank, lastRank } from "./rank"
+import { isAdamantineRank, isRank, lastRank, rankOrder } from "./rank"
 
 describe("isAdamantineRank", () => {
-  it("is true for all three Adamantine ranks", () => {
+  it("is true for both current Adamantine ranks", () => {
     expect(isAdamantineRank("Adamantine1")).toBe(true)
     expect(isAdamantineRank("Adamantine2")).toBe(true)
-    expect(isAdamantineRank("Adamantine3")).toBe(true)
   })
 
   it("is false for non-Adamantine ranks", () => {
@@ -15,10 +14,10 @@ describe("isAdamantineRank", () => {
   })
 })
 
-describe("currentMaxRank", () => {
-  it("is Adamantine2, one below the ladder's absolute max (Adamantine3 isn't fully available yet)", () => {
-    expect(currentMaxRank).toBe("Adamantine2")
-    expect(lastRank).toBe("Adamantine3")
-    expect(currentMaxRank).not.toBe(lastRank)
+describe("lastRank", () => {
+  it("is Adamantine2 — Adamantine3 is planned but not yet in the ladder at all", () => {
+    expect(lastRank).toBe("Adamantine2")
+    expect(rankOrder).not.toContain("Adamantine3")
+    expect(isRank("Adamantine3")).toBe(false)
   })
 })

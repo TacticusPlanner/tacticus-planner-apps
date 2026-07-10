@@ -10,7 +10,8 @@ import {
   type PlayerDataChunkKey,
   type SplitPlayerDataChunkKey,
 } from "./chunk-keys"
-import type { PlayerDataChunkPayload, PlayerDataMetadata } from "./types"
+import type { PlayerDataChunkDto } from "./player-data.dto"
+import type { PlayerDataMetadataStorageModel } from "./player-data.storage"
 
 // Exported so tests can delete/reset the exact database the app uses (see player-data-sync.test.ts).
 export const playerDataDbName = "tacticus-planner-player-data"
@@ -29,6 +30,7 @@ const splitChunkKeyPath: Record<SplitPlayerDataChunkKey, string | string[]> = {
   mows: "unitId",
   "inventory-upgrades": "upgradeId",
   "inventory-items": "itemId",
+  "inventory-shards": "unitId",
   "campaign-progress": ["tacticusCampaignId", "type"],
   "campaign-events-progress": ["tacticusCampaignId", "type"],
   "lre-progress": "id",
@@ -50,116 +52,29 @@ function withoutId<T extends { id: string }>(record: T): Omit<T, "id"> {
   return rest as Omit<T, "id">
 }
 
+function mergedChunkSummaryId(chunkKey: MergedPlayerDataChunkKey): string {
+  return `${chunkKey}:summary`
+}
+
 /**
- * Decomposes one merged chunk's whole payload into the flat records stored in the shared `profile`
- * store: a "summary" record for the leftover scalars/small fixed-shape groups (requisition orders,
- * badges/orbs/components; the active event id, game-mode tokens) that have no natural per-item id
- * worth splitting on, plus one row per naturally-keyed sub-collection (shards, mythic shards, xp
- * books; battle attempts).
+ * Wraps a merged chunk's whole payload as the single row stored in the shared `profile` store (see
+ * chunk-keys.ts: none of these three chunks has one natural per-item id worth splitting on the way
+ * the dedicated split chunks do, so each is kept as one summary row rather than decomposed further).
  */
 function decomposeMergedChunk(
   chunkKey: MergedPlayerDataChunkKey,
   data: unknown
 ): Record<string, unknown>[] {
-  switch (chunkKey) {
-    case "player-details": {
-      const details = data as PlayerDataChunkPayload<"player-details">
-      return [{ id: "player-details:main", ...details }]
-    }
-
-    case "inventory": {
-      const inventory = data as PlayerDataChunkPayload<"inventory">
-      return [
-        {
-          id: "inventory:summary",
-          abilityBadges: inventory.abilityBadges,
-          components: inventory.components,
-          forgeBadges: inventory.forgeBadges,
-          orbs: inventory.orbs,
-          requisitionOrdersRegular: inventory.requisitionOrdersRegular,
-          requisitionOrdersBlessed: inventory.requisitionOrdersBlessed,
-          resetStones: inventory.resetStones,
-        },
-        ...inventory.shards.map((shard) => ({
-          id: `inventory:shard:${shard.unitId}`,
-          ...shard,
-        })),
-        ...inventory.mythicShards.map((shard) => ({
-          id: `inventory:mythicShard:${shard.unitId}`,
-          ...shard,
-        })),
-        ...inventory.xpBooks.map((book) => ({
-          id: `inventory:xpBook:${book.xpBookId}`,
-          ...book,
-        })),
-      ]
-    }
-
-    case "live-progress": {
-      const liveProgress = data as PlayerDataChunkPayload<"live-progress">
-      return [
-        {
-          id: "live-progress:summary",
-          activeCampaignEventId: liveProgress.activeCampaignEventId,
-          gameModeTokens: liveProgress.gameModeTokens,
-        },
-        ...liveProgress.battleAttempts.map((battle) => ({
-          id: `live-progress:battleAttempt:${battle.tacticusCampaignId}:${battle.battleIndex}`,
-          ...battle,
-        })),
-      ]
-    }
-  }
+  return [{ id: mergedChunkSummaryId(chunkKey), ...(data as object) }]
 }
 
-/** Inverse of `decomposeMergedChunk`: reassembles one chunk's whole payload from the flat records a
- * range query returned for it. Returns `undefined` if there's no summary record (chunk never synced). */
+/** Inverse of `decomposeMergedChunk`. Returns `undefined` if there's no summary record (chunk never synced). */
 function reassembleMergedChunk(
   chunkKey: MergedPlayerDataChunkKey,
   records: { id: string }[]
 ): unknown {
-  switch (chunkKey) {
-    case "player-details": {
-      const record = records.find((r) => r.id === "player-details:main")
-      return record ? withoutId(record) : undefined
-    }
-
-    case "inventory": {
-      const summary = records.find((r) => r.id === "inventory:summary")
-
-      if (!summary) {
-        return undefined
-      }
-
-      return {
-        ...withoutId(summary),
-        shards: records
-          .filter((r) => r.id.startsWith("inventory:shard:"))
-          .map(withoutId),
-        mythicShards: records
-          .filter((r) => r.id.startsWith("inventory:mythicShard:"))
-          .map(withoutId),
-        xpBooks: records
-          .filter((r) => r.id.startsWith("inventory:xpBook:"))
-          .map(withoutId),
-      }
-    }
-
-    case "live-progress": {
-      const summary = records.find((r) => r.id === "live-progress:summary")
-
-      if (!summary) {
-        return undefined
-      }
-
-      return {
-        ...withoutId(summary),
-        battleAttempts: records
-          .filter((r) => r.id.startsWith("live-progress:battleAttempt:"))
-          .map(withoutId),
-      }
-    }
-  }
+  const summary = records.find((r) => r.id === mergedChunkSummaryId(chunkKey))
+  return summary ? withoutId(summary) : undefined
 }
 
 /**
@@ -173,7 +88,7 @@ function reassembleMergedChunk(
  * previous hand-rolled "detect a missing store and reopen one version higher" logic entirely.
  */
 class PlayerDataDb extends Dexie {
-  metadata!: Table<PlayerDataMetadata, string>
+  metadata!: Table<PlayerDataMetadataStorageModel, string>
 
   constructor() {
     super(playerDataDbName)
@@ -200,7 +115,7 @@ export async function getPlayerDataMetadata() {
 }
 
 export function getManifestMetadata(
-  metadata: ReadonlyMap<string, PlayerDataMetadata>
+  metadata: ReadonlyMap<string, PlayerDataMetadataStorageModel>
 ) {
   return metadata.get(playerDataManifestMetadataKey)
 }
@@ -223,7 +138,7 @@ export async function hasCompletePlayerDataCache() {
 export async function replacePlayerDataChunk(
   chunkKey: PlayerDataChunkKey,
   data: unknown,
-  metadata: PlayerDataMetadata
+  metadata: PlayerDataMetadataStorageModel
 ) {
   const table = playerDataDb.table(storeNameForChunk(chunkKey))
 
@@ -245,7 +160,9 @@ export async function replacePlayerDataChunk(
   )
 }
 
-export async function saveManifestMetadata(metadata: PlayerDataMetadata) {
+export async function saveManifestMetadata(
+  metadata: PlayerDataMetadataStorageModel
+) {
   await playerDataDb.metadata.put(metadata)
 }
 
@@ -258,7 +175,7 @@ export async function saveManifestMetadata(metadata: PlayerDataMetadata) {
  */
 export async function getChunkData<K extends PlayerDataChunkKey>(
   chunkKey: K
-): Promise<PlayerDataChunkPayload<K> | undefined> {
+): Promise<PlayerDataChunkDto<K> | undefined> {
   const chunkMetadata = await playerDataDb.metadata.get(chunkKey)
 
   if (!chunkMetadata) {
@@ -273,13 +190,13 @@ export async function getChunkData<K extends PlayerDataChunkKey>(
       .toArray()
 
     return reassembleMergedChunk(chunkKey, records) as
-      PlayerDataChunkPayload<K> | undefined
+      PlayerDataChunkDto<K> | undefined
   }
 
   if (isSplitPlayerDataChunkKey(chunkKey)) {
     return (await playerDataDb
       .table(chunkKey)
-      .toArray()) as PlayerDataChunkPayload<K>
+      .toArray()) as PlayerDataChunkDto<K>
   }
 
   return undefined
@@ -294,7 +211,7 @@ export async function getChunkData<K extends PlayerDataChunkKey>(
 export async function getChunkRecord<K extends SplitPlayerDataChunkKey>(
   chunkKey: K,
   id: string | readonly string[]
-): Promise<PlayerDataChunkPayload<K>[number] | undefined> {
+): Promise<PlayerDataChunkDto<K>[number] | undefined> {
   return playerDataDb.table(chunkKey).get(id as string | string[])
 }
 
