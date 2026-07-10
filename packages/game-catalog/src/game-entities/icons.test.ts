@@ -81,25 +81,25 @@ describe("campaignDescriptor", () => {
 describe("traitIcon", () => {
   it("converts a simple PascalCase trait id to its snake_case filename", () => {
     expect(traitIcon("Healer")).toBe(
-      "/snowprint_assets/traits/ui_icon_trait_healer_01.png"
+      "/game_catalog/traits/ui_icon_trait_healer_01.png"
     )
     expect(traitIcon("ActOfFaith")).toBe(
-      "/snowprint_assets/traits/ui_icon_trait_act_of_faith_01.png"
+      "/game_catalog/traits/ui_icon_trait_act_of_faith_01.png"
     )
     expect(traitIcon("ShadowInTheWarp")).toBe(
-      "/snowprint_assets/traits/ui_icon_trait_shadow_in_the_warp_01.png"
+      "/game_catalog/traits/ui_icon_trait_shadow_in_the_warp_01.png"
     )
   })
 
   it("uses the override map for irregular trait filenames", () => {
     expect(traitIcon("Psyker")).toBe(
-      "/snowprint_assets/traits/ui_icon_trait_psychic_01.png"
+      "/game_catalog/traits/ui_icon_trait_psychic_01.png"
     )
     expect(traitIcon("LivingMetal")).toBe(
-      "/snowprint_assets/traits/ui_icon_trait_livingmetall_01.png"
+      "/game_catalog/traits/ui_icon_trait_livingmetall_01.png"
     )
     expect(traitIcon("Unstoppable")).toBe(
-      "/snowprint_assets/traits/ui_icon_trait_unknown_01.png"
+      "/game_catalog/traits/ui_icon_trait_unknown_01.png"
     )
   })
 })
@@ -107,10 +107,10 @@ describe("traitIcon", () => {
 describe("damageTypeIcon", () => {
   it("builds the icon path directly from the PascalCase damage type id", () => {
     expect(damageTypeIcon("Physical")).toBe(
-      "/snowprint_assets/damage_icons/ui_icon_damage_profile2_Physical.png"
+      "/game_catalog/damage_icons/ui_icon_damage_profile2_Physical.png"
     )
     expect(damageTypeIcon("HeavyRound")).toBe(
-      "/snowprint_assets/damage_icons/ui_icon_damage_profile2_HeavyRound.png"
+      "/game_catalog/damage_icons/ui_icon_damage_profile2_HeavyRound.png"
     )
   })
 })
@@ -118,7 +118,7 @@ describe("damageTypeIcon", () => {
 describe("equipmentSlotIcon", () => {
   it("maps a known slot code to its icon path", () => {
     expect(equipmentSlotIcon("I_Crit")).toBe(
-      "/snowprint_assets/equipment/ui_icon_itemtype_crit.png"
+      "/game_catalog/equipment/ui_icon_itemtype_crit.png"
     )
   })
 
@@ -130,10 +130,10 @@ describe("equipmentSlotIcon", () => {
 describe("statIcon", () => {
   it("returns a stat_icons path for each known stat kind", () => {
     expect(statIcon("health")).toBe(
-      "/snowprint_assets/stat_icons/ui_icon_stat_health_01.png"
+      "/game_catalog/stat_icons/ui_icon_stat_health_01.png"
     )
     expect(statIcon("movement")).toBe(
-      "/snowprint_assets/stat_icons/ui_icon_stat_move_01.png"
+      "/game_catalog/stat_icons/ui_icon_stat_move_01.png"
     )
   })
 })
@@ -146,12 +146,12 @@ describe("progressionVisual", () => {
   it("renders gold stars for the first five steps", () => {
     expect(progressionVisual("OneStar")).toEqual({
       kind: "stars",
-      icon: "/snowprint_assets/stars/gold.png",
+      icon: "/game_catalog/stars/gold.png",
       count: 1,
     })
     expect(progressionVisual("FiveStars")).toEqual({
       kind: "stars",
-      icon: "/snowprint_assets/stars/gold.png",
+      icon: "/game_catalog/stars/gold.png",
       count: 5,
     })
   })
@@ -159,12 +159,12 @@ describe("progressionVisual", () => {
   it("renders red stars for the next five steps", () => {
     expect(progressionVisual("RedOneStar")).toEqual({
       kind: "stars",
-      icon: "/snowprint_assets/stars/red.png",
+      icon: "/game_catalog/stars/red.png",
       count: 1,
     })
     expect(progressionVisual("RedFiveStars")).toEqual({
       kind: "stars",
-      icon: "/snowprint_assets/stars/red.png",
+      icon: "/game_catalog/stars/red.png",
       count: 5,
     })
   })
@@ -172,12 +172,12 @@ describe("progressionVisual", () => {
   it("renders blue stars for the next three steps", () => {
     expect(progressionVisual("OneBlueStar")).toEqual({
       kind: "stars",
-      icon: "/snowprint_assets/stars/ui_icon_star_legendary_large.png",
+      icon: "/game_catalog/stars/ui_icon_star_legendary_large.png",
       count: 1,
     })
     expect(progressionVisual("ThreeBlueStars")).toEqual({
       kind: "stars",
-      icon: "/snowprint_assets/stars/ui_icon_star_legendary_large.png",
+      icon: "/game_catalog/stars/ui_icon_star_legendary_large.png",
       count: 3,
     })
   })
@@ -185,7 +185,7 @@ describe("progressionVisual", () => {
   it("renders a single wings icon for the max step", () => {
     expect(progressionVisual("MythicWings")).toEqual({
       kind: "wings",
-      icon: "/snowprint_assets/stars/ui_icon_star_mythic.png",
+      icon: "/game_catalog/stars/ui_icon_star_mythic.png",
     })
   })
 })

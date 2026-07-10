@@ -9,46 +9,42 @@ import {
 
 describe("entity icon mapping", () => {
   it("maps rank ids to asset paths using lowercase Rank filenames", () => {
-    expect(rankIcon("Stone1")).toBe("/snowprint_assets/ranks/stone1.png")
-    expect(rankIcon("Diamond3")).toBe("/snowprint_assets/ranks/diamond3.png")
-    expect(rankIcon("Adamantine1")).toBe(
-      "/snowprint_assets/ranks/adamantine1.png"
-    )
-    expect(rankIcon("Adamantine2")).toBe(
-      "/snowprint_assets/ranks/adamantine2.png"
-    )
+    expect(rankIcon("Stone1")).toBe("/game_catalog/ranks/stone1.png")
+    expect(rankIcon("Diamond3")).toBe("/game_catalog/ranks/diamond3.png")
+    expect(rankIcon("Adamantine1")).toBe("/game_catalog/ranks/adamantine1.png")
+    expect(rankIcon("Adamantine2")).toBe("/game_catalog/ranks/adamantine2.png")
   })
 
   it("derives the upgrade-material icon from the upgrade id", () => {
     expect(UpgradeIcons.icon("upgArmC001")).toBe(
-      "/snowprint_assets/upgrade_materials/ui_icon_upgrade_upgArmC001.png"
+      "/game_catalog/upgrade_materials/ui_icon_upgrade_upgArmC001.png"
     )
   })
 
   it("maps storyline groups by groupId+type", () => {
     expect(campaignIcon("campaign1", "Standard")).toBe(
-      "/snowprint_assets/campaigns/indomitus-standard.png"
+      "/game_catalog/campaigns/indomitus-standard.png"
     )
     expect(campaignIcon("elite1", "Elite")).toBe(
-      "/snowprint_assets/campaigns/indomitus-elite.png"
+      "/game_catalog/campaigns/indomitus-elite.png"
     )
     expect(campaignIcon("mirror1", "Mirror")).toBe(
-      "/snowprint_assets/campaigns/indomitus-mirror-standard.png"
+      "/game_catalog/campaigns/indomitus-mirror-standard.png"
     )
     expect(campaignIcon("eliteMirror1", "EliteMirror")).toBe(
-      "/snowprint_assets/campaigns/indomitus-mirror-elite.png"
+      "/game_catalog/campaigns/indomitus-mirror-elite.png"
     )
   })
 
   it("maps event campaigns to the defending-faction asset, challenge tiers reuse the base image", () => {
     expect(campaignIcon("eventCampaign1", "Standard")).toBe(
-      "/snowprint_assets/campaigns/death-guard-vs-admech-eventStandard.png"
+      "/game_catalog/campaigns/death-guard-vs-admech-eventStandard.png"
     )
     expect(campaignIcon("eventCampaign1", "Extremis")).toBe(
-      "/snowprint_assets/campaigns/death-guard-vs-admech-eventExtremis.png"
+      "/game_catalog/campaigns/death-guard-vs-admech-eventExtremis.png"
     )
     expect(campaignIcon("eventCampaign1", "Standard", true)).toBe(
-      "/snowprint_assets/campaigns/death-guard-vs-admech-eventStandard.png"
+      "/game_catalog/campaigns/death-guard-vs-admech-eventStandard.png"
     )
     expect(campaignIcon("eventCampaign99", "Standard")).toBeUndefined()
   })
