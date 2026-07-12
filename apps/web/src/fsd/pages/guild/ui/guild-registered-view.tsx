@@ -18,7 +18,7 @@ import { useMsal } from "@azure/msal-react"
 import { syncMyGuild, type RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
-import { formatRelativeTime } from "../lib/format-relative-time"
+import { formatRelativeTime } from "@/shared/lib"
 import { GuildPurgeDialog } from "./guild-purge-dialog"
 
 const tabs = [

@@ -123,7 +123,11 @@ export function PlayerDataProvider({
         setLastSyncedAt(result.syncedAt)
         setStatus(result.status)
       } catch (caught) {
-        setError(caught instanceof Error ? caught.message : String(caught))
+        const syncError =
+          caught instanceof Error ? caught : new Error(String(caught))
+
+        console.error("Player-data sync failed.", syncError)
+        setError(syncError.message)
         // Unlike the catalog, there is no "last known good, still usable" distinction to fall back to
         // here from the provider's point of view — cached chunks (if any) remain in IndexedDB regardless
         // and are read directly by feature hooks, independent of this status.

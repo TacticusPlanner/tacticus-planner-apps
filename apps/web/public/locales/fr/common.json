@@ -56,6 +56,18 @@
       "saved": "Intégration Tacticus mise à jour.",
       "genericError": "Une erreur s’est produite. Veuillez réessayer."
     },
+    "playerData": {
+      "statusIdle": "Non connecté",
+      "statusSyncing": "Synchronisation…",
+      "statusReady": "À jour",
+      "statusStale": "Synchronisation incomplète",
+      "statusError": "Échec de la synchronisation",
+      "lastSynced": "Dernière synchronisation {{time}}",
+      "neverSynced": "Jamais synchronisé",
+      "syncProgress": "Synchronisation {{downloaded}} / {{total}}…",
+      "retrySync": "Échec de la synchronisation — réessayer",
+      "refreshRequired": "Actualisation requise · {{lastSync}}"
+    },
     "account": {
       "purgeWarningTitle": "Purger le compte",
       "purgeWarningDescription": "Cette action supprime immédiatement et définitivement toutes vos données du planificateur. Elle est irréversible.",

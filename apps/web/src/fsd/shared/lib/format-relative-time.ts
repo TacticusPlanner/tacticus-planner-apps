@@ -9,8 +9,8 @@ const UNITS: { unit: Intl.RelativeTimeFormatUnit; seconds: number }[] = [
 
 /**
  * Formats an instant (epoch milliseconds) as a locale-aware relative string ("3 hours ago", or "in 3
- * hours" for a future instant), matching whichever of the app's supported languages is active instead of
- * hardcoding English. Returns null for a null input so callers can show their own "never" copy.
+ * hours" for a future instant). Returns null for a null or invalid input so callers can provide their
+ * own fallback copy.
  */
 export function formatRelativeTime(
   epochMs: number | null,

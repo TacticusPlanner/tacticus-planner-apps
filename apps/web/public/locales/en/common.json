@@ -65,6 +65,9 @@
       "statusError": "Sync failed",
       "lastSynced": "Last synced {{time}}",
       "neverSynced": "Never synced",
+      "syncProgress": "Syncing {{downloaded}} / {{total}}…",
+      "retrySync": "Sync failed — try again",
+      "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
     },
     "account": {

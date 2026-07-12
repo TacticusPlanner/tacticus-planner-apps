@@ -56,6 +56,18 @@
       "saved": "Tacticus-Integration aktualisiert.",
       "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     },
+    "playerData": {
+      "statusIdle": "Nicht angemeldet",
+      "statusSyncing": "Wird synchronisiert…",
+      "statusReady": "Aktuell",
+      "statusStale": "Synchronisierung unvollständig",
+      "statusError": "Synchronisierung fehlgeschlagen",
+      "lastSynced": "Zuletzt synchronisiert {{time}}",
+      "neverSynced": "Noch nie synchronisiert",
+      "syncProgress": "Synchronisierung {{downloaded}} / {{total}}…",
+      "retrySync": "Synchronisierung fehlgeschlagen — erneut versuchen",
+      "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}"
+    },
     "account": {
       "purgeWarningTitle": "Konto löschen",
       "purgeWarningDescription": "Dies löscht sofort und unwiderruflich alle deine Planner-Daten. Diese Aktion kann nicht rückgängig gemacht werden.",

@@ -12,7 +12,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import type { GuildMemberSummary } from "@/entities/guild"
 
-import { formatRelativeTime } from "../lib/format-relative-time"
+import { formatRelativeTime } from "@/shared/lib"
 import { GuildRoleBadge } from "./guild-role-badge"
 
 type Props = {
