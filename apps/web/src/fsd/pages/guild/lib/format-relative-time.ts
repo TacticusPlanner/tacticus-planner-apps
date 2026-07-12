@@ -8,9 +8,9 @@ const UNITS: { unit: Intl.RelativeTimeFormatUnit; seconds: number }[] = [
 ]
 
 /**
- * Formats a past instant (epoch milliseconds) as a locale-aware relative string ("3 hours ago"), matching
- * whichever of the app's supported languages is active instead of hardcoding English. Returns null for a
- * null input so callers can show their own "never" copy.
+ * Formats an instant (epoch milliseconds) as a locale-aware relative string ("3 hours ago", or "in 3
+ * hours" for a future instant), matching whichever of the app's supported languages is active instead of
+ * hardcoding English. Returns null for a null input so callers can show their own "never" copy.
  */
 export function formatRelativeTime(
   epochMs: number | null,
@@ -22,16 +22,17 @@ export function formatRelativeTime(
 
   const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" })
   const diffSeconds = Math.round((Date.now() - epochMs) / 1000)
+  const absDiffSeconds = Math.abs(diffSeconds)
 
-  if (diffSeconds < 60) {
+  if (absDiffSeconds < 60) {
     return formatter.format(0, "second")
   }
 
   for (const { unit, seconds } of UNITS) {
-    if (diffSeconds >= seconds) {
-      return formatter.format(-Math.floor(diffSeconds / seconds), unit)
+    if (absDiffSeconds >= seconds) {
+      return formatter.format(-Math.round(diffSeconds / seconds), unit)
     }
   }
 
-  return formatter.format(-Math.floor(diffSeconds / 60), "minute")
+  return formatter.format(-Math.round(diffSeconds / 60), "minute")
 }

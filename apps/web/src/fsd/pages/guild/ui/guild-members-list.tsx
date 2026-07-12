@@ -56,7 +56,10 @@ function GuildMembersTable({ members }: Props) {
           <TableHead>{t("guild.members.columns.member")}</TableHead>
           <TableHead>{t("guild.members.columns.role")}</TableHead>
           <TableHead>{t("guild.members.columns.level")}</TableHead>
-          <TableHead>{t("guild.members.columns.lastActive")}</TableHead>
+          <TableHead>{t("guild.members.columns.lastActiveInGame")}</TableHead>
+          <TableHead>
+            {t("guild.members.columns.lastActiveInPlanner")}
+          </TableHead>
           <TableHead>{t("guild.members.columns.linked")}</TableHead>
         </TableRow>
       </TableHeader>
@@ -69,7 +72,18 @@ function GuildMembersTable({ members }: Props) {
             </TableCell>
             <TableCell className="tabular-nums">{member.level}</TableCell>
             <TableCell className="text-sm text-muted-foreground">
-              {formatLastActive(member.lastActivityOn, i18n.language, t)}
+              {formatLastActiveInGame(
+                member.lastActiveInGameOn,
+                i18n.language,
+                t
+              )}
+            </TableCell>
+            <TableCell className="text-sm text-muted-foreground">
+              {formatLastActiveInPlanner(
+                member.lastActiveInPlannerOn,
+                i18n.language,
+                t
+              )}
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">
               {member.isLinked
@@ -103,7 +117,22 @@ function GuildMembersCards({ members }: Props) {
               {t("guild.members.columns.level")}: {member.level}
             </span>
             <span>
-              {formatLastActive(member.lastActivityOn, i18n.language, t)}
+              {t("guild.members.columns.lastActiveInGame")}:{" "}
+              {formatLastActiveInGame(
+                member.lastActiveInGameOn,
+                i18n.language,
+                t
+              )}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>
+              {t("guild.members.columns.lastActiveInPlanner")}:{" "}
+              {formatLastActiveInPlanner(
+                member.lastActiveInPlannerOn,
+                i18n.language,
+                t
+              )}
             </span>
           </div>
           <span className="text-muted-foreground">
@@ -117,18 +146,32 @@ function GuildMembersCards({ members }: Props) {
   )
 }
 
-function formatLastActive(
-  lastActivityOn: number | null,
+function formatLastActiveInGame(
+  lastActiveInGameOn: number | null,
   locale: string,
   t: TFunction
 ) {
-  if (lastActivityOn === null) {
+  if (lastActiveInGameOn === null) {
     return t("guild.members.never")
   }
 
-  // The upstream Tacticus API reports lastActivityOn as unix seconds, not milliseconds.
+  // The upstream Tacticus API reports lastActivityOn as unix milliseconds already.
   return (
-    formatRelativeTime(lastActivityOn * 1000, locale) ??
+    formatRelativeTime(lastActiveInGameOn, locale) ?? t("guild.members.never")
+  )
+}
+
+function formatLastActiveInPlanner(
+  lastActiveInPlannerOn: string | null,
+  locale: string,
+  t: TFunction
+) {
+  if (lastActiveInPlannerOn === null) {
+    return t("guild.members.never")
+  }
+
+  return (
+    formatRelativeTime(Date.parse(lastActiveInPlannerOn), locale) ??
     t("guild.members.never")
   )
 }

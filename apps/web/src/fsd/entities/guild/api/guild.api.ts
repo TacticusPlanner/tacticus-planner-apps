@@ -1,6 +1,6 @@
 import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 
-import { apiGet, apiPost } from "@/shared/api"
+import { apiDelete, apiGet, apiPost } from "@/shared/api"
 import { acquireAccessToken } from "@/shared/auth"
 
 // Mirrors the backend's persistence-local GuildRole enum (TacticusPlanner.Persistence.Users.Guilds.GuildRole)
@@ -14,7 +14,8 @@ export type GuildMemberSummary = {
   isLinked: boolean
   role: GuildRole
   level: number
-  lastActivityOn: number | null
+  lastActiveInGameOn: number | null
+  lastActiveInPlannerOn: string | null
   displayLabel: string
 }
 
@@ -64,6 +65,15 @@ export function syncMyGuild(
 ) {
   return withAccessToken(instance, account, (accessToken) =>
     apiPost<RegisteredGuild>("/api/v1/guilds/me/sync", { accessToken })
+  )
+}
+
+export async function purgeGuild(
+  instance: IPublicClientApplication,
+  account: AccountInfo
+) {
+  await withAccessToken(instance, account, (accessToken) =>
+    apiDelete("/api/v1/guilds/me", { accessToken })
   )
 }
 

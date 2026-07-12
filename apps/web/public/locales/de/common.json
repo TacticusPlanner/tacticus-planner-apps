@@ -127,7 +127,6 @@
     "syncWithTacticus": "Mit Tacticus synchronisieren"
   },
   "guild": {
-    "title": "Gilde",
     "loadError": "Deine Gilde konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
     "tacticusUserIdRequired": {
@@ -142,7 +141,8 @@
     },
     "unregistered": {
       "title": "Noch keine Gilde registriert",
-      "description": "Eine Gilde muss zuerst von einem Gildenanführer oder Ko-Anführer mit einem Gilden-API-Token (Gildenberechtigung) registriert werden.",
+      "description": "Eine Gilde muss zuerst von einem Gildenanführer oder Ko-Anführer registriert werden.",
+      "leaderPrompt": "Bist du der Gildenanführer oder Ko-Anführer? Verwende das Eingabefeld unten, um ein Gilden-API-Token mit den Berechtigungen Guild und GuildRaids einzufügen.",
       "tokenLabel": "Gilden-API-Token",
       "tokenPlaceholder": "Füge dein Gilden-API-Token ein",
       "register": "Gilde registrieren",
@@ -155,7 +155,16 @@
       "neverSynced": "Noch nie synchronisiert",
       "sync": "Gilde synchronisieren",
       "syncing": "Wird synchronisiert…",
-      "syncError": "Beim Synchronisieren ist etwas schiefgelaufen. Bitte versuche es erneut."
+      "syncError": "Beim Synchronisieren ist etwas schiefgelaufen. Bitte versuche es erneut.",
+      "deleteGuild": "Gilde löschen"
+    },
+    "purge": {
+      "title": "Gilde löschen",
+      "warningTitle": "Gilde löschen",
+      "warningDescription": "Dadurch werden die Planner-Registrierung dieser Gilde und die Mitgliederliste sofort und dauerhaft gelöscht. Die Gilde in Tacticus selbst ist davon nicht betroffen, und jedes aktuelle Mitglied kann sie danach erneut registrieren. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmLabel": "Gib \"{{word}}\" ein, um die Löschaktion zu aktivieren",
+      "submit": "Diese Gilde löschen",
+      "genericError": "Beim Löschen der Gilde ist etwas schiefgelaufen. Bitte versuche es erneut."
     },
     "tabs": {
       "members": "Mitglieder"
@@ -167,7 +176,8 @@
         "member": "Mitglied",
         "role": "Rolle",
         "level": "Level",
-        "lastActive": "Zuletzt aktiv",
+        "lastActiveInGame": "Zuletzt aktiv (Spiel)",
+        "lastActiveInPlanner": "Zuletzt aktiv (Planner)",
         "linked": "Planner-Konto"
       },
       "linked": "Verknüpft",

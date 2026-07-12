@@ -127,7 +127,6 @@
     "syncWithTacticus": "Sincronizar con Tacticus"
   },
   "guild": {
-    "title": "Gremio",
     "loadError": "No se pudo cargar tu gremio.",
     "retry": "Reintentar",
     "tacticusUserIdRequired": {
@@ -142,7 +141,8 @@
     },
     "unregistered": {
       "title": "Aún no hay ningún gremio registrado",
-      "description": "Un gremio debe ser registrado primero por un líder o colíder del gremio usando un token de API de gremio con alcance de gremio.",
+      "description": "Un gremio debe ser registrado primero por un líder o colíder del gremio.",
+      "leaderPrompt": "¿Eres el líder o colíder del gremio? Usa el campo de abajo para pegar un token de API de gremio con alcance Guild y GuildRaids.",
       "tokenLabel": "Token de API del gremio",
       "tokenPlaceholder": "Pega tu token de API del gremio",
       "register": "Registrar gremio",
@@ -155,7 +155,16 @@
       "neverSynced": "Nunca sincronizado",
       "sync": "Sincronizar gremio",
       "syncing": "Sincronizando…",
-      "syncError": "Algo salió mal al sincronizar. Inténtalo de nuevo."
+      "syncError": "Algo salió mal al sincronizar. Inténtalo de nuevo.",
+      "deleteGuild": "Eliminar gremio"
+    },
+    "purge": {
+      "title": "Eliminar gremio",
+      "warningTitle": "Eliminar gremio",
+      "warningDescription": "Esto elimina de inmediato y de forma permanente el registro de este gremio en Planner y su lista de miembros. Esto no afecta al gremio en Tacticus, y cualquier miembro actual puede volver a registrarlo después. Esta acción no se puede deshacer.",
+      "confirmLabel": "Escribe \"{{word}}\" para habilitar la acción de eliminar",
+      "submit": "Eliminar este gremio",
+      "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo."
     },
     "tabs": {
       "members": "Miembros"
@@ -167,7 +176,8 @@
         "member": "Miembro",
         "role": "Rol",
         "level": "Nivel",
-        "lastActive": "Última actividad",
+        "lastActiveInGame": "Última actividad (juego)",
+        "lastActiveInPlanner": "Última actividad (Planner)",
         "linked": "Cuenta de Planner"
       },
       "linked": "Vinculado",

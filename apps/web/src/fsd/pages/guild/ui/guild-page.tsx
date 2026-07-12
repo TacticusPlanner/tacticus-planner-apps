@@ -27,10 +27,11 @@ export function GuildPage() {
   const { t } = useTranslation()
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
+  // `instance.getActiveAccount()` re-derives a fresh AccountInfo object from MSAL's cache on every call, so
+  // it is not reference-stable across renders — only `accountId` (a plain string) is safe to use in the
+  // mount effect's dependency array below (mirrors CurrentUserProvider).
+  const accountId = account?.homeAccountId
   const abortRef = useRef<AbortController | null>(null)
-  // Tracks which account we've already kicked off the initial fetch for, mirroring
-  // CurrentUserProvider's guard so the mount effect stays a no-op unless the account actually changed.
-  const fetchedAccountIdRef = useRef<string | null>(null)
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
 
   // Explicit reload (retry button, or a child view's onSaved/onRegistered/onSynced) always re-fetches and
@@ -44,7 +45,6 @@ export function GuildPage() {
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
-    fetchedAccountIdRef.current = account.homeAccountId
 
     setFetchState({ status: "idle" })
 
@@ -77,31 +77,32 @@ export function GuildPage() {
   // call setState synchronously; only the (genuinely async) promise callbacks do. Kept as its own inline
   // fetch rather than calling `load()` so this effect never invokes a function with a synchronous setState
   // branch (mirrors CurrentUserProvider's mount effect).
+  //
+  // Guards result application with a per-invocation `active` flag instead of a cross-invocation ref (see
+  // game-catalog-provider.tsx): StrictMode double-invokes this effect (mount, cleanup, mount again) before
+  // the async `getMyGuild` call ever reaches its first `await`, so a ref that's set synchronously and only
+  // reset on unmount would still read as "already fetched" on the second invocation — skipping it entirely
+  // while the first invocation's request was aborted before any request was even sent.
   useEffect(() => {
-    if (!account) {
-      fetchedAccountIdRef.current = null
+    const currentAccount = instance.getActiveAccount() ?? accounts[0]
+    if (!currentAccount) {
       return
     }
 
-    if (fetchedAccountIdRef.current === account.homeAccountId) {
-      return
-    }
-
-    abortRef.current?.abort()
+    let active = true
     const controller = new AbortController()
     abortRef.current = controller
-    fetchedAccountIdRef.current = account.homeAccountId
 
-    void getMyGuild(instance, account, controller.signal).then(
+    void getMyGuild(instance, currentAccount, controller.signal).then(
       (data) => {
-        if (controller.signal.aborted) {
+        if (!active) {
           return
         }
 
         setFetchState({ status: "success", data })
       },
       (error: unknown) => {
-        if (controller.signal.aborted) {
+        if (!active) {
           return
         }
 
@@ -113,9 +114,12 @@ export function GuildPage() {
       }
     )
 
-    return () => controller.abort()
+    return () => {
+      active = false
+      controller.abort()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, instance])
+  }, [accountId, instance, accounts])
 
   const isLoading = useMemo(
     () => fetchState.status === "idle",
@@ -127,8 +131,6 @@ export function GuildPage() {
       className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10"
       data-testid="guild-page"
     >
-      <h1 className="font-heading text-2xl font-medium">{t("guild.title")}</h1>
-
       {isLoading ? (
         <div className="flex flex-col gap-3" data-testid="guild-page-loading">
           <Skeleton className="h-24 w-full" />
@@ -162,7 +164,11 @@ export function GuildPage() {
       {fetchState.status === "success" &&
       fetchState.data.state === "registered" &&
       fetchState.data.guild ? (
-        <GuildRegisteredView guild={fetchState.data.guild} onSynced={load} />
+        <GuildRegisteredView
+          guild={fetchState.data.guild}
+          onSynced={load}
+          onPurged={load}
+        />
       ) : null}
     </main>
   )

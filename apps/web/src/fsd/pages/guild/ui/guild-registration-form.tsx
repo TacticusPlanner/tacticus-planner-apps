@@ -71,7 +71,10 @@ export function GuildRegistrationForm({ onRegistered }: Props) {
     <Card data-testid="guild-unregistered">
       <CardHeader>
         <CardTitle>{t("guild.unregistered.title")}</CardTitle>
-        <CardDescription>{t("guild.unregistered.description")}</CardDescription>
+        <CardDescription className="flex flex-col gap-2">
+          <p>{t("guild.unregistered.description")}</p>
+          <p>{t("guild.unregistered.leaderPrompt")}</p>
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form

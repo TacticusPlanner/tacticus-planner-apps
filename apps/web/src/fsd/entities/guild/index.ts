@@ -1,5 +1,6 @@
 export {
   getMyGuild,
+  purgeGuild,
   registerGuild,
   syncMyGuild,
   type GuildMemberSummary,
