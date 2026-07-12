@@ -122,8 +122,64 @@
     "rankLookup": "Recherche de rang",
     "createGoal": "Créer un objectif",
     "uiKit": "Kit d'interface",
+    "guild": "Guilde",
     "menu": "Menu",
     "syncWithTacticus": "Synchroniser avec Tacticus"
+  },
+  "guild": {
+    "title": "Guilde",
+    "loadError": "Impossible de charger votre guilde.",
+    "retry": "Réessayer",
+    "tacticusUserIdRequired": {
+      "title": "ID utilisateur Tacticus requis",
+      "description": "Un ID utilisateur Tacticus est nécessaire pour vous identifier dans les données de guilde avant de pouvoir la consulter ou l'enregistrer.",
+      "userIdLabel": "ID utilisateur Tacticus",
+      "userIdPlaceholder": "Entrez votre ID utilisateur Tacticus",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "ID utilisateur Tacticus enregistré.",
+      "genericError": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "unregistered": {
+      "title": "Aucune guilde enregistrée pour le moment",
+      "description": "Une guilde doit d'abord être enregistrée par un chef ou un co-chef de guilde à l'aide d'un jeton API de guilde avec la portée Guilde.",
+      "tokenLabel": "Jeton API de guilde",
+      "tokenPlaceholder": "Collez votre jeton API de guilde",
+      "register": "Enregistrer la guilde",
+      "registering": "Enregistrement…",
+      "genericError": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "summary": {
+      "level": "Niveau {{level}}",
+      "lastSynced": "Dernière synchronisation {{time}}",
+      "neverSynced": "Jamais synchronisé",
+      "sync": "Synchroniser la guilde",
+      "syncing": "Synchronisation…",
+      "syncError": "Une erreur s'est produite lors de la synchronisation. Veuillez réessayer."
+    },
+    "tabs": {
+      "members": "Membres"
+    },
+    "members": {
+      "empty": "Aucun membre trouvé.",
+      "loadError": "Impossible de charger les membres de la guilde.",
+      "columns": {
+        "member": "Membre",
+        "role": "Rôle",
+        "level": "Niveau",
+        "lastActive": "Dernière activité",
+        "linked": "Compte Planner"
+      },
+      "linked": "Lié",
+      "notLinked": "Non lié",
+      "never": "Jamais actif"
+    },
+    "roles": {
+      "leader": "Chef",
+      "coLeader": "Co-chef",
+      "officer": "Officier",
+      "member": "Membre"
+    }
   },
   "language": {
     "label": "Langue",

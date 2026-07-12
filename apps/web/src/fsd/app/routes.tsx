@@ -32,6 +32,9 @@ const LookupPlaceholder = lazy(() =>
 const UiKitPage = lazy(() =>
   import("@/pages/ui-kit").then((m) => ({ default: m.UiKitPage }))
 )
+const GuildPage = lazy(() =>
+  import("@/pages/guild").then((m) => ({ default: m.GuildPage }))
+)
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
@@ -94,6 +97,14 @@ export const routes: RouteObject[] = [
           { path: "mow", element: <LookupPlaceholder tab="mow" /> },
           { path: "npc", element: <LookupPlaceholder tab="npc" /> },
         ],
+      },
+      {
+        path: "/guild",
+        element: (
+          <ProtectedRoute>
+            <GuildPage />
+          </ProtectedRoute>
+        ),
       },
       // Public component showcase for local/QA use — never registered in production (see
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)

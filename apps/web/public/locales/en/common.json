@@ -161,12 +161,68 @@
     "lookup": "Lookup",
     "createGoal": "Create Goal",
     "uiKit": "UI Kit",
+    "guild": "Guild",
     "menu": "Menu",
     "syncWithTacticus": "Sync with Tacticus"
   },
   "home": {
     "subtitle": "This page is still under construction.",
     "tourButton": "Show me around"
+  },
+  "guild": {
+    "title": "Guild",
+    "loadError": "Couldn't load your guild.",
+    "retry": "Retry",
+    "tacticusUserIdRequired": {
+      "title": "Tacticus User ID required",
+      "description": "A Tacticus User ID is needed to match you against guild data before you can view or register a guild.",
+      "userIdLabel": "Tacticus user ID",
+      "userIdPlaceholder": "Enter your Tacticus user ID",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Tacticus user ID saved.",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "unregistered": {
+      "title": "No guild registered yet",
+      "description": "A guild must first be registered by a Guild Leader or Co-Leader using a Guild API Token with Guild scope.",
+      "tokenLabel": "Guild API token",
+      "tokenPlaceholder": "Paste your Guild API token",
+      "register": "Register Guild",
+      "registering": "Registering…",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "summary": {
+      "level": "Level {{level}}",
+      "lastSynced": "Last synced {{time}}",
+      "neverSynced": "Never synchronized",
+      "sync": "Sync Guild",
+      "syncing": "Syncing…",
+      "syncError": "Something went wrong while synchronizing. Please try again."
+    },
+    "tabs": {
+      "members": "Members"
+    },
+    "members": {
+      "empty": "No members found.",
+      "loadError": "Couldn't load guild members.",
+      "columns": {
+        "member": "Member",
+        "role": "Role",
+        "level": "Level",
+        "lastActive": "Last active",
+        "linked": "Planner account"
+      },
+      "linked": "Linked",
+      "notLinked": "Not linked",
+      "never": "Never active"
+    },
+    "roles": {
+      "leader": "Leader",
+      "coLeader": "Co-Leader",
+      "officer": "Officer",
+      "member": "Member"
+    }
   },
   "language": {
     "label": "Language",

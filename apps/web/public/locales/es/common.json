@@ -122,8 +122,64 @@
     "rankLookup": "Consulta de rango",
     "createGoal": "Crear objetivo",
     "uiKit": "Kit de interfaz",
+    "guild": "Gremio",
     "menu": "Menú",
     "syncWithTacticus": "Sincronizar con Tacticus"
+  },
+  "guild": {
+    "title": "Gremio",
+    "loadError": "No se pudo cargar tu gremio.",
+    "retry": "Reintentar",
+    "tacticusUserIdRequired": {
+      "title": "Se requiere el ID de usuario de Tacticus",
+      "description": "Se necesita un ID de usuario de Tacticus para identificarte en los datos del gremio antes de poder verlo o registrarlo.",
+      "userIdLabel": "ID de usuario de Tacticus",
+      "userIdPlaceholder": "Introduce tu ID de usuario de Tacticus",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "saved": "ID de usuario de Tacticus guardado.",
+      "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "unregistered": {
+      "title": "Aún no hay ningún gremio registrado",
+      "description": "Un gremio debe ser registrado primero por un líder o colíder del gremio usando un token de API de gremio con alcance de gremio.",
+      "tokenLabel": "Token de API del gremio",
+      "tokenPlaceholder": "Pega tu token de API del gremio",
+      "register": "Registrar gremio",
+      "registering": "Registrando…",
+      "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "summary": {
+      "level": "Nivel {{level}}",
+      "lastSynced": "Última sincronización {{time}}",
+      "neverSynced": "Nunca sincronizado",
+      "sync": "Sincronizar gremio",
+      "syncing": "Sincronizando…",
+      "syncError": "Algo salió mal al sincronizar. Inténtalo de nuevo."
+    },
+    "tabs": {
+      "members": "Miembros"
+    },
+    "members": {
+      "empty": "No se encontraron miembros.",
+      "loadError": "No se pudieron cargar los miembros del gremio.",
+      "columns": {
+        "member": "Miembro",
+        "role": "Rol",
+        "level": "Nivel",
+        "lastActive": "Última actividad",
+        "linked": "Cuenta de Planner"
+      },
+      "linked": "Vinculado",
+      "notLinked": "No vinculado",
+      "never": "Nunca activo"
+    },
+    "roles": {
+      "leader": "Líder",
+      "coLeader": "Colíder",
+      "officer": "Oficial",
+      "member": "Miembro"
+    }
   },
   "language": {
     "label": "Idioma",

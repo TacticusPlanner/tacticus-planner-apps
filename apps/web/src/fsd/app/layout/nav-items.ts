@@ -1,11 +1,12 @@
 import type { LucideIcon } from "lucide-react"
-import { Home, LayoutGrid, Search } from "lucide-react"
+import { Home, LayoutGrid, Search, Users } from "lucide-react"
 
 import { isUiKitEnabled } from "@/shared/config"
 
 export interface NavItem {
   path: string
-  labelKey: "nav.home" | "nav.lookup" | "nav.createGoal" | "nav.uiKit"
+  labelKey:
+    "nav.home" | "nav.lookup" | "nav.createGoal" | "nav.uiKit" | "nav.guild"
   icon: LucideIcon
   anonymousAllowed: boolean
   // Where this item surfaces on mobile: a direct bottom-nav destination, or
@@ -28,6 +29,13 @@ export const navItems: NavItem[] = [
     icon: Search,
     anonymousAllowed: true,
     mobilePlacement: "menu",
+  },
+  {
+    path: "/guild",
+    labelKey: "nav.guild",
+    icon: Users,
+    anonymousAllowed: false,
+    mobilePlacement: "primary",
   },
   // The showcase route only registers with the router in non-production builds (see
   // shared/config's isUiKitEnabled) - mirror that here so it never appears in nav either.

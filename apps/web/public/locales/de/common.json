@@ -122,8 +122,64 @@
     "rankLookup": "Rang-Nachschlag",
     "createGoal": "Ziel erstellen",
     "uiKit": "UI-Kit",
+    "guild": "Gilde",
     "menu": "Menü",
     "syncWithTacticus": "Mit Tacticus synchronisieren"
+  },
+  "guild": {
+    "title": "Gilde",
+    "loadError": "Deine Gilde konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "tacticusUserIdRequired": {
+      "title": "Tacticus-Benutzer-ID erforderlich",
+      "description": "Eine Tacticus-Benutzer-ID wird benötigt, um dich mit Gildendaten abzugleichen, bevor du eine Gilde ansehen oder registrieren kannst.",
+      "userIdLabel": "Tacticus-Benutzer-ID",
+      "userIdPlaceholder": "Gib deine Tacticus-Benutzer-ID ein",
+      "save": "Speichern",
+      "saving": "Wird gespeichert…",
+      "saved": "Tacticus-Benutzer-ID gespeichert.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "unregistered": {
+      "title": "Noch keine Gilde registriert",
+      "description": "Eine Gilde muss zuerst von einem Gildenanführer oder Ko-Anführer mit einem Gilden-API-Token (Gildenberechtigung) registriert werden.",
+      "tokenLabel": "Gilden-API-Token",
+      "tokenPlaceholder": "Füge dein Gilden-API-Token ein",
+      "register": "Gilde registrieren",
+      "registering": "Wird registriert…",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "summary": {
+      "level": "Level {{level}}",
+      "lastSynced": "Zuletzt synchronisiert {{time}}",
+      "neverSynced": "Noch nie synchronisiert",
+      "sync": "Gilde synchronisieren",
+      "syncing": "Wird synchronisiert…",
+      "syncError": "Beim Synchronisieren ist etwas schiefgelaufen. Bitte versuche es erneut."
+    },
+    "tabs": {
+      "members": "Mitglieder"
+    },
+    "members": {
+      "empty": "Keine Mitglieder gefunden.",
+      "loadError": "Gildenmitglieder konnten nicht geladen werden.",
+      "columns": {
+        "member": "Mitglied",
+        "role": "Rolle",
+        "level": "Level",
+        "lastActive": "Zuletzt aktiv",
+        "linked": "Planner-Konto"
+      },
+      "linked": "Verknüpft",
+      "notLinked": "Nicht verknüpft",
+      "never": "Nie aktiv"
+    },
+    "roles": {
+      "leader": "Anführer",
+      "coLeader": "Ko-Anführer",
+      "officer": "Offizier",
+      "member": "Mitglied"
+    }
   },
   "language": {
     "label": "Sprache",
