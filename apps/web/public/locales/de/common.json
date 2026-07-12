@@ -56,6 +56,18 @@
       "saved": "Tacticus-Integration aktualisiert.",
       "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     },
+    "playerData": {
+      "statusIdle": "Nicht angemeldet",
+      "statusSyncing": "Wird synchronisiert…",
+      "statusReady": "Aktuell",
+      "statusStale": "Synchronisierung unvollständig",
+      "statusError": "Synchronisierung fehlgeschlagen",
+      "lastSynced": "Zuletzt synchronisiert {{time}}",
+      "neverSynced": "Noch nie synchronisiert",
+      "syncProgress": "Synchronisierung {{downloaded}} / {{total}}…",
+      "retrySync": "Synchronisierung fehlgeschlagen — erneut versuchen",
+      "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}"
+    },
     "account": {
       "purgeWarningTitle": "Konto löschen",
       "purgeWarningDescription": "Dies löscht sofort und unwiderruflich alle deine Planner-Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -122,8 +134,74 @@
     "rankLookup": "Rang-Nachschlag",
     "createGoal": "Ziel erstellen",
     "uiKit": "UI-Kit",
+    "guild": "Gilde",
     "menu": "Menü",
     "syncWithTacticus": "Mit Tacticus synchronisieren"
+  },
+  "guild": {
+    "loadError": "Deine Gilde konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "tacticusUserIdRequired": {
+      "title": "Tacticus-Benutzer-ID erforderlich",
+      "description": "Eine Tacticus-Benutzer-ID wird benötigt, um dich mit Gildendaten abzugleichen, bevor du eine Gilde ansehen oder registrieren kannst.",
+      "userIdLabel": "Tacticus-Benutzer-ID",
+      "userIdPlaceholder": "Gib deine Tacticus-Benutzer-ID ein",
+      "save": "Speichern",
+      "saving": "Wird gespeichert…",
+      "saved": "Tacticus-Benutzer-ID gespeichert.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "unregistered": {
+      "title": "Noch keine Gilde registriert",
+      "description": "Eine Gilde muss zuerst von einem Gildenanführer oder Ko-Anführer registriert werden.",
+      "leaderPrompt": "Bist du der Gildenanführer oder Ko-Anführer? Verwende das Eingabefeld unten, um ein Gilden-API-Token mit den Berechtigungen Guild und GuildRaids einzufügen.",
+      "tokenLabel": "Gilden-API-Token",
+      "tokenPlaceholder": "Füge dein Gilden-API-Token ein",
+      "register": "Gilde registrieren",
+      "registering": "Wird registriert…",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "summary": {
+      "level": "Level {{level}}",
+      "lastSynced": "Zuletzt synchronisiert {{time}}",
+      "neverSynced": "Noch nie synchronisiert",
+      "sync": "Gilde synchronisieren",
+      "syncing": "Wird synchronisiert…",
+      "syncError": "Beim Synchronisieren ist etwas schiefgelaufen. Bitte versuche es erneut.",
+      "deleteGuild": "Gilde löschen"
+    },
+    "purge": {
+      "title": "Gilde löschen",
+      "warningTitle": "Gilde löschen",
+      "warningDescription": "Dadurch werden die Planner-Registrierung dieser Gilde und die Mitgliederliste sofort und dauerhaft gelöscht. Die Gilde in Tacticus selbst ist davon nicht betroffen, und jedes aktuelle Mitglied kann sie danach erneut registrieren. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmLabel": "Gib \"{{word}}\" ein, um die Löschaktion zu aktivieren",
+      "submit": "Diese Gilde löschen",
+      "genericError": "Beim Löschen der Gilde ist etwas schiefgelaufen. Bitte versuche es erneut."
+    },
+    "tabs": {
+      "members": "Mitglieder"
+    },
+    "members": {
+      "empty": "Keine Mitglieder gefunden.",
+      "loadError": "Gildenmitglieder konnten nicht geladen werden.",
+      "columns": {
+        "member": "Mitglied",
+        "role": "Rolle",
+        "level": "Level",
+        "lastActiveInGame": "Zuletzt aktiv (Spiel)",
+        "lastActiveInPlanner": "Zuletzt aktiv (Planner)",
+        "linked": "Planner-Konto"
+      },
+      "linked": "Verknüpft",
+      "notLinked": "Nicht verknüpft",
+      "never": "Nie aktiv"
+    },
+    "roles": {
+      "leader": "Anführer",
+      "coLeader": "Ko-Anführer",
+      "officer": "Offizier",
+      "member": "Mitglied"
+    }
   },
   "language": {
     "label": "Sprache",

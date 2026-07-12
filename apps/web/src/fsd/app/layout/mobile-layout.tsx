@@ -1,6 +1,16 @@
 import { Suspense, useState, type ComponentProps } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, Menu, PlusCircle, RefreshCw, Settings } from "lucide-react"
+import {
+  AlertTriangle,
+  CheckCircle2,
+  CircleDashed,
+  Clock,
+  LogIn,
+  Menu,
+  PlusCircle,
+  RefreshCw,
+  Settings,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -153,7 +163,32 @@ function MobileNavActionButton({
 
 function MobileNavActions() {
   const { t } = useTranslation()
-  const { isSyncing, statusText, syncNow } = usePlayerDataSyncStatus()
+  const { errorText, isSyncing, status, statusText, syncNow } =
+    usePlayerDataSyncStatus()
+  const syncPresentation = {
+    idle: {
+      Icon: CircleDashed,
+      className: "bg-muted text-muted-foreground",
+    },
+    syncing: {
+      Icon: RefreshCw,
+      className: "bg-primary text-primary-foreground",
+    },
+    ready: {
+      Icon: CheckCircle2,
+      className: "bg-primary text-primary-foreground",
+    },
+    stale: {
+      Icon: Clock,
+      className: "bg-accent text-accent-foreground",
+    },
+    error: {
+      Icon: AlertTriangle,
+      className: "bg-destructive text-primary-foreground",
+    },
+  }[status]
+  const syncLabel = `${t("nav.syncWithTacticus")} — ${errorText ?? statusText}`
+  const SyncIcon = syncPresentation.Icon
 
   return (
     <div className="pointer-events-none absolute inset-x-0 -top-6 flex justify-center gap-4">
@@ -167,17 +202,26 @@ function MobileNavActions() {
         <PlusCircle className="size-6" aria-hidden="true" />
       </MobileNavActionButton>
       <MobileNavActionButton
-        aria-label={t("nav.syncWithTacticus")}
-        className="pointer-events-auto"
+        aria-label={syncLabel}
+        className={cn(
+          "pointer-events-auto relative",
+          syncPresentation.className
+        )}
         data-testid="mobile-sync-button"
         disabled={isSyncing}
         onClick={syncNow}
-        title={`${t("nav.syncWithTacticus")} — ${statusText}`}
+        title={syncLabel}
       >
-        <RefreshCw
+        <SyncIcon
           aria-hidden="true"
-          className={cn("size-6", isSyncing && "animate-spin")}
+          className={cn("size-6", isSyncing && "motion-safe:animate-spin")}
         />
+        {status === "stale" ? (
+          <span
+            aria-hidden="true"
+            className="absolute top-1 right-1 size-2 rounded-full bg-accent-foreground motion-safe:animate-pulse"
+          />
+        ) : null}
       </MobileNavActionButton>
     </div>
   )

@@ -56,6 +56,18 @@
       "saved": "Integración con Tacticus actualizada.",
       "genericError": "Algo salió mal. Inténtalo de nuevo."
     },
+    "playerData": {
+      "statusIdle": "Sin iniciar sesión",
+      "statusSyncing": "Sincronizando…",
+      "statusReady": "Actualizado",
+      "statusStale": "Sincronización incompleta",
+      "statusError": "Error de sincronización",
+      "lastSynced": "Última sincronización {{time}}",
+      "neverSynced": "Nunca sincronizado",
+      "syncProgress": "Sincronizando {{downloaded}} / {{total}}…",
+      "retrySync": "Error de sincronización — reintentar",
+      "refreshRequired": "Actualización necesaria · {{lastSync}}"
+    },
     "account": {
       "purgeWarningTitle": "Purgar cuenta",
       "purgeWarningDescription": "Esto elimina de inmediato todos tus datos del planificador. Esta acción no se puede deshacer.",
@@ -122,8 +134,74 @@
     "rankLookup": "Consulta de rango",
     "createGoal": "Crear objetivo",
     "uiKit": "Kit de interfaz",
+    "guild": "Gremio",
     "menu": "Menú",
     "syncWithTacticus": "Sincronizar con Tacticus"
+  },
+  "guild": {
+    "loadError": "No se pudo cargar tu gremio.",
+    "retry": "Reintentar",
+    "tacticusUserIdRequired": {
+      "title": "Se requiere el ID de usuario de Tacticus",
+      "description": "Se necesita un ID de usuario de Tacticus para identificarte en los datos del gremio antes de poder verlo o registrarlo.",
+      "userIdLabel": "ID de usuario de Tacticus",
+      "userIdPlaceholder": "Introduce tu ID de usuario de Tacticus",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "saved": "ID de usuario de Tacticus guardado.",
+      "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "unregistered": {
+      "title": "Aún no hay ningún gremio registrado",
+      "description": "Un gremio debe ser registrado primero por un líder o colíder del gremio.",
+      "leaderPrompt": "¿Eres el líder o colíder del gremio? Usa el campo de abajo para pegar un token de API de gremio con alcance Guild y GuildRaids.",
+      "tokenLabel": "Token de API del gremio",
+      "tokenPlaceholder": "Pega tu token de API del gremio",
+      "register": "Registrar gremio",
+      "registering": "Registrando…",
+      "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "summary": {
+      "level": "Nivel {{level}}",
+      "lastSynced": "Última sincronización {{time}}",
+      "neverSynced": "Nunca sincronizado",
+      "sync": "Sincronizar gremio",
+      "syncing": "Sincronizando…",
+      "syncError": "Algo salió mal al sincronizar. Inténtalo de nuevo.",
+      "deleteGuild": "Eliminar gremio"
+    },
+    "purge": {
+      "title": "Eliminar gremio",
+      "warningTitle": "Eliminar gremio",
+      "warningDescription": "Esto elimina de inmediato y de forma permanente el registro de este gremio en Planner y su lista de miembros. Esto no afecta al gremio en Tacticus, y cualquier miembro actual puede volver a registrarlo después. Esta acción no se puede deshacer.",
+      "confirmLabel": "Escribe \"{{word}}\" para habilitar la acción de eliminar",
+      "submit": "Eliminar este gremio",
+      "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo."
+    },
+    "tabs": {
+      "members": "Miembros"
+    },
+    "members": {
+      "empty": "No se encontraron miembros.",
+      "loadError": "No se pudieron cargar los miembros del gremio.",
+      "columns": {
+        "member": "Miembro",
+        "role": "Rol",
+        "level": "Nivel",
+        "lastActiveInGame": "Última actividad (juego)",
+        "lastActiveInPlanner": "Última actividad (Planner)",
+        "linked": "Cuenta de Planner"
+      },
+      "linked": "Vinculado",
+      "notLinked": "No vinculado",
+      "never": "Nunca activo"
+    },
+    "roles": {
+      "leader": "Líder",
+      "coLeader": "Colíder",
+      "officer": "Oficial",
+      "member": "Miembro"
+    }
   },
   "language": {
     "label": "Idioma",

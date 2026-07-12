@@ -85,6 +85,7 @@ function createManifest(
 
 class FakeGameCatalogClient implements GameCatalogClient {
   readonly downloaded: string[] = []
+  readonly manifestRequests: (string | undefined)[] = []
 
   constructor(
     private readonly manifest: GameCatalogManifest,
@@ -93,8 +94,10 @@ class FakeGameCatalogClient implements GameCatalogClient {
     private readonly failKeys: ReadonlySet<string> = new Set()
   ) {}
 
-  getManifest(): Promise<GameCatalogManifestResult> {
-    if (this.notModified) {
+  getManifest(etag?: string): Promise<GameCatalogManifestResult> {
+    this.manifestRequests.push(etag)
+
+    if (this.notModified && etag) {
       return Promise.resolve({ status: "not-modified" })
     }
 
@@ -128,6 +131,24 @@ class FakeGameCatalogClient implements GameCatalogClient {
 
 function resetDb() {
   return Dexie.delete(catalogDbName)
+}
+
+function deleteDatasetMetadata(datasetKey: string) {
+  return new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(catalogDbName)
+
+    request.onsuccess = () => {
+      const db = request.result
+      const transaction = db.transaction("metadata", "readwrite")
+      transaction.objectStore("metadata").delete(datasetKey)
+      transaction.oncomplete = () => {
+        db.close()
+        resolve()
+      }
+      transaction.onerror = () => reject(transaction.error as Error)
+    }
+    request.onerror = () => reject(request.error as Error)
+  })
 }
 
 // Simulates a real pre-existing client one version behind — missing a dataset (`missingKey`) that was
@@ -200,6 +221,24 @@ describe("syncGameCatalog", () => {
     expect(result.status).toBe("ready")
     expect(result.firstTime).toBe(false)
     expect(result.gameVersion).toBe("1.40")
+  })
+
+  it("refetches the manifest without an ETag and repairs an incomplete cache after a 304", async () => {
+    const manifest = createManifest()
+    await syncGameCatalog(new FakeGameCatalogClient(manifest))
+    await deleteDatasetMetadata("lre-common")
+
+    const client = new FakeGameCatalogClient(manifest, true)
+    const result = await syncGameCatalog(client)
+
+    expect(client.manifestRequests).toEqual([
+      `"${manifest.sourceHash}"`,
+      undefined,
+    ])
+    expect(client.downloaded).toEqual(["lre-common"])
+    expect(result.status).toBe("ready")
+    expect(result.downloaded).toEqual(["lre-common"])
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
   })
 
   it("only downloads datasets whose hash changed", async () => {

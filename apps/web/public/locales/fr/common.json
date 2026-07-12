@@ -56,6 +56,18 @@
       "saved": "Intégration Tacticus mise à jour.",
       "genericError": "Une erreur s’est produite. Veuillez réessayer."
     },
+    "playerData": {
+      "statusIdle": "Non connecté",
+      "statusSyncing": "Synchronisation…",
+      "statusReady": "À jour",
+      "statusStale": "Synchronisation incomplète",
+      "statusError": "Échec de la synchronisation",
+      "lastSynced": "Dernière synchronisation {{time}}",
+      "neverSynced": "Jamais synchronisé",
+      "syncProgress": "Synchronisation {{downloaded}} / {{total}}…",
+      "retrySync": "Échec de la synchronisation — réessayer",
+      "refreshRequired": "Actualisation requise · {{lastSync}}"
+    },
     "account": {
       "purgeWarningTitle": "Purger le compte",
       "purgeWarningDescription": "Cette action supprime immédiatement et définitivement toutes vos données du planificateur. Elle est irréversible.",
@@ -122,8 +134,74 @@
     "rankLookup": "Recherche de rang",
     "createGoal": "Créer un objectif",
     "uiKit": "Kit d'interface",
+    "guild": "Guilde",
     "menu": "Menu",
     "syncWithTacticus": "Synchroniser avec Tacticus"
+  },
+  "guild": {
+    "loadError": "Impossible de charger votre guilde.",
+    "retry": "Réessayer",
+    "tacticusUserIdRequired": {
+      "title": "ID utilisateur Tacticus requis",
+      "description": "Un ID utilisateur Tacticus est nécessaire pour vous identifier dans les données de guilde avant de pouvoir la consulter ou l'enregistrer.",
+      "userIdLabel": "ID utilisateur Tacticus",
+      "userIdPlaceholder": "Entrez votre ID utilisateur Tacticus",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "ID utilisateur Tacticus enregistré.",
+      "genericError": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "unregistered": {
+      "title": "Aucune guilde enregistrée pour le moment",
+      "description": "Une guilde doit d'abord être enregistrée par un chef ou un co-chef de guilde.",
+      "leaderPrompt": "Êtes-vous le chef ou le co-chef de la guilde ? Utilisez le champ ci-dessous pour coller un jeton API de guilde avec les portées Guild et GuildRaids.",
+      "tokenLabel": "Jeton API de guilde",
+      "tokenPlaceholder": "Collez votre jeton API de guilde",
+      "register": "Enregistrer la guilde",
+      "registering": "Enregistrement…",
+      "genericError": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "summary": {
+      "level": "Niveau {{level}}",
+      "lastSynced": "Dernière synchronisation {{time}}",
+      "neverSynced": "Jamais synchronisé",
+      "sync": "Synchroniser la guilde",
+      "syncing": "Synchronisation…",
+      "syncError": "Une erreur s'est produite lors de la synchronisation. Veuillez réessayer.",
+      "deleteGuild": "Supprimer la guilde"
+    },
+    "purge": {
+      "title": "Supprimer la guilde",
+      "warningTitle": "Supprimer la guilde",
+      "warningDescription": "Cela supprime immédiatement et définitivement l'enregistrement Planner de cette guilde ainsi que la liste de ses membres. Cela n'affecte pas la guilde dans Tacticus elle-même, et tout membre actuel pourra la réenregistrer par la suite. Cette action est irréversible.",
+      "confirmLabel": "Tapez « {{word}} » pour activer l'action de suppression",
+      "submit": "Supprimer cette guilde",
+      "genericError": "Une erreur s'est produite lors de la suppression de la guilde. Veuillez réessayer."
+    },
+    "tabs": {
+      "members": "Membres"
+    },
+    "members": {
+      "empty": "Aucun membre trouvé.",
+      "loadError": "Impossible de charger les membres de la guilde.",
+      "columns": {
+        "member": "Membre",
+        "role": "Rôle",
+        "level": "Niveau",
+        "lastActiveInGame": "Dernière activité (jeu)",
+        "lastActiveInPlanner": "Dernière activité (Planner)",
+        "linked": "Compte Planner"
+      },
+      "linked": "Lié",
+      "notLinked": "Non lié",
+      "never": "Jamais actif"
+    },
+    "roles": {
+      "leader": "Chef",
+      "coLeader": "Co-chef",
+      "officer": "Officier",
+      "member": "Membre"
+    }
   },
   "language": {
     "label": "Langue",

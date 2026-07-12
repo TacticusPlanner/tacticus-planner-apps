@@ -32,9 +32,34 @@ const LookupPlaceholder = lazy(() =>
 const UiKitPage = lazy(() =>
   import("@/pages/ui-kit").then((m) => ({ default: m.UiKitPage }))
 )
+const GuildPage = lazy(() =>
+  import("@/pages/guild").then((m) => ({ default: m.GuildPage }))
+)
+const GuildMembersRoute = lazy(() =>
+  import("@/pages/guild").then((m) => ({ default: m.GuildMembersRoute }))
+)
+
+// msal-react's MsalProvider always mounts with `accounts: []`/`inProgress: Startup`, even when the
+// underlying instance already restored an active account before the app rendered (see
+// shared/auth's initializeAuthentication) — it only picks up the real state a tick later, inside its
+// own effect. Every route guard below must wait for `inProgress` to clear before trusting
+// `isAuthenticated`; deciding on the stale first-render value is what caused a hard refresh on a
+// protected deep link (e.g. /guild/members) to bounce to "/" before MSAL had a chance to catch up.
+function AuthResolving() {
+  return (
+    <div className="flex min-h-svh items-center justify-center">
+      <Spinner className="size-8 text-primary" />
+    </div>
+  )
+}
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
+  const { inProgress } = useMsal()
+
+  if (inProgress !== InteractionStatus.None) {
+    return <AuthResolving />
+  }
 
   if (!isAuthenticated) {
     return <Navigate replace to="/" />
@@ -45,6 +70,11 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
 function LandingRoute() {
   const isAuthenticated = useIsAuthenticated()
+  const { inProgress } = useMsal()
+
+  if (inProgress !== InteractionStatus.None) {
+    return <AuthResolving />
+  }
 
   if (isAuthenticated) {
     return <Navigate replace to="/home" />
@@ -59,11 +89,7 @@ function AuthCallbackRoute() {
   const { inProgress } = useMsal()
 
   if (inProgress !== InteractionStatus.None) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <Spinner className="size-8 text-primary" />
-      </div>
-    )
+    return <AuthResolving />
   }
 
   return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
@@ -93,6 +119,18 @@ export const routes: RouteObject[] = [
           { path: "character", element: <CharacterLookupPage /> },
           { path: "mow", element: <LookupPlaceholder tab="mow" /> },
           { path: "npc", element: <LookupPlaceholder tab="npc" /> },
+        ],
+      },
+      {
+        path: "/guild",
+        element: (
+          <ProtectedRoute>
+            <GuildPage />
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <Navigate replace to="/guild/members" /> },
+          { path: "members", element: <GuildMembersRoute /> },
         ],
       },
       // Public component showcase for local/QA use — never registered in production (see

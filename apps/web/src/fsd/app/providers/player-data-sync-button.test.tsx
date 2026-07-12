@@ -66,7 +66,7 @@ describe("PlayerDataSyncButton", () => {
 
     const button = screen.getByTestId("player-data-sync-button")
     expect(button).toBeDisabled()
-    expect(button.querySelector("svg")).toHaveClass("animate-spin")
+    expect(button.querySelector("svg")).toHaveClass("motion-safe:animate-spin")
   })
 
   it("does not spin or disable the button once a sync has completed", () => {
@@ -75,6 +75,8 @@ describe("PlayerDataSyncButton", () => {
 
     const button = screen.getByTestId("player-data-sync-button")
     expect(button).not.toBeDisabled()
-    expect(button.querySelector("svg")).not.toHaveClass("animate-spin")
+    expect(button.querySelector("svg")).not.toHaveClass(
+      "motion-safe:animate-spin"
+    )
   })
 })

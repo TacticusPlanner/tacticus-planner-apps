@@ -59,18 +59,31 @@ export async function syncGameCatalog(
   const manifestMetadata = getManifestMetadata(metadata)
   const firstTime = !manifestMetadata
 
-  const manifestResult = await client.getManifest(
+  let manifestResult = await client.getManifest(
     manifestMetadata?.etag ?? undefined
   )
 
   if (manifestResult.status === "not-modified") {
     const ready = await hasCompleteGameCatalogCache()
 
-    return {
-      status: ready ? "ready" : "stale",
-      gameVersion: manifestMetadata?.gameVersion ?? "",
-      firstTime: false,
-      downloaded: [],
+    if (ready) {
+      return {
+        status: "ready",
+        gameVersion: manifestMetadata?.gameVersion ?? "",
+        firstTime: false,
+        downloaded: [],
+      }
+    }
+
+    // A valid manifest ETag does not prove IndexedDB is complete: browser storage can be partially
+    // evicted, or a migrated client can be missing metadata for a newly introduced dataset. Refetch
+    // without the conditional header so the normal hash-driven path can repair only what is missing.
+    manifestResult = await client.getManifest()
+
+    if (manifestResult.status === "not-modified") {
+      throw new Error(
+        "GameCatalog manifest returned not-modified for an unconditional recovery request."
+      )
     }
   }
 

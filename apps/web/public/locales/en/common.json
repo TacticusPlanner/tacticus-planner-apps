@@ -65,6 +65,9 @@
       "statusError": "Sync failed",
       "lastSynced": "Last synced {{time}}",
       "neverSynced": "Never synced",
+      "syncProgress": "Syncing {{downloaded}} / {{total}}…",
+      "retrySync": "Sync failed — try again",
+      "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
     },
     "account": {
@@ -161,12 +164,78 @@
     "lookup": "Lookup",
     "createGoal": "Create Goal",
     "uiKit": "UI Kit",
+    "guild": "Guild",
     "menu": "Menu",
     "syncWithTacticus": "Sync with Tacticus"
   },
   "home": {
     "subtitle": "This page is still under construction.",
     "tourButton": "Show me around"
+  },
+  "guild": {
+    "loadError": "Couldn't load your guild.",
+    "retry": "Retry",
+    "tacticusUserIdRequired": {
+      "title": "Tacticus User ID required",
+      "description": "A Tacticus User ID is needed to match you against guild data before you can view or register a guild.",
+      "userIdLabel": "Tacticus user ID",
+      "userIdPlaceholder": "Enter your Tacticus user ID",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Tacticus user ID saved.",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "unregistered": {
+      "title": "No guild registered yet",
+      "description": "A guild must first be registered by a Guild Leader or Co-Leader.",
+      "leaderPrompt": "Are you the Guild Leader or Co-Leader? Use the input below to paste a Guild API Token with Guild and GuildRaids scope.",
+      "tokenLabel": "Guild API token",
+      "tokenPlaceholder": "Paste your Guild API token",
+      "register": "Register Guild",
+      "registering": "Registering…",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "summary": {
+      "level": "Level {{level}}",
+      "lastSynced": "Last synced {{time}}",
+      "neverSynced": "Never synchronized",
+      "sync": "Sync Guild",
+      "syncing": "Syncing…",
+      "syncError": "Something went wrong while synchronizing. Please try again.",
+      "deleteGuild": "Delete Guild"
+    },
+    "purge": {
+      "title": "Delete guild",
+      "warningTitle": "Delete guild",
+      "warningDescription": "This permanently deletes this guild's Planner registration and member roster immediately. This does not affect the guild in Tacticus itself, and any current member can re-register it afterward. This action cannot be undone.",
+      "confirmLabel": "Type \"{{word}}\" to enable the delete action",
+      "submit": "Delete this guild",
+      "genericError": "Something went wrong while deleting the guild. Please try again."
+    },
+    "tabs": {
+      "members": "Members"
+    },
+    "members": {
+      "empty": "No members found.",
+      "loadError": "Couldn't load guild members.",
+      "columns": {
+        "member": "Member",
+        "role": "Role",
+        "level": "Level",
+        "lastActiveInGame": "Last active (game)",
+        "lastActiveInPlanner": "Last active (Planner)",
+        "linked": "Planner account"
+      },
+      "linked": "Linked",
+      "notLinked": "Not linked",
+      "never": "Never active"
+    },
+    "roles": {
+      "leader": "Leader",
+      "coLeader": "Co-Leader",
+      "officer": "Officer",
+      "member": "Member"
+    }
   },
   "language": {
     "label": "Language",
