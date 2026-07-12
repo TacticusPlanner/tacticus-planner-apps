@@ -1,9 +1,8 @@
-/// <reference types="vitest/config" />
-
 import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
+import { coverageConfigDefaults } from "vitest/config"
 
 const aspirePort = process.env.PORT ? Number(process.env.PORT) : undefined
 
@@ -24,6 +23,17 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "cobertura"],
       reportsDirectory: "./coverage",
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        "**/index.ts", // barrel re-exports only, no logic of their own
+        "**/*.css",
+      ],
+      thresholds: {
+        statements: 85,
+        branches: 70,
+        functions: 85,
+        lines: 85,
+      },
     },
   },
   resolve: {

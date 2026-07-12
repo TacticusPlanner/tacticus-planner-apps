@@ -223,6 +223,48 @@ describe("catalog schemas", () => {
     expect(definitions.success).toBe(true)
   })
 
+  it("validates an upgrade, including its recursively-nested craft recipe", () => {
+    const result = datasetPayloadSchemas.upgrades.safeParse([
+      {
+        id: "u1",
+        material: "Plasteel",
+        snowprintId: "sp1",
+        label: "Plasteel",
+        rarity: "Rare",
+        stat: "Armour",
+        craftable: true,
+        recipe: [
+          {
+            material: "Ore",
+            count: 2,
+            recipe: [{ material: "Rock", count: 4, recipe: null }],
+          },
+        ],
+        farmLocations: [],
+      },
+    ])
+
+    expect(result.success).toBe(true)
+  })
+
+  it("rejects an upgrade with an unrecognized rarity", () => {
+    const result = datasetPayloadSchemas.upgrades.safeParse([
+      {
+        id: "u1",
+        material: "Plasteel",
+        snowprintId: "sp1",
+        label: "Plasteel",
+        rarity: "NotARarity",
+        stat: "Armour",
+        craftable: true,
+        recipe: [],
+        farmLocations: [],
+      },
+    ])
+
+    expect(result.success).toBe(false)
+  })
+
   it("validates a manifest", () => {
     const result = manifestSchema.safeParse({
       version: "dev-1",

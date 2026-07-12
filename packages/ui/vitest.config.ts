@@ -1,5 +1,5 @@
 import path from "path"
-import { defineConfig } from "vitest/config"
+import { coverageConfigDefaults, defineConfig } from "vitest/config"
 
 export default defineConfig({
   test: {
@@ -10,6 +10,17 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "cobertura"],
       reportsDirectory: "./coverage",
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        "**/index.ts", // barrel re-exports only, no logic of their own
+        "**/*.css",
+      ],
+      thresholds: {
+        statements: 90,
+        branches: 85,
+        functions: 95,
+        lines: 95,
+      },
     },
   },
   resolve: {
