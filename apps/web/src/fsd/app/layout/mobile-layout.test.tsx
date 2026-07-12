@@ -28,6 +28,7 @@ vi.mock("@/shared/tour", () => ({
 
 const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
   usePlayerDataSyncStatusMock: vi.fn(() => ({
+    status: "idle",
     isSyncing: false,
     statusText: "Up to date",
     syncNow: vi.fn(),
@@ -78,6 +79,7 @@ describe("MobileBottomNav actions", () => {
   it("triggers a sync on click when idle, and is not disabled", () => {
     const syncNow = vi.fn()
     usePlayerDataSyncStatusMock.mockReturnValue({
+      status: "idle",
       isSyncing: false,
       statusText: "Up to date",
       syncNow,
@@ -94,6 +96,7 @@ describe("MobileBottomNav actions", () => {
 
   it("spins the icon and disables the sync button while a sync is in progress", () => {
     usePlayerDataSyncStatusMock.mockReturnValue({
+      status: "syncing",
       isSyncing: true,
       statusText: "Syncing…",
       syncNow: vi.fn(),
@@ -102,6 +105,8 @@ describe("MobileBottomNav actions", () => {
 
     const syncButton = screen.getByTestId("mobile-sync-button")
     expect(syncButton).toBeDisabled()
-    expect(syncButton.querySelector("svg")).toHaveClass("animate-spin")
+    expect(syncButton.querySelector("svg")).toHaveClass(
+      "motion-safe:animate-spin"
+    )
   })
 })
