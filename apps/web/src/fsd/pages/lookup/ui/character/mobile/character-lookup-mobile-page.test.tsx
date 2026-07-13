@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 
-import type { FactionGroup } from "@workspace/game-catalog"
+import { unitIdSchema, type FactionGroup } from "@workspace/game-domain"
 
 vi.mock("../character-lookup-controls", () => ({
   CharacterLookupControls: ({ onApply }: { onApply: () => void }) => (
@@ -24,7 +24,7 @@ const characterGroups: FactionGroup[] = []
 function baseProps() {
   return {
     characterGroups,
-    characterId: "cato",
+    characterId: unitIdSchema.parse("cato"),
     rankStart: "Stone1" as const,
     rankEnd: "Iron1" as const,
     progressionStart: "Common:None" as const,
@@ -75,7 +75,7 @@ describe("CharacterLookupMobilePage", () => {
       <CharacterLookupMobilePage
         {...baseProps()}
         profile={{
-          id: "cato",
+          id: unitIdSchema.parse("cato"),
           name: "Cato Sicarius",
           faction: "Ultramarines",
           movement: 4,

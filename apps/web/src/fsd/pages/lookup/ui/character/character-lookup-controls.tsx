@@ -19,7 +19,8 @@ import {
   type FactionGroup,
   type Progression,
   type Rank,
-} from "@workspace/game-catalog"
+  type UnitId,
+} from "@workspace/game-domain"
 
 import {
   CharacterCombobox,
@@ -55,8 +56,8 @@ export function CharacterLookupControls({
   isMobile,
 }: {
   characterGroups: FactionGroup[]
-  characterId?: string
-  onCharacterChange: (id: string) => void
+  characterId?: UnitId
+  onCharacterChange: (id: UnitId) => void
   rankStart: Rank
   rankEnd: Rank
   onRangeChange: (start: Rank, end: Rank) => void

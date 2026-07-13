@@ -16,7 +16,8 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { characterIcon, type FactionGroup } from "@workspace/game-catalog"
+import { characterIcon } from "@workspace/game-catalog"
+import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
 import { EntityIcon } from "./entity-icon"
 
@@ -28,8 +29,8 @@ export function CharacterCombobox({
   emptyText,
 }: {
   groups: FactionGroup[]
-  value?: string
-  onChange: (id: string) => void
+  value?: UnitId
+  onChange: (id: UnitId) => void
   placeholder: string
   emptyText: string
 }) {

@@ -1,9 +1,15 @@
 import { z } from "zod"
 import {
-  Rank,
+  abilityIdSchema,
+  campaignIdSchema,
+  equipmentIdSchema,
   progressionOrder,
+  Rank,
+  Rarity,
+  unitIdSchema,
+  upgradeIdSchema,
   type Progression,
-} from "@workspace/game-catalog"
+} from "@workspace/game-domain"
 
 // Envelope/manifest shapes mirror @workspace/game-catalog's zod schemas: loose objects so additive
 // (server-added) fields don't break validation on older deployed clients.
@@ -33,7 +39,7 @@ export const playerDataChunkEnvelopeMetaSchema = z.looseObject({
 })
 
 const rarityAmountSchema = z.looseObject({
-  rarity: z.string(),
+  rarity: z.enum(Rarity),
   amount: z.number(),
 })
 
@@ -49,23 +55,21 @@ const playerDetailsSchema = z.looseObject({
   powerLevel: z.number(),
 })
 
-const progressionSchema = z.enum(
-  progressionOrder as unknown as [Progression, ...Progression[]]
-)
+const progressionSchema: z.ZodType<Progression> = z.enum(progressionOrder)
 
 // Shared fields for a character or a MoW. MoWs have no rank and no equipment slots, so those are
 // only added on `playerCharacterSchema` below (mirrors the backend's `PlayerBaseUnitRecord` split
 // into `PlayerCharacterRecord`/`PlayerMowRecord`). Name/faction/grandAlliance are intentionally
 // absent — the catalog already knows them for a given unit id, so they aren't duplicated here.
 const playerUnitBaseSchema = {
-  unitId: z.string(),
+  unitId: unitIdSchema,
   progressionIndex: progressionSchema,
   xp: z.number(),
   xpLevel: z.number(),
   shards: z.number(),
   mythicShards: z.number(),
   abilities: z.array(
-    z.looseObject({ abilityId: z.string(), level: z.number() })
+    z.looseObject({ abilityId: abilityIdSchema, level: z.number() })
   ),
   appliedUpgradeSlots: z.array(z.number()),
 }
@@ -76,7 +80,7 @@ const playerCharacterSchema = z.looseObject({
   equippedItems: z.array(
     z.looseObject({
       slotId: z.string(),
-      equipmentId: z.string(),
+      equipmentId: equipmentIdSchema,
       level: z.number(),
     })
   ),
@@ -85,7 +89,7 @@ const playerCharacterSchema = z.looseObject({
 const playerMowSchema = z.looseObject({ ...playerUnitBaseSchema })
 
 const inventoryUpgradeSchema = z.looseObject({
-  upgradeId: z.string(),
+  upgradeId: upgradeIdSchema,
   amount: z.number(),
 })
 
@@ -113,7 +117,7 @@ const mowComponentsSchema = z.looseObject({
 // absent from `characters`/`mows` — an already-unlocked unit's shard counts live on its own record
 // instead (see `playerUnitBaseSchema`'s `shards`/`mythicShards`), never duplicated here.
 const inventoryShardSchema = z.looseObject({
-  unitId: z.string(),
+  unitId: unitIdSchema,
   amount: z.number(),
   mythicAmount: z.number(),
 })
@@ -145,7 +149,7 @@ const inventorySchema = z.looseObject({
 // attempt data lives in the `live-progress` chunk instead (it changes far more often than this
 // identity/high-water-mark record does).
 const campaignProgressSchema = z.looseObject({
-  tacticusCampaignId: z.string(),
+  tacticusCampaignId: campaignIdSchema,
   type: z.string(),
   highestCompletedBattleIndex: z.number(),
 })
@@ -166,13 +170,13 @@ const gameModeTokensSchema = z.looseObject({
 const liveProgressSchema = z.looseObject({
   battleAttempts: z.array(
     z.looseObject({
-      tacticusCampaignId: z.string(),
+      tacticusCampaignId: campaignIdSchema,
       battleIndex: z.number(),
       attemptsLeft: z.number(),
       attemptsUsed: z.number(),
     })
   ),
-  activeCampaignEventId: z.string().nullable(),
+  activeCampaignEventId: campaignIdSchema.nullable(),
   gameModeTokens: gameModeTokensSchema,
 })
 

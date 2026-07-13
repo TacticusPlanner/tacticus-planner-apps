@@ -1,12 +1,11 @@
 import { z } from "zod"
-
-import { Rarity } from "../game-entities/rarity"
+import { Rarity, upgradeIdSchema, type UpgradeId } from "@workspace/game-domain"
 import { farmLocationSchema } from "./shared"
 
 // A recipe ingredient. Craftable ingredients carry their own nested recipe (recursively); base materials
 // have no nested recipe. Typed explicitly because the schema is self-referential.
 export type GameCatalogUpgradeRecipeIngredient = {
-  material: string
+  material: UpgradeId
   count: number
   recipe: GameCatalogUpgradeRecipeIngredient[] | null
 }
@@ -14,15 +13,15 @@ export type GameCatalogUpgradeRecipeIngredient = {
 const upgradeRecipeIngredientSchema: z.ZodType<GameCatalogUpgradeRecipeIngredient> =
   z.lazy(() =>
     z.looseObject({
-      material: z.string(),
+      material: upgradeIdSchema,
       count: z.number(),
       recipe: z.array(upgradeRecipeIngredientSchema).nullable(),
     })
   )
 
 export const upgradeViewSchema = z.looseObject({
-  id: z.string(),
-  material: z.string(),
+  id: upgradeIdSchema,
+  material: upgradeIdSchema,
   snowprintId: z.string(),
   label: z.string(),
   rarity: z.enum(Rarity),

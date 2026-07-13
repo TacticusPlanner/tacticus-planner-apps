@@ -2,7 +2,11 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
-import type { FactionGroup } from "@workspace/game-catalog"
+import {
+  factionIdSchema,
+  unitIdSchema,
+  type FactionGroup,
+} from "@workspace/game-domain"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -34,16 +38,16 @@ function renderControls(props: Parameters<typeof CharacterLookupControls>[0]) {
 
 const characterGroups: FactionGroup[] = [
   {
-    factionId: "Ultramarines",
+    factionId: factionIdSchema.parse("Ultramarines"),
     factionName: "Ultramarines",
-    members: [{ id: "cato", name: "Cato Sicarius" }],
+    members: [{ id: unitIdSchema.parse("cato"), name: "Cato Sicarius" }],
   },
 ]
 
 function baseProps() {
   return {
     characterGroups,
-    characterId: "cato",
+    characterId: unitIdSchema.parse("cato"),
     onCharacterChange: vi.fn(),
     rankStart: "Stone1" as const,
     rankEnd: "Iron1" as const,

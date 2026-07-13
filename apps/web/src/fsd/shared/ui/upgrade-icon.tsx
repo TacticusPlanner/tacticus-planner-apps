@@ -1,4 +1,5 @@
-import { UpgradeIcons, type Rarity } from "@workspace/game-catalog"
+import { UpgradeIcons } from "@workspace/game-catalog"
+import type { Rarity, UpgradeId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "./entity-icon"
@@ -10,7 +11,7 @@ export function UpgradeIcon({
   crafted,
   className = "size-8",
 }: {
-  id: string
+  id: UpgradeId
   rarity?: Rarity
   crafted?: boolean
   className?: string

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { rarityIcon, type Rarity } from "@workspace/game-catalog"
+import { rarityIcon } from "@workspace/game-catalog"
+import type { Rarity } from "@workspace/game-domain"
 import {
   Tooltip,
   TooltipContent,

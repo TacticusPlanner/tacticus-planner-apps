@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import type { Rank } from "@workspace/game-catalog"
+import type { Rank } from "@workspace/game-domain"
 
 import { RankBadge } from "./rank-badge"
 

@@ -8,13 +8,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { progressionVisual } from "@workspace/game-catalog"
 import {
   progressionOrder,
   progressionRarity,
-  progressionStars,
-  progressionVisual,
   type Progression,
-} from "@workspace/game-catalog"
+} from "@workspace/game-domain"
 
 import { EntityIcon } from "./entity-icon"
 import { RarityIcon } from "./rarity-icon"
@@ -55,8 +54,8 @@ export function ProgressionSelect({
 function ProgressionBadge({ value }: { value: Progression }) {
   const { t } = useTranslation(["progression"])
   const rarity = progressionRarity(value)
-  const stars = progressionStars(value)
-  const visual = progressionVisual(stars)
+  const stars = value.slice(value.indexOf(":") + 1)
+  const visual = progressionVisual(value)
   const starsLabel = t(`stars.${stars}`, { defaultValue: stars })
 
   return (

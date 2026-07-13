@@ -1,4 +1,11 @@
 import { z } from "zod"
+import {
+  abilityIdSchema,
+  equipmentIdSchema,
+  factionIdSchema,
+  Rarity,
+  unitIdSchema,
+} from "@workspace/game-domain"
 
 const equipmentUpgradeLevelSchema = z.looseObject({
   goldCost: z.number(),
@@ -7,7 +14,7 @@ const equipmentUpgradeLevelSchema = z.looseObject({
 })
 
 export const equipmentUpgradeCostSchema = z.looseObject({
-  rarity: z.string(),
+  rarity: z.enum(Rarity),
   levels: z.array(equipmentUpgradeLevelSchema),
 })
 
@@ -19,15 +26,15 @@ const equipmentLevelSchema = z.looseObject({
 })
 
 export const equipmentSchema = z.looseObject({
-  id: z.string(),
+  id: equipmentIdSchema,
   name: z.string(),
-  rarity: z.string(),
+  rarity: z.enum(Rarity),
   type: z.string(),
-  abilityId: z.string(),
+  abilityId: abilityIdSchema,
   isRelic: z.boolean(),
   isUniqueRelic: z.boolean(),
-  allowedUnits: z.array(z.string()),
-  allowedFactions: z.array(z.string()),
+  allowedUnits: z.array(unitIdSchema),
+  allowedFactions: z.array(factionIdSchema),
   levels: z.array(equipmentLevelSchema),
   // The matched per-rarity upgrade-cost ladder, inlined server-side (no shared extras table).
   upgradeLevels: z.array(equipmentUpgradeLevelSchema),

@@ -7,12 +7,7 @@ export const Alliance = {
 
 export type Alliance = (typeof Alliance)[keyof typeof Alliance]
 
-export const allianceOrder: readonly Alliance[] = [
-  Alliance.Imperial,
-  Alliance.Chaos,
-  Alliance.Xenos,
-  Alliance.Neutral,
-]
+export const allianceOrder: readonly Alliance[] = Object.values(Alliance)
 
 export const allianceRank = (alliance: Alliance): number => {
   const index = allianceOrder.indexOf(alliance)

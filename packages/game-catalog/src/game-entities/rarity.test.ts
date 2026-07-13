@@ -1,17 +1,7 @@
 import { describe, expect, it } from "vitest"
+import type { Rarity } from "@workspace/game-domain"
 
-import { rarityClass, rarityOrder, rarityRank, type Rarity } from "./rarity"
-
-describe("rarityRank", () => {
-  it("ranks rarities by their position in rarityOrder", () => {
-    expect(rarityRank("Common")).toBe(0)
-    expect(rarityRank("Mythic")).toBe(rarityOrder.length - 1)
-  })
-
-  it("ranks an unrecognized rarity as not found", () => {
-    expect(rarityRank("SomeNewRarity" as Rarity)).toBe(-1)
-  })
-})
+import { rarityClass } from "./rarity"
 
 describe("rarityClass", () => {
   it("maps each rarity to its own text-color class", () => {

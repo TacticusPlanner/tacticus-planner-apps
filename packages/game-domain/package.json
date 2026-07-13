@@ -1,34 +1,28 @@
 {
-  "name": "@workspace/game-catalog",
+  "name": "@workspace/game-domain",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint && knip",
+    "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@workspace/game-domain": "workspace:*",
-    "dexie": "^4.4.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
-    "fake-indexeddb": "^6.2.5",
     "globals": "catalog:",
-    "jsdom": "catalog:",
-    "knip": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./queries": "./src/queries.ts"
+    ".": "./src/index.ts"
   }
 }

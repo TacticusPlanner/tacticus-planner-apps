@@ -1,9 +1,9 @@
-import type { Rank, Rarity } from "@workspace/game-catalog"
+import type { Rank, Rarity, UpgradeId } from "@workspace/game-domain"
 
 import type { LocationViewModel } from "@/shared/ui"
 
 export type BaseUpgradeViewModel = {
-  id: string
+  id: UpgradeId
   count: number
   /** Raw owned amount (applied to the character + inventory, base+crafted expanded to this base
    *  upgrade) — uncapped, so a player can see they have more than enough. 0 unless the "include my
@@ -19,7 +19,7 @@ export type BaseUpgradeViewModel = {
 }
 
 export type RecipeViewModel = {
-  id: string
+  id: UpgradeId
   label: string
   count: number
   rarity: Rarity
@@ -28,7 +28,7 @@ export type RecipeViewModel = {
 }
 
 export type UpgradeViewModel = {
-  id: string
+  id: UpgradeId
   label: string
   rarity: Rarity
   crafted: boolean

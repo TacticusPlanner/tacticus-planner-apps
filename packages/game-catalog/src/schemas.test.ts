@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, expectTypeOf, it } from "vitest"
+import type { BattleId, FactionId } from "@workspace/game-domain"
 
 import {
   characterViewSchema,
@@ -221,6 +222,16 @@ describe("catalog schemas", () => {
 
     expect(battles.success).toBe(true)
     expect(definitions.success).toBe(true)
+
+    if (!battles.success || !definitions.success) {
+      throw new Error("Expected valid campaign payloads")
+    }
+    expectTypeOf(battles.data[0]!.id).toEqualTypeOf<BattleId>()
+    expectTypeOf(
+      battles.data[0]!.enemiesFactions[0]!
+    ).toEqualTypeOf<FactionId>()
+    expectTypeOf(definitions.data[0]!.battleIds[0]!).toEqualTypeOf<BattleId>()
+    expectTypeOf(definitions.data[0]!.faction).toEqualTypeOf<FactionId>()
   })
 
   it("validates an upgrade, including its recursively-nested craft recipe", () => {

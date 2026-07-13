@@ -23,6 +23,7 @@
     "@azure/msal-react": "^5.5.0",
     "@tanstack/react-table": "^8.21.3",
     "@workspace/game-catalog": "workspace:*",
+    "@workspace/game-domain": "workspace:*",
     "@workspace/player-data": "workspace:*",
     "@workspace/ui": "workspace:*",
     "dexie-react-hooks": "^4.4.0",

@@ -1,25 +1,29 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import type { FactionGroup } from "@workspace/game-catalog"
+import {
+  factionIdSchema,
+  unitIdSchema,
+  type FactionGroup,
+} from "@workspace/game-domain"
 
 import { CharacterCombobox } from "./character-combobox"
 
 const groups: FactionGroup[] = [
   {
-    factionId: "Ultramarines",
+    factionId: factionIdSchema.parse("Ultramarines"),
     factionName: "Ultramarines",
     members: [
-      { id: "cato", name: "Cato Sicarius" },
-      { id: "marneus", name: "Marneus Calgar" },
+      { id: unitIdSchema.parse("cato"), name: "Cato Sicarius" },
+      { id: unitIdSchema.parse("marneus"), name: "Marneus Calgar" },
     ],
   },
   {
-    factionId: "Necrons",
+    factionId: factionIdSchema.parse("Necrons"),
     factionName: "Necrons",
     members: [
-      { id: "imotekh", name: "Imotekh" },
-      { id: "trazyn", name: "Trazyn" },
+      { id: unitIdSchema.parse("imotekh"), name: "Imotekh" },
+      { id: unitIdSchema.parse("trazyn"), name: "Trazyn" },
     ],
   },
 ]

@@ -1,15 +1,16 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
+import type { CharacterStorageModel } from "@workspace/game-catalog"
 import {
-  campaignDescriptor,
-  campaignIcon,
-  progressionStars,
   rankIndex,
   rarityRank,
   statAtRank,
+  type BattleId,
+  type CampaignId,
   type Rank,
-} from "@workspace/game-catalog"
-import type { CharacterStorageModel } from "@workspace/game-catalog"
+  type UpgradeId,
+} from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import {
@@ -57,9 +58,9 @@ export function useCharacterLookupCalc({
   character: CharacterStorageModel | undefined
   characterForCalc: Character | undefined
   applied: LookupSelection
-  upgradesById: ReadonlyMap<string, UpgradeWithFarmLocations>
-  battlesById: ReadonlyMap<string, Battle>
-  releaseTypeByGroupId: ReadonlyMap<string, string>
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  battlesById: ReadonlyMap<BattleId, Battle>
+  releaseTypeByGroupId: ReadonlyMap<CampaignId, string>
   effectiveIncludeOwned: boolean
   playerCharacter: PlayerCharacter | undefined
   inventoryUpgrades: PlayerDataChunkDto<"inventory-upgrades"> | undefined
@@ -349,16 +350,8 @@ export function useCharacterLookupCalc({
     ]
 
     const statPair = (base: number) => ({
-      current: statAtRank(
-        base,
-        applied.rankStart,
-        progressionStars(applied.progressionStart)
-      ),
-      target: statAtRank(
-        base,
-        applied.rankEnd,
-        progressionStars(applied.progressionEnd)
-      ),
+      current: statAtRank(base, applied.rankStart, applied.progressionStart),
+      target: statAtRank(base, applied.rankEnd, applied.progressionEnd),
     })
 
     return {

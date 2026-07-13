@@ -1,10 +1,15 @@
 import {
   campaignDescriptor,
   campaignIcon,
-  rarityRank,
   type CampaignDescriptor,
-  type Rarity,
 } from "@workspace/game-catalog"
+import {
+  rarityRank,
+  type BattleId,
+  type CampaignId,
+  type Rarity,
+  type UpgradeId,
+} from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "@/shared/lib"
 
@@ -13,23 +18,23 @@ import type { Battle, FarmLocation } from "@/shared/lib"
 // rank-lookup.mapper.ts also produces values shaped to them.
 
 export interface CampaignInsightNeed {
-  id: string
+  id: UpgradeId
   count: number
 }
 
 /** The minimal shape `computeCampaignInsights` needs from an upgrade record — any richer record
  *  type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`) satisfies this structurally. */
 export interface CampaignInsightUpgrade {
-  id: string
+  id: UpgradeId
   rarity: Rarity
   farmLocations: FarmLocation[]
 }
 
 /** One upgrade+location's contribution to a campaign insight's score, for the expanded breakdown. */
 export interface CampaignInsightContribution {
-  upgradeId: string
-  battleId: string
-  campaignGroupId: string
+  upgradeId: UpgradeId
+  battleId: BattleId
+  campaignGroupId: CampaignId
   type: string
   challenge: boolean
   nodeNumber: number
@@ -73,7 +78,7 @@ export function dropRate(location: FarmLocation): number {
 // Event types fold into two tiers for scoring purposes: "eventStandard" is "standard",
 // "eventExtremis" is "extremis" (the "challenge" flag doesn't split into its own tier).
 function eventTier(
-  campaignGroupId: string,
+  campaignGroupId: CampaignId,
   type: string,
   challenge: boolean
 ): "standard" | "extremis" | undefined {
@@ -116,9 +121,9 @@ interface ChipAccumulator {
  */
 export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
   needs: CampaignInsightNeed[],
-  upgradesById: ReadonlyMap<string, U>,
-  battlesById: ReadonlyMap<string, Battle>,
-  isEventGroup: (campaignGroupId: string) => boolean,
+  upgradesById: ReadonlyMap<UpgradeId, U>,
+  battlesById: ReadonlyMap<BattleId, Battle>,
+  isEventGroup: (campaignGroupId: CampaignId) => boolean,
   resolveLabel: (descriptor: CampaignDescriptor, isEvent: boolean) => string,
   topN = 3
 ): { campaignInsights: CampaignInsight[]; eventInsights: CampaignInsight[] } {

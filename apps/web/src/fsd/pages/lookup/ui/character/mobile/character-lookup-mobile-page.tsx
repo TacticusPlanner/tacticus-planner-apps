@@ -1,7 +1,12 @@
 import { useEffect, useRef } from "react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type { FactionGroup, Progression, Rank } from "@workspace/game-catalog"
+import type {
+  FactionGroup,
+  Progression,
+  Rank,
+  UnitId,
+} from "@workspace/game-domain"
 
 import type { CampaignInsight } from "../campaign-insights"
 import { CharacterLookupControls } from "../character-lookup-controls"
@@ -15,7 +20,7 @@ import type { UnitProfileViewModel } from "../unit-profile.view-model"
 
 interface CharacterLookupMobilePageProps {
   characterGroups: FactionGroup[]
-  characterId: string | undefined
+  characterId: UnitId | undefined
   rankStart: Rank
   rankEnd: Rank
   progressionStart: Progression
@@ -30,7 +35,7 @@ interface CharacterLookupMobilePageProps {
   groups: RankGroupViewModel[]
   campaignInsights: CampaignInsight[]
   eventInsights: CampaignInsight[]
-  onCharacterChange: (id: string) => void
+  onCharacterChange: (id: UnitId) => void
   onRangeChange: (start: Rank, end: Rank) => void
   onProgressionRangeChange: (start: Progression, end: Progression) => void
   onPointFiveChange: (value: boolean) => void

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { unitIdSchema } from "@workspace/game-domain"
 
 const npcStatSchema = z.looseObject({
   abilityLevel: z.number(),
@@ -11,7 +12,7 @@ const npcStatSchema = z.looseObject({
 })
 
 export const npcSchema = z.looseObject({
-  id: z.string(),
+  id: unitIdSchema,
   name: z.string(),
   meleeDamage: z.string(),
   meleeHits: z.number(),
