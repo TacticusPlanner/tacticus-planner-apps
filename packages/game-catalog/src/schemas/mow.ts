@@ -1,18 +1,24 @@
 import { z } from "zod"
+import {
+  Alliance,
+  factionIdSchema,
+  unitIdSchema,
+  upgradeIdSchema,
+} from "@workspace/game-domain"
 
 import { amountByRaritySchema } from "./shared"
 
 const mowAbilitySchema = z.looseObject({
   name: z.string(),
-  recipes: z.array(z.array(z.string())),
+  recipes: z.array(z.array(upgradeIdSchema)),
 })
 
 export const mowSchema = z.looseObject({
-  id: z.string(),
+  id: unitIdSchema,
   name: z.string(),
   unitKind: z.string(),
-  faction: z.string(),
-  alliance: z.string(),
+  faction: factionIdSchema,
+  alliance: z.enum(Alliance),
   primaryAbility: mowAbilitySchema,
   secondaryAbility: mowAbilitySchema,
 })

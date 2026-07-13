@@ -20,41 +20,12 @@ export const Rank = {
   Adamantine1: "Adamantine1",
   Adamantine2: "Adamantine2",
   // Adamantine3 is planned but removed from the ladder for now — nothing in-game can reach it yet
-  // (see lastRank below). Add it back here (and to rankOrder) once it ships.
 } as const
 
 export type Rank = (typeof Rank)[keyof typeof Rank]
 
-export const rankOrder: readonly Rank[] = [
-  Rank.Stone1,
-  Rank.Stone2,
-  Rank.Stone3,
-  Rank.Iron1,
-  Rank.Iron2,
-  Rank.Iron3,
-  Rank.Bronze1,
-  Rank.Bronze2,
-  Rank.Bronze3,
-  Rank.Silver1,
-  Rank.Silver2,
-  Rank.Silver3,
-  Rank.Gold1,
-  Rank.Gold2,
-  Rank.Gold3,
-  Rank.Diamond1,
-  Rank.Diamond2,
-  Rank.Diamond3,
-  Rank.Adamantine1,
-  Rank.Adamantine2,
-]
-
+export const rankOrder: readonly Rank[] = Object.values(Rank)
 export const firstRank: Rank = rankOrder[0]
-
-// Adamantine3 is planned for the game but is intentionally left out of the ladder above — nothing
-// can actually reach it yet (even `maxRankByRarity.Mythic` in unit-stats.ts caps out at
-// `Adamantine2`), so `lastRank` is Adamantine2 for now. Add Adamantine3 back to `Rank`/`rankOrder`
-// once it ships, at which point this becomes Adamantine3 again with no other call-site changes
-// needed (every consumer already reads the ladder's actual end via `lastRank`, not a hardcoded value).
 export const lastRank: Rank = rankOrder[rankOrder.length - 1]
 
 export const rankIndex = (id: Rank): number => rankOrder.indexOf(id)
@@ -62,7 +33,6 @@ export const rankIndex = (id: Rank): number => rankOrder.indexOf(id)
 export const isRank = (value: string): value is Rank =>
   (rankOrder as readonly string[]).includes(value)
 
-// Adamantine1-3 don't have a "point five" step (see rank-lookup's Point Five toggle).
 export const isAdamantineRank = (rank: Rank): boolean =>
   rank.startsWith("Adamantine")
 

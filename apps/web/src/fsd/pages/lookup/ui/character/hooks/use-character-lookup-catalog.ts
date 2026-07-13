@@ -1,10 +1,8 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
-import {
-  groupByFaction,
-  type CampaignDefinitionStorageModel,
-} from "@workspace/game-catalog"
+import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
+import { groupByFaction } from "@workspace/game-domain"
 import {
   getCampaignBattles,
   getCampaignDefinitions,
@@ -54,12 +52,14 @@ export function useCharacterLookupCatalog() {
     [campaignBattles]
   )
 
-  // A campaign-definition's `id` is already its `groupId` (see `groupsWithId` in
-  // game-catalog-storage.ts), so indexing by `id` here doubles as indexing by `groupId`.
+  // Index by the schema-validated groupId rather than the storage-managed id alias so the map's
+  // key retains the canonical CampaignId brand.
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
   const releaseTypeByGroupId = useMemo(
     () =>
-      new Map((campaignDefinitions ?? []).map((d) => [d.id, toReleaseType(d)])),
+      new Map(
+        (campaignDefinitions ?? []).map((d) => [d.groupId, toReleaseType(d)])
+      ),
     [campaignDefinitions]
   )
 

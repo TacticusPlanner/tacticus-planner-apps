@@ -1,4 +1,9 @@
 import { describe, expect, it } from "vitest"
+import {
+  battleIdSchema,
+  campaignIdSchema,
+  upgradeIdSchema,
+} from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "@/shared/lib"
 
@@ -8,14 +13,54 @@ import {
   type CampaignInsightUpgrade,
 } from "./campaign-insights"
 
-function location(overrides: Partial<FarmLocation>): FarmLocation {
-  return {
+type RawBattle = Omit<Battle, "campaignGroupId"> & { campaignGroupId: string }
+type RawUpgrade = Omit<CampaignInsightUpgrade, "id"> & { id: string }
+type RawFarmLocation = Omit<FarmLocation, "battleId"> & { battleId: string }
+
+function computeInsights(
+  needs: { id: string; count: number }[],
+  upgradesById: ReadonlyMap<string, RawUpgrade>,
+  battlesById: ReadonlyMap<string, RawBattle>,
+  isEventGroup: (campaignGroupId: string) => boolean,
+  resolveLabel: Parameters<typeof computeCampaignInsights>[4],
+  topN?: number
+) {
+  return computeCampaignInsights(
+    needs.map((need) => ({ ...need, id: upgradeIdSchema.parse(need.id) })),
+    new Map(
+      [...upgradesById].map(([id, upgrade]) => [
+        upgradeIdSchema.parse(id),
+        { ...upgrade, id: upgradeIdSchema.parse(upgrade.id) },
+      ])
+    ),
+    new Map(
+      [...battlesById].map(([id, battle]) => [
+        battleIdSchema.parse(id),
+        {
+          ...battle,
+          campaignGroupId: campaignIdSchema.parse(battle.campaignGroupId),
+        },
+      ])
+    ),
+    isEventGroup,
+    resolveLabel,
+    topN
+  )
+}
+
+function location(overrides: Partial<RawFarmLocation>): FarmLocation {
+  const value = {
     battleId: "battle1",
     guaranteed: false,
     effectiveRate: null,
     numerator: null,
     denominator: null,
     ...overrides,
+  }
+
+  return {
+    ...value,
+    battleId: battleIdSchema.parse(value.battleId),
   }
 }
 
@@ -50,7 +95,7 @@ describe("dropRate", () => {
 })
 
 describe("computeCampaignInsights", () => {
-  const battlesById = new Map<string, Battle>([
+  const battlesById = new Map<string, RawBattle>([
     [
       "std-node-1",
       {
@@ -116,7 +161,7 @@ describe("computeCampaignInsights", () => {
       : `${descriptor.nameKey}:${descriptor.difficultyToken}`
 
   it("dedups energy cost per distinct battle within a chip (two upgrades, same node)", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "rare1",
         {
@@ -143,7 +188,7 @@ describe("computeCampaignInsights", () => {
       { id: "rare2", count: 1 },
     ]
 
-    const { campaignInsights } = computeCampaignInsights(
+    const { campaignInsights } = computeInsights(
       needs,
       upgradesById,
       battlesById,
@@ -168,7 +213,7 @@ describe("computeCampaignInsights", () => {
   })
 
   it("ranks a guaranteed high-rarity/cheap-energy node above a low-rarity/expensive, low-chance one", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "legendary1",
         {
@@ -195,7 +240,7 @@ describe("computeCampaignInsights", () => {
       { id: "common1", count: 1 },
     ]
 
-    const { campaignInsights } = computeCampaignInsights(
+    const { campaignInsights } = computeInsights(
       needs,
       upgradesById,
       battlesById,
@@ -210,7 +255,7 @@ describe("computeCampaignInsights", () => {
   })
 
   it("splits event campaigns into a separate ranked list", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "eventMat",
         {
@@ -224,7 +269,7 @@ describe("computeCampaignInsights", () => {
     ])
     const needs = [{ id: "eventMat", count: 1 }]
 
-    const { campaignInsights, eventInsights } = computeCampaignInsights(
+    const { campaignInsights, eventInsights } = computeInsights(
       needs,
       upgradesById,
       battlesById,
@@ -241,7 +286,7 @@ describe("computeCampaignInsights", () => {
   })
 
   it("merges an event's difficulty tiers (Standard + Extremis) into one chip and sums their scores", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "eventMat",
         {
@@ -256,7 +301,7 @@ describe("computeCampaignInsights", () => {
     ])
     const needs = [{ id: "eventMat", count: 1 }]
 
-    const { eventInsights } = computeCampaignInsights(
+    const { eventInsights } = computeInsights(
       needs,
       upgradesById,
       battlesById,
@@ -285,7 +330,7 @@ describe("computeCampaignInsights", () => {
   })
 
   it("leaves tierScores unset for a regular (non-event) campaign chip", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "rare1",
         {
@@ -297,7 +342,7 @@ describe("computeCampaignInsights", () => {
         },
       ],
     ])
-    const { campaignInsights } = computeCampaignInsights(
+    const { campaignInsights } = computeInsights(
       [{ id: "rare1", count: 1 }],
       upgradesById,
       battlesById,
@@ -309,7 +354,7 @@ describe("computeCampaignInsights", () => {
   })
 
   it("truncates to the requested top-N, sorted by score descending", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "legendary1",
         {
@@ -336,7 +381,7 @@ describe("computeCampaignInsights", () => {
       { id: "common1", count: 1 },
     ]
 
-    const { campaignInsights } = computeCampaignInsights(
+    const { campaignInsights } = computeInsights(
       needs,
       upgradesById,
       battlesById,
@@ -350,7 +395,7 @@ describe("computeCampaignInsights", () => {
   })
 
   it("skips a location whose battle id isn't in the catalog", () => {
-    const upgradesById = new Map<string, CampaignInsightUpgrade>([
+    const upgradesById = new Map<string, RawUpgrade>([
       [
         "orphan",
         {
@@ -363,7 +408,7 @@ describe("computeCampaignInsights", () => {
       ],
     ])
 
-    const { campaignInsights, eventInsights } = computeCampaignInsights(
+    const { campaignInsights, eventInsights } = computeInsights(
       [{ id: "orphan", count: 1 }],
       upgradesById,
       battlesById,

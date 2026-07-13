@@ -16,9 +16,9 @@ import {
 import {
   campaignDescriptor,
   campaignIcon,
-  rarityRank,
   type CampaignDescriptor,
 } from "@workspace/game-catalog"
+import { rarityRank, type UpgradeId } from "@workspace/game-domain"
 
 import { useCampaignDisplay, type CampaignShortLabel } from "@/shared/lib"
 import { EntityIcon, LocationChips, RarityIcon, UpgradeIcon } from "@/shared/ui"
@@ -108,7 +108,7 @@ export function CampaignInsightList({
 }: {
   label: string
   insights: CampaignInsight[]
-  upgradeById: ReadonlyMap<string, BaseUpgradeViewModel>
+  upgradeById: ReadonlyMap<UpgradeId, BaseUpgradeViewModel>
 }) {
   const { t } = useTranslation(["common"])
   const { shortLabel, tierCode } = useCampaignDisplay()
@@ -206,7 +206,7 @@ interface ContributionLocation {
 }
 
 interface UpgradeContributionGroup {
-  upgradeId: string
+  upgradeId: UpgradeId
   upgrade?: BaseUpgradeViewModel
   count: number
   totalValue: number
@@ -218,10 +218,10 @@ interface UpgradeContributionGroup {
 // upgrades needed from this campaign show up first.
 function groupContributionsByUpgrade(
   contributions: CampaignInsightContribution[],
-  upgradeById: ReadonlyMap<string, BaseUpgradeViewModel>,
+  upgradeById: ReadonlyMap<UpgradeId, BaseUpgradeViewModel>,
   shortLabel: ShortLabelResolver
 ): UpgradeContributionGroup[] {
-  const groups = new Map<string, UpgradeContributionGroup>()
+  const groups = new Map<UpgradeId, UpgradeContributionGroup>()
   for (const contribution of contributions) {
     let group = groups.get(contribution.upgradeId)
     if (!group) {

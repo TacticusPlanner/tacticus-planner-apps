@@ -3,7 +3,7 @@ import {
   rankIndex,
   rankOrder,
   type Rank,
-} from "@workspace/game-catalog"
+} from "@workspace/game-domain"
 
 import type {
   BaseUpgradeNeed,
@@ -12,6 +12,7 @@ import type {
   UpgradeAmount,
   Upgrade,
 } from "./rank-lookup.domain"
+import type { UpgradeId } from "@workspace/game-domain"
 
 export type {
   BaseUpgradeNeed,
@@ -22,7 +23,7 @@ export type {
   Upgrade,
 } from "./rank-lookup.domain"
 
-const rankUpgradeMap = (character: Character): Map<string, string[]> =>
+const rankUpgradeMap = (character: Character): Map<Rank, UpgradeId[]> =>
   new Map(
     character.rankUpUpgrades.map((entry) => [entry.rank, entry.upgradeIds])
   )
@@ -37,11 +38,11 @@ export function rankUpUpgradeIds(
   rankStart: Rank,
   rankEnd: Rank,
   pointFive: boolean
-): string[] {
+): UpgradeId[] {
   if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
 
   const byRank = rankUpgradeMap(character)
-  const ids: string[] = []
+  const ids: UpgradeId[] = []
   for (let i = rankIndex(rankStart); i < rankIndex(rankEnd); i++) {
     ids.push(...(byRank.get(rankOrder[i]) ?? []))
   }
@@ -95,11 +96,11 @@ export function groupUpgradesByRank(
  */
 function reduceToBaseUpgrades(
   entries: UpgradeAmount[],
-  upgradesById: ReadonlyMap<string, Upgrade>
-): Map<string, number> {
-  const counts = new Map<string, number>()
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
+): Map<UpgradeId, number> {
+  const counts = new Map<UpgradeId, number>()
 
-  const add = (id: string, multiplier: number) => {
+  const add = (id: UpgradeId, multiplier: number) => {
     const upgrade = upgradesById.get(id)
     if (upgrade?.crafted && upgrade.recipe.length > 0) {
       for (const ingredient of upgrade.recipe) {
@@ -121,8 +122,8 @@ function reduceToBaseUpgrades(
  * base upgrades (and unknown ids) are counted directly.
  */
 export function aggregateBaseUpgrades(
-  upgradeIds: string[],
-  upgradesById: ReadonlyMap<string, Upgrade>
+  upgradeIds: UpgradeId[],
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
 ): BaseUpgradeNeed[] {
   const counts = reduceToBaseUpgrades(
     upgradeIds.map((id) => ({ id, amount: 1 })),
@@ -139,9 +140,9 @@ export function aggregateBaseUpgrades(
  * comparable at the same (base-upgrade) granularity.
  */
 export function aggregateOwnedBaseUpgrades(
-  appliedIds: string[],
+  appliedIds: UpgradeId[],
   inventoryUpgrades: UpgradeAmount[],
-  upgradesById: ReadonlyMap<string, Upgrade>
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
 ): BaseUpgradeNeed[] {
   const counts = reduceToBaseUpgrades(
     [...appliedIds.map((id) => ({ id, amount: 1 })), ...inventoryUpgrades],
@@ -163,7 +164,7 @@ export function appliedUpgradeIds(
   character: Character,
   currentRank: Rank,
   appliedSlotIndices: readonly number[]
-): string[] {
+): UpgradeId[] {
   const byRank = rankUpgradeMap(character)
   const ids = rankUpUpgradeIds(character, firstRank, currentRank, false)
   const currentRankUpgrades = byRank.get(currentRank) ?? []

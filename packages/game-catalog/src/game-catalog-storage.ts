@@ -1,4 +1,4 @@
-import Dexie, { type Table } from "dexie"
+import Dexie, { type EntityTable } from "dexie"
 
 import {
   catalogManifestMetadataKey,
@@ -17,6 +17,18 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.
 export const catalogDbVersion = 3
 
+// One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
+// stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
+// properly typed without hand-declaring one property per dataset (11 of them).
+type GameCatalogTables = {
+  [K in GameCatalogDatasetKey]: EntityTable<StorageModel<K>, "id">
+}
+
+type GameCatalogDb = Dexie &
+  GameCatalogTables & {
+    metadata: EntityTable<GameCatalogDatasetMetadata, "key">
+  }
+
 /**
  * Single long-lived Dexie instance for the whole app's lifetime — idiomatic Dexie usage (repeatedly
  * closing/reopening a connection defeats its internal optimizations and is explicitly discouraged).
@@ -27,20 +39,12 @@ export const catalogDbVersion = 3
  * `.version(N+1).stores({...})` block here), not a custom self-heal workaround: this replaces the
  * previous hand-rolled "detect a missing store and reopen one version higher" logic entirely.
  */
-class GameCatalogDb extends Dexie {
-  metadata!: Table<GameCatalogDatasetMetadata, string>
+const catalogDb = new Dexie(catalogDbName) as GameCatalogDb
 
-  constructor() {
-    super(catalogDbName)
-
-    this.version(catalogDbVersion).stores({
-      metadata: "key",
-      ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
-    })
-  }
-}
-
-const catalogDb = new GameCatalogDb()
+catalogDb.version(catalogDbVersion).stores({
+  metadata: "key",
+  ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
+})
 
 export async function getGameCatalogMetadata() {
   const values = await catalogDb.metadata.toArray()
@@ -64,22 +68,24 @@ export async function hasCompleteGameCatalogCache() {
  * Replaces a changed dataset on re-sync: empties its store (`clear()` — full wipe, no merge) and re-adds
  * all records, plus its metadata, in one transaction. Stale rows are removed.
  */
-export async function replaceGameCatalogDataset(
-  datasetKey: GameCatalogDatasetKey,
-  data: unknown,
-  metadata: GameCatalogDatasetMetadata
-) {
+export async function replaceGameCatalogDataset<
+  K extends GameCatalogDatasetKey,
+>(datasetKey: K, data: unknown, metadata: GameCatalogDatasetMetadata) {
+  // datasetToStorageModels is a shape-agnostic, runtime-key-dispatched transform (it returns
+  // Record<string, unknown>[] since it has no way to know its own dataset's specific shape at the
+  // type level) — this single cast is the honest boundary where the payload, already validated by
+  // datasetPayloadSchemas[datasetKey] (see game-catalog-api.ts), enters the typed store.
   const records = datasetToStorageModels[datasetKey](data).map(
     mapDatasetRowToStorageModel
-  )
-  // Typed the same way as getDatasetRecords' read path below (Dexie's `.table<T, TKey>()` overload)
-  // rather than the untyped `.table(datasetKey)` lookup — `records` themselves are already only
-  // typed as `Record<string, unknown>[]` (the per-dataset-key transform in `datasetToStorageModels`
-  // above has no way to know its own dataset's specific shape at the type level), so this is as far
-  // as this generic-over-`datasetKey` write path can be typed without hand-declaring one Dexie table
-  // property per dataset (11 of them) purely to duplicate what `datasetToStorageModels`'s keys already
-  // enumerate.
-  const table = catalogDb.table<Record<string, unknown>, string>(datasetKey)
+  ) as StorageModel<K>[]
+
+  // Bracket access on `catalogDb` (typed via the `GameCatalogTables` mapped type above) does not
+  // collapse to a single `EntityTable<StorageModel<K>, "id">` for a still-generic `K` — TS distributes
+  // it into a union across every dataset key instead, which then won't assign to `StorageModel<K>[]`.
+  // Dexie's own `.table<T, TKey>()` overload takes its type arguments explicitly rather than inferring
+  // through the intersection, so it collapses correctly here; it's the same accessor `getDatasetRecords`
+  // below uses.
+  const table = catalogDb.table<StorageModel<K>, string>(datasetKey)
 
   await catalogDb.transaction("rw", table, catalogDb.metadata, async () => {
     await table.clear()

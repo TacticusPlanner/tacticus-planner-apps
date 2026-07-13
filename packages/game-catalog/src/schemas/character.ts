@@ -1,4 +1,10 @@
 import { z } from "zod"
+import {
+  Alliance,
+  factionIdSchema,
+  Rarity,
+  unitIdSchema,
+} from "@workspace/game-domain"
 
 import {
   characterRankUpSchema,
@@ -7,14 +13,14 @@ import {
 } from "./shared"
 
 export const characterViewSchema = z.looseObject({
-  id: z.string(),
+  id: unitIdSchema,
   name: z.string(),
-  faction: z.string(),
-  alliance: z.string(),
+  faction: factionIdSchema,
+  alliance: z.enum(Alliance),
   health: z.number(),
   damage: z.number(),
   armour: z.number(),
-  initialRarity: z.string(),
+  initialRarity: z.enum(Rarity),
   meleeDamage: z.string(),
   meleeHits: z.number(),
   rangedDamage: z.string().nullable(),

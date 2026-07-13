@@ -9,7 +9,7 @@ import {
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { Rarity } from "@workspace/game-catalog"
+import type { Rarity } from "@workspace/game-domain"
 
 import {
   BaseUpgradesCards,

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
-import { isAdamantineRank } from "@workspace/game-catalog"
+import { isAdamantineRank } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 import {
   getInventoryUpgrades,
   getPlayerCharacter,
@@ -54,7 +55,7 @@ export function CharacterLookupPage() {
     handleApply,
   } = useLookupSelection()
 
-  const handleCharacterChange = (id: string) => {
+  const handleCharacterChange = (id: UnitId) => {
     setDraftCharacterId(id)
   }
 
@@ -92,7 +93,7 @@ export function CharacterLookupPage() {
   // rank/progression edits the user has since made via the slider. Falls back to
   // setDraftCharacterId's normal default behavior whenever signed out, the record hasn't finished
   // loading, or the unit isn't in the synced chunk at all.
-  const prefilledCharacterIdRef = useRef<string | undefined>(undefined)
+  const prefilledCharacterIdRef = useRef<UnitId | undefined>(undefined)
 
   useEffect(() => {
     if (

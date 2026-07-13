@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 
 import {
   aggregateBaseUpgrades,
@@ -10,15 +11,27 @@ import {
   type Upgrade,
 } from "./rank-lookup-calc"
 
+const upgradeId = upgradeIdSchema.parse
+const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
+
 // 6 upgrades per rank, ordered [Health, Health, Damage, Damage, Armour, Armour] — point-five takes
 // indices 0/2/4 (the first of each stat pair).
 const character: Character = {
-  id: "astarCyrus",
+  id: unitIdSchema.parse("astarCyrus"),
   name: "Cyrus",
   rankUpUpgrades: [
-    { rank: "Stone1", upgradeIds: ["h1", "h2", "d1", "d2", "a1", "a2"] },
-    { rank: "Stone2", upgradeIds: ["h3", "h4", "d3", "d4", "a3", "a4"] },
-    { rank: "Stone3", upgradeIds: ["h5", "h6", "d5", "d6", "a5", "a6"] },
+    {
+      rank: "Stone1",
+      upgradeIds: upgradeIds(["h1", "h2", "d1", "d2", "a1", "a2"]),
+    },
+    {
+      rank: "Stone2",
+      upgradeIds: upgradeIds(["h3", "h4", "d3", "d4", "a3", "a4"]),
+    },
+    {
+      rank: "Stone3",
+      upgradeIds: upgradeIds(["h5", "h6", "d5", "d6", "a5", "a6"]),
+    },
   ],
 }
 
@@ -82,11 +95,11 @@ describe("groupUpgradesByRank", () => {
 })
 
 describe("aggregateBaseUpgrades", () => {
-  const upgrades = new Map<string, Upgrade>([
+  const upgrades = new Map<ReturnType<typeof upgradeId>, Upgrade>([
     [
-      "base1",
+      upgradeId("base1"),
       {
-        id: "base1",
+        id: upgradeId("base1"),
         label: "Base 1",
         rarity: "Common",
         stat: "Health",
@@ -95,9 +108,9 @@ describe("aggregateBaseUpgrades", () => {
       },
     ],
     [
-      "base2",
+      upgradeId("base2"),
       {
-        id: "base2",
+        id: upgradeId("base2"),
         label: "Base 2",
         rarity: "Common",
         stat: "Damage",
@@ -106,41 +119,44 @@ describe("aggregateBaseUpgrades", () => {
       },
     ],
     [
-      "craft1",
+      upgradeId("craft1"),
       {
-        id: "craft1",
+        id: upgradeId("craft1"),
         label: "Craft 1",
         rarity: "Rare",
         stat: "Health",
         crafted: true,
         recipe: [
-          { material: "base1", count: 2 },
-          { material: "craft2", count: 1 },
+          { material: upgradeId("base1"), count: 2 },
+          { material: upgradeId("craft2"), count: 1 },
         ],
       },
     ],
     [
-      "craft2",
+      upgradeId("craft2"),
       {
-        id: "craft2",
+        id: upgradeId("craft2"),
         label: "Craft 2",
         rarity: "Uncommon",
         stat: "Health",
         crafted: true,
-        recipe: [{ material: "base2", count: 3 }],
+        recipe: [{ material: upgradeId("base2"), count: 3 }],
       },
     ],
   ])
 
   it("expands crafted upgrades recursively and sums base counts", () => {
     // craft1 = 2×base1 + 1×craft2(=3×base2); plus a standalone base1.
-    const result = aggregateBaseUpgrades(["craft1", "base1"], upgrades)
+    const result = aggregateBaseUpgrades(
+      upgradeIds(["craft1", "base1"]),
+      upgrades
+    )
     const byId = Object.fromEntries(result.map((r) => [r.id, r.count]))
     expect(byId).toEqual({ base1: 3, base2: 3 })
   })
 
   it("treats unknown ids as base upgrades", () => {
-    expect(aggregateBaseUpgrades(["mystery"], upgrades)).toEqual([
+    expect(aggregateBaseUpgrades(upgradeIds(["mystery"]), upgrades)).toEqual([
       { id: "mystery", count: 1 },
     ])
   })
@@ -148,8 +164,8 @@ describe("aggregateBaseUpgrades", () => {
   it("expands a crafted inventory entry through its recipe, combined with applied ids", () => {
     // craft2 owned ×2 = 2×3×base2 = 6×base2; plus a standalone applied base1.
     const result = aggregateOwnedBaseUpgrades(
-      ["base1"],
-      [{ id: "craft2", amount: 2 }],
+      upgradeIds(["base1"]),
+      [{ id: upgradeId("craft2"), amount: 2 }],
       upgrades
     )
     const byId = Object.fromEntries(result.map((r) => [r.id, r.count]))

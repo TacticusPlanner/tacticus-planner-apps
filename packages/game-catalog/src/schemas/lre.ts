@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { factionIdSchema, unitIdSchema } from "@workspace/game-domain"
 
 const lreFilterSchema = z.looseObject({
   kind: z.string(),
@@ -19,7 +20,7 @@ const lreTrackEnemiesSchema = z.looseObject({
 })
 
 export const lreEnemySchema = z.looseObject({
-  id: z.string(),
+  id: unitIdSchema,
   stars: z.number(),
   count: z.number(),
 })
@@ -35,7 +36,7 @@ export const lreBattleSchema = z.looseObject({
   number: z.number(),
   power: z.number(),
   tier: z.number(),
-  disallowedFactions: z.array(z.string()),
+  disallowedFactions: z.array(factionIdSchema),
   waves: z.array(lreWaveSchema),
 })
 
@@ -72,7 +73,7 @@ export const lreTrackViewSchema = z.looseObject({
   unitsRestrictions: z.array(lreRestrictionSchema),
   // Ids of this track's battles in the lre-battles dataset (ordered); the battle bodies live there.
   battleIds: z.array(z.string()),
-  availableUnitIds: z.array(z.string()),
+  availableUnitIds: z.array(unitIdSchema),
 })
 
 export const lreViewSchema = z.looseObject({
@@ -102,7 +103,7 @@ export const lreBattleViewSchema = z.looseObject({
   number: z.number(),
   power: z.number(),
   tier: z.number(),
-  disallowedFactions: z.array(z.string()),
+  disallowedFactions: z.array(factionIdSchema),
   waves: z.array(lreWaveSchema),
 })
 

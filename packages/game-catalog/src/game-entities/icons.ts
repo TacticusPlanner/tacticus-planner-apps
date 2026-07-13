@@ -1,8 +1,13 @@
-import type { CharacterId, CampaignGroupId, UpgradeId } from "./ids"
-import type { Rank } from "./rank"
-import type { Rarity } from "./rarity"
+import {
+  progressionStarsIndex,
+  type CampaignId,
+  type Progression,
+  type Rank,
+  type Rarity,
+  type UnitId,
+  type UpgradeId,
+} from "@workspace/game-domain"
 import { characterIconOverrides } from "./character-icon-overrides"
-import { rarityStarsIndex, type RarityStars } from "./unit-stats"
 
 // All asset paths (including the app's own custom icons — rarity badges, gold/red stars, the
 // crafted-upgrade badge) are relative to the web app's /public/game_catalog/ root. These
@@ -41,8 +46,8 @@ function camelToSnake(id: string): string {
   return id.replace(/([A-Z])/g, "_$1").toLowerCase()
 }
 
-export function characterIcon(id: CharacterId): string | undefined {
-  const slug = characterIconOverrides[id] ?? camelToSnake(id)
+export function characterIcon(id: UnitId): string | undefined {
+  const slug = characterIconOverrides.get(id) ?? camelToSnake(id)
   return `${ASSET_BASE_PATH}/characters/ui_image_RoundPortrait_${slug}_01.png`
 }
 
@@ -103,7 +108,7 @@ export interface CampaignDescriptor {
  * the groupId shape rather than the battle's own `type` string.
  */
 export function campaignDescriptor(
-  groupId: CampaignGroupId,
+  groupId: CampaignId,
   type: string,
   challenge = false
 ): CampaignDescriptor | undefined {
@@ -145,7 +150,7 @@ export function campaignDescriptor(
 // for events (e.g. "death-guard-vs-admech-eventExtremis.png"); challenge tiers reuse their base
 // Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
 export function campaignIcon(
-  groupId: CampaignGroupId,
+  groupId: CampaignId,
   type: string,
   challenge = false
 ): string | undefined {
@@ -258,8 +263,8 @@ export type ProgressionVisual =
 // Ported from V1's stars.icon.tsx: None renders as plain text (no icon); 1-5 stars are gold,
 // 6-10 are red, 11-13 are blue, and the max step (14) renders as a single wings image instead of
 // 14 individual stars.
-export function progressionVisual(value: RarityStars): ProgressionVisual {
-  const index = rarityStarsIndex(value)
+export function progressionVisual(value: Progression): ProgressionVisual {
+  const index = progressionStarsIndex(value)
   if (index === 0) return { kind: "none" }
   if (index <= 5) return { kind: "stars", icon: goldStarIcon, count: index }
   if (index <= 10) {

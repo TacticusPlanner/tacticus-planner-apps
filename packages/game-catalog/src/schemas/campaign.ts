@@ -1,4 +1,12 @@
 import { z } from "zod"
+import {
+  Alliance,
+  battleIdSchema,
+  campaignIdSchema,
+  factionIdSchema,
+  Rank,
+  unitIdSchema,
+} from "@workspace/game-domain"
 
 const campaignGuaranteedRewardSchema = z.looseObject({
   id: z.string(),
@@ -21,16 +29,16 @@ const campaignRewardsViewSchema = z.looseObject({
 })
 
 const campaignDetailedEnemySchema = z.looseObject({
-  id: z.string(),
+  id: unitIdSchema,
   name: z.string(),
   count: z.number(),
   stars: z.number(),
-  rank: z.string(),
+  rank: z.enum(Rank),
 })
 
 export const campaignBattleViewSchema = z.looseObject({
-  id: z.string(),
-  campaignGroupId: z.string(),
+  id: battleIdSchema,
+  campaignGroupId: campaignIdSchema,
   type: z.string(),
   challenge: z.boolean(),
   energyCost: z.number(),
@@ -38,8 +46,8 @@ export const campaignBattleViewSchema = z.looseObject({
   slots: z.number(),
   rewards: campaignRewardsViewSchema,
   enemyPower: z.number(),
-  enemiesAlliances: z.array(z.string()),
-  enemiesFactions: z.array(z.string()),
+  enemiesAlliances: z.array(z.enum(Alliance)),
+  enemiesFactions: z.array(factionIdSchema),
   enemiesTotal: z.number(),
   enemiesTypes: z.array(z.string()),
   detailedEnemyTypes: z.array(campaignDetailedEnemySchema),
@@ -47,10 +55,10 @@ export const campaignBattleViewSchema = z.looseObject({
 
 // A campaign group's definition: metadata plus the ids of the battles in the campaign-battles dataset.
 export const campaignDefinitionSchema = z.looseObject({
-  groupId: z.string(),
-  faction: z.string(),
+  groupId: campaignIdSchema,
+  faction: factionIdSchema,
   releaseType: z.string(),
-  coreCharacters: z.array(z.string()),
+  coreCharacters: z.array(unitIdSchema),
   types: z.array(z.string()),
-  battleIds: z.array(z.string()),
+  battleIds: z.array(battleIdSchema),
 })

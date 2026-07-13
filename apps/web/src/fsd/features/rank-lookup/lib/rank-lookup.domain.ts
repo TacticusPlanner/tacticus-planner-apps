@@ -1,24 +1,24 @@
-import type { Rank, Rarity } from "@workspace/game-catalog"
+import type { Rank, Rarity, UnitId, UpgradeId } from "@workspace/game-domain"
 
 interface RankUpEntry {
   rank: Rank
-  upgradeIds: string[]
+  upgradeIds: UpgradeId[]
 }
 
 export interface Character {
-  id: string
+  id: UnitId
   name: string
   rankUpUpgrades: RankUpEntry[]
 }
 
 export interface RecipeIngredient {
-  material: string
+  material: UpgradeId
   count: number
   recipe?: RecipeIngredient[] | null
 }
 
 export interface Upgrade {
-  id: string
+  id: UpgradeId
   label: string
   rarity: Rarity
   stat: string
@@ -30,18 +30,18 @@ export interface Upgrade {
 export interface RankUpGroup {
   fromRank: Rank
   toRank: Rank
-  upgradeIds: string[]
+  upgradeIds: UpgradeId[]
   /** True for the extra "point five" group shown at the target rank. */
   pointFive?: boolean
 }
 
 export interface BaseUpgradeNeed {
-  id: string
+  id: UpgradeId
   count: number
 }
 
 /** A single owned-inventory or applied-upgrade entry: `amount` copies of upgrade `id`. */
 export interface UpgradeAmount {
-  id: string
+  id: UpgradeId
   amount: number
 }

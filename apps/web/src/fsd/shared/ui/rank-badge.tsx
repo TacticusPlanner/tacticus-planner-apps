@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { rankIcon, type Rank } from "@workspace/game-catalog"
+import { rankIcon } from "@workspace/game-catalog"
+import type { Rank } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "./entity-icon"

@@ -14,10 +14,12 @@ import {
   rankIndex,
   type Progression,
   type Rank,
-} from "@workspace/game-catalog"
+  unitIdSchema,
+  type UnitId,
+} from "@workspace/game-domain"
 
 export interface LookupSelection {
-  characterId?: string
+  characterId?: UnitId
   rankStart: Rank
   rankEnd: Rank
   progressionStart: Progression
@@ -39,7 +41,7 @@ function selectionFromParams(params: URLSearchParams): LookupSelection {
   const progressionStart = params.get("progressionStart")
   const progressionEnd = params.get("progressionEnd")
   return {
-    characterId: params.get("character") ?? undefined,
+    characterId: unitIdSchema.safeParse(params.get("character")).data,
     rankStart: clampToCurrentMax(start && isRank(start) ? start : firstRank),
     rankEnd: clampToCurrentMax(end && isRank(end) ? end : rankAt(1)),
     progressionStart:
@@ -93,7 +95,7 @@ export function useLookupSelection() {
   // instead of the firstRank/firstProgression defaults (see character-lookup-page.tsx); it is only
   // ever supplied when that data is actually available, so behavior is unchanged otherwise.
   const setDraftCharacterId = (
-    id: string,
+    id: UnitId,
     prefill?: { rankStart: Rank; progressionStart: Progression }
   ) => {
     const next: LookupSelection = { ...draft, characterId: id }

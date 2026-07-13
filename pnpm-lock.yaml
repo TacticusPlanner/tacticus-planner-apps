@@ -125,6 +125,9 @@ importers:
       '@workspace/game-catalog':
         specifier: workspace:*
         version: link:../../packages/game-catalog
+      '@workspace/game-domain':
+        specifier: workspace:*
+        version: link:../../packages/game-domain
       '@workspace/player-data':
         specifier: workspace:*
         version: link:../../packages/player-data
@@ -237,6 +240,9 @@ importers:
 
   packages/game-catalog:
     dependencies:
+      '@workspace/game-domain':
+        specifier: workspace:*
+        version: link:../game-domain
       dexie:
         specifier: ^4.4.4
         version: 4.4.4
@@ -275,11 +281,39 @@ importers:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.2(@types/node@24.13.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
 
+  packages/game-domain:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@eslint/js':
+        specifier: 'catalog:'
+        version: 10.0.1(eslint@10.6.0(jiti@2.7.0))
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 4.1.9(vitest@4.1.9)
+      eslint:
+        specifier: 'catalog:'
+        version: 10.6.0(jiti@2.7.0)
+      globals:
+        specifier: 'catalog:'
+        version: 17.7.0
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      typescript-eslint:
+        specifier: 'catalog:'
+        version: 8.62.1(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.2(@types/node@24.13.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+
   packages/player-data:
     dependencies:
-      '@workspace/game-catalog':
+      '@workspace/game-domain':
         specifier: workspace:*
-        version: link:../game-catalog
+        version: link:../game-domain
       dexie:
         specifier: ^4.4.4
         version: 4.4.4

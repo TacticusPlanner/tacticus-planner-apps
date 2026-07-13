@@ -1,7 +1,7 @@
 export type UnitStatPair = { current: number; target: number }
 
 export type UnitProfileViewModel = {
-  id: string
+  id: UnitId
   name: string
   faction: string
   movement: number
@@ -19,3 +19,4 @@ export type UnitProfileViewModel = {
   damage: UnitStatPair
   armour: UnitStatPair
 }
+import type { UnitId } from "@workspace/game-domain"
