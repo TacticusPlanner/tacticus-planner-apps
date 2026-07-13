@@ -237,6 +237,15 @@
       "member": "Member"
     }
   },
+  "goals": {
+    "title": "Goals",
+    "loadError": "Couldn't load your goals.",
+    "retry": "Retry",
+    "empty": {
+      "title": "No goals yet",
+      "description": "Create a goal to start tracking progress toward a character, Machine of War, or upgrade target."
+    }
+  },
   "language": {
     "label": "Language",
     "options": {
