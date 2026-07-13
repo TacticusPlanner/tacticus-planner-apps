@@ -1,4 +1,4 @@
-import Dexie, { type Table } from "dexie"
+import Dexie, { type EntityTable } from "dexie"
 
 import {
   isMergedPlayerDataChunkKey,
@@ -88,7 +88,7 @@ function reassembleMergedChunk(
  * previous hand-rolled "detect a missing store and reopen one version higher" logic entirely.
  */
 class PlayerDataDb extends Dexie {
-  metadata!: Table<PlayerDataMetadataStorageModel, string>
+  metadata!: EntityTable<PlayerDataMetadataStorageModel, "key">
 
   constructor() {
     super(playerDataDbName)
@@ -194,6 +194,11 @@ export async function getChunkData<K extends PlayerDataChunkKey>(
   }
 
   if (isSplitPlayerDataChunkKey(chunkKey)) {
+    // Unlike getChunkRecord below, K here ranges over the full PlayerDataChunkKey union (the runtime
+    // guard narrows the value, not the type parameter), so `PlayerDataChunkDto<K>[number]` isn't a
+    // valid element type for every K in that union — the accessor stays untyped and the cast moves to
+    // the return, the same generic-heterogeneous-dispatch boundary `getChunkData`'s merged branch below
+    // already has.
     return (await playerDataDb
       .table(chunkKey)
       .toArray()) as PlayerDataChunkDto<K>
@@ -210,9 +215,11 @@ export async function getChunkData<K extends PlayerDataChunkKey>(
  */
 export async function getChunkRecord<K extends SplitPlayerDataChunkKey>(
   chunkKey: K,
-  id: string | readonly string[]
+  id: string | string[]
 ): Promise<PlayerDataChunkDto<K>[number] | undefined> {
-  return playerDataDb.table(chunkKey).get(id as string | string[])
+  return playerDataDb
+    .table<PlayerDataChunkDto<K>[number], string | string[]>(chunkKey)
+    .get(id)
 }
 
 export async function clearPlayerDataDb() {
