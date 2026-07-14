@@ -50,6 +50,19 @@ export function useGoalCatalog() {
     return record ? mapCharacterStorageToDomain(record) : undefined
   }
 
+  /** Display name for a goal row (list/grid). Only Character entities resolve via the catalog today
+   * (MoW/upgrade entity types fall back to the raw id — see Phase 3 scope notes). */
+  const getEntityName = (entityType: string, entityId: string) => {
+    if (entityType !== "Character") {
+      return entityId
+    }
+
+    const record = charactersById?.get(entityId as UnitId)
+    return t(`characters:${entityId}`, {
+      defaultValue: record?.name ?? entityId,
+    })
+  }
+
   const loading = charactersById === undefined || upgrades === undefined
 
   return {
@@ -57,6 +70,7 @@ export function useGoalCatalog() {
     upgradesById,
     characterGroups,
     getCharacter,
+    getEntityName,
     loading,
   }
 }

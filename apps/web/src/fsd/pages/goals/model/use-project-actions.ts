@@ -1,0 +1,134 @@
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+
+import { useMsal } from "@azure/msal-react"
+
+import {
+  activateProject,
+  updateProjectGoals,
+  updateProjectGoalsStatus,
+  type ProjectGoalSummary,
+} from "@/entities/project"
+import { ApiError } from "@/shared/api"
+
+const PRIORITY_STEP = 10
+
+/**
+ * Swaps `goalId` with its adjacent *visible* neighbor (the reorder buttons only ever act within the
+ * currently-displayed, e.g. Active-tab, subset) inside the full, priority-ordered member list, then
+ * returns the full list's goal ids in their new order. Operating on the full list — not just the visible
+ * subset — matters because `updateProjectGoals` replaces a project's *entire* membership: submitting only
+ * the visible subset would silently drop every non-visible (completed/archived) member from the project.
+ * Swapping index positions (rather than reassigning priority values in place) keeps every other member's
+ * relative order untouched.
+ */
+export function reorderedMemberIds(
+  members: ProjectGoalSummary[],
+  goalId: string,
+  direction: "up" | "down",
+  visibleGoalIds: string[]
+): string[] | undefined {
+  const visibleIndex = visibleGoalIds.indexOf(goalId)
+  const neighborId =
+    direction === "up"
+      ? visibleGoalIds[visibleIndex - 1]
+      : visibleGoalIds[visibleIndex + 1]
+
+  if (visibleIndex === -1 || neighborId === undefined) {
+    return undefined
+  }
+
+  const ids = members.map((member) => member.goal.goalId)
+  const a = ids.indexOf(goalId)
+  const b = ids.indexOf(neighborId)
+  if (a === -1 || b === -1) {
+    return undefined
+  }
+
+  const reordered = [...ids]
+  ;[reordered[a], reordered[b]] = [reordered[b], reordered[a]]
+  return reordered
+}
+
+/**
+ * Project-level mutations: active-plan toggle, bulk pause/resume, and per-project reorder. Reorder takes
+ * the *full* desired member ordering (see `reorderedMemberIds`) and recomputes spaced priorities before
+ * submitting, so a single move never requires renumbering races with concurrent edits elsewhere.
+ */
+export function useProjectActions(onChanged: () => void) {
+  const { t } = useTranslation()
+  const { instance, accounts } = useMsal()
+  const account = instance.getActiveAccount() ?? accounts[0]
+  const [pending, setPending] = useState(false)
+
+  const run = async (action: () => Promise<unknown>) => {
+    if (!account) {
+      return false
+    }
+
+    setPending(true)
+    try {
+      await action()
+      onChanged()
+      return true
+    } catch (error) {
+      toast.error(
+        error instanceof ApiError
+          ? error.message
+          : t("goals.toasts.actionError")
+      )
+      return false
+    } finally {
+      setPending(false)
+    }
+  }
+
+  const activate = async (projectId: string) => {
+    if (!account) {
+      return
+    }
+
+    const ok = await run(() => activateProject(instance, account, projectId))
+    if (ok) {
+      toast.success(t("goals.toasts.activated"))
+    }
+  }
+
+  const bulkStatus = async (projectId: string, status: "Active" | "Paused") => {
+    if (!account) {
+      return
+    }
+
+    const ok = await run(() =>
+      updateProjectGoalsStatus(instance, account, projectId, status)
+    )
+    if (ok) {
+      toast.success(
+        status === "Active"
+          ? t("goals.toasts.bulkResumed")
+          : t("goals.toasts.bulkPaused")
+      )
+    }
+  }
+
+  const reorder = async (projectId: string, orderedGoalIds: string[]) => {
+    if (!account) {
+      return
+    }
+
+    await run(() =>
+      updateProjectGoals(
+        instance,
+        account,
+        projectId,
+        orderedGoalIds.map((goalId, index) => ({
+          goalId,
+          priority: (index + 1) * PRIORITY_STEP,
+        }))
+      )
+    )
+  }
+
+  return { activate, bulkStatus, reorder, pending }
+}

@@ -1,6 +1,7 @@
 export {
   activateProject,
   createProject,
+  listProjectGoals,
   listProjects,
   updateProjectGoals,
   updateProjectGoalsStatus,
@@ -8,5 +9,7 @@ export {
 export type {
   CreateProjectRequest,
   ProjectGoalEntry,
+  ProjectGoalSummary,
+  ProjectMemberGoal,
   ProjectSummary,
 } from "./model/types"

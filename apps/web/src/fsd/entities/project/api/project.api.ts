@@ -6,6 +6,7 @@ import { withAccessToken } from "@/shared/auth"
 import type {
   CreateProjectRequest,
   ProjectGoalEntry,
+  ProjectGoalSummary,
   ProjectSummary,
 } from "../model/types"
 
@@ -60,6 +61,20 @@ export function updateProjectGoals(
         accessToken,
         body: { goals },
       }
+    )
+  )
+}
+
+export function listProjectGoals(
+  instance: IPublicClientApplication,
+  account: AccountInfo,
+  projectId: string,
+  signal?: AbortSignal
+) {
+  return withAccessToken(instance, account, (accessToken) =>
+    apiGet<{ goals: ProjectGoalSummary[] }>(
+      `/api/v1/me/projects/${projectId}/goals`,
+      { accessToken, signal }
     )
   )
 }

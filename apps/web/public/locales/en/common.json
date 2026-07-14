@@ -245,7 +245,63 @@
     "empty": {
       "title": "No goals yet",
       "description": "Create a goal to start tracking progress toward a character, Machine of War, or upgrade target.",
-      "createButton": "Create your first goal"
+      "createButton": "Create your first goal",
+      "filtered": "No goals in this view."
+    },
+    "tabs": {
+      "active": "Active",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "view": {
+      "list": "List view",
+      "grid": "Grid view"
+    },
+    "columns": {
+      "entity": "Character",
+      "type": "Type",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "Draft": "Draft",
+      "Active": "Active",
+      "Paused": "Paused",
+      "Completed": "Completed",
+      "Archived": "Archived"
+    },
+    "actions": {
+      "openMenu": "Open goal actions",
+      "pause": "Pause",
+      "resume": "Resume",
+      "complete": "Mark complete",
+      "archive": "Archive",
+      "unarchive": "Restore from archive",
+      "delete": "Delete",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "delete": {
+      "title": "Delete this goal?",
+      "description": "This permanently removes the goal. This can't be undone.",
+      "confirm": "Delete goal",
+      "cancel": "Cancel"
+    },
+    "project": {
+      "filterAll": "All projects",
+      "filterLabel": "Project",
+      "setActive": "Set as active plan",
+      "active": "active",
+      "pauseAll": "Pause all",
+      "resumeAll": "Resume all"
+    },
+    "toasts": {
+      "statusChanged": "Goal updated.",
+      "deleted": "Goal deleted.",
+      "activated": "Active plan updated.",
+      "bulkPaused": "Paused the project's goals.",
+      "bulkResumed": "Resumed the project's goals.",
+      "actionError": "Something went wrong. Please try again."
     },
     "create": {
       "title": "Create a goal",
