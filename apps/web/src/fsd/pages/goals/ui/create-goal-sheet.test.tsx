@@ -1,0 +1,211 @@
+import { useEffect, useState } from "react"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { fireEvent, render, screen } from "@testing-library/react"
+
+// Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
+// pages/lookup/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
+// directly below, so it only needs to handle a synchronous value and a resolving promise.
+vi.mock("dexie-react-hooks", () => ({
+  useLiveQuery: (
+    querier: () => unknown,
+    deps: unknown[] = [],
+    defaultResult?: unknown
+  ) => {
+    const [value, setValue] = useState<unknown>(defaultResult)
+    useEffect(() => {
+      const result = querier()
+      if (result instanceof Promise) {
+        let active = true
+        void result.then((resolved) => {
+          if (active) setValue(resolved)
+        })
+        return () => {
+          active = false
+        }
+      }
+      setValue(result)
+      return undefined
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, deps)
+    return value
+  },
+}))
+
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: { defaultValue?: string }) =>
+      opts?.defaultValue ?? key,
+  }),
+}))
+
+const account = { homeAccountId: "acc-1", username: "test@example.com" }
+
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({
+    accounts: [account],
+    instance: { getActiveAccount: () => account },
+  }),
+  useIsAuthenticated: () => false,
+}))
+
+const characters = new Map([
+  [
+    "hero1",
+    {
+      id: "hero1",
+      name: "Hero One",
+      faction: "Ultramarines",
+      rankUpUpgrades: [
+        { rank: "Stone1", upgradeIds: ["h1"] },
+        { rank: "Stone2", upgradeIds: ["h2"] },
+      ],
+    },
+  ],
+])
+
+const upgrades = [
+  {
+    id: "h1",
+    label: "Health Base",
+    rarity: "Common",
+    stat: "Health",
+    craftable: false,
+    recipe: [],
+    farmLocations: [],
+  },
+  {
+    id: "h2",
+    label: "Health Two",
+    rarity: "Common",
+    stat: "Health",
+    craftable: false,
+    recipe: [],
+    farmLocations: [],
+  },
+]
+
+vi.mock("@workspace/game-catalog/queries", () => ({
+  getCharactersMap: () => characters,
+  getUpgrades: () => upgrades,
+}))
+
+vi.mock("@workspace/player-data/queries", () => ({
+  getPlayerCharacter: () => Promise.resolve(undefined),
+  getInventoryUpgrades: () => undefined,
+}))
+
+const createGoal = vi.fn()
+const listProjects = vi.fn()
+
+vi.mock("@/entities/goal", () => ({
+  createGoal: (...args: unknown[]) => createGoal(...args),
+}))
+
+vi.mock("@/entities/project", () => ({
+  listProjects: (...args: unknown[]) => listProjects(...args),
+}))
+
+vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
+
+import { CreateGoalSheet } from "./create-goal-sheet"
+
+async function selectCharacter() {
+  fireEvent.click(
+    screen.getByRole("combobox", {
+      name: "goals.create.characterPlaceholder",
+    })
+  )
+  fireEvent.click(await screen.findByText("Hero One"))
+}
+
+describe("CreateGoalSheet", () => {
+  beforeEach(() => {
+    createGoal.mockReset()
+    listProjects.mockReset()
+    listProjects.mockResolvedValue({ projects: [] })
+  })
+
+  it("creates a Rank goal for the selected character and closes on success", async () => {
+    createGoal.mockResolvedValue({ goalId: "goal-1" })
+    const onOpenChange = vi.fn()
+    const onCreated = vi.fn()
+    render(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
+    )
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createGoal).toHaveBeenCalledTimes(1)
+    })
+    const [, , request] = createGoal.mock.calls[0]
+    expect(request).toMatchObject({
+      entityType: "Character",
+      entityId: "hero1",
+      goalType: "Rank",
+      projectId: undefined,
+    })
+    expect(request.config.rank).toMatchObject({ start: 0, end: 1 })
+
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(onCreated).toHaveBeenCalledTimes(1)
+  })
+
+  it("keeps the sheet open and resets the form when 'create another' is checked", async () => {
+    createGoal.mockResolvedValue({ goalId: "goal-1" })
+    const onOpenChange = vi.fn()
+    render(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+    )
+
+    await selectCharacter()
+    fireEvent.click(screen.getByRole("checkbox"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    // Wait for the actual reset (not just the createGoal call) — the mocked call registers
+    // synchronously, before its resolved promise lets handleSubmit's resetForm() run.
+    await vi.waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: "goals.create.characterPlaceholder",
+        })
+      ).toHaveTextContent("goals.create.characterPlaceholder")
+    })
+    expect(createGoal).toHaveBeenCalledTimes(1)
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+  })
+
+  it("shows the ApiError message when creation fails", async () => {
+    createGoal.mockRejectedValue(new Error("boom"))
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-error")).toHaveTextContent(
+        "goals.create.genericError"
+      )
+    })
+  })
+
+  it("submits an Unlock goal with no config target", async () => {
+    createGoal.mockResolvedValue({ goalId: "goal-1" })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-select"))
+    fireEvent.click(
+      screen.getByRole("option", { name: "goals.create.goalTypes.Unlock" })
+    )
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createGoal).toHaveBeenCalledTimes(1)
+    })
+    const [, , request] = createGoal.mock.calls[0]
+    expect(request.goalType).toBe("Unlock")
+    expect(request.config).toEqual({})
+  })
+})

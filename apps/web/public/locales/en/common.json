@@ -241,9 +241,55 @@
     "title": "Goals",
     "loadError": "Couldn't load your goals.",
     "retry": "Retry",
+    "createButton": "Create goal",
     "empty": {
       "title": "No goals yet",
-      "description": "Create a goal to start tracking progress toward a character, Machine of War, or upgrade target."
+      "description": "Create a goal to start tracking progress toward a character, Machine of War, or upgrade target.",
+      "createButton": "Create your first goal"
+    },
+    "create": {
+      "title": "Create a goal",
+      "characterLabel": "Character",
+      "characterPlaceholder": "Select a character",
+      "characterEmpty": "No character found.",
+      "goalTypeLabel": "Goal type",
+      "goalTypes": {
+        "Rank": "Rank",
+        "Ascension": "Ascension",
+        "Ability": "Ability",
+        "Unlock": "Unlock",
+        "Shards": "Shards",
+        "Material": "Upgrade material"
+      },
+      "rank": {
+        "start": "From rank",
+        "end": "To rank",
+        "startPointFive": "Half-step at start",
+        "endPointFive": "Half-step at target"
+      },
+      "ascension": {
+        "start": "From progression",
+        "end": "To progression"
+      },
+      "ability": {
+        "activeStart": "Active ability, from level",
+        "activeEnd": "Active ability, to level",
+        "passiveStart": "Passive ability, from level",
+        "passiveEnd": "Passive ability, to level"
+      },
+      "shards": {
+        "count": "Shard target"
+      },
+      "unlockDescription": "This goal is complete once the character is unlocked.",
+      "previewTitle": "Still needed",
+      "previewDisclaimer": "Estimate may change once the goal is created.",
+      "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
+      "projectLabel": "Project",
+      "projectDefault": "Default project",
+      "projectActive": "active",
+      "createAnother": "Create another goal",
+      "submit": "Create goal",
+      "genericError": "Couldn't create the goal. Please try again."
     }
   },
   "language": {

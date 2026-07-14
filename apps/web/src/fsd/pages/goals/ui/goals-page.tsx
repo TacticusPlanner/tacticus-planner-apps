@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -9,22 +10,32 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { useGoals } from "../model/use-goals"
+import { CreateGoalSheet } from "./create-goal-sheet"
 
 /**
- * Goals page: renders one of three states from useGoals' discriminator. There is no creation UI yet —
- * this ships the persisted, unified goal list only (see the V2 Goals plan's phase 1); creation lands in a
- * later phase.
+ * Goals page: renders one of three states from useGoals' discriminator, plus a "Create goal"
+ * trigger (header + empty state) that opens CreateGoalSheet. See the V2 Goals plan's phase 2 —
+ * Characters only, one goal type per creation, no chains yet.
  */
 export function GoalsPage() {
   const { t } = useTranslation()
   const { fetchState, isLoading, retry } = useGoals()
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
 
   return (
     <main
       className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10"
       data-testid="goals-page"
     >
-      <h1 className="text-2xl font-semibold">{t("goals.title")}</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold">{t("goals.title")}</h1>
+        <Button
+          data-testid="goals-page-create-button"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          {t("goals.createButton")}
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="flex flex-col gap-3" data-testid="goals-page-loading">
@@ -51,8 +62,15 @@ export function GoalsPage() {
           <CardHeader>
             <CardTitle>{t("goals.empty.title")}</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
             {t("goals.empty.description")}
+            <Button
+              data-testid="goals-page-empty-create-button"
+              size="sm"
+              onClick={() => setIsCreateOpen(true)}
+            >
+              {t("goals.empty.createButton")}
+            </Button>
           </CardContent>
         </Card>
       ) : null}
@@ -73,6 +91,12 @@ export function GoalsPage() {
           ))}
         </div>
       ) : null}
+
+      <CreateGoalSheet
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onCreated={retry}
+      />
     </main>
   )
 }
