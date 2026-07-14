@@ -71,7 +71,17 @@ const upgrades = [
     stat: "Health",
     craftable: false,
     recipe: [],
-    farmLocations: [],
+    // Farmable at a guaranteed-drop node so the estimate preview (plan §16 phase 4) has something to
+    // compute for the default Stone1 -> Stone2 range selectCharacter() lands on.
+    farmLocations: [
+      {
+        battleId: "B1",
+        guaranteed: true,
+        effectiveRate: null,
+        numerator: null,
+        denominator: null,
+      },
+    ],
   },
   {
     id: "h2",
@@ -84,9 +94,21 @@ const upgrades = [
   },
 ]
 
+const battles = [
+  {
+    id: "B1",
+    campaignGroupId: "CG1",
+    type: "Normal",
+    challenge: false,
+    nodeNumber: 1,
+    energyCost: 10,
+  },
+]
+
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
   getUpgrades: () => upgrades,
+  getCampaignBattles: () => battles,
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
@@ -187,6 +209,16 @@ describe("CreateGoalSheet", () => {
       expect(screen.getByTestId("create-goal-error")).toHaveTextContent(
         "goals.create.genericError"
       )
+    })
+  })
+
+  it("shows an estimated completion date in the preview once the required material is farmable", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-estimate")).toBeInTheDocument()
     })
   })
 

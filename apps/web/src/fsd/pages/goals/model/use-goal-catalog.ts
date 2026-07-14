@@ -2,9 +2,14 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
 import { groupByFaction, type UnitId } from "@workspace/game-domain"
-import { getCharactersMap, getUpgrades } from "@workspace/game-catalog/queries"
+import {
+  getCampaignBattles,
+  getCharactersMap,
+  getUpgrades,
+} from "@workspace/game-catalog/queries"
 
 import {
+  mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup"
@@ -30,6 +35,21 @@ export function useGoalCatalog() {
         (upgrades ?? []).map((u) => [u.id, mapUpgradeStorageToDomain(u)])
       ),
     [upgrades]
+  )
+
+  // Battle economics (energy cost) for the estimation engine (plan §16 phase 4) — mirrors
+  // `pages/lookup/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
+  // page-can't-import-page reason as the rest of this hook.
+  const campaignBattles = useLiveQuery(() => getCampaignBattles(), [])
+  const battlesById = useMemo(
+    () =>
+      new Map(
+        (campaignBattles ?? []).map((b) => [
+          b.id,
+          mapCampaignBattleStorageToDomain(b),
+        ])
+      ),
+    [campaignBattles]
   )
 
   const characterGroups = useMemo(
@@ -68,6 +88,7 @@ export function useGoalCatalog() {
   return {
     charactersById,
     upgradesById,
+    battlesById,
     characterGroups,
     getCharacter,
     getEntityName,

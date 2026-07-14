@@ -125,6 +125,7 @@ export function CreateGoalSheet({
               onRankStartPointFiveChange={form.setRankStartPointFive}
               onRankEndPointFiveChange={form.setRankEndPointFive}
               missingUpgrades={form.missingUpgrades}
+              estimate={form.estimatePreview}
             />
           ) : null}
 

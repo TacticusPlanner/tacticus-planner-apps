@@ -12,6 +12,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import type { EstimateResult } from "../model/estimate/estimate.domain"
 import type { GoalRow } from "../model/types"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import type { useGoalActions } from "../model/use-goal-actions"
@@ -23,12 +24,21 @@ type Props = {
   actions: ReturnType<typeof useGoalActions>
   reorderEnabled: boolean
   onMove?: (goalId: string, direction: "up" | "down") => void
+  /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
+   *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
+  estimates?: ReadonlyMap<string, EstimateResult | null>
 }
 
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
  * responsive split. Reorder (up/down) is only rendered when `reorderEnabled` (single project + Active
  * tab + list view, per the Phase 3 scope notes). */
-export function GoalsList({ rows, actions, reorderEnabled, onMove }: Props) {
+export function GoalsList({
+  rows,
+  actions,
+  reorderEnabled,
+  onMove,
+  estimates,
+}: Props) {
   const isMobile = useIsMobile()
 
   if (rows.length === 0) {
@@ -38,6 +48,7 @@ export function GoalsList({ rows, actions, reorderEnabled, onMove }: Props) {
   return isMobile ? (
     <GoalsMobileCards
       actions={actions}
+      estimates={estimates}
       onMove={onMove}
       reorderEnabled={reorderEnabled}
       rows={rows}
@@ -45,6 +56,7 @@ export function GoalsList({ rows, actions, reorderEnabled, onMove }: Props) {
   ) : (
     <GoalsTable
       actions={actions}
+      estimates={estimates}
       onMove={onMove}
       reorderEnabled={reorderEnabled}
       rows={rows}
@@ -52,7 +64,34 @@ export function GoalsList({ rows, actions, reorderEnabled, onMove }: Props) {
   )
 }
 
-function GoalsTable({ rows, actions, reorderEnabled, onMove }: Props) {
+/** "{{days}}d" for a computed estimate, "—" when there's no entry for this goal (no project
+ * selected, non-Rank goal type, or the farm is blocked/unreachable — plan §16 phase 4 scope notes). */
+function EstimateCell({
+  estimate,
+}: {
+  estimate: EstimateResult | null | undefined
+}) {
+  const { t } = useTranslation()
+  return (
+    <span
+      className="text-muted-foreground"
+      data-testid="goal-row-estimate"
+      title={estimate?.date}
+    >
+      {estimate
+        ? t("goals.estimate.days", { days: estimate.days })
+        : t("goals.estimate.none")}
+    </span>
+  )
+}
+
+function GoalsTable({
+  rows,
+  actions,
+  reorderEnabled,
+  onMove,
+  estimates,
+}: Props) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
 
@@ -63,6 +102,7 @@ function GoalsTable({ rows, actions, reorderEnabled, onMove }: Props) {
           <TableHead>{t("goals.columns.entity")}</TableHead>
           <TableHead>{t("goals.columns.type")}</TableHead>
           <TableHead>{t("goals.columns.status")}</TableHead>
+          <TableHead>{t("goals.columns.estimate")}</TableHead>
           <TableHead className="text-right">
             {t("goals.columns.actions")}
           </TableHead>
@@ -81,6 +121,9 @@ function GoalsTable({ rows, actions, reorderEnabled, onMove }: Props) {
             </TableCell>
             <TableCell>
               <StatusBadge status={row.status} />
+            </TableCell>
+            <TableCell>
+              <EstimateCell estimate={estimates?.get(row.goalId)} />
             </TableCell>
             <TableCell>
               <div className="flex items-center justify-end gap-1">
@@ -122,7 +165,13 @@ function GoalsTable({ rows, actions, reorderEnabled, onMove }: Props) {
   )
 }
 
-function GoalsMobileCards({ rows, actions, reorderEnabled, onMove }: Props) {
+function GoalsMobileCards({
+  rows,
+  actions,
+  reorderEnabled,
+  onMove,
+  estimates,
+}: Props) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
 
@@ -140,9 +189,12 @@ function GoalsMobileCards({ rows, actions, reorderEnabled, onMove }: Props) {
             </span>
             <StatusBadge status={row.status} />
           </div>
-          <Badge className="w-fit" variant="outline">
-            {t(`goals.create.goalTypes.${row.goalType}`)}
-          </Badge>
+          <div className="flex items-center justify-between gap-2">
+            <Badge className="w-fit" variant="outline">
+              {t(`goals.create.goalTypes.${row.goalType}`)}
+            </Badge>
+            <EstimateCell estimate={estimates?.get(row.goalId)} />
+          </div>
           <div className="flex items-center justify-end gap-1">
             {reorderEnabled ? (
               <>

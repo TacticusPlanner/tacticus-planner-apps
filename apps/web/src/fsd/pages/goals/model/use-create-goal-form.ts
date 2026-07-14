@@ -31,6 +31,8 @@ import {
 import { listProjects, type ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
+import { estimateGoal } from "./estimate/estimate"
+import { DAILY_ENERGY } from "./estimate/estimate.domain"
 import { useGoalCatalog } from "./use-goal-catalog"
 import { useGoalPrefill } from "./use-goal-prefill"
 
@@ -54,8 +56,13 @@ export function useCreateGoalForm({
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
 
-  const { charactersById, upgradesById, characterGroups, getCharacter } =
-    useGoalCatalog()
+  const {
+    charactersById,
+    upgradesById,
+    battlesById,
+    characterGroups,
+    getCharacter,
+  } = useGoalCatalog()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
 
   const [characterId, setCharacterId] = useState<UnitId | undefined>(undefined)
@@ -219,6 +226,38 @@ export function useCreateGoalForm({
     upgradesById,
   ])
 
+  // Isolated day-by-day estimate for the same Rank range (plan §9 context (a) — computed on its own,
+  // not inserted into any project's schedule). `null` outside a valid Rank range; otherwise built from
+  // `missingUpgrades` (already required-minus-owned) so the two previews never disagree with each
+  // other, and `estimateGoal` itself reports `days: 0` once nothing is missing.
+  const estimatePreview = useMemo(() => {
+    if (
+      goalType !== "Rank" ||
+      !character ||
+      rankIndex(rankStart) >= rankIndex(rankEnd)
+    ) {
+      return null
+    }
+
+    return estimateGoal({
+      needs: missingUpgrades.map((entry) => ({
+        id: entry.id,
+        count: entry.missing,
+      })),
+      upgradesById,
+      battlesById,
+      dailyEnergy: DAILY_ENERGY,
+    })
+  }, [
+    goalType,
+    character,
+    rankStart,
+    rankEnd,
+    missingUpgrades,
+    upgradesById,
+    battlesById,
+  ])
+
   const canSubmit =
     !!characterId &&
     (goalType !== "Rank" || rankIndex(rankStart) < rankIndex(rankEnd)) &&
@@ -324,6 +363,7 @@ export function useCreateGoalForm({
     status,
     errorMessage,
     missingUpgrades,
+    estimatePreview,
     canSubmit,
     handleSubmit,
   }

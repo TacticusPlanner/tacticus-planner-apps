@@ -261,7 +261,8 @@
       "entity": "Character",
       "type": "Type",
       "status": "Status",
-      "actions": "Actions"
+      "actions": "Actions",
+      "estimate": "Est."
     },
     "status": {
       "Draft": "Draft",
@@ -345,7 +346,12 @@
       "projectActive": "active",
       "createAnother": "Create another goal",
       "submit": "Create goal",
-      "genericError": "Couldn't create the goal. Please try again."
+      "genericError": "Couldn't create the goal. Please try again.",
+      "previewEstimate": "≈ {{days}} days · ready {{date}}"
+    },
+    "estimate": {
+      "none": "—",
+      "days": "{{days}}d"
     }
   },
   "language": {

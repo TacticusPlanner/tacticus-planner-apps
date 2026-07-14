@@ -43,6 +43,7 @@ const characters = new Map([
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
   getUpgrades: () => [],
+  getCampaignBattles: () => [],
 }))
 
 import type { GoalRow } from "../model/types"
@@ -121,5 +122,40 @@ describe("GoalsList", () => {
     expect(
       screen.queryByTestId("goal-row-move-up-goal-1")
     ).not.toBeInTheDocument()
+  })
+
+  it("shows the plan estimate's completion date for a goal with an entry, and the placeholder otherwise", async () => {
+    const estimates = new Map([
+      [
+        "goal-1",
+        { days: 5, date: "2026-01-06", energyTotal: 50, raidsTotal: 5 },
+      ],
+    ])
+    render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates}
+        reorderEnabled={false}
+        rows={rows}
+      />
+    )
+
+    await screen.findByText("Hero One")
+
+    const estimateCells = screen.getAllByTestId("goal-row-estimate")
+    expect(estimateCells[0]).toHaveAttribute("title", "2026-01-06")
+    expect(estimateCells[1]).not.toHaveAttribute("title")
+  })
+
+  it("renders the placeholder for every row when no estimates are given", async () => {
+    render(
+      <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
+    )
+
+    await screen.findByText("Hero One")
+
+    for (const cell of screen.getAllByTestId("goal-row-estimate")) {
+      expect(cell).not.toHaveAttribute("title")
+    }
   })
 })

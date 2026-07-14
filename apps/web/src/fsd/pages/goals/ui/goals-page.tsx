@@ -20,6 +20,7 @@ import {
   reorderedMemberIds,
   useProjectActions,
 } from "../model/use-project-actions"
+import { usePlanEstimate } from "../model/use-plan-estimate"
 import { useProjectGoals } from "../model/use-project-goals"
 import { useProjects } from "../model/use-projects"
 import { CreateGoalSheet } from "./create-goal-sheet"
@@ -47,6 +48,7 @@ export function GoalsPage() {
   const projects = useProjects()
   const goals = useGoals({ archived: tab === "archived" })
   const projectGoals = useProjectGoals(projectId)
+  const planEstimate = usePlanEstimate(projectId, projectGoals.goals)
 
   const refreshCurrentView = () => {
     if (projectId) {
@@ -219,6 +221,7 @@ export function GoalsPage() {
       {rows.length > 0 && view === "list" ? (
         <GoalsList
           actions={goalActions}
+          estimates={planEstimate.results}
           onMove={handleMove}
           reorderEnabled={reorderEnabled}
           rows={rows}
@@ -226,7 +229,11 @@ export function GoalsPage() {
       ) : null}
 
       {rows.length > 0 && view === "grid" ? (
-        <GoalsGrid actions={goalActions} rows={rows} />
+        <GoalsGrid
+          actions={goalActions}
+          estimates={planEstimate.results}
+          rows={rows}
+        />
       ) : null}
 
       <CreateGoalSheet

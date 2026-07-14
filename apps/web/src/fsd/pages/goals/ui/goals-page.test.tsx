@@ -65,6 +65,7 @@ const characters = new Map([
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
   getUpgrades: () => [],
+  getCampaignBattles: () => [],
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({

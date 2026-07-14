@@ -8,8 +8,10 @@ import { rankOrder, type Progression, type Rank } from "@workspace/game-domain"
 import { ProgressionSelect, RankSelect } from "@/shared/ui"
 
 export type MissingUpgrade = { id: string; label: string; missing: number }
+export type EstimatePreview = { days: number; date: string }
 
-/** Target-rank fields + the resource-requirement preview (plan §16 phase 2 — Rank only). */
+/** Target-rank fields + the resource-requirement preview (plan §16 phase 2 — Rank only) + the
+ * isolated day-by-day estimate for that same range (plan §16 phase 4). */
 export function RankGoalFields({
   rankStart,
   rankEnd,
@@ -21,6 +23,7 @@ export function RankGoalFields({
   onRankStartPointFiveChange,
   onRankEndPointFiveChange,
   missingUpgrades,
+  estimate,
 }: {
   rankStart: Rank
   rankEnd: Rank
@@ -32,6 +35,7 @@ export function RankGoalFields({
   onRankStartPointFiveChange: (value: boolean) => void
   onRankEndPointFiveChange: (value: boolean) => void
   missingUpgrades: MissingUpgrade[]
+  estimate: EstimatePreview | null
 }) {
   const { t } = useTranslation()
 
@@ -72,19 +76,31 @@ export function RankGoalFields({
         </Field>
       </div>
 
-      {missingUpgrades.length > 0 ? (
+      {missingUpgrades.length > 0 || estimate ? (
         <div
           className="grid gap-1 rounded-2xl border p-3 text-sm"
           data-testid="create-goal-preview"
         >
-          <p className="font-medium">{t("goals.create.previewTitle")}</p>
-          <ul className="grid gap-0.5 text-muted-foreground">
-            {missingUpgrades.map((entry) => (
-              <li key={entry.id}>
-                {entry.label} × {entry.missing}
-              </li>
-            ))}
-          </ul>
+          {missingUpgrades.length > 0 ? (
+            <>
+              <p className="font-medium">{t("goals.create.previewTitle")}</p>
+              <ul className="grid gap-0.5 text-muted-foreground">
+                {missingUpgrades.map((entry) => (
+                  <li key={entry.id}>
+                    {entry.label} × {entry.missing}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+          {estimate ? (
+            <p className="font-medium" data-testid="create-goal-estimate">
+              {t("goals.create.previewEstimate", {
+                days: estimate.days,
+                date: estimate.date,
+              })}
+            </p>
+          ) : null}
           <p className="text-xs text-muted-foreground">
             {t("goals.create.previewDisclaimer")}
           </p>
