@@ -4,5 +4,6 @@ export {
   getCurrentUser,
   isInteractionRequired,
   requestApiAccess,
+  withAccessToken,
   type CurrentUser,
 } from "./current-user"

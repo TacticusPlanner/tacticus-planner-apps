@@ -1,7 +1,7 @@
 import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 
 import { apiDelete, apiGet, apiPost } from "@/shared/api"
-import { acquireAccessToken } from "@/shared/auth"
+import { withAccessToken } from "@/shared/auth"
 
 // Mirrors the backend's persistence-local GuildRole enum (TacticusPlanner.Persistence.Users.Guilds.GuildRole)
 // serialized by its C# name — not the upstream Tacticus wire spelling (which uses CO_LEADER etc.).
@@ -75,14 +75,4 @@ export async function purgeGuild(
   await withAccessToken(instance, account, (accessToken) =>
     apiDelete("/api/v1/guilds/me", { accessToken })
   )
-}
-
-async function withAccessToken<T>(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  action: (accessToken: string) => Promise<T>
-) {
-  const accessToken = await acquireAccessToken(instance, account)
-
-  return action(accessToken)
 }

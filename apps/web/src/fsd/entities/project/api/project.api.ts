@@ -1,30 +1,13 @@
 import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 
 import { apiGet, apiPost, apiPut } from "@/shared/api"
-import { acquireAccessToken } from "@/shared/auth"
+import { withAccessToken } from "@/shared/auth"
 
-export type ProjectSummary = {
-  projectId: string
-  name: string
-  description: string | null
-  color: string | null
-  status: "Active" | "Paused" | "Archived"
-  isActivePlan: boolean
-  isDefault: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export type CreateProjectRequest = {
-  name: string
-  description?: string | null
-  color?: string | null
-}
-
-export type ProjectGoalEntry = {
-  goalId: string
-  priority: number
-}
+import type {
+  CreateProjectRequest,
+  ProjectGoalEntry,
+  ProjectSummary,
+} from "../model/types"
 
 export function listProjects(
   instance: IPublicClientApplication,
@@ -96,14 +79,4 @@ export function updateProjectGoalsStatus(
       }
     )
   )
-}
-
-async function withAccessToken<T>(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  action: (accessToken: string) => Promise<T>
-) {
-  const accessToken = await acquireAccessToken(instance, account)
-
-  return action(accessToken)
 }
