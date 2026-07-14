@@ -12,6 +12,8 @@ export type GoalRow = {
   goalType: GoalKind
   status: GoalStatus
   priority?: number
+  milestonesTotal: number
+  milestonesCompleted: number
 }
 
 export function goalRowFromSummary(goal: GoalSummary): GoalRow {
@@ -21,6 +23,8 @@ export function goalRowFromSummary(goal: GoalSummary): GoalRow {
     entityId: goal.entityId,
     goalType: goal.goalType,
     status: goal.status,
+    milestonesTotal: goal.milestonesTotal,
+    milestonesCompleted: goal.milestonesCompleted,
   }
 }
 
@@ -32,5 +36,7 @@ export function goalRowFromProjectMember(entry: ProjectGoalSummary): GoalRow {
     goalType: entry.goal.goalType as GoalKind,
     status: entry.goal.status as GoalStatus,
     priority: entry.priority,
+    milestonesTotal: entry.goal.milestonesTotal,
+    milestonesCompleted: entry.goal.milestonesCompleted,
   }
 }

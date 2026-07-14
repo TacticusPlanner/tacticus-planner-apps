@@ -77,6 +77,10 @@ export type GoalSummary = {
   status: GoalStatus
   notes: string | null
   aggregateId: string | null
+  // Lean milestone counts (not the full list — see GoalDetail.milestones for that) so a goals list can
+  // show "M/N" without an N+1 detail fetch per row.
+  milestonesTotal: number
+  milestonesCompleted: number
   createdAt: string
   updatedAt: string
 }
@@ -108,4 +112,20 @@ export type CreateGoalRequest = {
 export type UpdateGoalRequest = {
   notes: string | null
   farmingLocationIds: string[] | null
+}
+
+/** One goal within a combined-creation request (plan §6/§16 phase 5). `dependsOnIndex` holds indices
+ * into the parent request's `goals` array — each must reference a strictly earlier position; the server
+ * resolves them into real goal ids. */
+export type CombinedGoalSpec = {
+  goalType: string
+  config: CreateGoalConfigRequest
+  dependsOnIndex: number[]
+}
+
+export type CreateCombinedGoalsRequest = {
+  entityType: string
+  entityId: string
+  projectId?: string | null
+  goals: CombinedGoalSpec[]
 }

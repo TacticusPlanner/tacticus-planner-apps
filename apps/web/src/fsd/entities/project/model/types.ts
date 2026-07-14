@@ -32,6 +32,8 @@ export type ProjectMemberGoal = {
   status: string
   notes: string | null
   aggregateId: string | null
+  milestonesTotal: number
+  milestonesCompleted: number
   createdAt: string
   updatedAt: string
 }

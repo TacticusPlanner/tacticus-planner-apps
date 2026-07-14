@@ -55,6 +55,14 @@ export function GoalsGrid({ rows, actions, estimates }: Props) {
                 {t(`goals.create.goalTypes.${row.goalType}`)}
               </Badge>
               <StatusBadge status={row.status} />
+              {row.milestonesTotal > 0 ? (
+                <Badge data-testid="goal-row-milestones" variant="secondary">
+                  {t("goals.milestones.count", {
+                    completed: row.milestonesCompleted,
+                    total: row.milestonesTotal,
+                  })}
+                </Badge>
+              ) : null}
               {estimate ? (
                 <Badge
                   data-testid="goal-row-estimate"

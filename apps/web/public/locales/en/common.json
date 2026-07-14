@@ -347,11 +347,19 @@
       "createAnother": "Create another goal",
       "submit": "Create goal",
       "genericError": "Couldn't create the goal. Please try again.",
-      "previewEstimate": "≈ {{days}} days · ready {{date}}"
+      "previewEstimate": "≈ {{days}} days · ready {{date}}",
+      "reviewTitle": "What will be created",
+      "suggestions": {
+        "unlockRequired": "required, this character isn't owned yet",
+        "ascensionRequired": "required to reach the target rank"
+      }
     },
     "estimate": {
       "none": "—",
       "days": "{{days}}d"
+    },
+    "milestones": {
+      "count": "{{completed}}/{{total}} milestones"
     }
   },
   "language": {

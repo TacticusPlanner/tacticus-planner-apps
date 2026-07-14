@@ -45,7 +45,9 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
-  useIsAuthenticated: () => false,
+  // true so useGoalPrefill actually calls getPlayerCharacter (below) — its per-test mocked
+  // resolution is how these tests control whether the selected character reads as locked/owned.
+  useIsAuthenticated: () => true,
 }))
 
 const characters = new Map([
@@ -111,16 +113,19 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignBattles: () => battles,
 }))
 
+const getPlayerCharacter = vi.fn()
+const getInventoryUpgrades = vi.fn()
+
 vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacter: () => Promise.resolve(undefined),
-  getInventoryUpgrades: () => undefined,
+  getPlayerCharacter: (...args: unknown[]) => getPlayerCharacter(...args),
+  getInventoryUpgrades: (...args: unknown[]) => getInventoryUpgrades(...args),
 }))
 
-const createGoal = vi.fn()
+const createCombinedGoals = vi.fn()
 const listProjects = vi.fn()
 
 vi.mock("@/entities/goal", () => ({
-  createGoal: (...args: unknown[]) => createGoal(...args),
+  createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
 }))
 
 vi.mock("@/entities/project", () => ({
@@ -142,13 +147,25 @@ async function selectCharacter() {
 
 describe("CreateGoalSheet", () => {
   beforeEach(() => {
-    createGoal.mockReset()
+    createCombinedGoals.mockReset()
     listProjects.mockReset()
     listProjects.mockResolvedValue({ projects: [] })
+
+    // Owned, nothing applied yet — numerically identical missingUpgrades/estimate math to an
+    // undefined playerCharacter, but not locked, so most tests exercise the plain (no
+    // auto-suggestion) composer path. Locked-character tests override this per test.
+    getPlayerCharacter.mockReset()
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone1",
+      progressionIndex: "Common:None",
+      appliedUpgradeSlots: [],
+    })
+    getInventoryUpgrades.mockReset()
+    getInventoryUpgrades.mockReturnValue(undefined)
   })
 
   it("creates a Rank goal for the selected character and closes on success", async () => {
-    createGoal.mockResolvedValue({ goalId: "goal-1" })
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
     const onOpenChange = vi.fn()
     const onCreated = vi.fn()
     render(
@@ -156,26 +173,38 @@ describe("CreateGoalSheet", () => {
     )
 
     await selectCharacter()
+    // Wait for useGoalPrefill's getPlayerCharacter() to resolve (owned, per the beforeEach mock) —
+    // before it resolves, isLocked reads its pre-resolution default (locked), which would also
+    // include an auto-suggested Unlock in the submission this test isn't testing for.
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-review").querySelectorAll("li")
+      ).toHaveLength(1)
+    })
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
     await vi.waitFor(() => {
-      expect(createGoal).toHaveBeenCalledTimes(1)
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [, , request] = createGoal.mock.calls[0]
+    const [, , request] = createCombinedGoals.mock.calls[0]
     expect(request).toMatchObject({
       entityType: "Character",
       entityId: "hero1",
-      goalType: "Rank",
       projectId: undefined,
     })
-    expect(request.config.rank).toMatchObject({ start: 0, end: 1 })
+    expect(request.goals).toHaveLength(1)
+    expect(request.goals[0]).toMatchObject({
+      goalType: "Rank",
+      dependsOnIndex: [],
+    })
+    expect(request.goals[0].config.rank).toMatchObject({ start: 0, end: 1 })
 
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(onCreated).toHaveBeenCalledTimes(1)
   })
 
   it("keeps the sheet open and resets the form when 'create another' is checked", async () => {
-    createGoal.mockResolvedValue({ goalId: "goal-1" })
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
     const onOpenChange = vi.fn()
     render(
       <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
@@ -185,8 +214,8 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(screen.getByRole("checkbox"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
-    // Wait for the actual reset (not just the createGoal call) — the mocked call registers
-    // synchronously, before its resolved promise lets handleSubmit's resetForm() run.
+    // Wait for the actual reset (not just the createCombinedGoals call) — the mocked call
+    // registers synchronously, before its resolved promise lets handleSubmit's resetForm() run.
     await vi.waitFor(() => {
       expect(
         screen.getByRole("combobox", {
@@ -194,12 +223,12 @@ describe("CreateGoalSheet", () => {
         })
       ).toHaveTextContent("goals.create.characterPlaceholder")
     })
-    expect(createGoal).toHaveBeenCalledTimes(1)
+    expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     expect(onOpenChange).not.toHaveBeenCalledWith(false)
   })
 
   it("shows the ApiError message when creation fails", async () => {
-    createGoal.mockRejectedValue(new Error("boom"))
+    createCombinedGoals.mockRejectedValue(new Error("boom"))
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
@@ -222,22 +251,50 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("submits an Unlock goal with no config target", async () => {
-    createGoal.mockResolvedValue({ goalId: "goal-1" })
+  it("submits only the explicitly toggled types, with no config target for Unlock", async () => {
+    createCombinedGoals.mockResolvedValue({ goals: [] })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    fireEvent.click(screen.getByTestId("create-goal-type-select"))
-    fireEvent.click(
-      screen.getByRole("option", { name: "goals.create.goalTypes.Unlock" })
-    )
+    // Rank is on by default; turn it off and turn Unlock on instead.
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
     await vi.waitFor(() => {
-      expect(createGoal).toHaveBeenCalledTimes(1)
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [, , request] = createGoal.mock.calls[0]
-    expect(request.goalType).toBe("Unlock")
-    expect(request.config).toEqual({})
+    const [, , request] = createCombinedGoals.mock.calls[0]
+    expect(request.goals).toEqual([
+      { goalType: "Unlock", config: {}, dependsOnIndex: [] },
+    ])
+  })
+
+  it("auto-suggests and includes Unlock for a locked character, with Rank depending on it, and lists it in the review", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined)
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const review = await screen.findByTestId("create-goal-review")
+    expect(review).toHaveTextContent("goals.create.goalTypes.Unlock")
+    expect(review).toHaveTextContent("goals.create.suggestions.unlockRequired")
+
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [, , request] = createCombinedGoals.mock.calls[0]
+    expect(request.goals).toHaveLength(2)
+    expect(request.goals[0]).toMatchObject({
+      goalType: "Unlock",
+      dependsOnIndex: [],
+    })
+    expect(request.goals[1]).toMatchObject({
+      goalType: "Rank",
+      dependsOnIndex: [0],
+    })
   })
 })

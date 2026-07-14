@@ -1,4 +1,5 @@
 export {
+  createCombinedGoals,
   createGoal,
   deleteGoal,
   getGoal,
@@ -8,6 +9,8 @@ export {
 } from "./api/goal.api"
 export type {
   AbilityTarget,
+  CombinedGoalSpec,
+  CreateCombinedGoalsRequest,
   CreateGoalConfigRequest,
   CreateGoalRequest,
   GoalConfig,

@@ -64,6 +64,8 @@ const rows: GoalRow[] = [
     goalType: "Rank",
     status: "Active",
     priority: 10,
+    milestonesTotal: 0,
+    milestonesCompleted: 0,
   },
   {
     goalId: "goal-2",
@@ -72,6 +74,8 @@ const rows: GoalRow[] = [
     goalType: "Rank",
     status: "Active",
     priority: 20,
+    milestonesTotal: 0,
+    milestonesCompleted: 0,
   },
 ]
 
@@ -157,5 +161,23 @@ describe("GoalsList", () => {
     for (const cell of screen.getAllByTestId("goal-row-estimate")) {
       expect(cell).not.toHaveAttribute("title")
     }
+  })
+
+  it("shows a milestones badge only for a row with milestonesTotal > 0", async () => {
+    const rowsWithMilestones: GoalRow[] = [
+      { ...rows[0], milestonesTotal: 4, milestonesCompleted: 1 },
+      rows[1],
+    ]
+    render(
+      <GoalsList
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={rowsWithMilestones}
+      />
+    )
+
+    await screen.findByText("Hero One")
+
+    expect(screen.getAllByTestId("goal-row-milestones")).toHaveLength(1)
   })
 })

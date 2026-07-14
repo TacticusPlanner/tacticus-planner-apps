@@ -17,24 +17,20 @@ import {
 } from "@workspace/game-domain"
 import { getInventoryUpgrades } from "@workspace/player-data/queries"
 
-import {
-  aggregateBaseUpgrades,
-  aggregateOwnedBaseUpgrades,
-  appliedUpgradeIds,
-  rankUpUpgradeIds,
-} from "@/features/rank-lookup"
-import {
-  createGoal,
-  type CreateGoalConfigRequest,
-  type GoalKind,
-} from "@/entities/goal"
+import { createCombinedGoals, type GoalKind } from "@/entities/goal"
 import { listProjects, type ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
 import { estimateGoal } from "./estimate/estimate"
 import { DAILY_ENERGY } from "./estimate/estimate.domain"
+import {
+  buildCombinedGoalSpecs,
+  buildReviewItems,
+  computeMissingUpgrades,
+} from "./goal-spec-builder"
 import { useGoalCatalog } from "./use-goal-catalog"
 import { useGoalPrefill } from "./use-goal-prefill"
+import { useGoalPrerequisites } from "./use-goal-prerequisites"
 
 const DEFAULT_PROJECT_VALUE = "__default__"
 
@@ -66,7 +62,9 @@ export function useCreateGoalForm({
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
 
   const [characterId, setCharacterId] = useState<UnitId | undefined>(undefined)
-  const [goalType, setGoalType] = useState<GoalKind>("Rank")
+  const [enabledTypes, setEnabledTypes] = useState<ReadonlySet<GoalKind>>(
+    () => new Set<GoalKind>(["Rank"])
+  )
 
   const [rankStart, setRankStart] = useState<Rank>(firstRank)
   const [rankEnd, setRankEnd] = useState<Rank>(rankAt(1))
@@ -135,9 +133,21 @@ export function useCreateGoalForm({
     )
   }, [open, instance, account])
 
+  const toggleType = (kind: GoalKind, enabled: boolean) => {
+    setEnabledTypes((current) => {
+      const next = new Set(current)
+      if (enabled) {
+        next.add(kind)
+      } else {
+        next.delete(kind)
+      }
+      return next
+    })
+  }
+
   const resetForm = () => {
     setCharacterId(undefined)
-    setGoalType("Rank")
+    setEnabledTypes(new Set(["Rank"]))
     setRankStart(firstRank)
     setRankEnd(rankAt(1))
     setRankStartPointFive(false)
@@ -155,7 +165,7 @@ export function useCreateGoalForm({
 
   const handleCharacterChange = (id: UnitId) => {
     setCharacterId(id)
-    setGoalType("Rank")
+    setEnabledTypes(new Set(["Rank"]))
     setRankStart(firstRank)
     setRankEnd(rankAt(1))
     setRankStartPointFive(false)
@@ -172,59 +182,30 @@ export function useCreateGoalForm({
 
   const character = characterId ? getCharacter(characterId) : undefined
 
-  // Resource-requirement preview (Rank goals only, plan §16 phase 2 scope decision — Ascension/
-  // Ability/Shards/Unlock have no analogous "required vs owned" calc reused anywhere yet).
-  const missingUpgrades = useMemo(() => {
-    if (
-      goalType !== "Rank" ||
-      !character ||
-      rankIndex(rankStart) >= rankIndex(rankEnd)
-    ) {
-      return []
-    }
-
-    const requiredIds = rankUpUpgradeIds(
+  // Resource-requirement preview — pure calc in ./goal-spec-builder.ts (this file's max-lines budget).
+  const missingUpgrades = useMemo(
+    () =>
+      computeMissingUpgrades({
+        rankEnabled: enabledTypes.has("Rank"),
+        character,
+        rankStart,
+        rankEnd,
+        rankEndPointFive,
+        playerCharacter,
+        inventoryUpgrades,
+        upgradesById,
+      }),
+    [
+      enabledTypes,
       character,
       rankStart,
       rankEnd,
-      rankEndPointFive
-    )
-    const required = aggregateBaseUpgrades(requiredIds, upgradesById)
-
-    const appliedIds = playerCharacter
-      ? appliedUpgradeIds(
-          character,
-          playerCharacter.rank,
-          playerCharacter.appliedUpgradeSlots
-        )
-      : []
-    const owned = aggregateOwnedBaseUpgrades(
-      appliedIds,
-      (inventoryUpgrades ?? []).map((entry) => ({
-        id: entry.upgradeId,
-        amount: entry.amount,
-      })),
-      upgradesById
-    )
-    const ownedById = new Map(owned.map((entry) => [entry.id, entry.count]))
-
-    return required
-      .map((need) => ({
-        id: need.id,
-        label: upgradesById.get(need.id)?.label ?? need.id,
-        missing: Math.max(0, need.count - (ownedById.get(need.id) ?? 0)),
-      }))
-      .filter((entry) => entry.missing > 0)
-  }, [
-    goalType,
-    character,
-    rankStart,
-    rankEnd,
-    rankEndPointFive,
-    playerCharacter,
-    inventoryUpgrades,
-    upgradesById,
-  ])
+      rankEndPointFive,
+      playerCharacter,
+      inventoryUpgrades,
+      upgradesById,
+    ]
+  )
 
   // Isolated day-by-day estimate for the same Rank range (plan §9 context (a) — computed on its own,
   // not inserted into any project's schedule). `null` outside a valid Rank range; otherwise built from
@@ -232,7 +213,7 @@ export function useCreateGoalForm({
   // other, and `estimateGoal` itself reports `days: 0` once nothing is missing.
   const estimatePreview = useMemo(() => {
     if (
-      goalType !== "Rank" ||
+      !enabledTypes.has("Rank") ||
       !character ||
       rankIndex(rankStart) >= rankIndex(rankEnd)
     ) {
@@ -249,7 +230,7 @@ export function useCreateGoalForm({
       dailyEnergy: DAILY_ENERGY,
     })
   }, [
-    goalType,
+    enabledTypes,
     character,
     rankStart,
     rankEnd,
@@ -258,12 +239,38 @@ export function useCreateGoalForm({
     battlesById,
   ])
 
+  // Combined-creation prerequisite detection (plan §6) — a locked character needs Unlock first; a
+  // Rank target beyond what the character's current Ascension allows needs Ascension first. Reruns
+  // whenever the toggled types or their targets change.
+  const prerequisites = useGoalPrerequisites({
+    isLocked: !!characterId && !playerCharacter,
+    currentProgression: playerCharacter?.progressionIndex,
+    enabledTypes,
+    rankEnd,
+  })
+
+  // Whether Unlock will actually be submitted — either the user toggled it explicitly, or it's
+  // required as a prerequisite for another enabled type on a locked character.
+  const includesUnlock = enabledTypes.has("Unlock") || prerequisites.needsUnlock
+  // Whether Ascension will actually be submitted — either explicit, or the auto-suggested one.
+  const includesAscension =
+    enabledTypes.has("Ascension") || !!prerequisites.needsAscension
+
+  // "What will be created" review list (plan §7) — in submit order, flagging entries the user didn't
+  // explicitly toggle themselves. Pure builder in ./goal-spec-builder.ts (this file's own max-lines
+  // budget) — same for the submit-time spec list below.
+  const reviewItems = useMemo(
+    () => buildReviewItems(enabledTypes, includesUnlock, includesAscension),
+    [enabledTypes, includesUnlock, includesAscension]
+  )
+
   const canSubmit =
     !!characterId &&
-    (goalType !== "Rank" || rankIndex(rankStart) < rankIndex(rankEnd)) &&
-    (goalType !== "Ascension" ||
+    enabledTypes.size > 0 &&
+    (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
+    (!enabledTypes.has("Ascension") ||
       progressionIndex(progressionStart) < progressionIndex(progressionEnd)) &&
-    (goalType !== "Shards" || shardsCount > 0)
+    (!enabledTypes.has("Shards") || shardsCount > 0)
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -274,36 +281,28 @@ export function useCreateGoalForm({
     setStatus("submitting")
     setErrorMessage(null)
 
-    const config: CreateGoalConfigRequest = {}
-    if (goalType === "Rank") {
-      config.rank = {
-        start: rankIndex(rankStart),
-        startPointFive: rankStartPointFive,
-        startAppliedUpgrades: 0,
-        end: rankIndex(rankEnd),
-        endPointFive: rankEndPointFive,
-        endAppliedUpgrades: 0,
-      }
-    } else if (goalType === "Ascension") {
-      config.progression = { start: progressionStart, end: progressionEnd }
-    } else if (goalType === "Ability") {
-      config.ability = {
-        activeStart: abilityActiveStart,
-        activeEnd: abilityActiveEnd,
-        passiveStart: abilityPassiveStart,
-        passiveEnd: abilityPassiveEnd,
-      }
-    } else if (goalType === "Shards") {
-      config.shards = { count: shardsCount }
-    }
-
     try {
-      await createGoal(instance, account, {
+      await createCombinedGoals(instance, account, {
         entityType: "Character",
         entityId: characterId,
-        goalType,
-        config,
         projectId: projectId === DEFAULT_PROJECT_VALUE ? undefined : projectId,
+        goals: buildCombinedGoalSpecs({
+          enabledTypes,
+          includesUnlock,
+          includesAscension,
+          ascensionSuggestion: prerequisites.needsAscension,
+          rankStart,
+          rankEnd,
+          rankStartPointFive,
+          rankEndPointFive,
+          progressionStart,
+          progressionEnd,
+          abilityActiveStart,
+          abilityActiveEnd,
+          abilityPassiveStart,
+          abilityPassiveEnd,
+          shardsCount,
+        }),
       })
 
       if (createAnother) {
@@ -329,8 +328,10 @@ export function useCreateGoalForm({
     characterGroups,
     characterId,
     handleCharacterChange,
-    goalType,
-    setGoalType,
+    enabledTypes,
+    toggleType,
+    prerequisites,
+    reviewItems,
     rankStart,
     setRankStart,
     rankEnd,

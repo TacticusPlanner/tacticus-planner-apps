@@ -1,0 +1,213 @@
+import type { Progression, Rank, UpgradeId } from "@workspace/game-domain"
+import { rankIndex } from "@workspace/game-domain"
+
+import {
+  aggregateBaseUpgrades,
+  aggregateOwnedBaseUpgrades,
+  appliedUpgradeIds,
+  rankUpUpgradeIds,
+  type Character,
+  type UpgradeWithFarmLocations,
+} from "@/features/rank-lookup"
+import type { CombinedGoalSpec, GoalKind } from "@/entities/goal"
+
+// Pure helpers behind the combined-creation composer (plan §6/§7) — split out of
+// `use-create-goal-form.ts` purely to keep that file under this repo's max-lines rule; all plain
+// functions (no hooks), so they're directly unit-testable without rendering anything.
+
+// Deliberately not reusing goal-type-fields.tsx's own `MissingUpgrade` type name (id: string) to
+// avoid two same-named-but-different exported types — this one's `id` stays branded `UpgradeId`,
+// which is structurally assignable to that string-keyed prop type at the call site.
+export type MissingUpgradeEntry = {
+  id: UpgradeId
+  label: string
+  missing: number
+}
+
+/** Resource-requirement preview (Rank goals only, plan §16 phase 2 scope decision — Ascension/
+ * Ability/Shards/Unlock have no analogous "required vs owned" calc reused anywhere yet): the base
+ * upgrades still needed for `rankStart` -> `rankEnd`, net of what's already applied/owned. `[]`
+ * when Rank isn't enabled or the range is empty/invalid. */
+export function computeMissingUpgrades(params: {
+  rankEnabled: boolean
+  character: Character | undefined
+  rankStart: Rank
+  rankEnd: Rank
+  rankEndPointFive: boolean
+  playerCharacter:
+    { rank: Rank; appliedUpgradeSlots: readonly number[] } | undefined
+  inventoryUpgrades:
+    readonly { upgradeId: UpgradeId; amount: number }[] | undefined
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+}): MissingUpgradeEntry[] {
+  const {
+    rankEnabled,
+    character,
+    rankStart,
+    rankEnd,
+    rankEndPointFive,
+    playerCharacter,
+    upgradesById,
+  } = params
+  if (
+    !rankEnabled ||
+    !character ||
+    rankIndex(rankStart) >= rankIndex(rankEnd)
+  ) {
+    return []
+  }
+
+  const requiredIds = rankUpUpgradeIds(
+    character,
+    rankStart,
+    rankEnd,
+    rankEndPointFive
+  )
+  const required = aggregateBaseUpgrades(requiredIds, upgradesById)
+
+  const appliedIds = playerCharacter
+    ? appliedUpgradeIds(
+        character,
+        playerCharacter.rank,
+        playerCharacter.appliedUpgradeSlots
+      )
+    : []
+  const owned = aggregateOwnedBaseUpgrades(
+    appliedIds,
+    (params.inventoryUpgrades ?? []).map((entry) => ({
+      id: entry.upgradeId,
+      amount: entry.amount,
+    })),
+    upgradesById
+  )
+  const ownedById = new Map(owned.map((entry) => [entry.id, entry.count]))
+
+  return required
+    .map((need) => ({
+      id: need.id,
+      label: upgradesById.get(need.id)?.label ?? need.id,
+      missing: Math.max(0, need.count - (ownedById.get(need.id) ?? 0)),
+    }))
+    .filter((entry) => entry.missing > 0)
+}
+
+export type ReviewItem = { goalType: GoalKind; autoSuggested: boolean }
+
+/** "What will be created" review list, in submit order, flagging entries the user didn't
+ * explicitly toggle themselves (auto-included via `useGoalPrerequisites`'s suggestions). */
+export function buildReviewItems(
+  enabledTypes: ReadonlySet<GoalKind>,
+  includesUnlock: boolean,
+  includesAscension: boolean
+): ReviewItem[] {
+  const items: ReviewItem[] = []
+  if (includesUnlock) {
+    items.push({
+      goalType: "Unlock",
+      autoSuggested: !enabledTypes.has("Unlock"),
+    })
+  }
+  if (includesAscension) {
+    items.push({
+      goalType: "Ascension",
+      autoSuggested: !enabledTypes.has("Ascension"),
+    })
+  }
+  for (const kind of ["Rank", "Ability", "Shards"] as const) {
+    if (enabledTypes.has(kind)) {
+      items.push({ goalType: kind, autoSuggested: false })
+    }
+  }
+  return items
+}
+
+/**
+ * The ordered spec list to submit (plan §6): Unlock -> Ascension -> Rank -> Ability -> Shards.
+ * Rank/Ability depend on whichever of Unlock/Ascension precede them; Ascension depends on Unlock
+ * alone; Shards depends on nothing (it's how a character *gets* unlocked, not something gated by
+ * it). `ascensionSuggestion` is `useGoalPrerequisites`'s auto-suggested target, used only when
+ * Ascension itself wasn't explicitly toggled.
+ */
+export function buildCombinedGoalSpecs(params: {
+  enabledTypes: ReadonlySet<GoalKind>
+  includesUnlock: boolean
+  includesAscension: boolean
+  ascensionSuggestion: { start: Progression; end: Progression } | null
+  rankStart: Rank
+  rankEnd: Rank
+  rankStartPointFive: boolean
+  rankEndPointFive: boolean
+  progressionStart: Progression
+  progressionEnd: Progression
+  abilityActiveStart: number
+  abilityActiveEnd: number
+  abilityPassiveStart: number
+  abilityPassiveEnd: number
+  shardsCount: number
+}): CombinedGoalSpec[] {
+  const { enabledTypes, includesUnlock, includesAscension } = params
+  const specs: CombinedGoalSpec[] = []
+  let unlockIndex: number | null = null
+  let ascensionIndex: number | null = null
+
+  if (includesUnlock) {
+    specs.push({ goalType: "Unlock", config: {}, dependsOnIndex: [] })
+    unlockIndex = specs.length - 1
+  }
+
+  if (includesAscension) {
+    const ascension = enabledTypes.has("Ascension")
+      ? { start: params.progressionStart, end: params.progressionEnd }
+      : params.ascensionSuggestion!
+    specs.push({
+      goalType: "Ascension",
+      config: { progression: ascension },
+      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+    })
+    ascensionIndex = specs.length - 1
+  }
+
+  if (enabledTypes.has("Rank")) {
+    specs.push({
+      goalType: "Rank",
+      config: {
+        rank: {
+          start: rankIndex(params.rankStart),
+          startPointFive: params.rankStartPointFive,
+          startAppliedUpgrades: 0,
+          end: rankIndex(params.rankEnd),
+          endPointFive: params.rankEndPointFive,
+          endAppliedUpgrades: 0,
+        },
+      },
+      dependsOnIndex: [unlockIndex, ascensionIndex].filter(
+        (index): index is number => index !== null
+      ),
+    })
+  }
+
+  if (enabledTypes.has("Ability")) {
+    specs.push({
+      goalType: "Ability",
+      config: {
+        ability: {
+          activeStart: params.abilityActiveStart,
+          activeEnd: params.abilityActiveEnd,
+          passiveStart: params.abilityPassiveStart,
+          passiveEnd: params.abilityPassiveEnd,
+        },
+      },
+      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+    })
+  }
+
+  if (enabledTypes.has("Shards")) {
+    specs.push({
+      goalType: "Shards",
+      config: { shards: { count: params.shardsCount } },
+      dependsOnIndex: [],
+    })
+  }
+
+  return specs
+}

@@ -85,6 +85,23 @@ function EstimateCell({
   )
 }
 
+/** "M/N milestones" badge when a Rank goal has milestone breakpoints (plan §16 phase 5) — absent
+ * entirely for goals with no milestones (non-Rank goals, or ones created before this phase). */
+function MilestonesBadge({ row }: { row: GoalRow }) {
+  const { t } = useTranslation()
+  if (row.milestonesTotal <= 0) {
+    return null
+  }
+  return (
+    <Badge data-testid="goal-row-milestones" variant="secondary">
+      {t("goals.milestones.count", {
+        completed: row.milestonesCompleted,
+        total: row.milestonesTotal,
+      })}
+    </Badge>
+  )
+}
+
 function GoalsTable({
   rows,
   actions,
@@ -115,9 +132,12 @@ function GoalsTable({
               {getEntityName(row.entityType, row.entityId)}
             </TableCell>
             <TableCell>
-              <Badge variant="outline">
-                {t(`goals.create.goalTypes.${row.goalType}`)}
-              </Badge>
+              <div className="flex items-center gap-1">
+                <Badge variant="outline">
+                  {t(`goals.create.goalTypes.${row.goalType}`)}
+                </Badge>
+                <MilestonesBadge row={row} />
+              </div>
             </TableCell>
             <TableCell>
               <StatusBadge status={row.status} />
@@ -190,9 +210,12 @@ function GoalsMobileCards({
             <StatusBadge status={row.status} />
           </div>
           <div className="flex items-center justify-between gap-2">
-            <Badge className="w-fit" variant="outline">
-              {t(`goals.create.goalTypes.${row.goalType}`)}
-            </Badge>
+            <div className="flex items-center gap-1">
+              <Badge className="w-fit" variant="outline">
+                {t(`goals.create.goalTypes.${row.goalType}`)}
+              </Badge>
+              <MilestonesBadge row={row} />
+            </div>
             <EstimateCell estimate={estimates?.get(row.goalId)} />
           </div>
           <div className="flex items-center justify-end gap-1">

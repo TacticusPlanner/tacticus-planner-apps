@@ -4,6 +4,7 @@ import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
 import { withAccessToken } from "@/shared/auth"
 
 import type {
+  CreateCombinedGoalsRequest,
   CreateGoalRequest,
   GoalDetail,
   GoalStatus,
@@ -41,6 +42,21 @@ export function createGoal(
 ) {
   return withAccessToken(instance, account, (accessToken) =>
     apiPost<GoalDetail>("/api/v1/me/goals", { accessToken, body: request })
+  )
+}
+
+/** Creates several linked goals for one entity in one call (plan §6, combined creation) — a shared
+ * aggregateId and dependsOn edges resolved from each spec's dependsOnIndex. See `CreateCombinedGoalsRequest`. */
+export function createCombinedGoals(
+  instance: IPublicClientApplication,
+  account: AccountInfo,
+  request: CreateCombinedGoalsRequest
+) {
+  return withAccessToken(instance, account, (accessToken) =>
+    apiPost<{ goals: GoalDetail[] }>("/api/v1/me/goals/combined", {
+      accessToken,
+      body: request,
+    })
   )
 }
 
