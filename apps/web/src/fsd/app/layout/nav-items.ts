@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { Home, LayoutGrid, Search, Users } from "lucide-react"
+import { Home, LayoutGrid, ListTodo, Search, Users } from "lucide-react"
 
 import { isUiKitEnabled } from "@/shared/config"
 
@@ -29,6 +29,13 @@ export const navItems: NavItem[] = [
     icon: Search,
     anonymousAllowed: true,
     mobilePlacement: "menu",
+  },
+  {
+    path: "/goals",
+    labelKey: "nav.createGoal",
+    icon: ListTodo,
+    anonymousAllowed: false,
+    mobilePlacement: "primary",
   },
   {
     path: "/guild",

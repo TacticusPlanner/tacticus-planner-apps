@@ -29,6 +29,18 @@ export async function acquireAccessToken(
   return authentication.accessToken
 }
 
+// Shared by every entities/*/api module (goal, project, guild, ...): acquire a token once, then run the
+// actual apiGet/apiPost/... call with it.
+export async function withAccessToken<T>(
+  instance: IPublicClientApplication,
+  account: AccountInfo,
+  action: (accessToken: string) => Promise<T>
+) {
+  const accessToken = await acquireAccessToken(instance, account)
+
+  return action(accessToken)
+}
+
 export async function getCurrentUser(
   instance: IPublicClientApplication,
   account: AccountInfo,
