@@ -152,7 +152,7 @@ describe("estimateGoal", () => {
       dailyEnergy: 10,
       referenceDate: REFERENCE_DATE,
     })
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       days: 3,
       date: "2026-01-04",
       energyTotal: 30,
@@ -169,7 +169,12 @@ describe("estimateGoal", () => {
         dailyEnergy: 10,
         referenceDate: REFERENCE_DATE,
       })
-    ).toEqual({ days: 0, date: "2026-01-01", energyTotal: 0, raidsTotal: 0 })
+    ).toMatchObject({
+      days: 0,
+      date: "2026-01-01",
+      energyTotal: 0,
+      raidsTotal: 0,
+    })
   })
 
   it("returns null for a material with no farm location", () => {
@@ -181,7 +186,7 @@ describe("estimateGoal", () => {
         dailyEnergy: 10,
         referenceDate: REFERENCE_DATE,
       })
-    ).toBeNull()
+    ).toMatchObject({ status: "Blocked", reason: "NoFarmLocation" })
   })
 
   it("returns null (MAX_DAYS guard) when the daily budget can never afford the node", () => {
@@ -193,7 +198,7 @@ describe("estimateGoal", () => {
         dailyEnergy: 5,
         referenceDate: REFERENCE_DATE,
       })
-    ).toBeNull()
+    ).toMatchObject({ status: "Blocked", reason: "InsufficientDailyEnergy" })
   })
 
   it("honors farmingLocationIds even when a cheaper node exists elsewhere", () => {
@@ -219,7 +224,7 @@ describe("estimateGoal", () => {
       farmingLocationIds: ["B1"],
       referenceDate: REFERENCE_DATE,
     })
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       days: 1,
       date: "2026-01-02",
       energyTotal: 10,
@@ -264,14 +269,14 @@ describe("estimatePlan", () => {
     })
 
     // priority 1 consumes all 5 owned copies -> already satisfied, days: 0
-    expect(results.get("high-priority")).toEqual({
+    expect(results.get("high-priority")).toMatchObject({
       days: 0,
       date: "2026-01-01",
       energyTotal: 0,
       raidsTotal: 0,
     })
     // priority 2 gets none of the shared inventory -> must farm all 5 (1/day at this budget)
-    expect(results.get("low-priority")).toEqual({
+    expect(results.get("low-priority")).toMatchObject({
       days: 5,
       date: "2026-01-06",
       energyTotal: 50,
@@ -318,7 +323,10 @@ describe("estimatePlan", () => {
       referenceDate: REFERENCE_DATE,
     })
 
-    expect(results.get("blocked")).toBeNull()
+    expect(results.get("blocked")).toMatchObject({
+      status: "Blocked",
+      reason: "NoFarmLocation",
+    })
   })
 
   it("farms pooled materials independently of goal priority for TotalMaterials", () => {
@@ -414,7 +422,7 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
       referenceDate: REFERENCE_DATE,
     })
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       days: 3,
       date: "2026-01-04",
       energyTotal: 30,

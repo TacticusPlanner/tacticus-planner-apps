@@ -8,6 +8,7 @@ import type {
   ProjectGoalEntry,
   ProjectGoalSummary,
   ProjectSummary,
+  UpdateProjectRequest,
 } from "../model/types"
 
 export function listProjects(
@@ -30,6 +31,20 @@ export function createProject(
 ) {
   return withAccessToken(instance, account, (accessToken) =>
     apiPost<ProjectSummary>("/api/v1/me/projects", {
+      accessToken,
+      body: request,
+    })
+  )
+}
+
+export function updateProject(
+  instance: IPublicClientApplication,
+  account: AccountInfo,
+  projectId: string,
+  request: UpdateProjectRequest
+) {
+  return withAccessToken(instance, account, (accessToken) =>
+    apiPut<ProjectSummary>(`/api/v1/me/projects/${projectId}`, {
       accessToken,
       body: request,
     })

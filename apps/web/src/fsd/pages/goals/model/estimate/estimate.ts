@@ -3,13 +3,14 @@ import type { BattleId } from "@workspace/game-domain"
 import type {
   Battle,
   EstimateResourceId,
-  EstimateResult,
+  EstimateOutcome,
   EstimateUpgrade,
   FarmLocation,
   FarmNode,
   GoalNeed,
   MaterialNeed,
 } from "./estimate.domain"
+import { blocked, unavailableReason } from "./estimate-blocked"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
@@ -162,25 +163,45 @@ export function estimateGoal({
   dailyEnergy: number
   farmingLocationIds?: readonly string[] | null
   referenceDate?: Date
-}): EstimateResult | null {
+}): EstimateOutcome {
   const remaining = new Map<EstimateResourceId, number>()
   const nodesById = new Map<EstimateResourceId, FarmNode[]>()
 
   for (const need of needs) {
     if (need.count <= 0) continue
+    const unavailable = unavailableReason(
+      need,
+      upgradesById,
+      battlesById,
+      farmingLocationIds,
+      dailyEnergy
+    )
+    if (unavailable) return blocked(unavailable, [need.id])
     const nodes = selectFarmNodes(
       need,
       upgradesById,
       battlesById,
       farmingLocationIds
     )
-    if (nodes.length === 0) return null
+    if (nodes.length === 0) {
+      return blocked(
+        unavailableReason(
+          need,
+          upgradesById,
+          battlesById,
+          farmingLocationIds,
+          dailyEnergy
+        ) ?? "NoFarmLocation",
+        [need.id]
+      )
+    }
     remaining.set(need.id, need.count)
     nodesById.set(need.id, nodes)
   }
 
   if (remaining.size === 0) {
     return {
+      status: "Estimated",
       days: 0,
       date: formatDate(referenceDate),
       energyTotal: 0,
@@ -204,8 +225,9 @@ export function estimateGoal({
   }
 
   return remaining.size > 0
-    ? null
+    ? blocked("SimulationLimit", [...remaining.keys()])
     : {
+        status: "Estimated",
         days,
         date: formatDate(addDays(referenceDate, days)),
         energyTotal,
@@ -238,7 +260,7 @@ export function estimatePlan({
   inventory: MaterialNeed[]
   ordering?: "GoalPriority" | "TotalMaterials"
   referenceDate?: Date
-}): Map<string, EstimateResult | null> {
+}): Map<string, EstimateOutcome> {
   const ordered = [...goals].sort((a, b) => a.priority - b.priority)
 
   // Step 1: higher-priority goals consume shared inventory first; only the leftover need continues
@@ -248,12 +270,12 @@ export function estimatePlan({
   )
   const remainingByGoal = new Map<string, Map<EstimateResourceId, number>>()
   const nodesByGoal = new Map<string, Map<EstimateResourceId, FarmNode[]>>()
-  const results = new Map<string, EstimateResult | null>()
+  const results = new Map<string, EstimateOutcome>()
 
   for (const goal of ordered) {
     const remaining = new Map<EstimateResourceId, number>()
     const nodesById = new Map<EstimateResourceId, FarmNode[]>()
-    let unreachable = false
+    let blockedOutcome: EstimateOutcome | null = null
 
     for (const need of goal.needs) {
       const available = held.get(need.id) ?? 0
@@ -263,6 +285,18 @@ export function estimatePlan({
       const stillNeeded = need.count - consumed
       if (stillNeeded <= 0) continue
 
+      const unavailable = unavailableReason(
+        need,
+        upgradesById,
+        battlesById,
+        goal.farmingLocationIds,
+        dailyEnergy
+      )
+      if (unavailable) {
+        blockedOutcome = blocked(unavailable, [need.id])
+        break
+      }
+
       const nodes = selectFarmNodes(
         { id: need.id, count: stillNeeded },
         upgradesById,
@@ -270,19 +304,29 @@ export function estimatePlan({
         goal.farmingLocationIds
       )
       if (nodes.length === 0) {
-        unreachable = true
+        blockedOutcome = blocked(
+          unavailableReason(
+            need,
+            upgradesById,
+            battlesById,
+            goal.farmingLocationIds,
+            dailyEnergy
+          ) ?? "NoFarmLocation",
+          [need.id]
+        )
         break
       }
       remaining.set(need.id, stillNeeded)
       nodesById.set(need.id, nodes)
     }
 
-    if (unreachable) {
-      results.set(goal.goalId, null)
+    if (blockedOutcome) {
+      results.set(goal.goalId, blockedOutcome)
       continue
     }
     if (remaining.size === 0) {
       results.set(goal.goalId, {
+        status: "Estimated",
         days: 0,
         date: formatDate(referenceDate),
         energyTotal: 0,
@@ -344,6 +388,7 @@ export function estimatePlan({
 
       if (remaining.size === 0) {
         results.set(goal.goalId, {
+          status: "Estimated",
           days,
           date: formatDate(addDays(referenceDate, days)),
           energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
@@ -355,7 +400,12 @@ export function estimatePlan({
   }
 
   for (const goalId of pending) {
-    results.set(goalId, null)
+    results.set(
+      goalId,
+      blocked("SimulationLimit", [
+        ...(remainingByGoal.get(goalId)?.keys() ?? []),
+      ])
+    )
   }
 
   return results
@@ -372,10 +422,10 @@ function estimatePooledPlan({
   ordered: GoalNeed[]
   remainingByGoal: Map<string, Map<EstimateResourceId, number>>
   nodesByGoal: Map<string, Map<EstimateResourceId, FarmNode[]>>
-  results: Map<string, EstimateResult | null>
+  results: Map<string, EstimateOutcome>
   dailyEnergy: number
   referenceDate: Date
-}): Map<string, EstimateResult | null> {
+}): Map<string, EstimateOutcome> {
   const totals = new Map<EstimateResourceId, number>()
   const pooledNodes = new Map<EstimateResourceId, FarmNode[]>()
   for (const goal of ordered) {
@@ -424,6 +474,7 @@ function estimatePooledPlan({
         acquired -= applied
         if (remaining.size === 0) {
           results.set(goal.goalId, {
+            status: "Estimated",
             days,
             date: formatDate(addDays(referenceDate, days)),
             energyTotal,
@@ -436,6 +487,13 @@ function estimatePooledPlan({
     }
   }
 
-  for (const goalId of pending) results.set(goalId, null)
+  for (const goalId of pending) {
+    results.set(
+      goalId,
+      blocked("SimulationLimit", [
+        ...(remainingByGoal.get(goalId)?.keys() ?? []),
+      ])
+    )
+  }
   return results
 }

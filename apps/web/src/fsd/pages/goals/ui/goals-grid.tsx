@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -7,7 +8,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import type { EstimateResult } from "../model/estimate/estimate.domain"
+import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 import type { GoalRow } from "../model/types"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import type { useGoalActions } from "../model/use-goal-actions"
@@ -18,12 +19,18 @@ type Props = {
   rows: GoalRow[]
   actions: ReturnType<typeof useGoalActions>
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — see `GoalsList`'s prop doc. */
-  estimates?: ReadonlyMap<string, EstimateResult | null>
+  estimates?: ReadonlyMap<string, EstimateOutcome>
+  onView?: (goalId: string) => void
 }
 
 /** Card-grid view of the same rows `GoalsList` renders. No reorder here — reorder is list-view only
  * (Phase 3 scope notes). */
-export function GoalsGrid({ rows, actions, estimates }: Props) {
+export function GoalsGrid({
+  rows,
+  actions,
+  estimates,
+  onView = () => undefined,
+}: Props) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
 
@@ -42,7 +49,13 @@ export function GoalsGrid({ rows, actions, estimates }: Props) {
           <Card data-testid="goal-row" key={row.goalId}>
             <CardHeader className="flex flex-row items-start justify-between gap-2">
               <CardTitle className="text-base">
-                {getEntityName(row.entityType, row.entityId)}
+                <Button
+                  className="h-auto p-0 text-base"
+                  onClick={() => onView(row.goalId)}
+                  variant="link"
+                >
+                  {getEntityName(row.entityType, row.entityId)}
+                </Button>
               </CardTitle>
               <GoalRowActions
                 actions={actions}
@@ -50,26 +63,52 @@ export function GoalsGrid({ rows, actions, estimates }: Props) {
                 status={row.status}
               />
             </CardHeader>
-            <CardContent className="flex items-center gap-2">
+            <CardContent className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">
                 {t(`goals.create.goalTypes.${row.goalType}`)}
               </Badge>
               <StatusBadge status={row.status} />
               {row.milestonesTotal > 0 ? (
-                <Badge data-testid="goal-row-milestones" variant="secondary">
-                  {t("goals.milestones.count", {
-                    completed: row.milestonesCompleted,
-                    total: row.milestonesTotal,
-                  })}
-                </Badge>
+                <Button
+                  className="h-auto p-0"
+                  onClick={() => onView(row.goalId)}
+                  variant="ghost"
+                >
+                  <Badge data-testid="goal-row-milestones" variant="secondary">
+                    {t("goals.milestones.count", {
+                      completed: row.milestonesCompleted,
+                      total: row.milestonesTotal,
+                    })}
+                  </Badge>
+                </Button>
               ) : null}
-              {estimate ? (
+              {row.notes ? (
+                <p
+                  className="w-full truncate text-sm text-muted-foreground"
+                  title={row.notes}
+                >
+                  {row.notes}
+                </p>
+              ) : row.goalType === "Unlock" ? (
+                <p className="w-full text-sm text-muted-foreground">
+                  {t("goals.unlockFlavor")}
+                </p>
+              ) : null}
+              {estimate && estimate.status !== "Blocked" ? (
                 <Badge
                   data-testid="goal-row-estimate"
                   title={estimate.date}
                   variant="secondary"
                 >
                   {t("goals.estimate.days", { days: estimate.days })}
+                </Badge>
+              ) : estimate?.status === "Blocked" ? (
+                <Badge
+                  data-testid="goal-row-estimate-blocked"
+                  title={t(`goals.estimate.blocked.${estimate.reason}`)}
+                  variant="outline"
+                >
+                  {t("goals.estimate.blockedLabel")}
                 </Badge>
               ) : null}
             </CardContent>

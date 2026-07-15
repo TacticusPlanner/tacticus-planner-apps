@@ -309,7 +309,11 @@ describe("CreateGoalSheet", () => {
     })
     const [, , request] = createCombinedGoals.mock.calls[0]
     expect(request.goals).toEqual([
-      { goalType: "Unlock", config: {}, dependsOnIndex: [] },
+      expect.objectContaining({
+        goalType: "Unlock",
+        config: {},
+        dependsOnIndex: [],
+      }),
     ])
   })
 

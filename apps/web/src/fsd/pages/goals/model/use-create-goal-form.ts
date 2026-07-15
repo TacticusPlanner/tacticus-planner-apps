@@ -28,6 +28,9 @@ import { buildCombinedGoalSpecs, buildReviewItems } from "./goal-spec-builder"
 import { useGoalCatalog } from "./use-goal-catalog"
 import { useGoalPrefill } from "./use-goal-prefill"
 import { useGoalPrerequisites } from "./use-goal-prerequisites"
+import { mowAbilityTrackLevel } from "./mow-ability-calc"
+import { buildCreateGoalSnapshot } from "./goal-snapshot-builder"
+import { getGoalValidationIssue } from "./goal-validation"
 
 const DEFAULT_PROJECT_VALUE = "__default__"
 
@@ -145,6 +148,12 @@ export function useCreateGoalForm({
         ? current
         : playerEntity.progressionIndex
     )
+    const activeLevel = playerEntity.abilities?.[0]?.level ?? 1
+    const passiveLevel = playerEntity.abilities?.[1]?.level ?? 1
+    setAbilityActiveStart(activeLevel)
+    setAbilityActiveEnd(activeLevel + 1)
+    setAbilityPassiveStart(passiveLevel)
+    setAbilityPassiveEnd(passiveLevel)
   }, [entityId, playerEntity, playerCharacter])
 
   useEffect(() => {
@@ -220,7 +229,7 @@ export function useCreateGoalForm({
 
   // Resource-requirement preview + isolated day-by-day estimate (plan §9 context (a)) — pure calc in
   // ./goal-preview.ts, kept out of this file for its max-lines budget.
-  const { missingUpgrades, estimatePreview } = useMemo(
+  const { missingUpgrades, snapshotUpgrades, estimatePreview } = useMemo(
     () =>
       computeCreationPreview({
         entityType,
@@ -288,9 +297,37 @@ export function useCreateGoalForm({
     [enabledTypes, includesUnlock, includesAscension]
   )
 
+  const currentActiveAbility =
+    entityType === "Mow"
+      ? mowAbilityTrackLevel(playerMow, "primary")
+      : (playerCharacter?.abilities?.[0]?.level ?? 1)
+  const currentPassiveAbility =
+    entityType === "Mow"
+      ? mowAbilityTrackLevel(playerMow, "secondary")
+      : (playerCharacter?.abilities?.[1]?.level ?? 1)
+  const validationIssue = getGoalValidationIssue({
+    hasEntityId: !!entityId,
+    enabledTypes,
+    isOwned: !!playerEntity,
+    currentRank: playerCharacter?.rank,
+    rankEnd,
+    currentProgression: playerEntity?.progressionIndex,
+    progressionEnd,
+    abilityActiveStart,
+    abilityActiveEnd,
+    abilityPassiveStart,
+    abilityPassiveEnd,
+    currentActiveAbility,
+    currentPassiveAbility,
+  })
+  const validationMessage = validationIssue
+    ? t(`goals.create.validation.${validationIssue}`)
+    : null
+
   const canSubmit =
     !!entityId &&
     enabledTypes.size > 0 &&
+    !validationMessage &&
     (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
     (!enabledTypes.has("Ascension") ||
       progressionIndex(progressionStart) < progressionIndex(progressionEnd)) &&
@@ -306,27 +343,40 @@ export function useCreateGoalForm({
     setErrorMessage(null)
 
     try {
+      const specs = buildCombinedGoalSpecs({
+        enabledTypes,
+        includesUnlock,
+        includesAscension,
+        ascensionSuggestion: prerequisites.needsAscension,
+        rankStart,
+        rankEnd,
+        rankStartPointFive,
+        rankEndPointFive,
+        progressionStart,
+        progressionEnd,
+        abilityActiveStart,
+        abilityActiveEnd,
+        abilityPassiveStart,
+        abilityPassiveEnd,
+        shardsCount,
+      })
       await createCombinedGoals(instance, account, {
         entityType,
         entityId,
         projectId: projectId === DEFAULT_PROJECT_VALUE ? undefined : projectId,
-        goals: buildCombinedGoalSpecs({
-          enabledTypes,
-          includesUnlock,
-          includesAscension,
-          ascensionSuggestion: prerequisites.needsAscension,
-          rankStart,
-          rankEnd,
-          rankStartPointFive,
-          rankEndPointFive,
-          progressionStart,
-          progressionEnd,
-          abilityActiveStart,
-          abilityActiveEnd,
-          abilityPassiveStart,
-          abilityPassiveEnd,
-          shardsCount,
-        }),
+        goals: specs.map((spec) => ({
+          ...spec,
+          snapshot: buildCreateGoalSnapshot({
+            spec,
+            entityType,
+            playerEntity,
+            playerCharacter,
+            currentActiveAbility,
+            currentPassiveAbility,
+            missingUpgrades: snapshotUpgrades,
+            estimatePreview,
+          }),
+        })),
       })
 
       if (createAnother) {
@@ -393,6 +443,7 @@ export function useCreateGoalForm({
     errorMessage,
     missingUpgrades,
     estimatePreview,
+    validationMessage,
     canSubmit,
     handleSubmit,
   }

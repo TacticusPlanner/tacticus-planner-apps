@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp, LockKeyhole } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -12,7 +12,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import type { EstimateResult } from "../model/estimate/estimate.domain"
+import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 import type { GoalRow } from "../model/types"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import type { useGoalActions } from "../model/use-goal-actions"
@@ -24,9 +24,10 @@ type Props = {
   actions: ReturnType<typeof useGoalActions>
   reorderEnabled: boolean
   onMove?: (goalId: string, direction: "up" | "down") => void
+  onView?: (goalId: string) => void
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
    *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
-  estimates?: ReadonlyMap<string, EstimateResult | null>
+  estimates?: ReadonlyMap<string, EstimateOutcome>
 }
 
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
@@ -37,6 +38,7 @@ export function GoalsList({
   actions,
   reorderEnabled,
   onMove,
+  onView = () => undefined,
   estimates,
 }: Props) {
   const isMobile = useIsMobile()
@@ -50,6 +52,7 @@ export function GoalsList({
       actions={actions}
       estimates={estimates}
       onMove={onMove}
+      onView={onView}
       reorderEnabled={reorderEnabled}
       rows={rows}
     />
@@ -58,6 +61,7 @@ export function GoalsList({
       actions={actions}
       estimates={estimates}
       onMove={onMove}
+      onView={onView}
       reorderEnabled={reorderEnabled}
       rows={rows}
     />
@@ -66,12 +70,20 @@ export function GoalsList({
 
 /** "{{days}}d" for a computed estimate, "—" when there's no entry for this goal (no project
  * selected, non-Rank goal type, or the farm is blocked/unreachable — plan §16 phase 4 scope notes). */
-function EstimateCell({
-  estimate,
-}: {
-  estimate: EstimateResult | null | undefined
-}) {
+function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
   const { t } = useTranslation()
+  if (estimate?.status === "Blocked") {
+    return (
+      <span
+        className="inline-flex items-center gap-1 text-amber-700"
+        data-testid="goal-row-estimate-blocked"
+        title={t(`goals.estimate.blocked.${estimate.reason}`)}
+      >
+        <LockKeyhole className="size-3.5" />
+        {t("goals.estimate.blockedLabel")}
+      </span>
+    )
+  }
   return (
     <span
       className="text-muted-foreground"
@@ -87,18 +99,30 @@ function EstimateCell({
 
 /** "M/N milestones" badge when a Rank goal has milestone breakpoints (plan §16 phase 5) — absent
  * entirely for goals with no milestones (non-Rank goals, or ones created before this phase). */
-function MilestonesBadge({ row }: { row: GoalRow }) {
+function MilestonesBadge({
+  row,
+  onView,
+}: {
+  row: GoalRow
+  onView: (goalId: string) => void
+}) {
   const { t } = useTranslation()
   if (row.milestonesTotal <= 0) {
     return null
   }
   return (
-    <Badge data-testid="goal-row-milestones" variant="secondary">
-      {t("goals.milestones.count", {
-        completed: row.milestonesCompleted,
-        total: row.milestonesTotal,
-      })}
-    </Badge>
+    <Button
+      className="h-auto p-0"
+      onClick={() => onView(row.goalId)}
+      variant="ghost"
+    >
+      <Badge data-testid="goal-row-milestones" variant="secondary">
+        {t("goals.milestones.count", {
+          completed: row.milestonesCompleted,
+          total: row.milestonesTotal,
+        })}
+      </Badge>
+    </Button>
   )
 }
 
@@ -108,6 +132,7 @@ function GoalsTable({
   reorderEnabled,
   onMove,
   estimates,
+  onView = () => undefined,
 }: Props) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -129,14 +154,32 @@ function GoalsTable({
         {rows.map((row, index) => (
           <TableRow data-testid="goal-row" key={row.goalId}>
             <TableCell className="font-medium">
-              {getEntityName(row.entityType, row.entityId)}
+              <Button
+                className="h-auto p-0 font-medium"
+                onClick={() => onView(row.goalId)}
+                variant="link"
+              >
+                {getEntityName(row.entityType, row.entityId)}
+              </Button>
+              {row.notes ? (
+                <p
+                  className="max-w-64 truncate text-xs font-normal text-muted-foreground"
+                  title={row.notes}
+                >
+                  {row.notes}
+                </p>
+              ) : row.goalType === "Unlock" ? (
+                <p className="text-xs font-normal text-muted-foreground">
+                  {t("goals.unlockFlavor")}
+                </p>
+              ) : null}
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-1">
                 <Badge variant="outline">
                   {t(`goals.create.goalTypes.${row.goalType}`)}
                 </Badge>
-                <MilestonesBadge row={row} />
+                <MilestonesBadge onView={onView} row={row} />
               </div>
             </TableCell>
             <TableCell>
@@ -191,6 +234,7 @@ function GoalsMobileCards({
   reorderEnabled,
   onMove,
   estimates,
+  onView = () => undefined,
 }: Props) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -204,9 +248,13 @@ function GoalsMobileCards({
           key={row.goalId}
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium">
+            <Button
+              className="h-auto p-0 font-medium"
+              onClick={() => onView(row.goalId)}
+              variant="link"
+            >
               {getEntityName(row.entityType, row.entityId)}
-            </span>
+            </Button>
             <StatusBadge status={row.status} />
           </div>
           <div className="flex items-center justify-between gap-2">
@@ -214,10 +262,17 @@ function GoalsMobileCards({
               <Badge className="w-fit" variant="outline">
                 {t(`goals.create.goalTypes.${row.goalType}`)}
               </Badge>
-              <MilestonesBadge row={row} />
+              <MilestonesBadge onView={onView} row={row} />
             </div>
             <EstimateCell estimate={estimates?.get(row.goalId)} />
           </div>
+          {row.notes ? (
+            <p className="truncate text-muted-foreground" title={row.notes}>
+              {row.notes}
+            </p>
+          ) : row.goalType === "Unlock" ? (
+            <p className="text-muted-foreground">{t("goals.unlockFlavor")}</p>
+          ) : null}
           <div className="flex items-center justify-end gap-1">
             {reorderEnabled ? (
               <>

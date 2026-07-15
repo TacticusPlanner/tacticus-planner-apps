@@ -22,6 +22,8 @@ export type MissingUpgradeEntry = {
   id: UpgradeId
   label: string
   missing: number
+  required: number
+  inventoryContribution: number
 }
 
 /** Resource-requirement preview (Rank goals only, plan §16 phase 2 scope decision — Ascension/
@@ -39,6 +41,7 @@ export function computeMissingUpgrades(params: {
   inventoryUpgrades:
     readonly { upgradeId: UpgradeId; amount: number }[] | undefined
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  includeCovered?: boolean
 }): MissingUpgradeEntry[] {
   const {
     rankEnabled,
@@ -83,12 +86,17 @@ export function computeMissingUpgrades(params: {
   const ownedById = new Map(owned.map((entry) => [entry.id, entry.count]))
 
   return required
-    .map((need) => ({
-      id: need.id,
-      label: upgradesById.get(need.id)?.label ?? need.id,
-      missing: Math.max(0, need.count - (ownedById.get(need.id) ?? 0)),
-    }))
-    .filter((entry) => entry.missing > 0)
+    .map((need) => {
+      const contribution = Math.min(need.count, ownedById.get(need.id) ?? 0)
+      return {
+        id: need.id,
+        label: upgradesById.get(need.id)?.label ?? need.id,
+        missing: need.count - contribution,
+        required: need.count,
+        inventoryContribution: contribution,
+      }
+    })
+    .filter((entry) => params.includeCovered || entry.missing > 0)
 }
 
 export type ReviewItem = { goalType: GoalKind; autoSuggested: boolean }

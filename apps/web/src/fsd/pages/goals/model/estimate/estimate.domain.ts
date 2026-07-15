@@ -52,7 +52,8 @@ export interface GoalNeed {
   farmingLocationIds?: readonly string[] | null
 }
 
-export interface EstimateResult {
+interface EstimateResult {
+  status?: "Estimated"
   /** Days of farming until every material need is met. */
   days: number
   /** ISO `yyyy-mm-dd` completion date, `days` after the estimate's reference date. */
@@ -60,5 +61,24 @@ export interface EstimateResult {
   energyTotal: number
   raidsTotal: number
 }
+
+export type EstimateBlockedReason =
+  | "NoFarmLocation"
+  | "FarmingOverrideUnavailable"
+  | "InsufficientDailyEnergy"
+  | "SimulationLimit"
+  | "UnsupportedCost"
+
+interface EstimateBlocked {
+  status: "Blocked"
+  reason: EstimateBlockedReason
+  resourceIds: EstimateResourceId[]
+  days?: never
+  date?: never
+  energyTotal?: never
+  raidsTotal?: never
+}
+
+export type EstimateOutcome = EstimateResult | EstimateBlocked
 
 export type { Battle, FarmLocation }

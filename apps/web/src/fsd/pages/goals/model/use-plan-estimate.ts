@@ -10,6 +10,7 @@ import {
 import {
   getInventoryUpgrades,
   getPlayerCharacter,
+  getPlayerMow,
 } from "@workspace/player-data/queries"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
@@ -27,11 +28,12 @@ import { usePlanningSettings } from "@/entities/planning-setting"
 
 import { estimatePlan } from "./estimate/estimate"
 import {
-  type EstimateResult,
+  type EstimateOutcome,
   type GoalNeed,
   type MaterialNeed,
 } from "./estimate/estimate.domain"
 import { useGoalCatalog } from "./use-goal-catalog"
+import { abilityResourceNeed } from "./plan-insights-need"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
@@ -40,10 +42,10 @@ type FetchState =
   | {
       status: "success"
       key: string
-      results: Map<string, EstimateResult | null>
+      results: Map<string, EstimateOutcome>
     }
 
-const EMPTY_RESULTS: ReadonlyMap<string, EstimateResult | null> = new Map()
+const EMPTY_RESULTS: ReadonlyMap<string, EstimateOutcome> = new Map()
 
 /**
  * Priority-shared plan estimate for a project's Rank-goal members (plan §9 context (b) / §5's
@@ -59,22 +61,24 @@ export function usePlanEstimate(
 ) {
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
-  const { getCharacter, upgradesById, battlesById } = useGoalCatalog()
+  const { getCharacter, getMow, upgradesById, battlesById } = useGoalCatalog()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
 
-  const rankMembers = members.filter(
-    (member) => member.goal.goalType === "Rank"
+  const estimatedMembers = members.filter(
+    (member) =>
+      member.goal.goalType === "Rank" ||
+      (member.goal.goalType === "Ability" && member.goal.entityType === "Mow")
   )
   // Cheap, stable dependency key for the effect below — re-fetch only when the project's Rank
   // membership or ordering actually changes, not on every parent render, and (tagged onto the
   // result below) to detect a still-in-flight query for a *previous* key.
-  const memberKey = rankMembers
+  const memberKey = estimatedMembers
     .map((member) => `${member.goal.goalId}:${member.priority}`)
     .join(",")
-  const hasQuery = Boolean(projectId && account && rankMembers.length > 0)
+  const hasQuery = Boolean(projectId && account && estimatedMembers.length > 0)
 
   useEffect(() => {
     if (!hasQuery || !account) {
@@ -84,13 +88,24 @@ export function usePlanEstimate(
     let active = true
 
     void Promise.all(
-      rankMembers.map((member) =>
+      estimatedMembers.map((member) =>
         getGoal(instance, account, member.goal.goalId)
       )
     )
       .then(async (details) => {
         const characterIds = [
-          ...new Set(details.map((detail) => detail.entityId)),
+          ...new Set(
+            details
+              .filter((detail) => detail.entityType === "Character")
+              .map((detail) => detail.entityId)
+          ),
+        ]
+        const mowIds = [
+          ...new Set(
+            details
+              .filter((detail) => detail.entityType === "Mow")
+              .map((detail) => detail.entityId)
+          ),
         ]
         const playerCharacterEntries = await Promise.all(
           characterIds.map((id) =>
@@ -99,9 +114,20 @@ export function usePlanEstimate(
             )
           )
         )
-        return { details, playerCharacterById: new Map(playerCharacterEntries) }
+        const playerMowEntries = await Promise.all(
+          mowIds.map((id) =>
+            getPlayerMow(unitIdSchema.parse(id) as UnitId).then(
+              (data) => [id, data] as const
+            )
+          )
+        )
+        return {
+          details,
+          playerCharacterById: new Map(playerCharacterEntries),
+          playerMowById: new Map(playerMowEntries),
+        }
       })
-      .then(({ details, playerCharacterById }) => {
+      .then(({ details, playerCharacterById, playerMowById }) => {
         if (!active) return
 
         const inventory: MaterialNeed[] = (inventoryUpgrades ?? []).map(
@@ -109,18 +135,54 @@ export function usePlanEstimate(
         )
 
         const priorityByGoalId = new Map(
-          rankMembers.map((member) => [member.goal.goalId, member.priority])
+          estimatedMembers.map((member) => [
+            member.goal.goalId,
+            member.priority,
+          ])
         )
-        const goals = details
-          .map((detail) =>
-            toGoalNeed(
+        const coverageByEntity = new Map<
+          string,
+          { primary: Set<number>; secondary: Set<number> }
+        >()
+        const goals = [...details]
+          .sort(
+            (a, b) =>
+              (priorityByGoalId.get(a.goalId) ?? 0) -
+              (priorityByGoalId.get(b.goalId) ?? 0)
+          )
+          .map((detail) => {
+            const priority = priorityByGoalId.get(detail.goalId)
+            if (priority === undefined) return null
+            if (detail.entityType === "Mow" && detail.goalType === "Ability") {
+              const coverage = coverageByEntity.get(detail.entityId) ?? {
+                primary: new Set<number>(),
+                secondary: new Set<number>(),
+              }
+              coverageByEntity.set(detail.entityId, coverage)
+              const needs = abilityResourceNeed({
+                detail,
+                mow: getMow(detail.entityId as UnitId),
+                playerMow: playerMowById.get(detail.entityId),
+                upgradesById,
+                coveredTransitions: coverage,
+              })
+              return needs
+                ? {
+                    goalId: detail.goalId,
+                    priority,
+                    needs,
+                    farmingLocationIds: detail.config.farmingLocationIds,
+                  }
+                : null
+            }
+            return toGoalNeed(
               detail,
               priorityByGoalId,
               playerCharacterById,
               getCharacter,
               upgradesById
             )
-          )
+          })
           .filter((need): need is GoalNeed => need !== null)
 
         const results = estimatePlan({

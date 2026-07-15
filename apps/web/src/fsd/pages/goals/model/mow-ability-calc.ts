@@ -38,6 +38,28 @@ export function mowAbilityUpgradeIds(
   return recipes.slice(levelStart - 1, levelEnd - 1).flat()
 }
 
+/** Returns only level-transition recipes not already assigned to a higher-priority goal and marks
+ * newly claimed transitions in `covered`. Transition keys are their source level. */
+export function uncoveredMowAbilityUpgradeIds(
+  recipes: readonly UpgradeId[][],
+  levelStart: number,
+  levelEnd: number,
+  currentLevel: number,
+  covered: Set<number>
+): UpgradeId[] {
+  const result: UpgradeId[] = []
+  for (
+    let level = Math.max(levelStart, currentLevel);
+    level < levelEnd;
+    level++
+  ) {
+    if (covered.has(level)) continue
+    covered.add(level)
+    result.push(...mowAbilityUpgradeIds(recipes, level, level + 1))
+  }
+  return result
+}
+
 /**
  * The player's current level for one ability track. The MoW catalog carries no id linking
  * `primaryAbility`/`secondaryAbility` to a synced `abilities[].abilityId` (those are Tacticus's own
@@ -77,6 +99,7 @@ export function computeMowMissingUpgrades(params: {
   inventoryUpgrades:
     readonly { upgradeId: UpgradeId; amount: number }[] | undefined
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  includeCovered?: boolean
 }): MissingUpgradeEntry[] {
   const { abilityEnabled, mow, playerMow, upgradesById } = params
   if (!abilityEnabled || !mow) {
@@ -120,10 +143,15 @@ export function computeMowMissingUpgrades(params: {
   const ownedById = new Map(owned.map((entry) => [entry.id, entry.count]))
 
   return required
-    .map((need) => ({
-      id: need.id,
-      label: upgradesById.get(need.id)?.label ?? need.id,
-      missing: Math.max(0, need.count - (ownedById.get(need.id) ?? 0)),
-    }))
-    .filter((entry) => entry.missing > 0)
+    .map((need) => {
+      const contribution = Math.min(need.count, ownedById.get(need.id) ?? 0)
+      return {
+        id: need.id,
+        label: upgradesById.get(need.id)?.label ?? need.id,
+        missing: need.count - contribution,
+        required: need.count,
+        inventoryContribution: contribution,
+      }
+    })
+    .filter((entry) => params.includeCovered || entry.missing > 0)
 }

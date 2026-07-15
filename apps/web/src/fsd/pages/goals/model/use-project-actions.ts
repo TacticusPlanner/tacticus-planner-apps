@@ -6,9 +6,12 @@ import { useMsal } from "@azure/msal-react"
 
 import {
   activateProject,
+  createProject,
+  updateProject,
   updateProjectGoals,
   updateProjectGoalsStatus,
   type ProjectGoalSummary,
+  type ProjectSummary,
 } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
@@ -73,6 +76,9 @@ export function useProjectActions(onChanged: () => void) {
       onChanged()
       return true
     } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        onChanged()
+      }
       toast.error(
         error instanceof ApiError
           ? error.message
@@ -130,5 +136,33 @@ export function useProjectActions(onChanged: () => void) {
     )
   }
 
-  return { activate, bulkStatus, reorder, pending }
+  const create = async (
+    name: string,
+    description: string | null,
+    color: string | null
+  ) => {
+    if (!account) return false
+    const ok = await run(() =>
+      createProject(instance, account, { name, description, color })
+    )
+    if (ok) toast.success(t("goals.toasts.projectCreated"))
+    return ok
+  }
+
+  const save = async (
+    project: ProjectSummary,
+    changes: Pick<ProjectSummary, "name" | "description" | "color" | "status">
+  ) => {
+    if (!account) return false
+    const ok = await run(() =>
+      updateProject(instance, account, project.projectId, {
+        ...changes,
+        revision: project.revision,
+      })
+    )
+    if (ok) toast.success(t("goals.toasts.projectUpdated"))
+    return ok
+  }
+
+  return { activate, bulkStatus, reorder, create, save, pending }
 }

@@ -328,7 +328,18 @@
       "setActive": "Set as active plan",
       "active": "active",
       "pauseAll": "Pause all",
-      "resumeAll": "Resume all"
+      "resumeAll": "Resume all",
+      "manage": "Manage projects",
+      "manageTitle": "Manage projects",
+      "manageDescription": "Create, rename, archive, or restore planning projects.",
+      "newProject": "New project",
+      "name": "Name",
+      "description": "Description",
+      "color": "Color",
+      "archive": "Archive project",
+      "restore": "Restore project",
+      "save": "Save project",
+      "create": "Create project"
     },
     "toasts": {
       "statusChanged": "Goal updated.",
@@ -336,7 +347,9 @@
       "activated": "Active plan updated.",
       "bulkPaused": "Paused the project's goals.",
       "bulkResumed": "Resumed the project's goals.",
-      "actionError": "Something went wrong. Please try again."
+      "actionError": "Something went wrong. Please try again.",
+      "projectCreated": "Project created.",
+      "projectUpdated": "Project updated."
     },
     "create": {
       "title": "Create a goal",
@@ -393,14 +406,62 @@
       "suggestions": {
         "unlockRequired": "required, this character isn't owned yet",
         "ascensionRequired": "required to reach the target rank"
+      },
+      "validation": {
+        "alreadyUnlocked": "This character is already unlocked.",
+        "rankAlreadyReached": "The selected rank has already been reached.",
+        "progressionAlreadyReached": "The selected progression has already been reached.",
+        "abilityRange": "At least one ability must increase and neither range may decrease.",
+        "abilityAlreadyReached": "The selected ability levels have already been reached."
       }
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}}d"
+      "days": "{{days}}d",
+      "blockedLabel": "Blocked",
+      "blocked": {
+        "NoFarmLocation": "No accessible farming location provides a required resource.",
+        "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
+        "InsufficientDailyEnergy": "Daily energy is below the cost of the cheapest usable node.",
+        "SimulationLimit": "The goal could not complete within the planning horizon.",
+        "UnsupportedCost": "Detailed costing is not supported for this goal."
+      }
     },
     "milestones": {
       "count": "{{completed}}/{{total}} milestones"
+    },
+    "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
+    "filters": {
+      "search": "Search goals",
+      "allTypes": "All goal types",
+      "groupByType": "Group by type",
+      "sort": {
+        "priority": "Priority",
+        "entity": "Character",
+        "type": "Goal type",
+        "status": "Status",
+        "estimate": "Estimate",
+        "updated": "Recently updated"
+      }
+    },
+    "detail": {
+      "title": "Goal details",
+      "loadError": "Couldn't load this goal.",
+      "saveError": "Couldn't save this goal.",
+      "save": "Save changes",
+      "estimateTitle": "Estimate comparison",
+      "originalEstimate": "Original",
+      "currentEstimate": "Current",
+      "originalResources": "Original requirement: {{count}} items · {{energy}} energy · {{raids}} raids",
+      "unavailable": "Unavailable",
+      "milestonesTitle": "Milestones",
+      "dependenciesTitle": "Dependencies",
+      "historyTitle": "History",
+      "notes": "Notes",
+      "farmingTitle": "Farming locations",
+      "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
+      "farmingInvalid": "Each required resource must be available from at least one selected node.",
+      "none": "None"
     },
     "insights": {
       "title": "Insights",

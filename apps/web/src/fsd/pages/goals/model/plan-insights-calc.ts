@@ -59,6 +59,10 @@ function goalResourceNeed(params: {
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
+  coveredAbilityTransitions?: {
+    primary: Set<number>
+    secondary: Set<number>
+  }
 }): ResourceNeed | null {
   const { detail, upgradesById } = params
   const isMow = detail.entityType === "Mow"
@@ -81,6 +85,7 @@ function goalResourceNeed(params: {
       mow: params.mow,
       playerMow: params.playerMow,
       upgradesById,
+      coveredTransitions: params.coveredAbilityTransitions,
     })
     return materials
       ? { materials, shardId: null, shards: 0, mythicShards: 0, orbsByType: {} }
@@ -158,6 +163,10 @@ export function computePlanInsights(params: {
     EstimateUpgrade & { rarity: Rarity }
   >()
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
+  const abilityCoverageByEntity = new Map<
+    string,
+    { primary: Set<number>; secondary: Set<number> }
+  >()
 
   const addProvenance = (id: EstimateResourceId, goalId: string) => {
     const set = provenance.get(id) ?? new Set<string>()
@@ -165,8 +174,18 @@ export function computePlanInsights(params: {
     provenance.set(id, set)
   }
 
-  for (const detail of params.details) {
+  const orderedDetails = [...params.details].sort(
+    (left, right) =>
+      (params.priorityByGoalId.get(left.goalId) ?? Number.MAX_SAFE_INTEGER) -
+      (params.priorityByGoalId.get(right.goalId) ?? Number.MAX_SAFE_INTEGER)
+  )
+  for (const detail of orderedDetails) {
     const entityId = detail.entityId as UnitId
+    const coverage = abilityCoverageByEntity.get(detail.entityId) ?? {
+      primary: new Set<number>(),
+      secondary: new Set<number>(),
+    }
+    abilityCoverageByEntity.set(detail.entityId, coverage)
     const need = goalResourceNeed({
       detail,
       character: params.getCharacter(entityId),
@@ -178,6 +197,7 @@ export function computePlanInsights(params: {
       upgradesById: params.upgradesById,
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
+      coveredAbilityTransitions: coverage,
     })
     if (!need) continue
 
@@ -252,7 +272,7 @@ export function computePlanInsights(params: {
   let anyUnreachable = false
   for (const goal of goalNeeds) {
     const result = estimateResults.get(goal.goalId)
-    if (!result) {
+    if (!result || result.status === "Blocked") {
       anyUnreachable = true
       continue
     }

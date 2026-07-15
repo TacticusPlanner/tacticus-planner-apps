@@ -17,7 +17,10 @@ import type { GoalDetail } from "@/entities/goal"
 
 import type { EstimateResourceId } from "./estimate/estimate.domain"
 import type { MaterialNeed } from "./estimate/estimate.domain"
-import { computeMowMissingUpgrades } from "./mow-ability-calc"
+import {
+  mowAbilityTrackLevel,
+  uncoveredMowAbilityUpgradeIds,
+} from "./mow-ability-calc"
 
 // Rank/Ability raw material need-derivation for the Insights plan-wide aggregation
 // (plan-insights-calc.ts) — split out purely for that file's max-lines budget.
@@ -96,22 +99,50 @@ export function abilityResourceNeed(params: {
   mow: MowStorageModel | undefined
   playerMow: PlayerMow | undefined
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  coveredTransitions?: {
+    primary: Set<number>
+    secondary: Set<number>
+  }
 }): MaterialNeed[] | null {
   const abilityTarget = params.detail.config.ability
   if (!abilityTarget || !params.mow) return null
 
-  const entries = computeMowMissingUpgrades({
-    abilityEnabled: true,
-    mow: params.mow,
-    playerMow: params.playerMow,
-    activeStart: abilityTarget.activeStart,
-    activeEnd: abilityTarget.activeEnd,
-    passiveStart: abilityTarget.passiveStart,
-    passiveEnd: abilityTarget.passiveEnd,
-    inventoryUpgrades: [],
-    upgradesById: params.upgradesById,
-  })
-  if (entries.length === 0) return null
-
-  return entries.map((entry) => ({ id: entry.id, count: entry.missing }))
+  const covered = params.coveredTransitions ?? {
+    primary: new Set<number>(),
+    secondary: new Set<number>(),
+  }
+  const requiredIds: UpgradeId[] = []
+  const appendUncovered = (
+    track: "primary" | "secondary",
+    recipes: readonly UpgradeId[][],
+    start: number,
+    end: number
+  ) => {
+    const current = mowAbilityTrackLevel(params.playerMow, track)
+    requiredIds.push(
+      ...uncoveredMowAbilityUpgradeIds(
+        recipes,
+        start,
+        end,
+        current,
+        covered[track]
+      )
+    )
+  }
+  appendUncovered(
+    "primary",
+    params.mow.primaryAbility.recipes,
+    abilityTarget.activeStart,
+    abilityTarget.activeEnd
+  )
+  appendUncovered(
+    "secondary",
+    params.mow.secondaryAbility.recipes,
+    abilityTarget.passiveStart,
+    abilityTarget.passiveEnd
+  )
+  if (requiredIds.length === 0) return null
+  return aggregateBaseUpgrades(requiredIds, params.upgradesById).map(
+    (entry) => ({ id: entry.id, count: entry.count })
+  )
 }

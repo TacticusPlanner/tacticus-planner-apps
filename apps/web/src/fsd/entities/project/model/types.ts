@@ -6,6 +6,7 @@ export type ProjectSummary = {
   status: "Active" | "Paused" | "Archived"
   isActivePlan: boolean
   isDefault: boolean
+  revision: number
   createdAt: string
   updatedAt: string
 }
@@ -14,6 +15,14 @@ export type CreateProjectRequest = {
   name: string
   description?: string | null
   color?: string | null
+}
+
+export type UpdateProjectRequest = {
+  name: string
+  description: string | null
+  color: string | null
+  status: "Active" | "Paused" | "Archived"
+  revision: number
 }
 
 export type ProjectGoalEntry = {

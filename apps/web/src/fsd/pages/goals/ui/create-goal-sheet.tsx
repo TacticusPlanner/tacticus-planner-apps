@@ -276,6 +276,11 @@ export function CreateGoalSheet({
               {form.errorMessage}
             </FieldError>
           ) : null}
+          {form.validationMessage ? (
+            <FieldError data-testid="create-goal-validation-error">
+              {form.validationMessage}
+            </FieldError>
+          ) : null}
         </form>
 
         <SheetFooter>

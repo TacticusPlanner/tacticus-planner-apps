@@ -74,6 +74,8 @@ const rows: GoalRow[] = [
     priority: 10,
     milestonesTotal: 0,
     milestonesCompleted: 0,
+    notes: null,
+    updatedAt: "2026-07-15T00:00:00Z",
   },
   {
     goalId: "goal-2",
@@ -84,6 +86,8 @@ const rows: GoalRow[] = [
     priority: 20,
     milestonesTotal: 0,
     milestonesCompleted: 0,
+    notes: null,
+    updatedAt: "2026-07-15T00:00:00Z",
   },
 ]
 
@@ -200,6 +204,8 @@ describe("GoalsList", () => {
         priority: 10,
         milestonesTotal: 0,
         milestonesCompleted: 0,
+        notes: null,
+        updatedAt: "2026-07-15T00:00:00Z",
       },
     ]
     render(

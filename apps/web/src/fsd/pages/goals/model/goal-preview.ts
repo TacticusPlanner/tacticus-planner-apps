@@ -9,7 +9,7 @@ import type {
 import type { GoalKind } from "@/entities/goal"
 
 import { estimateGoal } from "./estimate/estimate"
-import type { EstimateResult } from "./estimate/estimate.domain"
+import type { EstimateOutcome } from "./estimate/estimate.domain"
 import {
   computeMissingUpgrades,
   type MissingUpgradeEntry,
@@ -48,9 +48,10 @@ export function computeCreationPreview(params: {
   dailyEnergy?: number
 }): {
   missingUpgrades: MissingUpgradeEntry[]
-  estimatePreview: EstimateResult | null
+  snapshotUpgrades: MissingUpgradeEntry[]
+  estimatePreview: EstimateOutcome | null
 } {
-  const missingUpgrades =
+  const snapshotUpgrades =
     params.entityType === "Mow"
       ? computeMowMissingUpgrades({
           abilityEnabled: params.enabledTypes.has("Ability"),
@@ -62,6 +63,7 @@ export function computeCreationPreview(params: {
           passiveEnd: params.abilityPassiveEnd,
           inventoryUpgrades: params.inventoryUpgrades,
           upgradesById: params.upgradesById,
+          includeCovered: true,
         })
       : computeMissingUpgrades({
           rankEnabled: params.enabledTypes.has("Rank"),
@@ -72,7 +74,9 @@ export function computeCreationPreview(params: {
           playerCharacter: params.playerCharacter,
           inventoryUpgrades: params.inventoryUpgrades,
           upgradesById: params.upgradesById,
+          includeCovered: true,
         })
+  const missingUpgrades = snapshotUpgrades.filter((entry) => entry.missing > 0)
 
   const previewEnabled =
     params.entityType === "Mow"
@@ -97,5 +101,5 @@ export function computeCreationPreview(params: {
         })
       : null
 
-  return { missingUpgrades, estimatePreview }
+  return { missingUpgrades, snapshotUpgrades, estimatePreview }
 }

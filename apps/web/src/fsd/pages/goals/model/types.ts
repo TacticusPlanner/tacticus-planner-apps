@@ -11,6 +11,8 @@ export type GoalRow = {
   entityId: string
   goalType: GoalKind
   status: GoalStatus
+  notes: string | null
+  updatedAt: string
   priority?: number
   milestonesTotal: number
   milestonesCompleted: number
@@ -23,6 +25,8 @@ export function goalRowFromSummary(goal: GoalSummary): GoalRow {
     entityId: goal.entityId,
     goalType: goal.goalType,
     status: goal.status,
+    notes: goal.notes,
+    updatedAt: goal.updatedAt,
     milestonesTotal: goal.milestonesTotal,
     milestonesCompleted: goal.milestonesCompleted,
   }
@@ -35,6 +39,8 @@ export function goalRowFromProjectMember(entry: ProjectGoalSummary): GoalRow {
     entityId: entry.goal.entityId,
     goalType: entry.goal.goalType as GoalKind,
     status: entry.goal.status as GoalStatus,
+    notes: entry.goal.notes,
+    updatedAt: entry.goal.updatedAt,
     priority: entry.priority,
     milestonesTotal: entry.goal.milestonesTotal,
     milestonesCompleted: entry.goal.milestonesCompleted,

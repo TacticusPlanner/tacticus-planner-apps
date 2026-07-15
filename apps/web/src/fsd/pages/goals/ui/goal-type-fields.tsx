@@ -6,9 +6,10 @@ import { Switch } from "@workspace/ui/components/switch"
 import { rankOrder, type Progression, type Rank } from "@workspace/game-domain"
 
 import { ProgressionSelect, RankSelect } from "@/shared/ui"
+import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 
 export type MissingUpgrade = { id: string; label: string; missing: number }
-export type EstimatePreview = { days: number; date: string }
+export type EstimatePreview = EstimateOutcome
 
 /** Target-rank fields + the resource-requirement preview (plan §16 phase 2 — Rank only) + the
  * isolated day-by-day estimate for that same range (plan §16 phase 4). */
@@ -93,12 +94,19 @@ export function RankGoalFields({
               </ul>
             </>
           ) : null}
-          {estimate ? (
+          {estimate && estimate.status !== "Blocked" ? (
             <p className="font-medium" data-testid="create-goal-estimate">
               {t("goals.create.previewEstimate", {
                 days: estimate.days,
                 date: estimate.date,
               })}
+            </p>
+          ) : estimate?.status === "Blocked" ? (
+            <p
+              className="font-medium text-amber-700"
+              data-testid="create-goal-estimate-blocked"
+            >
+              {t(`goals.estimate.blocked.${estimate.reason}`)}
             </p>
           ) : null}
           <p className="text-xs text-muted-foreground">

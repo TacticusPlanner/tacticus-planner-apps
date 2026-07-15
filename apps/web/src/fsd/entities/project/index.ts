@@ -1,6 +1,7 @@
 export {
   activateProject,
   createProject,
+  updateProject,
   listProjectGoals,
   listProjects,
   updateProjectGoals,
@@ -8,6 +9,7 @@ export {
 } from "./api/project.api"
 export type {
   CreateProjectRequest,
+  UpdateProjectRequest,
   ProjectGoalEntry,
   ProjectGoalSummary,
   ProjectMemberGoal,

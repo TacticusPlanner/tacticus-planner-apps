@@ -60,9 +60,26 @@ export type GoalMilestone = {
 
 export type GoalSnapshot = {
   createdAt: string
+  initialRank: string | null
+  initialProgression: string | null
+  initialActiveAbilityLevel: number | null
+  initialPassiveAbilityLevel: number | null
+  initialShards: number | null
+  initialUnlocked: boolean | null
+  initialRequirement: GoalSnapshotResource[]
+  initialInventoryContribution: GoalSnapshotResource[]
+  originalEnergyTotal: number | null
+  originalRaidsTotal: number | null
   originalEstimateDays: number | null
   originalEstimateDate: string | null
 }
+
+export type GoalSnapshotResource = {
+  resourceId: string
+  count: number
+}
+
+export type CreateGoalSnapshotRequest = Omit<GoalSnapshot, "createdAt">
 
 export type GoalEvent = {
   at: string
@@ -107,6 +124,7 @@ export type CreateGoalRequest = {
   goalType: string
   config: CreateGoalConfigRequest
   projectId?: string | null
+  snapshot?: CreateGoalSnapshotRequest | null
 }
 
 export type UpdateGoalRequest = {
@@ -121,6 +139,7 @@ export type CombinedGoalSpec = {
   goalType: string
   config: CreateGoalConfigRequest
   dependsOnIndex: number[]
+  snapshot?: CreateGoalSnapshotRequest | null
 }
 
 export type CreateCombinedGoalsRequest = {

@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -12,6 +13,7 @@ import {
 import type { ProjectSummary } from "@/entities/project"
 
 import type { useProjectActions } from "../model/use-project-actions"
+import { ManageProjectsSheet } from "./manage-projects-sheet"
 
 const ALL_PROJECTS_VALUE = "__all__"
 
@@ -31,6 +33,7 @@ export function ProjectToolbar({
   projectActions,
 }: Props) {
   const { t } = useTranslation()
+  const [manageOpen, setManageOpen] = useState(false)
   const selectedProject = projects.find(
     (project) => project.projectId === projectId
   )
@@ -50,14 +53,24 @@ export function ProjectToolbar({
           <SelectItem value={ALL_PROJECTS_VALUE}>
             {t("goals.project.filterAll")}
           </SelectItem>
-          {projects.map((project) => (
-            <SelectItem key={project.projectId} value={project.projectId}>
-              {project.name}
-              {project.isActivePlan ? ` (${t("goals.project.active")})` : ""}
-            </SelectItem>
-          ))}
+          {projects
+            .filter((project) => project.status !== "Archived")
+            .map((project) => (
+              <SelectItem key={project.projectId} value={project.projectId}>
+                {project.name}
+                {project.isActivePlan ? ` (${t("goals.project.active")})` : ""}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
+      <Button
+        data-testid="goals-project-manage"
+        onClick={() => setManageOpen(true)}
+        size="sm"
+        variant="outline"
+      >
+        {t("goals.project.manage")}
+      </Button>
 
       {selectedProject ? (
         <>
@@ -106,6 +119,12 @@ export function ProjectToolbar({
           </Button>
         </>
       ) : null}
+      <ManageProjectsSheet
+        actions={projectActions}
+        onOpenChange={setManageOpen}
+        open={manageOpen}
+        projects={projects}
+      />
     </div>
   )
 }

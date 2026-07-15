@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { upgradeIdSchema } from "@workspace/game-domain"
 
-import { mowAbilityTrackLevel, mowAbilityUpgradeIds } from "./mow-ability-calc"
+import {
+  mowAbilityTrackLevel,
+  mowAbilityUpgradeIds,
+  uncoveredMowAbilityUpgradeIds,
+} from "./mow-ability-calc"
 
 const upgradeId = upgradeIdSchema.parse
 
@@ -61,5 +65,19 @@ describe("mowAbilityTrackLevel", () => {
 
   it("defaults to level 1 for an unowned (undefined) MoW", () => {
     expect(mowAbilityTrackLevel(undefined, "primary")).toBe(1)
+  })
+})
+
+describe("uncoveredMowAbilityUpgradeIds", () => {
+  it("assigns overlapping transitions only to the first goal", () => {
+    const covered = new Set<number>()
+    expect(uncoveredMowAbilityUpgradeIds(recipes, 1, 4, 1, covered)).toEqual([
+      upgradeId("m2a"),
+      upgradeId("m2b"),
+      upgradeId("m3a"),
+      upgradeId("m4a"),
+      upgradeId("m4b"),
+    ])
+    expect(uncoveredMowAbilityUpgradeIds(recipes, 2, 4, 1, covered)).toEqual([])
   })
 })
