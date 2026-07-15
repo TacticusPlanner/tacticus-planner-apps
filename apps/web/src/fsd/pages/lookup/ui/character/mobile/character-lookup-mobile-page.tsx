@@ -8,7 +8,8 @@ import type {
   UnitId,
 } from "@workspace/game-domain"
 
-import type { CampaignInsight } from "../campaign-insights"
+import type { CampaignInsight } from "@/shared/lib"
+
 import { CharacterLookupControls } from "../character-lookup-controls"
 import { CharacterLookupResults } from "../character-lookup-results"
 import type {

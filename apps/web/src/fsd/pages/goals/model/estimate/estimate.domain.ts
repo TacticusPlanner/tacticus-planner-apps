@@ -11,16 +11,31 @@ import type { Battle, FarmLocation } from "@/shared/lib"
 // against the same default.
 export const DAILY_ENERGY = 480
 
-/** How much of one base upgrade is still needed. */
+/** A farmable character shard resource (plan §16 phase 7) — folded into the same day-by-day engine
+ *  as upgrade materials via a synthetic `EstimateUpgrade` entry keyed by this id, since a character's
+ *  `shardLocations` use the identical `FarmLocation` shape as an upgrade's. Mythic shards and orbs
+ *  have no campaign-node farm source (Onslaught/events only), so they never get one of these ids and
+ *  stay count-only in the Insights breakdown rather than entering the simulator. */
+export type ShardResourceId = `shard:${string}`
+
+export function shardResourceId(entityId: string): ShardResourceId {
+  return `shard:${entityId}`
+}
+
+/** Any resource the engine can farm a day-by-day estimate for: an upgrade material, or (phase 7) a
+ *  farmable character shard. */
+export type EstimateResourceId = UpgradeId | ShardResourceId
+
+/** How much of one farmable resource is still needed. */
 export interface MaterialNeed {
-  id: UpgradeId
+  id: EstimateResourceId
   count: number
 }
 
-/** The minimal shape the engine needs from an upgrade record — any richer catalog type (e.g.
- *  rank-lookup's `UpgradeWithFarmLocations`) satisfies this structurally. */
+/** The minimal shape the engine needs from an upgrade (or shard) record — any richer catalog type
+ *  (e.g. rank-lookup's `UpgradeWithFarmLocations`) satisfies this structurally. */
 export interface EstimateUpgrade {
-  id: UpgradeId
+  id: EstimateResourceId
   farmLocations: FarmLocation[]
 }
 

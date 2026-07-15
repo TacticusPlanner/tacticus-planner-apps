@@ -110,10 +110,7 @@ export function GoalsPage() {
     rows.length === 0
 
   return (
-    <main
-      className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10"
-      data-testid="goals-page"
-    >
+    <div className="flex flex-col gap-6" data-testid="goals-page">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">{t("goals.title")}</h1>
         <Button
@@ -241,7 +238,7 @@ export function GoalsPage() {
         onOpenChange={setIsCreateOpen}
         onCreated={refreshCurrentView}
       />
-    </main>
+    </div>
   )
 }
 

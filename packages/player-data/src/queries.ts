@@ -16,3 +16,9 @@ export function getPlayerCharacter(unitId: UnitId) {
 export function getPlayerMow(unitId: UnitId) {
   return getChunkRecord("mows", unitId)
 }
+
+// Shard progress toward a unit not yet unlocked (absent from `characters`/`mows`, whose own records
+// carry an already-unlocked unit's shards/mythicShards instead — see the schema comment).
+export function getInventoryShard(unitId: UnitId) {
+  return getChunkRecord("inventory-shards", unitId)
+}

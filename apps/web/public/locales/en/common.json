@@ -249,6 +249,8 @@
       "filtered": "No goals in this view."
     },
     "tabs": {
+      "goals": "Goals",
+      "insights": "Insights",
       "active": "Active",
       "completed": "Completed",
       "archived": "Archived"
@@ -367,6 +369,26 @@
     },
     "milestones": {
       "count": "{{completed}}/{{total}} milestones"
+    },
+    "insights": {
+      "title": "Insights",
+      "selectProject": "Select a project",
+      "noProjectTitle": "No project selected",
+      "noProjectDescription": "Select a project above to see its total missing resources, farming bottlenecks, and relevant campaign events.",
+      "materialsTitle": "Materials by rarity",
+      "shardsTitle": "Shards & orbs",
+      "shards": "Shards",
+      "mythicShards": "Mythic shards",
+      "countOnlyDisclaimer": "Orbs and mythic shards are count-only — they don't factor into the energy estimate below.",
+      "estimateTitle": "Estimate",
+      "energyTotal": "Total energy",
+      "completionDate": "Completion date",
+      "completionUnknown": "—",
+      "bottlenecksTitle": "Bottlenecks",
+      "campaignsTitle": "Relevant campaigns",
+      "eventsTitle": "Relevant events",
+      "noBenefitingGoals": "No goals in this plan currently need this.",
+      "empty": "Nothing to show yet."
     }
   },
   "language": {

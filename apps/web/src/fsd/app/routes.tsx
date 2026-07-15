@@ -35,8 +35,14 @@ const UiKitPage = lazy(() =>
 const GuildPage = lazy(() =>
   import("@/pages/guild").then((m) => ({ default: m.GuildPage }))
 )
+const GoalsLayout = lazy(() =>
+  import("@/pages/goals").then((m) => ({ default: m.GoalsLayout }))
+)
 const GoalsPage = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.GoalsPage }))
+)
+const InsightsPage = lazy(() =>
+  import("@/pages/goals").then((m) => ({ default: m.InsightsPage }))
 )
 const GuildMembersRoute = lazy(() =>
   import("@/pages/guild").then((m) => ({ default: m.GuildMembersRoute }))
@@ -128,9 +134,13 @@ export const routes: RouteObject[] = [
         path: "/goals",
         element: (
           <ProtectedRoute>
-            <GoalsPage />
+            <GoalsLayout />
           </ProtectedRoute>
         ),
+        children: [
+          { index: true, element: <GoalsPage /> },
+          { path: "insights", element: <InsightsPage /> },
+        ],
       },
       {
         path: "/guild",

@@ -1,7 +1,8 @@
-import type { BattleId, UpgradeId } from "@workspace/game-domain"
+import type { BattleId } from "@workspace/game-domain"
 
 import type {
   Battle,
+  EstimateResourceId,
   EstimateResult,
   EstimateUpgrade,
   FarmLocation,
@@ -12,16 +13,15 @@ import type {
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
-// `GoalsService.computeMaterialQuantityInfo` (priority-ordered shared-inventory allocation), scoped
-// to Rank/Upgrade goals only (plan §16 phase 4 scope notes — Ascension/Unlock/Shards need a
-// shard-cost data port V2 doesn't have yet; onslaught tokens, home-screen-event scoring, and
-// XP-tome/orb accrual are deferred fidelity, not ported).
+// `GoalsService.computeMaterialQuantityInfo` (priority-ordered shared-inventory allocation). Handles
+// upgrade materials and (plan §16 phase 7) farmable character shards via `EstimateResourceId`; orbs,
+// mythic shards, onslaught tokens, home-screen-event scoring, and XP-tome accrual have no
+// campaign-node farm source and are deferred fidelity, not ported.
 //
-// Single-consumer, i18n-free, pure functions — colocated under `pages/goals` (like
-// `pages/lookup/.../campaign-insights.ts`) rather than in a `features/*` slice, since a feature
-// cannot import another feature (`features/rank-lookup`) under this repo's FSD rules; callers derive
-// `needs`/`inventory` via `features/rank-lookup/lib/rank-lookup-calc.ts` and pass the pre-aggregated
-// result in.
+// Single-consumer, i18n-free, pure functions — colocated under `pages/goals` rather than in a
+// `features/*` slice, since a feature cannot import another feature (`features/rank-lookup`) under
+// this repo's FSD rules; callers derive `needs`/`inventory` via
+// `features/rank-lookup/lib/rank-lookup-calc.ts` and pass the pre-aggregated result in.
 
 /** V1's guard against a farm that can never complete (e.g. zero daily energy, or every candidate
  *  node priced out of the daily budget) looping forever. */
@@ -30,8 +30,8 @@ const MAX_DAYS = 1000
 /**
  * The chance a single run drops this location's material: 1 for a guaranteed drop, the precomputed
  * `effectiveRate` when present, else the raw `numerator/denominator` fraction, else 0. Duplicated
- * from `pages/lookup/.../campaign-insights.ts` (a page, so not importable) rather than shared, per
- * this codebase's cross-page duplication convention.
+ * from `@/shared/lib`'s `campaign-insights.ts` rather than imported, per this codebase's cross-file
+ * duplication convention for small pure helpers.
  */
 export function dropRate(location: FarmLocation): number {
   if (location.guaranteed) return 1
@@ -50,7 +50,7 @@ export function dropRate(location: FarmLocation): number {
  */
 export function selectFarmNodes(
   need: MaterialNeed,
-  upgradesById: ReadonlyMap<UpgradeId, EstimateUpgrade>,
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
   battlesById: ReadonlyMap<BattleId, Battle>,
   farmingLocationIds?: readonly string[] | null
 ): FarmNode[] {
@@ -102,8 +102,8 @@ function formatDate(date: Date): string {
  * `estimatePlan` (each goal's turn within a combined day), so both loops spend a day identically.
  */
 function spendDay(
-  remaining: Map<UpgradeId, number>,
-  nodesById: ReadonlyMap<UpgradeId, FarmNode[]>,
+  remaining: Map<EstimateResourceId, number>,
+  nodesById: ReadonlyMap<EstimateResourceId, FarmNode[]>,
   startingEnergy: number
 ): { energySpent: number; raidsPerformed: number } {
   let energy = startingEnergy
@@ -157,14 +157,14 @@ export function estimateGoal({
   referenceDate = new Date(),
 }: {
   needs: MaterialNeed[]
-  upgradesById: ReadonlyMap<UpgradeId, EstimateUpgrade>
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>
   battlesById: ReadonlyMap<BattleId, Battle>
   dailyEnergy: number
   farmingLocationIds?: readonly string[] | null
   referenceDate?: Date
 }): EstimateResult | null {
-  const remaining = new Map<UpgradeId, number>()
-  const nodesById = new Map<UpgradeId, FarmNode[]>()
+  const remaining = new Map<EstimateResourceId, number>()
+  const nodesById = new Map<EstimateResourceId, FarmNode[]>()
 
   for (const need of needs) {
     if (need.count <= 0) continue
@@ -231,7 +231,7 @@ export function estimatePlan({
   referenceDate = new Date(),
 }: {
   goals: GoalNeed[]
-  upgradesById: ReadonlyMap<UpgradeId, EstimateUpgrade>
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>
   battlesById: ReadonlyMap<BattleId, Battle>
   dailyEnergy: number
   inventory: MaterialNeed[]
@@ -241,16 +241,16 @@ export function estimatePlan({
 
   // Step 1: higher-priority goals consume shared inventory first; only the leftover need continues
   // into the farming simulation below.
-  const held = new Map<UpgradeId, number>(
+  const held = new Map<EstimateResourceId, number>(
     inventory.map((entry) => [entry.id, entry.count])
   )
-  const remainingByGoal = new Map<string, Map<UpgradeId, number>>()
-  const nodesByGoal = new Map<string, Map<UpgradeId, FarmNode[]>>()
+  const remainingByGoal = new Map<string, Map<EstimateResourceId, number>>()
+  const nodesByGoal = new Map<string, Map<EstimateResourceId, FarmNode[]>>()
   const results = new Map<string, EstimateResult | null>()
 
   for (const goal of ordered) {
-    const remaining = new Map<UpgradeId, number>()
-    const nodesById = new Map<UpgradeId, FarmNode[]>()
+    const remaining = new Map<EstimateResourceId, number>()
+    const nodesById = new Map<EstimateResourceId, FarmNode[]>()
     let unreachable = false
 
     for (const need of goal.needs) {

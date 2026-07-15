@@ -49,6 +49,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getMowsMap: () => mows,
   getUpgrades: () => [],
   getCampaignBattles: () => [],
+  getCampaignDefinitions: () => [],
+  getAscensionCostsMap: () => new Map(),
+  getUnlockShardCostsMap: () => new Map(),
 }))
 
 import type { GoalRow } from "../model/types"

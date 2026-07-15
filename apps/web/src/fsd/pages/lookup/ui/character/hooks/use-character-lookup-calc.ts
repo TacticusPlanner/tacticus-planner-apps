@@ -23,9 +23,12 @@ import {
   type RecipeIngredient,
   type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
-import { useCampaignDisplay, type Battle } from "@/shared/lib"
+import {
+  computeCampaignInsights,
+  useCampaignDisplay,
+  type Battle,
+} from "@/shared/lib"
 
-import { computeCampaignInsights } from "../campaign-insights"
 import type { LookupSelection } from "./use-lookup-selection"
 import type {
   BaseUpgradeViewModel,

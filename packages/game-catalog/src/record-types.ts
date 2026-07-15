@@ -17,6 +17,8 @@ import type {
   mowSchema,
   mowUpgradeCostSchema,
   npcSchema,
+  ascensionCostSchema,
+  unlockShardCostSchema,
   upgradeViewSchema,
 } from "./schemas"
 
@@ -43,6 +45,8 @@ export type GameCatalogLreWave = z.infer<typeof lreWaveSchema>
 export type GameCatalogLreEnemy = z.infer<typeof lreEnemySchema>
 export type GameCatalogFarmLocation = z.infer<typeof farmLocationSchema>
 export type GameCatalogMowUpgradeCost = z.infer<typeof mowUpgradeCostSchema>
+export type GameCatalogAscensionCost = z.infer<typeof ascensionCostSchema>
+export type GameCatalogUnlockShardCost = z.infer<typeof unlockShardCostSchema>
 export type GameCatalogEquipmentUpgradeCost = z.infer<
   typeof equipmentUpgradeCostSchema
 >

@@ -4,10 +4,12 @@
 // touching the Dexie instance itself. Add a new named query here as new business needs arise.
 import { getDatasetRecords } from "./game-catalog-storage"
 import type {
+  AscensionCostStorageModel,
   CampaignBattleStorageModel,
   CampaignDefinitionStorageModel,
   CharacterStorageModel,
   MowStorageModel,
+  UnlockShardCostStorageModel,
   UpgradeStorageModel,
 } from "./game-catalog.storage"
 
@@ -33,6 +35,30 @@ export function getMows(): Promise<MowStorageModel[]> {
 export async function getMowsMap(): Promise<Map<string, MowStorageModel>> {
   const mows = await getMows()
   return new Map(mows.map((mow) => [mow.id, mow]))
+}
+
+export function getAscensionCosts(): Promise<AscensionCostStorageModel[]> {
+  return getDatasetRecords("ascension-costs")
+}
+
+// Indexes the shared ascension cost ladder by progression step (its natural, storage-managed id).
+export async function getAscensionCostsMap(): Promise<
+  Map<string, AscensionCostStorageModel>
+> {
+  const costs = await getAscensionCosts()
+  return new Map(costs.map((cost) => [cost.id, cost]))
+}
+
+export function getUnlockShardCosts(): Promise<UnlockShardCostStorageModel[]> {
+  return getDatasetRecords("unlock-shard-costs")
+}
+
+// Indexes the per-rarity unlock shard cost table by rarity (its natural, storage-managed id).
+export async function getUnlockShardCostsMap(): Promise<
+  Map<string, UnlockShardCostStorageModel>
+> {
+  const costs = await getUnlockShardCosts()
+  return new Map(costs.map((cost) => [cost.id, cost]))
 }
 
 export function getUpgrades(): Promise<UpgradeStorageModel[]> {

@@ -5,6 +5,8 @@ export const servedDatasetKeys = [
   "npcs",
   "mows",
   "mow-upgrade-costs",
+  "ascension-costs",
+  "unlock-shard-costs",
   "upgrades",
   "equipment",
   "campaign-battles",

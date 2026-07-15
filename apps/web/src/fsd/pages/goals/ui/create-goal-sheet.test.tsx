@@ -128,6 +128,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getMowsMap: () => mows,
   getUpgrades: () => upgrades,
   getCampaignBattles: () => battles,
+  getCampaignDefinitions: () => [],
+  getAscensionCostsMap: () => new Map(),
+  getUnlockShardCostsMap: () => new Map(),
 }))
 
 const getPlayerCharacter = vi.fn()

@@ -11,8 +11,10 @@ import {
   estimatePlan,
   selectFarmNodes,
 } from "./estimate"
+import { shardResourceId } from "./estimate.domain"
 import type {
   Battle,
+  EstimateResourceId,
   EstimateUpgrade,
   FarmLocation,
   GoalNeed,
@@ -317,5 +319,66 @@ describe("estimatePlan", () => {
     })
 
     expect(results.get("blocked")).toBeNull()
+  })
+})
+
+describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () => {
+  it("clears a shard need through the same engine as materials, via a synthetic EstimateUpgrade entry", () => {
+    const shardId = shardResourceId("hero1")
+    const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
+      [
+        shardId,
+        { id: shardId, farmLocations: [location("B1", { guaranteed: true })] },
+      ],
+    ])
+    const battlesById = new Map([battle("B1", 10)])
+
+    const result = estimateGoal({
+      needs: [{ id: shardId, count: 3 }],
+      upgradesById,
+      battlesById,
+      dailyEnergy: 10,
+      referenceDate: REFERENCE_DATE,
+    })
+
+    expect(result).toEqual({
+      days: 3,
+      date: "2026-01-04",
+      energyTotal: 30,
+      raidsTotal: 3,
+    })
+  })
+
+  it("mixes a shard resource and a material need in the same estimate", () => {
+    const shardId = shardResourceId("hero1")
+    const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
+      [
+        shardId,
+        { id: shardId, farmLocations: [location("B1", { guaranteed: true })] },
+      ],
+      [
+        upgradeId("U1"),
+        {
+          id: upgradeId("U1"),
+          farmLocations: [location("B1", { guaranteed: true })],
+        },
+      ],
+    ])
+    const battlesById = new Map([battle("B1", 10)])
+
+    const result = estimateGoal({
+      needs: [
+        { id: shardId, count: 1 },
+        { id: upgradeId("U1"), count: 1 },
+      ],
+      upgradesById,
+      battlesById,
+      dailyEnergy: 10,
+      referenceDate: REFERENCE_DATE,
+    })
+
+    // Both share the same single node — one raid/day clears one unit of whichever is spendable
+    // first, so it takes 2 days total to clear both.
+    expect(result?.days).toBe(2)
   })
 })

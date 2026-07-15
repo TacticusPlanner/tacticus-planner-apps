@@ -11,11 +11,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { Rarity } from "@workspace/game-domain"
 
+import type { CampaignInsight } from "@/shared/lib"
+
 import {
   BaseUpgradesCards,
   BaseUpgradesTable,
 } from "./character-lookup-base-upgrades"
-import type { CampaignInsight } from "./campaign-insights"
 import { CampaignInsightList, TopRarityChip } from "./character-lookup-insights"
 import { RankGroupBody, RankGroupHeader } from "./character-lookup-rank-groups"
 import type {

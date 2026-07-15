@@ -20,13 +20,13 @@ import {
 } from "@workspace/game-catalog"
 import { rarityRank, type UpgradeId } from "@workspace/game-domain"
 
-import { useCampaignDisplay, type CampaignShortLabel } from "@/shared/lib"
+import {
+  useCampaignDisplay,
+  type CampaignInsight,
+  type CampaignInsightContribution,
+  type CampaignShortLabel,
+} from "@/shared/lib"
 import { EntityIcon, LocationChips, RarityIcon, UpgradeIcon } from "@/shared/ui"
-
-import type {
-  CampaignInsight,
-  CampaignInsightContribution,
-} from "./campaign-insights"
 
 import type { BaseUpgradeViewModel } from "./character-lookup-results.view-model"
 

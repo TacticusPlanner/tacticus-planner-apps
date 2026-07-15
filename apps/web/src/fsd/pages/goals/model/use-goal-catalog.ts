@@ -2,10 +2,14 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
 import { groupByFaction, type UnitId } from "@workspace/game-domain"
+import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
 import {
+  getAscensionCostsMap,
   getCampaignBattles,
+  getCampaignDefinitions,
   getCharactersMap,
   getMowsMap,
+  getUnlockShardCostsMap,
   getUpgrades,
 } from "@workspace/game-catalog/queries"
 
@@ -53,6 +57,21 @@ export function useGoalCatalog() {
     [campaignBattles]
   )
 
+  // Event-vs-standing-campaign detection for the Insights view's campaign/event scoring (plan §16
+  // phase 7) — mirrors `pages/lookup/.../use-character-lookup-catalog.ts`'s `releaseTypeByGroupId`,
+  // duplicated for the same page-can't-import-page reason as the rest of this hook.
+  const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
+  const releaseTypeByGroupId = useMemo(
+    () =>
+      new Map(
+        (campaignDefinitions ?? []).map((d: CampaignDefinitionStorageModel) => [
+          d.groupId,
+          d.releaseType,
+        ])
+      ),
+    [campaignDefinitions]
+  )
+
   const characterGroups = useMemo(
     () =>
       groupByFaction(
@@ -90,6 +109,12 @@ export function useGoalCatalog() {
 
   const getMow = (unitId: UnitId) => mowsById?.get(unitId)
 
+  // The shared ascension-orb/shard cost ladder + per-rarity unlock-shard table (plan §16 phase 7) —
+  // both single catalog-wide tables, not per-character, so no grouping/id-lookup helper beyond the
+  // map itself is needed.
+  const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
+  const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
+
   /** Display name for a goal row (list/grid). Character and Mow entities resolve via the catalog
    * (upgrade entity types fall back to the raw id — see Phase 3 scope notes). */
   const getEntityName = (entityType: string, entityId: string) => {
@@ -113,6 +138,9 @@ export function useGoalCatalog() {
     mowsById,
     upgradesById,
     battlesById,
+    ascensionCostsById,
+    unlockShardCostsById,
+    releaseTypeByGroupId,
     characterGroups,
     mowGroups,
     getCharacter,

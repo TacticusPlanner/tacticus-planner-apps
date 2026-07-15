@@ -4,3 +4,8 @@ export {
   useCampaignDisplay,
   type CampaignShortLabel,
 } from "./use-campaign-display"
+export {
+  computeCampaignInsights,
+  type CampaignInsight,
+  type CampaignInsightContribution,
+} from "./campaign-insights"

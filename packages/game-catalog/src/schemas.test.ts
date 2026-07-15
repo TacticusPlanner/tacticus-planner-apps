@@ -145,6 +145,50 @@ describe("catalog schemas", () => {
     expect(result.success).toBe(true)
   })
 
+  it("validates the ascension-costs ladder as its own dataset", () => {
+    const result = datasetPayloadSchemas["ascension-costs"].safeParse([
+      {
+        progression: "Common:None",
+        shards: 0,
+        mythicShards: 0,
+        orbs: 0,
+        orbRarity: null,
+      },
+      {
+        progression: "Uncommon:TwoStars",
+        shards: 15,
+        mythicShards: 0,
+        orbs: 10,
+        orbRarity: "Uncommon",
+      },
+    ])
+
+    expect(result.success).toBe(true)
+  })
+
+  it("rejects an ascension-costs entry with an unrecognized progression step", () => {
+    const result = datasetPayloadSchemas["ascension-costs"].safeParse([
+      {
+        progression: "NotAStep",
+        shards: 0,
+        mythicShards: 0,
+        orbs: 0,
+        orbRarity: null,
+      },
+    ])
+
+    expect(result.success).toBe(false)
+  })
+
+  it("validates the unlock-shard-costs table as its own dataset", () => {
+    const result = datasetPayloadSchemas["unlock-shard-costs"].safeParse([
+      { rarity: "Common", shards: 40 },
+      { rarity: "Mythic", shards: 1400 },
+    ])
+
+    expect(result.success).toBe(true)
+  })
+
   it("validates equipment with the inlined per-rarity upgrade ladder", () => {
     const result = datasetPayloadSchemas.equipment.safeParse([
       {

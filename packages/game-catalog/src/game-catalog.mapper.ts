@@ -19,6 +19,16 @@ function byLevel(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.level, ...row }))
 }
 
+// ascension-costs is keyed by its progression step string; unlock-shard-costs by rarity — both are
+// single shared ladders/tables with no id of their own, so the natural key doubles as the store id.
+function byProgression(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.progression, ...row }))
+}
+
+function byRarity(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.rarity, ...row }))
+}
+
 export const datasetToStorageModels: Record<
   GameCatalogDatasetKey,
   DatasetToStorageModels
@@ -27,6 +37,8 @@ export const datasetToStorageModels: Record<
   npcs: asArray,
   mows: asArray,
   "mow-upgrade-costs": byLevel,
+  "ascension-costs": byProgression,
+  "unlock-shard-costs": byRarity,
   upgrades: asArray,
   equipment: asArray,
   "campaign-battles": asArray,

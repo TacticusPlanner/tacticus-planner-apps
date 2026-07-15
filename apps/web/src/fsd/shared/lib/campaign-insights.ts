@@ -11,28 +11,34 @@ import {
   type UpgradeId,
 } from "@workspace/game-domain"
 
-import type { Battle, FarmLocation } from "@/shared/lib"
+import type { Battle, FarmLocation } from "./battle.domain"
 
-// Single-consumer calc (Character Lookup) — colocated here rather than in shared/lib, since nothing
-// else in the app needs it. `Battle`/`FarmLocation` stay in shared/lib: rank-lookup's
-// rank-lookup.mapper.ts also produces values shaped to them.
+// Promoted from pages/lookup (Character Lookup, its original single consumer) once the Goals Insights
+// view (plan §16 phase 7) became a second — a page can't import another page's internals under this
+// repo's FSD rules, and duplicating ~250 lines of scoring logic isn't reasonable the way the small
+// `dropRate` helper is elsewhere, so this now lives in shared/lib alongside `Battle`/`FarmLocation`.
 
-export interface CampaignInsightNeed {
-  id: UpgradeId
+// `TId` defaults to `UpgradeId` (Character Lookup, the original single consumer, never needs to name
+// it explicitly) but widens to any resource-id type — e.g. Goals Insights (plan §16 phase 7) scores
+// farmable character shards through the same engine via `EstimateResourceId`, which a plain `UpgradeId`
+// can't represent.
+export interface CampaignInsightNeed<TId extends string = UpgradeId> {
+  id: TId
   count: number
 }
 
-/** The minimal shape `computeCampaignInsights` needs from an upgrade record — any richer record
- *  type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`) satisfies this structurally. */
-export interface CampaignInsightUpgrade {
-  id: UpgradeId
+/** The minimal shape `computeCampaignInsights` needs from an upgrade (or other farmable resource)
+ *  record — any richer record type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`)
+ *  satisfies this structurally. */
+export interface CampaignInsightUpgrade<TId extends string = UpgradeId> {
+  id: TId
   rarity: Rarity
   farmLocations: FarmLocation[]
 }
 
-/** One upgrade+location's contribution to a campaign insight's score, for the expanded breakdown. */
-export interface CampaignInsightContribution {
-  upgradeId: UpgradeId
+/** One resource+location's contribution to a campaign insight's score, for the expanded breakdown. */
+export interface CampaignInsightContribution<TId extends string = UpgradeId> {
+  upgradeId: TId
   battleId: BattleId
   campaignGroupId: CampaignId
   type: string
@@ -49,7 +55,7 @@ interface CampaignInsightTierScore {
   score: number
 }
 
-export interface CampaignInsight {
+export interface CampaignInsight<TId extends string = UpgradeId> {
   id: string
   label: string
   icon?: string
@@ -57,8 +63,8 @@ export interface CampaignInsight {
   score: number
   /** Only set for event insights: the combined score split back into its Standard/Extremis tiers. */
   tierScores?: CampaignInsightTierScore[]
-  /** Every upgrade+location that fed into this score, sorted by contribution value descending. */
-  contributions: CampaignInsightContribution[]
+  /** Every resource+location that fed into this score, sorted by contribution value descending. */
+  contributions: CampaignInsightContribution<TId>[]
 }
 
 /**
@@ -94,13 +100,13 @@ interface TierAccumulator {
   energyByBattle: Map<string, number>
 }
 
-interface ChipAccumulator {
+interface ChipAccumulator<TId extends string> {
   label: string
   icon?: string
   isEvent: boolean
   value: number
   energyByBattle: Map<string, number>
-  contributions: CampaignInsightContribution[]
+  contributions: CampaignInsightContribution<TId>[]
   tiers: Map<"standard" | "extremis", TierAccumulator>
 }
 
@@ -119,15 +125,21 @@ interface ChipAccumulator {
  * (rather than importing react-i18next here) so this calc function stays pure/i18n-free and
  * testable without a translation setup; callers pass `useCampaignDisplay()`'s bound resolvers.
  */
-export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
-  needs: CampaignInsightNeed[],
-  upgradesById: ReadonlyMap<UpgradeId, U>,
+export function computeCampaignInsights<
+  TId extends string = UpgradeId,
+  U extends CampaignInsightUpgrade<TId> = CampaignInsightUpgrade<TId>,
+>(
+  needs: CampaignInsightNeed<TId>[],
+  upgradesById: ReadonlyMap<TId, U>,
   battlesById: ReadonlyMap<BattleId, Battle>,
   isEventGroup: (campaignGroupId: CampaignId) => boolean,
   resolveLabel: (descriptor: CampaignDescriptor, isEvent: boolean) => string,
   topN = 3
-): { campaignInsights: CampaignInsight[]; eventInsights: CampaignInsight[] } {
-  const chips = new Map<string, ChipAccumulator>()
+): {
+  campaignInsights: CampaignInsight<TId>[]
+  eventInsights: CampaignInsight<TId>[]
+} {
+  const chips = new Map<string, ChipAccumulator<TId>>()
 
   for (const need of needs) {
     const upgrade = upgradesById.get(need.id)
@@ -239,7 +251,7 @@ export function computeCampaignInsights<U extends CampaignInsightUpgrade>(
     score,
     tierScores,
     contributions,
-  }: (typeof scored)[number]): CampaignInsight => ({
+  }: (typeof scored)[number]): CampaignInsight<TId> => ({
     id,
     label,
     icon,

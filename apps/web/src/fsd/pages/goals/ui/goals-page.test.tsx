@@ -67,6 +67,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getMowsMap: () => new Map(),
   getUpgrades: () => [],
   getCampaignBattles: () => [],
+  getCampaignDefinitions: () => [],
+  getAscensionCostsMap: () => new Map(),
+  getUnlockShardCostsMap: () => new Map(),
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({

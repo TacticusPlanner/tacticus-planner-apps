@@ -14,7 +14,7 @@ import type { MissingUpgradeEntry } from "./goal-spec-builder"
 // have no rank at all; they progress via two independent ability-level tracks (primary/secondary),
 // each with its own per-level upgrade-material recipe list. Colocated here (page-local, not a
 // `features/mow-lookup` slice) since Goals is the only consumer today — no MoW Lookup page exists
-// yet to share this with (mirrors estimate.ts/campaign-insights.ts's same page-scoped convention).
+// yet to share this with (mirrors estimate.ts's same page-scoped convention).
 
 export type MowAbilityTrack = "primary" | "secondary"
 
