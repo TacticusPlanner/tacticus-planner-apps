@@ -242,6 +242,38 @@
     "loadError": "Couldn't load your goals.",
     "retry": "Retry",
     "createButton": "Create goal",
+    "planningSettings": {
+      "button": "Planning settings",
+      "title": "Planning settings",
+      "description": "Choose the daily energy budget and how the active plan schedules farming.",
+      "dailyEnergy": "Energy per day",
+      "ordering": "Farming order",
+      "goalPriority": "By goal priority",
+      "goalPriorityDescription": "Complete higher-priority goals before spending energy on lower-priority goals.",
+      "totalMaterials": "By total materials",
+      "totalMaterialsDescription": "Pool material demand across the plan before selecting farming nodes.",
+      "save": "Save settings",
+      "cancel": "Cancel",
+      "error": "Planning settings could not be saved."
+    },
+    "v1Import": {
+      "menu": "Import from V1",
+      "title": "Import from V1",
+      "description": "Your V1 credentials are used once and are never saved. Matching V2 goal kinds will be replaced and imported goals will be paused.",
+      "username": "V1 username",
+      "password": "V1 password",
+      "selectParts": "Choose what to import",
+      "parts": {
+        "personalKey": "Personal Tacticus API key",
+        "userId": "Tacticus user ID",
+        "guildKey": "Guild API token",
+        "goals": "Goals"
+      },
+      "submit": "Import selected",
+      "close": "Close",
+      "error": "The V1 profile could not be imported.",
+      "goalCounts": "Goals: {{imported}} imported, {{replaced}} replaced, {{skipped}} skipped"
+    },
     "empty": {
       "title": "No goals yet",
       "description": "Create a goal to start tracking progress toward a character, Machine of War, or upgrade target.",

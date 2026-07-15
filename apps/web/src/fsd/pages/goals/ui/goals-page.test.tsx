@@ -36,6 +36,13 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
+vi.mock("@/entities/planning-setting", () => ({
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    save: vi.fn(),
+  }),
+}))
+
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))

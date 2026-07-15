@@ -22,7 +22,6 @@ import { computeCampaignInsights } from "@/shared/lib"
 
 import { estimatePlan, selectFarmNodes } from "./estimate/estimate"
 import {
-  DAILY_ENERGY,
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
@@ -142,6 +141,8 @@ export function computePlanInsights(params: {
   getCharacter: (unitId: UnitId) => Character | undefined
   campaignName: (descriptor: Pick<CampaignDescriptor, "nameKey">) => string
   campaignFullLabel: (descriptor: CampaignDescriptor) => string
+  dailyEnergy?: number
+  ordering?: "GoalPriority" | "TotalMaterials"
 }): PlanInsightsResult {
   const totals: PlanInsightsTotals = {
     materialsByRarity: {},
@@ -241,7 +242,8 @@ export function computePlanInsights(params: {
     goals: goalNeeds,
     upgradesById: combinedUpgradesById,
     battlesById: params.battlesById,
-    dailyEnergy: DAILY_ENERGY,
+    dailyEnergy: params.dailyEnergy ?? 288,
+    ordering: params.ordering,
     inventory,
   })
 

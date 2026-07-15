@@ -1,6 +1,13 @@
+import { useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
+import { Settings } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+
+import { PlanningSettingsProvider } from "@/entities/planning-setting"
+
+import { PlanningSettingsDialog } from "./planning-settings-dialog"
 
 const tabs = [
   { value: "goals", path: "/goals", labelKey: "goals.tabs.goals" },
@@ -17,9 +24,18 @@ const tabs = [
  * `LookupPage`.
  */
 export function GoalsLayout() {
+  return (
+    <PlanningSettingsProvider>
+      <GoalsLayoutContent />
+    </PlanningSettingsProvider>
+  )
+}
+
+function GoalsLayoutContent() {
   const { t } = useTranslation()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const activeTab = pathname.startsWith("/goals/insights")
     ? "insights"
@@ -27,26 +43,40 @@ export function GoalsLayout() {
 
   return (
     <main className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => {
-          const tab = tabs.find((t) => t.value === value)
-          if (tab) void navigate(tab.path)
-        }}
-      >
-        <TabsList variant="line">
-          {tabs.map((tab) => (
-            <TabsTrigger
-              data-testid={`goals-layout-tab-${tab.value}`}
-              key={tab.value}
-              value={tab.value}
-            >
-              {t(tab.labelKey)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      <div className="flex items-center justify-between gap-3">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => {
+            const tab = tabs.find((t) => t.value === value)
+            if (tab) void navigate(tab.path)
+          }}
+        >
+          <TabsList variant="line">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                data-testid={`goals-layout-tab-${tab.value}`}
+                key={tab.value}
+                value={tab.value}
+              >
+                {t(tab.labelKey)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        <Button
+          data-testid="goals-planning-settings"
+          variant="outline"
+          size="sm"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <Settings data-icon="inline-start" />
+          {t("goals.planningSettings.button")}
+        </Button>
+      </div>
       <Outlet />
+      {settingsOpen ? (
+        <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />
+      ) : null}
     </main>
   )
 }

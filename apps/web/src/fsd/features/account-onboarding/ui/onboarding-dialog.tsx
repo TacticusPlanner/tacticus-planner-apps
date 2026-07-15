@@ -232,6 +232,12 @@ function ImportProfileForm({ account, instance, onCompleted }: FormProps) {
       await importV1Profile(instance, account, {
         username: username.trim(),
         password,
+        import: {
+          personalTacticusApiKey: true,
+          tacticusUserId: true,
+          guildApiToken: false,
+          goals: false,
+        },
       })
       onCompleted()
     } catch (error) {

@@ -39,6 +39,14 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
+vi.mock("@/entities/planning-setting", () => ({
+  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    save: vi.fn(),
+  }),
+}))
+
 const account = { homeAccountId: "acc-1", username: "test@example.com" }
 
 vi.mock("@azure/msal-react", () => ({

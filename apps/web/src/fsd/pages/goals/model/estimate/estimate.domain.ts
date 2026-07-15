@@ -5,12 +5,6 @@ import type { Battle, FarmLocation } from "@/shared/lib"
 // Input/output shapes for the day-by-day estimation engine (estimate.ts). Kept separate from the
 // calc functions themselves, mirroring rank-lookup.domain.ts / rank-lookup-calc.ts.
 
-// Matches V1's default daily energy budget. A Planning-settings UI to make this user-configurable is
-// plan §16 phase 8 — until then every estimate (creation preview and plan-context) assumes this
-// budget. Shared here so `use-create-goal-form`'s preview and `use-plan-estimate` both estimate
-// against the same default.
-export const DAILY_ENERGY = 480
-
 /** A farmable character shard resource (plan §16 phase 7) — folded into the same day-by-day engine
  *  as upgrade materials via a synthetic `EstimateUpgrade` entry keyed by this id, since a character's
  *  `shardLocations` use the identical `FarmLocation` shape as an upgrade's. Mythic shards and orbs

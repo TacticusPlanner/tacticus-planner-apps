@@ -23,10 +23,10 @@ import {
 } from "@/features/rank-lookup"
 import { getGoal, type GoalDetail } from "@/entities/goal"
 import type { ProjectGoalSummary } from "@/entities/project"
+import { usePlanningSettings } from "@/entities/planning-setting"
 
 import { estimatePlan } from "./estimate/estimate"
 import {
-  DAILY_ENERGY,
   type EstimateResult,
   type GoalNeed,
   type MaterialNeed,
@@ -61,6 +61,7 @@ export function usePlanEstimate(
   const account = instance.getActiveAccount() ?? accounts[0]
   const { getCharacter, upgradesById, battlesById } = useGoalCatalog()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+  const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
 
@@ -126,7 +127,8 @@ export function usePlanEstimate(
           goals,
           upgradesById,
           battlesById,
-          dailyEnergy: DAILY_ENERGY,
+          dailyEnergy: planningSettings.dailyEnergy,
+          ordering: planningSettings.ordering,
           inventory,
         })
         setFetchState({ status: "success", key: memberKey, results })
@@ -140,7 +142,13 @@ export function usePlanEstimate(
       active = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasQuery, account?.homeAccountId, memberKey])
+  }, [
+    hasQuery,
+    account?.homeAccountId,
+    memberKey,
+    planningSettings.dailyEnergy,
+    planningSettings.ordering,
+  ])
 
   // The fetched results are only "current" once their tagged key matches today's query — while a
   // new query is in flight (or none has resolved yet), this reads as loading rather than showing a

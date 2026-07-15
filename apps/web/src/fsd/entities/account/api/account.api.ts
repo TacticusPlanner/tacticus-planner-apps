@@ -34,17 +34,32 @@ export function updateTacticusIntegration(
   )
 }
 
-type ImportV1ProfileRequest = {
+export type ImportV1ProfileRequest = {
   username: string
   password: string
+  import: {
+    personalTacticusApiKey: boolean
+    tacticusUserId: boolean
+    guildApiToken: boolean
+    goals: boolean
+  }
 }
 
-type ImportV1ProfileResult = {
-  profileId: string
-  playerName: string
-  powerLevel: number
-  tacticusApiKeyMasked: string | null
-  tacticusUserIdMasked: string | null
+export type ImportPartResult = {
+  status: "Imported" | "Skipped" | "Failed"
+  code: string | null
+  message: string | null
+}
+
+export type ImportV1ProfileResult = {
+  tacticusUserId: ImportPartResult
+  personalTacticusApiKey: ImportPartResult
+  guildApiToken: ImportPartResult
+  goals: ImportPartResult
+  goalsImported: number
+  goalsReplaced: number
+  goalsSkipped: number
+  goalIssues: { code: string; sourceGoalId: string | null; message: string }[]
 }
 
 export function importV1Profile(

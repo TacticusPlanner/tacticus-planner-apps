@@ -57,6 +57,11 @@ vi.mock("@/features/account-management", () => ({
     open ? <div data-testid="manage-account-dialog-stub" /> : null,
 }))
 
+vi.mock("@/features/v1-import", () => ({
+  ImportV1Dialog: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="v1-import-dialog-stub" /> : null,
+}))
+
 // The real module re-exports `@/shared/config`, whose i18n setup calls `initReactI18next` at
 // import time — incompatible with the plain `useTranslation` mock above.
 vi.mock("@/shared/api", () => ({
@@ -162,6 +167,15 @@ describe("AuthControl", () => {
     fireEvent.click(screen.getByTestId("auth-manage-account"))
 
     expect(screen.getByTestId("manage-account-dialog-stub")).toBeVisible()
+  })
+
+  it("opens the full V1 import dialog from the user menu", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    fireEvent.click(screen.getByTestId("auth-v1-import"))
+
+    expect(screen.getByTestId("v1-import-dialog-stub")).toBeVisible()
   })
 
   it("shows a compact, aria-labeled sign-in button when unauthenticated", () => {

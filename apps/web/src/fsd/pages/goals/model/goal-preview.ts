@@ -9,7 +9,6 @@ import type {
 import type { GoalKind } from "@/entities/goal"
 
 import { estimateGoal } from "./estimate/estimate"
-import { DAILY_ENERGY } from "./estimate/estimate.domain"
 import type { EstimateResult } from "./estimate/estimate.domain"
 import {
   computeMissingUpgrades,
@@ -46,6 +45,7 @@ export function computeCreationPreview(params: {
     readonly { upgradeId: UpgradeId; amount: number }[] | undefined
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   battlesById: Parameters<typeof estimateGoal>[0]["battlesById"]
+  dailyEnergy?: number
 }): {
   missingUpgrades: MissingUpgradeEntry[]
   estimatePreview: EstimateResult | null
@@ -93,7 +93,7 @@ export function computeCreationPreview(params: {
           })),
           upgradesById: params.upgradesById,
           battlesById: params.battlesById,
-          dailyEnergy: DAILY_ENERGY,
+          dailyEnergy: params.dailyEnergy ?? 288,
         })
       : null
 

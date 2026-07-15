@@ -11,6 +11,7 @@ import {
 
 import { getGoal } from "@/entities/goal"
 import type { ProjectGoalSummary } from "@/entities/project"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
 
 import { computePlanInsights } from "./plan-insights-calc"
@@ -57,6 +58,7 @@ export function usePlanInsights(
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+  const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
 
@@ -152,6 +154,8 @@ export function usePlanInsights(
             getCharacter,
             campaignName,
             campaignFullLabel,
+            dailyEnergy: planningSettings.dailyEnergy,
+            ordering: planningSettings.ordering,
           })
 
           setFetchState({ status: "success", key: memberKey, result })
@@ -166,7 +170,14 @@ export function usePlanInsights(
       active = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasQuery, catalogReady, account?.homeAccountId, memberKey])
+  }, [
+    hasQuery,
+    catalogReady,
+    account?.homeAccountId,
+    memberKey,
+    planningSettings.dailyEnergy,
+    planningSettings.ordering,
+  ])
 
   const isCurrent =
     fetchState.status === "success" && fetchState.key === memberKey

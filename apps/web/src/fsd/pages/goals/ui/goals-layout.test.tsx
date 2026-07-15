@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
@@ -8,6 +9,19 @@ vi.mock("react-i18next", () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
       opts?.defaultValue ?? key,
   }),
+}))
+
+vi.mock("@/entities/planning-setting", () => ({
+  PlanningSettingsProvider: ({ children }: { children: ReactNode }) => children,
+  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    save: vi.fn(),
+  }),
+}))
+
+vi.mock("@/shared/api", () => ({
+  ApiError: class ApiError extends Error {},
 }))
 
 import { GoalsLayout } from "./goals-layout"

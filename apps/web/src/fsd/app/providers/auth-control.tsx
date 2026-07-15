@@ -1,6 +1,7 @@
 import { useState } from "react"
 import {
   LoaderCircle,
+  Download,
   LogIn,
   LogOut,
   RefreshCw,
@@ -28,6 +29,7 @@ import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { ManageAccountDialog } from "@/features/account-management"
+import { ImportV1Dialog } from "@/features/v1-import"
 import { useCurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import {
@@ -91,6 +93,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch, state: accountState } = useCurrentUser()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
+  const [isV1ImportOpen, setIsV1ImportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
 
   const handleSignIn = () => {
@@ -216,6 +219,20 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             </>
           ) : null}
           <Button
+            aria-label={t("goals.v1Import.menu")}
+            className="w-full justify-start"
+            data-testid="auth-v1-import"
+            onClick={() => {
+              setIsV1ImportOpen(true)
+              setMenuOpen(false)
+            }}
+            size="sm"
+            variant="ghost"
+          >
+            <Download data-icon="inline-start" />
+            {t("goals.v1Import.menu")}
+          </Button>
+          <Button
             aria-label={t("auth.manageAccount")}
             className="w-full justify-start"
             data-testid="auth-manage-account"
@@ -280,6 +297,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
         onOpenChange={setIsManageAccountOpen}
         open={isManageAccountOpen}
       />
+      <ImportV1Dialog open={isV1ImportOpen} onOpenChange={setIsV1ImportOpen} />
     </div>
   )
 }

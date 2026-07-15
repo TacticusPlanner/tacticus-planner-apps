@@ -19,6 +19,7 @@ import { getInventoryUpgrades } from "@workspace/player-data/queries"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { createCombinedGoals, type GoalKind } from "@/entities/goal"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import { listProjects, type ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
@@ -52,6 +53,7 @@ export function useCreateGoalForm({
   const { t } = useTranslation()
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
+  const { settings: planningSettings } = usePlanningSettings()
 
   const {
     charactersById,
@@ -237,6 +239,7 @@ export function useCreateGoalForm({
         inventoryUpgrades,
         upgradesById,
         battlesById,
+        dailyEnergy: planningSettings.dailyEnergy,
       }),
     [
       entityType,
@@ -255,6 +258,7 @@ export function useCreateGoalForm({
       inventoryUpgrades,
       upgradesById,
       battlesById,
+      planningSettings.dailyEnergy,
     ]
   )
 

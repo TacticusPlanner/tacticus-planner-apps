@@ -228,6 +228,7 @@ export function estimatePlan({
   battlesById,
   dailyEnergy,
   inventory,
+  ordering = "GoalPriority",
   referenceDate = new Date(),
 }: {
   goals: GoalNeed[]
@@ -235,6 +236,7 @@ export function estimatePlan({
   battlesById: ReadonlyMap<BattleId, Battle>
   dailyEnergy: number
   inventory: MaterialNeed[]
+  ordering?: "GoalPriority" | "TotalMaterials"
   referenceDate?: Date
 }): Map<string, EstimateResult | null> {
   const ordered = [...goals].sort((a, b) => a.priority - b.priority)
@@ -293,6 +295,17 @@ export function estimatePlan({
     nodesByGoal.set(goal.goalId, nodesById)
   }
 
+  if (ordering === "TotalMaterials") {
+    return estimatePooledPlan({
+      ordered,
+      remainingByGoal,
+      nodesByGoal,
+      results,
+      dailyEnergy,
+      referenceDate,
+    })
+  }
+
   // Step 2: one combined day loop. Each day, every still-pending goal (in priority order) spends
   // against the same shared daily energy budget in turn, so goal N only sees what priority 1..N-1
   // left over that day.
@@ -345,5 +358,84 @@ export function estimatePlan({
     results.set(goalId, null)
   }
 
+  return results
+}
+
+function estimatePooledPlan({
+  ordered,
+  remainingByGoal,
+  nodesByGoal,
+  results,
+  dailyEnergy,
+  referenceDate,
+}: {
+  ordered: GoalNeed[]
+  remainingByGoal: Map<string, Map<EstimateResourceId, number>>
+  nodesByGoal: Map<string, Map<EstimateResourceId, FarmNode[]>>
+  results: Map<string, EstimateResult | null>
+  dailyEnergy: number
+  referenceDate: Date
+}): Map<string, EstimateResult | null> {
+  const totals = new Map<EstimateResourceId, number>()
+  const pooledNodes = new Map<EstimateResourceId, FarmNode[]>()
+  for (const goal of ordered) {
+    const remaining = remainingByGoal.get(goal.goalId)
+    if (!remaining) continue
+    for (const [id, count] of remaining) {
+      totals.set(id, (totals.get(id) ?? 0) + count)
+      if (!pooledNodes.has(id)) {
+        pooledNodes.set(id, nodesByGoal.get(goal.goalId)?.get(id) ?? [])
+      }
+    }
+  }
+  // Resource selection must not inherit project priority. A stable resource-id order makes the
+  // pooled farm deterministic even when callers reorder goals or change their priorities.
+  const pooled = new Map(
+    [...totals].sort(([left], [right]) =>
+      String(left).localeCompare(String(right))
+    )
+  )
+
+  const pending = new Set(remainingByGoal.keys())
+  let days = 0
+  let energyTotal = 0
+  let raidsTotal = 0
+
+  while (pending.size > 0 && days < MAX_DAYS) {
+    days++
+    const before = new Map(pooled)
+    const spent = spendDay(pooled, pooledNodes, dailyEnergy)
+    if (spent.energySpent === 0) break
+    energyTotal += spent.energySpent
+    raidsTotal += spent.raidsPerformed
+
+    for (const [id, oldCount] of before) {
+      let acquired = oldCount - (pooled.get(id) ?? 0)
+      if (acquired <= 0) continue
+      for (const goal of ordered) {
+        if (!pending.has(goal.goalId)) continue
+        const remaining = remainingByGoal.get(goal.goalId)!
+        const needed = remaining.get(id) ?? 0
+        if (needed <= 0) continue
+        const applied = Math.min(needed, acquired)
+        const next = needed - applied
+        if (next <= 0) remaining.delete(id)
+        else remaining.set(id, next)
+        acquired -= applied
+        if (remaining.size === 0) {
+          results.set(goal.goalId, {
+            days,
+            date: formatDate(addDays(referenceDate, days)),
+            energyTotal,
+            raidsTotal,
+          })
+          pending.delete(goal.goalId)
+        }
+        if (acquired <= 0) break
+      }
+    }
+  }
+
+  for (const goalId of pending) results.set(goalId, null)
   return results
 }
