@@ -40,8 +40,13 @@ const characters = new Map([
   ["hero2", { id: "hero2", name: "Hero Two", faction: "Ultramarines" }],
 ])
 
+const mows = new Map([
+  ["mow1", { id: "mow1", name: "Stormbird", faction: "Ultramarines" }],
+])
+
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
+  getMowsMap: () => mows,
   getUpgrades: () => [],
   getCampaignBattles: () => [],
 }))
@@ -179,5 +184,25 @@ describe("GoalsList", () => {
     await screen.findByText("Hero One")
 
     expect(screen.getAllByTestId("goal-row-milestones")).toHaveLength(1)
+  })
+
+  it("resolves a Machine of War row's display name from the mows catalog", async () => {
+    const mowRows: GoalRow[] = [
+      {
+        goalId: "goal-3",
+        entityType: "Mow",
+        entityId: "mow1",
+        goalType: "Ability",
+        status: "Active",
+        priority: 10,
+        milestonesTotal: 0,
+        milestonesCompleted: 0,
+      },
+    ]
+    render(
+      <GoalsList actions={stubActions} reorderEnabled={false} rows={mowRows} />
+    )
+
+    expect(await screen.findByText("Stormbird")).toBeInTheDocument()
   })
 })

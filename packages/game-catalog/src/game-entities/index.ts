@@ -5,6 +5,7 @@ export {
   rarityIcon,
   rankIcon,
   characterIcon,
+  mowIcon,
   campaignIcon,
   campaignDescriptor,
   traitIcon,

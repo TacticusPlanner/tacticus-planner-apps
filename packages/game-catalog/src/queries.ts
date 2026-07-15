@@ -7,6 +7,7 @@ import type {
   CampaignBattleStorageModel,
   CampaignDefinitionStorageModel,
   CharacterStorageModel,
+  MowStorageModel,
   UpgradeStorageModel,
 } from "./game-catalog.storage"
 
@@ -22,6 +23,16 @@ export async function getCharactersMap(): Promise<
 > {
   const characters = await getCharacters()
   return new Map(characters.map((character) => [character.id, character]))
+}
+
+export function getMows(): Promise<MowStorageModel[]> {
+  return getDatasetRecords("mows")
+}
+
+// Mirrors getCharactersMap() — the common case of indexing Machines of War by id.
+export async function getMowsMap(): Promise<Map<string, MowStorageModel>> {
+  const mows = await getMows()
+  return new Map(mows.map((mow) => [mow.id, mow]))
 }
 
 export function getUpgrades(): Promise<UpgradeStorageModel[]> {

@@ -12,3 +12,7 @@ export function getInventoryUpgrades() {
 export function getPlayerCharacter(unitId: UnitId) {
   return getChunkRecord("characters", unitId)
 }
+
+export function getPlayerMow(unitId: UnitId) {
+  return getChunkRecord("mows", unitId)
+}

@@ -16,27 +16,28 @@ import {
   type UnitId,
 } from "@workspace/game-domain"
 import { getInventoryUpgrades } from "@workspace/player-data/queries"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { createCombinedGoals, type GoalKind } from "@/entities/goal"
 import { listProjects, type ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
-import { estimateGoal } from "./estimate/estimate"
-import { DAILY_ENERGY } from "./estimate/estimate.domain"
-import {
-  buildCombinedGoalSpecs,
-  buildReviewItems,
-  computeMissingUpgrades,
-} from "./goal-spec-builder"
+import { computeCreationPreview } from "./goal-preview"
+import { buildCombinedGoalSpecs, buildReviewItems } from "./goal-spec-builder"
 import { useGoalCatalog } from "./use-goal-catalog"
 import { useGoalPrefill } from "./use-goal-prefill"
 import { useGoalPrerequisites } from "./use-goal-prerequisites"
 
 const DEFAULT_PROJECT_VALUE = "__default__"
 
+export type EntityType = "Character" | "Mow"
+
+const defaultTypesFor = (entityType: EntityType): Set<GoalKind> =>
+  new Set(entityType === "Mow" ? ["Ability"] : ["Rank"])
+
 /**
  * Everything CreateGoalSheet needs to render: catalog data, per-field form state, the synced-data
- * prefill effect, the Rank-goal resource preview, and the submit handler. Split out of the UI
+ * prefill effect, the resource-requirement preview, and the submit handler. Split out of the UI
  * component so create-goal-sheet.tsx stays presentational (and under this repo's max-lines rule).
  */
 export function useCreateGoalForm({
@@ -54,16 +55,20 @@ export function useCreateGoalForm({
 
   const {
     charactersById,
+    mowsById,
     upgradesById,
     battlesById,
     characterGroups,
+    mowGroups,
     getCharacter,
+    getMow,
   } = useGoalCatalog()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
 
-  const [characterId, setCharacterId] = useState<UnitId | undefined>(undefined)
-  const [enabledTypes, setEnabledTypes] = useState<ReadonlySet<GoalKind>>(
-    () => new Set<GoalKind>(["Rank"])
+  const [entityType, setEntityType] = useState<EntityType>("Character")
+  const [entityId, setEntityId] = useState<UnitId | undefined>(undefined)
+  const [enabledTypes, setEnabledTypes] = useState<ReadonlySet<GoalKind>>(() =>
+    defaultTypesFor("Character")
   )
 
   const [rankStart, setRankStart] = useState<Rank>(firstRank)
@@ -90,38 +95,55 @@ export function useCreateGoalForm({
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const { playerCharacter } = useGoalPrefill(characterId)
+  const { playerEntity } = useGoalPrefill(entityId, entityType)
+  // A Character's synced record is the only one that ever carries `rank` (plan §16 phase 6 — a MoW
+  // has no rank at all); `entityType` reliably discriminates which shape `playerEntity` actually is,
+  // since useGoalPrefill fetched it based on that same value.
+  // `playerEntity`'s runtime shape always matches `entityType` (useGoalPrefill fetched it based on
+  // that same value) — TS can't correlate two separately-computed variables through the ternary
+  // below, so the cast documents an invariant the types alone can't express.
+  const playerCharacter =
+    entityType === "Character"
+      ? (playerEntity as PlayerDataChunkDto<"characters">[number] | undefined)
+      : undefined
+  const playerMow =
+    entityType === "Mow"
+      ? (playerEntity as PlayerDataChunkDto<"mows">[number] | undefined)
+      : undefined
 
-  // Applies the synced rank/progression prefill once per character selection, mirroring
+  // Applies the synced rank/progression prefill once per entity selection, mirroring
   // character-lookup-page.tsx's ref-guard: never on a later background refresh, so it can't
   // clobber edits the user has since made to the target fields.
-  const prefilledCharacterIdRef = useRef<UnitId | undefined>(undefined)
+  const prefilledEntityIdRef = useRef<UnitId | undefined>(undefined)
   useEffect(() => {
     if (
-      !characterId ||
-      !playerCharacter ||
-      prefilledCharacterIdRef.current === characterId
+      !entityId ||
+      !playerEntity ||
+      prefilledEntityIdRef.current === entityId
     ) {
       return
     }
-    prefilledCharacterIdRef.current = characterId
+    prefilledEntityIdRef.current = entityId
 
-    setRankStart(playerCharacter.rank)
-    setRankEnd((current) =>
-      rankIndex(current) > rankIndex(playerCharacter.rank)
+    // A MoW has no `rank` (plan §16 phase 6) — `playerCharacter?.rank` is `undefined` there, so
+    // these no-op via their functional updaters instead of being wrapped in an `if`, which the
+    // set-state-in-effect lint rule can't recognize as the safe "sync on selection change" idiom.
+    const rank = playerCharacter?.rank
+    setRankStart((current) => rank ?? current)
+    setRankEnd((current) => {
+      if (!rank) return current
+      return rankIndex(current) > rankIndex(rank)
         ? current
-        : rankAt(
-            Math.min(rankIndex(playerCharacter.rank) + 1, rankIndex(lastRank))
-          )
-    )
-    setProgressionStart(playerCharacter.progressionIndex)
+        : rankAt(Math.min(rankIndex(rank) + 1, rankIndex(lastRank)))
+    })
+    setProgressionStart(playerEntity.progressionIndex)
     setProgressionEnd((current) =>
       progressionIndex(current) >
-      progressionIndex(playerCharacter.progressionIndex)
+      progressionIndex(playerEntity.progressionIndex)
         ? current
-        : playerCharacter.progressionIndex
+        : playerEntity.progressionIndex
     )
-  }, [characterId, playerCharacter])
+  }, [entityId, playerEntity, playerCharacter])
 
   useEffect(() => {
     if (!open || !account) {
@@ -145,9 +167,7 @@ export function useCreateGoalForm({
     })
   }
 
-  const resetForm = () => {
-    setCharacterId(undefined)
-    setEnabledTypes(new Set(["Rank"]))
+  const resetTargetFields = () => {
     setRankStart(firstRank)
     setRankEnd(rankAt(1))
     setRankStartPointFive(false)
@@ -159,20 +179,32 @@ export function useCreateGoalForm({
     setAbilityPassiveStart(0)
     setAbilityPassiveEnd(0)
     setShardsCount(0)
-    setProjectId(DEFAULT_PROJECT_VALUE)
-    prefilledCharacterIdRef.current = undefined
   }
 
-  const handleCharacterChange = (id: UnitId) => {
-    setCharacterId(id)
-    setEnabledTypes(new Set(["Rank"]))
-    setRankStart(firstRank)
-    setRankEnd(rankAt(1))
-    setRankStartPointFive(false)
-    setRankEndPointFive(false)
-    setProgressionStart(firstProgression)
-    setProgressionEnd(firstProgression)
-    prefilledCharacterIdRef.current = undefined
+  const resetForm = () => {
+    setEntityType("Character")
+    setEntityId(undefined)
+    setEnabledTypes(defaultTypesFor("Character"))
+    resetTargetFields()
+    setProjectId(DEFAULT_PROJECT_VALUE)
+    prefilledEntityIdRef.current = undefined
+  }
+
+  // Switching entity type (the Characters/MoW tabs, plan §7) clears the selection — Rank isn't
+  // offered on the MoW tab at all (see create-goal-sheet.tsx), so the default toggle set differs.
+  const handleEntityTypeChange = (type: EntityType) => {
+    setEntityType(type)
+    setEntityId(undefined)
+    setEnabledTypes(defaultTypesFor(type))
+    resetTargetFields()
+    prefilledEntityIdRef.current = undefined
+  }
+
+  const handleEntityChange = (id: UnitId) => {
+    setEntityId(id)
+    setEnabledTypes(defaultTypesFor(entityType))
+    resetTargetFields()
+    prefilledEntityIdRef.current = undefined
   }
 
   const rankEndOptions = useMemo(() => {
@@ -180,77 +212,65 @@ export function useCreateGoalForm({
     return options.length > 0 ? options : [rankStart]
   }, [rankStart])
 
-  const character = characterId ? getCharacter(characterId) : undefined
+  const character =
+    entityType === "Character" && entityId ? getCharacter(entityId) : undefined
+  const mow = entityType === "Mow" && entityId ? getMow(entityId) : undefined
 
-  // Resource-requirement preview — pure calc in ./goal-spec-builder.ts (this file's max-lines budget).
-  const missingUpgrades = useMemo(
+  // Resource-requirement preview + isolated day-by-day estimate (plan §9 context (a)) — pure calc in
+  // ./goal-preview.ts, kept out of this file for its max-lines budget.
+  const { missingUpgrades, estimatePreview } = useMemo(
     () =>
-      computeMissingUpgrades({
-        rankEnabled: enabledTypes.has("Rank"),
+      computeCreationPreview({
+        entityType,
+        enabledTypes,
         character,
+        mow,
+        playerCharacter,
+        playerMow,
         rankStart,
         rankEnd,
         rankEndPointFive,
-        playerCharacter,
+        abilityActiveStart,
+        abilityActiveEnd,
+        abilityPassiveStart,
+        abilityPassiveEnd,
         inventoryUpgrades,
         upgradesById,
+        battlesById,
       }),
     [
+      entityType,
       enabledTypes,
       character,
+      mow,
+      playerCharacter,
+      playerMow,
       rankStart,
       rankEnd,
       rankEndPointFive,
-      playerCharacter,
+      abilityActiveStart,
+      abilityActiveEnd,
+      abilityPassiveStart,
+      abilityPassiveEnd,
       inventoryUpgrades,
       upgradesById,
+      battlesById,
     ]
   )
 
-  // Isolated day-by-day estimate for the same Rank range (plan §9 context (a) — computed on its own,
-  // not inserted into any project's schedule). `null` outside a valid Rank range; otherwise built from
-  // `missingUpgrades` (already required-minus-owned) so the two previews never disagree with each
-  // other, and `estimateGoal` itself reports `days: 0` once nothing is missing.
-  const estimatePreview = useMemo(() => {
-    if (
-      !enabledTypes.has("Rank") ||
-      !character ||
-      rankIndex(rankStart) >= rankIndex(rankEnd)
-    ) {
-      return null
-    }
-
-    return estimateGoal({
-      needs: missingUpgrades.map((entry) => ({
-        id: entry.id,
-        count: entry.missing,
-      })),
-      upgradesById,
-      battlesById,
-      dailyEnergy: DAILY_ENERGY,
-    })
-  }, [
-    enabledTypes,
-    character,
-    rankStart,
-    rankEnd,
-    missingUpgrades,
-    upgradesById,
-    battlesById,
-  ])
-
-  // Combined-creation prerequisite detection (plan §6) — a locked character needs Unlock first; a
-  // Rank target beyond what the character's current Ascension allows needs Ascension first. Reruns
-  // whenever the toggled types or their targets change.
+  // Combined-creation prerequisite detection (plan §6) — a locked entity needs Unlock first; a Rank
+  // target beyond what a Character's current Ascension allows needs Ascension first (never triggers
+  // for a MoW, since Rank is never in `enabledTypes` there). Reruns whenever the toggled types or
+  // their targets change.
   const prerequisites = useGoalPrerequisites({
-    isLocked: !!characterId && !playerCharacter,
-    currentProgression: playerCharacter?.progressionIndex,
+    isLocked: !!entityId && !playerEntity,
+    currentProgression: playerEntity?.progressionIndex,
     enabledTypes,
     rankEnd,
   })
 
   // Whether Unlock will actually be submitted — either the user toggled it explicitly, or it's
-  // required as a prerequisite for another enabled type on a locked character.
+  // required as a prerequisite for another enabled type on a locked entity.
   const includesUnlock = enabledTypes.has("Unlock") || prerequisites.needsUnlock
   // Whether Ascension will actually be submitted — either explicit, or the auto-suggested one.
   const includesAscension =
@@ -265,7 +285,7 @@ export function useCreateGoalForm({
   )
 
   const canSubmit =
-    !!characterId &&
+    !!entityId &&
     enabledTypes.size > 0 &&
     (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
     (!enabledTypes.has("Ascension") ||
@@ -274,7 +294,7 @@ export function useCreateGoalForm({
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    if (!account || !characterId || !canSubmit) {
+    if (!account || !entityId || !canSubmit) {
       return
     }
 
@@ -283,8 +303,8 @@ export function useCreateGoalForm({
 
     try {
       await createCombinedGoals(instance, account, {
-        entityType: "Character",
-        entityId: characterId,
+        entityType,
+        entityId,
         projectId: projectId === DEFAULT_PROJECT_VALUE ? undefined : projectId,
         goals: buildCombinedGoalSpecs({
           enabledTypes,
@@ -325,9 +345,13 @@ export function useCreateGoalForm({
   return {
     account,
     charactersById,
+    mowsById,
     characterGroups,
-    characterId,
-    handleCharacterChange,
+    mowGroups,
+    entityType,
+    handleEntityTypeChange,
+    entityId,
+    handleEntityChange,
     enabledTypes,
     toggleType,
     prerequisites,

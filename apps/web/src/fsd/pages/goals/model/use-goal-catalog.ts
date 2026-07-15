@@ -5,6 +5,7 @@ import { groupByFaction, type UnitId } from "@workspace/game-domain"
 import {
   getCampaignBattles,
   getCharactersMap,
+  getMowsMap,
   getUpgrades,
 } from "@workspace/game-catalog/queries"
 
@@ -65,14 +66,36 @@ export function useGoalCatalog() {
     [charactersById, t]
   )
 
+  // Machines of War (plan §16 phase 6) — no `mows` i18n namespace exists (MoW catalog records already
+  // carry a plain display `name`, unlike character ids which key into translated strings), so this
+  // groups on the raw catalog name directly rather than going through `t()`.
+  const mowsById = useLiveQuery(() => getMowsMap(), [])
+  const mowGroups = useMemo(
+    () =>
+      groupByFaction(
+        [...(mowsById?.values() ?? [])].map((mow) => ({
+          id: mow.id,
+          name: mow.name,
+          faction: mow.faction,
+        })),
+        (factionId) => t(`factions:${factionId}`, { defaultValue: factionId })
+      ),
+    [mowsById, t]
+  )
+
   const getCharacter = (unitId: UnitId) => {
     const record = charactersById?.get(unitId)
     return record ? mapCharacterStorageToDomain(record) : undefined
   }
 
-  /** Display name for a goal row (list/grid). Only Character entities resolve via the catalog today
-   * (MoW/upgrade entity types fall back to the raw id — see Phase 3 scope notes). */
+  const getMow = (unitId: UnitId) => mowsById?.get(unitId)
+
+  /** Display name for a goal row (list/grid). Character and Mow entities resolve via the catalog
+   * (upgrade entity types fall back to the raw id — see Phase 3 scope notes). */
   const getEntityName = (entityType: string, entityId: string) => {
+    if (entityType === "Mow") {
+      return mowsById?.get(entityId)?.name ?? entityId
+    }
     if (entityType !== "Character") {
       return entityId
     }
@@ -87,10 +110,13 @@ export function useGoalCatalog() {
 
   return {
     charactersById,
+    mowsById,
     upgradesById,
     battlesById,
     characterGroups,
+    mowGroups,
     getCharacter,
+    getMow,
     getEntityName,
     loading,
   }

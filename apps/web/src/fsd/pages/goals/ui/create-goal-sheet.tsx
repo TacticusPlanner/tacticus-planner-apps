@@ -19,10 +19,14 @@ import {
 } from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Switch } from "@workspace/ui/components/switch"
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+
+import { mowIcon } from "@workspace/game-catalog"
 
 import type { GoalKind } from "@/entities/goal"
 import { CharacterCombobox } from "@/shared/ui"
 
+import type { EntityType } from "../model/use-create-goal-form"
 import { useCreateGoalForm } from "../model/use-create-goal-form"
 import {
   AbilityGoalFields,
@@ -31,13 +35,17 @@ import {
   ShardsGoalFields,
 } from "./goal-type-fields"
 
-const GOAL_KINDS: GoalKind[] = [
+// Rank is omitted entirely on the MoW tab (plan §16 phase 6) — MoWs have no rank ladder, so offering
+// the toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs`
+// never handle for that entity.
+const CHARACTER_GOAL_KINDS: GoalKind[] = [
   "Rank",
   "Ascension",
   "Ability",
   "Unlock",
   "Shards",
 ]
+const MOW_GOAL_KINDS: GoalKind[] = ["Ascension", "Ability", "Unlock", "Shards"]
 
 type CreateGoalSheetProps = {
   open: boolean
@@ -47,9 +55,10 @@ type CreateGoalSheetProps = {
 }
 
 /**
- * Goal-creation side panel — Characters only, combined multi-goal-type composer (plan §6/§7/§16
- * phase 5): toggle any combination of Rank/Ascension/Ability/Unlock/Shards for one character,
- * `useCreateGoalForm`'s `useGoalPrerequisites` auto-suggests Unlock (locked character) and Ascension
+ * Goal-creation side panel — a Characters/Machines of War tab switch (plan §7/§16 phase 6) over a
+ * combined multi-goal-type composer (plan §6/§16 phase 5): toggle any combination of goal types for
+ * one entity (Rank is only ever offered for a Character — MoWs have no rank ladder),
+ * `useCreateGoalForm`'s `useGoalPrerequisites` auto-suggests Unlock (locked entity) and Ascension
  * (unreachable target rank), and the review block below lists everything about to be created before
  * a single combined submit. Mirrors `manage-account-dialog.tsx`'s controlled-form shape
  * (reset-and-stay-open on "create another"), but hosted in a `Sheet` instead of a `Dialog`. All
@@ -80,24 +89,65 @@ export function CreateGoalSheet({
           className="flex flex-1 flex-col gap-4 overflow-y-auto px-6"
           onSubmit={(event) => void form.handleSubmit(event)}
         >
+          <Tabs
+            value={form.entityType}
+            onValueChange={(value) =>
+              form.handleEntityTypeChange(value as EntityType)
+            }
+          >
+            <TabsList>
+              <TabsTrigger
+                data-testid="create-goal-entity-type-character"
+                value="Character"
+              >
+                {t("goals.create.entityType.character")}
+              </TabsTrigger>
+              <TabsTrigger
+                data-testid="create-goal-entity-type-mow"
+                value="Mow"
+              >
+                {t("goals.create.entityType.mow")}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <div className="grid gap-2">
-            <Label>{t("goals.create.characterLabel")}</Label>
-            <CharacterCombobox
-              groups={form.characterGroups}
-              value={form.characterId}
-              onChange={form.handleCharacterChange}
-              placeholder={t("goals.create.characterPlaceholder")}
-              emptyText={t("goals.create.characterEmpty")}
-            />
+            {form.entityType === "Mow" ? (
+              <>
+                <Label>{t("goals.create.mowLabel")}</Label>
+                <CharacterCombobox
+                  groups={form.mowGroups}
+                  value={form.entityId}
+                  onChange={form.handleEntityChange}
+                  placeholder={t("goals.create.mowPlaceholder")}
+                  emptyText={t("goals.create.mowEmpty")}
+                  icon={mowIcon}
+                />
+              </>
+            ) : (
+              <>
+                <Label>{t("goals.create.characterLabel")}</Label>
+                <CharacterCombobox
+                  groups={form.characterGroups}
+                  value={form.entityId}
+                  onChange={form.handleEntityChange}
+                  placeholder={t("goals.create.characterPlaceholder")}
+                  emptyText={t("goals.create.characterEmpty")}
+                />
+              </>
+            )}
           </div>
 
-          {form.charactersById && form.characterId ? (
+          {form.entityId ? (
             <div className="grid gap-1.5">
               <Label className="text-xs text-muted-foreground">
                 {t("goals.create.goalTypeLabel")}
               </Label>
               <div className="grid grid-cols-2 gap-2">
-                {GOAL_KINDS.map((kind) => (
+                {(form.entityType === "Mow"
+                  ? MOW_GOAL_KINDS
+                  : CHARACTER_GOAL_KINDS
+                ).map((kind) => (
                   <Field key={kind} orientation="horizontal">
                     <Switch
                       checked={form.enabledTypes.has(kind)}
@@ -115,7 +165,7 @@ export function CreateGoalSheet({
             </div>
           ) : null}
 
-          {form.characterId && form.enabledTypes.has("Rank") ? (
+          {form.entityId && form.enabledTypes.has("Rank") ? (
             <RankGoalFields
               rankStart={form.rankStart}
               rankEnd={form.rankEnd}
@@ -131,7 +181,7 @@ export function CreateGoalSheet({
             />
           ) : null}
 
-          {form.characterId && form.enabledTypes.has("Ascension") ? (
+          {form.entityId && form.enabledTypes.has("Ascension") ? (
             <AscensionGoalFields
               progressionStart={form.progressionStart}
               progressionEnd={form.progressionEnd}
@@ -140,7 +190,7 @@ export function CreateGoalSheet({
             />
           ) : null}
 
-          {form.characterId && form.enabledTypes.has("Ability") ? (
+          {form.entityId && form.enabledTypes.has("Ability") ? (
             <AbilityGoalFields
               activeStart={form.abilityActiveStart}
               activeEnd={form.abilityActiveEnd}
@@ -153,20 +203,20 @@ export function CreateGoalSheet({
             />
           ) : null}
 
-          {form.characterId && form.enabledTypes.has("Shards") ? (
+          {form.entityId && form.enabledTypes.has("Shards") ? (
             <ShardsGoalFields
               count={form.shardsCount}
               onCountChange={form.setShardsCount}
             />
           ) : null}
 
-          {form.characterId && form.enabledTypes.has("Unlock") ? (
+          {form.entityId && form.enabledTypes.has("Unlock") ? (
             <p className="text-sm text-muted-foreground">
               {t("goals.create.unlockDescription")}
             </p>
           ) : null}
 
-          {form.characterId && form.reviewItems.length > 0 ? (
+          {form.entityId && form.reviewItems.length > 0 ? (
             <div
               className="grid gap-1 rounded-2xl border p-3 text-sm"
               data-testid="create-goal-review"
@@ -192,7 +242,7 @@ export function CreateGoalSheet({
             </div>
           ) : null}
 
-          {form.characterId ? (
+          {form.entityId ? (
             <div className="grid gap-1.5">
               <Label className="text-xs text-muted-foreground">
                 {t("goals.create.projectLabel")}

@@ -27,12 +27,16 @@ export function CharacterCombobox({
   onChange,
   placeholder,
   emptyText,
+  // Defaults to the Character icon resolver; pass `mowIcon` (or any other) to reuse this same
+  // combobox for a different entity type — it's otherwise generic over {id, name, faction} groups.
+  icon = characterIcon,
 }: {
   groups: FactionGroup[]
   value?: UnitId
   onChange: (id: UnitId) => void
   placeholder: string
   emptyText: string
+  icon?: (id: UnitId) => string | undefined
 }) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -87,7 +91,7 @@ export function CharacterCombobox({
           <span className="flex min-w-0 items-center gap-2">
             {selected && (
               <EntityIcon
-                src={characterIcon(selected.id)}
+                src={icon(selected.id)}
                 alt=""
                 className="size-9 shrink-0 rounded-full"
               />
@@ -122,7 +126,7 @@ export function CharacterCombobox({
                     className="gap-2"
                   >
                     <EntityIcon
-                      src={characterIcon(member.id)}
+                      src={icon(member.id)}
                       alt=""
                       className="size-9 shrink-0 rounded-full"
                     />

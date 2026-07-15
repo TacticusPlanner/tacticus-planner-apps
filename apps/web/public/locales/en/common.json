@@ -306,9 +306,16 @@
     },
     "create": {
       "title": "Create a goal",
+      "entityType": {
+        "character": "Characters",
+        "mow": "Machines of War"
+      },
       "characterLabel": "Character",
       "characterPlaceholder": "Select a character",
       "characterEmpty": "No character found.",
+      "mowLabel": "Machine of War",
+      "mowPlaceholder": "Select a machine of war",
+      "mowEmpty": "No machine of war found.",
       "goalTypeLabel": "Goal type",
       "goalTypes": {
         "Rank": "Rank",

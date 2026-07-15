@@ -64,12 +64,14 @@ const characters = new Map([
 
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
+  getMowsMap: () => new Map(),
   getUpgrades: () => [],
   getCampaignBattles: () => [],
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: () => Promise.resolve(undefined),
+  getPlayerMow: () => Promise.resolve(undefined),
   getInventoryUpgrades: () => undefined,
 }))
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 // Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
 // pages/lookup/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
@@ -107,17 +108,35 @@ const battles = [
   },
 ]
 
+const mows = new Map([
+  [
+    "mow1",
+    {
+      id: "mow1",
+      name: "Stormbird",
+      unitKind: "Vehicle",
+      faction: "Ultramarines",
+      alliance: "Imperial",
+      primaryAbility: { name: "Smash", recipes: [["h1"]] },
+      secondaryAbility: { name: "Crush", recipes: [] },
+    },
+  ],
+])
+
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
+  getMowsMap: () => mows,
   getUpgrades: () => upgrades,
   getCampaignBattles: () => battles,
 }))
 
 const getPlayerCharacter = vi.fn()
+const getPlayerMow = vi.fn()
 const getInventoryUpgrades = vi.fn()
 
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: (...args: unknown[]) => getPlayerCharacter(...args),
+  getPlayerMow: (...args: unknown[]) => getPlayerMow(...args),
   getInventoryUpgrades: (...args: unknown[]) => getInventoryUpgrades(...args),
 }))
 
@@ -145,6 +164,17 @@ async function selectCharacter() {
   fireEvent.click(await screen.findByText("Hero One"))
 }
 
+async function selectMow() {
+  const user = userEvent.setup()
+  await user.click(screen.getByTestId("create-goal-entity-type-mow"))
+  fireEvent.click(
+    screen.getByRole("combobox", {
+      name: "goals.create.mowPlaceholder",
+    })
+  )
+  fireEvent.click(await screen.findByText("Stormbird"))
+}
+
 describe("CreateGoalSheet", () => {
   beforeEach(() => {
     createCombinedGoals.mockReset()
@@ -160,6 +190,8 @@ describe("CreateGoalSheet", () => {
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
     })
+    getPlayerMow.mockReset()
+    getPlayerMow.mockResolvedValue(undefined)
     getInventoryUpgrades.mockReset()
     getInventoryUpgrades.mockReturnValue(undefined)
   })
@@ -295,6 +327,52 @@ describe("CreateGoalSheet", () => {
     expect(request.goals[1]).toMatchObject({
       goalType: "Rank",
       dependsOnIndex: [0],
+    })
+  })
+
+  it("creates an Ability goal for the selected Machine of War, with no Rank toggle offered", async () => {
+    // Owned (mirrors the Character "plain" tests' getPlayerCharacter override) so this test exercises
+    // the no-auto-suggestion path — an undefined playerMow would auto-suggest Unlock, like the locked-
+    // character test above.
+    getPlayerMow.mockResolvedValue({
+      progressionIndex: "Common:None",
+      abilities: [],
+      appliedUpgradeSlots: [],
+    })
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectMow()
+    // Wait for useGoalPrefill's getPlayerMow() to resolve — before it resolves, isLocked reads its
+    // pre-resolution default (locked), which would also auto-suggest Unlock.
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-review").querySelectorAll("li")
+      ).toHaveLength(1)
+    })
+
+    expect(
+      screen.queryByTestId("create-goal-type-toggle-Rank")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId("create-goal-type-toggle-Ability")
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [, , request] = createCombinedGoals.mock.calls[0]
+    expect(request).toMatchObject({
+      entityType: "Mow",
+      entityId: "mow1",
+      projectId: undefined,
+    })
+    expect(request.goals).toHaveLength(1)
+    expect(request.goals[0]).toMatchObject({
+      goalType: "Ability",
+      dependsOnIndex: [],
     })
   })
 })

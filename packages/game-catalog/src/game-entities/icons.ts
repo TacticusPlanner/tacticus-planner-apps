@@ -51,6 +51,15 @@ export function characterIcon(id: UnitId): string | undefined {
   return `${ASSET_BASE_PATH}/characters/ui_image_RoundPortrait_${slug}_01.png`
 }
 
+// No Machine of War portrait assets are synced into /public/game_catalog/ yet (only a `characters/`
+// folder exists today) — returns `undefined` until that asset set ships, which `EntityIcon` already
+// renders as "no icon" rather than a broken image (see shared/ui/entity-icon.tsx). Revisit once MoW
+// assets are available; likely the same RoundPortrait naming convention under a `mows/` folder.
+export function mowIcon(id: UnitId): string | undefined {
+  void id
+  return undefined
+}
+
 // ---- Campaign icon + descriptor -------------------------------------------------------------
 
 // Storyline base names, indexed 1-4 — the asset/i18n-name-key stem shared by all four of a

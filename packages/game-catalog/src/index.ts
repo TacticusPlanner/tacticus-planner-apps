@@ -61,6 +61,7 @@ export {
 export {
   type StorageModel,
   type CharacterStorageModel,
+  type MowStorageModel,
   type UpgradeStorageModel,
   type CampaignBattleStorageModel,
   type CampaignDefinitionStorageModel,
@@ -73,6 +74,7 @@ export {
   rarityIcon,
   rankIcon,
   characterIcon,
+  mowIcon,
   campaignIcon,
   campaignDescriptor,
   type CampaignDescriptor,
