@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   deleteGoal,
@@ -11,7 +12,6 @@ import {
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
-import { useActiveAccountId } from "@/shared/auth"
 
 /**
  * Per-goal lifecycle mutations (pause/resume/complete/archive/unarchive/delete) shared by the list, grid,
@@ -22,36 +22,27 @@ import { useActiveAccountId } from "@/shared/auth"
 export function useGoalActions(_onChanged?: () => void) {
   void _onChanged
   const { t } = useTranslation()
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const [pendingId, setPendingId] = useState<string | null>(null)
   const mutation = useMutation({
-    mutationFn: ({
-      action,
-    }: {
-      action: () => Promise<unknown>
-      accountId: string
-    }) => action(),
-    onSuccess: async (_result, variables) => {
+    mutationFn: (action: () => Promise<unknown>) => action(),
+    onSuccess: async () => {
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: goalQueries.all(variables.accountId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: projectQueries.all(variables.accountId),
-        }),
+        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
       ])
     },
   })
 
   const run = async (goalId: string, action: () => Promise<unknown>) => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return
     }
 
     setPendingId(goalId)
     try {
-      await mutation.mutateAsync({ action, accountId })
+      await mutation.mutateAsync(action)
       return true
     } catch (error) {
       toast.error(
@@ -66,7 +57,7 @@ export function useGoalActions(_onChanged?: () => void) {
   }
 
   const setStatus = async (goalId: string, status: GoalStatus) => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return
     }
 
@@ -77,7 +68,7 @@ export function useGoalActions(_onChanged?: () => void) {
   }
 
   const remove = async (goalId: string) => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return false
     }
 

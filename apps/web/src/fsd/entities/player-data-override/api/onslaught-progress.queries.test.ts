@@ -9,23 +9,14 @@ vi.mock("./onslaught-progress.api", () => ({
 import { onslaughtProgressQueries } from "./onslaught-progress.queries"
 
 describe("onslaught progress queries", () => {
-  it("builds an account-scoped key and delegates its query", async () => {
+  it("builds a resource key and delegates its query", async () => {
     const signal = new AbortController().signal
-    const query = onslaughtProgressQueries.current("account-1")
+    const query = onslaughtProgressQueries.current()
 
     await query.queryFn?.({ signal } as never)
 
-    expect(onslaughtProgressQueries.all("account-1")).toEqual([
-      "account",
-      "account-1",
-      "player-data-overrides",
-    ])
-    expect(query.queryKey).toEqual([
-      "account",
-      "account-1",
-      "player-data-overrides",
-      "onslaught",
-    ])
+    expect(onslaughtProgressQueries.all()).toEqual(["player-data-overrides"])
+    expect(query.queryKey).toEqual(["player-data-overrides", "onslaught"])
     expect(getProgress).toHaveBeenCalledWith(signal)
   })
 })

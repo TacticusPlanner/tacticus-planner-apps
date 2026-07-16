@@ -38,8 +38,8 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
-    current: (accountId: string) => ({
-      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+    current: () => ({
+      queryKey: ["player-data-overrides", "onslaught"],
       queryFn: () =>
         Promise.resolve({
           imperial: { sector: "Stone", tier: 1 },
@@ -79,7 +79,7 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
-  useIsAuthenticated: () => false,
+  useIsAuthenticated: () => true,
 }))
 
 const characters = new Map([
@@ -125,13 +125,13 @@ vi.mock("@/entities/goal", () => ({
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
   goalQueries: {
-    all: (accountId: string) => ["account", accountId, "goals"],
-    list: (accountId: string, archived: boolean) => ({
-      queryKey: ["account", accountId, "goals", "list", { archived }],
+    all: () => ["goals"],
+    list: (archived: boolean) => ({
+      queryKey: ["goals", "list", { archived }],
       queryFn: () => listGoals({ archived }),
     }),
-    detail: (accountId: string, goalId: string) => ({
-      queryKey: ["account", accountId, "goals", "detail", goalId],
+    detail: (goalId: string) => ({
+      queryKey: ["goals", "detail", goalId],
       queryFn: () => Promise.resolve(undefined),
     }),
   },
@@ -155,13 +155,13 @@ vi.mock("@/entities/project", () => ({
   updateProjectGoalsStatus: (...args: unknown[]) =>
     updateProjectGoalsStatus(...args),
   projectQueries: {
-    all: (accountId: string) => ["account", accountId, "projects"],
-    list: (accountId: string) => ({
-      queryKey: ["account", accountId, "projects", "list"],
+    all: () => ["projects"],
+    list: () => ({
+      queryKey: ["projects", "list"],
       queryFn: () => listProjects(),
     }),
-    goals: (accountId: string, projectId: string) => ({
-      queryKey: ["account", accountId, "projects", projectId, "goals"],
+    goals: (projectId: string) => ({
+      queryKey: ["projects", projectId, "goals"],
       queryFn: () => listProjectGoals(projectId),
     }),
   },

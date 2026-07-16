@@ -41,8 +41,8 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
-    current: (accountId: string) => ({
-      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+    current: () => ({
+      queryKey: ["player-data-overrides", "onslaught"],
       queryFn: () =>
         Promise.resolve({
           imperial: { sector: "Stone", tier: 1 },
@@ -190,8 +190,8 @@ vi.mock("@/entities/goal", () => ({
 vi.mock("@/entities/project", () => ({
   listProjects: (...args: unknown[]) => listProjects(...args),
   projectQueries: {
-    list: (accountId: string) => ({
-      queryKey: ["account", accountId, "projects", "list"],
+    list: () => ({
+      queryKey: ["projects", "list"],
       queryFn: () => listProjects(),
     }),
   },

@@ -16,6 +16,7 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
+  useIsAuthenticated: () => true,
 }))
 
 vi.mock("sonner", () => ({
@@ -28,11 +29,16 @@ const deleteGoal = vi.fn()
 vi.mock("@/entities/goal", () => ({
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
+  goalQueries: { all: () => ["goals"] },
   useGoalRefresh: () => ({
     revision: 0,
     refreshGoals: vi.fn(),
     registerGoalRefetch: vi.fn(() => () => undefined),
   }),
+}))
+
+vi.mock("@/entities/project", () => ({
+  projectQueries: { all: () => ["projects"] },
 }))
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))

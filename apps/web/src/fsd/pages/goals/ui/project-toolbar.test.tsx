@@ -15,6 +15,7 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
+  useIsAuthenticated: () => true,
 }))
 
 vi.mock("sonner", () => ({
@@ -28,6 +29,11 @@ vi.mock("@/entities/project", () => ({
   activateProject: (...args: unknown[]) => activateProject(...args),
   updateProjectGoalsStatus: (...args: unknown[]) =>
     updateProjectGoalsStatus(...args),
+  projectQueries: { all: () => ["projects"] },
+}))
+
+vi.mock("@/entities/goal", () => ({
+  goalQueries: { all: () => ["goals"] },
 }))
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))

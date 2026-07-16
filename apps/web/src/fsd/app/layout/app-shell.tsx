@@ -9,7 +9,6 @@ import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { CreateGoalSheet } from "@/pages/goals"
-import { useActiveAccountId } from "@/shared/auth"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
@@ -63,15 +62,11 @@ function ShellContent({
   visibleItems: typeof navItems
 }) {
   const [createOpen, setCreateOpen] = useState(false)
-  const accountId = useActiveAccountId()
   const queryClient = useQueryClient()
   const refreshGoals = () => {
-    if (!accountId) return
     void Promise.all([
-      queryClient.invalidateQueries({ queryKey: goalQueries.all(accountId) }),
-      queryClient.invalidateQueries({
-        queryKey: projectQueries.all(accountId),
-      }),
+      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
     ])
   }
   const shellProps = {

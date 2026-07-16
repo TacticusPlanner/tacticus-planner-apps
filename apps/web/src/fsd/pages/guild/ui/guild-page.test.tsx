@@ -27,13 +27,14 @@ const { mockAccounts, mockInstance } = vi.hoisted(() => {
 
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ accounts: mockAccounts, instance: mockInstance }),
+  useIsAuthenticated: () => true,
 }))
 
 vi.mock("@/entities/guild", () => ({
   getMyGuild: (...args: unknown[]) => getMyGuild(...args),
   guildQueries: {
-    current: (accountId: string) => ({
-      queryKey: ["account", accountId, "guild", "current"],
+    current: () => ({
+      queryKey: ["guild", "current"],
       queryFn: () => getMyGuild(),
     }),
   },

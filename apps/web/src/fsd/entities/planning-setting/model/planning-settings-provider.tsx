@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react"
-import { useMsal } from "@azure/msal-react"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   getPlanningSettings,
@@ -17,28 +17,27 @@ export function PlanningSettingsProvider({
 }: {
   children: ReactNode
 }) {
-  const { instance, accounts } = useMsal()
-  const accountId = (instance.getActiveAccount() ?? accounts[0])?.homeAccountId
+  const isAuthenticated = useIsAuthenticated()
   const [settings, setSettings] = useState(defaultPlanningSettings)
-  const [settledAccountId, setSettledAccountId] = useState<string>()
-  const loading = Boolean(accountId && settledAccountId !== accountId)
+  const [settled, setSettled] = useState(false)
+  const loading = isAuthenticated && !settled
 
   useEffect(() => {
-    if (!accountId) return
+    if (!isAuthenticated) return
     let active = true
     void getPlanningSettings().then(
       (value) => {
         if (active) setSettings(value)
-        if (active) setSettledAccountId(accountId)
+        if (active) setSettled(true)
       },
       () => {
-        if (active) setSettledAccountId(accountId)
+        if (active) setSettled(true)
       }
     )
     return () => {
       active = false
     }
-  }, [accountId])
+  }, [isAuthenticated])
 
   const value = useMemo<PlanningSettingsContextValue>(
     () => ({
@@ -47,10 +46,10 @@ export function PlanningSettingsProvider({
       save: async (next) => {
         const saved = await updatePlanningSettings(next)
         setSettings(saved)
-        setSettledAccountId(accountId)
+        setSettled(true)
       },
     }),
-    [accountId, loading, settings]
+    [loading, settings]
   )
 
   return (

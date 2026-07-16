@@ -1,18 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { authenticatedQueryKey } from "@/shared/api"
-
 import { getOnslaughtProgress } from "./onslaught-progress.api"
 
 export const onslaughtProgressQueries = {
-  all: (accountId: string) =>
-    [...authenticatedQueryKey(accountId), "player-data-overrides"] as const,
-  current: (accountId: string) =>
+  all: () => ["player-data-overrides"] as const,
+  current: () =>
     queryOptions({
-      queryKey: [
-        ...onslaughtProgressQueries.all(accountId),
-        "onslaught",
-      ] as const,
+      queryKey: [...onslaughtProgressQueries.all(), "onslaught"] as const,
       queryFn: ({ signal }) => getOnslaughtProgress(signal),
     }),
 }

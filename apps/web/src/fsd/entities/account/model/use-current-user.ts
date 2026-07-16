@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-
-import { useActiveAccountId } from "@/shared/auth"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import { accountQueries } from "../api/account.queries"
 import type { CurrentUser } from "./current-user"
@@ -12,14 +11,14 @@ export type CurrentUserState =
   | { status: "error"; error: unknown }
 
 export function useCurrentUser() {
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const query = useQuery({
-    ...accountQueries.current(accountId ?? "anonymous"),
-    enabled: Boolean(accountId),
+    ...accountQueries.current(),
+    enabled: isAuthenticated,
   })
 
   let state: CurrentUserState
-  if (!accountId) {
+  if (!isAuthenticated) {
     state = { status: "idle" }
   } else if (query.isPending) {
     state = { status: "loading" }

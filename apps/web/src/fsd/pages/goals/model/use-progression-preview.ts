@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import type {
@@ -20,7 +21,6 @@ import {
   progressForAlliance,
 } from "@/entities/player-data-override"
 import type { AscensionFarmingSource } from "@/entities/goal"
-import { useActiveAccountId } from "@/shared/auth"
 
 import { estimateGoal } from "./estimate/estimate"
 import { shardResourceId } from "./estimate/estimate.domain"
@@ -47,7 +47,7 @@ export function useProgressionPreview(params: {
   battlesById: Parameters<typeof estimateGoal>[0]["battlesById"]
   dailyEnergy: number
 }) {
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const inventoryShard = useLiveQuery(
     () => (params.entityId ? getInventoryShard(params.entityId) : undefined),
     [params.entityId]
@@ -57,8 +57,8 @@ export function useProgressionPreview(params: {
   const currentOnslaughtTokens =
     liveProgress?.gameModeTokens.onslaught?.current ?? 0
   const { data: onslaughtProgress } = useQuery({
-    ...onslaughtProgressQueries.current(accountId ?? "anonymous"),
-    enabled: Boolean(accountId),
+    ...onslaughtProgressQueries.current(),
+    enabled: isAuthenticated,
   })
 
   return useMemo(() => {

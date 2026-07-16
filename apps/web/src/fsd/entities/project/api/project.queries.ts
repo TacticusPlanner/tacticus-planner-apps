@@ -1,21 +1,18 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { authenticatedQueryKey } from "@/shared/api"
-
 import { listProjectGoals, listProjects } from "./project.api"
 
 export const projectQueries = {
-  all: (accountId: string) =>
-    [...authenticatedQueryKey(accountId), "projects"] as const,
-  list: (accountId: string) =>
+  all: () => ["projects"] as const,
+  list: () =>
     queryOptions({
-      queryKey: [...projectQueries.all(accountId), "list"] as const,
+      queryKey: [...projectQueries.all(), "list"] as const,
       queryFn: ({ signal }) => listProjects(signal),
     }),
-  goals: (accountId: string, projectId: string) =>
+  goals: (projectId: string) =>
     queryOptions({
       queryKey: [
-        ...projectQueries.all(accountId),
+        ...projectQueries.all(),
         "detail",
         projectId,
         "goals",

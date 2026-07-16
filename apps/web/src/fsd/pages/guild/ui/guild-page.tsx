@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { guildQueries } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
-import { useActiveAccountId } from "@/shared/auth"
 
 import { GuildRegisteredView } from "./guild-registered-view"
 import { GuildRegistrationForm } from "./guild-registration-form"
@@ -13,10 +13,10 @@ import { GuildTacticusUserIdCard } from "./guild-tacticus-user-id-card"
 
 export function GuildPage() {
   const { t } = useTranslation()
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const query = useQuery({
-    ...guildQueries.current(accountId ?? "anonymous"),
-    enabled: Boolean(accountId),
+    ...guildQueries.current(),
+    enabled: isAuthenticated,
   })
   const load = () => {
     void query.refetch()

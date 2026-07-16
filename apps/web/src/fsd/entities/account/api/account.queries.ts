@@ -1,17 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { authenticatedQueryKey } from "@/shared/api"
-
 import { getCurrentUser } from "./account.api"
 
 export const accountQueries = {
-  all: (accountId: string) => [
-    ...authenticatedQueryKey(accountId),
-    "current-user",
-  ],
-  current: (accountId: string) =>
+  all: () => ["current-user"] as const,
+  current: () =>
     queryOptions({
-      queryKey: accountQueries.all(accountId),
+      queryKey: accountQueries.all(),
       queryFn: ({ signal }) => getCurrentUser(signal),
     }),
 }

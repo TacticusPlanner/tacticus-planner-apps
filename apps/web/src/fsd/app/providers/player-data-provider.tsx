@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react"
 
-import { useIsAuthenticated, useMsal } from "@azure/msal-react"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   PlayerDataHttpClient,
@@ -20,7 +20,7 @@ import {
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
 
-import { acquireAccessToken } from "@/shared/auth"
+import { acquireAccessToken, useActiveAccountId } from "@/shared/auth"
 
 // A background sync is due once the last successful sync is more than an hour old — matches the
 // "sync at most hourly, but always up to date within an hour" requirement. Re-checked periodically
@@ -84,9 +84,8 @@ export function PlayerDataProvider({
   baseUrl,
   children,
 }: PlayerDataProviderProps) {
-  const { instance, accounts } = useMsal()
   const isAuthenticated = useIsAuthenticated()
-  const accountId = (instance.getActiveAccount() ?? accounts[0])?.homeAccountId
+  const accountId = useActiveAccountId()
 
   const [status, setStatus] = useState<PlayerDataStatus>("idle")
   const [progress, setProgress] = useState<PlayerDataSyncProgress | null>(null)
@@ -98,13 +97,8 @@ export function PlayerDataProvider({
       return null
     }
 
-    const account = instance.getActiveAccount() ?? accounts[0]
-    if (!account) {
-      return null
-    }
-
     return new PlayerDataHttpClient(baseUrl, acquireAccessToken)
-  }, [baseUrl, isAuthenticated, accountId, instance, accounts])
+  }, [baseUrl, isAuthenticated, accountId])
 
   const runSync = useCallback(
     async (activeClient: PlayerDataHttpClient, activeAccountId: string) => {

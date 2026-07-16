@@ -6,6 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import type { UpgradeId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -24,7 +25,6 @@ import { Textarea } from "@workspace/ui/components/textarea"
 
 import { goalQueries, updateGoal } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
-import { useActiveAccountId } from "@/shared/auth"
 import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import { StatusBadge } from "./status-badge"
@@ -43,7 +43,7 @@ export function GoalDetailSheet({
   onUpdated: () => void
 }) {
   const { t } = useTranslation()
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const { getEntityName, upgradesById } = useGoalCatalog()
   const [draftState, setDraftState] = useState<{
@@ -56,14 +56,14 @@ export function GoalDetailSheet({
     message: string
   } | null>(null)
   const detailQuery = useQuery({
-    ...goalQueries.detail(accountId ?? "anonymous", goalId ?? "unselected"),
-    enabled: Boolean(accountId && goalId),
+    ...goalQueries.detail(goalId ?? "unselected"),
+    enabled: Boolean(isAuthenticated && goalId),
   })
   const detail = detailQuery.data ?? null
   const dependencyQueries = useQueries({
     queries: (detail?.dependsOn ?? []).map((id) => ({
-      ...goalQueries.detail(accountId ?? "anonymous", id),
-      enabled: Boolean(accountId),
+      ...goalQueries.detail(id),
+      enabled: isAuthenticated,
     })),
   })
   const dependencies = dependencyQueries.flatMap((query) =>
@@ -92,13 +92,12 @@ export function GoalDetailSheet({
         farmingLocationIds: request.farmingLocationIds,
       }),
     onSuccess: async (updated) => {
-      if (!accountId) return
       queryClient.setQueryData(
-        goalQueries.detail(accountId, updated.goalId).queryKey,
+        goalQueries.detail(updated.goalId).queryKey,
         updated
       )
       await queryClient.invalidateQueries({
-        queryKey: goalQueries.lists(accountId),
+        queryKey: goalQueries.lists(),
       })
       onUpdated()
     },
@@ -127,7 +126,7 @@ export function GoalDetailSheet({
     )
 
   const save = async () => {
-    if (!detail || !accountId || !overrideValid) return
+    if (!detail || !isAuthenticated || !overrideValid) return
     setSaveError(null)
     try {
       await updateMutation.mutateAsync({

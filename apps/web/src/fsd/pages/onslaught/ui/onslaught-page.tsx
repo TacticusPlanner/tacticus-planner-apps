@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
@@ -33,39 +34,32 @@ import {
   type OnslaughtProgress,
   type OnslaughtSector,
 } from "@/entities/player-data-override"
-import { useActiveAccountId } from "@/shared/auth"
 
 const allianceKey = (alliance: OnslaughtAlliance) =>
   alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
 
 export function OnslaughtPage() {
   const { t } = useTranslation()
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const rewards = useLiveQuery(() => getOnslaughtRewards(), [])
-  const [draft, setDraft] = useState<{
-    accountId: string
-    progress: OnslaughtProgress
-  }>()
+  const [draft, setDraft] = useState<OnslaughtProgress>()
   const [message, setMessage] = useState<string | null>(null)
   const progressQuery = useQuery({
-    ...onslaughtProgressQueries.current(accountId ?? "anonymous"),
-    enabled: Boolean(accountId),
+    ...onslaughtProgressQueries.current(),
+    enabled: isAuthenticated,
   })
   const saveMutation = useMutation({
     mutationFn: updateOnslaughtProgress,
     onSuccess: (saved) => {
-      if (accountId) {
-        queryClient.setQueryData(
-          onslaughtProgressQueries.current(accountId).queryKey,
-          saved
-        )
-      }
+      queryClient.setQueryData(
+        onslaughtProgressQueries.current().queryKey,
+        saved
+      )
     },
   })
 
-  const progress =
-    draft?.accountId === accountId ? draft.progress : progressQuery.data
+  const progress = draft ?? progressQuery.data
   const displayMessage =
     message ?? (progressQuery.isError ? t("onslaught.loadError") : null)
 
@@ -75,19 +69,16 @@ export function OnslaughtPage() {
   ) => {
     if (!progress) return
     const key = allianceKey(alliance)
-    setDraft({
-      accountId: accountId ?? "anonymous",
-      progress: { ...progress, [key]: { ...progress[key], ...patch } },
-    })
+    setDraft({ ...progress, [key]: { ...progress[key], ...patch } })
     setMessage(null)
   }
 
   const save = async () => {
-    if (!accountId || !progress) return
+    if (!isAuthenticated || !progress) return
     setMessage(null)
     try {
       const saved = await saveMutation.mutateAsync(progress)
-      setDraft({ accountId, progress: saved })
+      setDraft(saved)
       setMessage(t("onslaught.saved"))
     } catch {
       setMessage(t("onslaught.saveError"))

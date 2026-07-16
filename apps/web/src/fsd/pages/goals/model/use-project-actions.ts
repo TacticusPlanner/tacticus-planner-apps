@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   activateProject,
@@ -15,7 +16,6 @@ import {
 } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
-import { useActiveAccountId } from "@/shared/auth"
 
 const PRIORITY_STEP = 10
 
@@ -64,44 +64,35 @@ export function reorderedMemberIds(
 export function useProjectActions(_onChanged?: () => void) {
   void _onChanged
   const { t } = useTranslation()
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const [pending, setPending] = useState(false)
   const mutation = useMutation({
-    mutationFn: ({
-      action,
-    }: {
-      action: () => Promise<unknown>
-      accountId: string
-    }) => action(),
-    onSuccess: async (_result, variables) => {
+    mutationFn: (action: () => Promise<unknown>) => action(),
+    onSuccess: async () => {
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: projectQueries.all(variables.accountId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: goalQueries.all(variables.accountId),
-        }),
+        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
       ])
     },
   })
 
   const run = async (action: () => Promise<unknown>) => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return false
     }
 
     setPending(true)
     try {
-      await mutation.mutateAsync({ action, accountId })
+      await mutation.mutateAsync(action)
       return true
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         void queryClient.invalidateQueries({
-          queryKey: projectQueries.all(accountId),
+          queryKey: projectQueries.all(),
         })
         void queryClient.invalidateQueries({
-          queryKey: goalQueries.all(accountId),
+          queryKey: goalQueries.all(),
         })
       }
       toast.error(
@@ -116,7 +107,7 @@ export function useProjectActions(_onChanged?: () => void) {
   }
 
   const activate = async (projectId: string) => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return
     }
 
@@ -127,7 +118,7 @@ export function useProjectActions(_onChanged?: () => void) {
   }
 
   const bulkStatus = async (projectId: string, status: "Active" | "Paused") => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return
     }
 
@@ -142,7 +133,7 @@ export function useProjectActions(_onChanged?: () => void) {
   }
 
   const reorder = async (projectId: string, orderedGoalIds: string[]) => {
-    if (!accountId) {
+    if (!isAuthenticated) {
       return
     }
 
@@ -162,7 +153,7 @@ export function useProjectActions(_onChanged?: () => void) {
     description: string | null,
     color: string | null
   ) => {
-    if (!accountId) return false
+    if (!isAuthenticated) return false
     const ok = await run(() => createProject({ name, description, color }))
     if (ok) toast.success(t("goals.toasts.projectCreated"))
     return ok
@@ -172,7 +163,7 @@ export function useProjectActions(_onChanged?: () => void) {
     project: ProjectSummary,
     changes: Pick<ProjectSummary, "name" | "description" | "color" | "status">
   ) => {
-    if (!accountId) return false
+    if (!isAuthenticated) return false
     const ok = await run(() =>
       updateProject(project.projectId, {
         ...changes,

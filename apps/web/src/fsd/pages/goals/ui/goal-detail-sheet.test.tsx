@@ -18,15 +18,16 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
+  useIsAuthenticated: () => true,
 }))
 
 vi.mock("@/entities/goal", () => ({
   goalQueries: {
-    detail: (accountId: string, goalId: string) => ({
+    detail: (goalId: string) => ({
       queryFn: () => getGoal(goalId),
-      queryKey: ["account", accountId, "goals", "detail", goalId],
+      queryKey: ["goals", "detail", goalId],
     }),
-    lists: (accountId: string) => ["account", accountId, "goals", "list"],
+    lists: () => ["goals", "list"],
   },
   updateGoal: (...args: unknown[]) => updateGoal(...args),
 }))

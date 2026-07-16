@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import { projectQueries, type ProjectGoalSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
-import { useActiveAccountId } from "@/shared/auth"
 
 type FetchState =
   | { status: "idle" }
@@ -12,13 +12,10 @@ type FetchState =
 
 export function useProjectGoals(projectId: string | undefined) {
   const { t } = useTranslation()
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const query = useQuery({
-    ...projectQueries.goals(
-      accountId ?? "anonymous",
-      projectId ?? "unselected"
-    ),
-    enabled: Boolean(accountId && projectId),
+    ...projectQueries.goals(projectId ?? "unselected"),
+    enabled: Boolean(isAuthenticated && projectId),
   })
 
   let fetchState: FetchState
@@ -39,7 +36,7 @@ export function useProjectGoals(projectId: string | undefined) {
   return {
     fetchState,
     goals: fetchState.status === "success" ? fetchState.goals : [],
-    loading: Boolean(accountId && projectId) && query.isPending,
+    loading: Boolean(isAuthenticated && projectId) && query.isPending,
     retry: () => {
       void query.refetch()
     },

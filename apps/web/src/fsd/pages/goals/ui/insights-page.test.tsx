@@ -45,8 +45,8 @@ vi.mock("@/entities/planning-setting", () => ({
 
 vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
-    current: (accountId: string) => ({
-      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+    current: () => ({
+      queryKey: ["player-data-overrides", "onslaught"],
       queryFn: () =>
         Promise.resolve({
           imperial: { sector: "Stone", tier: 1 },
@@ -75,6 +75,7 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
+  useIsAuthenticated: () => true,
 }))
 
 const characters = new Map([
@@ -151,12 +152,12 @@ vi.mock("@/entities/project", () => ({
   listProjects: (...args: unknown[]) => listProjects(...args),
   listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
   projectQueries: {
-    list: (accountId: string) => ({
-      queryKey: ["account", accountId, "projects", "list"],
+    list: () => ({
+      queryKey: ["projects", "list"],
       queryFn: () => listProjects(),
     }),
-    goals: (accountId: string, projectId: string) => ({
-      queryKey: ["account", accountId, "projects", projectId, "goals"],
+    goals: (projectId: string) => ({
+      queryKey: ["projects", projectId, "goals"],
       queryFn: () => listProjectGoals(projectId),
     }),
   },
@@ -167,8 +168,8 @@ const getGoal = vi.fn()
 vi.mock("@/entities/goal", () => ({
   getGoal: (...args: unknown[]) => getGoal(...args),
   goalQueries: {
-    detail: (accountId: string, goalId: string) => ({
-      queryKey: ["account", accountId, "goals", "detail", goalId],
+    detail: (goalId: string) => ({
+      queryKey: ["goals", "detail", goalId],
       queryFn: () => getGoal(goalId),
     }),
   },

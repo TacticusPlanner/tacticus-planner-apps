@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useQueries, useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
@@ -16,7 +17,6 @@ import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import type { ProjectGoalSummary } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
-import { useActiveAccountId } from "@/shared/auth"
 
 import { computePlanInsights } from "./plan-insights-calc"
 import {
@@ -47,7 +47,7 @@ export function usePlanInsights(
   projectId: string | undefined,
   members: ProjectGoalSummary[]
 ) {
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const {
     upgradesById,
     battlesById,
@@ -73,17 +73,16 @@ export function usePlanInsights(
   const memberKey = activeMembers
     .map((member) => `${member.goal.goalId}:${member.priority}`)
     .join(",")
-  const hasQuery = Boolean(projectId && accountId && activeMembers.length > 0)
+  const hasQuery = Boolean(
+    projectId && isAuthenticated && activeMembers.length > 0
+  )
   const goalDetailQueries = useQueries({
-    queries:
-      hasQuery && accountId
-        ? activeMembers.map((member) =>
-            goalQueries.detail(accountId, member.goal.goalId)
-          )
-        : [],
+    queries: hasQuery
+      ? activeMembers.map((member) => goalQueries.detail(member.goal.goalId))
+      : [],
   })
   const onslaughtProgressQuery = useQuery({
-    ...onslaughtProgressQueries.current(accountId ?? "anonymous"),
+    ...onslaughtProgressQueries.current(),
     enabled: hasQuery,
   })
   const serverDataVersion = [
@@ -206,7 +205,7 @@ export function usePlanInsights(
     catalogReady,
     serverDataReady,
     serverDataVersion,
-    accountId,
+    isAuthenticated,
     memberKey,
     planningSettings.dailyEnergy,
     liveProgress?.gameModeTokens.onslaught?.current,

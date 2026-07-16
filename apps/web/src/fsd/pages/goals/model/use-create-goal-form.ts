@@ -174,7 +174,7 @@ export function useCreateGoalForm({
   }, [entityId, playerEntity, playerCharacter])
 
   const projectsQuery = useQuery({
-    ...projectQueries.list(account?.homeAccountId ?? "anonymous"),
+    ...projectQueries.list(),
     enabled: Boolean(open && account),
   })
   const projects = projectsQuery.data?.projects ?? []

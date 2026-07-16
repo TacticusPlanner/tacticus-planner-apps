@@ -12,6 +12,7 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
+  useIsAuthenticated: () => true,
 }))
 
 vi.mock("react-i18next", () => ({
@@ -29,8 +30,8 @@ vi.mock("@/entities/player-data-override", () => ({
   getOnslaughtProgress: (...args: unknown[]) => getProgress(...args),
   updateOnslaughtProgress: (...args: unknown[]) => saveProgress(...args),
   onslaughtProgressQueries: {
-    current: (accountId: string) => ({
-      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+    current: () => ({
+      queryKey: ["player-data-overrides", "onslaught"],
       queryFn: () => getProgress(),
     }),
   },

@@ -1,33 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-
-import { useActiveAccountId } from "@/shared/auth"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import { planningSettingsQueries } from "../api/planning-settings.queries"
 import { updatePlanningSettings } from "../api/planning-settings.api"
 import { defaultPlanningSettings, type PlanningSettings } from "./types"
 
 export function usePlanningSettings() {
-  const accountId = useActiveAccountId()
+  const isAuthenticated = useIsAuthenticated()
   const client = useQueryClient()
   const query = useQuery({
-    ...planningSettingsQueries.current(accountId ?? "anonymous"),
-    enabled: Boolean(accountId),
+    ...planningSettingsQueries.current(),
+    enabled: isAuthenticated,
   })
   const mutation = useMutation({
     mutationFn: updatePlanningSettings,
     onSuccess: (settings) => {
-      if (accountId) {
-        client.setQueryData(
-          planningSettingsQueries.current(accountId).queryKey,
-          settings
-        )
-      }
+      client.setQueryData(planningSettingsQueries.current().queryKey, settings)
     },
   })
 
   return {
     settings: query.data ?? defaultPlanningSettings,
-    loading: Boolean(accountId) && query.isPending,
+    loading: isAuthenticated && query.isPending,
     save: async (settings: PlanningSettings) => {
       await mutation.mutateAsync(settings)
     },

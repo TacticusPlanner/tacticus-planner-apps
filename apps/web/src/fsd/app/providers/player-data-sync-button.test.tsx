@@ -19,6 +19,7 @@ vi.mock("./player-data-provider", () => ({
 
 const refreshGoals = vi.fn()
 vi.mock("@/entities/goal", () => ({
+  goalQueries: { all: () => ["goals"] },
   useGoalRefresh: () => ({
     revision: 0,
     refreshGoals,

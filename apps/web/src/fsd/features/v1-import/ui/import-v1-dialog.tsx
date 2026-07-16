@@ -52,7 +52,6 @@ export function ImportV1Dialog({
   const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch } = useCurrentUser()
   const queryClient = useQueryClient()
-  const accountId = account?.homeAccountId
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [selection, setSelection] = useState<Selection>({
@@ -88,20 +87,12 @@ export function ImportV1Dialog({
       })
       setResult(imported)
       refetch()
-      if (accountId) {
-        await queryClient.invalidateQueries({
-          queryKey: accountQueries.all(accountId),
-        })
-        if (selection.goals) {
-          await Promise.all([
-            queryClient.invalidateQueries({
-              queryKey: goalQueries.all(accountId),
-            }),
-            queryClient.invalidateQueries({
-              queryKey: projectQueries.all(accountId),
-            }),
-          ])
-        }
+      await queryClient.invalidateQueries({ queryKey: accountQueries.all() })
+      if (selection.goals) {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+          queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+        ])
       }
       setPassword("")
       setStatus("success")

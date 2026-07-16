@@ -18,7 +18,6 @@ import {
 } from "./player-data-provider"
 import { formatRelativeTime } from "@/shared/lib"
 import { goalQueries } from "@/entities/goal"
-import { useActiveAccountId } from "@/shared/auth"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -51,15 +50,10 @@ export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
   const { error, lastSyncedAt, progress, status, syncNow } =
     usePlayerDataStatus()
-  const accountId = useActiveAccountId()
   const queryClient = useQueryClient()
   const syncAndRefreshGoals = async () => {
     await syncNow()
-    if (accountId) {
-      await queryClient.invalidateQueries({
-        queryKey: goalQueries.all(accountId),
-      })
-    }
+    await queryClient.invalidateQueries({ queryKey: goalQueries.all() })
   }
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
