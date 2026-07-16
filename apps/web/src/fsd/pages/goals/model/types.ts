@@ -1,6 +1,13 @@
 import type { GoalKind, GoalStatus, GoalSummary } from "@/entities/goal"
 import type { ProjectGoalSummary } from "@/entities/project"
 
+export type GoalProject = {
+  projectId: string
+  name: string
+  color: string | null
+  isActivePlan: boolean
+}
+
 /**
  * Unified row shape the list/grid/actions components render, regardless of whether the data came from
  * `useGoals` (flat, no project scope) or `useProjectGoals` (project-scoped, carries `priority`).
@@ -16,9 +23,13 @@ export type GoalRow = {
   priority?: number
   milestonesTotal: number
   milestonesCompleted: number
+  projects?: GoalProject[]
 }
 
-export function goalRowFromSummary(goal: GoalSummary): GoalRow {
+export function goalRowFromSummary(
+  goal: GoalSummary,
+  projects: GoalProject[] = []
+): GoalRow {
   return {
     goalId: goal.goalId,
     entityType: goal.entityType,
@@ -29,6 +40,7 @@ export function goalRowFromSummary(goal: GoalSummary): GoalRow {
     updatedAt: goal.updatedAt,
     milestonesTotal: goal.milestonesTotal,
     milestonesCompleted: goal.milestonesCompleted,
+    ...(projects.length > 0 ? { projects } : {}),
   }
 }
 

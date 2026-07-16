@@ -13,6 +13,7 @@ import type { GoalRow } from "../model/types"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import type { useGoalActions } from "../model/use-goal-actions"
 import { GoalRowActions } from "./goal-row-actions"
+import { GoalProjectBadges, GoalTypeBadge, GoalUnitIcon } from "./goal-visuals"
 import { StatusBadge } from "./status-badge"
 
 type Props = {
@@ -48,15 +49,23 @@ export function GoalsGrid({
         return (
           <Card data-testid="goal-row" key={row.goalId}>
             <CardHeader className="flex flex-row items-start justify-between gap-2">
-              <CardTitle className="text-base">
-                <Button
-                  className="h-auto p-0 text-base"
-                  onClick={() => onView(row.goalId)}
-                  variant="link"
-                >
-                  {getEntityName(row.entityType, row.entityId)}
-                </Button>
-              </CardTitle>
+              <div className="flex min-w-0 items-center gap-3">
+                <GoalUnitIcon
+                  entityId={row.entityId}
+                  entityType={row.entityType}
+                  name={getEntityName(row.entityType, row.entityId)}
+                />
+                <CardTitle className="min-w-0 text-base">
+                  <Button
+                    className="h-auto p-0 text-base"
+                    onClick={() => onView(row.goalId)}
+                    variant="link"
+                  >
+                    {getEntityName(row.entityType, row.entityId)}
+                  </Button>
+                  <GoalProjectBadges projects={row.projects ?? []} />
+                </CardTitle>
+              </div>
               <GoalRowActions
                 actions={actions}
                 goalId={row.goalId}
@@ -64,9 +73,7 @@ export function GoalsGrid({
               />
             </CardHeader>
             <CardContent className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline">
-                {t(`goals.create.goalTypes.${row.goalType}`)}
-              </Badge>
+              <GoalTypeBadge type={row.goalType} />
               <StatusBadge status={row.status} />
               {row.milestonesTotal > 0 ? (
                 <Button

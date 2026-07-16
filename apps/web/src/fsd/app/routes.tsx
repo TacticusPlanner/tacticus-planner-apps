@@ -41,6 +41,9 @@ const GoalsLayout = lazy(() =>
 const GoalsPage = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.GoalsPage }))
 )
+const ProjectsPage = lazy(() =>
+  import("@/pages/goals").then((m) => ({ default: m.ProjectsPage }))
+)
 const InsightsPage = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.InsightsPage }))
 )
@@ -142,6 +145,7 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <GoalsPage /> },
+          { path: "project", element: <ProjectsPage /> },
           { path: "insights", element: <InsightsPage /> },
         ],
       },

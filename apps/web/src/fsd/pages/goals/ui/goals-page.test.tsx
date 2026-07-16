@@ -263,8 +263,30 @@ describe("GoalsPage", () => {
     expect(await screen.findByTestId("goals-grid")).toBeInTheDocument()
   })
 
-  it("selecting a project filter fetches that project's goals", async () => {
-    listGoals.mockResolvedValue({ goals: [] })
+  it("groups goals by goal type", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
+      ],
+    })
+    render(<GoalsPage />)
+
+    fireEvent.click(await screen.findByTestId("goals-group-by"))
+    fireEvent.click(
+      await screen.findByRole("option", { name: "goals.filters.groupByType" })
+    )
+
+    expect(
+      screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: "goals.create.goalTypes.Ability" })
+    ).toBeInTheDocument()
+  })
+
+  it("shows project membership without a project switcher", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
     listProjects.mockResolvedValue({
       projects: [
         {
@@ -281,17 +303,15 @@ describe("GoalsPage", () => {
         },
       ],
     })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: activeGoal, priority: 0 }],
+    })
     render(<GoalsPage />)
 
-    fireEvent.click(await screen.findByTestId("goals-project-filter"))
-    fireEvent.click(
-      await screen.findByRole("option", {
-        name: "My Goals (goals.project.active)",
-      })
-    )
-
-    await vi.waitFor(() => {
-      expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
-    })
+    expect(
+      await screen.findByText("My Goals · goals.project.active")
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-project-filter")).not.toBeInTheDocument()
+    expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
   })
 })

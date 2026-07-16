@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Switch } from "@workspace/ui/components/switch"
 import {
   Select,
   SelectContent,
@@ -21,73 +20,51 @@ import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import type { GoalStatus } from "@/entities/goal"
 
-import { goalRowFromProjectMember, goalRowFromSummary } from "../model/types"
+import { goalRowFromSummary } from "../model/types"
 import { useGoalActions } from "../model/use-goal-actions"
 import { useGoals } from "../model/use-goals"
-import {
-  reorderedMemberIds,
-  useProjectActions,
-} from "../model/use-project-actions"
-import { usePlanInsights } from "../model/use-plan-insights"
-import { useProjectGoals } from "../model/use-project-goals"
 import { useProjects } from "../model/use-projects"
+import { useGoalProjects } from "../model/use-goal-projects"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import { GoalsGrid } from "./goals-grid"
 import { GoalsList } from "./goals-list"
 import { GoalDetailSheet } from "./goal-detail-sheet"
-import { ProjectToolbar } from "./project-toolbar"
 
 type Tab = "active" | "completed" | "archived"
 type View = "list" | "grid"
-type Sort = "priority" | "entity" | "type" | "status" | "estimate" | "updated"
+type Sort = "entity" | "type" | "status" | "updated"
+type Group = "none" | "unit" | "type"
 
 const ACTIVE_TAB_STATUSES: GoalStatus[] = ["Draft", "Active", "Paused"]
 
 /**
- * Goals page: Active/Completed/Archived tabs, list⇄grid view toggle, an optional project filter that
- * scopes the goal set (enabling per-project reorder and bulk lifecycle), and per-goal lifecycle actions.
- * See the V2 Goals plan §16 phase 3.
+ * Complete cross-project goals view. Project planning and ordering live on the routed Projects tab.
  */
 export function GoalsPage() {
   const { t } = useTranslation()
   const [tab, setTab] = useState<Tab>("active")
   const [view, setView] = useState<View>("list")
-  const [projectId, setProjectId] = useState<string | undefined>(undefined)
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState("all")
-  const [sort, setSort] = useState<Sort>("priority")
-  const [groupByUnit, setGroupByUnit] = useState(false)
+  const [sort, setSort] = useState<Sort>("updated")
+  const [group, setGroup] = useState<Group>("none")
   const { getEntityName } = useGoalCatalog()
 
   const projects = useProjects()
+  const projectsByGoalId = useGoalProjects(projects.projects)
   const nonArchivedGoals = useGoals()
   const archivedGoals = useGoals({ archived: true })
   const selectedGoals = tab === "archived" ? archivedGoals : nonArchivedGoals
-  const projectGoals = useProjectGoals(projectId)
-  const { result: planInsights } = usePlanInsights(
-    projectId,
-    projectGoals.goals
-  )
-
-  const refreshCurrentView = () => {
-    if (projectId) {
-      projectGoals.retry()
-    } else {
-      selectedGoals.retry()
-    }
-  }
+  const refreshCurrentView = selectedGoals.retry
 
   const goalActions = useGoalActions()
-  const projectActions = useProjectActions()
-
-  const baseRows = projectId
-    ? projectGoals.goals
-        .filter((entry) => matchesTab(entry.goal.status as GoalStatus, tab))
-        .map(goalRowFromProjectMember)
-    : selectedGoals.fetchState.status === "success"
+  const baseRows =
+    selectedGoals.fetchState.status === "success"
       ? selectedGoals.fetchState.goals
           .filter((goal) => tab === "archived" || matchesTab(goal.status, tab))
-          .map(goalRowFromSummary)
+          .map((goal) =>
+            goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
+          )
       : []
 
   const rows = baseRows
@@ -101,30 +78,20 @@ export function GoalsPage() {
       if (sort === "status") return left.status.localeCompare(right.status)
       if (sort === "updated")
         return right.updatedAt.localeCompare(left.updatedAt)
-      if (sort === "estimate") {
-        const a = planInsights.estimates.get(left.goalId)
-        const b = planInsights.estimates.get(right.goalId)
-        const aDate = a?.status === "Blocked" ? "9999" : (a?.date ?? "9999")
-        const bDate = b?.status === "Blocked" ? "9999" : (b?.date ?? "9999")
-        return aDate.localeCompare(bDate)
-      }
-      return (
-        (left.priority ?? Number.MAX_SAFE_INTEGER) -
-        (right.priority ?? Number.MAX_SAFE_INTEGER)
-      )
+      return 0
     })
-  const countSourceRows = projectId
-    ? projectGoals.goals.map(goalRowFromProjectMember)
-    : [
-        ...(nonArchivedGoals.fetchState.status === "success"
-          ? nonArchivedGoals.fetchState.goals.map(goalRowFromSummary)
-          : []),
-        ...(archivedGoals.fetchState.status === "success"
-          ? archivedGoals.fetchState.goals
-              .filter((goal) => goal.status === "Archived")
-              .map(goalRowFromSummary)
-          : []),
-      ]
+  const countSourceRows = [
+    ...(nonArchivedGoals.fetchState.status === "success"
+      ? nonArchivedGoals.fetchState.goals.map((goal) =>
+          goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
+        )
+      : []),
+    ...(archivedGoals.fetchState.status === "success"
+      ? archivedGoals.fetchState.goals
+          .filter((goal) => goal.status === "Archived")
+          .map((goal) => goalRowFromSummary(goal))
+      : []),
+  ]
   const filteredCountRows = countSourceRows.filter(
     (row) => goalType === "all" || row.goalType === goalType
   )
@@ -137,55 +104,25 @@ export function GoalsPage() {
     archived: filteredCountRows.filter((row) => row.status === "Archived")
       .length,
   }
-  const rowGroups = groupByUnit
-    ? [...new Set(rows.map((row) => `${row.entityType}:${row.entityId}`))].map(
-        (key) => ({
-          key,
-          rows: rows.filter(
-            (row) => `${row.entityType}:${row.entityId}` === key
-          ),
-        })
-      )
-    : [{ key: "all", rows }]
+  const groupKey = (row: (typeof rows)[number]) =>
+    group === "unit"
+      ? `${row.entityType}:${row.entityId}`
+      : group === "type"
+        ? row.goalType
+        : "all"
+  const rowGroups = [...new Set(rows.map(groupKey))].map((key) => ({
+    key,
+    rows: rows.filter((row) => groupKey(row) === key),
+  }))
 
-  const isLoading = projectId ? projectGoals.loading : selectedGoals.isLoading
-  const fetchError = projectId
-    ? projectGoals.fetchState.status === "error"
-      ? projectGoals.fetchState.message
-      : null
-    : selectedGoals.fetchState.status === "error"
+  const isLoading = selectedGoals.isLoading
+  const fetchError =
+    selectedGoals.fetchState.status === "error"
       ? selectedGoals.fetchState.message
       : null
 
-  const reorderEnabled =
-    Boolean(projectId) &&
-    tab === "active" &&
-    view === "list" &&
-    sort === "priority" &&
-    !groupByUnit
-
-  const handleMove = (goalId: string, direction: "up" | "down") => {
-    if (!projectId) {
-      return
-    }
-
-    const orderedIds = reorderedMemberIds(
-      projectGoals.goals,
-      goalId,
-      direction,
-      rows.map((row) => row.goalId)
-    )
-    if (orderedIds) {
-      void projectActions.reorder(projectId, orderedIds)
-    }
-  }
-
   const showPristineEmptyState =
-    tab === "active" &&
-    !projectId &&
-    !isLoading &&
-    !fetchError &&
-    rows.length === 0
+    tab === "active" && !isLoading && !fetchError && rows.length === 0
 
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
@@ -231,13 +168,6 @@ export function GoalsPage() {
         </div>
       </div>
 
-      <ProjectToolbar
-        onProjectIdChange={setProjectId}
-        projectActions={projectActions}
-        projectId={projectId}
-        projects={projects.projects}
-      />
-
       <div className="grid gap-3 md:grid-cols-[12rem_12rem_auto] md:items-center">
         <Select onValueChange={setGoalType} value={goalType}>
           <SelectTrigger data-testid="goals-type-filter">
@@ -259,30 +189,30 @@ export function GoalsPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {(
-              [
-                "priority",
-                "entity",
-                "type",
-                "status",
-                "estimate",
-                "updated",
-              ] as const
-            ).map((value) => (
+            {(["entity", "type", "status", "updated"] as const).map((value) => (
               <SelectItem key={value} value={value}>
                 {t(`goals.filters.sort.${value}`)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <label className="flex items-center gap-2 text-sm">
-          <Switch
-            checked={groupByUnit}
-            data-testid="goals-group-by-unit"
-            onCheckedChange={setGroupByUnit}
-          />
-          {t("goals.filters.groupByUnit")}
-        </label>
+        <Select
+          onValueChange={(value) => setGroup(value as Group)}
+          value={group}
+        >
+          <SelectTrigger data-testid="goals-group-by">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">{t("goals.filters.groupNone")}</SelectItem>
+            <SelectItem value="unit">
+              {t("goals.filters.groupByUnit")}
+            </SelectItem>
+            <SelectItem value="type">
+              {t("goals.filters.groupByType")}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
@@ -328,32 +258,31 @@ export function GoalsPage() {
         </p>
       ) : null}
 
-      {rowGroups.map((group) =>
-        group.rows.length > 0 ? (
-          <section className="grid gap-2" key={group.key}>
-            {group.key !== "all" ? (
+      {rowGroups.map((rowGroup) =>
+        rowGroup.rows.length > 0 ? (
+          <section className="grid gap-2" key={rowGroup.key}>
+            {rowGroup.key !== "all" ? (
               <h2 className="text-lg font-semibold">
-                {getEntityName(
-                  group.rows[0]!.entityType,
-                  group.rows[0]!.entityId
-                )}
+                {group === "type"
+                  ? t(`goals.create.goalTypes.${rowGroup.rows[0]!.goalType}`)
+                  : getEntityName(
+                      rowGroup.rows[0]!.entityType,
+                      rowGroup.rows[0]!.entityId
+                    )}
               </h2>
             ) : null}
             {view === "list" ? (
               <GoalsList
                 actions={goalActions}
-                estimates={planInsights.estimates}
-                onMove={handleMove}
                 onView={setDetailGoalId}
-                reorderEnabled={reorderEnabled}
-                rows={group.rows}
+                reorderEnabled={false}
+                rows={rowGroup.rows}
               />
             ) : (
               <GoalsGrid
                 actions={goalActions}
-                estimates={planInsights.estimates}
                 onView={setDetailGoalId}
-                rows={group.rows}
+                rows={rowGroup.rows}
               />
             )}
           </section>
@@ -361,10 +290,8 @@ export function GoalsPage() {
       )}
 
       <GoalDetailSheet
-        isolated={!projectId}
-        estimate={
-          detailGoalId ? planInsights.estimates.get(detailGoalId) : undefined
-        }
+        estimate={undefined}
+        isolated
         goalId={detailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={refreshCurrentView}

@@ -7,8 +7,9 @@ import {
 } from "@workspace/ui/components/card"
 
 import type { Rarity } from "@workspace/game-domain"
+import { ASSET_BASE_PATH } from "@workspace/game-catalog"
 
-import { RarityIcon } from "@/shared/ui"
+import { EntityIcon, RarityIcon } from "@/shared/ui"
 
 import type {
   PlanInsightsBottleneck,
@@ -49,7 +50,14 @@ export function InsightsSummary({
     >
       <Card>
         <CardHeader>
-          <CardTitle>{t("goals.insights.upgradesTitle")}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <EntityIcon
+              alt=""
+              className="size-6"
+              src={`${ASSET_BASE_PATH}/upgrade-crafted-badge.png`}
+            />
+            {t("goals.insights.upgradesTitle")}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {upgradeEntries.length === 0 ? (
@@ -71,7 +79,14 @@ export function InsightsSummary({
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("goals.insights.shardsTitle")}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <EntityIcon
+              alt=""
+              className="size-6"
+              src={`${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`}
+            />
+            {t("goals.insights.shardsTitle")}
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
@@ -102,7 +117,11 @@ export function InsightsSummary({
             <div className="mt-2 flex flex-wrap gap-3">
               {orbEntries.map(([rarity, count]) => (
                 <div className="flex items-center gap-1.5" key={rarity}>
-                  <RarityIcon className="size-5" rarity={rarity} />
+                  <EntityIcon
+                    alt=""
+                    className="size-7"
+                    src={`${ASSET_BASE_PATH}/resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.png`}
+                  />
                   <span className="font-medium">{count}</span>
                 </div>
               ))}
@@ -116,14 +135,28 @@ export function InsightsSummary({
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("goals.insights.estimateTitle")}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <EntityIcon
+              alt=""
+              className="size-6"
+              src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+            />
+            {t("goals.insights.estimateTitle")}
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">
               {t("goals.insights.energyTotal")}
             </span>
-            <span className="font-medium">{energyTotal}</span>
+            <span className="flex items-center gap-1 font-medium">
+              <EntityIcon
+                alt=""
+                className="size-5"
+                src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+              />
+              {energyTotal}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">

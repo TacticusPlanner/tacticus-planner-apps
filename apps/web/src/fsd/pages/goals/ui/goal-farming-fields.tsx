@@ -8,8 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { ASSET_BASE_PATH } from "@workspace/game-catalog"
 
 import type { AscensionFarmingSource, FarmingStrategy } from "@/entities/goal"
+import { EntityIcon } from "@/shared/ui"
 import type { useCreateGoalForm } from "../model/use-create-goal-form"
 import { AbilityGoalFields, AscensionGoalFields } from "./goal-type-fields"
 
@@ -80,19 +82,34 @@ export function ProgressionPreview({ form }: { form: GoalForm }) {
       data-testid="create-goal-progression-preview"
     >
       <p className="font-medium">{t("goals.create.previewTitle")}</p>
-      <p>
+      <p className="flex items-center gap-1.5">
+        <EntityIcon
+          alt=""
+          className="size-5"
+          src={`${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`}
+        />
         {t("goals.create.ascension.shards", {
           regular: preview.regularShards,
           mythic: preview.mythicShards,
         })}
       </p>
       {Object.entries(preview.orbsByType).map(([rarity, count]) => (
-        <p key={rarity}>
+        <p className="flex items-center gap-1.5" key={rarity}>
+          <EntityIcon
+            alt=""
+            className="size-6"
+            src={`${ASSET_BASE_PATH}/resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.png`}
+          />
           {rarity} {t("goals.create.ascension.orbs", { count })}
         </p>
       ))}
       {preview.campaign?.status === "Estimated" ? (
-        <p>
+        <p className="flex items-center gap-1.5">
+          <EntityIcon
+            alt=""
+            className="size-5"
+            src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+          />
           {t("goals.create.ascension.campaignEstimate", {
             energy: preview.campaign.energyTotal,
             raids: preview.campaign.raidsTotal,

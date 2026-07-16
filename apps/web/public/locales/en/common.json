@@ -302,6 +302,7 @@
     },
     "tabs": {
       "goals": "Goals",
+      "projects": "Projects",
       "insights": "Insights",
       "active": "Active",
       "completed": "Completed",
@@ -343,6 +344,11 @@
       "cancel": "Cancel"
     },
     "project": {
+      "title": "Projects",
+      "pageDescription": "Organize goals into focused plans and control their priority.",
+      "noProjectTitle": "No projects yet",
+      "noProjectDescription": "Create a project to organize and prioritize related goals.",
+      "membership": "Projects containing this goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
       "setActive": "Set as active plan",
@@ -477,6 +483,7 @@
     "filters": {
       "search": "Search goals",
       "allTypes": "All goal types",
+      "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
       "sort": {

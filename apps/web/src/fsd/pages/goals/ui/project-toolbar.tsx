@@ -22,6 +22,7 @@ type Props = {
   projectId: string | undefined
   onProjectIdChange: (projectId: string | undefined) => void
   projectActions: ReturnType<typeof useProjectActions>
+  requireProject?: boolean
 }
 
 /** Project filter select + (when a specific project is selected) its active-plan toggle and bulk
@@ -31,6 +32,7 @@ export function ProjectToolbar({
   projectId,
   onProjectIdChange,
   projectActions,
+  requireProject = false,
 }: Props) {
   const { t } = useTranslation()
   const [manageOpen, setManageOpen] = useState(false)
@@ -50,9 +52,11 @@ export function ProjectToolbar({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={ALL_PROJECTS_VALUE}>
-            {t("goals.project.filterAll")}
-          </SelectItem>
+          {!requireProject ? (
+            <SelectItem value={ALL_PROJECTS_VALUE}>
+              {t("goals.project.filterAll")}
+            </SelectItem>
+          ) : null}
           {projects
             .filter((project) => project.status !== "Archived")
             .map((project) => (

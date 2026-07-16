@@ -17,6 +17,7 @@ import type { GoalRow } from "../model/types"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import type { useGoalActions } from "../model/use-goal-actions"
 import { GoalRowActions } from "./goal-row-actions"
+import { GoalProjectBadges, GoalTypeBadge, GoalUnitIcon } from "./goal-visuals"
 import { StatusBadge } from "./status-badge"
 
 type Props = {
@@ -154,13 +155,23 @@ function GoalsTable({
         {rows.map((row, index) => (
           <TableRow data-testid="goal-row" key={row.goalId}>
             <TableCell className="font-medium">
-              <Button
-                className="h-auto p-0 font-medium"
-                onClick={() => onView(row.goalId)}
-                variant="link"
-              >
-                {getEntityName(row.entityType, row.entityId)}
-              </Button>
+              <div className="flex items-center gap-3">
+                <GoalUnitIcon
+                  entityId={row.entityId}
+                  entityType={row.entityType}
+                  name={getEntityName(row.entityType, row.entityId)}
+                />
+                <div className="min-w-0">
+                  <Button
+                    className="h-auto p-0 font-medium"
+                    onClick={() => onView(row.goalId)}
+                    variant="link"
+                  >
+                    {getEntityName(row.entityType, row.entityId)}
+                  </Button>
+                  <GoalProjectBadges projects={row.projects ?? []} />
+                </div>
+              </div>
               {row.notes ? (
                 <p
                   className="max-w-64 truncate text-xs font-normal text-muted-foreground"
@@ -176,9 +187,7 @@ function GoalsTable({
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-1">
-                <Badge variant="outline">
-                  {t(`goals.create.goalTypes.${row.goalType}`)}
-                </Badge>
+                <GoalTypeBadge type={row.goalType} />
                 <MilestonesBadge onView={onView} row={row} />
               </div>
             </TableCell>
@@ -248,20 +257,29 @@ function GoalsMobileCards({
           key={row.goalId}
         >
           <div className="flex items-center justify-between gap-2">
-            <Button
-              className="h-auto p-0 font-medium"
-              onClick={() => onView(row.goalId)}
-              variant="link"
-            >
-              {getEntityName(row.entityType, row.entityId)}
-            </Button>
+            <div className="flex min-w-0 items-center gap-2">
+              <GoalUnitIcon
+                className="size-9"
+                entityId={row.entityId}
+                entityType={row.entityType}
+                name={getEntityName(row.entityType, row.entityId)}
+              />
+              <div className="min-w-0">
+                <Button
+                  className="h-auto p-0 font-medium"
+                  onClick={() => onView(row.goalId)}
+                  variant="link"
+                >
+                  {getEntityName(row.entityType, row.entityId)}
+                </Button>
+                <GoalProjectBadges projects={row.projects ?? []} />
+              </div>
+            </div>
             <StatusBadge status={row.status} />
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
-              <Badge className="w-fit" variant="outline">
-                {t(`goals.create.goalTypes.${row.goalType}`)}
-              </Badge>
+              <GoalTypeBadge type={row.goalType} />
               <MilestonesBadge onView={onView} row={row} />
             </div>
             <EstimateCell estimate={estimates?.get(row.goalId)} />
