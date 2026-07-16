@@ -15,7 +15,7 @@ import type { StorageModel } from "./game-catalog.storage"
 export const catalogDbName = "tacticus-planner-game-catalog"
 // v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
 // served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.
-export const catalogDbVersion = 3
+export const catalogDbVersion = 4
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
@@ -40,6 +40,15 @@ type GameCatalogDb = Dexie &
  * previous hand-rolled "detect a missing store and reopen one version higher" logic entirely.
  */
 const catalogDb = new Dexie(catalogDbName) as GameCatalogDb
+
+catalogDb.version(3).stores({
+  metadata: "key",
+  ...Object.fromEntries(
+    servedDatasetKeys
+      .filter((key) => key !== "onslaught-rewards")
+      .map((key) => [key, "id"])
+  ),
+})
 
 catalogDb.version(catalogDbVersion).stores({
   metadata: "key",

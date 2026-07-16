@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useMsal } from "@azure/msal-react"
 
 import { listProjectGoals, type ProjectGoalSummary } from "@/entities/project"
+import { useGoalRefresh } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 type FetchState =
@@ -22,11 +23,23 @@ export function useProjectGoals(projectId: string | undefined) {
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const accountId = account?.homeAccountId
+  const accountRef = useRef(account)
+  const instanceRef = useRef(instance)
   const abortRef = useRef<AbortController | null>(null)
+  const tRef = useRef(t)
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
+  const { registerGoalRefetch } = useGoalRefresh()
+  const registerRef = useRef(registerGoalRefetch)
 
-  const load = () => {
-    const currentAccount = instance.getActiveAccount() ?? accounts[0]
+  useEffect(() => {
+    accountRef.current = account
+    instanceRef.current = instance
+    tRef.current = t
+    registerRef.current = registerGoalRefetch
+  }, [account, instance, registerGoalRefetch, t])
+
+  const load = useCallback(async () => {
+    const currentAccount = accountRef.current
     if (!currentAccount || !projectId) {
       return
     }
@@ -35,45 +48,42 @@ export function useProjectGoals(projectId: string | undefined) {
     const controller = new AbortController()
     abortRef.current = controller
 
-    void listProjectGoals(
-      instance,
-      currentAccount,
-      projectId,
-      controller.signal
-    ).then(
-      (data) => {
-        if (controller.signal.aborted) {
-          return
-        }
-
+    try {
+      const data = await listProjectGoals(
+        instanceRef.current,
+        currentAccount,
+        projectId,
+        controller.signal
+      )
+      if (!controller.signal.aborted) {
         setFetchState({ status: "success", goals: data.goals })
-      },
-      (error: unknown) => {
-        if (controller.signal.aborted) {
-          return
-        }
-
-        setFetchState({
-          status: "error",
-          message:
-            error instanceof ApiError ? error.message : t("goals.loadError"),
-        })
       }
-    )
-  }
+    } catch (error) {
+      if (controller.signal.aborted) return
+      setFetchState({
+        status: "error",
+        message:
+          error instanceof ApiError
+            ? error.message
+            : tRef.current("goals.loadError"),
+      })
+      throw error
+    }
+  }, [projectId])
 
   useEffect(() => {
     if (!projectId) {
       return undefined
     }
 
-    load()
+    const unregister = registerRef.current(`project-goals:${projectId}`, load)
+    void load()
 
     return () => {
+      unregister()
       abortRef.current?.abort()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, projectId])
+  }, [accountId, load, projectId])
 
   // Gated on `projectId` rather than reset via effect state: when the filter clears, the last fetch's
   // result would otherwise linger in `fetchState` until the next project selection re-fetches.

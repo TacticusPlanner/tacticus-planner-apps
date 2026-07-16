@@ -5,8 +5,6 @@ import { Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
-import { PlanningSettingsProvider } from "@/entities/planning-setting"
-
 import { PlanningSettingsDialog } from "./planning-settings-dialog"
 
 const tabs = [
@@ -24,11 +22,7 @@ const tabs = [
  * `LookupPage`.
  */
 export function GoalsLayout() {
-  return (
-    <PlanningSettingsProvider>
-      <GoalsLayoutContent />
-    </PlanningSettingsProvider>
-  )
+  return <GoalsLayoutContent />
 }
 
 function GoalsLayoutContent() {

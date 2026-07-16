@@ -39,6 +39,7 @@ export const datasetToStorageModels: Record<
   "mow-upgrade-costs": byLevel,
   "ascension-costs": byProgression,
   "unlock-shard-costs": byRarity,
+  "onslaught-rewards": asArray,
   upgrades: asArray,
   equipment: asArray,
   "campaign-battles": asArray,

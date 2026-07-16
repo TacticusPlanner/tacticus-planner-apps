@@ -36,9 +36,22 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
+vi.mock("@/entities/player-data-override", () => ({
+  getOnslaughtProgress: () =>
+    Promise.resolve({
+      imperial: { sector: "Stone", tier: 1 },
+      xenos: { sector: "Stone", tier: 1 },
+      chaos: { sector: "Stone", tier: 1 },
+      revision: 1,
+    }),
+  progressForAlliance: (progress: Record<string, unknown>, alliance: string) =>
+    progress[alliance.toLowerCase()],
+  onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
+}))
+
 vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    settings: { dailyEnergy: 288, revision: 1 },
     save: vi.fn(),
   }),
 }))
@@ -77,12 +90,15 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getOnslaughtRewards: () => [],
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
   getInventoryUpgrades: () => undefined,
+  getInventoryShard: () => Promise.resolve(undefined),
+  getLiveProgress: () => undefined,
 }))
 
 const listGoals = vi.fn()
@@ -96,6 +112,11 @@ vi.mock("@/entities/goal", () => ({
   createGoal: (...args: unknown[]) => createGoal(...args),
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
+  useGoalRefresh: () => ({
+    revision: 0,
+    refreshGoals: vi.fn(),
+    registerGoalRefetch: vi.fn(() => () => undefined),
+  }),
 }))
 
 const listProjectGoals = vi.fn()
@@ -137,50 +158,17 @@ describe("GoalsPage", () => {
     listProjects.mockResolvedValue({ projects: [] })
   })
 
-  it("opens the create-goal sheet from the header button", async () => {
+  it("does not render page-level creation actions", async () => {
     listGoals.mockResolvedValue({ goals: [] })
-    render(<GoalsPage />)
-
-    expect(screen.queryByTestId("create-goal-sheet")).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByTestId("goals-page-create-button"))
-
-    expect(await screen.findByTestId("create-goal-sheet")).toBeInTheDocument()
-  })
-
-  it("opens the create-goal sheet from the empty-state button", async () => {
-    listGoals.mockResolvedValue({ goals: [] })
-    render(<GoalsPage />)
-
-    fireEvent.click(await screen.findByTestId("goals-page-empty-create-button"))
-
-    expect(await screen.findByTestId("create-goal-sheet")).toBeInTheDocument()
-  })
-
-  it("refetches the goal list after a successful creation", async () => {
-    listGoals.mockResolvedValue({ goals: [] })
-    createGoal.mockResolvedValue({ goalId: "goal-1" })
     render(<GoalsPage />)
 
     await screen.findByTestId("goals-page-empty")
-    // React's dev-mode double-invocation of effects means the initial load can legitimately fire
-    // listGoals more than once before settling — capture the count once stable rather than
-    // asserting a hardcoded "1", and assert it *increases* after the create action below.
-    const initialCallCount = listGoals.mock.calls.length
-    expect(initialCallCount).toBeGreaterThan(0)
-
-    fireEvent.click(screen.getByTestId("goals-page-create-button"))
-    fireEvent.click(
-      screen.getByRole("combobox", {
-        name: "goals.create.characterPlaceholder",
-      })
-    )
-    fireEvent.click(await screen.findByText("Hero One"))
-    fireEvent.click(screen.getByTestId("create-goal-submit"))
-
-    await vi.waitFor(() => {
-      expect(listGoals.mock.calls.length).toBeGreaterThan(initialCallCount)
-    })
+    expect(
+      screen.queryByTestId("goals-page-create-button")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goals-page-empty-create-button")
+    ).not.toBeInTheDocument()
   })
 
   it("shows a row for an active goal with lifecycle actions", async () => {

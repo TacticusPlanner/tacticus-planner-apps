@@ -9,6 +9,7 @@ import type {
   CampaignDefinitionStorageModel,
   CharacterStorageModel,
   MowStorageModel,
+  OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
   UpgradeStorageModel,
 } from "./game-catalog.storage"
@@ -51,6 +52,10 @@ export async function getAscensionCostsMap(): Promise<
 
 export function getUnlockShardCosts(): Promise<UnlockShardCostStorageModel[]> {
   return getDatasetRecords("unlock-shard-costs")
+}
+
+export function getOnslaughtRewards(): Promise<OnslaughtRewardStorageModel[]> {
+  return getDatasetRecords("onslaught-rewards")
 }
 
 // Indexes the per-rarity unlock shard cost table by rarity (its natural, storage-managed id).

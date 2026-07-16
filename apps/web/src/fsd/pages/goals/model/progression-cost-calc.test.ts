@@ -6,7 +6,6 @@ import type {
 
 import {
   ascensionResourceNeed,
-  shardsResourceNeed,
   unlockResourceNeed,
 } from "./progression-cost-calc"
 
@@ -163,35 +162,5 @@ describe("unlockResourceNeed", () => {
     })
 
     expect(need.shards).toBe(0)
-  })
-})
-
-describe("shardsResourceNeed", () => {
-  it("uses the goal's own target count directly", () => {
-    const need = shardsResourceNeed({
-      count: 250,
-      entityId: "hero1",
-      isMow: false,
-    })
-
-    expect(need.shards).toBe(250)
-    expect(need.shardId).toBe("shard:hero1")
-  })
-
-  it("returns an empty need for a zero or negative count", () => {
-    expect(
-      shardsResourceNeed({ count: 0, entityId: "hero1", isMow: false }).shards
-    ).toBe(0)
-  })
-
-  it("never sets shardId for a MoW", () => {
-    const need = shardsResourceNeed({
-      count: 100,
-      entityId: "mow1",
-      isMow: true,
-    })
-
-    expect(need.shards).toBe(100)
-    expect(need.shardId).toBeNull()
   })
 })

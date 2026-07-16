@@ -3,6 +3,7 @@ import type {
   CampaignDescriptor,
   CharacterStorageModel,
   MowStorageModel,
+  OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import type {
@@ -18,6 +19,11 @@ import type {
   UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
+import {
+  onslaughtReward,
+  progressForAlliance,
+  type OnslaughtProgress,
+} from "@/entities/player-data-override"
 import { computeCampaignInsights } from "@/shared/lib"
 
 import { estimatePlan, selectFarmNodes } from "./estimate/estimate"
@@ -25,19 +31,13 @@ import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
-  type MaterialNeed,
+  type UpgradeNeed,
 } from "./estimate/estimate.domain"
+import { resourceLabel } from "./plan-insights-need"
 import {
-  abilityResourceNeed,
-  rankResourceNeed,
-  resourceLabel,
-} from "./plan-insights-need"
-import {
-  ascensionResourceNeed,
-  shardsResourceNeed,
-  unlockResourceNeed,
-  type ResourceNeed,
-} from "./progression-cost-calc"
+  calculateGoalFarmingStages,
+  calculateGoalResourceNeed,
+} from "./goal-requirements"
 import type {
   PlanInsightsBottleneck,
   PlanInsightsResult,
@@ -47,84 +47,6 @@ import type {
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
-
-function goalResourceNeed(params: {
-  detail: GoalDetail
-  character: Character | undefined
-  characterView: CharacterStorageModel | undefined
-  mow: MowStorageModel | undefined
-  playerCharacter: PlayerCharacter | undefined
-  playerMow: PlayerMow | undefined
-  inventoryShard: InventoryShard | undefined
-  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
-  ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
-  unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
-  coveredAbilityTransitions?: {
-    primary: Set<number>
-    secondary: Set<number>
-  }
-}): ResourceNeed | null {
-  const { detail, upgradesById } = params
-  const isMow = detail.entityType === "Mow"
-
-  if (detail.goalType === "Rank") {
-    const materials = rankResourceNeed({
-      detail,
-      character: params.character,
-      playerCharacter: params.playerCharacter,
-      upgradesById,
-    })
-    return materials
-      ? { materials, shardId: null, shards: 0, mythicShards: 0, orbsByType: {} }
-      : null
-  }
-
-  if (detail.goalType === "Ability") {
-    const materials = abilityResourceNeed({
-      detail,
-      mow: params.mow,
-      playerMow: params.playerMow,
-      upgradesById,
-      coveredTransitions: params.coveredAbilityTransitions,
-    })
-    return materials
-      ? { materials, shardId: null, shards: 0, mythicShards: 0, orbsByType: {} }
-      : null
-  }
-
-  if (detail.goalType === "Ascension" && detail.config.progression) {
-    const owned = isMow ? params.playerMow : params.playerCharacter
-    return ascensionResourceNeed({
-      start: detail.config.progression.start,
-      end: detail.config.progression.end,
-      entityId: detail.entityId,
-      isMow,
-      ownedShards: owned?.shards ?? 0,
-      ownedMythicShards: owned?.mythicShards ?? 0,
-      ascensionCostsById: params.ascensionCostsById,
-    })
-  }
-
-  if (detail.goalType === "Unlock") {
-    return unlockResourceNeed({
-      initialRarity: params.characterView?.initialRarity,
-      entityId: detail.entityId,
-      isMow,
-      ownedShards: params.inventoryShard?.amount ?? 0,
-      unlockShardCostsById: params.unlockShardCostsById,
-    })
-  }
-
-  if (detail.goalType === "Shards" && detail.config.shards) {
-    return shardsResourceNeed({
-      count: detail.config.shards.count,
-      entityId: detail.entityId,
-      isMow,
-    })
-  }
-
-  return null
-}
 
 /** The Insights view's full per-project aggregation (plan §16 phase 7) — pure, given every batch-
  *  fetched input `use-plan-insights.ts`'s hook gathers. See that file's doc comment for the overall
@@ -147,10 +69,12 @@ export function computePlanInsights(params: {
   campaignName: (descriptor: Pick<CampaignDescriptor, "nameKey">) => string
   campaignFullLabel: (descriptor: CampaignDescriptor) => string
   dailyEnergy?: number
-  ordering?: "GoalPriority" | "TotalMaterials"
+  onslaughtProgress?: OnslaughtProgress
+  currentOnslaughtTokens?: number
+  onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
 }): PlanInsightsResult {
   const totals: PlanInsightsTotals = {
-    materialsByRarity: {},
+    upgradesByRarity: {},
     orbsByType: {},
     shards: 0,
     mythicShards: 0,
@@ -167,6 +91,7 @@ export function computePlanInsights(params: {
     string,
     { primary: Set<number>; secondary: Set<number> }
   >()
+  let onslaughtTokens = 0
 
   const addProvenance = (id: EstimateResourceId, goalId: string) => {
     const set = provenance.get(id) ?? new Set<string>()
@@ -186,7 +111,7 @@ export function computePlanInsights(params: {
       secondary: new Set<number>(),
     }
     abilityCoverageByEntity.set(detail.entityId, coverage)
-    const need = goalResourceNeed({
+    const needParams = {
       detail,
       character: params.getCharacter(entityId),
       characterView: params.charactersById.get(detail.entityId),
@@ -198,8 +123,54 @@ export function computePlanInsights(params: {
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
-    })
+    }
+    const stages = calculateGoalFarmingStages(needParams)
+    const need = stages
+      ? {
+          upgrades: stages.flatMap((stage) => stage.needs),
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+        }
+      : calculateGoalResourceNeed(needParams)
     if (!need) continue
+
+    if (
+      detail.goalType === "Ascension" &&
+      detail.config.progression &&
+      (detail.config.ascensionFarming?.source === "Onslaught" ||
+        detail.config.ascensionFarming?.source === "Both") &&
+      params.onslaughtProgress
+    ) {
+      const entity = isMowDetail(detail)
+        ? params.mowsById.get(detail.entityId)
+        : params.charactersById.get(detail.entityId)
+      const allianceProgress = progressForAlliance(
+        params.onslaughtProgress,
+        entity?.alliance ?? "Imperial"
+      )
+      const currentProgression = isMowDetail(detail)
+        ? params.playerMowById.get(detail.entityId)?.progressionIndex
+        : params.playerCharacterById.get(detail.entityId)?.progressionIndex
+      const rarity = (
+        currentProgression ?? detail.config.progression.start
+      ).split(":")[0]
+      const regularReward = onslaughtReward(
+        params.onslaughtRewards ?? [],
+        allianceProgress.sector,
+        allianceProgress.tier,
+        regularRewardKey(rarity)
+      )
+      const mythicReward = onslaughtReward(
+        params.onslaughtRewards ?? [],
+        allianceProgress.sector,
+        allianceProgress.tier,
+        "Mythic"
+      )
+      onslaughtTokens += tokensFor(need.shards, regularReward)
+      onslaughtTokens += tokensFor(need.mythicShards, mythicReward)
+    }
 
     totals.shards += need.shards
     totals.mythicShards += need.mythicShards
@@ -208,22 +179,25 @@ export function computePlanInsights(params: {
         (totals.orbsByType[rarity as Rarity] ?? 0) + (count ?? 0)
     }
 
-    const needs: MaterialNeed[] = []
-    for (const material of need.materials) {
-      // `need.materials` only ever holds true upgrade ids (progression-cost-calc.ts's Ascension/
+    const needs: UpgradeNeed[] = []
+    for (const material of need.upgrades) {
+      // `need.upgrades` only ever holds true upgrade ids (progression-cost-calc.ts's Ascension/
       // Unlock/Shards needs never populate it; only Rank/Ability do) — `EstimateResourceId`'s wider
-      // union is a typing artifact of sharing `MaterialNeed` with the shard-aware engine.
+      // union is a typing artifact of sharing `UpgradeNeed` with the shard-aware engine.
       const rarity = params.upgradesById.get(material.id as UpgradeId)?.rarity
       if (rarity) {
-        totals.materialsByRarity[rarity] =
-          (totals.materialsByRarity[rarity] ?? 0) + material.count
+        totals.upgradesByRarity[rarity] =
+          (totals.upgradesByRarity[rarity] ?? 0) + material.count
       }
       addProvenance(material.id, detail.goalId)
       campaignNeeds.push({ id: material.id, count: material.count })
       needs.push(material)
     }
 
-    if (need.shardId && need.shards > 0) {
+    const campaignShardsEnabled =
+      detail.goalType !== "Ascension" ||
+      detail.config.ascensionFarming?.source !== "Onslaught"
+    if (need.shardId && need.shards > 0 && campaignShardsEnabled) {
       needs.push({ id: need.shardId, count: need.shards })
       addProvenance(need.shardId, detail.goalId)
       campaignNeeds.push({ id: need.shardId, count: need.shards })
@@ -244,7 +218,12 @@ export function computePlanInsights(params: {
 
     const priority = params.priorityByGoalId.get(detail.goalId)
     if (needs.length > 0 && priority !== undefined) {
-      goalNeeds.push({ goalId: detail.goalId, priority, needs })
+      goalNeeds.push({
+        goalId: detail.goalId,
+        priority,
+        needs,
+        stages: stages ?? undefined,
+      })
     }
   }
 
@@ -253,7 +232,7 @@ export function computePlanInsights(params: {
     EstimateUpgrade & { rarity: Rarity }
   >([...params.upgradesById, ...shardCatalogEntries])
 
-  const inventory: MaterialNeed[] = params.inventoryUpgrades.map((entry) => ({
+  const inventory: UpgradeNeed[] = params.inventoryUpgrades.map((entry) => ({
     id: entry.upgradeId as EstimateResourceId,
     count: entry.amount,
   }))
@@ -263,7 +242,6 @@ export function computePlanInsights(params: {
     upgradesById: combinedUpgradesById,
     battlesById: params.battlesById,
     dailyEnergy: params.dailyEnergy ?? 288,
-    ordering: params.ordering,
     inventory,
   })
 
@@ -338,13 +316,46 @@ export function computePlanInsights(params: {
     benefitingGoalIdsByInsightId.set(insight.id, [...goalIds])
   }
 
+  const onslaughtDays =
+    Math.max(
+      0,
+      onslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
+    ) / 1.5
+  if (onslaughtDays > 0) {
+    const onslaughtDate = new Date()
+    onslaughtDate.setUTCDate(
+      onslaughtDate.getUTCDate() + Math.ceil(onslaughtDays)
+    )
+    const value = onslaughtDate.toISOString().slice(0, 10)
+    if (!completionDate || value > completionDate) completionDate = value
+  }
+
   return {
     totals,
     energyTotal,
+    onslaughtTokens,
+    onslaughtDays,
+    estimates: estimateResults,
     completionDate,
     bottlenecks,
     campaignInsights,
     eventInsights,
     benefitingGoalIdsByInsightId,
   }
+}
+
+function isMowDetail(detail: GoalDetail) {
+  return detail.entityType === "Mow"
+}
+
+function regularRewardKey(rarity: string) {
+  return (
+    ["Common", "Uncommon", "Rare", "Epic", "Legendary"].includes(rarity)
+      ? rarity
+      : "Legendary"
+  ) as "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
+}
+
+function tokensFor(shards: number, reward: { min: number; max: number }) {
+  return shards <= 0 ? 0 : Math.ceil(shards / ((reward.min + reward.max) / 2))
 }

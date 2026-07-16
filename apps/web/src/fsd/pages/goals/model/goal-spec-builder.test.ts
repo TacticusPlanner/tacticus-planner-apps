@@ -10,11 +10,13 @@ const baseSpecParams = {
   rankEndPointFive: false,
   progressionStart: "Common:None" as const,
   progressionEnd: "Common:OneStar" as const,
+  ascensionFarmingSource: "Campaign" as const,
   abilityActiveStart: 0,
   abilityActiveEnd: 0,
   abilityPassiveStart: 0,
   abilityPassiveEnd: 0,
-  shardsCount: 0,
+  abilityTrack: "first" as const,
+  farmingStrategy: "TotalUpgrades" as const,
 }
 
 describe("buildReviewItems", () => {
@@ -113,17 +115,15 @@ describe("buildCombinedGoalSpecs", () => {
     })
   })
 
-  it("leaves Shards with no dependency even when Unlock is included", () => {
+  it("persists the selected farming strategy on rank goals", () => {
     const specs = buildCombinedGoalSpecs({
       ...baseSpecParams,
-      enabledTypes: new Set(["Unlock", "Shards"]),
-      includesUnlock: true,
+      enabledTypes: new Set(["Rank"]),
+      includesUnlock: false,
       includesAscension: false,
-      shardsCount: 50,
+      farmingStrategy: "Milestones",
     })
 
-    const shards = specs.find((spec) => spec.goalType === "Shards")
-    expect(shards?.dependsOnIndex).toEqual([])
-    expect(shards?.config.shards).toEqual({ count: 50 })
+    expect(specs[0]?.config.farmingStrategy).toBe("Milestones")
   })
 })

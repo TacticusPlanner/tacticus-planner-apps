@@ -30,7 +30,6 @@ export function buildCreateGoalSnapshot(params: {
     initialProgression: params.playerEntity?.progressionIndex ?? null,
     initialActiveAbilityLevel: params.currentActiveAbility,
     initialPassiveAbilityLevel: params.currentPassiveAbility,
-    initialShards: params.playerEntity?.shards ?? 0,
     initialUnlocked: !!params.playerEntity,
     initialRequirement: ownsResourcePreview
       ? params.missingUpgrades.map((entry) => ({

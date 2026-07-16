@@ -15,7 +15,7 @@ vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsProvider: ({ children }: { children: ReactNode }) => children,
   dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    settings: { dailyEnergy: 288, revision: 1 },
     save: vi.fn(),
   }),
 }))

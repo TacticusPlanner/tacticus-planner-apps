@@ -21,7 +21,7 @@ export function shardResourceId(entityId: string): ShardResourceId {
 export type EstimateResourceId = UpgradeId | ShardResourceId
 
 /** How much of one farmable resource is still needed. */
-export interface MaterialNeed {
+export interface UpgradeNeed {
   id: EstimateResourceId
   count: number
 }
@@ -46,7 +46,9 @@ export interface GoalNeed {
   /** Per-project priority — lower runs first and claims shared inventory/energy ahead of higher
    *  numbers, mirroring `project_goals.priority` (plan §5). */
   priority: number
-  needs: MaterialNeed[]
+  needs: UpgradeNeed[]
+  /** Ordered farming segments for this goal. Missing/empty means one TotalUpgrades stage. */
+  stages?: readonly { target: string; needs: UpgradeNeed[] }[]
   /** Restricts farming to these battle ids when set (goal's `config.farmingLocationIds`); otherwise
    *  the engine auto-selects the least-energy node(s) per material. */
   farmingLocationIds?: readonly string[] | null

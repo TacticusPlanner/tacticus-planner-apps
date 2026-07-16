@@ -27,6 +27,10 @@ export type {
   GoalSummary,
   ProgressionTarget,
   RankTarget,
-  ShardTarget,
+  AscensionFarmingConfig,
+  AscensionFarmingSource,
+  FarmingStrategy,
   UpdateGoalRequest,
 } from "./model/types"
+export { GoalRefreshProvider } from "./model/goal-refresh-provider"
+export { useGoalRefresh } from "./model/goal-refresh-context"

@@ -22,17 +22,21 @@ import type {
 export function InsightsSummary({
   totals,
   energyTotal,
+  onslaughtTokens,
+  onslaughtDays,
   completionDate,
   bottlenecks,
 }: {
   totals: PlanInsightsTotals
   energyTotal: number
+  onslaughtTokens: number
+  onslaughtDays: number
   completionDate: string | null
   bottlenecks: PlanInsightsBottleneck[]
 }) {
   const { t } = useTranslation()
 
-  const materialEntries = Object.entries(totals.materialsByRarity) as [
+  const upgradeEntries = Object.entries(totals.upgradesByRarity) as [
     Rarity,
     number,
   ][]
@@ -45,16 +49,16 @@ export function InsightsSummary({
     >
       <Card>
         <CardHeader>
-          <CardTitle>{t("goals.insights.materialsTitle")}</CardTitle>
+          <CardTitle>{t("goals.insights.upgradesTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
-          {materialEntries.length === 0 ? (
+          {upgradeEntries.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               {t("goals.insights.empty")}
             </p>
           ) : (
             <ul className="flex flex-wrap gap-3">
-              {materialEntries.map(([rarity, count]) => (
+              {upgradeEntries.map(([rarity, count]) => (
                 <li className="flex items-center gap-1.5" key={rarity}>
                   <RarityIcon className="size-5" rarity={rarity} />
                   <span className="text-sm font-medium">{count}</span>
@@ -75,6 +79,18 @@ export function InsightsSummary({
               {t("goals.insights.shards")}
             </span>
             <span className="font-medium">{totals.shards}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">
+              {t("goals.insights.onslaughtTokens")}
+            </span>
+            <span className="font-medium">{onslaughtTokens}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">
+              {t("goals.insights.onslaughtDays")}
+            </span>
+            <span className="font-medium">{onslaughtDays.toFixed(1)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">

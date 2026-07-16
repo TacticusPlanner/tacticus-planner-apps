@@ -30,9 +30,7 @@ const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
 /**
  * Detects the two prerequisite gaps the combined-creation composer (plan §6) auto-suggests: a locked
  * character needs an Unlock goal before Rank/Ascension/Ability can make sense, and a Rank target beyond
- * what the character's current Ascension progression allows needs an Ascension goal first. Shards is
- * deliberately excluded from `needsUnlock` — farming shards is *how* a character gets unlocked, so a
- * Shards goal never depends on one.
+ * what the character's current Ascension progression allows needs an Ascension goal first.
  *
  * Detection stays this simple by design (plan §16 phase 4/5 scope notes): there's no ability-level
  * rank-gating data anywhere in the domain model, so ability gaps are never detected — only locked-entity

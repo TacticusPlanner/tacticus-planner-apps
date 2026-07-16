@@ -26,6 +26,7 @@ import {
   type ImportV1ProfileResult,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
+import { useGoalRefresh } from "@/entities/goal"
 
 const parts = [
   ["personalTacticusApiKey", "goals.v1Import.parts.personalKey"],
@@ -47,6 +48,7 @@ export function ImportV1Dialog({
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch } = useCurrentUser()
+  const { refreshGoals } = useGoalRefresh()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [selection, setSelection] = useState<Selection>({
@@ -81,6 +83,7 @@ export function ImportV1Dialog({
       })
       setResult(imported)
       refetch()
+      if (selection.goals) await refreshGoals()
       setPassword("")
       setStatus("success")
     } catch (caught) {

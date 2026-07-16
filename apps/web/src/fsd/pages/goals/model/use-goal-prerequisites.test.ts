@@ -23,19 +23,6 @@ describe("useGoalPrerequisites", () => {
     expect(result.current.needsUnlock).toBe(true)
   })
 
-  it("does not suggest Unlock for a locked character when only Shards is enabled", () => {
-    const { result } = renderHook(() =>
-      useGoalPrerequisites({
-        isLocked: true,
-        currentProgression: undefined,
-        enabledTypes: types("Shards"),
-        rankEnd: "Gold1",
-      })
-    )
-
-    expect(result.current.needsUnlock).toBe(false)
-  })
-
   it("does not suggest Unlock when the character already has an explicit Unlock goal toggled", () => {
     const { result } = renderHook(() =>
       useGoalPrerequisites({

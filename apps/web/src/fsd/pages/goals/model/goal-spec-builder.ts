@@ -9,7 +9,12 @@ import {
   type Character,
   type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
-import type { CombinedGoalSpec, GoalKind } from "@/entities/goal"
+import type {
+  CombinedGoalSpec,
+  AscensionFarmingSource,
+  FarmingStrategy,
+  GoalKind,
+} from "@/entities/goal"
 
 // Pure helpers behind the combined-creation composer (plan §6/§7) — split out of
 // `use-create-goal-form.ts` purely to keep that file under this repo's max-lines rule; all plain
@@ -27,7 +32,7 @@ export type MissingUpgradeEntry = {
 }
 
 /** Resource-requirement preview (Rank goals only, plan §16 phase 2 scope decision — Ascension/
- * Ability/Shards/Unlock have no analogous "required vs owned" calc reused anywhere yet): the base
+ * Ability/Unlock have no analogous "required vs owned" calc reused anywhere yet): the base
  * upgrades still needed for `rankStart` -> `rankEnd`, net of what's already applied/owned. `[]`
  * when Rank isn't enabled or the range is empty/invalid. */
 export function computeMissingUpgrades(params: {
@@ -121,7 +126,7 @@ export function buildReviewItems(
       autoSuggested: !enabledTypes.has("Ascension"),
     })
   }
-  for (const kind of ["Rank", "Ability", "Shards"] as const) {
+  for (const kind of ["Rank", "Ability"] as const) {
     if (enabledTypes.has(kind)) {
       items.push({ goalType: kind, autoSuggested: false })
     }
@@ -130,10 +135,9 @@ export function buildReviewItems(
 }
 
 /**
- * The ordered spec list to submit (plan §6): Unlock -> Ascension -> Rank -> Ability -> Shards.
+ * The ordered spec list to submit: Unlock -> Ascension -> Rank -> Ability.
  * Rank/Ability depend on whichever of Unlock/Ascension precede them; Ascension depends on Unlock
- * alone; Shards depends on nothing (it's how a character *gets* unlocked, not something gated by
- * it). `ascensionSuggestion` is `useGoalPrerequisites`'s auto-suggested target, used only when
+ * alone. `ascensionSuggestion` is `useGoalPrerequisites`'s auto-suggested target, used only when
  * Ascension itself wasn't explicitly toggled.
  */
 export function buildCombinedGoalSpecs(params: {
@@ -147,11 +151,13 @@ export function buildCombinedGoalSpecs(params: {
   rankEndPointFive: boolean
   progressionStart: Progression
   progressionEnd: Progression
+  ascensionFarmingSource: AscensionFarmingSource
   abilityActiveStart: number
   abilityActiveEnd: number
   abilityPassiveStart: number
   abilityPassiveEnd: number
-  shardsCount: number
+  abilityTrack: "first" | "second"
+  farmingStrategy: FarmingStrategy
 }): CombinedGoalSpec[] {
   const { enabledTypes, includesUnlock, includesAscension } = params
   const specs: CombinedGoalSpec[] = []
@@ -169,7 +175,14 @@ export function buildCombinedGoalSpecs(params: {
       : params.ascensionSuggestion!
     specs.push({
       goalType: "Ascension",
-      config: { progression: ascension },
+      config: {
+        progression: ascension,
+        ascensionFarming: {
+          source: params.ascensionFarmingSource,
+          shardBattleIds: [],
+          mythicShardBattleIds: [],
+        },
+      },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
     })
     ascensionIndex = specs.length - 1
@@ -179,6 +192,7 @@ export function buildCombinedGoalSpecs(params: {
     specs.push({
       goalType: "Rank",
       config: {
+        farmingStrategy: params.farmingStrategy,
         rank: {
           start: rankIndex(params.rankStart),
           startPointFive: params.rankStartPointFive,
@@ -198,22 +212,21 @@ export function buildCombinedGoalSpecs(params: {
     specs.push({
       goalType: "Ability",
       config: {
+        farmingStrategy: params.farmingStrategy,
         ability: {
           activeStart: params.abilityActiveStart,
-          activeEnd: params.abilityActiveEnd,
+          activeEnd:
+            params.abilityTrack === "first"
+              ? params.abilityActiveEnd
+              : params.abilityActiveStart,
           passiveStart: params.abilityPassiveStart,
-          passiveEnd: params.abilityPassiveEnd,
+          passiveEnd:
+            params.abilityTrack === "second"
+              ? params.abilityPassiveEnd
+              : params.abilityPassiveStart,
         },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
-    })
-  }
-
-  if (enabledTypes.has("Shards")) {
-    specs.push({
-      goalType: "Shards",
-      config: { shards: { count: params.shardsCount } },
-      dependsOnIndex: [],
     })
   }
 

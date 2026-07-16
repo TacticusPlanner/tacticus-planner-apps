@@ -4,7 +4,12 @@ import { toast } from "sonner"
 
 import { useMsal } from "@azure/msal-react"
 
-import { deleteGoal, updateGoalStatus, type GoalStatus } from "@/entities/goal"
+import {
+  deleteGoal,
+  updateGoalStatus,
+  useGoalRefresh,
+  type GoalStatus,
+} from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 /**
@@ -18,6 +23,7 @@ export function useGoalActions(onChanged: () => void) {
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const [pendingId, setPendingId] = useState<string | null>(null)
+  const { refreshGoals } = useGoalRefresh()
 
   const run = async (goalId: string, action: () => Promise<unknown>) => {
     if (!account) {
@@ -27,6 +33,7 @@ export function useGoalActions(onChanged: () => void) {
     setPendingId(goalId)
     try {
       await action()
+      refreshGoals()
       onChanged()
       return true
     } catch (error) {

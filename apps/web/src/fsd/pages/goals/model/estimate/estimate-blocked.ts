@@ -7,7 +7,7 @@ import type {
   EstimateResourceId,
   EstimateUpgrade,
   FarmLocation,
-  MaterialNeed,
+  UpgradeNeed,
 } from "./estimate.domain"
 
 export function blocked(
@@ -18,7 +18,7 @@ export function blocked(
 }
 
 export function unavailableReason(
-  need: MaterialNeed,
+  need: UpgradeNeed,
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
   battlesById: ReadonlyMap<BattleId, Battle>,
   farmingLocationIds: readonly string[] | null | undefined,

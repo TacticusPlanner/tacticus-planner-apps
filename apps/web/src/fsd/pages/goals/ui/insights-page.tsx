@@ -90,6 +90,8 @@ export function InsightsPage() {
             bottlenecks={result.bottlenecks}
             completionDate={result.completionDate}
             energyTotal={result.energyTotal}
+            onslaughtTokens={result.onslaughtTokens}
+            onslaughtDays={result.onslaughtDays}
             totals={result.totals}
           />
           <InsightsEvents

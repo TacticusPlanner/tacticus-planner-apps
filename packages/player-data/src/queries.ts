@@ -22,3 +22,7 @@ export function getPlayerMow(unitId: UnitId) {
 export function getInventoryShard(unitId: UnitId) {
   return getChunkRecord("inventory-shards", unitId)
 }
+
+export function getLiveProgress() {
+  return getChunkData("live-progress")
+}

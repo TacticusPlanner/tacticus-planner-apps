@@ -28,6 +28,11 @@ const deleteGoal = vi.fn()
 vi.mock("@/entities/goal", () => ({
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
+  useGoalRefresh: () => ({
+    revision: 0,
+    refreshGoals: vi.fn(),
+    registerGoalRefetch: vi.fn(() => () => undefined),
+  }),
 }))
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))

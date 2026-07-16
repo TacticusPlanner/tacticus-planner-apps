@@ -2,7 +2,7 @@ import type {
   CharacterStorageModel,
   MowStorageModel,
 } from "@workspace/game-catalog"
-import { rankAt, type UpgradeId } from "@workspace/game-domain"
+import { rankAt, rankIndex, type UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import {
@@ -16,7 +16,7 @@ import {
 import type { GoalDetail } from "@/entities/goal"
 
 import type { EstimateResourceId } from "./estimate/estimate.domain"
-import type { MaterialNeed } from "./estimate/estimate.domain"
+import type { UpgradeNeed } from "./estimate/estimate.domain"
 import {
   mowAbilityTrackLevel,
   uncoveredMowAbilityUpgradeIds,
@@ -55,11 +55,17 @@ export function rankResourceNeed(params: {
   character: Character | undefined
   playerCharacter: PlayerCharacter | undefined
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
-}): MaterialNeed[] | null {
+}): UpgradeNeed[] | null {
   const rankTarget = params.detail.config.rank
   if (!rankTarget || !params.character) return null
 
-  const rankStart = rankAt(rankTarget.start)
+  const effectiveStart = Math.max(
+    rankTarget.start,
+    params.playerCharacter
+      ? rankIndex(params.playerCharacter.rank)
+      : rankTarget.start
+  )
+  const rankStart = rankAt(effectiveStart)
   const rankEnd = rankAt(rankTarget.end)
   const requiredIds = rankUpUpgradeIds(
     params.character,
@@ -103,7 +109,7 @@ export function abilityResourceNeed(params: {
     primary: Set<number>
     secondary: Set<number>
   }
-}): MaterialNeed[] | null {
+}): UpgradeNeed[] | null {
   const abilityTarget = params.detail.config.ability
   if (!abilityTarget || !params.mow) return null
 

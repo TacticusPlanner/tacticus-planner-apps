@@ -2,14 +2,17 @@ import { useEffect, useState } from "react"
 import { useMsal } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
+import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import {
   getInventoryShard,
   getInventoryUpgrades,
+  getLiveProgress,
   getPlayerCharacter,
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
 import { getGoal } from "@/entities/goal"
+import { getOnslaughtProgress } from "@/entities/player-data-override"
 import type { ProjectGoalSummary } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
@@ -58,6 +61,8 @@ export function usePlanInsights(
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+  const liveProgress = useLiveQuery(() => getLiveProgress(), [])
+  const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
   const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
@@ -72,6 +77,7 @@ export function usePlanInsights(
   const catalogReady =
     !!charactersById &&
     !!mowsById &&
+    !!onslaughtRewards &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
 
@@ -82,12 +88,15 @@ export function usePlanInsights(
 
     let active = true
 
-    void Promise.all(
-      activeMembers.map((member) =>
-        getGoal(instance, account, member.goal.goalId)
-      )
-    )
-      .then(async (details) => {
+    void Promise.all([
+      Promise.all(
+        activeMembers.map((member) =>
+          getGoal(instance, account, member.goal.goalId)
+        )
+      ),
+      getOnslaughtProgress(instance, account),
+    ])
+      .then(async ([details, onslaughtProgress]) => {
         const entityIds = [...new Set(details.map((detail) => detail.entityId))]
         const [
           playerCharacterEntries,
@@ -119,6 +128,7 @@ export function usePlanInsights(
 
         return {
           details,
+          onslaughtProgress,
           playerCharacterById: new Map(playerCharacterEntries),
           playerMowById: new Map(playerMowEntries),
           inventoryShardById: new Map(inventoryShardEntries),
@@ -130,6 +140,7 @@ export function usePlanInsights(
           playerCharacterById,
           playerMowById,
           inventoryShardById,
+          onslaughtProgress,
         }) => {
           if (!active) return
 
@@ -155,7 +166,10 @@ export function usePlanInsights(
             campaignName,
             campaignFullLabel,
             dailyEnergy: planningSettings.dailyEnergy,
-            ordering: planningSettings.ordering,
+            onslaughtProgress,
+            currentOnslaughtTokens:
+              liveProgress?.gameModeTokens.onslaught?.current ?? 0,
+            onslaughtRewards: onslaughtRewards!,
           })
 
           setFetchState({ status: "success", key: memberKey, result })
@@ -176,7 +190,7 @@ export function usePlanInsights(
     account?.homeAccountId,
     memberKey,
     planningSettings.dailyEnergy,
-    planningSettings.ordering,
+    liveProgress?.gameModeTokens.onslaught?.current,
   ])
 
   const isCurrent =

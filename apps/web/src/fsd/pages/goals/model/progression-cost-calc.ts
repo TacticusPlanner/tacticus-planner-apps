@@ -8,13 +8,13 @@ import {
   type Rarity,
 } from "@workspace/game-domain"
 
-import type { MaterialNeed } from "./estimate/estimate.domain"
+import type { UpgradeNeed } from "./estimate/estimate.domain"
 import {
   shardResourceId,
   type ShardResourceId,
 } from "./estimate/estimate.domain"
 
-// Need-derivation for Ascension/Unlock/Shards goals (plan §16 phase 7) — the sibling of
+// Need-derivation for Ascension and Unlock goals — the sibling of
 // `goal-spec-builder.ts`'s `computeMissingUpgrades` (Character Rank) and `mow-ability-calc.ts`'s
 // `computeMowMissingUpgrades` (MoW Ability). These three goal types are costed in Ascension Orbs and
 // shard counts rather than `UpgradeId` materials, via the ascension-costs/unlock-shard-costs catalog
@@ -26,7 +26,7 @@ import {
  *  no campaign-node source). `shardId` is set only when there's a net shard need AND the entity is a
  *  Character (a MoW has no `shardLocations` to farm from — plan §16 phase 7 scope notes). */
 export type ResourceNeed = {
-  materials: MaterialNeed[]
+  upgrades: UpgradeNeed[]
   shardId: ShardResourceId | null
   shards: number
   mythicShards: number
@@ -34,7 +34,7 @@ export type ResourceNeed = {
 }
 
 const EMPTY_NEED: ResourceNeed = {
-  materials: [],
+  upgrades: [],
   shardId: null,
   shards: 0,
   mythicShards: 0,
@@ -55,6 +55,7 @@ export function ascensionResourceNeed(params: {
   isMow: boolean
   ownedShards: number
   ownedMythicShards: number
+  currentProgression?: string
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
 }): ResourceNeed {
   const {
@@ -65,9 +66,14 @@ export function ascensionResourceNeed(params: {
     ownedShards,
     ownedMythicShards,
     ascensionCostsById,
+    currentProgression,
   } = params
 
-  const startIndex = progressionOrder.indexOf(start as Progression)
+  const configuredStartIndex = progressionOrder.indexOf(start as Progression)
+  const currentIndex = currentProgression
+    ? progressionOrder.indexOf(currentProgression as Progression)
+    : -1
+  const startIndex = Math.max(configuredStartIndex, currentIndex)
   const endIndex = progressionOrder.indexOf(end as Progression)
   if (startIndex < 0 || endIndex <= startIndex) return EMPTY_NEED
 
@@ -98,7 +104,7 @@ export function ascensionResourceNeed(params: {
   }
 
   return {
-    materials: [],
+    upgrades: [],
     shardId: !isMow && netShards > 0 ? shardResourceId(entityId) : null,
     shards: netShards,
     mythicShards: netMythicShards,
@@ -126,29 +132,9 @@ export function unlockResourceNeed(params: {
   if (netShards === 0) return EMPTY_NEED
 
   return {
-    materials: [],
+    upgrades: [],
     shardId: shardResourceId(entityId),
     shards: netShards,
-    mythicShards: 0,
-    orbsByType: {},
-  }
-}
-
-/** A Shards goal's own target count is the need directly — it's how a character/MoW *gets* shards
- *  (there's nothing further to look up), mirroring `goal-spec-builder.ts`'s treatment of Shards as
- *  depending on nothing. */
-export function shardsResourceNeed(params: {
-  count: number
-  entityId: string
-  isMow: boolean
-}): ResourceNeed {
-  const { count, entityId, isMow } = params
-  if (count <= 0) return EMPTY_NEED
-
-  return {
-    materials: [],
-    shardId: !isMow ? shardResourceId(entityId) : null,
-    shards: count,
     mythicShards: 0,
     orbsByType: {},
   }

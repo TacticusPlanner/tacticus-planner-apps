@@ -28,6 +28,7 @@ export type {
   GameCatalogLreView,
   GameCatalogAscensionCost,
   GameCatalogUnlockShardCost,
+  GameCatalogOnslaughtReward,
 } from "./record-types"
 
 // All catalog API shapes are inferred from the zod schemas that validate them at runtime.

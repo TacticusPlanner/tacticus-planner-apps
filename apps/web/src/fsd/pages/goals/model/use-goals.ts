@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { useMsal } from "@azure/msal-react"
 
-import { listGoals, type GoalSummary } from "@/entities/goal"
+import { listGoals, useGoalRefresh, type GoalSummary } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 type FetchState =
@@ -22,11 +22,24 @@ export function useGoals(options?: { archived?: boolean }) {
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const accountId = account?.homeAccountId
+  const accountRef = useRef(account)
+  const instanceRef = useRef(instance)
   const archived = options?.archived ?? false
   const abortRef = useRef<AbortController | null>(null)
+  const tRef = useRef(t)
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
+  const { registerGoalRefetch } = useGoalRefresh()
+  const registerRef = useRef(registerGoalRefetch)
 
-  const load = useCallback(() => {
+  useEffect(() => {
+    accountRef.current = account
+    instanceRef.current = instance
+    tRef.current = t
+    registerRef.current = registerGoalRefetch
+  }, [account, instance, registerGoalRefetch, t])
+
+  const load = useCallback(async () => {
+    const account = accountRef.current
     if (!account) {
       return
     }
@@ -37,72 +50,37 @@ export function useGoals(options?: { archived?: boolean }) {
 
     setFetchState({ status: "idle" })
 
-    void listGoals(instance, account, {
-      archived,
-      signal: controller.signal,
-    }).then(
-      (data) => {
-        if (controller.signal.aborted) {
-          return
-        }
-
+    try {
+      const data = await listGoals(instanceRef.current, account, {
+        archived,
+        signal: controller.signal,
+      })
+      if (!controller.signal.aborted) {
         setFetchState({ status: "success", goals: data.goals })
-      },
-      (error: unknown) => {
-        if (controller.signal.aborted) {
-          return
-        }
-
-        setFetchState({
-          status: "error",
-          message:
-            error instanceof ApiError ? error.message : t("goals.loadError"),
-        })
       }
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [instance, account, archived])
+    } catch (error) {
+      if (controller.signal.aborted) return
+      setFetchState({
+        status: "error",
+        message:
+          error instanceof ApiError
+            ? error.message
+            : tRef.current("goals.loadError"),
+      })
+      throw error
+    }
+  }, [archived])
 
   useEffect(() => {
-    const currentAccount = instance.getActiveAccount() ?? accounts[0]
-    if (!currentAccount) {
-      return
-    }
-
-    let active = true
-    const controller = new AbortController()
-    abortRef.current = controller
-
-    void listGoals(instance, currentAccount, {
-      archived,
-      signal: controller.signal,
-    }).then(
-      (data) => {
-        if (!active) {
-          return
-        }
-
-        setFetchState({ status: "success", goals: data.goals })
-      },
-      (error: unknown) => {
-        if (!active) {
-          return
-        }
-
-        setFetchState({
-          status: "error",
-          message:
-            error instanceof ApiError ? error.message : t("goals.loadError"),
-        })
-      }
-    )
+    if (!accountId) return undefined
+    const unregister = registerRef.current(`goals:${archived}`, load)
+    void load()
 
     return () => {
-      active = false
-      controller.abort()
+      unregister()
+      abortRef.current?.abort()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, instance, accounts, archived])
+  }, [accountId, archived, load])
 
   const isLoading = useMemo(
     () => fetchState.status === "idle",

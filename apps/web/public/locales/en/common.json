@@ -163,10 +163,35 @@
     "home": "Home",
     "lookup": "Lookup",
     "createGoal": "Create Goal",
+    "goals": "Goals",
+    "onslaught": "Onslaught",
     "uiKit": "UI Kit",
     "guild": "Guild",
     "menu": "Menu",
     "syncWithTacticus": "Sync with Tacticus"
+  },
+  "onslaught": {
+    "title": "Onslaught progress",
+    "description": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
+    "sector": "Sector",
+    "tier": "Tier",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Onslaught progress saved.",
+    "loadError": "Couldn't load Onslaught progress.",
+    "saveError": "Couldn't save Onslaught progress. Refresh and try again.",
+    "rewardsTitle": "Shard rewards reference",
+    "sectorTier": "Sector / tier",
+    "current": "Current alliance progress",
+    "rewards": {
+      "Common": "Common",
+      "Uncommon": "Uncommon",
+      "Rare": "Rare",
+      "Epic": "Epic",
+      "Legendary": "Legendary",
+      "LegendaryBlue": "Legendary 1★ blue",
+      "Mythic": "Mythic"
+    }
   },
   "home": {
     "subtitle": "This page is still under construction.",
@@ -245,13 +270,8 @@
     "planningSettings": {
       "button": "Planning settings",
       "title": "Planning settings",
-      "description": "Choose the daily energy budget and how the active plan schedules farming.",
+      "description": "Choose the daily energy budget used by goal estimates.",
       "dailyEnergy": "Energy per day",
-      "ordering": "Farming order",
-      "goalPriority": "By goal priority",
-      "goalPriorityDescription": "Complete higher-priority goals before spending energy on lower-priority goals.",
-      "totalMaterials": "By total materials",
-      "totalMaterialsDescription": "Pool material demand across the plan before selecting farming nodes.",
       "save": "Save settings",
       "cancel": "Cancel",
       "error": "Planning settings could not be saved."
@@ -368,9 +388,7 @@
         "Rank": "Rank",
         "Ascension": "Ascension",
         "Ability": "Ability",
-        "Unlock": "Unlock",
-        "Shards": "Shards",
-        "Material": "Upgrade material"
+        "Unlock": "Unlock"
       },
       "rank": {
         "start": "From rank",
@@ -380,21 +398,43 @@
       },
       "ascension": {
         "start": "From progression",
-        "end": "To progression"
+        "end": "To progression",
+        "source": "Shard source",
+        "Campaign": "Campaign",
+        "Onslaught": "Onslaught",
+        "Both": "Campaign and Onslaught",
+        "onslaughtProgressHint": "The estimate uses the saved sector and tier for this unit's alliance.",
+        "editOnslaughtProgress": "Edit Onslaught progress",
+        "shards": "{{regular}} shards · {{mythic}} mythic shards",
+        "orbs": "orbs × {{count}}",
+        "campaignEstimate": "Campaign: {{energy}} energy · {{raids}} raids · {{days}} days",
+        "onslaughtEstimate": "Onslaught: {{tokens}} tokens · {{days}} days",
+        "combinedEstimate": "Combined duration: {{days}} days"
       },
       "ability": {
+        "track": "Ability track",
+        "active": "Active",
+        "passive": "Passive",
+        "primary": "Primary",
+        "secondary": "Secondary",
         "activeStart": "Active ability, from level",
         "activeEnd": "Active ability, to level",
         "passiveStart": "Passive ability, from level",
         "passiveEnd": "Passive ability, to level"
       },
-      "shards": {
-        "count": "Shard target"
+      "farmingStrategy": {
+        "label": "Farming strategy",
+        "TotalUpgrades": "Total upgrades",
+        "EveryStep": "Every step",
+        "Milestones": "Milestones",
+        "MajorMilestones": "Major milestones"
       },
       "unlockDescription": "This goal is complete once the character is unlocked.",
+      "unlockUnavailable": "Unlock is unavailable because this character has no catalog shard locations.",
       "previewTitle": "Still needed",
       "previewDisclaimer": "Estimate may change once the goal is created.",
       "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
+      "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
       "projectLabel": "Project",
       "projectDefault": "Default project",
       "projectActive": "active",
@@ -402,8 +442,11 @@
       "submit": "Create goal",
       "genericError": "Couldn't create the goal. Please try again.",
       "previewEstimate": "≈ {{days}} days · ready {{date}}",
+      "previewEnergy": "{{energy}} energy · {{raids}} raids · {{dailyEnergy}} energy/day",
       "reviewTitle": "What will be created",
       "suggestions": {
+        "includeUnlock": "Include the suggested Unlock goal",
+        "includeAscension": "Include the suggested Ascension goal",
         "unlockRequired": "required, this character isn't owned yet",
         "ascensionRequired": "required to reach the target rank"
       },
@@ -435,6 +478,7 @@
       "search": "Search goals",
       "allTypes": "All goal types",
       "groupByType": "Group by type",
+      "groupByUnit": "Group by unit",
       "sort": {
         "priority": "Priority",
         "entity": "Character",
@@ -450,6 +494,7 @@
       "saveError": "Couldn't save this goal.",
       "save": "Save changes",
       "estimateTitle": "Estimate comparison",
+      "isolatedEstimate": "Isolated estimate",
       "originalEstimate": "Original",
       "currentEstimate": "Current",
       "originalResources": "Original requirement: {{count}} items · {{energy}} energy · {{raids}} raids",
@@ -468,10 +513,12 @@
       "selectProject": "Select a project",
       "noProjectTitle": "No project selected",
       "noProjectDescription": "Select a project above to see its total missing resources, farming bottlenecks, and relevant campaign events.",
-      "materialsTitle": "Materials by rarity",
+      "upgradesTitle": "Upgrades by rarity",
       "shardsTitle": "Shards & orbs",
       "shards": "Shards",
       "mythicShards": "Mythic shards",
+      "onslaughtTokens": "Onslaught tokens",
+      "onslaughtDays": "Onslaught days",
       "countOnlyDisclaimer": "Orbs and mythic shards are count-only — they don't factor into the energy estimate below.",
       "estimateTitle": "Estimate",
       "energyTotal": "Total energy",

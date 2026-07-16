@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- The hook intentionally exposes the complete creation-sheet state machine. */
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -8,6 +9,7 @@ import {
   firstRank,
   lastRank,
   progressionIndex,
+  progressionOrder,
   rankAt,
   rankIndex,
   rankOrder,
@@ -18,7 +20,12 @@ import {
 import { getInventoryUpgrades } from "@workspace/player-data/queries"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { createCombinedGoals, type GoalKind } from "@/entities/goal"
+import {
+  createCombinedGoals,
+  type AscensionFarmingSource,
+  type FarmingStrategy,
+  type GoalKind,
+} from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { listProjects, type ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
@@ -31,6 +38,7 @@ import { useGoalPrerequisites } from "./use-goal-prerequisites"
 import { mowAbilityTrackLevel } from "./mow-ability-calc"
 import { buildCreateGoalSnapshot } from "./goal-snapshot-builder"
 import { getGoalValidationIssue } from "./goal-validation"
+import { useProgressionPreview } from "./use-progression-preview"
 
 const DEFAULT_PROJECT_VALUE = "__default__"
 
@@ -63,6 +71,8 @@ export function useCreateGoalForm({
     mowsById,
     upgradesById,
     battlesById,
+    ascensionCostsById,
+    unlockShardCostsById,
     characterGroups,
     mowGroups,
     getCharacter,
@@ -75,6 +85,9 @@ export function useCreateGoalForm({
   const [enabledTypes, setEnabledTypes] = useState<ReadonlySet<GoalKind>>(() =>
     defaultTypesFor("Character")
   )
+  const [includeSuggestedUnlock, setIncludeSuggestedUnlock] = useState(true)
+  const [includeSuggestedAscension, setIncludeSuggestedAscension] =
+    useState(true)
 
   const [rankStart, setRankStart] = useState<Rank>(firstRank)
   const [rankEnd, setRankEnd] = useState<Rank>(rankAt(1))
@@ -85,13 +98,17 @@ export function useCreateGoalForm({
     useState<Progression>(firstProgression)
   const [progressionEnd, setProgressionEnd] =
     useState<Progression>(firstProgression)
+  const [ascensionFarmingSource, setAscensionFarmingSource] =
+    useState<AscensionFarmingSource>("Campaign")
 
   const [abilityActiveStart, setAbilityActiveStart] = useState(0)
   const [abilityActiveEnd, setAbilityActiveEnd] = useState(0)
   const [abilityPassiveStart, setAbilityPassiveStart] = useState(0)
   const [abilityPassiveEnd, setAbilityPassiveEnd] = useState(0)
+  const [abilityTrack, setAbilityTrack] = useState<"first" | "second">("first")
 
-  const [shardsCount, setShardsCount] = useState(0)
+  const [farmingStrategy, setFarmingStrategy] =
+    useState<FarmingStrategy>("TotalUpgrades")
 
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [projectId, setProjectId] = useState(DEFAULT_PROJECT_VALUE)
@@ -185,17 +202,21 @@ export function useCreateGoalForm({
     setRankEndPointFive(false)
     setProgressionStart(firstProgression)
     setProgressionEnd(firstProgression)
+    setAscensionFarmingSource("Campaign")
     setAbilityActiveStart(0)
     setAbilityActiveEnd(0)
     setAbilityPassiveStart(0)
     setAbilityPassiveEnd(0)
-    setShardsCount(0)
+    setAbilityTrack("first")
+    setFarmingStrategy("TotalUpgrades")
   }
 
   const resetForm = () => {
     setEntityType("Character")
     setEntityId(undefined)
     setEnabledTypes(defaultTypesFor("Character"))
+    setIncludeSuggestedUnlock(true)
+    setIncludeSuggestedAscension(true)
     resetTargetFields()
     setProjectId(DEFAULT_PROJECT_VALUE)
     prefilledEntityIdRef.current = undefined
@@ -207,6 +228,8 @@ export function useCreateGoalForm({
     setEntityType(type)
     setEntityId(undefined)
     setEnabledTypes(defaultTypesFor(type))
+    setIncludeSuggestedUnlock(true)
+    setIncludeSuggestedAscension(true)
     resetTargetFields()
     prefilledEntityIdRef.current = undefined
   }
@@ -214,6 +237,8 @@ export function useCreateGoalForm({
   const handleEntityChange = (id: UnitId) => {
     setEntityId(id)
     setEnabledTypes(defaultTypesFor(entityType))
+    setIncludeSuggestedUnlock(true)
+    setIncludeSuggestedAscension(true)
     resetTargetFields()
     prefilledEntityIdRef.current = undefined
   }
@@ -222,10 +247,31 @@ export function useCreateGoalForm({
     const options = rankOrder.filter((r) => rankIndex(r) > rankIndex(rankStart))
     return options.length > 0 ? options : [rankStart]
   }, [rankStart])
+  const rankStartOptions = useMemo(
+    () =>
+      rankOrder.filter(
+        (rank) =>
+          rankIndex(rank) >= rankIndex(playerCharacter?.rank ?? rankStart)
+      ),
+    [playerCharacter?.rank, rankStart]
+  )
+  const progressionStartOptions = useMemo(
+    () =>
+      progressionOrder.filter(
+        (progression) =>
+          progressionIndex(progression) >=
+          progressionIndex(playerEntity?.progressionIndex ?? progressionStart)
+      ),
+    [playerEntity?.progressionIndex, progressionStart]
+  )
 
   const character =
     entityType === "Character" && entityId ? getCharacter(entityId) : undefined
   const mow = entityType === "Mow" && entityId ? getMow(entityId) : undefined
+  const unlockAvailable =
+    entityType === "Character" &&
+    !!entityId &&
+    (charactersById?.get(entityId)?.shardLocations?.length ?? 0) > 0
 
   // Resource-requirement preview + isolated day-by-day estimate (plan §9 context (a)) — pure calc in
   // ./goal-preview.ts, kept out of this file for its max-lines budget.
@@ -276,7 +322,7 @@ export function useCreateGoalForm({
   // for a MoW, since Rank is never in `enabledTypes` there). Reruns whenever the toggled types or
   // their targets change.
   const prerequisites = useGoalPrerequisites({
-    isLocked: !!entityId && !playerEntity,
+    isLocked: entityType === "Character" && !!entityId && !playerEntity,
     currentProgression: playerEntity?.progressionIndex,
     enabledTypes,
     rankEnd,
@@ -284,10 +330,32 @@ export function useCreateGoalForm({
 
   // Whether Unlock will actually be submitted — either the user toggled it explicitly, or it's
   // required as a prerequisite for another enabled type on a locked entity.
-  const includesUnlock = enabledTypes.has("Unlock") || prerequisites.needsUnlock
+  const includesUnlock =
+    enabledTypes.has("Unlock") ||
+    (prerequisites.needsUnlock && includeSuggestedUnlock)
   // Whether Ascension will actually be submitted — either explicit, or the auto-suggested one.
   const includesAscension =
-    enabledTypes.has("Ascension") || !!prerequisites.needsAscension
+    enabledTypes.has("Ascension") ||
+    (!!prerequisites.needsAscension && includeSuggestedAscension)
+
+  const progressionPreview = useProgressionPreview({
+    entityId,
+    entityType,
+    character:
+      entityType === "Character" && entityId
+        ? charactersById?.get(entityId)
+        : undefined,
+    playerEntity,
+    progressionStart,
+    progressionEnd,
+    ascensionEnabled: includesAscension,
+    unlockEnabled: includesUnlock,
+    source: ascensionFarmingSource,
+    ascensionCostsById,
+    unlockShardCostsById,
+    battlesById,
+    dailyEnergy: planningSettings.dailyEnergy,
+  })
 
   // "What will be created" review list (plan §7) — in submit order, flagging entries the user didn't
   // explicitly toggle themselves. Pure builder in ./goal-spec-builder.ts (this file's own max-lines
@@ -330,8 +398,7 @@ export function useCreateGoalForm({
     !validationMessage &&
     (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
     (!enabledTypes.has("Ascension") ||
-      progressionIndex(progressionStart) < progressionIndex(progressionEnd)) &&
-    (!enabledTypes.has("Shards") || shardsCount > 0)
+      progressionIndex(progressionStart) < progressionIndex(progressionEnd))
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -354,11 +421,13 @@ export function useCreateGoalForm({
         rankEndPointFive,
         progressionStart,
         progressionEnd,
+        ascensionFarmingSource,
         abilityActiveStart,
         abilityActiveEnd,
         abilityPassiveStart,
         abilityPassiveEnd,
-        shardsCount,
+        abilityTrack,
+        farmingStrategy,
       })
       await createCombinedGoals(instance, account, {
         entityType,
@@ -407,22 +476,31 @@ export function useCreateGoalForm({
     entityId,
     handleEntityChange,
     enabledTypes,
+    unlockAvailable,
     toggleType,
     prerequisites,
+    includeSuggestedUnlock,
+    setIncludeSuggestedUnlock,
+    includeSuggestedAscension,
+    setIncludeSuggestedAscension,
     reviewItems,
     rankStart,
     setRankStart,
     rankEnd,
     setRankEnd,
     rankEndOptions,
+    rankStartOptions,
     rankStartPointFive,
     setRankStartPointFive,
     rankEndPointFive,
     setRankEndPointFive,
     progressionStart,
+    progressionStartOptions,
     setProgressionStart,
     progressionEnd,
     setProgressionEnd,
+    ascensionFarmingSource,
+    setAscensionFarmingSource,
     abilityActiveStart,
     setAbilityActiveStart,
     abilityActiveEnd,
@@ -431,8 +509,10 @@ export function useCreateGoalForm({
     setAbilityPassiveStart,
     abilityPassiveEnd,
     setAbilityPassiveEnd,
-    shardsCount,
-    setShardsCount,
+    abilityTrack,
+    setAbilityTrack,
+    farmingStrategy,
+    setFarmingStrategy,
     projects,
     projectId,
     setProjectId,
@@ -443,6 +523,8 @@ export function useCreateGoalForm({
     errorMessage,
     missingUpgrades,
     estimatePreview,
+    planningSettings,
+    progressionPreview,
     validationMessage,
     canSubmit,
     handleSubmit,

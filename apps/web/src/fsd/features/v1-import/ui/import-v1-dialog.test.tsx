@@ -20,6 +20,15 @@ vi.mock("@/entities/account", () => ({
   useCurrentUser: () => ({ refetch }),
 }))
 
+const refreshGoals = vi.fn()
+vi.mock("@/entities/goal", () => ({
+  useGoalRefresh: () => ({
+    revision: 0,
+    refreshGoals,
+    registerGoalRefetch: vi.fn(() => () => undefined),
+  }),
+}))
+
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},
 }))
@@ -39,6 +48,7 @@ describe("ImportV1Dialog", () => {
       goalIssues: [],
     })
     refetch.mockReset()
+    refreshGoals.mockReset()
     onOpenChange.mockReset()
   })
 
@@ -70,6 +80,7 @@ describe("ImportV1Dialog", () => {
       "Imported"
     )
     expect(refetch).toHaveBeenCalledTimes(1)
+    expect(refreshGoals).toHaveBeenCalledTimes(1)
   })
 
   it("shows an import failure without refreshing account state", async () => {

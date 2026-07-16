@@ -46,10 +46,12 @@ export function MobileShell({
   isAuthenticated,
   visibleItems,
   pageTitle,
+  onCreateGoal,
 }: {
   isAuthenticated: boolean
   visibleItems: NavItem[]
   pageTitle: string | undefined
+  onCreateGoal?: () => void
 }) {
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
@@ -60,7 +62,10 @@ export function MobileShell({
         </Suspense>
       </div>
       <ScrollToTopButton />
-      <MobileBottomNav items={visibleItems} />
+      <MobileBottomNav
+        items={visibleItems}
+        onCreateGoal={onCreateGoal ?? (() => undefined)}
+      />
     </div>
   )
 }
@@ -161,7 +166,7 @@ function MobileNavActionButton({
   )
 }
 
-function MobileNavActions() {
+function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   const { t } = useTranslation()
   const { errorText, isSyncing, status, statusText, syncNow } =
     usePlayerDataSyncStatus()
@@ -196,7 +201,7 @@ function MobileNavActions() {
         aria-label={t("nav.createGoal")}
         className="pointer-events-auto"
         data-testid="mobile-create-goal-button"
-        disabled
+        onClick={onCreateGoal}
         title={t("nav.createGoal")}
       >
         <PlusCircle className="size-6" aria-hidden="true" />
@@ -227,7 +232,13 @@ function MobileNavActions() {
   )
 }
 
-function MobileBottomNav({ items }: { items: NavItem[] }) {
+function MobileBottomNav({
+  items,
+  onCreateGoal,
+}: {
+  items: NavItem[]
+  onCreateGoal: () => void
+}) {
   const { t } = useTranslation()
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -309,7 +320,7 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
           </Link>
         )
       })}
-      <MobileNavActions />
+      <MobileNavActions onCreateGoal={onCreateGoal} />
     </nav>
   )
 }

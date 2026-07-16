@@ -4,6 +4,9 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
+import { GoalRefreshProvider, useGoalRefresh } from "@/entities/goal"
+import { PlanningSettingsProvider } from "@/entities/planning-setting"
+import { CreateGoalSheet } from "@/pages/goals"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
@@ -33,21 +36,57 @@ export function AppShell() {
         {/* Unlike the catalog, player data is per-account and not required to render the shell, so it
             is not gated behind an init screen — it syncs in the background once authenticated. */}
         <PlayerDataProvider baseUrl={apiBaseUrl}>
-          {isMobile ? (
-            <MobileShell
-              isAuthenticated={isAuthenticated}
-              visibleItems={visibleItems}
-              pageTitle={pageTitle}
-            />
-          ) : (
-            <DesktopShell
-              isAuthenticated={isAuthenticated}
-              visibleItems={visibleItems}
-              pageTitle={pageTitle}
-            />
-          )}
+          <PlanningSettingsProvider>
+            <GoalRefreshProvider>
+              <ShellContent
+                isAuthenticated={isAuthenticated}
+                isMobile={isMobile}
+                pageTitle={pageTitle}
+                visibleItems={visibleItems}
+              />
+            </GoalRefreshProvider>
+          </PlanningSettingsProvider>
         </PlayerDataProvider>
       </GameCatalogInitGate>
     </GameCatalogProvider>
   )
 }
+
+function ShellContent({
+  isAuthenticated,
+  isMobile,
+  pageTitle,
+  visibleItems,
+}: {
+  isAuthenticated: boolean
+  isMobile: boolean
+  pageTitle: string | undefined
+  visibleItems: typeof navItems
+}) {
+  const [createOpen, setCreateOpen] = useState(false)
+  const { refreshGoals } = useGoalRefresh()
+  const shellProps = {
+    isAuthenticated,
+    visibleItems,
+    pageTitle,
+    onCreateGoal: () => setCreateOpen(true),
+  }
+
+  return (
+    <>
+      {isMobile ? (
+        <MobileShell {...shellProps} />
+      ) : (
+        <DesktopShell {...shellProps} />
+      )}
+      {isAuthenticated ? (
+        <CreateGoalSheet
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          onCreated={refreshGoals}
+        />
+      ) : null}
+    </>
+  )
+}
+import { useState } from "react"

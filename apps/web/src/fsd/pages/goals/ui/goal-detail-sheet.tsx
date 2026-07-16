@@ -26,11 +26,13 @@ import { StatusBadge } from "./status-badge"
 export function GoalDetailSheet({
   goalId,
   estimate,
+  isolated,
   onOpenChange,
   onUpdated,
 }: {
   goalId: string | null
   estimate: EstimateOutcome | undefined
+  isolated: boolean
   onOpenChange: (open: boolean) => void
   onUpdated: () => void
 }) {
@@ -158,6 +160,11 @@ export function GoalDetailSheet({
               <h3 className="font-semibold">
                 {t("goals.detail.estimateTitle")}
               </h3>
+              {isolated ? (
+                <Badge variant="outline">
+                  {t("goals.detail.isolatedEstimate")}
+                </Badge>
+              ) : null}
               <p>
                 {t("goals.detail.originalEstimate")}:{" "}
                 {detail.snapshot?.originalEstimateDays != null

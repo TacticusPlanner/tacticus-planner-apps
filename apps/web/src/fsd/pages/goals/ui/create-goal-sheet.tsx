@@ -28,12 +28,13 @@ import { CharacterCombobox } from "@/shared/ui"
 
 import type { EntityType } from "../model/use-create-goal-form"
 import { useCreateGoalForm } from "../model/use-create-goal-form"
+import { RankGoalFields } from "./goal-type-fields"
 import {
-  AbilityGoalFields,
-  AscensionGoalFields,
-  RankGoalFields,
-  ShardsGoalFields,
-} from "./goal-type-fields"
+  AbilityTrackFields,
+  AscensionFarmingFields,
+  FarmingStrategyField,
+  ProgressionPreview,
+} from "./goal-farming-fields"
 
 // Rank is omitted entirely on the MoW tab (plan §16 phase 6) — MoWs have no rank ladder, so offering
 // the toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs`
@@ -43,9 +44,8 @@ const CHARACTER_GOAL_KINDS: GoalKind[] = [
   "Ascension",
   "Ability",
   "Unlock",
-  "Shards",
 ]
-const MOW_GOAL_KINDS: GoalKind[] = ["Ascension", "Ability", "Unlock", "Shards"]
+const MOW_GOAL_KINDS: GoalKind[] = ["Ascension", "Ability"]
 
 type CreateGoalSheetProps = {
   open: boolean
@@ -151,6 +151,7 @@ export function CreateGoalSheet({
                   <Field key={kind} orientation="horizontal">
                     <Switch
                       checked={form.enabledTypes.has(kind)}
+                      disabled={kind === "Unlock" && !form.unlockAvailable}
                       onCheckedChange={(checked) =>
                         form.toggleType(kind, checked)
                       }
@@ -162,7 +163,42 @@ export function CreateGoalSheet({
                   </Field>
                 ))}
               </div>
+              {!form.unlockAvailable && form.entityType === "Character" ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("goals.create.unlockUnavailable")}
+                </p>
+              ) : null}
             </div>
+          ) : null}
+
+          {form.prerequisites.needsUnlock ? (
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={form.includeSuggestedUnlock}
+                data-testid="create-goal-include-unlock"
+                onCheckedChange={(checked) =>
+                  form.setIncludeSuggestedUnlock(checked === true)
+                }
+              />
+              <FieldLabel className="font-normal">
+                {t("goals.create.suggestions.includeUnlock")}
+              </FieldLabel>
+            </Field>
+          ) : null}
+
+          {form.prerequisites.needsAscension ? (
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={form.includeSuggestedAscension}
+                data-testid="create-goal-include-ascension"
+                onCheckedChange={(checked) =>
+                  form.setIncludeSuggestedAscension(checked === true)
+                }
+              />
+              <FieldLabel className="font-normal">
+                {t("goals.create.suggestions.includeAscension")}
+              </FieldLabel>
+            </Field>
           ) : null}
 
           {form.entityId && form.enabledTypes.has("Rank") ? (
@@ -170,6 +206,7 @@ export function CreateGoalSheet({
               rankStart={form.rankStart}
               rankEnd={form.rankEnd}
               rankEndOptions={form.rankEndOptions}
+              rankStartOptions={form.rankStartOptions}
               rankStartPointFive={form.rankStartPointFive}
               rankEndPointFive={form.rankEndPointFive}
               onRankStartChange={form.setRankStart}
@@ -178,42 +215,33 @@ export function CreateGoalSheet({
               onRankEndPointFiveChange={form.setRankEndPointFive}
               missingUpgrades={form.missingUpgrades}
               estimate={form.estimatePreview}
+              dailyEnergy={form.planningSettings.dailyEnergy}
             />
           ) : null}
 
           {form.entityId && form.enabledTypes.has("Ascension") ? (
-            <AscensionGoalFields
-              progressionStart={form.progressionStart}
-              progressionEnd={form.progressionEnd}
-              onProgressionStartChange={form.setProgressionStart}
-              onProgressionEndChange={form.setProgressionEnd}
-            />
+            <AscensionFarmingFields form={form} />
           ) : null}
 
           {form.entityId && form.enabledTypes.has("Ability") ? (
-            <AbilityGoalFields
-              activeStart={form.abilityActiveStart}
-              activeEnd={form.abilityActiveEnd}
-              passiveStart={form.abilityPassiveStart}
-              passiveEnd={form.abilityPassiveEnd}
-              onActiveStartChange={form.setAbilityActiveStart}
-              onActiveEndChange={form.setAbilityActiveEnd}
-              onPassiveStartChange={form.setAbilityPassiveStart}
-              onPassiveEndChange={form.setAbilityPassiveEnd}
-            />
+            <AbilityTrackFields form={form} />
           ) : null}
 
-          {form.entityId && form.enabledTypes.has("Shards") ? (
-            <ShardsGoalFields
-              count={form.shardsCount}
-              onCountChange={form.setShardsCount}
-            />
+          {form.entityId &&
+          (form.enabledTypes.has("Rank") ||
+            (form.entityType === "Mow" && form.enabledTypes.has("Ability"))) ? (
+            <FarmingStrategyField form={form} />
           ) : null}
 
           {form.entityId && form.enabledTypes.has("Unlock") ? (
-            <p className="text-sm text-muted-foreground">
-              {t("goals.create.unlockDescription")}
-            </p>
+            <div className="grid gap-2">
+              <p className="text-sm text-muted-foreground">
+                {t("goals.create.unlockDescription")}
+              </p>
+              {!form.enabledTypes.has("Ascension") ? (
+                <ProgressionPreview form={form} />
+              ) : null}
+            </div>
           ) : null}
 
           {form.entityId && form.reviewItems.length > 0 ? (

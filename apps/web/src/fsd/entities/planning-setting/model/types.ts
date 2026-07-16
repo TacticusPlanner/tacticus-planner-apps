@@ -1,14 +1,10 @@
-export type PlanningOrdering = "GoalPriority" | "TotalMaterials"
-
 export type PlanningSettings = {
   dailyEnergy: number
-  ordering: PlanningOrdering
   revision: number
 }
 
 export const defaultPlanningSettings: PlanningSettings = {
   dailyEnergy: 288,
-  ordering: "GoalPriority",
   revision: 0,
 }
 

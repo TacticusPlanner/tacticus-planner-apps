@@ -43,16 +43,19 @@ export function DesktopShell({
   isAuthenticated,
   visibleItems,
   pageTitle,
+  onCreateGoal,
 }: {
   isAuthenticated: boolean
   visibleItems: NavItem[]
   pageTitle: string | undefined
+  onCreateGoal?: () => void
 }) {
   return (
     <SidebarProvider>
       <AppSidebar
         isAuthenticated={isAuthenticated}
         visibleItems={visibleItems}
+        onCreateGoal={onCreateGoal ?? (() => undefined)}
       />
       <SidebarInset>
         <header className="flex items-center justify-between gap-2 border-b px-6 py-4">
@@ -80,9 +83,11 @@ export function DesktopShell({
 function AppSidebar({
   isAuthenticated,
   visibleItems,
+  onCreateGoal,
 }: {
   isAuthenticated: boolean
   visibleItems: NavItem[]
+  onCreateGoal: () => void
 }) {
   const { t } = useTranslation()
   const { instance } = useMsal()
@@ -111,7 +116,7 @@ function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton
               className="bg-primary text-primary-foreground hover:bg-primary/80"
-              disabled
+              onClick={onCreateGoal}
               tooltip={t("nav.createGoal")}
             >
               <PlusCircle />

@@ -38,9 +38,22 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    settings: { dailyEnergy: 288, revision: 1 },
     save: vi.fn(),
   }),
+}))
+
+vi.mock("@/entities/player-data-override", () => ({
+  getOnslaughtProgress: () =>
+    Promise.resolve({
+      imperial: { sector: "Stone", tier: 1 },
+      xenos: { sector: "Stone", tier: 1 },
+      chaos: { sector: "Stone", tier: 1 },
+      revision: 1,
+    }),
+  progressForAlliance: (progress: Record<string, unknown>, alliance: string) =>
+    progress[alliance.toLowerCase()],
+  onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 
 const account = { homeAccountId: "acc-1", username: "test@example.com" }
@@ -108,6 +121,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getOnslaughtRewards: () => [],
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
@@ -115,6 +129,7 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerMow: () => Promise.resolve(undefined),
   getInventoryUpgrades: () => undefined,
   getInventoryShard: () => Promise.resolve(undefined),
+  getLiveProgress: () => undefined,
 }))
 
 const listProjects = vi.fn()
@@ -129,6 +144,11 @@ const getGoal = vi.fn()
 
 vi.mock("@/entities/goal", () => ({
   getGoal: (...args: unknown[]) => getGoal(...args),
+  useGoalRefresh: () => ({
+    revision: 0,
+    refreshGoals: vi.fn(),
+    registerGoalRefetch: vi.fn(() => () => undefined),
+  }),
 }))
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
@@ -162,7 +182,8 @@ const rankGoalDetail = {
     },
     progression: null,
     ability: null,
-    shards: null,
+    farmingStrategy: "TotalUpgrades",
+    ascensionFarming: null,
     farmingLocationIds: null,
   },
   milestones: [],
@@ -191,7 +212,7 @@ describe("InsightsPage", () => {
     expect(await screen.findByTestId("insights-page-empty")).toBeInTheDocument()
   })
 
-  it("aggregates the active plan's Rank goal into the materials-by-rarity total", async () => {
+  it("aggregates the active plan's Rank goal into the upgrades-by-rarity total", async () => {
     listProjects.mockResolvedValue({
       projects: [
         {
@@ -222,6 +243,6 @@ describe("InsightsPage", () => {
     await waitFor(() =>
       expect(screen.getByTestId("insights-summary")).toBeInTheDocument()
     )
-    expect(await screen.findByText("1")).toBeInTheDocument()
+    expect((await screen.findAllByText("1")).length).toBeGreaterThan(0)
   })
 })

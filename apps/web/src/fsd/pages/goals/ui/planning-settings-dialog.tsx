@@ -10,17 +10,12 @@ import {
   DialogTitle,
 } from "@workspace/ui/components/dialog"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@workspace/ui/components/radio-group"
 import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   dailyEnergyTiers,
   usePlanningSettings,
-  type PlanningOrdering,
 } from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
 
@@ -52,7 +47,6 @@ export function PlanningSettingsDialog({
       )
     )
   )
-  const [ordering, setOrdering] = useState<PlanningOrdering>(settings.ordering)
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle")
   const [error, setError] = useState<string | null>(null)
 
@@ -62,7 +56,6 @@ export function PlanningSettingsDialog({
     try {
       await save({
         dailyEnergy: dailyEnergyTiers[tierIndex],
-        ordering,
         revision: settings.revision,
       })
       onOpenChange(false)
@@ -108,43 +101,6 @@ export function PlanningSettingsDialog({
               <span>288</span>
               <span>938</span>
             </div>
-          </Field>
-
-          <Field>
-            <FieldLabel>{t("goals.planningSettings.ordering")}</FieldLabel>
-            <RadioGroup
-              value={ordering}
-              onValueChange={(value) => setOrdering(value as PlanningOrdering)}
-            >
-              <label className="flex items-start gap-3">
-                <RadioGroupItem
-                  data-testid="planning-order-priority"
-                  value="GoalPriority"
-                />
-                <span>
-                  <span className="block text-sm font-medium">
-                    {t("goals.planningSettings.goalPriority")}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {t("goals.planningSettings.goalPriorityDescription")}
-                  </span>
-                </span>
-              </label>
-              <label className="flex items-start gap-3">
-                <RadioGroupItem
-                  data-testid="planning-order-total"
-                  value="TotalMaterials"
-                />
-                <span>
-                  <span className="block text-sm font-medium">
-                    {t("goals.planningSettings.totalMaterials")}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {t("goals.planningSettings.totalMaterialsDescription")}
-                  </span>
-                </span>
-              </label>
-            </RadioGroup>
           </Field>
         </div>
 

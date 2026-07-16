@@ -16,6 +16,7 @@ import {
   type PlayerDataStatus,
 } from "./player-data-provider"
 import { formatRelativeTime } from "@/shared/lib"
+import { useGoalRefresh } from "@/entities/goal"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -48,6 +49,11 @@ export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
   const { error, lastSyncedAt, progress, status, syncNow } =
     usePlayerDataStatus()
+  const { refreshGoals } = useGoalRefresh()
+  const syncAndRefreshGoals = async () => {
+    await syncNow()
+    refreshGoals()
+  }
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
   const statusLabel = t(statusLabelKeys[status])
@@ -94,7 +100,7 @@ export function usePlayerDataSyncStatus() {
     lastSyncText,
     statusText,
     errorText: error,
-    syncNow,
+    syncNow: syncAndRefreshGoals,
   }
 }
 

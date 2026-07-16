@@ -44,6 +44,9 @@ const GoalsPage = lazy(() =>
 const InsightsPage = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.InsightsPage }))
 )
+const OnslaughtPage = lazy(() =>
+  import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
+)
 const GuildMembersRoute = lazy(() =>
   import("@/pages/guild").then((m) => ({ default: m.GuildMembersRoute }))
 )
@@ -141,6 +144,14 @@ export const routes: RouteObject[] = [
           { index: true, element: <GoalsPage /> },
           { path: "insights", element: <InsightsPage /> },
         ],
+      },
+      {
+        path: "/onslaught",
+        element: (
+          <ProtectedRoute>
+            <OnslaughtPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/guild",

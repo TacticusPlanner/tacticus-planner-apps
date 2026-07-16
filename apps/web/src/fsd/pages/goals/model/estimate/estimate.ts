@@ -8,7 +8,7 @@ import type {
   FarmLocation,
   FarmNode,
   GoalNeed,
-  MaterialNeed,
+  UpgradeNeed,
 } from "./estimate.domain"
 import { blocked, unavailableReason } from "./estimate-blocked"
 
@@ -50,7 +50,7 @@ export function dropRate(location: FarmLocation): number {
  * no drop chance are never selectable. Empty when the material can't be farmed at all.
  */
 export function selectFarmNodes(
-  need: MaterialNeed,
+  need: UpgradeNeed,
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
   battlesById: ReadonlyMap<BattleId, Battle>,
   farmingLocationIds?: readonly string[] | null
@@ -157,7 +157,7 @@ export function estimateGoal({
   farmingLocationIds,
   referenceDate = new Date(),
 }: {
-  needs: MaterialNeed[]
+  needs: UpgradeNeed[]
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>
   battlesById: ReadonlyMap<BattleId, Battle>
   dailyEnergy: number
@@ -250,15 +250,13 @@ export function estimatePlan({
   battlesById,
   dailyEnergy,
   inventory,
-  ordering = "GoalPriority",
   referenceDate = new Date(),
 }: {
   goals: GoalNeed[]
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>
   battlesById: ReadonlyMap<BattleId, Battle>
   dailyEnergy: number
-  inventory: MaterialNeed[]
-  ordering?: "GoalPriority" | "TotalMaterials"
+  inventory: UpgradeNeed[]
   referenceDate?: Date
 }): Map<string, EstimateOutcome> {
   const ordered = [...goals].sort((a, b) => a.priority - b.priority)
@@ -268,63 +266,63 @@ export function estimatePlan({
   const held = new Map<EstimateResourceId, number>(
     inventory.map((entry) => [entry.id, entry.count])
   )
-  const remainingByGoal = new Map<string, Map<EstimateResourceId, number>>()
-  const nodesByGoal = new Map<string, Map<EstimateResourceId, FarmNode[]>>()
+  type StageState = {
+    remaining: Map<EstimateResourceId, number>
+    nodesById: Map<EstimateResourceId, FarmNode[]>
+  }
+  const stagesByGoal = new Map<string, StageState[]>()
   const results = new Map<string, EstimateOutcome>()
 
   for (const goal of ordered) {
-    const remaining = new Map<EstimateResourceId, number>()
-    const nodesById = new Map<EstimateResourceId, FarmNode[]>()
+    const stages: StageState[] = []
     let blockedOutcome: EstimateOutcome | null = null
 
-    for (const need of goal.needs) {
-      const available = held.get(need.id) ?? 0
-      const consumed = Math.min(available, need.count)
-      if (consumed > 0) held.set(need.id, available - consumed)
+    const sourceStages = goal.stages?.length
+      ? goal.stages
+      : [{ target: "final", needs: goal.needs }]
+    for (const sourceStage of sourceStages) {
+      const remaining = new Map<EstimateResourceId, number>()
+      const nodesById = new Map<EstimateResourceId, FarmNode[]>()
+      for (const need of sourceStage.needs) {
+        const available = held.get(need.id) ?? 0
+        const consumed = Math.min(available, need.count)
+        if (consumed > 0) held.set(need.id, available - consumed)
+        const stillNeeded = need.count - consumed
+        if (stillNeeded <= 0) continue
 
-      const stillNeeded = need.count - consumed
-      if (stillNeeded <= 0) continue
-
-      const unavailable = unavailableReason(
-        need,
-        upgradesById,
-        battlesById,
-        goal.farmingLocationIds,
-        dailyEnergy
-      )
-      if (unavailable) {
-        blockedOutcome = blocked(unavailable, [need.id])
-        break
-      }
-
-      const nodes = selectFarmNodes(
-        { id: need.id, count: stillNeeded },
-        upgradesById,
-        battlesById,
-        goal.farmingLocationIds
-      )
-      if (nodes.length === 0) {
-        blockedOutcome = blocked(
-          unavailableReason(
-            need,
-            upgradesById,
-            battlesById,
-            goal.farmingLocationIds,
-            dailyEnergy
-          ) ?? "NoFarmLocation",
-          [need.id]
+        const unavailable = unavailableReason(
+          need,
+          upgradesById,
+          battlesById,
+          goal.farmingLocationIds,
+          dailyEnergy
         )
-        break
+        if (unavailable) {
+          blockedOutcome = blocked(unavailable, [need.id])
+          break
+        }
+        const nodes = selectFarmNodes(
+          { id: need.id, count: stillNeeded },
+          upgradesById,
+          battlesById,
+          goal.farmingLocationIds
+        )
+        if (nodes.length === 0) {
+          blockedOutcome = blocked("NoFarmLocation", [need.id])
+          break
+        }
+        remaining.set(need.id, stillNeeded)
+        nodesById.set(need.id, nodes)
       }
-      remaining.set(need.id, stillNeeded)
-      nodesById.set(need.id, nodes)
+      if (blockedOutcome) break
+      if (remaining.size > 0) stages.push({ remaining, nodesById })
     }
 
     if (blockedOutcome) {
       results.set(goal.goalId, blockedOutcome)
       continue
     }
-    if (remaining.size === 0) {
+    if (stages.length === 0) {
       results.set(goal.goalId, {
         status: "Estimated",
         days: 0,
@@ -335,26 +333,14 @@ export function estimatePlan({
       continue
     }
 
-    remainingByGoal.set(goal.goalId, remaining)
-    nodesByGoal.set(goal.goalId, nodesById)
-  }
-
-  if (ordering === "TotalMaterials") {
-    return estimatePooledPlan({
-      ordered,
-      remainingByGoal,
-      nodesByGoal,
-      results,
-      dailyEnergy,
-      referenceDate,
-    })
+    stagesByGoal.set(goal.goalId, stages)
   }
 
   // Step 2: one combined day loop. Each day, every still-pending goal (in priority order) spends
   // against the same shared daily energy budget in turn, so goal N only sees what priority 1..N-1
   // left over that day.
   let days = 0
-  const pending = new Set(remainingByGoal.keys())
+  const pending = new Set(stagesByGoal.keys())
   const energyTotalByGoal = new Map<string, number>(
     [...pending].map((id) => [id, 0])
   )
@@ -369,24 +355,28 @@ export function estimatePlan({
     for (const goal of ordered) {
       if (!pending.has(goal.goalId) || energy <= 0) continue
 
-      const remaining = remainingByGoal.get(goal.goalId)!
-      const nodesById = nodesByGoal.get(goal.goalId)!
-      const { energySpent, raidsPerformed } = spendDay(
-        remaining,
-        nodesById,
-        energy
-      )
-      energy -= energySpent
+      const stages = stagesByGoal.get(goal.goalId)!
+      let goalEnergySpent = 0
+      let goalRaids = 0
+      while (stages.length > 0 && energy > 0) {
+        const stage = stages[0]!
+        const spent = spendDay(stage.remaining, stage.nodesById, energy)
+        energy -= spent.energySpent
+        goalEnergySpent += spent.energySpent
+        goalRaids += spent.raidsPerformed
+        if (stage.remaining.size > 0) break
+        stages.shift()
+      }
       energyTotalByGoal.set(
         goal.goalId,
-        (energyTotalByGoal.get(goal.goalId) ?? 0) + energySpent
+        (energyTotalByGoal.get(goal.goalId) ?? 0) + goalEnergySpent
       )
       raidsTotalByGoal.set(
         goal.goalId,
-        (raidsTotalByGoal.get(goal.goalId) ?? 0) + raidsPerformed
+        (raidsTotalByGoal.get(goal.goalId) ?? 0) + goalRaids
       )
 
-      if (remaining.size === 0) {
+      if (stages.length === 0) {
         results.set(goal.goalId, {
           status: "Estimated",
           days,
@@ -403,97 +393,12 @@ export function estimatePlan({
     results.set(
       goalId,
       blocked("SimulationLimit", [
-        ...(remainingByGoal.get(goalId)?.keys() ?? []),
+        ...(stagesByGoal
+          .get(goalId)
+          ?.flatMap((stage) => [...stage.remaining.keys()]) ?? []),
       ])
     )
   }
 
-  return results
-}
-
-function estimatePooledPlan({
-  ordered,
-  remainingByGoal,
-  nodesByGoal,
-  results,
-  dailyEnergy,
-  referenceDate,
-}: {
-  ordered: GoalNeed[]
-  remainingByGoal: Map<string, Map<EstimateResourceId, number>>
-  nodesByGoal: Map<string, Map<EstimateResourceId, FarmNode[]>>
-  results: Map<string, EstimateOutcome>
-  dailyEnergy: number
-  referenceDate: Date
-}): Map<string, EstimateOutcome> {
-  const totals = new Map<EstimateResourceId, number>()
-  const pooledNodes = new Map<EstimateResourceId, FarmNode[]>()
-  for (const goal of ordered) {
-    const remaining = remainingByGoal.get(goal.goalId)
-    if (!remaining) continue
-    for (const [id, count] of remaining) {
-      totals.set(id, (totals.get(id) ?? 0) + count)
-      if (!pooledNodes.has(id)) {
-        pooledNodes.set(id, nodesByGoal.get(goal.goalId)?.get(id) ?? [])
-      }
-    }
-  }
-  // Resource selection must not inherit project priority. A stable resource-id order makes the
-  // pooled farm deterministic even when callers reorder goals or change their priorities.
-  const pooled = new Map(
-    [...totals].sort(([left], [right]) =>
-      String(left).localeCompare(String(right))
-    )
-  )
-
-  const pending = new Set(remainingByGoal.keys())
-  let days = 0
-  let energyTotal = 0
-  let raidsTotal = 0
-
-  while (pending.size > 0 && days < MAX_DAYS) {
-    days++
-    const before = new Map(pooled)
-    const spent = spendDay(pooled, pooledNodes, dailyEnergy)
-    if (spent.energySpent === 0) break
-    energyTotal += spent.energySpent
-    raidsTotal += spent.raidsPerformed
-
-    for (const [id, oldCount] of before) {
-      let acquired = oldCount - (pooled.get(id) ?? 0)
-      if (acquired <= 0) continue
-      for (const goal of ordered) {
-        if (!pending.has(goal.goalId)) continue
-        const remaining = remainingByGoal.get(goal.goalId)!
-        const needed = remaining.get(id) ?? 0
-        if (needed <= 0) continue
-        const applied = Math.min(needed, acquired)
-        const next = needed - applied
-        if (next <= 0) remaining.delete(id)
-        else remaining.set(id, next)
-        acquired -= applied
-        if (remaining.size === 0) {
-          results.set(goal.goalId, {
-            status: "Estimated",
-            days,
-            date: formatDate(addDays(referenceDate, days)),
-            energyTotal,
-            raidsTotal,
-          })
-          pending.delete(goal.goalId)
-        }
-        if (acquired <= 0) break
-      }
-    }
-  }
-
-  for (const goalId of pending) {
-    results.set(
-      goalId,
-      blocked("SimulationLimit", [
-        ...(remainingByGoal.get(goalId)?.keys() ?? []),
-      ])
-    )
-  }
   return results
 }

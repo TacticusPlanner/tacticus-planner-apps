@@ -21,10 +21,12 @@ import { RarityIcon } from "./rarity-icon"
 export function ProgressionSelect({
   label,
   value,
+  options = progressionOrder,
   onChange,
 }: {
   label: string
   value: Progression
+  options?: readonly Progression[]
   onChange: (value: Progression) => void
 }) {
   return (
@@ -35,7 +37,7 @@ export function ProgressionSelect({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {progressionOrder.map((option) => (
+          {options.map((option) => (
             <SelectItem key={option} value={option}>
               <ProgressionBadge value={option} />
             </SelectItem>

@@ -17,6 +17,15 @@ vi.mock("./player-data-provider", () => ({
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
 }))
 
+const refreshGoals = vi.fn()
+vi.mock("@/entities/goal", () => ({
+  useGoalRefresh: () => ({
+    revision: 0,
+    refreshGoals,
+    registerGoalRefetch: vi.fn(() => () => undefined),
+  }),
+}))
+
 import { PlayerDataSyncButton } from "./player-data-sync-button"
 
 function mockStatus(
@@ -47,7 +56,7 @@ function renderButton() {
 }
 
 describe("PlayerDataSyncButton", () => {
-  it("triggers a sync on click and is enabled while idle", () => {
+  it("triggers a sync on click and is enabled while idle", async () => {
     const syncNow = vi.fn()
     mockStatus("idle", { syncNow })
     renderButton()
@@ -58,6 +67,7 @@ describe("PlayerDataSyncButton", () => {
     fireEvent.click(button)
 
     expect(syncNow).toHaveBeenCalledTimes(1)
+    await vi.waitFor(() => expect(refreshGoals).toHaveBeenCalledTimes(1))
   })
 
   it("spins the icon and disables the button while a sync is in progress", () => {

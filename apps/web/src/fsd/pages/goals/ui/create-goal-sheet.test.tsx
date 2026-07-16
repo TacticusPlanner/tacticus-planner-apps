@@ -39,10 +39,23 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
+vi.mock("@/entities/player-data-override", () => ({
+  getOnslaughtProgress: () =>
+    Promise.resolve({
+      imperial: { sector: "Stone", tier: 1 },
+      xenos: { sector: "Stone", tier: 1 },
+      chaos: { sector: "Stone", tier: 1 },
+      revision: 1,
+    }),
+  progressForAlliance: (progress: Record<string, unknown>, alliance: string) =>
+    progress[alliance.toLowerCase()],
+  onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
+}))
+
 vi.mock("@/entities/planning-setting", () => ({
   dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, ordering: "GoalPriority", revision: 1 },
+    settings: { dailyEnergy: 288, revision: 1 },
     save: vi.fn(),
   }),
 }))
@@ -66,6 +79,7 @@ const characters = new Map([
       id: "hero1",
       name: "Hero One",
       faction: "Ultramarines",
+      shardLocations: [{ battleId: "B1" }],
       rankUpUpgrades: [
         { rank: "Stone1", upgradeIds: ["h1"] },
         { rank: "Stone2", upgradeIds: ["h2"] },
@@ -139,6 +153,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getOnslaughtRewards: () => [],
 }))
 
 const getPlayerCharacter = vi.fn()
@@ -149,6 +164,8 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: (...args: unknown[]) => getPlayerCharacter(...args),
   getPlayerMow: (...args: unknown[]) => getPlayerMow(...args),
   getInventoryUpgrades: (...args: unknown[]) => getInventoryUpgrades(...args),
+  getInventoryShard: () => undefined,
+  getLiveProgress: () => undefined,
 }))
 
 const createCombinedGoals = vi.fn()
@@ -254,7 +271,9 @@ describe("CreateGoalSheet", () => {
     )
 
     await selectCharacter()
-    fireEvent.click(screen.getByRole("checkbox"))
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "goals.create.createAnother" })
+    )
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
     // Wait for the actual reset (not just the createCombinedGoals call) — the mocked call
@@ -372,6 +391,10 @@ describe("CreateGoalSheet", () => {
     expect(
       screen.getByTestId("create-goal-type-toggle-Ability")
     ).toBeInTheDocument()
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+    })
 
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 

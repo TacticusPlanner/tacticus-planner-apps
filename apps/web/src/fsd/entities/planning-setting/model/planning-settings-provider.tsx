@@ -17,41 +17,62 @@ export function PlanningSettingsProvider({
   children: ReactNode
 }) {
   const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
+  const accountId = (instance.getActiveAccount() ?? accounts[0])?.homeAccountId
   const [settings, setSettings] = useState(defaultPlanningSettings)
-  const [loading, setLoading] = useState(Boolean(account))
+  const [settledAccountId, setSettledAccountId] = useState<string>()
+  const loading = Boolean(accountId && settledAccountId !== accountId)
 
   useEffect(() => {
+    if (!accountId) return
+
+    const account = resolveAccount(instance, accountId)
     if (!account) return
+
     let active = true
     void getPlanningSettings(instance, account).then(
       (value) => {
         if (active) setSettings(value)
-        if (active) setLoading(false)
+        if (active) setSettledAccountId(accountId)
       },
       () => {
-        if (active) setLoading(false)
+        if (active) setSettledAccountId(accountId)
       }
     )
     return () => {
       active = false
     }
-  }, [instance, account])
+  }, [instance, accountId])
 
   const value = useMemo<PlanningSettingsContextValue>(
     () => ({
       settings,
       loading,
       save: async (next) => {
+        const account = accountId
+          ? resolveAccount(instance, accountId)
+          : undefined
         if (!account) return
         const saved = await updatePlanningSettings(instance, account, next)
         setSettings(saved)
+        setSettledAccountId(accountId)
       },
     }),
-    [account, instance, loading, settings]
+    [accountId, instance, loading, settings]
   )
 
   return (
     <PlanningSettingsContext value={value}>{children}</PlanningSettingsContext>
   )
+}
+
+function resolveAccount(
+  instance: ReturnType<typeof useMsal>["instance"],
+  accountId: string
+) {
+  const activeAccount = instance.getActiveAccount()
+  if (activeAccount?.homeAccountId === accountId) return activeAccount
+
+  return instance
+    .getAllAccounts()
+    .find((account) => account.homeAccountId === accountId)
 }

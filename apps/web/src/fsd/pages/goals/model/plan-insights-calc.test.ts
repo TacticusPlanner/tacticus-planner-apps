@@ -47,7 +47,8 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       rank: null,
       progression: null,
       ability: null,
-      shards: null,
+      farmingStrategy: "TotalUpgrades",
+      ascensionFarming: null,
       farmingLocationIds: null,
     },
     milestones: [],
@@ -68,6 +69,7 @@ describe("computePlanInsights", () => {
     id: "hero1",
     name: "Hero One",
     initialRarity: "Common",
+    alliance: "Xenos",
     shardLocations: [],
   } as unknown as CharacterStorageModel
 
@@ -130,7 +132,8 @@ describe("computePlanInsights", () => {
           },
           progression: null,
           ability: null,
-          shards: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
           farmingLocationIds: null,
         },
       }),
@@ -142,7 +145,7 @@ describe("computePlanInsights", () => {
       priorityByGoalId: new Map([["goal-1", 1]]),
     })
 
-    expect(result.totals.materialsByRarity).toEqual({ Common: 1 })
+    expect(result.totals.upgradesByRarity).toEqual({ Common: 1 })
     expect(result.energyTotal).toBe(10)
     expect(result.completionDate).not.toBeNull()
     expect(result.bottlenecks).toHaveLength(1)
@@ -158,7 +161,7 @@ describe("computePlanInsights", () => {
       priorityByGoalId: new Map(),
     })
 
-    expect(result.totals.materialsByRarity).toEqual({})
+    expect(result.totals.upgradesByRarity).toEqual({})
     expect(result.energyTotal).toBe(0)
     expect(result.completionDate).toBeNull()
     expect(result.bottlenecks).toHaveLength(0)
@@ -179,7 +182,8 @@ describe("computePlanInsights", () => {
           },
           progression: null,
           ability: null,
-          shards: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
           farmingLocationIds: null,
         },
       }),
@@ -196,5 +200,68 @@ describe("computePlanInsights", () => {
     expect(result.benefitingGoalIdsByInsightId.get(insight.id)).toEqual([
       "goal-1",
     ])
+  })
+
+  it("uses the entity alliance's saved Onslaught progress for Ascension tokens and duration", () => {
+    const details = [
+      goalDetail({
+        goalType: "Ascension",
+        config: {
+          rank: null,
+          progression: { start: "Common:None", end: "Common:OneStar" },
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          farmingLocationIds: null,
+          ascensionFarming: {
+            source: "Onslaught",
+            shardBattleIds: [],
+            mythicShardBattleIds: [],
+          },
+        },
+      }),
+    ]
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      ascensionCostsById: new Map([
+        [
+          "Common:OneStar",
+          {
+            id: "Common:OneStar",
+            progression: "Common:OneStar",
+            shards: 10,
+            mythicShards: 0,
+            orbs: 0,
+            orbRarity: null,
+          } as AscensionCostStorageModel,
+        ],
+      ]),
+      onslaughtProgress: {
+        imperial: { sector: "Stone", tier: 1 },
+        xenos: { sector: "Diamond", tier: 1 },
+        chaos: { sector: "Stone", tier: 1 },
+        revision: 2,
+      },
+      currentOnslaughtTokens: 1,
+      onslaughtRewards: [
+        {
+          id: "Diamond-1",
+          sector: "Diamond",
+          tier: 1,
+          regular: [
+            { min: 3, max: 4 },
+            { min: 4, max: 5 },
+            { min: 6, max: 7 },
+            { min: 10, max: 11 },
+            { min: 16, max: 20 },
+          ],
+          mythic: { min: 1, max: 2 },
+        },
+      ],
+    })
+
+    expect(result.onslaughtTokens).toBe(3)
+    expect(result.onslaughtDays).toBeCloseTo(2 / 1.5)
   })
 })

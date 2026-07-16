@@ -1,9 +1,11 @@
 // Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).
-export type GoalEntityType = "Character" | "Mow" | "Upgrade"
-export type GoalKind =
-  "Rank" | "Ascension" | "Ability" | "Unlock" | "Shards" | "Material"
+export type GoalEntityType = "Character" | "Mow"
+export type GoalKind = "Rank" | "Ascension" | "Ability" | "Unlock"
+export type FarmingStrategy =
+  "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
+export type AscensionFarmingSource = "Campaign" | "Onslaught" | "Both"
 export type GoalStatus =
   "Draft" | "Active" | "Paused" | "Completed" | "Archived"
 export type GoalEventType =
@@ -35,15 +37,18 @@ export type AbilityTarget = {
   passiveEnd: number
 }
 
-export type ShardTarget = {
-  count: number
+export type AscensionFarmingConfig = {
+  source: AscensionFarmingSource
+  shardBattleIds: string[]
+  mythicShardBattleIds: string[]
 }
 
 export type GoalConfig = {
   rank: RankTarget | null
   progression: ProgressionTarget | null
   ability: AbilityTarget | null
-  shards: ShardTarget | null
+  farmingStrategy: FarmingStrategy
+  ascensionFarming: AscensionFarmingConfig | null
   // Campaign battle ids (opaque string codes) the goal is farmed from; empty/null means auto
   // lowest-energy selection.
   farmingLocationIds: string[] | null
@@ -64,7 +69,6 @@ export type GoalSnapshot = {
   initialProgression: string | null
   initialActiveAbilityLevel: number | null
   initialPassiveAbilityLevel: number | null
-  initialShards: number | null
   initialUnlocked: boolean | null
   initialRequirement: GoalSnapshotResource[]
   initialInventoryContribution: GoalSnapshotResource[]
@@ -114,7 +118,8 @@ export type CreateGoalConfigRequest = {
   rank?: RankTarget | null
   progression?: ProgressionTarget | null
   ability?: AbilityTarget | null
-  shards?: ShardTarget | null
+  farmingStrategy?: FarmingStrategy
+  ascensionFarming?: AscensionFarmingConfig | null
   farmingLocationIds?: string[] | null
 }
 
@@ -130,6 +135,7 @@ export type CreateGoalRequest = {
 export type UpdateGoalRequest = {
   notes: string | null
   farmingLocationIds: string[] | null
+  farmingStrategy?: FarmingStrategy
 }
 
 /** One goal within a combined-creation request (plan §6/§16 phase 5). `dependsOnIndex` holds indices
