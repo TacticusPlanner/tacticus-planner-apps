@@ -1,11 +1,6 @@
 import { getRequiredEnvironmentValue } from "@/shared/config"
 import { acquireAccessToken } from "@/shared/auth"
 
-const apiBaseUrl = getRequiredEnvironmentValue("VITE_API_BASE_URL").replace(
-  /\/$/,
-  ""
-)
-
 export class ApiError extends Error {
   readonly status: number
 
@@ -53,6 +48,10 @@ async function request<T>(
   const hasBody = options.body !== undefined
   const accessToken = await acquireAccessToken()
 
+  const apiBaseUrl = getRequiredEnvironmentValue("VITE_API_BASE_URL").replace(
+    /\/$/,
+    ""
+  )
   const response = await fetch(`${apiBaseUrl}${path}`, {
     method,
     headers: {
