@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 vi.mock("react-i18next", () => ({
@@ -61,14 +61,9 @@ describe("GoalRowActions", () => {
     await user.click(await screen.findByText("goals.actions.pause"))
 
     await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        "goal-1",
-        "Paused"
-      )
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
     })
-    expect(onChanged).toHaveBeenCalled()
+    expect(onChanged).not.toHaveBeenCalled()
   })
 
   it("opens the confirm dialog and deletes on confirm", async () => {
@@ -85,13 +80,9 @@ describe("GoalRowActions", () => {
     await user.click(screen.getByTestId("delete-goal-confirm"))
 
     await vi.waitFor(() => {
-      expect(deleteGoal).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        "goal-1"
-      )
+      expect(deleteGoal).toHaveBeenCalledWith("goal-1")
     })
-    expect(onChanged).toHaveBeenCalled()
+    expect(onChanged).not.toHaveBeenCalled()
   })
 
   it("surfaces an error toast when the mutation fails", async () => {

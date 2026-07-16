@@ -1,6 +1,7 @@
 import {
   BrowserCacheLocation,
   EventType,
+  InteractionRequiredAuthError,
   LogLevel,
   PublicClientApplication,
   type AuthenticationResult,
@@ -9,7 +10,9 @@ import {
   type RedirectRequest,
 } from "@azure/msal-browser"
 
-import { getRequiredEnvironmentValue } from "@/shared/config"
+import { getRequiredEnvironmentValue } from "../config/environment"
+
+let authentication: PublicClientApplication | undefined
 
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
@@ -94,5 +97,56 @@ export async function initializeAuthentication() {
     }
   }
 
+  authentication = msalInstance
+
   return msalInstance
+}
+
+class AuthenticationUnavailableError extends Error {
+  constructor() {
+    super("No authenticated account is available.")
+    this.name = "AuthenticationUnavailableError"
+  }
+}
+
+function getAuthentication() {
+  if (!authentication) {
+    throw new AuthenticationUnavailableError()
+  }
+
+  return authentication
+}
+
+function getActiveAccount() {
+  const instance = getAuthentication()
+  const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
+
+  if (!account) {
+    throw new AuthenticationUnavailableError()
+  }
+
+  return { account, instance }
+}
+
+export async function acquireAccessToken() {
+  const { account, instance } = getActiveAccount()
+  const result = await instance.acquireTokenSilent({
+    account,
+    scopes: loginRequest.scopes,
+  })
+
+  return result.accessToken
+}
+
+export function isInteractionRequired(error: unknown) {
+  return error instanceof InteractionRequiredAuthError
+}
+
+export function requestApiAccess() {
+  const { account, instance } = getActiveAccount()
+
+  return instance.acquireTokenRedirect({
+    account,
+    scopes: loginRequest.scopes,
+  })
 }

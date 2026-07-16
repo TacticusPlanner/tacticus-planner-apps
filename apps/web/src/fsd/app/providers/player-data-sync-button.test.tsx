@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
@@ -67,7 +67,7 @@ describe("PlayerDataSyncButton", () => {
     fireEvent.click(button)
 
     expect(syncNow).toHaveBeenCalledTimes(1)
-    await vi.waitFor(() => expect(refreshGoals).toHaveBeenCalledTimes(1))
+    expect(refreshGoals).not.toHaveBeenCalled()
   })
 
   it("spins the icon and disables the button while a sync is in progress", () => {

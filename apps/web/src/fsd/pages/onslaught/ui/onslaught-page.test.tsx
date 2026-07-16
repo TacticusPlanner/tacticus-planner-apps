@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen, waitFor } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router"
 
@@ -28,6 +28,12 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 vi.mock("@/entities/player-data-override", () => ({
   getOnslaughtProgress: (...args: unknown[]) => getProgress(...args),
   updateOnslaughtProgress: (...args: unknown[]) => saveProgress(...args),
+  onslaughtProgressQueries: {
+    current: (accountId: string) => ({
+      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+      queryFn: () => getProgress(),
+    }),
+  },
   onslaughtAlliances: ["Imperial", "Xenos", "Chaos"],
   onslaughtSectors: [
     "Stone",
@@ -87,6 +93,6 @@ describe("OnslaughtPage", () => {
 
     await user.click(screen.getByTestId("save-onslaught-progress"))
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(1))
-    expect(saveProgress.mock.calls[0]?.[2]).toEqual(progress)
+    expect(saveProgress.mock.calls[0]?.[0]).toEqual(progress)
   })
 })

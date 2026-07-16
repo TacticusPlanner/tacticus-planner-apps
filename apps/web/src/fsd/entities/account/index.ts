@@ -3,13 +3,11 @@ export {
   purgeAccount,
   updateTacticusIntegration,
 } from "./api/account.api"
+export { accountQueries } from "./api/account.queries"
 export type {
   ImportPartResult,
   ImportV1ProfileRequest,
   ImportV1ProfileResult,
 } from "./api/account.api"
-export {
-  CurrentUserProvider,
-  useCurrentUser,
-  type CurrentUserState,
-} from "./model/current-user-provider"
+export { useCurrentUser, type CurrentUserState } from "./model/use-current-user"
+export type { CurrentUser } from "./model/current-user"

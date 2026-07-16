@@ -103,9 +103,7 @@ export function PlayerDataProvider({
       return null
     }
 
-    return new PlayerDataHttpClient(baseUrl, () =>
-      acquireAccessToken(instance, account)
-    )
+    return new PlayerDataHttpClient(baseUrl, acquireAccessToken)
   }, [baseUrl, isAuthenticated, accountId, instance, accounts])
 
   const runSync = useCallback(

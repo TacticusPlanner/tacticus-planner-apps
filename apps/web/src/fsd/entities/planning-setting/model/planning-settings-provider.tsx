@@ -11,6 +11,7 @@ import {
 } from "./planning-settings-context"
 import { defaultPlanningSettings } from "./types"
 
+/** @deprecated Production data is provided by usePlanningSettings and TanStack Query. */
 export function PlanningSettingsProvider({
   children,
 }: {
@@ -24,12 +25,8 @@ export function PlanningSettingsProvider({
 
   useEffect(() => {
     if (!accountId) return
-
-    const account = resolveAccount(instance, accountId)
-    if (!account) return
-
     let active = true
-    void getPlanningSettings(instance, account).then(
+    void getPlanningSettings().then(
       (value) => {
         if (active) setSettings(value)
         if (active) setSettledAccountId(accountId)
@@ -41,38 +38,22 @@ export function PlanningSettingsProvider({
     return () => {
       active = false
     }
-  }, [instance, accountId])
+  }, [accountId])
 
   const value = useMemo<PlanningSettingsContextValue>(
     () => ({
       settings,
       loading,
       save: async (next) => {
-        const account = accountId
-          ? resolveAccount(instance, accountId)
-          : undefined
-        if (!account) return
-        const saved = await updatePlanningSettings(instance, account, next)
+        const saved = await updatePlanningSettings(next)
         setSettings(saved)
         setSettledAccountId(accountId)
       },
     }),
-    [accountId, instance, loading, settings]
+    [accountId, loading, settings]
   )
 
   return (
     <PlanningSettingsContext value={value}>{children}</PlanningSettingsContext>
   )
-}
-
-function resolveAccount(
-  instance: ReturnType<typeof useMsal>["instance"],
-  accountId: string
-) {
-  const activeAccount = instance.getActiveAccount()
-  if (activeAccount?.homeAccountId === accountId) return activeAccount
-
-  return instance
-    .getAllAccounts()
-    .find((account) => account.homeAccountId === accountId)
 }

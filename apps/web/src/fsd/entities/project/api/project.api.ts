@@ -1,7 +1,4 @@
-import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
-
 import { apiGet, apiPost, apiPut } from "@/shared/api"
-import { withAccessToken } from "@/shared/auth"
 
 import type {
   CreateProjectRequest,
@@ -11,102 +8,55 @@ import type {
   UpdateProjectRequest,
 } from "../model/types"
 
-export function listProjects(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  signal?: AbortSignal
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiGet<{ projects: ProjectSummary[] }>("/api/v1/me/projects", {
-      accessToken,
-      signal,
-    })
-  )
+export function listProjects(signal?: AbortSignal) {
+  return apiGet<{ projects: ProjectSummary[] }>("/api/v1/me/projects", {
+    signal,
+  })
 }
 
-export function createProject(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  request: CreateProjectRequest
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPost<ProjectSummary>("/api/v1/me/projects", {
-      accessToken,
-      body: request,
-    })
-  )
+export function createProject(request: CreateProjectRequest) {
+  return apiPost<ProjectSummary>("/api/v1/me/projects", { body: request })
 }
 
 export function updateProject(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
   projectId: string,
   request: UpdateProjectRequest
 ) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPut<ProjectSummary>(`/api/v1/me/projects/${projectId}`, {
-      accessToken,
-      body: request,
-    })
-  )
+  return apiPut<ProjectSummary>(`/api/v1/me/projects/${projectId}`, {
+    body: request,
+  })
 }
 
-export function activateProject(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  projectId: string
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPost<ProjectSummary>(`/api/v1/me/projects/${projectId}/activate`, {
-      accessToken,
-    })
+export function activateProject(projectId: string) {
+  return apiPost<ProjectSummary>(
+    `/api/v1/me/projects/${projectId}/activate`,
+    {}
   )
 }
 
 export function updateProjectGoals(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
   projectId: string,
   goals: ProjectGoalEntry[]
 ) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPut<{ goals: ProjectGoalEntry[] }>(
-      `/api/v1/me/projects/${projectId}/goals`,
-      {
-        accessToken,
-        body: { goals },
-      }
-    )
+  return apiPut<{ goals: ProjectGoalEntry[] }>(
+    `/api/v1/me/projects/${projectId}/goals`,
+    { body: { goals } }
   )
 }
 
-export function listProjectGoals(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  projectId: string,
-  signal?: AbortSignal
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiGet<{ goals: ProjectGoalSummary[] }>(
-      `/api/v1/me/projects/${projectId}/goals`,
-      { accessToken, signal }
-    )
+export function listProjectGoals(projectId: string, signal?: AbortSignal) {
+  return apiGet<{ goals: ProjectGoalSummary[] }>(
+    `/api/v1/me/projects/${projectId}/goals`,
+    { signal }
   )
 }
 
 export function updateProjectGoalsStatus(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
   projectId: string,
   status: "Active" | "Paused"
 ) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPost<{ goalsTransitioned: number }>(
-      `/api/v1/me/projects/${projectId}/goals/status`,
-      {
-        accessToken,
-        body: { status },
-      }
-    )
+  return apiPost<{ goalsTransitioned: number }>(
+    `/api/v1/me/projects/${projectId}/goals/status`,
+    { body: { status } }
   )
 }

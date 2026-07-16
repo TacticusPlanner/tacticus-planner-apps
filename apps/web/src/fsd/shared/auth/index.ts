@@ -1,9 +1,8 @@
-export { initializeAuthentication, loginRequest } from "./authentication"
 export {
   acquireAccessToken,
-  getCurrentUser,
+  initializeAuthentication,
   isInteractionRequired,
+  loginRequest,
   requestApiAccess,
-  withAccessToken,
-  type CurrentUser,
-} from "./current-user"
+} from "./authentication"
+export { useActiveAccountId } from "./use-active-account-id"

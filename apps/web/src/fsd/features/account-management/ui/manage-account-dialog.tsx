@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -31,9 +32,9 @@ import {
   purgeAccount,
   updateTacticusIntegration,
   useCurrentUser,
+  type CurrentUser,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import type { CurrentUser } from "@/shared/auth"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
 
@@ -84,12 +85,7 @@ export function ManageAccountDialog({
             </TabsTrigger>
           </TabsList>
           <TabsContent value="integration">
-            <TacticusIntegrationTab
-              account={account}
-              instance={instance}
-              onSaved={refetch}
-              user={state.user}
-            />
+            <TacticusIntegrationTab onSaved={refetch} user={state.user} />
           </TabsContent>
           <TabsContent value="account">
             <AccountTab
@@ -105,13 +101,9 @@ export function ManageAccountDialog({
 }
 
 function TacticusIntegrationTab({
-  account,
-  instance,
   onSaved,
   user,
 }: {
-  account: AccountInfo
-  instance: IPublicClientApplication
   onSaved: () => void
   user: CurrentUser
 }) {
@@ -123,6 +115,9 @@ function TacticusIntegrationTab({
     "idle" | "submitting" | "error" | "success"
   >("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const updateIntegration = useMutation({
+    mutationFn: updateTacticusIntegration,
+  })
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -131,7 +126,7 @@ function TacticusIntegrationTab({
     setErrorMessage(null)
 
     try {
-      await updateTacticusIntegration(instance, account, {
+      await updateIntegration.mutateAsync({
         clearTacticusUserId: removeUserId,
         tacticusApiKey: apiKey.trim() || undefined,
         tacticusUserId: removeUserId ? undefined : userId.trim() || undefined,
@@ -267,6 +262,7 @@ function AccountTab({
   const [confirmation, setConfirmation] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const purge = useMutation({ mutationFn: purgeAccount })
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
 
@@ -279,7 +275,7 @@ function AccountTab({
     setErrorMessage(null)
 
     try {
-      await purgeAccount(instance, account)
+      await purge.mutateAsync()
       onPurged()
       void instance.logoutRedirect({ account })
     } catch (error) {

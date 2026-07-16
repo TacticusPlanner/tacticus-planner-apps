@@ -60,8 +60,9 @@ export function GoalsPage() {
   const { getEntityName } = useGoalCatalog()
 
   const projects = useProjects()
-  const goals = useGoals({ archived: tab === "archived" })
+  const nonArchivedGoals = useGoals()
   const archivedGoals = useGoals({ archived: true })
+  const selectedGoals = tab === "archived" ? archivedGoals : nonArchivedGoals
   const projectGoals = useProjectGoals(projectId)
   const { result: planInsights } = usePlanInsights(
     projectId,
@@ -72,22 +73,19 @@ export function GoalsPage() {
     if (projectId) {
       projectGoals.retry()
     } else {
-      goals.retry()
+      selectedGoals.retry()
     }
   }
 
-  const goalActions = useGoalActions(refreshCurrentView)
-  const projectActions = useProjectActions(() => {
-    projects.retry()
-    refreshCurrentView()
-  })
+  const goalActions = useGoalActions()
+  const projectActions = useProjectActions()
 
   const baseRows = projectId
     ? projectGoals.goals
         .filter((entry) => matchesTab(entry.goal.status as GoalStatus, tab))
         .map(goalRowFromProjectMember)
-    : goals.fetchState.status === "success"
-      ? goals.fetchState.goals
+    : selectedGoals.fetchState.status === "success"
+      ? selectedGoals.fetchState.goals
           .filter((goal) => tab === "archived" || matchesTab(goal.status, tab))
           .map(goalRowFromSummary)
       : []
@@ -118,8 +116,8 @@ export function GoalsPage() {
   const countSourceRows = projectId
     ? projectGoals.goals.map(goalRowFromProjectMember)
     : [
-        ...(goals.fetchState.status === "success"
-          ? goals.fetchState.goals.map(goalRowFromSummary)
+        ...(nonArchivedGoals.fetchState.status === "success"
+          ? nonArchivedGoals.fetchState.goals.map(goalRowFromSummary)
           : []),
         ...(archivedGoals.fetchState.status === "success"
           ? archivedGoals.fetchState.goals
@@ -150,13 +148,13 @@ export function GoalsPage() {
       )
     : [{ key: "all", rows }]
 
-  const isLoading = projectId ? projectGoals.loading : goals.isLoading
+  const isLoading = projectId ? projectGoals.loading : selectedGoals.isLoading
   const fetchError = projectId
     ? projectGoals.fetchState.status === "error"
       ? projectGoals.fetchState.message
       : null
-    : goals.fetchState.status === "error"
-      ? goals.fetchState.message
+    : selectedGoals.fetchState.status === "error"
+      ? selectedGoals.fetchState.message
       : null
 
   const reorderEnabled =

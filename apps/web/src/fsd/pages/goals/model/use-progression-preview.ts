@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
-import { useMsal } from "@azure/msal-react"
+import { useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { useLiveQuery } from "dexie-react-hooks"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import type {
@@ -15,12 +15,12 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import {
-  getOnslaughtProgress,
   onslaughtReward,
+  onslaughtProgressQueries,
   progressForAlliance,
-  type OnslaughtProgress,
 } from "@/entities/player-data-override"
 import type { AscensionFarmingSource } from "@/entities/goal"
+import { useActiveAccountId } from "@/shared/auth"
 
 import { estimateGoal } from "./estimate/estimate"
 import { shardResourceId } from "./estimate/estimate.domain"
@@ -47,9 +47,7 @@ export function useProgressionPreview(params: {
   battlesById: Parameters<typeof estimateGoal>[0]["battlesById"]
   dailyEnergy: number
 }) {
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
-  const accountId = account?.homeAccountId
+  const accountId = useActiveAccountId()
   const inventoryShard = useLiveQuery(
     () => (params.entityId ? getInventoryShard(params.entityId) : undefined),
     [params.entityId]
@@ -58,23 +56,10 @@ export function useProgressionPreview(params: {
   const rewards = useLiveQuery(() => getOnslaughtRewards(), [])
   const currentOnslaughtTokens =
     liveProgress?.gameModeTokens.onslaught?.current ?? 0
-  const [onslaughtProgress, setOnslaughtProgress] =
-    useState<OnslaughtProgress>()
-
-  useEffect(() => {
-    if (!accountId) return undefined
-    const stableAccount = instance
-      .getAllAccounts()
-      .find((candidate) => candidate.homeAccountId === accountId)
-    if (!stableAccount) return undefined
-    let active = true
-    void getOnslaughtProgress(instance, stableAccount).then((progress) => {
-      if (active) setOnslaughtProgress(progress)
-    })
-    return () => {
-      active = false
-    }
-  }, [accountId, instance])
+  const { data: onslaughtProgress } = useQuery({
+    ...onslaughtProgressQueries.current(accountId ?? "anonymous"),
+    enabled: Boolean(accountId),
+  })
 
   return useMemo(() => {
     if (

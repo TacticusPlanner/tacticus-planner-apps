@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -83,13 +83,12 @@ describe("ManageAccountDialog", () => {
 
     await vi.waitFor(() => {
       expect(updateTacticusIntegration).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
         {
           clearTacticusUserId: false,
           tacticusApiKey: "new-key",
           tacticusUserId: undefined,
-        }
+        },
+        expect.anything()
       )
     })
     expect(refetch).toHaveBeenCalledTimes(1)
@@ -126,13 +125,12 @@ describe("ManageAccountDialog", () => {
 
     await vi.waitFor(() => {
       expect(updateTacticusIntegration).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
         {
           clearTacticusUserId: true,
           tacticusApiKey: undefined,
           tacticusUserId: undefined,
-        }
+        },
+        expect.anything()
       )
     })
   })

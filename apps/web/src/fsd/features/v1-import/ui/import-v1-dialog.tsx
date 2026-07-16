@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useMsal } from "@azure/msal-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -21,12 +22,14 @@ import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
+  accountQueries,
   importV1Profile,
   useCurrentUser,
   type ImportV1ProfileResult,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import { useGoalRefresh } from "@/entities/goal"
+import { goalQueries } from "@/entities/goal"
+import { projectQueries } from "@/entities/project"
 
 const parts = [
   ["personalTacticusApiKey", "goals.v1Import.parts.personalKey"],
@@ -48,7 +51,8 @@ export function ImportV1Dialog({
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch } = useCurrentUser()
-  const { refreshGoals } = useGoalRefresh()
+  const queryClient = useQueryClient()
+  const accountId = account?.homeAccountId
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [selection, setSelection] = useState<Selection>({
@@ -62,6 +66,7 @@ export function ImportV1Dialog({
   >("idle")
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ImportV1ProfileResult | null>(null)
+  const importProfile = useMutation({ mutationFn: importV1Profile })
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -76,14 +81,28 @@ export function ImportV1Dialog({
     setError(null)
     setResult(null)
     try {
-      const imported = await importV1Profile(instance, account, {
+      const imported = await importProfile.mutateAsync({
         username: username.trim(),
         password,
         import: selection,
       })
       setResult(imported)
       refetch()
-      if (selection.goals) await refreshGoals()
+      if (accountId) {
+        await queryClient.invalidateQueries({
+          queryKey: accountQueries.all(accountId),
+        })
+        if (selection.goals) {
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: goalQueries.all(accountId),
+            }),
+            queryClient.invalidateQueries({
+              queryKey: projectQueries.all(accountId),
+            }),
+          ])
+        }
+      }
       setPassword("")
       setStatus("success")
     } catch (caught) {

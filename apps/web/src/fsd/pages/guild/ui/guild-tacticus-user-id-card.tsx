@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -40,6 +41,9 @@ export function GuildTacticusUserIdCard({ onSaved }: Props) {
   const [userId, setUserId] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const updateIntegration = useMutation({
+    mutationFn: updateTacticusIntegration,
+  })
 
   if (!account) {
     return null
@@ -57,7 +61,7 @@ export function GuildTacticusUserIdCard({ onSaved }: Props) {
     setErrorMessage(null)
 
     try {
-      await updateTacticusIntegration(instance, account, {
+      await updateIntegration.mutateAsync({
         tacticusUserId: trimmed,
       })
       refetchCurrentUser()

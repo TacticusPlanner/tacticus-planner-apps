@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 vi.mock("dexie-react-hooks", () => ({
@@ -37,6 +37,18 @@ vi.mock("react-i18next", () => ({
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
+  onslaughtProgressQueries: {
+    current: (accountId: string) => ({
+      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+      queryFn: () =>
+        Promise.resolve({
+          imperial: { sector: "Stone", tier: 1 },
+          xenos: { sector: "Stone", tier: 1 },
+          chaos: { sector: "Stone", tier: 1 },
+          revision: 1,
+        }),
+    }),
+  },
   getOnslaughtProgress: () =>
     Promise.resolve({
       imperial: { sector: "Stone", tier: 1 },
@@ -112,6 +124,17 @@ vi.mock("@/entities/goal", () => ({
   createGoal: (...args: unknown[]) => createGoal(...args),
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
+  goalQueries: {
+    all: (accountId: string) => ["account", accountId, "goals"],
+    list: (accountId: string, archived: boolean) => ({
+      queryKey: ["account", accountId, "goals", "list", { archived }],
+      queryFn: () => listGoals({ archived }),
+    }),
+    detail: (accountId: string, goalId: string) => ({
+      queryKey: ["account", accountId, "goals", "detail", goalId],
+      queryFn: () => Promise.resolve(undefined),
+    }),
+  },
   useGoalRefresh: () => ({
     revision: 0,
     refreshGoals: vi.fn(),
@@ -131,6 +154,17 @@ vi.mock("@/entities/project", () => ({
   updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
   updateProjectGoalsStatus: (...args: unknown[]) =>
     updateProjectGoalsStatus(...args),
+  projectQueries: {
+    all: (accountId: string) => ["account", accountId, "projects"],
+    list: (accountId: string) => ({
+      queryKey: ["account", accountId, "projects", "list"],
+      queryFn: () => listProjects(),
+    }),
+    goals: (accountId: string, projectId: string) => ({
+      queryKey: ["account", accountId, "projects", projectId, "goals"],
+      queryFn: () => listProjectGoals(projectId),
+    }),
+  },
 }))
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
@@ -147,6 +181,12 @@ const activeGoal = {
   aggregateId: null,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",
+}
+
+const archivedGoal = {
+  ...activeGoal,
+  goalId: "goal-archived",
+  status: "Archived",
 }
 
 describe("GoalsPage", () => {
@@ -196,6 +236,22 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
+  it("retains non-archived tab counts while the Archived tab is selected", async () => {
+    listGoals.mockImplementation((options?: { archived?: boolean }) =>
+      Promise.resolve({
+        goals: options?.archived ? [archivedGoal] : [activeGoal],
+      })
+    )
+    const user = userEvent.setup()
+    render(<GoalsPage />)
+
+    await screen.findByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goals-tab-archived"))
+
+    expect(screen.getByTestId("goals-tab-active")).toHaveTextContent("(1)")
+    expect(screen.getByTestId("goals-tab-archived")).toHaveTextContent("(1)")
+  })
+
   it("switches to grid view", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     render(<GoalsPage />)
@@ -229,16 +285,13 @@ describe("GoalsPage", () => {
 
     fireEvent.click(await screen.findByTestId("goals-project-filter"))
     fireEvent.click(
-      screen.getByRole("option", { name: "My Goals (goals.project.active)" })
+      await screen.findByRole("option", {
+        name: "My Goals (goals.project.active)",
+      })
     )
 
     await vi.waitFor(() => {
-      expect(listProjectGoals).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        "proj-1",
-        expect.anything()
-      )
+      expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
     })
   })
 })

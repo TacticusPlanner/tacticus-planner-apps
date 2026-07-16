@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 // Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
@@ -40,6 +40,18 @@ vi.mock("react-i18next", () => ({
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
+  onslaughtProgressQueries: {
+    current: (accountId: string) => ({
+      queryKey: ["account", accountId, "player-data-overrides", "onslaught"],
+      queryFn: () =>
+        Promise.resolve({
+          imperial: { sector: "Stone", tier: 1 },
+          xenos: { sector: "Stone", tier: 1 },
+          chaos: { sector: "Stone", tier: 1 },
+          revision: 1,
+        }),
+    }),
+  },
   getOnslaughtProgress: () =>
     Promise.resolve({
       imperial: { sector: "Stone", tier: 1 },
@@ -177,6 +189,12 @@ vi.mock("@/entities/goal", () => ({
 
 vi.mock("@/entities/project", () => ({
   listProjects: (...args: unknown[]) => listProjects(...args),
+  projectQueries: {
+    list: (accountId: string) => ({
+      queryKey: ["account", accountId, "projects", "list"],
+      queryFn: () => listProjects(),
+    }),
+  },
 }))
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
@@ -246,7 +264,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [, , request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0]
     expect(request).toMatchObject({
       entityType: "Character",
       entityId: "hero1",
@@ -326,7 +344,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [, , request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0]
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Unlock",
@@ -352,7 +370,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [, , request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0]
     expect(request.goals).toHaveLength(2)
     expect(request.goals[0]).toMatchObject({
       goalType: "Unlock",
@@ -401,7 +419,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [, , request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0]
     expect(request).toMatchObject({
       entityType: "Mow",
       entityId: "mow1",

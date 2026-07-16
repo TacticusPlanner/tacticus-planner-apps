@@ -7,6 +7,7 @@ export {
   updateGoal,
   updateGoalStatus,
 } from "./api/goal.api"
+export { goalQueries } from "./api/goal.queries"
 export type {
   AbilityTarget,
   CombinedGoalSpec,
@@ -32,5 +33,3 @@ export type {
   FarmingStrategy,
   UpdateGoalRequest,
 } from "./model/types"
-export { GoalRefreshProvider } from "./model/goal-refresh-provider"
-export { useGoalRefresh } from "./model/goal-refresh-context"

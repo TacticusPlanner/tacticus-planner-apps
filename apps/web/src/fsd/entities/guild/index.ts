@@ -8,3 +8,4 @@ export {
   type MyGuildResponse,
   type RegisteredGuild,
 } from "./api/guild.api"
+export { guildQueries } from "./api/guild.queries"

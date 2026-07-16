@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -76,13 +76,9 @@ describe("ProjectToolbar", () => {
     fireEvent.click(screen.getByTestId("goals-project-set-active"))
 
     await vi.waitFor(() => {
-      expect(activateProject).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        "proj-1"
-      )
+      expect(activateProject).toHaveBeenCalledWith("proj-1")
     })
-    expect(onChanged).toHaveBeenCalled()
+    expect(onChanged).not.toHaveBeenCalled()
   })
 
   it("bulk-pauses the project's goals", async () => {
@@ -93,14 +89,9 @@ describe("ProjectToolbar", () => {
     fireEvent.click(screen.getByTestId("goals-project-pause-all"))
 
     await vi.waitFor(() => {
-      expect(updateProjectGoalsStatus).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        "proj-1",
-        "Paused"
-      )
+      expect(updateProjectGoalsStatus).toHaveBeenCalledWith("proj-1", "Paused")
     })
-    expect(onChanged).toHaveBeenCalled()
+    expect(onChanged).not.toHaveBeenCalled()
   })
 
   it("bulk-resumes the project's goals", async () => {
@@ -111,12 +102,7 @@ describe("ProjectToolbar", () => {
     fireEvent.click(screen.getByTestId("goals-project-resume-all"))
 
     await vi.waitFor(() => {
-      expect(updateProjectGoalsStatus).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        "proj-1",
-        "Active"
-      )
+      expect(updateProjectGoalsStatus).toHaveBeenCalledWith("proj-1", "Active")
     })
   })
 })

@@ -1,12 +1,15 @@
+import { useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
+import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
-import { GoalRefreshProvider, useGoalRefresh } from "@/entities/goal"
-import { PlanningSettingsProvider } from "@/entities/planning-setting"
+import { goalQueries } from "@/entities/goal"
+import { projectQueries } from "@/entities/project"
 import { CreateGoalSheet } from "@/pages/goals"
+import { useActiveAccountId } from "@/shared/auth"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
@@ -36,16 +39,12 @@ export function AppShell() {
         {/* Unlike the catalog, player data is per-account and not required to render the shell, so it
             is not gated behind an init screen — it syncs in the background once authenticated. */}
         <PlayerDataProvider baseUrl={apiBaseUrl}>
-          <PlanningSettingsProvider>
-            <GoalRefreshProvider>
-              <ShellContent
-                isAuthenticated={isAuthenticated}
-                isMobile={isMobile}
-                pageTitle={pageTitle}
-                visibleItems={visibleItems}
-              />
-            </GoalRefreshProvider>
-          </PlanningSettingsProvider>
+          <ShellContent
+            isAuthenticated={isAuthenticated}
+            isMobile={isMobile}
+            pageTitle={pageTitle}
+            visibleItems={visibleItems}
+          />
         </PlayerDataProvider>
       </GameCatalogInitGate>
     </GameCatalogProvider>
@@ -64,7 +63,17 @@ function ShellContent({
   visibleItems: typeof navItems
 }) {
   const [createOpen, setCreateOpen] = useState(false)
-  const { refreshGoals } = useGoalRefresh()
+  const accountId = useActiveAccountId()
+  const queryClient = useQueryClient()
+  const refreshGoals = () => {
+    if (!accountId) return
+    void Promise.all([
+      queryClient.invalidateQueries({ queryKey: goalQueries.all(accountId) }),
+      queryClient.invalidateQueries({
+        queryKey: projectQueries.all(accountId),
+      }),
+    ])
+  }
   const shellProps = {
     isAuthenticated,
     visibleItems,
@@ -89,4 +98,3 @@ function ShellContent({
     </>
   )
 }
-import { useState } from "react"

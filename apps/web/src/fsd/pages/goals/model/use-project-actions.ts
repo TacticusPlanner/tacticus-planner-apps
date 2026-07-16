@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-
-import { useMsal } from "@azure/msal-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import {
   activateProject,
@@ -10,10 +9,13 @@ import {
   updateProject,
   updateProjectGoals,
   updateProjectGoalsStatus,
+  projectQueries,
   type ProjectGoalSummary,
   type ProjectSummary,
 } from "@/entities/project"
+import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
+import { useActiveAccountId } from "@/shared/auth"
 
 const PRIORITY_STEP = 10
 
@@ -59,25 +61,48 @@ export function reorderedMemberIds(
  * the *full* desired member ordering (see `reorderedMemberIds`) and recomputes spaced priorities before
  * submitting, so a single move never requires renumbering races with concurrent edits elsewhere.
  */
-export function useProjectActions(onChanged: () => void) {
+export function useProjectActions(_onChanged?: () => void) {
+  void _onChanged
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
+  const accountId = useActiveAccountId()
+  const queryClient = useQueryClient()
   const [pending, setPending] = useState(false)
+  const mutation = useMutation({
+    mutationFn: ({
+      action,
+    }: {
+      action: () => Promise<unknown>
+      accountId: string
+    }) => action(),
+    onSuccess: async (_result, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: projectQueries.all(variables.accountId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: goalQueries.all(variables.accountId),
+        }),
+      ])
+    },
+  })
 
   const run = async (action: () => Promise<unknown>) => {
-    if (!account) {
+    if (!accountId) {
       return false
     }
 
     setPending(true)
     try {
-      await action()
-      onChanged()
+      await mutation.mutateAsync({ action, accountId })
       return true
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
-        onChanged()
+        void queryClient.invalidateQueries({
+          queryKey: projectQueries.all(accountId),
+        })
+        void queryClient.invalidateQueries({
+          queryKey: goalQueries.all(accountId),
+        })
       }
       toast.error(
         error instanceof ApiError
@@ -91,24 +116,22 @@ export function useProjectActions(onChanged: () => void) {
   }
 
   const activate = async (projectId: string) => {
-    if (!account) {
+    if (!accountId) {
       return
     }
 
-    const ok = await run(() => activateProject(instance, account, projectId))
+    const ok = await run(() => activateProject(projectId))
     if (ok) {
       toast.success(t("goals.toasts.activated"))
     }
   }
 
   const bulkStatus = async (projectId: string, status: "Active" | "Paused") => {
-    if (!account) {
+    if (!accountId) {
       return
     }
 
-    const ok = await run(() =>
-      updateProjectGoalsStatus(instance, account, projectId, status)
-    )
+    const ok = await run(() => updateProjectGoalsStatus(projectId, status))
     if (ok) {
       toast.success(
         status === "Active"
@@ -119,14 +142,12 @@ export function useProjectActions(onChanged: () => void) {
   }
 
   const reorder = async (projectId: string, orderedGoalIds: string[]) => {
-    if (!account) {
+    if (!accountId) {
       return
     }
 
     await run(() =>
       updateProjectGoals(
-        instance,
-        account,
         projectId,
         orderedGoalIds.map((goalId, index) => ({
           goalId,
@@ -141,10 +162,8 @@ export function useProjectActions(onChanged: () => void) {
     description: string | null,
     color: string | null
   ) => {
-    if (!account) return false
-    const ok = await run(() =>
-      createProject(instance, account, { name, description, color })
-    )
+    if (!accountId) return false
+    const ok = await run(() => createProject({ name, description, color }))
     if (ok) toast.success(t("goals.toasts.projectCreated"))
     return ok
   }
@@ -153,9 +172,9 @@ export function useProjectActions(onChanged: () => void) {
     project: ProjectSummary,
     changes: Pick<ProjectSummary, "name" | "description" | "color" | "status">
   ) => {
-    if (!account) return false
+    if (!accountId) return false
     const ok = await run(() =>
-      updateProject(instance, account, project.projectId, {
+      updateProject(project.projectId, {
         ...changes,
         revision: project.revision,
       })

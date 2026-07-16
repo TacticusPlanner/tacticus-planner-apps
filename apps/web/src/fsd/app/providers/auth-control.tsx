@@ -115,7 +115,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
       accountState.status === "error" &&
       isInteractionRequired(accountState.error)
     ) {
-      void requestApiAccess(instance, account!).catch((error: unknown) => {
+      void requestApiAccess().catch((error: unknown) => {
         logAuthenticationError("api-access", error)
         toast.error(t("auth.error"))
       })

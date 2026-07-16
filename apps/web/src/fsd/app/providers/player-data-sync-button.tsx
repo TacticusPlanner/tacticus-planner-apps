@@ -8,6 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { useQueryClient } from "@tanstack/react-query"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -16,7 +17,8 @@ import {
   type PlayerDataStatus,
 } from "./player-data-provider"
 import { formatRelativeTime } from "@/shared/lib"
-import { useGoalRefresh } from "@/entities/goal"
+import { goalQueries } from "@/entities/goal"
+import { useActiveAccountId } from "@/shared/auth"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -49,10 +51,15 @@ export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
   const { error, lastSyncedAt, progress, status, syncNow } =
     usePlayerDataStatus()
-  const { refreshGoals } = useGoalRefresh()
+  const accountId = useActiveAccountId()
+  const queryClient = useQueryClient()
   const syncAndRefreshGoals = async () => {
     await syncNow()
-    refreshGoals()
+    if (accountId) {
+      await queryClient.invalidateQueries({
+        queryKey: goalQueries.all(accountId),
+      })
+    }
   }
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"

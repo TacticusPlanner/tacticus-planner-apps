@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
 import { useMsal } from "@azure/msal-react"
 import {
@@ -27,7 +28,7 @@ import {
   type GoalKind,
 } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
-import { listProjects, type ProjectSummary } from "@/entities/project"
+import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
 import { computeCreationPreview } from "./goal-preview"
@@ -110,7 +111,6 @@ export function useCreateGoalForm({
   const [farmingStrategy, setFarmingStrategy] =
     useState<FarmingStrategy>("TotalUpgrades")
 
-  const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [projectId, setProjectId] = useState(DEFAULT_PROJECT_VALUE)
 
   const [createAnother, setCreateAnother] = useState(false)
@@ -173,15 +173,12 @@ export function useCreateGoalForm({
     setAbilityPassiveEnd(passiveLevel)
   }, [entityId, playerEntity, playerCharacter])
 
-  useEffect(() => {
-    if (!open || !account) {
-      return
-    }
-    void listProjects(instance, account).then(
-      (data) => setProjects(data.projects),
-      () => setProjects([])
-    )
-  }, [open, instance, account])
+  const projectsQuery = useQuery({
+    ...projectQueries.list(account?.homeAccountId ?? "anonymous"),
+    enabled: Boolean(open && account),
+  })
+  const projects = projectsQuery.data?.projects ?? []
+  const createGoals = useMutation({ mutationFn: createCombinedGoals })
 
   const toggleType = (kind: GoalKind, enabled: boolean) => {
     setEnabledTypes((current) => {
@@ -429,7 +426,7 @@ export function useCreateGoalForm({
         abilityTrack,
         farmingStrategy,
       })
-      await createCombinedGoals(instance, account, {
+      await createGoals.mutateAsync({
         entityType,
         entityId,
         projectId: projectId === DEFAULT_PROJECT_VALUE ? undefined : projectId,

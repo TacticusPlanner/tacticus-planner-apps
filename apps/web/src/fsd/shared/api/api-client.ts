@@ -1,4 +1,5 @@
 import { getRequiredEnvironmentValue } from "@/shared/config"
+import { acquireAccessToken } from "@/shared/auth"
 
 const apiBaseUrl = getRequiredEnvironmentValue("VITE_API_BASE_URL").replace(
   /\/$/,
@@ -16,7 +17,6 @@ export class ApiError extends Error {
 }
 
 type ApiRequestOptions = {
-  accessToken: string
   signal?: AbortSignal
 }
 
@@ -51,12 +51,13 @@ async function request<T>(
   options: ApiWriteOptions
 ): Promise<T> {
   const hasBody = options.body !== undefined
+  const accessToken = await acquireAccessToken()
 
   const response = await fetch(`${apiBaseUrl}${path}`, {
     method,
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer ${options.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
       ...(hasBody ? { "Content-Type": "application/json" } : {}),
     },
     body: hasBody ? JSON.stringify(options.body) : undefined,

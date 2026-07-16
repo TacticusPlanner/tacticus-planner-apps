@@ -2,6 +2,7 @@ export {
   getOnslaughtProgress,
   updateOnslaughtProgress,
 } from "./api/onslaught-progress.api"
+export { onslaughtProgressQueries } from "./api/onslaught-progress.queries"
 export {
   onslaughtAlliances,
   onslaughtSectors,

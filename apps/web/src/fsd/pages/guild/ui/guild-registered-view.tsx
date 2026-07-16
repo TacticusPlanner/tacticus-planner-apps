@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Outlet, useLocation, useNavigate } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -50,6 +51,7 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const [status, setStatus] = useState<"idle" | "syncing" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false)
+  const synchronize = useMutation({ mutationFn: syncMyGuild })
 
   const lastSynced = guild.lastSyncSucceededAt
     ? formatRelativeTime(Date.parse(guild.lastSyncSucceededAt), i18n.language)
@@ -66,7 +68,7 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
     setErrorMessage(null)
 
     try {
-      await syncMyGuild(instance, account)
+      await synchronize.mutateAsync()
       setStatus("idle")
       onSynced()
     } catch (error) {
@@ -164,8 +166,6 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
 
       {account ? (
         <GuildPurgeDialog
-          account={account}
-          instance={instance}
           open={isPurgeDialogOpen}
           onOpenChange={setIsPurgeDialogOpen}
           onPurged={onPurged}

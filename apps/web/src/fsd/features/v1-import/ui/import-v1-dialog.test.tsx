@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@/test/render"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const importV1Profile = vi.fn()
@@ -65,22 +65,25 @@ describe("ImportV1Dialog", () => {
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
     await waitFor(() => {
-      expect(importV1Profile).toHaveBeenCalledWith(instance, account, {
-        username: "legacy-user",
-        password: "secret",
-        import: {
-          personalTacticusApiKey: true,
-          tacticusUserId: true,
-          guildApiToken: false,
-          goals: true,
+      expect(importV1Profile).toHaveBeenCalledWith(
+        {
+          username: "legacy-user",
+          password: "secret",
+          import: {
+            personalTacticusApiKey: true,
+            tacticusUserId: true,
+            guildApiToken: false,
+            goals: true,
+          },
         },
-      })
+        expect.anything()
+      )
     })
     expect(await screen.findByTestId("v1-import-result")).toHaveTextContent(
       "Imported"
     )
     expect(refetch).toHaveBeenCalledTimes(1)
-    expect(refreshGoals).toHaveBeenCalledTimes(1)
+    expect(refreshGoals).not.toHaveBeenCalled()
   })
 
   it("shows an import failure without refreshing account state", async () => {

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -80,7 +80,7 @@ describe("GuildPurgeDialog", () => {
     await user.click(screen.getByTestId("guild-purge-submit"))
 
     await vi.waitFor(() => {
-      expect(purgeGuild).toHaveBeenCalledWith(instance, account)
+      expect(purgeGuild).toHaveBeenCalledOnce()
     })
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(onPurged).toHaveBeenCalledTimes(1)

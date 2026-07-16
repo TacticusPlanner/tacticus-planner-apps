@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState, type ReactNode } from "react"
 
 import { GoalRefreshContext } from "./goal-refresh-context"
 
+/** @deprecated Production data refreshes through TanStack Query invalidation. */
 export function GoalRefreshProvider({ children }: { children: ReactNode }) {
   const [revision, setRevision] = useState(0)
   const subscribers = useRef(new Map<string, () => Promise<void>>())

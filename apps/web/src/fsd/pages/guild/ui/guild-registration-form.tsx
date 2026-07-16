@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -37,6 +38,7 @@ export function GuildRegistrationForm({ onRegistered }: Props) {
   const [token, setToken] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const registration = useMutation({ mutationFn: registerGuild })
 
   if (!account) {
     return null
@@ -54,7 +56,7 @@ export function GuildRegistrationForm({ onRegistered }: Props) {
     setErrorMessage(null)
 
     try {
-      await registerGuild(instance, account, { guildApiToken: trimmed })
+      await registration.mutateAsync({ guildApiToken: trimmed })
       setToken("")
       onRegistered()
     } catch (error) {

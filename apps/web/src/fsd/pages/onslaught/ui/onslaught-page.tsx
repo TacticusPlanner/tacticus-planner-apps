@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useMsal } from "@azure/msal-react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useLiveQuery } from "dexie-react-hooks"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
@@ -23,9 +23,9 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
-  getOnslaughtProgress,
   onslaughtReward,
   onslaughtAlliances,
+  onslaughtProgressQueries,
   onslaughtSectors,
   rewardKeys,
   updateOnslaughtProgress,
@@ -33,39 +33,41 @@ import {
   type OnslaughtProgress,
   type OnslaughtSector,
 } from "@/entities/player-data-override"
+import { useActiveAccountId } from "@/shared/auth"
 
 const allianceKey = (alliance: OnslaughtAlliance) =>
   alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
 
 export function OnslaughtPage() {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
+  const accountId = useActiveAccountId()
+  const queryClient = useQueryClient()
   const rewards = useLiveQuery(() => getOnslaughtRewards(), [])
-  const [progress, setProgress] = useState<OnslaughtProgress | null>(null)
-  const [status, setStatus] = useState<"loading" | "idle" | "saving" | "error">(
-    "loading"
-  )
+  const [draft, setDraft] = useState<{
+    accountId: string
+    progress: OnslaughtProgress
+  }>()
   const [message, setMessage] = useState<string | null>(null)
+  const progressQuery = useQuery({
+    ...onslaughtProgressQueries.current(accountId ?? "anonymous"),
+    enabled: Boolean(accountId),
+  })
+  const saveMutation = useMutation({
+    mutationFn: updateOnslaughtProgress,
+    onSuccess: (saved) => {
+      if (accountId) {
+        queryClient.setQueryData(
+          onslaughtProgressQueries.current(accountId).queryKey,
+          saved
+        )
+      }
+    },
+  })
 
-  useEffect(() => {
-    if (!account) return
-    let active = true
-    void getOnslaughtProgress(instance, account)
-      .then((value) => {
-        if (!active) return
-        setProgress(value)
-        setStatus("idle")
-      })
-      .catch(() => {
-        if (!active) return
-        setMessage(t("onslaught.loadError"))
-        setStatus("error")
-      })
-    return () => {
-      active = false
-    }
-  }, [account, instance, t])
+  const progress =
+    draft?.accountId === accountId ? draft.progress : progressQuery.data
+  const displayMessage =
+    message ?? (progressQuery.isError ? t("onslaught.loadError") : null)
 
   const updateAlliance = (
     alliance: OnslaughtAlliance,
@@ -73,26 +75,26 @@ export function OnslaughtPage() {
   ) => {
     if (!progress) return
     const key = allianceKey(alliance)
-    setProgress({ ...progress, [key]: { ...progress[key], ...patch } })
+    setDraft({
+      accountId: accountId ?? "anonymous",
+      progress: { ...progress, [key]: { ...progress[key], ...patch } },
+    })
     setMessage(null)
   }
 
   const save = async () => {
-    if (!account || !progress) return
-    setStatus("saving")
+    if (!accountId || !progress) return
     setMessage(null)
     try {
-      const saved = await updateOnslaughtProgress(instance, account, progress)
-      setProgress(saved)
-      setStatus("idle")
+      const saved = await saveMutation.mutateAsync(progress)
+      setDraft({ accountId, progress: saved })
       setMessage(t("onslaught.saved"))
     } catch {
-      setStatus("error")
       setMessage(t("onslaught.saveError"))
     }
   }
 
-  if (status === "loading" || !rewards) {
+  if (progressQuery.isPending || !rewards) {
     return (
       <div className="flex min-h-64 items-center justify-center">
         <Spinner className="size-8" />
@@ -102,7 +104,7 @@ export function OnslaughtPage() {
   if (!progress) {
     return (
       <Alert variant="destructive">
-        <AlertDescription>{message}</AlertDescription>
+        <AlertDescription>{displayMessage}</AlertDescription>
       </Alert>
     )
   }
@@ -187,21 +189,21 @@ export function OnslaughtPage() {
 
       <div className="flex items-center gap-3">
         <Button
-          disabled={status === "saving"}
+          disabled={saveMutation.isPending}
           onClick={() => void save()}
           data-testid="save-onslaught-progress"
         >
-          {status === "saving" ? t("onslaught.saving") : t("onslaught.save")}
+          {saveMutation.isPending ? t("onslaught.saving") : t("onslaught.save")}
         </Button>
-        {message ? (
+        {displayMessage ? (
           <span
             className={
-              status === "error"
+              progressQuery.isError || saveMutation.isError
                 ? "text-sm text-destructive"
                 : "text-sm text-muted-foreground"
             }
           >
-            {message}
+            {displayMessage}
           </span>
         ) : null}
       </div>

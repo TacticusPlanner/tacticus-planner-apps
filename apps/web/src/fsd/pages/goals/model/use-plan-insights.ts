@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useMsal } from "@azure/msal-react"
+import { useQueries, useQuery } from "@tanstack/react-query"
 import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
@@ -11,11 +11,12 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import { getGoal } from "@/entities/goal"
-import { getOnslaughtProgress } from "@/entities/player-data-override"
+import { goalQueries } from "@/entities/goal"
+import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import type { ProjectGoalSummary } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
+import { useActiveAccountId } from "@/shared/auth"
 
 import { computePlanInsights } from "./plan-insights-calc"
 import {
@@ -46,8 +47,7 @@ export function usePlanInsights(
   projectId: string | undefined,
   members: ProjectGoalSummary[]
 ) {
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
+  const accountId = useActiveAccountId()
   const {
     upgradesById,
     battlesById,
@@ -73,7 +73,27 @@ export function usePlanInsights(
   const memberKey = activeMembers
     .map((member) => `${member.goal.goalId}:${member.priority}`)
     .join(",")
-  const hasQuery = Boolean(projectId && account && activeMembers.length > 0)
+  const hasQuery = Boolean(projectId && accountId && activeMembers.length > 0)
+  const goalDetailQueries = useQueries({
+    queries:
+      hasQuery && accountId
+        ? activeMembers.map((member) =>
+            goalQueries.detail(accountId, member.goal.goalId)
+          )
+        : [],
+  })
+  const onslaughtProgressQuery = useQuery({
+    ...onslaughtProgressQueries.current(accountId ?? "anonymous"),
+    enabled: hasQuery,
+  })
+  const serverDataVersion = [
+    ...goalDetailQueries.map((query) => query.dataUpdatedAt),
+    onslaughtProgressQuery.dataUpdatedAt,
+  ].join(",")
+  const serverDataReady =
+    goalDetailQueries.length === activeMembers.length &&
+    goalDetailQueries.every((query) => query.isSuccess) &&
+    onslaughtProgressQuery.isSuccess
   const catalogReady =
     !!charactersById &&
     !!mowsById &&
@@ -82,21 +102,18 @@ export function usePlanInsights(
     !!unlockShardCostsById
 
   useEffect(() => {
-    if (!hasQuery || !account || !catalogReady) {
+    if (!hasQuery || !catalogReady || !serverDataReady) {
       return undefined
     }
 
     let active = true
+    const details = goalDetailQueries.flatMap((query) =>
+      query.data ? [query.data] : []
+    )
+    const onslaughtProgress = onslaughtProgressQuery.data
 
-    void Promise.all([
-      Promise.all(
-        activeMembers.map((member) =>
-          getGoal(instance, account, member.goal.goalId)
-        )
-      ),
-      getOnslaughtProgress(instance, account),
-    ])
-      .then(async ([details, onslaughtProgress]) => {
+    void Promise.resolve()
+      .then(async () => {
         const entityIds = [...new Set(details.map((detail) => detail.entityId))]
         const [
           playerCharacterEntries,
@@ -187,7 +204,9 @@ export function usePlanInsights(
   }, [
     hasQuery,
     catalogReady,
-    account?.homeAccountId,
+    serverDataReady,
+    serverDataVersion,
+    accountId,
     memberKey,
     planningSettings.dailyEnergy,
     liveProgress?.gameModeTokens.onslaught?.current,
@@ -199,6 +218,6 @@ export function usePlanInsights(
   return {
     result:
       hasQuery && isCurrent ? fetchState.result : EMPTY_PLAN_INSIGHTS_RESULT,
-    loading: hasQuery && !isCurrent,
+    loading: hasQuery && (!serverDataReady || !isCurrent),
   }
 }

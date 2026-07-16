@@ -1,6 +1,11 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useMsal } from "@azure/msal-react"
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import type { UpgradeId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -17,8 +22,9 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
 
-import { getGoal, updateGoal, type GoalDetail } from "@/entities/goal"
+import { goalQueries, updateGoal } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
+import { useActiveAccountId } from "@/shared/auth"
 import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 import { useGoalCatalog } from "../model/use-goal-catalog"
 import { StatusBadge } from "./status-badge"
@@ -37,44 +43,66 @@ export function GoalDetailSheet({
   onUpdated: () => void
 }) {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
+  const accountId = useActiveAccountId()
+  const queryClient = useQueryClient()
   const { getEntityName, upgradesById } = useGoalCatalog()
-  const [detail, setDetail] = useState<GoalDetail | null>(null)
-  const [dependencies, setDependencies] = useState<GoalDetail[]>([])
-  const [notes, setNotes] = useState("")
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([])
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [draftState, setDraftState] = useState<{
+    key: string
+    notes: string
+    selectedLocations: string[]
+  } | null>(null)
+  const [saveError, setSaveError] = useState<{
+    goalId: string
+    message: string
+  } | null>(null)
+  const detailQuery = useQuery({
+    ...goalQueries.detail(accountId ?? "anonymous", goalId ?? "unselected"),
+    enabled: Boolean(accountId && goalId),
+  })
+  const detail = detailQuery.data ?? null
+  const dependencyQueries = useQueries({
+    queries: (detail?.dependsOn ?? []).map((id) => ({
+      ...goalQueries.detail(accountId ?? "anonymous", id),
+      enabled: Boolean(accountId),
+    })),
+  })
+  const dependencies = dependencyQueries.flatMap((query) =>
+    query.data ? [query.data] : []
+  )
+  const draftKey = detail ? `${detail.goalId}:${detail.updatedAt}` : ""
+  const draft =
+    draftState?.key === draftKey
+      ? draftState
+      : {
+          key: draftKey,
+          notes: detail?.notes ?? "",
+          selectedLocations: detail?.config.farmingLocationIds ?? [],
+        }
+  const notes = draft.notes
+  const selectedLocations = draft.selectedLocations
 
-  useEffect(() => {
-    if (!goalId || !account) return
-    let active = true
-    void getGoal(instance, account, goalId).then(
-      async (value) => {
-        if (!active) return
-        setDetail(value)
-        setError(null)
-        setDependencies([])
-        setNotes(value.notes ?? "")
-        setSelectedLocations(value.config.farmingLocationIds ?? [])
-        const loaded = await Promise.all(
-          value.dependsOn.map((id) => getGoal(instance, account, id))
-        )
-        if (active) setDependencies(loaded)
-      },
-      (reason: unknown) =>
-        active &&
-        setError(
-          reason instanceof ApiError
-            ? reason.message
-            : t("goals.detail.loadError")
-        )
-    )
-    return () => {
-      active = false
-    }
-  }, [goalId, account, instance, t])
+  const updateMutation = useMutation({
+    mutationFn: (request: {
+      goalId: string
+      notes: string | null
+      farmingLocationIds: string[] | null
+    }) =>
+      updateGoal(request.goalId, {
+        notes: request.notes,
+        farmingLocationIds: request.farmingLocationIds,
+      }),
+    onSuccess: async (updated) => {
+      if (!accountId) return
+      queryClient.setQueryData(
+        goalQueries.detail(accountId, updated.goalId).queryKey,
+        updated
+      )
+      await queryClient.invalidateQueries({
+        queryKey: goalQueries.lists(accountId),
+      })
+      onUpdated()
+    },
+  })
 
   const locationGroups = useMemo(() => {
     if (!detail?.snapshot) return []
@@ -99,27 +127,33 @@ export function GoalDetailSheet({
     )
 
   const save = async () => {
-    if (!detail || !account || !overrideValid) return
-    setSaving(true)
-    setError(null)
+    if (!detail || !accountId || !overrideValid) return
+    setSaveError(null)
     try {
-      const updated = await updateGoal(instance, account, detail.goalId, {
+      await updateMutation.mutateAsync({
+        goalId: detail.goalId,
         notes: notes.trim() || null,
         farmingLocationIds:
           selectedLocations.length > 0 ? selectedLocations : null,
       })
-      setDetail(updated)
-      onUpdated()
     } catch (reason) {
-      setError(
-        reason instanceof ApiError
-          ? reason.message
-          : t("goals.detail.saveError")
-      )
-    } finally {
-      setSaving(false)
+      setSaveError({
+        goalId: detail.goalId,
+        message:
+          reason instanceof ApiError
+            ? reason.message
+            : t("goals.detail.saveError"),
+      })
     }
   }
+
+  const error = detailQuery.isError
+    ? detailQuery.error instanceof ApiError
+      ? detailQuery.error.message
+      : t("goals.detail.loadError")
+    : saveError?.goalId === goalId
+      ? saveError.message
+      : null
 
   return (
     <Sheet open={!!goalId} onOpenChange={onOpenChange}>
@@ -254,7 +288,9 @@ export function GoalDetailSheet({
                 id="goal-notes"
                 maxLength={200}
                 value={notes}
-                onChange={(event) => setNotes(event.target.value)}
+                onChange={(event) =>
+                  setDraftState({ ...draft, notes: event.target.value })
+                }
               />
               <span className="text-xs text-muted-foreground">
                 {notes.length}/200
@@ -273,11 +309,13 @@ export function GoalDetailSheet({
                   <Checkbox
                     checked={selectedLocations.includes(battleId)}
                     onCheckedChange={(checked) =>
-                      setSelectedLocations((current) =>
-                        checked === true
-                          ? [...current, battleId]
-                          : current.filter((id) => id !== battleId)
-                      )
+                      setDraftState({
+                        ...draft,
+                        selectedLocations:
+                          checked === true
+                            ? [...selectedLocations, battleId]
+                            : selectedLocations.filter((id) => id !== battleId),
+                      })
                     }
                   />
                   {battleId}
@@ -293,7 +331,7 @@ export function GoalDetailSheet({
         ) : null}
         <SheetFooter>
           <Button
-            disabled={!detail || saving || !overrideValid}
+            disabled={!detail || updateMutation.isPending || !overrideValid}
             onClick={() => void save()}
           >
             {t("goals.detail.save")}
