@@ -65,7 +65,9 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
-  scopes: [getRequiredEnvironmentValue("VITE_API_SCOPE")],
+  get scopes() {
+    return [getRequiredEnvironmentValue("VITE_API_SCOPE")]
+  },
 }
 
 export async function initializeAuthentication() {
