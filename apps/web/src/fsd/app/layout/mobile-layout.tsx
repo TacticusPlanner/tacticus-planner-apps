@@ -85,7 +85,7 @@ function MobileHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 flex h-(--mobile-header-height) items-center justify-between gap-3 border-b bg-background px-4 pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 flex h-(--mobile-header-height) items-center justify-between gap-3 border-b bg-sidebar px-4 pt-[env(safe-area-inset-top)]">
       <div className="flex min-w-0 items-center gap-2">
         <AppLogo className="size-7 shrink-0" />
         <span className="truncate text-sm font-semibold tracking-tight">
@@ -177,11 +177,11 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
     },
     syncing: {
       Icon: RefreshCw,
-      className: "bg-primary text-primary-foreground",
+      className: "bg-accent text-accent-foreground",
     },
     ready: {
       Icon: CheckCircle2,
-      className: "bg-primary text-primary-foreground",
+      className: "bg-accent text-accent-foreground",
     },
     stale: {
       Icon: Clock,
@@ -255,7 +255,7 @@ function MobileBottomNav({
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-background pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-sidebar pb-[env(safe-area-inset-bottom)]"
       data-testid="primary-nav"
     >
       {menuItems.length > 0 ? (

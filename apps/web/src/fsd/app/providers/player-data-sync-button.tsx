@@ -119,8 +119,8 @@ export function usePlayerDataSyncStatus() {
 
 const statusClasses: Record<PlayerDataStatus, string> = {
   idle: "text-muted-foreground",
-  syncing: "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
-  ready: "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
+  syncing: "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent",
+  ready: "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent",
   stale:
     "bg-accent/15 text-accent-foreground ring-1 ring-inset ring-accent/40 hover:bg-accent/25 hover:text-accent-foreground",
   error:
@@ -147,7 +147,7 @@ export function PlayerDataSyncButton() {
 
   return (
     <SidebarMenuButton
-      className={cn("h-auto min-h-12", statusClasses[status])}
+      className={cn("mt-2 h-auto min-h-12", statusClasses[status])}
       data-testid="player-data-sync-button"
       onClick={syncNow}
       disabled={isSyncing}
