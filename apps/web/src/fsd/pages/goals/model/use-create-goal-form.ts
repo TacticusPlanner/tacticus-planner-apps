@@ -25,8 +25,7 @@ import { useUpgradeFields } from "./use-upgrade-fields"
 
 export type EntityType = "Character" | "Mow"
 
-const defaultTypesFor = (entityType: EntityType): Set<GoalKind> =>
-  new Set(entityType === "Mow" ? ["Ability"] : ["Rank"])
+const defaultGoalTypes = (): Set<GoalKind> => new Set()
 
 /**
  * Everything CreateGoalSheet needs to render: catalog data, per-field form state, the synced-data
@@ -68,9 +67,8 @@ export function useCreateGoalForm({
 
   const [entityType, setEntityType] = useState<EntityType>("Character")
   const [entityId, setEntityId] = useState<UnitId | undefined>(undefined)
-  const [enabledTypes, setEnabledTypes] = useState<ReadonlySet<GoalKind>>(() =>
-    defaultTypesFor("Character")
-  )
+  const [enabledTypes, setEnabledTypes] =
+    useState<ReadonlySet<GoalKind>>(defaultGoalTypes)
   const [includeSuggestedUnlock, setIncludeSuggestedUnlock] = useState(true)
   const [includeSuggestedAscension, setIncludeSuggestedAscension] =
     useState(true)
@@ -181,7 +179,7 @@ export function useCreateGoalForm({
   const resetForm = () => {
     setEntityType("Character")
     setEntityId(undefined)
-    setEnabledTypes(defaultTypesFor("Character"))
+    setEnabledTypes(defaultGoalTypes())
     setIncludeSuggestedUnlock(true)
     setIncludeSuggestedAscension(true)
     resetTargetFields()
@@ -197,7 +195,7 @@ export function useCreateGoalForm({
     const type: EntityType = charactersById?.has(id) ? "Character" : "Mow"
     setEntityType(type)
     setEntityId(id)
-    setEnabledTypes(defaultTypesFor(type))
+    setEnabledTypes(defaultGoalTypes())
     setIncludeSuggestedUnlock(true)
     setIncludeSuggestedAscension(true)
     resetTargetFields()

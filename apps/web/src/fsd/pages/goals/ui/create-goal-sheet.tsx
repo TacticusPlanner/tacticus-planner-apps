@@ -137,6 +137,14 @@ export function CreateGoalSheet({
             ) : null}
             {t("goals.create.submit")}
           </Button>
+          <Button
+            data-testid="create-goal-close"
+            onClick={() => onOpenChange(false)}
+            type="button"
+            variant="outline"
+          >
+            {t("goals.create.close")}
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

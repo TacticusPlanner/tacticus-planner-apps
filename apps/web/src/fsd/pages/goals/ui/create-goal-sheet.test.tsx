@@ -234,7 +234,8 @@ const createCombinedGoals = vi.fn()
 const createGoal = vi.fn()
 const listProjects = vi.fn()
 
-vi.mock("@/entities/goal", () => ({
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
 }))
@@ -306,6 +307,13 @@ describe("CreateGoalSheet", () => {
     // include an auto-suggested Unlock in the submission this test isn't testing for.
     await vi.waitFor(() => {
       expect(
+        screen.getByTestId("create-goal-type-toggle-Rank")
+      ).not.toBeDisabled()
+    })
+    // No goal type is preselected — turn Rank on explicitly.
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    await vi.waitFor(() => {
+      expect(
         screen.getByTestId("create-goal-review").querySelectorAll("li")
       ).toHaveLength(1)
     })
@@ -339,6 +347,7 @@ describe("CreateGoalSheet", () => {
     )
 
     await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
     fireEvent.click(
       screen.getByRole("checkbox", { name: "goals.create.createAnother" })
     )
@@ -362,6 +371,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
     await vi.waitFor(() => {
@@ -375,6 +385,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     await vi.waitFor(() => {
       expect(screen.getByTestId("create-goal-estimate")).toBeInTheDocument()
@@ -385,6 +396,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     // Defaults to "Total upgrades" (use-create-goal-form.ts's initial state).
     await vi.waitFor(() => {
@@ -414,8 +426,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    // Rank is on by default; turn it off and turn Unlock on instead.
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    // No goal type is preselected — turn Unlock on explicitly.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -437,7 +448,6 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
 
     fireEvent.click(
@@ -472,7 +482,6 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
 
     fireEvent.click(
@@ -550,8 +559,7 @@ describe("CreateGoalSheet", () => {
         screen.getByTestId("create-goal-type-toggle-Unlock")
       ).not.toBeDisabled()
     })
-    // Ability is on by default for a MoW; swap it for Unlock so only Unlock is submitted.
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
+    // No goal type is preselected — turn Unlock on explicitly.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -575,6 +583,9 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
+    // No goal type is preselected — turn Rank on explicitly, which is what triggers the auto-
+    // suggested Unlock prerequisite for a locked entity.
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     const review = await screen.findByTestId("create-goal-review")
     expect(review).toHaveTextContent("goals.create.goalTypes.Unlock")
@@ -610,12 +621,14 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectMow()
-    // Wait for useGoalPrefill's getPlayerMow() to resolve — before it resolves, isLocked reads its
-    // pre-resolution default (locked), which would also auto-suggest Unlock.
+    // Wait for useGoalPrefill's getPlayerMow() to resolve (owned) — before it resolves, isLocked
+    // reads its pre-resolution default (locked), which would also auto-suggest Unlock once Ability
+    // is turned on below. The Unlock toggle going disabled is the observable sign that the owned
+    // data has landed.
     await vi.waitFor(() => {
       expect(
-        screen.getByTestId("create-goal-review").querySelectorAll("li")
-      ).toHaveLength(1)
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).toBeDisabled()
     })
 
     expect(
@@ -624,6 +637,15 @@ describe("CreateGoalSheet", () => {
     expect(
       screen.getByTestId("create-goal-type-toggle-Ability")
     ).toBeInTheDocument()
+
+    // No goal type is preselected — turn Ability on explicitly.
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
+
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-review").querySelectorAll("li")
+      ).toHaveLength(1)
+    })
 
     await vi.waitFor(() => {
       expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
@@ -658,6 +680,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
     fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
     fireEvent.click(await screen.findByTestId("create-goal-project-proj-2"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))

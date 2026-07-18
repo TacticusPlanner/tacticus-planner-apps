@@ -1,11 +1,27 @@
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import type {
-  CombinedGoalSpec,
-  CreateGoalSnapshotRequest,
-} from "@/entities/goal"
-import type { EstimateOutcome } from "./estimate/estimate.domain"
-import type { MissingUpgradeEntry } from "./goal-spec-builder"
+import type { CombinedGoalSpec, CreateGoalSnapshotRequest } from "./types"
+
+/** The subset of a resource-requirement preview entry this builder actually reads — deliberately
+ * structural (not importing `pages/goals`' own `MissingUpgradeEntry`) so this entities-layer module
+ * stays independent of the pages layer; the regular create-goal flow's real entries satisfy this
+ * shape as-is. */
+export type SnapshotMissingUpgradeInput = {
+  id: string
+  required: number
+  inventoryContribution: number
+}
+
+/** The subset of an estimate-preview outcome this builder actually reads — see
+ * `SnapshotMissingUpgradeInput`'s note; the regular create-goal flow's real `EstimateOutcome` (a
+ * discriminated union) satisfies this shape as-is. */
+export type SnapshotEstimateInput = {
+  status?: string
+  days?: number
+  date?: string
+  energyTotal?: number
+  raidsTotal?: number
+} | null
 
 export function buildCreateGoalSnapshot(params: {
   spec: CombinedGoalSpec
@@ -17,8 +33,8 @@ export function buildCreateGoalSnapshot(params: {
   playerCharacter: PlayerDataChunkDto<"characters">[number] | undefined
   currentActiveAbility: number
   currentPassiveAbility: number
-  missingUpgrades: MissingUpgradeEntry[]
-  estimatePreview: EstimateOutcome | null
+  missingUpgrades: SnapshotMissingUpgradeInput[]
+  estimatePreview: SnapshotEstimateInput
 }): CreateGoalSnapshotRequest {
   const estimate =
     params.estimatePreview?.status !== "Blocked" ? params.estimatePreview : null

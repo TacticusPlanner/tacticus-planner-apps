@@ -62,11 +62,11 @@ export function useEntityPrefillEffect({
     const passiveLevel = playerEntity.abilities?.[1]?.level ?? 1
     abilityFields.prefillFrom(activeLevel, passiveLevel)
 
-    // The default toggle set (defaultTypesFor, applied synchronously on selection before this
-    // synced data was available) may turn out to already be maxed out once it loads — strip it
-    // rather than leave a checked-but-disabled toggle sitting in the form. Always called (a no-op
-    // functional updater when nothing's maxed) for the same lint-idiom reason as the setState calls
-    // above — a conditionally-called setState inside an effect trips the set-state-in-effect rule.
+    // A toggle the user enabled before this synced data loaded may turn out to already be maxed
+    // out once it arrives — strip it rather than leave a checked-but-disabled toggle sitting in the
+    // form. Always called (a no-op functional updater when nothing's maxed) for the same lint-idiom
+    // reason as the setState calls above — a conditionally-called setState inside an effect trips
+    // the set-state-in-effect rule.
     const rankMaxed = isAtMaxRank(rank)
     const abilityMaxed = isAtMaxAbility(
       playerEntity.progressionIndex,

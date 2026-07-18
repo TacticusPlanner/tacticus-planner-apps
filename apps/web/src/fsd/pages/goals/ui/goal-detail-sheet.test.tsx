@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -57,6 +57,17 @@ vi.mock("../model/use-goal-catalog", () => ({
       ],
       ["upgrade-2", { farmLocations: [{ battleId: "battle-2" }] }],
     ]),
+    charactersById: new Map([
+      [
+        "hero-1",
+        {
+          shardLocations: [
+            { battleId: "shard-battle-1" },
+            { battleId: "shard-battle-2" },
+          ],
+        },
+      ],
+    ]),
   }),
 }))
 
@@ -79,10 +90,13 @@ const detail = {
   goalId: "goal-1",
   entityType: "Character",
   entityId: "hero-1",
-  goalType: "Rank",
+  // Ability, not Rank — Rank goals now hide the farm-location picker entirely (see the dedicated
+  // "Rank goal" test below), so the generic farming-override behavior is exercised through a goal
+  // type that still uses it.
+  goalType: "Ability",
   status: "Active",
   notes: "Old note",
-  config: { farmingLocationIds: [] },
+  config: { farmingLocationIds: [], farmingStrategy: "TotalUpgrades" },
   dependsOn: ["dependency-1"],
   milestones: [
     {
@@ -114,6 +128,35 @@ const dependency = {
   goalId: "dependency-1",
   milestones: [],
   snapshot: null,
+}
+
+const rankDetail = {
+  ...detail,
+  goalType: "Rank",
+  dependsOn: [],
+  config: {
+    farmingLocationIds: [],
+    farmingStrategy: "TotalUpgrades",
+    rank: {
+      start: 0,
+      startPointFive: false,
+      startAppliedUpgrades: 0,
+      end: 5,
+      endPointFive: false,
+      endAppliedUpgrades: 0,
+    },
+  },
+}
+
+const unlockDetail = {
+  ...detail,
+  goalType: "Unlock",
+  dependsOn: [],
+  config: { farmingLocationIds: [], farmingStrategy: "TotalUpgrades" },
+  // Unlock goals never populate initialRequirement (buildCreateGoalSnapshot's ownsResourcePreview is
+  // only true for Character Rank / Mow Ability) — the shard-location list instead comes from
+  // charactersById, mocked above.
+  snapshot: { ...detail.snapshot, initialRequirement: [] },
 }
 
 function renderSheet(
@@ -168,6 +211,13 @@ describe("GoalDetailSheet", () => {
     expect(
       screen.getByText("goals.detail.isolatedEstimate")
     ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        (_, element) =>
+          element?.tagName === "P" &&
+          Boolean(element.textContent?.includes("3d · 2026-01-08"))
+      )
+    ).toBeInTheDocument()
 
     const notes = screen.getByLabelText("goals.detail.notes")
     fireEvent.change(notes, { target: { value: " Updated note " } })
@@ -185,6 +235,7 @@ describe("GoalDetailSheet", () => {
       expect(updateGoal).toHaveBeenCalledWith("goal-1", {
         farmingLocationIds: ["battle-1", "battle-2"],
         notes: "Updated note",
+        farmingStrategy: "TotalUpgrades",
       })
     })
     expect(onUpdated).toHaveBeenCalledOnce()
@@ -269,5 +320,55 @@ describe("GoalDetailSheet", () => {
     ).toBeInTheDocument()
     expect(screen.getByText("goals.detail.save")).toBeDisabled()
     expect(updateGoalProjects).not.toHaveBeenCalled()
+  })
+
+  it("lets a Rank goal's farming strategy be changed, with no farm-location picker", async () => {
+    getGoal.mockReset().mockResolvedValue(rankDetail)
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+
+    expect(screen.getByTestId("create-goal-farming-strategy")).toBeVisible()
+    expect(
+      screen.queryByText("goals.detail.farmingTitle")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText("goals.detail.shardsTitle")
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("create-goal-farming-strategy"))
+    fireEvent.click(
+      within(await screen.findByRole("listbox")).getByText(
+        "goals.create.farmingStrategy.Milestones"
+      )
+    )
+    fireEvent.click(screen.getByText("goals.detail.save"))
+
+    await vi.waitFor(() => {
+      expect(updateGoal).toHaveBeenCalledWith("goal-1", {
+        farmingLocationIds: null,
+        notes: "Old note",
+        farmingStrategy: "Milestones",
+      })
+    })
+  })
+
+  it("shows shard locations (not upgrade farm locations) for an Unlock goal", async () => {
+    getGoal.mockReset().mockResolvedValue(unlockDetail)
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+
+    expect(screen.getByText("goals.detail.shardsTitle")).toBeInTheDocument()
+    expect(
+      screen.queryByText("goals.detail.farmingTitle")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("create-goal-farming-strategy")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("checkbox", { name: "shard-battle-1" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("checkbox", { name: "shard-battle-2" })
+    ).toBeInTheDocument()
   })
 })

@@ -4,11 +4,10 @@ import { useMutation } from "@tanstack/react-query"
 
 import type { UnitId } from "@workspace/game-domain"
 
-import { createCombinedGoals } from "@/entities/goal"
+import { buildCreateGoalSnapshot, createCombinedGoals } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 import { buildCombinedGoalSpecs } from "./goal-spec-builder"
-import { buildCreateGoalSnapshot } from "./goal-snapshot-builder"
 import type { EntityType } from "./use-create-goal-form"
 
 type SpecParams = Parameters<typeof buildCombinedGoalSpecs>[0]

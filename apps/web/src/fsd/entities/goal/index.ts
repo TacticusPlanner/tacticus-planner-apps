@@ -9,6 +9,11 @@ export {
   updateGoalStatus,
 } from "./api/goal.api"
 export { goalQueries } from "./api/goal.queries"
+export { buildCreateGoalSnapshot } from "./model/goal-snapshot-builder"
+export type {
+  SnapshotEstimateInput,
+  SnapshotMissingUpgradeInput,
+} from "./model/goal-snapshot-builder"
 export type {
   AbilityTarget,
   CombinedGoalSpec,

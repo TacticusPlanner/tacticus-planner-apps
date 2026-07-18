@@ -295,7 +295,7 @@
       "submit": "Import selected",
       "close": "Close",
       "error": "The V1 profile could not be imported.",
-      "goalCounts": "Goals: {{imported}} imported, {{replaced}} replaced, {{skipped}} skipped"
+      "goalCounts": "Goals: {{created}} created, {{skipped}} skipped, {{failed}} failed"
     },
     "empty": {
       "title": "No goals yet",
@@ -384,10 +384,10 @@
       "title": "Create a goal",
       "entityType": {
         "unit": "Unit",
-        "equipment": "Equipment"
+        "equipment": "Item"
       },
       "unitLabel": "Unit",
-      "unitPlaceholder": "Select a character or Machine of War",
+      "unitPlaceholder": "Select a unit",
       "unitEmpty": "No unit found.",
       "goalTypeLabel": "Goal type",
       "goalTypes": {
@@ -460,7 +460,7 @@
       },
       "equipment": {
         "label": "Equipment",
-        "placeholder": "Select a piece of equipment",
+        "placeholder": "Select an item",
         "empty": "No equipment found.",
         "targetLevel": "Target level",
         "relicGroup": "Relic"
@@ -474,6 +474,7 @@
       "projectActive": "active",
       "createAnother": "Create another goal",
       "submit": "Create goal",
+      "close": "Close",
       "genericError": "Couldn't create the goal. Please try again.",
       "previewEstimate": "≈ {{days}} days · ready {{date}}",
       "previewEnergy": "{{energy}} energy · {{raids}} raids · {{dailyEnergy}} energy/day",
@@ -546,6 +547,8 @@
       "projectsRequired": "Select at least one project.",
       "farmingTitle": "Farming locations",
       "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
+      "shardsTitle": "Shards location",
+      "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
       "none": "None"
     },

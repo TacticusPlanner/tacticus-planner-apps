@@ -58,7 +58,7 @@ export function DesktopShell({
         onCreateGoal={onCreateGoal ?? (() => undefined)}
       />
       <SidebarInset>
-        <header className="flex items-center justify-between gap-2 border-b px-6 py-4">
+        <header className="flex items-center justify-between gap-2 border-b bg-sidebar px-6 py-4">
           {pageTitle ? (
             <h1 className="truncate text-2xl font-semibold tracking-tight">
               {pageTitle}

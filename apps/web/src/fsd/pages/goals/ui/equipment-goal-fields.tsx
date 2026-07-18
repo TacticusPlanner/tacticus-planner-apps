@@ -69,8 +69,7 @@ export function EquipmentGoalFields({
       className="flex flex-1 flex-col gap-4 overflow-y-auto px-6"
       onSubmit={(event) => void handleSubmit(event)}
     >
-      <div className="grid gap-2">
-        <Label>{t("goals.create.equipment.label")}</Label>
+      <div className="mt-2 grid gap-2">
         <RarityCombobox
           emptyText={t("goals.create.equipment.empty")}
           items={equipmentItems}

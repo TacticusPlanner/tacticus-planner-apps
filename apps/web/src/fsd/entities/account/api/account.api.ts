@@ -1,4 +1,5 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
+import type { CreateCombinedGoalsRequest } from "@/entities/goal"
 
 import type { CurrentUser } from "../model/current-user"
 
@@ -52,8 +53,10 @@ export type ImportV1ProfileResult = {
   personalTacticusApiKey: ImportPartResult
   guildApiToken: ImportPartResult
   goals: ImportPartResult
-  goalsImported: number
-  goalsReplaced: number
+  // Parsed V1 goals, already shaped as create requests — one per unit. The client submits each of
+  // these through the standard `createCombinedGoals` mutation (see `import-v1-dialog.tsx`); the
+  // backend no longer creates goals itself.
+  goalSpecs?: CreateCombinedGoalsRequest[]
   goalsSkipped: number
   goalIssues: { code: string; sourceGoalId: string | null; message: string }[]
 }

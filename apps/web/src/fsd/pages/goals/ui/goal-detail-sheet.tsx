@@ -7,10 +7,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import type { UpgradeId } from "@workspace/game-domain"
+import { rankAt, type UpgradeId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 import {
   Sheet,
@@ -23,12 +22,19 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
 
-import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
+import {
+  goalQueries,
+  updateGoal,
+  updateGoalProjects,
+  type FarmingStrategy,
+} from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
-import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 import { useGoalCatalog } from "../model/use-goal-catalog"
+import { FarmingStrategyField } from "./farming-strategy-field"
+import { GoalEstimateSection } from "./goal-estimate-section"
+import { GoalLocationsField } from "./goal-locations-field"
 import { GoalProjectsField } from "./goal-projects-field"
 import { StatusBadge } from "./status-badge"
 
@@ -48,12 +54,13 @@ export function GoalDetailSheet({
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
-  const { getEntityName, upgradesById } = useGoalCatalog()
+  const { getEntityName, upgradesById, charactersById } = useGoalCatalog()
   const [draftState, setDraftState] = useState<{
     key: string
     notes: string
     selectedLocations: string[]
     selectedProjectIds: string[]
+    farmingStrategy: FarmingStrategy
   } | null>(null)
   const [saveError, setSaveError] = useState<{
     goalId: string
@@ -82,10 +89,12 @@ export function GoalDetailSheet({
           notes: detail?.notes ?? "",
           selectedLocations: detail?.config.farmingLocationIds ?? [],
           selectedProjectIds: detail?.projectIds ?? [],
+          farmingStrategy: detail?.config.farmingStrategy ?? "TotalUpgrades",
         }
   const notes = draft.notes
   const selectedLocations = draft.selectedLocations
   const selectedProjectIds = draft.selectedProjectIds
+  const farmingStrategy = draft.farmingStrategy
 
   const projectsQuery = useQuery({
     ...projectQueries.list(),
@@ -98,10 +107,12 @@ export function GoalDetailSheet({
       goalId: string
       notes: string | null
       farmingLocationIds: string[] | null
+      farmingStrategy: FarmingStrategy
     }) =>
       updateGoal(request.goalId, {
         notes: request.notes,
         farmingLocationIds: request.farmingLocationIds,
+        farmingStrategy: request.farmingStrategy,
       }),
     onSuccess: async (updated) => {
       queryClient.setQueryData(
@@ -129,7 +140,13 @@ export function GoalDetailSheet({
     },
   })
 
-  const locationGroups = useMemo(() => {
+  // Rank goals never expose a farming-location override (product decision — see the section's JSX
+  // below); Unlock goals farm a shard, not an upgrade, so their location list comes from the
+  // character's own catalog shardLocations rather than the (always-empty, for Unlock)
+  // snapshot-derived upgrade requirement every other costed goal type uses.
+  const isRank = detail?.goalType === "Rank"
+  const isUnlock = detail?.goalType === "Unlock"
+  const upgradeLocationGroups = useMemo(() => {
     if (!detail?.snapshot) return []
     return detail.snapshot.initialRequirement.map((resource) => ({
       resourceId: resource.resourceId,
@@ -142,10 +159,26 @@ export function GoalDetailSheet({
       ],
     }))
   }, [detail, upgradesById])
+  const shardBattleIds = useMemo(() => {
+    if (!detail || detail.goalType !== "Unlock") return []
+    return [
+      ...new Set(
+        charactersById
+          ?.get(detail.entityId)
+          ?.shardLocations.map((location) => location.battleId) ?? []
+      ),
+    ]
+  }, [detail, charactersById])
+  const locationGroups = isUnlock
+    ? shardBattleIds.length > 0
+      ? [{ resourceId: "shards", battleIds: shardBattleIds }]
+      : []
+    : upgradeLocationGroups
   const allLocations = [
     ...new Set(locationGroups.flatMap((group) => group.battleIds)),
   ]
   const overrideValid =
+    isRank ||
     selectedLocations.length === 0 ||
     locationGroups.every((group) =>
       group.battleIds.some((id) => selectedLocations.includes(id))
@@ -163,8 +196,12 @@ export function GoalDetailSheet({
       await updateMutation.mutateAsync({
         goalId: detail.goalId,
         notes: notes.trim() || null,
-        farmingLocationIds:
-          selectedLocations.length > 0 ? selectedLocations : null,
+        farmingLocationIds: isRank
+          ? null
+          : selectedLocations.length > 0
+            ? selectedLocations
+            : null,
+        farmingStrategy,
       })
       if (projectsChanged) {
         await updateProjectsMutation.mutateAsync({
@@ -227,47 +264,11 @@ export function GoalDetailSheet({
               ) : null}
             </div>
 
-            <section className="grid gap-2">
-              <h3 className="font-semibold">
-                {t("goals.detail.estimateTitle")}
-              </h3>
-              {isolated ? (
-                <Badge variant="outline">
-                  {t("goals.detail.isolatedEstimate")}
-                </Badge>
-              ) : null}
-              <p>
-                {t("goals.detail.originalEstimate")}:{" "}
-                {detail.snapshot?.originalEstimateDays != null
-                  ? `${detail.snapshot.originalEstimateDays}d · ${detail.snapshot.originalEstimateDate}`
-                  : t("goals.detail.unavailable")}
-              </p>
-              <p>
-                {t("goals.detail.currentEstimate")}:{" "}
-                {estimate?.status === "Blocked"
-                  ? t(`goals.estimate.blocked.${estimate.reason}`)
-                  : estimate
-                    ? `${estimate.days}d · ${estimate.date}`
-                    : t("goals.detail.unavailable")}
-              </p>
-              {detail.snapshot ? (
-                <p className="flex items-center gap-1.5 text-muted-foreground">
-                  <EntityIcon
-                    alt=""
-                    className="size-5 shrink-0"
-                    src={energyIconUrl}
-                  />
-                  {t("goals.detail.originalResources", {
-                    count: detail.snapshot.initialRequirement.reduce(
-                      (sum, item) => sum + item.count,
-                      0
-                    ),
-                    energy: detail.snapshot.originalEnergyTotal ?? "—",
-                    raids: detail.snapshot.originalRaidsTotal ?? "—",
-                  })}
-                </p>
-              ) : null}
-            </section>
+            <GoalEstimateSection
+              estimate={estimate}
+              isolated={isolated}
+              snapshot={detail.snapshot}
+            />
 
             <section className="grid gap-2">
               <h3 className="font-semibold">
@@ -353,36 +354,38 @@ export function GoalDetailSheet({
               }
             />
 
-            <section className="grid gap-2">
-              <h3 className="font-semibold">
-                {t("goals.detail.farmingTitle")}
-              </h3>
-              <p className="text-muted-foreground">
-                {t("goals.detail.farmingDescription")}
-              </p>
-              {allLocations.map((battleId) => (
-                <label className="flex items-center gap-2" key={battleId}>
-                  <Checkbox
-                    checked={selectedLocations.includes(battleId)}
-                    onCheckedChange={(checked) =>
-                      setDraftState({
-                        ...draft,
-                        selectedLocations:
-                          checked === true
-                            ? [...selectedLocations, battleId]
-                            : selectedLocations.filter((id) => id !== battleId),
-                      })
-                    }
-                  />
-                  {battleId}
-                </label>
-              ))}
-              {!overrideValid ? (
-                <p className="text-destructive">
-                  {t("goals.detail.farmingInvalid")}
-                </p>
-              ) : null}
-            </section>
+            {isRank && detail.config.rank ? (
+              <FarmingStrategyField
+                abilityActiveEnd={0}
+                abilityActiveStart={0}
+                abilityPassiveEnd={0}
+                abilityPassiveStart={0}
+                context="rank"
+                farmingStrategy={farmingStrategy}
+                onFarmingStrategyChange={(value) =>
+                  setDraftState({ ...draft, farmingStrategy: value })
+                }
+                rankEnd={rankAt(detail.config.rank.end)}
+                rankStart={rankAt(detail.config.rank.start)}
+              />
+            ) : null}
+
+            {!isRank ? (
+              <GoalLocationsField
+                allLocations={allLocations}
+                isUnlock={isUnlock}
+                onToggle={(battleId, checked) =>
+                  setDraftState({
+                    ...draft,
+                    selectedLocations: checked
+                      ? [...selectedLocations, battleId]
+                      : selectedLocations.filter((id) => id !== battleId),
+                  })
+                }
+                overrideValid={overrideValid}
+                selectedLocations={selectedLocations}
+              />
+            ) : null}
           </div>
         ) : null}
         <SheetFooter>

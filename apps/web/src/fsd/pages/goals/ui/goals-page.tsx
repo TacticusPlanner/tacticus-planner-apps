@@ -28,6 +28,7 @@ import type { GoalStatus } from "@/entities/goal"
 
 import { goalRowFromSummary } from "../model/types"
 import { useGoalActions } from "../model/use-goal-actions"
+import { useGoalEstimate } from "../model/use-goal-estimate"
 import { useGoals } from "../model/use-goals"
 import { useProjects } from "../model/use-projects"
 import { useGoalProjects } from "../model/use-goal-projects"
@@ -64,6 +65,7 @@ export function GoalsPage() {
   const refreshCurrentView = selectedGoals.retry
 
   const goalActions = useGoalActions()
+  const { estimate: detailEstimate } = useGoalEstimate(detailGoalId)
   const baseRows =
     selectedGoals.fetchState.status === "success"
       ? selectedGoals.fetchState.goals
@@ -306,7 +308,7 @@ export function GoalsPage() {
       )}
 
       <GoalDetailSheet
-        estimate={undefined}
+        estimate={detailEstimate}
         isolated
         goalId={detailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}

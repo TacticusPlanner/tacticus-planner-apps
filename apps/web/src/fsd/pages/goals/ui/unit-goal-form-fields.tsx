@@ -59,8 +59,7 @@ export function UnitGoalFormFields({
       className="flex flex-1 flex-col gap-4 overflow-y-auto px-6"
       onSubmit={(event) => void form.handleSubmit(event)}
     >
-      <div className="grid gap-2">
-        <Label>{t("goals.create.unitLabel")}</Label>
+      <div className="mt-2 grid gap-2">
         <UnitCombobox
           groups={form.unitGroups}
           value={form.entityId}
