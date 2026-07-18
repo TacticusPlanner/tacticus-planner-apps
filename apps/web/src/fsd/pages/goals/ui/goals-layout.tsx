@@ -5,6 +5,8 @@ import { Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
+import { PageContainer } from "@/widgets/page-container"
+
 import { PlanningSettingsDialog } from "./planning-settings-dialog"
 
 const tabs = [
@@ -43,7 +45,7 @@ function GoalsLayoutContent() {
       : "goals"
 
   return (
-    <main className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+    <PageContainer>
       <div className="flex items-center justify-between gap-3">
         <Tabs
           value={activeTab}
@@ -78,6 +80,6 @@ function GoalsLayoutContent() {
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />
       ) : null}
-    </main>
+    </PageContainer>
   )
 }

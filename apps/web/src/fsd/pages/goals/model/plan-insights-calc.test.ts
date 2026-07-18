@@ -50,11 +50,14 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       farmingStrategy: "TotalUpgrades",
       ascensionFarming: null,
       farmingLocationIds: null,
+      upgrade: null,
+      equipment: null,
     },
     milestones: [],
     snapshot: null,
     events: [],
     dependsOn: [],
+    projectIds: [],
     ...overrides,
   }
 }
@@ -135,6 +138,8 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades",
           ascensionFarming: null,
           farmingLocationIds: null,
+          upgrade: null,
+          equipment: null,
         },
       }),
     ]
@@ -185,6 +190,8 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades",
           ascensionFarming: null,
           farmingLocationIds: null,
+          upgrade: null,
+          equipment: null,
         },
       }),
     ]
@@ -212,6 +219,8 @@ describe("computePlanInsights", () => {
           ability: null,
           farmingStrategy: "TotalUpgrades",
           farmingLocationIds: null,
+          upgrade: null,
+          equipment: null,
           ascensionFarming: {
             source: "Onslaught",
             shardBattleIds: [],

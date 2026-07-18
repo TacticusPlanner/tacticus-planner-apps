@@ -282,7 +282,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
                 size="icon"
                 variant="ghost"
               >
-                <RefreshCw className="size-3" />
+                {isInteractionRequired(accountState.error) ? (
+                  <LogIn className="size-3" />
+                ) : (
+                  <RefreshCw className="size-3" />
+                )}
               </Button>
             </TooltipTrigger>
             {compact ? (

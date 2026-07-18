@@ -187,7 +187,10 @@ function GoalsTable({
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-1">
-                <GoalTypeBadge type={row.goalType} />
+                <GoalTypeBadge
+                  entityType={row.entityType}
+                  type={row.goalType}
+                />
                 <MilestonesBadge onView={onView} row={row} />
               </div>
             </TableCell>
@@ -279,7 +282,7 @@ function GoalsMobileCards({
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
-              <GoalTypeBadge type={row.goalType} />
+              <GoalTypeBadge entityType={row.entityType} type={row.goalType} />
               <MilestonesBadge onView={onView} row={row} />
             </div>
             <EstimateCell estimate={estimates?.get(row.goalId)} />

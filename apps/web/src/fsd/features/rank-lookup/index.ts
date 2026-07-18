@@ -2,6 +2,7 @@ export {
   rankUpUpgradeIds,
   groupUpgradesByRank,
   aggregateBaseUpgrades,
+  aggregateBaseUpgradeAmounts,
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
   type Character,

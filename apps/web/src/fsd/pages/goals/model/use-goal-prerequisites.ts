@@ -25,6 +25,7 @@ const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
   "Rank",
   "Ascension",
   "Ability",
+  "Upgrade",
 ])
 
 /**

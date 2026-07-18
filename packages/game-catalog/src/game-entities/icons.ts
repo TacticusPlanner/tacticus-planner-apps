@@ -1,6 +1,7 @@
 import {
   progressionStarsIndex,
   type CampaignId,
+  type EquipmentId,
   type Progression,
   type Rank,
   type Rarity,
@@ -8,6 +9,7 @@ import {
   type UpgradeId,
 } from "@workspace/game-domain"
 import { characterIconOverrides } from "./character-icon-overrides"
+import { mowIconOverrides } from "./mow-icon-overrides"
 
 // All asset paths (including the app's own custom icons — rarity badges, gold/red stars, the
 // crafted-upgrade badge) are relative to the web app's /public/game_catalog/ root. These
@@ -46,18 +48,20 @@ function camelToSnake(id: string): string {
   return id.replace(/([A-Z])/g, "_$1").toLowerCase()
 }
 
-export function characterIcon(id: UnitId): string | undefined {
-  const slug = characterIconOverrides.get(id) ?? camelToSnake(id)
+function roundPortraitIcon(slug: string): string {
   return `${ASSET_BASE_PATH}/characters/ui_image_RoundPortrait_${slug}_01.png`
 }
 
-// No Machine of War portrait assets are synced into /public/game_catalog/ yet (only a `characters/`
-// folder exists today) — returns `undefined` until that asset set ships, which `EntityIcon` already
-// renders as "no icon" rather than a broken image (see shared/ui/entity-icon.tsx). Revisit once MoW
-// assets are available; likely the same RoundPortrait naming convention under a `mows/` folder.
+export function characterIcon(id: UnitId): string | undefined {
+  const slug = characterIconOverrides.get(id) ?? camelToSnake(id)
+  return roundPortraitIcon(slug)
+}
+
+// MoW portraits ship in the same `characters/` folder as character portraits (there is no separate
+// `mows/` folder), using the same RoundPortrait naming convention.
 export function mowIcon(id: UnitId): string | undefined {
-  void id
-  return undefined
+  const slug = mowIconOverrides.get(id) ?? camelToSnake(id)
+  return roundPortraitIcon(slug)
 }
 
 // ---- Campaign icon + descriptor -------------------------------------------------------------
@@ -236,6 +240,23 @@ export function equipmentSlotIcon(slot: string): string | undefined {
     ? `${ASSET_BASE_PATH}/equipment/ui_icon_itemtype_${info.slug}.png`
     : undefined
 }
+
+// ---- Equipment (per-item) icons ------------------------------------------------------------
+
+// Layered the same way V1's equipment-icon.tsx does: the item's own art, a rarity-colored frame on
+// top, and (for isRelic pieces) an extra relic frame overlay. Equipment ids match their asset
+// filename directly (e.g. "I_Block_C002" -> ui_icon_item_I_Block_C002.png) — no slug transform
+// needed, unlike character/mow ids.
+export const EquipmentIcons = {
+  fallback: `${ASSET_BASE_PATH}/equipment/ui_icon_item_unknown.png`,
+  icon(id: EquipmentId): string {
+    return `${ASSET_BASE_PATH}/equipment/ui_icon_item_${id}.png`
+  },
+  frame(rarity: Rarity): string {
+    return `${ASSET_BASE_PATH}/misc/ui_frame_items_${rarity.toLowerCase()}.png`
+  },
+  relicFrame: `${ASSET_BASE_PATH}/misc/ui_frame_items_relic.png`,
+} as const
 
 // ---- Stat icons ----------------------------------------------------------------------------------
 

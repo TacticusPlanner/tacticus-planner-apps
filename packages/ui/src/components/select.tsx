@@ -60,10 +60,20 @@ function SelectContent({
   children,
   position = "item-aligned",
   align = "center",
+  container,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+}: React.ComponentProps<typeof SelectPrimitive.Content> & {
+  // Forwarded to the underlying Portal. Defaults to `document.body` (Radix's own default) when
+  // omitted — pass the enclosing Dialog/Sheet's content node to keep this select inside that
+  // container's DOM subtree instead. Radix Dialog's scroll lock sets `pointer-events: none` on
+  // `document.body` while open and only re-enables it on its own content node (and any node it
+  // explicitly registers as a "shard") — a select portaled to `document.body` (the default,
+  // correct for a standalone trigger) is neither, so it's unopenable/unclickable while a
+  // Dialog/Sheet is open. Mirrors PopoverContent's own `container` prop and its doc comment.
+  container?: React.ComponentProps<typeof SelectPrimitive.Portal>["container"]
+}) {
   return (
-    <SelectPrimitive.Portal>
+    <SelectPrimitive.Portal container={container}>
       <SelectPrimitive.Content
         data-slot="select-content"
         data-align-trigger={position === "item-aligned"}

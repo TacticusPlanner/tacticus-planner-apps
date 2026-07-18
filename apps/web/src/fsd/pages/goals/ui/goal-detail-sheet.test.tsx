@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const getGoal = vi.fn()
 const updateGoal = vi.fn()
+const updateGoalProjects = vi.fn()
+const listProjects = vi.fn()
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -30,6 +32,17 @@ vi.mock("@/entities/goal", () => ({
     lists: () => ["goals", "list"],
   },
   updateGoal: (...args: unknown[]) => updateGoal(...args),
+  updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
+}))
+
+vi.mock("@/entities/project", () => ({
+  projectQueries: {
+    list: () => ({
+      queryFn: () => listProjects(),
+      queryKey: ["projects", "list"],
+    }),
+    all: () => ["projects"],
+  },
 }))
 
 vi.mock("../model/use-goal-catalog", () => ({
@@ -80,6 +93,7 @@ const detail = {
     },
   ],
   events: [{ at: "2026-01-01T00:00:00Z", type: "Created" }],
+  projectIds: ["project-1"],
   snapshot: {
     initialRequirement: [
       { count: 2, resourceId: "upgrade-1" },
@@ -129,6 +143,17 @@ describe("GoalDetailSheet", () => {
       .mockImplementation((_goalId, request) =>
         Promise.resolve({ ...detail, ...request })
       )
+    updateGoalProjects
+      .mockReset()
+      .mockImplementation((_goalId, projectIds) =>
+        Promise.resolve({ ...detail, projectIds })
+      )
+    listProjects.mockReset().mockResolvedValue({
+      projects: [
+        { projectId: "project-1", name: "My Goals", isActivePlan: true },
+        { projectId: "project-2", name: "Event Prep", isActivePlan: false },
+      ],
+    })
   })
 
   it("renders details, validates farming overrides, and saves edits", async () => {
@@ -147,12 +172,13 @@ describe("GoalDetailSheet", () => {
     const notes = screen.getByLabelText("goals.detail.notes")
     fireEvent.change(notes, { target: { value: " Updated note " } })
 
-    const checkboxes = screen.getAllByRole("checkbox")
-    await user.click(checkboxes[0]!)
+    const battle1 = screen.getByRole("checkbox", { name: "battle-1" })
+    const battle2 = screen.getByRole("checkbox", { name: "battle-2" })
+    await user.click(battle1)
     expect(screen.getByText("goals.detail.farmingInvalid")).toBeInTheDocument()
     expect(screen.getByText("goals.detail.save")).toBeDisabled()
 
-    await user.click(checkboxes[1]!)
+    await user.click(battle2)
     await user.click(screen.getByText("goals.detail.save"))
 
     await vi.waitFor(() => {
@@ -162,8 +188,10 @@ describe("GoalDetailSheet", () => {
       })
     })
     expect(onUpdated).toHaveBeenCalledOnce()
+    // Project membership wasn't touched, so the goal-side membership call is skipped entirely.
+    expect(updateGoalProjects).not.toHaveBeenCalled()
 
-    await user.click(checkboxes[0]!)
+    await user.click(battle1)
     expect(screen.getByRole("checkbox", { name: "battle-1" })).not.toBeChecked()
   })
 
@@ -206,5 +234,40 @@ describe("GoalDetailSheet", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Revision conflict"
     )
+  })
+
+  it("adds the goal to another project on save", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+
+    const eventPrep = await screen.findByRole("checkbox", {
+      name: "Event Prep",
+    })
+    await user.click(eventPrep)
+    await user.click(screen.getByText("goals.detail.save"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalProjects).toHaveBeenCalledWith("goal-1", [
+        "project-1",
+        "project-2",
+      ])
+    })
+  })
+
+  it("disables save and shows a validation message when every project is unchecked", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+
+    const myGoals = await screen.findByRole("checkbox", {
+      name: "My Goals (goals.create.projectActive)",
+    })
+    await user.click(myGoals)
+
+    expect(
+      screen.getByText("goals.detail.projectsRequired")
+    ).toBeInTheDocument()
+    expect(screen.getByText("goals.detail.save")).toBeDisabled()
+    expect(updateGoalProjects).not.toHaveBeenCalled()
   })
 })

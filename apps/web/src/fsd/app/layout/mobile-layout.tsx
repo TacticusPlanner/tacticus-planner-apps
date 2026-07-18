@@ -168,7 +168,7 @@ function MobileNavActionButton({
 
 function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   const { t } = useTranslation()
-  const { errorText, isSyncing, status, statusText, syncNow } =
+  const { errorText, isSyncing, requiresReauth, status, statusText, syncNow } =
     usePlayerDataSyncStatus()
   const syncPresentation = {
     idle: {
@@ -188,11 +188,13 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
       className: "bg-accent text-accent-foreground",
     },
     error: {
-      Icon: AlertTriangle,
+      Icon: requiresReauth ? LogIn : AlertTriangle,
       className: "bg-destructive text-primary-foreground",
     },
   }[status]
-  const syncLabel = `${t("nav.syncWithTacticus")} — ${errorText ?? statusText}`
+  // A raw MSAL/network error message isn't actionable for the user — once it's a sign-in issue, the
+  // friendly statusText ("Sign-in expired…") replaces it instead of surfacing errorText verbatim.
+  const syncLabel = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
   const SyncIcon = syncPresentation.Icon
 
   return (

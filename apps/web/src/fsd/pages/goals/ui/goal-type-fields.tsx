@@ -4,9 +4,9 @@ import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
 
 import type { Progression, Rank, UpgradeId } from "@workspace/game-domain"
-import { ASSET_BASE_PATH } from "@workspace/game-catalog"
 
 import {
+  energyIconUrl,
   EntityIcon,
   ProgressionSelect,
   RankSelect,
@@ -122,8 +122,8 @@ export function RankGoalFields({
               <p className="flex items-center gap-1.5">
                 <EntityIcon
                   alt=""
-                  className="size-5"
-                  src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+                  className="size-5 shrink-0"
+                  src={energyIconUrl}
                 />
                 {t("goals.create.previewEnergy", {
                   energy: estimate.energyTotal,
@@ -287,8 +287,8 @@ export function AbilityGoalFields({
               <p className="flex items-center gap-1.5 font-medium">
                 <EntityIcon
                   alt=""
-                  className="size-5"
-                  src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+                  className="size-5 shrink-0"
+                  src={energyIconUrl}
                 />
                 {t("goals.create.previewEnergy", {
                   energy: estimate.energyTotal,

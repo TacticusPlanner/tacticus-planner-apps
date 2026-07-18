@@ -1,11 +1,57 @@
 import {
+  lastProgression,
+  lastRank,
   progressionIndex,
+  progressionRarity,
   rankIndex,
   type Progression,
   type Rank,
+  type Rarity,
 } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
+
+// Mirrors the backend's `AbilityCaps` table (`GoalTargetValidationService.cs`) — the ability-level
+// ceiling for a unit's current rarity tier. An Ability goal can never target above this until the
+// unit is Ascended further, which is exactly when "already at max" should disable the toggle.
+const abilityCapByRarity: Record<Rarity, number> = {
+  Common: 8,
+  Uncommon: 17,
+  Rare: 26,
+  Epic: 35,
+  Legendary: 50,
+  Mythic: 60,
+}
+
+/** True once a unit has climbed its entire rank ladder — a Rank goal (and, for a Character, an
+ * Upgrade goal's rank-range picker) has nowhere left to target. */
+export function isAtMaxRank(currentRank: Rank | undefined): boolean {
+  return !!currentRank && rankIndex(currentRank) >= rankIndex(lastRank)
+}
+
+/** True once a unit has reached the last Ascension step — an Ascension goal has nowhere left to
+ * target. */
+export function isAtMaxProgression(
+  currentProgression: Progression | undefined
+): boolean {
+  return (
+    !!currentProgression &&
+    progressionIndex(currentProgression) >= progressionIndex(lastProgression)
+  )
+}
+
+/** True once both ability tracks are already at the level cap for the unit's current rarity — an
+ * Ability goal has nowhere left to target until the unit is Ascended into a higher rarity tier
+ * (which raises the cap). Undefined progression (no synced/prefill data yet) reads as not-maxed. */
+export function isAtMaxAbility(
+  currentProgression: Progression | undefined,
+  currentActiveAbility: number,
+  currentPassiveAbility: number
+): boolean {
+  if (!currentProgression) return false
+  const cap = abilityCapByRarity[progressionRarity(currentProgression)]
+  return currentActiveAbility >= cap && currentPassiveAbility >= cap
+}
 
 export type GoalValidationIssue =
   | "alreadyUnlocked"

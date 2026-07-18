@@ -1,4 +1,6 @@
 import {
+  BrowserAuthError,
+  BrowserAuthErrorCodes,
   BrowserCacheLocation,
   EventType,
   InteractionRequiredAuthError,
@@ -141,7 +143,19 @@ export async function acquireAccessToken() {
 }
 
 export function isInteractionRequired(error: unknown) {
-  return error instanceof InteractionRequiredAuthError
+  if (error instanceof InteractionRequiredAuthError) {
+    return true
+  }
+
+  // acquireTokenSilent falls back to a hidden "prompt=none" iframe whenever the cache has no usable
+  // refresh token. That iframe can never complete silently when the browser blocks third-party
+  // cookies (Safari ITP, Chrome/Firefox privacy modes, etc.) or the IdP session has expired, so it
+  // just runs out the clock and MSAL reports a plain timeout rather than InteractionRequiredAuthError.
+  // Treat it the same way: only an interactive (redirect) request can resolve it.
+  return (
+    error instanceof BrowserAuthError &&
+    error.errorCode === BrowserAuthErrorCodes.timedOut
+  )
 }
 
 export function requestApiAccess() {

@@ -29,6 +29,8 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
+import { energyIconUrl, EntityIcon } from "@/shared/ui"
+
 import { UiKitShowcaseCard } from "./ui-kit-showcase-card"
 
 export function SelectionShowcase() {
@@ -114,7 +116,15 @@ export function SelectionShowcase() {
             </ToggleGroup>
           </Field>
           <Field>
-            <FieldLabel>Daily energy: {energy[0]}</FieldLabel>
+            <FieldLabel className="flex items-center gap-1.5">
+              Daily energy:
+              <EntityIcon
+                alt=""
+                className="size-4 shrink-0"
+                src={energyIconUrl}
+              />
+              {energy[0]}
+            </FieldLabel>
             <Slider
               max={100}
               onValueChange={setEnergy}

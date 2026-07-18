@@ -73,7 +73,7 @@ export function GoalsGrid({
               />
             </CardHeader>
             <CardContent className="flex flex-wrap items-center gap-2">
-              <GoalTypeBadge type={row.goalType} />
+              <GoalTypeBadge entityType={row.entityType} type={row.goalType} />
               <StatusBadge status={row.status} />
               {row.milestonesTotal > 0 ? (
                 <Button

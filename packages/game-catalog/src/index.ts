@@ -69,6 +69,7 @@ export {
   type UnlockShardCostStorageModel,
   type OnslaughtRewardStorageModel,
   type UpgradeStorageModel,
+  type EquipmentStorageModel,
   type CampaignBattleStorageModel,
   type CampaignDefinitionStorageModel,
 } from "./game-catalog.storage"
@@ -88,6 +89,7 @@ export {
   traitIcon,
   damageTypeIcon,
   equipmentSlotIcon,
+  EquipmentIcons,
   statIcon,
   type StatIconKind,
   progressionVisual,

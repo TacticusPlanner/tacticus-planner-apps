@@ -16,6 +16,7 @@ export type AscensionCostStorageModel = StorageModel<"ascension-costs">
 export type UnlockShardCostStorageModel = StorageModel<"unlock-shard-costs">
 export type OnslaughtRewardStorageModel = StorageModel<"onslaught-rewards">
 export type UpgradeStorageModel = StorageModel<"upgrades">
+export type EquipmentStorageModel = StorageModel<"equipment">
 export type CampaignBattleStorageModel = StorageModel<"campaign-battles">
 export type CampaignDefinitionStorageModel =
   StorageModel<"campaign-definitions">

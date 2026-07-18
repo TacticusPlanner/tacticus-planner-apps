@@ -9,7 +9,7 @@ import {
 import type { Rarity } from "@workspace/game-domain"
 import { ASSET_BASE_PATH } from "@workspace/game-catalog"
 
-import { EntityIcon, RarityIcon } from "@/shared/ui"
+import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
 
 import type {
   PlanInsightsBottleneck,
@@ -138,8 +138,8 @@ export function InsightsSummary({
           <CardTitle className="flex items-center gap-2">
             <EntityIcon
               alt=""
-              className="size-6"
-              src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+              className="size-6 shrink-0"
+              src={energyIconUrl}
             />
             {t("goals.insights.estimateTitle")}
           </CardTitle>
@@ -152,8 +152,8 @@ export function InsightsSummary({
             <span className="flex items-center gap-1 font-medium">
               <EntityIcon
                 alt=""
-                className="size-5"
-                src={`${ASSET_BASE_PATH}/damage_icons/ui_icon_damage_profile2_Energy.png`}
+                className="size-5 shrink-0"
+                src={energyIconUrl}
               />
               {energyTotal}
             </span>
@@ -186,7 +186,12 @@ export function InsightsSummary({
               {bottlenecks.map((bottleneck) => (
                 <li className="flex justify-between gap-2" key={bottleneck.id}>
                   <span>{bottleneck.label}</span>
-                  <span className="text-muted-foreground">
+                  <span className="flex items-center gap-1 text-muted-foreground">
+                    <EntityIcon
+                      alt=""
+                      className="size-4 shrink-0"
+                      src={energyIconUrl}
+                    />
                     {bottleneck.energyToClear}
                   </span>
                 </li>

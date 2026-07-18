@@ -5,9 +5,11 @@ import {
   CheckCircle2,
   CircleDashed,
   Clock,
+  LogIn,
   RefreshCw,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
@@ -18,6 +20,7 @@ import {
 } from "./player-data-provider"
 import { formatRelativeTime } from "@/shared/lib"
 import { goalQueries } from "@/entities/goal"
+import { requestApiAccess } from "@/shared/auth"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -48,12 +51,18 @@ const relativeTimeRefreshMs = 30 * 1000
  */
 export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
-  const { error, lastSyncedAt, progress, status, syncNow } =
+  const { error, lastSyncedAt, progress, requiresReauth, status, syncNow } =
     usePlayerDataStatus()
   const queryClient = useQueryClient()
   const syncAndRefreshGoals = async () => {
     await syncNow()
     await queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+  }
+  const handleSignIn = () => {
+    void requestApiAccess().catch((signInError: unknown) => {
+      console.error("[MSAL] player-data reauth failed", signInError)
+      toast.error(t("auth.error"))
+    })
   }
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
@@ -74,7 +83,9 @@ export function usePlayerDataSyncStatus() {
     status === "syncing"
       ? progressText
       : status === "error"
-        ? (error ?? t("manageAccount.playerData.retrySync"))
+        ? requiresReauth
+          ? t("manageAccount.playerData.reauthRequired")
+          : (error ?? t("manageAccount.playerData.retrySync"))
         : status === "stale"
           ? t("manageAccount.playerData.refreshRequired", {
               lastSync: lastSyncText,
@@ -101,7 +112,8 @@ export function usePlayerDataSyncStatus() {
     lastSyncText,
     statusText,
     errorText: error,
-    syncNow: syncAndRefreshGoals,
+    requiresReauth,
+    syncNow: requiresReauth ? handleSignIn : syncAndRefreshGoals,
   }
 }
 
@@ -125,10 +137,13 @@ const statusClasses: Record<PlayerDataStatus, string> = {
  */
 export function PlayerDataSyncButton() {
   const { t } = useTranslation()
-  const { errorText, isSyncing, status, statusText, syncNow } =
+  const { errorText, isSyncing, requiresReauth, status, statusText, syncNow } =
     usePlayerDataSyncStatus()
-  const Icon = statusIcons[status]
-  const tooltip = `${t("nav.syncWithTacticus")} — ${errorText ?? statusText}`
+  const Icon =
+    status === "error" && requiresReauth ? LogIn : statusIcons[status]
+  // A raw MSAL/network error message isn't actionable for the user — once it's a sign-in issue, the
+  // friendly statusText ("Sign-in expired…") replaces it instead of surfacing errorText verbatim.
+  const tooltip = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
 
   return (
     <SidebarMenuButton

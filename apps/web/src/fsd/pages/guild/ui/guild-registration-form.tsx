@@ -18,8 +18,6 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useMsal } from "@azure/msal-react"
-
 import { registerGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
@@ -33,16 +31,10 @@ type Props = {
  */
 export function GuildRegistrationForm({ onRegistered }: Props) {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
   const [token, setToken] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const registration = useMutation({ mutationFn: registerGuild })
-
-  if (!account) {
-    return null
-  }
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()

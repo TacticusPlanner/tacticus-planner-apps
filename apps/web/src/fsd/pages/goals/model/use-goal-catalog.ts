@@ -1,7 +1,12 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
-import { groupByFaction, type UnitId } from "@workspace/game-domain"
+import {
+  factionRank,
+  groupByFaction,
+  type FactionGroup,
+  type UnitId,
+} from "@workspace/game-domain"
 import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
 import {
   getAscensionCostsMap,
@@ -102,6 +107,13 @@ export function useGoalCatalog() {
     [mowsById, t]
   )
 
+  // Combined "Unit" picker (plan: merge the Character/Mow tabs into one) — same faction, same
+  // group, Characters and Mows interleaved together rather than shown as separate faction lists.
+  const unitGroups = useMemo(
+    () => mergeUnitGroups(characterGroups, mowGroups),
+    [characterGroups, mowGroups]
+  )
+
   const getCharacter = (unitId: UnitId) => {
     const record = charactersById?.get(unitId)
     return record ? mapCharacterStorageToDomain(record) : undefined
@@ -143,9 +155,27 @@ export function useGoalCatalog() {
     releaseTypeByGroupId,
     characterGroups,
     mowGroups,
+    unitGroups,
     getCharacter,
     getMow,
     getEntityName,
     loading,
   }
+}
+
+/** Combines two already-faction-grouped lists into one, merging same-faction groups (rather than
+ * appending a second same-named faction heading) and re-sorting by the shared faction order. */
+function mergeUnitGroups(a: FactionGroup[], b: FactionGroup[]): FactionGroup[] {
+  const byFaction = new Map<string, FactionGroup>()
+  for (const group of [...a, ...b]) {
+    const existing = byFaction.get(group.factionId)
+    if (existing) {
+      existing.members.push(...group.members)
+    } else {
+      byFaction.set(group.factionId, { ...group, members: [...group.members] })
+    }
+  }
+  return [...byFaction.values()].sort(
+    (x, y) => factionRank(x.factionId) - factionRank(y.factionId)
+  )
 }

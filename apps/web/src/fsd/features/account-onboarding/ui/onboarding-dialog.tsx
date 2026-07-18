@@ -20,8 +20,6 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useMsal } from "@azure/msal-react"
-
 import {
   importV1Profile,
   updateTacticusIntegration,
@@ -40,12 +38,6 @@ type FormProps = { onCompleted: () => void }
  */
 export function OnboardingDialog() {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
-
-  if (!account) {
-    return null
-  }
 
   return (
     <Dialog open>

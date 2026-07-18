@@ -5,7 +5,11 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
+import {
+  GameCatalogProvider,
+  PlayerDataProvider,
+  ReauthDialog,
+} from "@/app/providers"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { CreateGoalSheet } from "@/pages/goals"
@@ -84,11 +88,14 @@ function ShellContent({
         <DesktopShell {...shellProps} />
       )}
       {isAuthenticated ? (
-        <CreateGoalSheet
-          open={createOpen}
-          onOpenChange={setCreateOpen}
-          onCreated={refreshGoals}
-        />
+        <>
+          <CreateGoalSheet
+            open={createOpen}
+            onOpenChange={setCreateOpen}
+            onCreated={refreshGoals}
+          />
+          <ReauthDialog />
+        </>
       ) : null}
     </>
   )

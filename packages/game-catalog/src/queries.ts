@@ -8,6 +8,7 @@ import type {
   CampaignBattleStorageModel,
   CampaignDefinitionStorageModel,
   CharacterStorageModel,
+  EquipmentStorageModel,
   MowStorageModel,
   OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
@@ -68,6 +69,19 @@ export async function getUnlockShardCostsMap(): Promise<
 
 export function getUpgrades(): Promise<UpgradeStorageModel[]> {
   return getDatasetRecords("upgrades")
+}
+
+export function getEquipment(): Promise<EquipmentStorageModel[]> {
+  return getDatasetRecords("equipment")
+}
+
+// Mirrors getCharactersMap() — the common case of indexing equipment/relic items by id (e.g. an
+// UpgradeEquipment goal's picker/level-bound lookup).
+export async function getEquipmentMap(): Promise<
+  Map<string, EquipmentStorageModel>
+> {
+  const equipment = await getEquipment()
+  return new Map(equipment.map((item) => [item.id, item]))
 }
 
 export function getCampaignBattles(): Promise<CampaignBattleStorageModel[]> {

@@ -11,6 +11,8 @@
     "error": "Authentication could not be completed. Please try again.",
     "grantAccess": "Grant API access",
     "manageAccount": "Manage Account",
+    "reauthDialogTitle": "Sign-in expired",
+    "reauthDialogDescription": "We couldn't refresh your session automatically. Sign in again to keep syncing your Tacticus data, or sign out.",
     "retry": "Retry loading account",
     "signIn": "Sign in",
     "signOut": "Sign out",
@@ -67,6 +69,7 @@
       "neverSynced": "Never synced",
       "syncProgress": "Syncing {{downloaded}} / {{total}}…",
       "retrySync": "Sync failed — try again",
+      "reauthRequired": "Sign-in expired — tap to sign in",
       "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
     },
@@ -380,21 +383,20 @@
     "create": {
       "title": "Create a goal",
       "entityType": {
-        "character": "Characters",
-        "mow": "Machines of War"
+        "unit": "Unit",
+        "equipment": "Equipment"
       },
-      "characterLabel": "Character",
-      "characterPlaceholder": "Select a character",
-      "characterEmpty": "No character found.",
-      "mowLabel": "Machine of War",
-      "mowPlaceholder": "Select a machine of war",
-      "mowEmpty": "No machine of war found.",
+      "unitLabel": "Unit",
+      "unitPlaceholder": "Select a character or Machine of War",
+      "unitEmpty": "No unit found.",
       "goalTypeLabel": "Goal type",
       "goalTypes": {
         "Rank": "Rank",
         "Ascension": "Ascension",
         "Ability": "Ability",
-        "Unlock": "Unlock"
+        "Unlock": "Unlock",
+        "Upgrade": "Upgrade",
+        "UpgradeEquipment": "Upgrade Equipment"
       },
       "rank": {
         "start": "From rank",
@@ -433,16 +435,42 @@
         "TotalUpgrades": "Total upgrades",
         "EveryStep": "Every step",
         "Milestones": "Milestones",
-        "MajorMilestones": "Major milestones"
+        "MajorMilestones": "Major milestones",
+        "unit": {
+          "rank": "rank",
+          "ability": "ability level"
+        },
+        "explanation": {
+          "TotalUpgrades": "One goal for the whole range — progress shows only once it's fully complete ({{count}} checkpoint).",
+          "EveryStep": "A checkpoint at every single {{unit}} along the way — the most granular tracking ({{count}} checkpoints).",
+          "Milestones": "A checkpoint at each major {{unit}} tier — a balanced default ({{count}} checkpoints).",
+          "MajorMilestones": "A checkpoint only at the biggest {{unit}} tiers — the fewest checkpoints ({{count}})."
+        }
       },
       "unlockDescription": "This goal is complete once the character is unlocked.",
       "unlockUnavailable": "Unlock is unavailable because this character has no catalog shard locations.",
+      "unlockCostUnsupportedMow": "Unlock targets are tracked for Machines of War, but their resource cost is not supported yet.",
+      "upgrade": {
+        "add": "Add an upgrade",
+        "addEmpty": "No matching upgrades found.",
+        "quantity": "Quantity",
+        "remove": "Remove",
+        "required": "required × {{count}}",
+        "empty": "Add at least one upgrade to farm toward a target quantity."
+      },
+      "equipment": {
+        "label": "Equipment",
+        "placeholder": "Select a piece of equipment",
+        "empty": "No equipment found.",
+        "targetLevel": "Target level",
+        "relicGroup": "Relic"
+      },
       "previewTitle": "Still needed",
       "previewDisclaimer": "Estimate may change once the goal is created.",
       "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
       "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
-      "projectLabel": "Project",
-      "projectDefault": "Default project",
+      "projectLabel": "Projects",
+      "projectDefault": "No projects selected — the goal will be added to your default project.",
       "projectActive": "active",
       "createAnother": "Create another goal",
       "submit": "Create goal",
@@ -461,7 +489,10 @@
         "rankAlreadyReached": "The selected rank has already been reached.",
         "progressionAlreadyReached": "The selected progression has already been reached.",
         "abilityRange": "At least one ability must increase and neither range may decrease.",
-        "abilityAlreadyReached": "The selected ability levels have already been reached."
+        "abilityAlreadyReached": "The selected ability levels have already been reached.",
+        "rankMaxed": "This character has already reached the maximum rank.",
+        "progressionMaxed": "This unit has already reached the maximum progression level.",
+        "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity."
       }
     },
     "estimate": {
@@ -510,6 +541,9 @@
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
       "notes": "Notes",
+      "projectsTitle": "Projects",
+      "projectsDescription": "A goal must belong to at least one project.",
+      "projectsRequired": "Select at least one project.",
       "farmingTitle": "Farming locations",
       "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",

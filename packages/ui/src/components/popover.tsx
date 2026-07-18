@@ -21,10 +21,19 @@ function PopoverContent({
   className,
   align = "center",
   sideOffset = 4,
+  container,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+}: React.ComponentProps<typeof PopoverPrimitive.Content> & {
+  // Forwarded to the underlying Portal. Defaults to `document.body` (Radix's own default) when
+  // omitted — pass the enclosing Dialog/Sheet's content node to keep this popover inside that
+  // container's DOM subtree instead. Radix Dialog's scroll lock only allows wheel/touch scrolling
+  // on its own content node (and any node it explicitly registers as a "shard"); a popover portaled
+  // to `document.body` — the default, correct for a standalone trigger — is neither, so every
+  // wheel/touch scroll inside it is silently swallowed by the lock while a Dialog/Sheet is open.
+  container?: React.ComponentProps<typeof PopoverPrimitive.Portal>["container"]
+}) {
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Portal container={container}>
       <PopoverPrimitive.Content
         data-slot="popover-content"
         align={align}

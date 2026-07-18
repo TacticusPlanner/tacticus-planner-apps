@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest"
-import { Rank } from "@workspace/game-domain"
+import { Rank, lastRank } from "@workspace/game-domain"
 
-import { getGoalValidationIssue } from "./goal-validation"
+import {
+  getGoalValidationIssue,
+  isAtMaxAbility,
+  isAtMaxProgression,
+  isAtMaxRank,
+} from "./goal-validation"
 
 const base = {
   hasEntityId: true,
@@ -51,5 +56,38 @@ describe("getGoalValidationIssue", () => {
         rankEnd: Rank.Silver1,
       })
     ).toBe("rankAlreadyReached")
+  })
+})
+
+describe("isAtMaxRank", () => {
+  it("is false for undefined or a non-max rank, true at the last rank", () => {
+    expect(isAtMaxRank(undefined)).toBe(false)
+    expect(isAtMaxRank(Rank.Silver1)).toBe(false)
+    expect(isAtMaxRank(lastRank)).toBe(true)
+  })
+})
+
+describe("isAtMaxProgression", () => {
+  it("is false for undefined or a non-max progression, true at the last step", () => {
+    expect(isAtMaxProgression(undefined)).toBe(false)
+    expect(isAtMaxProgression("Rare:FourStars")).toBe(false)
+    expect(isAtMaxProgression("Mythic:MythicWings")).toBe(true)
+  })
+})
+
+describe("isAtMaxAbility", () => {
+  it("is false without progression data", () => {
+    expect(isAtMaxAbility(undefined, 60, 60)).toBe(false)
+  })
+
+  it("is false when either track still has room under the current rarity's cap", () => {
+    expect(isAtMaxAbility("Legendary:RedThreeStars", 50, 40)).toBe(false)
+  })
+
+  it("is true only once both tracks reach the current rarity's cap", () => {
+    expect(isAtMaxAbility("Legendary:RedThreeStars", 50, 50)).toBe(true)
+    // Mythic's cap (60) is higher than Legendary's (50) — not maxed yet at the Legendary cap.
+    expect(isAtMaxAbility("Mythic:OneBlueStar", 50, 50)).toBe(false)
+    expect(isAtMaxAbility("Mythic:OneBlueStar", 60, 60)).toBe(true)
   })
 })

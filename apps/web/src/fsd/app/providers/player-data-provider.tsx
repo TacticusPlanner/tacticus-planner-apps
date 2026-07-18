@@ -20,7 +20,11 @@ import {
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
 
-import { acquireAccessToken, useActiveAccountId } from "@/shared/auth"
+import {
+  acquireAccessToken,
+  isInteractionRequired,
+  useActiveAccountId,
+} from "@/shared/auth"
 
 // A background sync is due once the last successful sync is more than an hour old — matches the
 // "sync at most hourly, but always up to date within an hour" requirement. Re-checked periodically
@@ -63,6 +67,10 @@ export type PlayerDataContextValue = {
   progress: PlayerDataSyncProgress | null
   lastSyncedAt: string | null
   error: string | null
+  // True when `error` is not a transient failure — acquireAccessToken could not renew the session
+  // silently, so retrying the same sync will just fail the same way. The UI should offer to sign in
+  // again (via requestApiAccess/loginRedirect) instead of a plain "try again".
+  requiresReauth: boolean
   syncNow: () => void
 }
 
@@ -91,6 +99,7 @@ export function PlayerDataProvider({
   const [progress, setProgress] = useState<PlayerDataSyncProgress | null>(null)
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [requiresReauth, setRequiresReauth] = useState(false)
 
   const client = useMemo(() => {
     if (!isAuthenticated || !accountId) {
@@ -104,6 +113,7 @@ export function PlayerDataProvider({
     async (activeClient: PlayerDataHttpClient, activeAccountId: string) => {
       setStatus("syncing")
       setError(null)
+      setRequiresReauth(false)
       setProgress(null)
 
       try {
@@ -120,6 +130,7 @@ export function PlayerDataProvider({
 
         console.error("Player-data sync failed.", syncError)
         setError(syncError.message)
+        setRequiresReauth(isInteractionRequired(caught))
         // Unlike the catalog, there is no "last known good, still usable" distinction to fall back to
         // here from the provider's point of view — cached chunks (if any) remain in IndexedDB regardless
         // and are read directly by feature hooks, independent of this status.
@@ -187,8 +198,15 @@ export function PlayerDataProvider({
   }, [client, accountId, runSync])
 
   const value = useMemo<PlayerDataContextValue>(
-    () => ({ status, progress, lastSyncedAt, error, syncNow }),
-    [status, progress, lastSyncedAt, error, syncNow]
+    () => ({
+      status,
+      progress,
+      lastSyncedAt,
+      error,
+      requiresReauth,
+      syncNow,
+    }),
+    [status, progress, lastSyncedAt, error, requiresReauth, syncNow]
   )
 
   return (

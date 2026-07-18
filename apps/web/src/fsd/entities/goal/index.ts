@@ -5,6 +5,7 @@ export {
   getGoal,
   listGoals,
   updateGoal,
+  updateGoalProjects,
   updateGoalStatus,
 } from "./api/goal.api"
 export { goalQueries } from "./api/goal.queries"
@@ -15,6 +16,7 @@ export type {
   CreateGoalConfigRequest,
   CreateGoalRequest,
   CreateGoalSnapshotRequest,
+  EquipmentTarget,
   GoalConfig,
   GoalDetail,
   GoalEntityType,
@@ -28,6 +30,8 @@ export type {
   GoalSummary,
   ProgressionTarget,
   RankTarget,
+  UpgradeItemTarget,
+  UpgradeTarget,
   AscensionFarmingConfig,
   AscensionFarmingSource,
   FarmingStrategy,

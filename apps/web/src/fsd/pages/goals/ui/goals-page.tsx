@@ -1,6 +1,12 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { LayoutGrid, List as ListIcon } from "lucide-react"
+import {
+  ArrowUpDown,
+  Filter,
+  Group,
+  LayoutGrid,
+  List as ListIcon,
+} from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -171,21 +177,30 @@ export function GoalsPage() {
       <div className="grid gap-3 md:grid-cols-[12rem_12rem_auto] md:items-center">
         <Select onValueChange={setGoalType} value={goalType}>
           <SelectTrigger data-testid="goals-type-filter">
+            <Filter />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
-            {(["Rank", "Ascension", "Ability", "Unlock"] as const).map(
-              (type) => (
-                <SelectItem key={type} value={type}>
-                  {t(`goals.create.goalTypes.${type}`)}
-                </SelectItem>
-              )
-            )}
+            {(
+              [
+                "Rank",
+                "Ascension",
+                "Ability",
+                "Unlock",
+                "Upgrade",
+                "UpgradeEquipment",
+              ] as const
+            ).map((type) => (
+              <SelectItem key={type} value={type}>
+                {t(`goals.create.goalTypes.${type}`)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select onValueChange={(value) => setSort(value as Sort)} value={sort}>
           <SelectTrigger data-testid="goals-sort">
+            <ArrowUpDown />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -201,6 +216,7 @@ export function GoalsPage() {
           value={group}
         >
           <SelectTrigger data-testid="goals-group-by">
+            <Group />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

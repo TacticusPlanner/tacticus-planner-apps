@@ -23,10 +23,13 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
 
-import { goalQueries, updateGoal } from "@/entities/goal"
+import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
+import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 import { useGoalCatalog } from "../model/use-goal-catalog"
+import { GoalProjectsField } from "./goal-projects-field"
 import { StatusBadge } from "./status-badge"
 
 export function GoalDetailSheet({
@@ -50,6 +53,7 @@ export function GoalDetailSheet({
     key: string
     notes: string
     selectedLocations: string[]
+    selectedProjectIds: string[]
   } | null>(null)
   const [saveError, setSaveError] = useState<{
     goalId: string
@@ -77,9 +81,17 @@ export function GoalDetailSheet({
           key: draftKey,
           notes: detail?.notes ?? "",
           selectedLocations: detail?.config.farmingLocationIds ?? [],
+          selectedProjectIds: detail?.projectIds ?? [],
         }
   const notes = draft.notes
   const selectedLocations = draft.selectedLocations
+  const selectedProjectIds = draft.selectedProjectIds
+
+  const projectsQuery = useQuery({
+    ...projectQueries.list(),
+    enabled: isAuthenticated,
+  })
+  const projects = projectsQuery.data?.projects ?? []
 
   const updateMutation = useMutation({
     mutationFn: (request: {
@@ -99,7 +111,21 @@ export function GoalDetailSheet({
       await queryClient.invalidateQueries({
         queryKey: goalQueries.lists(),
       })
-      onUpdated()
+    },
+  })
+
+  const updateProjectsMutation = useMutation({
+    mutationFn: (request: { goalId: string; projectIds: string[] }) =>
+      updateGoalProjects(request.goalId, request.projectIds),
+    onSuccess: async (updated) => {
+      queryClient.setQueryData(
+        goalQueries.detail(updated.goalId).queryKey,
+        updated
+      )
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: goalQueries.lists() }),
+        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+      ])
     },
   })
 
@@ -125,8 +151,13 @@ export function GoalDetailSheet({
       group.battleIds.some((id) => selectedLocations.includes(id))
     )
 
+  const projectsValid = selectedProjectIds.length > 0
+  const projectsChanged =
+    selectedProjectIds.length !== (detail?.projectIds.length ?? 0) ||
+    selectedProjectIds.some((id) => !detail?.projectIds.includes(id))
+
   const save = async () => {
-    if (!detail || !isAuthenticated || !overrideValid) return
+    if (!detail || !isAuthenticated || !overrideValid || !projectsValid) return
     setSaveError(null)
     try {
       await updateMutation.mutateAsync({
@@ -135,6 +166,13 @@ export function GoalDetailSheet({
         farmingLocationIds:
           selectedLocations.length > 0 ? selectedLocations : null,
       })
+      if (projectsChanged) {
+        await updateProjectsMutation.mutateAsync({
+          goalId: detail.goalId,
+          projectIds: selectedProjectIds,
+        })
+      }
+      onUpdated()
     } catch (reason) {
       setSaveError({
         goalId: detail.goalId,
@@ -213,7 +251,12 @@ export function GoalDetailSheet({
                     : t("goals.detail.unavailable")}
               </p>
               {detail.snapshot ? (
-                <p className="text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-muted-foreground">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={energyIconUrl}
+                  />
                   {t("goals.detail.originalResources", {
                     count: detail.snapshot.initialRequirement.reduce(
                       (sum, item) => sum + item.count,
@@ -296,6 +339,20 @@ export function GoalDetailSheet({
               </span>
             </Field>
 
+            <GoalProjectsField
+              projects={projects}
+              selectedProjectIds={selectedProjectIds}
+              projectsValid={projectsValid}
+              onToggle={(projectId, checked) =>
+                setDraftState({
+                  ...draft,
+                  selectedProjectIds: checked
+                    ? [...selectedProjectIds, projectId]
+                    : selectedProjectIds.filter((id) => id !== projectId),
+                })
+              }
+            />
+
             <section className="grid gap-2">
               <h3 className="font-semibold">
                 {t("goals.detail.farmingTitle")}
@@ -330,7 +387,13 @@ export function GoalDetailSheet({
         ) : null}
         <SheetFooter>
           <Button
-            disabled={!detail || updateMutation.isPending || !overrideValid}
+            disabled={
+              !detail ||
+              updateMutation.isPending ||
+              updateProjectsMutation.isPending ||
+              !overrideValid ||
+              !projectsValid
+            }
             onClick={() => void save()}
           >
             {t("goals.detail.save")}

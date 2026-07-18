@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { useMsal } from "@azure/msal-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -48,8 +47,6 @@ export function ImportV1Dialog({
   onOpenChange: (open: boolean) => void
 }) {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch } = useCurrentUser()
   const queryClient = useQueryClient()
   const [username, setUsername] = useState("")
@@ -70,7 +67,6 @@ export function ImportV1Dialog({
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     if (
-      !account ||
       !username.trim() ||
       !password ||
       !Object.values(selection).some(Boolean)

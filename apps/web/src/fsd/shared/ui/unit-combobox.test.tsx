@@ -5,9 +5,10 @@ import {
   factionIdSchema,
   unitIdSchema,
   type FactionGroup,
+  type UnitId,
 } from "@workspace/game-domain"
 
-import { CharacterCombobox } from "./character-combobox"
+import { UnitCombobox } from "./unit-combobox"
 
 const groups: FactionGroup[] = [
   {
@@ -28,13 +29,20 @@ const groups: FactionGroup[] = [
   },
 ]
 
-function renderCombobox(onChange = vi.fn()) {
+function renderCombobox({
+  onChange = vi.fn<(id: UnitId) => void>(),
+  lockedIds,
+}: {
+  onChange?: ReturnType<typeof vi.fn<(id: UnitId) => void>>
+  lockedIds?: ReadonlySet<UnitId>
+} = {}) {
   render(
-    <CharacterCombobox
+    <UnitCombobox
       groups={groups}
       onChange={onChange}
       placeholder="Select a character"
       emptyText="No character found."
+      lockedIds={lockedIds}
     />
   )
   fireEvent.click(screen.getByRole("combobox"))
@@ -45,7 +53,7 @@ function optionNames() {
   return screen.getAllByRole("option").map((el) => el.textContent)
 }
 
-describe("CharacterCombobox", () => {
+describe("UnitCombobox", () => {
   it("lists every group and member in the given order when there is no search text", () => {
     renderCombobox()
 
@@ -99,5 +107,15 @@ describe("CharacterCombobox", () => {
     fireEvent.click(screen.getByText("Trazyn"))
 
     expect(onChange).toHaveBeenCalledWith("trazyn")
+  })
+
+  it("marks locked units with a lock icon, leaving unlisted ids unmarked", () => {
+    renderCombobox({ lockedIds: new Set([unitIdSchema.parse("imotekh")]) })
+
+    const lockedOption = screen.getByRole("option", { name: "Imotekh" })
+    const unlockedOption = screen.getByRole("option", { name: "Cato Sicarius" })
+
+    expect(lockedOption.querySelector("svg.lucide-lock")).not.toBeNull()
+    expect(unlockedOption.querySelector("svg.lucide-lock")).toBeNull()
   })
 })

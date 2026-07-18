@@ -11,6 +11,7 @@ export {
   traitIcon,
   damageTypeIcon,
   equipmentSlotIcon,
+  EquipmentIcons,
   statIcon,
   progressionVisual,
 } from "./icons"

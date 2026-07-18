@@ -14,8 +14,6 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
-import { useMsal } from "@azure/msal-react"
-
 import { syncMyGuild, type RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
@@ -46,8 +44,6 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const { t, i18n } = useTranslation()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
   const [status, setStatus] = useState<"idle" | "syncing" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false)
@@ -60,7 +56,7 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const handleSync = async () => {
     // Guards against overlapping requests — the button is also disabled while syncing, but this covers
     // any path that could otherwise re-trigger the handler mid-flight.
-    if (!account || status === "syncing") {
+    if (status === "syncing") {
       return
     }
 
@@ -164,13 +160,11 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
       </Tabs>
       <Outlet context={guild.members} />
 
-      {account ? (
-        <GuildPurgeDialog
-          open={isPurgeDialogOpen}
-          onOpenChange={setIsPurgeDialogOpen}
-          onPurged={onPurged}
-        />
-      ) : null}
+      <GuildPurgeDialog
+        open={isPurgeDialogOpen}
+        onOpenChange={setIsPurgeDialogOpen}
+        onPurged={onPurged}
+      />
     </div>
   )
 }

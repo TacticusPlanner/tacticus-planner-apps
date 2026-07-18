@@ -33,6 +33,14 @@ vi.mock("../config/environment", () => ({
 
 vi.mock("@azure/msal-browser", () => {
   class InteractionRequiredAuthError extends Error {}
+  class BrowserAuthError extends Error {
+    errorCode: string
+
+    constructor(errorCode: string) {
+      super(errorCode)
+      this.errorCode = errorCode
+    }
+  }
   class PublicClientApplication {
     constructor(configuration: unknown) {
       mocks.constructor(configuration)
@@ -41,6 +49,8 @@ vi.mock("@azure/msal-browser", () => {
   }
 
   return {
+    BrowserAuthError,
+    BrowserAuthErrorCodes: { timedOut: "timed_out" },
     BrowserCacheLocation: { LocalStorage: "localStorage" },
     EventType: { LOGIN_SUCCESS: "login-success" },
     InteractionRequiredAuthError,
@@ -49,7 +59,11 @@ vi.mock("@azure/msal-browser", () => {
   }
 })
 
-import { InteractionRequiredAuthError, LogLevel } from "@azure/msal-browser"
+import {
+  BrowserAuthError,
+  InteractionRequiredAuthError,
+  LogLevel,
+} from "@azure/msal-browser"
 
 import {
   acquireAccessToken,
@@ -167,5 +181,16 @@ describe("authentication", () => {
       )
     ).toBe(true)
     expect(isInteractionRequired(new Error("other"))).toBe(false)
+  })
+
+  it("treats a silent-iframe timeout as requiring interaction", () => {
+    expect(
+      isInteractionRequired(new BrowserAuthError("timed_out", "correlation-id"))
+    ).toBe(true)
+    expect(
+      isInteractionRequired(
+        new BrowserAuthError("popup_window_error", "correlation-id")
+      )
+    ).toBe(false)
   })
 })

@@ -18,6 +18,7 @@ import {
   usePlanningSettings,
 } from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
+import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
 const tierLabels = [
   "Free",
@@ -83,9 +84,14 @@ export function PlanningSettingsDialog({
           <Field>
             <FieldLabel>{t("goals.planningSettings.dailyEnergy")}</FieldLabel>
             <p
-              className="text-sm font-medium"
+              className="flex items-center gap-1.5 text-sm font-medium"
               data-testid="planning-settings-energy-value"
             >
+              <EntityIcon
+                alt=""
+                className="size-5 shrink-0"
+                src={energyIconUrl}
+              />
               {dailyEnergyTiers[tierIndex]} · {tierLabels[tierIndex]}
             </p>
             <Slider

@@ -133,6 +133,20 @@ export function aggregateBaseUpgrades(
 }
 
 /**
+ * Same reduction as `aggregateBaseUpgrades`, but for entries that already carry an explicit target
+ * amount (e.g. an Upgrade goal's `{upgradeId, quantity}` targets) instead of being counted once per
+ * occurrence in a flat id list — the "required, with quantities" sibling to
+ * `aggregateOwnedBaseUpgrades`'s "owned, with quantities".
+ */
+export function aggregateBaseUpgradeAmounts(
+  entries: UpgradeAmount[],
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
+): BaseUpgradeNeed[] {
+  const counts = reduceToBaseUpgrades(entries, upgradesById)
+  return [...counts.entries()].map(([id, count]) => ({ id, count }))
+}
+
+/**
  * The base-upgrade totals a player already "has" toward a rank-up: upgrades already applied to the
  * character (counted once each — see `appliedUpgradeIds`) plus everything sitting in their inventory,
  * both base materials and already-crafted higher-tier upgrades (counted by owned amount). Reduced

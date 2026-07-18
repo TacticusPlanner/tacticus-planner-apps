@@ -17,6 +17,24 @@ export function getPlayerMow(unitId: UnitId) {
   return getChunkRecord("mows", unitId)
 }
 
+// The caller's whole roster, e.g. for building an owned/locked-id lookup across an entire catalog
+// (see goals' create-goal-sheet unit picker) — getPlayerCharacter/getPlayerMow above are for the
+// single-selected-unit case.
+export function getPlayerCharacters() {
+  return getChunkData("characters")
+}
+
+export function getPlayerMows() {
+  return getChunkData("mows")
+}
+
+// The caller's un-equipped equipment/relic stock ({itemId, level, amount} — itemId matches the
+// game-catalog `equipment` dataset's id), synced from the Tacticus API's own inventory but never
+// consumed anywhere in this app until the UpgradeEquipment goal type — see the `Equipment` GoalEntityType.
+export function getPlayerInventoryItems() {
+  return getChunkData("inventory-items")
+}
+
 // Shard progress toward a unit not yet unlocked (absent from `characters`/`mows`, whose own records
 // carry an already-unlocked unit's shards/mythicShards instead — see the schema comment).
 export function getInventoryShard(unitId: UnitId) {

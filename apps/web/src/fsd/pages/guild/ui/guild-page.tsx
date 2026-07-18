@@ -6,6 +6,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { guildQueries } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
+import { PageContainer } from "@/widgets/page-container"
 
 import { GuildRegisteredView } from "./guild-registered-view"
 import { GuildRegistrationForm } from "./guild-registration-form"
@@ -29,10 +30,7 @@ export function GuildPage() {
   const data = query.data
 
   return (
-    <main
-      className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10"
-      data-testid="guild-page"
-    >
+    <PageContainer data-testid="guild-page">
       {query.isPending ? (
         <div className="flex flex-col gap-3" data-testid="guild-page-loading">
           <Skeleton className="h-24 w-full" />
@@ -68,6 +66,6 @@ export function GuildPage() {
           onPurged={load}
         />
       ) : null}
-    </main>
+    </PageContainer>
   )
 }

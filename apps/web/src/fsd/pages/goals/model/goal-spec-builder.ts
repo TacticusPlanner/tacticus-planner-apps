@@ -1,7 +1,9 @@
 import type { Progression, Rank, UpgradeId } from "@workspace/game-domain"
 import { rankIndex } from "@workspace/game-domain"
+import type { MowStorageModel } from "@workspace/game-catalog"
 
 import {
+  aggregateBaseUpgradeAmounts,
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
@@ -104,6 +106,122 @@ export function computeMissingUpgrades(params: {
     .filter((entry) => params.includeCovered || entry.missing > 0)
 }
 
+/** The upgrade ids relevant to a Character's own progression — its whole rank ladder — used to
+ * bound what an Upgrade goal on that character may target. Mirrors the backend's
+ * `CharacterRelevantUpgradeIds` (`GameCatalogGoalLookups.cs`) so client-side filtering and
+ * server-side rejection agree. */
+export function characterRelevantUpgradeIds(
+  character: Character
+): ReadonlySet<UpgradeId> {
+  return new Set(character.rankUpUpgrades.flatMap((step) => step.upgradeIds))
+}
+
+/** The upgrade ids relevant to a Mow's own progression — its whole primary+secondary ability
+ * ladder. Mirrors the backend's `MowRelevantUpgradeIds`. */
+export function mowRelevantUpgradeIds(
+  mow: MowStorageModel
+): ReadonlySet<UpgradeId> {
+  return new Set([
+    ...mow.primaryAbility.recipes.flat(),
+    ...mow.secondaryAbility.recipes.flat(),
+  ])
+}
+
+function countOccurrences(
+  ids: UpgradeId[],
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+): Map<UpgradeId, number> {
+  const counts = new Map<UpgradeId, number>()
+  for (const id of ids) {
+    // An Upgrade goal only ever targets base upgrades — a crafted upgrade isn't something you farm
+    // directly, so it's never offered as a selectable target (its own base ingredients still are,
+    // wherever they themselves show up in the ladder/recipes).
+    if (upgradesById.get(id)?.crafted) continue
+    counts.set(id, (counts.get(id) ?? 0) + 1)
+  }
+  return counts
+}
+
+/** An Upgrade goal's selectable upgrades, scoped to `rankStart` -> `rankEnd` (plan: the rank-range
+ * picker on the Upgrade card) — each key is a selectable (base, non-crafted) upgrade id, each value
+ * the number of times it's actually required across that specific range (the raw applied-upgrade
+ * count, i.e. what the picker prefills as the target quantity). Empty for an empty/invalid range. */
+export function characterRelevantUpgradeQuantities(
+  character: Character,
+  rankStart: Rank,
+  rankEnd: Rank,
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+): Map<UpgradeId, number> {
+  return countOccurrences(
+    rankUpUpgradeIds(character, rankStart, rankEnd, false),
+    upgradesById
+  )
+}
+
+/** Same shape as `characterRelevantUpgradeQuantities`, but for a Mow's whole ability ladder (both
+ * tracks combined) — a Mow's Upgrade goal isn't scoped to a level range (unlike a Character's rank
+ * range), since a single level range can't unambiguously cover two independent ability tracks. */
+export function mowRelevantUpgradeQuantities(
+  mow: MowStorageModel,
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+): Map<UpgradeId, number> {
+  return countOccurrences(
+    [
+      ...mow.primaryAbility.recipes.flat(),
+      ...mow.secondaryAbility.recipes.flat(),
+    ],
+    upgradesById
+  )
+}
+
+/** Resource-requirement preview for an Upgrade goal (plan: re-introduced V1 upgrade-stockpile
+ * goal, phase 9+) — reduces every target to base upgrades via the same `aggregateBaseUpgrades`/
+ * `aggregateOwnedBaseUpgrades` primitives Rank goals use (see `computeMissingUpgrades` above),
+ * netted against inventory only. Unlike a Rank goal there's no "applied to a rank" contribution to
+ * net against — an Upgrade goal isn't attached to any specific rank transition, just a standalone
+ * upgrade stockpile target. */
+export function computeUpgradeGoalNeed(params: {
+  upgradeEnabled: boolean
+  targets: { upgradeId: UpgradeId; quantity: number }[]
+  inventoryUpgrades:
+    readonly { upgradeId: UpgradeId; amount: number }[] | undefined
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  includeCovered?: boolean
+}): MissingUpgradeEntry[] {
+  const { upgradeEnabled, targets, upgradesById } = params
+  if (!upgradeEnabled || targets.length === 0) return []
+
+  const required = aggregateBaseUpgradeAmounts(
+    targets.map((target) => ({
+      id: target.upgradeId,
+      amount: target.quantity,
+    })),
+    upgradesById
+  )
+  const owned = aggregateOwnedBaseUpgrades(
+    [],
+    (params.inventoryUpgrades ?? []).map((entry) => ({
+      id: entry.upgradeId,
+      amount: entry.amount,
+    })),
+    upgradesById
+  )
+  const ownedById = new Map(owned.map((entry) => [entry.id, entry.count]))
+
+  return required
+    .map((need) => {
+      const contribution = Math.min(need.count, ownedById.get(need.id) ?? 0)
+      return {
+        id: need.id,
+        label: upgradesById.get(need.id)?.label ?? need.id,
+        missing: need.count - contribution,
+        required: need.count,
+        inventoryContribution: contribution,
+      }
+    })
+    .filter((entry) => params.includeCovered || entry.missing > 0)
+}
+
 export type ReviewItem = { goalType: GoalKind; autoSuggested: boolean }
 
 /** "What will be created" review list, in submit order, flagging entries the user didn't
@@ -126,7 +244,7 @@ export function buildReviewItems(
       autoSuggested: !enabledTypes.has("Ascension"),
     })
   }
-  for (const kind of ["Rank", "Ability"] as const) {
+  for (const kind of ["Rank", "Ability", "Upgrade"] as const) {
     if (enabledTypes.has(kind)) {
       items.push({ goalType: kind, autoSuggested: false })
     }
@@ -158,6 +276,7 @@ export function buildCombinedGoalSpecs(params: {
   abilityPassiveEnd: number
   abilityTrack: "first" | "second"
   farmingStrategy: FarmingStrategy
+  upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
 }): CombinedGoalSpec[] {
   const { enabledTypes, includesUnlock, includesAscension } = params
   const specs: CombinedGoalSpec[] = []
@@ -225,6 +344,16 @@ export function buildCombinedGoalSpecs(params: {
               ? params.abilityPassiveEnd
               : params.abilityPassiveStart,
         },
+      },
+      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+    })
+  }
+
+  if (enabledTypes.has("Upgrade") && params.upgradeTargets.length > 0) {
+    specs.push({
+      goalType: "Upgrade",
+      config: {
+        upgrade: { targets: params.upgradeTargets },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
     })
