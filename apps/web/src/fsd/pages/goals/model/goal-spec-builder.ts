@@ -43,6 +43,8 @@ export function computeMissingUpgrades(params: {
   rankStart: Rank
   rankEnd: Rank
   rankEndPointFive: boolean
+  rankEndAppliedUpgrades?: number
+  rankEndTopRowCount?: number
   playerCharacter:
     { rank: Rank; appliedUpgradeSlots: readonly number[] } | undefined
   inventoryUpgrades:
@@ -71,7 +73,9 @@ export function computeMissingUpgrades(params: {
     character,
     rankStart,
     rankEnd,
-    rankEndPointFive
+    rankEndPointFive,
+    params.rankEndAppliedUpgrades,
+    params.rankEndTopRowCount
   )
   const required = aggregateBaseUpgrades(requiredIds, upgradesById)
 
@@ -229,7 +233,8 @@ export type ReviewItem = { goalType: GoalKind; autoSuggested: boolean }
 export function buildReviewItems(
   enabledTypes: ReadonlySet<GoalKind>,
   includesUnlock: boolean,
-  includesAscension: boolean
+  includesAscension: boolean,
+  includesLevel: boolean
 ): ReviewItem[] {
   const items: ReviewItem[] = []
   if (includesUnlock) {
@@ -244,6 +249,12 @@ export function buildReviewItems(
       autoSuggested: !enabledTypes.has("Ascension"),
     })
   }
+  if (includesLevel) {
+    items.push({
+      goalType: "Level",
+      autoSuggested: !enabledTypes.has("Level"),
+    })
+  }
   for (const kind of ["Rank", "Ability", "Upgrade"] as const) {
     if (enabledTypes.has(kind)) {
       items.push({ goalType: kind, autoSuggested: false })
@@ -253,20 +264,24 @@ export function buildReviewItems(
 }
 
 /**
- * The ordered spec list to submit: Unlock -> Ascension -> Rank -> Ability.
- * Rank/Ability depend on whichever of Unlock/Ascension precede them; Ascension depends on Unlock
- * alone. `ascensionSuggestion` is `useGoalPrerequisites`'s auto-suggested target, used only when
- * Ascension itself wasn't explicitly toggled.
+ * The ordered spec list to submit: Unlock -> Ascension -> Level -> Rank -> Ability. Rank/Ability
+ * depend on whichever of Unlock/Ascension/Level precede them (a Level goal is itself a prerequisite
+ * for both, not a sibling — you can't reach a rank/ability level beyond your current character
+ * level, see use-goal-prerequisites.ts); Ascension/Level each depend on Unlock alone.
+ * `ascensionSuggestion`/`levelSuggestion` are `useGoalPrerequisites`'s auto-suggested targets, used
+ * only when Ascension/Level themselves weren't explicitly toggled.
  */
 export function buildCombinedGoalSpecs(params: {
   enabledTypes: ReadonlySet<GoalKind>
   includesUnlock: boolean
   includesAscension: boolean
+  includesLevel: boolean
   ascensionSuggestion: { start: Progression; end: Progression } | null
+  levelSuggestion: { start: number; end: number } | null
   rankStart: Rank
   rankEnd: Rank
-  rankStartPointFive: boolean
   rankEndPointFive: boolean
+  rankEndAppliedUpgrades: number
   progressionStart: Progression
   progressionEnd: Progression
   ascensionFarmingSource: AscensionFarmingSource
@@ -274,14 +289,17 @@ export function buildCombinedGoalSpecs(params: {
   abilityActiveEnd: number
   abilityPassiveStart: number
   abilityPassiveEnd: number
-  abilityTrack: "first" | "second"
+  levelStart: number
+  levelEnd: number
   farmingStrategy: FarmingStrategy
   upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
 }): CombinedGoalSpec[] {
-  const { enabledTypes, includesUnlock, includesAscension } = params
+  const { enabledTypes, includesUnlock, includesAscension, includesLevel } =
+    params
   const specs: CombinedGoalSpec[] = []
   let unlockIndex: number | null = null
   let ascensionIndex: number | null = null
+  let levelIndex: number | null = null
 
   if (includesUnlock) {
     specs.push({ goalType: "Unlock", config: {}, dependsOnIndex: [] })
@@ -307,6 +325,18 @@ export function buildCombinedGoalSpecs(params: {
     ascensionIndex = specs.length - 1
   }
 
+  if (includesLevel) {
+    const level = enabledTypes.has("Level")
+      ? { start: params.levelStart, end: params.levelEnd }
+      : params.levelSuggestion!
+    specs.push({
+      goalType: "Level",
+      config: { level },
+      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+    })
+    levelIndex = specs.length - 1
+  }
+
   if (enabledTypes.has("Rank")) {
     specs.push({
       goalType: "Rank",
@@ -314,14 +344,16 @@ export function buildCombinedGoalSpecs(params: {
         farmingStrategy: params.farmingStrategy,
         rank: {
           start: rankIndex(params.rankStart),
-          startPointFive: params.rankStartPointFive,
+          // The "From" field is always a clean rank boundary (read-only, synced from the unit's
+          // actual current rank) — only the target end carries an Additional target.
+          startPointFive: false,
           startAppliedUpgrades: 0,
           end: rankIndex(params.rankEnd),
           endPointFive: params.rankEndPointFive,
-          endAppliedUpgrades: 0,
+          endAppliedUpgrades: params.rankEndAppliedUpgrades,
         },
       },
-      dependsOnIndex: [unlockIndex, ascensionIndex].filter(
+      dependsOnIndex: [unlockIndex, ascensionIndex, levelIndex].filter(
         (index): index is number => index !== null
       ),
     })
@@ -334,18 +366,14 @@ export function buildCombinedGoalSpecs(params: {
         farmingStrategy: params.farmingStrategy,
         ability: {
           activeStart: params.abilityActiveStart,
-          activeEnd:
-            params.abilityTrack === "first"
-              ? params.abilityActiveEnd
-              : params.abilityActiveStart,
+          activeEnd: params.abilityActiveEnd,
           passiveStart: params.abilityPassiveStart,
-          passiveEnd:
-            params.abilityTrack === "second"
-              ? params.abilityPassiveEnd
-              : params.abilityPassiveStart,
+          passiveEnd: params.abilityPassiveEnd,
         },
       },
-      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+      dependsOnIndex: [unlockIndex, levelIndex].filter(
+        (index): index is number => index !== null
+      ),
     })
   }
 

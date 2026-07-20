@@ -10,7 +10,13 @@ import {
 
 import type { GoalKind } from "@/entities/goal"
 
+import {
+  requiredLevelForRankTarget,
+  type RankAdditionalTarget,
+} from "./rank-additional-target"
+
 type AscensionSuggestion = { start: Progression; end: Progression }
+type LevelSuggestion = { start: number; end: number }
 
 export type GoalPrerequisites = {
   /** The selected character isn't in the caller's synced roster (locked/not yet owned) and at least
@@ -19,6 +25,10 @@ export type GoalPrerequisites = {
   /** The enabled Rank goal's target isn't reachable at the effective current progression, and
    *  Ascension wasn't already toggled to cover it — `null` otherwise. */
   needsAscension: AscensionSuggestion | null
+  /** The enabled Rank and/or Ability goal's target implies a character level beyond the effective
+   *  current level, and Level wasn't already toggled to cover it — `null` otherwise (and always
+   *  `null` for a Mow, which has no Level goal — plan scope decision). */
+  needsLevel: LevelSuggestion | null
 }
 
 const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
@@ -38,17 +48,28 @@ const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
  * and rank-reachability are.
  */
 export function useGoalPrerequisites({
+  entityType,
   isLocked,
   currentProgression,
+  currentLevel,
   enabledTypes,
   rankEnd,
+  rankAdditionalTarget,
+  abilityActiveEnd,
+  abilityPassiveEnd,
 }: {
+  entityType: "Character" | "Mow"
   /** Whether the selected character is absent from the caller's synced roster. */
   isLocked: boolean
   /** The character's current progression, when known (unavailable while locked). */
   currentProgression: Progression | undefined
+  /** The unit's current synced level, when known (unavailable while locked). */
+  currentLevel: number | undefined
   enabledTypes: ReadonlySet<GoalKind>
   rankEnd: Rank
+  rankAdditionalTarget: RankAdditionalTarget
+  abilityActiveEnd: number
+  abilityPassiveEnd: number
 }): GoalPrerequisites {
   const needsUnlock =
     isLocked &&
@@ -70,5 +91,42 @@ export function useGoalPrerequisites({
     return { start, end: minProgressionForRank(rankEnd) }
   }, [enabledTypes, rankEnd, currentProgression])
 
-  return { needsUnlock, needsAscension }
+  // Ranking up (and applying each upgrade slot beyond a clean rank boundary) and leveling an
+  // ability both require having already reached a specific character level — Ability's own target
+  // level directly *is* the required character level (they share the same numeric scale; compare
+  // `abilityCapByRarity` in goal-validation.ts against `rankToLevel` in rank-additional-target.ts,
+  // which land on the same figures per rarity tier).
+  const needsLevel = useMemo<LevelSuggestion | null>(() => {
+    if (entityType !== "Character" || enabledTypes.has("Level")) return null
+
+    let required = 0
+    if (enabledTypes.has("Rank")) {
+      required = Math.max(
+        required,
+        requiredLevelForRankTarget(rankEnd, rankAdditionalTarget)
+      )
+    }
+    if (enabledTypes.has("Ability")) {
+      required = Math.max(required, abilityActiveEnd, abilityPassiveEnd)
+    }
+    if (required <= 0) return null
+
+    // A locked character has no synced level to reason from — conservatively assume the lowest
+    // possible starting point, since a freshly-unlocked unit starts there (same posture as
+    // needsAscension's own `firstProgression` fallback above).
+    const start = currentLevel ?? 1
+    if (required <= start) return null
+
+    return { start, end: required }
+  }, [
+    entityType,
+    enabledTypes,
+    rankEnd,
+    rankAdditionalTarget,
+    abilityActiveEnd,
+    abilityPassiveEnd,
+    currentLevel,
+  ])
+
+  return { needsUnlock, needsAscension, needsLevel }
 }

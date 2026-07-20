@@ -6,8 +6,9 @@ export { RankBadge } from "./rank-badge"
 export { RarityIcon } from "./rarity-icon"
 export { UnitCombobox } from "./unit-combobox"
 export { RarityCombobox, type RarityComboboxItem } from "./rarity-combobox"
-export { ProgressionSelect } from "./progression-select"
+export { ProgressionSelect, ProgressionBadge } from "./progression-select"
 export { RankSelect } from "./rank-select"
+export { ReadOnlyField } from "./read-only-field"
 export {
   LocationChips,
   LocationSection,

@@ -44,3 +44,10 @@ export function getInventoryShard(unitId: UnitId) {
 export function getLiveProgress() {
   return getChunkData("live-progress")
 }
+
+// The caller's owned XP books ({xpBookId, amount}[]), synced as part of the merged "inventory"
+// chunk (see chunk-keys.ts) — pulled out as its own named query since Level goals are the only
+// current consumer (see the Level goal's resource-cost preview).
+export async function getInventoryXpBooks() {
+  return (await getChunkData("inventory"))?.xpBooks
+}

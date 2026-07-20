@@ -78,6 +78,30 @@ describe("rankUpUpgradeIds", () => {
       rankUpUpgradeIds(character, "Stone1", "Iron1", false)
     )
   })
+
+  it("adds the first N of the top-row subset at the target rank when topRowCount is set", () => {
+    // topRowCount picks from the *top row* [h3, d3, a3] (indices 0/2/4), not a raw prefix of the
+    // 6-element list — 2 of it is [h3, d3] (Health then Damage), never [h3, h4].
+    expect(
+      rankUpUpgradeIds(character, "Stone1", "Stone2", false, 0, 1)
+    ).toEqual(["h1", "h2", "d1", "d2", "a1", "a2", "h3"])
+    expect(
+      rankUpUpgradeIds(character, "Stone1", "Stone2", false, 0, 2)
+    ).toEqual(["h1", "h2", "d1", "d2", "a1", "a2", "h3", "d3"])
+    // 3 of 3 matches plain point-five exactly.
+    expect(
+      rankUpUpgradeIds(character, "Stone1", "Stone2", false, 0, 3)
+    ).toEqual(rankUpUpgradeIds(character, "Stone1", "Stone2", true))
+  })
+
+  it("prefers topRowCount over appliedUpgrades over pointFive when more than one is set", () => {
+    expect(rankUpUpgradeIds(character, "Stone1", "Stone2", true, 4, 1)).toEqual(
+      ["h1", "h2", "d1", "d2", "a1", "a2", "h3"]
+    )
+    expect(rankUpUpgradeIds(character, "Stone1", "Stone2", true, 4, 0)).toEqual(
+      ["h1", "h2", "d1", "d2", "a1", "a2", "h3", "h4", "d3", "d4"]
+    )
+  })
 })
 
 describe("groupUpgradesByRank", () => {
@@ -90,6 +114,24 @@ describe("groupUpgradesByRank", () => {
       toRank: "Stone2",
       pointFive: true,
       upgradeIds: ["h3", "d3", "a3"],
+    })
+  })
+
+  it("produces a partial group from the top-row subset when topRowCount is set", () => {
+    const groups = groupUpgradesByRank(
+      character,
+      "Stone1",
+      "Stone2",
+      false,
+      0,
+      2
+    )
+    expect(groups).toHaveLength(2)
+    expect(groups[1]).toMatchObject({
+      fromRank: "Stone2",
+      toRank: "Stone2",
+      pointFive: true,
+      upgradeIds: ["h3", "d3"],
     })
   })
 })

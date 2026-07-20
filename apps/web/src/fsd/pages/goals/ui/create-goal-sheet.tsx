@@ -59,7 +59,10 @@ export function CreateGoalSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent data-testid="create-goal-sheet">
+      <SheetContent
+        data-testid="create-goal-sheet"
+        onPointerDownOutside={(event) => event.preventDefault()}
+      >
         <SheetHeader>
           <SheetTitle>{t("goals.create.title")}</SheetTitle>
         </SheetHeader>
@@ -92,6 +95,7 @@ export function CreateGoalSheet({
             targetLevel={equipmentForm.targetLevel}
             setTargetLevel={equipmentForm.setTargetLevel}
             maxLevel={equipmentForm.maxLevel}
+            ownedByLevel={equipmentForm.ownedByLevel}
             status={equipmentForm.status}
             errorMessage={equipmentForm.errorMessage}
             handleSubmit={equipmentForm.handleSubmit}

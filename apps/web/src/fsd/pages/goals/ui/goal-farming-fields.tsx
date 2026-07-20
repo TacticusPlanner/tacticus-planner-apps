@@ -14,22 +14,14 @@ import type { Progression } from "@workspace/game-domain"
 
 import type { AscensionFarmingSource } from "@/entities/goal"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
-import type { EntityType } from "../model/use-create-goal-form"
 import type { useProgressionPreview } from "../model/use-progression-preview"
-import {
-  AbilityGoalFields,
-  AscensionGoalFields,
-  type EstimatePreview,
-  type MissingUpgrade,
-} from "./goal-type-fields"
+import { AscensionGoalFields } from "./goal-type-fields"
 
 const sources: AscensionFarmingSource[] = ["Campaign", "Onslaught", "Both"]
 
 export function AscensionFarmingFields({
   progressionStart,
   progressionEnd,
-  progressionStartOptions,
-  onProgressionStartChange,
   onProgressionEndChange,
   ascensionFarmingSource,
   onAscensionFarmingSourceChange,
@@ -37,8 +29,6 @@ export function AscensionFarmingFields({
 }: {
   progressionStart: Progression
   progressionEnd: Progression
-  progressionStartOptions: readonly Progression[]
-  onProgressionStartChange: (value: Progression) => void
   onProgressionEndChange: (value: Progression) => void
   ascensionFarmingSource: AscensionFarmingSource
   onAscensionFarmingSourceChange: (value: AscensionFarmingSource) => void
@@ -52,8 +42,6 @@ export function AscensionFarmingFields({
       <AscensionGoalFields
         progressionStart={progressionStart}
         progressionEnd={progressionEnd}
-        progressionStartOptions={progressionStartOptions}
-        onProgressionStartChange={onProgressionStartChange}
         onProgressionEndChange={onProgressionEndChange}
       />
       <div className="grid gap-1.5">
@@ -166,102 +154,6 @@ export function ProgressionPreview({
           days: preview.combinedDays.toFixed(1),
         })}
       </p>
-    </div>
-  )
-}
-
-export function AbilityTrackFields({
-  entityType,
-  abilityTrack,
-  onAbilityTrackChange,
-  abilityActiveStart,
-  abilityActiveEnd,
-  abilityPassiveStart,
-  abilityPassiveEnd,
-  onAbilityActiveStartChange,
-  onAbilityActiveEndChange,
-  onAbilityPassiveStartChange,
-  onAbilityPassiveEndChange,
-  missingUpgrades,
-  estimate,
-  dailyEnergy,
-}: {
-  entityType: EntityType
-  abilityTrack: "first" | "second"
-  onAbilityTrackChange: (value: "first" | "second") => void
-  abilityActiveStart: number
-  abilityActiveEnd: number
-  abilityPassiveStart: number
-  abilityPassiveEnd: number
-  onAbilityActiveStartChange: (value: number) => void
-  onAbilityActiveEndChange: (value: number) => void
-  onAbilityPassiveStartChange: (value: number) => void
-  onAbilityPassiveEndChange: (value: number) => void
-  missingUpgrades: MissingUpgrade[]
-  estimate: EstimatePreview | null
-  dailyEnergy: number
-}) {
-  const { t } = useTranslation()
-  const trackTriggerRef = useRef<HTMLButtonElement>(null)
-  const [trackContainer, setTrackContainer] = useState<HTMLElement>()
-  return (
-    <div className="grid gap-3">
-      <div className="grid gap-1.5">
-        <Label>{t("goals.create.ability.track")}</Label>
-        <Select
-          onOpenChange={(open) => {
-            if (open) {
-              setTrackContainer(
-                (trackTriggerRef.current?.closest(
-                  '[data-slot="sheet-content"]'
-                ) as HTMLElement | null) ?? undefined
-              )
-            }
-          }}
-          value={abilityTrack}
-          onValueChange={(value) =>
-            onAbilityTrackChange(value as "first" | "second")
-          }
-        >
-          <SelectTrigger
-            className="w-full"
-            data-testid="create-goal-ability-track"
-            ref={trackTriggerRef}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent container={trackContainer}>
-            <SelectItem value="first">
-              {t(
-                entityType === "Mow"
-                  ? "goals.create.ability.primary"
-                  : "goals.create.ability.active"
-              )}
-            </SelectItem>
-            <SelectItem value="second">
-              {t(
-                entityType === "Mow"
-                  ? "goals.create.ability.secondary"
-                  : "goals.create.ability.passive"
-              )}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <AbilityGoalFields
-        activeStart={abilityActiveStart}
-        activeEnd={abilityActiveEnd}
-        passiveStart={abilityPassiveStart}
-        passiveEnd={abilityPassiveEnd}
-        onActiveStartChange={onAbilityActiveStartChange}
-        onActiveEndChange={onAbilityActiveEndChange}
-        onPassiveStartChange={onAbilityPassiveStartChange}
-        onPassiveEndChange={onAbilityPassiveEndChange}
-        missingUpgrades={missingUpgrades}
-        estimate={estimate}
-        dailyEnergy={dailyEnergy}
-        costingSupported={entityType === "Mow"}
-      />
     </div>
   )
 }

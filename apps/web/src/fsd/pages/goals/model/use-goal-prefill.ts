@@ -1,6 +1,7 @@
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 import {
   getPlayerCharacter,
   getPlayerMow,
@@ -56,5 +57,19 @@ export function useGoalPrefill(
       result.id !== entityId ||
       result.entityType !== entityType)
 
-  return { playerEntity, loading }
+  // Narrowed by `entityType` (the same value `playerEntity` was itself fetched by) rather than by
+  // inspecting its shape — a Character's synced record is the only one that ever carries `rank`,
+  // but TS can't correlate two separately-computed variables through a shape check alone, so this
+  // documents an invariant the types can't express. Exposed alongside the union `playerEntity` so
+  // callers needing the narrowed shape (e.g. a Character's `rank`/`xp`) don't each redo the cast.
+  const playerCharacter =
+    entityType === "Character"
+      ? (playerEntity as PlayerDataChunkDto<"characters">[number] | undefined)
+      : undefined
+  const playerMow =
+    entityType === "Mow"
+      ? (playerEntity as PlayerDataChunkDto<"mows">[number] | undefined)
+      : undefined
+
+  return { playerEntity, playerCharacter, playerMow, loading }
 }

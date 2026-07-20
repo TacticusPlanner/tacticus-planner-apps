@@ -4,8 +4,10 @@ import { Rank, lastRank } from "@workspace/game-domain"
 import {
   getGoalValidationIssue,
   isAtMaxAbility,
+  isAtMaxLevel,
   isAtMaxProgression,
   isAtMaxRank,
+  MAX_CHARACTER_LEVEL,
 } from "./goal-validation"
 
 const base = {
@@ -22,6 +24,8 @@ const base = {
   abilityPassiveEnd: 18,
   currentActiveAbility: 20,
   currentPassiveAbility: 18,
+  currentLevel: 31,
+  levelEnd: 42,
 }
 
 describe("getGoalValidationIssue", () => {
@@ -57,6 +61,23 @@ describe("getGoalValidationIssue", () => {
       })
     ).toBe("rankAlreadyReached")
   })
+
+  it("rejects an already-reached level target, accepts one above the current level", () => {
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        enabledTypes: new Set(["Level"] as const),
+        levelEnd: 31,
+      })
+    ).toBe("levelAlreadyReached")
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        enabledTypes: new Set(["Level"] as const),
+        levelEnd: 42,
+      })
+    ).toBeNull()
+  })
 })
 
 describe("isAtMaxRank", () => {
@@ -89,5 +110,13 @@ describe("isAtMaxAbility", () => {
     // Mythic's cap (60) is higher than Legendary's (50) — not maxed yet at the Legendary cap.
     expect(isAtMaxAbility("Mythic:OneBlueStar", 50, 50)).toBe(false)
     expect(isAtMaxAbility("Mythic:OneBlueStar", 60, 60)).toBe(true)
+  })
+})
+
+describe("isAtMaxLevel", () => {
+  it("is false for undefined or a below-cap level, true at the level cap", () => {
+    expect(isAtMaxLevel(undefined)).toBe(false)
+    expect(isAtMaxLevel(31)).toBe(false)
+    expect(isAtMaxLevel(MAX_CHARACTER_LEVEL)).toBe(true)
   })
 })

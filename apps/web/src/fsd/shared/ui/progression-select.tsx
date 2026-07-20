@@ -53,7 +53,7 @@ export function ProgressionSelect({
 // around a promotion boundary, e.g. "Common:TwoStars" then "Uncommon:TwoStars"). Stars match V1's
 // stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step) —
 // except "None", which has nothing to show an icon for and stays as plain text.
-function ProgressionBadge({ value }: { value: Progression }) {
+export function ProgressionBadge({ value }: { value: Progression }) {
   const { t } = useTranslation(["progression"])
   const rarity = progressionRarity(value)
   const stars = value.slice(value.indexOf(":") + 1)

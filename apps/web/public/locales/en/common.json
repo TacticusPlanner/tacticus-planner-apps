@@ -389,6 +389,14 @@
       "unitLabel": "Unit",
       "unitPlaceholder": "Select a unit",
       "unitEmpty": "No unit found.",
+      "info": {
+        "title": "Current status",
+        "shards": "Shards",
+        "mythicShards": "Mythic shards",
+        "equipmentOwnedTitle": "Owned",
+        "equipmentOwnedNone": "None owned yet",
+        "equipmentLevelCount": "Lv {{level}} × {{count}}"
+      },
       "goalTypeLabel": "Goal type",
       "goalTypes": {
         "Rank": "Rank",
@@ -396,17 +404,25 @@
         "Ability": "Ability",
         "Unlock": "Unlock",
         "Upgrade": "Upgrade",
-        "UpgradeEquipment": "Upgrade Equipment"
+        "UpgradeEquipment": "Upgrade Equipment",
+        "Level": "Level"
       },
       "rank": {
         "start": "From rank",
         "end": "To rank",
-        "startPointFive": "Half-step at start",
-        "endPointFive": "Half-step at target"
+        "current": "Current rank",
+        "target": "Target rank",
+        "appliedUpgrades": "{{applied}}/{{total}}",
+        "additionalTarget": {
+          "label": "Additional target",
+          "none": "None (full rank)",
+          "topRow": "Top row (rank and a half)",
+          "row": "{{count}} of {{total}} — Level {{level}}"
+        }
       },
       "ascension": {
-        "start": "From progression",
-        "end": "To progression",
+        "start": "Current progression",
+        "end": "Target progression",
         "source": "Shard source",
         "Campaign": "Campaign",
         "Onslaught": "Onslaught",
@@ -420,15 +436,16 @@
         "combinedEstimate": "Combined duration: {{days}} days"
       },
       "ability": {
-        "track": "Ability track",
-        "active": "Active",
-        "passive": "Passive",
-        "primary": "Primary",
-        "secondary": "Secondary",
-        "activeStart": "Active ability, from level",
-        "activeEnd": "Active ability, to level",
-        "passiveStart": "Passive ability, from level",
-        "passiveEnd": "Passive ability, to level"
+        "activeStart": "Active ability, current level",
+        "passiveStart": "Passive ability, current level",
+        "target": "Target level"
+      },
+      "level": {
+        "current": "Current level",
+        "target": "Target level",
+        "booksNeeded": "≈ {{count}} Legendary XP Books",
+        "goldToApply": "≈ {{gold}} gold to apply",
+        "costDisclaimer": "Netted against your owned XP books. No days estimate — XP books aren't farmed from campaign energy."
       },
       "farmingStrategy": {
         "label": "Farming strategy",
@@ -445,6 +462,11 @@
           "EveryStep": "A checkpoint at every single {{unit}} along the way — the most granular tracking ({{count}} checkpoints).",
           "Milestones": "A checkpoint at each major {{unit}} tier — a balanced default ({{count}} checkpoints).",
           "MajorMilestones": "A checkpoint only at the biggest {{unit}} tiers — the fewest checkpoints ({{count}})."
+        },
+        "unavailable": {
+          "singleRank": "Not enough range yet for more than one checkpoint — pick a further target.",
+          "tooFewMilestones": "The selected range doesn't span enough milestone tiers for this strategy.",
+          "tooFewMajorMilestones": "The selected range doesn't span enough major milestone tiers for this strategy."
         }
       },
       "unlockDescription": "This goal is complete once the character is unlocked.",
@@ -466,7 +488,9 @@
         "relicGroup": "Relic"
       },
       "previewTitle": "Still needed",
-      "previewDisclaimer": "Estimate may change once the goal is created.",
+      "showAll": "Show all ({{count}})",
+      "showLess": "Show less",
+      "previewDisclaimer": "The actual estimate may change depending on this goal's priority within the selected project and the selected farming strategy.",
       "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
       "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
       "projectLabel": "Projects",
@@ -476,14 +500,16 @@
       "submit": "Create goal",
       "close": "Close",
       "genericError": "Couldn't create the goal. Please try again.",
-      "previewEstimate": "≈ {{days}} days · ready {{date}}",
-      "previewEnergy": "{{energy}} energy · {{raids}} raids · {{dailyEnergy}} energy/day",
+      "previewEstimate": "≈ {{days}} days",
+      "previewEnergy": "{{energy}} energy",
       "reviewTitle": "What will be created",
       "suggestions": {
         "includeUnlock": "Include the suggested Unlock goal",
         "includeAscension": "Include the suggested Ascension goal",
+        "includeLevel": "Include the suggested Level goal (reach level {{level}})",
         "unlockRequired": "required, this character isn't owned yet",
-        "ascensionRequired": "required to reach the target rank"
+        "ascensionRequired": "required to reach the target rank",
+        "levelRequired": "required to reach the target rank/ability level"
       },
       "validation": {
         "alreadyUnlocked": "This character is already unlocked.",
@@ -491,9 +517,11 @@
         "progressionAlreadyReached": "The selected progression has already been reached.",
         "abilityRange": "At least one ability must increase and neither range may decrease.",
         "abilityAlreadyReached": "The selected ability levels have already been reached.",
+        "levelAlreadyReached": "The selected level has already been reached.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
-        "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity."
+        "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
+        "levelMaxed": "This character has already reached the maximum level."
       }
     },
     "estimate": {
@@ -536,7 +564,6 @@
       "isolatedEstimate": "Isolated estimate",
       "originalEstimate": "Original",
       "currentEstimate": "Current",
-      "originalResources": "Original requirement: {{count}} items · {{energy}} energy · {{raids}} raids",
       "unavailable": "Unavailable",
       "milestonesTitle": "Milestones",
       "dependenciesTitle": "Dependencies",

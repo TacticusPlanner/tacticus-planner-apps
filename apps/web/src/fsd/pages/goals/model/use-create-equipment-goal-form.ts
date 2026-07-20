@@ -1,11 +1,14 @@
-import { useState, type FormEvent } from "react"
+import { useMemo, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useMutation } from "@tanstack/react-query"
 import { getEquipmentMap } from "@workspace/game-catalog/queries"
+import { getPlayerInventoryItems } from "@workspace/player-data/queries"
 
 import { createGoal } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
+
+export type OwnedEquipmentLevel = { level: number; count: number }
 
 /**
  * State/handlers for the Equipment (UpgradeEquipment) side of the goal-creation sheet — a new goal
@@ -40,6 +43,22 @@ export function useCreateEquipmentGoalForm({
     ? equipmentById?.get(equipmentId)
     : undefined
   const maxLevel = selectedEquipment?.levels.length ?? 1
+
+  // Owned-count-by-level for the selected equipment's info card — grouped client-side from the
+  // caller's whole un-equipped inventory (small: equipment stock, not per-character upgrade
+  // materials), mirroring the Unit tab's own shard-count summary.
+  const inventoryItems = useLiveQuery(() => getPlayerInventoryItems(), [])
+  const ownedByLevel = useMemo<OwnedEquipmentLevel[]>(() => {
+    if (!equipmentId || !inventoryItems) return []
+    const totals = new Map<number, number>()
+    for (const item of inventoryItems) {
+      if (item.itemId !== equipmentId) continue
+      totals.set(item.level, (totals.get(item.level) ?? 0) + item.amount)
+    }
+    return [...totals.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([level, count]) => ({ level, count }))
+  }, [inventoryItems, equipmentId])
 
   const handleEquipmentChange = (id: string) => {
     setEquipmentId(id)
@@ -90,6 +109,7 @@ export function useCreateEquipmentGoalForm({
     targetLevel,
     setTargetLevel,
     maxLevel,
+    ownedByLevel,
     status,
     errorMessage,
     canSubmit,

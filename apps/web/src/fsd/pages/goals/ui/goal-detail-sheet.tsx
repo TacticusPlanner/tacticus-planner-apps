@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   useMutation,
@@ -7,7 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { rankAt, type UpgradeId } from "@workspace/game-domain"
+import { rankAt } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
@@ -31,9 +31,12 @@ import {
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import type { EstimateOutcome } from "../model/estimate/estimate.domain"
+import { additionalTargetFromWire } from "../model/rank-additional-target"
 import { useGoalCatalog } from "../model/use-goal-catalog"
+import { useGoalLocationGroups } from "../model/use-goal-location-groups"
 import { FarmingStrategyField } from "./farming-strategy-field"
 import { GoalEstimateSection } from "./goal-estimate-section"
+import { GoalLevelSummary } from "./goal-level-summary"
 import { GoalLocationsField } from "./goal-locations-field"
 import { GoalProjectsField } from "./goal-projects-field"
 import { StatusBadge } from "./status-badge"
@@ -140,48 +143,12 @@ export function GoalDetailSheet({
     },
   })
 
-  // Rank goals never expose a farming-location override (product decision — see the section's JSX
-  // below); Unlock goals farm a shard, not an upgrade, so their location list comes from the
-  // character's own catalog shardLocations rather than the (always-empty, for Unlock)
-  // snapshot-derived upgrade requirement every other costed goal type uses.
-  const isRank = detail?.goalType === "Rank"
-  const isUnlock = detail?.goalType === "Unlock"
-  const upgradeLocationGroups = useMemo(() => {
-    if (!detail?.snapshot) return []
-    return detail.snapshot.initialRequirement.map((resource) => ({
-      resourceId: resource.resourceId,
-      battleIds: [
-        ...new Set(
-          upgradesById
-            .get(resource.resourceId as UpgradeId)
-            ?.farmLocations.map((location) => location.battleId) ?? []
-        ),
-      ],
-    }))
-  }, [detail, upgradesById])
-  const shardBattleIds = useMemo(() => {
-    if (!detail || detail.goalType !== "Unlock") return []
-    return [
-      ...new Set(
-        charactersById
-          ?.get(detail.entityId)
-          ?.shardLocations.map((location) => location.battleId) ?? []
-      ),
-    ]
-  }, [detail, charactersById])
-  const locationGroups = isUnlock
-    ? shardBattleIds.length > 0
-      ? [{ resourceId: "shards", battleIds: shardBattleIds }]
-      : []
-    : upgradeLocationGroups
-  const allLocations = [
-    ...new Set(locationGroups.flatMap((group) => group.battleIds)),
-  ]
-  const overrideValid =
-    isRank ||
-    selectedLocations.length === 0 ||
-    locationGroups.every((group) =>
-      group.battleIds.some((id) => selectedLocations.includes(id))
+  const { isRank, isUnlock, isLevel, allLocations, overrideValid } =
+    useGoalLocationGroups(
+      detail,
+      upgradesById,
+      charactersById,
+      selectedLocations
     )
 
   const projectsValid = selectedProjectIds.length > 0
@@ -196,11 +163,12 @@ export function GoalDetailSheet({
       await updateMutation.mutateAsync({
         goalId: detail.goalId,
         notes: notes.trim() || null,
-        farmingLocationIds: isRank
-          ? null
-          : selectedLocations.length > 0
-            ? selectedLocations
-            : null,
+        farmingLocationIds:
+          isRank || isLevel
+            ? null
+            : selectedLocations.length > 0
+              ? selectedLocations
+              : null,
         farmingStrategy,
       })
       if (projectsChanged) {
@@ -231,7 +199,11 @@ export function GoalDetailSheet({
 
   return (
     <Sheet open={!!goalId} onOpenChange={onOpenChange}>
-      <SheetContent className="overflow-y-auto" data-testid="goal-detail-sheet">
+      <SheetContent
+        className="overflow-y-auto"
+        data-testid="goal-detail-sheet"
+        onPointerDownOutside={(event) => event.preventDefault()}
+      >
         <SheetHeader>
           <SheetTitle>
             {detail
@@ -365,12 +337,20 @@ export function GoalDetailSheet({
                 onFarmingStrategyChange={(value) =>
                   setDraftState({ ...draft, farmingStrategy: value })
                 }
+                rankAdditionalTarget={additionalTargetFromWire(
+                  rankAt(detail.config.rank.end),
+                  detail.config.rank
+                )}
                 rankEnd={rankAt(detail.config.rank.end)}
                 rankStart={rankAt(detail.config.rank.start)}
               />
             ) : null}
 
-            {!isRank ? (
+            {isLevel && detail.config.level ? (
+              <GoalLevelSummary target={detail.config.level} />
+            ) : null}
+
+            {!isRank && !isLevel ? (
               <GoalLocationsField
                 allLocations={allLocations}
                 isUnlock={isUnlock}

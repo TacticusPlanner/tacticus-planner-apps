@@ -4,6 +4,7 @@ export {
   UpgradeIcons,
   rarityIcon,
   rankIcon,
+  shardIcon,
   characterIcon,
   mowIcon,
   campaignIcon,

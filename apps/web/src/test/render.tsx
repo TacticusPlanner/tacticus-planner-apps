@@ -4,6 +4,7 @@ import {
   render as testingLibraryRender,
   type RenderOptions,
 } from "@testing-library/react"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 // Test utilities intentionally re-export non-component Testing Library helpers.
 // eslint-disable-next-line react-refresh/only-export-components
@@ -31,7 +32,9 @@ function createWrapper(UserWrapper?: TestWrapper): TestWrapper {
   return function TestQueryWrapper({ children }) {
     return (
       <QueryClientProvider client={queryClient}>
-        {UserWrapper ? <UserWrapper>{children}</UserWrapper> : children}
+        <TooltipProvider>
+          {UserWrapper ? <UserWrapper>{children}</UserWrapper> : children}
+        </TooltipProvider>
       </QueryClientProvider>
     )
   }

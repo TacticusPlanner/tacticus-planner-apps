@@ -33,6 +33,16 @@ export type ResourceNeed = {
   orbsByType: Partial<Record<Rarity, number>>
 }
 
+/** Whether a unit's *current* progression is already in the Mythic tier — the point at which
+ *  further ascension is costed in Mythic Shards rather than regular ones (each progression step in
+ *  the catalog ladder carries both `shards`/`mythicShards` fields, but only one is ever non-zero
+ *  per tier). Used to decide which shard count is the relevant one to surface for an owned unit;
+ *  a locked unit (no current progression yet) never satisfies this, since unlocking always costs
+ *  regular shards regardless of the character's starting rarity (see `unlockResourceNeed`). */
+export function isMythicProgression(progression: Progression): boolean {
+  return progression.startsWith("Mythic:")
+}
+
 const EMPTY_NEED: ResourceNeed = {
   upgrades: [],
   shardId: null,

@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ArrowRight } from "lucide-react"
 import { Label } from "@workspace/ui/components/label"
@@ -15,6 +15,8 @@ import { rankAt, rankIndex, type Rank } from "@workspace/game-domain"
 import type { FarmingStrategy } from "@/entities/goal"
 import { RankBadge } from "@/shared/ui"
 import { farmingStageTargets } from "../model/farming-stages"
+import { farmingStrategyAvailability } from "../model/farming-strategy-availability"
+import type { RankAdditionalTarget } from "../model/rank-additional-target"
 
 const strategies: FarmingStrategy[] = [
   "TotalUpgrades",
@@ -33,12 +35,20 @@ const MAX_VISIBLE_STAGES = 6
  * breakpoints this goal will get) and a one-line explanation of the selected strategy. `context`
  * picks the checkpoint unit (rank vs Mow ability level) and which of the caller's start/end pairs
  * to chart — for Ability, the track that's actually growing (mirrors the backend's own
- * `ActiveEnd > ActiveStart` pick in `CreateGoalEndpoint`). Split out of `goal-farming-fields.tsx`
- * purely for that file's own max-lines budget. */
+ * `ActiveEnd > ActiveStart` pick in `CreateGoalEndpoint`). Each option's availability is recomputed
+ * from the same start/end (plus, for Rank, the selected Additional target) on every render — an
+ * option whose range can't support it stays visible but unselectable, with its explanation shown
+ * inline right under the label (not a hover tooltip — a disabled Radix `Select.Item` is
+ * `pointer-events: none`, which a nested hover trigger can't reliably escape) (see
+ * `farming-strategy-availability.ts`); if the currently-selected strategy itself becomes
+ * unavailable this way, it's reset to `"TotalUpgrades"` (always available) rather than left
+ * silently selected. Split out of `goal-farming-fields.tsx` purely for that file's own max-lines
+ * budget. */
 export function FarmingStrategyField({
   context,
   rankStart,
   rankEnd,
+  rankAdditionalTarget,
   abilityActiveStart,
   abilityActiveEnd,
   abilityPassiveStart,
@@ -49,6 +59,7 @@ export function FarmingStrategyField({
   context: "rank" | "ability"
   rankStart: Rank
   rankEnd: Rank
+  rankAdditionalTarget?: RankAdditionalTarget
   abilityActiveStart: number
   abilityActiveEnd: number
   abilityPassiveStart: number
@@ -66,6 +77,24 @@ export function FarmingStrategyField({
       : abilityActiveEnd > abilityActiveStart
         ? [abilityActiveStart, abilityActiveEnd]
         : [abilityPassiveStart, abilityPassiveEnd]
+
+  const availability = farmingStrategyAvailability(
+    context,
+    start,
+    end,
+    context === "rank" && rankAdditionalTarget != null
+      ? rankAdditionalTarget !== "None"
+      : false
+  )
+
+  // The option list is recalculated from `start`/`end`/`rankAdditionalTarget` on every render (all
+  // plain props, no memoization needed) — if that leaves the current selection disabled, fall back
+  // to the one option that's always available rather than leave an unselectable value selected.
+  useEffect(() => {
+    if (availability[farmingStrategy] !== null) return
+    onFarmingStrategyChange("TotalUpgrades")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availability[farmingStrategy]])
 
   const targets = farmingStageTargets(context, start, end, farmingStrategy)
   const chain = targets.length > 0 ? [start, ...targets] : []
@@ -96,11 +125,29 @@ export function FarmingStrategyField({
           <SelectValue />
         </SelectTrigger>
         <SelectContent container={strategyContainer}>
-          {strategies.map((strategy) => (
-            <SelectItem key={strategy} value={strategy}>
-              {t(`goals.create.farmingStrategy.${strategy}`)}
-            </SelectItem>
-          ))}
+          {strategies.map((strategy) => {
+            const reason = availability[strategy]
+            return (
+              <SelectItem
+                data-testid={`create-goal-farming-strategy-option-${strategy}`}
+                disabled={reason !== null}
+                key={strategy}
+                value={strategy}
+              >
+                <span className="flex flex-col">
+                  <span>{t(`goals.create.farmingStrategy.${strategy}`)}</span>
+                  {reason ? (
+                    <span
+                      className="text-xs text-muted-foreground"
+                      data-testid={`create-goal-farming-strategy-option-${strategy}-reason`}
+                    >
+                      {t(`goals.create.farmingStrategy.unavailable.${reason}`)}
+                    </span>
+                  ) : null}
+                </span>
+              </SelectItem>
+            )
+          })}
         </SelectContent>
       </Select>
 

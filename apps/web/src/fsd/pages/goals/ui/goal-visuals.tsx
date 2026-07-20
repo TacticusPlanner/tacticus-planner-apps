@@ -22,6 +22,7 @@ import { EntityIcon } from "@/shared/ui"
 import type { GoalProject } from "../model/types"
 
 const genericUpgradeIcon = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_generic.png`
+const genericLevelIcon = `${ASSET_BASE_PATH}/misc/xp_generic.png`
 
 /** The goal-type badge/card icon — a generic per-kind symbol representing the concept, not any one
  * specific unit/upgrade/item (see e.g. `EquipmentIcon` for the actual per-item icon used in the
@@ -45,6 +46,8 @@ function goalTypeIcon(kind: GoalKind, entityType?: string): string {
       return `${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`
     case "UpgradeEquipment":
       return `${ASSET_BASE_PATH}/misc/forge_badges_generic.png`
+    case "Level":
+      return genericLevelIcon
   }
 }
 

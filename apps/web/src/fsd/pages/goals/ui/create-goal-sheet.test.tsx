@@ -215,6 +215,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 const getPlayerCharacter = vi.fn()
 const getPlayerMow = vi.fn()
 const getInventoryUpgrades = vi.fn()
+const getInventoryXpBooks = vi.fn()
+const getPlayerInventoryItems = vi.fn()
+const getInventoryShard = vi.fn()
 // Backs the picker's locked-unit lookup — empty roster by default (no test here asserts on the
 // lock badge itself, that's covered by unit-combobox.test.tsx).
 const getPlayerCharacters = vi.fn(() => Promise.resolve([]))
@@ -226,7 +229,9 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacters: () => getPlayerCharacters(),
   getPlayerMows: () => getPlayerMows(),
   getInventoryUpgrades: (...args: unknown[]) => getInventoryUpgrades(...args),
-  getInventoryShard: () => undefined,
+  getInventoryXpBooks: () => getInventoryXpBooks(),
+  getPlayerInventoryItems: () => getPlayerInventoryItems(),
+  getInventoryShard: (...args: unknown[]) => getInventoryShard(...args),
   getLiveProgress: () => undefined,
 }))
 
@@ -286,11 +291,23 @@ describe("CreateGoalSheet", () => {
       rank: "Stone1",
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
+      // High enough that no test's Rank/Ability target implies a level the character hasn't
+      // already reached (see needsLevel in use-goal-prerequisites.ts) — otherwise a Level goal
+      // gets auto-suggested and included, changing review-item/submitted-goal counts most tests
+      // here don't expect. Below MAX_CHARACTER_LEVEL so the Level toggle itself stays enabled.
+      // Tests specifically covering Level auto-suggestion/creation override this per test.
+      xpLevel: 59,
     })
     getPlayerMow.mockReset()
     getPlayerMow.mockResolvedValue(undefined)
     getInventoryUpgrades.mockReset()
     getInventoryUpgrades.mockReturnValue(undefined)
+    getInventoryXpBooks.mockReset()
+    getInventoryXpBooks.mockReturnValue(undefined)
+    getPlayerInventoryItems.mockReset()
+    getPlayerInventoryItems.mockReturnValue(undefined)
+    getInventoryShard.mockReset()
+    getInventoryShard.mockReturnValue(undefined)
   })
 
   it("creates a Rank goal for the selected character and closes on success", async () => {
@@ -337,6 +354,93 @@ describe("CreateGoalSheet", () => {
 
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(onCreated).toHaveBeenCalledTimes(1)
+  })
+
+  it("creates a Level goal for the selected character, current level read-only, prefilled from synced xpLevel, with a books/gold cost preview", async () => {
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone1",
+      progressionIndex: "Common:None",
+      appliedUpgradeSlots: [],
+      xpLevel: 31,
+      xp: 0,
+    })
+    const onOpenChange = vi.fn()
+    const onCreated = vi.fn()
+    render(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
+    )
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Level")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Level"))
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-level-target")).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-level-target"))
+    fireEvent.click(within(await screen.findByRole("listbox")).getByText("42"))
+
+    // 31 -> 42 with 0 partial xp needs a non-zero books/gold cost (exact figures are covered by
+    // level-xp-cost.test.ts's own unit coverage — this file's `t` mock doesn't interpolate options,
+    // so the count/gold values themselves aren't observable through rendered text here).
+    await vi.waitFor(() => {
+      const cost = screen.getByTestId("create-goal-level-cost")
+      expect(cost).toHaveTextContent("goals.create.level.booksNeeded")
+      expect(cost).toHaveTextContent("goals.create.level.goldToApply")
+    })
+
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(request.goals).toHaveLength(1)
+    expect(request.goals[0]).toMatchObject({
+      goalType: "Level",
+      dependsOnIndex: [],
+    })
+    expect(request.goals[0].config.level).toEqual({ start: 31, end: 42 })
+
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(onCreated).toHaveBeenCalledTimes(1)
+  })
+
+  it("nets a Level goal's cost against owned XP books, hiding the cost preview once fully covered", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone1",
+      progressionIndex: "Common:None",
+      appliedUpgradeSlots: [],
+      xpLevel: 31,
+      xp: 0,
+    })
+    // 31 -> 32 needs 94200 - 72200 = 22000 xp; 2 owned Legendary books (25000 xp) fully covers it.
+    getInventoryXpBooks.mockReturnValue([
+      { xpBookId: "bookLegendary", amount: 2 },
+    ])
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Level")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Level"))
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-level-target")).toBeInTheDocument()
+    })
+    await vi.waitFor(() => {
+      expect(
+        screen.queryByTestId("create-goal-level-cost")
+      ).not.toBeInTheDocument()
+    })
   })
 
   it("keeps the sheet open and resets the form when 'create another' is checked", async () => {
@@ -406,6 +510,13 @@ describe("CreateGoalSheet", () => {
         "goals.create.farmingStrategy.explanation.TotalUpgrades"
       )
     })
+
+    // Milestones needs a range spanning at least 2 milestone tiers — the default Stone1 -> Stone2
+    // range is too short, so widen the target first.
+    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+    fireEvent.click(
+      within(await screen.findByRole("listbox")).getByText("Silver1")
+    )
 
     fireEvent.click(screen.getByTestId("create-goal-farming-strategy"))
     fireEvent.click(
@@ -507,12 +618,13 @@ describe("CreateGoalSheet", () => {
     expect(quantityInput).toHaveValue(1)
   })
 
-  it("disables and unchecks Rank/Ascension/Ability/Upgrade once the selected character is already maxed out", async () => {
+  it("disables and unchecks Rank/Ascension/Ability/Level/Upgrade once the selected character is already maxed out", async () => {
     getPlayerCharacter.mockResolvedValue({
       rank: lastRank,
       progressionIndex: "Mythic:MythicWings",
       appliedUpgradeSlots: [],
       abilities: [{ level: 60 }, { level: 60 }],
+      xpLevel: 60,
     })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
@@ -528,6 +640,10 @@ describe("CreateGoalSheet", () => {
     expect(screen.getByTestId("create-goal-type-toggle-Ability")).toBeDisabled()
     expect(
       screen.getByTestId("create-goal-type-toggle-Ability")
+    ).not.toBeChecked()
+    expect(screen.getByTestId("create-goal-type-toggle-Level")).toBeDisabled()
+    expect(
+      screen.getByTestId("create-goal-type-toggle-Level")
     ).not.toBeChecked()
     expect(screen.getByTestId("create-goal-type-toggle-Upgrade")).toBeDisabled()
   })
@@ -577,19 +693,22 @@ describe("CreateGoalSheet", () => {
     ])
   })
 
-  it("auto-suggests and includes Unlock for a locked character, with Rank depending on it, and lists it in the review", async () => {
+  it("auto-suggests and includes Unlock and Level for a locked character, with Rank depending on both, and lists them in the review", async () => {
     getPlayerCharacter.mockResolvedValue(undefined)
     createCombinedGoals.mockResolvedValue({ goals: [] })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     // No goal type is preselected — turn Rank on explicitly, which is what triggers the auto-
-    // suggested Unlock prerequisite for a locked entity.
+    // suggested Unlock prerequisite for a locked entity, and (Stone1 -> Stone2 implies level 3, a
+    // locked character conservatively assumed to start at level 1) the auto-suggested Level goal.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     const review = await screen.findByTestId("create-goal-review")
     expect(review).toHaveTextContent("goals.create.goalTypes.Unlock")
     expect(review).toHaveTextContent("goals.create.suggestions.unlockRequired")
+    expect(review).toHaveTextContent("goals.create.goalTypes.Level")
+    expect(review).toHaveTextContent("goals.create.suggestions.levelRequired")
 
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -597,15 +716,117 @@ describe("CreateGoalSheet", () => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
     const [request] = createCombinedGoals.mock.calls[0]
-    expect(request.goals).toHaveLength(2)
+    expect(request.goals).toHaveLength(3)
     expect(request.goals[0]).toMatchObject({
       goalType: "Unlock",
       dependsOnIndex: [],
     })
     expect(request.goals[1]).toMatchObject({
-      goalType: "Rank",
+      goalType: "Level",
       dependsOnIndex: [0],
     })
+    expect(request.goals[1].config.level).toEqual({ start: 1, end: 3 })
+    expect(request.goals[2]).toMatchObject({
+      goalType: "Rank",
+      dependsOnIndex: [0, 1],
+    })
+  })
+
+  it("omits the suggested Level goal once its checkbox is unchecked", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone1",
+      progressionIndex: "Common:None",
+      appliedUpgradeSlots: [],
+      xpLevel: 1,
+    })
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Rank")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+
+    fireEvent.click(await screen.findByTestId("create-goal-include-level"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(
+      request.goals.map((goal: { goalType: string }) => goal.goalType)
+    ).toEqual(["Rank"])
+  })
+
+  it("shows the selected owned character's shard count, level, ability levels, rank, and progression", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone2",
+      progressionIndex: "Epic:RedOneStar",
+      appliedUpgradeSlots: [],
+      xpLevel: 20,
+      xp: 100,
+      shards: 45,
+      mythicShards: 0,
+      abilities: [
+        { abilityId: "a1", level: 3 },
+        { abilityId: "a2", level: 2 },
+      ],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const info = await screen.findByTestId("create-goal-unit-info")
+    await vi.waitFor(() => expect(info).toHaveTextContent("45"))
+    expect(info).toHaveTextContent("goals.create.info.shards")
+    expect(info).toHaveTextContent("20")
+    expect(info).toHaveTextContent("3")
+    expect(info).toHaveTextContent("2")
+    expect(info).toHaveTextContent("Stone2")
+    expect(within(info).getByAltText("RedOneStar")).toBeInTheDocument()
+  })
+
+  it("shows only the Mythic Shard count once an owned character's progression reaches the Mythic tier", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Adamantine1",
+      progressionIndex: "Mythic:OneBlueStar",
+      appliedUpgradeSlots: [],
+      xpLevel: 55,
+      xp: 0,
+      shards: 999,
+      mythicShards: 12,
+      abilities: [],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const info = await screen.findByTestId("create-goal-unit-info")
+    await vi.waitFor(() => expect(info).toHaveTextContent("12"))
+    expect(info).toHaveTextContent("goals.create.info.mythicShards")
+    expect(info).not.toHaveTextContent("999")
+  })
+
+  it("shows only a shard count for a locked character", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined)
+    getInventoryShard.mockReturnValue({
+      unitId: "hero1",
+      amount: 7,
+      mythicAmount: 0,
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const info = await screen.findByTestId("create-goal-unit-info")
+    await vi.waitFor(() => expect(info).toHaveTextContent("7"))
+    expect(info).toHaveTextContent("goals.create.info.shards")
+    expect(info).not.toHaveTextContent("goals.create.level.current")
+    expect(info).not.toHaveTextContent("goals.create.rank.current")
   })
 
   it("creates an Ability goal for the selected Machine of War, with no Rank toggle offered", async () => {
@@ -754,6 +975,50 @@ describe("CreateGoalSheet", () => {
     for (const option of options) {
       expect(option.querySelector("img")).not.toBeNull()
     }
+  })
+
+  it("shows the owned equipment count grouped by level once a piece of equipment is selected", async () => {
+    getPlayerInventoryItems.mockReturnValue([
+      { itemId: "I_Block_C002", level: 1, amount: 5 },
+      { itemId: "I_Block_C002", level: 1, amount: 2 },
+      { itemId: "I_Block_C002", level: 3, amount: 1 },
+      { itemId: "some-other-item", level: 1, amount: 99 },
+    ])
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    const user = userEvent.setup()
+    await user.click(screen.getByTestId("create-goal-pill-equipment"))
+    fireEvent.click(
+      screen.getByRole("combobox", {
+        name: "goals.create.equipment.placeholder",
+      })
+    )
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Refractor Field"))
+
+    const info = await screen.findByTestId("create-goal-equipment-info")
+    await vi.waitFor(() =>
+      expect(info).toHaveTextContent("goals.create.info.equipmentLevelCount")
+    )
+    expect(info).not.toHaveTextContent("99")
+  })
+
+  it("shows a 'none owned' hint when the selected equipment has no owned stock", async () => {
+    getPlayerInventoryItems.mockReturnValue([])
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    const user = userEvent.setup()
+    await user.click(screen.getByTestId("create-goal-pill-equipment"))
+    fireEvent.click(
+      screen.getByRole("combobox", {
+        name: "goals.create.equipment.placeholder",
+      })
+    )
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Refractor Field"))
+
+    const info = await screen.findByTestId("create-goal-equipment-info")
+    expect(info).toHaveTextContent("goals.create.info.equipmentOwnedNone")
   })
 
   it("disables submit on the Equipment pill until a piece of equipment is selected", async () => {

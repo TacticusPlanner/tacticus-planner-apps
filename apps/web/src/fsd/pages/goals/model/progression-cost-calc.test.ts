@@ -6,6 +6,7 @@ import type {
 
 import {
   ascensionResourceNeed,
+  isMythicProgression,
   unlockResourceNeed,
 } from "./progression-cost-calc"
 
@@ -162,5 +163,17 @@ describe("unlockResourceNeed", () => {
     })
 
     expect(need.shards).toBe(0)
+  })
+})
+
+describe("isMythicProgression", () => {
+  it("is true once progression reaches the Mythic tier", () => {
+    expect(isMythicProgression("Mythic:OneBlueStar")).toBe(true)
+    expect(isMythicProgression("Mythic:MythicWings")).toBe(true)
+  })
+
+  it("is false for every pre-Mythic tier", () => {
+    expect(isMythicProgression("Common:None")).toBe(false)
+    expect(isMythicProgression("Legendary:OneBlueStar")).toBe(false)
   })
 })

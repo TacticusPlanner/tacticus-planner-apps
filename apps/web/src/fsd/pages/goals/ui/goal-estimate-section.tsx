@@ -30,7 +30,9 @@ export function GoalEstimateSection({
       <p>
         {t("goals.detail.originalEstimate")}:{" "}
         {snapshot?.originalEstimateDays != null
-          ? `${snapshot.originalEstimateDays}d · ${snapshot.originalEstimateDate}`
+          ? t("goals.create.previewEstimate", {
+              days: snapshot.originalEstimateDays,
+            })
           : t("goals.detail.unavailable")}
       </p>
       <p>
@@ -38,19 +40,14 @@ export function GoalEstimateSection({
         {estimate?.status === "Blocked"
           ? t(`goals.estimate.blocked.${estimate.reason}`)
           : estimate
-            ? `${estimate.days}d · ${estimate.date}`
+            ? t("goals.create.previewEstimate", { days: estimate.days })
             : t("goals.detail.unavailable")}
       </p>
       {snapshot ? (
         <p className="flex items-center gap-1.5 text-muted-foreground">
           <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
-          {t("goals.detail.originalResources", {
-            count: snapshot.initialRequirement.reduce(
-              (sum, item) => sum + item.count,
-              0
-            ),
+          {t("goals.create.previewEnergy", {
             energy: snapshot.originalEnergyTotal ?? "—",
-            raids: snapshot.originalRaidsTotal ?? "—",
           })}
         </p>
       ) : null}

@@ -37,6 +37,8 @@ export function computeCreationPreview(params: {
   rankStart: Rank
   rankEnd: Rank
   rankEndPointFive: boolean
+  rankEndAppliedUpgrades: number
+  rankEndTopRowCount: number
   abilityActiveStart: number
   abilityActiveEnd: number
   abilityPassiveStart: number
@@ -71,6 +73,8 @@ export function computeCreationPreview(params: {
           rankStart: params.rankStart,
           rankEnd: params.rankEnd,
           rankEndPointFive: params.rankEndPointFive,
+          rankEndAppliedUpgrades: params.rankEndAppliedUpgrades,
+          rankEndTopRowCount: params.rankEndTopRowCount,
           playerCharacter: params.playerCharacter,
           inventoryUpgrades: params.inventoryUpgrades,
           upgradesById: params.upgradesById,

@@ -137,11 +137,13 @@ const rankDetail = {
   config: {
     farmingLocationIds: [],
     farmingStrategy: "TotalUpgrades",
+    // end: 15 (Diamond1) — wide enough to span 2+ milestone checkpoints, so Milestones stays
+    // selectable (farmingStrategyAvailability disables it below that).
     rank: {
       start: 0,
       startPointFive: false,
       startAppliedUpgrades: 0,
-      end: 5,
+      end: 15,
       endPointFive: false,
       endAppliedUpgrades: 0,
     },
@@ -156,6 +158,19 @@ const unlockDetail = {
   // Unlock goals never populate initialRequirement (buildCreateGoalSnapshot's ownsResourcePreview is
   // only true for Character Rank / Mow Ability) — the shard-location list instead comes from
   // charactersById, mocked above.
+  snapshot: { ...detail.snapshot, initialRequirement: [] },
+}
+
+const levelDetail = {
+  ...detail,
+  goalType: "Level",
+  dependsOn: [],
+  config: {
+    farmingLocationIds: [],
+    farmingStrategy: "TotalUpgrades",
+    level: { start: 31, end: 42 },
+  },
+  // Level goals are uncosted — buildCreateGoalSnapshot never populates initialRequirement for them.
   snapshot: { ...detail.snapshot, initialRequirement: [] },
 }
 
@@ -215,7 +230,11 @@ describe("GoalDetailSheet", () => {
       screen.getByText(
         (_, element) =>
           element?.tagName === "P" &&
-          Boolean(element.textContent?.includes("3d · 2026-01-08"))
+          Boolean(
+            element.textContent?.includes(
+              'goals.create.previewEstimate:{"days":3}'
+            )
+          )
       )
     ).toBeInTheDocument()
 
@@ -370,5 +389,30 @@ describe("GoalDetailSheet", () => {
     expect(
       screen.getByRole("checkbox", { name: "shard-battle-2" })
     ).toBeInTheDocument()
+  })
+
+  it("shows the current/target level for a Level goal, with no farming strategy or location picker", async () => {
+    getGoal.mockReset().mockResolvedValue(levelDetail)
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+
+    const levelSummary = screen.getByTestId("goal-detail-level")
+    expect(levelSummary).toHaveTextContent("goals.create.level.current: 31")
+    expect(levelSummary).toHaveTextContent("goals.create.level.target: 42")
+    expect(
+      screen.queryByTestId("create-goal-farming-strategy")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goal-detail-locations")
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByText("goals.detail.save"))
+    await vi.waitFor(() => {
+      expect(updateGoal).toHaveBeenCalledWith("goal-1", {
+        farmingLocationIds: null,
+        notes: "Old note",
+        farmingStrategy: "TotalUpgrades",
+      })
+    })
   })
 })

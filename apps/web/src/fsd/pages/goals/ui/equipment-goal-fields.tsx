@@ -1,5 +1,6 @@
 import { useMemo, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { Badge } from "@workspace/ui/components/badge"
 import { FieldError } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
@@ -12,6 +13,7 @@ import {
   RarityCombobox,
   type RarityComboboxItem,
 } from "@/shared/ui"
+import type { OwnedEquipmentLevel } from "../model/use-create-equipment-goal-form"
 
 /** The "Equipment" pill's form body — an equipment/relic picker plus a target level, both bounded
  * by that piece's own level count. Uses the same searchable, rarity-grouped combobox as the
@@ -28,6 +30,7 @@ export function EquipmentGoalFields({
   targetLevel,
   setTargetLevel,
   maxLevel,
+  ownedByLevel,
   status,
   errorMessage,
   handleSubmit,
@@ -38,6 +41,7 @@ export function EquipmentGoalFields({
   targetLevel: number
   setTargetLevel: (value: number) => void
   maxLevel: number
+  ownedByLevel: OwnedEquipmentLevel[]
   status: "idle" | "submitting" | "error"
   errorMessage: string | null
   handleSubmit: (event: FormEvent) => void | Promise<void>
@@ -89,6 +93,30 @@ export function EquipmentGoalFields({
           value={equipmentId}
         />
       </div>
+
+      {selectedEquipment ? (
+        <div
+          className="grid gap-2 rounded-2xl border p-3 text-sm"
+          data-testid="create-goal-equipment-info"
+        >
+          <p className="font-medium">
+            {t("goals.create.info.equipmentOwnedTitle")}
+          </p>
+          {ownedByLevel.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {ownedByLevel.map(({ level, count }) => (
+                <Badge key={level} variant="secondary">
+                  {t("goals.create.info.equipmentLevelCount", { level, count })}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              {t("goals.create.info.equipmentOwnedNone")}
+            </p>
+          )}
+        </div>
+      ) : null}
 
       {selectedEquipment ? (
         <div className="grid gap-2">

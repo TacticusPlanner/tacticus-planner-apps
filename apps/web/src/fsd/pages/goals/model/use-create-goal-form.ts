@@ -3,22 +3,28 @@ import { useLiveQuery } from "dexie-react-hooks"
 import { useQuery } from "@tanstack/react-query"
 
 import type { UnitId } from "@workspace/game-domain"
-import { getInventoryUpgrades } from "@workspace/player-data/queries"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
+import {
+  getInventoryUpgrades,
+  getInventoryXpBooks,
+} from "@workspace/player-data/queries"
 
 import { type FarmingStrategy, type GoalKind } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { projectQueries } from "@/entities/project"
 
 import { computeCreationPreview } from "./goal-preview"
+import { additionalTargetSelection } from "./rank-additional-target"
 import { useAbilityFields } from "./use-ability-fields"
 import { useAscensionFields } from "./use-ascension-fields"
 import { useEntityPrefillEffect } from "./use-entity-prefill-effect"
+import { useEntityShardSummary } from "./use-entity-shard-summary"
 import { useGoalCatalog } from "./use-goal-catalog"
 import { useGoalPrefill } from "./use-goal-prefill"
 import { useGoalPrerequisitesAndReview } from "./use-goal-prerequisites-and-review"
 import { useGoalSubmit } from "./use-goal-submit"
 import { useGoalValidationState } from "./use-goal-validation-state"
+import { useLevelFields } from "./use-level-fields"
+import { useLevelGoalCost } from "./use-level-goal-cost"
 import { useLockedUnitIds } from "./use-locked-unit-ids"
 import { useRankFields } from "./use-rank-fields"
 import { useUpgradeFields } from "./use-upgrade-fields"
@@ -64,6 +70,7 @@ export function useCreateGoalForm({
     getMow,
   } = useGoalCatalog()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+  const inventoryXpBooks = useLiveQuery(() => getInventoryXpBooks(), [])
 
   const [entityType, setEntityType] = useState<EntityType>("Character")
   const [entityId, setEntityId] = useState<UnitId | undefined>(undefined)
@@ -72,6 +79,7 @@ export function useCreateGoalForm({
   const [includeSuggestedUnlock, setIncludeSuggestedUnlock] = useState(true)
   const [includeSuggestedAscension, setIncludeSuggestedAscension] =
     useState(true)
+  const [includeSuggestedLevel, setIncludeSuggestedLevel] = useState(true)
 
   const [farmingStrategy, setFarmingStrategy] =
     useState<FarmingStrategy>("TotalUpgrades")
@@ -80,21 +88,12 @@ export function useCreateGoalForm({
   // case) — a goal may belong to several projects at once (checkbox list, plan: multi-project goals).
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([])
 
-  const { playerEntity } = useGoalPrefill(entityId, entityType)
-  // A Character's synced record is the only one that ever carries `rank` (plan §16 phase 6 — a MoW
-  // has no rank at all); `entityType` reliably discriminates which shape `playerEntity` actually is,
-  // since useGoalPrefill fetched it based on that same value.
-  // `playerEntity`'s runtime shape always matches `entityType` (useGoalPrefill fetched it based on
-  // that same value) — TS can't correlate two separately-computed variables through the ternary
-  // below, so the cast documents an invariant the types alone can't express.
-  const playerCharacter =
-    entityType === "Character"
-      ? (playerEntity as PlayerDataChunkDto<"characters">[number] | undefined)
-      : undefined
-  const playerMow =
-    entityType === "Mow"
-      ? (playerEntity as PlayerDataChunkDto<"mows">[number] | undefined)
-      : undefined
+  const {
+    playerEntity,
+    playerCharacter,
+    playerMow,
+    loading: entityLoading,
+  } = useGoalPrefill(entityId, entityType)
 
   const character =
     entityType === "Character" && entityId ? getCharacter(entityId) : undefined
@@ -104,11 +103,28 @@ export function useCreateGoalForm({
   // destructured by name — the rest (setters, option lists, and everything Upgrade-specific beyond
   // `upgradeTargets`) flow straight through via `...xFields.state` in the return value at the
   // bottom, unread here.
-  const rankFields = useRankFields(playerCharacter?.rank)
-  const { rankStart, rankEnd, rankStartPointFive, rankEndPointFive } =
-    rankFields.state
+  const rankFields = useRankFields()
+  const { rankStart, rankEnd, rankAdditionalTarget } = rankFields.state
+  const {
+    pointFive: rankEndPointFive,
+    appliedUpgrades: rankEndAppliedUpgrades,
+    topRowCount: rankEndTopRowCount,
+  } = additionalTargetSelection(rankAdditionalTarget)
 
-  const ascensionFields = useAscensionFields(playerEntity?.progressionIndex)
+  // How many of the current rank's own upgrade slots are already applied — the small "3/6" badge
+  // next to the read-only "Current rank" field. `rankUpgradeSlotsTotal` comes from the catalog (so
+  // it's known even for a locked/unowned character); `rankAppliedUpgrades` is 0 until synced player
+  // data resolves, deduplicated and capped the same way the backend's achievement check treats
+  // `appliedUpgradeSlots` (`GoalAchievementEvaluator.RankAchieved`'s `.Distinct().Count()`).
+  const rankUpgradeSlotsTotal =
+    character?.rankUpUpgrades.find((entry) => entry.rank === rankStart)
+      ?.upgradeIds.length ?? 0
+  const rankAppliedUpgrades = Math.min(
+    playerCharacter ? new Set(playerCharacter.appliedUpgradeSlots).size : 0,
+    rankUpgradeSlotsTotal
+  )
+
+  const ascensionFields = useAscensionFields()
   const { progressionStart, progressionEnd, ascensionFarmingSource } =
     ascensionFields.state
 
@@ -118,8 +134,18 @@ export function useCreateGoalForm({
     abilityActiveEnd,
     abilityPassiveStart,
     abilityPassiveEnd,
-    abilityTrack,
   } = abilityFields.state
+
+  const levelFields = useLevelFields()
+  const { levelStart, levelEnd } = levelFields.state
+
+  const levelCost = useLevelGoalCost({
+    enabled: enabledTypes.has("Level"),
+    levelStart,
+    levelEnd,
+    currentXp: playerCharacter?.xp ?? 0,
+    inventoryXpBooks,
+  })
 
   const upgradeFields = useUpgradeFields({
     character,
@@ -135,10 +161,12 @@ export function useCreateGoalForm({
     entityId,
     playerEntity,
     rank: playerCharacter?.rank,
+    xpLevel: playerCharacter?.xpLevel,
     rankFields,
     upgradeFields,
     ascensionFields,
     abilityFields,
+    levelFields,
     setEnabledTypes,
   })
 
@@ -172,19 +200,28 @@ export function useCreateGoalForm({
     rankFields.reset()
     ascensionFields.reset()
     abilityFields.reset()
+    levelFields.reset()
     upgradeFields.reset()
     setFarmingStrategy("TotalUpgrades")
+  }
+
+  // Shared by resetForm (also clears entity selection + projects) and handleEntityChange (also
+  // switches entity) — every goal-type toggle/suggestion/target field reverts to its just-picked-
+  // a-unit default.
+  const resetSelections = () => {
+    setEnabledTypes(defaultGoalTypes())
+    setIncludeSuggestedUnlock(true)
+    setIncludeSuggestedAscension(true)
+    setIncludeSuggestedLevel(true)
+    resetTargetFields()
+    resetPrefillGuard()
   }
 
   const resetForm = () => {
     setEntityType("Character")
     setEntityId(undefined)
-    setEnabledTypes(defaultGoalTypes())
-    setIncludeSuggestedUnlock(true)
-    setIncludeSuggestedAscension(true)
-    resetTargetFields()
+    resetSelections()
     setSelectedProjectIds([])
-    resetPrefillGuard()
   }
 
   // The Unit picker (plan: merged Character/Mow tabs into one) offers both kinds together — the
@@ -195,17 +232,20 @@ export function useCreateGoalForm({
     const type: EntityType = charactersById?.has(id) ? "Character" : "Mow"
     setEntityType(type)
     setEntityId(id)
-    setEnabledTypes(defaultGoalTypes())
-    setIncludeSuggestedUnlock(true)
-    setIncludeSuggestedAscension(true)
-    resetTargetFields()
-    resetPrefillGuard()
+    resetSelections()
   }
 
   // Whether the selected entity is already in the caller's synced roster — an Unlock goal never
   // makes sense for it (see `unlockAvailable` and the validation check below), regardless of
   // Character/MoW.
   const isOwned = !!playerEntity
+
+  // Shard progress for the selected-entity info card (below the unit picker) — see
+  // use-entity-shard-summary.ts for the owned/locked split.
+  const { usesMythicShards, lockedShards } = useEntityShardSummary(
+    entityId,
+    playerEntity
+  )
   // A MoW has no `shardLocations` in the catalog at all (unlike a Character, whose farmability can
   // be genuinely absent — an unreleased character has no catalog shard locations yet), so Unlock is
   // simply offered whenever a MoW isn't already owned; its resource cost just isn't estimated yet
@@ -232,6 +272,8 @@ export function useCreateGoalForm({
         rankStart,
         rankEnd,
         rankEndPointFive,
+        rankEndAppliedUpgrades,
+        rankEndTopRowCount,
         abilityActiveStart,
         abilityActiveEnd,
         abilityPassiveStart,
@@ -251,6 +293,8 @@ export function useCreateGoalForm({
       rankStart,
       rankEnd,
       rankEndPointFive,
+      rankEndAppliedUpgrades,
+      rankEndTopRowCount,
       abilityActiveStart,
       abilityActiveEnd,
       abilityPassiveStart,
@@ -266,6 +310,7 @@ export function useCreateGoalForm({
     prerequisites,
     includesUnlock,
     includesAscension,
+    includesLevel,
     progressionPreview,
     reviewItems,
   } = useGoalPrerequisitesAndReview({
@@ -279,8 +324,12 @@ export function useCreateGoalForm({
         : undefined,
     enabledTypes,
     rankEnd,
+    rankAdditionalTarget,
+    abilityActiveEnd,
+    abilityPassiveEnd,
     includeSuggestedUnlock,
     includeSuggestedAscension,
+    includeSuggestedLevel,
     progressionStart,
     progressionEnd,
     ascensionFarmingSource,
@@ -296,6 +345,7 @@ export function useCreateGoalForm({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
+    atMaxLevel,
     validationMessage,
     canSubmit,
   } = useGoalValidationState({
@@ -314,6 +364,8 @@ export function useCreateGoalForm({
     abilityActiveEnd,
     abilityPassiveStart,
     abilityPassiveEnd,
+    levelStart,
+    levelEnd,
     upgradeFieldsValid: upgradeFields.isValid,
   })
 
@@ -332,11 +384,13 @@ export function useCreateGoalForm({
       enabledTypes,
       includesUnlock,
       includesAscension,
+      includesLevel,
       ascensionSuggestion: prerequisites.needsAscension,
+      levelSuggestion: prerequisites.needsLevel,
       rankStart,
       rankEnd,
-      rankStartPointFive,
       rankEndPointFive,
+      rankEndAppliedUpgrades,
       progressionStart,
       progressionEnd,
       ascensionFarmingSource,
@@ -344,7 +398,8 @@ export function useCreateGoalForm({
       abilityActiveEnd,
       abilityPassiveStart,
       abilityPassiveEnd,
-      abilityTrack,
+      levelStart,
+      levelEnd,
       farmingStrategy,
       upgradeTargets,
     },
@@ -374,7 +429,13 @@ export function useCreateGoalForm({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
+    atMaxLevel,
     entityAlreadyOwned: isOwned,
+    entityLoading,
+    ownedShards: playerEntity?.shards,
+    ownedMythicShards: playerEntity?.mythicShards,
+    usesMythicShards,
+    lockedShards,
     lockedUnitIds,
     toggleType,
     prerequisites,
@@ -382,10 +443,16 @@ export function useCreateGoalForm({
     setIncludeSuggestedUnlock,
     includeSuggestedAscension,
     setIncludeSuggestedAscension,
+    includeSuggestedLevel,
+    setIncludeSuggestedLevel,
     reviewItems,
+    rankAppliedUpgrades,
+    rankUpgradeSlotsTotal,
     ...rankFields.state,
     ...ascensionFields.state,
     ...abilityFields.state,
+    ...levelFields.state,
+    levelCost,
     farmingStrategy,
     setFarmingStrategy,
     ...upgradeFields.state,

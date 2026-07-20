@@ -33,6 +33,7 @@ export type {
   GoalSnapshotResource,
   GoalStatus,
   GoalSummary,
+  LevelTarget,
   ProgressionTarget,
   RankTarget,
   UpgradeItemTarget,

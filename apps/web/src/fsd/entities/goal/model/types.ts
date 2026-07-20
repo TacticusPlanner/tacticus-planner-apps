@@ -3,7 +3,13 @@
 // not enum values).
 export type GoalEntityType = "Character" | "Mow" | "Equipment"
 export type GoalKind =
-  "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade" | "UpgradeEquipment"
+  | "Rank"
+  | "Ascension"
+  | "Ability"
+  | "Unlock"
+  | "Upgrade"
+  | "UpgradeEquipment"
+  | "Level"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
 export type AscensionFarmingSource = "Campaign" | "Onslaught" | "Both"
@@ -36,6 +42,13 @@ export type AbilityTarget = {
   activeEnd: number
   passiveStart: number
   passiveEnd: number
+}
+
+/** Target character level (`GoalEntityType` `"Character"` only — see `MAX_CHARACTER_LEVEL`).
+ * Uncosted, like Ability — "complete" is simply the player's synced `xpLevel` reaching `end`. */
+export type LevelTarget = {
+  start: number
+  end: number
 }
 
 export type AscensionFarmingConfig = {
@@ -71,6 +84,7 @@ export type GoalConfig = {
   farmingLocationIds: string[] | null
   upgrade: UpgradeTarget | null
   equipment: EquipmentTarget | null
+  level: LevelTarget | null
 }
 
 export type GoalMilestone = {
@@ -145,6 +159,7 @@ export type CreateGoalConfigRequest = {
   farmingLocationIds?: string[] | null
   upgrade?: UpgradeTarget | null
   equipment?: EquipmentTarget | null
+  level?: LevelTarget | null
 }
 
 export type CreateGoalRequest = {

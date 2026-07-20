@@ -10,12 +10,13 @@ import { UnitCombobox } from "@/shared/ui"
 import type { useCreateGoalForm } from "../model/use-create-goal-form"
 import { FarmingStrategyField } from "./farming-strategy-field"
 import {
-  AbilityTrackFields,
   AscensionFarmingFields,
   ProgressionPreview,
 } from "./goal-farming-fields"
-import { RankGoalFields } from "./goal-type-fields"
+import { AbilityGoalFields, RankGoalFields } from "./goal-type-fields"
 import { GoalTypeCard, GoalTypeToggleGroup } from "./goal-visuals"
+import { LevelGoalFields } from "./level-goal-fields"
+import { UnitInfoCard } from "./unit-info-card"
 import { UpgradeGoalFields } from "./upgrade-goal-fields"
 
 // Rank is omitted entirely on the MoW tab (plan §16 phase 6) — MoWs have no rank ladder, so offering
@@ -23,13 +24,14 @@ import { UpgradeGoalFields } from "./upgrade-goal-fields"
 // never handle for that entity. Unlock, by contrast, applies to both — a MoW's resource cost just
 // isn't estimated yet (see `unlockResourceNeed`'s `isMow` short-circuit).
 const CHARACTER_GOAL_KINDS: GoalKind[] = [
-  "Rank",
+  "Unlock",
   "Ascension",
   "Ability",
-  "Unlock",
   "Upgrade",
+  "Rank",
+  "Level",
 ]
-const MOW_GOAL_KINDS: GoalKind[] = ["Ascension", "Ability", "Unlock", "Upgrade"]
+const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
 
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
@@ -41,7 +43,7 @@ type GoalForm = ReturnType<typeof useCreateGoalForm>
  * a coordinator-level component (it assembles many goal-type cards from the one central form, same
  * as `create-goal-sheet.tsx` itself), not a leaf presentational field, so taking the whole `form`
  * is the same posture as the sheet already had; the leaf field components it renders
- * (`RankGoalFields`, `AscensionFarmingFields`, `AbilityTrackFields`, `FarmingStrategyField`,
+ * (`RankGoalFields`, `AscensionFarmingFields`, `AbilityGoalFields`, `FarmingStrategyField`,
  * `UpgradeGoalFields`, `ProgressionPreview`) each still get only their own explicit props.
  */
 export function UnitGoalFormFields({
@@ -72,6 +74,27 @@ export function UnitGoalFormFields({
       </div>
 
       {form.entityId ? (
+        <UnitInfoCard
+          entityType={form.entityType}
+          isOwned={form.entityAlreadyOwned}
+          loading={form.entityLoading}
+          rank={form.entityType === "Character" ? form.rankStart : undefined}
+          progression={form.progressionStart}
+          abilityActiveLevel={form.abilityActiveStart}
+          abilityPassiveLevel={form.abilityPassiveStart}
+          level={form.entityType === "Character" ? form.levelStart : undefined}
+          shardCount={
+            form.entityAlreadyOwned
+              ? ((form.usesMythicShards
+                  ? form.ownedMythicShards
+                  : form.ownedShards) ?? 0)
+              : (form.lockedShards ?? 0)
+          }
+          shardIsMythic={form.entityAlreadyOwned && form.usesMythicShards}
+        />
+      ) : null}
+
+      {form.entityId ? (
         <div className="grid gap-1.5">
           <Label className="text-xs text-muted-foreground">
             {t("goals.create.goalTypeLabel")}
@@ -87,6 +110,7 @@ export function UnitGoalFormFields({
               (kind === "Rank" && form.atMaxRank) ||
               (kind === "Ascension" && form.atMaxProgression) ||
               (kind === "Ability" && form.atMaxAbility) ||
+              (kind === "Level" && form.atMaxLevel) ||
               (kind === "Upgrade" &&
                 form.entityType === "Character" &&
                 form.atMaxRank)
@@ -115,6 +139,11 @@ export function UnitGoalFormFields({
           {form.atMaxAbility ? (
             <p className="text-xs text-muted-foreground">
               {t("goals.create.validation.abilityMaxed")}
+            </p>
+          ) : null}
+          {form.atMaxLevel ? (
+            <p className="text-xs text-muted-foreground">
+              {t("goals.create.validation.levelMaxed")}
             </p>
           ) : null}
         </div>
@@ -150,27 +179,43 @@ export function UnitGoalFormFields({
         </Field>
       ) : null}
 
+      {form.prerequisites.needsLevel ? (
+        <Field orientation="horizontal">
+          <Checkbox
+            checked={form.includeSuggestedLevel}
+            data-testid="create-goal-include-level"
+            onCheckedChange={(checked) =>
+              form.setIncludeSuggestedLevel(checked === true)
+            }
+          />
+          <FieldLabel className="font-normal">
+            {t("goals.create.suggestions.includeLevel", {
+              level: form.prerequisites.needsLevel.end,
+            })}
+          </FieldLabel>
+        </Field>
+      ) : null}
+
       {form.entityId && form.enabledTypes.has("Rank") ? (
         <GoalTypeCard kind="Rank">
           <RankGoalFields
             rankStart={form.rankStart}
             rankEnd={form.rankEnd}
             rankEndOptions={form.rankEndOptions}
-            rankStartOptions={form.rankStartOptions}
-            rankStartPointFive={form.rankStartPointFive}
-            rankEndPointFive={form.rankEndPointFive}
-            onRankStartChange={form.setRankStart}
+            rankAdditionalTarget={form.rankAdditionalTarget}
+            additionalTargetChoices={form.additionalTargetChoices}
             onRankEndChange={form.setRankEnd}
-            onRankStartPointFiveChange={form.setRankStartPointFive}
-            onRankEndPointFiveChange={form.setRankEndPointFive}
+            onRankAdditionalTargetChange={form.setRankAdditionalTarget}
             missingUpgrades={form.missingUpgrades}
             estimate={form.estimatePreview}
-            dailyEnergy={form.planningSettings.dailyEnergy}
+            rankAppliedUpgrades={form.rankAppliedUpgrades}
+            rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
           />
           <FarmingStrategyField
             context="rank"
             rankStart={form.rankStart}
             rankEnd={form.rankEnd}
+            rankAdditionalTarget={form.rankAdditionalTarget}
             abilityActiveStart={form.abilityActiveStart}
             abilityActiveEnd={form.abilityActiveEnd}
             abilityPassiveStart={form.abilityPassiveStart}
@@ -181,13 +226,23 @@ export function UnitGoalFormFields({
         </GoalTypeCard>
       ) : null}
 
+      {form.entityId && form.enabledTypes.has("Level") ? (
+        <GoalTypeCard kind="Level">
+          <LevelGoalFields
+            levelStart={form.levelStart}
+            levelEnd={form.levelEnd}
+            levelEndOptions={form.levelEndOptions}
+            onLevelEndChange={form.setLevelEnd}
+            cost={form.levelCost}
+          />
+        </GoalTypeCard>
+      ) : null}
+
       {form.entityId && form.enabledTypes.has("Ascension") ? (
         <GoalTypeCard kind="Ascension">
           <AscensionFarmingFields
             progressionStart={form.progressionStart}
             progressionEnd={form.progressionEnd}
-            progressionStartOptions={form.progressionStartOptions}
-            onProgressionStartChange={form.setProgressionStart}
             onProgressionEndChange={form.setProgressionEnd}
             ascensionFarmingSource={form.ascensionFarmingSource}
             onAscensionFarmingSourceChange={form.setAscensionFarmingSource}
@@ -198,21 +253,14 @@ export function UnitGoalFormFields({
 
       {form.entityId && form.enabledTypes.has("Ability") ? (
         <GoalTypeCard entityType={form.entityType} kind="Ability">
-          <AbilityTrackFields
-            entityType={form.entityType}
-            abilityTrack={form.abilityTrack}
-            onAbilityTrackChange={form.setAbilityTrack}
-            abilityActiveStart={form.abilityActiveStart}
-            abilityActiveEnd={form.abilityActiveEnd}
-            abilityPassiveStart={form.abilityPassiveStart}
-            abilityPassiveEnd={form.abilityPassiveEnd}
-            onAbilityActiveStartChange={form.setAbilityActiveStart}
-            onAbilityActiveEndChange={form.setAbilityActiveEnd}
-            onAbilityPassiveStartChange={form.setAbilityPassiveStart}
-            onAbilityPassiveEndChange={form.setAbilityPassiveEnd}
+          <AbilityGoalFields
+            activeStart={form.abilityActiveStart}
+            passiveStart={form.abilityPassiveStart}
+            targetLevel={form.abilityTargetLevel}
+            onTargetLevelChange={form.setAbilityTargetLevel}
             missingUpgrades={form.missingUpgrades}
             estimate={form.estimatePreview}
-            dailyEnergy={form.planningSettings.dailyEnergy}
+            costingSupported={form.entityType === "Mow"}
           />
           {form.entityType === "Mow" ? (
             <FarmingStrategyField
@@ -287,7 +335,9 @@ export function UnitGoalFormFields({
                     {t(
                       item.goalType === "Unlock"
                         ? "goals.create.suggestions.unlockRequired"
-                        : "goals.create.suggestions.ascensionRequired"
+                        : item.goalType === "Level"
+                          ? "goals.create.suggestions.levelRequired"
+                          : "goals.create.suggestions.ascensionRequired"
                     )}
                   </span>
                 ) : null}

@@ -1,40 +1,26 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 
 import {
   firstProgression,
   progressionIndex,
-  progressionOrder,
   type Progression,
 } from "@workspace/game-domain"
 
 import type { AscensionFarmingSource } from "@/entities/goal"
 
 /**
- * The Ascension goal's own target-range state — start/end progression step, the shard-farming
- * source toggle, and the start-option list (bounded below by the unit's actual current
- * progression). Split out of `use-create-goal-form.ts` purely for that file's own max-lines
- * budget. `currentProgression` is the unit's live synced progression (`playerEntity?.
- * progressionIndex`) — undefined for an unowned/locked unit.
+ * The Ascension goal's own target-range state — a read-only start progression (always the unit's
+ * live synced progression, never user-editable — see `prefillFrom`), the target progression step,
+ * and the shard-farming source toggle. Split out of `use-create-goal-form.ts` purely for that
+ * file's own max-lines budget.
  */
-export function useAscensionFields(
-  currentProgression: Progression | undefined
-) {
+export function useAscensionFields() {
   const [progressionStart, setProgressionStart] =
     useState<Progression>(firstProgression)
   const [progressionEnd, setProgressionEnd] =
     useState<Progression>(firstProgression)
   const [ascensionFarmingSource, setAscensionFarmingSource] =
     useState<AscensionFarmingSource>("Campaign")
-
-  const progressionStartOptions = useMemo(
-    () =>
-      progressionOrder.filter(
-        (progression) =>
-          progressionIndex(progression) >=
-          progressionIndex(currentProgression ?? progressionStart)
-      ),
-    [currentProgression, progressionStart]
-  )
 
   const reset = () => {
     setProgressionStart(firstProgression)
@@ -44,6 +30,8 @@ export function useAscensionFields(
 
   // Applies the synced current-progression prefill once per entity selection — called from the
   // parent's single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
+  // `progressionStart` is never otherwise settable — the "From" field always reflects this synced
+  // value.
   const prefillFrom = (progression: Progression) => {
     setProgressionStart(progression)
     setProgressionEnd((current) =>
@@ -56,10 +44,8 @@ export function useAscensionFields(
   return {
     state: {
       progressionStart,
-      setProgressionStart,
       progressionEnd,
       setProgressionEnd,
-      progressionStartOptions,
       ascensionFarmingSource,
       setAscensionFarmingSource,
     },
