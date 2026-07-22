@@ -181,9 +181,15 @@ type TooltipRenderProps = {
     role: string
     title: string
   }
-  closeProps: { /* same shape */ }
-  primaryProps: { /* same shape */ }
-  skipProps: { /* same shape */ }
+  closeProps: {
+    /* same shape */
+  }
+  primaryProps: {
+    /* same shape */
+  }
+  skipProps: {
+    /* same shape */
+  }
 
   // Container props (spread on tooltip wrapper)
   tooltipProps: {
