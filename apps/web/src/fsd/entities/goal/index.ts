@@ -35,6 +35,7 @@ export type {
   GoalSummary,
   LevelTarget,
   ProgressionTarget,
+  ProjectPriority,
   RankTarget,
   UpgradeItemTarget,
   UpgradeTarget,

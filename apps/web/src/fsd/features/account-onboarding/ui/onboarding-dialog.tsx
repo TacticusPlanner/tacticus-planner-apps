@@ -215,6 +215,8 @@ function ImportProfileForm({ onCompleted }: FormProps) {
           tacticusUserId: true,
           guildApiToken: false,
           goals: false,
+          onslaughtProgress: false,
+          campaignEventProgress: false,
         },
       })
       onCompleted()

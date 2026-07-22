@@ -80,6 +80,8 @@ export {
   UpgradeIcons,
   rarityIcon,
   rankIcon,
+  onslaughtTierIcon,
+  onslaughtAllianceIcon,
   shardIcon,
   characterIcon,
   mowIcon,
@@ -95,4 +97,7 @@ export {
   type StatIconKind,
   progressionVisual,
   type ProgressionVisual,
+  type OnslaughtSectorIcon,
+  type OnslaughtTierIcon,
+  type OnslaughtAllianceIcon,
 } from "./game-entities"

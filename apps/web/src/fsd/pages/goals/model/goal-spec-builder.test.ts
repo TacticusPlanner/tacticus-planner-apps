@@ -39,6 +39,8 @@ const baseSpecParams = {
   levelEnd: 2,
   farmingStrategy: "TotalUpgrades" as const,
   upgradeTargets: [],
+  selectedRegularShardLocationIds: [],
+  selectedMythicShardLocationIds: [],
 }
 
 describe("buildReviewItems", () => {

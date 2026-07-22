@@ -1,5 +1,12 @@
 import type { LucideIcon } from "lucide-react"
-import { Home, LayoutGrid, ListTodo, Shield, Search, Users } from "lucide-react"
+import {
+  Home,
+  LayoutGrid,
+  ListTodo,
+  TrendingUp,
+  Search,
+  Users,
+} from "lucide-react"
 
 import { isUiKitEnabled } from "@/shared/config"
 
@@ -9,7 +16,7 @@ export interface NavItem {
     | "nav.home"
     | "nav.lookup"
     | "nav.goals"
-    | "nav.onslaught"
+    | "nav.progress"
     | "nav.uiKit"
     | "nav.guild"
   icon: LucideIcon
@@ -43,9 +50,9 @@ export const navItems: NavItem[] = [
     mobilePlacement: "primary",
   },
   {
-    path: "/onslaught",
-    labelKey: "nav.onslaught",
-    icon: Shield,
+    path: "/progress",
+    labelKey: "nav.progress",
+    icon: TrendingUp,
     anonymousAllowed: false,
     mobilePlacement: "menu",
   },

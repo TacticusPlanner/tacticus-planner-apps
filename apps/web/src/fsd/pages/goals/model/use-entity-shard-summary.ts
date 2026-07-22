@@ -3,6 +3,7 @@ import { useLiveQuery } from "dexie-react-hooks"
 import type { Progression, UnitId } from "@workspace/game-domain"
 import { getInventoryShard } from "@workspace/player-data/queries"
 
+import type { EntityType } from "./use-create-goal-form"
 import { isMythicProgression } from "./progression-cost-calc"
 
 /**
@@ -13,8 +14,11 @@ import { isMythicProgression } from "./progression-cost-calc"
  * chunk keyed by unitId, fetched here.
  */
 export function useEntityShardSummary(
+  entityType: EntityType,
   entityId: UnitId | undefined,
-  playerEntity: { progressionIndex: Progression } | undefined
+  isOwned: boolean,
+  playerEntity: { progressionIndex: Progression } | undefined,
+  charactersById: Map<string, { shardLocations?: unknown[] }> | undefined
 ) {
   const lockedShard = useLiveQuery(
     () => (entityId ? getInventoryShard(entityId) : undefined),
@@ -27,5 +31,19 @@ export function useEntityShardSummary(
   const usesMythicShards =
     !!playerEntity && isMythicProgression(playerEntity.progressionIndex)
 
-  return { usesMythicShards, lockedShards: lockedShard?.amount }
+  // A MoW has no `shardLocations` in the catalog at all (unlike a Character, whose farmability can
+  // be genuinely absent — an unreleased character has no catalog shard locations yet), so Unlock is
+  // simply offered whenever a MoW isn't already owned; its resource cost just isn't estimated yet
+  // (see `unlockResourceNeed`'s `isMow` short-circuit).
+  const unlockAvailable =
+    !!entityId &&
+    !isOwned &&
+    (entityType === "Mow" ||
+      (charactersById?.get(entityId)?.shardLocations?.length ?? 0) > 0)
+
+  return {
+    usesMythicShards,
+    lockedShards: lockedShard?.amount,
+    unlockAvailable,
+  }
 }

@@ -29,15 +29,18 @@ export function useCampaignDisplay() {
   )
 
   /**
-   * Full campaign label for a single (non-event) campaign chip, e.g. "Fall of Cadia Standard",
+   * Full campaign label for a single campaign/event chip, e.g. "Fall of Cadia Standard",
    * "Indomitus Elite", "Indomitus Mirror" (the mirror base tier omits the redundant "Standard"
-   * word since the mirror name already distinguishes it from the non-mirror campaign). Event
-   * campaigns just use the plain name — their difficulty tiers are merged into one chip.
+   * word since the mirror name already distinguishes it from the non-mirror campaign), or
+   * "Death Guard Extremis" for an event tier — events carry two distinct difficulty tiers
+   * (Standard/Extremis) that farm at very different rates, so the tier must stay visible here too.
    */
   const fullLabel = useCallback(
     (descriptor: CampaignDescriptor) => {
       const label = name(descriptor)
-      if (descriptor.isEvent) return label
+      if (descriptor.isEvent) {
+        return `${label} ${t(`campaigns:difficulties.${descriptor.difficultyToken}`)}`
+      }
       if (descriptor.difficultyToken === "elite") {
         return `${label} ${t("campaigns:difficulties.elite")}`
       }

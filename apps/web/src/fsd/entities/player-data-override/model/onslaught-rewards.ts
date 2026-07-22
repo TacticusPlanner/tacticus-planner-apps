@@ -28,8 +28,9 @@ export function onslaughtReward(
   tier: number,
   key: OnslaughtRewardKey
 ): OnslaughtRewardRange {
+  const rewardTier = tier === 4 ? 3 : tier
   const row = rewards.find(
-    (reward) => reward.sector === sector && reward.tier === tier
+    (reward) => reward.sector === sector && reward.tier === rewardTier
   )
   if (!row) throw new Error(`Missing Onslaught rewards for ${sector} ${tier}.`)
 

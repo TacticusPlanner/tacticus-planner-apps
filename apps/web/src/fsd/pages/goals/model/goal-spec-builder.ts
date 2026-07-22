@@ -293,6 +293,15 @@ export function buildCombinedGoalSpecs(params: {
   levelEnd: number
   farmingStrategy: FarmingStrategy
   upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
+  /** The shard-location selector's checked battle ids (plan: Unlock/Ascension shard-location
+   * picker), pre-split by shard type (a battle id is unambiguously one or the other, per the
+   * catalog's own `isMythic` tag — see use-shard-location-selection.ts) — empty means unrestricted
+   * for that type, so the specs below omit/empty that field rather than pinning it, identical to
+   * today's behavior before this selector existed. Unlock only ever uses the regular set (it never
+   * costs mythic shards); Ascension routes regular selections to `shardBattleIds` and mythic ones to
+   * `mythicShardBattleIds`. */
+  selectedRegularShardLocationIds: readonly string[]
+  selectedMythicShardLocationIds: readonly string[]
 }): CombinedGoalSpec[] {
   const { enabledTypes, includesUnlock, includesAscension, includesLevel } =
     params
@@ -302,7 +311,16 @@ export function buildCombinedGoalSpecs(params: {
   let levelIndex: number | null = null
 
   if (includesUnlock) {
-    specs.push({ goalType: "Unlock", config: {}, dependsOnIndex: [] })
+    specs.push({
+      goalType: "Unlock",
+      config: {
+        farmingLocationIds:
+          params.selectedRegularShardLocationIds.length > 0
+            ? [...params.selectedRegularShardLocationIds]
+            : undefined,
+      },
+      dependsOnIndex: [],
+    })
     unlockIndex = specs.length - 1
   }
 
@@ -316,8 +334,8 @@ export function buildCombinedGoalSpecs(params: {
         progression: ascension,
         ascensionFarming: {
           source: params.ascensionFarmingSource,
-          shardBattleIds: [],
-          mythicShardBattleIds: [],
+          shardBattleIds: [...params.selectedRegularShardLocationIds],
+          mythicShardBattleIds: [...params.selectedMythicShardLocationIds],
         },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],

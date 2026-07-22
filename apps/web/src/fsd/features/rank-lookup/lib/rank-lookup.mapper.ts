@@ -41,6 +41,7 @@ export function mapCampaignBattleStorageToDomain(
     challenge: record.challenge,
     nodeNumber: record.nodeNumber,
     energyCost: record.energyCost,
+    dailyAttempts: record.dailyAttempts,
   }
 }
 

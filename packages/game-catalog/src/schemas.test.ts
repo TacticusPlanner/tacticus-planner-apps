@@ -242,6 +242,7 @@ describe("catalog schemas", () => {
         energyCost: 0,
         nodeNumber: 1,
         slots: 1,
+        dailyAttempts: 10,
         rewards: { guaranteed: [], potential: [] },
         enemyPower: 34,
         enemiesAlliances: ["Xenos"],

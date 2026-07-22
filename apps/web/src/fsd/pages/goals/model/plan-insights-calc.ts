@@ -223,6 +223,12 @@ export function computePlanInsights(params: {
         priority,
         needs,
         stages: stages ?? undefined,
+        // Unlock is the only goal type that stores its shard-location selection directly on
+        // `config.farmingLocationIds` (Ascension's own selection lives on `config.ascensionFarming`
+        // instead, and isn't restricted here) — without threading it through, `estimatePlan` falls
+        // back to auto-picking every one of the character's shard locations regardless of what the
+        // user actually selected, so a duration estimate never reflects the selection at all.
+        farmingLocationIds: detail.config.farmingLocationIds ?? undefined,
       })
     }
   }

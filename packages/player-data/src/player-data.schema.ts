@@ -1,6 +1,7 @@
 import { z } from "zod"
 import {
   abilityIdSchema,
+  battleIdSchema,
   campaignIdSchema,
   equipmentIdSchema,
   progressionOrder,
@@ -154,6 +155,13 @@ const campaignProgressSchema = z.looseObject({
   highestCompletedBattleIndex: z.number(),
 })
 
+const campaignEventProgressSchema = z.looseObject({
+  tacticusCampaignId: campaignIdSchema,
+  type: z.string(),
+  completedBattleCount: z.number(),
+  completedChallengeBattlesIds: z.array(battleIdSchema),
+})
+
 const tokenBucketOrNullSchema = tokenBucketSchema.nullable()
 
 const gameModeTokensSchema = z.looseObject({
@@ -217,7 +225,7 @@ export const playerDataChunkPayloadSchemas = {
   "inventory-shards": z.array(inventoryShardSchema),
   inventory: inventorySchema,
   "campaign-progress": z.array(campaignProgressSchema),
-  "campaign-events-progress": z.array(campaignProgressSchema),
+  "campaign-events-progress": z.array(campaignEventProgressSchema),
   "live-progress": liveProgressSchema,
   "lre-progress": z.array(lreProgressSchema),
 } as const

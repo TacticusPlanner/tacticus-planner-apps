@@ -28,6 +28,7 @@ import {
   ascensionResourceNeed,
   unlockResourceNeed,
 } from "./progression-cost-calc"
+import { estimateRemainingShardEnergy } from "./shard-energy-estimate"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]
@@ -46,6 +47,13 @@ export function useProgressionPreview(params: {
   unlockShardCostsById?: ReadonlyMap<string, UnlockShardCostStorageModel>
   battlesById: Parameters<typeof estimateGoal>[0]["battlesById"]
   dailyEnergy: number
+  /** The shard-location selector's checked battle ids, split by shard type (plan: Unlock/Ascension
+   * shard-location picker, mythic-vs-regular filtering) — empty means unrestricted for that type
+   * (auto-pick least-energy node(s) among all of that type, the pre-existing behavior), matching
+   * `estimateGoal`'s own `farmingLocationIds` semantics. A regular selection never restricts the
+   * mythic estimate or vice versa — they're independent picks. */
+  regularFarmingLocationIds?: readonly string[]
+  mythicFarmingLocationIds?: readonly string[]
 }) {
   const isAuthenticated = useIsAuthenticated()
   const inventoryShard = useLiveQuery(
@@ -94,18 +102,26 @@ export function useProgressionPreview(params: {
     const campaignEnabled =
       params.unlockEnabled || params.source !== "Onslaught"
     const shardId = shardResourceId(params.entityId)
+    // Campaign nodes only ever drop regular shards (mythic is Onslaught-only below) — a mythic-only
+    // location must never be counted as a source for this regular-shard need.
+    const regularShardLocations =
+      params.character?.shardLocations.filter(
+        (location) => !location.isMythic
+      ) ?? []
+    const mythicShardLocations =
+      params.character?.shardLocations.filter(
+        (location) => location.isMythic
+      ) ?? []
     const campaign =
       campaignEnabled && regularShards > 0 && params.character
         ? estimateGoal({
             needs: [{ id: shardId, count: regularShards }],
             upgradesById: new Map([
-              [
-                shardId,
-                { id: shardId, farmLocations: params.character.shardLocations },
-              ],
+              [shardId, { id: shardId, farmLocations: regularShardLocations }],
             ]),
             battlesById: params.battlesById,
             dailyEnergy: params.dailyEnergy,
+            farmingLocationIds: params.regularFarmingLocationIds,
           })
         : null
     let onslaughtTokens = 0
@@ -141,11 +157,56 @@ export function useProgressionPreview(params: {
     const onslaughtDays =
       Math.max(0, onslaughtTokens - currentOnslaughtTokens) / 1.5
     const campaignDays = campaign?.status === "Estimated" ? campaign.days : 0
+
+    // Ascension's own "energy for remaining shards" lines (plan: shard-location selector) — isolated
+    // to Ascension's net need alone (not combined with Unlock's, unlike `campaign` above, which nets
+    // both together for the shared farm-day simulation when both are enabled), and split by shard
+    // type since a single Ascension range can need regular shards, mythic shards, or both (a step
+    // that crosses into the Mythic tier switches from one to the other), each only ever farmable from
+    // its own matching-type locations.
+    // Same "must select at least one location" gate as Unlock's own energy line — an empty selection
+    // means "nothing picked yet", not `estimateRemainingShardEnergy`'s usual unrestricted/auto-pick
+    // fallback.
+    const ascensionShardEnergy =
+      params.ascensionEnabled &&
+      params.character &&
+      (params.regularFarmingLocationIds?.length ?? 0) > 0
+        ? estimateRemainingShardEnergy({
+            entityId: params.entityId,
+            remainingShards: ascension?.shards ?? 0,
+            shardLocations: regularShardLocations,
+            battlesById: params.battlesById,
+            farmingLocationIds: params.regularFarmingLocationIds ?? [],
+            dailyEnergy: params.dailyEnergy,
+          })
+        : null
+    const ascensionMythicShardEnergy =
+      params.ascensionEnabled &&
+      params.character &&
+      (params.mythicFarmingLocationIds?.length ?? 0) > 0
+        ? estimateRemainingShardEnergy({
+            entityId: params.entityId,
+            remainingShards: ascension?.mythicShards ?? 0,
+            shardLocations: mythicShardLocations,
+            battlesById: params.battlesById,
+            farmingLocationIds: params.mythicFarmingLocationIds ?? [],
+            dailyEnergy: params.dailyEnergy,
+          })
+        : null
+
     return {
       regularShards,
       mythicShards,
       orbsByType: ascension?.orbsByType ?? {},
       campaign,
+      ascensionShardEnergy,
+      ascensionMythicShardEnergy,
+      // Whether the *Ascension goal itself* (not the combined Unlock+Ascension `regularShards`/
+      // `mythicShards` above) needs each shard type — drives which of the two shard-location groups
+      // the Ascension card offers (plan: don't recommend a mythic-only node like a Mythic-tier
+      // Extremis node for a below-Mythic range, and vice versa).
+      ascensionNeedsRegularShards: (ascension?.shards ?? 0) > 0,
+      ascensionNeedsMythicShards: (ascension?.mythicShards ?? 0) > 0,
       onslaughtTokens,
       onslaughtDays,
       combinedDays: Math.max(campaignDays, onslaughtDays),

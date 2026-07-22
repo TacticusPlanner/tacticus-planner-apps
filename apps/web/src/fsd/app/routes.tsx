@@ -47,8 +47,22 @@ const ProjectsPage = lazy(() =>
 const InsightsPage = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.InsightsPage }))
 )
+const ProgressLayout = lazy(() =>
+  import("@/pages/progress").then((m) => ({ default: m.ProgressLayout }))
+)
 const OnslaughtPage = lazy(() =>
   import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
+)
+const CampaignsPage = lazy(() =>
+  import("@/pages/progress").then((m) => ({ default: m.CampaignsPage }))
+)
+const CampaignEventsPage = lazy(() =>
+  import("@/pages/progress").then((m) => ({ default: m.CampaignEventsPage }))
+)
+const XpIncomePlaceholderPage = lazy(() =>
+  import("@/pages/progress").then((m) => ({
+    default: m.XpIncomePlaceholderPage,
+  }))
 )
 const GuildMembersRoute = lazy(() =>
   import("@/pages/guild").then((m) => ({ default: m.GuildMembersRoute }))
@@ -150,12 +164,22 @@ export const routes: RouteObject[] = [
         ],
       },
       {
-        path: "/onslaught",
+        path: "/progress",
         element: (
           <ProtectedRoute>
-            <OnslaughtPage />
+            <ProgressLayout />
           </ProtectedRoute>
         ),
+        children: [
+          {
+            index: true,
+            element: <Navigate replace to="/progress/onslaught" />,
+          },
+          { path: "onslaught", element: <OnslaughtPage /> },
+          { path: "campaigns", element: <CampaignsPage /> },
+          { path: "campaign-events", element: <CampaignEventsPage /> },
+          { path: "xp-income", element: <XpIncomePlaceholderPage /> },
+        ],
       },
       {
         path: "/guild",

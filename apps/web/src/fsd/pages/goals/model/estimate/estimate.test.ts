@@ -34,12 +34,14 @@ const location = (
   effectiveRate: null,
   numerator: null,
   denominator: null,
+  isMythic: false,
   ...overrides,
 })
 
 const battle = (
   id: string,
-  energyCost: number
+  energyCost: number,
+  dailyAttempts = 999
 ): [ReturnType<typeof battleId>, Battle] => [
   battleId(id),
   {
@@ -48,6 +50,7 @@ const battle = (
     challenge: false,
     nodeNumber: 1,
     energyCost,
+    dailyAttempts,
   },
 ]
 
@@ -101,7 +104,12 @@ describe("selectFarmNodes", () => {
       battlesById
     )
     expect(nodes).toEqual([
-      { battleId: battleId("B2"), energyCost: 10, dropRate: 1 },
+      {
+        battleId: battleId("B2"),
+        energyCost: 10,
+        dropRate: 1,
+        dailyAttempts: 999,
+      },
     ])
   })
 
@@ -113,7 +121,12 @@ describe("selectFarmNodes", () => {
       ["B1"]
     )
     expect(nodes).toEqual([
-      { battleId: battleId("B1"), energyCost: 6, dropRate: 0.5 },
+      {
+        battleId: battleId("B1"),
+        energyCost: 6,
+        dropRate: 0.5,
+        dailyAttempts: 999,
+      },
     ])
   })
 
@@ -230,6 +243,89 @@ describe("estimateGoal", () => {
       energyTotal: 10,
       raidsTotal: 1,
     })
+  })
+})
+
+// Worked-example fixture matching the product spec's Battle A/B table: A costs 6 energy, 10 daily
+// attempts, 0.4 expected shards/attempt (15 energy/shard); B costs 6 energy, 10 daily attempts, 0.6
+// expected shards/attempt (10 energy/shard). A generous dailyEnergy budget (well above what either
+// node needs to exhaust its own attempts) isolates the attempts cap as the actual bottleneck, exactly
+// like the spec's "assume all available attempts are used each day" framing.
+describe("estimateGoal with a daily-attempts cap", () => {
+  const battlesById = new Map([battle("A", 6, 10), battle("B", 6, 10)])
+  const upgradesById = new Map<ReturnType<typeof upgradeId>, EstimateUpgrade>([
+    [
+      upgradeId("U1"),
+      {
+        id: upgradeId("U1"),
+        farmLocations: [
+          location("A", { effectiveRate: 0.4 }),
+          location("B", { effectiveRate: 0.6 }),
+        ],
+      },
+    ],
+  ])
+
+  it("caps a single node's daily raids at its attempt limit even when energy would allow more", () => {
+    const result = estimateGoal({
+      needs: [{ id: upgradeId("U1"), count: 320 }],
+      upgradesById,
+      battlesById,
+      dailyEnergy: 100_000,
+      farmingLocationIds: ["A"],
+      referenceDate: REFERENCE_DATE,
+    })
+    expect(result).toMatchObject({ days: 80, energyTotal: 4800 })
+  })
+
+  it("splits the same remaining need across two selected nodes, each independently attempt-capped", () => {
+    const result = estimateGoal({
+      needs: [{ id: upgradeId("U1"), count: 320 }],
+      upgradesById,
+      battlesById,
+      dailyEnergy: 100_000,
+      farmingLocationIds: ["A", "B"],
+      referenceDate: REFERENCE_DATE,
+    })
+    // 4 shards/day from A + 6 shards/day from B = 10/day, exactly clearing 320 in 32 days at
+    // (10 + 10) attempts * 6 energy = 120 energy/day.
+    expect(result).toMatchObject({ days: 32, energyTotal: 3840 })
+  })
+
+  it("shares one node's attempt cap across two different materials farmed there the same day", () => {
+    const twoMaterialUpgrades = new Map<
+      ReturnType<typeof upgradeId>,
+      EstimateUpgrade
+    >([
+      [
+        upgradeId("U1"),
+        {
+          id: upgradeId("U1"),
+          farmLocations: [location("A", { effectiveRate: 0.4 })],
+        },
+      ],
+      [
+        upgradeId("U2"),
+        {
+          id: upgradeId("U2"),
+          farmLocations: [location("A", { effectiveRate: 0.4 })],
+        },
+      ],
+    ])
+    const result = estimateGoal({
+      needs: [
+        { id: upgradeId("U1"), count: 2 },
+        { id: upgradeId("U2"), count: 2 },
+      ],
+      upgradesById: twoMaterialUpgrades,
+      battlesById,
+      dailyEnergy: 100_000,
+      farmingLocationIds: ["A"],
+      referenceDate: REFERENCE_DATE,
+    })
+    // Node A allows 10 raids/day total, shared between U1 and U2 — not 10 raids each — so clearing
+    // both (5 raids apiece at 0.4/raid) still takes exactly 1 day.
+    expect(result).toMatchObject({ days: 1, energyTotal: 60 })
   })
 })
 

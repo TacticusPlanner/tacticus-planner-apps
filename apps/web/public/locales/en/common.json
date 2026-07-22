@@ -167,7 +167,7 @@
     "lookup": "Lookup",
     "createGoal": "Create Goal",
     "goals": "Goals",
-    "onslaught": "Onslaught",
+    "progress": "Progress",
     "uiKit": "UI Kit",
     "guild": "Guild",
     "menu": "Menu",
@@ -178,11 +178,13 @@
     "description": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
     "sector": "Sector",
     "tier": "Tier",
+    "tierComplete": "Tier 4 · sector complete",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Onslaught progress saved.",
     "loadError": "Couldn't load Onslaught progress.",
     "saveError": "Couldn't save Onslaught progress. Refresh and try again.",
+    "conflict": "Onslaught progress changed elsewhere. Latest values loaded; apply your change again.",
     "rewardsTitle": "Shard rewards reference",
     "sectorTier": "Sector / tier",
     "current": "Current alliance progress",
@@ -194,6 +196,47 @@
       "Legendary": "Legendary",
       "LegendaryBlue": "Legendary 1★ blue",
       "Mythic": "Mythic"
+    }
+  },
+  "progress": {
+    "tabs": {
+      "onslaught": "Onslaught",
+      "campaigns": "Campaigns",
+      "campaign-events": "Campaign Events",
+      "xp-income": "XP Income"
+    },
+    "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
+    "campaigns": {
+      "title": "Campaign progress",
+      "description": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
+      "normal": "Normal campaigns",
+      "mirror": "Mirror campaigns"
+    },
+    "events": {
+      "title": "Campaign event progress",
+      "description": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
+      "regular": "Regular battles",
+      "challenges": "Optional challenges",
+      "regularProgress": "{{type}} regular progress",
+      "decrease": "Decrease progress",
+      "increase": "Increase progress",
+      "max": "Max",
+      "useSynced": "Use synced value",
+      "manual": "Manual",
+      "synced": "Synced",
+      "save": "Save",
+      "saved": "Campaign event progress saved.",
+      "saveError": "Couldn't save campaign event progress.",
+      "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
+    },
+    "xpIncome": {
+      "title": "XP Income",
+      "description": "XP Income helps estimate how many XP books you earn from Arena, Guild Raids, Archeotech purchases, and other sources.",
+      "comingSoon": "This V1 feature is being considered for V2. Tell us if it should be prioritized.",
+      "interestButton": "I want XP Income in V2",
+      "interestRecorded": "Thanks for your interest",
+      "interestAcknowledgement": "Thanks. Your interest will help us prioritize future V2 features.",
+      "bookAlt": "Legendary XP book"
     }
   },
   "home": {
@@ -290,7 +333,9 @@
         "personalKey": "Personal Tacticus API key",
         "userId": "Tacticus user ID",
         "guildKey": "Guild API token",
-        "goals": "Goals"
+        "goals": "Goals",
+        "onslaughtProgress": "Onslaught progress",
+        "campaignEventProgress": "Campaign event progress"
       },
       "submit": "Import selected",
       "close": "Close",
@@ -472,6 +517,20 @@
       "unlockDescription": "This goal is complete once the character is unlocked.",
       "unlockUnavailable": "Unlock is unavailable because this character has no catalog shard locations.",
       "unlockCostUnsupportedMow": "Unlock targets are tracked for Machines of War, but their resource cost is not supported yet.",
+      "shardLocations": {
+        "labelRegular": "Shard locations",
+        "labelMythic": "Mythic shard locations",
+        "energyPerShard": "≈{{energy}} energy per shard",
+        "remainingEnergy": "≈{{energy}} energy to obtain the remaining shards",
+        "energyValue": "≈{{energy}} energy",
+        "daysValue": "≈{{days}} days"
+      },
+      "unlock": {
+        "ownedOfTotal": "{{owned}} / {{total}} shards",
+        "remaining": "{{count}} remaining",
+        "unlocksAt": "Unlocks at",
+        "selectLocationPrompt": "Select a shard location to estimate energy and time"
+      },
       "upgrade": {
         "add": "Add an upgrade",
         "addEmpty": "No matching upgrades found.",
@@ -487,7 +546,7 @@
         "targetLevel": "Target level",
         "relicGroup": "Relic"
       },
-      "previewTitle": "Still needed",
+      "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
       "showLess": "Show less",
       "previewDisclaimer": "The actual estimate may change depending on this goal's priority within the selected project and the selected farming strategy.",
@@ -496,6 +555,9 @@
       "projectLabel": "Projects",
       "projectDefault": "No projects selected — the goal will be added to your default project.",
       "projectActive": "active",
+      "projectDefaultMarker": "default",
+      "projectPriority": "Priority within {{project}}",
+      "projectPriorityAuto": "auto",
       "createAnother": "Create another goal",
       "submit": "Create goal",
       "close": "Close",
@@ -503,6 +565,8 @@
       "previewEstimate": "≈ {{days}} days",
       "previewEnergy": "{{energy}} energy",
       "reviewTitle": "What will be created",
+      "projectEstimateLoading": "calculating…",
+      "projectEstimateUnavailable": "no estimate available",
       "suggestions": {
         "includeUnlock": "Include the suggested Unlock goal",
         "includeAscension": "Include the suggested Ascension goal",
@@ -521,7 +585,8 @@
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
-        "levelMaxed": "This character has already reached the maximum level."
+        "levelMaxed": "This character has already reached the maximum level.",
+        "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit."
       }
     },
     "estimate": {

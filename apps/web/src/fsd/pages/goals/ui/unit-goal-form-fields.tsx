@@ -1,23 +1,18 @@
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
+import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 
 import type { UnitId } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import { UnitCombobox } from "@/shared/ui"
+import { projectMarkerSuffix } from "../model/project-marker"
 import type { useCreateGoalForm } from "../model/use-create-goal-form"
-import { FarmingStrategyField } from "./farming-strategy-field"
-import {
-  AscensionFarmingFields,
-  ProgressionPreview,
-} from "./goal-farming-fields"
-import { AbilityGoalFields, RankGoalFields } from "./goal-type-fields"
-import { GoalTypeCard, GoalTypeToggleGroup } from "./goal-visuals"
-import { LevelGoalFields } from "./level-goal-fields"
+import { GoalTypeCards } from "./goal-type-cards"
+import { GoalTypeToggleGroup } from "./goal-visuals"
 import { UnitInfoCard } from "./unit-info-card"
-import { UpgradeGoalFields } from "./upgrade-goal-fields"
 
 // Rank is omitted entirely on the MoW tab (plan §16 phase 6) — MoWs have no rank ladder, so offering
 // the toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs`
@@ -36,15 +31,14 @@ const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
 /**
- * The "Unit" pill's entire form body — unit picker, goal-type toggles, prerequisite suggestions,
- * every enabled goal-type's `GoalTypeCard`, the combined-goal review list, and project selection.
- * Split out of `create-goal-sheet.tsx` purely for that file's own max-lines budget (same reason
- * `EquipmentGoalFields`/`UpgradeGoalFields`/`GoalProjectsField` live in their own files) — this is
- * a coordinator-level component (it assembles many goal-type cards from the one central form, same
- * as `create-goal-sheet.tsx` itself), not a leaf presentational field, so taking the whole `form`
- * is the same posture as the sheet already had; the leaf field components it renders
- * (`RankGoalFields`, `AscensionFarmingFields`, `AbilityGoalFields`, `FarmingStrategyField`,
- * `UpgradeGoalFields`, `ProgressionPreview`) each still get only their own explicit props.
+ * The "Unit" pill's entire form body, in display order: unit picker, goal-type toggles, every
+ * enabled goal-type's `GoalTypeCard` (assembled by `GoalTypeCards`), prerequisite suggestions,
+ * project selection + per-project priority, then the combined-goal review list ("What will be
+ * created", with each selected project's own duration estimate) last. Split out of
+ * `create-goal-sheet.tsx` purely for that file's own max-lines budget (same reason
+ * `EquipmentGoalFields`/`UpgradeGoalFields`/`GoalProjectsField`/`GoalTypeCards` live in their own
+ * files) — this is a coordinator-level component, not a leaf presentational field, so taking the
+ * whole `form` is the same posture as the sheet already had.
  */
 export function UnitGoalFormFields({
   form,
@@ -54,6 +48,8 @@ export function UnitGoalFormFields({
   unitIcon: (id: UnitId) => string | undefined
 }) {
   const { t } = useTranslation()
+  const goalKinds =
+    form.entityType === "Mow" ? MOW_GOAL_KINDS : CHARACTER_GOAL_KINDS
 
   return (
     <form
@@ -100,9 +96,7 @@ export function UnitGoalFormFields({
             {t("goals.create.goalTypeLabel")}
           </Label>
           <GoalTypeToggleGroup
-            kinds={
-              form.entityType === "Mow" ? MOW_GOAL_KINDS : CHARACTER_GOAL_KINDS
-            }
+            kinds={goalKinds}
             enabledTypes={form.enabledTypes}
             onToggle={form.toggleType}
             isDisabled={(kind) =>
@@ -113,7 +107,8 @@ export function UnitGoalFormFields({
               (kind === "Level" && form.atMaxLevel) ||
               (kind === "Upgrade" &&
                 form.entityType === "Character" &&
-                form.atMaxRank)
+                form.atMaxRank) ||
+              form.hasActiveOrPausedGoal(kind)
             }
             entityType={form.entityType}
           />
@@ -146,9 +141,27 @@ export function UnitGoalFormFields({
               {t("goals.create.validation.levelMaxed")}
             </p>
           ) : null}
+          {/* One line per kind that already has an in-flight (Active/Paused) goal for this unit — a
+              unit may still accumulate any number of Completed/Archived goals of the same type, so
+              only these count (mirrors the backend's create/resume conflict check). */}
+          {goalKinds
+            .filter((kind) => form.hasActiveOrPausedGoal(kind))
+            .map((kind) => (
+              <p className="text-xs text-muted-foreground" key={kind}>
+                {t("goals.create.validation.activeOrPausedGoalExists", {
+                  goalType: t(`goals.create.goalTypes.${kind}`),
+                })}
+              </p>
+            ))}
         </div>
       ) : null}
 
+      {form.entityId ? (
+        <GoalTypeCards form={form} goalKinds={goalKinds} />
+      ) : null}
+
+      {/* Prerequisite suggestions describe extra goals to prepend to the set above — shown after
+          the config cards so the user sees what they configured before what gets auto-added. */}
       {form.prerequisites.needsUnlock ? (
         <Field orientation="horizontal">
           <Checkbox
@@ -196,127 +209,60 @@ export function UnitGoalFormFields({
         </Field>
       ) : null}
 
-      {form.entityId && form.enabledTypes.has("Rank") ? (
-        <GoalTypeCard kind="Rank">
-          <RankGoalFields
-            rankStart={form.rankStart}
-            rankEnd={form.rankEnd}
-            rankEndOptions={form.rankEndOptions}
-            rankAdditionalTarget={form.rankAdditionalTarget}
-            additionalTargetChoices={form.additionalTargetChoices}
-            onRankEndChange={form.setRankEnd}
-            onRankAdditionalTargetChange={form.setRankAdditionalTarget}
-            missingUpgrades={form.missingUpgrades}
-            estimate={form.estimatePreview}
-            rankAppliedUpgrades={form.rankAppliedUpgrades}
-            rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
-          />
-          <FarmingStrategyField
-            context="rank"
-            rankStart={form.rankStart}
-            rankEnd={form.rankEnd}
-            rankAdditionalTarget={form.rankAdditionalTarget}
-            abilityActiveStart={form.abilityActiveStart}
-            abilityActiveEnd={form.abilityActiveEnd}
-            abilityPassiveStart={form.abilityPassiveStart}
-            abilityPassiveEnd={form.abilityPassiveEnd}
-            farmingStrategy={form.farmingStrategy}
-            onFarmingStrategyChange={form.setFarmingStrategy}
-          />
-        </GoalTypeCard>
-      ) : null}
-
-      {form.entityId && form.enabledTypes.has("Level") ? (
-        <GoalTypeCard kind="Level">
-          <LevelGoalFields
-            levelStart={form.levelStart}
-            levelEnd={form.levelEnd}
-            levelEndOptions={form.levelEndOptions}
-            onLevelEndChange={form.setLevelEnd}
-            cost={form.levelCost}
-          />
-        </GoalTypeCard>
-      ) : null}
-
-      {form.entityId && form.enabledTypes.has("Ascension") ? (
-        <GoalTypeCard kind="Ascension">
-          <AscensionFarmingFields
-            progressionStart={form.progressionStart}
-            progressionEnd={form.progressionEnd}
-            onProgressionEndChange={form.setProgressionEnd}
-            ascensionFarmingSource={form.ascensionFarmingSource}
-            onAscensionFarmingSourceChange={form.setAscensionFarmingSource}
-            progressionPreview={form.progressionPreview}
-          />
-        </GoalTypeCard>
-      ) : null}
-
-      {form.entityId && form.enabledTypes.has("Ability") ? (
-        <GoalTypeCard entityType={form.entityType} kind="Ability">
-          <AbilityGoalFields
-            activeStart={form.abilityActiveStart}
-            passiveStart={form.abilityPassiveStart}
-            targetLevel={form.abilityTargetLevel}
-            onTargetLevelChange={form.setAbilityTargetLevel}
-            missingUpgrades={form.missingUpgrades}
-            estimate={form.estimatePreview}
-            costingSupported={form.entityType === "Mow"}
-          />
-          {form.entityType === "Mow" ? (
-            <FarmingStrategyField
-              context="ability"
-              rankStart={form.rankStart}
-              rankEnd={form.rankEnd}
-              abilityActiveStart={form.abilityActiveStart}
-              abilityActiveEnd={form.abilityActiveEnd}
-              abilityPassiveStart={form.abilityPassiveStart}
-              abilityPassiveEnd={form.abilityPassiveEnd}
-              farmingStrategy={form.farmingStrategy}
-              onFarmingStrategyChange={form.setFarmingStrategy}
-            />
+      {form.entityId ? (
+        <div className="grid gap-1.5">
+          <Label className="text-xs text-muted-foreground">
+            {t("goals.create.projectLabel")}
+          </Label>
+          {form.projects.length > 0 ? (
+            <div className="grid gap-2">
+              {form.projects.map((project) => {
+                const selected = form.selectedProjectIds.includes(
+                  project.projectId
+                )
+                return (
+                  <Field key={project.projectId} orientation="horizontal">
+                    <Checkbox
+                      checked={selected}
+                      data-testid={`create-goal-project-${project.projectId}`}
+                      onCheckedChange={(checked) =>
+                        form.toggleProject(project.projectId, checked === true)
+                      }
+                    />
+                    <FieldLabel className="flex-1 font-normal">
+                      {project.name}
+                      {projectMarkerSuffix(t, project)}
+                    </FieldLabel>
+                    {selected ? (
+                      <Input
+                        aria-label={t("goals.create.projectPriority", {
+                          project: project.name,
+                        })}
+                        className="w-20"
+                        data-testid={`create-goal-project-priority-${project.projectId}`}
+                        min={1}
+                        onChange={(event) =>
+                          form.setProjectPriority(
+                            project.projectId,
+                            event.target.value
+                          )
+                        }
+                        placeholder={t("goals.create.projectPriorityAuto")}
+                        type="number"
+                        value={form.projectPriorities[project.projectId] ?? ""}
+                      />
+                    ) : null}
+                  </Field>
+                )
+              })}
+            </div>
           ) : null}
-        </GoalTypeCard>
-      ) : null}
-
-      {form.entityId && form.enabledTypes.has("Upgrade") ? (
-        <GoalTypeCard kind="Upgrade">
-          <UpgradeGoalFields
-            targets={form.upgradeTargets}
-            relevantUpgradeQuantities={form.relevantUpgradeQuantities}
-            upgradesById={form.upgradesById}
-            onAdd={form.addUpgradeTarget}
-            onRemove={form.removeUpgradeTarget}
-            onQuantityChange={form.setUpgradeTargetQuantity}
-            missingUpgrades={form.upgradeGoalNeed}
-            rankRange={
-              form.entityType === "Character"
-                ? {
-                    start: form.upgradeRankStart,
-                    end: form.upgradeRankEnd,
-                    startOptions: form.upgradeRankStartOptions,
-                    endOptions: form.upgradeRankEndOptions,
-                    onStartChange: form.setUpgradeRankStart,
-                    onEndChange: form.setUpgradeRankEnd,
-                  }
-                : undefined
-            }
-          />
-        </GoalTypeCard>
-      ) : null}
-
-      {form.entityId && form.enabledTypes.has("Unlock") ? (
-        <GoalTypeCard kind="Unlock">
-          <p className="text-sm text-muted-foreground">
-            {t("goals.create.unlockDescription")}
-          </p>
-          {form.entityType === "Mow" ? (
+          {form.selectedProjectIds.length === 0 ? (
             <p className="text-xs text-muted-foreground">
-              {t("goals.create.unlockCostUnsupportedMow")}
+              {t("goals.create.projectDefault")}
             </p>
-          ) : !form.enabledTypes.has("Ascension") ? (
-            <ProgressionPreview preview={form.progressionPreview} />
           ) : null}
-        </GoalTypeCard>
+        </div>
       ) : null}
 
       {form.entityId && form.reviewItems.length > 0 ? (
@@ -344,41 +290,35 @@ export function UnitGoalFormFields({
               </li>
             ))}
           </ul>
-        </div>
-      ) : null}
-
-      {form.entityId ? (
-        <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">
-            {t("goals.create.projectLabel")}
-          </Label>
-          {form.projects.length > 0 ? (
-            <div className="grid gap-2">
-              {form.projects.map((project) => (
-                <Field key={project.projectId} orientation="horizontal">
-                  <Checkbox
-                    checked={form.selectedProjectIds.includes(
-                      project.projectId
-                    )}
-                    data-testid={`create-goal-project-${project.projectId}`}
-                    onCheckedChange={(checked) =>
-                      form.toggleProject(project.projectId, checked === true)
-                    }
-                  />
-                  <FieldLabel className="font-normal">
-                    {project.name}
-                    {project.isActivePlan
-                      ? ` (${t("goals.create.projectActive")})`
-                      : ""}
-                  </FieldLabel>
-                </Field>
-              ))}
-            </div>
-          ) : null}
-          {form.selectedProjectIds.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.projectDefault")}
-            </p>
+          {form.estimatedProjectIds.length > 0 ? (
+            <ul className="grid gap-0.5 border-t pt-1 text-muted-foreground">
+              {form.estimatedProjectIds.map((projectId) => {
+                const project = form.projects.find(
+                  (candidate) => candidate.projectId === projectId
+                )
+                const estimate = form.perProjectEstimates.get(projectId)
+                return (
+                  <li
+                    data-testid={`create-goal-project-estimate-${projectId}`}
+                    key={projectId}
+                  >
+                    {project?.name ?? projectId}
+                    {": "}
+                    {!estimate || estimate.status === "loading"
+                      ? t("goals.create.projectEstimateLoading")
+                      : estimate.status === "unavailable"
+                        ? t("goals.create.projectEstimateUnavailable")
+                        : estimate.outcome.status === "Blocked"
+                          ? t(
+                              `goals.estimate.blocked.${estimate.outcome.reason}`
+                            )
+                          : t("goals.create.previewEstimate", {
+                              days: estimate.outcome.days,
+                            })}
+                  </li>
+                )
+              })}
+            </ul>
           ) : null}
         </div>
       ) : null}

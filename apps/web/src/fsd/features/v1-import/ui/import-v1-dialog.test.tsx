@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@/test/render"
+import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const importV1Profile = vi.fn()
@@ -37,6 +38,15 @@ vi.mock("@/entities/project", () => ({
   projectQueries: { all: () => ["projects"] },
 }))
 
+vi.mock("@/entities/player-data-override", () => ({
+  onslaughtProgressQueries: {
+    all: () => ["player-data-overrides"],
+  },
+  campaignEventProgressQueries: {
+    all: () => ["player-data-overrides", "campaign-events"],
+  },
+}))
+
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},
 }))
@@ -73,6 +83,8 @@ describe("ImportV1Dialog", () => {
       personalTacticusApiKey: { status: "Imported" },
       tacticusUserId: { status: "Imported" },
       guildApiToken: { status: "Skipped" },
+      onslaughtProgress: { status: "Imported" },
+      campaignEventProgress: { status: "Imported" },
       goals: { status: "Imported" },
       goalSpecs: [goalSpec("unit-1"), goalSpec("unit-2")],
       goalsSkipped: 3,
@@ -87,6 +99,10 @@ describe("ImportV1Dialog", () => {
   })
 
   it("submits credentials with the user's selected import parts, then creates each imported goal spec through the standard create mutation", async () => {
+    const invalidateQueries = vi.spyOn(
+      QueryClient.prototype,
+      "invalidateQueries"
+    )
     render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
 
     fireEvent.change(screen.getByTestId("v1-import-username"), {
@@ -108,6 +124,8 @@ describe("ImportV1Dialog", () => {
             tacticusUserId: true,
             guildApiToken: false,
             goals: true,
+            onslaughtProgress: true,
+            campaignEventProgress: true,
           },
         },
         expect.anything()
@@ -130,6 +148,13 @@ describe("ImportV1Dialog", () => {
       "Imported"
     )
     expect(refetch).toHaveBeenCalledTimes(1)
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["player-data-overrides"],
+    })
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["player-data-overrides", "campaign-events"],
+    })
+    invalidateQueries.mockRestore()
   })
 
   it("counts a failed goal-spec submission without blocking the others", async () => {

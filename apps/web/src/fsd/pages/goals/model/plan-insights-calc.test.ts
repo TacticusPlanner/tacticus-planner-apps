@@ -91,6 +91,7 @@ describe("computePlanInsights", () => {
         numerator: null,
         denominator: null,
         effectiveRate: null,
+        isMythic: false,
       },
     ],
   }
@@ -101,6 +102,7 @@ describe("computePlanInsights", () => {
     challenge: false,
     nodeNumber: 1,
     energyCost: 10,
+    dailyAttempts: 999,
   }
 
   const baseParams = {
@@ -276,5 +278,57 @@ describe("computePlanInsights", () => {
 
     expect(result.onslaughtTokens).toBe(3)
     expect(result.onslaughtDays).toBeCloseTo(2 / 1.5)
+  })
+
+  it("restricts an Unlock goal's shard farming to config.farmingLocationIds, changing the resulting energy total", () => {
+    const twoLocationCharacterView = {
+      ...characterView,
+      shardLocations: [
+        { battleId: "B1", guaranteed: true },
+        { battleId: "B2", guaranteed: true },
+      ],
+    } as unknown as CharacterStorageModel
+
+    const params = {
+      ...baseParams,
+      charactersById: new Map([["hero1", twoLocationCharacterView]]),
+      battlesById: new Map([
+        [battleId("B1"), battle],
+        [battleId("B2"), { ...battle, energyCost: 100 } satisfies Battle],
+      ]),
+      unlockShardCostsById: new Map<string, UnlockShardCostStorageModel>([
+        ["Common", { id: "Common", rarity: "Common", shards: 10 }],
+      ]),
+      priorityByGoalId: new Map([["goal-1", 1]]),
+    }
+
+    const restrictedToCheapNode = computePlanInsights({
+      ...params,
+      details: [
+        goalDetail({
+          goalType: "Unlock",
+          config: {
+            ...goalDetail({}).config,
+            farmingLocationIds: ["B1"],
+          },
+        }),
+      ],
+    })
+    const restrictedToExpensiveNode = computePlanInsights({
+      ...params,
+      details: [
+        goalDetail({
+          goalType: "Unlock",
+          config: {
+            ...goalDetail({}).config,
+            farmingLocationIds: ["B2"],
+          },
+        }),
+      ],
+    })
+
+    // 10 shards at 1 energy/shard (guaranteed drop) from B1 (10 energy) vs. B2 (100 energy).
+    expect(restrictedToCheapNode.energyTotal).toBe(100)
+    expect(restrictedToExpensiveNode.energyTotal).toBe(1000)
   })
 })

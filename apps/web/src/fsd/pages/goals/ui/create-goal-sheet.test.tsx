@@ -92,7 +92,17 @@ const characters = new Map([
       id: "hero1",
       name: "Hero One",
       faction: "Ultramarines",
-      shardLocations: [{ battleId: "B1" }],
+      // Backs the Unlock card's "X out of Y shards required to unlock at R" — R is this.
+      initialRarity: "Common",
+      // guaranteed: true (dropRate 1) against B1's energyCost: 10 below gives a clean 10-energy-
+      // per-shard figure for the shard-location selector's energy math. ASE28 is a mythic-shard
+      // node (isMythic: true) — present in the catalog data purely to back the "Unlock never
+      // offers a mythic location, Ascension offers it only once its range needs mythic shards"
+      // tests below; it must never appear on the Unlock card regardless of range.
+      shardLocations: [
+        { battleId: "B1", guaranteed: true },
+        { battleId: "ASE28", guaranteed: true, isMythic: true },
+      ],
       rankUpUpgrades: [
         { rank: "Stone1", upgradeIds: ["h1", "c1"] },
         { rank: "Stone2", upgradeIds: ["h2"] },
@@ -176,12 +186,25 @@ const equipmentItems = new Map([
 
 const battles = [
   {
+    // A resolvable campaign/type combo (storyline group "campaign1", per
+    // @workspace/game-catalog's campaignDescriptor) so the shard-location field's full-name
+    // rendering has something real to resolve, rather than falling back to the raw battle id.
     id: "B1",
-    campaignGroupId: "CG1",
-    type: "Normal",
+    campaignGroupId: "campaign1",
+    type: "Standard",
     challenge: false,
     nodeNumber: 1,
     energyCost: 10,
+    dailyAttempts: 10,
+  },
+  {
+    id: "ASE28",
+    campaignGroupId: "CGM",
+    type: "Extremis",
+    challenge: false,
+    nodeNumber: 28,
+    energyCost: 15,
+    dailyAttempts: 10,
   },
 ]
 
@@ -206,8 +229,38 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getUpgrades: () => upgrades,
   getCampaignBattles: () => battles,
   getCampaignDefinitions: () => [],
-  getAscensionCostsMap: () => new Map(),
-  getUnlockShardCostsMap: () => new Map(),
+  // Common:None -> Common:OneStar (the default range a locked character's Ascension card lands
+  // on) costs 20 regular shards — backs the Ascension card's own energy-for-remaining-shards line.
+  getAscensionCostsMap: () =>
+    new Map([
+      [
+        "Common:OneStar",
+        {
+          progression: "Common:OneStar",
+          shards: 20,
+          mythicShards: 0,
+          orbs: 0,
+          orbRarity: null,
+        },
+      ],
+      // Crossing into this step costs mythic shards — backs the "Ascension only offers the
+      // mythic shard-location group once its range actually needs mythic shards" test below.
+      // "TwoBlueStars" (unlike "OneBlueStar") has no Legendary-tier counterpart in
+      // progressionOrder, so its star label is unambiguous in the progression-end picker.
+      [
+        "Mythic:TwoBlueStars",
+        {
+          progression: "Mythic:TwoBlueStars",
+          shards: 0,
+          mythicShards: 8,
+          orbs: 0,
+          orbRarity: null,
+        },
+      ],
+    ]),
+  // Y in the Unlock card's "X out of Y shards required to unlock at R" — 30 total for Common.
+  getUnlockShardCostsMap: () =>
+    new Map([["Common", { rarity: "Common", shards: 30 }]]),
   getOnslaughtRewards: () => [],
   getEquipmentMap: () => Promise.resolve(equipmentItems),
 }))
@@ -238,16 +291,38 @@ vi.mock("@workspace/player-data/queries", () => ({
 const createCombinedGoals = vi.fn()
 const createGoal = vi.fn()
 const listProjects = vi.fn()
+const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
+  // Backs useGoalTypeConflicts' active/paused-goal lookup — empty by default (no test here asserts
+  // on the same-kind-goal-exists disable message, that's covered by use-goal-type-conflicts.test.ts).
+  goalQueries: {
+    list: (archived: boolean) => ({
+      queryKey: ["goals", "list", { archived }],
+      queryFn: () => listGoals(),
+    }),
+    // Backs use-per-project-estimates.ts's per-goal detail fetch — never actually called while
+    // projectQueries.goals (above) returns no members, but stubbed defensively all the same.
+    detail: (goalId: string) => ({
+      queryKey: ["goals", "detail", goalId],
+      queryFn: () => Promise.reject(new Error("not stubbed")),
+    }),
+  },
 }))
 
 vi.mock("@/entities/project", () => ({
   listProjects: (...args: unknown[]) => listProjects(...args),
   projectQueries: {
+    // Backs use-per-project-estimates.ts's per-project member lookup — empty by default (no test
+    // here asserts on the per-project duration preview itself, that's covered by
+    // per-project-estimate.test.ts), which also keeps it from ever needing goalQueries.detail.
+    goals: (projectId: string) => ({
+      queryKey: ["projects", "detail", projectId, "goals"],
+      queryFn: () => Promise.resolve({ goals: [] }),
+    }),
     list: () => ({
       queryKey: ["projects", "list"],
       queryFn: () => listProjects(),
@@ -282,6 +357,8 @@ describe("CreateGoalSheet", () => {
     createCombinedGoals.mockReset()
     listProjects.mockReset()
     listProjects.mockResolvedValue({ projects: [] })
+    listGoals.mockReset()
+    listGoals.mockResolvedValue({ goals: [] })
 
     // Owned, nothing applied yet — numerically identical missingUpgrades/estimate math to an
     // undefined playerCharacter, but not locked, so most tests exercise the plain (no
@@ -343,7 +420,7 @@ describe("CreateGoalSheet", () => {
     expect(request).toMatchObject({
       entityType: "Character",
       entityId: "hero1",
-      projectIds: undefined,
+      projects: undefined,
     })
     expect(request.goals).toHaveLength(1)
     expect(request.goals[0]).toMatchObject({
@@ -485,15 +562,274 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("shows an estimated completion date in the preview once the required material is farmable", async () => {
+  it("no longer shows a combined duration estimate inside the Resources needed card", async () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId("create-goal-estimate")).toBeInTheDocument()
+      expect(screen.getByTestId("create-goal-preview")).toBeInTheDocument()
     })
+    expect(screen.queryByTestId("create-goal-estimate")).not.toBeInTheDocument()
+  })
+
+  it('shows a per-project estimated duration in "What will be created" once the required material is farmable', async () => {
+    listProjects.mockResolvedValue({
+      projects: [{ projectId: "proj-1", name: "My Goals", isActivePlan: true }],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
+
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-project-estimate-proj-1")
+      ).toHaveTextContent("goals.create.previewEstimate")
+    })
+  })
+
+  it("estimates against the default project when no project is checked", async () => {
+    listProjects.mockResolvedValue({
+      projects: [
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isActivePlan: true,
+          isDefault: true,
+        },
+      ],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+
+    // No project checkbox clicked — the estimate still resolves, against the default project.
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-project-estimate-proj-1")
+      ).toHaveTextContent("goals.create.previewEstimate")
+    })
+  })
+
+  it("renders sections in order: config cards, then prerequisite suggestions, then project selection, then the review", async () => {
+    // A locked character (getPlayerCharacter unresolved) is what puts a prerequisite-suggestion
+    // checkbox and a config card and the review on screen simultaneously (see the auto-suggests
+    // test below) — reused here purely to compare their DOM positions.
+    getPlayerCharacter.mockResolvedValue(undefined)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+
+    const rankCard = await screen.findByTestId("create-goal-type-card-Rank")
+    const unlockSuggestion = await screen.findByTestId(
+      "create-goal-include-unlock"
+    )
+    const projectLabel = screen.getByText("goals.create.projectLabel")
+    const review = await screen.findByTestId("create-goal-review")
+
+    // Node.DOCUMENT_POSITION_FOLLOWING set on the bitmask means the argument comes after `this` in
+    // the document.
+    expect(
+      rankCard.compareDocumentPosition(unlockSuggestion) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      unlockSuggestion.compareDocumentPosition(projectLabel) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      projectLabel.compareDocumentPosition(review) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  it("shows the character's shard farm locations with an energy-per-shard figure on the Unlock card, defaulting farmingLocationIds to the lowest-energy node", async () => {
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+
+    const location = await screen.findByTestId("create-goal-shard-location-B1")
+    // Full campaign battle name (resolved from the "campaign1"/Standard descriptor + node number),
+    // not the raw battle id — the mocked t() returns each key's defaultValue, so the campaign's own
+    // name resolves to its untranslated nameKey ("indomitus") while the "Standard" difficulty word
+    // (no defaultValue passed for it) falls back to its raw i18n key.
+    expect(location).toHaveTextContent("indomitus")
+    expect(location).toHaveTextContent("campaigns:difficulties.standard 1")
+    // B1's energyCost (10) / guaranteed dropRate (1) = 10 energy per shard.
+    expect(location).toHaveTextContent(
+      "goals.create.shardLocations.energyPerShard"
+    )
+    // B1 is the character's only regular shard location, so it's selected by default without any
+    // click — the user is never required to pick a location before an estimate is available.
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-shard-location-checkbox-B1")
+      ).toBeChecked()
+    })
+
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    const unlockSpec = request.goals.find(
+      (goal: { goalType: string }) => goal.goalType === "Unlock"
+    )
+    expect(unlockSpec.config.farmingLocationIds).toEqual(["B1"])
+  })
+
+  it('shows "{{owned}} / {{total}} shards" + "{{remaining}} remaining" and an energy/days line on the Unlock card by default, with no mythic shard row', async () => {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
+    getInventoryShard.mockResolvedValue({ amount: 12 }) // X = 12 owned shards
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+
+    const requirement = await screen.findByTestId(
+      "create-goal-unlock-requirement"
+    )
+    expect(requirement).toHaveTextContent("goals.create.unlock.ownedOfTotal")
+    expect(requirement).toHaveTextContent("goals.create.unlock.remaining")
+    expect(requirement).not.toHaveTextContent("mythic")
+
+    // The character's only regular shard location (B1) is selected by default, so the energy/days
+    // figure is already shown without the user picking anything first.
+    await vi.waitFor(() => {
+      expect(requirement).toHaveTextContent(
+        "goals.create.shardLocations.energyValue"
+      )
+    })
+    expect(requirement).toHaveTextContent(
+      "goals.create.shardLocations.daysValue"
+    )
+    expect(requirement).not.toHaveTextContent(
+      "goals.create.unlock.selectLocationPrompt"
+    )
+
+    // Unchecking it back down to zero falls back to the "pick a location" prompt, rather than the
+    // default being fought back on (a real "no restriction" state, distinct from the initial default).
+    fireEvent.click(
+      screen.getByTestId("create-goal-shard-location-checkbox-B1")
+    )
+    await vi.waitFor(() => {
+      expect(requirement).toHaveTextContent(
+        "goals.create.unlock.selectLocationPrompt"
+      )
+    })
+    expect(requirement).not.toHaveTextContent(
+      "goals.create.shardLocations.energyValue"
+    )
+  })
+
+  it("shows the shard-location selector on the Ascension card too, but only once when Unlock is also enabled", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so both Unlock and Ascension are offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ascension")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
+
+    // The default Common:None -> Common:None range needs no shards at all, so the selector
+    // correctly stays hidden until the target actually crosses a step that costs regular shards —
+    // advance to Common:OneStar (20 regular shards per the ascension-costs fixture above).
+    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(
+      within(listbox).getByAltText("OneStar").closest('[role="option"]')!
+    )
+
+    // Ascension alone: the shared selector shows on its card.
+    await screen.findByTestId("create-goal-shard-location-B1")
+    expect(screen.getAllByTestId("create-goal-shard-location-B1")).toHaveLength(
+      1
+    )
+
+    // Enabling Unlock alongside it moves the (shared, single) selector to Unlock's card — never
+    // duplicated across both at once.
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    await vi.waitFor(() => {
+      expect(
+        screen.getAllByTestId("create-goal-shard-location-B1")
+      ).toHaveLength(1)
+    })
+  })
+
+  it("never offers a mythic shard location on the Unlock card, even though the character has one in its catalog data", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+
+    await screen.findByTestId("create-goal-shard-locations-regular")
+    expect(
+      screen.queryByTestId("create-goal-shard-locations-mythic")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("create-goal-shard-location-ASE28")
+    ).not.toBeInTheDocument()
+  })
+
+  it("offers the mythic shard-location group on the Ascension card once the target range needs mythic shards", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Ascension is offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ascension")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
+
+    // Default Common:None -> Common:None range needs nothing yet — no mythic group.
+    expect(
+      screen.queryByTestId("create-goal-shard-locations-mythic")
+    ).not.toBeInTheDocument()
+
+    // Advance all the way to Mythic:TwoBlueStars (8 mythic shards per the fixture above) — now the
+    // mythic group appears, listing ASE28 (never B1, which is regular-only).
+    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(
+      within(listbox).getByAltText("TwoBlueStars").closest('[role="option"]')!
+    )
+
+    await screen.findByTestId("create-goal-shard-location-ASE28")
+    expect(
+      within(
+        screen.getByTestId("create-goal-shard-locations-mythic")
+      ).queryByTestId("create-goal-shard-location-B1")
+    ).not.toBeInTheDocument()
   })
 
   it("shows a checkpoint-chain preview and explanation that updates with the selected farming strategy", async () => {
@@ -532,7 +868,7 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("submits only the explicitly toggled types, with no config target for Unlock", async () => {
+  it("submits only the explicitly toggled types, with no rank/progression/ability target for Unlock", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
@@ -548,7 +884,9 @@ describe("CreateGoalSheet", () => {
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Unlock",
-        config: {},
+        // farmingLocationIds defaults to the character's only regular shard location (B1) — no
+        // rank/progression/ability target exists for Unlock, which is what this test guards.
+        config: { farmingLocationIds: ["B1"] },
         dependsOnIndex: [],
       }),
     ])
@@ -881,7 +1219,7 @@ describe("CreateGoalSheet", () => {
     expect(request).toMatchObject({
       entityType: "Mow",
       entityId: "mow1",
-      projectIds: undefined,
+      projects: undefined,
     })
     expect(request.goals).toHaveLength(1)
     expect(request.goals[0]).toMatchObject({
@@ -910,7 +1248,40 @@ describe("CreateGoalSheet", () => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
     const [request] = createCombinedGoals.mock.calls[0]
-    expect(request.projectIds).toEqual(["proj-1", "proj-2"])
+    expect(request.projects).toEqual([
+      { projectId: "proj-1", priority: undefined },
+      { projectId: "proj-2", priority: undefined },
+    ])
+  })
+
+  it("includes a project's typed priority in the submission", async () => {
+    listProjects.mockResolvedValue({
+      projects: [
+        { projectId: "proj-1", name: "My Goals", isActivePlan: true },
+        { projectId: "proj-2", name: "Event Prep", isActivePlan: false },
+      ],
+    })
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
+    fireEvent.click(await screen.findByTestId("create-goal-project-proj-2"))
+    fireEvent.change(
+      screen.getByTestId("create-goal-project-priority-proj-1"),
+      { target: { value: "3" } }
+    )
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(request.projects).toEqual([
+      { projectId: "proj-1", priority: 3 },
+      { projectId: "proj-2", priority: undefined },
+    ])
   })
 
   it("creates an UpgradeEquipment goal for the selected equipment and target level", async () => {

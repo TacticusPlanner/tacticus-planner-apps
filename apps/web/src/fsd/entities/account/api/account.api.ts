@@ -39,6 +39,8 @@ export type ImportV1ProfileRequest = {
     tacticusUserId: boolean
     guildApiToken: boolean
     goals: boolean
+    onslaughtProgress: boolean
+    campaignEventProgress: boolean
   }
 }
 
@@ -52,6 +54,8 @@ export type ImportV1ProfileResult = {
   tacticusUserId: ImportPartResult
   personalTacticusApiKey: ImportPartResult
   guildApiToken: ImportPartResult
+  onslaughtProgress: ImportPartResult
+  campaignEventProgress: ImportPartResult
   goals: ImportPartResult
   // Parsed V1 goals, already shaped as create requests — one per unit. The client submits each of
   // these through the standard `createCombinedGoals` mutation (see `import-v1-dialog.tsx`); the

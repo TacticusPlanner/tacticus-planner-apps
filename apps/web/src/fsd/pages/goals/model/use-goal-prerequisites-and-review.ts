@@ -41,6 +41,8 @@ export function useGoalPrerequisitesAndReview({
   unlockShardCostsById,
   battlesById,
   dailyEnergy,
+  selectedRegularShardLocationIds,
+  selectedMythicShardLocationIds,
 }: {
   entityId: UnitId | undefined
   entityType: "Character" | "Mow"
@@ -62,6 +64,8 @@ export function useGoalPrerequisitesAndReview({
   unlockShardCostsById: ProgressionPreviewParams["unlockShardCostsById"]
   battlesById: ProgressionPreviewParams["battlesById"]
   dailyEnergy: number
+  selectedRegularShardLocationIds: readonly string[]
+  selectedMythicShardLocationIds: readonly string[]
 }) {
   const prerequisites = useGoalPrerequisites({
     entityType,
@@ -103,6 +107,8 @@ export function useGoalPrerequisitesAndReview({
     unlockShardCostsById,
     battlesById,
     dailyEnergy,
+    regularFarmingLocationIds: selectedRegularShardLocationIds,
+    mythicFarmingLocationIds: selectedMythicShardLocationIds,
   })
 
   // "What will be created" review list (plan §7) — in submit order, flagging entries the user

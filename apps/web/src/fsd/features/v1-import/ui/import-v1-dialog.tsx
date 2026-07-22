@@ -41,6 +41,10 @@ import {
   type CreateCombinedGoalsRequest,
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
+import {
+  campaignEventProgressQueries,
+  onslaughtProgressQueries,
+} from "@/entities/player-data-override"
 
 /**
  * Attaches an initial-state snapshot to every goal in an imported unit's spec — the backend
@@ -91,6 +95,8 @@ const parts = [
   ["tacticusUserId", "goals.v1Import.parts.userId"],
   ["guildApiToken", "goals.v1Import.parts.guildKey"],
   ["goals", "goals.v1Import.parts.goals"],
+  ["onslaughtProgress", "goals.v1Import.parts.onslaughtProgress"],
+  ["campaignEventProgress", "goals.v1Import.parts.campaignEventProgress"],
 ] as const
 
 type Selection = Record<(typeof parts)[number][0], boolean>
@@ -117,6 +123,8 @@ export function ImportV1Dialog({
     tacticusUserId: true,
     guildApiToken: true,
     goals: true,
+    onslaughtProgress: true,
+    campaignEventProgress: true,
   })
   const [status, setStatus] = useState<
     "idle" | "submitting" | "error" | "success"
@@ -148,6 +156,16 @@ export function ImportV1Dialog({
       setResult(imported)
       refetch()
       await queryClient.invalidateQueries({ queryKey: accountQueries.all() })
+      if (selection.onslaughtProgress) {
+        await queryClient.invalidateQueries({
+          queryKey: onslaughtProgressQueries.all(),
+        })
+      }
+      if (selection.campaignEventProgress) {
+        await queryClient.invalidateQueries({
+          queryKey: campaignEventProgressQueries.all(),
+        })
+      }
       if (selection.goals) {
         // The backend only parses V1 goals into create-request specs — it no longer creates them,
         // nor resolves each goal's initial-state snapshot (no client-side estimate engine there).
@@ -289,6 +307,11 @@ function ImportResult({
     [t("goals.v1Import.parts.userId"), result.tacticusUserId],
     [t("goals.v1Import.parts.guildKey"), result.guildApiToken],
     [t("goals.v1Import.parts.goals"), result.goals],
+    [t("goals.v1Import.parts.onslaughtProgress"), result.onslaughtProgress],
+    [
+      t("goals.v1Import.parts.campaignEventProgress"),
+      result.campaignEventProgress,
+    ],
   ] as const
   return (
     <div

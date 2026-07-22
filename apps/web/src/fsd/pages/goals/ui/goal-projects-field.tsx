@@ -3,6 +3,8 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import type { ProjectSummary } from "@/entities/project"
 
+import { projectMarkerSuffix } from "../model/project-marker"
+
 /**
  * Checkbox list of every project, used by GoalDetailSheet to show and edit a goal's project
  * membership (a goal may belong to several projects at once). Split out of goal-detail-sheet.tsx to
@@ -37,7 +39,7 @@ export function GoalProjectsField({
             }
           />
           {project.name}
-          {project.isActivePlan ? ` (${t("goals.create.projectActive")})` : ""}
+          {projectMarkerSuffix(t, project)}
         </label>
       ))}
       {!projectsValid ? (

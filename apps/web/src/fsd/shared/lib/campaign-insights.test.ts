@@ -55,6 +55,7 @@ function location(overrides: Partial<RawFarmLocation>): FarmLocation {
     effectiveRate: null,
     numerator: null,
     denominator: null,
+    isMythic: false,
     ...overrides,
   }
 
@@ -104,6 +105,7 @@ describe("computeCampaignInsights", () => {
         challenge: false,
         nodeNumber: 1,
         energyCost: 6,
+        dailyAttempts: 10,
       },
     ],
     [
@@ -114,6 +116,7 @@ describe("computeCampaignInsights", () => {
         challenge: false,
         nodeNumber: 2,
         energyCost: 6,
+        dailyAttempts: 10,
       },
     ],
     [
@@ -124,6 +127,7 @@ describe("computeCampaignInsights", () => {
         challenge: false,
         nodeNumber: 5,
         energyCost: 12,
+        dailyAttempts: 6,
       },
     ],
     [
@@ -134,6 +138,7 @@ describe("computeCampaignInsights", () => {
         challenge: false,
         nodeNumber: 3,
         energyCost: 5,
+        dailyAttempts: 10,
       },
     ],
     [
@@ -144,6 +149,7 @@ describe("computeCampaignInsights", () => {
         challenge: false,
         nodeNumber: 3,
         energyCost: 8,
+        dailyAttempts: 10,
       },
     ],
   ])

@@ -44,6 +44,22 @@ export function rankIcon(id: Rank): string {
   return `${ASSET_BASE_PATH}/ranks/${id.toLowerCase()}.png`
 }
 
+export type OnslaughtSectorIcon =
+  "Stone" | "Iron" | "Bronze" | "Silver" | "Gold" | "Diamond" | "Adamantine"
+export type OnslaughtTierIcon = 1 | 2 | 3 | 4
+export type OnslaughtAllianceIcon = "Imperial" | "Xenos" | "Chaos"
+
+export function onslaughtTierIcon(
+  sector: OnslaughtSectorIcon,
+  tier: OnslaughtTierIcon
+): string {
+  return `${ASSET_BASE_PATH}/onslaught/ui_onslaught_button_rank_${sector.toLowerCase()}_${tier}.png`
+}
+
+export function onslaughtAllianceIcon(alliance: OnslaughtAllianceIcon): string {
+  return `${ASSET_BASE_PATH}/onslaught/${alliance.toLowerCase()}.png`
+}
+
 // Regular vs Mythic shard icon — a unit's ascension cost switches currency once its progression
 // reaches the Mythic tier (see goals' isMythicProgression), so callers showing a shard count pick
 // whichever icon matches.

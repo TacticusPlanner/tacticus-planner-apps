@@ -45,6 +45,14 @@ export function getLiveProgress() {
   return getChunkData("live-progress")
 }
 
+export function getCampaignProgress() {
+  return getChunkData("campaign-progress")
+}
+
+export function getCampaignEventProgress() {
+  return getChunkData("campaign-events-progress")
+}
+
 // The caller's owned XP books ({xpBookId, amount}[]), synced as part of the merged "inventory"
 // chunk (see chunk-keys.ts) — pulled out as its own named query since Level goals are the only
 // current consumer (see the Level goal's resource-cost preview).

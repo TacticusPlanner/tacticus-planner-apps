@@ -97,7 +97,7 @@ export function AscensionFarmingFields({
 
 type ProgressionPreviewResult = ReturnType<typeof useProgressionPreview>
 
-export function ProgressionPreview({
+function ProgressionPreview({
   preview,
 }: {
   preview: ProgressionPreviewResult
@@ -131,6 +131,20 @@ export function ProgressionPreview({
           {rarity} {t("goals.create.ascension.orbs", { count })}
         </p>
       ))}
+      {/* Ascension's own energy-for-remaining-shards line (plan: shard-location selector) —
+          isolated to Ascension's net regular-shard need, distinct from the combined
+          campaignEstimate/combinedEstimate figures below (which also fold in an enabled Unlock's
+          own shard need for the shared farm-day simulation). */}
+      {preview.ascensionShardEnergy ? (
+        <p className="flex items-center gap-1.5 text-muted-foreground">
+          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
+          {preview.ascensionShardEnergy.status === "Blocked"
+            ? t(`goals.estimate.blocked.${preview.ascensionShardEnergy.reason}`)
+            : t("goals.create.shardLocations.remainingEnergy", {
+                energy: preview.ascensionShardEnergy.energyTotal,
+              })}
+        </p>
+      ) : null}
       {preview.campaign?.status === "Estimated" ? (
         <p className="flex items-center gap-1.5">
           <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />

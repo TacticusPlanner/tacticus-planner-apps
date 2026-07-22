@@ -52,6 +52,11 @@ describe("onslaughtReward", () => {
       max: 18,
       mythic: false,
     })
+    expect(onslaughtReward(rewards, "Gold", 4, "Legendary")).toEqual({
+      min: 16,
+      max: 18,
+      mythic: false,
+    })
   })
 
   it("matches V1 mythic shard ranges", () => {

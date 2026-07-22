@@ -19,8 +19,6 @@ import {
 } from "@workspace/game-domain"
 
 import {
-  energyIconUrl,
-  EntityIcon,
   ProgressionBadge,
   RankBadge,
   ReadOnlyField,
@@ -32,16 +30,14 @@ import {
   rowLevel,
   type RankAdditionalTarget,
 } from "../model/rank-additional-target"
-import type { EstimateOutcome } from "../model/estimate/estimate.domain"
 
 export type MissingUpgrade = { id: string; label: string; missing: number }
-export type EstimatePreview = EstimateOutcome
 
-const STILL_NEEDED_VISIBLE_COUNT = 3
+const RESOURCES_NEEDED_VISIBLE_COUNT = 3
 
-/** "Still needed" upgrade list, collapsed to the first 3 entries until expanded — shared between
+/** "Resources needed" upgrade list, collapsed to the first 3 entries until expanded — shared between
  * Rank's and Ability's own resource-requirement preview. */
-function StillNeededList({
+function ResourcesNeededList({
   missingUpgrades,
 }: {
   missingUpgrades: MissingUpgrade[]
@@ -52,7 +48,7 @@ function StillNeededList({
 
   const visible = expanded
     ? missingUpgrades
-    : missingUpgrades.slice(0, STILL_NEEDED_VISIBLE_COUNT)
+    : missingUpgrades.slice(0, RESOURCES_NEEDED_VISIBLE_COUNT)
 
   return (
     <>
@@ -64,10 +60,10 @@ function StillNeededList({
           </li>
         ))}
       </ul>
-      {missingUpgrades.length > STILL_NEEDED_VISIBLE_COUNT ? (
+      {missingUpgrades.length > RESOURCES_NEEDED_VISIBLE_COUNT ? (
         <button
           className="justify-self-start text-xs font-medium text-primary underline-offset-2 hover:underline"
-          data-testid="create-goal-still-needed-toggle"
+          data-testid="create-goal-resources-needed-toggle"
           onClick={() => setExpanded((current) => !current)}
           type="button"
         >
@@ -77,31 +73,6 @@ function StillNeededList({
         </button>
       ) : null}
     </>
-  )
-}
-
-function EstimateSummary({ estimate }: { estimate: EstimatePreview | null }) {
-  const { t } = useTranslation()
-  if (!estimate) return null
-
-  return estimate.status === "Blocked" ? (
-    <p
-      className="font-medium text-amber-700"
-      data-testid="create-goal-estimate-blocked"
-    >
-      {t(`goals.estimate.blocked.${estimate.reason}`)}
-    </p>
-  ) : (
-    <div
-      className="grid gap-0.5 font-medium"
-      data-testid="create-goal-estimate"
-    >
-      <p>{t("goals.create.previewEstimate", { days: estimate.days })}</p>
-      <p className="flex items-center gap-1.5">
-        <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
-        {t("goals.create.previewEnergy", { energy: estimate.energyTotal })}
-      </p>
-    </div>
   )
 }
 
@@ -130,9 +101,11 @@ function additionalTargetLabel(
 
 /** Target-rank field + its "Additional target" (V1's Point Five / Mythic-tier partial-upgrade
  * selection — see rank-additional-target.ts) + the resource-requirement preview (plan §16 phase 2
- * — Rank only) + the isolated day-by-day estimate for that same range (plan §16 phase 4). The
- * current rank is read-only — it always reflects the unit's actual current rank, with a small
- * "N/total" badge showing how many of that rank's own upgrade slots are already applied. */
+ * — Rank only). The current rank is read-only — it always reflects the unit's actual current rank,
+ * with a small "N/total" badge showing how many of that rank's own upgrade slots are already applied.
+ * The day-by-day duration estimate for this range no longer renders here — it's shown per selected
+ * project in the drawer's "What will be created" review instead (per-project priority changes the
+ * estimate, so one combined isolated number here would be misleading). */
 export function RankGoalFields({
   rankStart,
   rankEnd,
@@ -142,7 +115,6 @@ export function RankGoalFields({
   onRankEndChange,
   onRankAdditionalTargetChange,
   missingUpgrades,
-  estimate,
   rankAppliedUpgrades,
   rankUpgradeSlotsTotal,
 }: {
@@ -154,7 +126,6 @@ export function RankGoalFields({
   onRankEndChange: (rank: Rank) => void
   onRankAdditionalTargetChange: (value: RankAdditionalTarget) => void
   missingUpgrades: MissingUpgrade[]
-  estimate: EstimatePreview | null
   rankAppliedUpgrades: number
   rankUpgradeSlotsTotal: number
 }) {
@@ -253,18 +224,13 @@ export function RankGoalFields({
         </Select>
       </div>
 
-      {missingUpgrades.length > 0 || estimate ? (
+      {missingUpgrades.length > 0 ? (
         <div
           className="grid gap-1 rounded-2xl border p-3 text-sm"
           data-testid="create-goal-preview"
         >
-          {missingUpgrades.length > 0 ? (
-            <>
-              <p className="font-medium">{t("goals.create.previewTitle")}</p>
-              <StillNeededList missingUpgrades={missingUpgrades} />
-            </>
-          ) : null}
-          <EstimateSummary estimate={estimate} />
+          <p className="font-medium">{t("goals.create.previewTitle")}</p>
+          <ResourcesNeededList missingUpgrades={missingUpgrades} />
           <p className="text-xs text-muted-foreground">
             {t("goals.create.previewDisclaimer")}
           </p>
@@ -311,7 +277,11 @@ export function AscensionGoalFields({
           }
           value={progressionEnd}
         >
-          <SelectTrigger className="w-full" ref={endTriggerRef}>
+          <SelectTrigger
+            className="w-full"
+            data-testid="create-goal-ascension-end"
+            ref={endTriggerRef}
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent container={endContainer}>
@@ -333,7 +303,6 @@ export function AbilityGoalFields({
   targetLevel,
   onTargetLevelChange,
   missingUpgrades,
-  estimate,
   costingSupported,
 }: {
   activeStart: number
@@ -341,7 +310,6 @@ export function AbilityGoalFields({
   targetLevel: number
   onTargetLevelChange: (value: number) => void
   missingUpgrades: MissingUpgrade[]
-  estimate: EstimatePreview | null
   costingSupported: boolean
 }) {
   const { t } = useTranslation("progression")
@@ -405,8 +373,7 @@ export function AbilityGoalFields({
           data-testid="create-goal-ability-preview"
         >
           <p className="font-medium">{tGoals("goals.create.previewTitle")}</p>
-          <StillNeededList missingUpgrades={missingUpgrades} />
-          <EstimateSummary estimate={estimate} />
+          <ResourcesNeededList missingUpgrades={missingUpgrades} />
         </div>
       ) : (
         <p className="col-span-2 text-xs text-muted-foreground">

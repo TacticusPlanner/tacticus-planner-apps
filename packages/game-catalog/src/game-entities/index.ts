@@ -4,6 +4,8 @@ export {
   UpgradeIcons,
   rarityIcon,
   rankIcon,
+  onslaughtTierIcon,
+  onslaughtAllianceIcon,
   shardIcon,
   characterIcon,
   mowIcon,
@@ -21,4 +23,7 @@ export type {
   CampaignDifficultyToken,
   StatIconKind,
   ProgressionVisual,
+  OnslaughtSectorIcon,
+  OnslaughtTierIcon,
+  OnslaughtAllianceIcon,
 } from "./icons"

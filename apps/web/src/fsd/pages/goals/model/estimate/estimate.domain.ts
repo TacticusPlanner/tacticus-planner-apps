@@ -38,6 +38,10 @@ export interface FarmNode {
   battleId: BattleId
   energyCost: number
   dropRate: number
+  /** The node's daily attempt cap — shared across every material farmed from the same battle within
+   *  one simulated day (see spendDay's per-battleId attempt tracking), since it's the same real-world
+   *  battle regardless of which material happens to drop there. */
+  dailyAttempts: number
 }
 
 /** One goal's material demand within a priority-shared plan estimate (`estimatePlan`). */

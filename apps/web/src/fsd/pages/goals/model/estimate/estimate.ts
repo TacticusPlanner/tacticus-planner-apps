@@ -74,6 +74,7 @@ export function selectFarmNodes(
       battleId: location.battleId,
       energyCost: battle.energyCost,
       dropRate: rate,
+      dailyAttempts: battle.dailyAttempts,
     })
   }
 
@@ -101,6 +102,10 @@ function formatDate(date: Date): string {
  * Spends one day's energy against a goal's still-remaining materials, cheapest node first, mutating
  * `remaining` and returning the energy/raids spent. Shared by `estimateGoal` (one goal) and
  * `estimatePlan` (each goal's turn within a combined day), so both loops spend a day identically.
+ * Each battle node's `dailyAttempts` cap is tracked per `battleId` across the whole call (not per
+ * material) — it's the same real-world battle regardless of which material happens to drop there, so
+ * two different materials farmed from the same node share one daily cap rather than each getting a
+ * fresh one.
  */
 function spendDay(
   remaining: Map<EstimateResourceId, number>,
@@ -110,6 +115,7 @@ function spendDay(
   let energy = startingEnergy
   let energySpent = 0
   let raidsPerformed = 0
+  const attemptsUsedByBattle = new Map<string, number>()
 
   const spendable = [...remaining.entries()]
     .flatMap(([id]) => (nodesById.get(id) ?? []).map((node) => ({ id, node })))
@@ -120,9 +126,18 @@ function spendDay(
     if (!remainingCount || remainingCount <= 0) continue
     if (energy < node.energyCost) continue
 
+    const attemptsUsed = attemptsUsedByBattle.get(node.battleId) ?? 0
+    const attemptsCap = node.dailyAttempts > 0 ? node.dailyAttempts : Infinity
+    const attemptsRemaining = attemptsCap - attemptsUsed
+    if (attemptsRemaining <= 0) continue
+
     const affordableRaids = Math.floor(energy / node.energyCost)
     const neededRaids = Math.ceil(remainingCount / node.dropRate)
-    const raidsToPerform = Math.min(affordableRaids, neededRaids)
+    const raidsToPerform = Math.min(
+      affordableRaids,
+      neededRaids,
+      attemptsRemaining
+    )
     if (raidsToPerform <= 0) continue
 
     const farmed = raidsToPerform * node.dropRate
@@ -130,6 +145,7 @@ function spendDay(
     energy -= spent
     energySpent += spent
     raidsPerformed += raidsToPerform
+    attemptsUsedByBattle.set(node.battleId, attemptsUsed + raidsToPerform)
 
     const nextRemaining = remainingCount - farmed
     if (nextRemaining <= 0) {

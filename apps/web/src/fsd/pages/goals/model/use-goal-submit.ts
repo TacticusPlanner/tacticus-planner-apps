@@ -4,7 +4,11 @@ import { useMutation } from "@tanstack/react-query"
 
 import type { UnitId } from "@workspace/game-domain"
 
-import { buildCreateGoalSnapshot, createCombinedGoals } from "@/entities/goal"
+import {
+  buildCreateGoalSnapshot,
+  createCombinedGoals,
+  type ProjectPriority,
+} from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 import { buildCombinedGoalSpecs } from "./goal-spec-builder"
@@ -27,7 +31,7 @@ export function useGoalSubmit({
   entityId,
   entityType,
   canSubmit,
-  selectedProjectIds,
+  selectedProjects,
   specParams,
   snapshotContext,
   onOpenChange,
@@ -37,7 +41,7 @@ export function useGoalSubmit({
   entityId: UnitId | undefined
   entityType: EntityType
   canSubmit: boolean
-  selectedProjectIds: string[]
+  selectedProjects: ProjectPriority[]
   specParams: SpecParams
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
@@ -64,8 +68,7 @@ export function useGoalSubmit({
       await createGoals.mutateAsync({
         entityType,
         entityId,
-        projectIds:
-          selectedProjectIds.length > 0 ? selectedProjectIds : undefined,
+        projects: selectedProjects.length > 0 ? selectedProjects : undefined,
         goals: specs.map((spec) => ({
           ...spec,
           snapshot: buildCreateGoalSnapshot({ ...snapshotContext, spec }),
