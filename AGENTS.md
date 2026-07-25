@@ -21,9 +21,11 @@ files there.
   (IndexedDB/Dexie-backed storage).
 - `.agents/skills` (canonical) / `.claude/skills` (generated mirror, kept in
   sync manually or via `skills-lock.json`): local agent skill docs — FSD,
-  shadcn, naming conventions, i18n, tanstack-query, vitest, joyride tours, and
-  the `reimplement-v1-page` migration workflow. Read the relevant skill before
-  touching an area it covers.
+  shadcn, naming conventions, i18n, tanstack-query, vitest, and joyride tours.
+  Read the relevant skill before touching an area it covers. The V1→V2 page
+  migration workflow (`reimplement-v1-page`) lives in the `tacticus-planner-dev`
+  orchestration workspace instead, since it spans this repo, `tacticusplanner`,
+  and `tacticus-planner-docs`.
 - `.design-sync`: generated shadcn/ui component reference docs and previews
   under `.design-sync/docs` and `.design-sync/previews` — do not hand-edit;
   regenerated from the design system.
