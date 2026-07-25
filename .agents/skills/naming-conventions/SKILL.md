@@ -50,12 +50,11 @@ toCharacter()
 
 **Exception — keep generic, key-driven dispatch as-is.** Where a schema/transform is already looked up
 generically by a runtime key (`playerDataChunkPayloadSchemas[chunk.key]` in
-`packages/player-data/src/schemas.ts`, `datasetToRecords[datasetKey]` in
+`packages/player-data/src/player-data.schema.ts`, `datasetToStorageModels[datasetKey]` in
 `packages/game-catalog/src/game-catalog.mapper.ts`), do **not** "fix" this into one hand-written
 `map<Entity>StorageToDomain()`/`parse<Entity>Dto()` per entity. The generic dispatch exists specifically
-to avoid that boilerplate across 10+ chunk/dataset keys — it's the same reasoning documented next to
-`getCharactersMap()` in `packages/game-catalog/src/queries.ts` (one generic function beats N
-hand-declared ones when the shape of the work is identical per key). Reserve named `map<X>To<Y>()`
+to avoid that boilerplate across 10+ chunk/dataset keys — one generic function beats N hand-declared
+ones when the shape of the work is identical per key. Reserve named `map<X>To<Y>()`
 functions for mappers that do real per-field work (renames, aggregation, filtering), like
 `mapCharacterStorageToDomain`.
 

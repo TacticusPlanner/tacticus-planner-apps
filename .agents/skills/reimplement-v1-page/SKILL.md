@@ -22,9 +22,13 @@ pages that must preserve existing calculations but improve design, accessibility
   summary + "Evidence" pointing at the exact V1 files).
 - **Rewrite conventions**: `apps/web/src/fsd/**` (FSD layers app→pages→widgets→features→entities→shared),
   `app/routes.tsx` (routing + auth guards), `shared/config/i18n` (i18next), `@workspace/ui` components, the
-  `@workspace/game-catalog` package for the served dataset shapes/schemas, and `shared/game-catalog`
-  (`useDatasetRecords(key)`, `GameCatalogProvider`) for the React data-fetching layer — game-catalog
-  itself is pure TS with no React/JSX.
+  `@workspace/game-catalog` package for the served dataset shapes/schemas — game-catalog itself is pure TS
+  with no React/JSX. For data access: `@workspace/game-catalog/queries` (and `@workspace/player-data/queries`
+  for user data) exposes Promise-based getters per entity (e.g. `getCharactersMap()`, `getUpgrades()`); pages
+  read them reactively via Dexie's `useLiveQuery`, wrapped in a page-local hook (e.g.
+  `use-character-lookup-catalog.ts`) that also does any id→translated-label mapping needed for the page.
+  `GameCatalogProvider` (`app/providers`) only tracks catalog **sync status** (`useGameCatalogStatus`) — it
+  does not hand out the data itself.
 - **V1 implementation**: the page component + its `*.service.ts` (the real calculation), and the V1 models
   (`v1/.../src/fsd/4-entities/*`, `5-shared/model/*` — e.g. enums like `Rank`).
 - **Assets**: rewrite `apps/web/public/game_catalog/**` (characters, upgrade_materials, stat_icons, …),
@@ -61,7 +65,7 @@ pages that must preserve existing calculations but improve design, accessibility
    an entity slice has no app-specific logic, delete it and point consumers at the package. Rules:
    - Upgrade icons: `upgradeIcon(id)` → derives path directly from id; always valid.
    - Rank icons: `rankIcon(id)` → `id.toLowerCase() + ".png"` — rename V1 Mythical assets to `Adamantine*.png`.
-   - Character icons: `characterIcon(id)` → derives `camelCase→snake_case` slug; ~30 characters diverge and
+   - Character icons: `characterIcon(id)` → derives `camelCase→snake_case` slug; 32 characters diverge and
      need an overrides map (`character-icon-overrides.ts`); commit the overrides once.
    - Campaign icons: `campaignIcon(groupId, difficulty)` → standard and event campaigns both covered; event
      images show the defending faction (Y in X-vs-Y groupId).
@@ -94,17 +98,22 @@ pages that must preserve existing calculations but improve design, accessibility
 - [ ] Future reuse opportunities identified (shared entity/feature components)
 - [ ] Intentional differences from V1 documented
 
-## Worked example — Rank Lookup (`/lookup/ranks`)
+## Worked example — Character Lookup (`/lookup/character`)
 
 - **Behavior** (from `v1/.../1-pages/learn-characters/rank-lookup.service.ts`): pick a character + rank range
   (+ "point five"), flatten `rankUpUpgrades` over the range, aggregate uncraftable **base materials**, and
   show campaign **farm locations**. The catalog (`characters[].rankUpUpgrades`, `upgrades[].recipe`/
-  `farmLocations`, `campaign-battles`) supplies all of it → **public, no user data**. V1's user
-  `campaignsProgress` (unlocked-location highlighting / farm-time estimates) is intentionally **dropped**.
-- **Code**: calc in `features/rank-lookup/lib/rank-lookup-calc.ts`; game enums + icon helpers in
-  `@workspace/game-catalog` (`game-entities/`), imported directly (no entity re-export shims); page in `pages/rank-lookup`
-  with orchestrator `rank-lookup-page.tsx` → `desktop/rank-lookup-desktop-page.tsx` (slider + table) and
-  `mobile/rank-lookup-mobile-page.tsx` (selects + accordion/cards); wired via `AppShell` in `app/routes.tsx`.
+  `farmLocations`, `campaign-battles`) supplies the reference data; the rewrite additionally reads the
+  signed-in user's owned upgrades/roster (`@workspace/player-data/queries`) when authenticated, so the page
+  works both **public/anonymous and signed-in** — it isn't gated behind `ProtectedRoute`.
+- **Code**: the calc/domain/mapper logic from the original Rank Lookup slice lives in
+  `features/rank-lookup/lib/` (`rank-lookup-calc.ts`, `.domain.ts`, `.mapper.ts`) and is consumed — not
+  duplicated — by the page. The page itself is `pages/lookup/ui/character/`, following the orchestrator +
+  sub-page pattern: `character-lookup-page.tsx` (orchestrator: auth state, `useLookupSelection`,
+  `useCharacterLookupCatalog` for reactive catalog/player-data reads via Dexie `useLiveQuery`,
+  `useCharacterLookupCalc` for the pure calc) → `desktop/character-lookup-desktop-page.tsx` and
+  `mobile/character-lookup-mobile-page.tsx`. Routed under the shared `/lookup` layout in `app/routes.tsx`
+  (`{ path: "character", element: <CharacterLookupPage /> }`).
 - **i18n/assets**: `en/` locale files for `characters/upgrades/campaignLocations/ranks/factions` generated
   manually from catalog; other languages are empty `{}` (en fallback). Rank assets renamed to `{RankId}.png`
   (e.g. `adamantine1.png`). Character icons derived from camelCase id → snake_case with `character-icon-overrides.ts`
