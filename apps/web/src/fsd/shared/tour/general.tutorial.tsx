@@ -2,6 +2,8 @@ import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
+import { isUiKitEnabled } from "@/shared/config"
+
 // Long enough for the Popover's open animation to settle before the tour measures/spotlights the
 // now-visible theme/language/tour-button targets inside it.
 const MOBILE_MENU_OPEN_DELAY_MS = 300
@@ -19,7 +21,7 @@ export function useDesktopTutorialSteps(): Step[] {
       { target: "dailies", title: t("nav.dailies") },
       { target: "progress", title: t("nav.progress") },
       { target: "guild", title: t("nav.guild") },
-      { target: "ui-kit", title: t("nav.uiKit") },
+      ...(isUiKitEnabled ? [{ target: "ui-kit", title: t("nav.uiKit") }] : []),
     ].map(({ target, title }) => ({
       target: `[data-testid="desktop-nav-${target}"]`,
       placement: "right" as const,

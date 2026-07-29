@@ -203,7 +203,10 @@ function NavMenuItem({ item }: { item: NavItem }) {
         isActive={isActive}
         tooltip={t(item.labelKey)}
       >
-        <Link to={item.path}>
+        <Link
+          aria-current={pathname === item.path ? "page" : undefined}
+          to={item.path}
+        >
           <item.icon />
           <span>{t(item.labelKey)}</span>
         </Link>
