@@ -263,6 +263,36 @@
         "title": "Tu menú de cuenta",
         "content": "Toca aquí en cualquier momento para cambiar el tema o el idioma, o repetir este recorrido."
       },
+      "accountDrawer": {
+        "title": "Cuenta y preferencias",
+        "content": "Gestiona aquí el tema, idioma, recorrido, importaciones, cuenta y opciones de sesión."
+      },
+      "bottomNavigation": {
+        "home": {
+          "title": "Inicio",
+          "content": "Vuelve a la página de inicio del Planner."
+        },
+        "goals": {
+          "title": "Objetivos",
+          "content": "Revisa y organiza todos tus objetivos de planificación."
+        },
+        "addGoal": {
+          "title": "Añadir objetivo",
+          "content": "Crea un nuevo objetivo de progreso desde cualquier parte de la aplicación."
+        },
+        "sync": {
+          "title": "Sincronizar",
+          "content": "Actualiza el Planner con los datos más recientes de Tacticus."
+        },
+        "dailies": {
+          "title": "Diarias",
+          "content": "Abre el área dedicada a las actividades diarias."
+        },
+        "menu": {
+          "title": "Menú",
+          "content": "Abre la navegación completa y con búsqueda de la aplicación."
+        }
+      },
       "navigation": {
         "title": "Desplázate con facilidad",
         "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."

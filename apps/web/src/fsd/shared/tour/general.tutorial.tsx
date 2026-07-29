@@ -48,11 +48,8 @@ export function useDesktopTutorialSteps(): Step[] {
   )
 }
 
-/** On mobile the theme/language/tour-replay controls live inside a closed Popover (see
- *  AuthControl / MobileGuestSettings), so this tutorial first calls out the menu trigger, then
- *  auto-expands it (via `setMobileMenuForceOpen`, backing useTourControlledPopoverOpen) for the
- *  steps that spotlight the controls inside it, and closes it again before moving on to
- *  navigation. `setMobileMenuForceOpen` comes from TourProvider, which owns this hook's caller. */
+/** On mobile, present the account controls as one surface rather than walking every setting.
+ *  The remaining steps spotlight each persistent bottom-navigation destination/action in order. */
 export function useMobileTutorialSteps(
   setMobileMenuForceOpen: (open: boolean) => void
 ): Step[] {
@@ -85,38 +82,50 @@ export function useMobileTutorialSteps(
         content: t("tour.steps.userMenu.content"),
       },
       {
-        target: '[data-testid="language-switcher"]',
+        target:
+          '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]',
         placement: "bottom",
-        title: t("tour.steps.language.title"),
-        content: t("tour.steps.language.content"),
-        before: openMenu,
-        // Joyride's focus trap moving focus while the Popover is open reads to Radix as focus
-        // escaping the popover, closing it again right after `openMenu` opens it - see
-        // https://react-joyride.com/docs/recipes (conditional/dynamic steps).
-        disableFocusTrap: true,
-      },
-      {
-        target: '[data-testid="theme-switcher"]',
-        placement: "bottom",
-        title: t("tour.steps.theme.title"),
-        content: t("tour.steps.theme.content"),
-        before: openMenu,
-        disableFocusTrap: true,
-      },
-      {
-        target: '[data-testid="tour-button"]',
-        placement: "bottom",
-        title: t("tour.steps.replay.title"),
-        content: t("tour.steps.replay.content"),
+        title: t("tour.steps.accountDrawer.title"),
+        content: t("tour.steps.accountDrawer.content"),
         before: openMenu,
         after: closeMenu,
         disableFocusTrap: true,
       },
       {
-        target: '[data-testid="primary-nav"]',
+        target: '[data-testid="mobile-nav-home"]',
         placement: "top",
-        title: t("tour.steps.navigation.title"),
-        content: t("tour.steps.navigation.content"),
+        title: t("tour.steps.bottomNavigation.home.title"),
+        content: t("tour.steps.bottomNavigation.home.content"),
+      },
+      {
+        target: '[data-testid="mobile-nav-goals"]',
+        placement: "top",
+        title: t("tour.steps.bottomNavigation.goals.title"),
+        content: t("tour.steps.bottomNavigation.goals.content"),
+      },
+      {
+        target: '[data-testid="mobile-create-goal-button"]',
+        placement: "top",
+        title: t("tour.steps.bottomNavigation.addGoal.title"),
+        content: t("tour.steps.bottomNavigation.addGoal.content"),
+      },
+      {
+        target: '[data-testid="mobile-sync-button"]',
+        placement: "top",
+        title: t("tour.steps.bottomNavigation.sync.title"),
+        content: t("tour.steps.bottomNavigation.sync.content"),
+      },
+      {
+        target: '[data-testid="mobile-nav-dailies"]',
+        placement: "top",
+        title: t("tour.steps.bottomNavigation.dailies.title"),
+        content: t("tour.steps.bottomNavigation.dailies.content"),
+      },
+      {
+        target: '[data-testid="mobile-menu-trigger"]',
+        placement: "top",
+        title: t("tour.steps.bottomNavigation.menu.title"),
+        content: t("tour.steps.bottomNavigation.menu.content"),
       },
     ],
     [t, openMenu, closeMenu]

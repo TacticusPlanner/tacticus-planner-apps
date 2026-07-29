@@ -718,6 +718,36 @@
         "title": "Your account menu",
         "content": "Tap here any time to switch the theme or language, or replay this tour."
       },
+      "accountDrawer": {
+        "title": "Account and preferences",
+        "content": "Manage your theme, language, guided tour, imports, account, and sign-in options here."
+      },
+      "bottomNavigation": {
+        "home": {
+          "title": "Home",
+          "content": "Return to your Planner home page."
+        },
+        "goals": {
+          "title": "Goals",
+          "content": "Review and organize all of your planning goals."
+        },
+        "addGoal": {
+          "title": "Add Goal",
+          "content": "Create a new progression goal from anywhere in the app."
+        },
+        "sync": {
+          "title": "Sync",
+          "content": "Refresh your Planner with the latest data from Tacticus."
+        },
+        "dailies": {
+          "title": "Dailies",
+          "content": "Open the dedicated area for daily activities."
+        },
+        "menu": {
+          "title": "Menu",
+          "content": "Open the complete, searchable application navigation."
+        }
+      },
       "navigation": {
         "title": "Find your way around",
         "content": "This menu groups the app's sections — use it to navigate between them at any time."

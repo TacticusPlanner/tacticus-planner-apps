@@ -3,7 +3,10 @@ import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) =>
+      key === "progress.tabs.campaign-events" ? "Campaign Events" : key,
+  }),
 }))
 
 vi.mock("@azure/msal-react", () => ({
@@ -45,9 +48,13 @@ import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 
-function renderShell(onCreateGoal = vi.fn(), isAuthenticated = false) {
+function renderShell(
+  onCreateGoal = vi.fn(),
+  isAuthenticated = false,
+  initialEntry = "/"
+) {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <MobileShell
         isAuthenticated={isAuthenticated}
         visibleItems={navItems as NavItem[]}
@@ -104,6 +111,44 @@ describe("MobileBottomNav actions", () => {
     const drawer = within(screen.getByTestId("mobile-menu"))
     expect(drawer.getByText("nav.uiKit")).toBeVisible()
     expect(drawer.queryByText("nav.home")).not.toBeInTheDocument()
+  })
+
+  it("shows nested destinations and finds them by their localized label", () => {
+    renderShell()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(drawer.getByText("unitLookup.tabs.character")).toBeVisible()
+    expect(drawer.getByText("goals.tabs.projects")).toBeVisible()
+    expect(drawer.getByText("Campaign Events")).toBeVisible()
+    expect(drawer.getByText("guild.tabs.members")).toBeVisible()
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "events" },
+    })
+
+    expect(drawer.getByText("nav.progress")).toBeVisible()
+    expect(drawer.getByText("Campaign Events")).toBeVisible()
+    expect(
+      drawer.queryByText("progress.tabs.campaigns")
+    ).not.toBeInTheDocument()
+    expect(drawer.queryByText("nav.lookup")).not.toBeInTheDocument()
+  })
+
+  it("marks only the exact nested destination as the current page", () => {
+    renderShell(vi.fn(), true, "/progress/campaign-events")
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(drawer.getByText("Campaign Events").closest("a")).toHaveAttribute(
+      "aria-current",
+      "page"
+    )
+    expect(drawer.getByText("nav.progress").closest("a")).not.toHaveAttribute(
+      "aria-current"
+    )
   })
 
   it("starts the guided tour directly from the authenticated top bar", () => {
