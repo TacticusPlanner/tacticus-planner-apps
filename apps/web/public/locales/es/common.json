@@ -2,6 +2,9 @@
   "app": {
     "name": "Tacticus Planner"
   },
+  "common": {
+    "close": "Cerrar"
+  },
   "auth": {
     "account": "Cuenta conectada",
     "accountLoading": "Cargando cuenta",
@@ -125,6 +128,8 @@
     }
   },
   "nav": {
+    "addGoal": "Añadir objetivo",
+    "dailies": "Diarias",
     "home": "Inicio",
     "rankLookup": "Consulta de rango",
     "createGoal": "Crear objetivo",
@@ -133,7 +138,16 @@
     "uiKit": "Kit de interfaz",
     "guild": "Gremio",
     "menu": "Menú",
+    "navigation": "Navegación",
+    "navigationHint": "Elige un destino o filtra la lista.",
+    "noResults": "No se encontraron elementos de navegación.",
+    "search": "Buscar en la navegación",
+    "sync": "Sincronizar",
     "syncWithTacticus": "Sincronizar con Tacticus"
+  },
+  "dailies": {
+    "title": "Las diarias están en construcción",
+    "description": "Esta sección dedicada estará disponible próximamente."
   },
   "guild": {
     "loadError": "No se pudo cargar tu gremio.",

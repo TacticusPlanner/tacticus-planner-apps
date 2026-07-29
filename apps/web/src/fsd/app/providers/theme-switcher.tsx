@@ -19,7 +19,7 @@ const themeIcons: Record<Theme, LucideIcon> = {
   system: Monitor,
 }
 
-export function ThemeSwitcher() {
+export function ThemeSwitcher({ className }: { className?: string }) {
   const { t } = useTranslation()
   const { theme, setTheme } = useTheme()
   const Icon = themeIcons[theme]
@@ -28,6 +28,7 @@ export function ThemeSwitcher() {
     <Select onValueChange={(value) => setTheme(value as Theme)} value={theme}>
       <SelectTrigger
         aria-label={t("theme.label")}
+        className={className}
         data-testid="theme-switcher"
         size="sm"
       >

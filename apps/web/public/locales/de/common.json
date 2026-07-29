@@ -2,6 +2,9 @@
   "app": {
     "name": "Tacticus Planner"
   },
+  "common": {
+    "close": "Schließen"
+  },
   "auth": {
     "account": "Angemeldetes Konto",
     "accountLoading": "Konto wird geladen",
@@ -125,6 +128,8 @@
     }
   },
   "nav": {
+    "addGoal": "Ziel hinzufügen",
+    "dailies": "Tägliches",
     "home": "Startseite",
     "rankLookup": "Rang-Nachschlag",
     "createGoal": "Ziel erstellen",
@@ -133,7 +138,16 @@
     "uiKit": "UI-Kit",
     "guild": "Gilde",
     "menu": "Menü",
+    "navigation": "Navigation",
+    "navigationHint": "Wähle ein Ziel oder filtere die Liste.",
+    "noResults": "Keine Navigationseinträge gefunden.",
+    "search": "Navigation durchsuchen",
+    "sync": "Sync",
     "syncWithTacticus": "Mit Tacticus synchronisieren"
+  },
+  "dailies": {
+    "title": "Tägliches ist in Arbeit",
+    "description": "Dieser eigene Bereich ist bald verfügbar."
   },
   "guild": {
     "loadError": "Deine Gilde konnte nicht geladen werden.",

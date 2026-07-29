@@ -27,6 +27,9 @@ import { OnboardingGate } from "./onboarding-gate"
 const HomePage = lazy(() =>
   import("@/pages/home").then((m) => ({ default: m.HomePage }))
 )
+const DailiesPage = lazy(() =>
+  import("@/pages/dailies").then((m) => ({ default: m.DailiesPage }))
+)
 const LookupPage = lazy(() =>
   import("@/pages/lookup").then((m) => ({ default: m.LookupPage }))
 )
@@ -117,6 +120,14 @@ export const routes: RouteObject[] = [
         element: (
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/dailies",
+        element: (
+          <ProtectedRoute>
+            <DailiesPage />
           </ProtectedRoute>
         ),
       },

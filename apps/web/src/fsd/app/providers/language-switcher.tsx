@@ -16,7 +16,7 @@ import {
   type SupportedLanguage,
 } from "@/shared/config"
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ className }: { className?: string }) {
   const { i18n, t } = useTranslation()
   const language = getSupportedLanguage(i18n.resolvedLanguage ?? i18n.language)
 
@@ -28,6 +28,7 @@ export function LanguageSwitcher() {
     <Select onValueChange={handleLanguageChange} value={language}>
       <SelectTrigger
         aria-label={t("language.label")}
+        className={className}
         data-testid="language-switcher"
         size="sm"
       >
