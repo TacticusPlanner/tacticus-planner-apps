@@ -2,6 +2,9 @@
   "app": {
     "name": "Tacticus Planner"
   },
+  "common": {
+    "close": "Fermer"
+  },
   "auth": {
     "account": "Compte connecté",
     "accountLoading": "Chargement du compte",
@@ -125,6 +128,8 @@
     }
   },
   "nav": {
+    "addGoal": "Ajouter un objectif",
+    "dailies": "Quotidiennes",
     "home": "Accueil",
     "rankLookup": "Recherche de rang",
     "createGoal": "Créer un objectif",
@@ -133,7 +138,16 @@
     "uiKit": "Kit d'interface",
     "guild": "Guilde",
     "menu": "Menu",
+    "navigation": "Navigation",
+    "navigationHint": "Choisissez une destination ou filtrez la liste.",
+    "noResults": "Aucun élément de navigation trouvé.",
+    "search": "Rechercher dans la navigation",
+    "sync": "Synchroniser",
     "syncWithTacticus": "Synchroniser avec Tacticus"
+  },
+  "dailies": {
+    "title": "Les quotidiennes sont en construction",
+    "description": "Cet espace dédié sera bientôt disponible."
   },
   "guild": {
     "loadError": "Impossible de charger votre guilde.",

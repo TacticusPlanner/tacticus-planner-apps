@@ -2,5 +2,5 @@
    scroll-to-top FAB never sit under the iOS/Android system inset or overlap the fixed bars. */
 :root {
   --mobile-header-height: calc(4rem + env(safe-area-inset-top, 0px));
-  --mobile-nav-height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  --mobile-nav-height: calc(5.25rem + env(safe-area-inset-bottom, 0px));
 }

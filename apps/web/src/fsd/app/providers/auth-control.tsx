@@ -10,6 +10,16 @@ import {
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@workspace/ui/components/drawer"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -35,6 +45,7 @@ import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
+import { AccountAvatar } from "./account-avatar"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
 
@@ -134,6 +145,110 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
     account.username ??
     t("auth.account")
   const accountEmail = account.username
+  const applicationAccountId = currentUser?.applicationUserId ?? null
+
+  const dialogs = (
+    <>
+      <ManageAccountDialog
+        onOpenChange={setIsManageAccountOpen}
+        open={isManageAccountOpen}
+      />
+      <ImportV1Dialog open={isV1ImportOpen} onOpenChange={setIsV1ImportOpen} />
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <div className="flex items-center" data-testid="auth-account">
+        <Drawer direction="bottom" onOpenChange={setMenuOpen} open={menuOpen}>
+          <DrawerTrigger asChild>
+            <button
+              type="button"
+              aria-label={t("auth.userMenu")}
+              className="rounded-full outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+              data-testid="auth-account-trigger"
+            >
+              <AccountAvatar
+                applicationAccountId={applicationAccountId}
+                className="size-10"
+                displayName={accountName}
+              />
+            </button>
+          </DrawerTrigger>
+          <DrawerContent
+            className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"
+            data-testid="auth-account-drawer"
+          >
+            <DrawerHeader className="border-b px-6 py-5 text-left">
+              <DrawerTitle className="text-xl">{accountName}</DrawerTitle>
+              <DrawerDescription className="break-all">
+                {accountEmail}
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-5">
+              <div className="space-y-2">
+                <span className="text-sm font-medium">{t("theme.label")}</span>
+                <ThemeSwitcher className="w-full" />
+              </div>
+              <div className="space-y-2">
+                <span className="text-sm font-medium">
+                  {t("language.label")}
+                </span>
+                <LanguageSwitcher className="w-full" />
+              </div>
+              <TourButton
+                className="w-full justify-start"
+                onStarted={() => setMenuOpen(false)}
+              />
+              <Separator />
+              <Button
+                className="w-full justify-start"
+                data-testid="auth-v1-import"
+                onClick={() => {
+                  setIsV1ImportOpen(true)
+                  setMenuOpen(false)
+                }}
+                variant="outline"
+              >
+                <Download data-icon="inline-start" />
+                {t("goals.v1Import.menu")}
+              </Button>
+              <Button
+                className="w-full justify-start"
+                data-testid="auth-manage-account"
+                onClick={() => {
+                  setIsManageAccountOpen(true)
+                  setMenuOpen(false)
+                }}
+                variant="outline"
+              >
+                <Settings data-icon="inline-start" />
+                {t("auth.manageAccount")}
+              </Button>
+              <Button
+                className="w-full justify-start"
+                data-testid="auth-sign-out"
+                disabled={isInteractionInProgress}
+                onClick={handleSignOut}
+                variant="outline"
+              >
+                <LogOut data-icon="inline-start" />
+                {t("auth.signOut")}
+              </Button>
+            </div>
+            <DrawerFooter className="border-t px-6 py-4">
+              <DrawerClose asChild>
+                <Button className="w-full" variant="secondary">
+                  {t("common.close")}
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+        {dialogs}
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center gap-1" data-testid="auth-account">
@@ -173,36 +288,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
                     {t("auth.accountLoading")}
                   </div>
                 ) : null}
-                {isMobile &&
-                accountState.status === "success" &&
-                accountEmail ? (
-                  <div
-                    className="truncate text-xs"
-                    data-testid="auth-account-email"
-                    title={accountEmail}
-                  >
-                    {accountEmail}
-                  </div>
-                ) : null}
               </div>
             )}
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-56 gap-2">
-          {isMobile ? (
-            <>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm">{t("theme.label")}</span>
-                <ThemeSwitcher />
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm">{t("language.label")}</span>
-                <LanguageSwitcher />
-              </div>
-              <TourButton />
-              <Separator />
-            </>
-          ) : null}
           <Button
             aria-label={t("goals.v1Import.menu")}
             className="w-full justify-start"
@@ -242,11 +332,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
           </Button>
         </PopoverContent>
       </Popover>
-      <ManageAccountDialog
-        onOpenChange={setIsManageAccountOpen}
-        open={isManageAccountOpen}
-      />
-      <ImportV1Dialog open={isV1ImportOpen} onOpenChange={setIsV1ImportOpen} />
+      {dialogs}
     </div>
   )
 }

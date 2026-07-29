@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
@@ -21,8 +21,10 @@ vi.mock("../providers/language-switcher", () => ({
   LanguageSwitcher: () => null,
 }))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
+const { startTour } = vi.hoisted(() => ({ startTour: vi.fn() }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => null,
+  useTour: () => ({ isRunning: false, startTour }),
   useTourControlledPopoverOpen: () => [false, vi.fn()] as const,
 }))
 
@@ -43,11 +45,11 @@ import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 
-function renderShell(onCreateGoal = vi.fn()) {
+function renderShell(onCreateGoal = vi.fn(), isAuthenticated = false) {
   return render(
     <MemoryRouter>
       <MobileShell
-        isAuthenticated={false}
+        isAuthenticated={isAuthenticated}
         visibleItems={navItems as NavItem[]}
         pageTitle="Home"
         onCreateGoal={onCreateGoal}
@@ -63,12 +65,53 @@ describe("MobileBottomNav actions", () => {
     const createGoal = screen.getByTestId("mobile-create-goal-button")
     const sync = screen.getByTestId("mobile-sync-button")
 
-    // Actual <button> elements (not <a>/<Link>s like the regular nav items), and visually filled/
-    // circular rather than the plain text style used by ordinary nav links.
+    // Actual <button> elements (not <a>/<Link>s like the regular nav items), with contained,
+    // circular visual controls rather than detached floating buttons.
     expect(createGoal.tagName).toBe("BUTTON")
     expect(sync.tagName).toBe("BUTTON")
-    expect(createGoal.className).toContain("rounded-full")
-    expect(sync.className).toContain("rounded-full")
+    expect(createGoal.querySelector(".rounded-full")).toBeInTheDocument()
+    expect(sync.querySelector(".rounded-full")).toBeInTheDocument()
+    expect(createGoal).toHaveTextContent("nav.addGoal")
+    expect(sync).toHaveTextContent("nav.sync")
+  })
+
+  it("renders the requested mobile navigation order", () => {
+    renderShell()
+
+    const nav = screen.getByTestId("primary-nav")
+    expect(
+      Array.from(nav.children).map((item) => item.textContent?.trim())
+    ).toEqual([
+      "nav.home",
+      "nav.goals",
+      "nav.addGoal",
+      "nav.sync",
+      "nav.dailies",
+      "nav.menu",
+    ])
+  })
+
+  it("opens a searchable navigation drawer and filters destinations", () => {
+    renderShell()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    expect(screen.getByTestId("mobile-menu")).toBeVisible()
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "uiKit" },
+    })
+
+    const drawer = within(screen.getByTestId("mobile-menu"))
+    expect(drawer.getByText("nav.uiKit")).toBeVisible()
+    expect(drawer.queryByText("nav.home")).not.toBeInTheDocument()
+  })
+
+  it("starts the guided tour directly from the authenticated top bar", () => {
+    renderShell(vi.fn(), true)
+
+    fireEvent.click(screen.getByTestId("mobile-tour-button"))
+
+    expect(startTour).toHaveBeenCalledTimes(1)
   })
 
   it("triggers the global Create Goal action", () => {

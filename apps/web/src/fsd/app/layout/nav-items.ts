@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import {
+  CalendarCheck,
   Home,
   LayoutGrid,
   ListTodo,
@@ -19,6 +20,7 @@ export interface NavItem {
     | "nav.progress"
     | "nav.uiKit"
     | "nav.guild"
+    | "nav.dailies"
   icon: LucideIcon
   anonymousAllowed: boolean
   // Where this item surfaces on mobile: a direct bottom-nav destination, or
@@ -46,6 +48,13 @@ export const navItems: NavItem[] = [
     path: "/goals",
     labelKey: "nav.goals",
     icon: ListTodo,
+    anonymousAllowed: false,
+    mobilePlacement: "primary",
+  },
+  {
+    path: "/dailies",
+    labelKey: "nav.dailies",
+    icon: CalendarCheck,
     anonymousAllowed: false,
     mobilePlacement: "primary",
   },

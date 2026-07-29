@@ -2,6 +2,9 @@
   "app": {
     "name": "Tacticus Planner"
   },
+  "common": {
+    "close": "Close"
+  },
   "auth": {
     "account": "Signed-in account",
     "accountLoading": "Loading account",
@@ -156,6 +159,8 @@
     }
   },
   "nav": {
+    "addGoal": "Add Goal",
+    "dailies": "Dailies",
     "home": "Home",
     "lookup": "Lookup",
     "createGoal": "Create Goal",
@@ -164,7 +169,16 @@
     "uiKit": "UI Kit",
     "guild": "Guild",
     "menu": "Menu",
+    "navigation": "Navigation",
+    "navigationHint": "Choose a destination or filter the list.",
+    "noResults": "No navigation items found.",
+    "search": "Search navigation",
+    "sync": "Sync",
     "syncWithTacticus": "Sync with Tacticus"
+  },
+  "dailies": {
+    "title": "Dailies are under construction",
+    "description": "This dedicated area is coming soon."
   },
   "onslaught": {
     "title": "Onslaught progress",
