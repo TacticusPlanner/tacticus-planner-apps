@@ -12,12 +12,12 @@ export function MobileNavLink({
   pathname: string
 }) {
   const { t } = useTranslation()
-  const isActive =
-    pathname === item.path || pathname.startsWith(item.path + "/")
+  const isCurrent = pathname === item.path
+  const isActive = isCurrent || pathname.startsWith(item.path + "/")
 
   return (
     <Link
-      aria-current={isActive ? "page" : undefined}
+      aria-current={isCurrent ? "page" : undefined}
       className={cn(
         "flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-medium transition-colors",
         isActive

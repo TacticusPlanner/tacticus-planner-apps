@@ -341,7 +341,7 @@ function MobileBottomNav({
                 return (
                   <div key={item.path}>
                     <Link
-                      aria-current={isActive ? "page" : undefined}
+                      aria-current={pathname === item.path ? "page" : undefined}
                       className={cn(
                         "flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
                         isActive
