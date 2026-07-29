@@ -46,7 +46,9 @@ import { LanguageSwitcher } from "../providers/language-switcher"
 import { usePlayerDataSyncStatus } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
+import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
 import "./mobile-layout.css"
+import { MobileNavLink } from "./mobile-nav-link"
 import type { NavItem } from "./nav-items"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 
@@ -119,6 +121,7 @@ function MobileHeader({
           <>
             <Button
               aria-label={t("tour.start")}
+              className="size-10 rounded-full"
               data-testid="mobile-tour-button"
               disabled={isRunning}
               onClick={startTour}
@@ -151,7 +154,11 @@ function MobileGuestSettings() {
           <Settings />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-56 gap-2">
+      <PopoverContent
+        align="end"
+        className="w-56 gap-2"
+        data-testid="mobile-guest-settings-content"
+      >
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm">{t("theme.label")}</span>
           <ThemeSwitcher />
@@ -246,33 +253,6 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   )
 }
 
-function MobileNavLink({
-  item,
-  pathname,
-}: {
-  item: NavItem
-  pathname: string
-}) {
-  const { t } = useTranslation()
-  const isActive = isItemActive(pathname, item.path)
-
-  return (
-    <Link
-      aria-current={isActive ? "page" : undefined}
-      className={cn(
-        "flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-medium transition-colors",
-        isActive
-          ? "text-primary"
-          : "text-muted-foreground hover:text-foreground"
-      )}
-      to={item.path}
-    >
-      <item.icon className="size-5" />
-      <span>{t(item.labelKey)}</span>
-    </Link>
-  )
-}
-
 function MobileBottomNav({
   items,
   onCreateGoal,
@@ -287,9 +267,22 @@ function MobileBottomNav({
   const homeItem = items.find((item) => item.path === "/home")
   const goalsItem = items.find((item) => item.path === "/goals")
   const dailiesItem = items.find((item) => item.path === "/dailies")
-  const filteredItems = items.filter((item) =>
-    t(item.labelKey).toLocaleLowerCase().includes(search.toLocaleLowerCase())
-  )
+  const normalizedSearch = search.trim().toLocaleLowerCase()
+  const filteredItems = items.flatMap((item) => {
+    const parentMatches = t(item.labelKey)
+      .toLocaleLowerCase()
+      .includes(normalizedSearch)
+    const matchingChildren =
+      item.children?.filter(
+        (child) =>
+          parentMatches ||
+          t(child.labelKey).toLocaleLowerCase().includes(normalizedSearch)
+      ) ?? []
+
+    return parentMatches || matchingChildren.length > 0
+      ? [{ ...item, children: matchingChildren }]
+      : []
+  })
   const isMenuItemActive = items.some(
     (item) =>
       !["/home", "/goals", "/dailies"].includes(item.path) &&
@@ -346,21 +339,34 @@ function MobileBottomNav({
               filteredItems.map((item) => {
                 const isActive = isItemActive(pathname, item.path)
                 return (
-                  <Link
-                    key={item.path}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
-                      isActive
-                        ? "bg-accent text-accent-foreground"
-                        : "hover:bg-accent hover:text-accent-foreground"
-                    )}
-                    onClick={() => setMenuOpen(false)}
-                    to={item.path}
-                  >
-                    <item.icon className="size-5" />
-                    {t(item.labelKey)}
-                  </Link>
+                  <div key={item.path}>
+                    <Link
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
+                        isActive
+                          ? "bg-accent text-accent-foreground"
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => setMenuOpen(false)}
+                      to={item.path}
+                    >
+                      <item.icon className="size-5" />
+                      {t(item.labelKey)}
+                    </Link>
+                    {item.children?.length ? (
+                      <div className="mt-1 ml-8 space-y-1 border-l pl-3">
+                        {item.children.map((child) => (
+                          <MobileDrawerSubItem
+                            key={child.path}
+                            item={child}
+                            onSelect={() => setMenuOpen(false)}
+                            pathname={pathname}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 )
               })
             ) : (

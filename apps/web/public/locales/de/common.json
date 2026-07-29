@@ -263,6 +263,36 @@
         "title": "Dein Konto-Menü",
         "content": "Tippe hier jederzeit, um das Design oder die Sprache zu wechseln oder diese Tour erneut zu starten."
       },
+      "accountDrawer": {
+        "title": "Konto und Einstellungen",
+        "content": "Verwalte hier Design, Sprache, Tour, Importe, Konto und Anmeldeoptionen."
+      },
+      "bottomNavigation": {
+        "home": {
+          "title": "Startseite",
+          "content": "Kehre zur Startseite deines Planners zurück."
+        },
+        "goals": {
+          "title": "Ziele",
+          "content": "Prüfe und organisiere alle deine Planungsziele."
+        },
+        "addGoal": {
+          "title": "Ziel hinzufügen",
+          "content": "Erstelle überall in der App ein neues Fortschrittsziel."
+        },
+        "sync": {
+          "title": "Synchronisieren",
+          "content": "Aktualisiere deinen Planner mit den neuesten Daten aus Tacticus."
+        },
+        "dailies": {
+          "title": "Tägliches",
+          "content": "Öffne den eigenen Bereich für tägliche Aktivitäten."
+        },
+        "menu": {
+          "title": "Menü",
+          "content": "Öffne die vollständige, durchsuchbare App-Navigation."
+        }
+      },
       "navigation": {
         "title": "Schnell navigieren",
         "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."

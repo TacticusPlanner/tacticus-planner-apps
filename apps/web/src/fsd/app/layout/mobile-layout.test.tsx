@@ -106,6 +106,29 @@ describe("MobileBottomNav actions", () => {
     expect(drawer.queryByText("nav.home")).not.toBeInTheDocument()
   })
 
+  it("shows nested destinations and finds them by their localized label", () => {
+    renderShell()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(drawer.getByText("unitLookup.tabs.character")).toBeVisible()
+    expect(drawer.getByText("goals.tabs.projects")).toBeVisible()
+    expect(drawer.getByText("progress.tabs.campaign-events")).toBeVisible()
+    expect(drawer.getByText("guild.tabs.members")).toBeVisible()
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "campaign-events" },
+    })
+
+    expect(drawer.getByText("nav.progress")).toBeVisible()
+    expect(drawer.getByText("progress.tabs.campaign-events")).toBeVisible()
+    expect(
+      drawer.queryByText("progress.tabs.campaigns")
+    ).not.toBeInTheDocument()
+    expect(drawer.queryByText("nav.lookup")).not.toBeInTheDocument()
+  })
+
   it("starts the guided tour directly from the authenticated top bar", () => {
     renderShell(vi.fn(), true)
 
