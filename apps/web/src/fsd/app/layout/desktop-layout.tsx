@@ -1,6 +1,6 @@
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, PlusCircle } from "lucide-react"
+import { LogIn, PlusCircle, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   Sidebar,
@@ -12,6 +12,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
@@ -29,6 +32,7 @@ import { LanguageSwitcher } from "../providers/language-switcher"
 import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
+import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import type { NavItem } from "./nav-items"
 
 function LoadingFill() {
@@ -69,7 +73,7 @@ export function DesktopShell({
           <div className="flex shrink-0 items-center gap-2">
             <ThemeSwitcher />
             <LanguageSwitcher />
-            <TourButton />
+            <TourButton iconOnly />
           </div>
         </header>
         <Suspense fallback={<LoadingFill />}>
@@ -93,6 +97,7 @@ function AppSidebar({
   const { instance } = useMsal()
   const { state } = useSidebar()
   const compact = state === "collapsed"
+  const [navigationOpen, setNavigationOpen] = useState(false)
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
@@ -116,6 +121,7 @@ function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton
               className="bg-primary text-primary-foreground hover:bg-primary/80"
+              data-testid="desktop-create-goal-button"
               onClick={onCreateGoal}
               tooltip={t("nav.createGoal")}
             >
@@ -126,7 +132,22 @@ function AppSidebar({
           <SidebarMenuItem>
             <PlayerDataSyncButton />
           </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              data-testid="desktop-navigation-search"
+              onClick={() => setNavigationOpen(true)}
+              tooltip={t("nav.search")}
+            >
+              <Search />
+              <span>{t("nav.search")}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
+        <DesktopNavigationDialog
+          items={visibleItems}
+          onOpenChange={setNavigationOpen}
+          open={navigationOpen}
+        />
       </SidebarHeader>
 
       <SidebarContent data-testid="primary-nav">
@@ -176,12 +197,36 @@ function NavMenuItem({ item }: { item: NavItem }) {
 
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={isActive} tooltip={t(item.labelKey)}>
-        <Link to={item.path}>
+      <SidebarMenuButton
+        asChild
+        data-testid={`desktop-nav-${item.path.slice(1)}`}
+        isActive={isActive}
+        tooltip={t(item.labelKey)}
+      >
+        <Link
+          aria-current={pathname === item.path ? "page" : undefined}
+          to={item.path}
+        >
           <item.icon />
           <span>{t(item.labelKey)}</span>
         </Link>
       </SidebarMenuButton>
+      {isActive && item.children?.length ? (
+        <SidebarMenuSub>
+          {item.children.map((child) => (
+            <SidebarMenuSubItem key={child.path}>
+              <SidebarMenuSubButton asChild isActive={pathname === child.path}>
+                <Link
+                  aria-current={pathname === child.path ? "page" : undefined}
+                  to={child.path}
+                >
+                  <span>{t(child.labelKey)}</span>
+                </Link>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          ))}
+        </SidebarMenuSub>
+      ) : null}
     </SidebarMenuItem>
   )
 }

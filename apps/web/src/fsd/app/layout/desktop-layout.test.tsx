@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
@@ -73,5 +73,37 @@ describe("DesktopShell", () => {
     expect(
       screen.getAllByRole("button", { name: "Toggle Sidebar" })
     ).toHaveLength(1)
+  })
+
+  it("shows children for the active section and searches the full hierarchy", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            pageTitle="Lookup"
+            onCreateGoal={vi.fn()}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(
+      screen.getByRole("link", { name: "unitLookup.tabs.mow" })
+    ).toHaveAttribute("aria-current", "page")
+
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
+      target: { value: "unitLookup.tabs.mow" },
+    })
+
+    expect(screen.getByRole("link", { name: "nav.lookup" })).toBeInTheDocument()
+    expect(
+      screen.getAllByRole("link", { name: "unitLookup.tabs.mow" })
+    ).toHaveLength(1)
+    expect(
+      screen.queryByRole("link", { name: "unitLookup.tabs.character" })
+    ).not.toBeInTheDocument()
   })
 })

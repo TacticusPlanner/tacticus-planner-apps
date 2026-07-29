@@ -2,6 +2,8 @@ import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
+import { isUiKitEnabled } from "@/shared/config"
+
 // Long enough for the Popover's open animation to settle before the tour measures/spotlights the
 // now-visible theme/language/tour-button targets inside it.
 const MOBILE_MENU_OPEN_DELAY_MS = 300
@@ -11,8 +13,23 @@ const MOBILE_MENU_OPEN_DELAY_MS = 300
 export function useDesktopTutorialSteps(): Step[] {
   const { t } = useTranslation()
 
-  return useMemo<Step[]>(
-    () => [
+  return useMemo<Step[]>(() => {
+    const navigationSteps: Step[] = [
+      { target: "home", title: t("nav.home") },
+      { target: "lookup", title: t("nav.lookup") },
+      { target: "goals", title: t("nav.goals") },
+      { target: "dailies", title: t("nav.dailies") },
+      { target: "progress", title: t("nav.progress") },
+      { target: "guild", title: t("nav.guild") },
+      ...(isUiKitEnabled ? [{ target: "ui-kit", title: t("nav.uiKit") }] : []),
+    ].map(({ target, title }) => ({
+      target: `[data-testid="desktop-nav-${target}"]`,
+      placement: "right" as const,
+      title,
+      content: t("tour.steps.navigation.content"),
+    }))
+
+    return [
       {
         target: "body",
         placement: "center",
@@ -38,14 +55,26 @@ export function useDesktopTutorialSteps(): Step[] {
         content: t("tour.steps.replay.content"),
       },
       {
-        target: '[data-testid="primary-nav"]',
+        target: '[data-testid="desktop-create-goal-button"]',
         placement: "right",
-        title: t("tour.steps.navigation.title"),
-        content: t("tour.steps.navigation.content"),
+        title: t("tour.steps.bottomNavigation.addGoal.title"),
+        content: t("tour.steps.bottomNavigation.addGoal.content"),
       },
-    ],
-    [t]
-  )
+      {
+        target: '[data-testid="player-data-sync-button"]',
+        placement: "right",
+        title: t("tour.steps.bottomNavigation.sync.title"),
+        content: t("tour.steps.bottomNavigation.sync.content"),
+      },
+      {
+        target: '[data-testid="desktop-navigation-search"]',
+        placement: "right",
+        title: t("nav.search"),
+        content: t("nav.navigationHint"),
+      },
+      ...navigationSteps,
+    ]
+  }, [t])
 }
 
 /** On mobile, present the account controls as one surface rather than walking every setting.

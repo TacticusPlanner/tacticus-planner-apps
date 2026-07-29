@@ -49,6 +49,7 @@ import { AppLogo } from "./app-logo"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
 import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
+import { filterNavigationItems } from "./navigation-filter"
 import type { NavItem } from "./nav-items"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 
@@ -267,22 +268,7 @@ function MobileBottomNav({
   const homeItem = items.find((item) => item.path === "/home")
   const goalsItem = items.find((item) => item.path === "/goals")
   const dailiesItem = items.find((item) => item.path === "/dailies")
-  const normalizedSearch = search.trim().toLocaleLowerCase()
-  const filteredItems = items.flatMap((item) => {
-    const parentMatches = t(item.labelKey)
-      .toLocaleLowerCase()
-      .includes(normalizedSearch)
-    const matchingChildren =
-      item.children?.filter(
-        (child) =>
-          parentMatches ||
-          t(child.labelKey).toLocaleLowerCase().includes(normalizedSearch)
-      ) ?? []
-
-    return parentMatches || matchingChildren.length > 0
-      ? [{ ...item, children: matchingChildren }]
-      : []
-  })
+  const filteredItems = filterNavigationItems(items, search, t)
   const isMenuItemActive = items.some(
     (item) =>
       !["/home", "/goals", "/dailies"].includes(item.path) &&

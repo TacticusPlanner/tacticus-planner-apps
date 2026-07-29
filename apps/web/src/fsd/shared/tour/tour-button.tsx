@@ -8,9 +8,11 @@ import { useTour } from "./tour-provider"
 
 export function TourButton({
   className,
+  iconOnly = false,
   onStarted,
 }: {
   className?: string
+  iconOnly?: boolean
   onStarted?: () => void
 }) {
   const { t } = useTranslation()
@@ -19,18 +21,18 @@ export function TourButton({
   return (
     <Button
       aria-label={t("tour.start")}
-      className={cn(className)}
+      className={cn(iconOnly && "size-10 rounded-full", className)}
       data-testid="tour-button"
       disabled={isRunning}
       onClick={() => {
         startTour()
         onStarted?.()
       }}
-      size="sm"
+      size={iconOnly ? "icon" : "sm"}
       variant="outline"
     >
       <Compass data-icon="inline-start" />
-      {t("tour.start")}
+      {iconOnly ? null : t("tour.start")}
     </Button>
   )
 }
