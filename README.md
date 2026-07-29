@@ -2,6 +2,11 @@
 
 This is a Vite monorepo template with shadcn/ui.
 
+## Releases
+
+See [RELEASING.md](RELEASING.md) for the branching, versioning, backport, and
+coordinated apps/API release process.
+
 ## Authentication configuration
 
 Use the dedicated Microsoft Entra External ID single-page application

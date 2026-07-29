@@ -46,3 +46,9 @@ No test runner or `test` script is currently configured. When adding tests, choo
 The current Git history uses short imperative subjects such as `Setup project`. Keep commit messages concise and action-oriented.
 
 Pull requests should include a brief summary, validation steps run (`pnpm lint`, `pnpm typecheck`, `pnpm build`), linked issues when applicable, and screenshots or recordings for visible UI changes.
+
+Open short-lived topic branches from `main` and squash-merge reviewed pull
+requests back into `main`. Delete topic branches after merging. For supported
+releases, fix defects on `main` first and backport the squash commit through a
+pull request into `release/X.Y`. See `RELEASING.md` for the complete release
+and patch process.
