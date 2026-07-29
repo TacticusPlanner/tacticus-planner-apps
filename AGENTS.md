@@ -99,5 +99,8 @@ The current Git history uses short imperative subjects such as `Setup project`. 
 
 Pull requests should include a brief summary, validation steps run (`pnpm lint`, `pnpm lint:fsd`, `pnpm typecheck`, `pnpm test:run`, `pnpm build`), linked issues when applicable, and screenshots or recordings for visible UI changes.
 
-This repository currently tracks work on the `svehera/goals-phase-9` branch,
-not `main` — open PRs against that branch unless told otherwise.
+Open short-lived topic branches from `main` and squash-merge reviewed pull
+requests back into `main`. Delete topic branches after merging. For supported
+releases, fix defects on `main` first and backport the squash commit through a
+pull request into `release/X.Y`. See `RELEASING.md` for the complete release
+and patch process.
