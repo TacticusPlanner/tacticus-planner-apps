@@ -7,6 +7,7 @@ import type { CurrentUserState } from "@/entities/account"
 const purgeAccount = vi.fn()
 const updateTacticusIntegration = vi.fn()
 const logoutRedirect = vi.fn().mockResolvedValue(undefined)
+const signOut = vi.fn().mockResolvedValue(undefined)
 const refetch = vi.fn()
 const currentUserState = vi.fn<() => CurrentUserState>()
 
@@ -41,6 +42,10 @@ vi.mock("@azure/msal-react", () => ({
   }),
 }))
 
+vi.mock("@/shared/auth", () => ({
+  signOut: (...args: unknown[]) => signOut(...args),
+}))
+
 vi.mock("@/entities/account", () => ({
   purgeAccount: (...args: unknown[]) => purgeAccount(...args),
   updateTacticusIntegration: (...args: unknown[]) =>
@@ -58,6 +63,7 @@ describe("ManageAccountDialog", () => {
     purgeAccount.mockReset()
     updateTacticusIntegration.mockReset()
     logoutRedirect.mockClear()
+    signOut.mockClear()
     refetch.mockClear()
   })
 
@@ -179,7 +185,7 @@ describe("ManageAccountDialog", () => {
     await vi.waitFor(() => {
       expect(purgeAccount).toHaveBeenCalledTimes(1)
     })
-    expect(logoutRedirect).toHaveBeenCalledTimes(1)
+    expect(signOut).toHaveBeenCalledTimes(1)
   })
 
   it("shows the masked Tacticus integration values on the integration tab", () => {

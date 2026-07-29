@@ -71,7 +71,7 @@ describe("OnboardingGate", () => {
     expect(screen.getByTestId("protected-content")).toBeVisible()
   })
 
-  it("does not block while the current user is still loading", () => {
+  it("blocks protected content while the current user is still provisioning", () => {
     setState({ status: "loading" })
 
     render(
@@ -83,7 +83,8 @@ describe("OnboardingGate", () => {
     expect(
       screen.queryByTestId("onboarding-dialog-stub")
     ).not.toBeInTheDocument()
-    expect(screen.getByTestId("protected-content")).toBeVisible()
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
+    expect(screen.getByRole("status")).toBeVisible()
   })
 
   it("fails open (does not block) if the current-user fetch errored", () => {

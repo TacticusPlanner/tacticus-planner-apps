@@ -233,3 +233,7 @@ export async function clearPlayerDataDb(): Promise<void> {
     )
   })
 }
+
+export async function deletePlayerDataDb(): Promise<void> {
+  await playerDataDb.delete()
+}

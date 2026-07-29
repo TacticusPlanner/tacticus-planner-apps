@@ -35,6 +35,7 @@ import {
   type CurrentUser,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
+import { signOut } from "@/shared/auth"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
 
@@ -277,7 +278,7 @@ function AccountTab({
     try {
       await purge.mutateAsync()
       onPurged()
-      void instance.logoutRedirect({ account })
+      await signOut(instance, account.homeAccountId)
     } catch (error) {
       setStatus("error")
       setErrorMessage(

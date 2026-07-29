@@ -17,6 +17,7 @@ const loginRedirect = vi.fn().mockResolvedValue(undefined)
 const logoutRedirect = vi.fn().mockResolvedValue(undefined)
 const isInteractionRequired = vi.fn<(error: unknown) => boolean>(() => false)
 const requestApiAccess = vi.fn().mockResolvedValue(undefined)
+const signOut = vi.fn().mockResolvedValue(undefined)
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -63,6 +64,7 @@ vi.mock("@/shared/auth", () => ({
   isInteractionRequired: (error: unknown) => isInteractionRequired(error),
   loginRequest: { scopes: ["api"] },
   requestApiAccess: (...args: unknown[]) => requestApiAccess(...args),
+  signOut: (...args: unknown[]) => signOut(...args),
 }))
 
 // Real switchers need a ThemeProvider/i18n config this test doesn't set up — only their presence
@@ -100,6 +102,7 @@ describe("AuthControl", () => {
     loginRedirect.mockClear().mockResolvedValue(undefined)
     logoutRedirect.mockClear().mockResolvedValue(undefined)
     requestApiAccess.mockClear().mockResolvedValue(undefined)
+    signOut.mockClear().mockResolvedValue(undefined)
     useCurrentUser.mockReturnValue({ state: { status: "loading" } })
   })
 
@@ -189,14 +192,17 @@ describe("AuthControl", () => {
   })
 
   it("signs out on click and toasts on a failed sign-out redirect", async () => {
-    logoutRedirect.mockRejectedValue(new Error("network down"))
+    signOut.mockRejectedValue(new Error("network down"))
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
     fireEvent.click(screen.getByTestId("auth-sign-out"))
 
     await vi.waitFor(() => {
-      expect(logoutRedirect).toHaveBeenCalledWith({ account: activeAccount() })
+      expect(signOut).toHaveBeenCalledWith(
+        expect.objectContaining({ logoutRedirect }),
+        activeAccount().homeAccountId
+      )
     })
   })
 
