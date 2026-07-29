@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react"
-import { render, screen } from "@testing-library/react"
+import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
@@ -155,7 +155,7 @@ describe("GuildRegisteredView", () => {
     await vi.waitFor(() => {
       expect(onSynced).toHaveBeenCalledTimes(1)
     })
-    expect(syncMyGuild).toHaveBeenCalledWith(mockInstance, mockAccounts[0])
+    expect(syncMyGuild).toHaveBeenCalledOnce()
   })
 
   it("shows an ApiError's message when sync fails", async () => {

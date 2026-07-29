@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
@@ -15,6 +15,10 @@ const { usePlayerDataStatusMock } = vi.hoisted(() => ({
 
 vi.mock("./player-data-provider", () => ({
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
+}))
+
+vi.mock("@/entities/goal", () => ({
+  goalQueries: { all: () => ["goals"] },
 }))
 
 import { PlayerDataSyncButton } from "./player-data-sync-button"
@@ -47,7 +51,7 @@ function renderButton() {
 }
 
 describe("PlayerDataSyncButton", () => {
-  it("triggers a sync on click and is enabled while idle", () => {
+  it("triggers a sync on click and is enabled while idle", async () => {
     const syncNow = vi.fn()
     mockStatus("idle", { syncNow })
     renderButton()

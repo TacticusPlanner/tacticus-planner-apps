@@ -1,6 +1,9 @@
 import {
+  BrowserAuthError,
+  BrowserAuthErrorCodes,
   BrowserCacheLocation,
   EventType,
+  InteractionRequiredAuthError,
   LogLevel,
   PublicClientApplication,
   type AuthenticationResult,
@@ -9,7 +12,9 @@ import {
   type RedirectRequest,
 } from "@azure/msal-browser"
 
-import { getRequiredEnvironmentValue } from "@/shared/config"
+import { getRequiredEnvironmentValue } from "../config/environment"
+
+let authentication: PublicClientApplication | undefined
 
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
@@ -62,7 +67,9 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
-  scopes: [getRequiredEnvironmentValue("VITE_API_SCOPE")],
+  get scopes() {
+    return [getRequiredEnvironmentValue("VITE_API_SCOPE")]
+  },
 }
 
 export async function initializeAuthentication() {
@@ -94,5 +101,68 @@ export async function initializeAuthentication() {
     }
   }
 
+  authentication = msalInstance
+
   return msalInstance
+}
+
+class AuthenticationUnavailableError extends Error {
+  constructor() {
+    super("No authenticated account is available.")
+    this.name = "AuthenticationUnavailableError"
+  }
+}
+
+function getAuthentication() {
+  if (!authentication) {
+    throw new AuthenticationUnavailableError()
+  }
+
+  return authentication
+}
+
+function getActiveAccount() {
+  const instance = getAuthentication()
+  const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
+
+  if (!account) {
+    throw new AuthenticationUnavailableError()
+  }
+
+  return { account, instance }
+}
+
+export async function acquireAccessToken() {
+  const { account, instance } = getActiveAccount()
+  const result = await instance.acquireTokenSilent({
+    account,
+    scopes: loginRequest.scopes,
+  })
+
+  return result.accessToken
+}
+
+export function isInteractionRequired(error: unknown) {
+  if (error instanceof InteractionRequiredAuthError) {
+    return true
+  }
+
+  // acquireTokenSilent falls back to a hidden "prompt=none" iframe whenever the cache has no usable
+  // refresh token. That iframe can never complete silently when the browser blocks third-party
+  // cookies (Safari ITP, Chrome/Firefox privacy modes, etc.) or the IdP session has expired, so it
+  // just runs out the clock and MSAL reports a plain timeout rather than InteractionRequiredAuthError.
+  // Treat it the same way: only an interactive (redirect) request can resolve it.
+  return (
+    error instanceof BrowserAuthError &&
+    error.errorCode === BrowserAuthErrorCodes.timedOut
+  )
+}
+
+export function requestApiAccess() {
+  const { account, instance } = getActiveAccount()
+
+  return instance.acquireTokenRedirect({
+    account,
+    scopes: loginRequest.scopes,
+  })
 }

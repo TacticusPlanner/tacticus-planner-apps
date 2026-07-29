@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Outlet, useLocation, useNavigate } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -12,8 +13,6 @@ import {
 } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
-
-import { useMsal } from "@azure/msal-react"
 
 import { syncMyGuild, type RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
@@ -45,11 +44,10 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const { t, i18n } = useTranslation()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
   const [status, setStatus] = useState<"idle" | "syncing" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false)
+  const synchronize = useMutation({ mutationFn: syncMyGuild })
 
   const lastSynced = guild.lastSyncSucceededAt
     ? formatRelativeTime(Date.parse(guild.lastSyncSucceededAt), i18n.language)
@@ -58,7 +56,7 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const handleSync = async () => {
     // Guards against overlapping requests — the button is also disabled while syncing, but this covers
     // any path that could otherwise re-trigger the handler mid-flight.
-    if (!account || status === "syncing") {
+    if (status === "syncing") {
       return
     }
 
@@ -66,7 +64,7 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
     setErrorMessage(null)
 
     try {
-      await syncMyGuild(instance, account)
+      await synchronize.mutateAsync()
       setStatus("idle")
       onSynced()
     } catch (error) {
@@ -162,15 +160,11 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
       </Tabs>
       <Outlet context={guild.members} />
 
-      {account ? (
-        <GuildPurgeDialog
-          account={account}
-          instance={instance}
-          open={isPurgeDialogOpen}
-          onOpenChange={setIsPurgeDialogOpen}
-          onPurged={onPurged}
-        />
-      ) : null}
+      <GuildPurgeDialog
+        open={isPurgeDialogOpen}
+        onOpenChange={setIsPurgeDialogOpen}
+        onPurged={onPurged}
+      />
     </div>
   )
 }

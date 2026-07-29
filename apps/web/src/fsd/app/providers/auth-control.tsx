@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   LoaderCircle,
+  Download,
   LogIn,
   LogOut,
-  RefreshCw,
   Settings,
   UserRound,
 } from "lucide-react"
@@ -15,11 +15,6 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 import { toast } from "sonner"
@@ -28,8 +23,8 @@ import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { ManageAccountDialog } from "@/features/account-management"
+import { ImportV1Dialog } from "@/features/v1-import"
 import { useCurrentUser } from "@/entities/account"
-import { ApiError } from "@/shared/api"
 import {
   isInteractionRequired,
   loginRequest,
@@ -69,19 +64,6 @@ function logAuthenticationError(operation: AuthOperation, error: unknown) {
   console.error(message, { value: String(error) })
 }
 
-function accountErrorMessageKey(
-  error: unknown
-):
-  | "auth.accountConsentRequired"
-  | "auth.accountForbidden"
-  | "auth.accountLoadError" {
-  if (isInteractionRequired(error)) return "auth.accountConsentRequired"
-  if (error instanceof ApiError && error.status === 403) {
-    return "auth.accountForbidden"
-  }
-  return "auth.accountLoadError"
-}
-
 export function AuthControl({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
@@ -89,9 +71,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const isAuthenticated = useIsAuthenticated()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
   const account = instance.getActiveAccount() ?? accounts[0]
-  const { refetch, state: accountState } = useCurrentUser()
+  const { state: accountState } = useCurrentUser()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
+  const [isV1ImportOpen, setIsV1ImportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
+  const hasRequestedApiAccess = useRef(false)
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {
@@ -107,20 +91,23 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
     })
   }
 
-  const handleAccountRecovery = () => {
+  useEffect(() => {
     if (
       accountState.status === "error" &&
       isInteractionRequired(accountState.error)
     ) {
-      void requestApiAccess(instance, account!).catch((error: unknown) => {
-        logAuthenticationError("api-access", error)
-        toast.error(t("auth.error"))
-      })
+      if (!hasRequestedApiAccess.current) {
+        hasRequestedApiAccess.current = true
+        void requestApiAccess().catch((error: unknown) => {
+          logAuthenticationError("api-access", error)
+          toast.error(t("auth.error"))
+        })
+      }
       return
     }
 
-    refetch()
-  }
+    hasRequestedApiAccess.current = false
+  }, [accountState, t])
 
   if (!isAuthenticated || !account) {
     return (
@@ -216,6 +203,20 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             </>
           ) : null}
           <Button
+            aria-label={t("goals.v1Import.menu")}
+            className="w-full justify-start"
+            data-testid="auth-v1-import"
+            onClick={() => {
+              setIsV1ImportOpen(true)
+              setMenuOpen(false)
+            }}
+            size="sm"
+            variant="ghost"
+          >
+            <Download data-icon="inline-start" />
+            {t("goals.v1Import.menu")}
+          </Button>
+          <Button
             aria-label={t("auth.manageAccount")}
             className="w-full justify-start"
             data-testid="auth-manage-account"
@@ -240,46 +241,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
           </Button>
         </PopoverContent>
       </Popover>
-      {accountState.status === "error" ? (
-        <div
-          className="flex items-center gap-1"
-          data-testid="auth-account-error"
-        >
-          {compact ? null : (
-            <span className="truncate text-xs text-destructive">
-              {t(accountErrorMessageKey(accountState.error))}
-            </span>
-          )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                aria-label={t(
-                  isInteractionRequired(accountState.error)
-                    ? "auth.grantAccess"
-                    : "auth.retry"
-                )}
-                className="size-6"
-                data-testid="auth-account-retry"
-                disabled={isInteractionInProgress}
-                onClick={handleAccountRecovery}
-                size="icon"
-                variant="ghost"
-              >
-                <RefreshCw className="size-3" />
-              </Button>
-            </TooltipTrigger>
-            {compact ? (
-              <TooltipContent align="center" side="right">
-                {t(accountErrorMessageKey(accountState.error))}
-              </TooltipContent>
-            ) : null}
-          </Tooltip>
-        </div>
-      ) : null}
       <ManageAccountDialog
         onOpenChange={setIsManageAccountOpen}
         open={isManageAccountOpen}
       />
+      <ImportV1Dialog open={isV1ImportOpen} onOpenChange={setIsV1ImportOpen} />
     </div>
   )
 }

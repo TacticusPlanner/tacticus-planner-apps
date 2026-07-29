@@ -28,16 +28,32 @@ const rankUpgradeMap = (character: Character): Map<Rank, UpgradeId[]> =>
     character.rankUpUpgrades.map((entry) => [entry.rank, entry.upgradeIds])
   )
 
+/** Every rank's `upgradeIds` are ordered as 2 rows of 3 stats, interleaved
+ * `[Health, Health, Damage, Damage, Armour, Armour]` — the "top row" (indices 0/2/4) is the first
+ * of each stat pair. */
+const topRow = (upgrades: readonly UpgradeId[]): UpgradeId[] =>
+  upgrades.filter((_, index) => index % 2 === 0)
+
 /**
- * The upgrade ids applied to take `character` from `rankStart` up to (but not including) `rankEnd`. When
- * `pointFive` is set, also include the immediately-applicable upgrades at the target rank — the first of
- * each stat pair (indices 0/2/4). Returns `[]` for an empty/invalid range.
+ * The upgrade ids applied to take `character` from `rankStart` up to (but not including) `rankEnd`.
+ * At the target rank, one of (checked in this order):
+ * - `topRowCount` > 0 includes just the first N of the *top row* (Health, then + Damage, then +
+ *   Armour — a below-Diamond3 rank's only independently-appliable upgrades, since its bottom row
+ *   needs a further level first),
+ * - `appliedUpgrades` > 0 includes just the first N upgrades in raw catalog order (V1's Mythic-tier
+ *   "N of 6" partial target, Diamond3+ only — ported from `CharacterUpgradesService.
+ *   getCharacterUpgradeRank`'s `lastRankUpgrades.slice(0, targetApplied)`), or
+ * - `pointFive` includes the whole top row (indices 0/2/4) — V1's "Rank Point Five", equivalent to
+ *   `topRowCount: 3`.
+ * Returns `[]` for an empty/invalid range.
  */
 export function rankUpUpgradeIds(
   character: Character,
   rankStart: Rank,
   rankEnd: Rank,
-  pointFive: boolean
+  pointFive: boolean,
+  appliedUpgrades = 0,
+  topRowCount = 0
 ): UpgradeId[] {
   if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
 
@@ -46,19 +62,26 @@ export function rankUpUpgradeIds(
   for (let i = rankIndex(rankStart); i < rankIndex(rankEnd); i++) {
     ids.push(...(byRank.get(rankOrder[i]) ?? []))
   }
-  if (pointFive) {
-    const endUpgrades = byRank.get(rankEnd) ?? []
-    ids.push(...endUpgrades.filter((_, index) => index % 2 === 0))
+  const endUpgrades = byRank.get(rankEnd) ?? []
+  if (topRowCount > 0) {
+    ids.push(...topRow(endUpgrades).slice(0, topRowCount))
+  } else if (appliedUpgrades > 0) {
+    ids.push(...endUpgrades.slice(0, appliedUpgrades))
+  } else if (pointFive) {
+    ids.push(...topRow(endUpgrades))
   }
   return ids
 }
 
-/** Per rank-step grouping for the "rank → rank" sections, plus an optional point-five group at the end. */
+/** Per rank-step grouping for the "rank → rank" sections, plus an optional partial group at the end
+ * — see `rankUpUpgradeIds` for the `pointFive`/`appliedUpgrades`/`topRowCount` semantics. */
 export function groupUpgradesByRank(
   character: Character,
   rankStart: Rank,
   rankEnd: Rank,
-  pointFive: boolean
+  pointFive: boolean,
+  appliedUpgrades = 0,
+  topRowCount = 0
 ): RankUpGroup[] {
   if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
 
@@ -71,18 +94,22 @@ export function groupUpgradesByRank(
       upgradeIds: byRank.get(rankOrder[i]) ?? [],
     })
   }
-  if (pointFive) {
-    const point5 = (byRank.get(rankEnd) ?? []).filter(
-      (_, index) => index % 2 === 0
-    )
-    if (point5.length > 0) {
-      groups.push({
-        fromRank: rankEnd,
-        toRank: rankEnd,
-        upgradeIds: point5,
-        pointFive: true,
-      })
-    }
+  const endUpgrades = byRank.get(rankEnd) ?? []
+  const partial =
+    topRowCount > 0
+      ? topRow(endUpgrades).slice(0, topRowCount)
+      : appliedUpgrades > 0
+        ? endUpgrades.slice(0, appliedUpgrades)
+        : pointFive
+          ? topRow(endUpgrades)
+          : []
+  if (partial.length > 0) {
+    groups.push({
+      fromRank: rankEnd,
+      toRank: rankEnd,
+      upgradeIds: partial,
+      pointFive: true,
+    })
   }
   return groups
 }
@@ -129,6 +156,20 @@ export function aggregateBaseUpgrades(
     upgradeIds.map((id) => ({ id, amount: 1 })),
     upgradesById
   )
+  return [...counts.entries()].map(([id, count]) => ({ id, count }))
+}
+
+/**
+ * Same reduction as `aggregateBaseUpgrades`, but for entries that already carry an explicit target
+ * amount (e.g. an Upgrade goal's `{upgradeId, quantity}` targets) instead of being counted once per
+ * occurrence in a flat id list — the "required, with quantities" sibling to
+ * `aggregateOwnedBaseUpgrades`'s "owned, with quantities".
+ */
+export function aggregateBaseUpgradeAmounts(
+  entries: UpgradeAmount[],
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
+): BaseUpgradeNeed[] {
+  const counts = reduceToBaseUpgrades(entries, upgradesById)
   return [...counts.entries()].map(([id, count]) => ({ id, count }))
 }
 

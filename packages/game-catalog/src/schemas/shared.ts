@@ -19,6 +19,9 @@ export const farmLocationSchema = z.looseObject({
   numerator: z.number().nullable(),
   denominator: z.number().nullable(),
   effectiveRate: z.number().nullable(),
+  // True only for a character's mythicShards_ reward locations (see the backend's ShardPrefixes) —
+  // always false for an upgrade material's own farm locations, which have no mythic concept at all.
+  isMythic: z.boolean(),
 })
 
 export const equipmentSlotSchema = z.looseObject({

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -72,9 +72,10 @@ describe("GuildRegistrationForm", () => {
     await vi.waitFor(() => {
       expect(onRegistered).toHaveBeenCalledTimes(1)
     })
-    expect(registerGuild).toHaveBeenCalledWith(mockInstance, mockAccounts[0], {
-      guildApiToken: "my-token",
-    })
+    expect(registerGuild).toHaveBeenCalledWith(
+      { guildApiToken: "my-token" },
+      expect.anything()
+    )
     expect(input).toHaveValue("")
   })
 

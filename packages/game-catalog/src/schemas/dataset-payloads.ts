@@ -7,6 +7,8 @@ import { equipmentSchema } from "./equipment"
 import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { npcSchema } from "./npc"
+import { onslaughtRewardSchema } from "./onslaught"
+import { ascensionCostSchema, unlockShardCostSchema } from "./progression-costs"
 import { upgradeViewSchema } from "./upgrade"
 
 // ---- dataset payloads (the envelope `data`) --------------------------------------------------
@@ -17,6 +19,9 @@ export const datasetPayloadSchemas = {
   npcs: z.array(npcSchema),
   mows: z.array(mowSchema),
   "mow-upgrade-costs": z.array(mowUpgradeCostSchema),
+  "ascension-costs": z.array(ascensionCostSchema),
+  "unlock-shard-costs": z.array(unlockShardCostSchema),
+  "onslaught-rewards": z.array(onslaughtRewardSchema),
   upgrades: z.array(upgradeViewSchema),
   equipment: z.array(equipmentSchema),
   "campaign-battles": z.array(campaignBattleViewSchema),
@@ -33,6 +38,9 @@ export type GameCatalogRecordByKey = {
   npcs: z.infer<typeof npcSchema>
   mows: z.infer<typeof mowSchema>
   "mow-upgrade-costs": z.infer<typeof mowUpgradeCostSchema>
+  "ascension-costs": z.infer<typeof ascensionCostSchema>
+  "unlock-shard-costs": z.infer<typeof unlockShardCostSchema>
+  "onslaught-rewards": z.infer<typeof onslaughtRewardSchema>
   upgrades: z.infer<typeof upgradeViewSchema>
   equipment: z.infer<typeof equipmentSchema>
   "campaign-battles": z.infer<typeof campaignBattleViewSchema>

@@ -44,6 +44,9 @@ export const campaignBattleViewSchema = z.looseObject({
   energyCost: z.number(),
   nodeNumber: z.number(),
   slots: z.number(),
+  // Daily attempt cap for this battle, derived server-side from its type (Elite/EliteMirror = 6,
+  // everything else = 10) — see the API's CampaignDenormalizer.DailyAttemptsForType.
+  dailyAttempts: z.number(),
   rewards: campaignRewardsViewSchema,
   enemyPower: z.number(),
   enemiesAlliances: z.array(z.enum(Alliance)),

@@ -108,7 +108,9 @@ class PlayerDataDb extends Dexie {
 
 const playerDataDb = new PlayerDataDb()
 
-export async function getPlayerDataMetadata() {
+export async function getPlayerDataMetadata(): Promise<
+  Map<string, PlayerDataMetadataStorageModel>
+> {
   const values = await playerDataDb.metadata.toArray()
 
   return new Map(values.map((metadata) => [metadata.key, metadata]))
@@ -116,11 +118,11 @@ export async function getPlayerDataMetadata() {
 
 export function getManifestMetadata(
   metadata: ReadonlyMap<string, PlayerDataMetadataStorageModel>
-) {
+): PlayerDataMetadataStorageModel | undefined {
   return metadata.get(playerDataManifestMetadataKey)
 }
 
-export async function hasCompletePlayerDataCache() {
+export async function hasCompletePlayerDataCache(): Promise<boolean> {
   const metadata = await getPlayerDataMetadata()
 
   return playerDataChunkKeys.every((chunkKey) => metadata.has(chunkKey))
@@ -139,7 +141,7 @@ export async function replacePlayerDataChunk(
   chunkKey: PlayerDataChunkKey,
   data: unknown,
   metadata: PlayerDataMetadataStorageModel
-) {
+): Promise<void> {
   const table = playerDataDb.table(storeNameForChunk(chunkKey))
 
   await playerDataDb.transaction(
@@ -162,7 +164,7 @@ export async function replacePlayerDataChunk(
 
 export async function saveManifestMetadata(
   metadata: PlayerDataMetadataStorageModel
-) {
+): Promise<void> {
   await playerDataDb.metadata.put(metadata)
 }
 
@@ -222,7 +224,7 @@ export async function getChunkRecord<K extends SplitPlayerDataChunkKey>(
     .get(id)
 }
 
-export async function clearPlayerDataDb() {
+export async function clearPlayerDataDb(): Promise<void> {
   const tableNames = ["metadata", profileStore, ...splitPlayerDataChunkKeys]
 
   await playerDataDb.transaction("rw", tableNames, async () => {

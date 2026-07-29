@@ -43,13 +43,14 @@ import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 
-function renderShell() {
+function renderShell(onCreateGoal = vi.fn()) {
   return render(
     <MemoryRouter>
       <MobileShell
         isAuthenticated={false}
         visibleItems={navItems as NavItem[]}
         pageTitle="Home"
+        onCreateGoal={onCreateGoal}
       />
     </MemoryRouter>
   )
@@ -70,10 +71,12 @@ describe("MobileBottomNav actions", () => {
     expect(sync.className).toContain("rounded-full")
   })
 
-  it("disables Create Goal (no trigger wired up yet), matching the desktop placeholder", () => {
-    renderShell()
+  it("triggers the global Create Goal action", () => {
+    const onCreateGoal = vi.fn()
+    renderShell(onCreateGoal)
 
-    expect(screen.getByTestId("mobile-create-goal-button")).toBeDisabled()
+    fireEvent.click(screen.getByTestId("mobile-create-goal-button"))
+    expect(onCreateGoal).toHaveBeenCalledTimes(1)
   })
 
   it("triggers a sync on click when idle, and is not disabled", () => {

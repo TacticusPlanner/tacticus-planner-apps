@@ -4,14 +4,9 @@
   },
   "auth": {
     "account": "Signed-in account",
-    "accountConsentRequired": "API access required",
-    "accountForbidden": "API access denied",
-    "accountLoadError": "Account unavailable",
     "accountLoading": "Loading account",
     "error": "Authentication could not be completed. Please try again.",
-    "grantAccess": "Grant API access",
     "manageAccount": "Manage Account",
-    "retry": "Retry loading account",
     "signIn": "Sign in",
     "signOut": "Sign out",
     "userMenu": "Account menu"
@@ -67,6 +62,7 @@
       "neverSynced": "Never synced",
       "syncProgress": "Syncing {{downloaded}} / {{total}}…",
       "retrySync": "Sync failed — try again",
+      "reauthRequired": "Sign-in expired — tap to sign in",
       "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
     },
@@ -163,10 +159,78 @@
     "home": "Home",
     "lookup": "Lookup",
     "createGoal": "Create Goal",
+    "goals": "Goals",
+    "progress": "Progress",
     "uiKit": "UI Kit",
     "guild": "Guild",
     "menu": "Menu",
     "syncWithTacticus": "Sync with Tacticus"
+  },
+  "onslaught": {
+    "title": "Onslaught progress",
+    "description": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
+    "sector": "Sector",
+    "tier": "Tier",
+    "tierComplete": "Tier 4 · sector complete",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Onslaught progress saved.",
+    "loadError": "Couldn't load Onslaught progress.",
+    "saveError": "Couldn't save Onslaught progress. Refresh and try again.",
+    "conflict": "Onslaught progress changed elsewhere. Latest values loaded; apply your change again.",
+    "rewardsTitle": "Shard rewards reference",
+    "sectorTier": "Sector / tier",
+    "current": "Current alliance progress",
+    "rewards": {
+      "Common": "Common",
+      "Uncommon": "Uncommon",
+      "Rare": "Rare",
+      "Epic": "Epic",
+      "Legendary": "Legendary",
+      "LegendaryBlue": "Legendary 1★ blue",
+      "Mythic": "Mythic"
+    }
+  },
+  "progress": {
+    "tabs": {
+      "onslaught": "Onslaught",
+      "campaigns": "Campaigns",
+      "campaign-events": "Campaign Events",
+      "xp-income": "XP Income"
+    },
+    "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
+    "campaigns": {
+      "title": "Campaign progress",
+      "description": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
+      "normal": "Normal campaigns",
+      "mirror": "Mirror campaigns"
+    },
+    "events": {
+      "title": "Campaign event progress",
+      "description": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
+      "regular": "Regular battles",
+      "challenges": "Optional challenges",
+      "regularProgress": "{{type}} regular progress",
+      "decrease": "Decrease progress",
+      "increase": "Increase progress",
+      "max": "Max",
+      "useSynced": "Use synced value",
+      "manual": "Manual",
+      "synced": "Synced",
+      "save": "Save",
+      "saved": "Campaign event progress saved.",
+      "saveError": "Couldn't save campaign event progress.",
+      "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
+    },
+    "xpIncome": {
+      "title": "XP Income",
+      "description": "XP Income helps estimate how many XP books you earn from Arena, Guild Raids, Archeotech purchases, and other sources.",
+      "comingSoon": "This V1 feature is being considered for V2. Tell us if it should be prioritized.",
+      "interestButton": "I want XP Income in V2",
+      "interestRecorded": "Thanks for your interest",
+      "interestAcknowledgement": "Thanks. Your interest will help us prioritize future V2 features.",
+      "bookAlt": "Legendary XP book"
+    }
   },
   "home": {
     "subtitle": "This page is still under construction.",
@@ -235,6 +299,359 @@
       "coLeader": "Co-Leader",
       "officer": "Officer",
       "member": "Member"
+    }
+  },
+  "goals": {
+    "title": "Goals",
+    "loadError": "Couldn't load your goals.",
+    "retry": "Retry",
+    "createButton": "Create goal",
+    "planningSettings": {
+      "button": "Planning settings",
+      "title": "Planning settings",
+      "description": "Choose the daily energy budget used by goal estimates.",
+      "dailyEnergy": "Energy per day",
+      "save": "Save settings",
+      "cancel": "Cancel",
+      "error": "Planning settings could not be saved."
+    },
+    "v1Import": {
+      "menu": "Import from V1",
+      "title": "Import from V1",
+      "description": "Your V1 credentials are used once and are never saved. Matching V2 goal kinds will be replaced and imported goals will be paused.",
+      "username": "V1 username",
+      "password": "V1 password",
+      "selectParts": "Choose what to import",
+      "parts": {
+        "personalKey": "Personal Tacticus API key",
+        "userId": "Tacticus user ID",
+        "guildKey": "Guild API token",
+        "goals": "Goals",
+        "onslaughtProgress": "Onslaught progress",
+        "campaignEventProgress": "Campaign event progress"
+      },
+      "submit": "Import selected",
+      "close": "Close",
+      "error": "The V1 profile could not be imported.",
+      "goalCounts": "Goals: {{created}} created, {{skipped}} skipped, {{failed}} failed"
+    },
+    "empty": {
+      "title": "No goals yet",
+      "description": "Create a goal to start tracking progress toward a character, Machine of War, or upgrade target.",
+      "createButton": "Create your first goal",
+      "filtered": "No goals in this view."
+    },
+    "tabs": {
+      "goals": "Goals",
+      "projects": "Projects",
+      "insights": "Insights",
+      "active": "Active",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "view": {
+      "list": "List view",
+      "grid": "Grid view"
+    },
+    "columns": {
+      "entity": "Character",
+      "type": "Type",
+      "status": "Status",
+      "actions": "Actions",
+      "estimate": "Est."
+    },
+    "status": {
+      "Draft": "Draft",
+      "Active": "Active",
+      "Paused": "Paused",
+      "Completed": "Completed",
+      "Archived": "Archived"
+    },
+    "actions": {
+      "openMenu": "Open goal actions",
+      "pause": "Pause",
+      "resume": "Resume",
+      "complete": "Mark complete",
+      "archive": "Archive",
+      "unarchive": "Restore from archive",
+      "delete": "Delete",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "delete": {
+      "title": "Delete this goal?",
+      "description": "This permanently removes the goal. This can't be undone.",
+      "confirm": "Delete goal",
+      "cancel": "Cancel"
+    },
+    "project": {
+      "title": "Projects",
+      "pageDescription": "Organize goals into focused plans and control their priority.",
+      "noProjectTitle": "No projects yet",
+      "noProjectDescription": "Create a project to organize and prioritize related goals.",
+      "membership": "Projects containing this goal",
+      "filterAll": "All projects",
+      "filterLabel": "Project",
+      "setActive": "Set as active plan",
+      "active": "active",
+      "pauseAll": "Pause all",
+      "resumeAll": "Resume all",
+      "manage": "Manage projects",
+      "manageTitle": "Manage projects",
+      "manageDescription": "Create, rename, archive, or restore planning projects.",
+      "newProject": "New project",
+      "name": "Name",
+      "description": "Description",
+      "color": "Color",
+      "archive": "Archive project",
+      "restore": "Restore project",
+      "save": "Save project",
+      "create": "Create project"
+    },
+    "toasts": {
+      "statusChanged": "Goal updated.",
+      "deleted": "Goal deleted.",
+      "activated": "Active plan updated.",
+      "bulkPaused": "Paused the project's goals.",
+      "bulkResumed": "Resumed the project's goals.",
+      "actionError": "Something went wrong. Please try again.",
+      "projectCreated": "Project created.",
+      "projectUpdated": "Project updated."
+    },
+    "create": {
+      "title": "Create a goal",
+      "entityType": {
+        "unit": "Unit",
+        "equipment": "Item"
+      },
+      "unitLabel": "Unit",
+      "unitPlaceholder": "Select a unit",
+      "unitEmpty": "No unit found.",
+      "info": {
+        "title": "Current status",
+        "shards": "Shards",
+        "mythicShards": "Mythic shards",
+        "equipmentOwnedTitle": "Owned",
+        "equipmentOwnedNone": "None owned yet",
+        "equipmentLevelCount": "Lv {{level}} × {{count}}"
+      },
+      "goalTypeLabel": "Goal type",
+      "goalTypes": {
+        "Rank": "Rank",
+        "Ascension": "Ascension",
+        "Ability": "Ability",
+        "Unlock": "Unlock",
+        "Upgrade": "Upgrade",
+        "UpgradeItem": "Upgrade Equipment",
+        "Level": "Level"
+      },
+      "rank": {
+        "start": "From rank",
+        "end": "To rank",
+        "current": "Current rank",
+        "target": "Target rank",
+        "appliedUpgrades": "{{applied}}/{{total}}",
+        "additionalTarget": {
+          "label": "Additional target",
+          "none": "None (full rank)",
+          "topRow": "Top row (rank and a half)",
+          "row": "{{count}} of {{total}} — Level {{level}}"
+        }
+      },
+      "ascension": {
+        "start": "Current progression",
+        "end": "Target progression",
+        "source": "Shard source",
+        "Campaign": "Campaign",
+        "Onslaught": "Onslaught",
+        "Both": "Campaign and Onslaught",
+        "onslaughtProgressHint": "The estimate uses the saved sector and tier for this unit's alliance.",
+        "editOnslaughtProgress": "Edit Onslaught progress",
+        "shards": "{{regular}} shards · {{mythic}} mythic shards",
+        "orbs": "orbs × {{count}}",
+        "campaignEstimate": "Campaign: {{energy}} energy · {{raids}} raids · {{days}} days",
+        "onslaughtEstimate": "Onslaught: {{tokens}} tokens · {{days}} days",
+        "combinedEstimate": "Combined duration: {{days}} days"
+      },
+      "ability": {
+        "activeStart": "Active ability, current level",
+        "passiveStart": "Passive ability, current level",
+        "target": "Target level"
+      },
+      "level": {
+        "current": "Current level",
+        "target": "Target level",
+        "booksNeeded": "≈ {{count}} Legendary XP Books",
+        "goldToApply": "≈ {{gold}} gold to apply",
+        "costDisclaimer": "Netted against your owned XP books. No days estimate — XP books aren't farmed from campaign energy."
+      },
+      "farmingStrategy": {
+        "label": "Farming strategy",
+        "TotalUpgrades": "Total upgrades",
+        "EveryStep": "Every step",
+        "Milestones": "Milestones",
+        "MajorMilestones": "Major milestones",
+        "unit": {
+          "rank": "rank",
+          "ability": "ability level"
+        },
+        "explanation": {
+          "TotalUpgrades": "One goal for the whole range — progress shows only once it's fully complete ({{count}} checkpoint).",
+          "EveryStep": "A checkpoint at every single {{unit}} along the way — the most granular tracking ({{count}} checkpoints).",
+          "Milestones": "A checkpoint at each major {{unit}} tier — a balanced default ({{count}} checkpoints).",
+          "MajorMilestones": "A checkpoint only at the biggest {{unit}} tiers — the fewest checkpoints ({{count}})."
+        },
+        "unavailable": {
+          "singleRank": "Not enough range yet for more than one checkpoint — pick a further target.",
+          "tooFewMilestones": "The selected range doesn't span enough milestone tiers for this strategy.",
+          "tooFewMajorMilestones": "The selected range doesn't span enough major milestone tiers for this strategy."
+        }
+      },
+      "unlockDescription": "This goal is complete once the character is unlocked.",
+      "unlockUnavailable": "Unlock is unavailable because this character has no catalog shard locations.",
+      "unlockCostUnsupportedMow": "Unlock targets are tracked for Machines of War, but their resource cost is not supported yet.",
+      "shardLocations": {
+        "labelRegular": "Shard locations",
+        "labelMythic": "Mythic shard locations",
+        "energyPerShard": "≈{{energy}} energy per shard",
+        "remainingEnergy": "≈{{energy}} energy to obtain the remaining shards",
+        "energyValue": "≈{{energy}} energy",
+        "daysValue": "≈{{days}} days"
+      },
+      "unlock": {
+        "ownedOfTotal": "{{owned}} / {{total}} shards",
+        "remaining": "{{count}} remaining",
+        "unlocksAt": "Unlocks at",
+        "selectLocationPrompt": "Select a shard location to estimate energy and time"
+      },
+      "upgrade": {
+        "add": "Add an upgrade",
+        "addEmpty": "No matching upgrades found.",
+        "quantity": "Quantity",
+        "remove": "Remove",
+        "required": "required × {{count}}",
+        "empty": "Add at least one upgrade to farm toward a target quantity."
+      },
+      "equipment": {
+        "label": "Equipment",
+        "placeholder": "Select an item",
+        "empty": "No equipment found.",
+        "targetLevel": "Target level",
+        "relicGroup": "Relic"
+      },
+      "previewTitle": "Resources needed",
+      "showAll": "Show all ({{count}})",
+      "showLess": "Show less",
+      "previewDisclaimer": "The actual estimate may change depending on this goal's priority within the selected project and the selected farming strategy.",
+      "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
+      "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
+      "projectLabel": "Projects",
+      "projectDefault": "No projects selected — the goal will be added to your default project.",
+      "projectActive": "active",
+      "projectDefaultMarker": "default",
+      "projectPriority": "Priority within {{project}}",
+      "projectPriorityAuto": "auto",
+      "createAnother": "Create another goal",
+      "submit": "Create goal",
+      "close": "Close",
+      "genericError": "Couldn't create the goal. Please try again.",
+      "previewEstimate": "≈ {{days}} days",
+      "previewEnergy": "{{energy}} energy",
+      "reviewTitle": "What will be created",
+      "projectEstimateLoading": "calculating…",
+      "projectEstimateUnavailable": "no estimate available",
+      "suggestions": {
+        "includeUnlock": "Include the suggested Unlock goal",
+        "includeAscension": "Include the suggested Ascension goal",
+        "includeLevel": "Include the suggested Level goal (reach level {{level}})",
+        "unlockRequired": "required, this character isn't owned yet",
+        "ascensionRequired": "required to reach the target rank",
+        "levelRequired": "required to reach the target rank/ability level"
+      },
+      "validation": {
+        "alreadyUnlocked": "This character is already unlocked.",
+        "rankAlreadyReached": "The selected rank has already been reached.",
+        "progressionAlreadyReached": "The selected progression has already been reached.",
+        "abilityRange": "At least one ability must increase and neither range may decrease.",
+        "abilityAlreadyReached": "The selected ability levels have already been reached.",
+        "levelAlreadyReached": "The selected level has already been reached.",
+        "rankMaxed": "This character has already reached the maximum rank.",
+        "progressionMaxed": "This unit has already reached the maximum progression level.",
+        "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
+        "levelMaxed": "This character has already reached the maximum level.",
+        "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit."
+      }
+    },
+    "estimate": {
+      "none": "—",
+      "days": "{{days}}d",
+      "blockedLabel": "Blocked",
+      "blocked": {
+        "NoFarmLocation": "No accessible farming location provides a required resource.",
+        "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
+        "InsufficientDailyEnergy": "Daily energy is below the cost of the cheapest usable node.",
+        "SimulationLimit": "The goal could not complete within the planning horizon.",
+        "UnsupportedCost": "Detailed costing is not supported for this goal."
+      }
+    },
+    "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
+    "filters": {
+      "search": "Search goals",
+      "allTypes": "All goal types",
+      "groupNone": "No grouping",
+      "groupByType": "Group by type",
+      "groupByUnit": "Group by unit",
+      "sort": {
+        "priority": "Priority",
+        "entity": "Character",
+        "type": "Goal type",
+        "status": "Status",
+        "estimate": "Estimate",
+        "updated": "Recently updated"
+      }
+    },
+    "detail": {
+      "title": "Goal details",
+      "loadError": "Couldn't load this goal.",
+      "saveError": "Couldn't save this goal.",
+      "save": "Save changes",
+      "estimateTitle": "Estimate",
+      "isolatedEstimate": "Isolated estimate",
+      "unavailable": "Unavailable",
+      "dependenciesTitle": "Dependencies",
+      "historyTitle": "History",
+      "notes": "Notes",
+      "projectsTitle": "Projects",
+      "projectsDescription": "A goal must belong to at least one project.",
+      "projectsRequired": "Select at least one project.",
+      "farmingTitle": "Farming locations",
+      "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
+      "shardsTitle": "Shards location",
+      "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
+      "farmingInvalid": "Each required resource must be available from at least one selected node.",
+      "none": "None"
+    },
+    "insights": {
+      "title": "Insights",
+      "selectProject": "Select a project",
+      "noProjectTitle": "No project selected",
+      "noProjectDescription": "Select a project above to see its total missing resources, farming bottlenecks, and relevant campaign events.",
+      "upgradesTitle": "Upgrades by rarity",
+      "shardsTitle": "Shards & orbs",
+      "shards": "Shards",
+      "mythicShards": "Mythic shards",
+      "onslaughtTokens": "Onslaught tokens",
+      "onslaughtDays": "Onslaught days",
+      "countOnlyDisclaimer": "Orbs and mythic shards are count-only — they don't factor into the energy estimate below.",
+      "estimateTitle": "Estimate",
+      "energyTotal": "Total energy",
+      "completionDate": "Completion date",
+      "completionUnknown": "—",
+      "bottlenecksTitle": "Bottlenecks",
+      "campaignsTitle": "Relevant campaigns",
+      "eventsTitle": "Relevant events",
+      "noBenefitingGoals": "No goals in this plan currently need this.",
+      "empty": "Nothing to show yet."
     }
   },
   "language": {

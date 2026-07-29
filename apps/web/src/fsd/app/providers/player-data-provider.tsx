@@ -5,11 +5,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
 
-import { useIsAuthenticated, useMsal } from "@azure/msal-react"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   PlayerDataHttpClient,
@@ -20,7 +21,12 @@ import {
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
 
-import { acquireAccessToken } from "@/shared/auth"
+import {
+  acquireAccessToken,
+  isInteractionRequired,
+  requestApiAccess,
+  useActiveAccountId,
+} from "@/shared/auth"
 
 // A background sync is due once the last successful sync is more than an hour old — matches the
 // "sync at most hourly, but always up to date within an hour" requirement. Re-checked periodically
@@ -63,6 +69,10 @@ export type PlayerDataContextValue = {
   progress: PlayerDataSyncProgress | null
   lastSyncedAt: string | null
   error: string | null
+  // True when `error` is not a transient failure — acquireAccessToken could not renew the session
+  // silently, so retrying the same sync will just fail the same way. The UI should offer to sign in
+  // again (via requestApiAccess/loginRedirect) instead of a plain "try again".
+  requiresReauth: boolean
   syncNow: () => void
 }
 
@@ -84,34 +94,29 @@ export function PlayerDataProvider({
   baseUrl,
   children,
 }: PlayerDataProviderProps) {
-  const { instance, accounts } = useMsal()
   const isAuthenticated = useIsAuthenticated()
-  const accountId = (instance.getActiveAccount() ?? accounts[0])?.homeAccountId
+  const accountId = useActiveAccountId()
 
   const [status, setStatus] = useState<PlayerDataStatus>("idle")
   const [progress, setProgress] = useState<PlayerDataSyncProgress | null>(null)
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [requiresReauth, setRequiresReauth] = useState(false)
+  const hasRequestedApiAccess = useRef(false)
 
   const client = useMemo(() => {
     if (!isAuthenticated || !accountId) {
       return null
     }
 
-    const account = instance.getActiveAccount() ?? accounts[0]
-    if (!account) {
-      return null
-    }
-
-    return new PlayerDataHttpClient(baseUrl, () =>
-      acquireAccessToken(instance, account)
-    )
-  }, [baseUrl, isAuthenticated, accountId, instance, accounts])
+    return new PlayerDataHttpClient(baseUrl, acquireAccessToken)
+  }, [baseUrl, isAuthenticated, accountId])
 
   const runSync = useCallback(
     async (activeClient: PlayerDataHttpClient, activeAccountId: string) => {
       setStatus("syncing")
       setError(null)
+      setRequiresReauth(false)
       setProgress(null)
 
       try {
@@ -120,6 +125,7 @@ export function PlayerDataProvider({
           activeClient,
           setProgress
         )
+        hasRequestedApiAccess.current = false
         setLastSyncedAt(result.syncedAt)
         setStatus(result.status)
       } catch (caught) {
@@ -132,6 +138,27 @@ export function PlayerDataProvider({
         // here from the provider's point of view — cached chunks (if any) remain in IndexedDB regardless
         // and are read directly by feature hooks, independent of this status.
         setStatus("error")
+
+        const requiresReauthNow = isInteractionRequired(caught)
+        setRequiresReauth(requiresReauthNow)
+
+        if (!requiresReauthNow) {
+          hasRequestedApiAccess.current = false
+          return
+        }
+
+        // Guarded to fire once per detected error — the periodic staleness check re-runs this
+        // sync every few minutes while the account stays unauthorized, and each retry hits this
+        // same catch block again without a redirect having resolved anything in between.
+        if (!hasRequestedApiAccess.current) {
+          hasRequestedApiAccess.current = true
+          void requestApiAccess().catch((redirectError: unknown) => {
+            console.error(
+              "[MSAL] player-data auto-reauth failed",
+              redirectError
+            )
+          })
+        }
       }
     },
     []
@@ -195,8 +222,15 @@ export function PlayerDataProvider({
   }, [client, accountId, runSync])
 
   const value = useMemo<PlayerDataContextValue>(
-    () => ({ status, progress, lastSyncedAt, error, syncNow }),
-    [status, progress, lastSyncedAt, error, syncNow]
+    () => ({
+      status,
+      progress,
+      lastSyncedAt,
+      error,
+      requiresReauth,
+      syncNow,
+    }),
+    [status, progress, lastSyncedAt, error, requiresReauth, syncNow]
   )
 
   return (

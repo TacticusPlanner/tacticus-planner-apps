@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -27,10 +27,17 @@ const { mockAccounts, mockInstance } = vi.hoisted(() => {
 
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ accounts: mockAccounts, instance: mockInstance }),
+  useIsAuthenticated: () => true,
 }))
 
 vi.mock("@/entities/guild", () => ({
   getMyGuild: (...args: unknown[]) => getMyGuild(...args),
+  guildQueries: {
+    current: () => ({
+      queryKey: ["guild", "current"],
+      queryFn: () => getMyGuild(),
+    }),
+  },
 }))
 
 vi.mock("@/shared/api", () => ({

@@ -2,6 +2,8 @@ import { Outlet, useLocation, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
+import { PageContainer } from "@/widgets/page-container"
+
 const tabs = [
   {
     value: "character",
@@ -26,7 +28,7 @@ export function LookupPage() {
     tabs.find((tab) => pathname.startsWith(tab.path))?.value ?? "character"
 
   return (
-    <main className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+    <PageContainer>
       <Tabs
         value={activeTab}
         onValueChange={(value) => {
@@ -43,6 +45,6 @@ export function LookupPage() {
         </TabsList>
       </Tabs>
       <Outlet />
-    </main>
+    </PageContainer>
   )
 }

@@ -23,10 +23,10 @@ import {
 } from "@workspace/game-domain"
 
 import {
-  CharacterCombobox,
   ProgressionSelect,
   RankBadge,
   RankSelect,
+  UnitCombobox,
 } from "@/shared/ui"
 
 import { shareCurrentLookupUrl } from "./character-lookup-share"
@@ -116,7 +116,7 @@ export function CharacterLookupControls({
     <div className="flex flex-col gap-5">
       <div className="grid gap-2" data-testid="lookup-character-select">
         <Label>{t("unitLookup.character")}</Label>
-        <CharacterCombobox
+        <UnitCombobox
           groups={characterGroups}
           value={characterId}
           onChange={onCharacterChange}

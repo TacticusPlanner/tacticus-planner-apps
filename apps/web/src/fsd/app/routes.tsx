@@ -9,6 +9,10 @@ import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { LandingPage } from "@/pages/landing"
+import { routes as goalsRoutes } from "@/pages/goals"
+import { routes as guildRoutes } from "@/pages/guild"
+import { routes as lookupRoutes } from "@/pages/lookup"
+import { routes as progressRoutes } from "@/pages/progress"
 import { isUiKitEnabled } from "@/shared/config"
 
 import { AppShell } from "./layout/app-shell"
@@ -16,18 +20,15 @@ import { OnboardingGate } from "./onboarding-gate"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
 // hits) is lazy-loaded — each becomes its own chunk, fetched only when its route is entered
-// (the layout's <Suspense fallback={<LoadingFill />}> around <Outlet /> covers the wait).
+// (the layout's <Suspense fallback={<LoadingFill />}> around <Outlet /> covers the wait). Each
+// page owns its own nested `children` route config (see e.g. pages/goals/route.tsx) — this module
+// only lazy-loads each section's top-level layout/page element and splices the page's own
+// `routes` export in as `children`, keeping AppShell and ProtectedRoute central.
 const HomePage = lazy(() =>
   import("@/pages/home").then((m) => ({ default: m.HomePage }))
 )
 const LookupPage = lazy(() =>
   import("@/pages/lookup").then((m) => ({ default: m.LookupPage }))
-)
-const CharacterLookupPage = lazy(() =>
-  import("@/pages/lookup").then((m) => ({ default: m.CharacterLookupPage }))
-)
-const LookupPlaceholder = lazy(() =>
-  import("@/pages/lookup").then((m) => ({ default: m.LookupPlaceholder }))
 )
 const UiKitPage = lazy(() =>
   import("@/pages/ui-kit").then((m) => ({ default: m.UiKitPage }))
@@ -35,8 +36,16 @@ const UiKitPage = lazy(() =>
 const GuildPage = lazy(() =>
   import("@/pages/guild").then((m) => ({ default: m.GuildPage }))
 )
-const GuildMembersRoute = lazy(() =>
-  import("@/pages/guild").then((m) => ({ default: m.GuildMembersRoute }))
+const GoalsLayout = lazy(() =>
+  import("@/pages/goals").then((m) => ({ default: m.GoalsLayout }))
+)
+const ProgressLayout = lazy(() =>
+  import("@/pages/progress").then((m) => ({ default: m.ProgressLayout }))
+)
+// A different page slice (pages/onslaught) nested under "/progress" — kept here rather than in
+// pages/progress/route.tsx since FSD forbids one page slice importing another's internals.
+const OnslaughtPage = lazy(() =>
+  import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
 )
 
 // msal-react's MsalProvider always mounts with `accounts: []`/`inProgress: Startup`, even when the
@@ -114,11 +123,27 @@ export const routes: RouteObject[] = [
       {
         path: "/lookup",
         element: <LookupPage />,
+        children: lookupRoutes,
+      },
+      {
+        path: "/goals",
+        element: (
+          <ProtectedRoute>
+            <GoalsLayout />
+          </ProtectedRoute>
+        ),
+        children: goalsRoutes,
+      },
+      {
+        path: "/progress",
+        element: (
+          <ProtectedRoute>
+            <ProgressLayout />
+          </ProtectedRoute>
+        ),
         children: [
-          { index: true, element: <Navigate replace to="/lookup/character" /> },
-          { path: "character", element: <CharacterLookupPage /> },
-          { path: "mow", element: <LookupPlaceholder tab="mow" /> },
-          { path: "npc", element: <LookupPlaceholder tab="npc" /> },
+          ...progressRoutes,
+          { path: "onslaught", element: <OnslaughtPage /> },
         ],
       },
       {
@@ -128,10 +153,7 @@ export const routes: RouteObject[] = [
             <GuildPage />
           </ProtectedRoute>
         ),
-        children: [
-          { index: true, element: <Navigate replace to="/guild/members" /> },
-          { path: "members", element: <GuildMembersRoute /> },
-        ],
+        children: guildRoutes,
       },
       // Public component showcase for local/QA use — never registered in production (see
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)

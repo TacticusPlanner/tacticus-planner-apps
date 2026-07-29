@@ -13,9 +13,7 @@ import {
 import type { StorageModel } from "./game-catalog.storage"
 
 export const catalogDbName = "tacticus-planner-game-catalog"
-// v3: drop the old per-record indexes (searchText + field indexes) and the shared "extras" store; every
-// served dataset is a plain id-keyed store. Reference tables are inlined or split into their own dataset.
-export const catalogDbVersion = 3
+export const catalogDbVersion = 4
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is

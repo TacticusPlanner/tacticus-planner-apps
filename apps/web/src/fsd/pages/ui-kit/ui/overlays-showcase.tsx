@@ -40,6 +40,8 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
+import { energyIconUrl, EntityIcon } from "@/shared/ui"
+
 import { UiKitShowcaseCard } from "./ui-kit-showcase-card"
 
 export function OverlaysShowcase() {
@@ -127,9 +129,30 @@ export function OverlaysShowcase() {
                 </DrawerDescription>
               </DrawerHeader>
               <div className="flex flex-col gap-3 px-4 pb-2 text-sm text-muted-foreground">
-                <p>Indomitus: 120 energy</p>
-                <p>Octarius Mirror: 60 energy</p>
-                <p>Event nodes: 50 energy</p>
+                <p className="flex items-center gap-1.5">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={energyIconUrl}
+                  />
+                  Indomitus: 120 energy
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={energyIconUrl}
+                  />
+                  Octarius Mirror: 60 energy
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={energyIconUrl}
+                  />
+                  Event nodes: 50 energy
+                </p>
               </div>
               <DrawerFooter>
                 <DrawerClose asChild>

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -24,8 +25,10 @@ import { ApiError } from "@/shared/api"
 const PURGE_CONFIRMATION_WORD = "Confirm"
 
 type Props = {
-  account: AccountInfo
-  instance: IPublicClientApplication
+  /** @deprecated Authentication is resolved by the shared API client. */
+  account?: AccountInfo
+  /** @deprecated Authentication is resolved by the shared API client. */
+  instance?: IPublicClientApplication
   open: boolean
   onOpenChange: (open: boolean) => void
   onPurged: () => void
@@ -37,17 +40,12 @@ type Props = {
  * destructive warning plus a literal type-to-confirm word, since this only removes Planner's copy of the
  * guild and never touches Tacticus itself.
  */
-export function GuildPurgeDialog({
-  account,
-  instance,
-  open,
-  onOpenChange,
-  onPurged,
-}: Props) {
+export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
   const { t } = useTranslation()
   const [confirmation, setConfirmation] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const purge = useMutation({ mutationFn: purgeGuild })
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
 
@@ -60,7 +58,7 @@ export function GuildPurgeDialog({
     setErrorMessage(null)
 
     try {
-      await purgeGuild(instance, account)
+      await purge.mutateAsync()
       setConfirmation("")
       setStatus("idle")
       onOpenChange(false)

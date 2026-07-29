@@ -1,7 +1,4 @@
-import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
-
 import { apiDelete, apiGet, apiPost } from "@/shared/api"
-import { acquireAccessToken } from "@/shared/auth"
 
 // Mirrors the backend's persistence-local GuildRole enum (TacticusPlanner.Persistence.Users.Guilds.GuildRole)
 // serialized by its C# name — not the upstream Tacticus wire spelling (which uses CO_LEADER etc.).
@@ -36,53 +33,18 @@ export type MyGuildResponse = {
   guild: RegisteredGuild | null
 }
 
-export function getMyGuild(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  signal?: AbortSignal
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiGet<MyGuildResponse>("/api/v1/guilds/me", { accessToken, signal })
-  )
+export function getMyGuild(signal?: AbortSignal) {
+  return apiGet<MyGuildResponse>("/api/v1/guilds/me", { signal })
 }
 
-export function registerGuild(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  request: { guildApiToken: string }
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPost<RegisteredGuild>("/api/v1/guilds/register", {
-      accessToken,
-      body: request,
-    })
-  )
+export function registerGuild(request: { guildApiToken: string }) {
+  return apiPost<RegisteredGuild>("/api/v1/guilds/register", { body: request })
 }
 
-export function syncMyGuild(
-  instance: IPublicClientApplication,
-  account: AccountInfo
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPost<RegisteredGuild>("/api/v1/guilds/me/sync", { accessToken })
-  )
+export function syncMyGuild() {
+  return apiPost<RegisteredGuild>("/api/v1/guilds/me/sync", {})
 }
 
-export async function purgeGuild(
-  instance: IPublicClientApplication,
-  account: AccountInfo
-) {
-  await withAccessToken(instance, account, (accessToken) =>
-    apiDelete("/api/v1/guilds/me", { accessToken })
-  )
-}
-
-async function withAccessToken<T>(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  action: (accessToken: string) => Promise<T>
-) {
-  const accessToken = await acquireAccessToken(instance, account)
-
-  return action(accessToken)
+export async function purgeGuild() {
+  await apiDelete("/api/v1/guilds/me", {})
 }

@@ -1,12 +1,10 @@
-import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
+import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
+import type { CreateCombinedGoalsRequest } from "@/entities/goal/@x/account"
 
-import { apiDelete, apiPost, apiPut } from "@/shared/api"
-import { acquireAccessToken } from "@/shared/auth"
+import type { CurrentUser } from "../model/current-user"
 
 type UpdateTacticusIntegrationRequest = {
-  // Omit to keep the currently stored key unchanged (only valid once an integration already exists).
   tacticusApiKey?: string
-  // Omit to leave the stored user id unchanged; set clearTacticusUserId to remove it instead.
   tacticusUserId?: string
   clearTacticusUserId?: boolean
 }
@@ -21,60 +19,58 @@ type TacticusIntegrationResult = {
   tacticusUserIdMasked: string | null
 }
 
+export function getCurrentUser(signal?: AbortSignal) {
+  return apiGet<CurrentUser>("/api/v1/me", { signal })
+}
+
 export function updateTacticusIntegration(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
   request: UpdateTacticusIntegrationRequest
 ) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPut<TacticusIntegrationResult>("/api/v1/me/tacticus-integration", {
-      accessToken,
-      body: request,
-    })
-  )
+  return apiPut<TacticusIntegrationResult>("/api/v1/me/tacticus-integration", {
+    body: request,
+  })
 }
 
-type ImportV1ProfileRequest = {
+export type ImportV1ProfileRequest = {
   username: string
   password: string
+  import: {
+    personalTacticusApiKey: boolean
+    tacticusUserId: boolean
+    guildApiToken: boolean
+    goals: boolean
+    onslaughtProgress: boolean
+    campaignEventProgress: boolean
+  }
 }
 
-type ImportV1ProfileResult = {
-  profileId: string
-  playerName: string
-  powerLevel: number
-  tacticusApiKeyMasked: string | null
-  tacticusUserIdMasked: string | null
+export type ImportPartResult = {
+  status: "Imported" | "Skipped" | "Failed"
+  code: string | null
+  message: string | null
 }
 
-export function importV1Profile(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  request: ImportV1ProfileRequest
-) {
-  return withAccessToken(instance, account, (accessToken) =>
-    apiPost<ImportV1ProfileResult>("/api/v1/me/v1-import", {
-      accessToken,
-      body: request,
-    })
-  )
+export type ImportV1ProfileResult = {
+  tacticusUserId: ImportPartResult
+  personalTacticusApiKey: ImportPartResult
+  guildApiToken: ImportPartResult
+  onslaughtProgress: ImportPartResult
+  campaignEventProgress: ImportPartResult
+  goals: ImportPartResult
+  // Parsed V1 goals, already shaped as create requests — one per unit. The client submits each of
+  // these through the standard `createCombinedGoals` mutation (see `import-v1-dialog.tsx`); the
+  // backend no longer creates goals itself.
+  goalSpecs?: CreateCombinedGoalsRequest[]
+  goalsSkipped: number
+  goalIssues: { code: string; sourceGoalId: string | null; message: string }[]
 }
 
-export async function purgeAccount(
-  instance: IPublicClientApplication,
-  account: AccountInfo
-) {
-  await withAccessToken(instance, account, (accessToken) =>
-    apiDelete("/api/v1/me", { accessToken })
-  )
+export function importV1Profile(request: ImportV1ProfileRequest) {
+  return apiPost<ImportV1ProfileResult>("/api/v1/me/v1-import", {
+    body: request,
+  })
 }
 
-async function withAccessToken<T>(
-  instance: IPublicClientApplication,
-  account: AccountInfo,
-  action: (accessToken: string) => Promise<T>
-) {
-  const accessToken = await acquireAccessToken(instance, account)
-
-  return action(accessToken)
+export async function purgeAccount() {
+  await apiDelete("/api/v1/me", {})
 }

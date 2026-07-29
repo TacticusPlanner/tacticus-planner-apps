@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -73,9 +73,8 @@ describe("GuildTacticusUserIdCard", () => {
       expect(onSaved).toHaveBeenCalledTimes(1)
     })
     expect(updateTacticusIntegration).toHaveBeenCalledWith(
-      mockInstance,
-      mockAccounts[0],
-      { tacticusUserId: "abc-123" }
+      { tacticusUserId: "abc-123" },
+      expect.anything()
     )
     expect(refetch).toHaveBeenCalledTimes(1)
   })

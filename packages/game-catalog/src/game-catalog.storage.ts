@@ -11,7 +11,12 @@ export type StorageModel<K extends GameCatalogDatasetKey> =
 // so call sites can name the storage-model type instead of re-deriving it from `StorageModel<"...">`
 // each time.
 export type CharacterStorageModel = StorageModel<"characters">
+export type MowStorageModel = StorageModel<"mows">
+export type AscensionCostStorageModel = StorageModel<"ascension-costs">
+export type UnlockShardCostStorageModel = StorageModel<"unlock-shard-costs">
+export type OnslaughtRewardStorageModel = StorageModel<"onslaught-rewards">
 export type UpgradeStorageModel = StorageModel<"upgrades">
+export type EquipmentStorageModel = StorageModel<"equipment">
 export type CampaignBattleStorageModel = StorageModel<"campaign-battles">
 export type CampaignDefinitionStorageModel =
   StorageModel<"campaign-definitions">

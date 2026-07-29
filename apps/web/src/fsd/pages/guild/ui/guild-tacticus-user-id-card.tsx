@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -17,8 +18,6 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useMsal } from "@azure/msal-react"
-
 import { updateTacticusIntegration, useCurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 
@@ -34,16 +33,13 @@ type Props = {
  */
 export function GuildTacticusUserIdCard({ onSaved }: Props) {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
   const { refetch: refetchCurrentUser } = useCurrentUser()
   const [userId, setUserId] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
-  if (!account) {
-    return null
-  }
+  const updateIntegration = useMutation({
+    mutationFn: updateTacticusIntegration,
+  })
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -57,7 +53,7 @@ export function GuildTacticusUserIdCard({ onSaved }: Props) {
     setErrorMessage(null)
 
     try {
-      await updateTacticusIntegration(instance, account, {
+      await updateIntegration.mutateAsync({
         tacticusUserId: trimmed,
       })
       refetchCurrentUser()

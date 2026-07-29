@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -19,9 +20,6 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
-import { useMsal } from "@azure/msal-react"
-
 import {
   importV1Profile,
   updateTacticusIntegration,
@@ -31,11 +29,7 @@ import { ApiError } from "@/shared/api"
 
 type FormStatus = "idle" | "submitting" | "error"
 
-type FormProps = {
-  account: AccountInfo
-  instance: IPublicClientApplication
-  onCompleted: () => void
-}
+type FormProps = { onCompleted: () => void }
 
 /**
  * Blocking onboarding dialog: shown by `OnboardingGate` whenever the signed-in user has no Tacticus API key
@@ -44,12 +38,6 @@ type FormProps = {
  */
 export function OnboardingDialog() {
   const { t } = useTranslation()
-  const { instance, accounts } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
-
-  if (!account) {
-    return null
-  }
 
   return (
     <Dialog open>
@@ -64,7 +52,7 @@ export function OnboardingDialog() {
           <DialogTitle>{t("onboarding.title")}</DialogTitle>
           <DialogDescription>{t("onboarding.description")}</DialogDescription>
         </DialogHeader>
-        <OnboardingOptions account={account} instance={instance} />
+        <OnboardingOptions />
       </DialogContent>
     </Dialog>
   )
@@ -72,13 +60,7 @@ export function OnboardingDialog() {
 
 // Two clearly separate, independent paths — not tabs — so it's obvious the user only needs to complete one
 // of them, not navigate between them. Each has its own heading and its own submit button.
-function OnboardingOptions({
-  account,
-  instance,
-}: {
-  account: AccountInfo
-  instance: IPublicClientApplication
-}) {
+function OnboardingOptions() {
   const { t } = useTranslation()
   const { refetch } = useCurrentUser()
   // Refetching the current user after either path succeeds flips hasCompletedOnboarding, and the gate
@@ -93,11 +75,7 @@ function OnboardingOptions({
         data-testid="onboarding-sign-up-section"
       >
         <h3 className="text-sm font-semibold">{t("onboarding.tabs.signUp")}</h3>
-        <SignUpForm
-          account={account}
-          instance={instance}
-          onCompleted={onCompleted}
-        />
+        <SignUpForm onCompleted={onCompleted} />
       </div>
 
       <FieldSeparator>{t("onboarding.or")}</FieldSeparator>
@@ -109,22 +87,21 @@ function OnboardingOptions({
         <h3 className="text-sm font-semibold">
           {t("onboarding.tabs.importProfile")}
         </h3>
-        <ImportProfileForm
-          account={account}
-          instance={instance}
-          onCompleted={onCompleted}
-        />
+        <ImportProfileForm onCompleted={onCompleted} />
       </div>
     </div>
   )
 }
 
-function SignUpForm({ account, instance, onCompleted }: FormProps) {
+function SignUpForm({ onCompleted }: FormProps) {
   const { t } = useTranslation()
   const [apiKey, setApiKey] = useState("")
   const [userId, setUserId] = useState("")
   const [status, setStatus] = useState<FormStatus>("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const updateIntegration = useMutation({
+    mutationFn: updateTacticusIntegration,
+  })
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -138,7 +115,7 @@ function SignUpForm({ account, instance, onCompleted }: FormProps) {
     setErrorMessage(null)
 
     try {
-      await updateTacticusIntegration(instance, account, {
+      await updateIntegration.mutateAsync({
         tacticusApiKey: trimmedApiKey,
         tacticusUserId: userId.trim() || undefined,
       })
@@ -211,12 +188,13 @@ function SignUpForm({ account, instance, onCompleted }: FormProps) {
   )
 }
 
-function ImportProfileForm({ account, instance, onCompleted }: FormProps) {
+function ImportProfileForm({ onCompleted }: FormProps) {
   const { t } = useTranslation()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [status, setStatus] = useState<FormStatus>("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const importProfile = useMutation({ mutationFn: importV1Profile })
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -229,9 +207,17 @@ function ImportProfileForm({ account, instance, onCompleted }: FormProps) {
     setErrorMessage(null)
 
     try {
-      await importV1Profile(instance, account, {
+      await importProfile.mutateAsync({
         username: username.trim(),
         password,
+        import: {
+          personalTacticusApiKey: true,
+          tacticusUserId: true,
+          guildApiToken: false,
+          goals: false,
+          onslaughtProgress: false,
+          campaignEventProgress: false,
+        },
       })
       onCompleted()
     } catch (error) {

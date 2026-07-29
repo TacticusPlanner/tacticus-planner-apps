@@ -21,6 +21,7 @@
   "dependencies": {
     "@azure/msal-browser": "^5.15.0",
     "@azure/msal-react": "^5.5.0",
+    "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-table": "^8.21.3",
     "@workspace/game-catalog": "workspace:*",
     "@workspace/game-domain": "workspace:*",

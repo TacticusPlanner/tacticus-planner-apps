@@ -21,10 +21,12 @@ import { RarityIcon } from "./rarity-icon"
 export function ProgressionSelect({
   label,
   value,
+  options = progressionOrder,
   onChange,
 }: {
   label: string
   value: Progression
+  options?: readonly Progression[]
   onChange: (value: Progression) => void
 }) {
   return (
@@ -35,7 +37,7 @@ export function ProgressionSelect({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {progressionOrder.map((option) => (
+          {options.map((option) => (
             <SelectItem key={option} value={option}>
               <ProgressionBadge value={option} />
             </SelectItem>
@@ -51,7 +53,7 @@ export function ProgressionSelect({
 // around a promotion boundary, e.g. "Common:TwoStars" then "Uncommon:TwoStars"). Stars match V1's
 // stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step) —
 // except "None", which has nothing to show an icon for and stays as plain text.
-function ProgressionBadge({ value }: { value: Progression }) {
+export function ProgressionBadge({ value }: { value: Progression }) {
   const { t } = useTranslation(["progression"])
   const rarity = progressionRarity(value)
   const stars = value.slice(value.indexOf(":") + 1)

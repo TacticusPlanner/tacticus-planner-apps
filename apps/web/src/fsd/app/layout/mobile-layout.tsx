@@ -46,10 +46,12 @@ export function MobileShell({
   isAuthenticated,
   visibleItems,
   pageTitle,
+  onCreateGoal,
 }: {
   isAuthenticated: boolean
   visibleItems: NavItem[]
   pageTitle: string | undefined
+  onCreateGoal: () => void
 }) {
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
@@ -60,7 +62,7 @@ export function MobileShell({
         </Suspense>
       </div>
       <ScrollToTopButton />
-      <MobileBottomNav items={visibleItems} />
+      <MobileBottomNav items={visibleItems} onCreateGoal={onCreateGoal} />
     </div>
   )
 }
@@ -80,7 +82,7 @@ function MobileHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 flex h-(--mobile-header-height) items-center justify-between gap-3 border-b bg-background px-4 pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 flex h-(--mobile-header-height) items-center justify-between gap-3 border-b bg-sidebar px-4 pt-[env(safe-area-inset-top)]">
       <div className="flex min-w-0 items-center gap-2">
         <AppLogo className="size-7 shrink-0" />
         <span className="truncate text-sm font-semibold tracking-tight">
@@ -161,9 +163,9 @@ function MobileNavActionButton({
   )
 }
 
-function MobileNavActions() {
+function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   const { t } = useTranslation()
-  const { errorText, isSyncing, status, statusText, syncNow } =
+  const { errorText, isSyncing, requiresReauth, status, statusText, syncNow } =
     usePlayerDataSyncStatus()
   const syncPresentation = {
     idle: {
@@ -172,22 +174,24 @@ function MobileNavActions() {
     },
     syncing: {
       Icon: RefreshCw,
-      className: "bg-primary text-primary-foreground",
+      className: "bg-accent text-accent-foreground",
     },
     ready: {
       Icon: CheckCircle2,
-      className: "bg-primary text-primary-foreground",
+      className: "bg-accent text-accent-foreground",
     },
     stale: {
       Icon: Clock,
       className: "bg-accent text-accent-foreground",
     },
     error: {
-      Icon: AlertTriangle,
+      Icon: requiresReauth ? LogIn : AlertTriangle,
       className: "bg-destructive text-primary-foreground",
     },
   }[status]
-  const syncLabel = `${t("nav.syncWithTacticus")} — ${errorText ?? statusText}`
+  // A raw MSAL/network error message isn't actionable for the user — once it's a sign-in issue, the
+  // friendly statusText ("Sign-in expired…") replaces it instead of surfacing errorText verbatim.
+  const syncLabel = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
   const SyncIcon = syncPresentation.Icon
 
   return (
@@ -196,7 +200,7 @@ function MobileNavActions() {
         aria-label={t("nav.createGoal")}
         className="pointer-events-auto"
         data-testid="mobile-create-goal-button"
-        disabled
+        onClick={onCreateGoal}
         title={t("nav.createGoal")}
       >
         <PlusCircle className="size-6" aria-hidden="true" />
@@ -227,7 +231,13 @@ function MobileNavActions() {
   )
 }
 
-function MobileBottomNav({ items }: { items: NavItem[] }) {
+function MobileBottomNav({
+  items,
+  onCreateGoal,
+}: {
+  items: NavItem[]
+  onCreateGoal: () => void
+}) {
   const { t } = useTranslation()
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -242,7 +252,7 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-background pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-sidebar pb-[env(safe-area-inset-bottom)]"
       data-testid="primary-nav"
     >
       {menuItems.length > 0 ? (
@@ -309,7 +319,7 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
           </Link>
         )
       })}
-      <MobileNavActions />
+      <MobileNavActions onCreateGoal={onCreateGoal} />
     </nav>
   )
 }

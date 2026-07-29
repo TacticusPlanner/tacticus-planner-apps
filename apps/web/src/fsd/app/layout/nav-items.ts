@@ -1,12 +1,24 @@
 import type { LucideIcon } from "lucide-react"
-import { Home, LayoutGrid, Search, Users } from "lucide-react"
+import {
+  Home,
+  LayoutGrid,
+  ListTodo,
+  TrendingUp,
+  Search,
+  Users,
+} from "lucide-react"
 
 import { isUiKitEnabled } from "@/shared/config"
 
 export interface NavItem {
   path: string
   labelKey:
-    "nav.home" | "nav.lookup" | "nav.createGoal" | "nav.uiKit" | "nav.guild"
+    | "nav.home"
+    | "nav.lookup"
+    | "nav.goals"
+    | "nav.progress"
+    | "nav.uiKit"
+    | "nav.guild"
   icon: LucideIcon
   anonymousAllowed: boolean
   // Where this item surfaces on mobile: a direct bottom-nav destination, or
@@ -28,6 +40,20 @@ export const navItems: NavItem[] = [
     labelKey: "nav.lookup",
     icon: Search,
     anonymousAllowed: true,
+    mobilePlacement: "menu",
+  },
+  {
+    path: "/goals",
+    labelKey: "nav.goals",
+    icon: ListTodo,
+    anonymousAllowed: false,
+    mobilePlacement: "primary",
+  },
+  {
+    path: "/progress",
+    labelKey: "nav.progress",
+    icon: TrendingUp,
+    anonymousAllowed: false,
     mobilePlacement: "menu",
   },
   {

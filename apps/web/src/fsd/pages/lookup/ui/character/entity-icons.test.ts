@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest"
 import {
   campaignIcon,
   characterIcon,
+  onslaughtAllianceIcon,
+  onslaughtTierIcon,
   rankIcon,
   UpgradeIcons,
 } from "@workspace/game-catalog"
@@ -18,6 +20,15 @@ describe("entity icon mapping", () => {
     expect(rankIcon("Diamond3")).toBe("/game_catalog/ranks/diamond3.png")
     expect(rankIcon("Adamantine1")).toBe("/game_catalog/ranks/adamantine1.png")
     expect(rankIcon("Adamantine2")).toBe("/game_catalog/ranks/adamantine2.png")
+  })
+
+  it("maps Onslaught progress and alliance markers to bundled assets", () => {
+    expect(onslaughtTierIcon("Diamond", 4)).toBe(
+      "/game_catalog/onslaught/ui_onslaught_button_rank_diamond_4.png"
+    )
+    expect(onslaughtAllianceIcon("Xenos")).toBe(
+      "/game_catalog/onslaught/xenos.png"
+    )
   })
 
   it("derives the upgrade-material icon from the upgrade id", () => {
