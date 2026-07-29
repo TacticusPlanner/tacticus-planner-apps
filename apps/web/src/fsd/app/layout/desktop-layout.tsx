@@ -48,14 +48,14 @@ export function DesktopShell({
   isAuthenticated: boolean
   visibleItems: NavItem[]
   pageTitle: string | undefined
-  onCreateGoal?: () => void
+  onCreateGoal: () => void
 }) {
   return (
     <SidebarProvider>
       <AppSidebar
         isAuthenticated={isAuthenticated}
         visibleItems={visibleItems}
-        onCreateGoal={onCreateGoal ?? (() => undefined)}
+        onCreateGoal={onCreateGoal}
       />
       <SidebarInset>
         <header className="flex items-center justify-between gap-2 border-b bg-sidebar px-6 py-4">

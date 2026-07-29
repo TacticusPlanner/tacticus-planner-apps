@@ -9,8 +9,8 @@ import type {
   FarmNode,
   GoalNeed,
   UpgradeNeed,
-} from "./estimate.domain"
-import { blocked, unavailableReason } from "./estimate-blocked"
+} from ".//estimate.domain"
+import { blocked, unavailableReason } from ".//estimate-blocked"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and

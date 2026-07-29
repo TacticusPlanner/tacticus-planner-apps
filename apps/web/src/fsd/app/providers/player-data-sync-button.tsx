@@ -9,7 +9,6 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
@@ -20,7 +19,6 @@ import {
 } from "./player-data-provider"
 import { formatRelativeTime } from "@/shared/lib"
 import { goalQueries } from "@/entities/goal"
-import { requestApiAccess } from "@/shared/auth"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -57,12 +55,6 @@ export function usePlayerDataSyncStatus() {
   const syncAndRefreshGoals = async () => {
     await syncNow()
     await queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-  }
-  const handleSignIn = () => {
-    void requestApiAccess().catch((signInError: unknown) => {
-      console.error("[MSAL] player-data reauth failed", signInError)
-      toast.error(t("auth.error"))
-    })
   }
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
@@ -113,7 +105,7 @@ export function usePlayerDataSyncStatus() {
     statusText,
     errorText: error,
     requiresReauth,
-    syncNow: requiresReauth ? handleSignIn : syncAndRefreshGoals,
+    syncNow: syncAndRefreshGoals,
   }
 }
 

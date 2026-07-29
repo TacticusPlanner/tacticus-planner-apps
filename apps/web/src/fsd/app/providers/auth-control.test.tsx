@@ -8,10 +8,7 @@ import { InteractionStatus } from "@azure/msal-browser"
 import type { CurrentUserState } from "@/entities/account"
 
 const isMobile = vi.fn(() => false)
-const useCurrentUser = vi.fn<
-  () => { refetch: () => void; state: CurrentUserState }
->(() => ({
-  refetch: vi.fn(),
+const useCurrentUser = vi.fn<() => { state: CurrentUserState }>(() => ({
   state: { status: "loading" },
 }))
 const useIsAuthenticated = vi.fn(() => true)
@@ -62,18 +59,6 @@ vi.mock("@/features/v1-import", () => ({
     open ? <div data-testid="v1-import-dialog-stub" /> : null,
 }))
 
-// The real module re-exports `@/shared/config`, whose i18n setup calls `initReactI18next` at
-// import time — incompatible with the plain `useTranslation` mock above.
-vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {
-    status: number
-    constructor(status: number, message: string) {
-      super(message)
-      this.status = status
-    }
-  },
-}))
-
 vi.mock("@/shared/auth", () => ({
   isInteractionRequired: (error: unknown) => isInteractionRequired(error),
   loginRequest: { scopes: ["api"] },
@@ -115,10 +100,7 @@ describe("AuthControl", () => {
     loginRedirect.mockClear().mockResolvedValue(undefined)
     logoutRedirect.mockClear().mockResolvedValue(undefined)
     requestApiAccess.mockClear().mockResolvedValue(undefined)
-    useCurrentUser.mockReturnValue({
-      refetch: vi.fn(),
-      state: { status: "loading" },
-    })
+    useCurrentUser.mockReturnValue({ state: { status: "loading" } })
   })
 
   it("opens a user menu with manage-account and sign-out on desktop", () => {
@@ -149,7 +131,6 @@ describe("AuthControl", () => {
   it("opens the manage-account dialog when the menu item is clicked", () => {
     isMobile.mockReturnValue(false)
     useCurrentUser.mockReturnValue({
-      refetch: vi.fn(),
       state: {
         status: "success",
         user: {
@@ -219,65 +200,45 @@ describe("AuthControl", () => {
     })
   })
 
-  it("surfaces a consent-required message and offers to grant access when the account failed to load", () => {
+  it("auto-fires requestApiAccess when the account errors with an interaction-required error", async () => {
     isInteractionRequired.mockReturnValue(true)
     useCurrentUser.mockReturnValue({
-      refetch: vi.fn(),
       state: { status: "error", error: new Error("needs consent") },
     })
     renderAuthControl()
-
-    expect(screen.getByTestId("auth-account-error")).toHaveTextContent(
-      "auth.accountConsentRequired"
-    )
-    expect(screen.getByTestId("auth-account-retry")).toHaveAttribute(
-      "aria-label",
-      "auth.grantAccess"
-    )
-  })
-
-  it("requests API access when recovering from a consent-required error", async () => {
-    isInteractionRequired.mockReturnValue(true)
-    useCurrentUser.mockReturnValue({
-      refetch: vi.fn(),
-      state: { status: "error", error: new Error("needs consent") },
-    })
-    renderAuthControl()
-
-    fireEvent.click(screen.getByTestId("auth-account-retry"))
 
     await vi.waitFor(() => {
       expect(requestApiAccess).toHaveBeenCalledTimes(1)
     })
   })
 
-  it("shows a forbidden message for a 403 ApiError and simply refetches on retry", async () => {
-    const { ApiError } = await import("@/shared/api")
-    const refetch = vi.fn()
+  it("does not fire requestApiAccess for a non-interaction-required account error", () => {
+    isInteractionRequired.mockReturnValue(false)
     useCurrentUser.mockReturnValue({
-      refetch,
-      state: { status: "error", error: new ApiError(403, "forbidden") },
-    })
-    renderAuthControl()
-
-    expect(screen.getByTestId("auth-account-error")).toHaveTextContent(
-      "auth.accountForbidden"
-    )
-
-    fireEvent.click(screen.getByTestId("auth-account-retry"))
-    expect(refetch).toHaveBeenCalledTimes(1)
-    expect(requestApiAccess).not.toHaveBeenCalled()
-  })
-
-  it("falls back to a generic load-error message for any other error", () => {
-    useCurrentUser.mockReturnValue({
-      refetch: vi.fn(),
       state: { status: "error", error: new Error("boom") },
     })
     renderAuthControl()
 
-    expect(screen.getByTestId("auth-account-error")).toHaveTextContent(
-      "auth.accountLoadError"
+    expect(requestApiAccess).not.toHaveBeenCalled()
+  })
+
+  it("fires requestApiAccess only once while the same error stays in place", async () => {
+    isInteractionRequired.mockReturnValue(true)
+    useCurrentUser.mockReturnValue({
+      state: { status: "error", error: new Error("needs consent") },
+    })
+    const { rerender } = renderAuthControl()
+
+    await vi.waitFor(() => {
+      expect(requestApiAccess).toHaveBeenCalledTimes(1)
+    })
+
+    rerender(
+      <TooltipProvider>
+        <AuthControl />
+      </TooltipProvider>
     )
+
+    expect(requestApiAccess).toHaveBeenCalledTimes(1)
   })
 })

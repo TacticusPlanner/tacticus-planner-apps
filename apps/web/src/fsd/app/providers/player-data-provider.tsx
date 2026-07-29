@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
@@ -23,6 +24,7 @@ import {
 import {
   acquireAccessToken,
   isInteractionRequired,
+  requestApiAccess,
   useActiveAccountId,
 } from "@/shared/auth"
 
@@ -100,6 +102,7 @@ export function PlayerDataProvider({
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [requiresReauth, setRequiresReauth] = useState(false)
+  const hasRequestedApiAccess = useRef(false)
 
   const client = useMemo(() => {
     if (!isAuthenticated || !accountId) {
@@ -122,6 +125,7 @@ export function PlayerDataProvider({
           activeClient,
           setProgress
         )
+        hasRequestedApiAccess.current = false
         setLastSyncedAt(result.syncedAt)
         setStatus(result.status)
       } catch (caught) {
@@ -130,11 +134,31 @@ export function PlayerDataProvider({
 
         console.error("Player-data sync failed.", syncError)
         setError(syncError.message)
-        setRequiresReauth(isInteractionRequired(caught))
         // Unlike the catalog, there is no "last known good, still usable" distinction to fall back to
         // here from the provider's point of view — cached chunks (if any) remain in IndexedDB regardless
         // and are read directly by feature hooks, independent of this status.
         setStatus("error")
+
+        const requiresReauthNow = isInteractionRequired(caught)
+        setRequiresReauth(requiresReauthNow)
+
+        if (!requiresReauthNow) {
+          hasRequestedApiAccess.current = false
+          return
+        }
+
+        // Guarded to fire once per detected error — the periodic staleness check re-runs this
+        // sync every few minutes while the account stays unauthorized, and each retry hits this
+        // same catch block again without a redirect having resolved anything in between.
+        if (!hasRequestedApiAccess.current) {
+          hasRequestedApiAccess.current = true
+          void requestApiAccess().catch((redirectError: unknown) => {
+            console.error(
+              "[MSAL] player-data auto-reauth failed",
+              redirectError
+            )
+          })
+        }
       }
     },
     []

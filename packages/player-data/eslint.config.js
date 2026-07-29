@@ -27,6 +27,7 @@ export default defineConfig([
           skipComments: true,
         },
       ],
+      "@typescript-eslint/explicit-module-boundary-types": "error",
     },
   },
   // This package is framework-agnostic player-data sync/storage logic — no JSX/React allowed. Move

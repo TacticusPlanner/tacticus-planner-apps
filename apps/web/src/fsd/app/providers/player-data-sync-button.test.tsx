@@ -17,14 +17,8 @@ vi.mock("./player-data-provider", () => ({
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
 }))
 
-const refreshGoals = vi.fn()
 vi.mock("@/entities/goal", () => ({
   goalQueries: { all: () => ["goals"] },
-  useGoalRefresh: () => ({
-    revision: 0,
-    refreshGoals,
-    registerGoalRefetch: vi.fn(() => () => undefined),
-  }),
 }))
 
 import { PlayerDataSyncButton } from "./player-data-sync-button"
@@ -68,7 +62,6 @@ describe("PlayerDataSyncButton", () => {
     fireEvent.click(button)
 
     expect(syncNow).toHaveBeenCalledTimes(1)
-    expect(refreshGoals).not.toHaveBeenCalled()
   })
 
   it("spins the icon and disables the button while a sync is in progress", () => {

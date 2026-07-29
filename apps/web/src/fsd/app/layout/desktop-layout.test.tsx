@@ -50,6 +50,7 @@ describe("DesktopShell", () => {
             isAuthenticated={false}
             visibleItems={navItems as NavItem[]}
             pageTitle="Home"
+            onCreateGoal={vi.fn()}
           />
         </TooltipProvider>
       </MemoryRouter>

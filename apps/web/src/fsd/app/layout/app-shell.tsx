@@ -1,23 +1,24 @@
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import {
-  GameCatalogProvider,
-  PlayerDataProvider,
-  ReauthDialog,
-} from "@/app/providers"
+import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
-import { CreateGoalSheet } from "@/pages/goals"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
 import { MobileShell } from "./mobile-layout"
 import { navItems } from "./nav-items"
+
+// Idle until the user opens it (via onCreateGoal), so it's lazy-loaded rather than pulled into the
+// shell's own chunk — mirrors the route-level lazy-load idiom in routes.tsx.
+const CreateGoalSheet = lazy(() =>
+  import("@/pages/goals").then((m) => ({ default: m.CreateGoalSheet }))
+)
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
@@ -88,14 +89,13 @@ function ShellContent({
         <DesktopShell {...shellProps} />
       )}
       {isAuthenticated ? (
-        <>
+        <Suspense fallback={null}>
           <CreateGoalSheet
             open={createOpen}
             onOpenChange={setCreateOpen}
             onCreated={refreshGoals}
           />
-          <ReauthDialog />
-        </>
+        </Suspense>
       ) : null}
     </>
   )

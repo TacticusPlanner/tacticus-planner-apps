@@ -1,9 +1,11 @@
 import { Card, CardContent } from "@workspace/ui/components/card"
 import type { UpgradeId } from "@workspace/game-domain"
 
-import { type CampaignInsight } from "@/shared/lib"
 import { RarityIcon, UpgradeIcon } from "@/shared/ui"
-import { CampaignInsightList as SharedCampaignInsightList } from "@/features/campaign-insights"
+import {
+  CampaignInsightList as SharedCampaignInsightList,
+  type CampaignInsight,
+} from "@/features/campaign-insights"
 
 import type { BaseUpgradeViewModel } from "./character-lookup-results.view-model"
 

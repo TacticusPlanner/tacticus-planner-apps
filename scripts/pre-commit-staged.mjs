@@ -27,18 +27,22 @@ const lintFiles = stagedFiles.filter(
     (file.startsWith("apps/web/") || file.startsWith("packages/ui/"))
 )
 
-if (prettierFiles.length > 0) {
-  run("prettier", [
-    "exec",
-    "prettier",
-    "--write",
-    "--ignore-unknown",
-    ...prettierFiles,
-  ])
+const MAX_FILES_PER_INVOCATION = 50
+
+for (const batch of chunk(prettierFiles, MAX_FILES_PER_INVOCATION)) {
+  run("prettier", ["exec", "prettier", "--write", "--ignore-unknown", ...batch])
 }
 
 runPackageLint("apps/web", lintFiles)
 runPackageLint("packages/ui", lintFiles)
+
+function chunk(items, size) {
+  const batches = []
+  for (let i = 0; i < items.length; i += size) {
+    batches.push(items.slice(i, i + size))
+  }
+  return batches
+}
 
 function getStagedFiles() {
   const result = spawnSync(
@@ -69,14 +73,16 @@ function runPackageLint(packageRoot, files) {
     return
   }
 
-  run(`eslint in ${packageRoot}`, [
-    "--dir",
-    packageRoot,
-    "exec",
-    "eslint",
-    "--fix",
-    ...packageFiles,
-  ])
+  for (const batch of chunk(packageFiles, MAX_FILES_PER_INVOCATION)) {
+    run(`eslint in ${packageRoot}`, [
+      "--dir",
+      packageRoot,
+      "exec",
+      "eslint",
+      "--fix",
+      ...batch,
+    ])
+  }
 }
 
 function run(label, args) {

@@ -51,7 +51,7 @@ export function MobileShell({
   isAuthenticated: boolean
   visibleItems: NavItem[]
   pageTitle: string | undefined
-  onCreateGoal?: () => void
+  onCreateGoal: () => void
 }) {
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
@@ -62,10 +62,7 @@ export function MobileShell({
         </Suspense>
       </div>
       <ScrollToTopButton />
-      <MobileBottomNav
-        items={visibleItems}
-        onCreateGoal={onCreateGoal ?? (() => undefined)}
-      />
+      <MobileBottomNav items={visibleItems} onCreateGoal={onCreateGoal} />
     </div>
   )
 }

@@ -15,12 +15,13 @@ import {
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import { rarityRank, type Rarity, type UpgradeId } from "@workspace/game-domain"
 
+import { useCampaignDisplay } from "@/shared/lib"
+import { EntityIcon, LocationChips, UpgradeIcon } from "@/shared/ui"
+
 import {
-  useCampaignDisplay,
   type CampaignInsight,
   type CampaignInsightContribution,
-} from "@/shared/lib"
-import { EntityIcon, LocationChips, UpgradeIcon } from "@/shared/ui"
+} from "../model/campaign-insights"
 
 export type CampaignInsightResource = {
   id: string

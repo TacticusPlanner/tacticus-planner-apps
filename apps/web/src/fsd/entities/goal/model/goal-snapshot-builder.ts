@@ -12,17 +12,6 @@ export type SnapshotMissingUpgradeInput = {
   inventoryContribution: number
 }
 
-/** The subset of an estimate-preview outcome this builder actually reads — see
- * `SnapshotMissingUpgradeInput`'s note; the regular create-goal flow's real `EstimateOutcome` (a
- * discriminated union) satisfies this shape as-is. */
-export type SnapshotEstimateInput = {
-  status?: string
-  days?: number
-  date?: string
-  energyTotal?: number
-  raidsTotal?: number
-} | null
-
 export function buildCreateGoalSnapshot(params: {
   spec: CombinedGoalSpec
   entityType: "Character" | "Mow"
@@ -34,10 +23,7 @@ export function buildCreateGoalSnapshot(params: {
   currentActiveAbility: number
   currentPassiveAbility: number
   missingUpgrades: SnapshotMissingUpgradeInput[]
-  estimatePreview: SnapshotEstimateInput
 }): CreateGoalSnapshotRequest {
-  const estimate =
-    params.estimatePreview?.status !== "Blocked" ? params.estimatePreview : null
   const ownsResourcePreview =
     (params.entityType === "Character" && params.spec.goalType === "Rank") ||
     (params.entityType === "Mow" && params.spec.goalType === "Ability")
@@ -46,7 +32,6 @@ export function buildCreateGoalSnapshot(params: {
     initialProgression: params.playerEntity?.progressionIndex ?? null,
     initialActiveAbilityLevel: params.currentActiveAbility,
     initialPassiveAbilityLevel: params.currentPassiveAbility,
-    initialUnlocked: !!params.playerEntity,
     initialRequirement: ownsResourcePreview
       ? params.missingUpgrades.map((entry) => ({
           resourceId: entry.id,
@@ -61,13 +46,5 @@ export function buildCreateGoalSnapshot(params: {
             count: entry.inventoryContribution,
           }))
       : [],
-    originalEnergyTotal: ownsResourcePreview
-      ? (estimate?.energyTotal ?? null)
-      : null,
-    originalRaidsTotal: ownsResourcePreview
-      ? (estimate?.raidsTotal ?? null)
-      : null,
-    originalEstimateDays: ownsResourcePreview ? (estimate?.days ?? null) : null,
-    originalEstimateDate: ownsResourcePreview ? (estimate?.date ?? null) : null,
   }
 }

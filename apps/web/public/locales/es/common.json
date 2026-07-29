@@ -4,14 +4,9 @@
   },
   "auth": {
     "account": "Cuenta conectada",
-    "accountConsentRequired": "Se requiere acceso a la API",
-    "accountForbidden": "Acceso a la API denegado",
-    "accountLoadError": "Cuenta no disponible",
     "accountLoading": "Cargando cuenta",
     "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
-    "grantAccess": "Conceder acceso a la API",
     "manageAccount": "Gestionar cuenta",
-    "retry": "Volver a cargar la cuenta",
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
     "userMenu": "Menú de la cuenta"

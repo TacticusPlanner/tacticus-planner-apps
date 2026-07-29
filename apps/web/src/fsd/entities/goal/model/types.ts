@@ -1,20 +1,19 @@
 // Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).
-export type GoalEntityType = "Character" | "Mow" | "Equipment"
+export type GoalEntityType = "Character" | "Mow" | "Item"
 export type GoalKind =
   | "Rank"
   | "Ascension"
   | "Ability"
   | "Unlock"
   | "Upgrade"
-  | "UpgradeEquipment"
+  | "UpgradeItem"
   | "Level"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
 export type AscensionFarmingSource = "Campaign" | "Onslaught" | "Both"
-export type GoalStatus =
-  "Draft" | "Active" | "Paused" | "Completed" | "Archived"
+export type GoalStatus = "Active" | "Paused" | "Completed" | "Archived"
 export type GoalEventType =
   | "Created"
   | "Paused"
@@ -66,10 +65,10 @@ export type UpgradeTarget = {
   targets: UpgradeItemTarget[]
 }
 
-/** Target level for a specific piece of equipment/relic gear (`GoalEntityType` `"Equipment"`
+/** Target level for a specific piece of equipment/relic gear (`GoalEntityType` `"Item"`
  * only). Uncosted — no gold/salvage/mythic-salvage farming engine exists in this app; "complete"
  * is simply the player's synced level for this equipment reaching `targetLevel`. */
-export type EquipmentTarget = {
+export type ItemTarget = {
   targetLevel: number
 }
 
@@ -83,32 +82,17 @@ export type GoalConfig = {
   // lowest-energy selection.
   farmingLocationIds: string[] | null
   upgrade: UpgradeTarget | null
-  equipment: EquipmentTarget | null
+  item: ItemTarget | null
   level: LevelTarget | null
 }
 
-export type GoalMilestone = {
-  index: number
-  kind: string
-  targetState: string
-  source: "calculated" | "user"
-  status: string
-  completedAt: string | null
-}
-
 export type GoalSnapshot = {
-  createdAt: string
   initialRank: string | null
   initialProgression: string | null
   initialActiveAbilityLevel: number | null
   initialPassiveAbilityLevel: number | null
-  initialUnlocked: boolean | null
   initialRequirement: GoalSnapshotResource[]
   initialInventoryContribution: GoalSnapshotResource[]
-  originalEnergyTotal: number | null
-  originalRaidsTotal: number | null
-  originalEstimateDays: number | null
-  originalEstimateDate: string | null
 }
 
 export type GoalSnapshotResource = {
@@ -116,7 +100,7 @@ export type GoalSnapshotResource = {
   count: number
 }
 
-export type CreateGoalSnapshotRequest = Omit<GoalSnapshot, "createdAt">
+export type CreateGoalSnapshotRequest = GoalSnapshot
 
 export type GoalEvent = {
   at: string
@@ -130,18 +114,12 @@ export type GoalSummary = {
   goalType: GoalKind
   status: GoalStatus
   notes: string | null
-  aggregateId: string | null
-  // Lean milestone counts (not the full list — see GoalDetail.milestones for that) so a goals list can
-  // show "M/N" without an N+1 detail fetch per row.
-  milestonesTotal: number
-  milestonesCompleted: number
   createdAt: string
   updatedAt: string
 }
 
 export type GoalDetail = GoalSummary & {
   config: GoalConfig
-  milestones: GoalMilestone[]
   snapshot: GoalSnapshot | null
   events: GoalEvent[]
   dependsOn: string[]
@@ -158,7 +136,7 @@ export type CreateGoalConfigRequest = {
   ascensionFarming?: AscensionFarmingConfig | null
   farmingLocationIds?: string[] | null
   upgrade?: UpgradeTarget | null
-  equipment?: EquipmentTarget | null
+  item?: ItemTarget | null
   level?: LevelTarget | null
 }
 

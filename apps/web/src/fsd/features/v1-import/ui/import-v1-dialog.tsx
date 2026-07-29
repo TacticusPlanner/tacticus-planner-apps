@@ -84,7 +84,6 @@ async function resolveImportedGoalSnapshot(
         currentActiveAbility,
         currentPassiveAbility,
         missingUpgrades: [],
-        estimatePreview: null,
       }),
     })),
   }

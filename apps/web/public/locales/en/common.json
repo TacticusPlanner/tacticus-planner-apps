@@ -4,16 +4,9 @@
   },
   "auth": {
     "account": "Signed-in account",
-    "accountConsentRequired": "API access required",
-    "accountForbidden": "API access denied",
-    "accountLoadError": "Account unavailable",
     "accountLoading": "Loading account",
     "error": "Authentication could not be completed. Please try again.",
-    "grantAccess": "Grant API access",
     "manageAccount": "Manage Account",
-    "reauthDialogTitle": "Sign-in expired",
-    "reauthDialogDescription": "We couldn't refresh your session automatically. Sign in again to keep syncing your Tacticus data, or sign out.",
-    "retry": "Retry loading account",
     "signIn": "Sign in",
     "signOut": "Sign out",
     "userMenu": "Account menu"
@@ -449,7 +442,7 @@
         "Ability": "Ability",
         "Unlock": "Unlock",
         "Upgrade": "Upgrade",
-        "UpgradeEquipment": "Upgrade Equipment",
+        "UpgradeItem": "Upgrade Equipment",
         "Level": "Level"
       },
       "rank": {
@@ -601,9 +594,6 @@
         "UnsupportedCost": "Detailed costing is not supported for this goal."
       }
     },
-    "milestones": {
-      "count": "{{completed}}/{{total}} milestones"
-    },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
     "filters": {
       "search": "Search goals",
@@ -625,12 +615,9 @@
       "loadError": "Couldn't load this goal.",
       "saveError": "Couldn't save this goal.",
       "save": "Save changes",
-      "estimateTitle": "Estimate comparison",
+      "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
-      "originalEstimate": "Original",
-      "currentEstimate": "Current",
       "unavailable": "Unavailable",
-      "milestonesTitle": "Milestones",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
       "notes": "Notes",
