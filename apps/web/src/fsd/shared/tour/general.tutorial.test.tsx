@@ -5,7 +5,30 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-import { useMobileTutorialSteps } from "./general.tutorial"
+import {
+  useDesktopTutorialSteps,
+  useMobileTutorialSteps,
+} from "./general.tutorial"
+
+describe("useDesktopTutorialSteps", () => {
+  it("visits desktop actions and each top-level navigation destination", () => {
+    const { result } = renderHook(() => useDesktopTutorialSteps())
+    const targets = result.current.map((step) => step.target)
+
+    expect(targets).toContain('[data-testid="desktop-create-goal-button"]')
+    expect(targets).toContain('[data-testid="player-data-sync-button"]')
+    expect(targets).toContain('[data-testid="desktop-navigation-search"]')
+    expect(targets.slice(-7)).toEqual([
+      '[data-testid="desktop-nav-home"]',
+      '[data-testid="desktop-nav-lookup"]',
+      '[data-testid="desktop-nav-goals"]',
+      '[data-testid="desktop-nav-dailies"]',
+      '[data-testid="desktop-nav-progress"]',
+      '[data-testid="desktop-nav-guild"]',
+      '[data-testid="desktop-nav-ui-kit"]',
+    ])
+  })
+})
 
 describe("useMobileTutorialSteps", () => {
   it("highlights the account drawer once and every bottom navigation item", () => {
