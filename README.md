@@ -7,6 +7,13 @@ This is a Vite monorepo template with shadcn/ui.
 See [RELEASING.md](RELEASING.md) for the branching, versioning, backport, and
 coordinated apps/API release process.
 
+## License and third-party rights
+
+Original source code is licensed under the
+[GNU Affero General Public License v3.0](LICENSE). See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the unofficial-project
+disclaimer and third-party trademark, copyright, game-data, and asset rights.
+
 ## Authentication configuration
 
 Use the dedicated Microsoft Entra External ID single-page application
