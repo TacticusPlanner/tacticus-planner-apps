@@ -1,5 +1,5 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
-import type { CreateCombinedGoalsRequest } from "@/entities/goal"
+import type { CreateCombinedGoalsRequest } from "@/entities/goal/@x/account"
 
 import type { CurrentUser } from "../model/current-user"
 
