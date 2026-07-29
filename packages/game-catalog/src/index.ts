@@ -59,6 +59,7 @@ export {
   getManifestMetadata,
   hasCompleteGameCatalogCache,
   clearGameCatalogDb,
+  deleteGameCatalogDb,
 } from "./game-catalog-storage"
 
 export {

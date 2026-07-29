@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { useMsal } from "@azure/msal-react"
 
 import { useGameCatalogStatus } from "@/app/providers"
+import { signOut } from "@/shared/auth"
 
 /**
  * Blocks the home content with a full-screen overlay while the game catalog initializes/syncs. Shows
@@ -12,6 +14,8 @@ import { useGameCatalogStatus } from "@/app/providers"
  */
 export function GameCatalogInitGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
+  const { accounts, instance } = useMsal()
+  const account = instance.getActiveAccount() ?? accounts[0]
   const { status, progress, gameVersion, firstTime, error, retry } =
     useGameCatalogStatus()
 
@@ -58,9 +62,25 @@ export function GameCatalogInitGate({ children }: { children: ReactNode }) {
               <p className="text-sm text-muted-foreground">
                 {t("catalog.init.errorDescription")}
               </p>
-              <Button data-testid="catalog-init-retry" onClick={retry}>
-                {t("catalog.init.retry")}
-              </Button>
+              <div className="flex gap-2">
+                <Button data-testid="catalog-init-retry" onClick={retry}>
+                  {t("catalog.init.retry")}
+                </Button>
+                <Button
+                  data-testid="catalog-init-sign-out"
+                  disabled={!account}
+                  onClick={() => {
+                    if (account) {
+                      void signOut(instance, account).catch((signOutError) => {
+                        console.error("[MSAL] sign-out failed", signOutError)
+                      })
+                    }
+                  }}
+                  variant="outline"
+                >
+                  {t("auth.signOut")}
+                </Button>
+              </div>
             </>
           ) : (
             <>

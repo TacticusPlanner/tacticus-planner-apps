@@ -1,9 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
 import type { GameCatalogContextValue } from "@/app/providers"
 
 const status = vi.fn<() => GameCatalogContextValue>()
+const account = { homeAccountId: "account-1" }
+const instance = { getActiveAccount: () => account }
+const signOut = vi.fn().mockResolvedValue(undefined)
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -11,6 +14,14 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/app/providers", () => ({
   useGameCatalogStatus: () => status(),
+}))
+
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({ accounts: [account], instance }),
+}))
+
+vi.mock("@/shared/auth", () => ({
+  signOut: (...args: unknown[]) => signOut(...args),
 }))
 
 import { GameCatalogInitGate } from "./game-catalog-init-gate"
@@ -83,5 +94,20 @@ describe("GameCatalogInitGate", () => {
     )
 
     expect(screen.getByTestId("catalog-init-retry")).toBeVisible()
+    expect(screen.getByTestId("catalog-init-sign-out")).toBeVisible()
+  })
+
+  it("signs out from the error overlay", () => {
+    setStatus({ status: "error", error: "boom" })
+
+    render(
+      <GameCatalogInitGate>
+        <div data-testid="home-content" />
+      </GameCatalogInitGate>
+    )
+
+    fireEvent.click(screen.getByTestId("catalog-init-sign-out"))
+
+    expect(signOut).toHaveBeenCalledWith(instance, account)
   })
 })

@@ -35,4 +35,5 @@ export {
   getManifestMetadata,
   hasCompletePlayerDataCache,
   clearPlayerDataDb,
+  deletePlayerDataDb,
 } from "./player-data-storage"

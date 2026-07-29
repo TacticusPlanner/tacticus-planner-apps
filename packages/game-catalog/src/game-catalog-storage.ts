@@ -116,3 +116,7 @@ export async function clearGameCatalogDb() {
     }
   )
 }
+
+export async function deleteGameCatalogDb(): Promise<void> {
+  await catalogDb.delete()
+}
