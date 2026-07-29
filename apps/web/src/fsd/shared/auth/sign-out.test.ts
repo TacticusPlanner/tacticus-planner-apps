@@ -22,9 +22,9 @@ describe("signOut", () => {
   it("deletes both IndexedDB databases before redirecting", async () => {
     const account = { homeAccountId: "account-1" }
     const logoutRedirect = vi.fn().mockResolvedValue(undefined)
-    const instance = { logoutRedirect }
+    const instance = { getAllAccounts: () => [account], logoutRedirect }
 
-    await signOut(instance as never, account as never)
+    await signOut(instance as never, account.homeAccountId)
 
     expect(deleteGameCatalogDb).toHaveBeenCalledTimes(1)
     expect(deletePlayerDataDb).toHaveBeenCalledTimes(1)

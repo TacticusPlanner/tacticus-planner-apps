@@ -1,11 +1,15 @@
-import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
+import type { IPublicClientApplication } from "@azure/msal-browser"
 import { deleteGameCatalogDb } from "@workspace/game-catalog"
 import { deletePlayerDataDb } from "@workspace/player-data"
 
 export async function signOut(
   instance: IPublicClientApplication,
-  account: AccountInfo
+  accountId: string
 ): Promise<void> {
   await Promise.all([deleteGameCatalogDb(), deletePlayerDataDb()])
-  await instance.logoutRedirect({ account })
+  const account = instance
+    .getAllAccounts()
+    .find((candidate) => candidate.homeAccountId === accountId)
+
+  await instance.logoutRedirect(account ? { account } : {})
 }

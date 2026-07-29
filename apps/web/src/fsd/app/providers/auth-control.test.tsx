@@ -201,7 +201,7 @@ describe("AuthControl", () => {
     await vi.waitFor(() => {
       expect(signOut).toHaveBeenCalledWith(
         expect.objectContaining({ logoutRedirect }),
-        activeAccount()
+        activeAccount().homeAccountId
       )
     })
   })

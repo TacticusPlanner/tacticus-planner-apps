@@ -278,7 +278,7 @@ function AccountTab({
     try {
       await purge.mutateAsync()
       onPurged()
-      await signOut(instance, account)
+      await signOut(instance, account.homeAccountId)
     } catch (error) {
       setStatus("error")
       setErrorMessage(

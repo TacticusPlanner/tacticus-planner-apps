@@ -6,7 +6,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useMsal } from "@azure/msal-react"
 
 import { useGameCatalogStatus } from "@/app/providers"
-import { signOut } from "@/shared/auth"
+import { signOut, useActiveAccountId } from "@/shared/auth"
 
 /**
  * Blocks the home content with a full-screen overlay while the game catalog initializes/syncs. Shows
@@ -14,8 +14,8 @@ import { signOut } from "@/shared/auth"
  */
 export function GameCatalogInitGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
-  const { accounts, instance } = useMsal()
-  const account = instance.getActiveAccount() ?? accounts[0]
+  const { instance } = useMsal()
+  const accountId = useActiveAccountId()
   const { status, progress, gameVersion, firstTime, error, retry } =
     useGameCatalogStatus()
 
@@ -68,12 +68,14 @@ export function GameCatalogInitGate({ children }: { children: ReactNode }) {
                 </Button>
                 <Button
                   data-testid="catalog-init-sign-out"
-                  disabled={!account}
+                  disabled={!accountId}
                   onClick={() => {
-                    if (account) {
-                      void signOut(instance, account).catch((signOutError) => {
-                        console.error("[MSAL] sign-out failed", signOutError)
-                      })
+                    if (accountId) {
+                      void signOut(instance, accountId).catch(
+                        (signOutError) => {
+                          console.error("[MSAL] sign-out failed", signOutError)
+                        }
+                      )
                     }
                   }}
                   variant="outline"

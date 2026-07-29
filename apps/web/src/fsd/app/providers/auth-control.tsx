@@ -86,7 +86,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   }
 
   const handleSignOut = () => {
-    void signOut(instance, account).catch((error: unknown) => {
+    void signOut(instance, account.homeAccountId).catch((error: unknown) => {
       logAuthenticationError("sign-out", error)
       toast.error(t("auth.error"))
     })

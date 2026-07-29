@@ -5,7 +5,7 @@ import type { GameCatalogContextValue } from "@/app/providers"
 
 const status = vi.fn<() => GameCatalogContextValue>()
 const account = { homeAccountId: "account-1" }
-const instance = { getActiveAccount: () => account }
+const instance = {}
 const signOut = vi.fn().mockResolvedValue(undefined)
 
 vi.mock("react-i18next", () => ({
@@ -17,11 +17,12 @@ vi.mock("@/app/providers", () => ({
 }))
 
 vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({ accounts: [account], instance }),
+  useMsal: () => ({ instance }),
 }))
 
 vi.mock("@/shared/auth", () => ({
   signOut: (...args: unknown[]) => signOut(...args),
+  useActiveAccountId: () => account.homeAccountId,
 }))
 
 import { GameCatalogInitGate } from "./game-catalog-init-gate"
@@ -108,6 +109,6 @@ describe("GameCatalogInitGate", () => {
 
     fireEvent.click(screen.getByTestId("catalog-init-sign-out"))
 
-    expect(signOut).toHaveBeenCalledWith(instance, account)
+    expect(signOut).toHaveBeenCalledWith(instance, account.homeAccountId)
   })
 })
