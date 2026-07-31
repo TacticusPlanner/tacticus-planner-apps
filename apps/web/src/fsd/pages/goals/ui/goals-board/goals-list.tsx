@@ -12,6 +12,10 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import {
+  NO_BLOCKERS,
+  UNKNOWN_PROGRESS,
+} from "../../model/attainment/goal-overview-metrics-defaults"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
 import type { GoalRow } from "../../model/shared/types"
@@ -209,7 +213,7 @@ function GoalsTable({
             <TableCell className="min-w-40">
               <GoalProgressDisplay
                 progress={
-                  metrics?.get(row.goalId)?.progress ?? { kind: "Unknown" }
+                  metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
                 }
               />
               <GoalRemainingSummary
@@ -220,12 +224,7 @@ function GoalsTable({
               <div className="flex flex-wrap items-center gap-1">
                 <StatusBadge status={row.status} />
                 <BlockedIndicator
-                  blockers={
-                    metrics?.get(row.goalId)?.blockers ?? {
-                      reasons: [],
-                      isBlocked: false,
-                    }
-                  }
+                  blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
                 />
               </div>
             </TableCell>
@@ -320,12 +319,7 @@ function GoalsMobileCards({
             <div className="flex flex-wrap items-center justify-end gap-1">
               <StatusBadge status={row.status} />
               <BlockedIndicator
-                blockers={
-                  metrics?.get(row.goalId)?.blockers ?? {
-                    reasons: [],
-                    isBlocked: false,
-                  }
-                }
+                blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
               />
             </div>
           </div>
@@ -336,7 +330,7 @@ function GoalsMobileCards({
             <EstimateCell estimate={estimates?.get(row.goalId)} />
           </div>
           <GoalProgressDisplay
-            progress={metrics?.get(row.goalId)?.progress ?? { kind: "Unknown" }}
+            progress={metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS}
           />
           <GoalRemainingSummary
             remaining={metrics?.get(row.goalId)?.remaining ?? null}

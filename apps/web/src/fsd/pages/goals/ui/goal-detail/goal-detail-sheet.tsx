@@ -21,6 +21,10 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import {
+  NO_BLOCKERS,
+  UNKNOWN_PROGRESS,
+} from "../../model/attainment/goal-overview-metrics-defaults"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
@@ -150,14 +154,21 @@ export function GoalDetailSheet({
   const projectsChanged =
     draft.selectedProjectIds.length !== (detail?.projectIds.length ?? 0) ||
     draft.selectedProjectIds.some((id) => !detail?.projectIds.includes(id))
+  // Set comparison, not array equality — toggling a checkbox off and back on reorders
+  // `selectedLocations` (see `GoalLocationsField`'s onToggle) without changing the actual selection.
+  const locationsChanged =
+    draft.selectedLocations.length !==
+      (detail?.config.farmingLocationIds?.length ?? 0) ||
+    draft.selectedLocations.some(
+      (id) => !(detail?.config.farmingLocationIds ?? []).includes(id)
+    )
   const hasUnsavedChanges =
     mode === "edit" &&
     !!detail &&
     (draft.notes.trim() !== (detail.notes ?? "") ||
       draft.farmingStrategy !== detail.config.farmingStrategy ||
       projectsChanged ||
-      draft.selectedLocations.join(",") !==
-        (detail.config.farmingLocationIds ?? []).join(","))
+      locationsChanged)
 
   const resetDraft = () => setDraftState(null)
 
@@ -283,33 +294,34 @@ export function GoalDetailSheet({
             <div className="grid gap-2 px-4 text-sm">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge status={detail.status} />
-                <BlockedIndicator
-                  blockers={
-                    metrics?.blockers ?? { reasons: [], isBlocked: false }
-                  }
-                />
+                <BlockedIndicator blockers={metrics?.blockers ?? NO_BLOCKERS} />
               </div>
-              <GoalProgressDisplay
-                progress={metrics?.progress ?? { kind: "Unknown" }}
-              />
-              {assignedProjects.length > 0 ? (
-                <GoalProjectBadges projects={assignedProjects} />
+              {/* View mode shows progress/projects itself (see `GoalDetailView`'s own sections) —
+                  only edit mode needs this read-only context surfaced up here, since its form has no
+                  progress/projects display of its own. */}
+              {mode === "edit" ? (
+                <>
+                  <GoalProgressDisplay
+                    progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                  />
+                  {assignedProjects.length > 0 ? (
+                    <GoalProjectBadges projects={assignedProjects} />
+                  ) : null}
+                </>
               ) : null}
             </div>
 
             {mode === "view" ? (
               <GoalDetailView
                 assignedProjects={assignedProjects}
-                blockers={
-                  metrics?.blockers ?? { reasons: [], isBlocked: false }
-                }
+                blockers={metrics?.blockers ?? NO_BLOCKERS}
                 dependencies={dependencies}
                 detail={detail}
                 estimate={estimate}
                 farmingSummary={farmingSummary}
                 getEntityName={getEntityName}
                 isolated={isolated}
-                progress={metrics?.progress ?? { kind: "Unknown" }}
+                progress={metrics?.progress ?? UNKNOWN_PROGRESS}
                 remaining={metrics?.remaining ?? null}
               />
             ) : (
@@ -330,36 +342,37 @@ export function GoalDetailSheet({
             )}
           </>
         ) : null}
-        <SheetFooter>
-          {mode === "view" ? (
-            <Button data-testid="goal-detail-edit" onClick={enterEdit}>
-              {t("goals.detail.edit")}
-            </Button>
-          ) : (
-            <>
-              <Button
-                data-testid="goal-detail-cancel"
-                onClick={requestLeaveEdit}
-                variant="outline"
-              >
-                {t("goals.detail.cancel")}
+        {detail ? (
+          <SheetFooter>
+            {mode === "view" ? (
+              <Button data-testid="goal-detail-edit" onClick={enterEdit}>
+                {t("goals.detail.edit")}
               </Button>
-              <Button
-                data-testid="goal-detail-save"
-                disabled={
-                  !detail ||
-                  updateMutation.isPending ||
-                  updateProjectsMutation.isPending ||
-                  !overrideValid ||
-                  !projectsValid
-                }
-                onClick={() => void save()}
-              >
-                {t("goals.detail.save")}
-              </Button>
-            </>
-          )}
-        </SheetFooter>
+            ) : (
+              <>
+                <Button
+                  data-testid="goal-detail-cancel"
+                  onClick={requestLeaveEdit}
+                  variant="outline"
+                >
+                  {t("goals.detail.cancel")}
+                </Button>
+                <Button
+                  data-testid="goal-detail-save"
+                  disabled={
+                    updateMutation.isPending ||
+                    updateProjectsMutation.isPending ||
+                    !overrideValid ||
+                    !projectsValid
+                  }
+                  onClick={() => void save()}
+                >
+                  {t("goals.detail.save")}
+                </Button>
+              </>
+            )}
+          </SheetFooter>
+        ) : null}
       </SheetContent>
 
       <DiscardChangesDialog

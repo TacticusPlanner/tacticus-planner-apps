@@ -74,14 +74,25 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
         Math.max(currentIndex, target.start),
         target.end
       )
+      const rankRatio = clampRatio(
+        clampedCurrent - target.start,
+        target.end - target.start
+      )
+      // Mirrors `computeGoalAttainment`'s Rank branch: reaching the end rank isn't "done" until its
+      // end-rank upgrade requirement is met too — never show a full bar before attainment agrees.
+      const requiredApplied = Math.max(
+        target.endAppliedUpgrades,
+        target.endPointFive ? 3 : 0
+      )
+      const endUpgradesDone =
+        requiredApplied === 0 ||
+        new Set(params.playerCharacter.appliedUpgradeSlots).size >=
+          requiredApplied
       return {
         kind: "Rank",
         current: params.playerCharacter.rank,
         target: rankAt(target.end),
-        ratio: clampRatio(
-          clampedCurrent - target.start,
-          target.end - target.start
-        ),
+        ratio: rankRatio >= 1 && !endUpgradesDone ? 0.99 : rankRatio,
       }
     }
     case "Ability": {
@@ -130,6 +141,11 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       }
     }
     case "Unlock": {
+      // Already owned — the shard inventory that funded the unlock is no longer tracked once
+      // complete, so report done rather than reading a stale/absent `inventoryShard` as still-short.
+      if (ownedUnit) {
+        return { kind: "Unlock", owned: 1, required: 1, ratio: 1 }
+      }
       const required = params.initialRarity
         ? (params.unlockShardCostsById.get(params.initialRarity)?.shards ?? 0)
         : 0
@@ -162,21 +178,31 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
     case "UpgradeItem": {
       const target = detail.config.item
       if (!target) return UNKNOWN_PROGRESS
+      if (!params.inventoryItems) return UNKNOWN_PROGRESS
       const entry = params.inventoryItems.find(
         (item) => item.itemId === detail.entityId
       )
       const current = entry?.level ?? 0
+      const meetsLevel = current >= target.targetLevel
+      // Mirrors `computeGoalAttainment`'s requirement that the item also has positive stock — at the
+      // target level with none in stock isn't "done" (used up), so never show a full bar for it.
+      const hasStock = (entry?.amount ?? 0) > 0
       return {
         kind: "UpgradeItem",
         current,
         target: target.targetLevel,
-        ratio: clampRatio(current, target.targetLevel),
+        ratio: meetsLevel
+          ? hasStock
+            ? 1
+            : 0.99
+          : clampRatio(current, target.targetLevel),
       }
     }
     case "Upgrade": {
       const target = detail.config.upgrade
       if (!target || target.targets.length === 0)
         return { kind: "Upgrade", ratio: null }
+      if (!params.inventoryUpgrades) return { kind: "Upgrade", ratio: null }
       const ownedById = new Map(
         params.inventoryUpgrades.map((entry) => [entry.upgradeId, entry.amount])
       )

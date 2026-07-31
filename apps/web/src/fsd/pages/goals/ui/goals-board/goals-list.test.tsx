@@ -171,6 +171,40 @@ describe("GoalsList", () => {
     }
   })
 
+  it("opens the goal detail via keyboard when the row itself is focused", async () => {
+    const onView = vi.fn()
+    render(
+      <GoalsList
+        actions={stubActions}
+        onView={onView}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+
+    const row = await screen.findByTestId("goal-row")
+    fireEvent.keyDown(row, { key: "Enter" })
+
+    expect(onView).toHaveBeenCalledWith("goal-1")
+  })
+
+  it("does not open the goal detail when Enter is pressed on the row actions trigger", async () => {
+    const onView = vi.fn()
+    render(
+      <GoalsList
+        actions={stubActions}
+        onView={onView}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+
+    const trigger = await screen.findByTestId("goal-row-actions-trigger-goal-1")
+    fireEvent.keyDown(trigger, { key: "Enter" })
+
+    expect(onView).not.toHaveBeenCalled()
+  })
+
   it("resolves a Machine of War row's display name from the mows catalog", async () => {
     const mowRows: GoalRow[] = [
       {

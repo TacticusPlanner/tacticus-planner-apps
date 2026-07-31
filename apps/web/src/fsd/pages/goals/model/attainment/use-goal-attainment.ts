@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useQueries } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -11,9 +12,11 @@ import {
 
 import { goalQueries } from "@/entities/goal"
 
-import { computeGoalAttainment, type GoalAttainment } from "./goal-attainment"
-
-const UNKNOWN: GoalAttainment = { status: "unknown", reached: false }
+import {
+  computeGoalAttainment,
+  UNKNOWN,
+  type GoalAttainment,
+} from "./goal-attainment"
 
 /**
  * Batch attainment for every goal id in `goalIds` — the data source for the overview's
@@ -38,11 +41,19 @@ export function useGoalAttainment(
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const inventoryItems = useLiveQuery(() => getPlayerInventoryItems(), [])
 
-  const playerCharacterById = new Map(
-    (playerCharacters ?? []).map((character) => [character.unitId, character])
+  const playerCharacterById = useMemo(
+    () =>
+      new Map(
+        (playerCharacters ?? []).map((character) => [
+          character.unitId,
+          character,
+        ])
+      ),
+    [playerCharacters]
   )
-  const playerMowById = new Map(
-    (playerMows ?? []).map((mow) => [mow.unitId, mow])
+  const playerMowById = useMemo(
+    () => new Map((playerMows ?? []).map((mow) => [mow.unitId, mow])),
+    [playerMows]
   )
 
   const result = new Map<string, GoalAttainment>()
@@ -61,8 +72,8 @@ export function useGoalAttainment(
         detail,
         playerCharacter: playerCharacterById.get(unitId),
         playerMow: playerMowById.get(unitId),
-        inventoryUpgrades: inventoryUpgrades ?? [],
-        inventoryItems: inventoryItems ?? [],
+        inventoryUpgrades,
+        inventoryItems,
       })
     )
   })

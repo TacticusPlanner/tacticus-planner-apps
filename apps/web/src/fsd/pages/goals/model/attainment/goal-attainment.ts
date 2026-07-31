@@ -31,7 +31,7 @@ export type GoalAttainment = {
 
 const REACHED: GoalAttainment = { status: "reached", reached: true }
 const NOT_REACHED: GoalAttainment = { status: "not-reached", reached: false }
-const UNKNOWN: GoalAttainment = { status: "unknown", reached: false }
+export const UNKNOWN: GoalAttainment = { status: "unknown", reached: false }
 
 function fromBoolean(value: boolean): GoalAttainment {
   return value ? REACHED : NOT_REACHED
@@ -53,8 +53,11 @@ export type GoalAttainmentParams = {
   detail: GoalDetail
   playerCharacter: PlayerCharacter | undefined
   playerMow: PlayerMow | undefined
-  inventoryUpgrades: readonly InventoryUpgrade[]
-  inventoryItems: readonly InventoryItem[]
+  /** `undefined` means the synced table hasn't loaded yet (distinct from a loaded, empty table) —
+   *  the Upgrade/UpgradeItem branches below report `UNKNOWN` rather than mistaking "not loaded" for
+   *  "loaded, and none owned". */
+  inventoryUpgrades: readonly InventoryUpgrade[] | undefined
+  inventoryItems: readonly InventoryItem[] | undefined
 }
 
 export function computeGoalAttainment(
@@ -78,7 +81,8 @@ export function computeGoalAttainment(
         target.endPointFive ? 3 : 0
       )
       return fromBoolean(
-        params.playerCharacter.appliedUpgradeSlots.length >= requiredApplied
+        new Set(params.playerCharacter.appliedUpgradeSlots).size >=
+          requiredApplied
       )
     }
     case "Ability": {
@@ -114,18 +118,19 @@ export function computeGoalAttainment(
       // inventory stock rather than a per-character/MoW record.
       const target = detail.config.item
       if (!target) return UNKNOWN
+      if (!params.inventoryItems) return UNKNOWN
       const entry = params.inventoryItems.find(
         (item) => item.itemId === detail.entityId
       )
       // A confirmed absence (synced inventory loaded, nothing at this id) is a known "not reached",
-      // not "unknown" — only a not-yet-loaded inventory chunk is unknown (guarded by the caller
-      // gating on catalog/player-data readiness before calling this at all).
+      // not "unknown" — only a not-yet-loaded inventory chunk is unknown (checked above).
       if (!entry) return NOT_REACHED
       return fromBoolean(entry.level >= target.targetLevel && entry.amount > 0)
     }
     case "Upgrade": {
       const target = detail.config.upgrade
       if (!target || target.targets.length === 0) return UNKNOWN
+      if (!params.inventoryUpgrades) return UNKNOWN
       const ownedById = new Map(
         params.inventoryUpgrades.map((entry) => [entry.upgradeId, entry.amount])
       )

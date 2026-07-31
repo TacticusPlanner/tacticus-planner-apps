@@ -21,7 +21,8 @@ import type { EstimateOutcome } from ".//estimate.domain"
 import { computePlanInsights } from "../insights/plan-insights-calc"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 
-// Mirrors use-plan-insights.ts's own gate — an archived goal has no live estimate to show.
+// Mirrors use-plan-insights.ts's own gate — only Active/Paused goals get a live estimate; a
+// Completed or Archived goal has none to show.
 const ACTIVE_STATUSES = new Set(["Active", "Paused"])
 
 type FetchState =

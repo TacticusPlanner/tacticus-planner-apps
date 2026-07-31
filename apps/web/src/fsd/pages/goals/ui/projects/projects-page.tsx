@@ -63,7 +63,10 @@ export function ProjectsPage() {
     reached: nonArchivedRows.filter((row) => isReached(row.goalId)).length,
     archived: allRows.filter((row) => row.status === "Archived").length,
   }
-  const overviewMetrics = useGoalsOverviewMetrics(rows.map((row) => row.goalId))
+  const overviewMetrics = useGoalsOverviewMetrics(
+    rows.map((row) => row.goalId),
+    insights.estimates
+  )
 
   const handleMove = (goalId: string, direction: "up" | "down") => {
     if (!projectId) return

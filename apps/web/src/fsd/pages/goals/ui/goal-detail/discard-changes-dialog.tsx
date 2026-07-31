@@ -3,6 +3,7 @@ import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -32,9 +33,9 @@ export function DiscardChangesDialog({
         <DialogHeader>
           <DialogTitle>{t("goals.detail.unsavedChangesTitle")}</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
+        <DialogDescription>
           {t("goals.detail.unsavedChangesDescription")}
-        </p>
+        </DialogDescription>
         <DialogFooter>
           <Button variant="outline" onClick={onKeepEditing}>
             {t("goals.detail.unsavedChangesCancel")}

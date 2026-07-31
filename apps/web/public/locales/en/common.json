@@ -617,6 +617,9 @@
     "filters": {
       "search": "Search goals",
       "allTypes": "All goal types",
+      "typeFilterLabel": "Goal type filter",
+      "sortByLabel": "Sort by",
+      "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
@@ -663,6 +666,7 @@
     },
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",
+      "progressLabel": "Goal progress",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "shards": "{{count}} shards remaining",

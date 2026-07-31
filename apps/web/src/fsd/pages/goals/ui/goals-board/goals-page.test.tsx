@@ -105,13 +105,16 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getOnslaughtRewards: () => [],
 }))
 
+const getPlayerCharacters = vi.fn<() => unknown[]>(() => [])
+
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
-  getPlayerCharacters: () => [],
-  getPlayerMows: () => [],
-  getInventoryUpgrades: () => undefined,
-  getPlayerInventoryItems: () => [],
+  getPlayerCharacters: (...args: unknown[]) =>
+    Promise.resolve(getPlayerCharacters(...(args as []))),
+  getPlayerMows: () => Promise.resolve([]),
+  getInventoryUpgrades: () => Promise.resolve(undefined),
+  getPlayerInventoryItems: () => Promise.resolve([]),
   getInventoryShard: () => Promise.resolve(undefined),
   getLiveProgress: () => undefined,
 }))
@@ -121,6 +124,9 @@ const listProjects = vi.fn()
 const createGoal = vi.fn()
 const updateGoalStatus = vi.fn()
 const deleteGoal = vi.fn()
+const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
+  Promise.resolve(undefined)
+)
 
 vi.mock("@/entities/goal", () => ({
   listGoals: (...args: unknown[]) => listGoals(...args),
@@ -135,7 +141,7 @@ vi.mock("@/entities/goal", () => ({
     }),
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
-      queryFn: () => Promise.resolve(undefined),
+      queryFn: () => getGoalDetail(goalId),
     }),
   },
 }))
@@ -194,6 +200,8 @@ describe("GoalsPage", () => {
     listProjectGoals.mockReset()
     listProjectGoals.mockResolvedValue({ goals: [] })
     listProjects.mockResolvedValue({ projects: [] })
+    getGoalDetail.mockReset().mockResolvedValue(undefined)
+    getPlayerCharacters.mockReset().mockReturnValue([])
   })
 
   it("does not render page-level creation actions", async () => {
@@ -232,6 +240,44 @@ describe("GoalsPage", () => {
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
     ).toBeInTheDocument()
+  })
+
+  it("moves a goal to the Reached tab once its rank target is met", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    getGoalDetail.mockResolvedValue({
+      goalId: activeGoal.goalId,
+      entityType: "Character",
+      entityId: "hero1",
+      goalType: "Rank",
+      status: "Active",
+      notes: null,
+      projectIds: [],
+      dependsOn: [],
+      events: [],
+      updatedAt: activeGoal.updatedAt,
+      config: {
+        rank: {
+          start: 0,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: 0,
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+      },
+    })
+    getPlayerCharacters.mockReturnValue([
+      { unitId: "hero1", rank: "Stone1", appliedUpgradeSlots: [] },
+    ])
+    const user = userEvent.setup()
+    render(<GoalsPage />)
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-tab-reached"))
+
+    expect(screen.getByTestId("goals-tab-reached")).toHaveTextContent("(1)")
+    expect(await screen.findByText("Hero One")).toBeInTheDocument()
   })
 
   it("retains non-archived tab counts while the Archived tab is selected", async () => {

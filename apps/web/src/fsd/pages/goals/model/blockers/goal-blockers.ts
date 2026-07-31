@@ -7,7 +7,7 @@ import type { EstimateBlockedReason } from "../estimate/estimate.domain"
 // approach, explicitly not carried over). `isBlocked` is a summary derived from `reasons`, never the
 // other way around.
 
-type BlockerReason =
+export type BlockerReason =
   /** The isolated/plan estimate for this goal came back `Blocked` — see `EstimateBlockedReason` for
    *  the specific farming-availability cause (no accessible node, daily energy too low, the
    *  selected-locations override excludes every viable node, or the day-by-day simulation couldn't

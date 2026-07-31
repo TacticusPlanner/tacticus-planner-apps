@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 import { useQueries } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -23,12 +23,10 @@ import { calculateGoalResourceNeed } from "../estimate/goal-requirements"
 import type { ResourceNeed } from "../estimate/progression-cost-calc"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { computeGoalAttainment } from "./goal-attainment"
+import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress, type GoalProgress } from "./goal-progress"
 
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
-
-const UNKNOWN_PROGRESS: GoalProgress = { kind: "Unknown" }
-const NO_BLOCKERS: GoalBlockers = { reasons: [], isBlocked: false }
 
 export type GoalOverviewMetrics = {
   progress: GoalProgress
@@ -70,6 +68,7 @@ export function useGoalsOverviewMetrics(
     ascensionCostsById,
     unlockShardCostsById,
     getCharacter,
+    loading: catalogLoading,
   } = useGoalCatalog()
   const detailQueries = useQueries({
     queries: goalIds.map((goalId) => ({
@@ -97,11 +96,19 @@ export function useGoalsOverviewMetrics(
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const inventoryItems = useLiveQuery(() => getPlayerInventoryItems(), [])
 
-  const playerCharacterById = new Map(
-    (playerCharacters ?? []).map((character) => [character.unitId, character])
+  const playerCharacterById = useMemo(
+    () =>
+      new Map(
+        (playerCharacters ?? []).map((character) => [
+          character.unitId,
+          character,
+        ])
+      ),
+    [playerCharacters]
   )
-  const playerMowById = new Map(
-    (playerMows ?? []).map((mow) => [mow.unitId, mow])
+  const playerMowById = useMemo(
+    () => new Map((playerMows ?? []).map((mow) => [mow.unitId, mow])),
+    [playerMows]
   )
 
   // Unlock goals need the not-yet-unlocked unit's shard inventory — a separate chunk from
@@ -113,35 +120,35 @@ export function useGoalsOverviewMetrics(
         .map((detail) => detail!.entityId)
     ),
   ]
-  const [inventoryShardByEntity, setInventoryShardByEntity] = useState<
-    ReadonlyMap<string, InventoryShard | undefined>
-  >(new Map())
+  // `useLiveQuery` (not a one-shot effect) so this reacts to a fresh player-data sync the same way
+  // every other input here does, instead of only re-fetching when the set of Unlock goals changes.
+  const inventoryShardByEntity =
+    useLiveQuery(
+      () =>
+        unlockEntityIds.length === 0
+          ? Promise.resolve(new Map<string, InventoryShard | undefined>())
+          : Promise.all(
+              unlockEntityIds.map((entityId) =>
+                getInventoryShard(entityId as UnitId)
+              )
+            ).then(
+              (results) =>
+                new Map(
+                  unlockEntityIds.map((entityId, index) => [
+                    entityId,
+                    results[index],
+                  ])
+                )
+            ),
+      [unlockEntityIds.join(",")]
+    ) ?? new Map<string, InventoryShard | undefined>()
 
-  useEffect(() => {
-    if (unlockEntityIds.length === 0) return undefined
-    let active = true
-    void Promise.all(
-      unlockEntityIds.map((entityId) => getInventoryShard(entityId as UnitId))
-    ).then((results) => {
-      if (!active) return
-      setInventoryShardByEntity(
-        new Map(
-          unlockEntityIds.map((entityId, index) => [entityId, results[index]])
-        )
-      )
-    })
-    return () => {
-      active = false
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unlockEntityIds.join(",")])
-
-  const catalogReady = !!(
-    charactersById &&
-    mowsById &&
-    ascensionCostsById &&
-    unlockShardCostsById
-  )
+  // `upgradesById` defaults to an empty Map before its own live query resolves (see
+  // `use-goal-catalog.ts`), so it can't signal "not loaded yet" on its own — `catalogLoading` (which
+  // does check the underlying query) closes that gap.
+  const catalogReady =
+    !catalogLoading &&
+    !!(mowsById && ascensionCostsById && unlockShardCostsById)
 
   const dependencyReachedById = new Map<string, boolean>()
   dependencyQueries.forEach((query, index) => {
@@ -156,8 +163,8 @@ export function useGoalsOverviewMetrics(
         detail: dependencyDetail,
         playerCharacter: playerCharacterById.get(dependencyUnitId),
         playerMow: playerMowById.get(dependencyUnitId),
-        inventoryUpgrades: inventoryUpgrades ?? [],
-        inventoryItems: inventoryItems ?? [],
+        inventoryUpgrades,
+        inventoryItems,
       }).reached
     )
   })
@@ -180,16 +187,16 @@ export function useGoalsOverviewMetrics(
       detail,
       playerCharacter,
       playerMow,
-      inventoryUpgrades: inventoryUpgrades ?? [],
-      inventoryItems: inventoryItems ?? [],
+      inventoryUpgrades,
+      inventoryItems,
     })
 
     const progress = computeGoalProgress({
       detail,
       playerCharacter,
       playerMow,
-      inventoryUpgrades: inventoryUpgrades ?? [],
-      inventoryItems: inventoryItems ?? [],
+      inventoryUpgrades,
+      inventoryItems,
       initialRarity: charactersById?.get(detail.entityId)?.initialRarity,
       unlockShardCostsById: unlockShardCostsById ?? new Map(),
       inventoryShard,

@@ -330,9 +330,32 @@ describe("GoalDetailSheet", () => {
     expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
   })
 
+  it("asks for confirmation before closing the sheet with unsaved edits, then closes on discard", async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    renderSheet({ onOpenChange })
+    await enterEditMode(user)
+
+    const notes = screen.getByLabelText("goals.detail.notes")
+    fireEvent.change(notes, { target: { value: "Changed" } })
+
+    await user.keyboard("{Escape}")
+    expect(
+      await screen.findByTestId("discard-changes-dialog")
+    ).toBeInTheDocument()
+    expect(onOpenChange).not.toHaveBeenCalled()
+
+    await user.click(screen.getByTestId("discard-changes-confirm"))
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
   it("renders blocked estimates and API load errors", async () => {
     const { unmount } = renderSheet({
-      estimate: { reason: "NoFarmableLocations", status: "Blocked" } as never,
+      estimate: {
+        reason: "NoFarmLocation",
+        resourceIds: [],
+        status: "Blocked",
+      },
     })
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
     expect(
@@ -341,7 +364,7 @@ describe("GoalDetailSheet", () => {
           element?.tagName === "P" &&
           Boolean(
             element.textContent?.includes(
-              "goals.estimate.blocked.NoFarmableLocations"
+              "goals.estimate.blocked.NoFarmLocation"
             )
           )
       )

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ArrowUpDown, Filter, Group } from "lucide-react"
+import { ArrowUpDown, Filter, Group as GroupIcon } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -138,8 +138,15 @@ export function GoalsPage() {
       ? selectedGoals.fetchState.message
       : null
 
+  // "Pristine" means no non-archived goals exist at all — not merely that the current tab/filter
+  // combination has no rows, which can also happen when every goal has already been reached or the
+  // type filter excludes everything.
   const showPristineEmptyState =
-    tab === "toReach" && !isLoading && !fetchError && rows.length === 0
+    tab === "toReach" &&
+    !isLoading &&
+    !fetchError &&
+    nonArchivedGoals.fetchState.status === "success" &&
+    nonArchivedRows.length === 0
 
   const goalTypeLabel =
     goalType === "all"
@@ -152,6 +159,12 @@ export function GoalsPage() {
       : group === "unit"
         ? t("goals.filters.groupByUnit")
         : t("goals.filters.groupByType")
+  // A stable purpose name for each filter's accessible name, not the current value alone — a
+  // screen-reader user on mobile (where the visible `SelectValue` is hidden) would otherwise hear
+  // just "Rank" with no indication of what that value is filtering/sorting/grouping by.
+  const typeFilterAriaLabel = `${t("goals.filters.typeFilterLabel")}: ${goalTypeLabel}`
+  const sortAriaLabel = `${t("goals.filters.sortByLabel")}: ${sortLabel}`
+  const groupAriaLabel = `${t("goals.filters.groupByLabel")}: ${groupLabel}`
 
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
@@ -179,7 +192,7 @@ export function GoalsPage() {
       <div className="flex items-center gap-2">
         <Select onValueChange={setGoalType} value={goalType}>
           <SelectTrigger
-            aria-label={goalTypeLabel}
+            aria-label={typeFilterAriaLabel}
             data-testid="goals-type-filter"
           >
             <Filter />
@@ -204,7 +217,7 @@ export function GoalsPage() {
           </SelectContent>
         </Select>
         <Select onValueChange={(value) => setSort(value as Sort)} value={sort}>
-          <SelectTrigger aria-label={sortLabel} data-testid="goals-sort">
+          <SelectTrigger aria-label={sortAriaLabel} data-testid="goals-sort">
             <ArrowUpDown />
             {isMobile ? null : <SelectValue />}
           </SelectTrigger>
@@ -220,8 +233,11 @@ export function GoalsPage() {
           onValueChange={(value) => setGroup(value as Group)}
           value={group}
         >
-          <SelectTrigger aria-label={groupLabel} data-testid="goals-group-by">
-            <Group />
+          <SelectTrigger
+            aria-label={groupAriaLabel}
+            data-testid="goals-group-by"
+          >
+            <GroupIcon />
             {isMobile ? null : <SelectValue />}
           </SelectTrigger>
           <SelectContent>

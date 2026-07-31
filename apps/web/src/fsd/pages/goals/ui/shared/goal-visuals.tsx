@@ -29,6 +29,18 @@ import { ProjectColorDot } from ".//project-color-dot"
 const genericUpgradeIcon = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_generic.png`
 const genericLevelIcon = `${ASSET_BASE_PATH}/misc/xp_generic.png`
 
+/** The track with the larger remaining gap — the one that's actually gating the goal, so that's the
+ *  one `GoalProgressDisplay` shows a current/target pair for. */
+function widestAbilityTrack(
+  progress: Extract<GoalProgress, { kind: "Ability" }>
+): { current: number; target: number } {
+  const activeGap = progress.targetActive - progress.currentActive
+  const passiveGap = progress.targetPassive - progress.currentPassive
+  return activeGap > passiveGap
+    ? { current: progress.currentActive, target: progress.targetActive }
+    : { current: progress.currentPassive, target: progress.targetPassive }
+}
+
 /** The goal-type badge/card icon — a generic per-kind symbol representing the concept, not any one
  * specific unit/upgrade/item (see e.g. `EquipmentIcon` for the actual per-item icon used in the
  * Equipment creation picker). `Ability` is the one kind whose icon depends on which entity it's
@@ -223,18 +235,7 @@ export function GoalProgressDisplay({ progress }: { progress: GoalProgress }) {
       </span>
     ) : progress.kind === "Ability" ? (
       <span>
-        {t("goals.overview.levelProgress", {
-          current:
-            progress.targetActive - progress.currentActive >
-            progress.targetPassive - progress.currentPassive
-              ? progress.currentActive
-              : progress.currentPassive,
-          target:
-            progress.targetActive - progress.currentActive >
-            progress.targetPassive - progress.currentPassive
-              ? progress.targetActive
-              : progress.targetPassive,
-        })}
+        {t("goals.overview.levelProgress", widestAbilityTrack(progress))}
       </span>
     ) : progress.kind === "Unlock" ? (
       <span>
@@ -250,6 +251,10 @@ export function GoalProgressDisplay({ progress }: { progress: GoalProgress }) {
           target: progress.target,
         })}
       </span>
+    ) : progress.ratio !== null ? (
+      // "Upgrade" — no natural current/target pair to show (it's an average across several
+      // materials), so the percentage itself is the only visible readout.
+      <span>{Math.round(progress.ratio * 100)}%</span>
     ) : null
 
   return (
@@ -257,6 +262,7 @@ export function GoalProgressDisplay({ progress }: { progress: GoalProgress }) {
       {currentTarget}
       {progress.ratio !== null ? (
         <Progress
+          aria-label={t("goals.overview.progressLabel")}
           className="h-1.5"
           data-testid="goal-progress-bar"
           value={progress.ratio * 100}
