@@ -9,8 +9,8 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type { GoalDetail } from "@/entities/goal"
 
 // Pure attainment calc — whether a goal's target conditions are already satisfied by the player's
-// synced progression, independent of the goal's lifecycle `status` (plan §3: "Goals to reach" vs.
-// "Reached goals" is computed here, never a manually-set flag). Mirrors `goal-requirements.ts`'s
+// synced progression, independent of the goal's lifecycle `status` (plan §3: "Unfulfilled" vs.
+// "Reached" is computed here, never a manually-set flag). Mirrors `goal-requirements.ts`'s
 // per-`GoalKind` split, but compares *current vs. target* rather than deriving a farmable need — no
 // catalog/cost data required, only the player's own synced records.
 

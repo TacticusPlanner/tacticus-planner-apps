@@ -359,8 +359,8 @@
       "goals": "Goals",
       "projects": "Projects",
       "insights": "Insights",
-      "toReach": "Goals to reach",
-      "reached": "Reached goals",
+      "toReach": "Unfulfilled",
+      "reached": "Reached",
       "archived": "Archived"
     },
     "columns": {

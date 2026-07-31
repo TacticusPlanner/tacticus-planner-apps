@@ -65,7 +65,7 @@ export function GoalsPage() {
     nonArchivedGoals.fetchState.status === "success"
       ? nonArchivedGoals.fetchState.goals.map((goal) => goal.goalId)
       : []
-  // Drives the "Goals to reach" / "Reached goals" split (plan §3) — computed from synced player
+  // Drives the "Unfulfilled" / "Reached" split (plan §3) — computed from synced player
   // progression, not the goal's lifecycle `status`. Archived goals are excluded: attainment isn't
   // meaningful once a goal has been taken out of active planning.
   const attainmentByGoalId = useGoalAttainment(nonArchivedGoalIds)

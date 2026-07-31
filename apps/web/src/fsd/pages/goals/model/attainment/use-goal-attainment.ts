@@ -16,8 +16,8 @@ import { computeGoalAttainment, type GoalAttainment } from "./goal-attainment"
 const UNKNOWN: GoalAttainment = { status: "unknown", reached: false }
 
 /**
- * Batch attainment for every goal id in `goalIds` — the data source for the overview's "Goals to
- * reach" / "Reached goals" grouping (plan §3). Fetches each goal's full `GoalDetail` (attainment
+ * Batch attainment for every goal id in `goalIds` — the data source for the overview's
+ * "Unfulfilled" / "Reached" grouping (plan §3). Fetches each goal's full `GoalDetail` (attainment
  * needs `config`'s numeric targets, which the list endpoint's `GoalSummary` doesn't carry) via
  * `useQueries`, mirroring `goal-detail-sheet.tsx`'s dependency-resolution shape, and re-evaluates
  * automatically whenever the underlying live-queried player-data tables change (a goal update, or a
