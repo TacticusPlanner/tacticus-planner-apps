@@ -21,6 +21,9 @@ describe("ColorPicker", () => {
     fireEvent.change(input, { target: { value: "#bad" } })
     expect(input).toHaveAttribute("aria-invalid", "true")
     expect(onChange).not.toHaveBeenCalled()
+    fireEvent.blur(input)
+    expect(input).toHaveValue("#112233")
+    expect(input).toHaveAttribute("aria-invalid", "false")
 
     fireEvent.change(input, { target: { value: "#AABBCC" } })
     expect(input).toHaveAttribute("aria-invalid", "false")

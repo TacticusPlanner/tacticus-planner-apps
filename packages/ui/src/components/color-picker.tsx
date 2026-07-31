@@ -54,6 +54,11 @@ export const ColorPicker = React.forwardRef<HTMLInputElement, ColorPickerProps>(
       if (HEX_COLOR.test(normalized)) onChange(normalized)
     }
 
+    const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
+      if (!HEX_COLOR.test(draft)) setDraft(parsedValue)
+      onBlur?.(event)
+    }
+
     return (
       <Popover>
         <PopoverTrigger asChild>
@@ -77,7 +82,7 @@ export const ColorPicker = React.forwardRef<HTMLInputElement, ColorPickerProps>(
             disabled={disabled}
             maxLength={7}
             name={name}
-            onBlur={onBlur}
+            onBlur={handleBlur}
             onChange={(event) => updateDraft(event.currentTarget.value)}
             ref={forwardedRef}
             spellCheck={false}
