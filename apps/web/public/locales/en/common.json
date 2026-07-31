@@ -669,6 +669,7 @@
       "progressLabel": "Goal progress",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
+        "upgradeSlots": "{{count}} upgrade slots remaining",
         "shards": "{{count}} shards remaining",
         "mythicShards": "{{count}} mythic shards remaining",
         "orbs": "{{count}} orbs remaining"

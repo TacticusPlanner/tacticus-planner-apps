@@ -17,6 +17,7 @@ import { farmingStageTargets } from "../farming/farming-stages"
 import {
   abilityResourceNeed,
   rankResourceNeed,
+  rankSlotsRemaining,
 } from "../insights/plan-insights-need"
 import {
   ascensionResourceNeed,
@@ -55,7 +56,18 @@ export function calculateGoalResourceNeed(
       upgradesById,
     })
     return upgrades
-      ? { upgrades, shardId: null, shards: 0, mythicShards: 0, orbsByType: {} }
+      ? {
+          upgrades,
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+          upgradeSlotsRemaining: rankSlotsRemaining({
+            detail,
+            character: params.character,
+            playerCharacter: params.playerCharacter,
+          }),
+        }
       : null
   }
   if (detail.goalType === "Ability") {
@@ -67,7 +79,14 @@ export function calculateGoalResourceNeed(
       coveredTransitions: params.coveredAbilityTransitions,
     })
     return upgrades
-      ? { upgrades, shardId: null, shards: 0, mythicShards: 0, orbsByType: {} }
+      ? {
+          upgrades,
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+          upgradeSlotsRemaining: null,
+        }
       : null
   }
   if (detail.goalType === "Ascension" && detail.config.progression) {

@@ -292,9 +292,19 @@ export function GoalRemainingSummary({
     0
   )
   const parts = [
-    upgradeCount > 0
-      ? t("goals.overview.remaining.upgrades", { count: upgradeCount })
-      : null,
+    // Rank goals report unfilled *slots* (a small, fixed-size count — 6 per rank) instead of the raw
+    // crafting-material total, which can look enormous once recipes are factored in and doesn't map
+    // onto "how many rank-ups are left" the way a slot count does. Every other goal kind has no slot
+    // concept (`upgradeSlotsRemaining` is `null`), so it keeps the material total.
+    remaining.upgradeSlotsRemaining !== null
+      ? remaining.upgradeSlotsRemaining > 0
+        ? t("goals.overview.remaining.upgradeSlots", {
+            count: remaining.upgradeSlotsRemaining,
+          })
+        : null
+      : upgradeCount > 0
+        ? t("goals.overview.remaining.upgrades", { count: upgradeCount })
+        : null,
     remaining.shards > 0
       ? t("goals.overview.remaining.shards", { count: remaining.shards })
       : null,
