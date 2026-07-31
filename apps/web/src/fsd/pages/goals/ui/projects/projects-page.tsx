@@ -9,8 +9,8 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
-import type { GoalStatus } from "@/entities/goal"
-
+import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
+import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { goalRowFromProjectMember } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
@@ -24,8 +24,9 @@ import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { GoalsList } from "../goals-board/goals-list"
 import { ProjectToolbar } from ".//project-toolbar"
 
-type Tab = "active" | "completed" | "archived"
-const ACTIVE_STATUSES: GoalStatus[] = ["Active", "Paused"]
+// Mirrors goals-page.tsx's grouping (plan §3): "toReach"/"reached" come from computed attainment,
+// never the goal's lifecycle `status`; "archived" stays status-driven.
+type Tab = "toReach" | "reached" | "archived"
 
 /** Project-scoped planning view, including priority ordering and bulk project actions. */
 export function ProjectsPage() {
@@ -37,7 +38,7 @@ export function ProjectsPage() {
     projects.activeProjectId ??
     projects.projects.find((project) => project.status !== "Archived")
       ?.projectId
-  const [tab, setTab] = useState<Tab>("active")
+  const [tab, setTab] = useState<Tab>("toReach")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const projectGoals = useProjectGoals(projectId)
   const goalActions = useGoalActions()
@@ -45,13 +46,24 @@ export function ProjectsPage() {
   const { result: insights } = usePlanInsights(projectId, projectGoals.goals)
 
   const allRows = projectGoals.goals.map(goalRowFromProjectMember)
-  const rows = allRows.filter((row) => matchesTab(row.status, tab))
+  const nonArchivedRows = allRows.filter((row) => row.status !== "Archived")
+  const attainmentByGoalId = useGoalAttainment(
+    nonArchivedRows.map((row) => row.goalId)
+  )
+  const isReached = (goalId: string) =>
+    attainmentByGoalId.get(goalId)?.reached ?? false
+  const rows =
+    tab === "archived"
+      ? allRows.filter((row) => row.status === "Archived")
+      : nonArchivedRows.filter(
+          (row) => isReached(row.goalId) === (tab === "reached")
+        )
   const counts = {
-    active: allRows.filter((row) => ACTIVE_STATUSES.includes(row.status))
-      .length,
-    completed: allRows.filter((row) => row.status === "Completed").length,
+    toReach: nonArchivedRows.filter((row) => !isReached(row.goalId)).length,
+    reached: nonArchivedRows.filter((row) => isReached(row.goalId)).length,
     archived: allRows.filter((row) => row.status === "Archived").length,
   }
+  const overviewMetrics = useGoalsOverviewMetrics(rows.map((row) => row.goalId))
 
   const handleMove = (goalId: string, direction: "up" | "down") => {
     if (!projectId) return
@@ -94,7 +106,7 @@ export function ProjectsPage() {
         <>
           <Tabs onValueChange={(value) => setTab(value as Tab)} value={tab}>
             <TabsList>
-              {(["active", "completed", "archived"] as const).map((value) => (
+              {(["toReach", "reached", "archived"] as const).map((value) => (
                 <TabsTrigger key={value} value={value}>
                   {t(`goals.tabs.${value}`)} ({counts[value]})
                 </TabsTrigger>
@@ -125,9 +137,10 @@ export function ProjectsPage() {
             <GoalsList
               actions={goalActions}
               estimates={insights.estimates}
+              metrics={overviewMetrics}
               onMove={handleMove}
               onView={setDetailGoalId}
-              reorderEnabled={tab === "active"}
+              reorderEnabled={tab === "toReach"}
               rows={rows}
             />
           )}
@@ -145,10 +158,4 @@ export function ProjectsPage() {
       />
     </div>
   )
-}
-
-function matchesTab(status: GoalStatus, tab: Tab) {
-  if (tab === "completed") return status === "Completed"
-  if (tab === "archived") return status === "Archived"
-  return ACTIVE_STATUSES.includes(status)
 }

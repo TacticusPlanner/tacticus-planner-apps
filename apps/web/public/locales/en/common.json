@@ -359,17 +359,14 @@
       "goals": "Goals",
       "projects": "Projects",
       "insights": "Insights",
-      "active": "Active",
-      "completed": "Completed",
+      "toReach": "Goals to reach",
+      "reached": "Reached goals",
       "archived": "Archived"
-    },
-    "view": {
-      "list": "List view",
-      "grid": "Grid view"
     },
     "columns": {
       "entity": "Character",
       "type": "Type",
+      "progress": "Progress",
       "status": "Status",
       "actions": "Actions",
       "estimate": "Est."
@@ -381,11 +378,18 @@
       "Completed": "Completed",
       "Archived": "Archived"
     },
+    "blocked": {
+      "label": "Blocked",
+      "reasons": {
+        "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
+        "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
+        "CatalogDataUnavailable": "Game data hasn't finished loading yet."
+      }
+    },
     "actions": {
       "openMenu": "Open goal actions",
       "pause": "Pause",
       "resume": "Resume",
-      "complete": "Mark complete",
       "archive": "Archive",
       "unarchive": "Restore from archive",
       "delete": "Delete",
@@ -417,6 +421,7 @@
       "name": "Name",
       "description": "Description",
       "color": "Color",
+      "customColor": "Custom color",
       "archive": "Archive project",
       "restore": "Restore project",
       "save": "Save project",
@@ -629,6 +634,14 @@
       "loadError": "Couldn't load this goal.",
       "saveError": "Couldn't save this goal.",
       "save": "Save changes",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "progressTitle": "Progress & target",
+      "blockersTitle": "Blockers",
+      "unsavedChangesTitle": "Discard unsaved changes?",
+      "unsavedChangesDescription": "You have unsaved changes to this goal. Closing now will discard them.",
+      "unsavedChangesConfirm": "Discard changes",
+      "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
       "unavailable": "Unavailable",
@@ -640,10 +653,22 @@
       "projectsRequired": "Select at least one project.",
       "farmingTitle": "Farming locations",
       "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
+      "farmingSummaryTitle": "Farming strategy",
+      "farmingSelected": "{{count}} location(s) selected",
+      "farmingAuto": "Automatic (least energy)",
       "shardsTitle": "Shards location",
       "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
       "none": "None"
+    },
+    "overview": {
+      "levelProgress": "Lv {{current}} → {{target}}",
+      "remaining": {
+        "upgrades": "{{count}} upgrades remaining",
+        "shards": "{{count}} shards remaining",
+        "mythicShards": "{{count}} mythic shards remaining",
+        "orbs": "{{count}} orbs remaining"
+      }
     },
     "insights": {
       "title": "Insights",

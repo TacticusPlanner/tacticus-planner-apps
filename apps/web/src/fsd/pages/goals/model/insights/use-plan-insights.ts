@@ -25,9 +25,11 @@ import {
 } from ".//use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 
-// Only these statuses represent resources the plan still needs to acquire — a completed/archived
-// goal's demand is done, mirroring goals-page.tsx's ACTIVE_TAB_STATUSES.
-const ACTIVE_STATUSES = new Set(["Draft", "Active", "Paused"])
+// Only these statuses represent resources the plan still needs to acquire — an archived goal's
+// demand is done. A goal that's already reached its target (see `model/attainment/`) drops out of
+// the cost totals on its own merit: `calculateGoalResourceNeed`/`calculateGoalFarmingStages`
+// naturally return no need once the target's synced state is met, for every costed goal kind.
+const ACTIVE_STATUSES = new Set(["Active", "Paused"])
 
 type FetchState =
   | { status: "idle" }

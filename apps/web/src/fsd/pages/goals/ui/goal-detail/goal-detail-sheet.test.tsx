@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -21,6 +22,40 @@ vi.mock("@azure/msal-react", () => ({
     instance: { getActiveAccount: () => account },
   }),
   useIsAuthenticated: () => true,
+}))
+
+vi.mock("dexie-react-hooks", () => ({
+  useLiveQuery: (
+    querier: () => unknown,
+    deps: unknown[] = [],
+    defaultResult?: unknown
+  ) => {
+    const [value, setValue] = useState<unknown>(defaultResult)
+    useEffect(() => {
+      const result = querier()
+      if (result instanceof Promise) {
+        let active = true
+        void result.then((resolved) => {
+          if (active) setValue(resolved)
+        })
+        return () => {
+          active = false
+        }
+      }
+      setValue(result)
+      return undefined
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, deps)
+    return value
+  },
+}))
+
+vi.mock("@workspace/player-data/queries", () => ({
+  getPlayerCharacters: () => [],
+  getPlayerMows: () => [],
+  getInventoryUpgrades: () => [],
+  getPlayerInventoryItems: () => [],
+  getInventoryShard: () => Promise.resolve(undefined),
 }))
 
 vi.mock("@/entities/goal", () => ({
@@ -68,6 +103,10 @@ vi.mock("../../model/shared/use-goal-catalog", () => ({
         },
       ],
     ]),
+    mowsById: new Map(),
+    ascensionCostsById: new Map(),
+    unlockShardCostsById: new Map(),
+    getCharacter: () => undefined,
   }),
 }))
 
@@ -176,6 +215,11 @@ function renderSheet(
   )
 }
 
+async function enterEditMode(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(await screen.findByTestId("goal-detail-edit"))
+  await screen.findByTestId("goal-detail-edit-form")
+}
+
 describe("GoalDetailSheet", () => {
   beforeEach(() => {
     getGoal
@@ -201,7 +245,7 @@ describe("GoalDetailSheet", () => {
     })
   })
 
-  it("renders details, validates farming overrides, and saves edits", async () => {
+  it("defaults to view mode with read-only details, then saves edits", async () => {
     const user = userEvent.setup()
     const onUpdated = vi.fn()
     renderSheet({ onUpdated })
@@ -223,6 +267,13 @@ describe("GoalDetailSheet", () => {
           )
       )
     ).toBeInTheDocument()
+    // View mode has no editable fields yet.
+    expect(
+      screen.queryByLabelText("goals.detail.notes")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText("goals.detail.save")).not.toBeInTheDocument()
+
+    await enterEditMode(user)
 
     const notes = screen.getByLabelText("goals.detail.notes")
     fireEvent.change(notes, { target: { value: " Updated note " } })
@@ -246,9 +297,37 @@ describe("GoalDetailSheet", () => {
     expect(onUpdated).toHaveBeenCalledOnce()
     // Project membership wasn't touched, so the goal-side membership call is skipped entirely.
     expect(updateGoalProjects).not.toHaveBeenCalled()
+    // Saving returns to view mode.
+    expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
+  })
 
-    await user.click(battle1)
-    expect(screen.getByRole("checkbox", { name: "battle-1" })).not.toBeChecked()
+  it("asks for confirmation before discarding unsaved edits on Cancel", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+    await enterEditMode(user)
+
+    const notes = screen.getByLabelText("goals.detail.notes")
+    fireEvent.change(notes, { target: { value: "Changed" } })
+
+    await user.click(screen.getByTestId("goal-detail-cancel"))
+    expect(
+      await screen.findByTestId("discard-changes-dialog")
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("discard-changes-confirm"))
+    expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
+  })
+
+  it("returns to view mode directly on Cancel when nothing changed", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+    await enterEditMode(user)
+
+    await user.click(screen.getByTestId("goal-detail-cancel"))
+    expect(
+      screen.queryByTestId("discard-changes-dialog")
+    ).not.toBeInTheDocument()
+    expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
   })
 
   it("renders blocked estimates and API load errors", async () => {
@@ -279,6 +358,7 @@ describe("GoalDetailSheet", () => {
     updateGoal.mockRejectedValueOnce(new Error("network"))
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
 
     await user.click(screen.getByText("goals.detail.save"))
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -296,6 +376,7 @@ describe("GoalDetailSheet", () => {
     const user = userEvent.setup()
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
 
     const eventPrep = await screen.findByRole("checkbox", {
       name: "Event Prep",
@@ -314,6 +395,7 @@ describe("GoalDetailSheet", () => {
   it("disables save and shows a validation message when every project is unchecked", async () => {
     const user = userEvent.setup()
     renderSheet()
+    await enterEditMode(user)
 
     const myGoals = await screen.findByRole("checkbox", {
       name: "My Goals (goals.create.projectActive)",
@@ -329,8 +411,10 @@ describe("GoalDetailSheet", () => {
 
   it("lets a Rank goal's farming strategy be changed, with no farm-location picker", async () => {
     getGoal.mockReset().mockResolvedValue(rankDetail)
+    const user = userEvent.setup()
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
 
     expect(screen.getByTestId("create-goal-farming-strategy")).toBeVisible()
     expect(
@@ -359,8 +443,10 @@ describe("GoalDetailSheet", () => {
 
   it("shows shard locations (not upgrade farm locations) for an Unlock goal", async () => {
     getGoal.mockReset().mockResolvedValue(unlockDetail)
+    const user = userEvent.setup()
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
 
     expect(screen.getByText("goals.detail.shardsTitle")).toBeInTheDocument()
     expect(
@@ -379,8 +465,10 @@ describe("GoalDetailSheet", () => {
 
   it("shows the current/target level for a Level goal, with no farming strategy or location picker", async () => {
     getGoal.mockReset().mockResolvedValue(levelDetail)
+    const user = userEvent.setup()
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
 
     const levelSummary = screen.getByTestId("goal-detail-level")
     expect(levelSummary).toHaveTextContent("goals.create.level.current: 31")

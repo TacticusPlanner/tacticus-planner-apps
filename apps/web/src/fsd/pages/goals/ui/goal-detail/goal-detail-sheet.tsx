@@ -7,9 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { rankAt } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
-import { Field, FieldLabel } from "@workspace/ui/components/field"
 import {
   Sheet,
   SheetContent,
@@ -19,26 +17,24 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Textarea } from "@workspace/ui/components/textarea"
 
-import {
-  goalQueries,
-  updateGoal,
-  updateGoalProjects,
-  type FarmingStrategy,
-} from "@/entities/goal"
+import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
-import { additionalTargetFromWire } from "../../model/estimate/rank-additional-target"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
-import { FarmingStrategyField } from "../create-goal/farming-strategy-field"
-import { GoalEstimateSection } from ".//goal-estimate-section"
-import { GoalLevelSummary } from "../create-goal/goal-level-summary"
-import { GoalLocationsField } from "../create-goal/goal-locations-field"
-import { GoalProjectsField } from "../projects/goal-projects-field"
-import { StatusBadge } from "../shared/status-badge"
+import { GoalProgressDisplay, GoalProjectBadges } from "../shared/goal-visuals"
+import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
+import { DiscardChangesDialog } from ".//discard-changes-dialog"
+import {
+  GoalDetailEditForm,
+  type GoalDetailDraft,
+} from ".//goal-detail-edit-form"
+import { GoalDetailView } from ".//goal-detail-view"
+
+type Mode = "view" | "edit"
 
 export function GoalDetailSheet({
   goalId,
@@ -57,13 +53,13 @@ export function GoalDetailSheet({
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const { getEntityName, upgradesById, charactersById } = useGoalCatalog()
-  const [draftState, setDraftState] = useState<{
-    key: string
-    notes: string
-    selectedLocations: string[]
-    selectedProjectIds: string[]
-    farmingStrategy: FarmingStrategy
-  } | null>(null)
+  const [mode, setMode] = useState<Mode>("view")
+  const [confirmAction, setConfirmAction] = useState<"cancel" | "close" | null>(
+    null
+  )
+  const [draftState, setDraftState] = useState<
+    (GoalDetailDraft & { key: string }) | null
+  >(null)
   const [saveError, setSaveError] = useState<{
     goalId: string
     message: string
@@ -93,10 +89,6 @@ export function GoalDetailSheet({
           selectedProjectIds: detail?.projectIds ?? [],
           farmingStrategy: detail?.config.farmingStrategy ?? "TotalUpgrades",
         }
-  const notes = draft.notes
-  const selectedLocations = draft.selectedLocations
-  const selectedProjectIds = draft.selectedProjectIds
-  const farmingStrategy = draft.farmingStrategy
 
   const projectsQuery = useQuery({
     ...projectQueries.list(),
@@ -104,12 +96,18 @@ export function GoalDetailSheet({
   })
   const projects = projectsQuery.data?.projects ?? []
 
+  const overviewMetrics = useGoalsOverviewMetrics(
+    goalId ? [goalId] : [],
+    goalId && estimate ? new Map([[goalId, estimate]]) : undefined
+  )
+  const metrics = goalId ? overviewMetrics.get(goalId) : undefined
+
   const updateMutation = useMutation({
     mutationFn: (request: {
       goalId: string
       notes: string | null
       farmingLocationIds: string[] | null
-      farmingStrategy: FarmingStrategy
+      farmingStrategy: GoalDetailDraft["farmingStrategy"]
     }) =>
       updateGoal(request.goalId, {
         notes: request.notes,
@@ -121,9 +119,7 @@ export function GoalDetailSheet({
         goalQueries.detail(updated.goalId).queryKey,
         updated
       )
-      await queryClient.invalidateQueries({
-        queryKey: goalQueries.lists(),
-      })
+      await queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
     },
   })
 
@@ -147,13 +143,39 @@ export function GoalDetailSheet({
       detail,
       upgradesById,
       charactersById,
-      selectedLocations
+      draft.selectedLocations
     )
 
-  const projectsValid = selectedProjectIds.length > 0
+  const projectsValid = draft.selectedProjectIds.length > 0
   const projectsChanged =
-    selectedProjectIds.length !== (detail?.projectIds.length ?? 0) ||
-    selectedProjectIds.some((id) => !detail?.projectIds.includes(id))
+    draft.selectedProjectIds.length !== (detail?.projectIds.length ?? 0) ||
+    draft.selectedProjectIds.some((id) => !detail?.projectIds.includes(id))
+  const hasUnsavedChanges =
+    mode === "edit" &&
+    !!detail &&
+    (draft.notes.trim() !== (detail.notes ?? "") ||
+      draft.farmingStrategy !== detail.config.farmingStrategy ||
+      projectsChanged ||
+      draft.selectedLocations.join(",") !==
+        (detail.config.farmingLocationIds ?? []).join(","))
+
+  const resetDraft = () => setDraftState(null)
+
+  const enterEdit = () => setMode("edit")
+  const requestLeaveEdit = () => {
+    if (hasUnsavedChanges) {
+      setConfirmAction("cancel")
+      return
+    }
+    resetDraft()
+    setMode("view")
+  }
+  const confirmDiscard = () => {
+    resetDraft()
+    setMode("view")
+    if (confirmAction === "close") onOpenChange(false)
+    setConfirmAction(null)
+  }
 
   const save = async () => {
     if (!detail || !isAuthenticated || !overrideValid || !projectsValid) return
@@ -161,21 +183,23 @@ export function GoalDetailSheet({
     try {
       await updateMutation.mutateAsync({
         goalId: detail.goalId,
-        notes: notes.trim() || null,
+        notes: draft.notes.trim() || null,
         farmingLocationIds:
           isRank || isLevel
             ? null
-            : selectedLocations.length > 0
-              ? selectedLocations
+            : draft.selectedLocations.length > 0
+              ? draft.selectedLocations
               : null,
-        farmingStrategy,
+        farmingStrategy: draft.farmingStrategy,
       })
       if (projectsChanged) {
         await updateProjectsMutation.mutateAsync({
           goalId: detail.goalId,
-          projectIds: selectedProjectIds,
+          projectIds: draft.selectedProjectIds,
         })
       }
+      resetDraft()
+      setMode("view")
       onUpdated()
     } catch (reason) {
       setSaveError({
@@ -196,8 +220,43 @@ export function GoalDetailSheet({
       ? saveError.message
       : null
 
+  const requestClose = (open: boolean) => {
+    if (open) return
+    if (hasUnsavedChanges) {
+      setConfirmAction("close")
+      return
+    }
+    resetDraft()
+    setMode("view")
+    onOpenChange(false)
+  }
+
+  const assignedProjects = detail
+    ? detail.projectIds
+        .map((projectId) => projects.find((p) => p.projectId === projectId))
+        .filter((project): project is (typeof projects)[number] => !!project)
+        .map((project) => ({
+          projectId: project.projectId,
+          name: project.name,
+          color: project.color,
+          isActivePlan: project.isActivePlan,
+        }))
+    : []
+
+  const farmingSummary = !detail
+    ? null
+    : isLevel
+      ? null
+      : isRank
+        ? t(`goals.create.farmingStrategy.${detail.config.farmingStrategy}`)
+        : (detail.config.farmingLocationIds?.length ?? 0) > 0
+          ? t("goals.detail.farmingSelected", {
+              count: detail.config.farmingLocationIds!.length,
+            })
+          : t("goals.detail.farmingAuto")
+
   return (
-    <Sheet open={!!goalId} onOpenChange={onOpenChange}>
+    <Sheet open={!!goalId} onOpenChange={requestClose}>
       <SheetContent
         className="overflow-y-auto"
         data-testid="goal-detail-sheet"
@@ -220,132 +279,94 @@ export function GoalDetailSheet({
           </p>
         ) : null}
         {detail ? (
-          <div className="grid gap-6 px-4 text-sm">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={detail.status} />
+          <>
+            <div className="grid gap-2 px-4 text-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge status={detail.status} />
+                <BlockedIndicator
+                  blockers={
+                    metrics?.blockers ?? { reasons: [], isBlocked: false }
+                  }
+                />
+              </div>
+              <GoalProgressDisplay
+                progress={metrics?.progress ?? { kind: "Unknown" }}
+              />
+              {assignedProjects.length > 0 ? (
+                <GoalProjectBadges projects={assignedProjects} />
+              ) : null}
             </div>
 
-            <GoalEstimateSection estimate={estimate} isolated={isolated} />
-
-            <section className="grid gap-2">
-              <h3 className="font-semibold">
-                {t("goals.detail.dependenciesTitle")}
-              </h3>
-              {dependencies.length > 0 ? (
-                dependencies.map((item) => (
-                  <p key={item.goalId}>
-                    {getEntityName(item.entityType, item.entityId)} ·{" "}
-                    {t(`goals.create.goalTypes.${item.goalType}`)}
-                  </p>
-                ))
-              ) : (
-                <p className="text-muted-foreground">
-                  {t("goals.detail.none")}
-                </p>
-              )}
-            </section>
-
-            <section className="grid gap-2">
-              <h3 className="font-semibold">
-                {t("goals.detail.historyTitle")}
-              </h3>
-              <ol className="grid gap-1">
-                {detail.events.map((event, index) => (
-                  <li key={`${event.at}-${index}`}>
-                    {event.type} · {new Date(event.at).toLocaleString()}
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            <Field>
-              <FieldLabel htmlFor="goal-notes">
-                {t("goals.detail.notes")}
-              </FieldLabel>
-              <Textarea
-                id="goal-notes"
-                maxLength={200}
-                value={notes}
-                onChange={(event) =>
-                  setDraftState({ ...draft, notes: event.target.value })
+            {mode === "view" ? (
+              <GoalDetailView
+                assignedProjects={assignedProjects}
+                blockers={
+                  metrics?.blockers ?? { reasons: [], isBlocked: false }
                 }
+                dependencies={dependencies}
+                detail={detail}
+                estimate={estimate}
+                farmingSummary={farmingSummary}
+                getEntityName={getEntityName}
+                isolated={isolated}
+                progress={metrics?.progress ?? { kind: "Unknown" }}
+                remaining={metrics?.remaining ?? null}
               />
-              <span className="text-xs text-muted-foreground">
-                {notes.length}/200
-              </span>
-            </Field>
-
-            <GoalProjectsField
-              projects={projects}
-              selectedProjectIds={selectedProjectIds}
-              projectsValid={projectsValid}
-              onToggle={(projectId, checked) =>
-                setDraftState({
-                  ...draft,
-                  selectedProjectIds: checked
-                    ? [...selectedProjectIds, projectId]
-                    : selectedProjectIds.filter((id) => id !== projectId),
-                })
-              }
-            />
-
-            {isRank && detail.config.rank ? (
-              <FarmingStrategyField
-                abilityActiveEnd={0}
-                abilityActiveStart={0}
-                abilityPassiveEnd={0}
-                abilityPassiveStart={0}
-                context="rank"
-                farmingStrategy={farmingStrategy}
-                onFarmingStrategyChange={(value) =>
-                  setDraftState({ ...draft, farmingStrategy: value })
-                }
-                rankAdditionalTarget={additionalTargetFromWire(
-                  rankAt(detail.config.rank.end),
-                  detail.config.rank
-                )}
-                rankEnd={rankAt(detail.config.rank.end)}
-                rankStart={rankAt(detail.config.rank.start)}
-              />
-            ) : null}
-
-            {isLevel && detail.config.level ? (
-              <GoalLevelSummary target={detail.config.level} />
-            ) : null}
-
-            {!isRank && !isLevel ? (
-              <GoalLocationsField
+            ) : (
+              <GoalDetailEditForm
                 allLocations={allLocations}
+                detail={detail}
+                draft={draft}
+                isLevel={isLevel}
+                isRank={isRank}
                 isUnlock={isUnlock}
-                onToggle={(battleId, checked) =>
-                  setDraftState({
-                    ...draft,
-                    selectedLocations: checked
-                      ? [...selectedLocations, battleId]
-                      : selectedLocations.filter((id) => id !== battleId),
-                  })
+                onDraftChange={(next) =>
+                  setDraftState({ ...next, key: draftKey })
                 }
                 overrideValid={overrideValid}
-                selectedLocations={selectedLocations}
+                projects={projects}
+                projectsValid={projectsValid}
               />
-            ) : null}
-          </div>
+            )}
+          </>
         ) : null}
         <SheetFooter>
-          <Button
-            disabled={
-              !detail ||
-              updateMutation.isPending ||
-              updateProjectsMutation.isPending ||
-              !overrideValid ||
-              !projectsValid
-            }
-            onClick={() => void save()}
-          >
-            {t("goals.detail.save")}
-          </Button>
+          {mode === "view" ? (
+            <Button data-testid="goal-detail-edit" onClick={enterEdit}>
+              {t("goals.detail.edit")}
+            </Button>
+          ) : (
+            <>
+              <Button
+                data-testid="goal-detail-cancel"
+                onClick={requestLeaveEdit}
+                variant="outline"
+              >
+                {t("goals.detail.cancel")}
+              </Button>
+              <Button
+                data-testid="goal-detail-save"
+                disabled={
+                  !detail ||
+                  updateMutation.isPending ||
+                  updateProjectsMutation.isPending ||
+                  !overrideValid ||
+                  !projectsValid
+                }
+                onClick={() => void save()}
+              >
+                {t("goals.detail.save")}
+              </Button>
+            </>
+          )}
         </SheetFooter>
       </SheetContent>
+
+      <DiscardChangesDialog
+        onDiscard={confirmDiscard}
+        onKeepEditing={() => setConfirmAction(null)}
+        open={confirmAction !== null}
+      />
     </Sheet>
   )
 }

@@ -1,12 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  ArrowUpDown,
-  Filter,
-  Group,
-  LayoutGrid,
-  List as ListIcon,
-} from "lucide-react"
+import { ArrowUpDown, Filter, Group } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -14,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Select,
@@ -24,8 +19,10 @@ import {
 } from "@workspace/ui/components/select"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
-import type { GoalStatus } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 
+import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
+import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { goalRowFromSummary } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalEstimate } from "../../model/estimate/use-goal-estimate"
@@ -33,24 +30,24 @@ import { useGoals } from "../../model/goals-data/use-goals"
 import { useProjects } from "../../model/projects/use-projects"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
-import { GoalsGrid } from ".//goals-grid"
 import { GoalsList } from ".//goals-list"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 
-type Tab = "active" | "completed" | "archived"
-type View = "list" | "grid"
+// "toReach"/"reached" are computed from attainment (plan §3), never the goal's lifecycle `status` —
+// a goal can be Active or Paused in either group. "archived" stays a separate, status-driven tab
+// since archiving is a user action, not something progression can satisfy.
+type Tab = "toReach" | "reached" | "archived"
 type Sort = "entity" | "type" | "status" | "updated"
 type Group = "none" | "unit" | "type"
 
-const ACTIVE_TAB_STATUSES: GoalStatus[] = ["Active", "Paused"]
-
 /**
- * Complete cross-project goals view. Project planning and ordering live on the routed Projects tab.
+ * Complete cross-project goals view (plan §1: list on desktop, cards on mobile — no view switcher).
+ * Project planning and ordering live on the routed Projects tab.
  */
 export function GoalsPage() {
   const { t } = useTranslation()
-  const [tab, setTab] = useState<Tab>("active")
-  const [view, setView] = useState<View>("list")
+  const isMobile = useIsMobile()
+  const [tab, setTab] = useState<Tab>("toReach")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState("all")
   const [sort, setSort] = useState<Sort>("updated")
@@ -64,53 +61,62 @@ export function GoalsPage() {
   const selectedGoals = tab === "archived" ? archivedGoals : nonArchivedGoals
   const refreshCurrentView = selectedGoals.retry
 
+  const nonArchivedGoalIds =
+    nonArchivedGoals.fetchState.status === "success"
+      ? nonArchivedGoals.fetchState.goals.map((goal) => goal.goalId)
+      : []
+  // Drives the "Goals to reach" / "Reached goals" split (plan §3) — computed from synced player
+  // progression, not the goal's lifecycle `status`. Archived goals are excluded: attainment isn't
+  // meaningful once a goal has been taken out of active planning.
+  const attainmentByGoalId = useGoalAttainment(nonArchivedGoalIds)
+  const isReached = (goalId: string) =>
+    attainmentByGoalId.get(goalId)?.reached ?? false
+
   const goalActions = useGoalActions()
   const { estimate: detailEstimate } = useGoalEstimate(detailGoalId)
-  const baseRows =
-    selectedGoals.fetchState.status === "success"
-      ? selectedGoals.fetchState.goals
-          .filter((goal) => tab === "archived" || matchesTab(goal.status, tab))
-          .map((goal) =>
-            goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
-          )
-      : []
 
-  const rows = baseRows
-    .filter((row) => goalType === "all" || row.goalType === goalType)
-    .sort((left, right) => {
-      if (sort === "entity")
-        return getEntityName(left.entityType, left.entityId).localeCompare(
-          getEntityName(right.entityType, right.entityId)
-        )
-      if (sort === "type") return left.goalType.localeCompare(right.goalType)
-      if (sort === "status") return left.status.localeCompare(right.status)
-      if (sort === "updated")
-        return right.updatedAt.localeCompare(left.updatedAt)
-      return 0
-    })
-  const countSourceRows = [
-    ...(nonArchivedGoals.fetchState.status === "success"
+  const nonArchivedRows =
+    nonArchivedGoals.fetchState.status === "success"
       ? nonArchivedGoals.fetchState.goals.map((goal) =>
           goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
         )
-      : []),
-    ...(archivedGoals.fetchState.status === "success"
+      : []
+  const archivedRows =
+    archivedGoals.fetchState.status === "success"
       ? archivedGoals.fetchState.goals
           .filter((goal) => goal.status === "Archived")
           .map((goal) => goalRowFromSummary(goal))
-      : []),
-  ]
-  const filteredCountRows = countSourceRows.filter(
+      : []
+  const filteredNonArchivedRows = nonArchivedRows.filter(
     (row) => goalType === "all" || row.goalType === goalType
   )
+  const filteredArchivedRows = archivedRows.filter(
+    (row) => goalType === "all" || row.goalType === goalType
+  )
+
+  const baseRows =
+    tab === "archived"
+      ? filteredArchivedRows
+      : filteredNonArchivedRows.filter(
+          (row) => isReached(row.goalId) === (tab === "reached")
+        )
+
+  const rows = [...baseRows].sort((left, right) => {
+    if (sort === "entity")
+      return getEntityName(left.entityType, left.entityId).localeCompare(
+        getEntityName(right.entityType, right.entityId)
+      )
+    if (sort === "type") return left.goalType.localeCompare(right.goalType)
+    if (sort === "status") return left.status.localeCompare(right.status)
+    if (sort === "updated") return right.updatedAt.localeCompare(left.updatedAt)
+    return 0
+  })
   const tabCounts = {
-    active: filteredCountRows.filter((row) =>
-      ACTIVE_TAB_STATUSES.includes(row.status)
-    ).length,
-    completed: filteredCountRows.filter((row) => row.status === "Completed")
+    toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
       .length,
-    archived: filteredCountRows.filter((row) => row.status === "Archived")
+    reached: filteredNonArchivedRows.filter((row) => isReached(row.goalId))
       .length,
+    archived: filteredArchivedRows.length,
   }
   const groupKey = (row: (typeof rows)[number]) =>
     group === "unit"
@@ -122,6 +128,9 @@ export function GoalsPage() {
     key,
     rows: rows.filter((row) => groupKey(row) === key),
   }))
+  // Progress bar + remaining-resource summary per visible row (plan §2) — scoped to only the rows
+  // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
+  const overviewMetrics = useGoalsOverviewMetrics(rows.map((row) => row.goalId))
 
   const isLoading = selectedGoals.isLoading
   const fetchError =
@@ -130,57 +139,51 @@ export function GoalsPage() {
       : null
 
   const showPristineEmptyState =
-    tab === "active" && !isLoading && !fetchError && rows.length === 0
+    tab === "toReach" && !isLoading && !fetchError && rows.length === 0
+
+  const goalTypeLabel =
+    goalType === "all"
+      ? t("goals.filters.allTypes")
+      : t(`goals.create.goalTypes.${goalType as GoalKind}`)
+  const sortLabel = t(`goals.filters.sort.${sort}`)
+  const groupLabel =
+    group === "none"
+      ? t("goals.filters.groupNone")
+      : group === "unit"
+        ? t("goals.filters.groupByUnit")
+        : t("goals.filters.groupByType")
 
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Tabs onValueChange={(value) => setTab(value as Tab)} value={tab}>
-          <TabsList>
-            <TabsTrigger data-testid="goals-tab-active" value="active">
-              {t("goals.tabs.active")}
-              {` (${tabCounts.active})`}
-            </TabsTrigger>
-            <TabsTrigger data-testid="goals-tab-completed" value="completed">
-              {t("goals.tabs.completed")}
-              {` (${tabCounts.completed})`}
-            </TabsTrigger>
-            <TabsTrigger data-testid="goals-tab-archived" value="archived">
-              {t("goals.tabs.archived")}
-              {` (${tabCounts.archived})`}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+      <Tabs onValueChange={(value) => setTab(value as Tab)} value={tab}>
+        <TabsList>
+          <TabsTrigger data-testid="goals-tab-to-reach" value="toReach">
+            {t("goals.tabs.toReach")}
+            {` (${tabCounts.toReach})`}
+          </TabsTrigger>
+          <TabsTrigger data-testid="goals-tab-reached" value="reached">
+            {t("goals.tabs.reached")}
+            {` (${tabCounts.reached})`}
+          </TabsTrigger>
+          <TabsTrigger data-testid="goals-tab-archived" value="archived">
+            {t("goals.tabs.archived")}
+            {` (${tabCounts.archived})`}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
-        <div className="flex items-center gap-1">
-          <Button
-            aria-label={t("goals.view.list")}
-            data-testid="goals-view-list"
-            onClick={() => setView("list")}
-            size="sm"
-            variant={view === "list" ? "secondary" : "ghost"}
-          >
-            <ListIcon />
-            {t("goals.view.list")}
-          </Button>
-          <Button
-            aria-label={t("goals.view.grid")}
-            data-testid="goals-view-grid"
-            onClick={() => setView("grid")}
-            size="sm"
-            variant={view === "grid" ? "secondary" : "ghost"}
-          >
-            <LayoutGrid />
-            {t("goals.view.grid")}
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-[12rem_12rem_auto] md:items-center">
+      {/* Filter, sort, and grouping stay in a single row on every viewport (plan §1's mobile-controls
+          requirement) — on mobile the triggers drop their text label down to just the leading icon,
+          keeping the row compact; the full label is still available via `aria-label` and the open
+          dropdown's option list always shows full text regardless of viewport. */}
+      <div className="flex items-center gap-2">
         <Select onValueChange={setGoalType} value={goalType}>
-          <SelectTrigger data-testid="goals-type-filter">
+          <SelectTrigger
+            aria-label={goalTypeLabel}
+            data-testid="goals-type-filter"
+          >
             <Filter />
-            <SelectValue />
+            {isMobile ? null : <SelectValue />}
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
@@ -201,9 +204,9 @@ export function GoalsPage() {
           </SelectContent>
         </Select>
         <Select onValueChange={(value) => setSort(value as Sort)} value={sort}>
-          <SelectTrigger data-testid="goals-sort">
+          <SelectTrigger aria-label={sortLabel} data-testid="goals-sort">
             <ArrowUpDown />
-            <SelectValue />
+            {isMobile ? null : <SelectValue />}
           </SelectTrigger>
           <SelectContent>
             {(["entity", "type", "status", "updated"] as const).map((value) => (
@@ -217,9 +220,9 @@ export function GoalsPage() {
           onValueChange={(value) => setGroup(value as Group)}
           value={group}
         >
-          <SelectTrigger data-testid="goals-group-by">
+          <SelectTrigger aria-label={groupLabel} data-testid="goals-group-by">
             <Group />
-            <SelectValue />
+            {isMobile ? null : <SelectValue />}
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="none">{t("goals.filters.groupNone")}</SelectItem>
@@ -289,20 +292,13 @@ export function GoalsPage() {
                     )}
               </h2>
             ) : null}
-            {view === "list" ? (
-              <GoalsList
-                actions={goalActions}
-                onView={setDetailGoalId}
-                reorderEnabled={false}
-                rows={rowGroup.rows}
-              />
-            ) : (
-              <GoalsGrid
-                actions={goalActions}
-                onView={setDetailGoalId}
-                rows={rowGroup.rows}
-              />
-            )}
+            <GoalsList
+              actions={goalActions}
+              metrics={overviewMetrics}
+              onView={setDetailGoalId}
+              reorderEnabled={false}
+              rows={rowGroup.rows}
+            />
           </section>
         ) : null
       )}
@@ -316,14 +312,4 @@ export function GoalsPage() {
       />
     </div>
   )
-}
-
-function matchesTab(status: GoalStatus, tab: Tab): boolean {
-  if (tab === "completed") {
-    return status === "Completed"
-  }
-  if (tab === "archived") {
-    return status === "Archived"
-  }
-  return ACTIVE_TAB_STATUSES.includes(status)
 }

@@ -108,7 +108,10 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
+  getPlayerCharacters: () => [],
+  getPlayerMows: () => [],
   getInventoryUpgrades: () => undefined,
+  getPlayerInventoryItems: () => [],
   getInventoryShard: () => Promise.resolve(undefined),
   getLiveProgress: () => undefined,
 }))
@@ -217,14 +220,14 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("filters out the active goal when switching to the Completed tab", async () => {
+  it("filters out the active goal when switching to the Reached tab", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const user = userEvent.setup()
     render(<GoalsPage />)
 
     await screen.findByTestId("goals-list-table")
 
-    await user.click(screen.getByTestId("goals-tab-completed"))
+    await user.click(screen.getByTestId("goals-tab-reached"))
 
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
@@ -243,19 +246,32 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
     await user.click(screen.getByTestId("goals-tab-archived"))
 
-    expect(screen.getByTestId("goals-tab-active")).toHaveTextContent("(1)")
+    expect(screen.getByTestId("goals-tab-to-reach")).toHaveTextContent("(1)")
     expect(screen.getByTestId("goals-tab-archived")).toHaveTextContent("(1)")
   })
 
-  it("switches to grid view", async () => {
+  it("opens the goal detail sheet when clicking anywhere on the row", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
+    const user = userEvent.setup()
     render(<GoalsPage />)
 
-    await screen.findByTestId("goals-list-table")
+    const row = await screen.findByTestId("goal-row")
+    await user.click(row)
 
-    fireEvent.click(screen.getByTestId("goals-view-grid"))
+    expect(await screen.findByTestId("goal-detail-sheet")).toBeInTheDocument()
+  })
 
-    expect(await screen.findByTestId("goals-grid")).toBeInTheDocument()
+  it("does not open the goal detail sheet when using the row actions menu", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    const user = userEvent.setup()
+    render(<GoalsPage />)
+
+    await screen.findByTestId("goal-row")
+    await user.click(
+      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    )
+
+    expect(screen.queryByTestId("goal-detail-sheet")).not.toBeInTheDocument()
   })
 
   it("groups goals by goal type", async () => {

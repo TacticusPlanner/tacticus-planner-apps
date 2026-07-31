@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { ArrowRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   ASSET_BASE_PATH,
@@ -15,11 +16,15 @@ import {
 } from "@workspace/ui/components/card"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
+import { Progress } from "@workspace/ui/components/progress"
 
 import type { GoalKind } from "@/entities/goal"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, ProgressionBadge, RankBadge } from "@/shared/ui"
 
+import type { ResourceNeed } from "../../model/estimate/progression-cost-calc"
+import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
+import { ProjectColorDot } from ".//project-color-dot"
 
 const genericUpgradeIcon = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_generic.png`
 const genericLevelIcon = `${ASSET_BASE_PATH}/misc/xp_generic.png`
@@ -185,15 +190,126 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
     >
       {projects.map((project) => (
         <Badge className="gap-1" key={project.projectId} variant="secondary">
-          <span
-            aria-hidden="true"
-            className="size-2 rounded-full bg-current"
-            style={project.color ? { color: project.color } : undefined}
-          />
+          <ProjectColorDot color={project.color} />
           {project.name}
           {project.isActivePlan ? ` · ${t("goals.project.active")}` : ""}
         </Badge>
       ))}
     </div>
+  )
+}
+
+/** Current → target state plus a progress bar, formatted per `GoalProgress`'s kind (plan §2) — reuses
+ * `RankBadge`/`ProgressionBadge` for Rank/Ascension so a goal's target reads identically here and in
+ * the create-goal form; other kinds are plain numbers, since no icon/name exists for a raw level or
+ * shard count. Renders nothing for `Unknown` (player data for this goal hasn't synced yet). */
+export function GoalProgressDisplay({ progress }: { progress: GoalProgress }) {
+  const { t } = useTranslation()
+
+  if (progress.kind === "Unknown") return null
+
+  const currentTarget =
+    progress.kind === "Rank" ? (
+      <span className="flex items-center gap-1.5">
+        <RankBadge rank={progress.current} showLabel={false} />
+        <ArrowRight className="size-3.5 text-muted-foreground" />
+        <RankBadge rank={progress.target} showLabel={false} />
+      </span>
+    ) : progress.kind === "Ascension" ? (
+      <span className="flex items-center gap-1.5">
+        <ProgressionBadge value={progress.current} />
+        <ArrowRight className="size-3.5 text-muted-foreground" />
+        <ProgressionBadge value={progress.target} />
+      </span>
+    ) : progress.kind === "Ability" ? (
+      <span>
+        {t("goals.overview.levelProgress", {
+          current:
+            progress.targetActive - progress.currentActive >
+            progress.targetPassive - progress.currentPassive
+              ? progress.currentActive
+              : progress.currentPassive,
+          target:
+            progress.targetActive - progress.currentActive >
+            progress.targetPassive - progress.currentPassive
+              ? progress.targetActive
+              : progress.targetPassive,
+        })}
+      </span>
+    ) : progress.kind === "Unlock" ? (
+      <span>
+        {t("goals.create.unlock.ownedOfTotal", {
+          owned: progress.owned,
+          total: progress.required,
+        })}
+      </span>
+    ) : progress.kind === "Level" || progress.kind === "UpgradeItem" ? (
+      <span>
+        {t("goals.overview.levelProgress", {
+          current: progress.current,
+          target: progress.target,
+        })}
+      </span>
+    ) : null
+
+  return (
+    <div className="grid gap-1" data-testid="goal-progress">
+      {currentTarget}
+      {progress.ratio !== null ? (
+        <Progress
+          className="h-1.5"
+          data-testid="goal-progress-bar"
+          value={progress.ratio * 100}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+/** "N upgrades/shards/orbs remaining" (plan §2) — a coarse count, not the full per-material
+ * breakdown (that lives in the detail view's Estimate section). `null` (uncosted kind, or nothing
+ * left) renders nothing. */
+export function GoalRemainingSummary({
+  remaining,
+}: {
+  remaining: ResourceNeed | null
+}) {
+  const { t } = useTranslation()
+  if (!remaining) return null
+
+  const upgradeCount = remaining.upgrades.reduce(
+    (sum, need) => sum + need.count,
+    0
+  )
+  const orbCount = Object.values(remaining.orbsByType).reduce(
+    (sum, count) => sum + (count ?? 0),
+    0
+  )
+  const parts = [
+    upgradeCount > 0
+      ? t("goals.overview.remaining.upgrades", { count: upgradeCount })
+      : null,
+    remaining.shards > 0
+      ? t("goals.overview.remaining.shards", { count: remaining.shards })
+      : null,
+    remaining.mythicShards > 0
+      ? t("goals.overview.remaining.mythicShards", {
+          count: remaining.mythicShards,
+        })
+      : null,
+    orbCount > 0
+      ? t("goals.overview.remaining.orbs", { count: orbCount })
+      : null,
+  ].filter((part): part is string => part !== null)
+
+  if (parts.length === 0) return null
+
+  return (
+    <p
+      className="text-xs text-muted-foreground"
+      data-testid="goal-remaining-summary"
+    >
+      {parts.join(" · ")}
+    </p>
   )
 }
