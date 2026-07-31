@@ -18,6 +18,7 @@ import type { UnitId } from "@workspace/game-domain"
 
 import { useCreateEquipmentGoalForm } from "../../model/goal-creation-form/use-create-equipment-goal-form"
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
+import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { EquipmentGoalFields } from ".//equipment-goal-fields"
 import { UnitGoalFormFields } from ".//unit-goal-form-fields"
 
@@ -28,6 +29,7 @@ type CreateGoalSheetProps = {
   onOpenChange: (open: boolean) => void
   /** Called after a successful, non-"create another" save so the caller can refresh its list. */
   onCreated: () => void
+  prefill?: CreateGoalPrefill
 }
 
 /**
@@ -44,10 +46,11 @@ export function CreateGoalSheet({
   open,
   onOpenChange,
   onCreated,
+  prefill,
 }: CreateGoalSheetProps) {
   const { t } = useTranslation()
   const [pill, setPill] = useState<Pill>("Unit")
-  const form = useCreateGoalForm({ open, onOpenChange, onCreated })
+  const form = useCreateGoalForm({ open, onOpenChange, onCreated, prefill })
   const equipmentForm = useCreateEquipmentGoalForm({
     open,
     onOpenChange,

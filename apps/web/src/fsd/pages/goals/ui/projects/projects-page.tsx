@@ -141,6 +141,7 @@ export function ProjectsPage() {
               actions={goalActions}
               estimates={insights.estimates}
               metrics={overviewMetrics}
+              potentialProgress={insights.potentialProgressByGoalId}
               onMove={handleMove}
               onView={setDetailGoalId}
               reorderEnabled={tab === "toReach"}
@@ -156,8 +157,14 @@ export function ProjectsPage() {
         }
         goalId={detailGoalId}
         isolated={false}
+        onGoalChange={setDetailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={projectGoals.retry}
+        potentialRatio={
+          detailGoalId
+            ? insights.potentialProgressByGoalId.get(detailGoalId)
+            : undefined
+        }
       />
     </div>
   )

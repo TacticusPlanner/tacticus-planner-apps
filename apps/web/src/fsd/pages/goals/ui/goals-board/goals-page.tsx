@@ -162,9 +162,9 @@ export function GoalsPage() {
   // A stable purpose name for each filter's accessible name, not the current value alone — a
   // screen-reader user on mobile (where the visible `SelectValue` is hidden) would otherwise hear
   // just "Rank" with no indication of what that value is filtering/sorting/grouping by.
-  const typeFilterAriaLabel = `${t("goals.filters.typeFilterLabel")}: ${goalTypeLabel}`
-  const sortAriaLabel = `${t("goals.filters.sortByLabel")}: ${sortLabel}`
-  const groupAriaLabel = `${t("goals.filters.groupByLabel")}: ${groupLabel}`
+  const typeFilterAriaLabel = t("goals.filters.typeFilterLabel")
+  const sortAriaLabel = t("goals.filters.sortByLabel")
+  const groupAriaLabel = t("goals.filters.groupByLabel")
 
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
@@ -192,11 +192,15 @@ export function GoalsPage() {
       <div className="flex items-center gap-2">
         <Select onValueChange={setGoalType} value={goalType}>
           <SelectTrigger
+            aria-describedby="goals-type-filter-value"
             aria-label={typeFilterAriaLabel}
             data-testid="goals-type-filter"
           >
             <Filter />
             {isMobile ? null : <SelectValue />}
+            <span className="sr-only" id="goals-type-filter-value">
+              {goalTypeLabel}
+            </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
@@ -217,9 +221,16 @@ export function GoalsPage() {
           </SelectContent>
         </Select>
         <Select onValueChange={(value) => setSort(value as Sort)} value={sort}>
-          <SelectTrigger aria-label={sortAriaLabel} data-testid="goals-sort">
+          <SelectTrigger
+            aria-describedby="goals-sort-value"
+            aria-label={sortAriaLabel}
+            data-testid="goals-sort"
+          >
             <ArrowUpDown />
             {isMobile ? null : <SelectValue />}
+            <span className="sr-only" id="goals-sort-value">
+              {sortLabel}
+            </span>
           </SelectTrigger>
           <SelectContent>
             {(["entity", "type", "status", "updated"] as const).map((value) => (
@@ -234,11 +245,15 @@ export function GoalsPage() {
           value={group}
         >
           <SelectTrigger
+            aria-describedby="goals-group-value"
             aria-label={groupAriaLabel}
             data-testid="goals-group-by"
           >
             <GroupIcon />
             {isMobile ? null : <SelectValue />}
+            <span className="sr-only" id="goals-group-value">
+              {groupLabel}
+            </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="none">{t("goals.filters.groupNone")}</SelectItem>
@@ -323,6 +338,7 @@ export function GoalsPage() {
         estimate={detailEstimate}
         isolated
         goalId={detailGoalId}
+        onGoalChange={setDetailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={refreshCurrentView}
       />

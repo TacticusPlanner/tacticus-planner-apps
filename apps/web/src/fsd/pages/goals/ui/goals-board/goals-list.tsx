@@ -1,4 +1,4 @@
-import type { KeyboardEvent, SyntheticEvent } from "react"
+import type { SyntheticEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown, ChevronUp, LockKeyhole } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -42,30 +42,18 @@ type Props = {
   estimates?: ReadonlyMap<string, EstimateOutcome>
   /** Progress + remaining-resource info per goal id (plan §2) — absent renders neither. */
   metrics?: ReadonlyMap<string, GoalOverviewMetrics>
+  potentialProgress?: ReadonlyMap<string, number>
 }
 
-/** Stops a click/keyboard activation on an inner control (the actions menu, reorder buttons) from
+/** Stops activation on an inner control from
  * also bubbling up to the row/card's own "open detail" handler. */
 function stopRowNavigation(event: SyntheticEvent<HTMLElement>): void {
   event.stopPropagation()
 }
 
-/** Enter/Space activates the row/card's own "open detail" handler — but only when the row/card
- * itself has focus, not when a nested control (button, menu item) does; those already handle their
- * own key activation and stop the event from reaching here (see `stopRowNavigation`). */
-function handleRowKeyDown(
-  event: KeyboardEvent<HTMLElement>,
-  onOpen: () => void
-): void {
-  if (event.target !== event.currentTarget) return
-  if (event.key !== "Enter" && event.key !== " ") return
-  event.preventDefault()
-  onOpen()
-}
-
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
  * responsive split. The whole row/card is clickable (opens the goal's detail view); the actions menu
- * and reorder buttons stop that click/keydown from bubbling so they keep working independently.
+ * and nested buttons stop activation from bubbling so they keep working independently.
  * Reorder (up/down) is only rendered when `reorderEnabled` (single project + Active tab + list view,
  * per the Phase 3 scope notes). */
 export function GoalsList({
@@ -76,6 +64,7 @@ export function GoalsList({
   onView = () => undefined,
   estimates,
   metrics,
+  potentialProgress,
 }: Props) {
   const isMobile = useIsMobile()
 
@@ -88,6 +77,7 @@ export function GoalsList({
       actions={actions}
       estimates={estimates}
       metrics={metrics}
+      potentialProgress={potentialProgress}
       onMove={onMove}
       onView={onView}
       reorderEnabled={reorderEnabled}
@@ -98,6 +88,7 @@ export function GoalsList({
       actions={actions}
       estimates={estimates}
       metrics={metrics}
+      potentialProgress={potentialProgress}
       onMove={onMove}
       onView={onView}
       reorderEnabled={reorderEnabled}
@@ -142,6 +133,7 @@ function GoalsTable({
   onMove,
   estimates,
   metrics,
+  potentialProgress,
   onView = () => undefined,
 }: Props) {
   const { t } = useTranslation()
@@ -164,16 +156,10 @@ function GoalsTable({
       <TableBody>
         {rows.map((row, index) => (
           <TableRow
-            aria-label={getEntityName(row.entityType, row.entityId)}
             className="cursor-pointer"
             data-testid="goal-row"
             key={row.goalId}
             onClick={() => onView(row.goalId)}
-            onKeyDown={(event) =>
-              handleRowKeyDown(event, () => onView(row.goalId))
-            }
-            role="button"
-            tabIndex={0}
           >
             <TableCell className="font-medium">
               <div className="flex items-center gap-3">
@@ -183,9 +169,16 @@ function GoalsTable({
                   name={getEntityName(row.entityType, row.entityId)}
                 />
                 <div className="min-w-0">
-                  <p className="font-medium">
+                  <Button
+                    className="h-auto p-0 font-medium"
+                    onClick={(event) => {
+                      stopRowNavigation(event)
+                      onView(row.goalId)
+                    }}
+                    variant="link"
+                  >
                     {getEntityName(row.entityType, row.entityId)}
-                  </p>
+                  </Button>
                   <GoalProjectBadges projects={row.projects ?? []} />
                 </div>
               </div>
@@ -212,6 +205,7 @@ function GoalsTable({
             </TableCell>
             <TableCell className="min-w-40">
               <GoalProgressDisplay
+                potentialRatio={potentialProgress?.get(row.goalId)}
                 progress={
                   metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
                 }
@@ -281,6 +275,7 @@ function GoalsMobileCards({
   onMove,
   estimates,
   metrics,
+  potentialProgress,
   onView = () => undefined,
 }: Props) {
   const { t } = useTranslation()
@@ -290,16 +285,10 @@ function GoalsMobileCards({
     <ul className="flex flex-col gap-3" data-testid="goals-list-cards">
       {rows.map((row, index) => (
         <li
-          aria-label={getEntityName(row.entityType, row.entityId)}
           className="flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm"
           data-testid="goal-row"
           key={row.goalId}
           onClick={() => onView(row.goalId)}
-          onKeyDown={(event) =>
-            handleRowKeyDown(event, () => onView(row.goalId))
-          }
-          role="button"
-          tabIndex={0}
         >
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2">
@@ -310,9 +299,16 @@ function GoalsMobileCards({
                 name={getEntityName(row.entityType, row.entityId)}
               />
               <div className="min-w-0">
-                <p className="font-medium">
+                <Button
+                  className="h-auto p-0 font-medium"
+                  onClick={(event) => {
+                    stopRowNavigation(event)
+                    onView(row.goalId)
+                  }}
+                  variant="link"
+                >
                   {getEntityName(row.entityType, row.entityId)}
-                </p>
+                </Button>
                 <GoalProjectBadges projects={row.projects ?? []} />
               </div>
             </div>
@@ -330,6 +326,7 @@ function GoalsMobileCards({
             <EstimateCell estimate={estimates?.get(row.goalId)} />
           </div>
           <GoalProgressDisplay
+            potentialRatio={potentialProgress?.get(row.goalId)}
             progress={metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS}
           />
           <GoalRemainingSummary

@@ -488,6 +488,47 @@ describe("CreateGoalSheet", () => {
     expect(onCreated).toHaveBeenCalledTimes(1)
   })
 
+  it("applies a prerequisite prefill for the unit, required target, and project memberships", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone1",
+      progressionIndex: "Common:None",
+      appliedUpgradeSlots: [],
+      xpLevel: 31,
+      xp: 0,
+    })
+    listProjects.mockResolvedValue({
+      projects: [
+        { projectId: "proj-1", name: "One", isActivePlan: true },
+        { projectId: "proj-2", name: "Two", isActivePlan: false },
+      ],
+    })
+    render(
+      <CreateGoalSheet
+        onCreated={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        prefill={{
+          entityType: "Character",
+          entityId: "hero1" as never,
+          goalType: "Level",
+          requiredLevel: 42,
+          projectIds: ["proj-2"],
+        }}
+      />
+    )
+
+    expect(
+      await screen.findByTestId("create-goal-type-card-Level")
+    ).toBeVisible()
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-level-target")).toHaveTextContent(
+        "42"
+      )
+      expect(screen.getByTestId("create-goal-project-proj-2")).toBeChecked()
+      expect(screen.getByTestId("create-goal-project-proj-1")).not.toBeChecked()
+    })
+  })
+
   it("nets a Level goal's cost against owned XP books, hiding the cost preview once fully covered", async () => {
     getPlayerCharacter.mockResolvedValue({
       rank: "Stone1",

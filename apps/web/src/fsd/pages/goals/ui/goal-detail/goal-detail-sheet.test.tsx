@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const getGoal = vi.fn()
@@ -64,6 +65,10 @@ vi.mock("@/entities/goal", () => ({
       queryFn: () => getGoal(goalId),
       queryKey: ["goals", "detail", goalId],
     }),
+    list: () => ({
+      queryFn: () => Promise.resolve({ goals: [] }),
+      queryKey: ["goals", "list", { archived: false }],
+    }),
     lists: () => ["goals", "list"],
   },
   updateGoal: (...args: unknown[]) => updateGoal(...args),
@@ -122,6 +127,7 @@ vi.mock("@/shared/api", () => ({
 }))
 
 import { ApiError } from "@/shared/api"
+import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 
 import { GoalDetailSheet } from ".//goal-detail-sheet"
 
@@ -201,17 +207,27 @@ const levelDetail = {
 }
 
 function renderSheet(
-  props: Partial<Parameters<typeof GoalDetailSheet>[0]> = {}
+  props: Partial<Parameters<typeof GoalDetailSheet>[0]> = {},
+  queryClient?: QueryClient
 ) {
+  const sheet = (
+    <CreateGoalLauncherProvider onLaunch={vi.fn()}>
+      <GoalDetailSheet
+        estimate={{ date: "2026-01-08", days: 3, status: "Estimated" } as never}
+        goalId="goal-1"
+        isolated
+        onOpenChange={vi.fn()}
+        onUpdated={vi.fn()}
+        {...props}
+      />
+    </CreateGoalLauncherProvider>
+  )
   return render(
-    <GoalDetailSheet
-      estimate={{ date: "2026-01-08", days: 3, status: "Estimated" } as never}
-      goalId="goal-1"
-      isolated
-      onOpenChange={vi.fn()}
-      onUpdated={vi.fn()}
-      {...props}
-    />
+    queryClient ? (
+      <QueryClientProvider client={queryClient}>{sheet}</QueryClientProvider>
+    ) : (
+      sheet
+    )
   )
 }
 
@@ -301,6 +317,36 @@ describe("GoalDetailSheet", () => {
     expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
   })
 
+  it("preserves the editing draft when the same goal refetches with a new updatedAt", async () => {
+    const user = userEvent.setup()
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    let currentDetail = detail
+    getGoal.mockImplementation((goalId: string) =>
+      Promise.resolve(goalId === "dependency-1" ? dependency : currentDetail)
+    )
+    renderSheet({}, queryClient)
+    await enterEditMode(user)
+
+    fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      target: { value: "Unsaved draft" },
+    })
+    currentDetail = {
+      ...detail,
+      notes: "Server-side note",
+      updatedAt: "2026-02-01T00:00:00Z",
+    }
+    await queryClient.invalidateQueries({
+      queryKey: ["goals", "detail", "goal-1"],
+    })
+
+    await vi.waitFor(() => expect(getGoal).toHaveBeenCalledTimes(3))
+    expect(screen.getByLabelText("goals.detail.notes")).toHaveValue(
+      "Unsaved draft"
+    )
+  })
+
   it("asks for confirmation before discarding unsaved edits on Cancel", async () => {
     const user = userEvent.setup()
     renderSheet()
@@ -310,11 +356,9 @@ describe("GoalDetailSheet", () => {
     fireEvent.change(notes, { target: { value: "Changed" } })
 
     await user.click(screen.getByTestId("goal-detail-cancel"))
-    expect(
-      await screen.findByTestId("discard-changes-dialog")
-    ).toBeInTheDocument()
+    expect(await screen.findByTestId("confirmation-dialog")).toBeInTheDocument()
 
-    await user.click(screen.getByTestId("discard-changes-confirm"))
+    await user.click(screen.getByTestId("confirmation-dialog-confirm"))
     expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
   })
 
@@ -324,9 +368,7 @@ describe("GoalDetailSheet", () => {
     await enterEditMode(user)
 
     await user.click(screen.getByTestId("goal-detail-cancel"))
-    expect(
-      screen.queryByTestId("discard-changes-dialog")
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("confirmation-dialog")).not.toBeInTheDocument()
     expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
   })
 
@@ -340,12 +382,10 @@ describe("GoalDetailSheet", () => {
     fireEvent.change(notes, { target: { value: "Changed" } })
 
     await user.keyboard("{Escape}")
-    expect(
-      await screen.findByTestId("discard-changes-dialog")
-    ).toBeInTheDocument()
+    expect(await screen.findByTestId("confirmation-dialog")).toBeInTheDocument()
     expect(onOpenChange).not.toHaveBeenCalled()
 
-    await user.click(screen.getByTestId("discard-changes-confirm"))
+    await user.click(screen.getByTestId("confirmation-dialog-confirm"))
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 

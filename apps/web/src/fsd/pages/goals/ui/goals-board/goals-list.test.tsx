@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
@@ -171,8 +172,46 @@ describe("GoalsList", () => {
     }
   })
 
-  it("opens the goal detail via keyboard when the row itself is focused", async () => {
+  it("renders separate actual and potential progress for a project-scoped goal", async () => {
+    render(
+      <GoalsList
+        actions={stubActions}
+        metrics={
+          new Map([
+            [
+              "goal-1",
+              {
+                progress: {
+                  kind: "Rank",
+                  current: "Stone1",
+                  target: "Iron1",
+                  ratio: 0.25,
+                },
+                remaining: null,
+                blockers: { isBlocked: false, reasons: [] },
+              },
+            ],
+          ]) as never
+        }
+        potentialProgress={new Map([["goal-1", 0.75]])}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+
+    expect(await screen.findByTestId("goal-progress-bar")).toHaveAttribute(
+      "aria-valuetext",
+      "25%"
+    )
+    expect(screen.getByTestId("goal-potential-progress-bar")).toHaveAttribute(
+      "aria-valuetext",
+      "75%"
+    )
+  })
+
+  it("opens the goal detail via keyboard from the goal-name button", async () => {
     const onView = vi.fn()
+    const user = userEvent.setup()
     render(
       <GoalsList
         actions={stubActions}
@@ -182,10 +221,13 @@ describe("GoalsList", () => {
       />
     )
 
-    const row = await screen.findByTestId("goal-row")
-    row.focus()
-    expect(row).toHaveFocus()
-    fireEvent.keyDown(row, { key: "Enter" })
+    const nameButton = await screen.findByRole("button", { name: "Hero One" })
+    const row = screen.getByTestId("goal-row")
+    expect(screen.getByRole("row", { name: /Hero One/ })).toBe(row)
+    expect(row).not.toHaveAttribute("tabindex")
+    nameButton.focus()
+    expect(nameButton).toHaveFocus()
+    await user.keyboard("{Enter}")
 
     expect(onView).toHaveBeenCalledWith("goal-1")
   })

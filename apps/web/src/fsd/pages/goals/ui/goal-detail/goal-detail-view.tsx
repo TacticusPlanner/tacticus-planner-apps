@@ -1,9 +1,11 @@
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 
 import type { GoalDetail } from "@/entities/goal"
 
 import {
   blockerReasonText,
+  type BlockerReason,
   type GoalBlockers,
 } from "../../model/blockers/goal-blockers"
 import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
@@ -16,6 +18,11 @@ import {
   GoalRemainingSummary,
 } from "../shared/goal-visuals"
 import { GoalEstimateSection } from ".//goal-estimate-section"
+
+type MissingPrerequisiteReason = Extract<
+  BlockerReason,
+  { kind: "MissingLevelPrerequisite" | "MissingAscensionPrerequisite" }
+>
 
 /**
  * Read-only view mode (plan §5's default) — everything a user can learn about a goal without
@@ -33,6 +40,9 @@ export function GoalDetailView({
   getEntityName,
   assignedProjects,
   farmingSummary,
+  potentialRatio,
+  onCreatePrerequisite,
+  onViewGoal,
 }: {
   detail: GoalDetail
   estimate: EstimateOutcome | undefined
@@ -44,6 +54,9 @@ export function GoalDetailView({
   getEntityName: (entityType: string, entityId: string) => string
   assignedProjects: GoalProject[]
   farmingSummary: string | null
+  potentialRatio?: number
+  onCreatePrerequisite: (reason: MissingPrerequisiteReason) => void
+  onViewGoal: (goalId: string) => void
 }) {
   const { t } = useTranslation()
 
@@ -51,8 +64,17 @@ export function GoalDetailView({
     <div className="grid gap-6 px-4 text-sm" data-testid="goal-detail-view">
       <section className="grid gap-2">
         <h3 className="font-semibold">{t("goals.detail.progressTitle")}</h3>
-        <GoalProgressDisplay progress={progress} />
-        <GoalRemainingSummary remaining={remaining} />
+        {progress.kind === "Unknown" && remaining === null ? (
+          <p className="text-muted-foreground">{t("goals.detail.none")}</p>
+        ) : (
+          <>
+            <GoalProgressDisplay
+              potentialRatio={potentialRatio}
+              progress={progress}
+            />
+            <GoalRemainingSummary remaining={remaining} />
+          </>
+        )}
       </section>
 
       <GoalEstimateSection estimate={estimate} isolated={isolated} />
@@ -61,9 +83,40 @@ export function GoalDetailView({
         <h3 className="font-semibold">{t("goals.detail.blockersTitle")}</h3>
         {blockers.isBlocked ? (
           <ul className="grid gap-1 text-amber-700">
-            {blockers.reasons.map((reason, index) => (
-              <li key={index}>{blockerReasonText(t, reason)}</li>
-            ))}
+            {blockers.reasons.map((reason, index) => {
+              const missingPrerequisite =
+                reason.kind === "MissingLevelPrerequisite" ||
+                reason.kind === "MissingAscensionPrerequisite"
+                  ? reason
+                  : null
+              return (
+                <li className="grid justify-items-start gap-2" key={index}>
+                  <span>{blockerReasonText(t, reason)}</span>
+                  {missingPrerequisite ? (
+                    <>
+                      {missingPrerequisite.existingGoalId ? (
+                        <span className="text-xs">
+                          {t("goals.blocked.existingPrerequisiteGuidance")}
+                        </span>
+                      ) : null}
+                      <Button
+                        onClick={() =>
+                          missingPrerequisite.existingGoalId
+                            ? onViewGoal(missingPrerequisite.existingGoalId)
+                            : onCreatePrerequisite(missingPrerequisite)
+                        }
+                        size="xs"
+                        variant="outline"
+                      >
+                        {missingPrerequisite.existingGoalId
+                          ? t("goals.blocked.reviewPrerequisite")
+                          : t("goals.blocked.createPrerequisite")}
+                      </Button>
+                    </>
+                  ) : null}
+                </li>
+              )
+            })}
           </ul>
         ) : (
           <p className="text-muted-foreground">{t("goals.detail.none")}</p>

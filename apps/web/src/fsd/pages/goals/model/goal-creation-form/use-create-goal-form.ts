@@ -32,31 +32,24 @@ import { useRankFields } from ".//use-rank-fields"
 import { useRankUpgradeSlotsSummary } from ".//use-rank-upgrade-slots-summary"
 import { useShardLocationSelection } from ".//use-shard-location-selection"
 import { useUpgradeFields } from ".//use-upgrade-fields"
+import type { CreateGoalPrefill } from ".//create-goal-launcher-context"
+import { useCreateGoalPrefill } from ".//use-create-goal-prefill"
 
 export type EntityType = "Character" | "Mow"
 
 const defaultGoalTypes = (): Set<GoalKind> => new Set()
 
-/**
- * Everything CreateGoalSheet needs to render: catalog data, per-field form state, the synced-data
- * prefill effect, the resource-requirement preview, and the submit handler. Split out of the UI
- * component so create-goal-sheet.tsx stays presentational (and under this repo's max-lines rule) —
- * each goal-type's own target-range state further lives in its own sub-hook (use-rank-fields.ts,
- * use-ascension-fields.ts, use-ability-fields.ts, use-upgrade-fields.ts), this hook owning only the
- * entity selection, the cross-cutting fields (farming strategy, projects), the single prefill
- * effect that coordinates all four sub-hooks, and the submit handler that assembles their state
- * into a request. Every sub-hook's public state is named identically to this hook's own former
- * flat fields, so it can be spread straight into the return value below without changing the
- * shape consumers (CreateGoalSheet, its field components, and their tests) already depend on.
- */
+/** Coordinates CreateGoalSheet's catalog, field hooks, preview, and submission state. */
 export function useCreateGoalForm({
   open,
   onOpenChange,
   onCreated,
+  prefill,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   onCreated: () => void
+  prefill?: CreateGoalPrefill
 }) {
   const { settings: planningSettings } = usePlanningSettings()
 
@@ -108,8 +101,6 @@ export function useCreateGoalForm({
     entityType === "Character" && entityId ? getCharacter(entityId) : undefined
   const mow = entityType === "Mow" && entityId ? getMow(entityId) : undefined
 
-  // Only each sub-hook's fields actually referenced by this hook's own computations below are
-  // destructured by name — the rest flow straight through via `...xFields.state` below, unread here.
   const rankFields = useRankFields()
   const { rankStart, rankEnd, rankAdditionalTarget } = rankFields.state
   const {
@@ -167,12 +158,8 @@ export function useCreateGoalForm({
     setEnabledTypes,
   })
 
-  // Whether the selected entity is already in the caller's synced roster — an Unlock goal never
-  // makes sense for it (see `unlockAvailable` and the validation check below), regardless of
-  // Character/MoW.
   const isOwned = !!playerEntity
 
-  // Shard progress + unlock-availability for the selected entity — see use-entity-shard-summary.ts.
   const { usesMythicShards, lockedShards, unlockAvailable } =
     useEntityShardSummary(
       entityType,
@@ -182,7 +169,6 @@ export function useCreateGoalForm({
       charactersById
     )
 
-  // Shard-location selector state (Unlock/Ascension) — see use-shard-location-selection.ts.
   const shardLocationSelection = useShardLocationSelection({
     entityType,
     entityId,
@@ -221,6 +207,19 @@ export function useCreateGoalForm({
     charactersById,
   })
 
+  useCreateGoalPrefill({
+    open,
+    prefill,
+    entityId,
+    playerEntity,
+    handleEntityChange,
+    setEntityType,
+    setEnabledTypes,
+    selectProjects: projectSelection.selectProjects,
+    setLevelEnd: levelFields.state.setLevelEnd,
+    setProgressionEnd: ascensionFields.state.setProgressionEnd,
+  })
+
   const lockedUnitIds = useLockedUnitIds(characterGroups, mowGroups)
 
   const { hasActiveOrPausedGoal } = useGoalTypeConflicts({
@@ -229,8 +228,6 @@ export function useCreateGoalForm({
     enabled: open && !!entityId,
   })
 
-  // Resource-requirement preview + isolated day-by-day estimate (plan §9 context (a)) — pure calc
-  // lives in ./goal-preview.ts, memoized wrapper in ./use-creation-preview.ts.
   const { missingUpgrades, snapshotUpgrades, estimatePreview } =
     useCreationPreview({
       entityType,
@@ -326,19 +323,12 @@ export function useCreateGoalForm({
     includesLevel,
     ascensionSuggestion: prerequisites.needsAscension,
     levelSuggestion: prerequisites.needsLevel,
-    rankStart,
-    rankEnd,
+    ...rankFields.state,
     rankEndPointFive,
     rankEndAppliedUpgrades,
-    progressionStart,
-    progressionEnd,
-    ascensionFarmingSource,
-    abilityActiveStart,
-    abilityActiveEnd,
-    abilityPassiveStart,
-    abilityPassiveEnd,
-    levelStart,
-    levelEnd,
+    ...ascensionFields.state,
+    ...abilityFields.state,
+    ...levelFields.state,
     farmingStrategy,
     upgradeTargets,
     selectedRegularShardLocationIds,
@@ -359,13 +349,7 @@ export function useCreateGoalForm({
       specParams: combinedSpecParams,
     })
 
-  const {
-    createAnother,
-    setCreateAnother,
-    status,
-    errorMessage,
-    handleSubmit,
-  } = useGoalSubmit({
+  const submission = useGoalSubmit({
     entityId,
     entityType,
     canSubmit,
@@ -438,16 +422,12 @@ export function useCreateGoalForm({
     setProjectPriority,
     perProjectEstimates,
     estimatedProjectIds,
-    createAnother,
-    setCreateAnother,
-    status,
-    errorMessage,
+    ...submission,
     missingUpgrades,
     estimatePreview,
     planningSettings,
     progressionPreview,
     validationMessage,
     canSubmit,
-    handleSubmit,
   }
 }

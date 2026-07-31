@@ -26,7 +26,11 @@ import {
 } from "@/entities/player-data-override"
 import { computeCampaignInsights } from "@/features/campaign-insights"
 
-import { estimatePlan, selectFarmNodes } from "../estimate/estimate"
+import {
+  allocatePlanInventory,
+  estimatePlan,
+  selectFarmNodes,
+} from "../estimate/estimate"
 import {
   type EstimateResourceId,
   type EstimateUpgrade,
@@ -38,6 +42,8 @@ import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
 } from "../estimate/goal-requirements"
+import { computeGoalProgress } from "../attainment/goal-progress"
+import { computePotentialProgressRatio } from ".//potential-progress"
 import type {
   PlanInsightsBottleneck,
   PlanInsightsResult,
@@ -250,6 +256,27 @@ export function computePlanInsights(params: {
     dailyEnergy: params.dailyEnergy ?? 288,
     inventory,
   })
+  const allocations = allocatePlanInventory(goalNeeds, inventory)
+  const potentialProgressByGoalId = new Map<string, number>()
+  for (const detail of orderedDetails) {
+    const allocation = allocations.get(detail.goalId)
+    if (!allocation) continue
+    const progress = computeGoalProgress({
+      detail,
+      playerCharacter: params.playerCharacterById.get(detail.entityId),
+      playerMow: params.playerMowById.get(detail.entityId),
+      inventoryUpgrades: params.inventoryUpgrades.map((entry) => ({
+        ...entry,
+        upgradeId: entry.upgradeId as UpgradeId,
+      })),
+      inventoryItems: undefined,
+      initialRarity: params.charactersById.get(detail.entityId)?.initialRarity,
+      unlockShardCostsById: params.unlockShardCostsById,
+      inventoryShard: params.inventoryShardById.get(detail.entityId),
+    })
+    const ratio = computePotentialProgressRatio(detail, progress, allocation)
+    if (ratio !== null) potentialProgressByGoalId.set(detail.goalId, ratio)
+  }
 
   let energyTotal = 0
   let completionDate: string | null = null
@@ -342,6 +369,7 @@ export function computePlanInsights(params: {
     onslaughtTokens,
     onslaughtDays,
     estimates: estimateResults,
+    potentialProgressByGoalId,
     completionDate,
     bottlenecks,
     campaignInsights,

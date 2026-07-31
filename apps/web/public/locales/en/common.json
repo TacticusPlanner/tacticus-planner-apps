@@ -383,8 +383,13 @@
       "reasons": {
         "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
-        "CatalogDataUnavailable": "Game data hasn't finished loading yet."
-      }
+        "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
+        "MissingLevelPrerequisite": "A Level goal reaching level {{level}} is required.",
+        "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required."
+      },
+      "createPrerequisite": "Create prerequisite goal",
+      "reviewPrerequisite": "Review existing prerequisite",
+      "existingPrerequisiteGuidance": "The existing active or paused goal does not reach this target. Archive or replace it before creating another."
     },
     "actions": {
       "openMenu": "Open goal actions",
@@ -667,6 +672,8 @@
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",
       "progressLabel": "Goal progress",
+      "actualProgress": "Actual progress",
+      "potentialProgress": "Potential progress",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "upgradeSlots": "{{count}} upgrade slots remaining",

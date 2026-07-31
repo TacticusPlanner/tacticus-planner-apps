@@ -7,6 +7,7 @@ import type {
   EstimateUpgrade,
   FarmLocation,
   FarmNode,
+  GoalInventoryAllocation,
   GoalNeed,
   UpgradeNeed,
 } from ".//estimate.domain"
@@ -260,6 +261,40 @@ export function estimateGoal({
  * `goalPriority` farm order), so a higher-priority goal's farming isn't slowed by a lower-priority
  * goal's competing needs. A goal's value is `null` when it can never complete (see `estimateGoal`).
  */
+export function allocatePlanInventory(
+  goals: readonly GoalNeed[],
+  inventory: readonly UpgradeNeed[]
+): Map<string, GoalInventoryAllocation> {
+  const held = new Map<EstimateResourceId, number>(
+    inventory.map((entry) => [entry.id, entry.count])
+  )
+  const allocations = new Map<string, GoalInventoryAllocation>()
+
+  for (const goal of [...goals].sort((a, b) => a.priority - b.priority)) {
+    const sourceStages = goal.stages?.length
+      ? goal.stages
+      : [{ target: "final", needs: goal.needs }]
+    const stages = sourceStages.map((sourceStage) => {
+      const remaining: UpgradeNeed[] = []
+      for (const need of sourceStage.needs) {
+        const available = held.get(need.id) ?? 0
+        const consumed = Math.min(available, need.count)
+        if (consumed > 0) held.set(need.id, available - consumed)
+        const stillNeeded = need.count - consumed
+        if (stillNeeded > 0) remaining.push({ ...need, count: stillNeeded })
+      }
+      return {
+        target: sourceStage.target,
+        needs: sourceStage.needs.map((need) => ({ ...need })),
+        remaining,
+      }
+    })
+    allocations.set(goal.goalId, { goalId: goal.goalId, stages })
+  }
+
+  return allocations
+}
+
 export function estimatePlan({
   goals,
   upgradesById,
@@ -276,12 +311,10 @@ export function estimatePlan({
   referenceDate?: Date
 }): Map<string, EstimateOutcome> {
   const ordered = [...goals].sort((a, b) => a.priority - b.priority)
+  const allocations = allocatePlanInventory(ordered, inventory)
 
   // Step 1: higher-priority goals consume shared inventory first; only the leftover need continues
   // into the farming simulation below.
-  const held = new Map<EstimateResourceId, number>(
-    inventory.map((entry) => [entry.id, entry.count])
-  )
   type StageState = {
     remaining: Map<EstimateResourceId, number>
     nodesById: Map<EstimateResourceId, FarmNode[]>
@@ -293,19 +326,11 @@ export function estimatePlan({
     const stages: StageState[] = []
     let blockedOutcome: EstimateOutcome | null = null
 
-    const sourceStages = goal.stages?.length
-      ? goal.stages
-      : [{ target: "final", needs: goal.needs }]
-    for (const sourceStage of sourceStages) {
+    const allocation = allocations.get(goal.goalId)
+    for (const sourceStage of allocation?.stages ?? []) {
       const remaining = new Map<EstimateResourceId, number>()
       const nodesById = new Map<EstimateResourceId, FarmNode[]>()
-      for (const need of sourceStage.needs) {
-        const available = held.get(need.id) ?? 0
-        const consumed = Math.min(available, need.count)
-        if (consumed > 0) held.set(need.id, available - consumed)
-        const stillNeeded = need.count - consumed
-        if (stillNeeded <= 0) continue
-
+      for (const need of sourceStage.remaining) {
         const unavailable = unavailableReason(
           need,
           upgradesById,
@@ -318,7 +343,7 @@ export function estimatePlan({
           break
         }
         const nodes = selectFarmNodes(
-          { id: need.id, count: stillNeeded },
+          need,
           upgradesById,
           battlesById,
           goal.farmingLocationIds
@@ -327,7 +352,7 @@ export function estimatePlan({
           blockedOutcome = blocked("NoFarmLocation", [need.id])
           break
         }
-        remaining.set(need.id, stillNeeded)
+        remaining.set(need.id, need.count)
         nodesById.set(need.id, nodes)
       }
       if (blockedOutcome) break

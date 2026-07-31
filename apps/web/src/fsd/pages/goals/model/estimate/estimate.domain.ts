@@ -58,6 +58,17 @@ export interface GoalNeed {
   farmingLocationIds?: readonly string[] | null
 }
 
+interface InventoryAllocationStage {
+  target: string
+  needs: UpgradeNeed[]
+  remaining: UpgradeNeed[]
+}
+
+export interface GoalInventoryAllocation {
+  goalId: string
+  stages: InventoryAllocationStage[]
+}
+
 interface EstimateResult {
   status?: "Estimated"
   /** Days of farming until every material need is met. */

@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next"
 
 import type { EstimateBlockedReason } from "../estimate/estimate.domain"
+import type { Progression } from "@workspace/game-domain"
 
 // Structured blocker reasons (plan §4) — a goal stays Active/Paused while blocked; blocking is a
 // derived, calculated collection of reasons, never a manually-set flag or a `Locked` status (V1's
@@ -21,6 +22,16 @@ export type BlockerReason =
   | { kind: "PlayerDataUnavailable" }
   /** The static game catalog (characters, upgrades, costs) this goal needs hasn't loaded yet. */
   | { kind: "CatalogDataUnavailable" }
+  | {
+      kind: "MissingLevelPrerequisite"
+      requiredLevel: number
+      existingGoalId: string | undefined
+    }
+  | {
+      kind: "MissingAscensionPrerequisite"
+      requiredProgression: Progression
+      existingGoalId: string | undefined
+    }
 
 export type GoalBlockers = {
   reasons: BlockerReason[]
@@ -32,6 +43,7 @@ export function computeGoalBlockers(params: {
   unreachedPrerequisiteGoalIds: readonly string[]
   playerDataUnavailable: boolean
   catalogDataUnavailable: boolean
+  implicitReasons?: readonly BlockerReason[]
 }): GoalBlockers {
   const reasons: BlockerReason[] = []
 
@@ -47,6 +59,7 @@ export function computeGoalBlockers(params: {
   if (params.estimateReason) {
     reasons.push({ kind: "EstimateBlocked", reason: params.estimateReason })
   }
+  reasons.push(...(params.implicitReasons ?? []))
 
   return { reasons, isBlocked: reasons.length > 0 }
 }
@@ -65,5 +78,13 @@ export function blockerReasonText(t: TFunction, reason: BlockerReason): string {
       return t("goals.blocked.reasons.PlayerDataUnavailable")
     case "CatalogDataUnavailable":
       return t("goals.blocked.reasons.CatalogDataUnavailable")
+    case "MissingLevelPrerequisite":
+      return t("goals.blocked.reasons.MissingLevelPrerequisite", {
+        level: reason.requiredLevel,
+      })
+    case "MissingAscensionPrerequisite":
+      return t("goals.blocked.reasons.MissingAscensionPrerequisite", {
+        progression: reason.requiredProgression,
+      })
   }
 }

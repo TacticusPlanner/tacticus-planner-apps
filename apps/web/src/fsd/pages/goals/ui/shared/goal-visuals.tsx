@@ -215,7 +215,13 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
  * `RankBadge`/`ProgressionBadge` for Rank/Ascension so a goal's target reads identically here and in
  * the create-goal form; other kinds are plain numbers, since no icon/name exists for a raw level or
  * shard count. Renders nothing for `Unknown` (player data for this goal hasn't synced yet). */
-export function GoalProgressDisplay({ progress }: { progress: GoalProgress }) {
+export function GoalProgressDisplay({
+  progress,
+  potentialRatio,
+}: {
+  progress: GoalProgress
+  potentialRatio?: number
+}) {
   const { t } = useTranslation()
 
   if (progress.kind === "Unknown") return null
@@ -261,12 +267,38 @@ export function GoalProgressDisplay({ progress }: { progress: GoalProgress }) {
     <div className="grid gap-1" data-testid="goal-progress">
       {currentTarget}
       {progress.ratio !== null ? (
-        <Progress
-          aria-label={t("goals.overview.progressLabel")}
-          className="h-1.5"
-          data-testid="goal-progress-bar"
-          value={progress.ratio * 100}
-        />
+        <div className="grid gap-1">
+          {potentialRatio !== undefined ? (
+            <span className="text-xs text-muted-foreground">
+              {t("goals.overview.actualProgress")}
+            </span>
+          ) : null}
+          <Progress
+            aria-label={
+              potentialRatio !== undefined
+                ? t("goals.overview.actualProgress")
+                : t("goals.overview.progressLabel")
+            }
+            aria-valuetext={`${Math.round(progress.ratio * 100)}%`}
+            className="h-1.5"
+            data-testid="goal-progress-bar"
+            value={progress.ratio * 100}
+          />
+          {potentialRatio !== undefined ? (
+            <>
+              <span className="text-xs text-muted-foreground">
+                {t("goals.overview.potentialProgress")}
+              </span>
+              <Progress
+                aria-label={t("goals.overview.potentialProgress")}
+                aria-valuetext={`${Math.round(potentialRatio * 100)}%`}
+                className="h-1.5"
+                data-testid="goal-potential-progress-bar"
+                value={potentialRatio * 100}
+              />
+            </>
+          ) : null}
+        </div>
       ) : null}
     </div>
   )

@@ -21,6 +21,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { ConfirmationDialog } from "@/shared/ui"
 import {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
@@ -29,14 +30,17 @@ import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overvi
 import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
+import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
+import type { BlockerReason } from "../../model/blockers/goal-blockers"
+import { prerequisitePrefill } from "../../model/blockers/prerequisite-prefill"
 import { GoalProgressDisplay, GoalProjectBadges } from "../shared/goal-visuals"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import { DiscardChangesDialog } from ".//discard-changes-dialog"
 import {
   GoalDetailEditForm,
   type GoalDetailDraft,
 } from ".//goal-detail-edit-form"
 import { GoalDetailView } from ".//goal-detail-view"
+import { goalDetailProjects } from ".//goal-detail-projects"
 
 type Mode = "view" | "edit"
 
@@ -46,16 +50,21 @@ export function GoalDetailSheet({
   isolated,
   onOpenChange,
   onUpdated,
+  potentialRatio,
+  onGoalChange,
 }: {
   goalId: string | null
   estimate: EstimateOutcome | undefined
   isolated: boolean
   onOpenChange: (open: boolean) => void
   onUpdated: () => void
+  potentialRatio?: number
+  onGoalChange?: (goalId: string) => void
 }) {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
+  const launchCreateGoal = useCreateGoalLauncher()
   const { getEntityName, upgradesById, charactersById } = useGoalCatalog()
   const [mode, setMode] = useState<Mode>("view")
   const [confirmAction, setConfirmAction] = useState<"cancel" | "close" | null>(
@@ -82,7 +91,7 @@ export function GoalDetailSheet({
   const dependencies = dependencyQueries.flatMap((query) =>
     query.data ? [query.data] : []
   )
-  const draftKey = detail ? `${detail.goalId}:${detail.updatedAt}` : ""
+  const draftKey = detail?.goalId ?? ""
   const draft =
     draftState?.key === draftKey
       ? draftState
@@ -172,7 +181,17 @@ export function GoalDetailSheet({
 
   const resetDraft = () => setDraftState(null)
 
-  const enterEdit = () => setMode("edit")
+  const enterEdit = () => {
+    if (!detail) return
+    setDraftState({
+      key: detail.goalId,
+      notes: detail.notes ?? "",
+      selectedLocations: detail.config.farmingLocationIds ?? [],
+      selectedProjectIds: detail.projectIds,
+      farmingStrategy: detail.config.farmingStrategy,
+    })
+    setMode("edit")
+  }
   const requestLeaveEdit = () => {
     if (hasUnsavedChanges) {
       setConfirmAction("cancel")
@@ -242,17 +261,28 @@ export function GoalDetailSheet({
     onOpenChange(false)
   }
 
-  const assignedProjects = detail
-    ? detail.projectIds
-        .map((projectId) => projects.find((p) => p.projectId === projectId))
-        .filter((project): project is (typeof projects)[number] => !!project)
-        .map((project) => ({
-          projectId: project.projectId,
-          name: project.name,
-          color: project.color,
-          isActivePlan: project.isActivePlan,
-        }))
-    : []
+  const assignedProjects = goalDetailProjects(detail, projects)
+
+  const createPrerequisite = (
+    reason: Extract<
+      BlockerReason,
+      { kind: "MissingLevelPrerequisite" | "MissingAscensionPrerequisite" }
+    >
+  ) => {
+    if (!detail) return
+    const prefill = prerequisitePrefill(detail, reason)
+    if (!prefill) return
+    resetDraft()
+    setMode("view")
+    onOpenChange(false)
+    launchCreateGoal(prefill)
+  }
+
+  const viewPrerequisiteGoal = (nextGoalId: string) => {
+    resetDraft()
+    setMode("view")
+    onGoalChange?.(nextGoalId)
+  }
 
   const farmingSummary = !detail
     ? null
@@ -296,12 +326,10 @@ export function GoalDetailSheet({
                 <StatusBadge status={detail.status} />
                 <BlockedIndicator blockers={metrics?.blockers ?? NO_BLOCKERS} />
               </div>
-              {/* View mode shows progress/projects itself (see `GoalDetailView`'s own sections) —
-                  only edit mode needs this read-only context surfaced up here, since its form has no
-                  progress/projects display of its own. */}
               {mode === "edit" ? (
                 <>
                   <GoalProgressDisplay
+                    potentialRatio={potentialRatio}
                     progress={metrics?.progress ?? UNKNOWN_PROGRESS}
                   />
                   {assignedProjects.length > 0 ? (
@@ -321,7 +349,10 @@ export function GoalDetailSheet({
                 farmingSummary={farmingSummary}
                 getEntityName={getEntityName}
                 isolated={isolated}
+                onCreatePrerequisite={createPrerequisite}
+                onViewGoal={viewPrerequisiteGoal}
                 progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                potentialRatio={potentialRatio}
                 remaining={metrics?.remaining ?? null}
               />
             ) : (
@@ -375,10 +406,14 @@ export function GoalDetailSheet({
         ) : null}
       </SheetContent>
 
-      <DiscardChangesDialog
-        onDiscard={confirmDiscard}
-        onKeepEditing={() => setConfirmAction(null)}
+      <ConfirmationDialog
+        cancelLabel={t("goals.detail.unsavedChangesCancel")}
+        confirmLabel={t("goals.detail.unsavedChangesConfirm")}
+        description={t("goals.detail.unsavedChangesDescription")}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={confirmDiscard}
         open={confirmAction !== null}
+        title={t("goals.detail.unsavedChangesTitle")}
       />
     </Sheet>
   )

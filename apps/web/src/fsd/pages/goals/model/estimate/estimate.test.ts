@@ -7,6 +7,7 @@ import {
 
 import {
   dropRate,
+  allocatePlanInventory,
   estimateGoal,
   estimatePlan,
   selectFarmNodes,
@@ -423,6 +424,51 @@ describe("estimatePlan", () => {
       status: "Blocked",
       reason: "NoFarmLocation",
     })
+  })
+})
+
+describe("allocatePlanInventory", () => {
+  it("deducts inventory by priority while preserving ordered stage traces", () => {
+    const resource = upgradeId("U1")
+    const allocations = allocatePlanInventory(
+      [
+        {
+          goalId: "later",
+          priority: 2,
+          needs: [{ id: resource, count: 5 }],
+        },
+        {
+          goalId: "first",
+          priority: 1,
+          needs: [{ id: resource, count: 7 }],
+          stages: [
+            { target: "1", needs: [{ id: resource, count: 4 }] },
+            { target: "2", needs: [{ id: resource, count: 3 }] },
+          ],
+        },
+      ],
+      [{ id: resource, count: 6 }]
+    )
+
+    expect(allocations.get("first")?.stages).toEqual([
+      {
+        target: "1",
+        needs: [{ id: resource, count: 4 }],
+        remaining: [],
+      },
+      {
+        target: "2",
+        needs: [{ id: resource, count: 3 }],
+        remaining: [{ id: resource, count: 1 }],
+      },
+    ])
+    expect(allocations.get("later")?.stages).toEqual([
+      {
+        target: "final",
+        needs: [{ id: resource, count: 5 }],
+        remaining: [{ id: resource, count: 5 }],
+      },
+    ])
   })
 })
 

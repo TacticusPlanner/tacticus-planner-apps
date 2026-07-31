@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useQueries } from "@tanstack/react-query"
+import { useQueries, useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
@@ -18,6 +18,7 @@ import {
   computeGoalBlockers,
   type GoalBlockers,
 } from "../blockers/goal-blockers"
+import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
 import type { EstimateOutcome } from "../estimate/estimate.domain"
 import { calculateGoalResourceNeed } from "../estimate/goal-requirements"
 import type { ResourceNeed } from "../estimate/progression-cost-calc"
@@ -77,6 +78,28 @@ export function useGoalsOverviewMetrics(
     })),
   })
   const details = detailQueries.map((query) => query.data)
+  const prerequisiteListQuery = useQuery({
+    ...goalQueries.list(false),
+    enabled: isAuthenticated,
+  })
+  const prerequisiteGoalIds =
+    prerequisiteListQuery.data?.goals
+      .filter(
+        (goal) => goal.goalType === "Level" || goal.goalType === "Ascension"
+      )
+      .map((goal) => goal.goalId) ?? []
+  const prerequisiteQueries = useQueries({
+    queries: prerequisiteGoalIds.map((goalId) => ({
+      ...goalQueries.detail(goalId),
+      enabled: isAuthenticated,
+    })),
+  })
+  const prerequisiteGoals = prerequisiteQueries.flatMap((query) =>
+    query.data ? [query.data] : []
+  )
+  const prerequisiteGoalsReady =
+    prerequisiteListQuery.isSuccess &&
+    prerequisiteQueries.every((query) => query.isSuccess)
 
   // Prerequisite goals (plan §4's "a prerequisite goal has not been reached") can be outside
   // `goalIds` (a different tab, a different project) — fetched separately so their own attainment is
@@ -229,6 +252,12 @@ export function useGoalsOverviewMetrics(
       ),
       playerDataUnavailable: catalogReady && attainment.status === "unknown",
       catalogDataUnavailable: !catalogReady,
+      implicitReasons: implicitPrerequisiteBlockers({
+        detail,
+        playerUnit: detail.entityType === "Mow" ? playerMow : playerCharacter,
+        prerequisiteGoals,
+        ready: prerequisiteGoalsReady && catalogReady,
+      }),
     })
 
     result.set(goalId, { progress, remaining, blockers })
