@@ -183,6 +183,8 @@ describe("GoalsList", () => {
     )
 
     const row = await screen.findByTestId("goal-row")
+    row.focus()
+    expect(row).toHaveFocus()
     fireEvent.keyDown(row, { key: "Enter" })
 
     expect(onView).toHaveBeenCalledWith("goal-1")

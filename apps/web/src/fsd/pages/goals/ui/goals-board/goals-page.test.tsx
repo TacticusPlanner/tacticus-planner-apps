@@ -276,8 +276,10 @@ describe("GoalsPage", () => {
 
     await user.click(screen.getByTestId("goals-tab-reached"))
 
-    expect(screen.getByTestId("goals-tab-reached")).toHaveTextContent("(1)")
     expect(await screen.findByText("Hero One")).toBeInTheDocument()
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("goals-tab-reached")).toHaveTextContent("(1)")
+    })
   })
 
   it("retains non-archived tab counts while the Archived tab is selected", async () => {
