@@ -62,6 +62,7 @@ export function rankResourceNeed(params: {
   character: FarmingCharacter | undefined
   playerCharacter: PlayerCharacter | undefined
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  /** Mutated in place; share one pool and invoke needs in stage/priority order. */
   craftedInventory?: CraftedInventoryPool
 }): UpgradeNeed[] | null {
   const rankTarget = params.detail.config.rank
@@ -167,6 +168,7 @@ export function abilityResourceNeed(params: {
   mow: MowStorageModel | undefined
   playerMow: PlayerMow | undefined
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  /** Mutated in place; share one pool and invoke needs in stage/priority order. */
   craftedInventory?: CraftedInventoryPool
   coveredTransitions?: {
     primary: Set<number>

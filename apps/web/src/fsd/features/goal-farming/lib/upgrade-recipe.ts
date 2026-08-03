@@ -42,6 +42,11 @@ export function rankUpUpgradeIds(
   return ids
 }
 
+/**
+ * Expands crafted recipes into base upgrades. When `craftedInventory` is supplied, matching stock
+ * is drained from that map in place before expansion; reuse one pool only across calculations that
+ * intentionally share inventory and invoke them in priority order.
+ */
 function reduceToBaseUpgrades(
   entries: UpgradeAmount[],
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>,
@@ -58,7 +63,9 @@ function reduceToBaseUpgrades(
     if (upgrade?.crafted && upgrade.recipe.length > 0) {
       const available = craftedInventory?.get(id) ?? 0
       const consumed = Math.min(available, multiplier)
-      if (consumed > 0) craftedInventory!.set(id, available - consumed)
+      if (craftedInventory && consumed > 0) {
+        craftedInventory.set(id, available - consumed)
+      }
       const remaining = multiplier - consumed
       if (remaining <= 0) return
 
@@ -90,6 +97,10 @@ export function createCraftedInventoryPool(
   return pool
 }
 
+/**
+ * Aggregates base needs while draining `craftedInventory` in place. Callers must share the pool
+ * through stage- and priority-ordered calculations so earlier needs consume stock first.
+ */
 export function aggregateBaseUpgradesWithCraftedInventory(
   upgradeIds: UpgradeId[],
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>,
