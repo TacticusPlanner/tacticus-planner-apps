@@ -63,7 +63,10 @@ describe("computePlanInsights", () => {
   const character: Character = {
     id: unitId("hero1"),
     name: "Hero One",
-    rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [upgradeId("mat1")] }],
+    rankUpUpgrades: [
+      { rank: rankOrder[0], upgradeIds: [upgradeId("mat1")] },
+      { rank: rankOrder[1], upgradeIds: [upgradeId("mat2")] },
+    ],
   }
   const characterView = {
     id: "hero1",
@@ -91,6 +94,11 @@ describe("computePlanInsights", () => {
       },
     ],
   }
+  const secondUpgrade: UpgradeWithFarmLocations = {
+    ...upgrade,
+    id: upgradeId("mat2"),
+    label: "Material Two",
+  }
 
   const battle: Battle = {
     campaignGroupId: campaignId("campaign1"),
@@ -106,7 +114,10 @@ describe("computePlanInsights", () => {
     playerMowById: new Map(),
     inventoryShardById: new Map(),
     inventoryUpgrades: [],
-    upgradesById: new Map([[upgrade.id, upgrade]]),
+    upgradesById: new Map([
+      [upgrade.id, upgrade],
+      [secondUpgrade.id, secondUpgrade],
+    ]),
     battlesById: new Map([[battleId("B1"), battle]]),
     charactersById: new Map([["hero1", characterView]]),
     mowsById: new Map<string, MowStorageModel>(),
@@ -155,6 +166,108 @@ describe("computePlanInsights", () => {
     expect(result.completionDate).not.toBeNull()
     expect(result.bottlenecks).toHaveLength(1)
     expect(result.bottlenecks[0]?.label).toBe("Material One")
+  })
+
+  it("estimates a same-rank partial-upgrade target", () => {
+    const details = [
+      goalDetail({
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[1]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[1]),
+            endPointFive: false,
+            endAppliedUpgrades: 1,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          item: null,
+          level: null,
+        },
+      }),
+    ]
+
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      playerCharacterById: new Map([
+        ["hero1", { rank: rankOrder[1], appliedUpgradeSlots: [] } as never],
+      ]),
+      priorityByGoalId: new Map([["goal-1", 1]]),
+    })
+
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      energyTotal: 10,
+      status: "Estimated",
+    })
+  })
+
+  it("does not let completed earlier ranks erase a repeated-material estimate", () => {
+    const repeatedMaterialCharacter: Character = {
+      ...character,
+      rankUpUpgrades: [
+        {
+          rank: rankOrder[0],
+          upgradeIds: Array(6).fill(upgrade.id),
+        },
+        {
+          rank: rankOrder[1],
+          upgradeIds: Array(6).fill(upgrade.id),
+        },
+      ],
+    }
+    const details = [
+      goalDetail({
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[2]),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          item: null,
+          level: null,
+        },
+      }),
+    ]
+
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      playerCharacterById: new Map([
+        [
+          "hero1",
+          {
+            rank: rankOrder[1],
+            appliedUpgradeSlots: [0, 1, 2],
+          } as never,
+        ],
+      ]),
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      getCharacter: (id) =>
+        id === repeatedMaterialCharacter.id
+          ? repeatedMaterialCharacter
+          : undefined,
+    })
+
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      energyTotal: 30,
+      status: "Estimated",
+    })
+    expect(result.potentialProgressByGoalId.has("goal-1")).toBe(true)
   })
 
   it("skips a goal with no priority entry, and returns the empty result for no costable goals", () => {
@@ -276,6 +389,54 @@ describe("computePlanInsights", () => {
     expect(result.onslaughtDays).toBeCloseTo(2 / 1.5)
   })
 
+  it("derives Ascension potential from owned alliance orbs", () => {
+    const result = computePlanInsights({
+      ...baseParams,
+      details: [
+        goalDetail({
+          goalType: "Ascension",
+          config: {
+            ...goalDetail({}).config,
+            progression: {
+              start: "Common:None",
+              end: "Common:OneStar",
+            },
+          },
+        }),
+      ],
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      playerCharacterById: new Map([
+        [
+          "hero1",
+          {
+            unitId: "hero1",
+            progressionIndex: "Common:None",
+          } as never,
+        ],
+      ]),
+      ascensionCostsById: new Map([
+        [
+          "Common:OneStar",
+          {
+            id: "Common:OneStar",
+            progression: "Common:OneStar",
+            shards: 0,
+            mythicShards: 0,
+            orbs: 10,
+            orbRarity: "Uncommon",
+          } as AscensionCostStorageModel,
+        ],
+      ]),
+      inventoryOrbs: {
+        imperial: [],
+        xenos: [{ rarity: "Uncommon", amount: 5 }],
+        chaos: [],
+      },
+    })
+
+    expect(result.potentialProgressByGoalId.get("goal-1")).toBe(0.5)
+  })
+
   it("restricts an Unlock goal's shard farming to config.farmingLocationIds, changing the resulting energy total", () => {
     const twoLocationCharacterView = {
       ...characterView,
@@ -326,5 +487,11 @@ describe("computePlanInsights", () => {
     // 10 shards at 1 energy/shard (guaranteed drop) from B1 (10 energy) vs. B2 (100 energy).
     expect(restrictedToCheapNode.energyTotal).toBe(100)
     expect(restrictedToExpensiveNode.energyTotal).toBe(1000)
+    expect(restrictedToCheapNode.potentialProgressByGoalId.has("goal-1")).toBe(
+      false
+    )
+    expect(
+      restrictedToExpensiveNode.potentialProgressByGoalId.has("goal-1")
+    ).toBe(false)
   })
 })

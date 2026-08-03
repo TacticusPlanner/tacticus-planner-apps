@@ -8,6 +8,10 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
+import {
+  CreateGoalLauncherProvider,
+  type CreateGoalPrefill,
+} from "@/pages/goals"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
@@ -67,6 +71,7 @@ function ShellContent({
   visibleItems: typeof navItems
 }) {
   const [createOpen, setCreateOpen] = useState(false)
+  const [createPrefill, setCreatePrefill] = useState<CreateGoalPrefill>()
   const queryClient = useQueryClient()
   const refreshGoals = () => {
     void Promise.all([
@@ -74,15 +79,23 @@ function ShellContent({
       queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
     ])
   }
+  const launchCreateGoal = (prefill?: CreateGoalPrefill) => {
+    setCreatePrefill(prefill)
+    setCreateOpen(true)
+  }
+  const handleCreateOpenChange = (open: boolean) => {
+    setCreateOpen(open)
+    if (!open) setCreatePrefill(undefined)
+  }
   const shellProps = {
     isAuthenticated,
     visibleItems,
     pageTitle,
-    onCreateGoal: () => setCreateOpen(true),
+    onCreateGoal: () => launchCreateGoal(),
   }
 
   return (
-    <>
+    <CreateGoalLauncherProvider onLaunch={launchCreateGoal}>
       {isMobile ? (
         <MobileShell {...shellProps} />
       ) : (
@@ -92,11 +105,12 @@ function ShellContent({
         <Suspense fallback={null}>
           <CreateGoalSheet
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={handleCreateOpenChange}
             onCreated={refreshGoals}
+            prefill={createPrefill}
           />
         </Suspense>
       ) : null}
-    </>
+    </CreateGoalLauncherProvider>
   )
 }

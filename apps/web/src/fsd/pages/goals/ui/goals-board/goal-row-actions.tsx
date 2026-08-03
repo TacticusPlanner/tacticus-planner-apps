@@ -21,8 +21,9 @@ type Props = {
   actions: ReturnType<typeof useGoalActions>
 }
 
-/** Per-row "⋯" lifecycle menu — resume/pause, complete, archive/unarchive, and a destructive delete
- * gated behind `DeleteGoalDialog`. */
+/** Per-row "⋯" lifecycle menu — resume/pause, archive/unarchive, and a destructive delete gated
+ * behind `DeleteGoalDialog`. Reaching a goal's target is computed automatically (see
+ * `model/attainment/`), never a manual action here. */
 export function GoalRowActions({ goalId, status, actions }: Props) {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -53,11 +54,6 @@ export function GoalRowActions({ goalId, status, actions }: Props) {
           {status === "Paused" ? (
             <DropdownMenuItem onSelect={() => setStatus("Active")}>
               {t("goals.actions.resume")}
-            </DropdownMenuItem>
-          ) : null}
-          {status !== "Completed" && status !== "Archived" ? (
-            <DropdownMenuItem onSelect={() => setStatus("Completed")}>
-              {t("goals.actions.complete")}
             </DropdownMenuItem>
           ) : null}
           {status !== "Archived" ? (

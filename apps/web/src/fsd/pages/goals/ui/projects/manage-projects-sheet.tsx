@@ -14,6 +14,8 @@ import {
 
 import type { ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../../model/projects/use-project-actions"
+import { ProjectColorDot } from "../shared/project-color-dot"
+import { ProjectColorPicker } from ".//project-color-picker"
 
 export function ManageProjectsSheet({
   open,
@@ -86,7 +88,10 @@ export function ManageProjectsSheet({
               variant={selectedId === project.projectId ? "secondary" : "ghost"}
               onClick={() => setProject(project)}
             >
-              <span>{project.name}</span>
+              <span className="flex items-center gap-2">
+                <ProjectColorDot color={project.color} />
+                {project.name}
+              </span>
               {project.status === "Archived"
                 ? t("goals.status.Archived")
                 : null}
@@ -123,7 +128,9 @@ export function ManageProjectsSheet({
             <FieldLabel htmlFor="project-color">
               {t("goals.project.color")}
             </FieldLabel>
+            <ProjectColorPicker onChange={setColor} value={color} />
             <Input
+              aria-label={t("goals.project.color")}
               id="project-color"
               placeholder="#6366f1"
               value={color}

@@ -29,6 +29,7 @@ export interface PlanInsightsResult {
   onslaughtTokens: number
   onslaughtDays: number
   estimates: Map<string, EstimateOutcome>
+  potentialProgressByGoalId: Map<string, number>
   /** The latest per-goal completion date across the plan (ISO `yyyy-mm-dd`); `null` when nothing is
    *  farmable yet, or any farmable goal can never complete within the simulator's day budget. */
   completionDate: string | null
@@ -47,6 +48,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   onslaughtTokens: 0,
   onslaughtDays: 0,
   estimates: new Map(),
+  potentialProgressByGoalId: new Map(),
   completionDate: null,
   bottlenecks: [],
   campaignInsights: [],

@@ -53,9 +53,15 @@ describe("rankUpUpgradeIds", () => {
     ])
   })
 
-  it("returns [] for an empty or inverted range", () => {
+  it("returns [] for an empty clean target or inverted range", () => {
     expect(rankUpUpgradeIds(character, "Stone2", "Stone2", false)).toEqual([])
     expect(rankUpUpgradeIds(character, "Stone3", "Stone1", false)).toEqual([])
+  })
+
+  it("includes a partial target at the starting rank", () => {
+    expect(
+      rankUpUpgradeIds(character, "Stone2", "Stone2", false, 0, 2)
+    ).toEqual(["h3", "d3"])
   })
 
   it("adds the first of each stat pair at the target rank when point-five is on", () => {
@@ -105,6 +111,19 @@ describe("rankUpUpgradeIds", () => {
 })
 
 describe("groupUpgradesByRank", () => {
+  it("creates a partial-only group at the starting rank", () => {
+    expect(
+      groupUpgradesByRank(character, "Stone2", "Stone2", false, 0, 2)
+    ).toEqual([
+      {
+        fromRank: "Stone2",
+        toRank: "Stone2",
+        pointFive: true,
+        upgradeIds: ["h3", "d3"],
+      },
+    ])
+  })
+
   it("produces one group per rank step with a point-five group at the end", () => {
     const groups = groupUpgradesByRank(character, "Stone1", "Stone2", true)
     expect(groups).toHaveLength(2)

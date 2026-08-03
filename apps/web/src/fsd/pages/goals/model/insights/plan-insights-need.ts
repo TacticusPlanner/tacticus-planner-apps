@@ -8,7 +8,6 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import {
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
-  appliedUpgradeIds,
   rankUpUpgradeIds,
   type Character,
   type UpgradeWithFarmLocations,
@@ -17,6 +16,10 @@ import type { GoalDetail } from "@/entities/goal"
 
 import type { EstimateResourceId } from "../estimate/estimate.domain"
 import type { UpgradeNeed } from "../estimate/estimate.domain"
+import {
+  additionalTargetFromWire,
+  additionalTargetSelection,
+} from "../estimate/rank-additional-target"
 import {
   mowAbilityTrackLevel,
   uncoveredMowAbilityUpgradeIds,
@@ -67,22 +70,33 @@ export function rankResourceNeed(params: {
   )
   const rankStart = rankAt(effectiveStart)
   const rankEnd = rankAt(rankTarget.end)
+  const additionalTarget = additionalTargetSelection(
+    additionalTargetFromWire(rankEnd, rankTarget)
+  )
   const requiredIds = rankUpUpgradeIds(
     params.character,
     rankStart,
     rankEnd,
-    rankTarget.endPointFive
+    rankTarget.endPointFive,
+    additionalTarget.appliedUpgrades,
+    additionalTarget.topRowCount
   )
   if (requiredIds.length === 0) return null
   const required = aggregateBaseUpgrades(requiredIds, params.upgradesById)
 
-  const appliedIds = params.playerCharacter
-    ? appliedUpgradeIds(
-        params.character,
-        params.playerCharacter.rank,
-        params.playerCharacter.appliedUpgradeSlots
-      )
-    : []
+  // `requiredIds` starts at the character's current rank (or a future configured start), so only
+  // slots applied at that exact starting rank can reduce it. Including completed earlier ranks here
+  // lets their materials incorrectly cancel a current/future need whenever recipes reuse the same
+  // base upgrades.
+  const appliedIds =
+    params.playerCharacter &&
+    effectiveStart === rankIndex(params.playerCharacter.rank)
+      ? (params.character.rankUpUpgrades
+          .find((entry) => entry.rank === params.playerCharacter!.rank)
+          ?.upgradeIds.filter((_, index) =>
+            params.playerCharacter!.appliedUpgradeSlots.includes(index)
+          ) ?? [])
+      : []
   const appliedById = new Map(
     aggregateOwnedBaseUpgrades(appliedIds, [], params.upgradesById).map(
       (entry) => [entry.id, entry.count]
@@ -95,6 +109,53 @@ export function rankResourceNeed(params: {
       count: Math.max(0, need.count - (appliedById.get(need.id) ?? 0)),
     }))
     .filter((need) => need.count > 0)
+}
+
+/**
+ * A Rank goal's unfilled upgrade *slots* still ahead — 6 per full rank crossed, plus a partial
+ * top-row/point-five target at the end rank, minus whatever's already applied at the character's
+ * current rank (a full rank below the current one is never partially filled — reaching it required
+ * applying all 6 of its slots — so only the current rank's own partial progress ever nets against
+ * this). `null` when there's no rank target, no catalog entry for `character`, or an empty range —
+ * mirrors `rankResourceNeed`'s guards so the two stay in sync about *when* a Rank goal has a need.
+ */
+export function rankSlotsRemaining(params: {
+  detail: GoalDetail
+  character: Character | undefined
+  playerCharacter: PlayerCharacter | undefined
+}): number | null {
+  const rankTarget = params.detail.config.rank
+  if (!rankTarget || !params.character) return null
+
+  const currentRankIndex = params.playerCharacter
+    ? rankIndex(params.playerCharacter.rank)
+    : rankTarget.start
+  const effectiveStart = Math.max(rankTarget.start, currentRankIndex)
+  const rankStart = rankAt(effectiveStart)
+  const rankEnd = rankAt(rankTarget.end)
+  const additionalTarget = additionalTargetSelection(
+    additionalTargetFromWire(rankEnd, rankTarget)
+  )
+  const requiredIds = rankUpUpgradeIds(
+    params.character,
+    rankStart,
+    rankEnd,
+    rankTarget.endPointFive,
+    additionalTarget.appliedUpgrades,
+    additionalTarget.topRowCount
+  )
+  if (requiredIds.length === 0) return null
+
+  // `requiredIds` unconditionally includes every slot of `rankStart` itself (see `rankUpUpgradeIds`)
+  // — only netted here when `rankStart` actually *is* the character's current rank (not a rank ahead
+  // of it, which happens when the goal's configured `start` is ahead of where the character actually
+  // is; that rank's slots haven't been reached yet, so nothing to net against them).
+  const appliedAtCurrentRank =
+    effectiveStart === currentRankIndex
+      ? new Set(params.playerCharacter?.appliedUpgradeSlots ?? []).size
+      : 0
+
+  return Math.max(0, requiredIds.length - appliedAtCurrentRank)
 }
 
 /** A MoW Ability goal's material demand, net of only what's applied toward each track's current

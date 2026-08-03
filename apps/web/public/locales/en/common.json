@@ -359,17 +359,14 @@
       "goals": "Goals",
       "projects": "Projects",
       "insights": "Insights",
-      "active": "Active",
-      "completed": "Completed",
+      "toReach": "Unfulfilled",
+      "reached": "Reached",
       "archived": "Archived"
-    },
-    "view": {
-      "list": "List view",
-      "grid": "Grid view"
     },
     "columns": {
       "entity": "Character",
       "type": "Type",
+      "progress": "Progress",
       "status": "Status",
       "actions": "Actions",
       "estimate": "Est."
@@ -381,11 +378,23 @@
       "Completed": "Completed",
       "Archived": "Archived"
     },
+    "blocked": {
+      "label": "Blocked",
+      "reasons": {
+        "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
+        "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
+        "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
+        "MissingLevelPrerequisite": "A Level goal reaching level {{level}} is required.",
+        "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required."
+      },
+      "createPrerequisite": "Create prerequisite goal",
+      "reviewPrerequisite": "Review existing prerequisite",
+      "existingPrerequisiteGuidance": "The existing active or paused goal does not reach this target. Archive or replace it before creating another."
+    },
     "actions": {
       "openMenu": "Open goal actions",
       "pause": "Pause",
       "resume": "Resume",
-      "complete": "Mark complete",
       "archive": "Archive",
       "unarchive": "Restore from archive",
       "delete": "Delete",
@@ -417,6 +426,7 @@
       "name": "Name",
       "description": "Description",
       "color": "Color",
+      "customColor": "Custom color",
       "archive": "Archive project",
       "restore": "Restore project",
       "save": "Save project",
@@ -467,7 +477,7 @@
         "appliedUpgrades": "{{applied}}/{{total}}",
         "additionalTarget": {
           "label": "Additional target",
-          "none": "None (full rank)",
+          "none": "None",
           "topRow": "Top row (rank and a half)",
           "row": "{{count}} of {{total}} — Level {{level}}"
         }
@@ -612,6 +622,9 @@
     "filters": {
       "search": "Search goals",
       "allTypes": "All goal types",
+      "typeFilterLabel": "Goal type filter",
+      "sortByLabel": "Sort by",
+      "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
@@ -629,8 +642,17 @@
       "loadError": "Couldn't load this goal.",
       "saveError": "Couldn't save this goal.",
       "save": "Save changes",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "progressTitle": "Progress & target",
+      "blockersTitle": "Blockers",
+      "unsavedChangesTitle": "Discard unsaved changes?",
+      "unsavedChangesDescription": "You have unsaved changes to this goal. Closing now will discard them.",
+      "unsavedChangesConfirm": "Discard changes",
+      "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
+      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in this project reserve their share. It does not change the goal's actual status.",
       "unavailable": "Unavailable",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
@@ -640,10 +662,27 @@
       "projectsRequired": "Select at least one project.",
       "farmingTitle": "Farming locations",
       "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
+      "farmingSummaryTitle": "Farming strategy",
+      "farmingSelected": "{{count}} location(s) selected",
+      "farmingAuto": "Automatic (least energy)",
       "shardsTitle": "Shards location",
       "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
       "none": "None"
+    },
+    "overview": {
+      "levelProgress": "Lv {{current}} → {{target}}",
+      "progressLabel": "Goal progress",
+      "actualProgress": "Actual progress",
+      "potentialProgress": "Potential progress",
+      "remaining": {
+        "upgrades": "{{count}} upgrades remaining",
+        "upgradeSlots": "{{count}} upgrade slots remaining",
+        "energy": "{{energy}} energy remaining",
+        "shards": "{{count}} shards remaining",
+        "mythicShards": "{{count}} mythic shards remaining",
+        "orbs": "{{count}} orbs remaining"
+      }
     },
     "insights": {
       "title": "Insights",

@@ -28,6 +28,12 @@ export type ResourceNeed = {
   shards: number
   mythicShards: number
   orbsByType: Partial<Record<Rarity, number>>
+  /** Rank goals only — unfilled upgrade *slots* (6 per rank) still ahead, net of whatever's already
+   *  applied at the current rank. `null` for every other goal kind, which has no fixed slot count to
+   *  count against. Distinct from `upgrades`' raw material total: a handful of slots can still expand
+   *  to a large crafting-material count once recipes are factored in, so the two numbers intentionally
+   *  don't agree — this is the "how many rank-up actions are left" reading, not "how much to farm". */
+  upgradeSlotsRemaining: number | null
 }
 
 /** Whether a unit's *current* progression is already in the Mythic tier — the point at which
@@ -46,6 +52,7 @@ const EMPTY_NEED: ResourceNeed = {
   shards: 0,
   mythicShards: 0,
   orbsByType: {},
+  upgradeSlotsRemaining: null,
 }
 
 /** The shards/mythic shards/orbs to cross every progression step in `(start, end]`, net of what's
@@ -116,6 +123,7 @@ export function ascensionResourceNeed(params: {
     shards: netShards,
     mythicShards: netMythicShards,
     orbsByType,
+    upgradeSlotsRemaining: null,
   }
 }
 
@@ -144,5 +152,6 @@ export function unlockResourceNeed(params: {
     shards: netShards,
     mythicShards: 0,
     orbsByType: {},
+    upgradeSlotsRemaining: null,
   }
 }

@@ -27,7 +27,6 @@ import {
 import { abilityLevelsByRarity } from "../../model/goal-creation-form/goal-validation"
 import {
   rowCount,
-  rowLevel,
   type RankAdditionalTarget,
 } from "../../model/estimate/rank-additional-target"
 
@@ -76,27 +75,34 @@ function ResourcesNeededList({
   )
 }
 
-function additionalTargetLabel(
-  t: ReturnType<typeof useTranslation>["t"],
-  rank: Rank,
+function AdditionalTargetLabel({
+  rank,
+  value,
+}: {
+  rank: Rank
   value: RankAdditionalTarget
-): string {
-  if (value === "None") return t("goals.create.rank.additionalTarget.none")
-  if (value === "TopRow") return t("goals.create.rank.additionalTarget.topRow")
-  if (value === "TopRow1" || value === "TopRow2") {
-    const count = value === "TopRow1" ? 1 : 2
-    return t("goals.create.rank.additionalTarget.row", {
-      count,
-      total: 3,
-      level: rowLevel(rank, count),
-    })
+}) {
+  const { t } = useTranslation()
+  if (value === "None") {
+    return <>{t("goals.create.rank.additionalTarget.none")}</>
   }
-  const count = rowCount(value)!
-  return t("goals.create.rank.additionalTarget.row", {
-    count,
-    total: 6,
-    level: rowLevel(rank, count),
-  })
+
+  let count = rowCount(value)
+  if (value === "TopRow1") count = 1
+  if (value === "TopRow2") count = 2
+  if (value === "TopRow") count = 3
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <RankBadge rank={rank} />
+      {count !== null ? (
+        <>
+          {" "}
+          <span>({count}/6)</span>
+        </>
+      ) : null}
+    </span>
+  )
 }
 
 /** Target-rank field + its "Additional target" (V1's Point Five / Mythic-tier partial-upgrade
@@ -217,7 +223,7 @@ export function RankGoalFields({
           <SelectContent container={additionalContainer}>
             {additionalTargetChoices.map((choice) => (
               <SelectItem key={choice} value={choice}>
-                {additionalTargetLabel(t, rankEnd, choice)}
+                <AdditionalTargetLabel rank={rankEnd} value={choice} />
               </SelectItem>
             ))}
           </SelectContent>

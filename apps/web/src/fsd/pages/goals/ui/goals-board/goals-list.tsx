@@ -1,3 +1,4 @@
+import type { SyntheticEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown, ChevronUp, LockKeyhole } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -11,17 +12,25 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import {
+  NO_BLOCKERS,
+  UNKNOWN_PROGRESS,
+} from "../../model/attainment/goal-overview-metrics-defaults"
+import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
 import type { GoalRow } from "../../model/shared/types"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { GoalRowActions } from ".//goal-row-actions"
 import {
+  GoalEnergyRemainingSummary,
+  GoalProgressDisplay,
   GoalProjectBadges,
+  GoalRemainingSummary,
   GoalTypeBadge,
   GoalUnitIcon,
 } from "../shared/goal-visuals"
-import { StatusBadge } from "../shared/status-badge"
+import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 
 type Props = {
   rows: GoalRow[]
@@ -32,11 +41,22 @@ type Props = {
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
    *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
   estimates?: ReadonlyMap<string, EstimateOutcome>
+  /** Progress + remaining-resource info per goal id (plan §2) — absent renders neither. */
+  metrics?: ReadonlyMap<string, GoalOverviewMetrics>
+  potentialProgress?: ReadonlyMap<string, number>
+}
+
+/** Stops activation on an inner control from
+ * also bubbling up to the row/card's own "open detail" handler. */
+function stopRowNavigation(event: SyntheticEvent<HTMLElement>): void {
+  event.stopPropagation()
 }
 
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
- * responsive split. Reorder (up/down) is only rendered when `reorderEnabled` (single project + Active
- * tab + list view, per the Phase 3 scope notes). */
+ * responsive split. The whole row/card is clickable (opens the goal's detail view); the actions menu
+ * and nested buttons stop activation from bubbling so they keep working independently.
+ * Reorder (up/down) is only rendered when `reorderEnabled` (single project + Active tab + list view,
+ * per the Phase 3 scope notes). */
 export function GoalsList({
   rows,
   actions,
@@ -44,6 +64,8 @@ export function GoalsList({
   onMove,
   onView = () => undefined,
   estimates,
+  metrics,
+  potentialProgress,
 }: Props) {
   const isMobile = useIsMobile()
 
@@ -55,6 +77,8 @@ export function GoalsList({
     <GoalsMobileCards
       actions={actions}
       estimates={estimates}
+      metrics={metrics}
+      potentialProgress={potentialProgress}
       onMove={onMove}
       onView={onView}
       reorderEnabled={reorderEnabled}
@@ -64,6 +88,8 @@ export function GoalsList({
     <GoalsTable
       actions={actions}
       estimates={estimates}
+      metrics={metrics}
+      potentialProgress={potentialProgress}
       onMove={onMove}
       onView={onView}
       reorderEnabled={reorderEnabled}
@@ -101,12 +127,20 @@ function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
   )
 }
 
+function estimateEnergy(estimate: EstimateOutcome | undefined) {
+  return estimate && estimate.status !== "Blocked"
+    ? estimate.energyTotal
+    : undefined
+}
+
 function GoalsTable({
   rows,
   actions,
   reorderEnabled,
   onMove,
   estimates,
+  metrics,
+  potentialProgress,
   onView = () => undefined,
 }: Props) {
   const { t } = useTranslation()
@@ -118,6 +152,7 @@ function GoalsTable({
         <TableRow>
           <TableHead>{t("goals.columns.entity")}</TableHead>
           <TableHead>{t("goals.columns.type")}</TableHead>
+          <TableHead>{t("goals.columns.progress")}</TableHead>
           <TableHead>{t("goals.columns.status")}</TableHead>
           <TableHead>{t("goals.columns.estimate")}</TableHead>
           <TableHead className="text-right">
@@ -127,7 +162,12 @@ function GoalsTable({
       </TableHeader>
       <TableBody>
         {rows.map((row, index) => (
-          <TableRow data-testid="goal-row" key={row.goalId}>
+          <TableRow
+            className="cursor-pointer"
+            data-testid="goal-row"
+            key={row.goalId}
+            onClick={() => onView(row.goalId)}
+          >
             <TableCell className="font-medium">
               <div className="flex items-center gap-3">
                 <GoalUnitIcon
@@ -138,7 +178,10 @@ function GoalsTable({
                 <div className="min-w-0">
                   <Button
                     className="h-auto p-0 font-medium"
-                    onClick={() => onView(row.goalId)}
+                    onClick={(event) => {
+                      stopRowNavigation(event)
+                      onView(row.goalId)
+                    }}
                     variant="link"
                   >
                     {getEntityName(row.entityType, row.entityId)}
@@ -167,13 +210,39 @@ function GoalsTable({
                 />
               </div>
             </TableCell>
+            <TableCell className="min-w-40">
+              <GoalProgressDisplay
+                actualSummary={
+                  <GoalRemainingSummary
+                    remaining={metrics?.get(row.goalId)?.remaining ?? null}
+                  />
+                }
+                potentialRatio={potentialProgress?.get(row.goalId)}
+                potentialSummary={
+                  <GoalEnergyRemainingSummary
+                    energy={estimateEnergy(estimates?.get(row.goalId))}
+                  />
+                }
+                progress={
+                  metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
+                }
+              />
+            </TableCell>
             <TableCell>
-              <StatusBadge status={row.status} />
+              <div className="flex flex-wrap items-center gap-1">
+                <StatusBadge status={row.status} />
+                <BlockedIndicator
+                  blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
+                />
+              </div>
             </TableCell>
             <TableCell>
               <EstimateCell estimate={estimates?.get(row.goalId)} />
             </TableCell>
-            <TableCell>
+            <TableCell
+              onClick={stopRowNavigation}
+              onKeyDown={stopRowNavigation}
+            >
               <div className="flex items-center justify-end gap-1">
                 {reorderEnabled ? (
                   <>
@@ -219,6 +288,8 @@ function GoalsMobileCards({
   reorderEnabled,
   onMove,
   estimates,
+  metrics,
+  potentialProgress,
   onView = () => undefined,
 }: Props) {
   const { t } = useTranslation()
@@ -228,9 +299,10 @@ function GoalsMobileCards({
     <ul className="flex flex-col gap-3" data-testid="goals-list-cards">
       {rows.map((row, index) => (
         <li
-          className="flex flex-col gap-2 rounded-2xl border p-3 text-sm"
+          className="flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm"
           data-testid="goal-row"
           key={row.goalId}
+          onClick={() => onView(row.goalId)}
         >
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2">
@@ -243,7 +315,10 @@ function GoalsMobileCards({
               <div className="min-w-0">
                 <Button
                   className="h-auto p-0 font-medium"
-                  onClick={() => onView(row.goalId)}
+                  onClick={(event) => {
+                    stopRowNavigation(event)
+                    onView(row.goalId)
+                  }}
                   variant="link"
                 >
                   {getEntityName(row.entityType, row.entityId)}
@@ -251,7 +326,12 @@ function GoalsMobileCards({
                 <GoalProjectBadges projects={row.projects ?? []} />
               </div>
             </div>
-            <StatusBadge status={row.status} />
+            <div className="flex flex-wrap items-center justify-end gap-1">
+              <StatusBadge status={row.status} />
+              <BlockedIndicator
+                blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
+              />
+            </div>
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
@@ -259,6 +339,20 @@ function GoalsMobileCards({
             </div>
             <EstimateCell estimate={estimates?.get(row.goalId)} />
           </div>
+          <GoalProgressDisplay
+            actualSummary={
+              <GoalRemainingSummary
+                remaining={metrics?.get(row.goalId)?.remaining ?? null}
+              />
+            }
+            potentialRatio={potentialProgress?.get(row.goalId)}
+            potentialSummary={
+              <GoalEnergyRemainingSummary
+                energy={estimateEnergy(estimates?.get(row.goalId))}
+              />
+            }
+            progress={metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS}
+          />
           {row.notes ? (
             <p className="truncate text-muted-foreground" title={row.notes}>
               {row.notes}
@@ -266,7 +360,11 @@ function GoalsMobileCards({
           ) : row.goalType === "Unlock" ? (
             <p className="text-muted-foreground">{t("goals.unlockFlavor")}</p>
           ) : null}
-          <div className="flex items-center justify-end gap-1">
+          <div
+            className="flex items-center justify-end gap-1"
+            onClick={stopRowNavigation}
+            onKeyDown={stopRowNavigation}
+          >
             {reorderEnabled ? (
               <>
                 <Button

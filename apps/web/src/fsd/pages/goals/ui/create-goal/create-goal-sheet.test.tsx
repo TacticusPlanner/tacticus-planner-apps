@@ -488,6 +488,47 @@ describe("CreateGoalSheet", () => {
     expect(onCreated).toHaveBeenCalledTimes(1)
   })
 
+  it("applies a prerequisite prefill for the unit, required target, and project memberships", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Stone1",
+      progressionIndex: "Common:None",
+      appliedUpgradeSlots: [],
+      xpLevel: 31,
+      xp: 0,
+    })
+    listProjects.mockResolvedValue({
+      projects: [
+        { projectId: "proj-1", name: "One", isActivePlan: true },
+        { projectId: "proj-2", name: "Two", isActivePlan: false },
+      ],
+    })
+    render(
+      <CreateGoalSheet
+        onCreated={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        prefill={{
+          entityType: "Character",
+          entityId: "hero1" as never,
+          goalType: "Level",
+          requiredLevel: 42,
+          projectIds: ["proj-2"],
+        }}
+      />
+    )
+
+    expect(
+      await screen.findByTestId("create-goal-type-card-Level")
+    ).toBeVisible()
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-level-target")).toHaveTextContent(
+        "42"
+      )
+      expect(screen.getByTestId("create-goal-project-proj-2")).toBeChecked()
+      expect(screen.getByTestId("create-goal-project-proj-1")).not.toBeChecked()
+    })
+  })
+
   it("nets a Level goal's cost against owned XP books, hiding the cost preview once fully covered", async () => {
     getPlayerCharacter.mockResolvedValue({
       rank: "Stone1",
@@ -866,6 +907,60 @@ describe("CreateGoalSheet", () => {
         screen.getByTestId("create-goal-farming-strategy-preview")
       ).toHaveTextContent("goals.create.farmingStrategy.explanation.Milestones")
     })
+  })
+
+  it("formats additional rank targets as the target rank plus applied slots", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+
+    fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
+    let listbox = await screen.findByRole("listbox")
+    expect(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
+    ).toBeInTheDocument()
+    expect(
+      within(listbox).getByRole("option", { name: /Stone2\s*\(3\/6\)/ })
+    ).toBeInTheDocument()
+    expect(within(listbox).getAllByRole("option")).toHaveLength(2)
+
+    fireEvent.click(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
+    )
+    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+    listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Adamantine1"))
+
+    fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
+    listbox = await screen.findByRole("listbox")
+    expect(
+      within(listbox).getByRole("option", {
+        name: /Adamantine1\s*\(5\/6\)/,
+      })
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
+    )
+    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+    listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Adamantine2"))
+
+    fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
+    listbox = await screen.findByRole("listbox")
+    expect(within(listbox).getAllByRole("option")).toHaveLength(1)
+    expect(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
+    ).toBeInTheDocument()
   })
 
   it("submits only the explicitly toggled types, with no rank/progression/ability target for Unlock", async () => {

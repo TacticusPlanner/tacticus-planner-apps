@@ -9,6 +9,7 @@ export { RarityCombobox, type RarityComboboxItem } from "./rarity-combobox"
 export { ProgressionSelect, ProgressionBadge } from "./progression-select"
 export { RankSelect } from "./rank-select"
 export { ReadOnlyField } from "./read-only-field"
+export { ConfirmationDialog } from "./confirmation-dialog"
 export {
   LocationChips,
   LocationSection,

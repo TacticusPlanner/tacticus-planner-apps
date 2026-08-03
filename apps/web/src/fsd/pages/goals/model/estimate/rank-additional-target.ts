@@ -1,4 +1,9 @@
-import { Rank, rankIndex, type Rank as RankType } from "@workspace/game-domain"
+import {
+  lastRank,
+  Rank,
+  rankIndex,
+  type Rank as RankType,
+} from "@workspace/game-domain"
 
 // Ported from V1's `rank-goal-select.tsx` / `rankToLevel` (tacticusplanner's `models/constants.ts`)
 // — restricted to ranks that exist in this domain model's ladder (no `Locked`, no unreachable
@@ -69,15 +74,15 @@ const rowTargets: readonly RankAdditionalTarget[] = [
   "Row5",
 ]
 
-/** Every selectable "Additional target" for `rank`, recalculated whenever the target rank changes —
- * `"None"` always first, then either the top-row progression (`"TopRow1"`, `"TopRow2"`, `"TopRow"`,
- * below Diamond3) or the 5 numbered Row options (Diamond3+) — never both, see `isMythicRank`. */
+/** Every selectable "Additional target" for `rank`: clean or 3/6 below Adamantine, clean plus
+ * 1/6-5/6 at non-maximum Adamantine ranks, and clean only at the current maximum rank. */
 export function additionalTargetOptions(
   rank: RankType
 ): readonly RankAdditionalTarget[] {
-  return isMythicRank(rank)
+  if (rank === lastRank) return ["None"]
+  return rankIndex(rank) >= rankIndex(Rank.Adamantine1)
     ? ["None", ...rowTargets]
-    : ["None", "TopRow1", "TopRow2", "TopRow"]
+    : ["None", "TopRow"]
 }
 
 /** The 1-5 count encoded by a `"RowN"` value, or `null` for every other value. */

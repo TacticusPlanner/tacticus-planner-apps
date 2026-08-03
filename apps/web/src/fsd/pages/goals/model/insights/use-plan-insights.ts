@@ -6,6 +6,7 @@ import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import {
   getInventoryShard,
+  getInventoryOrbs,
   getInventoryUpgrades,
   getLiveProgress,
   getPlayerCharacter,
@@ -25,9 +26,11 @@ import {
 } from ".//use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 
-// Only these statuses represent resources the plan still needs to acquire — a completed/archived
-// goal's demand is done, mirroring goals-page.tsx's ACTIVE_TAB_STATUSES.
-const ACTIVE_STATUSES = new Set(["Draft", "Active", "Paused"])
+// Only these statuses represent resources the plan still needs to acquire — an archived goal's
+// demand is done. A goal that's already reached its target (see `model/attainment/`) drops out of
+// the cost totals on its own merit: `calculateGoalResourceNeed`/`calculateGoalFarmingStages`
+// naturally return no need once the target's synced state is met, for every costed goal kind.
+const ACTIVE_STATUSES = new Set(["Active", "Paused"])
 
 type FetchState =
   | { status: "idle" }
@@ -61,6 +64,7 @@ export function usePlanInsights(
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+  const inventoryOrbs = useLiveQuery(() => getInventoryOrbs(), [])
   const liveProgress = useLiveQuery(() => getLiveProgress(), [])
   const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
   const { settings: planningSettings } = usePlanningSettings()
@@ -73,6 +77,10 @@ export function usePlanInsights(
   const memberKey = activeMembers
     .map((member) => `${member.goal.goalId}:${member.priority}`)
     .join(",")
+  const calculationKey = `${memberKey}:${JSON.stringify({
+    inventoryUpgrades,
+    inventoryOrbs,
+  })}`
   const hasQuery = Boolean(
     projectId && isAuthenticated && activeMembers.length > 0
   )
@@ -171,6 +179,7 @@ export function usePlanInsights(
             playerMowById,
             inventoryShardById,
             inventoryUpgrades: inventoryUpgrades ?? [],
+            inventoryOrbs,
             upgradesById,
             battlesById,
             charactersById: charactersById!,
@@ -188,7 +197,7 @@ export function usePlanInsights(
             onslaughtRewards: onslaughtRewards!,
           })
 
-          setFetchState({ status: "success", key: memberKey, result })
+          setFetchState({ status: "success", key: calculationKey, result })
         }
       )
       .catch(() => {
@@ -206,13 +215,13 @@ export function usePlanInsights(
     serverDataReady,
     serverDataVersion,
     isAuthenticated,
-    memberKey,
+    calculationKey,
     planningSettings.dailyEnergy,
     liveProgress?.gameModeTokens.onslaught?.current,
   ])
 
   const isCurrent =
-    fetchState.status === "success" && fetchState.key === memberKey
+    fetchState.status === "success" && fetchState.key === calculationKey
 
   return {
     result:

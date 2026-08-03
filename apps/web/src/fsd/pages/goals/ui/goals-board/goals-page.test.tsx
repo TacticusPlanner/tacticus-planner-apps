@@ -105,10 +105,16 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getOnslaughtRewards: () => [],
 }))
 
+const getPlayerCharacters = vi.fn<() => unknown[]>(() => [])
+
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
-  getInventoryUpgrades: () => undefined,
+  getPlayerCharacters: (...args: unknown[]) =>
+    Promise.resolve(getPlayerCharacters(...(args as []))),
+  getPlayerMows: () => Promise.resolve([]),
+  getInventoryUpgrades: () => Promise.resolve(undefined),
+  getPlayerInventoryItems: () => Promise.resolve([]),
   getInventoryShard: () => Promise.resolve(undefined),
   getLiveProgress: () => undefined,
 }))
@@ -118,6 +124,9 @@ const listProjects = vi.fn()
 const createGoal = vi.fn()
 const updateGoalStatus = vi.fn()
 const deleteGoal = vi.fn()
+const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
+  Promise.resolve(undefined)
+)
 
 vi.mock("@/entities/goal", () => ({
   listGoals: (...args: unknown[]) => listGoals(...args),
@@ -132,7 +141,7 @@ vi.mock("@/entities/goal", () => ({
     }),
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
-      queryFn: () => Promise.resolve(undefined),
+      queryFn: () => getGoalDetail(goalId),
     }),
   },
 }))
@@ -165,6 +174,15 @@ vi.mock("@/entities/project", () => ({
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { GoalsPage } from ".//goals-page"
+import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
+
+function renderPage() {
+  return render(
+    <CreateGoalLauncherProvider onLaunch={vi.fn()}>
+      <GoalsPage />
+    </CreateGoalLauncherProvider>
+  )
+}
 
 const activeGoal = {
   goalId: "goal-1",
@@ -191,11 +209,13 @@ describe("GoalsPage", () => {
     listProjectGoals.mockReset()
     listProjectGoals.mockResolvedValue({ goals: [] })
     listProjects.mockResolvedValue({ projects: [] })
+    getGoalDetail.mockReset().mockResolvedValue(undefined)
+    getPlayerCharacters.mockReset().mockReturnValue([])
   })
 
   it("does not render page-level creation actions", async () => {
     listGoals.mockResolvedValue({ goals: [] })
-    render(<GoalsPage />)
+    renderPage()
 
     await screen.findByTestId("goals-page-empty")
     expect(
@@ -206,9 +226,31 @@ describe("GoalsPage", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("keeps filter control names stable while exposing the selected value", async () => {
+    listGoals.mockResolvedValue({ goals: [] })
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-page-empty")
+
+    const sort = screen.getByTestId("goals-sort")
+    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
+    expect(
+      document.getElementById("goals-sort-value")
+    ).not.toBeEmptyDOMElement()
+
+    await user.click(sort)
+    await user.click(
+      screen.getByRole("option", { name: "goals.filters.sort.status" })
+    )
+    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
+    expect(document.getElementById("goals-sort-value")).toHaveTextContent(
+      "goals.filters.sort.status"
+    )
+  })
+
   it("shows a row for an active goal with lifecycle actions", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
-    render(<GoalsPage />)
+    renderPage()
 
     expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
     expect(screen.getByText("Hero One")).toBeInTheDocument()
@@ -217,18 +259,58 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("filters out the active goal when switching to the Completed tab", async () => {
+  it("filters out the active goal when switching to the Reached tab", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const user = userEvent.setup()
-    render(<GoalsPage />)
+    renderPage()
 
     await screen.findByTestId("goals-list-table")
 
-    await user.click(screen.getByTestId("goals-tab-completed"))
+    await user.click(screen.getByTestId("goals-tab-reached"))
 
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
     ).toBeInTheDocument()
+  })
+
+  it("moves a goal to the Reached tab once its rank target is met", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    getGoalDetail.mockResolvedValue({
+      goalId: activeGoal.goalId,
+      entityType: "Character",
+      entityId: "hero1",
+      goalType: "Rank",
+      status: "Active",
+      notes: null,
+      projectIds: [],
+      dependsOn: [],
+      events: [],
+      updatedAt: activeGoal.updatedAt,
+      config: {
+        rank: {
+          start: 0,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: 0,
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+      },
+    })
+    getPlayerCharacters.mockReturnValue([
+      { unitId: "hero1", rank: "Stone1", appliedUpgradeSlots: [] },
+    ])
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-tab-reached"))
+
+    expect(await screen.findByText("Hero One")).toBeInTheDocument()
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("goals-tab-reached")).toHaveTextContent("(1)")
+    })
   })
 
   it("retains non-archived tab counts while the Archived tab is selected", async () => {
@@ -238,24 +320,37 @@ describe("GoalsPage", () => {
       })
     )
     const user = userEvent.setup()
-    render(<GoalsPage />)
+    renderPage()
 
     await screen.findByTestId("goals-list-table")
     await user.click(screen.getByTestId("goals-tab-archived"))
 
-    expect(screen.getByTestId("goals-tab-active")).toHaveTextContent("(1)")
+    expect(screen.getByTestId("goals-tab-to-reach")).toHaveTextContent("(1)")
     expect(screen.getByTestId("goals-tab-archived")).toHaveTextContent("(1)")
   })
 
-  it("switches to grid view", async () => {
+  it("opens the goal detail sheet when clicking anywhere on the row", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
-    render(<GoalsPage />)
+    const user = userEvent.setup()
+    renderPage()
 
-    await screen.findByTestId("goals-list-table")
+    const row = await screen.findByTestId("goal-row")
+    await user.click(row)
 
-    fireEvent.click(screen.getByTestId("goals-view-grid"))
+    expect(await screen.findByTestId("goal-detail-sheet")).toBeInTheDocument()
+  })
 
-    expect(await screen.findByTestId("goals-grid")).toBeInTheDocument()
+  it("does not open the goal detail sheet when using the row actions menu", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goal-row")
+    await user.click(
+      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    )
+
+    expect(screen.queryByTestId("goal-detail-sheet")).not.toBeInTheDocument()
   })
 
   it("groups goals by goal type", async () => {
@@ -265,7 +360,7 @@ describe("GoalsPage", () => {
         { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
       ],
     })
-    render(<GoalsPage />)
+    renderPage()
 
     fireEvent.click(await screen.findByTestId("goals-group-by"))
     fireEvent.click(
@@ -301,7 +396,7 @@ describe("GoalsPage", () => {
     listProjectGoals.mockResolvedValue({
       goals: [{ goal: activeGoal, priority: 0 }],
     })
-    render(<GoalsPage />)
+    renderPage()
 
     expect(
       await screen.findByText("My Goals · goals.project.active")

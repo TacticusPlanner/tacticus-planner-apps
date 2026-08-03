@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
@@ -169,6 +170,117 @@ describe("GoalsList", () => {
     for (const cell of screen.getAllByTestId("goal-row-estimate")) {
       expect(cell).not.toHaveAttribute("title")
     }
+  })
+
+  it("renders separate actual and potential progress for a project-scoped goal", async () => {
+    const estimates = new Map([
+      [
+        "goal-1",
+        { days: 5, date: "2026-01-06", energyTotal: 50, raidsTotal: 5 },
+      ],
+    ])
+    render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates}
+        metrics={
+          new Map([
+            [
+              "goal-1",
+              {
+                progress: {
+                  kind: "Rank",
+                  current: "Stone1",
+                  target: "Iron1",
+                  ratio: 0.25,
+                },
+                remaining: {
+                  upgrades: [],
+                  shardId: null,
+                  shards: 0,
+                  mythicShards: 0,
+                  orbsByType: {},
+                  upgradeSlotsRemaining: 3,
+                },
+                blockers: { isBlocked: false, reasons: [] },
+              },
+            ],
+          ]) as never
+        }
+        potentialProgress={new Map([["goal-1", 0.75]])}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+
+    expect(await screen.findByTestId("goal-progress-bar")).toHaveAttribute(
+      "aria-valuetext",
+      "25%"
+    )
+    expect(screen.getByTestId("goal-potential-progress-bar")).toHaveAttribute(
+      "aria-valuetext",
+      "75%"
+    )
+    const actualSummary = screen.getByTestId("goal-remaining-summary")
+    const potentialSummary = screen.getByTestId("goal-energy-remaining-summary")
+    expect(actualSummary).toHaveTextContent(
+      "goals.overview.remaining.upgradeSlots"
+    )
+    expect(potentialSummary).toHaveTextContent(
+      "goals.overview.remaining.energy"
+    )
+    expect(
+      screen
+        .getByTestId("goal-progress-bar")
+        .compareDocumentPosition(actualSummary) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      screen
+        .getByTestId("goal-potential-progress-bar")
+        .compareDocumentPosition(potentialSummary) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  it("opens the goal detail via keyboard from the goal-name button", async () => {
+    const onView = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <GoalsList
+        actions={stubActions}
+        onView={onView}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+
+    const nameButton = await screen.findByRole("button", { name: "Hero One" })
+    const row = screen.getByTestId("goal-row")
+    expect(screen.getByRole("row", { name: /Hero One/ })).toBe(row)
+    expect(row).not.toHaveAttribute("tabindex")
+    nameButton.focus()
+    expect(nameButton).toHaveFocus()
+    await user.keyboard("{Enter}")
+
+    expect(onView).toHaveBeenCalledWith("goal-1")
+  })
+
+  it("does not open the goal detail when Enter is pressed on the row actions trigger", async () => {
+    const onView = vi.fn()
+    render(
+      <GoalsList
+        actions={stubActions}
+        onView={onView}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+
+    const trigger = await screen.findByTestId("goal-row-actions-trigger-goal-1")
+    fireEvent.keyDown(trigger, { key: "Enter" })
+
+    expect(onView).not.toHaveBeenCalled()
   })
 
   it("resolves a Machine of War row's display name from the mows catalog", async () => {

@@ -45,7 +45,8 @@ const topRow = (upgrades: readonly UpgradeId[]): UpgradeId[] =>
  *   getCharacterUpgradeRank`'s `lastRankUpgrades.slice(0, targetApplied)`), or
  * - `pointFive` includes the whole top row (indices 0/2/4) — V1's "Rank Point Five", equivalent to
  *   `topRowCount: 3`.
- * Returns `[]` for an empty/invalid range.
+ * A same-rank range may still return its configured partial target; a clean same-rank or inverted
+ * range returns `[]`.
  */
 export function rankUpUpgradeIds(
   character: Character,
@@ -55,7 +56,7 @@ export function rankUpUpgradeIds(
   appliedUpgrades = 0,
   topRowCount = 0
 ): UpgradeId[] {
-  if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
+  if (rankIndex(rankStart) > rankIndex(rankEnd)) return []
 
   const byRank = rankUpgradeMap(character)
   const ids: UpgradeId[] = []
@@ -83,7 +84,7 @@ export function groupUpgradesByRank(
   appliedUpgrades = 0,
   topRowCount = 0
 ): RankUpGroup[] {
-  if (rankIndex(rankStart) >= rankIndex(rankEnd)) return []
+  if (rankIndex(rankStart) > rankIndex(rankEnd)) return []
 
   const byRank = rankUpgradeMap(character)
   const groups: RankUpGroup[] = []

@@ -4,6 +4,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 import type { ProjectSummary } from "@/entities/project"
 
 import { projectMarkerSuffix } from "../../model/projects/project-marker"
+import { ProjectColorDot } from "../shared/project-color-dot"
 
 /**
  * Checkbox list of every project, used by GoalDetailSheet to show and edit a goal's project
@@ -38,6 +39,7 @@ export function GoalProjectsField({
               onToggle(project.projectId, checked === true)
             }
           />
+          <ProjectColorDot color={project.color} />
           {project.name}
           {projectMarkerSuffix(t, project)}
         </label>

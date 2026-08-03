@@ -13,6 +13,7 @@ import {
 import type { ProjectSummary } from "@/entities/project"
 
 import type { useProjectActions } from "../../model/projects/use-project-actions"
+import { ProjectColorDot } from "../shared/project-color-dot"
 import { ManageProjectsSheet } from ".//manage-projects-sheet"
 
 const ALL_PROJECTS_VALUE = "__all__"
@@ -61,6 +62,7 @@ export function ProjectToolbar({
             .filter((project) => project.status !== "Archived")
             .map((project) => (
               <SelectItem key={project.projectId} value={project.projectId}>
+                <ProjectColorDot color={project.color} />
                 {project.name}
                 {project.isActivePlan ? ` (${t("goals.project.active")})` : ""}
               </SelectItem>

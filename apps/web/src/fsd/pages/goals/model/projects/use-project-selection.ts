@@ -44,6 +44,11 @@ export function useProjectSelection({ open }: { open: boolean }) {
     setProjectPriorities((current) => ({ ...current, [projectId]: value }))
   }
 
+  const selectProjects = (projectIds: readonly string[]) => {
+    setSelectedProjectIds([...projectIds])
+    setProjectPriorities({})
+  }
+
   const reset = () => {
     setSelectedProjectIds([])
     setProjectPriorities({})
@@ -55,6 +60,7 @@ export function useProjectSelection({ open }: { open: boolean }) {
     toggleProject,
     projectPriorities,
     setProjectPriority,
+    selectProjects,
     reset,
   }
 }
