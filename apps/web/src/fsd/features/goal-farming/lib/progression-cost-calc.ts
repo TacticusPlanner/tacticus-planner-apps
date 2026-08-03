@@ -8,8 +8,11 @@ import {
   type Rarity,
 } from "@workspace/game-domain"
 
-import type { UpgradeNeed } from "../model/estimate.domain"
-import { shardResourceId, type ShardResourceId } from "../model/estimate.domain"
+import {
+  shardResourceId,
+  type ShardResourceId,
+  type UpgradeNeed,
+} from "../model/estimate.domain"
 
 // Need-derivation for Ascension and Unlock goals — the sibling of
 // `goal-spec-builder.ts`'s `computeMissingUpgrades` (Character Rank) and `mow-ability-calc.ts`'s

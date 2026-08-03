@@ -27,7 +27,7 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import { goalQueries } from "@/entities/goal"
+import { goalQueries, type GoalDetail } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
@@ -63,7 +63,9 @@ export function useDailyRaids(
   const details = detailQueries.flatMap((query) =>
     query.data ? [query.data] : []
   )
-  const detailKey = details.map((detail) => detail.goalId).join(",")
+  const detailKey = details
+    .map((detail) => `${detail.goalId}:${detail.entityType}:${detail.entityId}`)
+    .join(",")
 
   const charactersById = useLiveQuery(() => getCharactersMap(), [])
   const mowsById = useLiveQuery(() => getMowsMap(), [])
@@ -78,21 +80,19 @@ export function useDailyRaids(
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const playerState = useLiveQuery(async () => {
-    const ids = [
-      ...new Set(details.filter(isUnitGoal).map((detail) => detail.entityId)),
-    ]
+    const { characterIds, mowIds } = playerUnitIds(details)
     const [characters, mows, shards] = await Promise.all([
       Promise.all(
-        ids.map(
-          async (id) => [id, await getPlayerCharacter(asUnitId(id))] as const
+        characterIds.map(
+          async (id) => [id, await getPlayerCharacter(id)] as const
         )
       ),
       Promise.all(
-        ids.map(async (id) => [id, await getPlayerMow(asUnitId(id))] as const)
+        mowIds.map(async (id) => [id, await getPlayerMow(id)] as const)
       ),
       Promise.all(
-        ids.map(
-          async (id) => [id, await getInventoryShard(asUnitId(id))] as const
+        characterIds.map(
+          async (id) => [id, await getInventoryShard(id)] as const
         )
       ),
     ])
@@ -226,17 +226,37 @@ export function useDailyRaids(
         })
       }
       if (detail.goalType === "Unlock") return t("dailies:target.unlock")
-      return detail.goalType
+      if (detail.goalType === "Level" && detail.config.level) {
+        return t("dailies:target.level", { value: detail.config.level.end })
+      }
+      if (detail.goalType === "Upgrade" && detail.config.upgrade) {
+        return t("dailies:target.upgrade", {
+          value: detail.config.upgrade.targets.reduce(
+            (total, target) => total + target.quantity,
+            0
+          ),
+        })
+      }
+      return t("dailies:target.other", { value: detail.goalType })
     },
     dailyEnergy: settings.dailyEnergy,
   })
   return result ? { ...result, locationsByBattleId } : { status: "no-farmable" }
 }
 
-function isUnitGoal(detail: { entityType: string }) {
-  return detail.entityType === "Character" || detail.entityType === "Mow"
-}
-
-function asUnitId(id: string): UnitId {
-  return unitIdSchema.parse(id)
+export function playerUnitIds(
+  details: readonly Pick<GoalDetail, "entityId" | "entityType">[]
+) {
+  const characterIds = new Set<UnitId>()
+  const mowIds = new Set<UnitId>()
+  for (const detail of details) {
+    const parsed = unitIdSchema.safeParse(detail.entityId)
+    if (!parsed.success) continue
+    if (detail.entityType === "Character") characterIds.add(parsed.data)
+    if (detail.entityType === "Mow") mowIds.add(parsed.data)
+  }
+  return {
+    characterIds: [...characterIds],
+    mowIds: [...mowIds],
+  }
 }

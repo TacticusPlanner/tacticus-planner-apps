@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
@@ -6,8 +7,10 @@ import type { DailyRaidsViewModel } from "../model/daily-raids.domain"
 
 export function RaidState({
   state,
+  onRetry,
 }: {
   state: Exclude<DailyRaidsViewModel["status"], "ready">
+  onRetry?: () => void
 }) {
   const { t } = useTranslation("dailies")
   if (state === "loading") {
@@ -28,8 +31,13 @@ export function RaidState({
         : "empty.noProject"
   return (
     <Card data-testid={`dailies-${state}`}>
-      <CardContent className="py-10 text-center text-muted-foreground">
-        {t(key)}
+      <CardContent className="grid justify-items-center gap-4 py-10 text-center text-muted-foreground">
+        <p>{t(key)}</p>
+        {state === "error" && onRetry ? (
+          <Button variant="outline" onClick={onRetry}>
+            {t("empty.retry")}
+          </Button>
+        ) : null}
       </CardContent>
     </Card>
   )

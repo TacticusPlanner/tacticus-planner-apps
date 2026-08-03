@@ -139,6 +139,7 @@ describe("bonus raids", () => {
     expect(bonus.entries.map((entry) => entry.resourceId)).toEqual([
       upgradeId("U2"),
     ])
+    expect([...bonus.attemptsUsedByBattle]).toEqual([[battleId("B2"), 2]])
   })
 
   it("keeps qualifying entries in goal-priority order", () => {
@@ -170,6 +171,10 @@ describe("bonus raids", () => {
     expect(bonus.entries.map((entry) => entry.goalId)).toEqual([
       "second",
       "third",
+    ])
+    expect([...bonus.attemptsUsedByBattle]).toEqual([
+      [battleId("B2"), 1],
+      [battleId("B3"), 1],
     ])
   })
 })

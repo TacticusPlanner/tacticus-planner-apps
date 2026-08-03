@@ -31,14 +31,14 @@ const rankToLevel: Record<RankType, number> = {
   Adamantine2: 60,
 }
 
-/** True from Diamond3 onward — V1's `isMythicUpgrade` threshold (`rank-goal-select.tsx`). A
- * character rank's 6 upgrade slots are 2 rows of 3 (1 Health + 1 Damage + 1 Armour per row): below
- * Diamond3 the top row is immediately appliable at the current rank, while the bottom row needs the
+/** True from Adamantine1 onward, where partial targets use numbered upgrade slots. A
+ * character rank's 6 upgrade slots are 2 rows of 3 (1 Health + 1 Damage + 1 Armour per row): before
+ * Adamantine1 the top row is immediately appliable at the current rank, while the bottom row needs the
  * unit to have already advanced a further level — so only the top row's 1-3 slots are ever
- * independently targetable there. A Diamond3+ rank's 6 slots aren't row-paired that way; V1 numbers
- * them individually instead (see `additionalTargetOptions`). */
-function isMythicRank(rank: RankType): boolean {
-  return rankIndex(rank) >= rankIndex(Rank.Diamond3)
+ * independently targetable there. An Adamantine rank's 6 slots aren't row-paired that way; V1
+ * numbers those slots individually instead (see `additionalTargetOptions`). */
+function usesNumberedUpgradeTargets(rank: RankType): boolean {
+  return rankIndex(rank) >= rankIndex(Rank.Adamantine1)
 }
 
 /** The XP-level label for a numbered partial-upgrade count at `rank` — ported from V1's
@@ -49,9 +49,9 @@ export function rowLevel(rank: RankType, count: number): number {
 
 /**
  * The Rank goal's "Additional target" value — how far past a clean rank boundary the goal's target
- * actually reaches. `"None"` (the default for every rank) is a clean boundary. Below Diamond3:
+ * actually reaches. `"None"` (the default for every rank) is a clean boundary. Before Adamantine1:
  * `"TopRow1"`/`"TopRow2"` are 1 or 2 of the top row's 3 upgrades (Health, then + Damage); `"TopRow"`
- * is all 3 (+ Armour) — V1's "Rank Point Five". Diamond3+: no top row — instead the rank's own 6
+ * is all 3 (+ Armour) — V1's "Rank Point Five". Adamantine1+: no top row — instead the rank's own 6
  * upgrade slots are numbered individually as `"Row1"`-`"Row5"` (V1's "Mythic-tier" partial target),
  * each at its own XP level.
  */
@@ -80,7 +80,7 @@ export function additionalTargetOptions(
   rank: RankType
 ): readonly RankAdditionalTarget[] {
   if (rank === lastRank) return ["None"]
-  return rankIndex(rank) >= rankIndex(Rank.Adamantine1)
+  return usesNumberedUpgradeTargets(rank)
     ? ["None", ...rowTargets]
     : ["None", "TopRow"]
 }
@@ -96,11 +96,11 @@ export function rowCount(value: RankAdditionalTarget): number | null {
  * client-side resource preview need:
  * - `pointFive`/`appliedUpgrades` are the backend's `RankTarget` fields — it only ever checks their
  *   *count* (`Math.Max(appliedUpgrades, pointFive ? 3 : 0)` against the player's distinct applied
- *   slot count, `GoalAchievementEvaluator.RankAchieved`), so it doesn't matter that pre-Diamond3 and
- *   Diamond3+ reach the same numbers via different upgrade subsets.
+ *   slot count, `GoalAchievementEvaluator.RankAchieved`), so it doesn't matter that pre-Adamantine and
+ *   Adamantine1+ reach the same numbers via different upgrade subsets.
  * - `topRowCount` is client-preview-only (`rankUpUpgradeIds`'s third mode) — needed to disambiguate
  *   what the *same* `appliedUpgrades` count actually selects: the first N of the top-row subset
- *   below Diamond3, vs. the first N of the raw 6 at Diamond3+.
+ *   below Adamantine1, vs. the first N of the raw 6 at Adamantine1+.
  */
 export function additionalTargetSelection(value: RankAdditionalTarget): {
   pointFive: boolean
@@ -148,13 +148,13 @@ export function requiredLevelForRankTarget(
 /** The inverse of `additionalTargetSelection` — reconstructs the Additional target a persisted goal
  * (`GoalDetail.config.rank`) was created with, for read-only display (the edit flow never lets a
  * user change a goal's rank target, only re-derives this for the Farming Strategy availability
- * calc). Needs `rank` too — the wire pair alone can't tell a pre-Diamond3 `"TopRow2"` apart from a
- * Diamond3+ `"Row2"`, since both send `appliedUpgrades: 2`. */
+ * calc). Needs `rank` too — the wire pair alone can't tell a pre-Adamantine `"TopRow2"` apart from an
+ * Adamantine1+ `"Row2"`, since both send `appliedUpgrades: 2`. */
 export function additionalTargetFromWire(
   rank: RankType,
   wire: { endPointFive: boolean; endAppliedUpgrades: number }
 ): RankAdditionalTarget {
-  if (isMythicRank(rank)) {
+  if (usesNumberedUpgradeTargets(rank)) {
     return wire.endAppliedUpgrades > 0
       ? (rowTargets[wire.endAppliedUpgrades - 1] ?? "None")
       : "None"

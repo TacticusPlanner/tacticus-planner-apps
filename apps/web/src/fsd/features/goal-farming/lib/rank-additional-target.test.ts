@@ -6,7 +6,7 @@ import {
   additionalTargetSelection,
   rowCount,
   rowLevel,
-} from ".//rank-additional-target"
+} from "./rank-additional-target"
 
 describe("additionalTargetOptions", () => {
   it("offers only None and the full top row below Adamantine", () => {
@@ -97,15 +97,24 @@ describe("additionalTargetFromWire", () => {
     ).toBe("TopRow")
   })
 
-  it("reconstructs RowN for a Diamond3+ rank, ignoring endPointFive", () => {
+  it("preserves Diamond3 TopRow through the endPointFive wire value", () => {
     expect(
       additionalTargetFromWire("Diamond3", {
+        endPointFive: true,
+        endAppliedUpgrades: 0,
+      })
+    ).toBe("TopRow")
+  })
+
+  it("reconstructs RowN for an Adamantine rank", () => {
+    expect(
+      additionalTargetFromWire("Adamantine1", {
         endPointFive: false,
         endAppliedUpgrades: 4,
       })
     ).toBe("Row4")
     expect(
-      additionalTargetFromWire("Diamond3", {
+      additionalTargetFromWire("Adamantine1", {
         endPointFive: false,
         endAppliedUpgrades: 0,
       })

@@ -6,7 +6,7 @@ import type { FarmingUpgrade } from "../model/estimate.domain"
 import {
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
-} from ".//upgrade-recipe"
+} from "./upgrade-recipe"
 
 type MissingUpgradeEntry = {
   id: UpgradeId

@@ -4,7 +4,10 @@
     "rank": "Rang {{value}}",
     "ability": "Fähigkeit {{value}}",
     "ascension": "Aufstieg {{value}}",
-    "unlock": "Freischalten"
+    "unlock": "Freischalten",
+    "level": "Stufe {{value}}",
+    "upgrade": "{{value}} Verbesserungen",
+    "other": "Ziel: {{value}}"
   },
   "tabs": {
     "raids": "Raids",
@@ -27,7 +30,8 @@
   "empty": {
     "noProject": "Kein Projekt verfügbar.",
     "noFarmable": "Dieses Projekt hat keinen aktiven farmbaren Kampagnenbedarf.",
-    "error": "Der Raid-Plan konnte nicht geladen werden."
+    "error": "Der Raid-Plan konnte nicht geladen werden.",
+    "retry": "Erneut versuchen"
   },
   "today": {
     "title": "Heutige Raids",
@@ -64,7 +68,11 @@
       "steps": {
         "navigation": {
           "title": "Navigation",
-          "content": "Wechsle zwischen den täglichen Planern und Raid-Ansichten."
+          "content": "Wechsle zwischen den täglichen Planern."
+        },
+        "raids": {
+          "title": "Raid-Ansichten",
+          "content": "Wechsle zwischen dem heutigen Plan und dem vollständigen Raid-Plan."
         },
         "project": {
           "title": "Projekt wählen",

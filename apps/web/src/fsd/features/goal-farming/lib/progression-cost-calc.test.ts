@@ -8,7 +8,7 @@ import {
   ascensionResourceNeed,
   isMythicProgression,
   unlockResourceNeed,
-} from ".//progression-cost-calc"
+} from "./progression-cost-calc"
 
 const ascensionCostsById = new Map<string, AscensionCostStorageModel>([
   [
@@ -142,7 +142,7 @@ describe("unlockResourceNeed", () => {
 
   it("returns an empty need for a MoW (no rarity field to key the table by)", () => {
     const need = unlockResourceNeed({
-      initialRarity: undefined,
+      initialRarity: "Rare",
       entityId: "mow1",
       isMow: true,
       ownedShards: 0,

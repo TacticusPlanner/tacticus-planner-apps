@@ -101,7 +101,7 @@ export interface RaidPlanSummary {
 
 export interface RaidPlanSchedule {
   days: RaidDaySchedule[]
-  outcomes: Map<string, EstimateOutcome>
+  outcomes: ReadonlyMap<string, EstimateOutcome>
   summary: RaidPlanSummary
 }
 

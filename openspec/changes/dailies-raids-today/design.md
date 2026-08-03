@@ -124,7 +124,7 @@ This extraction happens anyway, at explicit user direction, as a deliberate exce
 
 Reuse the `/progress` page's existing pattern exactly: shadcn `Tabs`/`TabsList`/`TabsTrigger` driven by route location, with a nested `RouteObject[]` (index redirect + one real route per tab, each `lazy`-imported) and `<Outlet/>` for tab content — `/progress/route.tsx` is the direct template (`{ index: true, element: <Navigate replace to=".../onslaught" /> }` plus one `{ path: ..., element: ... }` per tab). Every tab is consequently its own addressable route, not client-only tab state — applied twice, once for Dailies' 6 primary tabs and once for Raids' 2 sub-tabs:
 
-```
+```text
 /dailies                    → redirect to /dailies/raids
 /dailies/raids              → redirect to /dailies/raids/today
 /dailies/raids/today        → Today (implemented)
