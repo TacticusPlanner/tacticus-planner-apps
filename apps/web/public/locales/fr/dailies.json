@@ -1,0 +1,112 @@
+{
+  "title": "Quotidiennes",
+  "target": {
+    "rank": "Rang {{value}}",
+    "ability": "Compétence {{value}}",
+    "ascension": "Ascension {{value}}",
+    "unlock": "Déverrouillage",
+    "level": "Niveau {{value}}",
+    "upgrade": "{{value}} améliorations",
+    "other": "Objectif : {{value}}"
+  },
+  "tabs": {
+    "raids": "Raids",
+    "shops": "Boutiques",
+    "onslaught": "Assaut",
+    "salvage-run": "Récupération",
+    "arena": "Arène",
+    "guild-raids": "Raids de guilde"
+  },
+  "placeholder": {
+    "title": "Cette quotidienne est en construction",
+    "description": "Ce planificateur sera disponible dans une prochaine mise à jour."
+  },
+  "project": { "placeholder": "Choisir un projet" },
+  "raids": {
+    "title": "Raids de campagne",
+    "description": "Dépensez l'énergie du jour selon la priorité du projet.",
+    "tabs": { "today": "Aujourd'hui", "plan": "Plan" }
+  },
+  "empty": {
+    "noProject": "Aucun projet disponible.",
+    "noFarmable": "Ce projet n'a aucun besoin de campagne actif.",
+    "error": "Impossible de charger le plan.",
+    "retry": "Réessayer"
+  },
+  "today": {
+    "title": "Raids du jour",
+    "summary": "{{energy}} énergie · {{raids}} tentatives"
+  },
+  "schedule": {
+    "raids_one": "{{count}} raid",
+    "raids_other": "{{count}} raids",
+    "progress": "{{owned}} sur {{target}} possédés",
+    "node": "{{node}} · {{raids}} raids",
+    "fullyRaided": "Entièrement attaqué"
+  },
+  "bonus": {
+    "title": "Raids bonus",
+    "empty": "Aucune ressource supplémentaire intacte.",
+    "showMore": "Afficher plus"
+  },
+  "plan": {
+    "summary": {
+      "days": "Jours au total",
+      "energy": "Énergie totale",
+      "raids": "Tentatives",
+      "unusedDays": "Jours inutilisés",
+      "completion": "Date de fin"
+    },
+    "day": "Jour {{day}}",
+    "dayStats": "{{energy}} / {{available}} énergie · {{raids}} raids",
+    "showAll": "Afficher tous les jours",
+    "collapse": "Réduire les détails",
+    "expand": "Développer les détails"
+  },
+  "tour": {
+    "today": {
+      "steps": {
+        "navigation": {
+          "title": "Navigation",
+          "content": "Passez entre les planificateurs quotidiens."
+        },
+        "raids": {
+          "title": "Vues de raid",
+          "content": "Passez du programme du jour au plan de raid complet."
+        },
+        "project": {
+          "title": "Choisir un projet",
+          "content": "Le plan suit ses objectifs actifs."
+        },
+        "schedule": {
+          "title": "Plan du jour",
+          "content": "Attaquez ces nœuds avec l'énergie du jour."
+        },
+        "bonus": {
+          "title": "Raids bonus",
+          "content": "Objectifs disponibles avec plus d'énergie."
+        }
+      }
+    },
+    "raidsPlan": {
+      "steps": {
+        "navigation": {
+          "title": "Vues de raid",
+          "content": "Passez entre Aujourd'hui et Plan."
+        },
+        "project": {
+          "title": "Projet partagé",
+          "content": "Les deux vues utilisent le même projet."
+        },
+        "summary": {
+          "title": "Résumé",
+          "content": "Les totaux incluent le Jour 1."
+        },
+        "days": {
+          "title": "Jours de raid",
+          "content": "Chaque jour regroupe les raids par objectif."
+        }
+      }
+    }
+  }
+}

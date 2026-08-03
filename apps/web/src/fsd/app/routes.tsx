@@ -13,6 +13,7 @@ import { routes as goalsRoutes } from "@/pages/goals"
 import { routes as guildRoutes } from "@/pages/guild"
 import { routes as lookupRoutes } from "@/pages/lookup"
 import { routes as progressRoutes } from "@/pages/progress"
+import { routes as dailiesRoutes } from "@/pages/dailies"
 import { isUiKitEnabled } from "@/shared/config"
 
 import { AppShell } from "./layout/app-shell"
@@ -27,8 +28,8 @@ import { OnboardingGate } from "./onboarding-gate"
 const HomePage = lazy(() =>
   import("@/pages/home").then((m) => ({ default: m.HomePage }))
 )
-const DailiesPage = lazy(() =>
-  import("@/pages/dailies").then((m) => ({ default: m.DailiesPage }))
+const DailiesLayout = lazy(() =>
+  import("@/pages/dailies").then((m) => ({ default: m.DailiesLayout }))
 )
 const LookupPage = lazy(() =>
   import("@/pages/lookup").then((m) => ({ default: m.LookupPage }))
@@ -127,9 +128,10 @@ export const routes: RouteObject[] = [
         path: "/dailies",
         element: (
           <ProtectedRoute>
-            <DailiesPage />
+            <DailiesLayout />
           </ProtectedRoute>
         ),
+        children: dailiesRoutes,
       },
       {
         path: "/lookup",

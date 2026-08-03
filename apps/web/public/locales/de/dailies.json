@@ -1,0 +1,112 @@
+{
+  "title": "Tägliches",
+  "target": {
+    "rank": "Rang {{value}}",
+    "ability": "Fähigkeit {{value}}",
+    "ascension": "Aufstieg {{value}}",
+    "unlock": "Freischalten",
+    "level": "Stufe {{value}}",
+    "upgrade": "{{value}} Verbesserungen",
+    "other": "Ziel: {{value}}"
+  },
+  "tabs": {
+    "raids": "Raids",
+    "shops": "Läden",
+    "onslaught": "Ansturm",
+    "salvage-run": "Bergungslauf",
+    "arena": "Arena",
+    "guild-raids": "Gilden-Raids"
+  },
+  "placeholder": {
+    "title": "Dieser Bereich ist in Arbeit",
+    "description": "Dieser Planer wird in einem zukünftigen Update verfügbar sein."
+  },
+  "project": { "placeholder": "Projekt auswählen" },
+  "raids": {
+    "title": "Kampagnen-Raids",
+    "description": "Nutze die heutige Energie nach Projektpriorität.",
+    "tabs": { "today": "Heute", "plan": "Plan" }
+  },
+  "empty": {
+    "noProject": "Kein Projekt verfügbar.",
+    "noFarmable": "Dieses Projekt hat keinen aktiven farmbaren Kampagnenbedarf.",
+    "error": "Der Raid-Plan konnte nicht geladen werden.",
+    "retry": "Erneut versuchen"
+  },
+  "today": {
+    "title": "Heutige Raids",
+    "summary": "{{energy}} Energie · {{raids}} Raid-Versuche"
+  },
+  "schedule": {
+    "raids_one": "{{count}} Raid",
+    "raids_other": "{{count}} Raids",
+    "progress": "{{owned}} von {{target}} im Besitz",
+    "node": "{{node}} · {{raids}} Raids",
+    "fullyRaided": "Vollständig geraidet"
+  },
+  "bonus": {
+    "title": "Bonus-Raids",
+    "empty": "Keine zusätzlichen unberührten Ressourcen übrig.",
+    "showMore": "Mehr anzeigen"
+  },
+  "plan": {
+    "summary": {
+      "days": "Tage gesamt",
+      "energy": "Energie gesamt",
+      "raids": "Raid-Versuche",
+      "unusedDays": "Ungenutzte Tage",
+      "completion": "Abschlussdatum"
+    },
+    "day": "Tag {{day}}",
+    "dayStats": "{{energy}} / {{available}} Energie · {{raids}} Raids",
+    "showAll": "Alle Tage anzeigen",
+    "collapse": "Raid-Details einklappen",
+    "expand": "Raid-Details ausklappen"
+  },
+  "tour": {
+    "today": {
+      "steps": {
+        "navigation": {
+          "title": "Navigation",
+          "content": "Wechsle zwischen den täglichen Planern."
+        },
+        "raids": {
+          "title": "Raid-Ansichten",
+          "content": "Wechsle zwischen dem heutigen Plan und dem vollständigen Raid-Plan."
+        },
+        "project": {
+          "title": "Projekt wählen",
+          "content": "Der Plan folgt den aktiven Zielen dieses Projekts."
+        },
+        "schedule": {
+          "title": "Heutiger Plan",
+          "content": "Raide diese Kampagnenknoten mit der heutigen Energie."
+        },
+        "bonus": {
+          "title": "Bonus-Raids",
+          "content": "Diese Ziele werden mit zusätzlicher Energie verfügbar."
+        }
+      }
+    },
+    "raidsPlan": {
+      "steps": {
+        "navigation": {
+          "title": "Raid-Ansichten",
+          "content": "Wechsle zwischen Heute und Plan."
+        },
+        "project": {
+          "title": "Gemeinsames Projekt",
+          "content": "Heute und Plan nutzen dasselbe Projekt."
+        },
+        "summary": {
+          "title": "Gesamtübersicht",
+          "content": "Die Summen enthalten Tag 1."
+        },
+        "days": {
+          "title": "Raid-Tage",
+          "content": "Jeder Tag gruppiert Raids nach Ziel."
+        }
+      }
+    }
+  }
+}

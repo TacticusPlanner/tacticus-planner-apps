@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 
-import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
+import type { EstimateOutcome } from "@/features/goal-farming"
 
 /**
  * Freshly recalculated estimate for the goal. Split out of goal-detail-sheet.tsx to keep that file

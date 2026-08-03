@@ -21,10 +21,10 @@ import { Progress } from "@workspace/ui/components/progress"
 import type { GoalKind } from "@/entities/goal"
 import { EntityIcon, ProgressionBadge, RankBadge } from "@/shared/ui"
 
-import type { ResourceNeed } from "../../model/estimate/progression-cost-calc"
+import type { ResourceNeed } from "@/features/goal-farming"
 import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
-import { ProjectColorDot } from ".//project-color-dot"
+import { ProjectColorDot } from "@/entities/project"
 
 const genericUpgradeIcon = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_generic.png`
 const genericLevelIcon = `${ASSET_BASE_PATH}/misc/xp_generic.png`

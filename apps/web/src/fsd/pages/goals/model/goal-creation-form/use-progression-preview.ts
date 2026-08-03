@@ -22,13 +22,13 @@ import {
 } from "@/entities/player-data-override"
 import type { AscensionFarmingSource } from "@/entities/goal"
 
-import { estimateGoal } from "../estimate/estimate"
-import { shardResourceId } from "../estimate/estimate.domain"
+import { estimateGoal } from "@/features/goal-farming"
+import { shardResourceId } from "@/features/goal-farming"
 import {
   ascensionResourceNeed,
   unlockResourceNeed,
-} from "../estimate/progression-cost-calc"
-import { estimateRemainingShardEnergy } from "../estimate/shard-energy-estimate"
+} from "@/features/goal-farming"
+import { estimateRemainingShardEnergy } from "@/features/goal-farming"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]

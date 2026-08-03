@@ -4,7 +4,7 @@ import type { Progression, UnitId } from "@workspace/game-domain"
 import { getInventoryShard } from "@workspace/player-data/queries"
 
 import type { EntityType } from ".//use-create-goal-form"
-import { isMythicProgression } from "../estimate/progression-cost-calc"
+import { isMythicProgression } from "@/features/goal-farming"
 
 /**
  * Shard-progress data for the selected-entity info card (below the unit picker in

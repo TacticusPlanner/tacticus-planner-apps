@@ -17,7 +17,7 @@ import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
 
-import type { EstimateOutcome } from ".//estimate.domain"
+import type { EstimateOutcome } from "@/features/goal-farming"
 import { computePlanInsights } from "../insights/plan-insights-calc"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 

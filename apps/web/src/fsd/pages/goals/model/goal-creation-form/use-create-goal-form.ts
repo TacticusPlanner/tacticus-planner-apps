@@ -10,7 +10,7 @@ import {
 import { type FarmingStrategy, type GoalKind } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 
-import { additionalTargetSelection } from "../estimate/rank-additional-target"
+import { additionalTargetSelection } from "@/features/goal-farming"
 import { useAbilityFields } from ".//use-ability-fields"
 import { useAscensionFields } from ".//use-ascension-fields"
 import { useCreationPreview } from ".//use-creation-preview"

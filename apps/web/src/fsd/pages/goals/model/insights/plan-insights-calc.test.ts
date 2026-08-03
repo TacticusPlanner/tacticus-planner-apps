@@ -22,7 +22,7 @@ import type {
 } from "@/features/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
 
-import type { Battle } from "../estimate/estimate.domain"
+import type { Battle } from "@/features/goal-farming"
 import { computePlanInsights } from ".//plan-insights-calc"
 
 const unitId = unitIdSchema.parse

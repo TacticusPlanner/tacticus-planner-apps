@@ -1,1 +1,2 @@
-export { DailiesPage } from "./ui/dailies-page"
+export { DailiesLayout } from "./ui/dailies-layout"
+export { routes } from "./route"

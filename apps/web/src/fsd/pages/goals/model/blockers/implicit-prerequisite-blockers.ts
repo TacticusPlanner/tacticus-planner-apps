@@ -12,7 +12,7 @@ import type { GoalDetail } from "@/entities/goal"
 import {
   additionalTargetFromWire,
   requiredLevelForRankTarget,
-} from "../estimate/rank-additional-target"
+} from "@/features/goal-farming"
 import { abilityLevelsByRarity } from "../goal-creation-form/goal-validation"
 import type { BlockerReason } from ".//goal-blockers"
 

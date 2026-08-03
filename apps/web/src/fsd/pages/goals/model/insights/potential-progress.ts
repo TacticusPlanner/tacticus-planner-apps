@@ -1,7 +1,7 @@
 import type { GoalDetail } from "@/entities/goal"
 
 import type { GoalProgress } from "../attainment/goal-progress"
-import type { GoalInventoryAllocation } from "../estimate/estimate.domain"
+import type { GoalInventoryAllocation } from "@/features/goal-farming"
 
 function clampRatio(value: number): number {
   return Math.min(1, Math.max(0, value))

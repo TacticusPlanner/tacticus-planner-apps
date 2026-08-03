@@ -7,7 +7,7 @@ import {
   type BattleId,
 } from "@workspace/game-domain"
 
-import type { Battle } from "../estimate/estimate.domain"
+import type { Battle } from "@/features/goal-farming"
 import { useShardLocationSelection } from ".//use-shard-location-selection"
 
 const battleId = battleIdSchema.parse

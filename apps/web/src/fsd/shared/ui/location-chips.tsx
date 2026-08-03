@@ -2,7 +2,12 @@ import { Badge } from "@workspace/ui/components/badge"
 
 import { EntityIcon } from "./entity-icon"
 
-export type LocationViewModel = { id: string; label: string; icon?: string }
+export type LocationViewModel = {
+  id: string
+  label: string
+  icon?: string
+  variant?: "outline" | "secondary"
+}
 
 export function LocationSection({
   label,
@@ -31,7 +36,7 @@ export function LocationChips({
       {locations.map((location) => (
         <Badge
           key={location.id}
-          variant="outline"
+          variant={location.variant ?? "outline"}
           className="gap-1 font-normal"
         >
           {location.icon ? (

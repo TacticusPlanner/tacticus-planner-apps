@@ -21,7 +21,7 @@ import type {
 } from "@/features/rank-lookup"
 import type { CombinedGoalSpec, GoalDetail } from "@/entities/goal"
 
-import type { Battle } from ".//estimate.domain"
+import type { Battle } from "@/features/goal-farming"
 import {
   buildPreviewGoalDetails,
   estimateNewGoalsForProject,

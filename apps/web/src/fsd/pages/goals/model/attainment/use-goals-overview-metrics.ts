@@ -19,9 +19,9 @@ import {
   type GoalBlockers,
 } from "../blockers/goal-blockers"
 import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
-import type { EstimateOutcome } from "../estimate/estimate.domain"
-import { calculateGoalResourceNeed } from "../estimate/goal-requirements"
-import type { ResourceNeed } from "../estimate/progression-cost-calc"
+import type { EstimateOutcome } from "@/features/goal-farming"
+import { calculateGoalResourceNeed } from "@/features/goal-farming"
+import type { ResourceNeed } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { computeGoalAttainment } from "./goal-attainment"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"

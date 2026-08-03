@@ -5,7 +5,7 @@ import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 import type { AscensionFarmingSource, GoalKind } from "@/entities/goal"
 
 import { buildReviewItems } from "../estimate/goal-spec-builder"
-import type { RankAdditionalTarget } from "../estimate/rank-additional-target"
+import type { RankAdditionalTarget } from "@/features/goal-farming"
 import { useGoalPrerequisites } from ".//use-goal-prerequisites"
 import { useProgressionPreview } from ".//use-progression-preview"
 

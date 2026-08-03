@@ -30,18 +30,18 @@ import {
   allocatePlanInventory,
   estimatePlan,
   selectFarmNodes,
-} from "../estimate/estimate"
+} from "@/features/goal-farming"
 import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
   type UpgradeNeed,
-} from "../estimate/estimate.domain"
-import { resourceLabel } from ".//plan-insights-need"
+} from "@/features/goal-farming"
+import { resourceLabel } from "@/features/goal-farming"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
-} from "../estimate/goal-requirements"
+} from "@/features/goal-farming"
 import { computeGoalProgress } from "../attainment/goal-progress"
 import { computePotentialProgressRatio } from "./potential-progress"
 import {

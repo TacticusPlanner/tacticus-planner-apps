@@ -12,7 +12,7 @@ import {
 import {
   additionalTargetOptions,
   type RankAdditionalTarget,
-} from "../estimate/rank-additional-target"
+} from "@/features/goal-farming"
 
 /**
  * The Rank goal's own target-range state — a read-only start rank (always the unit's live synced

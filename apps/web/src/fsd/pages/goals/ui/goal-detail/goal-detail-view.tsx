@@ -8,8 +8,7 @@ import {
   type BlockerReason,
   type GoalBlockers,
 } from "../../model/blockers/goal-blockers"
-import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
-import type { ResourceNeed } from "../../model/estimate/progression-cost-calc"
+import type { EstimateOutcome, ResourceNeed } from "@/features/goal-farming"
 import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
 import {
@@ -18,7 +17,7 @@ import {
   GoalProjectBadges,
   GoalRemainingSummary,
 } from "../shared/goal-visuals"
-import { GoalEstimateSection } from ".//goal-estimate-section"
+import { GoalEstimateSection } from "./goal-estimate-section"
 
 type MissingPrerequisiteReason = Extract<
   BlockerReason,

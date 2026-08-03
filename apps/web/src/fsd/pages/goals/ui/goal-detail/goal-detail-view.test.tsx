@@ -2,6 +2,7 @@ import { render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 

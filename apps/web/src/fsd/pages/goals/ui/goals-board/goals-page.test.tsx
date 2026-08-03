@@ -151,7 +151,8 @@ const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
 const updateProjectGoalsStatus = vi.fn()
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
   listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
   activateProject: (...args: unknown[]) => activateProject(...args),

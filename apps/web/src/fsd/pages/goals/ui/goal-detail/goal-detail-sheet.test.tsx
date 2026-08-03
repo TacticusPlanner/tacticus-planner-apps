@@ -75,7 +75,8 @@ vi.mock("@/entities/goal", () => ({
   updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
 }))
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
     list: () => ({
       queryFn: () => listProjects(),

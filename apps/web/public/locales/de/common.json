@@ -145,10 +145,6 @@
     "sync": "Sync",
     "syncWithTacticus": "Mit Tacticus synchronisieren"
   },
-  "dailies": {
-    "title": "Tägliches ist in Arbeit",
-    "description": "Dieser eigene Bereich ist bald verfügbar."
-  },
   "guild": {
     "loadError": "Deine Gilde konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
