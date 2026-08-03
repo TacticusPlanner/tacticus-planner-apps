@@ -92,10 +92,18 @@ export function selectFarmNodes(
   )
 }
 
-export function addDays(base: Date, days: number): Date {
+function addDays(base: Date, days: number): Date {
   const result = new Date(base.getTime())
   result.setUTCDate(result.getUTCDate() + days)
   return result
+}
+
+/** Returns the inclusive completion date when the reference date is farming Day 1. */
+export function inclusiveCompletionDate(
+  referenceDate: Date,
+  requiredDays: number
+): Date {
+  return addDays(referenceDate, Math.max(requiredDays - 1, 0))
 }
 
 export function formatDate(date: Date): string {
@@ -266,7 +274,7 @@ export function estimateGoal({
     : {
         status: "Estimated",
         days,
-        date: formatDate(addDays(referenceDate, days)),
+        date: formatDate(inclusiveCompletionDate(referenceDate, days)),
         energyTotal,
         raidsTotal,
       }

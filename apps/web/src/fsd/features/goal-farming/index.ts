@@ -38,6 +38,7 @@ export {
 } from "./lib/progression-cost-calc"
 export { estimateRemainingShardEnergy } from "./lib/shard-energy-estimate"
 export { farmingStageTargets } from "./lib/farming-stages"
+export { createCraftedInventoryPool } from "./lib/upgrade-recipe"
 export {
   shardResourceId,
   type Battle,

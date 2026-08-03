@@ -7,11 +7,15 @@ import type {
 import {
   battleIdSchema,
   campaignIdSchema,
+  rankIndex,
+  rankOrder,
   unitIdSchema,
+  upgradeIdSchema,
 } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 import type { ProjectGoalSummary } from "@/entities/project"
+import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
 
 import {
   activeProjectMembers,
@@ -226,5 +230,115 @@ describe("daily raid derivation", () => {
       characterIds: [unitIdSchema.parse("hero1")],
       mowIds: [unitIdSchema.parse("mow1")],
     })
+  })
+
+  it("shares crafted inventory by priority and keeps Today identical to Plan Day 1", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const craftedId = upgradeIdSchema.parse("crafted")
+    const baseId = upgradeIdSchema.parse("base")
+    const nodeId = battleIdSchema.parse("B1")
+    const character: FarmingCharacter = {
+      id: heroId,
+      name: "Synthetic hero",
+      rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [craftedId] }],
+    }
+    const baseUpgrade = {
+      id: baseId,
+      label: "Base",
+      rarity: "Common",
+      stat: "health",
+      crafted: false,
+      recipe: [],
+      farmLocations: [
+        {
+          battleId: nodeId,
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+          isMythic: false,
+        },
+      ],
+    } as FarmingUpgrade
+    const craftedUpgrade = {
+      ...baseUpgrade,
+      id: craftedId,
+      label: "Crafted",
+      crafted: true,
+      recipe: [{ material: baseId, count: 2 }],
+      farmLocations: [],
+    } as FarmingUpgrade
+    const details = ["neurothrope", "ahriman", "abraxas"].map((goalId) =>
+      goalDetail({
+        goalId,
+        entityId: heroId,
+        goalType: "Rank",
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[1]),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          item: null,
+          level: null,
+        },
+      })
+    )
+
+    const result = calculateDailyRaids({
+      members: details.map((detail, index) => ({
+        priority: index + 1,
+        goal: detail,
+      })),
+      details,
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      inventoryShardById: new Map(),
+      inventoryUpgrades: [{ upgradeId: craftedId, amount: 1 }],
+      upgradesById: new Map([
+        [craftedId, craftedUpgrade],
+        [baseId, baseUpgrade],
+      ]),
+      battlesById: new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            energyCost: 10,
+            dailyAttempts: 999,
+          },
+        ],
+      ]),
+      charactersById: new Map(),
+      mowsById: new Map(),
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: new Map(),
+      getCharacter: () => character,
+      dailyEnergy: 100,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    })
+
+    expect(result?.status).toBe("ready")
+    if (!result || result.status !== "ready") return
+    expect(result.today).toEqual(result.planDays[0])
+    expect(result.today.entries).toEqual([
+      expect.objectContaining({ goalId: "ahriman", itemsFarmed: 2 }),
+      expect.objectContaining({ goalId: "abraxas", itemsFarmed: 2 }),
+    ])
+    expect(
+      result.today.entries.some((entry) => entry.goalId === "neurothrope")
+    ).toBe(false)
   })
 })

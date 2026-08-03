@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest"
 import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
+import type { MowStorageModel } from "@workspace/game-catalog"
 
 import type { GoalDetail } from "@/entities/goal"
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 
-import { rankResourceNeed, rankSlotsRemaining } from "./goal-need"
+import {
+  abilityResourceNeed,
+  rankResourceNeed,
+  rankSlotsRemaining,
+} from "./goal-need"
+import { createCraftedInventoryPool } from "./upgrade-recipe"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
@@ -181,6 +187,65 @@ describe("rankSlotsRemaining", () => {
     ).toEqual([{ id: repeatedId, count: 3 }])
   })
 
+  it("removes applied slots before consuming matching crafted inventory", () => {
+    const crafted = upgradeId("crafted")
+    const base = upgradeId("base")
+    const craftedCharacter: FarmingCharacter = {
+      ...character,
+      rankUpUpgrades: [
+        {
+          rank: "Stone1",
+          upgradeIds: [crafted, crafted, base, base, base, base],
+        },
+        { rank: "Stone2", upgradeIds: [] },
+      ],
+    }
+    const upgradesById = new Map([
+      [
+        crafted,
+        {
+          id: crafted,
+          label: "Crafted",
+          rarity: "Common",
+          stat: "health",
+          crafted: true,
+          recipe: [{ material: base, count: 2 }],
+          farmLocations: [],
+        } as FarmingUpgrade,
+      ],
+      [
+        base,
+        {
+          id: base,
+          label: "Base",
+          rarity: "Common",
+          stat: "health",
+          crafted: false,
+          recipe: [],
+          farmLocations: [],
+        } as FarmingUpgrade,
+      ],
+    ])
+    const craftedInventory = createCraftedInventoryPool(
+      [{ upgradeId: crafted, amount: 1 }],
+      upgradesById
+    )
+
+    expect(
+      rankResourceNeed({
+        detail: goalDetail({ start: 0, end: 1 }),
+        character: craftedCharacter,
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [0],
+        } as never,
+        upgradesById,
+        craftedInventory,
+      })
+    ).toEqual([{ id: base, count: 4 }])
+    expect(craftedInventory.get(crafted)).toBe(0)
+  })
+
   it("returns null when the goal has no rank target", () => {
     expect(
       rankSlotsRemaining({
@@ -200,5 +265,77 @@ describe("rankSlotsRemaining", () => {
         playerCharacter: undefined,
       })
     ).toBeNull()
+  })
+})
+
+describe("abilityResourceNeed", () => {
+  it("consumes nested crafted inventory before expanding MoW ability recipes", () => {
+    const top = upgradeId("top")
+    const nested = upgradeId("nested")
+    const base = upgradeId("base")
+    const upgradesById = new Map([
+      [
+        top,
+        {
+          id: top,
+          label: "Top",
+          rarity: "Common",
+          stat: "health",
+          crafted: true,
+          recipe: [{ material: nested, count: 2 }],
+          farmLocations: [],
+        } as FarmingUpgrade,
+      ],
+      [
+        nested,
+        {
+          id: nested,
+          label: "Nested",
+          rarity: "Common",
+          stat: "health",
+          crafted: true,
+          recipe: [{ material: base, count: 3 }],
+          farmLocations: [],
+        } as FarmingUpgrade,
+      ],
+      [
+        base,
+        {
+          id: base,
+          label: "Base",
+          rarity: "Common",
+          stat: "health",
+          crafted: false,
+          recipe: [],
+          farmLocations: [],
+        } as FarmingUpgrade,
+      ],
+    ])
+    const craftedInventory = createCraftedInventoryPool(
+      [{ upgradeId: nested, amount: 1 }],
+      upgradesById
+    )
+
+    expect(
+      abilityResourceNeed({
+        detail: {
+          config: {
+            ability: {
+              activeStart: 1,
+              activeEnd: 2,
+              passiveStart: 1,
+              passiveEnd: 1,
+            },
+          },
+        } as GoalDetail,
+        mow: {
+          primaryAbility: { recipes: [[top]] },
+          secondaryAbility: { recipes: [] },
+        } as unknown as MowStorageModel,
+        playerMow: undefined,
+        upgradesById,
+        craftedInventory,
+      })
+    ).toEqual([{ id: base, count: 3 }])
   })
 })

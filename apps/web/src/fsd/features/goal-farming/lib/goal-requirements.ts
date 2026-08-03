@@ -11,6 +11,7 @@ import type { GoalDetail } from "@/entities/goal"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 import { farmingStageTargets } from "./farming-stages"
+import type { CraftedInventoryPool } from "./upgrade-recipe"
 import {
   abilityResourceNeed,
   rankResourceNeed,
@@ -38,6 +39,7 @@ export type GoalRequirementParams = {
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
   coveredAbilityTransitions?: { primary: Set<number>; secondary: Set<number> }
+  craftedInventory?: CraftedInventoryPool
 }
 
 export function calculateGoalResourceNeed(
@@ -51,6 +53,7 @@ export function calculateGoalResourceNeed(
       character: params.character,
       playerCharacter: params.playerCharacter,
       upgradesById,
+      craftedInventory: params.craftedInventory,
     })
     return upgrades
       ? {
@@ -74,6 +77,7 @@ export function calculateGoalResourceNeed(
       playerMow: params.playerMow,
       upgradesById,
       coveredTransitions: params.coveredAbilityTransitions,
+      craftedInventory: params.craftedInventory,
     })
     return upgrades
       ? {
@@ -116,12 +120,14 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
   if (detail.goalType === "Rank" && detail.config.rank) {
     const target = detail.config.rank
     let start = target.start
-    return farmingStageTargets(
+    const targets = farmingStageTargets(
       "rank",
       start,
       target.end,
       detail.config.farmingStrategy
     )
+    if (targets.length === 0) return null
+    return targets
       .map((end) => {
         const stageDetail = {
           ...detail,
@@ -146,6 +152,7 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
               character: params.character,
               playerCharacter: params.playerCharacter,
               upgradesById: params.upgradesById,
+              craftedInventory: params.craftedInventory,
             }) ?? [],
         }
       })
@@ -164,12 +171,14 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
       primary: new Set<number>(),
       secondary: new Set<number>(),
     }
-    return farmingStageTargets(
+    const targets = farmingStageTargets(
       "ability",
       start,
       endTarget,
       detail.config.farmingStrategy
     )
+    if (targets.length === 0) return null
+    return targets
       .map((end) => {
         const stageAbility = primary
           ? {
@@ -198,6 +207,7 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
               playerMow: params.playerMow,
               upgradesById: params.upgradesById,
               coveredTransitions: coverage,
+              craftedInventory: params.craftedInventory,
             }) ?? [],
         }
       })

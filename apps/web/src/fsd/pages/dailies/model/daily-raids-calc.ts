@@ -18,6 +18,7 @@ import {
   allocatePlanInventory,
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
+  createCraftedInventoryPool,
   estimateBonusRaids,
   estimatePlanSchedule,
   estimateTodaySchedule,
@@ -100,6 +101,10 @@ export function calculateDailyRaids(
     string,
     { primary: Set<number>; secondary: Set<number> }
   >()
+  const craftedInventory = createCraftedInventoryPool(
+    params.inventoryUpgrades,
+    params.upgradesById
+  )
 
   for (const member of activeMembers) {
     const detail = detailById.get(member.goal.goalId)
@@ -123,17 +128,19 @@ export function calculateDailyRaids(
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
+      craftedInventory,
     }
     const stages = calculateGoalFarmingStages(requirementParams)
-    const need = stages?.length
-      ? {
-          upgrades: stages.flatMap((stage) => stage.needs),
-          shardId: null,
-          shards: 0,
-          mythicShards: 0,
-          orbsByType: {},
-        }
-      : calculateGoalResourceNeed(requirementParams)
+    const need =
+      stages !== null
+        ? {
+            upgrades: stages.flatMap((stage) => stage.needs),
+            shardId: null,
+            shards: 0,
+            mythicShards: 0,
+            orbsByType: {},
+          }
+        : calculateGoalResourceNeed(requirementParams)
     if (!need) continue
 
     const needs = [...need.upgrades]
@@ -163,7 +170,7 @@ export function calculateDailyRaids(
         })
       }
     }
-    if (needs.length === 0) continue
+    if (needs.length === 0 && stages === null) continue
     for (const needEntry of need.upgrades) {
       const upgrade = params.upgradesById.get(needEntry.id as UpgradeId)
       resourceLabels.set(needEntry.id, upgrade?.label ?? needEntry.id)

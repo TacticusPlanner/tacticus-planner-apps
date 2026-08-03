@@ -9,6 +9,7 @@ import {
   dropRate,
   allocatePlanInventory,
   estimateGoal,
+  inclusiveCompletionDate,
   selectFarmNodes,
 } from "./estimate"
 import { estimatePlan } from "./estimate-plan"
@@ -168,7 +169,7 @@ describe("estimateGoal", () => {
     })
     expect(result).toMatchObject({
       days: 3,
-      date: "2026-01-04",
+      date: "2026-01-03",
       energyTotal: 30,
       raidsTotal: 3,
     })
@@ -240,10 +241,22 @@ describe("estimateGoal", () => {
     })
     expect(result).toMatchObject({
       days: 1,
-      date: "2026-01-02",
+      date: "2026-01-01",
       energyTotal: 10,
       raidsTotal: 1,
     })
+  })
+})
+
+describe("inclusiveCompletionDate", () => {
+  it.each([
+    [0, "2026-01-01"],
+    [1, "2026-01-01"],
+    [3, "2026-01-03"],
+  ])("maps %i required days to %s", (days, expected) => {
+    expect(inclusiveCompletionDate(REFERENCE_DATE, days)).toEqual(
+      new Date(`${expected}T00:00:00.000Z`)
+    )
   })
 })
 
@@ -375,7 +388,7 @@ describe("estimatePlan", () => {
     // priority 2 gets none of the shared inventory -> must farm all 5 (1/day at this budget)
     expect(results.get("low-priority")).toMatchObject({
       days: 5,
-      date: "2026-01-06",
+      date: "2026-01-05",
       energyTotal: 50,
       raidsTotal: 5,
     })
@@ -493,7 +506,7 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
 
     expect(result).toMatchObject({
       days: 3,
-      date: "2026-01-04",
+      date: "2026-01-03",
       energyTotal: 30,
       raidsTotal: 3,
     })
