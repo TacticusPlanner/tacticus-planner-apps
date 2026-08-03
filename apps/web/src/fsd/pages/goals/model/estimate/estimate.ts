@@ -2,6 +2,7 @@ import type { BattleId } from "@workspace/game-domain"
 
 import type {
   Battle,
+  CountedResourceNeed,
   EstimateResourceId,
   EstimateOutcome,
   EstimateUpgrade,
@@ -9,6 +10,7 @@ import type {
   FarmNode,
   GoalInventoryAllocation,
   GoalNeed,
+  InventoryAllocationGoal,
   UpgradeNeed,
 } from ".//estimate.domain"
 import { blocked, unavailableReason } from ".//estimate-blocked"
@@ -261,21 +263,21 @@ export function estimateGoal({
  * `goalPriority` farm order), so a higher-priority goal's farming isn't slowed by a lower-priority
  * goal's competing needs. A goal's value is `null` when it can never complete (see `estimateGoal`).
  */
-export function allocatePlanInventory(
-  goals: readonly GoalNeed[],
-  inventory: readonly UpgradeNeed[]
-): Map<string, GoalInventoryAllocation> {
-  const held = new Map<EstimateResourceId, number>(
+export function allocateInventory<TId extends string>(
+  goals: readonly InventoryAllocationGoal<TId>[],
+  inventory: readonly CountedResourceNeed<TId>[]
+): Map<string, GoalInventoryAllocation<TId>> {
+  const held = new Map<TId, number>(
     inventory.map((entry) => [entry.id, entry.count])
   )
-  const allocations = new Map<string, GoalInventoryAllocation>()
+  const allocations = new Map<string, GoalInventoryAllocation<TId>>()
 
   for (const goal of [...goals].sort((a, b) => a.priority - b.priority)) {
     const sourceStages = goal.stages?.length
       ? goal.stages
       : [{ target: "final", needs: goal.needs }]
     const stages = sourceStages.map((sourceStage) => {
-      const remaining: UpgradeNeed[] = []
+      const remaining: CountedResourceNeed<TId>[] = []
       for (const need of sourceStage.needs) {
         const available = held.get(need.id) ?? 0
         const consumed = Math.min(available, need.count)
@@ -293,6 +295,13 @@ export function allocatePlanInventory(
   }
 
   return allocations
+}
+
+export function allocatePlanInventory(
+  goals: readonly GoalNeed[],
+  inventory: readonly UpgradeNeed[]
+): Map<string, GoalInventoryAllocation> {
+  return allocateInventory(goals, inventory)
 }
 
 export function estimatePlan({

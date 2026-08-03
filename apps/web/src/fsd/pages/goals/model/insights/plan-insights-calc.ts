@@ -43,7 +43,13 @@ import {
   calculateGoalResourceNeed,
 } from "../estimate/goal-requirements"
 import { computeGoalProgress } from "../attainment/goal-progress"
-import { computePotentialProgressRatio } from ".//potential-progress"
+import { computePotentialProgressRatio } from "./potential-progress"
+import {
+  allocateOrbInventory,
+  createOrbGoalNeed,
+  type InventoryOrbs,
+  type OrbGoalNeed,
+} from "./orb-potential-allocation"
 import type {
   PlanInsightsBottleneck,
   PlanInsightsResult,
@@ -64,6 +70,7 @@ export function computePlanInsights(params: {
   playerMowById: ReadonlyMap<string, PlayerMow | undefined>
   inventoryShardById: ReadonlyMap<string, InventoryShard | undefined>
   inventoryUpgrades: readonly { upgradeId: string; amount: number }[]
+  inventoryOrbs?: InventoryOrbs
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   battlesById: Parameters<typeof estimatePlan>[0]["battlesById"]
   charactersById: ReadonlyMap<string, CharacterStorageModel>
@@ -87,6 +94,7 @@ export function computePlanInsights(params: {
   }
 
   const goalNeeds: GoalNeed[] = []
+  const orbGoalNeeds: OrbGoalNeed[] = []
   const provenance = new Map<EstimateResourceId, Set<string>>()
   const shardCatalogEntries = new Map<
     EstimateResourceId,
@@ -223,6 +231,18 @@ export function computePlanInsights(params: {
     }
 
     const priority = params.priorityByGoalId.get(detail.goalId)
+    if (detail.goalType === "Ascension") {
+      const entity = isMowDetail(detail)
+        ? params.mowsById.get(detail.entityId)
+        : params.charactersById.get(detail.entityId)
+      const orbGoal = createOrbGoalNeed({
+        goalId: detail.goalId,
+        priority,
+        alliance: entity?.alliance,
+        orbsByType: need.orbsByType,
+      })
+      if (orbGoal) orbGoalNeeds.push(orbGoal)
+    }
     if (needs.length > 0 && priority !== undefined) {
       goalNeeds.push({
         goalId: detail.goalId,
@@ -257,9 +277,18 @@ export function computePlanInsights(params: {
     inventory,
   })
   const allocations = allocatePlanInventory(goalNeeds, inventory)
+  const orbAllocations = allocateOrbInventory(
+    orbGoalNeeds,
+    params.inventoryOrbs
+  )
   const potentialProgressByGoalId = new Map<string, number>()
   for (const detail of orderedDetails) {
-    const allocation = allocations.get(detail.goalId)
+    const allocation =
+      detail.goalType === "Ascension"
+        ? orbAllocations.get(detail.goalId)
+        : detail.goalType === "Rank" || detail.goalType === "Ability"
+          ? allocations.get(detail.goalId)
+          : undefined
     if (!allocation) continue
     const progress = computeGoalProgress({
       detail,

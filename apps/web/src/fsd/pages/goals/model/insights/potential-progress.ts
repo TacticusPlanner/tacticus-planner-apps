@@ -39,7 +39,7 @@ function stageBoundary(detail: GoalDetail, target: string): number {
 export function computePotentialProgressRatio(
   detail: GoalDetail,
   progress: GoalProgress,
-  allocation: GoalInventoryAllocation | undefined
+  allocation: GoalInventoryAllocation<string> | undefined
 ): number | null {
   const current = actualRatio(progress)
   if (current === null || !allocation) return null

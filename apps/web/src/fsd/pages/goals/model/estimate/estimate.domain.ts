@@ -21,10 +21,12 @@ export function shardResourceId(entityId: string): ShardResourceId {
 export type EstimateResourceId = UpgradeId | ShardResourceId
 
 /** How much of one farmable resource is still needed. */
-export interface UpgradeNeed {
-  id: EstimateResourceId
+export interface CountedResourceNeed<TId extends string> {
+  id: TId
   count: number
 }
+
+export type UpgradeNeed = CountedResourceNeed<EstimateResourceId>
 
 /** The minimal shape the engine needs from an upgrade (or shard) record — any richer catalog type
  *  (e.g. rank-lookup's `UpgradeWithFarmLocations`) satisfies this structurally. */
@@ -45,28 +47,34 @@ export interface FarmNode {
 }
 
 /** One goal's material demand within a priority-shared plan estimate (`estimatePlan`). */
-export interface GoalNeed {
+export interface InventoryAllocationGoal<TId extends string> {
   goalId: string
   /** Per-project priority — lower runs first and claims shared inventory/energy ahead of higher
    *  numbers, mirroring `project_goals.priority` (plan §5). */
   priority: number
-  needs: UpgradeNeed[]
+  needs: CountedResourceNeed<TId>[]
   /** Ordered farming segments for this goal. Missing/empty means one TotalUpgrades stage. */
-  stages?: readonly { target: string; needs: UpgradeNeed[] }[]
+  stages?: readonly { target: string; needs: CountedResourceNeed<TId>[] }[]
+}
+
+/** One goal's farmable material demand within a priority-shared plan estimate. */
+export interface GoalNeed extends InventoryAllocationGoal<EstimateResourceId> {
   /** Restricts farming to these battle ids when set (goal's `config.farmingLocationIds`); otherwise
    *  the engine auto-selects the least-energy node(s) per material. */
   farmingLocationIds?: readonly string[] | null
 }
 
-interface InventoryAllocationStage {
+interface InventoryAllocationStage<TId extends string> {
   target: string
-  needs: UpgradeNeed[]
-  remaining: UpgradeNeed[]
+  needs: CountedResourceNeed<TId>[]
+  remaining: CountedResourceNeed<TId>[]
 }
 
-export interface GoalInventoryAllocation {
+export interface GoalInventoryAllocation<
+  TId extends string = EstimateResourceId,
+> {
   goalId: string
-  stages: InventoryAllocationStage[]
+  stages: InventoryAllocationStage<TId>[]
 }
 
 interface EstimateResult {

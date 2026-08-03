@@ -276,6 +276,54 @@ describe("computePlanInsights", () => {
     expect(result.onslaughtDays).toBeCloseTo(2 / 1.5)
   })
 
+  it("derives Ascension potential from owned alliance orbs", () => {
+    const result = computePlanInsights({
+      ...baseParams,
+      details: [
+        goalDetail({
+          goalType: "Ascension",
+          config: {
+            ...goalDetail({}).config,
+            progression: {
+              start: "Common:None",
+              end: "Common:OneStar",
+            },
+          },
+        }),
+      ],
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      playerCharacterById: new Map([
+        [
+          "hero1",
+          {
+            unitId: "hero1",
+            progressionIndex: "Common:None",
+          } as never,
+        ],
+      ]),
+      ascensionCostsById: new Map([
+        [
+          "Common:OneStar",
+          {
+            id: "Common:OneStar",
+            progression: "Common:OneStar",
+            shards: 0,
+            mythicShards: 0,
+            orbs: 10,
+            orbRarity: "Uncommon",
+          } as AscensionCostStorageModel,
+        ],
+      ]),
+      inventoryOrbs: {
+        imperial: [],
+        xenos: [{ rarity: "Uncommon", amount: 5 }],
+        chaos: [],
+      },
+    })
+
+    expect(result.potentialProgressByGoalId.get("goal-1")).toBe(0.5)
+  })
+
   it("restricts an Unlock goal's shard farming to config.farmingLocationIds, changing the resulting energy total", () => {
     const twoLocationCharacterView = {
       ...characterView,
@@ -326,5 +374,11 @@ describe("computePlanInsights", () => {
     // 10 shards at 1 energy/shard (guaranteed drop) from B1 (10 energy) vs. B2 (100 energy).
     expect(restrictedToCheapNode.energyTotal).toBe(100)
     expect(restrictedToExpensiveNode.energyTotal).toBe(1000)
+    expect(restrictedToCheapNode.potentialProgressByGoalId.has("goal-1")).toBe(
+      false
+    )
+    expect(
+      restrictedToExpensiveNode.potentialProgressByGoalId.has("goal-1")
+    ).toBe(false)
   })
 })

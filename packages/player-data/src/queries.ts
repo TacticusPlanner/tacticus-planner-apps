@@ -82,3 +82,10 @@ export async function getInventoryXpBooks(): Promise<
 > {
   return (await getChunkData("inventory"))?.xpBooks
 }
+
+/** Owned ascension orbs grouped by alliance and rarity. */
+export async function getInventoryOrbs(): Promise<
+  PlayerDataChunkDto<"inventory">["orbs"] | undefined
+> {
+  return (await getChunkData("inventory"))?.orbs
+}
