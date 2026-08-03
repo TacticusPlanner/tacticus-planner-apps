@@ -477,7 +477,7 @@
         "appliedUpgrades": "{{applied}}/{{total}}",
         "additionalTarget": {
           "label": "Additional target",
-          "none": "None (full rank)",
+          "none": "None",
           "topRow": "Top row (rank and a half)",
           "row": "{{count}} of {{total}} — Level {{level}}"
         }

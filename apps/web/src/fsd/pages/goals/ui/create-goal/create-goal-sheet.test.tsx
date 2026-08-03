@@ -918,21 +918,48 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
     let listbox = await screen.findByRole("listbox")
     expect(
-      within(listbox).getByRole("option", { name: "Stone2" })
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
     ).toBeInTheDocument()
     expect(
       within(listbox).getByRole("option", { name: /Stone2\s*\(3\/6\)/ })
     ).toBeInTheDocument()
+    expect(within(listbox).getAllByRole("option")).toHaveLength(2)
 
-    fireEvent.click(within(listbox).getByRole("option", { name: "Stone2" }))
+    fireEvent.click(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
+    )
     fireEvent.click(screen.getByTestId("create-goal-rank-end"))
     listbox = await screen.findByRole("listbox")
-    fireEvent.click(within(listbox).getByText("Diamond3"))
+    fireEvent.click(within(listbox).getByText("Adamantine1"))
 
     fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
     listbox = await screen.findByRole("listbox")
     expect(
-      within(listbox).getByRole("option", { name: /Diamond3\s*\(5\/6\)/ })
+      within(listbox).getByRole("option", {
+        name: /Adamantine1\s*\(5\/6\)/,
+      })
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
+    )
+    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+    listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Adamantine2"))
+
+    fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
+    listbox = await screen.findByRole("listbox")
+    expect(within(listbox).getAllByRole("option")).toHaveLength(1)
+    expect(
+      within(listbox).getByRole("option", {
+        name: "goals.create.rank.additionalTarget.none",
+      })
     ).toBeInTheDocument()
   })
 

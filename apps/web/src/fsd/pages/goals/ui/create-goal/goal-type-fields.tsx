@@ -82,6 +82,11 @@ function AdditionalTargetLabel({
   rank: Rank
   value: RankAdditionalTarget
 }) {
+  const { t } = useTranslation()
+  if (value === "None") {
+    return <>{t("goals.create.rank.additionalTarget.none")}</>
+  }
+
   let count = rowCount(value)
   if (value === "TopRow1") count = 1
   if (value === "TopRow2") count = 2

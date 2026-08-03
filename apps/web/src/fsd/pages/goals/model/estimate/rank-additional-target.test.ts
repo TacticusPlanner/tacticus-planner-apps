@@ -9,38 +9,24 @@ import {
 } from ".//rank-additional-target"
 
 describe("additionalTargetOptions", () => {
-  it("offers None + the top-row progression (1 of 3 / 2 of 3 / Top row) below Diamond3", () => {
-    expect(additionalTargetOptions("Stone1")).toEqual([
+  it("offers only None and the full top row below Adamantine", () => {
+    expect(additionalTargetOptions("Stone1")).toEqual(["None", "TopRow"])
+    expect(additionalTargetOptions("Diamond3")).toEqual(["None", "TopRow"])
+  })
+
+  it("offers None plus 1-5 applied slots at a non-maximum Adamantine rank", () => {
+    expect(additionalTargetOptions("Adamantine1")).toEqual([
       "None",
-      "TopRow1",
-      "TopRow2",
-      "TopRow",
-    ])
-    expect(additionalTargetOptions("Diamond2")).toEqual([
-      "None",
-      "TopRow1",
-      "TopRow2",
-      "TopRow",
+      "Row1",
+      "Row2",
+      "Row3",
+      "Row4",
+      "Row5",
     ])
   })
 
-  it("offers None + the 5 numbered Row options from Diamond3 onward", () => {
-    expect(additionalTargetOptions("Diamond3")).toEqual([
-      "None",
-      "Row1",
-      "Row2",
-      "Row3",
-      "Row4",
-      "Row5",
-    ])
-    expect(additionalTargetOptions("Adamantine2")).toEqual([
-      "None",
-      "Row1",
-      "Row2",
-      "Row3",
-      "Row4",
-      "Row5",
-    ])
+  it("offers only None at the current maximum rank", () => {
+    expect(additionalTargetOptions("Adamantine2")).toEqual(["None"])
   })
 })
 
