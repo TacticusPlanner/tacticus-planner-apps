@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { GoalDetail } from "@/entities/goal"
-import type { GoalInventoryAllocation } from "../estimate/estimate.domain"
+import type { GoalInventoryAllocation } from "@/features/goal-farming"
 import { computePotentialProgressRatio } from ".//potential-progress"
 
 const detail = {

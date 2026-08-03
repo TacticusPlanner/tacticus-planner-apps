@@ -25,10 +25,7 @@ import {
   UpgradeIcon,
 } from "@/shared/ui"
 import { abilityLevelsByRarity } from "../../model/goal-creation-form/goal-validation"
-import {
-  rowCount,
-  type RankAdditionalTarget,
-} from "../../model/estimate/rank-additional-target"
+import { rowCount, type RankAdditionalTarget } from "@/features/goal-farming"
 
 export type MissingUpgrade = { id: string; label: string; missing: number }
 

@@ -27,7 +27,7 @@ import {
   UNKNOWN_PROGRESS,
 } from "../../model/attainment/goal-overview-metrics-defaults"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
+import type { EstimateOutcome } from "@/features/goal-farming"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import type { EstimateResourceId } from "../../model/estimate/estimate.domain"
+import type { EstimateResourceId } from "@/features/goal-farming"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import {
   CampaignInsightList,

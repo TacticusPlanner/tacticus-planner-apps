@@ -145,10 +145,6 @@
     "sync": "Synchroniser",
     "syncWithTacticus": "Synchroniser avec Tacticus"
   },
-  "dailies": {
-    "title": "Les quotidiennes sont en construction",
-    "description": "Cet espace dédié sera bientôt disponible."
-  },
   "guild": {
     "loadError": "Impossible de charger votre guilde.",
     "retry": "Réessayer",

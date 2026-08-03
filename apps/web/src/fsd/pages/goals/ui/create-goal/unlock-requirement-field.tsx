@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
 
 import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
-import type { EstimateOutcome } from "../../model/estimate/estimate.domain"
+import type { EstimateOutcome } from "@/features/goal-farming"
 
 /**
  * "{{owned}} / {{total}} shards" + "{{remaining}} remaining · ≈energy · ≈days" + "Unlocks at

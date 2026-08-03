@@ -148,8 +148,31 @@ vi.mock("@workspace/player-data/queries", () => ({
 
 const listProjects = vi.fn()
 const listProjectGoals = vi.fn()
+let projectList: Array<{
+  projectId: string
+  name: string
+  description: null
+  color: null
+  status: "Active"
+  isActivePlan: boolean
+  isDefault: boolean
+  revision: number
+  createdAt: string
+  updatedAt: string
+}> = []
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
+  useProjects: () => ({
+    projects: projectList,
+    activeProjectId: projectList.find((project) => project.isActivePlan)
+      ?.projectId,
+    defaultProjectId: projectList.find((project) => project.isDefault)
+      ?.projectId,
+    fetchState: { status: "success", projects: projectList },
+    loading: false,
+    retry: vi.fn(),
+  }),
   listProjects: (...args: unknown[]) => listProjects(...args),
   listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
   projectQueries: {
@@ -219,6 +242,7 @@ const rankGoalDetail = {
 
 describe("InsightsPage", () => {
   beforeEach(() => {
+    projectList = []
     listProjects.mockReset()
     listProjectGoals.mockReset()
     getGoal.mockReset()
@@ -238,22 +262,21 @@ describe("InsightsPage", () => {
   })
 
   it("aggregates the active plan's Rank goal into the upgrades-by-rarity total", async () => {
-    listProjects.mockResolvedValue({
-      projects: [
-        {
-          projectId: "proj-1",
-          name: "My Plan",
-          description: null,
-          color: null,
-          status: "Active",
-          isActivePlan: true,
-          isDefault: true,
-          revision: 0,
-          createdAt: "2026-01-01T00:00:00Z",
-          updatedAt: "2026-01-01T00:00:00Z",
-        },
-      ],
-    })
+    projectList = [
+      {
+        projectId: "proj-1",
+        name: "My Plan",
+        description: null,
+        color: null,
+        status: "Active",
+        isActivePlan: true,
+        isDefault: true,
+        revision: 0,
+        createdAt: "2026-01-01T00:00:00Z",
+        updatedAt: "2026-01-01T00:00:00Z",
+      },
+    ]
+    listProjects.mockResolvedValue({ projects: projectList })
     listProjectGoals.mockResolvedValue({
       goals: [{ goal: rankGoal, priority: 1 }],
     })

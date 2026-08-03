@@ -9,20 +9,21 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
+import {
+  ProjectToolbar,
+  reorderedMemberIds,
+  useProjectActions,
+} from "@/features/project-management"
+import { useProjects } from "@/entities/project"
+
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { goalRowFromProjectMember } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
-import {
-  reorderedMemberIds,
-  useProjectActions,
-} from "../../model/projects/use-project-actions"
 import { useProjectGoals } from "../../model/projects/use-project-goals"
-import { useProjects } from "../../model/projects/use-projects"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { GoalsList } from "../goals-board/goals-list"
-import { ProjectToolbar } from ".//project-toolbar"
 
 // Mirrors goals-page.tsx's grouping (plan §3): "toReach"/"reached" come from computed attainment,
 // never the goal's lifecycle `status`; "archived" stays status-driven.

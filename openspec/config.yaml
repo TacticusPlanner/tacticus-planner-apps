@@ -1,0 +1,110 @@
+schema: spec-driven
+
+# Project context — shown to AI when creating artifacts.
+context: |
+  Tech stack: TypeScript, React (Vite), Feature-Sliced Design under
+  apps/web/src/fsd, shadcn/Radix UI + Tailwind, react-i18next, TanStack Query,
+  Vitest. See this repo's AGENTS.md and its .agents/skills for conventions
+  before writing code.
+
+  This app ships both a desktop and a mobile layout from the same codebase
+  (`useIsMobile()` from `@workspace/ui/hooks/use-mobile`, 768px breakpoint).
+  Many pages render meaningfully different UI/interaction on each — not just a
+  responsive reflow of the same markup — so treat "desktop" and "mobile" as
+  two UI forms to consider, not one.
+
+  Every page has (or should get) a Joyride-driven onboarding tour: a
+  co-located `<page>.tutorial.tsx` exporting a `use<Page>Tutorial():
+  TourPageSteps` hook (`{ desktop: Step[], mobile?: Step[] }`), registered via
+  `useTourPageSteps` from `@/shared/tour`. Steps target `data-testid`
+  selectors; step title/content come from i18n
+  (`tour.<page>.steps.<step>.title`/`.content`). See
+  `apps/web/src/fsd/pages/lookup/ui/character/character-lookup.tutorial.tsx`
+  for the reference pattern, `apps/web/src/fsd/shared/tour/general.tutorial.tsx`
+  for the shared nav/shell tour, and the `react-joyride` skill.
+
+  All user-facing strings go through react-i18next; translation resources
+  live in `apps/web/public/locales` under per-domain namespaces — see the
+  `react-i18next` skill.
+
+  Enforce Feature-Sliced Design dependency direction. Pages must not import
+  other pages; entities must not import features or pages; features must not
+  import sibling features. Logic reused by multiple pages belongs in an
+  appropriate entity or feature and must be consumed through that slice's
+  public API.
+
+  Authenticated and API-backed browser verification must use the full local
+  stack started through the workspace Aspire AppHost, not a standalone Vite
+  server.
+
+# Per-artifact rules.
+rules:
+  specs:
+    - When a capability's behavior, layout, or interaction genuinely differs
+      between desktop and mobile (not just responsive reflow of the same
+      content), write that out as separate, explicit scenarios (e.g. "on
+      mobile, ..." / "on desktop, ...") rather than one ambiguous scenario
+      that leaves the platform split to be decided later.
+    - Do not force a desktop/mobile split where none exists — most
+      requirements (data, business rules, empty states) are platform-
+      independent; only branch scenarios where the user-facing behavior
+      actually diverges.
+    - Distinguish loading, load failure, no available parent entity, and a
+      valid selection with no applicable data when those states require
+      different user-facing behavior.
+    - When sibling routes or tabs share user-controlled state, explicitly
+      require whether that state persists across navigation and where its
+      default value comes from.
+  design:
+    - When desktop and mobile need different Joyride target selectors,
+      different layout structure, or different interaction patterns, document
+      that split as its own decision (what differs and why) rather than
+      leaving it implicit in the task list.
+    - For functionality shared by multiple pages, document the owning FSD
+      slice and its public API. Avoid page-to-page and feature-to-feature
+      imports.
+    - For route-backed sibling views sharing selection or filter state,
+      document which common layout owns the state and how default selection
+      is derived.
+    - When a calculation produces both detailed rows and aggregate totals,
+      identify one canonical result structure and derive summaries from it
+      rather than maintaining separate calculation paths.
+  tasks:
+    - For any new page, or a materially changed page flow, include a task to
+      create or update that page's Joyride tutorial (a co-located
+      `<page>.tutorial.tsx` registered via `useTourPageSteps`), covering both
+      desktop and mobile steps. If the change is to shared navigation/shell
+      rather than one page, update `general.tutorial.tsx` instead of adding a
+      page-local file.
+    - Include a task to add or update the i18n keys for any new tutorial
+      steps (`tour.<page>.steps.*`) alongside the tutorial task itself, not as
+      a separate follow-up.
+    - Include a task to add or update i18n keys for all new/changed UI copy
+      in the appropriate `apps/web/public/locales` namespace — never leave
+      user-facing strings untranslated pending a later change.
+    - When introducing a new i18next namespace, include tasks to add it to
+      every supported locale, register its TypeScript resource type, migrate
+      any replaced keys out of their previous namespace, and update tests.
+    - For materially changed responsive pages, include automated tutorial
+      coverage and manual tour verification at one viewport below 768px and
+      one viewport at or above 768px.
+    - Manual verification tasks must identify their required data states,
+      such as a populated project and an empty project, so verification is
+      not blocked at the end of implementation.
+    - When moving shared logic between FSD slices, include regression tests
+      for existing consumers and run the FSD boundary validator.
+    - End non-trivial changes using the repository-wide gates
+      `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and
+      `git diff --check`.
+
+operations:
+  apply:
+    guidance:
+      - Run OpenSpec commands from the `tacticus-planner-apps` submodule.
+      - For authenticated or API-backed live verification, start the stack
+        from the workspace root through Aspire and wait for both `web` and
+        `api` to become healthy before testing.
+      - Mark task checkboxes as soon as each task and its proportional
+        verification are complete.
+      - Do not mark manual verification complete when required test-data
+        states are unavailable; report the exact missing state.

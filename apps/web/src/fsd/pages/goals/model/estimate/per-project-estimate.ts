@@ -7,7 +7,7 @@ import type {
 } from "@/entities/goal"
 
 import { computePlanInsights } from "../insights/plan-insights-calc"
-import type { EstimateOutcome } from ".//estimate.domain"
+import type { EstimateOutcome } from "@/features/goal-farming"
 
 type PlanInsightsParams = Parameters<typeof computePlanInsights>[0]
 

@@ -13,7 +13,7 @@ import type { GoalKind } from "@/entities/goal"
 import {
   requiredLevelForRankTarget,
   type RankAdditionalTarget,
-} from "../estimate/rank-additional-target"
+} from "@/features/goal-farming"
 
 type AscensionSuggestion = { start: Progression; end: Progression }
 type LevelSuggestion = { start: number; end: number }

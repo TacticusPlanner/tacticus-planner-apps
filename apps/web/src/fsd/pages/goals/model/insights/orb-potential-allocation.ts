@@ -1,11 +1,11 @@
 import type { Rarity } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { allocateInventory } from "../estimate/estimate"
+import { allocateInventory } from "@/features/goal-farming"
 import type {
   CountedResourceNeed,
   InventoryAllocationGoal,
-} from "../estimate/estimate.domain"
+} from "@/features/goal-farming"
 
 type OrbResourceId = `orb:${string}:${Rarity}`
 export type InventoryOrbs = PlayerDataChunkDto<"inventory">["orbs"]

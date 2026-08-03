@@ -313,7 +313,8 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   },
 }))
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
   projectQueries: {
     // Backs use-per-project-estimates.ts's per-project member lookup — empty by default (no test

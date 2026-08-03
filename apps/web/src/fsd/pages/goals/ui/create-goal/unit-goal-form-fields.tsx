@@ -8,7 +8,7 @@ import type { UnitId } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import { UnitCombobox } from "@/shared/ui"
-import { projectMarkerSuffix } from "../../model/projects/project-marker"
+import { projectMarkerSuffix } from "@/entities/project"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import { GoalTypeCards } from ".//goal-type-cards"
 import { GoalTypeToggleGroup } from "../shared/goal-visuals"

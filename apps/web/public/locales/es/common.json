@@ -145,10 +145,6 @@
     "sync": "Sincronizar",
     "syncWithTacticus": "Sincronizar con Tacticus"
   },
-  "dailies": {
-    "title": "Las diarias están en construcción",
-    "description": "Esta sección dedicada estará disponible próximamente."
-  },
   "guild": {
     "loadError": "No se pudo cargar tu gremio.",
     "retry": "Reintentar",

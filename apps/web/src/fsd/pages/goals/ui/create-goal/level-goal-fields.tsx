@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/select"
 
 import { ReadOnlyField } from "@/shared/ui"
-import type { LevelGoalCost } from "../../model/estimate/level-xp-cost"
+import type { LevelGoalCost } from "@/features/goal-farming"
 
 /** Target-level field + its resource-cost preview (books required + gold to apply, netted against
  * owned books — plan scope decision: no day/energy estimate, since XP books aren't

@@ -12,7 +12,7 @@ import { goalQueries, type GoalDetail } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 
 import { estimateNewGoalsForProject } from ".//per-project-estimate"
-import type { EstimateOutcome } from ".//estimate.domain"
+import type { EstimateOutcome } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 
 // Mirrors use-plan-insights.ts's own ACTIVE_STATUSES — only these statuses represent resources a

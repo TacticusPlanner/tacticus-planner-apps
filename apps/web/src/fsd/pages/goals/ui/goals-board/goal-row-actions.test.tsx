@@ -32,7 +32,8 @@ vi.mock("@/entities/goal", () => ({
   goalQueries: { all: () => ["goals"] },
 }))
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: { all: () => ["projects"] },
 }))
 

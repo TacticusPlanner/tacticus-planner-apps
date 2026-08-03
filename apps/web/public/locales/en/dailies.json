@@ -1,0 +1,104 @@
+{
+  "title": "Dailies",
+  "target": {
+    "rank": "Rank {{value}}",
+    "ability": "Ability {{value}}",
+    "ascension": "Ascension {{value}}",
+    "unlock": "Unlock"
+  },
+  "tabs": {
+    "raids": "Raids",
+    "shops": "Shops",
+    "onslaught": "Onslaught",
+    "salvage-run": "Salvage Run",
+    "arena": "Arena",
+    "guild-raids": "Guild Raids"
+  },
+  "placeholder": {
+    "title": "This daily is under construction",
+    "description": "This planner will be available in a future update."
+  },
+  "project": { "placeholder": "Select a project" },
+  "raids": {
+    "title": "Campaign raids",
+    "description": "Spend today's energy on your active project goals in priority order.",
+    "tabs": { "today": "Today", "plan": "Plan" }
+  },
+  "empty": {
+    "noProject": "No project is available. Reload the page or create a project in Goals.",
+    "noFarmable": "This project has no active, farmable campaign needs.",
+    "error": "The raid plan could not be loaded. Try again."
+  },
+  "today": {
+    "title": "Today's raids",
+    "summary": "{{energy}} energy · {{raids}} raid attempts"
+  },
+  "schedule": {
+    "raids_one": "{{count}} raid",
+    "raids_other": "{{count}} raids",
+    "progress": "{{owned}} of {{target}} owned",
+    "node": "{{node}} · {{raids}} raids",
+    "fullyRaided": "Fully raided"
+  },
+  "bonus": {
+    "title": "Bonus raids",
+    "empty": "No additional untouched resources remain after today's schedule.",
+    "showMore": "Show more"
+  },
+  "plan": {
+    "summary": {
+      "days": "Total days",
+      "energy": "Total energy",
+      "raids": "Raid attempts",
+      "unusedDays": "Days unused",
+      "completion": "Completion date"
+    },
+    "day": "Day {{day}}",
+    "dayStats": "{{energy}} / {{available}} energy · {{raids}} raids",
+    "showAll": "Show all days",
+    "collapse": "Collapse raid details",
+    "expand": "Expand raid details"
+  },
+  "tour": {
+    "today": {
+      "steps": {
+        "navigation": {
+          "title": "Dailies navigation",
+          "content": "Use these tabs to move between daily planners and the two raid views."
+        },
+        "project": {
+          "title": "Choose a project",
+          "content": "Today's schedule follows the active goals and priorities of this project."
+        },
+        "schedule": {
+          "title": "Today's schedule",
+          "content": "Raid these campaign nodes with today's available energy."
+        },
+        "bonus": {
+          "title": "Bonus raids",
+          "content": "These untouched needs become candidates when more energy is available."
+        }
+      }
+    },
+    "raidsPlan": {
+      "steps": {
+        "navigation": {
+          "title": "Raid views",
+          "content": "Switch between today's focused schedule and the complete multi-day plan."
+        },
+        "project": {
+          "title": "Shared project",
+          "content": "Today and Plan always use the same selected project."
+        },
+        "summary": {
+          "title": "Whole-plan summary",
+          "content": "These totals cover every displayed day, beginning with Today."
+        },
+        "days": {
+          "title": "Raid days",
+          "content": "Each day groups its raids by goal and campaign resource."
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@ import type { CampaignInsight } from "@/features/campaign-insights"
 import type {
   EstimateOutcome,
   EstimateResourceId,
-} from "../estimate/estimate.domain"
+} from "@/features/goal-farming"
 
 // Input/output shapes for the Insights view's plan-wide aggregation (plan-insights-calc.ts), kept
 // separate from the calc itself — mirrors estimate.domain.ts / estimate.ts.

@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import {
   computeLevelGoalCost,
   type LevelGoalCost,
-} from "../estimate/level-xp-cost"
+} from "@/features/goal-farming"
 
 /**
  * Resource-cost preview for a Level goal (plan scope decision: books required + gold to apply,

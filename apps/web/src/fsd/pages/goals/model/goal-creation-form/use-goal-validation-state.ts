@@ -11,7 +11,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalKind } from "@/entities/goal"
 
-import { mowAbilityTrackLevel } from "../estimate/mow-ability-calc"
+import { mowAbilityTrackLevel } from "@/features/goal-farming"
 import {
   getGoalValidationIssue,
   isAtMaxAbility,

@@ -3,8 +3,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import type { ProjectSummary } from "@/entities/project"
 
-import { projectMarkerSuffix } from "../../model/projects/project-marker"
-import { ProjectColorDot } from "../shared/project-color-dot"
+import { ProjectColorDot, projectMarkerSuffix } from "@/entities/project"
 
 /**
  * Checkbox list of every project, used by GoalDetailSheet to show and edit a goal's project

@@ -176,10 +176,6 @@
     "sync": "Sync",
     "syncWithTacticus": "Sync with Tacticus"
   },
-  "dailies": {
-    "title": "Dailies are under construction",
-    "description": "This dedicated area is coming soon."
-  },
   "onslaught": {
     "title": "Onslaught progress",
     "description": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",

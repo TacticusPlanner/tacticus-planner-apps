@@ -8,13 +8,13 @@ import type {
 } from "@/features/rank-lookup"
 import type { GoalKind } from "@/entities/goal"
 
-import { estimateGoal } from "../estimate/estimate"
-import type { EstimateOutcome } from "../estimate/estimate.domain"
+import { estimateGoal } from "@/features/goal-farming"
+import type { EstimateOutcome } from "@/features/goal-farming"
 import {
   computeMissingUpgrades,
   type MissingUpgradeEntry,
 } from "../estimate/goal-spec-builder"
-import { computeMowMissingUpgrades } from "../estimate/mow-ability-calc"
+import { computeMowMissingUpgrades } from "@/features/goal-farming"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

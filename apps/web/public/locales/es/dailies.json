@@ -1,0 +1,104 @@
+{
+  "title": "Diarias",
+  "target": {
+    "rank": "Rango {{value}}",
+    "ability": "Habilidad {{value}}",
+    "ascension": "Ascensión {{value}}",
+    "unlock": "Desbloqueo"
+  },
+  "tabs": {
+    "raids": "Incursiones",
+    "shops": "Tiendas",
+    "onslaught": "Onslaught",
+    "salvage-run": "Recuperación",
+    "arena": "Arena",
+    "guild-raids": "Incursiones de gremio"
+  },
+  "placeholder": {
+    "title": "Esta diaria está en construcción",
+    "description": "Este planificador estará disponible en una actualización futura."
+  },
+  "project": { "placeholder": "Selecciona un proyecto" },
+  "raids": {
+    "title": "Incursiones de campaña",
+    "description": "Gasta la energía de hoy según la prioridad del proyecto.",
+    "tabs": { "today": "Hoy", "plan": "Plan" }
+  },
+  "empty": {
+    "noProject": "No hay ningún proyecto disponible.",
+    "noFarmable": "Este proyecto no tiene necesidades de campaña activas.",
+    "error": "No se pudo cargar el plan."
+  },
+  "today": {
+    "title": "Incursiones de hoy",
+    "summary": "{{energy}} de energía · {{raids}} intentos"
+  },
+  "schedule": {
+    "raids_one": "{{count}} incursión",
+    "raids_other": "{{count}} incursiones",
+    "progress": "{{owned}} de {{target}} en posesion",
+    "node": "{{node}} · {{raids}} incursiones",
+    "fullyRaided": "Completado"
+  },
+  "bonus": {
+    "title": "Incursiones extra",
+    "empty": "No quedan recursos adicionales sin tocar.",
+    "showMore": "Mostrar más"
+  },
+  "plan": {
+    "summary": {
+      "days": "Días totales",
+      "energy": "Energía total",
+      "raids": "Intentos",
+      "unusedDays": "Días sin usar",
+      "completion": "Fecha final"
+    },
+    "day": "Día {{day}}",
+    "dayStats": "{{energy}} / {{available}} energía · {{raids}} incursiones",
+    "showAll": "Mostrar todos los días",
+    "collapse": "Contraer detalles",
+    "expand": "Expandir detalles"
+  },
+  "tour": {
+    "today": {
+      "steps": {
+        "navigation": {
+          "title": "Navegación",
+          "content": "Cambia entre los planificadores y vistas."
+        },
+        "project": {
+          "title": "Elige un proyecto",
+          "content": "El plan sigue sus objetivos activos."
+        },
+        "schedule": {
+          "title": "Plan de hoy",
+          "content": "Ataca estos nodos con la energía de hoy."
+        },
+        "bonus": {
+          "title": "Incursiones extra",
+          "content": "Objetivos disponibles con más energía."
+        }
+      }
+    },
+    "raidsPlan": {
+      "steps": {
+        "navigation": {
+          "title": "Vistas",
+          "content": "Cambia entre Hoy y Plan."
+        },
+        "project": {
+          "title": "Proyecto compartido",
+          "content": "Hoy y Plan usan el mismo proyecto."
+        },
+        "summary": {
+          "title": "Resumen",
+          "content": "Los totales incluyen el Día 1."
+        },
+        "days": {
+          "title": "Días de incursión",
+          "content": "Cada día agrupa incursiones por objetivo."
+        }
+      }
+    }
+  }
+}

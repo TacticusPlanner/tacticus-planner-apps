@@ -6,7 +6,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import type { FarmingStrategy, GoalDetail } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 
-import { additionalTargetFromWire } from "../../model/estimate/rank-additional-target"
+import { additionalTargetFromWire } from "@/features/goal-farming"
 import { FarmingStrategyField } from "../create-goal/farming-strategy-field"
 import { GoalLevelSummary } from "../create-goal/goal-level-summary"
 import { GoalLocationsField } from "../create-goal/goal-locations-field"

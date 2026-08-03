@@ -6,8 +6,8 @@ import type { BattleId } from "@workspace/game-domain"
 
 import { useCampaignDisplay } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
-import { dropRate } from "../../model/estimate/estimate"
-import type { Battle, FarmLocation } from "../../model/estimate/estimate.domain"
+import { dropRate } from "@/features/goal-farming"
+import type { Battle, FarmLocation } from "@/features/goal-farming"
 
 /** The full campaign battle name for a shard-farm location, e.g. "Fall of Cadia Standard 22" or
  *  "Death Guard Extremis 5B" — falls back to the raw battle id when the battle's campaign/type
