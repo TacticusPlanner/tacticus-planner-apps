@@ -111,3 +111,11 @@
 - [x] 12.6 Reconcile OpenSpec failure/empty-state requirements, namespace work, route-fence linting, and the final repository-wide validation gate
 - [x] 12.7 Apply verified maintainability findings: public readonly/export types, import cleanup, recipe cycle protection and direct tests, named scheduling constants, accumulator ownership, test naming, derivation coverage, and shared Today progress lookup
 - [x] 12.8 Run focused tests, `pnpm test:run`, typecheck, lint, FSD validation, strict OpenSpec validation, and `git diff --check`
+
+## 13. Resolve follow-up pull-request review findings
+
+- [x] 13.1 Calculate the whole-plan completion date from the last rendered day (`totalDays - 1` from Today) and cover one-day and multi-day plans with regression assertions
+- [x] 13.2 Make the project-list retry test model an error-to-ready transition and assert the recovered Today page
+- [x] 13.3 Disable mutation garbage-collection timers in the project-actions test QueryClient
+- [x] 13.4 Clarify that the tutorial summary covers every planned day and reconcile the plan specification and design
+- [x] 13.5 Run focused tests, typecheck, strict OpenSpec validation, and `git diff --check`

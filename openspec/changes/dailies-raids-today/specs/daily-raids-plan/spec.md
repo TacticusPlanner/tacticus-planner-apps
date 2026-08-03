@@ -114,7 +114,7 @@ Above the day columns, Raids Plan SHALL show: the total number of days until eve
 
 - **GIVEN** a plan that takes N days total
 - **WHEN** Raids Plan loads
-- **THEN** the displayed completion date is N days after today's date
+- **THEN** the displayed completion date is N - 1 days after today's date, so a one-day plan completes Today
 
 ### Requirement: Raids Plan pages days 3-at-a-time
 

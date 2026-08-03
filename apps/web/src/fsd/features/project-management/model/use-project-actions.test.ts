@@ -26,7 +26,10 @@ vi.mock("@/entities/project", async (importOriginal) => {
 
 function createWrapper() {
   const queryClient = new QueryClient({
-    defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
+    defaultOptions: {
+      mutations: { gcTime: Infinity, retry: false },
+      queries: { retry: false },
+    },
   })
   return function TestWrapper({ children }: { children: ReactNode }) {
     return createElement(QueryClientProvider, { client: queryClient }, children)

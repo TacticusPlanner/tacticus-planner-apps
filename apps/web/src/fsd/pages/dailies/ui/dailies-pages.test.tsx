@@ -143,14 +143,20 @@ function ready(
 
 function ContextRoute() {
   const [projectId, setProjectId] = useState<string | undefined>("p1")
+  const [projectsError, setProjectsError] = useState(
+    contextOverrides.projectsError ?? false
+  )
   const context: DailiesOutletContext = {
     projects: [],
     projectId,
     setProjectId,
     projectsUnavailable: false,
-    projectsError: false,
-    retryProjects,
     ...contextOverrides,
+    projectsError,
+    retryProjects: () => {
+      retryProjects()
+      setProjectsError(false)
+    },
   }
   return <Outlet context={context} />
 }
@@ -226,7 +232,8 @@ describe("Dailies raid pages", () => {
 
     await user.click(screen.getByRole("button", { name: "empty.retry" }))
     expect(retryProjects).toHaveBeenCalledOnce()
-    expect(screen.queryByTestId("dailies-no-project")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("dailies-error")).not.toBeInTheDocument()
+    expect(screen.getByTestId("today-page")).toBeInTheDocument()
   })
 
   it("starts the plan with Today, paginates, and toggles detail density", async () => {

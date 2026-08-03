@@ -194,6 +194,7 @@ function runPlanSchedule(
     (total, day) => total + day.raidsTotal,
     0
   )
+  const completionDayOffset = Math.max(scheduleDays.length - 1, 0)
   return {
     days: scheduleDays,
     outcomes: results,
@@ -204,7 +205,7 @@ function runPlanSchedule(
       daysWithUnusedEnergy: scheduleDays.filter(
         (day) => dailyEnergy - day.energyTotal > UNUSED_ENERGY_THRESHOLD
       ).length,
-      completionDate: formatDate(addDays(referenceDate, scheduleDays.length)),
+      completionDate: formatDate(addDays(referenceDate, completionDayOffset)),
     },
   }
 }

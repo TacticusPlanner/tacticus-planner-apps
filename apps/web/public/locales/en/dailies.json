@@ -100,7 +100,7 @@
         },
         "summary": {
           "title": "Whole-plan summary",
-          "content": "These totals cover every displayed day, beginning with Today."
+          "content": "These totals cover every planned day, beginning with Today."
         },
         "days": {
           "title": "Raid days",

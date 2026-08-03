@@ -111,8 +111,28 @@ describe("raid schedule breakdown", () => {
       totalEnergy: 50,
       totalRaids: 5,
       daysWithUnusedEnergy: 3,
-      completionDate: "2026-01-04",
+      completionDate: "2026-01-03",
     })
+  })
+
+  it("uses Today as the completion date for a one-day plan", () => {
+    const plan = estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "goal",
+          priority: 1,
+          needs: [{ id: upgradeId("U1"), count: 1 }],
+        },
+      ],
+      upgradesById: resources(["U1", "B1"]),
+      battlesById: new Map([battle("B1")]),
+      dailyEnergy: 100,
+      inventory: [],
+      referenceDate,
+    })
+
+    expect(plan.summary.totalDays).toBe(1)
+    expect(plan.summary.completionDate).toBe("2026-01-01")
   })
 })
 

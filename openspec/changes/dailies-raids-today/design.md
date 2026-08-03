@@ -63,7 +63,7 @@ Per-day energy/raid-attempt totals (for both Today's and each Plan day's own sum
 - **Total days**: the loop's terminal `days` (already `estimatePlan`'s existing behavior, unchanged) — counted from Day 1, same as V1's `daysTotal = upgradesRaids.length`.
 - **Total energy** / **total raid-attempt count**: sum of every day's breakdown totals (Today/Day 1 through the last day) — same as V1's `sum(upgradesRaids.map(day => day.energyTotal))` / `sum(...day.raidsTotal)`. The summary and rendered columns now cover the same complete range.
 - **Days unused**: count of days where `dailyEnergy - dayEnergyTotal > 60`, the exact threshold V1 uses (`freeEnergyDays`) — ported as-is rather than redesigned to "any leftover energy," per this change's general policy of porting V1's algorithm verbatim.
-- **Completion date**: `referenceDate + totalDays`, identical math to `estimateGoal`/`estimatePlan`'s existing `date` field.
+- **Completion date**: `referenceDate + max(totalDays - 1, 0)`, because Day 1 is Today and a one-day plan therefore completes on the reference date.
 
 ### Pagination: reuse Bonus Raids' truncate-then-reveal pattern
 
