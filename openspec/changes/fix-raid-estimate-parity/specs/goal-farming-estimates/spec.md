@@ -79,3 +79,19 @@ The system SHALL treat the reference date as Day 1 for an estimate that requires
 - **GIVEN** existing inventory already covers all farmable demand
 - **WHEN** the estimate is calculated as zero days
 - **THEN** the completion date equals the reference date
+
+### Requirement: Simultaneous rewards contribute to one raid yield
+
+The system SHALL calculate a farm node's expected resource yield as the sum of every reward entry for that resource and battle that is granted by the same raid. A catalog-provided combined effective rate SHALL take precedence over the guaranteed fallback rate.
+
+#### Scenario: Combined elite shard location
+
+- **GIVEN** a catalog location is guaranteed and has a combined effective rate of `1.079`
+- **WHEN** the estimator calculates that node's shard yield
+- **THEN** one raid contributes `1.079` expected shards rather than `1`
+
+#### Scenario: Cached catalog has split simultaneous entries
+
+- **GIVEN** a cached catalog contains separate `1` guaranteed and `0.079` potential locations for the same shard and battle
+- **WHEN** the estimator builds farm-node candidates
+- **THEN** it combines them into one node with an expected yield of `1.079` and applies the battle's attempt cap only once

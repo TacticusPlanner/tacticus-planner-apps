@@ -57,12 +57,18 @@ const battle = (
 ]
 
 describe("dropRate", () => {
-  it("is 1 for a guaranteed drop, regardless of any rate fields", () => {
+  it("is 1 for a guaranteed drop without an explicit combined rate", () => {
     expect(dropRate(location("B1", { guaranteed: true }))).toBe(1)
   })
 
   it("prefers effectiveRate when present", () => {
     expect(dropRate(location("B1", { effectiveRate: 0.4 }))).toBe(0.4)
+  })
+
+  it("uses a combined effectiveRate above 1 for a guaranteed-plus-bonus location", () => {
+    expect(
+      dropRate(location("B1", { guaranteed: true, effectiveRate: 1.079 }))
+    ).toBe(1.079)
   })
 
   it("falls back to numerator/denominator", () => {
@@ -131,6 +137,68 @@ describe("selectFarmNodes", () => {
       },
     ])
   })
+
+  it("keeps a catalog-provided combined guaranteed-plus-bonus yield", () => {
+    const combinedReward = new Map<
+      ReturnType<typeof upgradeId>,
+      EstimateUpgrade
+    >([
+      [
+        upgradeId("shards_character"),
+        {
+          id: upgradeId("shards_character"),
+          farmLocations: [
+            location("B1", { guaranteed: true, effectiveRate: 1.079 }),
+          ],
+        },
+      ],
+    ])
+
+    const nodes = selectFarmNodes(
+      { id: upgradeId("shards_character"), count: 500 },
+      combinedReward,
+      new Map([battle("B1", 10, 6)])
+    )
+
+    expect(nodes).toHaveLength(1)
+    expect(nodes[0]?.dropRate).toBe(1.079)
+  })
+
+  it.each([undefined, ["B1"]])(
+    "combines legacy split rewards for one battle with restriction %j",
+    (farmingLocationIds) => {
+      const splitRewards = new Map<
+        ReturnType<typeof upgradeId>,
+        EstimateUpgrade
+      >([
+        [
+          upgradeId("shards_character"),
+          {
+            id: upgradeId("shards_character"),
+            farmLocations: [
+              location("B1", { guaranteed: true }),
+              location("B1", { effectiveRate: 0.079 }),
+            ],
+          },
+        ],
+      ])
+
+      const nodes = selectFarmNodes(
+        { id: upgradeId("shards_character"), count: 500 },
+        splitRewards,
+        new Map([battle("B1", 10, 6)]),
+        farmingLocationIds
+      )
+
+      expect(nodes).toHaveLength(1)
+      expect(nodes[0]).toMatchObject({
+        battleId: battleId("B1"),
+        energyCost: 10,
+        dailyAttempts: 6,
+      })
+      expect(nodes[0]?.dropRate).toBeCloseTo(1.079)
+    }
+  )
 
   it("is empty for a material with no catalog entry", () => {
     expect(

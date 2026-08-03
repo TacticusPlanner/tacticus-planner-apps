@@ -39,8 +39,8 @@ const MAX_DAYS = 1000
  * duplication convention for small pure helpers.
  */
 export function dropRate(location: FarmLocation): number {
-  if (location.guaranteed) return 1
   if (location.effectiveRate != null) return location.effectiveRate
+  if (location.guaranteed) return 1
   if (location.numerator != null && location.denominator) {
     return location.numerator / location.denominator
   }
@@ -64,7 +64,7 @@ export function selectFarmNodes(
 
   const restricted = farmingLocationIds && farmingLocationIds.length > 0
 
-  const candidates: FarmNode[] = []
+  const candidatesByBattle = new Map<BattleId, FarmNode>()
   for (const location of upgrade.farmLocations) {
     const battle = battlesById.get(location.battleId)
     if (!battle || battle.energyCost <= 0) continue
@@ -74,14 +74,20 @@ export function selectFarmNodes(
 
     if (restricted && !farmingLocationIds.includes(location.battleId)) continue
 
-    candidates.push({
-      battleId: location.battleId,
-      energyCost: battle.energyCost,
-      dropRate: rate,
-      dailyAttempts: battle.dailyAttempts,
-    })
+    const existing = candidatesByBattle.get(location.battleId)
+    if (existing) {
+      existing.dropRate += rate
+    } else {
+      candidatesByBattle.set(location.battleId, {
+        battleId: location.battleId,
+        energyCost: battle.energyCost,
+        dropRate: rate,
+        dailyAttempts: battle.dailyAttempts,
+      })
+    }
   }
 
+  const candidates = [...candidatesByBattle.values()]
   if (candidates.length === 0 || restricted) return candidates
 
   const minEnergyPerItem = Math.min(

@@ -21,3 +21,13 @@
 
 - [x] 4.1 Run focused goal-farming, Dailies derivation, and Goals/Insights tests, then run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, strict OpenSpec validation, and `git diff --check`
 - [x] 4.2 In the Aspire-hosted signed-in app, manually verify a populated project with owned crafted upgrades: Today matches Raids Plan Day 1, satisfied crafted recipes do not reappear as ingredient farming, and the summary completion date matches the final rendered day
+
+## 5. Simultaneous reward yields
+
+- [x] 5.1 Prefer an explicit combined effective rate over the guaranteed fallback when resolving one farm location's expected yield
+- [x] 5.2 Aggregate split farm-location entries for the same resource and battle into one candidate before efficiency selection and daily-attempt accounting
+- [x] 5.3 Add regressions for both a combined `1.079` elite shard location and legacy split `1` plus `0.079` locations, including restricted-node selection
+
+## 6. Reward-yield verification
+
+- [x] 6.1 Run focused estimator and Dailies tests, `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, strict OpenSpec validation, and `git diff --check`

@@ -4,6 +4,8 @@ The shared `features/goal-farming` slice currently converts required rank and Mo
 
 Goal needs are derived in priority order by both Dailies and Goals/Insights, and some goals are split into ordered farming stages. Today, Bonus Raids, and Raids Plan already consume one canonical schedule result. Completion dates are currently calculated in more than one engine path by adding the full day count to the reference date.
 
+Elite shard battles can list the same shard once as guaranteed and again as a probabilistic bonus. The current estimator turns each catalog entry into an alternative farm node and selects the guaranteed `1` yield, losing the simultaneous `0.079` bonus.
+
 ## Goals / Non-Goals
 
 **Goals:**
@@ -12,12 +14,13 @@ Goal needs are derived in priority order by both Dailies and Goals/Insights, and
 - Apply one recipe-aware inventory policy to Rank and MoW Ability needs in every shared-engine consumer.
 - Keep the existing base-material allocation and day scheduler unchanged after corrected needs are produced.
 - Centralize inclusive completion-date math so detailed outcomes and plan summaries cannot drift.
+- Treat all reward occurrences for the same resource and battle as one raid yield, including both new combined catalog locations and legacy split cached locations.
 
 **Non-Goals:**
 
 - Reproduce V1's global campaign filters, Home Screen Event ordering, completed-raid tracking, or other settings that V2 does not model.
 - Convert crafted inventory into freely spendable base ingredients.
-- Change node selection, drop-rate math, energy budgeting, attempt caps, routes, or presentation.
+- Change energy budgeting, attempt caps, routes, or presentation beyond correcting simultaneous-reward yield calculation.
 
 ## Decisions
 
@@ -62,12 +65,19 @@ Tests will freeze small catalogs and inventory snapshots that isolate:
 
 A compact Neurothrope/Ahriman/Abraxas-style integration fixture will assert that corrected derived demand feeds the same schedule consumers, without embedding the user's private player data.
 
+### Aggregate farm candidates by battle before efficiency selection
+
+Interpret a location's explicit `effectiveRate` before the guaranteed fallback so a consolidated guaranteed-plus-bonus location can carry a rate above one. While building candidates for one resource, group locations by battle id and sum their resolved rates. The resulting `FarmNode` remains unique per battle, so efficiency selection and daily-attempt accounting operate on the actual raid choice.
+
+This deliberately supports both catalog generations: the corrected API emits one `1.079` location, while an IndexedDB cache may temporarily contain separate `1` and `0.079` locations. Both produce the same node and schedule without requiring users to clear storage.
+
 ## Risks / Trade-offs
 
 - **[Risk]** Mutating one inventory pool makes order significant. **Mitigation:** construct it once immediately before already-defined priority-ordered goal iteration, thread it explicitly through stages, and cover both order dimensions with tests.
 - **[Risk]** Applied rank slots and crafted inventory could both satisfy the same requirement. **Mitigation:** remove applied slot occurrences from raw required ids before consuming loose inventory.
 - **[Risk]** A fully covered stage could trigger fallback derivation and recreate demand. **Mitigation:** represent staged applicability separately from stage length and add a fully-covered regression test.
 - **[Risk]** Corrected demand changes existing snapshots and completion dates. **Mitigation:** treat affected expectations as correctness updates, run the full shared-engine and consumer suites, and report before/after parity totals in the PR.
+- **[Risk]** Duplicate entries that are alternatives rather than simultaneous rewards could be summed. **Mitigation:** aggregate only entries for the same resource already being estimated and the same battle id; raw catalog semantics define repeated occurrences in one battle as simultaneous rewards.
 
 ## Migration Plan
 
