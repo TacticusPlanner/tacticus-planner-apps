@@ -61,10 +61,16 @@ export function computeMissingUpgrades(params: {
     playerCharacter,
     upgradesById,
   } = params
+  const sameRankWithoutPartial =
+    rankIndex(rankStart) === rankIndex(rankEnd) &&
+    !rankEndPointFive &&
+    (params.rankEndAppliedUpgrades ?? 0) === 0 &&
+    (params.rankEndTopRowCount ?? 0) === 0
   if (
     !rankEnabled ||
     !character ||
-    rankIndex(rankStart) >= rankIndex(rankEnd)
+    rankIndex(rankStart) > rankIndex(rankEnd) ||
+    sameRankWithoutPartial
   ) {
     return []
   }

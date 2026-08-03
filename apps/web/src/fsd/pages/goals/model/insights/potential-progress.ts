@@ -19,8 +19,14 @@ function stageBoundary(detail: GoalDetail, target: string): number {
   if (detail.goalType === "Rank" && detail.config.rank) {
     const { start, end } = detail.config.rank
     const targetIndex = Number(target)
-    if (!Number.isFinite(targetIndex) || end <= start) return 1
-    return clampRatio((targetIndex - start) / (end - start))
+    if (!Number.isFinite(targetIndex)) return 1
+    const requiredApplied = Math.max(
+      detail.config.rank.endAppliedUpgrades,
+      detail.config.rank.endPointFive ? 3 : 0
+    )
+    const totalSlots = (end - start) * 6 + requiredApplied
+    if (totalSlots <= 0 || targetIndex >= end) return 1
+    return clampRatio(((targetIndex - start) * 6) / totalSlots)
   }
 
   if (detail.goalType === "Ability" && detail.config.ability) {

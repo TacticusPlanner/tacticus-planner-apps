@@ -173,9 +173,16 @@ describe("GoalsList", () => {
   })
 
   it("renders separate actual and potential progress for a project-scoped goal", async () => {
+    const estimates = new Map([
+      [
+        "goal-1",
+        { days: 5, date: "2026-01-06", energyTotal: 50, raidsTotal: 5 },
+      ],
+    ])
     render(
       <GoalsList
         actions={stubActions}
+        estimates={estimates}
         metrics={
           new Map([
             [
@@ -187,7 +194,14 @@ describe("GoalsList", () => {
                   target: "Iron1",
                   ratio: 0.25,
                 },
-                remaining: null,
+                remaining: {
+                  upgrades: [],
+                  shardId: null,
+                  shards: 0,
+                  mythicShards: 0,
+                  orbsByType: {},
+                  upgradeSlotsRemaining: 3,
+                },
                 blockers: { isBlocked: false, reasons: [] },
               },
             ],
@@ -207,6 +221,26 @@ describe("GoalsList", () => {
       "aria-valuetext",
       "75%"
     )
+    const actualSummary = screen.getByTestId("goal-remaining-summary")
+    const potentialSummary = screen.getByTestId("goal-energy-remaining-summary")
+    expect(actualSummary).toHaveTextContent(
+      "goals.overview.remaining.upgradeSlots"
+    )
+    expect(potentialSummary).toHaveTextContent(
+      "goals.overview.remaining.energy"
+    )
+    expect(
+      screen
+        .getByTestId("goal-progress-bar")
+        .compareDocumentPosition(actualSummary) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      screen
+        .getByTestId("goal-potential-progress-bar")
+        .compareDocumentPosition(potentialSummary) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
   })
 
   it("opens the goal detail via keyboard from the goal-name button", async () => {

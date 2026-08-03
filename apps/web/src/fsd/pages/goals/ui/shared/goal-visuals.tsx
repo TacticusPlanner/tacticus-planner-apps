@@ -218,13 +218,17 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
 export function GoalProgressDisplay({
   progress,
   potentialRatio,
+  actualSummary,
+  potentialSummary,
 }: {
   progress: GoalProgress
   potentialRatio?: number
+  actualSummary?: ReactNode
+  potentialSummary?: ReactNode
 }) {
   const { t } = useTranslation()
 
-  if (progress.kind === "Unknown") return null
+  if (progress.kind === "Unknown") return actualSummary
 
   const currentTarget =
     progress.kind === "Rank" ? (
@@ -284,6 +288,7 @@ export function GoalProgressDisplay({
             data-testid="goal-progress-bar"
             value={progress.ratio * 100}
           />
+          {actualSummary}
           {potentialRatio !== undefined ? (
             <>
               <span className="text-xs text-muted-foreground">
@@ -296,10 +301,13 @@ export function GoalProgressDisplay({
                 data-testid="goal-potential-progress-bar"
                 value={potentialRatio * 100}
               />
+              {potentialSummary}
             </>
           ) : null}
         </div>
-      ) : null}
+      ) : (
+        actualSummary
+      )}
     </div>
   )
 }
@@ -358,6 +366,24 @@ export function GoalRemainingSummary({
       data-testid="goal-remaining-summary"
     >
       {parts.join(" · ")}
+    </p>
+  )
+}
+
+export function GoalEnergyRemainingSummary({
+  energy,
+}: {
+  energy: number | undefined
+}) {
+  const { t } = useTranslation()
+  if (energy === undefined) return null
+
+  return (
+    <p
+      className="text-xs text-muted-foreground"
+      data-testid="goal-energy-remaining-summary"
+    >
+      {t("goals.overview.remaining.energy", { energy })}
     </p>
   )
 }

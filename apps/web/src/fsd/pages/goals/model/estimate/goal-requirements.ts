@@ -135,6 +135,8 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
               start,
               end,
               endPointFive: end === target.end && target.endPointFive,
+              endAppliedUpgrades:
+                end === target.end ? target.endAppliedUpgrades : 0,
             },
           },
         }

@@ -70,29 +70,34 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       const target = detail.config.rank
       if (!target || !params.playerCharacter) return UNKNOWN_PROGRESS
       const currentIndex = rankIndex(params.playerCharacter.rank)
-      const clampedCurrent = Math.min(
-        Math.max(currentIndex, target.start),
-        target.end
-      )
-      const rankRatio = clampRatio(
-        clampedCurrent - target.start,
-        target.end - target.start
-      )
-      // Mirrors `computeGoalAttainment`'s Rank branch: reaching the end rank isn't "done" until its
-      // end-rank upgrade requirement is met too — never show a full bar before attainment agrees.
+      const appliedSlots = new Set(params.playerCharacter.appliedUpgradeSlots)
+        .size
+      // Treat each crossed rank as six slots and append any partial target at the end rank. Applied
+      // slots then advance the bar continuously and same-rank partial goals have a real span.
       const requiredApplied = Math.max(
         target.endAppliedUpgrades,
         target.endPointFive ? 3 : 0
       )
-      const endUpgradesDone =
-        requiredApplied === 0 ||
-        new Set(params.playerCharacter.appliedUpgradeSlots).size >=
-          requiredApplied
+      const totalSlots = (target.end - target.start) * 6 + requiredApplied
+      const completedSlots =
+        currentIndex > target.end
+          ? totalSlots
+          : currentIndex < target.start
+            ? 0
+            : (currentIndex - target.start) * 6 +
+              (currentIndex === target.end
+                ? Math.min(appliedSlots, requiredApplied)
+                : Math.min(appliedSlots, 6))
       return {
         kind: "Rank",
         current: params.playerCharacter.rank,
         target: rankAt(target.end),
-        ratio: rankRatio >= 1 && !endUpgradesDone ? 0.99 : rankRatio,
+        ratio:
+          totalSlots <= 0
+            ? currentIndex >= target.end
+              ? 1
+              : 0
+            : clampRatio(completedSlots, totalSlots),
       }
     }
     case "Ability": {

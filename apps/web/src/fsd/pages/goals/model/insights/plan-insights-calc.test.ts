@@ -63,7 +63,10 @@ describe("computePlanInsights", () => {
   const character: Character = {
     id: unitId("hero1"),
     name: "Hero One",
-    rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [upgradeId("mat1")] }],
+    rankUpUpgrades: [
+      { rank: rankOrder[0], upgradeIds: [upgradeId("mat1")] },
+      { rank: rankOrder[1], upgradeIds: [upgradeId("mat2")] },
+    ],
   }
   const characterView = {
     id: "hero1",
@@ -91,6 +94,11 @@ describe("computePlanInsights", () => {
       },
     ],
   }
+  const secondUpgrade: UpgradeWithFarmLocations = {
+    ...upgrade,
+    id: upgradeId("mat2"),
+    label: "Material Two",
+  }
 
   const battle: Battle = {
     campaignGroupId: campaignId("campaign1"),
@@ -106,7 +114,10 @@ describe("computePlanInsights", () => {
     playerMowById: new Map(),
     inventoryShardById: new Map(),
     inventoryUpgrades: [],
-    upgradesById: new Map([[upgrade.id, upgrade]]),
+    upgradesById: new Map([
+      [upgrade.id, upgrade],
+      [secondUpgrade.id, secondUpgrade],
+    ]),
     battlesById: new Map([[battleId("B1"), battle]]),
     charactersById: new Map([["hero1", characterView]]),
     mowsById: new Map<string, MowStorageModel>(),
@@ -155,6 +166,45 @@ describe("computePlanInsights", () => {
     expect(result.completionDate).not.toBeNull()
     expect(result.bottlenecks).toHaveLength(1)
     expect(result.bottlenecks[0]?.label).toBe("Material One")
+  })
+
+  it("estimates a same-rank partial-upgrade target", () => {
+    const details = [
+      goalDetail({
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[1]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[1]),
+            endPointFive: false,
+            endAppliedUpgrades: 1,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          item: null,
+          level: null,
+        },
+      }),
+    ]
+
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      playerCharacterById: new Map([
+        ["hero1", { rank: rankOrder[1], appliedUpgradeSlots: [] } as never],
+      ]),
+      priorityByGoalId: new Map([["goal-1", 1]]),
+    })
+
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      energyTotal: 10,
+      status: "Estimated",
+    })
   })
 
   it("skips a goal with no priority entry, and returns the empty result for no costable goals", () => {

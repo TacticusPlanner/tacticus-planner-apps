@@ -23,6 +23,7 @@ import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { GoalRowActions } from ".//goal-row-actions"
 import {
+  GoalEnergyRemainingSummary,
   GoalProgressDisplay,
   GoalProjectBadges,
   GoalRemainingSummary,
@@ -126,6 +127,12 @@ function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
   )
 }
 
+function estimateEnergy(estimate: EstimateOutcome | undefined) {
+  return estimate && estimate.status !== "Blocked"
+    ? estimate.energyTotal
+    : undefined
+}
+
 function GoalsTable({
   rows,
   actions,
@@ -205,13 +212,20 @@ function GoalsTable({
             </TableCell>
             <TableCell className="min-w-40">
               <GoalProgressDisplay
+                actualSummary={
+                  <GoalRemainingSummary
+                    remaining={metrics?.get(row.goalId)?.remaining ?? null}
+                  />
+                }
                 potentialRatio={potentialProgress?.get(row.goalId)}
+                potentialSummary={
+                  <GoalEnergyRemainingSummary
+                    energy={estimateEnergy(estimates?.get(row.goalId))}
+                  />
+                }
                 progress={
                   metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
                 }
-              />
-              <GoalRemainingSummary
-                remaining={metrics?.get(row.goalId)?.remaining ?? null}
               />
             </TableCell>
             <TableCell>
@@ -326,11 +340,18 @@ function GoalsMobileCards({
             <EstimateCell estimate={estimates?.get(row.goalId)} />
           </div>
           <GoalProgressDisplay
+            actualSummary={
+              <GoalRemainingSummary
+                remaining={metrics?.get(row.goalId)?.remaining ?? null}
+              />
+            }
             potentialRatio={potentialProgress?.get(row.goalId)}
+            potentialSummary={
+              <GoalEnergyRemainingSummary
+                energy={estimateEnergy(estimates?.get(row.goalId))}
+              />
+            }
             progress={metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS}
-          />
-          <GoalRemainingSummary
-            remaining={metrics?.get(row.goalId)?.remaining ?? null}
           />
           {row.notes ? (
             <p className="truncate text-muted-foreground" title={row.notes}>

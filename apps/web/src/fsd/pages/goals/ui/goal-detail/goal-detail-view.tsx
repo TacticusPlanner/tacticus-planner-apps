@@ -13,6 +13,7 @@ import type { ResourceNeed } from "../../model/estimate/progression-cost-calc"
 import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
 import {
+  GoalEnergyRemainingSummary,
   GoalProgressDisplay,
   GoalProjectBadges,
   GoalRemainingSummary,
@@ -69,10 +70,24 @@ export function GoalDetailView({
         ) : (
           <>
             <GoalProgressDisplay
+              actualSummary={<GoalRemainingSummary remaining={remaining} />}
               potentialRatio={potentialRatio}
+              potentialSummary={
+                <GoalEnergyRemainingSummary
+                  energy={
+                    estimate && estimate.status !== "Blocked"
+                      ? estimate.energyTotal
+                      : undefined
+                  }
+                />
+              }
               progress={progress}
             />
-            <GoalRemainingSummary remaining={remaining} />
+            {potentialRatio !== undefined ? (
+              <p className="text-xs text-muted-foreground">
+                {t("goals.detail.potentialProgressDescription")}
+              </p>
+            ) : null}
           </>
         )}
       </section>

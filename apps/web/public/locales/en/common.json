@@ -652,6 +652,7 @@
       "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
+      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in this project reserve their share. It does not change the goal's actual status.",
       "unavailable": "Unavailable",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
@@ -677,6 +678,7 @@
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "upgradeSlots": "{{count}} upgrade slots remaining",
+        "energy": "{{energy}} energy remaining",
         "shards": "{{count}} shards remaining",
         "mythicShards": "{{count}} mythic shards remaining",
         "orbs": "{{count}} orbs remaining"

@@ -18,6 +18,10 @@ import type { GoalDetail } from "@/entities/goal"
 import type { EstimateResourceId } from "../estimate/estimate.domain"
 import type { UpgradeNeed } from "../estimate/estimate.domain"
 import {
+  additionalTargetFromWire,
+  additionalTargetSelection,
+} from "../estimate/rank-additional-target"
+import {
   mowAbilityTrackLevel,
   uncoveredMowAbilityUpgradeIds,
 } from "../estimate/mow-ability-calc"
@@ -67,11 +71,16 @@ export function rankResourceNeed(params: {
   )
   const rankStart = rankAt(effectiveStart)
   const rankEnd = rankAt(rankTarget.end)
+  const additionalTarget = additionalTargetSelection(
+    additionalTargetFromWire(rankEnd, rankTarget)
+  )
   const requiredIds = rankUpUpgradeIds(
     params.character,
     rankStart,
     rankEnd,
-    rankTarget.endPointFive
+    rankTarget.endPointFive,
+    additionalTarget.appliedUpgrades,
+    additionalTarget.topRowCount
   )
   if (requiredIds.length === 0) return null
   const required = aggregateBaseUpgrades(requiredIds, params.upgradesById)
@@ -119,11 +128,16 @@ export function rankSlotsRemaining(params: {
   const effectiveStart = Math.max(rankTarget.start, currentRankIndex)
   const rankStart = rankAt(effectiveStart)
   const rankEnd = rankAt(rankTarget.end)
+  const additionalTarget = additionalTargetSelection(
+    additionalTargetFromWire(rankEnd, rankTarget)
+  )
   const requiredIds = rankUpUpgradeIds(
     params.character,
     rankStart,
     rankEnd,
-    rankTarget.endPointFive
+    rankTarget.endPointFive,
+    additionalTarget.appliedUpgrades,
+    additionalTarget.topRowCount
   )
   if (requiredIds.length === 0) return null
 

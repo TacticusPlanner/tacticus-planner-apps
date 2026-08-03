@@ -74,6 +74,37 @@ describe("computePotentialProgressRatio", () => {
     ).toBe(1)
   })
 
+  it("interpolates inventory for a same-rank partial target", () => {
+    const partialDetail = {
+      ...detail,
+      config: {
+        ...detail.config,
+        rank: {
+          ...detail.config.rank,
+          start: 1,
+          end: 1,
+          endAppliedUpgrades: 2,
+        },
+      },
+    } as GoalDetail
+    expect(
+      computePotentialProgressRatio(
+        partialDetail,
+        { kind: "Rank", current: "Stone2", target: "Stone2", ratio: 0.5 },
+        {
+          goalId: "goal-1",
+          stages: [
+            {
+              target: "final",
+              needs: [{ id: "U1" as never, count: 2 }],
+              remaining: [{ id: "U1" as never, count: 1 }],
+            },
+          ],
+        }
+      )
+    ).toBe(0.75)
+  })
+
   it("returns null when actual progress is unknown", () => {
     expect(
       computePotentialProgressRatio(detail, { kind: "Unknown" }, allocation)

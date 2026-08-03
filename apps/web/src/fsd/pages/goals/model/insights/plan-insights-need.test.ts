@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest"
 import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import type { Character } from "@/features/rank-lookup"
+import type {
+  Character,
+  UpgradeWithFarmLocations,
+} from "@/features/rank-lookup"
 
-import { rankSlotsRemaining } from "./plan-insights-need"
+import { rankResourceNeed, rankSlotsRemaining } from "./plan-insights-need"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
@@ -34,6 +37,7 @@ function goalDetail(rank: {
   start: number
   end: number
   endPointFive?: boolean
+  endAppliedUpgrades?: number
 }): GoalDetail {
   return {
     config: {
@@ -43,7 +47,7 @@ function goalDetail(rank: {
         startAppliedUpgrades: 0,
         end: rank.end,
         endPointFive: rank.endPointFive ?? false,
-        endAppliedUpgrades: 0,
+        endAppliedUpgrades: rank.endAppliedUpgrades ?? 0,
       },
     },
   } as GoalDetail
@@ -104,6 +108,40 @@ describe("rankSlotsRemaining", () => {
         playerCharacter: { rank: "Stone1", appliedUpgradeSlots: [] } as never,
       })
     ).toBe(9)
+  })
+
+  it("counts and costs a same-rank partial target", () => {
+    const detail = goalDetail({ start: 1, end: 1, endAppliedUpgrades: 2 })
+    const playerCharacter = {
+      rank: "Stone2",
+      appliedUpgradeSlots: [0],
+    } as never
+    expect(rankSlotsRemaining({ detail, character, playerCharacter })).toBe(1)
+
+    const upgradesById = new Map(
+      character.rankUpUpgrades.flatMap((rank) =>
+        rank.upgradeIds.map((id) => [
+          id,
+          {
+            id,
+            label: id,
+            rarity: "Common",
+            stat: "health",
+            crafted: false,
+            recipe: [],
+            farmLocations: [],
+          } as UpgradeWithFarmLocations,
+        ])
+      )
+    )
+    expect(
+      rankResourceNeed({
+        detail,
+        character,
+        playerCharacter,
+        upgradesById,
+      })
+    ).toEqual([{ id: upgradeId("d3"), count: 1 }])
   })
 
   it("returns null when the goal has no rank target", () => {

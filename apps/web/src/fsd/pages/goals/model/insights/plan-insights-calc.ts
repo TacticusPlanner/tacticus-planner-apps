@@ -139,7 +139,7 @@ export function computePlanInsights(params: {
       coveredAbilityTransitions: coverage,
     }
     const stages = calculateGoalFarmingStages(needParams)
-    const need = stages
+    const need = stages?.length
       ? {
           upgrades: stages.flatMap((stage) => stage.needs),
           shardId: null,
