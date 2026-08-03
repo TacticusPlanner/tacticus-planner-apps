@@ -207,6 +207,69 @@ describe("computePlanInsights", () => {
     })
   })
 
+  it("does not let completed earlier ranks erase a repeated-material estimate", () => {
+    const repeatedMaterialCharacter: Character = {
+      ...character,
+      rankUpUpgrades: [
+        {
+          rank: rankOrder[0],
+          upgradeIds: Array(6).fill(upgrade.id),
+        },
+        {
+          rank: rankOrder[1],
+          upgradeIds: Array(6).fill(upgrade.id),
+        },
+      ],
+    }
+    const details = [
+      goalDetail({
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[2]),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          ascensionFarming: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          item: null,
+          level: null,
+        },
+      }),
+    ]
+
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      playerCharacterById: new Map([
+        [
+          "hero1",
+          {
+            rank: rankOrder[1],
+            appliedUpgradeSlots: [0, 1, 2],
+          } as never,
+        ],
+      ]),
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      getCharacter: (id) =>
+        id === repeatedMaterialCharacter.id
+          ? repeatedMaterialCharacter
+          : undefined,
+    })
+
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      energyTotal: 30,
+      status: "Estimated",
+    })
+    expect(result.potentialProgressByGoalId.has("goal-1")).toBe(true)
+  })
+
   it("skips a goal with no priority entry, and returns the empty result for no costable goals", () => {
     const details = [goalDetail({ goalType: "Ability" })]
 

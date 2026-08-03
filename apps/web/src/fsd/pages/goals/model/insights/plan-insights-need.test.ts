@@ -144,6 +144,46 @@ describe("rankSlotsRemaining", () => {
     ).toEqual([{ id: upgradeId("d3"), count: 1 }])
   })
 
+  it("does not subtract matching materials from completed earlier ranks", () => {
+    const repeatedId = upgradeId("shared")
+    const repeatedMaterialCharacter: Character = {
+      ...character,
+      rankUpUpgrades: [
+        { rank: "Stone1", upgradeIds: Array(6).fill(repeatedId) },
+        { rank: "Stone2", upgradeIds: Array(6).fill(repeatedId) },
+        { rank: "Stone3", upgradeIds: Array(6).fill(repeatedId) },
+      ],
+    }
+    const detail = goalDetail({ start: 0, end: 2 })
+    const playerCharacter = {
+      rank: "Stone2",
+      appliedUpgradeSlots: [0, 1, 2],
+    } as never
+    const upgradesById = new Map([
+      [
+        repeatedId,
+        {
+          id: repeatedId,
+          label: "Shared material",
+          rarity: "Common",
+          stat: "health",
+          crafted: false,
+          recipe: [],
+          farmLocations: [],
+        } as UpgradeWithFarmLocations,
+      ],
+    ])
+
+    expect(
+      rankResourceNeed({
+        detail,
+        character: repeatedMaterialCharacter,
+        playerCharacter,
+        upgradesById,
+      })
+    ).toEqual([{ id: repeatedId, count: 3 }])
+  })
+
   it("returns null when the goal has no rank target", () => {
     expect(
       rankSlotsRemaining({

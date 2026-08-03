@@ -8,7 +8,6 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import {
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
-  appliedUpgradeIds,
   rankUpUpgradeIds,
   type Character,
   type UpgradeWithFarmLocations,
@@ -85,13 +84,19 @@ export function rankResourceNeed(params: {
   if (requiredIds.length === 0) return null
   const required = aggregateBaseUpgrades(requiredIds, params.upgradesById)
 
-  const appliedIds = params.playerCharacter
-    ? appliedUpgradeIds(
-        params.character,
-        params.playerCharacter.rank,
-        params.playerCharacter.appliedUpgradeSlots
-      )
-    : []
+  // `requiredIds` starts at the character's current rank (or a future configured start), so only
+  // slots applied at that exact starting rank can reduce it. Including completed earlier ranks here
+  // lets their materials incorrectly cancel a current/future need whenever recipes reuse the same
+  // base upgrades.
+  const appliedIds =
+    params.playerCharacter &&
+    effectiveStart === rankIndex(params.playerCharacter.rank)
+      ? (params.character.rankUpUpgrades
+          .find((entry) => entry.rank === params.playerCharacter!.rank)
+          ?.upgradeIds.filter((_, index) =>
+            params.playerCharacter!.appliedUpgradeSlots.includes(index)
+          ) ?? [])
+      : []
   const appliedById = new Map(
     aggregateOwnedBaseUpgrades(appliedIds, [], params.upgradesById).map(
       (entry) => [entry.id, entry.count]
