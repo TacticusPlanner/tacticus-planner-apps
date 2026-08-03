@@ -4,7 +4,10 @@
     "rank": "Rang {{value}}",
     "ability": "Compétence {{value}}",
     "ascension": "Ascension {{value}}",
-    "unlock": "Déverrouillage"
+    "unlock": "Déverrouillage",
+    "level": "Niveau {{value}}",
+    "upgrade": "{{value}} améliorations",
+    "other": "Objectif : {{value}}"
   },
   "tabs": {
     "raids": "Raids",
@@ -27,7 +30,8 @@
   "empty": {
     "noProject": "Aucun projet disponible.",
     "noFarmable": "Ce projet n'a aucun besoin de campagne actif.",
-    "error": "Impossible de charger le plan."
+    "error": "Impossible de charger le plan.",
+    "retry": "Réessayer"
   },
   "today": {
     "title": "Raids du jour",
@@ -36,7 +40,7 @@
   "schedule": {
     "raids_one": "{{count}} raid",
     "raids_other": "{{count}} raids",
-    "progress": "{{owned}} sur {{target}} possedes",
+    "progress": "{{owned}} sur {{target}} possédés",
     "node": "{{node}} · {{raids}} raids",
     "fullyRaided": "Entièrement attaqué"
   },
@@ -64,7 +68,11 @@
       "steps": {
         "navigation": {
           "title": "Navigation",
-          "content": "Passez entre les planificateurs et les vues."
+          "content": "Passez entre les planificateurs quotidiens."
+        },
+        "raids": {
+          "title": "Vues de raid",
+          "content": "Passez du programme du jour au plan de raid complet."
         },
         "project": {
           "title": "Choisir un projet",

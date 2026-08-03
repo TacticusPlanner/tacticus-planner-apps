@@ -14,7 +14,7 @@ import type {
   RaidBreakdownEntry,
   UpgradeNeed,
 } from "../model/estimate.domain"
-import { blocked, unavailableReason } from ".//estimate-blocked"
+import { blocked, unavailableReason } from "./estimate-blocked"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
@@ -106,10 +106,10 @@ export function formatDate(date: Date): string {
  * Spends one day's energy against a goal's still-remaining materials, cheapest node first, mutating
  * `remaining` and returning the energy/raids spent. Shared by `estimateGoal` (one goal) and
  * `estimatePlan` (each goal's turn within a combined day), so both loops spend a day identically.
- * Each battle node's `dailyAttempts` cap is tracked per `battleId` across the whole call (not per
- * material) — it's the same real-world battle regardless of which material happens to drop there, so
- * two different materials farmed from the same node share one daily cap rather than each getting a
- * fresh one.
+ * `attemptsUsedByBattle` is a caller-owned accumulator mutated in place. Each battle node's
+ * `dailyAttempts` cap is tracked per `battleId` across the whole call (not per material) — it's the
+ * same real-world battle regardless of which material happens to drop there, so two different
+ * materials farmed from the same node share one daily cap rather than each getting a fresh one.
  */
 export function spendDay(
   remaining: Map<EstimateResourceId, number>,
@@ -120,7 +120,6 @@ export function spendDay(
   energySpent: number
   raidsPerformed: number
   breakdown: Omit<RaidBreakdownEntry, "goalId">[]
-  attemptsUsedByBattle: Map<BattleId, number>
 } {
   let energy = startingEnergy
   let energySpent = 0
@@ -177,7 +176,6 @@ export function spendDay(
     energySpent,
     raidsPerformed,
     breakdown,
-    attemptsUsedByBattle,
   }
 }
 

@@ -10,17 +10,17 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type { GoalDetail } from "@/entities/goal"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
-import { farmingStageTargets } from ".//farming-stages"
+import { farmingStageTargets } from "./farming-stages"
 import {
   abilityResourceNeed,
   rankResourceNeed,
   rankSlotsRemaining,
-} from ".//goal-need"
+} from "./goal-need"
 import {
   ascensionResourceNeed,
   unlockResourceNeed,
   type ResourceNeed,
-} from ".//progression-cost-calc"
+} from "./progression-cost-calc"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

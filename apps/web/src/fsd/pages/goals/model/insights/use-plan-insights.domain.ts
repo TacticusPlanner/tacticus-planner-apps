@@ -28,7 +28,7 @@ export interface PlanInsightsResult {
   energyTotal: number
   onslaughtTokens: number
   onslaughtDays: number
-  estimates: Map<string, EstimateOutcome>
+  estimates: ReadonlyMap<string, EstimateOutcome>
   potentialProgressByGoalId: Map<string, number>
   /** The latest per-goal completion date across the plan (ISO `yyyy-mm-dd`); `null` when nothing is
    *  farmable yet, or any farmable goal can never complete within the simulator's day budget. */

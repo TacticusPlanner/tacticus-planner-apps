@@ -21,11 +21,13 @@ import {
   estimateBonusRaids,
   estimatePlanSchedule,
   estimateTodaySchedule,
+  type EstimatePlanParams,
   type EstimateResourceId,
   type EstimateUpgrade,
   type FarmingCharacter,
   type FarmingUpgrade,
   type GoalNeed,
+  type RaidPlanSchedule,
 } from "@/features/goal-farming"
 import type { Battle } from "@/shared/lib"
 
@@ -207,7 +209,7 @@ export function calculateDailyRaids(
     count: entry.amount,
   }))
   const initialProgress = resourceProgress(goals, inventory, shardProgress)
-  const calculation = {
+  const calculation: EstimatePlanParams = {
     goals,
     upgradesById,
     battlesById: params.battlesById,
@@ -217,7 +219,7 @@ export function calculateDailyRaids(
   }
   const today = estimateTodaySchedule(calculation)
   const bonus = estimateBonusRaids(calculation)
-  const plan = estimatePlanSchedule(calculation)
+  const plan: RaidPlanSchedule = estimatePlanSchedule(calculation)
   if (today.entries.length === 0 && bonus.entries.length === 0) return null
 
   return {

@@ -16,6 +16,8 @@ export type DailiesOutletContext = {
   projectId: string | undefined
   setProjectId: (projectId: string | undefined) => void
   projectsUnavailable: boolean
+  projectsError: boolean
+  retryProjects: () => void
 }
 
 const tabs = [
@@ -31,8 +33,14 @@ export function DailiesLayout() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { t } = useTranslation("dailies")
-  const { projects, activeProjectId, defaultProjectId, fetchState, loading } =
-    useProjects()
+  const {
+    projects,
+    activeProjectId,
+    defaultProjectId,
+    fetchState,
+    loading,
+    retry,
+  } = useProjects()
   const [selectedProjectId, setSelectedProjectId] = useState<string>()
   const projectId = selectedProjectId ?? activeProjectId ?? defaultProjectId
 
@@ -42,9 +50,11 @@ export function DailiesLayout() {
       projectId,
       setProjectId: setSelectedProjectId,
       projectsUnavailable:
-        !loading && (fetchState.status === "error" || projects.length === 0),
+        !loading && fetchState.status === "success" && projects.length === 0,
+      projectsError: !loading && fetchState.status === "error",
+      retryProjects: retry,
     }),
-    [fetchState.status, loading, projectId, projects]
+    [fetchState.status, loading, projectId, projects, retry]
   )
   const active =
     tabs.find((tab) => pathname.includes(`/dailies/${tab}`)) ?? "raids"

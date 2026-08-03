@@ -45,17 +45,24 @@ function reduceToBaseUpgrades(
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
 ) {
   const counts = new Map<UpgradeId, number>()
-  const add = (id: UpgradeId, multiplier: number) => {
+  const add = (
+    id: UpgradeId,
+    multiplier: number,
+    expansionPath: Set<UpgradeId>
+  ) => {
+    if (expansionPath.has(id)) return
     const upgrade = upgradesById.get(id)
     if (upgrade?.crafted && upgrade.recipe.length > 0) {
+      expansionPath.add(id)
       for (const ingredient of upgrade.recipe) {
-        add(ingredient.material, multiplier * ingredient.count)
+        add(ingredient.material, multiplier * ingredient.count, expansionPath)
       }
+      expansionPath.delete(id)
     } else {
       counts.set(id, (counts.get(id) ?? 0) + multiplier)
     }
   }
-  for (const entry of entries) add(entry.id, entry.amount)
+  for (const entry of entries) add(entry.id, entry.amount, new Set())
   return counts
 }
 

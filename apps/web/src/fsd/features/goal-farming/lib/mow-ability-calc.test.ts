@@ -5,7 +5,7 @@ import {
   mowAbilityTrackLevel,
   mowAbilityUpgradeIds,
   uncoveredMowAbilityUpgradeIds,
-} from ".//mow-ability-calc"
+} from "./mow-ability-calc"
 
 const upgradeId = upgradeIdSchema.parse
 

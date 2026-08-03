@@ -47,10 +47,17 @@ Today SHALL provide a project selector independent of any other page's project s
 - **WHEN** the user selects a different project in Today's project selector
 - **THEN** the schedule, Bonus Raids section, and empty states are all recomputed for the newly-selected project only
 
-#### Scenario: No project available to default to
+#### Scenario: Project list fails to load
 
-- **GIVEN** the player's project list fails to load, or otherwise contains no projects at all
-- **THEN** Today shows an empty state prompting the user to select a project, and no schedule or Bonus Raids section is shown
+- **GIVEN** the player's project-list request fails
+- **WHEN** Today loads
+- **THEN** Today shows the load error with an action that retries the failed project-list request, and does not present the failure as an empty project list
+
+#### Scenario: Project list loads without projects
+
+- **GIVEN** the player's project-list request succeeds with no projects
+- **WHEN** Today loads
+- **THEN** Today shows an empty state prompting the user to create or select a project, and no schedule or Bonus Raids section is shown
 
 ### Requirement: Today's schedule scope
 

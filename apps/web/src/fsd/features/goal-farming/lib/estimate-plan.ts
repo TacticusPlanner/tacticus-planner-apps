@@ -22,6 +22,7 @@ import {
 } from "./estimate"
 
 const MAX_DAYS = 1000
+const UNUSED_ENERGY_THRESHOLD = 60
 
 export type EstimatePlanParams = {
   goals: GoalNeed[]
@@ -193,6 +194,7 @@ function runPlanSchedule(
     (total, day) => total + day.raidsTotal,
     0
   )
+  const completionDayOffset = Math.max(scheduleDays.length - 1, 0)
   return {
     days: scheduleDays,
     outcomes: results,
@@ -201,9 +203,9 @@ function runPlanSchedule(
       totalEnergy,
       totalRaids,
       daysWithUnusedEnergy: scheduleDays.filter(
-        (day) => dailyEnergy - day.energyTotal > 60
+        (day) => dailyEnergy - day.energyTotal > UNUSED_ENERGY_THRESHOLD
       ).length,
-      completionDate: formatDate(addDays(referenceDate, scheduleDays.length)),
+      completionDate: formatDate(addDays(referenceDate, completionDayOffset)),
     },
   }
 }
@@ -216,7 +218,7 @@ export function estimatePlanSchedule(
 
 export function estimatePlan(
   params: EstimatePlanParams
-): Map<string, EstimateOutcome> {
+): ReadonlyMap<string, EstimateOutcome> {
   return estimatePlanSchedule(params).outcomes
 }
 
@@ -234,6 +236,8 @@ export function estimateTodaySchedule(
   )
 }
 
+// Keep this sentinel finite: runPlanSchedule subtracts remaining energy from the daily budget,
+// which would produce NaN if the budget were Infinity.
 const UNLIMITED_DAILY_ENERGY = 88_888_888
 
 export function estimateBonusRaids(
@@ -250,9 +254,17 @@ export function estimateBonusRaids(
   const entries = unlimited.entries.filter(
     (entry) => !raidedResourceIds.has(entry.resourceId)
   )
+  const attemptsUsedByBattle = new Map<BattleId, number>()
+  for (const entry of entries) {
+    attemptsUsedByBattle.set(
+      entry.battleId,
+      (attemptsUsedByBattle.get(entry.battleId) ?? 0) + entry.raidsPerformed
+    )
+  }
   return {
     ...unlimited,
     entries,
+    attemptsUsedByBattle,
     energyTotal: entries.reduce((total, entry) => total + entry.energySpent, 0),
     raidsTotal: entries.reduce(
       (total, entry) => total + entry.raidsPerformed,

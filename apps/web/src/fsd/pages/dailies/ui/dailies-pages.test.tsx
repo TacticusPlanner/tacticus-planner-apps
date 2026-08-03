@@ -29,6 +29,8 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 const battle = battleIdSchema.parse("B1")
+const retryProjects = vi.fn()
+let contextOverrides: Partial<DailiesOutletContext> = {}
 
 function ready(
   overrides: Partial<DailyRaidsReadyViewModel> = {}
@@ -141,11 +143,20 @@ function ready(
 
 function ContextRoute() {
   const [projectId, setProjectId] = useState<string | undefined>("p1")
+  const [projectsError, setProjectsError] = useState(
+    contextOverrides.projectsError ?? false
+  )
   const context: DailiesOutletContext = {
     projects: [],
     projectId,
     setProjectId,
     projectsUnavailable: false,
+    ...contextOverrides,
+    projectsError,
+    retryProjects: () => {
+      retryProjects()
+      setProjectsError(false)
+    },
   }
   return <Outlet context={context} />
 }
@@ -165,6 +176,8 @@ function renderPage(element: React.ReactNode) {
 describe("Dailies raid pages", () => {
   beforeEach(() => {
     registeredTours.length = 0
+    contextOverrides = {}
+    retryProjects.mockClear()
     useDailyRaids.mockReturnValue(ready())
   })
 
@@ -211,6 +224,17 @@ describe("Dailies raid pages", () => {
       expect(screen.getByTestId(`dailies-${status}`)).toBeInTheDocument()
     }
   )
+
+  it("shows a retry action for project-list failures", async () => {
+    const user = userEvent.setup()
+    contextOverrides = { projectsError: true }
+    renderPage(<TodayPage />)
+
+    await user.click(screen.getByRole("button", { name: "empty.retry" }))
+    expect(retryProjects).toHaveBeenCalledOnce()
+    expect(screen.queryByTestId("dailies-error")).not.toBeInTheDocument()
+    expect(screen.getByTestId("today-page")).toBeInTheDocument()
+  })
 
   it("starts the plan with Today, paginates, and toggles detail density", async () => {
     const user = userEvent.setup()

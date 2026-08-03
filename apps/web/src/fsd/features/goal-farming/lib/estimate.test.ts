@@ -10,7 +10,7 @@ import {
   allocatePlanInventory,
   estimateGoal,
   selectFarmNodes,
-} from ".//estimate"
+} from "./estimate"
 import { estimatePlan } from "./estimate-plan"
 import { shardResourceId } from "../model/estimate.domain"
 import type {

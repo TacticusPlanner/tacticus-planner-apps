@@ -34,11 +34,17 @@ Raids Plan SHALL use the same selected project as Today (one selection shared ac
 - **WHEN** the user switches to Today and selects project B
 - **THEN** Raids Plan now shows project B's schedule when next viewed, without requiring a separate selection
 
-#### Scenario: Raids Plan's empty states follow Today's project state
+#### Scenario: Raids Plan mirrors Today's project-list failure state
 
-- **GIVEN** no project is available to default to (project list failed to load or is empty)
+- **GIVEN** the project-list request fails
 - **WHEN** Raids Plan loads
-- **THEN** it shows the same "select a project" empty state as Today, not a separate one
+- **THEN** it shows the same load error and retry action as Today, not an empty-project prompt
+
+#### Scenario: Raids Plan mirrors Today's empty-project state
+
+- **GIVEN** the project-list request succeeds with no projects
+- **WHEN** Raids Plan loads
+- **THEN** it shows the same empty-project prompt as Today, not a load error
 
 ### Requirement: Raids Plan includes Today
 
@@ -108,7 +114,7 @@ Above the day columns, Raids Plan SHALL show: the total number of days until eve
 
 - **GIVEN** a plan that takes N days total
 - **WHEN** Raids Plan loads
-- **THEN** the displayed completion date is N days after today's date
+- **THEN** the displayed completion date is N - 1 days after today's date, so a one-day plan completes Today
 
 ### Requirement: Raids Plan pages days 3-at-a-time
 

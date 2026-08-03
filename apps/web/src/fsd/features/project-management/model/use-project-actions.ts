@@ -66,7 +66,8 @@ export function useProjectActions(_onChanged?: () => void) {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
-  const [pending, setPending] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
+  const pending = pendingCount > 0
   const mutation = useMutation({
     mutationFn: (action: () => Promise<unknown>) => action(),
     onSuccess: async () => {
@@ -82,7 +83,7 @@ export function useProjectActions(_onChanged?: () => void) {
       return false
     }
 
-    setPending(true)
+    setPendingCount((count) => count + 1)
     try {
       await mutation.mutateAsync(action)
       return true
@@ -102,7 +103,7 @@ export function useProjectActions(_onChanged?: () => void) {
       )
       return false
     } finally {
-      setPending(false)
+      setPendingCount((count) => Math.max(0, count - 1))
     }
   }
 

@@ -1,4 +1,4 @@
-import { estimateGoal } from ".//estimate"
+import { estimateGoal } from "./estimate"
 import { shardResourceId } from "../model/estimate.domain"
 import type { EstimateOutcome, FarmLocation } from "../model/estimate.domain"
 

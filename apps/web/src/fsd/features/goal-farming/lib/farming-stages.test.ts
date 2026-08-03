@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { rankOrder } from "@workspace/game-domain"
 
-import { farmingStageTargets } from ".//farming-stages"
+import { farmingStageTargets } from "./farming-stages"
 
 const rank = (value: string) =>
   rankOrder.indexOf(value as (typeof rankOrder)[number])

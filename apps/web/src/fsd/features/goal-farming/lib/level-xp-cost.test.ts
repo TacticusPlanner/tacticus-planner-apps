@@ -5,7 +5,7 @@ import {
   netXpAgainstOwnedBooks,
   ownedBooksByRarity,
   xpNeededForLevelRange,
-} from ".//level-xp-cost"
+} from "./level-xp-cost"
 
 describe("xpNeededForLevelRange", () => {
   it("computes the cumulative-xp gap between two levels, net of partial xp already earned", () => {

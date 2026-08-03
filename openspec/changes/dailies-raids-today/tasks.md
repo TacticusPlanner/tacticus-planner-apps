@@ -47,7 +47,7 @@
 - [x] 5.2 Add the raid schedule card list (one card per upgrade/shard: node(s), raid count each), grouped into per-goal sections separated and labeled with each goal's unit/target (task 3.4), consuming task 3.2's output; mark each node listing as fully raided when that node's combined daily total (task 2.1a) equals its daily cap (task 2.1), not the entry's own count alone
 - [x] 5.3 Add the empty-state views: no project available to default to (project list failed to load or is empty), and project selected with nothing farmable
 - [x] 5.4 Add the Bonus Raids section below a visible separator, grouped by goal the same way as 5.2 (in goal-priority order), including its own empty state, consuming task 2.6's output via task 3.2; initially render only the top 3 qualifying entries with a "Show more" control that reveals the rest in place when more than 3 qualify; mark node listings as fully raided the same way as 5.2
-- [x] 5.5 Create the `dailies` i18next namespace (`public/locales/en/dailies.json`), move the existing `dailies.title`/`dailies.description` keys out of `common.json`, and add keys for all new UI copy (empty states, section headers, card labels, per-goal group header pattern, "Show more" control, fully-raided indicator label)
+- [x] 5.5 Create the `dailies` i18next namespace for every supported locale, register it in the typed i18next configuration, move the existing `dailies.title`/`dailies.description` keys out of every `common.json`, add keys for all new UI copy (empty states, section headers, card labels, per-goal group header pattern, "Show more" control, fully-raided indicator label), and verify the namespace migration with translation/UI tests
 - [x] 5.6 Make Today's cards, goal groups, project selector, Bonus Raids, and empty states responsively reflow for mobile while preserving the same information and interactions as desktop
 - [x] 5.7 Create and register a co-located Today Joyride tutorial via `useTourPageSteps`, covering the local Dailies/Raids navigation and Today content with desktop and mobile steps and stable `data-testid` targets, and add its `tour.today.steps.*` i18n keys to the `dailies` namespace in the same change
 
@@ -100,3 +100,22 @@
 - [x] 11.1 Pass the full engine day sequence to Raids Plan, label Day 1 as "Today", and retain it when the complete plan resolves on the first day
 - [x] 11.2 Update Plan pagination and UI tests so the initial window is Today, Day 2, and Day 3, with later days revealed by "Show all days"
 - [x] 11.3 Verify focused tests, typecheck, strict OpenSpec validation, and the populated Plan in the running app
+
+## 12. Resolve pull-request review findings
+
+- [x] 12.1 Correct Bonus Raids' filtered `attemptsUsedByBattle` accounting and add regression assertions that only displayed bonus entries contribute to the returned map
+- [x] 12.2 Preserve Diamond 3's top-row target by using the Adamantine 1 numbered-slot boundary consistently for options and wire decoding, with a Diamond 3 `endPointFive` round-trip regression test
+- [x] 12.3 Make Dailies player-state loading validate unit ids safely and query characters, MoWs, and shards only for their matching entity types; preserve a recoverable error state for project-query failures
+- [x] 12.4 Make project-management pending state safe across concurrent mutations and cover overlapping actions with a regression test
+- [x] 12.5 Correct localized copy and fallback target labels, give the Raids tutorial step distinct localized copy, and verify every supported locale
+- [x] 12.6 Reconcile OpenSpec failure/empty-state requirements, namespace work, route-fence linting, and the final repository-wide validation gate
+- [x] 12.7 Apply verified maintainability findings: public readonly/export types, import cleanup, recipe cycle protection and direct tests, named scheduling constants, accumulator ownership, test naming, derivation coverage, and shared Today progress lookup
+- [x] 12.8 Run focused tests, `pnpm test:run`, typecheck, lint, FSD validation, strict OpenSpec validation, and `git diff --check`
+
+## 13. Resolve follow-up pull-request review findings
+
+- [x] 13.1 Calculate the whole-plan completion date from the last rendered day (`totalDays - 1` from Today) and cover one-day and multi-day plans with regression assertions
+- [x] 13.2 Make the project-list retry test model an error-to-ready transition and assert the recovered Today page
+- [x] 13.3 Disable mutation garbage-collection timers in the project-actions test QueryClient
+- [x] 13.4 Clarify that the tutorial summary covers every planned day and reconcile the plan specification and design
+- [x] 13.5 Run focused tests, typecheck, strict OpenSpec validation, and `git diff --check`

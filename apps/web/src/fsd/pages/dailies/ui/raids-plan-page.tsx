@@ -27,6 +27,9 @@ export function RaidsPlanPage() {
   const raids = useDailyRaids(context.projectId)
   useRaidsPlanTutorial()
 
+  if (context.projectsError) {
+    return <RaidState state="error" onRetry={context.retryProjects} />
+  }
   if (context.projectsUnavailable) return <RaidState state="no-project" />
   if (raids.status !== "ready") return <RaidState state={raids.status} />
 

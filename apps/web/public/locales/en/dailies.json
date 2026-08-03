@@ -4,7 +4,10 @@
     "rank": "Rank {{value}}",
     "ability": "Ability {{value}}",
     "ascension": "Ascension {{value}}",
-    "unlock": "Unlock"
+    "unlock": "Unlock",
+    "level": "Level {{value}}",
+    "upgrade": "{{value}} upgrades",
+    "other": "{{value}} goal"
   },
   "tabs": {
     "raids": "Raids",
@@ -27,7 +30,8 @@
   "empty": {
     "noProject": "No project is available. Reload the page or create a project in Goals.",
     "noFarmable": "This project has no active, farmable campaign needs.",
-    "error": "The raid plan could not be loaded. Try again."
+    "error": "The raid plan could not be loaded. Try again.",
+    "retry": "Retry"
   },
   "today": {
     "title": "Today's raids",
@@ -64,7 +68,11 @@
       "steps": {
         "navigation": {
           "title": "Dailies navigation",
-          "content": "Use these tabs to move between daily planners and the two raid views."
+          "content": "Use these tabs to move between daily planners."
+        },
+        "raids": {
+          "title": "Raid views",
+          "content": "Switch between today's focused schedule and the complete raid plan."
         },
         "project": {
           "title": "Choose a project",
@@ -92,7 +100,7 @@
         },
         "summary": {
           "title": "Whole-plan summary",
-          "content": "These totals cover every displayed day, beginning with Today."
+          "content": "These totals cover every planned day, beginning with Today."
         },
         "days": {
           "title": "Raid days",

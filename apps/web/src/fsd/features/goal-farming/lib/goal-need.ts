@@ -16,16 +16,16 @@ import type {
 import {
   additionalTargetFromWire,
   additionalTargetSelection,
-} from ".//rank-additional-target"
+} from "./rank-additional-target"
 import {
   mowAbilityTrackLevel,
   uncoveredMowAbilityUpgradeIds,
-} from ".//mow-ability-calc"
+} from "./mow-ability-calc"
 import {
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
   rankUpUpgradeIds,
-} from ".//upgrade-recipe"
+} from "./upgrade-recipe"
 
 // Rank/Ability raw material need-derivation for the Insights plan-wide aggregation
 // (plan-insights-calc.ts) — split out purely for that file's max-lines budget.

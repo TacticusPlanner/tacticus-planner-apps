@@ -4,7 +4,10 @@
     "rank": "Rango {{value}}",
     "ability": "Habilidad {{value}}",
     "ascension": "Ascensión {{value}}",
-    "unlock": "Desbloqueo"
+    "unlock": "Desbloqueo",
+    "level": "Nivel {{value}}",
+    "upgrade": "{{value}} mejoras",
+    "other": "Objetivo: {{value}}"
   },
   "tabs": {
     "raids": "Incursiones",
@@ -27,7 +30,8 @@
   "empty": {
     "noProject": "No hay ningún proyecto disponible.",
     "noFarmable": "Este proyecto no tiene necesidades de campaña activas.",
-    "error": "No se pudo cargar el plan."
+    "error": "No se pudo cargar el plan.",
+    "retry": "Reintentar"
   },
   "today": {
     "title": "Incursiones de hoy",
@@ -36,7 +40,7 @@
   "schedule": {
     "raids_one": "{{count}} incursión",
     "raids_other": "{{count}} incursiones",
-    "progress": "{{owned}} de {{target}} en posesion",
+    "progress": "{{owned}} de {{target}} en posesión",
     "node": "{{node}} · {{raids}} incursiones",
     "fullyRaided": "Completado"
   },
@@ -64,7 +68,11 @@
       "steps": {
         "navigation": {
           "title": "Navegación",
-          "content": "Cambia entre los planificadores y vistas."
+          "content": "Cambia entre los planificadores diarios."
+        },
+        "raids": {
+          "title": "Vistas de incursión",
+          "content": "Cambia entre el plan de hoy y el plan completo de incursiones."
         },
         "project": {
           "title": "Elige un proyecto",

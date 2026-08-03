@@ -37,4 +37,16 @@ describe("Dailies tutorials", () => {
       }
     }
   )
+
+  it("uses distinct copy for the Dailies and Raids tab steps", () => {
+    renderHook(() => useTodayTutorial())
+    const steps = register.mock.lastCall?.[0] as {
+      desktop: { target: string; title: string; content: string }[]
+    }
+
+    expect(steps.desktop.slice(0, 2).map((step) => step.title)).toEqual([
+      "localized:tour.today.steps.navigation.title",
+      "localized:tour.today.steps.raids.title",
+    ])
+  })
 })

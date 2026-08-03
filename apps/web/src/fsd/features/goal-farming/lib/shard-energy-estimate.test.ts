@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { battleIdSchema, campaignIdSchema } from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "../model/estimate.domain"
-import { estimateRemainingShardEnergy } from ".//shard-energy-estimate"
+import { estimateRemainingShardEnergy } from "./shard-energy-estimate"
 
 const battleId = battleIdSchema.parse
 const campaignId = campaignIdSchema.parse

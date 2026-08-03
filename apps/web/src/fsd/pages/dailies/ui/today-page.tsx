@@ -21,12 +21,16 @@ export function TodayPage() {
   const raids = useDailyRaids(context.projectId)
   useTodayTutorial()
 
+  if (context.projectsError) {
+    return <RaidState state="error" onRetry={context.retryProjects} />
+  }
   if (context.projectsUnavailable) return <RaidState state="no-project" />
   if (raids.status !== "ready") return <RaidState state={raids.status} />
 
   const bonusEntries = showAllBonus
     ? raids.bonus.entries
     : raids.bonus.entries.slice(0, BONUS_LIMIT)
+  const todayProgress = raids.resourceProgressByDay.get(1) ?? new Map()
 
   return (
     <div className="space-y-5 md:space-y-7" data-testid="today-page">
@@ -59,7 +63,7 @@ export function TodayPage() {
             goalsById={raids.goalsById}
             locationsByBattleId={raids.locationsByBattleId}
             resourceLabels={raids.resourceLabels}
-            resourceProgress={raids.resourceProgressByDay.get(1) ?? new Map()}
+            resourceProgress={todayProgress}
             resourceVisuals={raids.resourceVisuals}
             testId="today-raid-list"
           />
@@ -78,7 +82,7 @@ export function TodayPage() {
               goalsById={raids.goalsById}
               locationsByBattleId={raids.locationsByBattleId}
               resourceLabels={raids.resourceLabels}
-              resourceProgress={raids.resourceProgressByDay.get(1) ?? new Map()}
+              resourceProgress={todayProgress}
               resourceVisuals={raids.resourceVisuals}
               testId="bonus-raid-list"
             />
