@@ -909,6 +909,33 @@ describe("CreateGoalSheet", () => {
     })
   })
 
+  it("formats additional rank targets as the target rank plus applied slots", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+
+    fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
+    let listbox = await screen.findByRole("listbox")
+    expect(
+      within(listbox).getByRole("option", { name: "Stone2" })
+    ).toBeInTheDocument()
+    expect(
+      within(listbox).getByRole("option", { name: /Stone2\s*\(3\/6\)/ })
+    ).toBeInTheDocument()
+
+    fireEvent.click(within(listbox).getByRole("option", { name: "Stone2" }))
+    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+    listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Diamond3"))
+
+    fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
+    listbox = await screen.findByRole("listbox")
+    expect(
+      within(listbox).getByRole("option", { name: /Diamond3\s*\(5\/6\)/ })
+    ).toBeInTheDocument()
+  })
+
   it("submits only the explicitly toggled types, with no rank/progression/ability target for Unlock", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
