@@ -147,8 +147,11 @@
     "target": "Target",
     "tabs": {
       "character": "Character",
+      "characterDescription": "Look up character details and stats",
       "mow": "Machines of War",
+      "mowDescription": "Look up Machine of War details and stats",
       "npc": "NPC",
+      "npcDescription": "Look up NPC details and stats",
       "mowComingSoon": "Machines of War lookup is coming soon.",
       "npcComingSoon": "NPC lookup is coming soon."
     },
@@ -161,13 +164,20 @@
   "nav": {
     "addGoal": "Add Goal",
     "dailies": "Dailies",
+    "dailiesDescription": "Daily and periodic in-game tasks",
     "home": "Home",
+    "homeDescription": "Your account overview and quick links",
     "lookup": "Lookup",
+    "lookupDescription": "Browse characters, Machines of War, and NPCs",
     "createGoal": "Create Goal",
     "goals": "Goals",
+    "goalsDescription": "Track progress toward your targets",
     "progress": "Progress",
+    "progressDescription": "Your synced campaign and Onslaught progress",
     "uiKit": "UI Kit",
+    "uiKitDescription": "Design system component showcase",
     "guild": "Guild",
+    "guildDescription": "Your guild roster and settings",
     "menu": "Menu",
     "navigation": "Navigation",
     "navigationHint": "Choose a destination or filter the list.",
@@ -177,8 +187,6 @@
     "syncWithTacticus": "Sync with Tacticus"
   },
   "onslaught": {
-    "title": "Onslaught progress",
-    "description": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
     "sector": "Sector",
     "tier": "Tier",
     "tierComplete": "Tier 4 · sector complete",
@@ -204,20 +212,20 @@
   "progress": {
     "tabs": {
       "onslaught": "Onslaught",
+      "onslaughtDescription": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
       "campaigns": "Campaigns",
+      "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "campaign-events": "Campaign Events",
-      "xp-income": "XP Income"
+      "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
+      "xp-income": "XP Income",
+      "xp-incomeDescription": "XP Income helps estimate how many XP books you earn from Arena, Guild Raids, Archeotech purchases, and other sources."
     },
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
-      "title": "Campaign progress",
-      "description": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "normal": "Normal campaigns",
       "mirror": "Mirror campaigns"
     },
     "events": {
-      "title": "Campaign event progress",
-      "description": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
       "regular": "Regular battles",
       "challenges": "Optional challenges",
       "regularProgress": "{{type}} regular progress",
@@ -233,8 +241,6 @@
       "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
     },
     "xpIncome": {
-      "title": "XP Income",
-      "description": "XP Income helps estimate how many XP books you earn from Arena, Guild Raids, Archeotech purchases, and other sources.",
       "comingSoon": "This V1 feature is being considered for V2. Tell us if it should be prioritized.",
       "interestButton": "I want XP Income in V2",
       "interestRecorded": "Thanks for your interest",
@@ -287,7 +293,8 @@
       "genericError": "Something went wrong while deleting the guild. Please try again."
     },
     "tabs": {
-      "members": "Members"
+      "members": "Members",
+      "membersDescription": "View your guild's member roster"
     },
     "members": {
       "empty": "No members found.",
@@ -353,8 +360,12 @@
     },
     "tabs": {
       "goals": "Goals",
+      "overview": "Overview",
+      "overviewDescription": "Filter, sort, and group all your active goals.",
       "projects": "Projects",
+      "projectsDescription": "Organize goals into focused plans and control their priority.",
       "insights": "Insights",
+      "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
       "reached": "Reached",
       "archived": "Archived"
@@ -404,8 +415,6 @@
       "cancel": "Cancel"
     },
     "project": {
-      "title": "Projects",
-      "pageDescription": "Organize goals into focused plans and control their priority.",
       "noProjectTitle": "No projects yet",
       "noProjectDescription": "Create a project to organize and prioritize related goals.",
       "membership": "Projects containing this goal",
@@ -681,7 +690,6 @@
       }
     },
     "insights": {
-      "title": "Insights",
       "selectProject": "Select a project",
       "noProjectTitle": "No project selected",
       "noProjectDescription": "Select a project above to see its total missing resources, farming bottlenecks, and relevant campaign events.",

@@ -38,12 +38,6 @@ export function XpIncomePlaceholderPage() {
             />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold">
-              {t("progress.xpIncome.title")}
-            </h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              {t("progress.xpIncome.description")}
-            </p>
             <p className="text-sm text-muted-foreground">
               {t("progress.xpIncome.comingSoon")}
             </p>

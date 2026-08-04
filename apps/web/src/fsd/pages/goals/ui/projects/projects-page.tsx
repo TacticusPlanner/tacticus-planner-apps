@@ -82,13 +82,6 @@ export function ProjectsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="projects-page">
-      <div>
-        <h1 className="text-2xl font-semibold">{t("goals.project.title")}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t("goals.project.pageDescription")}
-        </p>
-      </div>
-
       <ProjectToolbar
         onProjectIdChange={setSelectedProjectId}
         projectActions={projectActions}

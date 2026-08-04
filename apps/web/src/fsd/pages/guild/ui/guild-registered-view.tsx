@@ -2,7 +2,7 @@ import { useState } from "react"
 import { RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
-import { Outlet, useLocation, useNavigate } from "react-router"
+import { Outlet } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -12,21 +12,12 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import { syncMyGuild, type RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
 import { formatRelativeTime } from "@/shared/lib"
 import { GuildPurgeDialog } from "./guild-purge-dialog"
-
-const tabs = [
-  {
-    value: "members",
-    path: "/guild/members",
-    labelKey: "guild.tabs.members",
-  },
-] as const
 
 type Props = {
   guild: RegisteredGuild
@@ -35,15 +26,13 @@ type Props = {
 }
 
 /**
- * The registered-guild view: name/tag/level summary, a Sync Guild button (Leader/Co-Leader only), and a
- * routed tab bar (mirrors LookupPage) with an `<Outlet/>` for the active tab's content. Only the Members
- * tab exists in Guild Phase 1 — clusters/stats/raids are deferred, and each will get its own route + tab
- * entry here without restructuring this view.
+ * The registered-guild view: name/tag/level summary, a Sync Guild button (Leader/Co-Leader only), and
+ * an `<Outlet/>` for the active tab's content - the Members tab (and any future Guild tabs) are now
+ * rendered by the shared app-shell header's section-tabs row (see `section-tabs.tsx`) instead of a tab
+ * bar here.
  */
 export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const { t, i18n } = useTranslation()
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
   const [status, setStatus] = useState<"idle" | "syncing" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false)
@@ -137,27 +126,6 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
         ) : null}
       </Card>
 
-      <Tabs
-        value={
-          tabs.find((tab) => pathname.startsWith(tab.path))?.value ?? "members"
-        }
-        onValueChange={(value) => {
-          const tab = tabs.find((entry) => entry.value === value)
-          if (tab) void navigate(tab.path)
-        }}
-      >
-        <TabsList>
-          {tabs.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              data-testid={`guild-tab-${tab.value}`}
-              value={tab.value}
-            >
-              {t(tab.labelKey)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
       <Outlet context={guild.members} />
 
       <GuildPurgeDialog

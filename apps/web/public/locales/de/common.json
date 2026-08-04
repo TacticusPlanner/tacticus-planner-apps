@@ -130,13 +130,20 @@
   "nav": {
     "addGoal": "Ziel hinzufügen",
     "dailies": "Tägliches",
+    "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben",
     "home": "Startseite",
+    "homeDescription": "Kontoübersicht und Schnellzugriffe",
     "rankLookup": "Rang-Nachschlag",
+    "lookupDescription": "Charaktere, Kriegsmaschinen und NPCs durchsuchen",
     "createGoal": "Ziel erstellen",
     "goals": "Ziele",
+    "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
     "onslaught": "Onslaught",
+    "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
     "uiKit": "UI-Kit",
+    "uiKitDescription": "Vorschau der Design-System-Komponenten",
     "guild": "Gilde",
+    "guildDescription": "Deine Gildenliste und Einstellungen",
     "menu": "Menü",
     "navigation": "Navigation",
     "navigationHint": "Wähle ein Ziel oder filtere die Liste.",
@@ -186,7 +193,8 @@
       "genericError": "Beim Löschen der Gilde ist etwas schiefgelaufen. Bitte versuche es erneut."
     },
     "tabs": {
-      "members": "Mitglieder"
+      "members": "Mitglieder",
+      "membersDescription": "Zeige die Mitgliederliste deiner Gilde"
     },
     "members": {
       "empty": "Keine Mitglieder gefunden.",
@@ -208,6 +216,28 @@
       "coLeader": "Ko-Anführer",
       "officer": "Offizier",
       "member": "Mitglied"
+    }
+  },
+  "unitLookup": {
+    "tabs": {
+      "characterDescription": "Charakterdetails und Werte nachschlagen",
+      "mowDescription": "Details und Werte von Kriegsmaschinen nachschlagen",
+      "npcDescription": "NPC-Details und Werte nachschlagen"
+    }
+  },
+  "progress": {
+    "tabs": {
+      "onslaughtDescription": "Gib den aktuellen Sektor und die Stufe für jede Allianz ein. Aufstiegsschätzungen verwenden diese Werte sowie synchronisierte Onslaught-Token.",
+      "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
+      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis.",
+      "xp-incomeDescription": "XP-Einkommen hilft abzuschätzen, wie viele XP-Bücher du aus Arena, Gilden-Raids, Archeotech-Käufen und anderen Quellen erhältst."
+    }
+  },
+  "goals": {
+    "tabs": {
+      "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
+      "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
+      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen"
     }
   },
   "language": {

@@ -50,8 +50,7 @@ export function InsightsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="insights-page">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">{t("goals.insights.title")}</h1>
+      <div className="flex items-center justify-end gap-4">
         <Select onValueChange={setSelectedProjectId} value={projectId}>
           <SelectTrigger className="w-56" data-testid="insights-project-select">
             <SelectValue placeholder={t("goals.insights.selectProject")} />

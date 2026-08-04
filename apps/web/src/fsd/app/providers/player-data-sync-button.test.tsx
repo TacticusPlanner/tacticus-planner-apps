@@ -83,4 +83,33 @@ describe("PlayerDataSyncButton", () => {
       "motion-safe:animate-spin"
     )
   })
+
+  it("shows the platform shortcut hint next to its label", () => {
+    mockStatus("idle")
+    renderButton()
+
+    expect(screen.getByTestId("player-data-sync-button")).toHaveTextContent(
+      "Ctrl+Shift+S"
+    )
+  })
+
+  it("starts a sync on Ctrl/Cmd+Shift+S when not already syncing", () => {
+    const syncNow = vi.fn()
+    mockStatus("idle", { syncNow })
+    renderButton()
+
+    fireEvent.keyDown(window, { key: "S", ctrlKey: true, shiftKey: true })
+
+    expect(syncNow).toHaveBeenCalledTimes(1)
+  })
+
+  it("is a no-op while a sync is already in progress", () => {
+    const syncNow = vi.fn()
+    mockStatus("syncing", { syncNow })
+    renderButton()
+
+    fireEvent.keyDown(window, { key: "S", ctrlKey: true, shiftKey: true })
+
+    expect(syncNow).not.toHaveBeenCalled()
+  })
 })

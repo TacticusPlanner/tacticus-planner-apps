@@ -66,26 +66,30 @@ function renderDailies(path = "/dailies") {
 describe("Dailies navigation", () => {
   beforeEach(() => useDailyRaids.mockClear())
 
-  it("redirects to Raids Today and routes every primary tab to its own placeholder", async () => {
-    const user = userEvent.setup()
+  it("redirects /dailies to Raids Today", async () => {
     renderDailies()
 
     expect(await screen.findByTestId("dailies-no-farmable")).toBeInTheDocument()
     expect(
       screen.getByRole("tab", { name: "raids.tabs.today" })
     ).toHaveAttribute("data-state", "active")
-    for (const tab of [
-      "tabs.shops",
-      "tabs.onslaught",
-      "tabs.salvage-run",
-      "tabs.arena",
-      "tabs.guild-raids",
-    ]) {
-      await user.click(screen.getByRole("tab", { name: tab }))
-      expect(
-        await screen.findByTestId("dailies-placeholder-page")
-      ).toBeInTheDocument()
-    }
+  })
+
+  // Primary tab navigation itself (Raids/Shops/Onslaught/Salvage Run/Arena/Guild Raids) now lives
+  // in the shared app-shell header's section-tabs row, not in DailiesLayout - see
+  // section-tabs.test.tsx. This only confirms each route still renders its own placeholder page.
+  it.each([
+    "/dailies/shops",
+    "/dailies/onslaught",
+    "/dailies/salvage-run",
+    "/dailies/arena",
+    "/dailies/guild-raids",
+  ])("routes %s to its own placeholder page", async (path) => {
+    renderDailies(path)
+
+    expect(
+      await screen.findByTestId("dailies-placeholder-page")
+    ).toBeInTheDocument()
   })
 
   it("keeps the selected project when switching from Today to Plan", async () => {

@@ -37,13 +37,7 @@ export function RaidsLayout() {
           },
         ]}
       />
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">{t("raids.title")}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t("raids.description")}
-          </p>
-        </div>
+      <div className="flex justify-end">
         <ProjectSelect
           projects={context.projects}
           projectId={context.projectId}

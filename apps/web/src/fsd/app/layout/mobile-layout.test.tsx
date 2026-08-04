@@ -51,19 +51,48 @@ import { navItems } from "./nav-items"
 function renderShell(
   onCreateGoal = vi.fn(),
   isAuthenticated = false,
-  initialEntry = "/"
+  initialEntry = "/",
+  activeSection: NavItem | undefined = undefined
 ) {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <MobileShell
+        activeSection={activeSection}
         isAuthenticated={isAuthenticated}
         visibleItems={navItems as NavItem[]}
+        pageDescription="Home description"
         pageTitle="Home"
         onCreateGoal={onCreateGoal}
       />
     </MemoryRouter>
   )
 }
+
+describe("MobileHeader", () => {
+  it("renders the page description beneath the page title", () => {
+    renderShell()
+
+    expect(screen.getByText("Home")).toBeInTheDocument()
+    expect(screen.getByText("Home description")).toBeInTheDocument()
+  })
+
+  it("renders no tab row when the active section has no children", () => {
+    renderShell()
+
+    expect(screen.queryByTestId("section-tabs")).not.toBeInTheDocument()
+  })
+
+  it("renders the active section's child pages as a tab row in the header", () => {
+    const lookup = navItems.find((item) => item.path === "/lookup")!
+    renderShell(vi.fn(), true, "/lookup/mow", lookup)
+
+    expect(screen.getByTestId("section-tabs")).toBeInTheDocument()
+    expect(screen.getByTestId("section-tab-lookup-mow")).toHaveAttribute(
+      "data-state",
+      "active"
+    )
+  })
+})
 
 describe("MobileBottomNav actions", () => {
   it("renders Create Goal and Sync with Tacticus as distinct action buttons, not nav links", () => {
@@ -123,6 +152,10 @@ describe("MobileBottomNav actions", () => {
     expect(drawer.getByText("goals.tabs.projects")).toBeVisible()
     expect(drawer.getByText("Campaign Events")).toBeVisible()
     expect(drawer.getByText("guild.tabs.members")).toBeVisible()
+    // Dailies is `mobilePlacement: "primary"` (also a direct bottom-bar link) but, now that it has
+    // children too, still gets the same nested-in-drawer treatment as every other section.
+    expect(drawer.getByText("dailies:tabs.raids")).toBeVisible()
+    expect(drawer.getByText("dailies:tabs.shops")).toBeVisible()
 
     fireEvent.change(screen.getByLabelText("nav.search"), {
       target: { value: "events" },
@@ -134,6 +167,40 @@ describe("MobileBottomNav actions", () => {
       drawer.queryByText("progress.tabs.campaigns")
     ).not.toBeInTheDocument()
     expect(drawer.queryByText("nav.lookup")).not.toBeInTheDocument()
+    // Clicking the filtered result links directly to that child page's own route.
+    expect(drawer.getByText("Campaign Events").closest("a")).toHaveAttribute(
+      "href",
+      "/progress/campaign-events"
+    )
+  })
+
+  it("shows each item's description beneath its label, for top-level and child items", () => {
+    renderShell()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(drawer.getByText("nav.lookupDescription")).toBeVisible()
+    expect(
+      drawer.getByText("unitLookup.tabs.characterDescription")
+    ).toBeVisible()
+  })
+
+  it("finds an item by a query that only matches its description", () => {
+    renderShell()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "unitLookup.tabs.npcDescription" },
+    })
+
+    expect(drawer.getByText("nav.lookup")).toBeVisible()
+    expect(drawer.getByText("unitLookup.tabs.npc")).toBeVisible()
+    expect(
+      drawer.queryByText("unitLookup.tabs.character")
+    ).not.toBeInTheDocument()
   })
 
   it("marks only the exact nested destination as the current page", () => {

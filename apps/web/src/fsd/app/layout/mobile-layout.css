@@ -1,6 +1,10 @@
 /* Shared mobile header/nav sizing - fixed spacing plus safe-area insets so content and the
-   scroll-to-top FAB never sit under the iOS/Android system inset or overlap the fixed bars. */
+   scroll-to-top FAB never sit under the iOS/Android system inset or overlap the fixed bars.
+   Header height grew from the original 4rem to 5rem to fit the page-description line under the
+   title, and now to ~7.75rem to also fit the section tab row beneath that (the icon/title row
+   itself is a fixed `h-20` in mobile-layout.tsx, independent of this variable) - kept as a single
+   constant rather than computed, since every mobile consumer already reads this one variable. */
 :root {
-  --mobile-header-height: calc(4rem + env(safe-area-inset-top, 0px));
+  --mobile-header-height: calc(7.75rem + env(safe-area-inset-top, 0px));
   --mobile-nav-height: calc(5.25rem + env(safe-area-inset-bottom, 0px));
 }
