@@ -11,11 +11,17 @@
   },
   "tabs": {
     "raids": "Raids",
+    "raidsDescription": "Nutze die heutige Energie nach Projektpriorität.",
     "shops": "Läden",
+    "shopsDescription": "Ladenrotationen und Käufe verfolgen",
     "onslaught": "Ansturm",
+    "onslaughtDescription": "Verfolge deinen täglichen Onslaught-Energieverbrauch",
     "salvage-run": "Bergungslauf",
+    "salvage-runDescription": "Fortschritt im Bergungslauf verfolgen",
     "arena": "Arena",
-    "guild-raids": "Gilden-Raids"
+    "arenaDescription": "Arena-Kämpfe und Belohnungen verfolgen",
+    "guild-raids": "Gilden-Raids",
+    "guild-raidsDescription": "Energie und Fortschritt der Gilden-Raids verfolgen"
   },
   "placeholder": {
     "title": "Dieser Bereich ist in Arbeit",
@@ -23,8 +29,6 @@
   },
   "project": { "placeholder": "Projekt auswählen" },
   "raids": {
-    "title": "Kampagnen-Raids",
-    "description": "Nutze die heutige Energie nach Projektpriorität.",
     "tabs": { "today": "Heute", "plan": "Plan" }
   },
   "empty": {

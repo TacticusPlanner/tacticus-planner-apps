@@ -1,7 +1,8 @@
-import { Suspense, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { Link, Outlet, useLocation } from "react-router"
 import { LogIn, PlusCircle, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { CommandShortcut } from "@workspace/ui/components/command"
 import {
   Sidebar,
   SidebarContent,
@@ -12,9 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
@@ -33,6 +31,8 @@ import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
 import { AppLogo } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
+import { DesktopSectionHeader } from "./desktop-section-header"
+import { isMacPlatform } from "./is-mac-platform"
 import type { NavItem } from "./nav-items"
 
 function LoadingFill() {
@@ -44,15 +44,21 @@ function LoadingFill() {
 }
 
 export function DesktopShell({
+  activeSection,
   isAuthenticated,
   visibleItems,
-  pageTitle,
+  pageDescription,
+  sectionTitle,
   onCreateGoal,
+  getEntryPath,
 }: {
+  activeSection: NavItem | undefined
   isAuthenticated: boolean
   visibleItems: NavItem[]
-  pageTitle: string | undefined
+  pageDescription: string | undefined
+  sectionTitle: string | undefined
   onCreateGoal: () => void
+  getEntryPath: (item: NavItem) => string
 }) {
   return (
     <SidebarProvider>
@@ -60,21 +66,23 @@ export function DesktopShell({
         isAuthenticated={isAuthenticated}
         visibleItems={visibleItems}
         onCreateGoal={onCreateGoal}
+        getEntryPath={getEntryPath}
       />
       <SidebarInset>
-        <header className="flex items-center justify-between gap-2 border-b bg-sidebar px-6 py-4">
-          {pageTitle ? (
-            <h1 className="truncate text-2xl font-semibold tracking-tight">
-              {pageTitle}
-            </h1>
-          ) : (
-            <span />
-          )}
-          <div className="flex shrink-0 items-center gap-2">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <TourButton iconOnly />
+        <header className="border-b bg-sidebar">
+          <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
+            <DesktopSectionHeader item={activeSection} title={sectionTitle} />
+            <div className="flex shrink-0 items-center gap-2">
+              <ThemeSwitcher />
+              <LanguageSwitcher />
+              <TourButton iconOnly />
+            </div>
           </div>
+          {pageDescription ? (
+            <p className="truncate px-6 pb-3 text-sm text-muted-foreground">
+              {pageDescription}
+            </p>
+          ) : null}
         </header>
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
@@ -88,20 +96,45 @@ function AppSidebar({
   isAuthenticated,
   visibleItems,
   onCreateGoal,
+  getEntryPath,
 }: {
   isAuthenticated: boolean
   visibleItems: NavItem[]
   onCreateGoal: () => void
+  getEntryPath: (item: NavItem) => string
 }) {
   const { t } = useTranslation()
   const { instance } = useMsal()
   const { state } = useSidebar()
   const compact = state === "collapsed"
   const [navigationOpen, setNavigationOpen] = useState(false)
+  const shortcutHint = (key: string) =>
+    isMacPlatform() ? `⌘${key}` : `Ctrl+${key}`
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return
+      if (!(event.metaKey || event.ctrlKey)) return
+
+      if (event.key === "k") {
+        event.preventDefault()
+        setNavigationOpen((open) => !open)
+      } else if (event.key === "g") {
+        event.preventDefault()
+        onCreateGoal()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [onCreateGoal])
 
   return (
     <Sidebar collapsible="icon">
@@ -127,6 +160,11 @@ function AppSidebar({
             >
               <PlusCircle />
               <span>{t("nav.createGoal")}</span>
+              {compact ? null : (
+                <CommandShortcut className="text-primary-foreground/70">
+                  {shortcutHint("G")}
+                </CommandShortcut>
+              )}
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -140,10 +178,14 @@ function AppSidebar({
             >
               <Search />
               <span>{t("nav.search")}</span>
+              {compact ? null : (
+                <CommandShortcut>{shortcutHint("K")}</CommandShortcut>
+              )}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
         <DesktopNavigationDialog
+          getEntryPath={getEntryPath}
           items={visibleItems}
           onOpenChange={setNavigationOpen}
           open={navigationOpen}
@@ -154,7 +196,11 @@ function AppSidebar({
         <SidebarGroup>
           <SidebarMenu>
             {visibleItems.map((item) => (
-              <NavMenuItem key={item.path} item={item} />
+              <NavMenuItem
+                key={item.path}
+                getEntryPath={getEntryPath}
+                item={item}
+              />
             ))}
           </SidebarMenu>
         </SidebarGroup>
@@ -189,8 +235,16 @@ function AppSidebar({
   )
 }
 
-function NavMenuItem({ item }: { item: NavItem }) {
-  const { t } = useTranslation()
+function NavMenuItem({
+  item,
+  getEntryPath,
+}: {
+  item: NavItem
+  getEntryPath: (item: NavItem) => string
+}) {
+  // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
+  // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
+  const { t } = useTranslation(["common", "dailies"])
   const { pathname } = useLocation()
   const isActive =
     pathname === item.path || pathname.startsWith(item.path + "/")
@@ -205,28 +259,12 @@ function NavMenuItem({ item }: { item: NavItem }) {
       >
         <Link
           aria-current={pathname === item.path ? "page" : undefined}
-          to={item.path}
+          to={getEntryPath(item)}
         >
           <item.icon />
           <span>{t(item.labelKey)}</span>
         </Link>
       </SidebarMenuButton>
-      {isActive && item.children?.length ? (
-        <SidebarMenuSub>
-          {item.children.map((child) => (
-            <SidebarMenuSubItem key={child.path}>
-              <SidebarMenuSubButton asChild isActive={pathname === child.path}>
-                <Link
-                  aria-current={pathname === child.path ? "page" : undefined}
-                  to={child.path}
-                >
-                  <span>{t(child.labelKey)}</span>
-                </Link>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-          ))}
-        </SidebarMenuSub>
-      ) : null}
     </SidebarMenuItem>
   )
 }

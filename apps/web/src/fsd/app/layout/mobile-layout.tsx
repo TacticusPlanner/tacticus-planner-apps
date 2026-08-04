@@ -5,12 +5,10 @@ import {
   CheckCircle2,
   CircleDashed,
   Clock,
-  Compass,
   LogIn,
   Menu,
   PlusCircle,
   RefreshCw,
-  Settings,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -25,28 +23,12 @@ import {
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
 import { Input } from "@workspace/ui/components/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
-import { useMsal } from "@azure/msal-react"
 
-import { loginRequest } from "@/shared/auth"
-import {
-  TourButton,
-  useTour,
-  useTourControlledPopoverOpen,
-} from "@/shared/tour"
-
-import { AuthControl } from "../providers/auth-control"
-import { LanguageSwitcher } from "../providers/language-switcher"
 import { usePlayerDataSyncStatus } from "../providers/player-data-sync-button"
-import { ThemeSwitcher } from "../providers/theme-switcher"
-import { AppLogo } from "./app-logo"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
+import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
 import { filterNavigationItems } from "./navigation-filter"
@@ -62,19 +44,28 @@ function LoadingFill() {
 }
 
 export function MobileShell({
+  activeSection,
   isAuthenticated,
   visibleItems,
+  pageDescription,
   pageTitle,
   onCreateGoal,
 }: {
+  activeSection: NavItem | undefined
   isAuthenticated: boolean
   visibleItems: NavItem[]
+  pageDescription: string | undefined
   pageTitle: string | undefined
   onCreateGoal: () => void
 }) {
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
-      <MobileHeader isAuthenticated={isAuthenticated} pageTitle={pageTitle} />
+      <MobileHeader
+        activeSection={activeSection}
+        isAuthenticated={isAuthenticated}
+        pageDescription={pageDescription}
+        pageTitle={pageTitle}
+      />
       <div className="flex-1 pb-(--mobile-nav-height)">
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
@@ -83,94 +74,6 @@ export function MobileShell({
       <ScrollToTopButton />
       <MobileBottomNav items={visibleItems} onCreateGoal={onCreateGoal} />
     </div>
-  )
-}
-
-function MobileHeader({
-  isAuthenticated,
-  pageTitle,
-}: {
-  isAuthenticated: boolean
-  pageTitle: string | undefined
-}) {
-  const { t } = useTranslation()
-  const { instance } = useMsal()
-  const { isRunning, startTour } = useTour()
-
-  const handleSignIn = () => {
-    void instance.loginRedirect(loginRequest)
-  }
-
-  return (
-    <header className="sticky top-0 z-40 flex h-(--mobile-header-height) items-center justify-between gap-3 border-b bg-sidebar px-4 pt-[env(safe-area-inset-top)]">
-      <div className="flex min-w-0 items-center gap-3">
-        <AppLogo className="size-10 shrink-0" />
-        <span className="truncate text-xl font-semibold tracking-tight">
-          {pageTitle ?? t("app.name")}
-        </span>
-      </div>
-      <div className="flex shrink-0 items-center gap-1">
-        {!isAuthenticated ? (
-          <>
-            <Button size="sm" onClick={handleSignIn}>
-              <LogIn />
-              {t("auth.signIn")}
-            </Button>
-            <MobileGuestSettings />
-          </>
-        ) : (
-          <>
-            <Button
-              aria-label={t("tour.start")}
-              className="size-10 rounded-full"
-              data-testid="mobile-tour-button"
-              disabled={isRunning}
-              onClick={startTour}
-              size="icon"
-              variant="ghost"
-            >
-              <Compass />
-            </Button>
-            <AuthControl />
-          </>
-        )}
-      </div>
-    </header>
-  )
-}
-
-function MobileGuestSettings() {
-  const { t } = useTranslation()
-  const [open, setOpen] = useTourControlledPopoverOpen()
-
-  return (
-    <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger asChild>
-        <Button
-          aria-label={t("settings.label")}
-          data-testid="mobile-guest-settings"
-          size="icon"
-          variant="outline"
-        >
-          <Settings />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="w-56 gap-2"
-        data-testid="mobile-guest-settings-content"
-      >
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm">{t("theme.label")}</span>
-          <ThemeSwitcher />
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm">{t("language.label")}</span>
-          <LanguageSwitcher />
-        </div>
-        <TourButton />
-      </PopoverContent>
-    </Popover>
   )
 }
 
@@ -261,7 +164,9 @@ function MobileBottomNav({
   items: NavItem[]
   onCreateGoal: () => void
 }) {
-  const { t } = useTranslation()
+  // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
+  // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
+  const { t } = useTranslation(["common", "dailies"])
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -337,8 +242,13 @@ function MobileBottomNav({
                       onClick={() => setMenuOpen(false)}
                       to={item.path}
                     >
-                      <item.icon className="size-5" />
-                      {t(item.labelKey)}
+                      <item.icon className="size-5 shrink-0" />
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate">{t(item.labelKey)}</span>
+                        <span className="truncate text-xs font-normal text-muted-foreground">
+                          {t(item.descriptionKey)}
+                        </span>
+                      </span>
                     </Link>
                     {item.children?.length ? (
                       <div className="mt-1 ml-8 space-y-1 border-l pl-3">

@@ -165,15 +165,7 @@ export function CampaignEventsPage() {
 
   return (
     <div className="space-y-8" data-testid="campaign-events-page">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold">
-            {t("progress.events.title")}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {t("progress.events.description")}
-          </p>
-        </div>
+      <header className="flex flex-wrap items-start justify-end gap-4">
         <Button
           disabled={!dirty || saveMutation.isPending}
           onClick={() => void save()}

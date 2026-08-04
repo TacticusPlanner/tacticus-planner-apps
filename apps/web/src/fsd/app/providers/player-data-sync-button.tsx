@@ -10,15 +10,18 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
+import { CommandShortcut } from "@workspace/ui/components/command"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { isMacPlatform } from "@/app/layout/is-mac-platform"
+import { formatRelativeTime } from "@/shared/lib"
+import { goalQueries } from "@/entities/goal"
 
 import {
   usePlayerDataStatus,
   type PlayerDataStatus,
 } from "./player-data-provider"
-import { formatRelativeTime } from "@/shared/lib"
-import { goalQueries } from "@/entities/goal"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -136,6 +139,26 @@ export function PlayerDataSyncButton() {
   // A raw MSAL/network error message isn't actionable for the user — once it's a sign-in issue, the
   // friendly statusText ("Sign-in expired…") replaces it instead of surfacing errorText verbatim.
   const tooltip = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
+  const shortcutHint = isMacPlatform() ? "⌘⇧S" : "Ctrl+Shift+S"
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "s"
+      ) {
+        event.preventDefault()
+        if (!isSyncing) syncNow()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isSyncing, syncNow])
 
   return (
     <SidebarMenuButton
@@ -159,8 +182,13 @@ export function PlayerDataSyncButton() {
         ) : null}
       </span>
       <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5 group-data-[collapsible=icon]:hidden">
-        <span className="truncate text-sm font-semibold">
-          {t("nav.syncWithTacticus")}
+        <span className="flex w-full min-w-0 items-center gap-2">
+          <span className="truncate text-sm font-semibold">
+            {t("nav.syncWithTacticus")}
+          </span>
+          <CommandShortcut className="text-current opacity-80">
+            {shortcutHint}
+          </CommandShortcut>
         </span>
         <span className="truncate text-xs font-normal opacity-80">
           {statusText}

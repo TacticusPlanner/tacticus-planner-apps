@@ -61,14 +61,6 @@ export function CampaignsPage() {
 
   return (
     <div className="space-y-8" data-testid="campaigns-page">
-      <header className="space-y-2">
-        <h2 className="text-xl font-semibold">
-          {t("progress.campaigns.title")}
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {t("progress.campaigns.description")}
-        </p>
-      </header>
       <div className="flex flex-wrap gap-8">
         <Summary
           label={t("progress.campaigns.normal")}

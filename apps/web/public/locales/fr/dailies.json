@@ -11,11 +11,17 @@
   },
   "tabs": {
     "raids": "Raids",
+    "raidsDescription": "Dépensez l'énergie du jour selon la priorité du projet.",
     "shops": "Boutiques",
+    "shopsDescription": "Suivez les rotations et achats en boutique",
     "onslaught": "Assaut",
+    "onslaughtDescription": "Suivez votre dépense d'énergie quotidienne pour l'Assaut",
     "salvage-run": "Récupération",
+    "salvage-runDescription": "Suivez la progression de la Récupération",
     "arena": "Arène",
-    "guild-raids": "Raids de guilde"
+    "arenaDescription": "Suivez les combats et récompenses de l'Arène",
+    "guild-raids": "Raids de guilde",
+    "guild-raidsDescription": "Suivez l'énergie et la progression des Raids de guilde"
   },
   "placeholder": {
     "title": "Cette quotidienne est en construction",
@@ -23,8 +29,6 @@
   },
   "project": { "placeholder": "Choisir un projet" },
   "raids": {
-    "title": "Raids de campagne",
-    "description": "Dépensez l'énergie du jour selon la priorité du projet.",
     "tabs": { "today": "Aujourd'hui", "plan": "Plan" }
   },
   "empty": {

@@ -11,11 +11,17 @@
   },
   "tabs": {
     "raids": "Raids",
+    "raidsDescription": "Spend today's energy on your active project goals in priority order.",
     "shops": "Shops",
+    "shopsDescription": "Track shop rotations and purchases",
     "onslaught": "Onslaught",
+    "onslaughtDescription": "Track your daily Onslaught energy spending",
     "salvage-run": "Salvage Run",
+    "salvage-runDescription": "Track Salvage Run progress",
     "arena": "Arena",
-    "guild-raids": "Guild Raids"
+    "arenaDescription": "Track Arena battles and rewards",
+    "guild-raids": "Guild Raids",
+    "guild-raidsDescription": "Track Guild Raids energy and progress"
   },
   "placeholder": {
     "title": "This daily is under construction",
@@ -23,8 +29,6 @@
   },
   "project": { "placeholder": "Select a project" },
   "raids": {
-    "title": "Campaign raids",
-    "description": "Spend today's energy on your active project goals in priority order.",
     "tabs": { "today": "Today", "plan": "Plan" }
   },
   "empty": {

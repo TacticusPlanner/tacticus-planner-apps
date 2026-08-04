@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes } from "react-router"
 
 vi.mock("react-i18next", () => ({
@@ -59,27 +58,18 @@ describe("GoalsLayout", () => {
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
   })
 
-  it("renders and navigates to Projects between Goals and Insights", async () => {
-    const user = userEvent.setup()
-    renderLayout("/goals")
+  it("renders the Projects child route at /goals/project", () => {
+    renderLayout("/goals/project")
 
-    const tabs = screen.getAllByRole("tab")
-    expect(tabs.map((tab) => tab.textContent)).toEqual([
-      "goals.tabs.goals",
-      "goals.tabs.projects",
-      "goals.tabs.insights",
-    ])
-
-    await user.click(screen.getByTestId("goals-layout-tab-project"))
     expect(screen.getByTestId("projects-child")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
   })
 
-  it("navigates to the Insights route when the Insights tab is clicked", async () => {
-    const user = userEvent.setup()
+  // Tab navigation between Goals/Projects/Insights now lives in the shared app-shell header's
+  // section-tabs row, not in GoalsLayout - see section-tabs.test.tsx.
+  it("renders the Planning Settings entry point", () => {
     renderLayout("/goals")
 
-    await user.click(screen.getByTestId("goals-layout-tab-insights"))
-
-    expect(screen.getByTestId("insights-child")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-planning-settings")).toBeInTheDocument()
   })
 })

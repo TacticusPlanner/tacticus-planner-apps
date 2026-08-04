@@ -18,15 +18,19 @@ import { filterNavigationItems } from "./navigation-filter"
 import type { NavItem } from "./nav-items"
 
 export function DesktopNavigationDialog({
+  getEntryPath,
   items,
   open,
   onOpenChange,
 }: {
+  getEntryPath: (item: NavItem) => string
   items: NavItem[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { t } = useTranslation()
+  // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
+  // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
+  const { t } = useTranslation(["common", "dailies"])
   const { pathname } = useLocation()
   const [search, setSearch] = useState("")
   const filteredItems = filterNavigationItems(items, search, t)
@@ -71,10 +75,15 @@ export function DesktopNavigationDialog({
                         : "hover:bg-accent hover:text-accent-foreground"
                     )}
                     onClick={() => handleOpenChange(false)}
-                    to={item.path}
+                    to={getEntryPath(item)}
                   >
-                    <item.icon className="size-5" />
-                    {t(item.labelKey)}
+                    <item.icon className="size-5 shrink-0" />
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate">{t(item.labelKey)}</span>
+                      <span className="truncate text-xs font-normal text-muted-foreground">
+                        {t(item.descriptionKey)}
+                      </span>
+                    </span>
                   </Link>
                   {item.children?.length ? (
                     <div className="mt-1 ml-8 space-y-1 border-l pl-3">
@@ -85,7 +94,7 @@ export function DesktopNavigationDialog({
                             pathname === child.path ? "page" : undefined
                           }
                           className={cn(
-                            "flex min-h-9 items-center rounded-md px-3 py-1.5 text-sm transition-colors",
+                            "flex min-h-9 flex-col rounded-md px-3 py-1.5 text-sm transition-colors",
                             pathname === child.path
                               ? "bg-accent text-accent-foreground"
                               : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -93,7 +102,10 @@ export function DesktopNavigationDialog({
                           onClick={() => handleOpenChange(false)}
                           to={child.path}
                         >
-                          {t(child.labelKey)}
+                          <span className="truncate">{t(child.labelKey)}</span>
+                          <span className="truncate text-xs font-normal opacity-80">
+                            {t(child.descriptionKey)}
+                          </span>
                         </Link>
                       ))}
                     </div>

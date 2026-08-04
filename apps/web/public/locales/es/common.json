@@ -130,13 +130,20 @@
   "nav": {
     "addGoal": "Añadir objetivo",
     "dailies": "Diarias",
+    "dailiesDescription": "Tareas diarias y periódicas del juego",
     "home": "Inicio",
-    "rankLookup": "Consulta de rango",
+    "homeDescription": "Resumen de tu cuenta y accesos directos",
+    "lookup": "Consulta de rango",
+    "lookupDescription": "Consulta personajes, Máquinas de Guerra y PNJ",
     "createGoal": "Crear objetivo",
     "goals": "Objetivos",
-    "onslaught": "Onslaught",
+    "goalsDescription": "Sigue tu progreso hacia tus objetivos",
+    "progress": "Progreso",
+    "progressDescription": "Tu progreso sincronizado de campañas y Onslaught",
     "uiKit": "Kit de interfaz",
+    "uiKitDescription": "Vista previa de los componentes del sistema de diseño",
     "guild": "Gremio",
+    "guildDescription": "El plantel y los ajustes de tu gremio",
     "menu": "Menú",
     "navigation": "Navegación",
     "navigationHint": "Elige un destino o filtra la lista.",
@@ -186,7 +193,8 @@
       "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo."
     },
     "tabs": {
-      "members": "Miembros"
+      "members": "Miembros",
+      "membersDescription": "Consulta el plantel de miembros de tu gremio"
     },
     "members": {
       "empty": "No se encontraron miembros.",
@@ -208,6 +216,31 @@
       "coLeader": "Colíder",
       "officer": "Oficial",
       "member": "Miembro"
+    }
+  },
+  "unitLookup": {
+    "tabs": {
+      "character": "Personaje",
+      "characterDescription": "Consulta detalles y estadísticas de personajes",
+      "mow": "Máquinas de Guerra",
+      "mowDescription": "Consulta detalles y estadísticas de Máquinas de Guerra",
+      "npc": "PNJ",
+      "npcDescription": "Consulta detalles y estadísticas de PNJ"
+    }
+  },
+  "progress": {
+    "tabs": {
+      "onslaughtDescription": "Introduce el sector y el nivel actuales de cada alianza. Las estimaciones de ascensión usan estos valores junto con las fichas de Onslaught sincronizadas.",
+      "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
+      "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia.",
+      "xp-incomeDescription": "Los ingresos de XP ayudan a estimar cuántos libros de XP obtienes de Arena, Incursiones de gremio, compras de Archeotech y otras fuentes."
+    }
+  },
+  "goals": {
+    "tabs": {
+      "overviewDescription": "Filtra, ordena y agrupa todos tus objetivos activos.",
+      "projectsDescription": "Organiza los objetivos en planes centrados y controla su prioridad.",
+      "insightsDescription": "Recomendaciones de mejoras y campañas"
     }
   },
   "language": {

@@ -1,11 +1,5 @@
 import { useMemo, useState } from "react"
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-  type NavigateFunction,
-} from "react-router"
-import { useTranslation } from "react-i18next"
+import { Outlet, type NavigateFunction } from "react-router"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import { useProjects, type ProjectSummary } from "@/entities/project"
@@ -20,19 +14,14 @@ export type DailiesOutletContext = {
   retryProjects: () => void
 }
 
-const tabs = [
-  "raids",
-  "shops",
-  "onslaught",
-  "salvage-run",
-  "arena",
-  "guild-raids",
-] as const
-
+/**
+ * Parent route for the Dailies area: Raids/Shops/Onslaught/Salvage Run/Arena/Guild Raids are now
+ * rendered by the shared app-shell header's section-tabs row (see `section-tabs.tsx`) instead of a
+ * tab bar here - this layout keeps only the `<Outlet/>` for the active tab's page. `RouteTabs`
+ * below is still exported and used by `RaidsLayout`'s own nested Today/Plan sub-tabs, a third
+ * level unaffected by that move.
+ */
 export function DailiesLayout() {
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
-  const { t } = useTranslation("dailies")
   const {
     projects,
     activeProjectId,
@@ -56,21 +45,9 @@ export function DailiesLayout() {
     }),
     [fetchState.status, loading, projectId, projects, retry]
   )
-  const active =
-    tabs.find((tab) => pathname.includes(`/dailies/${tab}`)) ?? "raids"
 
   return (
     <PageContainer data-testid="dailies-layout">
-      <RouteTabs
-        active={active}
-        navigate={navigate}
-        testId="dailies-primary-tabs"
-        tabs={tabs.map((tab) => ({
-          value: tab,
-          label: t(`tabs.${tab}`),
-          path: `/dailies/${tab}`,
-        }))}
-      />
       <Outlet context={context} />
     </PageContainer>
   )
@@ -95,9 +72,12 @@ export function RouteTabs({
         if (tab) void navigate(tab.path)
       }}
     >
+      {/* overflow-y-hidden avoids a spurious vertical scrollbar: overflow-x-auto alone forces
+          overflow-y to also compute as 'auto' per the CSS overflow spec, which then clips and
+          scrolls on any sub-pixel vertical overflow (e.g. the "line" variant's underline). */}
       <TabsList
         variant="line"
-        className="max-w-full justify-start overflow-x-auto"
+        className="max-w-full justify-start overflow-x-auto overflow-y-hidden"
         data-testid={testId}
       >
         {entries.map((tab) => (

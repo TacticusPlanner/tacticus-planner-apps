@@ -11,11 +11,17 @@
   },
   "tabs": {
     "raids": "Incursiones",
+    "raidsDescription": "Gasta la energía de hoy según la prioridad del proyecto.",
     "shops": "Tiendas",
+    "shopsDescription": "Consulta las rotaciones y compras de la tienda",
     "onslaught": "Onslaught",
+    "onslaughtDescription": "Consulta tu gasto diario de energía de Onslaught",
     "salvage-run": "Recuperación",
+    "salvage-runDescription": "Consulta el progreso de Recuperación",
     "arena": "Arena",
-    "guild-raids": "Incursiones de gremio"
+    "arenaDescription": "Consulta las batallas y recompensas de Arena",
+    "guild-raids": "Incursiones de gremio",
+    "guild-raidsDescription": "Consulta la energía y el progreso de las Incursiones de gremio"
   },
   "placeholder": {
     "title": "Esta diaria está en construcción",
@@ -23,8 +29,6 @@
   },
   "project": { "placeholder": "Selecciona un proyecto" },
   "raids": {
-    "title": "Incursiones de campaña",
-    "description": "Gasta la energía de hoy según la prioridad del proyecto.",
     "tabs": { "today": "Hoy", "plan": "Plan" }
   },
   "empty": {

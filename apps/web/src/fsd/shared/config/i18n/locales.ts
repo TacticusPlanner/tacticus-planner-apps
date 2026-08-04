@@ -1,10 +1,10 @@
 export const fallbackLanguage = "en"
 
 export const supportedLocales = [
-  { code: "en", labelKey: "language.options.en" },
-  { code: "fr", labelKey: "language.options.fr" },
-  { code: "de", labelKey: "language.options.de" },
-  { code: "es", labelKey: "language.options.es" },
+  { code: "en", labelKey: "language.options.en", flag: "🇬🇧" },
+  { code: "fr", labelKey: "language.options.fr", flag: "🇫🇷" },
+  { code: "de", labelKey: "language.options.de", flag: "🇩🇪" },
+  { code: "es", labelKey: "language.options.es", flag: "🇪🇸" },
 ] as const
 
 export type SupportedLanguage = (typeof supportedLocales)[number]["code"]

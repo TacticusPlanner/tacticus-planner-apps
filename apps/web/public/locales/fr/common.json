@@ -130,13 +130,20 @@
   "nav": {
     "addGoal": "Ajouter un objectif",
     "dailies": "Quotidiennes",
+    "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
     "home": "Accueil",
-    "rankLookup": "Recherche de rang",
+    "homeDescription": "Aperçu de votre compte et raccourcis",
+    "lookup": "Recherche de rang",
+    "lookupDescription": "Recherchez des personnages, Machines de guerre et PNJ",
     "createGoal": "Créer un objectif",
     "goals": "Objectifs",
-    "onslaught": "Onslaught",
+    "goalsDescription": "Suivez votre progression vers vos objectifs",
+    "progress": "Progression",
+    "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
     "uiKit": "Kit d'interface",
+    "uiKitDescription": "Aperçu des composants du système de design",
     "guild": "Guilde",
+    "guildDescription": "Votre effectif et paramètres de guilde",
     "menu": "Menu",
     "navigation": "Navigation",
     "navigationHint": "Choisissez une destination ou filtrez la liste.",
@@ -186,7 +193,8 @@
       "genericError": "Une erreur s'est produite lors de la suppression de la guilde. Veuillez réessayer."
     },
     "tabs": {
-      "members": "Membres"
+      "members": "Membres",
+      "membersDescription": "Consultez la liste des membres de votre guilde"
     },
     "members": {
       "empty": "Aucun membre trouvé.",
@@ -208,6 +216,31 @@
       "coLeader": "Co-chef",
       "officer": "Officier",
       "member": "Membre"
+    }
+  },
+  "unitLookup": {
+    "tabs": {
+      "character": "Personnage",
+      "characterDescription": "Consultez les détails et statistiques des personnages",
+      "mow": "Machines de guerre",
+      "mowDescription": "Consultez les détails et statistiques des Machines de guerre",
+      "npc": "PNJ",
+      "npcDescription": "Consultez les détails et statistiques des PNJ"
+    }
+  },
+  "progress": {
+    "tabs": {
+      "onslaughtDescription": "Indiquez le secteur et le palier actuels de chaque alliance. Les estimations d'ascension utilisent ces valeurs ainsi que les jetons Onslaught synchronisés.",
+      "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
+      "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence.",
+      "xp-incomeDescription": "Revenus d'XP aide à estimer le nombre de livres d'XP que vous gagnez via l'Arène, les Raids de guilde, les achats Archeotech et d'autres sources."
+    }
+  },
+  "goals": {
+    "tabs": {
+      "overviewDescription": "Filtrez, triez et regroupez tous vos objectifs actifs.",
+      "projectsDescription": "Organisez vos objectifs en plans ciblés et maîtrisez leur priorité.",
+      "insightsDescription": "Recommandations d'améliorations et de campagnes"
     }
   },
   "language": {

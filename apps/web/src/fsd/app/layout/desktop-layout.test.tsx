@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import { MemoryRouter } from "react-router"
+import { fireEvent, render, screen, within } from "@testing-library/react"
+import { MemoryRouter, useLocation } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
@@ -40,6 +40,40 @@ vi.mock("@/shared/tour", () => ({ TourButton: () => null }))
 import { DesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
+import { resolveActiveNavigation } from "./resolve-active-navigation"
+import { useSectionEntryPath } from "./use-section-entry-path"
+
+function identityEntryPath(item: NavItem) {
+  return item.path
+}
+
+const homeItem = navItems.find((item) => item.path === "/home")!
+const lookupItem = navItems.find((item) => item.path === "/lookup")!
+const dailiesItem = navItems.find((item) => item.path === "/dailies")!
+const goalsItem = navItems.find((item) => item.path === "/goals")!
+
+// Exercises `DesktopShell` together with the real `useSectionEntryPath` hook, the same way
+// `ShellContent` wires them in `app-shell.tsx`, so entry-path resolution is tested end to end.
+function EntryPathHarness() {
+  const { pathname } = useLocation()
+  const { getEntryPath } = useSectionEntryPath(navItems as NavItem[], pathname)
+  const { activeItem } = resolveActiveNavigation(
+    navItems as NavItem[],
+    pathname
+  )
+
+  return (
+    <DesktopShell
+      activeSection={activeItem}
+      isAuthenticated
+      visibleItems={navItems as NavItem[]}
+      pageDescription="Lookup description"
+      sectionTitle="Lookup"
+      onCreateGoal={vi.fn()}
+      getEntryPath={getEntryPath}
+    />
+  )
+}
 
 describe("DesktopShell", () => {
   it("has a single sidebar trigger, living inside the collapsible sidebar itself", () => {
@@ -49,8 +83,11 @@ describe("DesktopShell", () => {
           <DesktopShell
             isAuthenticated={false}
             visibleItems={navItems as NavItem[]}
-            pageTitle="Home"
+            activeSection={homeItem}
+            pageDescription="Home description"
+            sectionTitle="Home"
             onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
           />
         </TooltipProvider>
       </MemoryRouter>
@@ -75,35 +112,396 @@ describe("DesktopShell", () => {
     ).toHaveLength(1)
   })
 
-  it("shows children for the active section and searches the full hierarchy", () => {
+  it("renders the page description beneath the page title in the header", () => {
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={homeItem}
+            pageDescription="Your account overview"
+            sectionTitle="Home"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByRole("heading", { name: "Home" })).toBeInTheDocument()
+    expect(screen.getByText("Your account overview")).toBeInTheDocument()
+    // Home has no children - no tab row belongs in the header for it.
+    expect(screen.queryByTestId("section-tabs")).not.toBeInTheDocument()
+  })
+
+  it("renders the active section's child pages as a tab row in the header", () => {
     render(
       <MemoryRouter initialEntries={["/lookup/mow"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
             visibleItems={navItems as NavItem[]}
-            pageTitle="Lookup"
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
             onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("section-tabs")).toBeInTheDocument()
+    expect(screen.getByTestId("section-tab-lookup-mow")).toHaveAttribute(
+      "data-state",
+      "active"
+    )
+    expect(screen.getByTestId("section-tab-lookup-character")).toHaveAttribute(
+      "data-state",
+      "inactive"
+    )
+  })
+
+  it("keeps the header title pinned to the section name on a child page, not the active child", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={lookupItem}
+            pageDescription="Machines of War description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByRole("heading", { name: "Lookup" })).toBeInTheDocument()
+    expect(
+      screen.queryByRole("heading", { name: "Machines of War" })
+    ).not.toBeInTheDocument()
+    // The description still swaps to the active child, independent of the title.
+    expect(screen.getByText("Machines of War description")).toBeInTheDocument()
+  })
+
+  it("renders all six of Dailies' children inline in the header, not a breadcrumb dropdown", () => {
+    render(
+      <MemoryRouter initialEntries={["/dailies/shops"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={dailiesItem}
+            pageDescription="Dailies description"
+            sectionTitle="Dailies"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
           />
         </TooltipProvider>
       </MemoryRouter>
     )
 
     expect(
-      screen.getByRole("link", { name: "unitLookup.tabs.mow" })
-    ).toHaveAttribute("aria-current", "page")
+      screen.queryByTestId("section-header-dropdown")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("section-tabs")).toBeInTheDocument()
+    for (const child of dailiesItem.children ?? []) {
+      expect(
+        screen.getByTestId(
+          `section-tab-${child.path.slice(1).replaceAll("/", "-")}`
+        )
+      ).toBeInTheDocument()
+    }
+    expect(screen.getByTestId("section-tab-dailies-shops")).toHaveAttribute(
+      "aria-current",
+      "page"
+    )
+    expect(
+      screen.getByTestId("section-tab-dailies-onslaught")
+    ).not.toHaveAttribute("aria-current")
+  })
+
+  it("highlights Overview, not Projects, when Goals' landing page (Board) is active", () => {
+    render(
+      <MemoryRouter initialEntries={["/goals/overview"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={goalsItem}
+            pageDescription="Goals description"
+            sectionTitle="Goals"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("section-tab-goals-overview")).toHaveAttribute(
+      "aria-current",
+      "page"
+    )
+    expect(screen.getByTestId("section-tab-goals-project")).not.toHaveAttribute(
+      "aria-current"
+    )
+    expect(
+      screen.getByTestId("section-tab-goals-insights")
+    ).not.toHaveAttribute("aria-current")
+  })
+
+  it("renders no child links in the sidebar, even for the active section", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    // Child links legitimately exist elsewhere now (the header's own inline nav row) - scope this
+    // assertion to the sidebar itself, the thing group 2 actually flattened.
+    const sidebar = within(document.querySelector('[data-slot="sidebar"]')!)
+
+    expect(
+      sidebar.queryByRole("link", { name: "unitLookup.tabs.mow" })
+    ).not.toBeInTheDocument()
+    expect(
+      sidebar.queryByRole("link", { name: "unitLookup.tabs.character" })
+    ).not.toBeInTheDocument()
+    expect(
+      sidebar.queryByRole("link", { name: "unitLookup.tabs.npc" })
+    ).not.toBeInTheDocument()
+  })
+
+  it("still finds and searches the full hierarchy via navigation search", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
     fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
       target: { value: "unitLookup.tabs.mow" },
     })
 
-    expect(screen.getByRole("link", { name: "nav.lookup" })).toBeInTheDocument()
     expect(
-      screen.getAllByRole("link", { name: "unitLookup.tabs.mow" })
-    ).toHaveLength(1)
+      screen.getByRole("link", { name: /^nav\.lookup/ })
+    ).toBeInTheDocument()
+    const mowResult = screen.getByRole("link", {
+      name: /^unitLookup\.tabs\.mow/,
+    })
+    expect(mowResult).toHaveAttribute("aria-current", "page")
+    expect(mowResult).toHaveAttribute("href", "/lookup/mow")
     expect(
-      screen.queryByRole("link", { name: "unitLookup.tabs.character" })
+      screen.queryByRole("link", { name: /^unitLookup\.tabs\.character/ })
     ).not.toBeInTheDocument()
+  })
+
+  it("shows each result's description beneath its label in navigation search, for top-level and child items", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    const dialog = screen.getByTestId("desktop-navigation-dialog")
+
+    expect(
+      within(dialog).getByText("nav.lookupDescription")
+    ).toBeInTheDocument()
+    expect(
+      within(dialog).getByText("unitLookup.tabs.mowDescription")
+    ).toBeInTheDocument()
+  })
+
+  it("finds an item by a query that only matches its description", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
+      target: { value: "unitLookup.tabs.npcDescription" },
+    })
+
+    expect(
+      screen.getByRole("link", { name: /^unitLookup\.tabs\.npc/ })
+    ).toBeInTheDocument()
+  })
+
+  it("toggles navigation search with Ctrl/Cmd+K regardless of focus, and shows the shortcut hint", () => {
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={homeItem}
+            pageDescription="Home description"
+            sectionTitle="Home"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("desktop-navigation-search")).toHaveTextContent(
+      "Ctrl+K"
+    )
+    expect(
+      screen.queryByTestId("desktop-navigation-dialog")
+    ).not.toBeInTheDocument()
+
+    // Focus is on the document body, not any particular control, when the shortcut fires.
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true })
+    expect(screen.getByTestId("desktop-navigation-dialog")).toBeVisible()
+
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true })
+    expect(
+      screen.queryByTestId("desktop-navigation-dialog")
+    ).not.toBeInTheDocument()
+  })
+
+  it("triggers Create Goal with Ctrl/Cmd+G and shows the shortcut hint", () => {
+    const onCreateGoal = vi.fn()
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={homeItem}
+            pageDescription="Home description"
+            sectionTitle="Home"
+            onCreateGoal={onCreateGoal}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("desktop-create-goal-button")).toHaveTextContent(
+      "Ctrl+G"
+    )
+
+    fireEvent.keyDown(window, { key: "g", ctrlKey: true })
+
+    expect(onCreateGoal).toHaveBeenCalledTimes(1)
+  })
+
+  it("navigates a multi-child section to its default child on first visit this session", () => {
+    render(
+      <MemoryRouter initialEntries={["/home"]}>
+        <TooltipProvider>
+          <EntryPathHarness />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("desktop-nav-lookup")).toHaveAttribute(
+      "href",
+      "/lookup"
+    )
+  })
+
+  it("navigates a multi-child section to its last-visited child after visiting one", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <EntryPathHarness />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    // Switch to a different top-level section - Lookup's sidebar link should now remember /mow.
+    fireEvent.click(screen.getByTestId("desktop-nav-progress"))
+
+    expect(screen.getByTestId("desktop-nav-lookup")).toHaveAttribute(
+      "href",
+      "/lookup/mow"
+    )
+  })
+
+  it("treats Dailies as a multi-child section too, once it has children", () => {
+    render(
+      <MemoryRouter initialEntries={["/dailies/shops"]}>
+        <TooltipProvider>
+          <EntryPathHarness />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    // Switch to a different top-level section - Dailies' sidebar link should now remember /shops.
+    fireEvent.click(screen.getByTestId("desktop-nav-home"))
+
+    expect(screen.getByTestId("desktop-nav-dailies")).toHaveAttribute(
+      "href",
+      "/dailies/shops"
+    )
+  })
+
+  it("keeps single-child and no-children sections on their existing default route", () => {
+    render(
+      <MemoryRouter initialEntries={["/guild/members"]}>
+        <TooltipProvider>
+          <EntryPathHarness />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByTestId("desktop-nav-home"))
+
+    expect(screen.getByTestId("desktop-nav-guild")).toHaveAttribute(
+      "href",
+      "/guild"
+    )
   })
 })
