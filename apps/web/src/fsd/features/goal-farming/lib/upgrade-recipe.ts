@@ -9,6 +9,8 @@ import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 
 type UpgradeAmount = { id: UpgradeId; amount: number }
 
+export type CraftedInventoryPool = Map<UpgradeId, number>
+
 const rankUpgradeMap = (character: FarmingCharacter) =>
   new Map(
     character.rankUpUpgrades.map((entry) => [entry.rank, entry.upgradeIds])
@@ -40,9 +42,15 @@ export function rankUpUpgradeIds(
   return ids
 }
 
+/**
+ * Expands crafted recipes into base upgrades. When `craftedInventory` is supplied, matching stock
+ * is drained from that map in place before expansion; reuse one pool only across calculations that
+ * intentionally share inventory and invoke them in priority order.
+ */
 function reduceToBaseUpgrades(
   entries: UpgradeAmount[],
-  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>,
+  craftedInventory?: CraftedInventoryPool
 ) {
   const counts = new Map<UpgradeId, number>()
   const add = (
@@ -53,9 +61,17 @@ function reduceToBaseUpgrades(
     if (expansionPath.has(id)) return
     const upgrade = upgradesById.get(id)
     if (upgrade?.crafted && upgrade.recipe.length > 0) {
+      const available = craftedInventory?.get(id) ?? 0
+      const consumed = Math.min(available, multiplier)
+      if (craftedInventory && consumed > 0) {
+        craftedInventory.set(id, available - consumed)
+      }
+      const remaining = multiplier - consumed
+      if (remaining <= 0) return
+
       expansionPath.add(id)
       for (const ingredient of upgrade.recipe) {
-        add(ingredient.material, multiplier * ingredient.count, expansionPath)
+        add(ingredient.material, remaining * ingredient.count, expansionPath)
       }
       expansionPath.delete(id)
     } else {
@@ -64,6 +80,55 @@ function reduceToBaseUpgrades(
   }
   for (const entry of entries) add(entry.id, entry.amount, new Set())
   return counts
+}
+
+export function createCraftedInventoryPool(
+  inventoryUpgrades: readonly { upgradeId: string; amount: number }[],
+  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+): CraftedInventoryPool {
+  const pool: CraftedInventoryPool = new Map()
+  for (const entry of inventoryUpgrades) {
+    const id = entry.upgradeId as UpgradeId
+    const upgrade = upgradesById.get(id)
+    if (!upgrade?.crafted || upgrade.recipe.length === 0 || entry.amount <= 0)
+      continue
+    pool.set(id, (pool.get(id) ?? 0) + entry.amount)
+  }
+  return pool
+}
+
+/**
+ * Aggregates base needs while draining `craftedInventory` in place. Callers must share the pool
+ * through stage- and priority-ordered calculations so earlier needs consume stock first.
+ */
+export function aggregateBaseUpgradesWithCraftedInventory(
+  upgradeIds: UpgradeId[],
+  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>,
+  craftedInventory: CraftedInventoryPool
+) {
+  return [
+    ...reduceToBaseUpgrades(
+      upgradeIds.map((id) => ({ id, amount: 1 })),
+      upgradesById,
+      craftedInventory
+    ),
+  ].map(([id, count]) => ({ id, count }))
+}
+
+export function removeUpgradeOccurrences(
+  requiredIds: UpgradeId[],
+  appliedIds: readonly UpgradeId[]
+): UpgradeId[] {
+  const remainingApplied = new Map<UpgradeId, number>()
+  for (const id of appliedIds) {
+    remainingApplied.set(id, (remainingApplied.get(id) ?? 0) + 1)
+  }
+  return requiredIds.filter((id) => {
+    const applied = remainingApplied.get(id) ?? 0
+    if (applied <= 0) return true
+    remainingApplied.set(id, applied - 1)
+    return false
+  })
 }
 
 export function aggregateBaseUpgrades(

@@ -9,6 +9,7 @@ import {
   dropRate,
   allocatePlanInventory,
   estimateGoal,
+  inclusiveCompletionDate,
   selectFarmNodes,
 } from "./estimate"
 import { estimatePlan } from "./estimate-plan"
@@ -56,12 +57,18 @@ const battle = (
 ]
 
 describe("dropRate", () => {
-  it("is 1 for a guaranteed drop, regardless of any rate fields", () => {
+  it("is 1 for a guaranteed drop without an explicit combined rate", () => {
     expect(dropRate(location("B1", { guaranteed: true }))).toBe(1)
   })
 
   it("prefers effectiveRate when present", () => {
     expect(dropRate(location("B1", { effectiveRate: 0.4 }))).toBe(0.4)
+  })
+
+  it("uses a combined effectiveRate above 1 for a guaranteed-plus-bonus location", () => {
+    expect(
+      dropRate(location("B1", { guaranteed: true, effectiveRate: 1.079 }))
+    ).toBe(1.079)
   })
 
   it("falls back to numerator/denominator", () => {
@@ -131,6 +138,68 @@ describe("selectFarmNodes", () => {
     ])
   })
 
+  it("keeps a catalog-provided combined guaranteed-plus-bonus yield", () => {
+    const combinedReward = new Map<
+      ReturnType<typeof upgradeId>,
+      EstimateUpgrade
+    >([
+      [
+        upgradeId("shards_character"),
+        {
+          id: upgradeId("shards_character"),
+          farmLocations: [
+            location("B1", { guaranteed: true, effectiveRate: 1.079 }),
+          ],
+        },
+      ],
+    ])
+
+    const nodes = selectFarmNodes(
+      { id: upgradeId("shards_character"), count: 500 },
+      combinedReward,
+      new Map([battle("B1", 10, 6)])
+    )
+
+    expect(nodes).toHaveLength(1)
+    expect(nodes[0]?.dropRate).toBe(1.079)
+  })
+
+  it.each([undefined, ["B1"]])(
+    "combines legacy split rewards for one battle with restriction %j",
+    (farmingLocationIds) => {
+      const splitRewards = new Map<
+        ReturnType<typeof upgradeId>,
+        EstimateUpgrade
+      >([
+        [
+          upgradeId("shards_character"),
+          {
+            id: upgradeId("shards_character"),
+            farmLocations: [
+              location("B1", { guaranteed: true }),
+              location("B1", { effectiveRate: 0.079 }),
+            ],
+          },
+        ],
+      ])
+
+      const nodes = selectFarmNodes(
+        { id: upgradeId("shards_character"), count: 500 },
+        splitRewards,
+        new Map([battle("B1", 10, 6)]),
+        farmingLocationIds
+      )
+
+      expect(nodes).toHaveLength(1)
+      expect(nodes[0]).toMatchObject({
+        battleId: battleId("B1"),
+        energyCost: 10,
+        dailyAttempts: 6,
+      })
+      expect(nodes[0]?.dropRate).toBeCloseTo(1.079)
+    }
+  )
+
   it("is empty for a material with no catalog entry", () => {
     expect(
       selectFarmNodes(
@@ -168,7 +237,7 @@ describe("estimateGoal", () => {
     })
     expect(result).toMatchObject({
       days: 3,
-      date: "2026-01-04",
+      date: "2026-01-03",
       energyTotal: 30,
       raidsTotal: 3,
     })
@@ -240,10 +309,22 @@ describe("estimateGoal", () => {
     })
     expect(result).toMatchObject({
       days: 1,
-      date: "2026-01-02",
+      date: "2026-01-01",
       energyTotal: 10,
       raidsTotal: 1,
     })
+  })
+})
+
+describe("inclusiveCompletionDate", () => {
+  it.each([
+    [0, "2026-01-01"],
+    [1, "2026-01-01"],
+    [3, "2026-01-03"],
+  ])("maps %i required days to %s", (days, expected) => {
+    expect(inclusiveCompletionDate(REFERENCE_DATE, days)).toEqual(
+      new Date(`${expected}T00:00:00.000Z`)
+    )
   })
 })
 
@@ -375,7 +456,7 @@ describe("estimatePlan", () => {
     // priority 2 gets none of the shared inventory -> must farm all 5 (1/day at this budget)
     expect(results.get("low-priority")).toMatchObject({
       days: 5,
-      date: "2026-01-06",
+      date: "2026-01-05",
       energyTotal: 50,
       raidsTotal: 5,
     })
@@ -493,7 +574,7 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
 
     expect(result).toMatchObject({
       days: 3,
-      date: "2026-01-04",
+      date: "2026-01-03",
       energyTotal: 30,
       raidsTotal: 3,
     })

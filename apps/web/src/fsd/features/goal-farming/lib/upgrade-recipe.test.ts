@@ -9,7 +9,10 @@ import {
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 import {
   aggregateBaseUpgrades,
+  aggregateBaseUpgradesWithCraftedInventory,
   aggregateOwnedBaseUpgrades,
+  createCraftedInventoryPool,
+  removeUpgradeOccurrences,
   rankUpUpgradeIds,
 } from "./upgrade-recipe"
 
@@ -110,5 +113,49 @@ describe("base-upgrade aggregation", () => {
         new Map([x, y, c].map((item) => [item.id, item]))
       )
     ).toEqual([{ id: c.id, count: 2 }])
+  })
+
+  it("consumes exact top-level and nested crafted inventory before expansion", () => {
+    const pool = createCraftedInventoryPool(
+      [
+        { upgradeId: a.id, amount: 1 },
+        { upgradeId: b.id, amount: 1 },
+        { upgradeId: c.id, amount: 99 },
+      ],
+      upgrades
+    )
+
+    expect(
+      aggregateBaseUpgradesWithCraftedInventory([a.id, a.id], upgrades, pool)
+    ).toEqual([
+      { id: c.id, count: 4 },
+      { id: d.id, count: 1 },
+    ])
+    expect(pool.get(a.id)).toBe(0)
+    expect(pool.get(b.id)).toBe(0)
+    expect(pool.has(c.id)).toBe(false)
+  })
+
+  it("leaves unrelated crafted stock and loose base inventory untouched", () => {
+    const pool = createCraftedInventoryPool(
+      [
+        { upgradeId: a.id, amount: 2 },
+        { upgradeId: c.id, amount: 10 },
+      ],
+      upgrades
+    )
+
+    expect(
+      aggregateBaseUpgradesWithCraftedInventory([b.id], upgrades, pool)
+    ).toEqual([{ id: c.id, count: 2 }])
+    expect(pool.get(a.id)).toBe(2)
+    expect(pool.has(c.id)).toBe(false)
+  })
+
+  it("removes only matching applied slot occurrences", () => {
+    expect(removeUpgradeOccurrences([a.id, b.id, a.id], [a.id])).toEqual([
+      b.id,
+      a.id,
+    ])
   })
 })

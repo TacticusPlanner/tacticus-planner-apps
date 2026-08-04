@@ -168,6 +168,76 @@ describe("computePlanInsights", () => {
     expect(result.bottlenecks[0]?.label).toBe("Material One")
   })
 
+  it("uses the shared crafted-inventory pool in goal priority order", () => {
+    const craftedId = upgradeId("crafted")
+    const baseId = upgradeId("base")
+    const craftedCharacter: Character = {
+      ...character,
+      rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [craftedId] }],
+    }
+    const baseUpgrade: UpgradeWithFarmLocations = {
+      ...upgrade,
+      id: baseId,
+      label: "Base",
+    }
+    const craftedUpgrade: UpgradeWithFarmLocations = {
+      ...upgrade,
+      id: craftedId,
+      label: "Crafted",
+      crafted: true,
+      recipe: [{ material: baseId, count: 2 }],
+      farmLocations: [],
+    }
+    const rankConfig = {
+      rank: {
+        start: rankIndex(rankOrder[0]),
+        startPointFive: false,
+        startAppliedUpgrades: 0,
+        end: rankIndex(rankOrder[1]),
+        endPointFive: false,
+        endAppliedUpgrades: 0,
+      },
+      progression: null,
+      ability: null,
+      farmingStrategy: "TotalUpgrades" as const,
+      ascensionFarming: null,
+      farmingLocationIds: null,
+      upgrade: null,
+      item: null,
+      level: null,
+    }
+    const details = [
+      goalDetail({ goalId: "first", config: rankConfig }),
+      goalDetail({ goalId: "second", config: rankConfig }),
+    ]
+
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      inventoryUpgrades: [{ upgradeId: craftedId, amount: 1 }],
+      upgradesById: new Map([
+        [craftedId, craftedUpgrade],
+        [baseId, baseUpgrade],
+      ]),
+      getCharacter: () => craftedCharacter,
+      priorityByGoalId: new Map([
+        ["first", 1],
+        ["second", 2],
+      ]),
+    })
+
+    expect(result.totals.upgradesByRarity).toEqual({ Common: 2 })
+    expect(result.estimates.get("first")).toMatchObject({
+      status: "Estimated",
+      days: 0,
+      energyTotal: 0,
+    })
+    expect(result.estimates.get("second")).toMatchObject({
+      status: "Estimated",
+      energyTotal: 20,
+    })
+  })
+
   it("estimates a same-rank partial-upgrade target", () => {
     const details = [
       goalDetail({

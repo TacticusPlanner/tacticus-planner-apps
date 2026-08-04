@@ -140,7 +140,7 @@ interface EstimateResult {
   status?: "Estimated"
   /** Days of farming until every material need is met. */
   days: number
-  /** ISO `yyyy-mm-dd` completion date, `days` after the estimate's reference date. */
+  /** ISO `yyyy-mm-dd` completion date, with the estimate's reference date treated as Day 1. */
   date: string
   energyTotal: number
   raidsTotal: number

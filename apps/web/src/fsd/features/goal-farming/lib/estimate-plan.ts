@@ -14,9 +14,9 @@ import type {
 } from "../model/estimate.domain"
 import { blocked, unavailableReason } from "./estimate-blocked"
 import {
-  addDays,
   allocatePlanInventory,
   formatDate,
+  inclusiveCompletionDate,
   selectFarmNodes,
   spendDay,
 } from "./estimate"
@@ -155,7 +155,7 @@ function runPlanSchedule(
         results.set(goal.goalId, {
           status: "Estimated",
           days,
-          date: formatDate(addDays(referenceDate, days)),
+          date: formatDate(inclusiveCompletionDate(referenceDate, days)),
           energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
           raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
         })
@@ -194,7 +194,6 @@ function runPlanSchedule(
     (total, day) => total + day.raidsTotal,
     0
   )
-  const completionDayOffset = Math.max(scheduleDays.length - 1, 0)
   return {
     days: scheduleDays,
     outcomes: results,
@@ -205,7 +204,9 @@ function runPlanSchedule(
       daysWithUnusedEnergy: scheduleDays.filter(
         (day) => dailyEnergy - day.energyTotal > UNUSED_ENERGY_THRESHOLD
       ).length,
-      completionDate: formatDate(addDays(referenceDate, completionDayOffset)),
+      completionDate: formatDate(
+        inclusiveCompletionDate(referenceDate, scheduleDays.length)
+      ),
     },
   }
 }

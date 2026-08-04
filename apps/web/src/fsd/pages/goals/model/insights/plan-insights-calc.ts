@@ -28,6 +28,7 @@ import { computeCampaignInsights } from "@/features/campaign-insights"
 
 import {
   allocatePlanInventory,
+  createCraftedInventoryPool,
   estimatePlan,
   selectFarmNodes,
 } from "@/features/goal-farming"
@@ -106,6 +107,10 @@ export function computePlanInsights(params: {
     { primary: Set<number>; secondary: Set<number> }
   >()
   let onslaughtTokens = 0
+  const craftedInventory = createCraftedInventoryPool(
+    params.inventoryUpgrades,
+    params.upgradesById
+  )
 
   const addProvenance = (id: EstimateResourceId, goalId: string) => {
     const set = provenance.get(id) ?? new Set<string>()
@@ -137,17 +142,19 @@ export function computePlanInsights(params: {
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
+      craftedInventory,
     }
     const stages = calculateGoalFarmingStages(needParams)
-    const need = stages?.length
-      ? {
-          upgrades: stages.flatMap((stage) => stage.needs),
-          shardId: null,
-          shards: 0,
-          mythicShards: 0,
-          orbsByType: {},
-        }
-      : calculateGoalResourceNeed(needParams)
+    const need =
+      stages !== null
+        ? {
+            upgrades: stages.flatMap((stage) => stage.needs),
+            shardId: null,
+            shards: 0,
+            mythicShards: 0,
+            orbsByType: {},
+          }
+        : calculateGoalResourceNeed(needParams)
     if (!need) continue
 
     if (
@@ -243,7 +250,7 @@ export function computePlanInsights(params: {
       })
       if (orbGoal) orbGoalNeeds.push(orbGoal)
     }
-    if (needs.length > 0 && priority !== undefined) {
+    if ((needs.length > 0 || stages !== null) && priority !== undefined) {
       goalNeeds.push({
         goalId: detail.goalId,
         priority,

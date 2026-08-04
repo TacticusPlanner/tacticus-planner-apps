@@ -23,8 +23,10 @@ import {
 } from "./mow-ability-calc"
 import {
   aggregateBaseUpgrades,
-  aggregateOwnedBaseUpgrades,
+  aggregateBaseUpgradesWithCraftedInventory,
+  removeUpgradeOccurrences,
   rankUpUpgradeIds,
+  type CraftedInventoryPool,
 } from "./upgrade-recipe"
 
 // Rank/Ability raw material need-derivation for the Insights plan-wide aggregation
@@ -60,6 +62,8 @@ export function rankResourceNeed(params: {
   character: FarmingCharacter | undefined
   playerCharacter: PlayerCharacter | undefined
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  /** Mutated in place; share one pool and invoke needs in stage/priority order. */
+  craftedInventory?: CraftedInventoryPool
 }): UpgradeNeed[] | null {
   const rankTarget = params.detail.config.rank
   if (!rankTarget || !params.character) return null
@@ -84,8 +88,6 @@ export function rankResourceNeed(params: {
     additionalTarget.topRowCount
   )
   if (requiredIds.length === 0) return null
-  const required = aggregateBaseUpgrades(requiredIds, params.upgradesById)
-
   // `requiredIds` starts at the character's current rank (or a future configured start), so only
   // slots applied at that exact starting rank can reduce it. Including completed earlier ranks here
   // lets their materials incorrectly cancel a current/future need whenever recipes reuse the same
@@ -99,18 +101,16 @@ export function rankResourceNeed(params: {
             params.playerCharacter!.appliedUpgradeSlots.includes(index)
           ) ?? [])
       : []
-  const appliedById = new Map(
-    aggregateOwnedBaseUpgrades(appliedIds, [], params.upgradesById).map(
-      (entry) => [entry.id, entry.count]
-    )
-  )
+  const unappliedIds = removeUpgradeOccurrences(requiredIds, appliedIds)
+  const required = params.craftedInventory
+    ? aggregateBaseUpgradesWithCraftedInventory(
+        unappliedIds,
+        params.upgradesById,
+        params.craftedInventory
+      )
+    : aggregateBaseUpgrades(unappliedIds, params.upgradesById)
 
-  return required
-    .map((need) => ({
-      id: need.id,
-      count: Math.max(0, need.count - (appliedById.get(need.id) ?? 0)),
-    }))
-    .filter((need) => need.count > 0)
+  return required.map((need) => ({ id: need.id, count: need.count }))
 }
 
 /**
@@ -168,6 +168,8 @@ export function abilityResourceNeed(params: {
   mow: MowStorageModel | undefined
   playerMow: PlayerMow | undefined
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  /** Mutated in place; share one pool and invoke needs in stage/priority order. */
+  craftedInventory?: CraftedInventoryPool
   coveredTransitions?: {
     primary: Set<number>
     secondary: Set<number>
@@ -211,7 +213,12 @@ export function abilityResourceNeed(params: {
     abilityTarget.passiveEnd
   )
   if (requiredIds.length === 0) return null
-  return aggregateBaseUpgrades(requiredIds, params.upgradesById).map(
-    (entry) => ({ id: entry.id, count: entry.count })
-  )
+  const required = params.craftedInventory
+    ? aggregateBaseUpgradesWithCraftedInventory(
+        requiredIds,
+        params.upgradesById,
+        params.craftedInventory
+      )
+    : aggregateBaseUpgrades(requiredIds, params.upgradesById)
+  return required.map((entry) => ({ id: entry.id, count: entry.count }))
 }
