@@ -133,12 +133,12 @@
     "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben",
     "home": "Startseite",
     "homeDescription": "Kontoübersicht und Schnellzugriffe",
-    "rankLookup": "Rang-Nachschlag",
+    "lookup": "Rang-Nachschlag",
     "lookupDescription": "Charaktere, Kriegsmaschinen und NPCs durchsuchen",
     "createGoal": "Ziel erstellen",
     "goals": "Ziele",
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
-    "onslaught": "Onslaught",
+    "progress": "Fortschritt",
     "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
     "uiKit": "UI-Kit",
     "uiKitDescription": "Vorschau der Design-System-Komponenten",
@@ -220,8 +220,11 @@
   },
   "unitLookup": {
     "tabs": {
+      "character": "Charakter",
       "characterDescription": "Charakterdetails und Werte nachschlagen",
+      "mow": "Kriegsmaschinen",
       "mowDescription": "Details und Werte von Kriegsmaschinen nachschlagen",
+      "npc": "NPC",
       "npcDescription": "NPC-Details und Werte nachschlagen"
     }
   },

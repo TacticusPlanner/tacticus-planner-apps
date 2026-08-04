@@ -72,7 +72,7 @@ describe("MobileHeader", () => {
   it("renders the page description beneath the page title", () => {
     renderShell()
 
-    expect(screen.getByText("Home")).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Home" })).toBeInTheDocument()
     expect(screen.getByText("Home description")).toBeInTheDocument()
   })
 

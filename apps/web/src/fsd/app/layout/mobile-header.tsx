@@ -47,9 +47,9 @@ export function MobileHeader({
         <div className="flex min-w-0 items-center gap-3">
           <AppLogo className="size-10 shrink-0" />
           <div className="flex min-w-0 flex-col">
-            <span className="truncate text-xl font-semibold tracking-tight">
+            <h1 className="truncate text-xl font-semibold tracking-tight">
               {pageTitle ?? t("app.name")}
-            </span>
+            </h1>
             {pageTitle && pageDescription ? (
               <span className="truncate text-xs text-muted-foreground">
                 {pageDescription}

@@ -133,12 +133,12 @@
     "dailiesDescription": "Tareas diarias y periódicas del juego",
     "home": "Inicio",
     "homeDescription": "Resumen de tu cuenta y accesos directos",
-    "rankLookup": "Consulta de rango",
+    "lookup": "Consulta de rango",
     "lookupDescription": "Consulta personajes, Máquinas de Guerra y PNJ",
     "createGoal": "Crear objetivo",
     "goals": "Objetivos",
     "goalsDescription": "Sigue tu progreso hacia tus objetivos",
-    "onslaught": "Onslaught",
+    "progress": "Progreso",
     "progressDescription": "Tu progreso sincronizado de campañas y Onslaught",
     "uiKit": "Kit de interfaz",
     "uiKitDescription": "Vista previa de los componentes del sistema de diseño",
@@ -220,8 +220,11 @@
   },
   "unitLookup": {
     "tabs": {
+      "character": "Personaje",
       "characterDescription": "Consulta detalles y estadísticas de personajes",
+      "mow": "Máquinas de Guerra",
       "mowDescription": "Consulta detalles y estadísticas de Máquinas de Guerra",
+      "npc": "PNJ",
       "npcDescription": "Consulta detalles y estadísticas de PNJ"
     }
   },
@@ -230,7 +233,7 @@
       "onslaughtDescription": "Introduce el sector y el nivel actuales de cada alianza. Las estimaciones de ascensión usan estos valores junto con las fichas de Onslaught sincronizadas.",
       "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
       "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia.",
-      "xp-incomeDescription": "Ingresos de XP ayuda a estimar cuántos libros de XP obtienes de Arena, Incursiones de gremio, compras de Archeotech y otras fuentes."
+      "xp-incomeDescription": "Los ingresos de XP ayudan a estimar cuántos libros de XP obtienes de Arena, Incursiones de gremio, compras de Archeotech y otras fuentes."
     }
   },
   "goals": {

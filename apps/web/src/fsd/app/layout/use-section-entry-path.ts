@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import type { NavItem } from "./nav-items"
 
@@ -61,11 +61,16 @@ export function useSectionEntryPath(navItems: NavItem[], pathname: string) {
       child &&
       lastVisitedChild[section.path] !== child.path
     ) {
-      const next = { ...lastVisitedChild, [section.path]: child.path }
-      writeStoredEntries(next)
-      setLastVisitedChild(next)
+      setLastVisitedChild({ ...lastVisitedChild, [section.path]: child.path })
     }
   }
+
+  // Persisted in a commit-phase Effect, not during the render above: React may discard or restart
+  // a render before it commits, and writing to sessionStorage there could record an uncommitted
+  // route.
+  useEffect(() => {
+    writeStoredEntries(lastVisitedChild)
+  }, [lastVisitedChild])
 
   const getEntryPath = (item: NavItem): string => {
     if (!item.children || item.children.length <= 1) return item.path

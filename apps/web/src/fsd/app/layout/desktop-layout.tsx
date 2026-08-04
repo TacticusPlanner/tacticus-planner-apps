@@ -117,6 +117,7 @@ function AppSidebar({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return
       if (!(event.metaKey || event.ctrlKey)) return
 
       if (event.key === "k") {
@@ -184,6 +185,7 @@ function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
         <DesktopNavigationDialog
+          getEntryPath={getEntryPath}
           items={visibleItems}
           onOpenChange={setNavigationOpen}
           open={navigationOpen}

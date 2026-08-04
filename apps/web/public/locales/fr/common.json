@@ -133,12 +133,12 @@
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
     "home": "Accueil",
     "homeDescription": "Aperçu de votre compte et raccourcis",
-    "rankLookup": "Recherche de rang",
+    "lookup": "Recherche de rang",
     "lookupDescription": "Recherchez des personnages, Machines de guerre et PNJ",
     "createGoal": "Créer un objectif",
     "goals": "Objectifs",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
-    "onslaught": "Onslaught",
+    "progress": "Progression",
     "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
     "uiKit": "Kit d'interface",
     "uiKitDescription": "Aperçu des composants du système de design",
@@ -220,8 +220,11 @@
   },
   "unitLookup": {
     "tabs": {
+      "character": "Personnage",
       "characterDescription": "Consultez les détails et statistiques des personnages",
+      "mow": "Machines de guerre",
       "mowDescription": "Consultez les détails et statistiques des Machines de guerre",
+      "npc": "PNJ",
       "npcDescription": "Consultez les détails et statistiques des PNJ"
     }
   },

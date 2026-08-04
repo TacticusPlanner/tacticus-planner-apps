@@ -18,10 +18,12 @@ import { filterNavigationItems } from "./navigation-filter"
 import type { NavItem } from "./nav-items"
 
 export function DesktopNavigationDialog({
+  getEntryPath,
   items,
   open,
   onOpenChange,
 }: {
+  getEntryPath: (item: NavItem) => string
   items: NavItem[]
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -73,7 +75,7 @@ export function DesktopNavigationDialog({
                         : "hover:bg-accent hover:text-accent-foreground"
                     )}
                     onClick={() => handleOpenChange(false)}
-                    to={item.path}
+                    to={getEntryPath(item)}
                   >
                     <item.icon className="size-5 shrink-0" />
                     <span className="flex min-w-0 flex-col">
