@@ -39,19 +39,28 @@
   },
   "today": {
     "title": "Today's raids",
-    "summary": "{{energy}} energy · {{raids}} raid attempts"
+    "summary": "{{energy}} energy · {{raids}} raid attempts",
+    "energyUsage": {
+      "label": "Daily energy used",
+      "value": "{{percent}}% of daily energy used"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} raid",
     "raids_other": "{{count}} raids",
     "progress": "{{owned}} of {{target}} owned",
     "node": "{{node}} · {{raids}} raids",
+    "battle": "Battle {{number}}",
+    "maxRaids": "Max raids",
     "fullyRaided": "Fully raided"
   },
   "bonus": {
     "title": "Bonus raids",
-    "empty": "No additional untouched resources remain after today's schedule.",
     "showMore": "Show more"
+  },
+  "todaysAttempts": {
+    "title": "Today's attempts",
+    "empty": "No real attempts recorded yet today."
   },
   "plan": {
     "summary": {
@@ -84,11 +93,15 @@
         },
         "schedule": {
           "title": "Today's schedule",
-          "content": "Raid these campaign nodes with today's available energy."
+          "content": "Raid these campaign nodes with today's available energy — extra suggestions appear here too once your budgeted needs are covered."
         },
-        "bonus": {
-          "title": "Bonus raids",
-          "content": "These untouched needs become candidates when more energy is available."
+        "energyUsage": {
+          "title": "Daily energy usage",
+          "content": "Shows how much of your real daily energy you've already spent today across your account, even above 100%."
+        },
+        "todaysAttempts": {
+          "title": "Today's attempts",
+          "content": "Every real raid you've made today across your account, wherever it hit zero attempts left."
         }
       }
     },

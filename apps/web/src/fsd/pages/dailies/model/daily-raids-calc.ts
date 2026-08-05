@@ -202,6 +202,11 @@ export function calculateDailyRaids(
         params.mowsById.get(detail.entityId)?.name ??
         detail.entityId,
       targetLabel: params.getTargetLabel?.(detail) ?? goalTargetLabel(detail),
+      goalKind: detail.goalType,
+      targetRank:
+        detail.goalType === "Rank" && detail.config.rank
+          ? rankAt(detail.config.rank.end)
+          : undefined,
     })
   }
 

@@ -9,7 +9,13 @@ export function useTodayTutorial() {
   const steps = useMemo(() => {
     const createStep = (
       target: string,
-      key: "navigation" | "raids" | "project" | "schedule" | "bonus"
+      key:
+        | "navigation"
+        | "raids"
+        | "project"
+        | "schedule"
+        | "energyUsage"
+        | "todaysAttempts"
     ): Step => ({
       target,
       title: t(`tour.today.steps.${key}.title`),
@@ -19,8 +25,9 @@ export function useTodayTutorial() {
       createStep('[data-testid="dailies-primary-tabs"]', "navigation"),
       createStep('[data-testid="raids-tabs"]', "raids"),
       createStep('[data-testid="dailies-project-select"]', "project"),
+      createStep('[data-testid="energy-usage"]', "energyUsage"),
       createStep('[data-testid="today-schedule"]', "schedule"),
-      createStep('[data-testid="bonus-raids"]', "bonus"),
+      createStep('[data-testid="todays-attempts"]', "todaysAttempts"),
     ]
     return { desktop: shared, mobile: shared }
   }, [t])

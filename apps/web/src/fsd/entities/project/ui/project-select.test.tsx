@@ -66,6 +66,21 @@ describe("ProjectSelect", () => {
     expect(trigger).toHaveAccessibleName("Select a project")
   })
 
+  it("shows the full label on mobile when compact is explicitly disabled", () => {
+    useIsMobileMock.mockReturnValue(true)
+    render(
+      <ProjectSelect
+        compact={false}
+        onProjectIdChange={vi.fn()}
+        projectId="proj-1"
+        projects={projects}
+        testId="project-select"
+      />
+    )
+
+    expect(screen.getByTestId("project-select")).toHaveTextContent("My Plan")
+  })
+
   it("shows the current project even when it's archived, so the trigger doesn't fall back to the placeholder", () => {
     const archivedProject = {
       ...projects[0]!,

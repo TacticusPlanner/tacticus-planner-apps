@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type { ProjectSummary } from "../model/types"
 import { projectMarkerSuffix } from "../model/project-marker"
@@ -31,6 +32,8 @@ export function ProjectSelect({
   allowAll = false,
   testId,
   placeholder,
+  compact,
+  className,
 }: {
   projects: ProjectSummary[]
   projectId: string | undefined
@@ -38,9 +41,15 @@ export function ProjectSelect({
   allowAll?: boolean
   testId?: string
   placeholder?: string
+  // Overrides the default icon-only-below-768px behavior. Pass `false` when a caller wants the
+  // full name shown regardless of viewport (e.g. its own layout already stacks to a full-width row
+  // on mobile instead of relying on this component to compress itself).
+  compact?: boolean
+  className?: string
 }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
+  const iconOnly = compact ?? isMobile
   const value = projectId ?? (allowAll ? ALL_PROJECTS_VALUE : "")
   const resolvedPlaceholder = placeholder ?? t("goals.insights.selectProject")
 
@@ -54,11 +63,11 @@ export function ProjectSelect({
       value={value}
     >
       <SelectTrigger
-        aria-label={isMobile ? resolvedPlaceholder : undefined}
-        className={isMobile ? undefined : "w-56"}
+        aria-label={iconOnly ? resolvedPlaceholder : undefined}
+        className={cn(iconOnly ? undefined : "w-56", className)}
         data-testid={testId}
       >
-        {isMobile ? (
+        {iconOnly ? (
           <FolderKanban aria-hidden="true" />
         ) : (
           <SelectValue placeholder={resolvedPlaceholder} />
