@@ -9,18 +9,6 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
-vi.mock("@/entities/planning-setting", () => ({
-  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
-  usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
-    save: vi.fn(),
-  }),
-}))
-
-vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {},
-}))
-
 import { GoalsLayout } from ".//goals-layout"
 
 function renderLayout(initialEntry: string) {
@@ -67,9 +55,13 @@ describe("GoalsLayout", () => {
 
   // Tab navigation between Goals/Projects/Insights now lives in the shared app-shell header's
   // section-tabs row, not in GoalsLayout - see section-tabs.test.tsx.
-  it("renders the Planning Settings entry point", () => {
+  // Planning Settings now lives only on Overview (goals-page.test.tsx), not in this shared
+  // layout - see goals-navigation spec's "Planning Settings is an Overview-only control".
+  it("does not render a Planning Settings entry point itself", () => {
     renderLayout("/goals")
 
-    expect(screen.getByTestId("goals-planning-settings")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goals-planning-settings")
+    ).not.toBeInTheDocument()
   })
 })

@@ -18,10 +18,10 @@ BLOCKED (see implementation notes / final report): empirically, `pnpm lint:fsd` 
 
 ## 3. Overview row consolidation
 
-- [ ] 3.1 Move the Planning Settings button and its dialog-open state from `goals-layout.tsx` into `goals-page.tsx`; reduce `GoalsLayout` to `PageContainer` + `Outlet`.
-- [ ] 3.2 On desktop, render `StatusFilterSelect`, `GoalFilters`, and the Planning Settings button in a single row on Overview.
-- [ ] 3.3 On mobile, keep `StatusFilterSelect` in its own row; render `GoalFilters` and the Planning Settings button icon-only (extend the existing `isMobile ? null : <SelectValue />` pattern to the Planning Settings `Button`, keeping its `aria-label`).
-- [ ] 3.4 Confirm Projects and Insights render no Planning Settings control at all.
+- [x] 3.1 Move the Planning Settings button and its dialog-open state from `goals-layout.tsx` into `goals-page.tsx`; reduce `GoalsLayout` to `PageContainer` + `Outlet`.
+- [x] 3.2 On desktop, render `StatusFilterSelect`, `GoalFilters`, and the Planning Settings button in a single row on Overview.
+- [x] 3.3 On mobile, keep `StatusFilterSelect` in its own row; render `GoalFilters` and the Planning Settings button icon-only (extend the existing `isMobile ? null : <SelectValue />` pattern to the Planning Settings `Button`, keeping its `aria-label`).
+- [x] 3.4 Confirm Projects and Insights render no Planning Settings control at all (neither ever rendered it themselves; it's now only in `GoalsPage`, and `GoalsLayout`'s own test asserts it renders no such control).
 
 ## 4. Shared project selector
 

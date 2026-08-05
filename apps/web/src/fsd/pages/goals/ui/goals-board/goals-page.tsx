@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -7,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
@@ -29,18 +31,22 @@ import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalsList } from ".//goals-list"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
+import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
 
 /**
  * Complete cross-project goals view (plan §1: list on desktop, cards on mobile — no view switcher).
- * Project planning and ordering live on the routed Projects tab.
+ * Project planning and ordering live on the routed Projects tab. Planning Settings lives only here
+ * (goals-navigation spec: Overview-only control) - moved down from the shared `GoalsLayout` wrapper.
  */
 export function GoalsPage() {
   const { t } = useTranslation()
+  const isMobile = useIsMobile()
   const [tab, setTab] = useState<GoalStatusFilterValue>("toReach")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
   const [sort, setSort] = useState<GoalSortValue>("updated")
   const [group, setGroup] = useState<GoalGroupValue>("none")
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
 
   const projects = useProjects()
@@ -137,19 +143,20 @@ export function GoalsPage() {
     nonArchivedGoals.fetchState.status === "success" &&
     nonArchivedRows.length === 0
 
-  return (
-    <div className="flex flex-col gap-6" data-testid="goals-page">
-      <StatusFilterSelect
-        counts={tabCounts}
-        onValueChange={setTab}
-        testId="goals-status-filter"
-        value={tab}
-      />
-
-      {/* Filter, sort, and grouping stay in a single row on every viewport (plan §1's mobile-controls
-          requirement) — on mobile the triggers drop their text label down to just the leading icon,
-          keeping the row compact; the full label is still available via `aria-label` and the open
-          dropdown's option list always shows full text regardless of viewport. */}
+  const planningSettingsButton = (
+    <Button
+      aria-label={t("goals.planningSettings.button")}
+      data-testid="goals-planning-settings"
+      onClick={() => setSettingsOpen(true)}
+      size="sm"
+      variant="outline"
+    >
+      <Settings data-icon="inline-start" />
+      {isMobile ? null : t("goals.planningSettings.button")}
+    </Button>
+  )
+  const goalFiltersAndSettings = (
+    <div className="flex items-center gap-2">
       <GoalFilters
         goalType={goalType}
         group={group}
@@ -158,6 +165,34 @@ export function GoalsPage() {
         onSortChange={setSort}
         sort={sort}
       />
+      {planningSettingsButton}
+    </div>
+  )
+  const statusFilter = (
+    <StatusFilterSelect
+      counts={tabCounts}
+      onValueChange={setTab}
+      testId="goals-status-filter"
+      value={tab}
+    />
+  )
+
+  return (
+    <div className="flex flex-col gap-6" data-testid="goals-page">
+      {/* goals-navigation spec: desktop merges the status filter, Type/Sort/Group filters, and
+          Planning Settings into a single row; mobile keeps the status filter in its own row and
+          compresses the filters + Planning Settings to icon-only triggers in a second row. */}
+      {isMobile ? (
+        <>
+          {statusFilter}
+          {goalFiltersAndSettings}
+        </>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          {statusFilter}
+          {goalFiltersAndSettings}
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex flex-col gap-3" data-testid="goals-page-loading">
@@ -234,6 +269,9 @@ export function GoalsPage() {
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={refreshCurrentView}
       />
+      {settingsOpen ? (
+        <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />
+      ) : null}
     </div>
   )
 }

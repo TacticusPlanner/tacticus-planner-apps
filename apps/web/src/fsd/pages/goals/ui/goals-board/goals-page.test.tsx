@@ -62,6 +62,7 @@ vi.mock("@/entities/player-data-override", () => ({
 }))
 
 vi.mock("@/entities/planning-setting", () => ({
+  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
   usePlanningSettings: () => ({
     settings: { dailyEnergy: 288, revision: 1 },
     save: vi.fn(),
@@ -226,6 +227,21 @@ describe("GoalsPage", () => {
     expect(
       screen.queryByTestId("goals-page-empty-create-button")
     ).not.toBeInTheDocument()
+  })
+
+  it("renders a Planning Settings entry point that opens the dialog", async () => {
+    listGoals.mockResolvedValue({ goals: [] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-page-empty")
+    const settingsButton = screen.getByTestId("goals-planning-settings")
+    expect(settingsButton).toHaveAccessibleName("goals.planningSettings.button")
+
+    await user.click(settingsButton)
+    expect(
+      await screen.findByTestId("planning-settings-dialog")
+    ).toBeInTheDocument()
   })
 
   it("keeps filter control names stable while exposing the selected value", async () => {
