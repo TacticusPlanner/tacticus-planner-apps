@@ -51,6 +51,12 @@ Raids Plan SHALL provide a control to collapse or expand each day column's raid-
 - **WHEN** Raids Plan is viewed below the 768px mobile breakpoint
 - **THEN** the collapse/expand control renders as an icon-only control, retaining an accessible name for its current action
 
+#### Scenario: Days revealed by "Show all days" keep the current density state
+
+- **GIVEN** the density toggle is currently set to collapsed (or expanded)
+- **WHEN** the user activates "Show all days"
+- **THEN** the newly-revealed day columns render in that same collapsed (or expanded) state, matching the columns already visible - there is one density state for the whole plan, not one per day
+
 ### Requirement: Raids Plan pages days 3-at-a-time
 
 Raids Plan SHALL initially render only the first 3 day columns (Today, Day 2, Day 3), with a "Show all days" control that reveals the remaining days when more exist — the same truncate-then-reveal pattern Bonus Raids uses. This control SHALL render within the whole-plan summary area, alongside the collapse/expand density toggle, rather than below the day columns.
@@ -73,8 +79,14 @@ Raids Plan SHALL initially render only the first 3 day columns (Today, Day 2, Da
 - **WHEN** Raids Plan loads
 - **THEN** all day columns are shown and no "Show all days" control is displayed
 
-#### Scenario: Show all days shares the summary area with the density toggle
+#### Scenario: Show all days shares the summary area with the density toggle on desktop
 
 - **GIVEN** the plan takes more than 3 days total
 - **WHEN** Raids Plan is viewed at or above the 768px desktop breakpoint
 - **THEN** the "Show all days" control and the collapse/expand density toggle both appear within the whole-plan summary area, not in separate rows below it
+
+#### Scenario: Show all days shares the summary area with the density toggle on mobile
+
+- **GIVEN** the plan takes more than 3 days total
+- **WHEN** Raids Plan is viewed below the 768px mobile breakpoint
+- **THEN** the "Show all days" control and the collapse/expand density toggle both still appear within the whole-plan summary area, not in separate rows below it - this placement is not desktop-only

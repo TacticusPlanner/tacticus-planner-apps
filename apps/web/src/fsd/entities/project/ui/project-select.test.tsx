@@ -66,6 +66,52 @@ describe("ProjectSelect", () => {
     expect(trigger).toHaveAccessibleName("Select a project")
   })
 
+  it("shows the current project even when it's archived, so the trigger doesn't fall back to the placeholder", () => {
+    const archivedProject = {
+      ...projects[0]!,
+      projectId: "proj-archived",
+      name: "Old Plan",
+      status: "Archived" as const,
+      isActivePlan: false,
+      isDefault: false,
+    }
+    render(
+      <ProjectSelect
+        onProjectIdChange={vi.fn()}
+        projectId="proj-archived"
+        projects={[projects[0]!, archivedProject]}
+        testId="project-select"
+      />
+    )
+
+    expect(screen.getByTestId("project-select")).toHaveTextContent("Old Plan")
+  })
+
+  it("does not offer an archived project as a destination when a different project is selected", async () => {
+    const user = userEvent.setup()
+    const archivedProject = {
+      ...projects[0]!,
+      projectId: "proj-archived",
+      name: "Old Plan",
+      status: "Archived" as const,
+      isActivePlan: false,
+      isDefault: false,
+    }
+    render(
+      <ProjectSelect
+        onProjectIdChange={vi.fn()}
+        projectId="proj-1"
+        projects={[projects[0]!, archivedProject]}
+        testId="project-select"
+      />
+    )
+
+    await user.click(screen.getByTestId("project-select"))
+    expect(
+      screen.queryByRole("option", { name: /Old Plan/ })
+    ).not.toBeInTheDocument()
+  })
+
   it("calls onProjectIdChange when a different project is selected", async () => {
     const user = userEvent.setup()
     const onProjectIdChange = vi.fn()

@@ -276,6 +276,29 @@ describe("ProjectDetailPage", () => {
     expect(screen.getByTestId("project-row-archive-proj-a")).toBeInTheDocument()
   })
 
+  it("shows an archived project's own name in the ProjectSelect instead of falling back to the placeholder", async () => {
+    listProjects.mockResolvedValue({
+      projects: [
+        project({
+          projectId: "proj-archived",
+          name: "Old Plan",
+          status: "Archived",
+          isActivePlan: false,
+          isDefault: false,
+        }),
+      ],
+    })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-archived")
+
+    await screen.findByTestId("project-detail-page")
+    expect(
+      within(screen.getByTestId("projects-goal-project-select")).getByText(
+        /Old Plan/
+      )
+    ).toBeInTheDocument()
+  })
+
   it("shows the goals for the project id in the route, driven by the route param rather than local state", async () => {
     listProjects.mockResolvedValue({
       projects: [

@@ -71,8 +71,16 @@ export function ProjectSelect({
               {t("goals.project.filterAll")}
             </SelectItem>
           ) : null}
+          {/* Archived projects aren't offered as new destinations to switch to, but the
+              currently-selected one stays in the list even if archived (e.g. the Projects detail
+              route for an archived project, reached from its list row) - otherwise its id matches
+              no option here and the trigger silently falls back to the placeholder instead of
+              showing which project is actually selected. */}
           {projects
-            .filter((project) => project.status !== "Archived")
+            .filter(
+              (project) =>
+                project.status !== "Archived" || project.projectId === projectId
+            )
             .map((project) => (
               <SelectItem key={project.projectId} value={project.projectId}>
                 <ProjectColorDot color={project.color} />

@@ -276,16 +276,29 @@ describe("Dailies raid pages", () => {
     })
   })
 
-  it("compresses the density toggle to icon-only on mobile while keeping Show all days as text", () => {
+  it("compresses the density toggle to icon-only on mobile while keeping Show all days as text, both still inside the summary area", () => {
     useIsMobileMock.mockReturnValue(true)
     renderPage(<RaidsPlanPage />)
 
-    const densityToggle = screen.getByTestId("plan-density-toggle")
+    const summary = screen.getByTestId("plan-summary")
+    const densityToggle = within(summary).getByTestId("plan-density-toggle")
     expect(densityToggle).not.toHaveTextContent("plan.collapse")
     expect(densityToggle).toHaveAccessibleName("plan.collapse")
     expect(
-      screen.getByRole("button", { name: "plan.showAll" })
+      within(summary).getByRole("button", { name: "plan.showAll" })
     ).toHaveTextContent("plan.showAll")
+  })
+
+  it("keeps the current density state on days revealed by Show all days", async () => {
+    const user = userEvent.setup()
+    renderPage(<RaidsPlanPage />)
+
+    await user.click(screen.getByRole("button", { name: "plan.collapse" }))
+    expect(screen.queryByText(/schedule.node/)).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole("button", { name: "plan.showAll" }))
+    expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
+    expect(screen.queryByText(/schedule.node/)).not.toBeInTheDocument()
   })
 
   it("still renders Today when the plan completes during Day 1", () => {

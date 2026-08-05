@@ -55,6 +55,12 @@ describe("GoalFilters", () => {
     )
     expect(onGoalTypeChange).toHaveBeenCalledWith("Rank")
 
+    await user.click(screen.getByTestId("goals-sort"))
+    await user.click(
+      screen.getByRole("option", { name: "goals.filters.sort.status" })
+    )
+    expect(onSortChange).toHaveBeenCalledWith("status")
+
     await user.click(screen.getByTestId("goals-group-by"))
     await user.click(
       screen.getByRole("option", { name: "goals.filters.groupByUnit" })
