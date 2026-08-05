@@ -240,7 +240,10 @@
     "tabs": {
       "overviewDescription": "Filtra, ordena y agrupa todos tus objetivos activos.",
       "projectsDescription": "Organiza los objetivos en planes centrados y controla su prioridad.",
-      "insightsDescription": "Recomendaciones de mejoras y campañas"
+      "insightsDescription": "Recomendaciones de mejoras y campañas",
+      "blocked": "Bloqueado",
+      "active": "Activo",
+      "paused": "Pausado"
     },
     "filters": {
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"

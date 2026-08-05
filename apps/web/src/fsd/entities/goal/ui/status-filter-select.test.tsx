@@ -8,12 +8,20 @@ vi.mock("react-i18next", () => ({
 
 import { StatusFilterSelect } from "./status-filter-select"
 
+const baseCounts = {
+  toReach: 2,
+  reached: 0,
+  archived: 1,
+  active: 2,
+  paused: 0,
+}
+
 describe("StatusFilterSelect", () => {
   it("defaults to Unfulfilled and shows per-option counts", async () => {
     const user = userEvent.setup()
     render(
       <StatusFilterSelect
-        counts={{ toReach: 2, reached: 0, archived: 1 }}
+        counts={baseCounts}
         onValueChange={vi.fn()}
         value="toReach"
       />
@@ -30,6 +38,28 @@ describe("StatusFilterSelect", () => {
     expect(
       screen.getByRole("option", { name: "goals.tabs.archived (1)" })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "goals.tabs.active (2)" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "goals.tabs.paused (0)" })
+    ).toBeInTheDocument()
+  })
+
+  it("shows the Blocked option without a count", async () => {
+    const user = userEvent.setup()
+    render(
+      <StatusFilterSelect
+        counts={baseCounts}
+        onValueChange={vi.fn()}
+        value="toReach"
+      />
+    )
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    expect(
+      screen.getByRole("option", { name: "goals.tabs.blocked" })
+    ).toBeInTheDocument()
   })
 
   it("calls onValueChange when a different status is selected", async () => {
@@ -37,7 +67,7 @@ describe("StatusFilterSelect", () => {
     const onValueChange = vi.fn()
     render(
       <StatusFilterSelect
-        counts={{ toReach: 2, reached: 1, archived: 0 }}
+        counts={{ ...baseCounts, reached: 1 }}
         onValueChange={onValueChange}
         value="toReach"
       />
@@ -51,10 +81,27 @@ describe("StatusFilterSelect", () => {
     expect(onValueChange).toHaveBeenCalledWith("reached")
   })
 
+  it("calls onValueChange when Blocked is selected", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <StatusFilterSelect
+        counts={baseCounts}
+        onValueChange={onValueChange}
+        value="toReach"
+      />
+    )
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(screen.getByRole("option", { name: "goals.tabs.blocked" }))
+
+    expect(onValueChange).toHaveBeenCalledWith("blocked")
+  })
+
   it("shows the reached indicator when reached goals exist and aren't being viewed", () => {
     const { rerender } = render(
       <StatusFilterSelect
-        counts={{ toReach: 2, reached: 1, archived: 0 }}
+        counts={{ ...baseCounts, reached: 1 }}
         onValueChange={vi.fn()}
         value="toReach"
       />
@@ -65,7 +112,7 @@ describe("StatusFilterSelect", () => {
 
     rerender(
       <StatusFilterSelect
-        counts={{ toReach: 2, reached: 1, archived: 0 }}
+        counts={{ ...baseCounts, reached: 1 }}
         onValueChange={vi.fn()}
         value="reached"
       />
@@ -78,7 +125,7 @@ describe("StatusFilterSelect", () => {
   it("hides the reached indicator when there are no reached goals", () => {
     render(
       <StatusFilterSelect
-        counts={{ toReach: 2, reached: 0, archived: 0 }}
+        counts={baseCounts}
         onValueChange={vi.fn()}
         value="toReach"
       />
@@ -91,7 +138,13 @@ describe("StatusFilterSelect", () => {
   it("supports a caller-provided testId for multiple instances on one page", () => {
     render(
       <StatusFilterSelect
-        counts={{ toReach: 0, reached: 0, archived: 0 }}
+        counts={{
+          toReach: 0,
+          reached: 0,
+          archived: 0,
+          active: 0,
+          paused: 0,
+        }}
         onValueChange={vi.fn()}
         testId="projects-status-filter"
         value="toReach"

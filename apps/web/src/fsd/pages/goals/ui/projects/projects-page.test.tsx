@@ -312,4 +312,56 @@ describe("ProjectsPage", () => {
       expect(listProjectGoals).toHaveBeenCalledWith("proj-b")
     )
   })
+
+  it("filters the goal list to only the Paused goal when switching to the Paused status", async () => {
+    const projectA = project()
+    listProjects.mockResolvedValue({ projects: [projectA] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        {
+          goal: goal({ goalId: "goal-active", status: "Active" }),
+          priority: 1,
+        },
+        {
+          goal: goal({ goalId: "goal-paused", status: "Paused" }),
+          priority: 2,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("projects-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
+    )
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    expect(
+      screen.getByTestId("goal-row-actions-trigger-goal-paused")
+    ).toBeInTheDocument()
+  })
+
+  it("selects the Blocked status without a live count and shows the filtered-empty state when nothing is blocked", async () => {
+    const projectA = project()
+    listProjects.mockResolvedValue({ projects: [projectA] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-active" }), priority: 1 }],
+    })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("projects-status-filter"))
+    expect(
+      screen.getByRole("option", { name: "goals.tabs.blocked" })
+    ).toBeInTheDocument()
+    await user.click(screen.getByRole("option", { name: "goals.tabs.blocked" }))
+
+    expect(await screen.findByText("goals.empty.filtered")).toBeInTheDocument()
+  })
 })

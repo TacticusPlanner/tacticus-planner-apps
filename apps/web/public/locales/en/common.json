@@ -368,7 +368,10 @@
       "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
       "reached": "Reached",
-      "archived": "Archived"
+      "archived": "Archived",
+      "blocked": "Blocked",
+      "active": "Active",
+      "paused": "Paused"
     },
     "columns": {
       "entity": "Character",

@@ -72,21 +72,39 @@ export function ProjectsPage() {
   )
   const isReached = (goalId: string) =>
     attainmentByGoalId.get(goalId)?.reached ?? false
-  const rows =
+  // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
+  // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
+  // full non-archived candidate set instead, then filters afterward (see the comment on
+  // `GoalStatusFilterCounts` for why this tab has no live count in the dropdown).
+  const candidateRows =
     tab === "archived"
       ? allRows.filter((row) => row.status === "Archived")
-      : nonArchivedRows.filter(
-          (row) => isReached(row.goalId) === (tab === "reached")
+      : tab === "active"
+        ? nonArchivedRows.filter((row) => row.status === "Active")
+        : tab === "paused"
+          ? nonArchivedRows.filter((row) => row.status === "Paused")
+          : tab === "blocked"
+            ? nonArchivedRows
+            : nonArchivedRows.filter(
+                (row) => isReached(row.goalId) === (tab === "reached")
+              )
+  const overviewMetrics = useGoalsOverviewMetrics(
+    candidateRows.map((row) => row.goalId),
+    insights.estimates
+  )
+  const rows =
+    tab === "blocked"
+      ? candidateRows.filter(
+          (row) => overviewMetrics.get(row.goalId)?.blockers.isBlocked
         )
+      : candidateRows
   const counts = {
     toReach: nonArchivedRows.filter((row) => !isReached(row.goalId)).length,
     reached: nonArchivedRows.filter((row) => isReached(row.goalId)).length,
     archived: allRows.filter((row) => row.status === "Archived").length,
+    active: nonArchivedRows.filter((row) => row.status === "Active").length,
+    paused: nonArchivedRows.filter((row) => row.status === "Paused").length,
   }
-  const overviewMetrics = useGoalsOverviewMetrics(
-    rows.map((row) => row.goalId),
-    insights.estimates
-  )
 
   const handleMove = (goalId: string, direction: "up" | "down") => {
     if (!projectId) return

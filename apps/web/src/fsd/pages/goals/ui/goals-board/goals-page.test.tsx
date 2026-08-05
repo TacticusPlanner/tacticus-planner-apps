@@ -209,6 +209,12 @@ const archivedGoal = {
   status: "Archived",
 }
 
+const pausedGoal = {
+  ...activeGoal,
+  goalId: "goal-paused",
+  status: "Paused",
+}
+
 describe("GoalsPage", () => {
   beforeEach(() => {
     listGoals.mockReset()
@@ -292,6 +298,62 @@ describe("GoalsPage", () => {
     await user.click(
       await screen.findByRole("option", { name: "goals.tabs.reached (0)" })
     )
+
+    expect(
+      await screen.findByTestId("goals-page-filtered-empty")
+    ).toBeInTheDocument()
+  })
+
+  it("filters to only the Paused goal when switching to the Paused status", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
+    )
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    expect(
+      screen.getByTestId(`goal-row-actions-trigger-${pausedGoal.goalId}`)
+    ).toBeInTheDocument()
+  })
+
+  it("filters to only the Active goal when switching to the Active status", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.active/ })
+    )
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    expect(
+      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    ).toBeInTheDocument()
+  })
+
+  it("selects the Blocked status without a live count and shows the filtered-empty state when nothing is blocked", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    expect(
+      screen.getByRole("option", { name: "goals.tabs.blocked" })
+    ).toBeInTheDocument()
+    await user.click(screen.getByRole("option", { name: "goals.tabs.blocked" }))
 
     expect(
       await screen.findByTestId("goals-page-filtered-empty")

@@ -91,12 +91,33 @@ export function GoalsPage() {
     (row) => goalType === "all" || row.goalType === goalType
   )
 
-  const baseRows =
+  // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
+  // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
+  // full non-archived candidate set instead, then filters afterward (see the comment on
+  // `GoalStatusFilterCounts` for why this tab has no live count in the dropdown).
+  const candidateRows =
     tab === "archived"
       ? filteredArchivedRows
-      : filteredNonArchivedRows.filter(
-          (row) => isReached(row.goalId) === (tab === "reached")
+      : tab === "active"
+        ? filteredNonArchivedRows.filter((row) => row.status === "Active")
+        : tab === "paused"
+          ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
+          : tab === "blocked"
+            ? filteredNonArchivedRows
+            : filteredNonArchivedRows.filter(
+                (row) => isReached(row.goalId) === (tab === "reached")
+              )
+  // Progress bar + remaining-resource summary per visible row (plan §2) — scoped to only the rows
+  // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
+  const overviewMetrics = useGoalsOverviewMetrics(
+    candidateRows.map((row) => row.goalId)
+  )
+  const baseRows =
+    tab === "blocked"
+      ? candidateRows.filter(
+          (row) => overviewMetrics.get(row.goalId)?.blockers.isBlocked
         )
+      : candidateRows
 
   const rows = [...baseRows].sort((left, right) => {
     if (sort === "entity")
@@ -114,6 +135,10 @@ export function GoalsPage() {
     reached: filteredNonArchivedRows.filter((row) => isReached(row.goalId))
       .length,
     archived: filteredArchivedRows.length,
+    active: filteredNonArchivedRows.filter((row) => row.status === "Active")
+      .length,
+    paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
+      .length,
   }
   const groupKey = (row: (typeof rows)[number]) =>
     group === "unit"
@@ -125,9 +150,6 @@ export function GoalsPage() {
     key,
     rows: rows.filter((row) => groupKey(row) === key),
   }))
-  // Progress bar + remaining-resource summary per visible row (plan §2) — scoped to only the rows
-  // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
-  const overviewMetrics = useGoalsOverviewMetrics(rows.map((row) => row.goalId))
 
   const isLoading = selectedGoals.isLoading
   const fetchError =

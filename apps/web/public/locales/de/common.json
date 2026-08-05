@@ -240,7 +240,10 @@
     "tabs": {
       "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
       "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
-      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen"
+      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
+      "blocked": "Blockiert",
+      "active": "Aktiv",
+      "paused": "Pausiert"
     },
     "filters": {
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
