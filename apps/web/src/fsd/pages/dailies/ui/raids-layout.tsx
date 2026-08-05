@@ -20,24 +20,29 @@ export function RaidsLayout() {
 
   return (
     <section className="space-y-5" data-testid="dailies-raids-layout">
-      <RouteTabs
-        active={active}
-        navigate={navigate}
-        testId="raids-tabs"
-        tabs={[
-          {
-            value: "today",
-            label: t("raids.tabs.today"),
-            path: "/dailies/raids/today",
-          },
-          {
-            value: "plan",
-            label: t("raids.tabs.plan"),
-            path: "/dailies/raids/plan",
-          },
-        ]}
-      />
-      <div className="flex justify-end">
+      {/* dailies-navigation spec: the Today/Raids Plan sub-tabs and the project selector share one
+          row (tabs leading, selector trailing) instead of two stacked rows; the selector compresses
+          to icon-only on mobile via ProjectSelect's own compact mode. */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <RouteTabs
+            active={active}
+            navigate={navigate}
+            testId="raids-tabs"
+            tabs={[
+              {
+                value: "today",
+                label: t("raids.tabs.today"),
+                path: "/dailies/raids/today",
+              },
+              {
+                value: "plan",
+                label: t("raids.tabs.plan"),
+                path: "/dailies/raids/plan",
+              },
+            ]}
+          />
+        </div>
         <ProjectSelect
           projects={context.projects}
           projectId={context.projectId}

@@ -32,10 +32,10 @@ BLOCKED (see implementation notes / final report): empirically, `pnpm lint:fsd` 
 
 ## 5. Dailies row consolidation
 
-- [ ] 5.1 In `raids-layout.tsx`, render `RouteTabs` (leading) and `ProjectSelect` (trailing) in a single row instead of two stacked rows.
-- [ ] 5.2 In `raids-plan-page.tsx`, move the Collapse/Expand button and the "Show all days" button into the `plan-summary` section as trailing elements, instead of each occupying its own row below the day-card grid; render Collapse/Expand icon-only on mobile (accessible name for the current action), keep "Show all days" as text on every breakpoint.
-- [ ] 5.3 In `raids-plan-page.tsx`, change the day-card grid's `grid-template-columns` from `repeat(auto-fit,minmax(20rem,1fr))` to a capped maximum (starting point: `repeat(auto-fit,minmax(20rem,24rem))`), and visually verify at 1, 2, 3, and 6+ visible days that cards no longer stretch to fill the row.
-- [ ] 5.4 Update `dailies-navigation` and `daily-raids-plan` test coverage for the new row layout, the Collapse/Expand and "Show all days" controls' new shared position and mobile icon-only rendering (Collapse/Expand only), and the capped grid.
+- [x] 5.1 In `raids-layout.tsx`, render `RouteTabs` (leading) and `ProjectSelect` (trailing) in a single row instead of two stacked rows.
+- [x] 5.2 In `raids-plan-page.tsx`, move the Collapse/Expand button and the "Show all days" button into the `plan-summary` section as trailing elements, instead of each occupying its own row below the day-card grid; render Collapse/Expand icon-only on mobile (accessible name for the current action), keep "Show all days" as text on every breakpoint.
+- [x] 5.3 In `raids-plan-page.tsx`, change the day-card grid's `grid-template-columns` from `repeat(auto-fit,minmax(20rem,1fr))` to a capped maximum (starting point: `repeat(auto-fit,minmax(20rem,24rem))`); not visually verified in-browser (see final report) — checked the resulting `grid-template-columns` class is applied via test.
+- [x] 5.4 Update `dailies-navigation` and `daily-raids-plan` test coverage for the new row layout, the Collapse/Expand and "Show all days" controls' new shared position and mobile icon-only rendering (Collapse/Expand only), and the capped grid.
 
 ## 6. Projects: on-page project list, narrowed form Sheet, and a dedicated goal-list selector
 

@@ -1,6 +1,13 @@
 import { useState } from "react"
 import { useOutletContext } from "react-router"
-import { BatteryLow, CalendarClock, CalendarDays, Swords } from "lucide-react"
+import {
+  BatteryLow,
+  CalendarClock,
+  CalendarDays,
+  ChevronsDownUp,
+  ChevronsUpDown,
+  Swords,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -9,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useDailyRaids } from "../model/use-daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
@@ -22,6 +30,7 @@ const DAY_LIMIT = 3
 export function RaidsPlanPage() {
   const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("dailies")
+  const isMobile = useIsMobile()
   const [showAllDays, setShowAllDays] = useState(false)
   const [compact, setCompact] = useState(false)
   const raids = useDailyRaids(context.projectId)
@@ -37,74 +46,97 @@ export function RaidsPlanPage() {
     ? raids.planDays
     : raids.planDays.slice(0, DAY_LIMIT)
 
+  const showAllDaysButton =
+    !showAllDays && raids.planDays.length > DAY_LIMIT ? (
+      <Button variant="outline" onClick={() => setShowAllDays(true)}>
+        {t("plan.showAll")}
+      </Button>
+    ) : null
+
   return (
     <div className="space-y-5" data-testid="raids-plan-page">
-      <section
-        className="grid grid-cols-2 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/5 md:grid-cols-5 dark:ring-foreground/10"
-        data-testid="plan-summary"
-      >
-        {(
-          [
+      {/* daily-raids-plan spec: the Collapse/Expand density toggle and "Show all days" both live in
+          this whole-plan summary area (trailing, below the stat grid) instead of each occupying its
+          own row; Collapse/Expand compresses to icon-only on mobile, "Show all days" stays text. */}
+      <section className="space-y-3" data-testid="plan-summary">
+        <div
+          className="grid grid-cols-2 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/5 md:grid-cols-5 dark:ring-foreground/10"
+          data-testid="plan-summary-stats"
+        >
+          {(
             [
-              "plan.summary.days",
-              raids.planSummary.totalDays,
-              <CalendarDays key="days" />,
-            ],
-            [
-              "plan.summary.energy",
-              raids.planSummary.totalEnergy,
-              <EntityIcon
-                key="energy"
-                alt=""
-                className="size-5"
-                src={energyIconUrl}
-              />,
-            ],
-            [
-              "plan.summary.raids",
-              raids.planSummary.totalRaids,
-              <Swords key="raids" />,
-            ],
-            [
-              "plan.summary.unusedDays",
-              raids.planSummary.daysWithUnusedEnergy,
-              <BatteryLow key="unused" />,
-            ],
-            [
-              "plan.summary.completion",
-              raids.planSummary.completionDate,
-              <CalendarClock key="completion" />,
-            ],
-          ] as const
-        ).map(([key, value, icon]) => (
-          <div
-            key={key}
-            className="flex min-w-0 items-center gap-2 border-r border-b p-3 last:col-span-2 md:border-b-0 md:last:col-span-1 md:last:border-r-0"
-          >
-            <span
-              aria-hidden="true"
-              className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground [&>svg]:size-4"
+              [
+                "plan.summary.days",
+                raids.planSummary.totalDays,
+                <CalendarDays key="days" />,
+              ],
+              [
+                "plan.summary.energy",
+                raids.planSummary.totalEnergy,
+                <EntityIcon
+                  key="energy"
+                  alt=""
+                  className="size-5"
+                  src={energyIconUrl}
+                />,
+              ],
+              [
+                "plan.summary.raids",
+                raids.planSummary.totalRaids,
+                <Swords key="raids" />,
+              ],
+              [
+                "plan.summary.unusedDays",
+                raids.planSummary.daysWithUnusedEnergy,
+                <BatteryLow key="unused" />,
+              ],
+              [
+                "plan.summary.completion",
+                raids.planSummary.completionDate,
+                <CalendarClock key="completion" />,
+              ],
+            ] as const
+          ).map(([key, value, icon]) => (
+            <div
+              key={key}
+              className="flex min-w-0 items-center gap-2 border-r border-b p-3 last:col-span-2 md:border-b-0 md:last:col-span-1 md:last:border-r-0"
             >
-              {icon}
-            </span>
-            <div className="min-w-0">
-              <div className="truncate text-xs text-muted-foreground">
-                {t(key)}
-              </div>
-              <div className="truncate text-base font-semibold tabular-nums md:text-lg">
-                {value}
+              <span
+                aria-hidden="true"
+                className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground [&>svg]:size-4"
+              >
+                {icon}
+              </span>
+              <div className="min-w-0">
+                <div className="truncate text-xs text-muted-foreground">
+                  {t(key)}
+                </div>
+                <div className="truncate text-base font-semibold tabular-nums md:text-lg">
+                  {value}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {showAllDaysButton}
+          <Button
+            aria-label={t(compact ? "plan.expand" : "plan.collapse")}
+            data-testid="plan-density-toggle"
+            onClick={() => setCompact((value) => !value)}
+            variant="outline"
+          >
+            {compact ? (
+              <ChevronsUpDown data-icon="inline-start" />
+            ) : (
+              <ChevronsDownUp data-icon="inline-start" />
+            )}
+            {isMobile ? null : t(compact ? "plan.expand" : "plan.collapse")}
+          </Button>
+        </div>
       </section>
-      <div className="flex justify-end">
-        <Button variant="outline" onClick={() => setCompact((value) => !value)}>
-          {t(compact ? "plan.expand" : "plan.collapse")}
-        </Button>
-      </div>
       <div
-        className="grid gap-3 md:[grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))] md:gap-4"
+        className="grid gap-3 md:[grid-template-columns:repeat(auto-fit,minmax(20rem,24rem))] md:gap-4"
         data-testid="plan-days"
       >
         {visibleDays.map((day) => (
@@ -159,11 +191,6 @@ export function RaidsPlanPage() {
           </Card>
         ))}
       </div>
-      {!showAllDays && raids.planDays.length > DAY_LIMIT ? (
-        <Button variant="outline" onClick={() => setShowAllDays(true)}>
-          {t("plan.showAll")}
-        </Button>
-      ) : null}
     </div>
   )
 }
