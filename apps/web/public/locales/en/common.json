@@ -817,6 +817,46 @@
           "content": "Share or copy a link to this exact character and rank range."
         }
       }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Filter by status",
+          "content": "Switch between Unfulfilled, Reached, and Archived goals."
+        },
+        "filters": {
+          "title": "Type, sort, and group",
+          "content": "Narrow by goal type, change the sort order, or group related goals together."
+        },
+        "planningSettings": {
+          "title": "Planning settings",
+          "content": "Set your daily energy budget here — every estimate on this page uses it."
+        },
+        "list": {
+          "title": "Your goals",
+          "content": "Every active goal appears below, matching your current filters."
+        }
+      }
+    },
+    "projects": {
+      "steps": {
+        "list": {
+          "title": "Your projects",
+          "content": "Every project you've created is listed here, including archived ones — each row has its own actions."
+        },
+        "newProject": {
+          "title": "Create a project",
+          "content": "Start a new project, or use a row's Edit action to rename, describe, or recolor an existing one."
+        },
+        "selector": {
+          "title": "Choose a project",
+          "content": "Pick which project's goals to view below — separate from managing the projects above."
+        },
+        "goals": {
+          "title": "Project goals",
+          "content": "The selected project's goals appear here, in priority order."
+        }
+      }
     }
   },
   "uiKit": {

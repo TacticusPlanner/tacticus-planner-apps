@@ -359,6 +359,46 @@
           "content": "Comparte o copia un enlace a este personaje e intervalo de rango exactos."
         }
       }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Filtrar por estado",
+          "content": "Cambia entre objetivos no cumplidos, alcanzados y archivados."
+        },
+        "filters": {
+          "title": "Tipo, orden y agrupación",
+          "content": "Filtra por tipo de objetivo, cambia el orden o agrupa objetivos relacionados."
+        },
+        "planningSettings": {
+          "title": "Ajustes de planificación",
+          "content": "Define aquí tu presupuesto diario de energía — todas las estimaciones de esta página lo usan."
+        },
+        "list": {
+          "title": "Tus objetivos",
+          "content": "Todos los objetivos activos aparecen abajo, según tus filtros actuales."
+        }
+      }
+    },
+    "projects": {
+      "steps": {
+        "list": {
+          "title": "Tus proyectos",
+          "content": "Todos tus proyectos aparecen aquí, incluidos los archivados — cada fila tiene sus propias acciones."
+        },
+        "newProject": {
+          "title": "Crea un proyecto",
+          "content": "Inicia un nuevo proyecto, o usa la acción Editar de una fila para renombrar, describir o recolorear uno existente."
+        },
+        "selector": {
+          "title": "Elige un proyecto",
+          "content": "Elige de qué proyecto ver los objetivos abajo — algo separado de gestionar los proyectos de arriba."
+        },
+        "goals": {
+          "title": "Objetivos del proyecto",
+          "content": "Los objetivos del proyecto seleccionado aparecen aquí, en orden de prioridad."
+        }
+      }
     }
   },
   "uiKit": {

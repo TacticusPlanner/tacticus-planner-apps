@@ -54,10 +54,10 @@ This section is dropped, not merely blocked. Empirically, `pnpm lint:fsd` (steig
 
 ## 7. Tutorials
 
-- [ ] 7.1 Create `goals-page.tutorial.tsx` (desktop + mobile steps) for Overview, covering the consolidated status filter/GoalFilters/Planning Settings row, registered via `useTourPageSteps`. Overview currently has no tutorial.
-- [ ] 7.2 Create a tutorial (desktop + mobile steps), co-located alongside `projects-page.tsx` in `pages/goals/ui/projects/`, covering the on-page project list, the narrowed create/edit Sheet, and the dedicated goal-list `ProjectSelect`. Projects currently has no tutorial.
-- [ ] 7.3 Update `today.tutorial.tsx` and `raids-plan.tutorial.tsx` for any `data-testid` selectors that moved (tab/selector row merge, Collapse/Expand and "Show all days" controls' new position).
-- [ ] 7.4 Add/update `tour.<page>.steps.*` i18n keys in `common.json` for the new/changed tutorial steps, for every supported locale.
+- [x] 7.1 Create `goals-page.tutorial.tsx` (desktop + mobile steps) for Overview, covering the consolidated status filter/GoalFilters/Planning Settings row, registered via `useTourPageSteps`. Overview currently has no tutorial.
+- [x] 7.2 Create a tutorial (desktop + mobile steps), co-located alongside `projects-page.tsx` in `pages/goals/ui/projects/`, covering the on-page project list, the narrowed create/edit Sheet, and the dedicated goal-list `ProjectSelect`. Projects currently has no tutorial.
+- [x] 7.3 Update `today.tutorial.tsx` and `raids-plan.tutorial.tsx` for any `data-testid` selectors that moved (tab/selector row merge, Collapse/Expand and "Show all days" controls' new position). Verified no update was needed: `raids-tabs`, `dailies-project-select`, `plan-summary`, and `plan-days` were all deliberately kept on the same elements/testids through the row-merge and summary-area restructuring (section 5), so both tutorials' existing target selectors remain valid.
+- [x] 7.4 Add/update `tour.<page>.steps.*` i18n keys in `common.json` for the new/changed tutorial steps, for every supported locale.
 
 ## 8. Verification
 

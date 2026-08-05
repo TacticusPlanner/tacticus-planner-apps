@@ -359,6 +359,46 @@
           "content": "Teile oder kopiere einen Link zu genau diesem Charakter und Rangbereich."
         }
       }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Nach Status filtern",
+          "content": "Wechsle zwischen unerfüllten, erreichten und archivierten Zielen."
+        },
+        "filters": {
+          "title": "Typ, Sortierung und Gruppierung",
+          "content": "Filtere nach Zieltyp, ändere die Sortierung oder gruppiere verwandte Ziele."
+        },
+        "planningSettings": {
+          "title": "Planungseinstellungen",
+          "content": "Lege hier dein tägliches Energiebudget fest — jede Schätzung auf dieser Seite nutzt es."
+        },
+        "list": {
+          "title": "Deine Ziele",
+          "content": "Alle aktiven Ziele erscheinen unten, passend zu deinen aktuellen Filtern."
+        }
+      }
+    },
+    "projects": {
+      "steps": {
+        "list": {
+          "title": "Deine Projekte",
+          "content": "Alle deine Projekte werden hier aufgelistet, auch archivierte — jede Zeile hat eigene Aktionen."
+        },
+        "newProject": {
+          "title": "Ein Projekt erstellen",
+          "content": "Starte ein neues Projekt, oder nutze die Bearbeiten-Aktion einer Zeile, um ein bestehendes umzubenennen, zu beschreiben oder umzufärben."
+        },
+        "selector": {
+          "title": "Ein Projekt auswählen",
+          "content": "Wähle, dessen Ziele unten angezeigt werden — getrennt von der Verwaltung der Projekte oben."
+        },
+        "goals": {
+          "title": "Projektziele",
+          "content": "Die Ziele des ausgewählten Projekts erscheinen hier, in Prioritätsreihenfolge."
+        }
+      }
     }
   },
   "uiKit": {

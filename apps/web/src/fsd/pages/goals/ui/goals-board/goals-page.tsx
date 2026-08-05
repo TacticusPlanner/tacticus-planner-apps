@@ -32,6 +32,7 @@ import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalsList } from ".//goals-list"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
+import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
  * Complete cross-project goals view (plan §1: list on desktop, cards on mobile — no view switcher).
@@ -48,6 +49,7 @@ export function GoalsPage() {
   const [group, setGroup] = useState<GoalGroupValue>("none")
   const [settingsOpen, setSettingsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
+  useGoalsOverviewTutorial()
 
   const projects = useProjects()
   const projectsByGoalId = useGoalProjects(projects.projects)

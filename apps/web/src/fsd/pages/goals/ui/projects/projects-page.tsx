@@ -31,6 +31,7 @@ import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { useProjectGoals } from "../../model/projects/use-project-goals"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { GoalsList } from "../goals-board/goals-list"
+import { useProjectsTutorial } from "./projects-page.tutorial"
 
 // Mirrors goals-page.tsx's grouping (plan §3): "toReach"/"reached" come from computed attainment,
 // never the goal's lifecycle `status`; "archived" stays status-driven.
@@ -44,6 +45,7 @@ type Tab = GoalStatusFilterValue
  */
 export function ProjectsPage() {
   const { t } = useTranslation()
+  useProjectsTutorial()
   const projects = useProjects()
   const hasProjects = projects.projects.length > 0
   const [selectedProjectId, setSelectedProjectId] = useState<string>()

@@ -359,6 +359,46 @@
           "content": "Partagez ou copiez un lien vers ce personnage et cette plage de rang exacts."
         }
       }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Filtrer par statut",
+          "content": "Basculez entre les objectifs non atteints, atteints et archivés."
+        },
+        "filters": {
+          "title": "Type, tri et regroupement",
+          "content": "Filtrez par type d'objectif, changez l'ordre de tri ou regroupez des objectifs liés."
+        },
+        "planningSettings": {
+          "title": "Paramètres de planification",
+          "content": "Définissez ici votre budget d'énergie quotidien — chaque estimation de cette page l'utilise."
+        },
+        "list": {
+          "title": "Vos objectifs",
+          "content": "Tous les objectifs actifs apparaissent ci-dessous, selon vos filtres actuels."
+        }
+      }
+    },
+    "projects": {
+      "steps": {
+        "list": {
+          "title": "Vos projets",
+          "content": "Tous vos projets sont listés ici, y compris les archivés — chaque ligne a ses propres actions."
+        },
+        "newProject": {
+          "title": "Créer un projet",
+          "content": "Démarrez un nouveau projet, ou utilisez l'action Modifier d'une ligne pour renommer, décrire ou recolorer un projet existant."
+        },
+        "selector": {
+          "title": "Choisir un projet",
+          "content": "Choisissez les objectifs de quel projet afficher ci-dessous — distinct de la gestion des projets ci-dessus."
+        },
+        "goals": {
+          "title": "Objectifs du projet",
+          "content": "Les objectifs du projet sélectionné apparaissent ici, par ordre de priorité."
+        }
+      }
     }
   },
   "uiKit": {

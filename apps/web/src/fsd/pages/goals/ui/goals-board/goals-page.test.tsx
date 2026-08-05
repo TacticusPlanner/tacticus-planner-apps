@@ -3,6 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
+vi.mock("@/shared/tour", () => ({
+  useTourPageSteps: () => undefined,
+}))
+
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
     querier: () => unknown,
