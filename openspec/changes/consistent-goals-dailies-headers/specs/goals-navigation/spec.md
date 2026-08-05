@@ -20,11 +20,11 @@ The Goals section SHALL render its Planning Settings entry point only on the Ove
 
 ### Requirement: Shared status filter control
 
-Overview and Projects SHALL each present the same status filter — Unfulfilled, Reached, Archived — as a single select control defaulting to Unfulfilled, rather than three separate tab buttons. Each option SHALL show its count of matching goals.
+Overview and a project's detail route SHALL each present the same status filter — Unfulfilled, Reached, Archived — as a single select control defaulting to Unfulfilled, rather than three separate tab buttons. Each option SHALL show its count of matching goals.
 
 #### Scenario: Status filter defaults to Unfulfilled
 
-- **WHEN** the user opens Overview or Projects
+- **WHEN** the user opens Overview or a project's detail route
 - **THEN** the status filter shows "Unfulfilled" as the selected value and the goal list reflects only unfulfilled goals
 
 #### Scenario: Selecting a status filters the goal list
