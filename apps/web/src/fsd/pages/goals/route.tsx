@@ -7,9 +7,14 @@ import { Navigate, type RouteObject } from "react-router"
 const GoalsPage = lazy(() =>
   import("./ui/goals-board/goals-page").then((m) => ({ default: m.GoalsPage }))
 )
-const ProjectsPage = lazy(() =>
-  import("./ui/projects/projects-page").then((m) => ({
-    default: m.ProjectsPage,
+const ProjectsListPage = lazy(() =>
+  import("./ui/projects/projects-list-page").then((m) => ({
+    default: m.ProjectsListPage,
+  }))
+)
+const ProjectDetailPage = lazy(() =>
+  import("./ui/projects/project-detail-page").then((m) => ({
+    default: m.ProjectDetailPage,
   }))
 )
 const InsightsPage = lazy(() =>
@@ -25,6 +30,7 @@ const InsightsPage = lazy(() =>
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/goals/overview" /> },
   { path: "overview", element: <GoalsPage /> },
-  { path: "project", element: <ProjectsPage /> },
+  { path: "projects", element: <ProjectsListPage /> },
+  { path: "projects/:projectId", element: <ProjectDetailPage /> },
   { path: "insights", element: <InsightsPage /> },
 ]

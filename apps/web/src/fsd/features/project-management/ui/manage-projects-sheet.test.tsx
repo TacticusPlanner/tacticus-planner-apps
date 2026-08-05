@@ -20,33 +20,31 @@ const activeProject = {
   revision: 1,
 }
 
-const archivedProject = {
-  ...activeProject,
-  projectId: "archived",
-  name: "Archived plan",
-  status: "Archived",
-}
-
 describe("ManageProjectsSheet", () => {
-  it("creates, edits, archives, and restores projects", async () => {
+  it("creates a project with a blank form and closes on success", async () => {
     const user = userEvent.setup()
+    const onOpenChange = vi.fn()
     const actions = {
       activate: vi.fn(),
-      bulkStatus: vi.fn(),
       create: vi.fn().mockResolvedValue(true),
       pending: false,
       reorder: vi.fn(),
-      save: vi.fn().mockResolvedValue(true),
+      save: vi.fn(),
     }
 
     render(
       <ManageProjectsSheet
         actions={actions as never}
-        onOpenChange={vi.fn()}
+        onOpenChange={onOpenChange}
         open
-        projects={[activeProject, archivedProject] as never}
+        project={undefined}
       />
     )
+
+    expect(
+      screen.getByText("goals.project.newProjectTitle")
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
 
     const form = document.querySelector("#manage-project-form")!
     fireEvent.submit(form)
@@ -65,43 +63,78 @@ describe("ManageProjectsSheet", () => {
       "Description",
       "#abcdef"
     )
-    await vi.waitFor(() =>
-      expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
+    await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
+  })
+
+  it("edits a pre-filled project and closes on success", async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    const actions = {
+      activate: vi.fn(),
+      create: vi.fn(),
+      pending: false,
+      reorder: vi.fn(),
+      save: vi.fn().mockResolvedValue(true),
+    }
+
+    render(
+      <ManageProjectsSheet
+        actions={actions as never}
+        onOpenChange={onOpenChange}
+        open
+        project={activeProject as never}
+      />
     )
 
-    await user.click(screen.getByText("Active plan"))
+    expect(screen.getByText("goals.project.editTitle")).toBeInTheDocument()
+    expect(screen.getByLabelText("goals.project.name")).toHaveValue(
+      "Active plan"
+    )
+
     fireEvent.change(screen.getByLabelText("goals.project.name"), {
       target: { value: " Renamed " },
     })
     await user.click(screen.getByText("goals.project.save"))
+
     expect(actions.save).toHaveBeenCalledWith(
       activeProject,
       expect.objectContaining({ name: "Renamed" })
     )
-
-    await user.click(screen.getByText("goals.project.archive"))
-    expect(actions.save).toHaveBeenCalledWith(
-      activeProject,
-      expect.objectContaining({ status: "Archived" })
-    )
-
-    await user.click(screen.getByText("Archived plan"))
-    await user.click(screen.getByText("goals.project.restore"))
-    expect(actions.save).toHaveBeenCalledWith(
-      archivedProject,
-      expect.objectContaining({ status: "Active" })
-    )
-
-    await user.click(screen.getByText("goals.project.newProject"))
-    expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
+    await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 
-  it("keeps successful edits normalized and disables pending actions", async () => {
+  it("does not close the Sheet when saving fails", async () => {
     const user = userEvent.setup()
+    const onOpenChange = vi.fn()
     const actions = {
+      activate: vi.fn(),
+      create: vi.fn(),
+      pending: false,
+      reorder: vi.fn(),
+      save: vi.fn().mockResolvedValue(false),
+    }
+
+    render(
+      <ManageProjectsSheet
+        actions={actions as never}
+        onOpenChange={onOpenChange}
+        open
+        project={activeProject as never}
+      />
+    )
+
+    await user.click(screen.getByText("goals.project.save"))
+    await vi.waitFor(() => expect(actions.save).toHaveBeenCalled())
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+  })
+
+  it("disables submit while pending or when the name is blank", () => {
+    const actions = {
+      activate: vi.fn(),
       create: vi.fn(),
       pending: true,
-      save: vi.fn().mockResolvedValue(true),
+      reorder: vi.fn(),
+      save: vi.fn(),
     }
 
     render(
@@ -109,12 +142,42 @@ describe("ManageProjectsSheet", () => {
         actions={actions as never}
         onOpenChange={vi.fn()}
         open
-        projects={[activeProject] as never}
+        project={activeProject as never}
       />
     )
 
-    await user.click(screen.getByText("Active plan"))
-    expect(screen.getByText("goals.project.archive")).toBeDisabled()
     expect(screen.getByText("goals.project.save")).toBeDisabled()
+  })
+
+  it("resets to blank fields when reopened for a new project", () => {
+    const actions = {
+      activate: vi.fn(),
+      create: vi.fn(),
+      pending: false,
+      reorder: vi.fn(),
+      save: vi.fn(),
+    }
+
+    const { rerender } = render(
+      <ManageProjectsSheet
+        actions={actions as never}
+        onOpenChange={vi.fn()}
+        open
+        project={activeProject as never}
+      />
+    )
+    expect(screen.getByLabelText("goals.project.name")).toHaveValue(
+      "Active plan"
+    )
+
+    rerender(
+      <ManageProjectsSheet
+        actions={actions as never}
+        onOpenChange={vi.fn()}
+        open
+        project={undefined}
+      />
+    )
+    expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
   })
 })

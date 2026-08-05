@@ -368,7 +368,10 @@
       "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
       "reached": "Reached",
-      "archived": "Archived"
+      "archived": "Archived",
+      "blocked": "Blocked",
+      "active": "Active",
+      "paused": "Paused"
     },
     "columns": {
       "entity": "Character",
@@ -417,16 +420,17 @@
     "project": {
       "noProjectTitle": "No projects yet",
       "noProjectDescription": "Create a project to organize and prioritize related goals.",
+      "notFoundTitle": "Project not found",
+      "notFoundDescription": "This project doesn't exist, or you don't have access to it.",
       "membership": "Projects containing this goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
       "setActive": "Set as active plan",
       "active": "active",
-      "pauseAll": "Pause all",
-      "resumeAll": "Resume all",
-      "manage": "Manage projects",
-      "manageTitle": "Manage projects",
-      "manageDescription": "Create, rename, archive, or restore planning projects.",
+      "edit": "Edit",
+      "editTitle": "Edit project",
+      "newProjectTitle": "New project",
+      "formDescription": "Name, describe, and color this project.",
       "newProject": "New project",
       "name": "Name",
       "description": "Description",
@@ -441,8 +445,6 @@
       "statusChanged": "Goal updated.",
       "deleted": "Goal deleted.",
       "activated": "Active plan updated.",
-      "bulkPaused": "Paused the project's goals.",
-      "bulkResumed": "Resumed the project's goals.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
       "projectUpdated": "Project updated."
@@ -633,6 +635,7 @@
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
+      "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "sort": {
         "priority": "Priority",
         "entity": "Character",
@@ -813,6 +816,54 @@
         "share": {
           "title": "Share this lookup",
           "content": "Share or copy a link to this exact character and rank range."
+        }
+      }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Filter by status",
+          "content": "Switch between Unfulfilled, Reached, and Archived goals."
+        },
+        "filters": {
+          "title": "Type, sort, and group",
+          "content": "Narrow by goal type, change the sort order, or group related goals together."
+        },
+        "planningSettings": {
+          "title": "Planning settings",
+          "content": "Set your daily energy budget here — every estimate on this page uses it."
+        },
+        "list": {
+          "title": "Your goals",
+          "content": "Every active goal appears below, matching your current filters."
+        }
+      }
+    },
+    "projectsList": {
+      "steps": {
+        "list": {
+          "title": "Your projects",
+          "content": "Every project you've created is listed here, including archived ones — each row has its own actions."
+        },
+        "newProject": {
+          "title": "Create a project",
+          "content": "Start a new project here, or use a row's Edit action to rename, describe, or recolor an existing one."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "This project",
+          "content": "This project's own row, with the same actions as on the Projects list — set it active, edit it, or archive it."
+        },
+        "selector": {
+          "title": "Choose a project",
+          "content": "Switch to a different project's own view — separate from managing projects on the list."
+        },
+        "goals": {
+          "title": "Project goals",
+          "content": "This project's goals appear here, in priority order."
         }
       }
     }

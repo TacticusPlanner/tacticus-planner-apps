@@ -246,9 +246,9 @@ describe("DesktopShell", () => {
       "aria-current",
       "page"
     )
-    expect(screen.getByTestId("section-tab-goals-project")).not.toHaveAttribute(
-      "aria-current"
-    )
+    expect(
+      screen.getByTestId("section-tab-goals-projects")
+    ).not.toHaveAttribute("aria-current")
     expect(
       screen.getByTestId("section-tab-goals-insights")
     ).not.toHaveAttribute("aria-current")

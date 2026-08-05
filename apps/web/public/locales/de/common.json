@@ -240,7 +240,21 @@
     "tabs": {
       "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
       "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
-      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen"
+      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
+      "blocked": "Blockiert",
+      "active": "Aktiv",
+      "paused": "Pausiert"
+    },
+    "filters": {
+      "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
+    },
+    "project": {
+      "notFoundTitle": "Projekt nicht gefunden",
+      "notFoundDescription": "Dieses Projekt existiert nicht, oder du hast keinen Zugriff darauf.",
+      "edit": "Bearbeiten",
+      "editTitle": "Projekt bearbeiten",
+      "newProjectTitle": "Neues Projekt",
+      "formDescription": "Benenne, beschreibe und färbe dieses Projekt."
     }
   },
   "language": {
@@ -344,6 +358,54 @@
         "share": {
           "title": "Diese Suche teilen",
           "content": "Teile oder kopiere einen Link zu genau diesem Charakter und Rangbereich."
+        }
+      }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Nach Status filtern",
+          "content": "Wechsle zwischen unerfüllten, erreichten und archivierten Zielen."
+        },
+        "filters": {
+          "title": "Typ, Sortierung und Gruppierung",
+          "content": "Filtere nach Zieltyp, ändere die Sortierung oder gruppiere verwandte Ziele."
+        },
+        "planningSettings": {
+          "title": "Planungseinstellungen",
+          "content": "Lege hier dein tägliches Energiebudget fest — jede Schätzung auf dieser Seite nutzt es."
+        },
+        "list": {
+          "title": "Deine Ziele",
+          "content": "Alle aktiven Ziele erscheinen unten, passend zu deinen aktuellen Filtern."
+        }
+      }
+    },
+    "projectsList": {
+      "steps": {
+        "list": {
+          "title": "Deine Projekte",
+          "content": "Alle deine Projekte werden hier aufgelistet, auch archivierte — jede Zeile hat eigene Aktionen."
+        },
+        "newProject": {
+          "title": "Ein Projekt erstellen",
+          "content": "Starte hier ein neues Projekt, oder nutze die Bearbeiten-Aktion einer Zeile, um ein bestehendes umzubenennen, zu beschreiben oder umzufärben."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "Dieses Projekt",
+          "content": "Die eigene Zeile dieses Projekts mit denselben Aktionen wie in der Projektliste — als aktiv festlegen, bearbeiten oder archivieren."
+        },
+        "selector": {
+          "title": "Ein Projekt auswählen",
+          "content": "Wechsle zur eigenen Ansicht eines anderen Projekts — getrennt von der Verwaltung in der Liste."
+        },
+        "goals": {
+          "title": "Projektziele",
+          "content": "Die Ziele dieses Projekts erscheinen hier, in Prioritätsreihenfolge."
         }
       }
     }

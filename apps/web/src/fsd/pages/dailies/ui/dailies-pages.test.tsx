@@ -14,6 +14,9 @@ import { TodayPage } from "./today-page"
 
 const useDailyRaids = vi.fn()
 const registeredTours: unknown[] = []
+const { useIsMobileMock } = vi.hoisted(() => ({
+  useIsMobileMock: vi.fn(() => false),
+}))
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -26,6 +29,9 @@ vi.mock("../model/use-daily-raids", () => ({
 }))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => registeredTours.push(steps),
+}))
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => useIsMobileMock(),
 }))
 
 const battle = battleIdSchema.parse("B1")
@@ -179,6 +185,7 @@ describe("Dailies raid pages", () => {
     contextOverrides = {}
     retryProjects.mockClear()
     useDailyRaids.mockReturnValue(ready())
+    useIsMobileMock.mockReturnValue(false)
   })
 
   it("groups the same resource under both contributing goals and reveals bonus entries after three", async () => {
@@ -248,8 +255,17 @@ describe("Dailies raid pages", () => {
     expect(screen.queryByTestId("plan-day-5")).not.toBeInTheDocument()
     expect(screen.getByText("200")).toBeInTheDocument()
     expect(screen.getByTestId("plan-days")).toHaveClass(
-      "md:[grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))]"
+      "md:[grid-template-columns:repeat(auto-fit,minmax(20rem,24rem))]"
     )
+    // Collapse/Expand and "Show all days" both live inside the whole-plan summary area.
+    const summary = screen.getByTestId("plan-summary")
+    expect(
+      within(summary).getByRole("button", { name: "plan.showAll" })
+    ).toBeInTheDocument()
+    expect(
+      within(summary).getByRole("button", { name: "plan.collapse" })
+    ).toBeInTheDocument()
+
     await user.click(screen.getByRole("button", { name: "plan.showAll" }))
     expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "plan.collapse" }))
@@ -258,6 +274,31 @@ describe("Dailies raid pages", () => {
       desktop: expect.any(Array),
       mobile: expect.any(Array),
     })
+  })
+
+  it("compresses the density toggle to icon-only on mobile while keeping Show all days as text, both still inside the summary area", () => {
+    useIsMobileMock.mockReturnValue(true)
+    renderPage(<RaidsPlanPage />)
+
+    const summary = screen.getByTestId("plan-summary")
+    const densityToggle = within(summary).getByTestId("plan-density-toggle")
+    expect(densityToggle).not.toHaveTextContent("plan.collapse")
+    expect(densityToggle).toHaveAccessibleName("plan.collapse")
+    expect(
+      within(summary).getByRole("button", { name: "plan.showAll" })
+    ).toHaveTextContent("plan.showAll")
+  })
+
+  it("keeps the current density state on days revealed by Show all days", async () => {
+    const user = userEvent.setup()
+    renderPage(<RaidsPlanPage />)
+
+    await user.click(screen.getByRole("button", { name: "plan.collapse" }))
+    expect(screen.queryByText(/schedule.node/)).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole("button", { name: "plan.showAll" }))
+    expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
+    expect(screen.queryByText(/schedule.node/)).not.toBeInTheDocument()
   })
 
   it("still renders Today when the plan completes during Day 1", () => {

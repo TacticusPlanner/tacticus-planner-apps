@@ -240,7 +240,21 @@
     "tabs": {
       "overviewDescription": "Filtrez, triez et regroupez tous vos objectifs actifs.",
       "projectsDescription": "Organisez vos objectifs en plans ciblés et maîtrisez leur priorité.",
-      "insightsDescription": "Recommandations d'améliorations et de campagnes"
+      "insightsDescription": "Recommandations d'améliorations et de campagnes",
+      "blocked": "Bloqué",
+      "active": "Actif",
+      "paused": "En pause"
+    },
+    "filters": {
+      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
+    },
+    "project": {
+      "notFoundTitle": "Projet introuvable",
+      "notFoundDescription": "Ce projet n'existe pas, ou vous n'y avez pas accès.",
+      "edit": "Modifier",
+      "editTitle": "Modifier le projet",
+      "newProjectTitle": "Nouveau projet",
+      "formDescription": "Nommez, décrivez et colorez ce projet."
     }
   },
   "language": {
@@ -344,6 +358,54 @@
         "share": {
           "title": "Partagez cette recherche",
           "content": "Partagez ou copiez un lien vers ce personnage et cette plage de rang exacts."
+        }
+      }
+    },
+    "overview": {
+      "steps": {
+        "statusFilter": {
+          "title": "Filtrer par statut",
+          "content": "Basculez entre les objectifs non atteints, atteints et archivés."
+        },
+        "filters": {
+          "title": "Type, tri et regroupement",
+          "content": "Filtrez par type d'objectif, changez l'ordre de tri ou regroupez des objectifs liés."
+        },
+        "planningSettings": {
+          "title": "Paramètres de planification",
+          "content": "Définissez ici votre budget d'énergie quotidien — chaque estimation de cette page l'utilise."
+        },
+        "list": {
+          "title": "Vos objectifs",
+          "content": "Tous les objectifs actifs apparaissent ci-dessous, selon vos filtres actuels."
+        }
+      }
+    },
+    "projectsList": {
+      "steps": {
+        "list": {
+          "title": "Vos projets",
+          "content": "Tous vos projets sont listés ici, y compris les archivés — chaque ligne a ses propres actions."
+        },
+        "newProject": {
+          "title": "Créer un projet",
+          "content": "Démarrez ici un nouveau projet, ou utilisez l'action Modifier d'une ligne pour renommer, décrire ou recolorer un projet existant."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "Ce projet",
+          "content": "La propre ligne de ce projet avec les mêmes actions que sur la liste des projets — l'activer, le modifier ou l'archiver."
+        },
+        "selector": {
+          "title": "Choisir un projet",
+          "content": "Passez à la vue propre d'un autre projet — distinct de la gestion des projets sur la liste."
+        },
+        "goals": {
+          "title": "Objectifs du projet",
+          "content": "Les objectifs de ce projet apparaissent ici, par ordre de priorité."
         }
       }
     }

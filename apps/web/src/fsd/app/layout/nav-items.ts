@@ -115,7 +115,7 @@ export const navItems: NavItem[] = [
         descriptionKey: "goals.tabs.overviewDescription",
       },
       {
-        path: "/goals/project",
+        path: "/goals/projects",
         labelKey: "goals.tabs.projects",
         descriptionKey: "goals.tabs.projectsDescription",
       },
