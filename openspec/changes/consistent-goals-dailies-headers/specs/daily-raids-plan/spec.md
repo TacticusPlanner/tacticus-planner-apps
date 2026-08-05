@@ -50,3 +50,31 @@ Raids Plan SHALL provide a control to collapse or expand each day column's raid-
 
 - **WHEN** Raids Plan is viewed below the 768px mobile breakpoint
 - **THEN** the collapse/expand control renders as an icon-only control, retaining an accessible name for its current action
+
+### Requirement: Raids Plan pages days 3-at-a-time
+
+Raids Plan SHALL initially render only the first 3 day columns (Today, Day 2, Day 3), with a "Show all days" control that reveals the remaining days when more exist — the same truncate-then-reveal pattern Bonus Raids uses. This control SHALL render within the whole-plan summary area, alongside the collapse/expand density toggle, rather than below the day columns.
+
+#### Scenario: More than 3 days truncates with a Show all control
+
+- **GIVEN** the plan takes more than 3 days total
+- **WHEN** Raids Plan loads
+- **THEN** only Today, Day 2, and Day 3 are shown, the whole-plan summary area includes a "Show all days" control, and later days are not rendered until it is activated
+
+#### Scenario: Show all days reveals the rest
+
+- **GIVEN** Raids Plan is showing its truncated view with a "Show all days" control
+- **WHEN** the user activates it
+- **THEN** every remaining day column is revealed in order
+
+#### Scenario: 3 or fewer total days needs no truncation
+
+- **GIVEN** the plan takes 3 days or fewer total
+- **WHEN** Raids Plan loads
+- **THEN** all day columns are shown and no "Show all days" control is displayed
+
+#### Scenario: Show all days shares the summary area with the density toggle
+
+- **GIVEN** the plan takes more than 3 days total
+- **WHEN** Raids Plan is viewed at or above the 768px desktop breakpoint
+- **THEN** the "Show all days" control and the collapse/expand density toggle both appear within the whole-plan summary area, not in separate rows below it
