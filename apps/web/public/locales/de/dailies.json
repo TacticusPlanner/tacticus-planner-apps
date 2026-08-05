@@ -101,7 +101,7 @@
         },
         "todaysAttempts": {
           "title": "Heutige Versuche",
-          "content": "Jeder echte Raid, den du heute kontoweit gemacht hast, überall dort, wo keine Versuche mehr übrig sind."
+          "content": "Jeder echte Raid, den du heute kontoweit gemacht hast — egal ob dort noch Versuche übrig sind oder das Limit erreicht ist."
         }
       }
     },

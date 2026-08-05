@@ -101,7 +101,7 @@
         },
         "todaysAttempts": {
           "title": "Intentos de hoy",
-          "content": "Cada incursión real que has hecho hoy en toda tu cuenta, dondequiera que se hayan agotado los intentos."
+          "content": "Cada incursión real que has hecho hoy en toda tu cuenta, tanto si aún le quedan intentos como si ha alcanzado su límite."
         }
       }
     },

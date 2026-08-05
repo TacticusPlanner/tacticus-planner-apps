@@ -105,6 +105,7 @@ export function ResourceCard({
               {progress ? (
                 <ResourceProgress progress={progress} standalone />
               ) : null}
+              <span className="sr-only">{label}</span>
             </div>
           )}
           <div className="min-w-0 flex-1 space-y-1.5">
@@ -123,7 +124,7 @@ export function ResourceCard({
                 const location = locationsByBattleId.get(entry.battleId)
                 return (
                   <div
-                    key={`${entry.battleId}-${entry.raidsPerformed}`}
+                    key={entry.battleId}
                     className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
                     data-testid={`raid-location-${entry.battleId}`}
                   >

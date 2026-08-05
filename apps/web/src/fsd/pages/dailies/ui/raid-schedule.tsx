@@ -75,6 +75,7 @@ export function RaidSchedule({
 
   const renderGroup = (
     { goal, resources }: GoalGroup,
+    keyPrefix: string,
     header?: ReactNode,
     footer?: ReactNode
   ) => {
@@ -92,7 +93,7 @@ export function RaidSchedule({
 
     return (
       <section
-        key={goal.goalId}
+        key={`${keyPrefix}-${goal.goalId}`}
         className={cn(
           "space-y-2 md:space-y-3",
           layout === "wide" && "md:mb-5 md:break-inside-avoid-column"
@@ -140,10 +141,11 @@ export function RaidSchedule({
       )}
       data-testid={testId}
     >
-      {grouped.map((group) => renderGroup(group))}
+      {grouped.map((group) => renderGroup(group, "today"))}
       {visibleBonusGrouped.map((group, index) =>
         renderGroup(
           group,
+          "bonus",
           index === 0 ? (
             <h3
               className="mb-2 text-sm font-semibold text-muted-foreground"
@@ -155,6 +157,25 @@ export function RaidSchedule({
           index === visibleBonusGrouped.length - 1 ? bonusFooter : undefined
         )
       )}
+      {bonusEntries &&
+      bonusEntries.length > 0 &&
+      visibleBonusGrouped.length === 0 ? (
+        // Every bonus goal group got de-duped away (all its locations are exhausted), but the
+        // heading/footer (e.g. "Show more") must still surface — there's no visible group section
+        // left to attach them to, so render them as their own flow item instead of dropping them.
+        <div
+          className={cn(layout === "wide" && "md:break-inside-avoid-column")}
+          key="bonus-raids-fallback"
+        >
+          <h3
+            className="mb-2 text-sm font-semibold text-muted-foreground"
+            data-testid="bonus-raids-heading"
+          >
+            {bonusLabel}
+          </h3>
+          {bonusFooter}
+        </div>
+      ) : null}
     </div>
   )
 }

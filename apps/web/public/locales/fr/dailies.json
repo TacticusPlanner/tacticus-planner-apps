@@ -101,7 +101,7 @@
         },
         "todaysAttempts": {
           "title": "Tentatives du jour",
-          "content": "Chaque raid réel effectué aujourd'hui sur tout le compte, partout où les tentatives sont épuisées."
+          "content": "Chaque raid réel effectué aujourd'hui sur tout le compte, qu'il reste des tentatives ou que la limite soit atteinte."
         }
       }
     },

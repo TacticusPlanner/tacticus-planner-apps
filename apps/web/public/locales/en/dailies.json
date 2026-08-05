@@ -101,7 +101,7 @@
         },
         "todaysAttempts": {
           "title": "Today's attempts",
-          "content": "Every real raid you've made today across your account, wherever it hit zero attempts left."
+          "content": "Every real raid you've made today, account-wide — whether it still has attempts left or has hit its cap."
         }
       }
     },

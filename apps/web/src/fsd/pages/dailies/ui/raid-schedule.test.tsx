@@ -100,7 +100,7 @@ describe("RaidSchedule location emphasis", () => {
     expect(screen.getByText('schedule.battle:{"number":4}')).toBeInTheDocument()
   })
 
-  it("hides the resource name by default, showing it in a tooltip on the icon, while keeping progress visible underneath", async () => {
+  it("keeps the resource name accessible (sr-only) by default and shows it in a visible tooltip on hover, while keeping progress visible underneath", async () => {
     const user = userEvent.setup()
     render(
       <RaidSchedule
@@ -130,11 +130,12 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    expect(screen.queryByText("Ceramite")).not.toBeInTheDocument()
+    // Visually hidden (sr-only) but still accessible before the tooltip opens.
+    expect(screen.getAllByText("Ceramite")).toHaveLength(1)
     expect(screen.getByText("5 / 10")).toBeInTheDocument()
 
     await user.hover(screen.getByTestId("raid-resource-icon"))
-    expect((await screen.findAllByText("Ceramite")).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText("Ceramite")).length).toBeGreaterThan(1)
   })
 
   it("renders one full-weight row per location when a resource is farmed at more than one node", () => {
@@ -247,17 +248,37 @@ describe("RaidSchedule location emphasis", () => {
   })
 
   it("skips the whole goal section when every one of its resources is fully de-duped away", () => {
+    // Two distinct resources (not just two locations for one resource) so a per-card check alone
+    // — each ResourceCard independently returning null — couldn't explain an absent section: the
+    // goal header and the (otherwise still-rendered, just empty) resource grid would remain unless
+    // RaidSchedule's own group-level visibility check skips the section.
     render(
       <RaidSchedule
-        attemptsLeftByBattle={new Map([[b1, 0]])}
-        attemptsUsedByBattle={new Map([[b1, 10]])}
+        attemptsLeftByBattle={
+          new Map([
+            [b1, 0],
+            [b2, 0],
+          ])
+        }
+        attemptsUsedByBattle={new Map()}
         emphasis="location"
-        entries={[entry(b1, 10, 10)]}
+        entries={[
+          entry(b1, 10, 10),
+          { ...entry(b2, 8, 8), resourceId: "upgrade2" as never },
+        ]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus Elite", 4)]])
+          new Map([
+            [b1, location("B1", "Indomitus Elite", 4)],
+            [b2, location("B2", "Fall of Cadia Standard", 7)],
+          ])
         }
-        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceLabels={
+          new Map([
+            ["upgrade1", "Ceramite"],
+            ["upgrade2", "Plasteel"],
+          ])
+        }
         resourceProgress={new Map()}
         resourceVisuals={new Map()}
         testId="schedule"
@@ -267,6 +288,12 @@ describe("RaidSchedule location emphasis", () => {
     expect(screen.queryByText("Hero One")).not.toBeInTheDocument()
     expect(
       screen.queryByTestId("raid-resource-grid-g1")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("raid-card-g1-upgrade1")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("raid-card-g1-upgrade2")
     ).not.toBeInTheDocument()
   })
 

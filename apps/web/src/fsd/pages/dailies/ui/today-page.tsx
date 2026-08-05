@@ -36,9 +36,14 @@ export function TodayPage() {
   if (context.projectsUnavailable) return <RaidState state="no-project" />
   if (raids.status !== "ready") return <RaidState state={raids.status} />
 
+  // Filter out exhausted locations before slicing to BONUS_LIMIT — otherwise an actionable entry
+  // past the limit can become unreachable if the first few entries all happen to be exhausted.
+  const visibleBonusEntries = raids.bonus.entries.filter(
+    (entry) => raids.attemptsLeftByBattle.get(entry.battleId) !== 0
+  )
   const bonusEntries = showAllBonus
-    ? raids.bonus.entries
-    : raids.bonus.entries.slice(0, BONUS_LIMIT)
+    ? visibleBonusEntries
+    : visibleBonusEntries.slice(0, BONUS_LIMIT)
   // Passed as one combined map alongside the combined entries below — only Raids Plan's own
   // (unaffected) material-emphasis rendering ever reads this for its per-node fully-raided chip;
   // the "location" emphasis path used here relies on `attemptsLeftByBattle` instead.
@@ -117,7 +122,7 @@ export function TodayPage() {
             entries={raids.today.entries}
             bonusEntries={bonusEntries}
             bonusFooter={
-              !showAllBonus && raids.bonus.entries.length > BONUS_LIMIT ? (
+              !showAllBonus && visibleBonusEntries.length > BONUS_LIMIT ? (
                 <Button
                   className="mt-2"
                   variant="outline"

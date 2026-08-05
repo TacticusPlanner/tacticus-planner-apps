@@ -38,9 +38,11 @@ When a goal's only scheduled resource is that same unit's shards, Today SHALL co
 
 Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid and the number of raids at each node, for today only (not a multi-day plan).
 
-A node whose combined raids across every contributing goal that day equal its daily attempt cap (fully raided — no further raids possible there today regardless of remaining energy) SHALL be excluded from its resource card's location listing; it appears only in the Fully Raided section instead. A node below its cap (raids stopped because need was fully covered, or the energy budget ran out) SHALL continue to show a plain raid count in its resource card. This is a per-node, per-day determination based on that node's combined raids across every contributing goal that day — not each entry's own raid count in isolation — consistent with the daily cap itself being shared across goals. The same treatment applies to node listings in Bonus Raids.
+A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0` for a standing — standard/mirror/elite/eliteMirror — campaign node) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable (for example an event-campaign node — see "Today shows real daily energy usage") SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
 
-If every location for a scheduled upgrade or shard becomes fully raided, that upgrade/shard's card SHALL be omitted from the schedule (or Bonus Raids) for that day — its need at available locations is exhausted for today — and it remains visible only via the Fully Raided section.
+A node that remains listed (real attempts not exhausted) SHALL show its planned raid count, except that a node whose planned raid count itself equals its daily attempt cap SHALL show "Max raids" instead of a numeric count.
+
+If every location for a scheduled upgrade or shard becomes excluded this way, that upgrade/shard's card SHALL be omitted from the schedule (or Bonus Raids) for that day — its need at available locations is exhausted for today — and it remains visible only via Today's Attempts, if the player actually attempted it there.
 
 The schedule SHALL respect, in this order of application:
 
@@ -78,29 +80,35 @@ The schedule SHALL respect, in this order of application:
 - **WHEN** Today loads
 - **THEN** Today shows an explicit empty message stating there is nothing to raid today, not a blank list
 
-#### Scenario: A node at its daily cap is excluded from the schedule
+#### Scenario: A node with zero real attempts left is excluded from the schedule
 
-- **GIVEN** a node's planned raid count equals its daily attempt cap
+- **GIVEN** a node's real synced attempts today have reached zero remaining
 - **WHEN** Today loads
-- **THEN** that node is excluded from its resource card's location listing, and appears only in the Fully Raided section
+- **THEN** that node is excluded from its resource card's location listing, and appears only in Today's Attempts
 
-#### Scenario: A node below its daily cap shows a plain count
+#### Scenario: A node with real attempts remaining shows a plain count
 
-- **GIVEN** a node's planned raid count is below its daily attempt cap (raids stopped because need was covered or the energy budget ran out, not because the node was capped)
+- **GIVEN** a node's real synced attempts today have not reached zero remaining
 - **WHEN** Today loads
-- **THEN** that node's listing shows its raid count with no fully-raided indicator, and remains in the resource card
+- **THEN** that node's listing remains in the resource card, showing its planned raid count
 
-#### Scenario: Fully raided combines raids across goals before excluding
+#### Scenario: A node's planned raid count equaling its daily cap shows Max raids
 
-- **GIVEN** two different in-scope goals each raid the same battle node on the same day, and their combined raids at that node equal its daily attempt cap, while neither goal's individual entry alone reaches the cap
+- **GIVEN** a node remains listed (its real attempts are not exhausted) and its planned raid count equals its daily attempt cap
 - **WHEN** Today loads
-- **THEN** that node is excluded from both goals' resource card listings, based on the combined total, not either entry's own count alone
+- **THEN** that node's listing shows "Max raids" instead of a numeric raid count
 
-#### Scenario: An entry's every location is fully raided
+#### Scenario: The simulated plan's own allocation does not by itself exclude a node
 
-- **GIVEN** an upgrade or shard's every farmable location today (across Today's schedule and Bonus Raids) has reached its daily attempt cap
+- **GIVEN** two different in-scope goals each raid the same battle node on the same day, and their combined _simulated_ raid count at that node equals its daily attempt cap, but the player's real synced attempts at that node are not yet exhausted
 - **WHEN** Today loads
-- **THEN** that upgrade/shard's card is omitted from Today's schedule (or Bonus Raids) for the day, and its locations are represented only in the Fully Raided section
+- **THEN** that node remains listed in both goals' resource cards, showing its planned raid count — the simulated plan reaching a node's cap does not by itself exclude it
+
+#### Scenario: An entry's every location has zero real attempts left
+
+- **GIVEN** an upgrade or shard's every farmable location today (across Today's schedule and Bonus Raids) has zero real attempts left
+- **WHEN** Today loads
+- **THEN** that upgrade/shard's card is omitted from Today's schedule (or Bonus Raids) for the day, and its locations are represented only via Today's Attempts if the player actually attempted them there
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 
@@ -120,27 +128,33 @@ Today and Bonus Raids SHALL render each scheduled battle as the primary element 
 
 ## ADDED Requirements
 
-### Requirement: Fully Raided locations section
+### Requirement: Today's Attempts section
 
-Today SHALL show a "Fully Raided" section after the Bonus Raids section, listing every location relevant to today's schedule or Bonus Raids (i.e. referenced by at least one entry there) whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`). This is real, account-synced ground truth, not the simulated plan's own per-node attempt counters: a location can be genuinely fully raided without the simulated plan ever scheduling a raid there today (the player raided it manually, outside any tracked goal), and a location the simulated plan treats as fully allocated is not listed here until the player has actually performed those raids. A location whose real attempts-left data is unavailable (for example an event-campaign node — see "Today shows real daily energy usage") is not listed, rather than guessed at.
+Today SHALL show a "Today's Attempts" section after the Bonus Raids section, listing every standing (standard/mirror/elite/eliteMirror) campaign node the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real raid count today, or "Max raids" once its real synced attempts have reached zero remaining (`attemptsLeft === 0`). Event-campaign nodes SHALL be excluded from this section for the same reason they're excluded from the real energy-usage total (see "Today shows real daily energy usage"): their `battleIndex` is ambiguous between Standard/Extremis tiers in the currently-stored data.
 
-#### Scenario: A fully raided location appears in the new section
+#### Scenario: An attempted location appears in Today's Attempts
 
-- **GIVEN** a location relevant to today's schedule or Bonus Raids has zero real attempts left today
+- **GIVEN** the player has real synced attempts today at a standing-campaign node
 - **WHEN** Today loads
-- **THEN** that location appears in the Fully Raided section, listed after Bonus Raids, labeled to indicate its attempts are exhausted rather than showing a raid count
+- **THEN** that location appears in the Today's Attempts section, listed after Bonus Raids, showing its real raid count today
 
-#### Scenario: A location the simulated plan fully allocated is not listed until really exhausted
+#### Scenario: An exhausted location shows Max raids in Today's Attempts
 
-- **GIVEN** a location's combined raids across today's schedule and Bonus Raids reach its daily attempt cap in the simulated plan, but the player's real synced attempts at that location are not yet exhausted
+- **GIVEN** a location listed in Today's Attempts has zero real attempts left today
 - **WHEN** Today loads
-- **THEN** that location does not appear in the Fully Raided section (it may still be excluded from its normal resource card per the "Today's raid schedule" requirement's own simulated-cap exclusion, which is independent of this section)
+- **THEN** that location's entry shows "Max raids" instead of a numeric raid count
 
-#### Scenario: No fully raided locations yet
+#### Scenario: Today's Attempts includes locations unrelated to the current project
 
-- **GIVEN** no location relevant to today's schedule or Bonus Raids has zero real attempts left
+- **GIVEN** the player has real synced attempts today at a standing-campaign node with no relevance to the current project's schedule or Bonus Raids
 - **WHEN** Today loads
-- **THEN** Today shows an explicit empty state for the Fully Raided section, not a blank or hidden section
+- **THEN** that location still appears in Today's Attempts
+
+#### Scenario: No attempts recorded yet today
+
+- **GIVEN** the player has no real synced attempts recorded yet today
+- **WHEN** Today loads
+- **THEN** Today shows an explicit empty state for the Today's Attempts section, not a blank or hidden section
 
 ### Requirement: Today shows real daily energy usage
 

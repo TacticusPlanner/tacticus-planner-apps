@@ -31,13 +31,15 @@
 - [x] 4.5 Update `today-page.tsx` and the Bonus Raids section to pass `emphasis="location"` to `RaidSchedule`.
 - [x] 4.6 Render the goal-type icon in `GoalHeader`/the merged-identity caption: relocated `goalTypeIcon()` paired with `RankBadge` (`showLabel={false}`) for Rank goals (both icons, no text); relocated `goalTypeIcon()`/icon+text treatment for every other kind.
 
-## 5. Fully Raided section
+## 5. Today's Attempts section & real-attempts exclusion
 
-- [x] 5.1 Derive the set of fully-raided locations (combined raids across Today + Bonus Raids equal to the location's daily attempt cap) from the already-computed `attemptsUsedByBattle` data.
-- [x] 5.2 Filter fully-raided locations out of the normal schedule/Bonus Raids location rows in `ResourceCard` (`emphasis="location"`); when every location for an entry is fully raided, omit that entry's card from the schedule/Bonus Raids entirely.
-- [x] 5.3 Add a new "Fully Raided" section to `today-page.tsx`, rendered after the Bonus Raids section, listing those locations (location-primary presentation, consistent with section 4).
-- [x] 5.4 Add an explicit empty state for the Fully Raided section when no location is fully raided yet.
-- [x] 5.5 Confirm (via test) that a fully-raided location is excluded from its normal resource card's location listing once it appears in the new section (dedup, per design.md Decision 3), and that an entry whose every location is fully raided is omitted from the schedule/Bonus Raids while remaining visible in the Fully Raided section.
+_(Superseded from the original "Fully Raided section" plan — see design.md Decision 3 for the two rounds of feedback that moved this from a simulated-cap, schedule-relevance-scoped section to a real-attempts, account-wide one.)_
+
+- [x] 5.1 Add `buildTodaysAttempts()` (`daily-raids-energy.ts`) deriving every standing-campaign node with real `attemptsUsed > 0` today, account-wide (not scoped to schedule relevance), returning `{ battleId, attemptsUsed, attemptsLeft }`; add `buildAttemptsLeftByBattle()` exposing real per-node attempts-left, used by the exclusion check below.
+- [x] 5.2 In `ResourceCard` (`emphasis="location"`), filter location rows by real `attemptsLeftByBattle.get(battleId) !== 0` (not the simulated `attemptsUsedByBattle`/daily-cap comparison); show "Max raids" instead of a numeric count when a listed node's planned raid count itself equals its daily cap. When every location for an entry is excluded this way, omit that entry's card from the schedule/Bonus Raids entirely.
+- [x] 5.3 Add a new "Today's Attempts" section to `today-page.tsx`, rendered after the Bonus Raids section, listing every location from `buildTodaysAttempts()` account-wide (location-primary presentation with resource icon+tooltip, consistent with section 4; "Max raids" badge when a location's real attempts are exhausted).
+- [x] 5.4 Add an explicit empty state for the Today's Attempts section when no real attempts are recorded yet today.
+- [x] 5.5 Confirm (via test) that a location is excluded from its normal resource card's location listing once its real attempts are exhausted (dedup, per design.md Decision 3); that an entry whose every location is exhausted is omitted from the schedule/Bonus Raids while still appearing in Today's Attempts if actually attempted; and that Today's Attempts includes locations unrelated to the current project's schedule.
 
 ## 6. Energy-usage progress bar
 
@@ -48,19 +50,19 @@
 ## 7. i18n
 
 - [x] 7.1 Add a "Battle {{number}}" key (or equivalent) to `apps/web/public/locales/en/dailies.json`.
-- [x] 7.2 Add the Fully Raided section's title/empty-state keys to `dailies.json`.
+- [x] 7.2 Add the Today's Attempts section's title/empty-state keys to `dailies.json`.
 - [x] 7.3 Add the energy-usage progress bar's accessible label key to `dailies.json`.
 - [x] 7.4 Add/port the same new keys to `de`, `es`, and `fr` locales.
 - [x] 7.5 Update `dailies-translations.test.ts` to cover the new keys across all locales (existing generic key-parity test already covers them — no changes needed).
 
 ## 8. Joyride tutorial
 
-- [x] 8.1 Update `today.tutorial.tsx` with new/updated steps covering the location-primary cards, the Fully Raided section, and the energy-usage progress bar, for both desktop and mobile.
+- [x] 8.1 Update `today.tutorial.tsx` with new/updated steps covering the location-primary cards, the Today's Attempts section, and the energy-usage progress bar, for both desktop and mobile.
 - [x] 8.2 Add the corresponding `tour.today.steps.*` i18n keys across all locales.
 - [x] 8.3 Update `dailies-tutorial.test.tsx` for the new/changed steps (existing generic assertions already cover the new steps — no changes needed).
 
 ## 9. Verification
 
-- [ ] 9.1 Manual verification at a viewport below 768px and one at or above 768px, using a project with: no farmable needs (empty state), a farmable schedule with a single-location resource, a resource farmed at multiple locations, at least one fully-raided location, and real synced attempts pushing the energy-usage bar above 100%.
+- [ ] 9.1 Manual verification at a viewport below 768px and one at or above 768px, using a project with: no farmable needs (empty state), a farmable schedule with a single-location resource, a resource farmed at multiple locations, at least one location with real attempts exhausted (excluded from its card, shown in Today's Attempts), Today's Attempts including at least one location unrelated to the current project, and real synced attempts pushing the energy-usage bar above 100%.
 - [ ] 9.2 Confirm Raids Plan's rendering (card layout, location chips, density toggle) is visually and behaviorally unchanged.
 - [x] 9.3 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`.
