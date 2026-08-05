@@ -161,16 +161,14 @@ describe("GoalsList", () => {
     expect(estimateCells[1]).not.toHaveAttribute("title")
   })
 
-  it("renders the placeholder for every row when no estimates are given", async () => {
+  it("renders no estimate column when no estimates are given", async () => {
     render(
       <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
     )
 
     await screen.findByText("Hero One")
 
-    for (const cell of screen.getAllByTestId("goal-row-estimate")) {
-      expect(cell).not.toHaveAttribute("title")
-    }
+    expect(screen.queryAllByTestId("goal-row-estimate")).toHaveLength(0)
   })
 
   it("renders separate actual and potential progress for a project-scoped goal", async () => {

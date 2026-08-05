@@ -154,7 +154,9 @@ function GoalsTable({
           <TableHead>{t("goals.columns.type")}</TableHead>
           <TableHead>{t("goals.columns.progress")}</TableHead>
           <TableHead>{t("goals.columns.status")}</TableHead>
-          <TableHead>{t("goals.columns.estimate")}</TableHead>
+          {estimates ? (
+            <TableHead>{t("goals.columns.estimate")}</TableHead>
+          ) : null}
           <TableHead className="text-right">
             {t("goals.columns.actions")}
           </TableHead>
@@ -236,9 +238,11 @@ function GoalsTable({
                 />
               </div>
             </TableCell>
-            <TableCell>
-              <EstimateCell estimate={estimates?.get(row.goalId)} />
-            </TableCell>
+            {estimates ? (
+              <TableCell>
+                <EstimateCell estimate={estimates.get(row.goalId)} />
+              </TableCell>
+            ) : null}
             <TableCell
               onClick={stopRowNavigation}
               onKeyDown={stopRowNavigation}
@@ -337,7 +341,9 @@ function GoalsMobileCards({
             <div className="flex items-center gap-1">
               <GoalTypeBadge entityType={row.entityType} type={row.goalType} />
             </div>
-            <EstimateCell estimate={estimates?.get(row.goalId)} />
+            {estimates ? (
+              <EstimateCell estimate={estimates.get(row.goalId)} />
+            ) : null}
           </div>
           <GoalProgressDisplay
             actualSummary={
