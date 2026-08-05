@@ -110,6 +110,24 @@ The schedule SHALL respect, in this order of application:
 - **WHEN** Today loads
 - **THEN** that upgrade/shard's card is omitted from Today's schedule (or Bonus Raids) for the day, and its locations are represented only via Today's Attempts if the player actually attempted them there
 
+#### Scenario: A node at its daily cap is marked fully raided
+
+- **GIVEN** a node's planned raid count equals its daily attempt cap and its real synced attempts today have not reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node's listing shows "Max raids" instead of a numeric raid count, replacing the previous in-place "fully raided" indicator now that this determination is attempts-based (see the real-attempts scenarios above)
+
+#### Scenario: A node below its daily cap shows a plain count
+
+- **GIVEN** a node's planned raid count is below its daily attempt cap, and its real synced attempts today have not reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node's listing shows its planned raid count with no Max-raids indicator
+
+#### Scenario: Fully raided combines raids across goals
+
+- **GIVEN** two different in-scope goals each raid the same battle node on the same day, their combined _planned_ raid count at that node equals its daily attempt cap while neither goal's individual entry alone reaches it, and the node's real synced attempts today have not reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node's listing under both goals' entries shows "Max raids", based on the combined planned total rather than either entry's own count alone
+
 ### Requirement: Campaign locations use the Character Lookup presentation
 
 Today and Bonus Raids SHALL render each scheduled battle as the primary element of its resource card: the campaign icon, the full campaign/tier name (e.g. "Indomitus Elite"), and the battle/node number, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
