@@ -6,17 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { useProjectGoals } from "../../model/projects/use-project-goals"
-import { useProjects } from "@/entities/project"
+import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { InsightsEvents } from ".//insights-events"
 import { InsightsSummary } from ".//insights-summary"
@@ -50,20 +43,15 @@ export function InsightsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="insights-page">
+      {/* goals-navigation spec: a subpage with a project selector but no tab/status row renders it
+          right-aligned, alone in its own row. */}
       <div className="flex items-center justify-end gap-4">
-        <Select onValueChange={setSelectedProjectId} value={projectId}>
-          <SelectTrigger className="w-56" data-testid="insights-project-select">
-            <SelectValue placeholder={t("goals.insights.selectProject")} />
-          </SelectTrigger>
-          <SelectContent>
-            {projects.projects.map((project) => (
-              <SelectItem key={project.projectId} value={project.projectId}>
-                {project.name}
-                {project.isActivePlan ? ` (${t("goals.project.active")})` : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <ProjectSelect
+          onProjectIdChange={setSelectedProjectId}
+          projectId={projectId}
+          projects={projects.projects}
+          testId="insights-project-select"
+        />
       </div>
 
       {!projectId ? (

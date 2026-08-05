@@ -25,10 +25,10 @@ BLOCKED (see implementation notes / final report): empirically, `pnpm lint:fsd` 
 
 ## 4. Shared project selector
 
-- [ ] 4.1 Add an icon-only/compact display mode to `ProjectSelect` (`entities/project/ui/project-select.tsx`) driven by `useIsMobile()`, preserving its accessible name below the 768px breakpoint.
-- [ ] 4.2 Replace Insights' hand-rolled inline `<Select>` (`insights-page.tsx`) with `ProjectSelect`.
-- [ ] 4.3 Verify every remaining Goals/Dailies project selector (Dailies, and the new Projects page from section 6) uses `ProjectSelect` directly, not a page-local reimplementation.
-- [ ] 4.4 Update or add tests for `ProjectSelect`'s new compact mode, and for Insights' selector now showing the project color dot and default/active markers.
+- [x] 4.1 Add an icon-only/compact display mode to `ProjectSelect` (`entities/project/ui/project-select.tsx`) driven by `useIsMobile()`, preserving its accessible name below the 768px breakpoint.
+- [x] 4.2 Replace Insights' hand-rolled inline `<Select>` (`insights-page.tsx`) with `ProjectSelect`.
+- [x] 4.3 Verify every remaining Goals/Dailies project selector (Dailies' `raids-layout.tsx`, `features/project-management`'s `ProjectToolbar`) uses `ProjectSelect` directly. Projects' own selector rework is Section 6 (still at its pre-move location per the Section 1 blocker).
+- [x] 4.4 Update or add tests for `ProjectSelect`'s new compact mode, and for Insights' selector now showing the project color dot and default/active markers (it now reuses `ProjectSelect`, so gets these automatically — verified via `project-select.test.tsx`).
 
 ## 5. Dailies row consolidation
 
