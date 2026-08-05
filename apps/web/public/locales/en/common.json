@@ -633,6 +633,7 @@
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
+      "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "sort": {
         "priority": "Priority",
         "entity": "Character",

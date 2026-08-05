@@ -241,6 +241,9 @@
       "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
       "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen"
+    },
+    "filters": {
+      "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
     }
   },
   "language": {

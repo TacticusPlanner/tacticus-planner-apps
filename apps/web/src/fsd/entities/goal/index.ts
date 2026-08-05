@@ -11,6 +11,17 @@ export {
 export { goalQueries } from "./api/goal.queries"
 export { buildCreateGoalSnapshot } from "./model/goal-snapshot-builder"
 export type { SnapshotMissingUpgradeInput } from "./model/goal-snapshot-builder"
+export { StatusFilterSelect } from "./ui/status-filter-select"
+export type {
+  GoalStatusFilterCounts,
+  GoalStatusFilterValue,
+} from "./ui/status-filter-select"
+export { GoalFilters } from "./ui/goal-filters"
+export type {
+  GoalGroupValue,
+  GoalSortValue,
+  GoalTypeFilterValue,
+} from "./ui/goal-filters"
 export type {
   AbilityTarget,
   CombinedGoalSpec,

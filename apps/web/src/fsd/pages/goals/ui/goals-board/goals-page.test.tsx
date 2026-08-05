@@ -128,7 +128,8 @@ const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
   Promise.resolve(undefined)
 )
 
-vi.mock("@/entities/goal", () => ({
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
   listGoals: (...args: unknown[]) => listGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
@@ -260,14 +261,17 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("filters out the active goal when switching to the Reached tab", async () => {
+  it("filters out the active goal when switching to the Reached status", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const user = userEvent.setup()
     renderPage()
 
     await screen.findByTestId("goals-list-table")
 
-    await user.click(screen.getByTestId("goals-tab-reached"))
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.tabs.reached (0)" })
+    )
 
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
@@ -306,15 +310,21 @@ describe("GoalsPage", () => {
 
     await screen.findByTestId("goals-list-table")
 
-    await user.click(screen.getByTestId("goals-tab-reached"))
+    await user.click(screen.getByTestId("goals-status-filter"))
+    // Attainment may already be resolved by the time the dropdown opens (this test's mocks
+    // resolve the goal as already meeting its rank target), so match the option by its status
+    // label alone rather than an exact, timing-dependent count.
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.reached/ })
+    )
 
     expect(await screen.findByText("Hero One")).toBeInTheDocument()
     await vi.waitFor(() => {
-      expect(screen.getByTestId("goals-tab-reached")).toHaveTextContent("(1)")
+      expect(screen.getByTestId("goals-status-filter")).toHaveTextContent("(1)")
     })
   })
 
-  it("retains non-archived tab counts while the Archived tab is selected", async () => {
+  it("retains non-archived status counts while Archived is selected", async () => {
     listGoals.mockImplementation((options?: { archived?: boolean }) =>
       Promise.resolve({
         goals: options?.archived ? [archivedGoal] : [activeGoal],
@@ -324,10 +334,18 @@ describe("GoalsPage", () => {
     renderPage()
 
     await screen.findByTestId("goals-list-table")
-    await user.click(screen.getByTestId("goals-tab-archived"))
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.tabs.archived (1)" })
+    )
 
-    expect(screen.getByTestId("goals-tab-to-reach")).toHaveTextContent("(1)")
-    expect(screen.getByTestId("goals-tab-archived")).toHaveTextContent("(1)")
+    await user.click(screen.getByTestId("goals-status-filter"))
+    expect(
+      await screen.findByRole("option", { name: "goals.tabs.toReach (1)" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "goals.tabs.archived (1)" })
+    ).toBeInTheDocument()
   })
 
   it("opens the goal detail sheet when clicking anywhere on the row", async () => {

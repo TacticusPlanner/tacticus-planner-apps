@@ -241,6 +241,9 @@
       "overviewDescription": "Filtrez, triez et regroupez tous vos objectifs actifs.",
       "projectsDescription": "Organisez vos objectifs en plans ciblés et maîtrisez leur priorité.",
       "insightsDescription": "Recommandations d'améliorations et de campagnes"
+    },
+    "filters": {
+      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     }
   },
   "language": {

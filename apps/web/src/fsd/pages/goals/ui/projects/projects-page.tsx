@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import {
   ProjectToolbar,
@@ -15,6 +14,7 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 import { useProjects } from "@/entities/project"
+import { StatusFilterSelect, type GoalStatusFilterValue } from "@/entities/goal"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
@@ -27,7 +27,7 @@ import { GoalsList } from "../goals-board/goals-list"
 
 // Mirrors goals-page.tsx's grouping (plan §3): "toReach"/"reached" come from computed attainment,
 // never the goal's lifecycle `status`; "archived" stays status-driven.
-type Tab = "toReach" | "reached" | "archived"
+type Tab = GoalStatusFilterValue
 
 /** Project-scoped planning view, including priority ordering and bulk project actions. */
 export function ProjectsPage() {
@@ -101,15 +101,12 @@ export function ProjectsPage() {
         </Card>
       ) : (
         <>
-          <Tabs onValueChange={(value) => setTab(value as Tab)} value={tab}>
-            <TabsList>
-              {(["toReach", "reached", "archived"] as const).map((value) => (
-                <TabsTrigger key={value} value={value}>
-                  {t(`goals.tabs.${value}`)} ({counts[value]})
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <StatusFilterSelect
+            counts={counts}
+            onValueChange={setTab}
+            testId="projects-status-filter"
+            value={tab}
+          />
 
           {projectGoals.fetchState.status === "error" ? (
             <div

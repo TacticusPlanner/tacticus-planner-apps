@@ -5,14 +5,16 @@
 - [ ] 1.3 Remove the Projects route from `pages/goals/route.tsx` now that `pages/projects` owns it.
 - [ ] 1.4 Run `pnpm lint:fsd` to confirm this composition doesn't violate FSD boundaries; adjust if it does.
 
+BLOCKED (see implementation notes / final report): empirically, `pnpm lint:fsd` (steiger's `fsd/forbidden-imports` rule) forbids `pages/projects` importing anything from `pages/goals`'s public API — same-layer page-to-page imports are disallowed even through `index.ts`. `ProjectsPage` currently depends on deep `pages/goals` internals (`GoalsList`, `GoalDetailSheet`, and ~20-30 supporting model/hook files for attainment, estimates, blockers, insights). Moving it out would require first extracting all of that shared infrastructure into a new `widgets/` layer — a large, high-risk refactor of business-critical calculation code not scoped in proposal.md/design.md's Impact list. Deferred pending a human decision (extract to `widgets/goal-board` vs. revert Decision 6 and keep Projects inside `pages/goals`); all of sections 2-7 below were implemented with `ProjectsPage` remaining at its current location (`pages/goals/ui/projects/projects-page.tsx`) so the rest of the change could proceed.
+
 ## 2. Shared Goals status filter and Type/Sort/Group filters
 
-- [ ] 2.1 Create `StatusFilterSelect` in `entities/goal/ui/` (Unfulfilled/Reached/Archived Select, default Unfulfilled, per-option counts, reached-indicator dot shown when reached count > 0 and value isn't "Reached").
-- [ ] 2.2 Extract the Type/Sort/Group filter row and its `goalType`/`sort`/`group` state and filtering logic out of `goals-page.tsx` into `GoalFilters` in `entities/goal/ui/`, preserving today's external behavior and mobile icon-only pattern exactly.
-- [ ] 2.3 Update `goals-page.tsx` (Overview) to consume both `StatusFilterSelect` and `GoalFilters` from `entities/goal/ui` instead of its local `TabsList`/filter row.
-- [ ] 2.4 Update the new Projects page to consume `StatusFilterSelect` from `entities/goal/ui`, wired to its own `counts`. Projects does not consume `GoalFilters` — Type/Sort/Group stays out of scope for Projects.
-- [ ] 2.5 Add/update i18n keys under `goals.*` in `apps/web/public/locales/<locale>/common.json` for the select's labels and the reached-indicator's accessible text, for every supported locale.
-- [ ] 2.6 Regression-test Overview's filter/sort/group behavior post-extraction (existing behavior must be unchanged); add tests for `StatusFilterSelect`'s default selection, status switching, and indicator visibility (present/absent per `specs/goals-navigation/spec.md`) on both Overview and Projects.
+- [x] 2.1 Create `StatusFilterSelect` in `entities/goal/ui/` (Unfulfilled/Reached/Archived Select, default Unfulfilled, per-option counts, reached-indicator dot shown when reached count > 0 and value isn't "Reached").
+- [x] 2.2 Extract the Type/Sort/Group filter row and its `goalType`/`sort`/`group` state and filtering logic out of `goals-page.tsx` into `GoalFilters` in `entities/goal/ui/`, preserving today's external behavior and mobile icon-only pattern exactly.
+- [x] 2.3 Update `goals-page.tsx` (Overview) to consume both `StatusFilterSelect` and `GoalFilters` from `entities/goal/ui` instead of its local `TabsList`/filter row.
+- [x] 2.4 Update the Projects page to consume `StatusFilterSelect` from `entities/goal/ui`, wired to its own `counts` (Projects page not yet physically moved — see Section 1 blocker note). Projects does not consume `GoalFilters` — Type/Sort/Group stays out of scope for Projects.
+- [x] 2.5 Add/update i18n keys under `goals.*` in `apps/web/public/locales/<locale>/common.json` for the select's labels and the reached-indicator's accessible text, for every supported locale.
+- [x] 2.6 Regression-test Overview's filter/sort/group behavior post-extraction (existing behavior must be unchanged); add tests for `StatusFilterSelect`'s default selection, status switching, and indicator visibility (present/absent per `specs/goals-navigation/spec.md`) on both Overview and Projects.
 
 ## 3. Overview row consolidation
 
