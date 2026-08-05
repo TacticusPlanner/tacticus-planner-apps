@@ -249,10 +249,8 @@
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
     },
     "project": {
-      "noSelectionTitle": "Kein Projekt ausgewählt",
-      "noSelectionDescription": "Wähle oben ein Projekt aus oder stelle ein archiviertes wieder her, um seine Ziele zu sehen.",
-      "listTitle": "Projekte",
-      "rowActionsMenu": "Projektaktionen",
+      "notFoundTitle": "Projekt nicht gefunden",
+      "notFoundDescription": "Dieses Projekt existiert nicht, oder du hast keinen Zugriff darauf.",
       "edit": "Bearbeiten",
       "editTitle": "Projekt bearbeiten",
       "newProjectTitle": "Neues Projekt",
@@ -383,7 +381,7 @@
         }
       }
     },
-    "projects": {
+    "projectsList": {
       "steps": {
         "list": {
           "title": "Deine Projekte",
@@ -391,15 +389,23 @@
         },
         "newProject": {
           "title": "Ein Projekt erstellen",
-          "content": "Starte ein neues Projekt, oder nutze die Bearbeiten-Aktion einer Zeile, um ein bestehendes umzubenennen, zu beschreiben oder umzufärben."
+          "content": "Starte hier ein neues Projekt, oder nutze die Bearbeiten-Aktion einer Zeile, um ein bestehendes umzubenennen, zu beschreiben oder umzufärben."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "Dieses Projekt",
+          "content": "Die eigene Zeile dieses Projekts mit denselben Aktionen wie in der Projektliste — als aktiv festlegen, bearbeiten oder archivieren."
         },
         "selector": {
           "title": "Ein Projekt auswählen",
-          "content": "Wähle, dessen Ziele unten angezeigt werden — getrennt von der Verwaltung der Projekte oben."
+          "content": "Wechsle zur eigenen Ansicht eines anderen Projekts — getrennt von der Verwaltung in der Liste."
         },
         "goals": {
           "title": "Projektziele",
-          "content": "Die Ziele des ausgewählten Projekts erscheinen hier, in Prioritätsreihenfolge."
+          "content": "Die Ziele dieses Projekts erscheinen hier, in Prioritätsreihenfolge."
         }
       }
     }

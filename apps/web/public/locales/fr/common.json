@@ -249,10 +249,8 @@
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
     "project": {
-      "noSelectionTitle": "Aucun projet sélectionné",
-      "noSelectionDescription": "Choisissez un projet ci-dessus, ou restaurez-en un archivé, pour voir ses objectifs.",
-      "listTitle": "Projets",
-      "rowActionsMenu": "Actions du projet",
+      "notFoundTitle": "Projet introuvable",
+      "notFoundDescription": "Ce projet n'existe pas, ou vous n'y avez pas accès.",
       "edit": "Modifier",
       "editTitle": "Modifier le projet",
       "newProjectTitle": "Nouveau projet",
@@ -383,7 +381,7 @@
         }
       }
     },
-    "projects": {
+    "projectsList": {
       "steps": {
         "list": {
           "title": "Vos projets",
@@ -391,15 +389,23 @@
         },
         "newProject": {
           "title": "Créer un projet",
-          "content": "Démarrez un nouveau projet, ou utilisez l'action Modifier d'une ligne pour renommer, décrire ou recolorer un projet existant."
+          "content": "Démarrez ici un nouveau projet, ou utilisez l'action Modifier d'une ligne pour renommer, décrire ou recolorer un projet existant."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "Ce projet",
+          "content": "La propre ligne de ce projet avec les mêmes actions que sur la liste des projets — l'activer, le modifier ou l'archiver."
         },
         "selector": {
           "title": "Choisir un projet",
-          "content": "Choisissez les objectifs de quel projet afficher ci-dessous — distinct de la gestion des projets ci-dessus."
+          "content": "Passez à la vue propre d'un autre projet — distinct de la gestion des projets sur la liste."
         },
         "goals": {
           "title": "Objectifs du projet",
-          "content": "Les objectifs du projet sélectionné apparaissent ici, par ordre de priorité."
+          "content": "Les objectifs de ce projet apparaissent ici, par ordre de priorité."
         }
       }
     }

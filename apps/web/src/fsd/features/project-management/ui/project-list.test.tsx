@@ -56,6 +56,7 @@ describe("ProjectList", () => {
       <ProjectList
         actions={actionsHarness() as never}
         onEdit={vi.fn()}
+        onSelect={vi.fn()}
         projects={[defaultProject, otherProject, archivedProject]}
       />
     )
@@ -65,147 +66,39 @@ describe("ProjectList", () => {
     expect(screen.getByText("Archived plan")).toBeInTheDocument()
   })
 
-  it("opens the Edit form for the row's own project via onEdit", async () => {
+  it("calls onSelect with the clicked row's project", async () => {
     const user = userEvent.setup()
+    const onSelect = vi.fn()
+    render(
+      <ProjectList
+        actions={actionsHarness() as never}
+        onEdit={vi.fn()}
+        onSelect={onSelect}
+        projects={[defaultProject, otherProject]}
+      />
+    )
+
+    await user.click(screen.getByText("Other plan"))
+    expect(onSelect).toHaveBeenCalledWith(otherProject)
+  })
+
+  it("does not call onSelect when a row's action icon is activated", async () => {
+    const user = userEvent.setup()
+    const onSelect = vi.fn()
     const onEdit = vi.fn()
     render(
       <ProjectList
         actions={actionsHarness() as never}
         onEdit={onEdit}
+        onSelect={onSelect}
         projects={[otherProject]}
       />
     )
 
     await user.click(
-      screen.getByTestId(
-        `project-row-actions-trigger-${otherProject.projectId}`
-      )
+      screen.getByTestId(`project-row-edit-${otherProject.projectId}`)
     )
-    await user.click(
-      await screen.findByTestId(`project-row-edit-${otherProject.projectId}`)
-    )
-
     expect(onEdit).toHaveBeenCalledWith(otherProject)
-  })
-
-  it("sets a non-active project active", async () => {
-    const user = userEvent.setup()
-    const activate = vi.fn()
-    render(
-      <ProjectList
-        actions={actionsHarness({ activate }) as never}
-        onEdit={vi.fn()}
-        projects={[otherProject]}
-      />
-    )
-
-    await user.click(
-      screen.getByTestId(
-        `project-row-actions-trigger-${otherProject.projectId}`
-      )
-    )
-    await user.click(
-      await screen.findByTestId(
-        `project-row-set-active-${otherProject.projectId}`
-      )
-    )
-
-    expect(activate).toHaveBeenCalledWith(otherProject.projectId)
-  })
-
-  it("archives a project that is neither default nor the active plan", async () => {
-    const user = userEvent.setup()
-    const save = vi.fn()
-    render(
-      <ProjectList
-        actions={actionsHarness({ save }) as never}
-        onEdit={vi.fn()}
-        projects={[otherProject]}
-      />
-    )
-
-    await user.click(
-      screen.getByTestId(
-        `project-row-actions-trigger-${otherProject.projectId}`
-      )
-    )
-    await user.click(
-      await screen.findByTestId(`project-row-archive-${otherProject.projectId}`)
-    )
-
-    expect(save).toHaveBeenCalledWith(
-      otherProject,
-      expect.objectContaining({ status: "Archived" })
-    )
-  })
-
-  it("disables Archive for the default project", async () => {
-    const user = userEvent.setup()
-    render(
-      <ProjectList
-        actions={actionsHarness() as never}
-        onEdit={vi.fn()}
-        projects={[defaultProject]}
-      />
-    )
-
-    await user.click(
-      screen.getByTestId(
-        `project-row-actions-trigger-${defaultProject.projectId}`
-      )
-    )
-    expect(
-      await screen.findByTestId(
-        `project-row-archive-${defaultProject.projectId}`
-      )
-    ).toHaveAttribute("data-disabled")
-  })
-
-  it("restores an archived project", async () => {
-    const user = userEvent.setup()
-    const save = vi.fn()
-    render(
-      <ProjectList
-        actions={actionsHarness({ save }) as never}
-        onEdit={vi.fn()}
-        projects={[archivedProject]}
-      />
-    )
-
-    await user.click(
-      screen.getByTestId(
-        `project-row-actions-trigger-${archivedProject.projectId}`
-      )
-    )
-    await user.click(
-      await screen.findByTestId(
-        `project-row-restore-${archivedProject.projectId}`
-      )
-    )
-
-    expect(save).toHaveBeenCalledWith(
-      archivedProject,
-      expect.objectContaining({ status: "Active" })
-    )
-  })
-
-  it("does not offer Set active for the already-active project", async () => {
-    const user = userEvent.setup()
-    render(
-      <ProjectList
-        actions={actionsHarness() as never}
-        onEdit={vi.fn()}
-        projects={[defaultProject]}
-      />
-    )
-
-    await user.click(
-      screen.getByTestId(
-        `project-row-actions-trigger-${defaultProject.projectId}`
-      )
-    )
-    expect(
-      screen.queryByTestId(`project-row-set-active-${defaultProject.projectId}`)
-    ).not.toBeInTheDocument()
+    expect(onSelect).not.toHaveBeenCalled()
   })
 })

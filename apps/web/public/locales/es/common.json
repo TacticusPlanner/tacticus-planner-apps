@@ -249,10 +249,8 @@
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
     "project": {
-      "noSelectionTitle": "Ningún proyecto seleccionado",
-      "noSelectionDescription": "Elige un proyecto arriba, o restaura uno archivado, para ver sus objetivos.",
-      "listTitle": "Proyectos",
-      "rowActionsMenu": "Acciones del proyecto",
+      "notFoundTitle": "Proyecto no encontrado",
+      "notFoundDescription": "Este proyecto no existe, o no tienes acceso a él.",
       "edit": "Editar",
       "editTitle": "Editar proyecto",
       "newProjectTitle": "Nuevo proyecto",
@@ -383,7 +381,7 @@
         }
       }
     },
-    "projects": {
+    "projectsList": {
       "steps": {
         "list": {
           "title": "Tus proyectos",
@@ -391,15 +389,23 @@
         },
         "newProject": {
           "title": "Crea un proyecto",
-          "content": "Inicia un nuevo proyecto, o usa la acción Editar de una fila para renombrar, describir o recolorear uno existente."
+          "content": "Inicia aquí un nuevo proyecto, o usa la acción Editar de una fila para renombrar, describir o recolorear uno existente."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "Este proyecto",
+          "content": "La fila propia de este proyecto con las mismas acciones que en la lista de proyectos — actívalo, edítalo o archívalo."
         },
         "selector": {
           "title": "Elige un proyecto",
-          "content": "Elige de qué proyecto ver los objetivos abajo — algo separado de gestionar los proyectos de arriba."
+          "content": "Cambia a la vista propia de otro proyecto — algo separado de gestionar proyectos en la lista."
         },
         "goals": {
           "title": "Objetivos del proyecto",
-          "content": "Los objetivos del proyecto seleccionado aparecen aquí, en orden de prioridad."
+          "content": "Los objetivos de este proyecto aparecen aquí, en orden de prioridad."
         }
       }
     }

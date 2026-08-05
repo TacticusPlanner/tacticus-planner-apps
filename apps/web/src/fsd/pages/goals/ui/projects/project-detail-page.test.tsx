@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { MemoryRouter, Route, Routes } from "react-router"
+import { useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
@@ -134,41 +137,91 @@ const listProjectGoals = vi.fn()
 const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
 
-vi.mock("@/entities/project", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/entities/project")>()),
-  listProjects: (...args: unknown[]) => listProjects(...args),
-  listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
-  activateProject: (...args: unknown[]) => activateProject(...args),
-  updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
-  projectQueries: {
-    all: () => ["projects"],
-    list: () => ({
-      queryKey: ["projects", "list"],
-      queryFn: () => listProjects(),
-    }),
-    goals: (projectId: string) => ({
-      queryKey: ["projects", projectId, "goals"],
-      queryFn: () => listProjectGoals(projectId),
-    }),
-  },
-}))
+type MockProjectSummary = {
+  projectId: string
+  isActivePlan: boolean
+  isDefault: boolean
+  [key: string]: unknown
+}
+
+vi.mock("@/entities/project", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/entities/project")>()
+  return {
+    ...actual,
+    listProjects: (...args: unknown[]) => listProjects(...args),
+    listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
+    activateProject: (...args: unknown[]) => activateProject(...args),
+    updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
+    projectQueries: {
+      all: () => ["projects"],
+      list: () => ({
+        queryKey: ["projects", "list"],
+        queryFn: () => listProjects(),
+      }),
+      goals: (projectId: string) => ({
+        queryKey: ["projects", projectId, "goals"],
+        queryFn: () => listProjectGoals(projectId),
+      }),
+    },
+    // `useProjects` lives inside the mocked `@/entities/project` package and imports
+    // `projectQueries` from its own barrel, so it doesn't see this factory's override above
+    // (a Vitest self-reference quirk with `importOriginal`) - reimplemented here directly
+    // against the mocked `listProjects`, mirroring `use-projects.ts`'s real shape.
+    useProjects: () => {
+      const isAuthenticated = useIsAuthenticated()
+      const query = useQuery({
+        queryKey: ["projects", "list"],
+        queryFn: () => listProjects(),
+        enabled: isAuthenticated,
+      })
+      const projects =
+        (query.data as { projects: MockProjectSummary[] } | undefined)
+          ?.projects ?? []
+      const activeProject = projects.find((project) => project.isActivePlan)
+      const defaultProject = projects.find((project) => project.isDefault)
+      return {
+        fetchState: query.isError
+          ? { status: "error" as const, message: "error" }
+          : query.data
+            ? { status: "success" as const, projects }
+            : { status: "idle" as const },
+        projects,
+        activeProjectId: activeProject?.projectId,
+        defaultProjectId: defaultProject?.projectId,
+        loading: isAuthenticated && query.isPending,
+        retry: () => {
+          void query.refetch()
+        },
+      }
+    },
+  }
+})
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
-import { ProjectsPage } from ".//projects-page"
+import { ProjectDetailPage } from "./project-detail-page"
 import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 
-function renderPage() {
+function renderPage(projectId = "proj-a") {
   return render(
-    <CreateGoalLauncherProvider onLaunch={vi.fn()}>
-      <ProjectsPage />
-    </CreateGoalLauncherProvider>
+    <MemoryRouter initialEntries={[`/goals/projects/${projectId}`]}>
+      <Routes>
+        <Route
+          path="/goals/projects/:projectId"
+          element={
+            <CreateGoalLauncherProvider onLaunch={vi.fn()}>
+              <ProjectDetailPage />
+            </CreateGoalLauncherProvider>
+          }
+        />
+      </Routes>
+    </MemoryRouter>
   )
 }
 
 function project(overrides: Partial<Record<string, unknown>> = {}) {
   return {
-    projectId: "proj-1",
+    projectId: "proj-a",
     name: "Project A",
     description: null,
     color: null,
@@ -196,7 +249,7 @@ function goal(overrides: Partial<Record<string, unknown>> = {}) {
   }
 }
 
-describe("ProjectsPage", () => {
+describe("ProjectDetailPage", () => {
   beforeEach(() => {
     listProjects.mockReset()
     listProjectGoals.mockReset()
@@ -205,64 +258,40 @@ describe("ProjectsPage", () => {
     getGoalDetail.mockReset().mockResolvedValue(undefined)
   })
 
-  it("shows only the New project affordance when there are no projects yet", async () => {
-    listProjects.mockResolvedValue({ projects: [] })
-    renderPage()
+  it("shows a not-found state for a project id that doesn't match any of the user's projects", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    renderPage("nonexistent")
 
-    expect(await screen.findByTestId("projects-page-empty")).toBeInTheDocument()
-    expect(screen.getByTestId("projects-new-project")).toBeInTheDocument()
-    expect(screen.queryByTestId("project-list")).not.toBeInTheDocument()
     expect(
-      screen.queryByTestId("projects-goal-project-select")
-    ).not.toBeInTheDocument()
+      await screen.findByTestId("project-detail-page-not-found")
+    ).toBeInTheDocument()
   })
 
-  it("lists every project, including archived ones", async () => {
-    const projectA = project()
-    const archived = project({
-      projectId: "proj-archived",
-      name: "Old plan",
-      isActivePlan: false,
-      isDefault: false,
-      status: "Archived",
-    })
-    listProjects.mockResolvedValue({ projects: [projectA, archived] })
+  it("shows the current project's own row with the same inline actions as the list route", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({ goals: [] })
-    renderPage()
+    renderPage("proj-a")
 
     expect(await screen.findByText("Project A")).toBeInTheDocument()
-    expect(screen.getByText("Old plan")).toBeInTheDocument()
+    expect(screen.getByTestId("project-row-archive-proj-a")).toBeInTheDocument()
   })
 
-  it("opens a blank Sheet for New project and a pre-filled Sheet for Edit", async () => {
-    const projectA = project()
-    listProjects.mockResolvedValue({ projects: [projectA] })
+  it("shows the goals for the project id in the route, driven by the route param rather than local state", async () => {
+    listProjects.mockResolvedValue({
+      projects: [
+        project(),
+        project({ projectId: "proj-b", name: "Project B" }),
+      ],
+    })
     listProjectGoals.mockResolvedValue({ goals: [] })
-    const user = userEvent.setup()
-    renderPage()
+    renderPage("proj-b")
 
-    await screen.findByText("Project A")
-    await user.click(screen.getByTestId("projects-new-project"))
-    expect(
-      await screen.findByText("goals.project.newProjectTitle")
-    ).toBeInTheDocument()
-    expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
-    await user.keyboard("{Escape}")
-
-    await user.click(
-      screen.getByTestId(`project-row-actions-trigger-${projectA.projectId}`)
-    )
-    await user.click(
-      await screen.findByTestId(`project-row-edit-${projectA.projectId}`)
-    )
-    expect(
-      await screen.findByText("goals.project.editTitle")
-    ).toBeInTheDocument()
-    expect(screen.getByLabelText("goals.project.name")).toHaveValue("Project A")
+    await screen.findByText("Project B")
+    expect(listProjectGoals).toHaveBeenCalledWith("proj-b")
   })
 
-  it("scopes the goal list to the ProjectSelect's choice, unaffected by acting on a different project's row", async () => {
-    const projectA = project({ projectId: "proj-a", name: "Project A" })
+  it("changing the ProjectSelect navigates to the newly-selected project's own detail route", async () => {
+    const projectA = project()
     const projectB = project({
       projectId: "proj-b",
       name: "Project B",
@@ -270,52 +299,46 @@ describe("ProjectsPage", () => {
       isDefault: false,
     })
     listProjects.mockResolvedValue({ projects: [projectA, projectB] })
-    listProjectGoals.mockImplementation((projectId: string) =>
-      Promise.resolve({
-        goals:
-          projectId === "proj-a"
-            ? [{ goal: goal({ goalId: "goal-a" }), priority: 1 }]
-            : [
-                {
-                  goal: goal({ goalId: "goal-b", entityId: "hero2" }),
-                  priority: 1,
-                },
-              ],
-      })
-    )
-    activateProject.mockResolvedValue({})
+    listProjectGoals.mockResolvedValue({ goals: [] })
     const user = userEvent.setup()
-    renderPage()
+    renderPage("proj-a")
 
-    // Defaults to the active plan, Project A.
-    await screen.findByTestId("goals-list-table")
-    expect(listProjectGoals).toHaveBeenCalledWith("proj-a")
-
-    // Setting Project B active from its row must not change which project's goals are shown.
-    await user.click(
-      screen.getByTestId(`project-row-actions-trigger-${projectB.projectId}`)
-    )
-    await user.click(
-      await screen.findByTestId(`project-row-set-active-${projectB.projectId}`)
-    )
-    await vi.waitFor(() =>
-      expect(activateProject).toHaveBeenCalledWith("proj-b")
-    )
-
+    await screen.findByTestId("project-detail-page")
     const select = screen.getByTestId("projects-goal-project-select")
     expect(within(select).getByText(/Project A/)).toBeInTheDocument()
 
-    // Only the trailing ProjectSelect itself changes the goal list's scope.
     await user.click(select)
     await user.click(await screen.findByRole("option", { name: /Project B/ }))
+
     await vi.waitFor(() =>
       expect(listProjectGoals).toHaveBeenCalledWith("proj-b")
+    )
+    expect(screen.getByTestId("project-detail-page")).toHaveAttribute(
+      "data-project-id",
+      "proj-b"
+    )
+  })
+
+  it("acting on the current project's own row does not change the route", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    activateProject.mockResolvedValue({})
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    await user.click(screen.getByTestId("project-row-edit-proj-a"))
+    expect(
+      await screen.findByText("goals.project.editTitle")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("project-detail-page")).toHaveAttribute(
+      "data-project-id",
+      "proj-a"
     )
   })
 
   it("filters the goal list to only the Paused goal when switching to the Paused status", async () => {
-    const projectA = project()
-    listProjects.mockResolvedValue({ projects: [projectA] })
+    listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
         {
@@ -329,7 +352,7 @@ describe("ProjectsPage", () => {
       ],
     })
     const user = userEvent.setup()
-    renderPage()
+    renderPage("proj-a")
 
     await screen.findByTestId("goals-list-table")
 
@@ -346,13 +369,12 @@ describe("ProjectsPage", () => {
   })
 
   it("selects the Blocked status without a live count and shows the filtered-empty state when nothing is blocked", async () => {
-    const projectA = project()
-    listProjects.mockResolvedValue({ projects: [projectA] })
+    listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [{ goal: goal({ goalId: "goal-active" }), priority: 1 }],
     })
     const user = userEvent.setup()
-    renderPage()
+    renderPage("proj-a")
 
     await screen.findByTestId("goals-list-table")
 
@@ -363,5 +385,41 @@ describe("ProjectsPage", () => {
     await user.click(screen.getByRole("option", { name: "goals.tabs.blocked" }))
 
     expect(await screen.findByText("goals.empty.filtered")).toBeInTheDocument()
+  })
+
+  it("offers the same Type/Sort/Group filters as Overview", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    expect(screen.getByTestId("goals-type-filter")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-sort")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
+  })
+
+  it("hides the reorder controls once a non-default sort is applied", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-1" }), priority: 1 },
+        { goal: goal({ goalId: "goal-2", entityId: "hero2" }), priority: 2 },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.getByTestId("goal-row-move-up-goal-1")).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("goals-sort"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
+    )
+
+    await screen.findByTestId("goals-list-table")
+    expect(
+      screen.queryByTestId("goal-row-move-up-goal-1")
+    ).not.toBeInTheDocument()
   })
 })

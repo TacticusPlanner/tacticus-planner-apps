@@ -420,15 +420,13 @@
     "project": {
       "noProjectTitle": "No projects yet",
       "noProjectDescription": "Create a project to organize and prioritize related goals.",
-      "noSelectionTitle": "No project selected",
-      "noSelectionDescription": "Choose a project above, or restore an archived one, to see its goals.",
+      "notFoundTitle": "Project not found",
+      "notFoundDescription": "This project doesn't exist, or you don't have access to it.",
       "membership": "Projects containing this goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
       "setActive": "Set as active plan",
       "active": "active",
-      "listTitle": "Projects",
-      "rowActionsMenu": "Project actions",
       "edit": "Edit",
       "editTitle": "Edit project",
       "newProjectTitle": "New project",
@@ -841,7 +839,7 @@
         }
       }
     },
-    "projects": {
+    "projectsList": {
       "steps": {
         "list": {
           "title": "Your projects",
@@ -849,15 +847,23 @@
         },
         "newProject": {
           "title": "Create a project",
-          "content": "Start a new project, or use a row's Edit action to rename, describe, or recolor an existing one."
+          "content": "Start a new project here, or use a row's Edit action to rename, describe, or recolor an existing one."
+        }
+      }
+    },
+    "projectDetail": {
+      "steps": {
+        "row": {
+          "title": "This project",
+          "content": "This project's own row, with the same actions as on the Projects list — set it active, edit it, or archive it."
         },
         "selector": {
           "title": "Choose a project",
-          "content": "Pick which project's goals to view below — separate from managing the projects above."
+          "content": "Switch to a different project's own view — separate from managing projects on the list."
         },
         "goals": {
           "title": "Project goals",
-          "content": "The selected project's goals appear here, in priority order."
+          "content": "This project's goals appear here, in priority order."
         }
       }
     }

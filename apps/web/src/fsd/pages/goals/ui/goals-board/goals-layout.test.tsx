@@ -19,7 +19,7 @@ function renderLayout(initialEntry: string) {
           <Route index element={<div data-testid="goals-child" />} />
           <Route
             element={<div data-testid="projects-child" />}
-            path="project"
+            path="projects"
           />
           <Route
             element={<div data-testid="insights-child" />}
@@ -46,8 +46,8 @@ describe("GoalsLayout", () => {
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
   })
 
-  it("renders the Projects child route at /goals/project", () => {
-    renderLayout("/goals/project")
+  it("renders the Projects child route at /goals/projects", () => {
+    renderLayout("/goals/projects")
 
     expect(screen.getByTestId("projects-child")).toBeInTheDocument()
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
