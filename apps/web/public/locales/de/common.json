@@ -244,6 +244,16 @@
     },
     "filters": {
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
+    },
+    "project": {
+      "noSelectionTitle": "Kein Projekt ausgewählt",
+      "noSelectionDescription": "Wähle oben ein Projekt aus oder stelle ein archiviertes wieder her, um seine Ziele zu sehen.",
+      "listTitle": "Projekte",
+      "rowActionsMenu": "Projektaktionen",
+      "edit": "Bearbeiten",
+      "editTitle": "Projekt bearbeiten",
+      "newProjectTitle": "Neues Projekt",
+      "formDescription": "Benenne, beschreibe und färbe dieses Projekt."
     }
   },
   "language": {

@@ -244,6 +244,16 @@
     },
     "filters": {
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
+    },
+    "project": {
+      "noSelectionTitle": "Ningún proyecto seleccionado",
+      "noSelectionDescription": "Elige un proyecto arriba, o restaura uno archivado, para ver sus objetivos.",
+      "listTitle": "Proyectos",
+      "rowActionsMenu": "Acciones del proyecto",
+      "edit": "Editar",
+      "editTitle": "Editar proyecto",
+      "newProjectTitle": "Nuevo proyecto",
+      "formDescription": "Asigna nombre, descripción y color a este proyecto."
     }
   },
   "language": {

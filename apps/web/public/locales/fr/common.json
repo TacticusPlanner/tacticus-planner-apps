@@ -244,6 +244,16 @@
     },
     "filters": {
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
+    },
+    "project": {
+      "noSelectionTitle": "Aucun projet sélectionné",
+      "noSelectionDescription": "Choisissez un projet ci-dessus, ou restaurez-en un archivé, pour voir ses objectifs.",
+      "listTitle": "Projets",
+      "rowActionsMenu": "Actions du projet",
+      "edit": "Modifier",
+      "editTitle": "Modifier le projet",
+      "newProjectTitle": "Nouveau projet",
+      "formDescription": "Nommez, décrivez et colorez ce projet."
     }
   },
   "language": {

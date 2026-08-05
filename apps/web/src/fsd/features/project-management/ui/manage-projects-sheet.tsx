@@ -12,53 +12,31 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet"
 
-import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectColorPicker } from ".//project-color-picker"
 
+/**
+ * The create/edit form for a project (project-management spec: "Creating and editing a project
+ * uses a form Sheet") — narrowed from its previous shape, which combined this form with an
+ * embedded project list/selection; that list now lives permanently on the Projects page itself (see
+ * `ProjectList`). `project` undefined means "New project" (blank form); a `ProjectSummary` means
+ * "Edit" (pre-filled). Submitting saves the change and closes the Sheet either way. Lifecycle
+ * actions (Set active/Archive/Restore) are no longer available here - they moved to each project
+ * list row.
+ */
 export function ManageProjectsSheet({
   open,
   onOpenChange,
-  projects,
+  project,
   actions,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  projects: ProjectSummary[]
+  project: ProjectSummary | undefined
   actions: ReturnType<typeof useProjectActions>
 }) {
   const { t } = useTranslation()
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const selected = projects.find((project) => project.projectId === selectedId)
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [color, setColor] = useState("")
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault()
-    if (!name.trim()) return
-    if (selected) {
-      void actions
-        .save(selected, {
-          ...selected,
-          name: name.trim(),
-          description: description.trim() || null,
-          color: color.trim() || null,
-        })
-        .then((ok) => ok && setName(name.trim()))
-    } else {
-      void actions
-        .create(name.trim(), description.trim() || null, color.trim() || null)
-        .then((ok) => ok && setName(""))
-    }
-  }
-
-  const setProject = (project: ProjectSummary | undefined) => {
-    setSelectedId(project?.projectId ?? null)
-    setName(project?.name ?? "")
-    setDescription(project?.description ?? "")
-    setColor(project?.color ?? "")
-  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -67,124 +45,116 @@ export function ManageProjectsSheet({
         data-testid="manage-projects-sheet"
       >
         <SheetHeader>
-          <SheetTitle>{t("goals.project.manageTitle")}</SheetTitle>
+          <SheetTitle>
+            {project
+              ? t("goals.project.editTitle")
+              : t("goals.project.newProjectTitle")}
+          </SheetTitle>
           <SheetDescription>
-            {t("goals.project.manageDescription")}
+            {t("goals.project.formDescription")}
           </SheetDescription>
         </SheetHeader>
 
-        <div className="grid gap-2 px-4">
-          <Button
-            variant={!selected ? "secondary" : "outline"}
-            onClick={() => setProject(undefined)}
-          >
-            {t("goals.project.newProject")}
-          </Button>
-          {projects.map((project) => (
-            <Button
-              className="justify-between"
-              key={project.projectId}
-              variant={selectedId === project.projectId ? "secondary" : "ghost"}
-              onClick={() => setProject(project)}
-            >
-              <span className="flex items-center gap-2">
-                <ProjectColorDot color={project.color} />
-                {project.name}
-              </span>
-              {project.status === "Archived"
-                ? t("goals.status.Archived")
-                : null}
-            </Button>
-          ))}
-        </div>
-
-        <form
-          className="grid gap-4 px-4"
-          id="manage-project-form"
-          onSubmit={submit}
-        >
-          <Field>
-            <FieldLabel htmlFor="project-name">
-              {t("goals.project.name")}
-            </FieldLabel>
-            <Input
-              id="project-name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="project-description">
-              {t("goals.project.description")}
-            </FieldLabel>
-            <Input
-              id="project-description"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="project-color">
-              {t("goals.project.color")}
-            </FieldLabel>
-            <ProjectColorPicker onChange={setColor} value={color} />
-            <Input
-              aria-label={t("goals.project.color")}
-              id="project-color"
-              placeholder="#6366f1"
-              value={color}
-              onChange={(event) => setColor(event.target.value)}
-            />
-          </Field>
-          {selected ? (
-            <div className="flex gap-2">
-              {selected.status === "Archived" ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={actions.pending}
-                  onClick={() =>
-                    void actions.save(selected, {
-                      ...selected,
-                      status: "Active",
-                    })
-                  }
-                >
-                  {t("goals.project.restore")}
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  disabled={
-                    actions.pending ||
-                    selected.isDefault ||
-                    selected.isActivePlan
-                  }
-                  onClick={() =>
-                    void actions.save(selected, {
-                      ...selected,
-                      status: "Archived",
-                    })
-                  }
-                >
-                  {t("goals.project.archive")}
-                </Button>
-              )}
-            </div>
-          ) : null}
-        </form>
-
-        <SheetFooter>
-          <Button
-            disabled={!name.trim() || actions.pending}
-            form="manage-project-form"
-            type="submit"
-          >
-            {selected ? t("goals.project.save") : t("goals.project.create")}
-          </Button>
-        </SheetFooter>
+        {/* Unmounted while closed and keyed by the target project (or "new") - so every time it
+            opens, local form state starts fresh from the current `project` prop rather than
+            needing an effect to resync state that a previous open may have left behind. */}
+        {open ? (
+          <ProjectForm
+            actions={actions}
+            key={project?.projectId ?? "new"}
+            onSaved={() => onOpenChange(false)}
+            project={project}
+          />
+        ) : null}
       </SheetContent>
     </Sheet>
+  )
+}
+
+function ProjectForm({
+  project,
+  actions,
+  onSaved,
+}: {
+  project: ProjectSummary | undefined
+  actions: ReturnType<typeof useProjectActions>
+  onSaved: () => void
+}) {
+  const { t } = useTranslation()
+  const [name, setName] = useState(project?.name ?? "")
+  const [description, setDescription] = useState(project?.description ?? "")
+  const [color, setColor] = useState(project?.color ?? "")
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault()
+    if (!name.trim()) return
+    const trimmedName = name.trim()
+    const trimmedDescription = description.trim() || null
+    const trimmedColor = color.trim() || null
+
+    const result = project
+      ? actions.save(project, {
+          ...project,
+          name: trimmedName,
+          description: trimmedDescription,
+          color: trimmedColor,
+        })
+      : actions.create(trimmedName, trimmedDescription, trimmedColor)
+
+    void result.then((ok) => ok && onSaved())
+  }
+
+  return (
+    <>
+      <form
+        className="grid gap-4 px-4"
+        id="manage-project-form"
+        onSubmit={submit}
+      >
+        <Field>
+          <FieldLabel htmlFor="project-name">
+            {t("goals.project.name")}
+          </FieldLabel>
+          <Input
+            id="project-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="project-description">
+            {t("goals.project.description")}
+          </FieldLabel>
+          <Input
+            id="project-description"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="project-color">
+            {t("goals.project.color")}
+          </FieldLabel>
+          <ProjectColorPicker onChange={setColor} value={color} />
+          <Input
+            aria-label={t("goals.project.color")}
+            id="project-color"
+            placeholder="#6366f1"
+            value={color}
+            onChange={(event) => setColor(event.target.value)}
+          />
+        </Field>
+      </form>
+
+      <SheetFooter>
+        <Button
+          disabled={!name.trim() || actions.pending}
+          form="manage-project-form"
+          type="submit"
+        >
+          {project ? t("goals.project.save") : t("goals.project.create")}
+        </Button>
+      </SheetFooter>
+    </>
   )
 }

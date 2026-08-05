@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Plus } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -9,11 +11,16 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
-  ProjectToolbar,
+  ManageProjectsSheet,
+  ProjectList,
   reorderedMemberIds,
   useProjectActions,
 } from "@/features/project-management"
-import { useProjects } from "@/entities/project"
+import {
+  ProjectSelect,
+  useProjects,
+  type ProjectSummary,
+} from "@/entities/project"
 import { StatusFilterSelect, type GoalStatusFilterValue } from "@/entities/goal"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
@@ -29,10 +36,16 @@ import { GoalsList } from "../goals-board/goals-list"
 // never the goal's lifecycle `status`; "archived" stays status-driven.
 type Tab = GoalStatusFilterValue
 
-/** Project-scoped planning view, including priority ordering and bulk project actions. */
+/**
+ * The dedicated project-management surface (project-management spec): a permanent, inline project
+ * list (including archived projects) with per-row lifecycle actions, a narrowed create/edit form
+ * Sheet, and — separate from the list — a `ProjectSelect` that alone drives which project's goals
+ * the list below shows. Row actions never change that selection.
+ */
 export function ProjectsPage() {
   const { t } = useTranslation()
   const projects = useProjects()
+  const hasProjects = projects.projects.length > 0
   const [selectedProjectId, setSelectedProjectId] = useState<string>()
   const projectId =
     selectedProjectId ??
@@ -41,6 +54,10 @@ export function ProjectsPage() {
       ?.projectId
   const [tab, setTab] = useState<Tab>("toReach")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [sheetProject, setSheetProject] = useState<ProjectSummary | undefined>(
+    undefined
+  )
   const projectGoals = useProjectGoals(projectId)
   const goalActions = useGoalActions()
   const projectActions = useProjectActions()
@@ -80,35 +97,67 @@ export function ProjectsPage() {
     if (orderedIds) void projectActions.reorder(projectId, orderedIds)
   }
 
+  const openNewProject = () => {
+    setSheetProject(undefined)
+    setSheetOpen(true)
+  }
+  const openEditProject = (project: ProjectSummary) => {
+    setSheetProject(project)
+    setSheetOpen(true)
+  }
+
   return (
     <div className="flex flex-col gap-6" data-testid="projects-page">
-      <ProjectToolbar
-        onProjectIdChange={setSelectedProjectId}
-        projectActions={projectActions}
-        projectId={projectId}
-        projects={projects.projects}
-        requireProject
-      />
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">
+          {t("goals.project.listTitle")}
+        </h2>
+        <Button
+          data-testid="projects-new-project"
+          onClick={openNewProject}
+          size="sm"
+          variant="outline"
+        >
+          <Plus data-icon="inline-start" />
+          {t("goals.project.newProject")}
+        </Button>
+      </div>
 
-      {!projectId ? (
-        <Card data-testid="projects-page-empty">
-          <CardHeader>
-            <CardTitle>{t("goals.project.noProjectTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {t("goals.project.noProjectDescription")}
-          </CardContent>
-        </Card>
-      ) : (
+      {hasProjects ? (
         <>
-          <StatusFilterSelect
-            counts={counts}
-            onValueChange={setTab}
-            testId="projects-status-filter"
-            value={tab}
+          <ProjectList
+            actions={projectActions}
+            onEdit={openEditProject}
+            projects={projects.projects}
           />
 
-          {projectGoals.fetchState.status === "error" ? (
+          {/* goals-navigation spec: the project selector is trailing, paired in the same row as the
+              status filter, right after the project list — row actions above never change it. */}
+          <div className="flex items-center justify-between gap-2">
+            <StatusFilterSelect
+              counts={counts}
+              onValueChange={setTab}
+              testId="projects-status-filter"
+              value={tab}
+            />
+            <ProjectSelect
+              onProjectIdChange={setSelectedProjectId}
+              projectId={projectId}
+              projects={projects.projects}
+              testId="projects-goal-project-select"
+            />
+          </div>
+
+          {!projectId ? (
+            <Card data-testid="projects-page-no-selection">
+              <CardHeader>
+                <CardTitle>{t("goals.project.noSelectionTitle")}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                {t("goals.project.noSelectionDescription")}
+              </CardContent>
+            </Card>
+          ) : projectGoals.fetchState.status === "error" ? (
             <div
               className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
               role="alert"
@@ -140,8 +189,23 @@ export function ProjectsPage() {
             />
           )}
         </>
+      ) : (
+        <Card data-testid="projects-page-empty">
+          <CardHeader>
+            <CardTitle>{t("goals.project.noProjectTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("goals.project.noProjectDescription")}
+          </CardContent>
+        </Card>
       )}
 
+      <ManageProjectsSheet
+        actions={projectActions}
+        onOpenChange={setSheetOpen}
+        open={sheetOpen}
+        project={sheetProject}
+      />
       <GoalDetailSheet
         estimate={
           detailGoalId ? insights.estimates.get(detailGoalId) : undefined

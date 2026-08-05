@@ -9,7 +9,6 @@ import {
   createProject,
   updateProject,
   updateProjectGoals,
-  updateProjectGoalsStatus,
   projectQueries,
   type ProjectGoalSummary,
   type ProjectSummary,
@@ -118,21 +117,6 @@ export function useProjectActions(_onChanged?: () => void) {
     }
   }
 
-  const bulkStatus = async (projectId: string, status: "Active" | "Paused") => {
-    if (!isAuthenticated) {
-      return
-    }
-
-    const ok = await run(() => updateProjectGoalsStatus(projectId, status))
-    if (ok) {
-      toast.success(
-        status === "Active"
-          ? t("goals.toasts.bulkResumed")
-          : t("goals.toasts.bulkPaused")
-      )
-    }
-  }
-
   const reorder = async (projectId: string, orderedGoalIds: string[]) => {
     if (!isAuthenticated) {
       return
@@ -175,5 +159,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { activate, bulkStatus, reorder, create, save, pending }
+  return { activate, reorder, create, save, pending }
 }
