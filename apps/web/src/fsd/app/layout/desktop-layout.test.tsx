@@ -49,8 +49,6 @@ function identityEntryPath(item: NavItem) {
 
 const homeItem = navItems.find((item) => item.path === "/home")!
 const lookupItem = navItems.find((item) => item.path === "/lookup")!
-const dailiesItem = navItems.find((item) => item.path === "/dailies")!
-const goalsItem = navItems.find((item) => item.path === "/goals")!
 
 // Exercises `DesktopShell` together with the real `useSectionEntryPath` hook, the same way
 // `ShellContent` wires them in `app-shell.tsx`, so entry-path resolution is tested end to end.
@@ -131,39 +129,9 @@ describe("DesktopShell", () => {
 
     expect(screen.getByRole("heading", { name: "Home" })).toBeInTheDocument()
     expect(screen.getByText("Your account overview")).toBeInTheDocument()
-    // Home has no children - no tab row belongs in the header for it.
-    expect(screen.queryByTestId("section-tabs")).not.toBeInTheDocument()
   })
 
-  it("renders the active section's child pages as a tab row in the header", () => {
-    render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
-        <TooltipProvider>
-          <DesktopShell
-            isAuthenticated
-            visibleItems={navItems as NavItem[]}
-            activeSection={lookupItem}
-            pageDescription="Lookup description"
-            sectionTitle="Lookup"
-            onCreateGoal={vi.fn()}
-            getEntryPath={identityEntryPath}
-          />
-        </TooltipProvider>
-      </MemoryRouter>
-    )
-
-    expect(screen.getByTestId("section-tabs")).toBeInTheDocument()
-    expect(screen.getByTestId("section-tab-lookup-mow")).toHaveAttribute(
-      "data-state",
-      "active"
-    )
-    expect(screen.getByTestId("section-tab-lookup-character")).toHaveAttribute(
-      "data-state",
-      "inactive"
-    )
-  })
-
-  it("keeps the header title pinned to the section name on a child page, not the active child", () => {
+  it("shows a plain '{Section} › {Active child}' breadcrumb in the header for a section with children", () => {
     render(
       <MemoryRouter initialEntries={["/lookup/mow"]}>
         <TooltipProvider>
@@ -180,81 +148,17 @@ describe("DesktopShell", () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByRole("heading", { name: "Lookup" })).toBeInTheDocument()
-    expect(
-      screen.queryByRole("heading", { name: "Machines of War" })
-    ).not.toBeInTheDocument()
-    // The description still swaps to the active child, independent of the title.
+    const title = screen.getByTestId("section-header-title")
+    expect(title).toHaveTextContent("Lookup")
+    expect(title).toHaveTextContent("unitLookup.tabs.mow")
+    // Child navigation no longer lives in the header at all - neither segment is interactive.
+    expect(within(title).queryByRole("link")).not.toBeInTheDocument()
+    expect(within(title).queryByRole("button")).not.toBeInTheDocument()
+    // The description still swaps to the active child, independent of the sidebar/breadcrumb.
     expect(screen.getByText("Machines of War description")).toBeInTheDocument()
   })
 
-  it("renders all six of Dailies' children inline in the header, not a breadcrumb dropdown", () => {
-    render(
-      <MemoryRouter initialEntries={["/dailies/shops"]}>
-        <TooltipProvider>
-          <DesktopShell
-            isAuthenticated
-            visibleItems={navItems as NavItem[]}
-            activeSection={dailiesItem}
-            pageDescription="Dailies description"
-            sectionTitle="Dailies"
-            onCreateGoal={vi.fn()}
-            getEntryPath={identityEntryPath}
-          />
-        </TooltipProvider>
-      </MemoryRouter>
-    )
-
-    expect(
-      screen.queryByTestId("section-header-dropdown")
-    ).not.toBeInTheDocument()
-    expect(screen.getByTestId("section-tabs")).toBeInTheDocument()
-    for (const child of dailiesItem.children ?? []) {
-      expect(
-        screen.getByTestId(
-          `section-tab-${child.path.slice(1).replaceAll("/", "-")}`
-        )
-      ).toBeInTheDocument()
-    }
-    expect(screen.getByTestId("section-tab-dailies-shops")).toHaveAttribute(
-      "aria-current",
-      "page"
-    )
-    expect(
-      screen.getByTestId("section-tab-dailies-onslaught")
-    ).not.toHaveAttribute("aria-current")
-  })
-
-  it("highlights Overview, not Projects, when Goals' landing page (Board) is active", () => {
-    render(
-      <MemoryRouter initialEntries={["/goals/overview"]}>
-        <TooltipProvider>
-          <DesktopShell
-            isAuthenticated
-            visibleItems={navItems as NavItem[]}
-            activeSection={goalsItem}
-            pageDescription="Goals description"
-            sectionTitle="Goals"
-            onCreateGoal={vi.fn()}
-            getEntryPath={identityEntryPath}
-          />
-        </TooltipProvider>
-      </MemoryRouter>
-    )
-
-    expect(screen.getByTestId("section-tab-goals-overview")).toHaveAttribute(
-      "aria-current",
-      "page"
-    )
-    expect(
-      screen.getByTestId("section-tab-goals-projects")
-    ).not.toHaveAttribute("aria-current")
-    expect(
-      screen.getByTestId("section-tab-goals-insights")
-    ).not.toHaveAttribute("aria-current")
-  })
-
-  it("renders no child links in the sidebar, even for the active section", () => {
+  it("renders every child page as a row in the sidebar's own flyout, not the header", () => {
     render(
       <MemoryRouter initialEntries={["/lookup/mow"]}>
         <TooltipProvider>
@@ -265,25 +169,61 @@ describe("DesktopShell", () => {
             pageDescription="Lookup description"
             sectionTitle="Lookup"
             onCreateGoal={vi.fn()}
-            getEntryPath={identityEntryPath}
+            // Real `getEntryPath` implementations never resolve to the bare, unrouted parent path
+            // (see use-section-entry-path.ts) - matching that here keeps the route on /lookup/mow
+            // across the click below, the same as production, so the active-child assertions hold.
+            getEntryPath={() => "/lookup/mow"}
           />
         </TooltipProvider>
       </MemoryRouter>
     )
 
-    // Child links legitimately exist elsewhere now (the header's own inline nav row) - scope this
-    // assertion to the sidebar itself, the thing group 2 actually flattened.
-    const sidebar = within(document.querySelector('[data-slot="sidebar"]')!)
+    // Child links legitimately exist elsewhere now (the sidebar's own flyout) - scope this
+    // assertion to the header, the thing this change flattened.
+    const header = document.querySelector("header")!
+    expect(
+      within(header).queryByRole("link", { name: "unitLookup.tabs.mow" })
+    ).not.toBeInTheDocument()
 
+    // The flyout's content only mounts once open - the row's own click handler opens it
+    // immediately (alongside navigating), so use that instead of simulating a hover delay.
+    fireEvent.click(screen.getByTestId("desktop-nav-lookup"))
+
+    const flyout = screen.getByTestId("desktop-nav-flyout-lookup")
     expect(
-      sidebar.queryByRole("link", { name: "unitLookup.tabs.mow" })
-    ).not.toBeInTheDocument()
+      within(flyout).getByRole("link", { name: /unitLookup\.tabs\.mow/ })
+    ).toHaveAttribute("aria-current", "page")
     expect(
-      sidebar.queryByRole("link", { name: "unitLookup.tabs.character" })
-    ).not.toBeInTheDocument()
+      within(flyout).getByRole("link", { name: /unitLookup\.tabs\.character/ })
+    ).not.toHaveAttribute("aria-current")
     expect(
-      sidebar.queryByRole("link", { name: "unitLookup.tabs.npc" })
-    ).not.toBeInTheDocument()
+      within(flyout).getByRole("link", { name: /unitLookup\.tabs\.npc/ })
+    ).toBeInTheDocument()
+  })
+
+  it("still navigates a section's own sidebar row via its entry path when the row also has a flyout", () => {
+    render(
+      <MemoryRouter initialEntries={["/lookup/mow"]}>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={() => "/lookup/npc"}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    // Clicking the section's own row uses whatever `getEntryPath` resolves - not a child clicked
+    // inside its flyout - confirming the flyout is additive rather than a replacement for it.
+    expect(screen.getByTestId("desktop-nav-lookup")).toHaveAttribute(
+      "href",
+      "/lookup/npc"
+    )
   })
 
   it("still finds and searches the full hierarchy via navigation search", () => {
