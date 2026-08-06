@@ -1,10 +1,4 @@
-# daily-raids-today Specification
-
-## Purpose
-
-Tells a player exactly what to raid today for one selected project's active goals — respecting their real energy budget, shared inventory, and per-battle attempt limits — plus what's just out of reach if they had more energy to spend.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Today uses an icon-led responsive schedule
 
@@ -39,55 +33,6 @@ When a goal's only scheduled resource is that same unit's shards, Today SHALL co
 - **GIVEN** a goal group's target is any goal kind other than Rank
 - **WHEN** Today renders that goal's header
 - **THEN** it shows that goal kind's icon paired with its existing text label
-
-### Requirement: Today has its own project selector
-
-Today SHALL provide a project selector independent of any other page's project selection. Selecting a project SHALL recompute the schedule for that project alone. The selector SHALL default to the player's Active project (the project marked as their active plan) when one exists, falling back to the player's Default project (a project every account always has exactly one of, and which cannot be deleted) when no project is currently marked Active.
-
-#### Scenario: Default selection is the Active project
-
-- **GIVEN** the player has a project marked as their Active project
-- **WHEN** Today loads with no prior selection made this session
-- **THEN** Today's project selector defaults to that Active project and shows its schedule without requiring the user to pick one
-
-#### Scenario: Falls back to the Default project when there is no Active project
-
-- **GIVEN** no project is currently marked as the player's Active project
-- **WHEN** Today loads with no prior selection made this session
-- **THEN** Today's project selector defaults to the player's Default project and shows its schedule without requiring the user to pick one
-
-#### Scenario: Switching the selected project
-
-- **WHEN** the user selects a different project in Today's project selector
-- **THEN** the schedule, Bonus Raids section, and empty states are all recomputed for the newly-selected project only
-
-#### Scenario: Project list fails to load
-
-- **GIVEN** the player's project-list request fails
-- **WHEN** Today loads
-- **THEN** Today shows the load error with an action that retries the failed project-list request, and does not present the failure as an empty project list
-
-#### Scenario: Project list loads without projects
-
-- **GIVEN** the player's project-list request succeeds with no projects
-- **WHEN** Today loads
-- **THEN** Today shows an empty state prompting the user to create or select a project, and no schedule or Bonus Raids section is shown
-
-### Requirement: Today's schedule scope
-
-Today SHALL compute its schedule from only the selected project's goals whose status is `Active`, in their configured priority order. Goals with status `Paused`, `Completed`, or `Archived` SHALL be excluded.
-
-#### Scenario: Only Active goals contribute
-
-- **GIVEN** a project with a mix of Active, Paused, Completed, and Archived goals, where only the Active goals have unmet farmable upgrade needs
-- **WHEN** Today loads
-- **THEN** the schedule reflects only the Active goals' needs
-
-#### Scenario: Paused goals do not contribute
-
-- **GIVEN** a project with a Paused goal that has an unmet farmable upgrade need
-- **WHEN** Today loads
-- **THEN** that Paused goal's need is excluded from the schedule, inventory allocation, and Bonus Raids entirely, as if the goal did not exist
 
 ### Requirement: Today's raid schedule
 
@@ -183,76 +128,6 @@ The schedule SHALL respect, in this order of application:
 - **WHEN** Today loads
 - **THEN** that node's listing under both goals' entries shows "Max raids", based on the combined planned total rather than either entry's own count alone
 
-### Requirement: Schedule entries show which goal they farm for
-
-Today's raid schedule and Bonus Raids SHALL group their entries by the goal(s) they are being farmed for, with a separator per goal identifying that goal's unit and target (e.g. which character or MoW, and which rank, ability, ascension, or upgrade target it's working toward). An upgrade or shard farmed for more than one goal within the same list SHALL appear once under each contributing goal's group, not merged into a single ungrouped entry.
-
-#### Scenario: Schedule grouped by goal
-
-- **GIVEN** the day's raid schedule includes raids toward two or more different goals
-- **WHEN** Today loads
-- **THEN** the schedule is organized into per-goal groups, each separated and labeled with that goal's unit and target, rather than shown as one flat list
-
-#### Scenario: The same upgrade needed by two goals appears under each
-
-- **GIVEN** two different in-scope goals each receive at least one real-schedule raid for the same upgrade
-- **WHEN** Today loads
-- **THEN** that upgrade appears once under each goal's group, each instance showing only the raids attributable to that goal
-
-#### Scenario: Bonus Raids grouped the same way
-
-- **GIVEN** Bonus Raids includes entries for two or more different goals
-- **WHEN** Today loads
-- **THEN** Bonus Raids is grouped by goal the same way the main schedule is, in the same goal-priority order
-
-### Requirement: Bonus Raids
-
-Below a visible separator, Today SHALL show a Bonus Raids section: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. An upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses.
-
-Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more than 3 entries qualify, Today SHALL show a "Show more" control beneath the visible entries; activating it reveals the remaining entries (still in the same order, still grouped by goal per the grouping requirement above).
-
-#### Scenario: A zero-raid upgrade appears as a bonus raid
-
-- **GIVEN** an upgrade has an in-scope goal need but the real energy budget is exhausted before any raid against it is planned, while an unlimited budget would raid it at least once
-- **WHEN** Today loads
-- **THEN** that upgrade appears in Bonus Raids, listing the node(s) and raid count an unlimited budget would have used
-
-#### Scenario: A partially-raided upgrade is excluded from Bonus Raids
-
-- **GIVEN** an upgrade receives at least one raid in the real schedule but not enough to fully clear its need
-- **WHEN** Today loads
-- **THEN** that upgrade does not appear in Bonus Raids, even though additional energy would raid it further
-
-#### Scenario: Bonus Raids ordering
-
-- **GIVEN** two or more upgrades qualify for Bonus Raids, belonging to goals of different priority
-- **WHEN** Today loads
-- **THEN** Bonus Raids lists them in the same goal-priority order as the main schedule, not by any other ranking
-
-#### Scenario: Bonus Raids truncated to top 3 with a Show more control
-
-- **GIVEN** more than 3 entries qualify for Bonus Raids
-- **WHEN** Today loads
-- **THEN** only the first 3 entries (in goal-priority order) are shown, followed by a "Show more" control, and the remaining entries are not rendered until that control is activated
-
-#### Scenario: Show more reveals the rest
-
-- **GIVEN** Bonus Raids is showing its truncated top-3 view with a "Show more" control
-- **WHEN** the user activates "Show more"
-- **THEN** the remaining qualifying entries are revealed in place, in the same goal-priority order, still grouped by goal
-
-#### Scenario: 3 or fewer entries need no truncation
-
-- **GIVEN** 3 or fewer entries qualify for Bonus Raids
-- **WHEN** Today loads
-- **THEN** all qualifying entries are shown and no "Show more" control is displayed
-
-#### Scenario: No bonus raids available
-
-- **GIVEN** no upgrade or shard qualifies for Bonus Raids (every farmable need is either fully covered by the real schedule or would still receive zero raids even with unlimited energy)
-- **WHEN** Today loads
-- **THEN** Today shows an explicit empty state for the Bonus Raids section, not a blank section
-
 ### Requirement: Campaign locations use the Character Lookup presentation
 
 Today and Bonus Raids SHALL render each scheduled battle as the primary element of its resource card: the campaign icon, the full campaign/tier name (e.g. "Indomitus Elite"), and the battle/node number, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
@@ -269,23 +144,7 @@ Today and Bonus Raids SHALL render each scheduled battle as the primary element 
 - **WHEN** Today renders that resource's card
 - **THEN** each location renders as its own full-weight row rather than a compact chip, and the resource's name/progress caption appears once for the card
 
-### Requirement: Only the active campaign event is farmable
-
-Standing campaign battles SHALL remain eligible for raid calculations. A battle belonging to an event campaign SHALL be eligible only when its campaign group id equals `live-progress.activeCampaignEventId`. When no campaign event is active, all event-campaign battles SHALL be excluded.
-
-#### Scenario: One campaign event is active
-
-- **GIVEN** the catalog contains standing campaign battles and battles from multiple event campaigns
-- **AND** live progress identifies one active campaign event
-- **WHEN** Today calculates the schedule
-- **THEN** it includes standing battles and battles from that active event only
-
-#### Scenario: No campaign event is active
-
-- **GIVEN** the catalog contains standing and event campaign battles
-- **AND** live progress has no active campaign event id
-- **WHEN** Today calculates the schedule
-- **THEN** it excludes every event campaign battle while retaining standing battles
+## ADDED Requirements
 
 ### Requirement: Today's Attempts section
 

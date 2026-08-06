@@ -21,13 +21,13 @@ import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "../../model/shared/types"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
+import { GoalTypeBadge } from "@/entities/goal"
 import { GoalRowActions } from ".//goal-row-actions"
 import {
   GoalEnergyRemainingSummary,
   GoalProgressDisplay,
   GoalProjectBadges,
   GoalRemainingSummary,
-  GoalTypeBadge,
   GoalUnitIcon,
 } from "../shared/goal-visuals"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"

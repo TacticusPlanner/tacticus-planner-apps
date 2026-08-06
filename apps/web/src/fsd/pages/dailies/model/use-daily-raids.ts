@@ -42,13 +42,20 @@ import {
   availableCampaignBattles,
   calculateDailyRaids,
 } from "./daily-raids-calc"
+import {
+  buildAttemptsLeftByBattle,
+  buildStandingBattleIndex,
+  buildTodaysAttempts,
+  calculateRealEnergyUsedToday,
+} from "./daily-raids-energy"
 import type { DailyRaidsViewModel } from "./daily-raids.domain"
 
 export function useDailyRaids(
   projectId: string | undefined
 ): DailyRaidsViewModel {
   const { t } = useTranslation(["dailies", "characters"])
-  const { shortLabel: campaignShortLabel } = useCampaignDisplay()
+  const { fullLabel: campaignFullLabel, shortLabel: campaignShortLabel } =
+    useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
   const membersQuery = useQuery({
     ...projectQueries.goals(projectId ?? "unselected"),
@@ -114,12 +121,16 @@ export function useDailyRaids(
       ),
     [upgrades]
   )
+  const eventCampaignIds = useMemo(
+    () =>
+      new Set(
+        (campaignDefinitions ?? [])
+          .filter((definition) => definition.releaseType === "event")
+          .map((definition) => definition.groupId)
+      ),
+    [campaignDefinitions]
+  )
   const battlesById = useMemo(() => {
-    const eventCampaignIds = new Set(
-      (campaignDefinitions ?? [])
-        .filter((definition) => definition.releaseType === "event")
-        .map((definition) => definition.groupId)
-    )
     const availableBattles = availableCampaignBattles(
       battles ?? [],
       eventCampaignIds,
@@ -131,7 +142,7 @@ export function useDailyRaids(
         mapCampaignBattleStorageToDomain(battle),
       ])
     )
-  }, [battles, campaignDefinitions, liveProgressResult])
+  }, [battles, eventCampaignIds, liveProgressResult])
   const locationsByBattleId = useMemo(
     () =>
       new Map(
@@ -146,9 +157,14 @@ export function useDailyRaids(
             battleId,
             {
               id: battleId,
-              label: short
+              fullName: descriptor
+                ? campaignFullLabel(descriptor)
+                : battle.campaignGroupId,
+              shortLabel: short
                 ? `${short.name} ${short.code} ${battle.nodeNumber}${short.challenge ? "B" : ""}`
                 : battle.campaignGroupId,
+              nodeNumber: battle.nodeNumber,
+              challenge: battle.challenge,
               icon: campaignIcon(
                 battle.campaignGroupId,
                 battle.type,
@@ -158,7 +174,39 @@ export function useDailyRaids(
           ] as const
         })
       ),
-    [battlesById, campaignShortLabel]
+    [battlesById, campaignFullLabel, campaignShortLabel]
+  )
+  const standingBattleIndex = useMemo(
+    () => buildStandingBattleIndex(battlesById, eventCampaignIds),
+    [battlesById, eventCampaignIds]
+  )
+  const realEnergyUsedToday = useMemo(
+    () =>
+      calculateRealEnergyUsedToday(
+        liveProgressResult?.value?.battleAttempts ?? [],
+        eventCampaignIds,
+        standingBattleIndex,
+        battlesById
+      ),
+    [liveProgressResult, eventCampaignIds, standingBattleIndex, battlesById]
+  )
+  const attemptsLeftByBattle = useMemo(
+    () =>
+      buildAttemptsLeftByBattle(
+        liveProgressResult?.value?.battleAttempts ?? [],
+        eventCampaignIds,
+        standingBattleIndex
+      ),
+    [liveProgressResult, eventCampaignIds, standingBattleIndex]
+  )
+  const todaysAttempts = useMemo(
+    () =>
+      buildTodaysAttempts(
+        liveProgressResult?.value?.battleAttempts ?? [],
+        eventCampaignIds,
+        standingBattleIndex
+      ),
+    [liveProgressResult, eventCampaignIds, standingBattleIndex]
   )
 
   if (!projectId) return { status: "no-project" }
@@ -241,7 +289,15 @@ export function useDailyRaids(
     },
     dailyEnergy: settings.dailyEnergy,
   })
-  return result ? { ...result, locationsByBattleId } : { status: "no-farmable" }
+  return result
+    ? {
+        ...result,
+        locationsByBattleId,
+        realEnergyUsedToday,
+        attemptsLeftByBattle,
+        todaysAttempts,
+      }
+    : { status: "no-farmable" }
 }
 
 export function playerUnitIds(

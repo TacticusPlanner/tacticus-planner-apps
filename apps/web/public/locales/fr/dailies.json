@@ -39,19 +39,28 @@
   },
   "today": {
     "title": "Raids du jour",
-    "summary": "{{energy}} énergie · {{raids}} tentatives"
+    "summary": "{{energy}} énergie · {{raids}} tentatives",
+    "energyUsage": {
+      "label": "Énergie quotidienne utilisée",
+      "value": "{{percent}} % de l'énergie quotidienne utilisée"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} raid",
     "raids_other": "{{count}} raids",
     "progress": "{{owned}} sur {{target}} possédés",
     "node": "{{node}} · {{raids}} raids",
+    "battle": "Combat {{number}}",
+    "maxRaids": "Maximum atteint",
     "fullyRaided": "Entièrement attaqué"
   },
   "bonus": {
     "title": "Raids bonus",
-    "empty": "Aucune ressource supplémentaire intacte.",
     "showMore": "Afficher plus"
+  },
+  "todaysAttempts": {
+    "title": "Tentatives du jour",
+    "empty": "Aucune tentative réelle enregistrée aujourd'hui pour le moment."
   },
   "plan": {
     "summary": {
@@ -84,11 +93,15 @@
         },
         "schedule": {
           "title": "Plan du jour",
-          "content": "Attaquez ces nœuds avec l'énergie du jour."
+          "content": "Attaquez ces nœuds avec l'énergie du jour — des suggestions supplémentaires apparaissent ici aussi une fois vos besoins budgétés couverts."
         },
-        "bonus": {
-          "title": "Raids bonus",
-          "content": "Objectifs disponibles avec plus d'énergie."
+        "energyUsage": {
+          "title": "Énergie quotidienne utilisée",
+          "content": "Indique la part de votre énergie quotidienne réelle déjà dépensée aujourd'hui sur tout le compte, même au-delà de 100 %."
+        },
+        "todaysAttempts": {
+          "title": "Tentatives du jour",
+          "content": "Chaque raid réel effectué aujourd'hui sur tout le compte, qu'il reste des tentatives ou que la limite soit atteinte."
         }
       }
     },

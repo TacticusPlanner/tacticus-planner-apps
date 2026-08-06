@@ -19,6 +19,7 @@ const { useIsMobileMock } = vi.hoisted(() => ({
 }))
 
 vi.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
   useTranslation: () => ({
     t: (key: string, values?: Record<string, unknown>) =>
       values ? `${key}:${JSON.stringify(values)}` : key,
@@ -51,6 +52,8 @@ function ready(
         unitType: "Character" as const,
         unitLabel: "Bellator",
         targetLabel: "Rank Gold1",
+        goalKind: "Rank" as const,
+        targetRank: "Gold1" as never,
       },
     ],
     [
@@ -62,6 +65,8 @@ function ready(
         unitType: "Character" as const,
         unitLabel: "Aleph-Null",
         targetLabel: "Rank Silver1",
+        goalKind: "Rank" as const,
+        targetRank: "Silver1" as never,
       },
     ],
   ])
@@ -140,9 +145,22 @@ function ready(
       ],
     ]),
     locationsByBattleId: new Map([
-      [battle, { id: battle, label: "Indomitus I 1", icon: "/campaign.png" }],
+      [
+        battle,
+        {
+          id: battle,
+          fullName: "Indomitus Elite",
+          shortLabel: "Indomitus I 1",
+          nodeNumber: 1,
+          challenge: false,
+          icon: "/campaign.png",
+        },
+      ],
     ]),
     attemptsUsedByBattle: new Map([[battle, 7]]),
+    realEnergyUsedToday: 120,
+    attemptsLeftByBattle: new Map([[battle, 3]]),
+    todaysAttempts: [],
     ...overrides,
   }
 }
@@ -194,11 +212,18 @@ describe("Dailies raid pages", () => {
 
     expect(screen.getAllByText("Bellator").length).toBeGreaterThan(0)
     expect(screen.getAllByText("Aleph-Null").length).toBeGreaterThan(0)
-    expect(screen.getAllByText("Ceramite")).toHaveLength(2)
+    // The same resource (Ceramite/U1) is grouped under both contributing goals — its name only
+    // renders as visible text for the merged shard-identity card (g1); for g2 it's icon+tooltip
+    // only, so the grouping is verified via each goal's own resource card existing instead.
+    expect(screen.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
     const todaySchedule = within(screen.getByTestId("today-schedule"))
-    expect(todaySchedule.getAllByText("Bellator")).toHaveLength(1)
-    expect(todaySchedule.getAllByText("Aleph-Null")).toHaveLength(1)
-    expect(todaySchedule.getAllByText(/Indomitus I 1/)).not.toHaveLength(0)
+    // Bonus Raids is its own grouping context again (a labeled continuation, not merged data), so
+    // a goal with multiple bonus resources (not eligible for the combined-shard-identity merge)
+    // gets its own separate goal header there too, in addition to Today's merged card.
+    expect(todaySchedule.getAllByText("Bellator")).toHaveLength(2)
+    expect(todaySchedule.getAllByText("Aleph-Null")).toHaveLength(2)
+    expect(todaySchedule.getAllByText(/Indomitus Elite/)).not.toHaveLength(0)
     expect(todaySchedule.getByText(/265 \/ 500/)).toBeInTheDocument()
     expect(
       todaySchedule.getByLabelText(
@@ -212,15 +237,88 @@ describe("Dailies raid pages", () => {
       screen.getAllByRole("img", { name: "Bellator" }).length
     ).toBeGreaterThan(0)
     expect(screen.getByTestId("today-raid-list")).toHaveClass(
-      "md:[grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))]"
+      "md:columns-[20rem]"
     )
-    expect(screen.queryByText("Bonus 4")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "bonus.showMore" }))
-    expect(screen.getByText("Bonus 4")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
     expect(registeredTours.at(-1)).toMatchObject({
       desktop: expect.any(Array),
       mobile: expect.any(Array),
     })
+  })
+
+  it("shows the real energy-usage percentage next to the title, uncapped above 100%", () => {
+    useDailyRaids.mockReturnValue(
+      ready({ dailyEnergy: 100, realEnergyUsedToday: 150 })
+    )
+    renderPage(<TodayPage />)
+
+    const bar = screen.getByTestId("energy-usage-bar")
+    expect(bar).toHaveAttribute("aria-label", "today.energyUsage.label")
+    expect(bar).toHaveAttribute(
+      "aria-valuetext",
+      'today.energyUsage.value:{"percent":150}'
+    )
+    expect(screen.getByText("150%")).toBeInTheDocument()
+  })
+
+  it("shows 0% energy usage when there are no real attempts today", () => {
+    useDailyRaids.mockReturnValue(
+      ready({ dailyEnergy: 288, realEnergyUsedToday: 0 })
+    )
+    renderPage(<TodayPage />)
+
+    expect(screen.getByText("0%")).toBeInTheDocument()
+  })
+
+  it("shows every real attempt today in Today's Attempts, account-wide, labeling exhausted locations distinctly", () => {
+    useDailyRaids.mockReturnValue(
+      ready({
+        todaysAttempts: [
+          { battleId: battle, attemptsUsed: 10, attemptsLeft: 0 },
+        ],
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const todaysAttempts = within(screen.getByTestId("todays-attempts"))
+    expect(todaysAttempts.getByText("Indomitus Elite")).toBeInTheDocument()
+    expect(todaysAttempts.getByText("schedule.maxRaids")).toBeInTheDocument()
+  })
+
+  it("shows a raids-performed badge for an attempt that still has real attempts left", () => {
+    useDailyRaids.mockReturnValue(
+      ready({
+        todaysAttempts: [
+          { battleId: battle, attemptsUsed: 4, attemptsLeft: 6 },
+        ],
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const todaysAttempts = within(screen.getByTestId("todays-attempts"))
+    expect(
+      todaysAttempts.getByText('schedule.raids:{"count":4}')
+    ).toBeInTheDocument()
+  })
+
+  it("shows an empty state when nothing has been attempted yet today", () => {
+    useDailyRaids.mockReturnValue(ready({ todaysAttempts: [] }))
+    renderPage(<TodayPage />)
+
+    const todaysAttempts = within(screen.getByTestId("todays-attempts"))
+    expect(todaysAttempts.getByText("todaysAttempts.empty")).toBeInTheDocument()
+  })
+
+  it("de-dupes a location out of Today's Raids once it has zero real attempts left", () => {
+    useDailyRaids.mockReturnValue(
+      ready({ attemptsLeftByBattle: new Map([[battle, 0]]) })
+    )
+    renderPage(<TodayPage />)
+
+    const todaySchedule = within(screen.getByTestId("today-schedule"))
+    expect(todaySchedule.queryByText("Indomitus Elite")).not.toBeInTheDocument()
   })
 
   it.each(["no-project", "no-farmable", "error"] as const)(

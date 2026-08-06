@@ -39,19 +39,28 @@
   },
   "today": {
     "title": "Incursiones de hoy",
-    "summary": "{{energy}} de energía · {{raids}} intentos"
+    "summary": "{{energy}} de energía · {{raids}} intentos",
+    "energyUsage": {
+      "label": "Energía diaria usada",
+      "value": "{{percent}}% de la energía diaria usada"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} incursión",
     "raids_other": "{{count}} incursiones",
     "progress": "{{owned}} de {{target}} en posesión",
     "node": "{{node}} · {{raids}} incursiones",
+    "battle": "Batalla {{number}}",
+    "maxRaids": "Máximo alcanzado",
     "fullyRaided": "Completado"
   },
   "bonus": {
     "title": "Incursiones extra",
-    "empty": "No quedan recursos adicionales sin tocar.",
     "showMore": "Mostrar más"
+  },
+  "todaysAttempts": {
+    "title": "Intentos de hoy",
+    "empty": "Todavía no se ha registrado ningún intento real hoy."
   },
   "plan": {
     "summary": {
@@ -84,11 +93,15 @@
         },
         "schedule": {
           "title": "Plan de hoy",
-          "content": "Ataca estos nodos con la energía de hoy."
+          "content": "Ataca estos nodos con la energía de hoy — aquí también aparecen sugerencias adicionales una vez cubiertas tus necesidades presupuestadas."
         },
-        "bonus": {
-          "title": "Incursiones extra",
-          "content": "Objetivos disponibles con más energía."
+        "energyUsage": {
+          "title": "Uso diario de energía",
+          "content": "Muestra cuánta de tu energía diaria real has gastado hoy en toda tu cuenta, incluso por encima del 100%."
+        },
+        "todaysAttempts": {
+          "title": "Intentos de hoy",
+          "content": "Cada incursión real que has hecho hoy en toda tu cuenta, tanto si aún le quedan intentos como si ha alcanzado su límite."
         }
       }
     },

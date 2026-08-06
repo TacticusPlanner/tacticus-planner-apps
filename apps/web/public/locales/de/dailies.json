@@ -39,19 +39,28 @@
   },
   "today": {
     "title": "Heutige Raids",
-    "summary": "{{energy}} Energie · {{raids}} Raid-Versuche"
+    "summary": "{{energy}} Energie · {{raids}} Raid-Versuche",
+    "energyUsage": {
+      "label": "Genutzte Tagesenergie",
+      "value": "{{percent}}% der Tagesenergie genutzt"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} Raid",
     "raids_other": "{{count}} Raids",
     "progress": "{{owned}} von {{target}} im Besitz",
     "node": "{{node}} · {{raids}} Raids",
+    "battle": "Kampf {{number}}",
+    "maxRaids": "Maximal geraidet",
     "fullyRaided": "Vollständig geraidet"
   },
   "bonus": {
     "title": "Bonus-Raids",
-    "empty": "Keine zusätzlichen unberührten Ressourcen übrig.",
     "showMore": "Mehr anzeigen"
+  },
+  "todaysAttempts": {
+    "title": "Heutige Versuche",
+    "empty": "Noch keine echten Versuche heute erfasst."
   },
   "plan": {
     "summary": {
@@ -84,11 +93,15 @@
         },
         "schedule": {
           "title": "Heutiger Plan",
-          "content": "Raide diese Kampagnenknoten mit der heutigen Energie."
+          "content": "Raide diese Kampagnenknoten mit der heutigen Energie — zusätzliche Vorschläge erscheinen hier auch, sobald dein Budget gedeckt ist."
         },
-        "bonus": {
-          "title": "Bonus-Raids",
-          "content": "Diese Ziele werden mit zusätzlicher Energie verfügbar."
+        "energyUsage": {
+          "title": "Tägliche Energienutzung",
+          "content": "Zeigt, wie viel deiner echten Tagesenergie du heute bereits kontoweit ausgegeben hast, auch über 100%."
+        },
+        "todaysAttempts": {
+          "title": "Heutige Versuche",
+          "content": "Jeder echte Raid, den du heute kontoweit gemacht hast — egal ob dort noch Versuche übrig sind oder das Limit erreicht ist."
         }
       }
     },
