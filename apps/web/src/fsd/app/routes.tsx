@@ -96,23 +96,13 @@ function LandingRoute() {
   return <LandingPage />
 }
 
-// MSAL redirects back to /auth/callback (see shared/auth redirectUri); resolve auth then route on.
-function AuthCallbackRoute() {
-  const isAuthenticated = useIsAuthenticated()
-  const { inProgress } = useMsal()
-
-  if (inProgress !== InteractionStatus.None) {
-    return <AuthResolving />
-  }
-
-  return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
-}
-
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
-// are plain element wrappers — no loaders are needed yet.
+// are plain element wrappers — no loaders are needed yet. Post-redirect navigation (previously a
+// dedicated /auth/callback route) is now owned by the MSAL redirect bridge (apps/web/redirect.html,
+// see shared/auth's redirectUri) — it navigates back to wherever the flow was initiated before the
+// SPA even loads, so no in-app callback route is needed.
 export const routes: RouteObject[] = [
   { path: "/", element: <LandingRoute /> },
-  { path: "/auth/callback", element: <AuthCallbackRoute /> },
   {
     element: <AppShell />,
     children: [

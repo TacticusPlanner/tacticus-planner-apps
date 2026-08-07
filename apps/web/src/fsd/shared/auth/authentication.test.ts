@@ -96,9 +96,7 @@ describe("authentication", () => {
     await expect(initializeAuthentication()).resolves.toBe(mocks.instance)
 
     expect(mocks.instance.initialize).toHaveBeenCalledOnce()
-    expect(mocks.instance.handleRedirectPromise).toHaveBeenCalledWith({
-      navigateToLoginRequestUrl: false,
-    })
+    expect(mocks.instance.handleRedirectPromise).toHaveBeenCalledWith()
     expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(cachedAccount)
 
     const eventCallback = mocks.instance.addEventCallback.mock.calls[0]?.[0]

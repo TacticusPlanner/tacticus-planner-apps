@@ -31,7 +31,11 @@ function createMsalConfig(): Configuration {
         `https://${tenantId}.ciamlogin.com`,
       ],
       postLogoutRedirectUri: window.location.origin,
-      redirectUri: new URL("/auth/callback", window.location.origin).href,
+      // Points at the MSAL redirect bridge (apps/web/redirect.html), a standalone static page with
+      // no app code — required by msal-browser v5 so ssoSilent()/acquireTokenSilent()'s hidden-iframe
+      // fallback can broadcast a response back despite Entra's default COOP headers. Used for every
+      // interaction type (redirect, silent, iframe fallback), not just interactive sign-in.
+      redirectUri: new URL("/redirect.html", window.location.origin).href,
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
@@ -86,9 +90,10 @@ export async function initializeAuthentication() {
     }
   })
 
-  const redirectResult = await msalInstance.handleRedirectPromise({
-    navigateToLoginRequestUrl: false,
-  })
+  // The redirect bridge (apps/web/redirect.html) already caches the response and navigates back to
+  // where the flow was initiated before this ever runs, so navigateToLoginRequestUrl's default
+  // (true) is a no-op safety net here, not a second navigation.
+  const redirectResult = await msalInstance.handleRedirectPromise()
 
   if (redirectResult) {
     msalInstance.setActiveAccount(redirectResult.account)

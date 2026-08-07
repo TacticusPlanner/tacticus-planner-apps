@@ -19,9 +19,9 @@ disclaimer and third-party trademark, copyright, game-data, and asset rights.
 Use the dedicated Microsoft Entra External ID single-page application
 registration for each environment and register its matching redirect URI:
 
-- Local: `http://localhost:5173/auth/callback`
-- Staging: `<staging-origin>/auth/callback`
-- Production: `<production-origin>/auth/callback`
+- Local: `http://localhost:5173/redirect.html`
+- Staging: `<staging-origin>/redirect.html`
+- Production: `<production-origin>/redirect.html`
 
 Copy `apps/web/.env.example` to `apps/web/.env.local`, then replace the sample
 values with the local API base URL, local delegated `access_as_user` scope,
