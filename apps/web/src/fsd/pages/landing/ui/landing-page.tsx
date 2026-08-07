@@ -13,13 +13,14 @@ import { toast } from "sonner"
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
 
-import { loginRequest } from "@/shared/auth"
+import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import { isUiKitEnabled } from "@/shared/config"
 
 export function LandingPage() {
-  const { t } = useTranslation("landing")
+  const { t } = useTranslation(["landing", "common"])
   const { inProgress, instance } = useMsal()
   const isInteractionInProgress = inProgress !== InteractionStatus.None
+  const silentSignInStatus = useSilentSignInStatus()
 
   const handleGetStarted = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {
@@ -58,7 +59,9 @@ export function LandingPage() {
         size="lg"
       >
         <LogIn data-icon="inline-start" />
-        {t("getStarted")}
+        {silentSignInStatus === "checking"
+          ? t("common:auth.checkingSignIn")
+          : t("getStarted")}
       </Button>
 
       <section

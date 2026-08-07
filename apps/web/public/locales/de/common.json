@@ -8,6 +8,7 @@
   "auth": {
     "account": "Angemeldetes Konto",
     "accountLoading": "Konto wird geladen",
+    "checkingSignIn": "Konto erkannt – Anmeldung läuft…",
     "error": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
     "manageAccount": "Konto verwalten",
     "signIn": "Anmelden",

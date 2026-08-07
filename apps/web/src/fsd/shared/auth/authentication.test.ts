@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => {
     handleRedirectPromise: vi.fn(),
     initialize: vi.fn(),
     setActiveAccount: vi.fn(),
+    ssoSilent: vi.fn(),
   }
 
   return {
@@ -67,6 +68,7 @@ import {
 
 import {
   acquireAccessToken,
+  attemptSilentSignIn,
   initializeAuthentication,
   isInteractionRequired,
   loginRequest,
@@ -192,5 +194,86 @@ describe("authentication", () => {
         new BrowserAuthError("popup_window_error", "correlation-id")
       )
     ).toBe(false)
+  })
+
+  describe("attemptSilentSignIn", () => {
+    it("does not call ssoSilent when there is no cached account", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([])
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "no-cached-account"
+      )
+      expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+    })
+
+    it("activates the restored account on success", async () => {
+      const cachedAccount = { homeAccountId: "cached" }
+      const restoredAccount = { homeAccountId: "restored" }
+      mocks.instance.getAllAccounts.mockReturnValue([cachedAccount] as never)
+      mocks.instance.ssoSilent.mockResolvedValue({ account: restoredAccount })
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "success"
+      )
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledWith({
+        account: cachedAccount,
+        scopes: ["api://planner/access"],
+      })
+      expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
+        restoredAccount
+      )
+    })
+
+    it("fails silently, without logging, on an interaction-required error", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([
+        { homeAccountId: "cached" },
+      ] as never)
+      mocks.instance.ssoSilent.mockRejectedValue(
+        new InteractionRequiredAuthError("interaction_required", "message")
+      )
+      const error = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => undefined)
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "failed"
+      )
+      expect(error).not.toHaveBeenCalled()
+    })
+
+    it("fails silently, without logging, on a silent-iframe timeout", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([
+        { homeAccountId: "cached" },
+      ] as never)
+      mocks.instance.ssoSilent.mockRejectedValue(
+        new BrowserAuthError("timed_out", "correlation-id")
+      )
+      const error = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => undefined)
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "failed"
+      )
+      expect(error).not.toHaveBeenCalled()
+    })
+
+    it("fails silently but logs an unexpected error", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([
+        { homeAccountId: "cached" },
+      ] as never)
+      mocks.instance.ssoSilent.mockRejectedValue(new Error("boom"))
+      const error = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => undefined)
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "failed"
+      )
+      expect(error).toHaveBeenCalledWith(
+        "[MSAL] silent sign-in failed unexpectedly",
+        expect.any(Error)
+      )
+    })
   })
 })

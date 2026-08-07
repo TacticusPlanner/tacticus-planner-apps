@@ -26,7 +26,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
-import { loginRequest } from "@/shared/auth"
+import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import { TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
@@ -116,6 +116,10 @@ function AppSidebar({
   const [navigationOpen, setNavigationOpen] = useState(false)
   const shortcutHint = (key: string) =>
     isMacPlatform() ? `⌘${key}` : `Ctrl+${key}`
+  const isCheckingSilentSignIn = useSilentSignInStatus() === "checking"
+  const signInLabel = isCheckingSilentSignIn
+    ? t("auth.checkingSignIn")
+    : t("auth.signIn")
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
@@ -227,10 +231,10 @@ function AppSidebar({
               <SidebarMenuButton
                 className="bg-primary text-primary-foreground hover:bg-primary/80"
                 onClick={handleSignIn}
-                tooltip={t("auth.signIn")}
+                tooltip={signInLabel}
               >
                 <LogIn />
-                {compact ? null : <span>{t("auth.signIn")}</span>}
+                {compact ? null : <span>{signInLabel}</span>}
               </SidebarMenuButton>
             )}
             <SidebarTrigger />

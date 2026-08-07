@@ -8,6 +8,7 @@
   "auth": {
     "account": "Compte connecté",
     "accountLoading": "Chargement du compte",
+    "checkingSignIn": "Compte détecté – connexion en cours…",
     "error": "L’authentification n’a pas pu aboutir. Veuillez réessayer.",
     "manageAccount": "Gérer le compte",
     "signIn": "Se connecter",
