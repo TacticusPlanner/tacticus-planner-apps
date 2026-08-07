@@ -47,12 +47,15 @@
 
 ## 5. Tenant configuration
 
-- [x] 5.1 Add the new bridge redirect URI to the Entra App Registration for
+- [ ] 5.1 Add the new bridge redirect URI to the Entra App Registration for
       every environment this app authenticates against (local/dev/staging/
       production, as applicable), alongside the existing entry until this
       change is fully deployed, then remove the old `/auth/callback` entry
       once confirmed unused. (Local registration fixed and confirmed live —
-      see 6.1.)
+      see 6.1. Staging and production App Registrations are still
+      unverified — reopened per review feedback; do not remove the old
+      `/auth/callback` entry from any environment until its `/redirect.html`
+      entry is confirmed there too.)
 
 ## 6. Verification
 

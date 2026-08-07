@@ -9,6 +9,10 @@
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/assets/*", "/*.{css,js,ico,png,jpg,jpeg,gif,svg,webp,html}"]
+    "exclude": [
+      "/assets/*",
+      "/*.{css,js,ico,png,jpg,jpeg,gif,svg,webp}",
+      "/redirect.html"
+    ]
   }
 }

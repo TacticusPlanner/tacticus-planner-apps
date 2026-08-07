@@ -8,7 +8,9 @@
     <script type="module">
       import { broadcastResponseToMainFrame } from "@azure/msal-browser/redirect-bridge"
 
-      broadcastResponseToMainFrame()
+      broadcastResponseToMainFrame().catch((error) => {
+        console.error("[MSAL] redirect bridge failed", error)
+      })
     </script>
   </body>
 </html>

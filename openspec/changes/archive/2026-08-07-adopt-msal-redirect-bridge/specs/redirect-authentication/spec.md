@@ -47,29 +47,45 @@ completes, rather than to a different default destination.
 - **THEN** the user returns to the same page/route they were on before the
   flow started
 
-### Requirement: Silent session checks and token refresh succeed under the identity provider's default isolation policy
+### Requirement: Silent session checks and token refresh are not blocked by the identity provider's cross-origin isolation policy
 
-The system SHALL complete silent session-restore checks and silent
-background token refresh successfully whenever the identity provider has a
-live session for the account, regardless of cross-origin isolation
-(Cross-Origin-Opener-Policy) headers the identity provider applies to its own
-pages.
+Cross-origin isolation (Cross-Origin-Opener-Policy) headers the identity
+provider applies to its own pages SHALL NOT, by themselves, prevent a silent
+session-restore check or a silent background token refresh from completing
+when the identity provider has a live session for the account. This
+guarantee covers only the cross-origin isolation policy — it does not cover
+other conditions, such as browser privacy restrictions that block
+third-party storage or cookies, which remain an expected and separate source
+of silent failure. When a silent attempt fails for any reason, the system
+falls back to interactive sign-in rather than surfacing an error for the
+background attempt.
 
-#### Scenario: Silent session restore with a live identity-provider session
+#### Scenario: Silent session restore with a live identity-provider session and no browser privacy restriction
 
-- **WHEN** the application attempts a silent session-restore check and the
-  identity provider has a live session for the cached account
+- **WHEN** the application attempts a silent session-restore check, the
+  identity provider has a live session for the cached account, and the
+  browser does not block the storage or cookies the check relies on
 - **THEN** the restore attempt succeeds without any user-visible interaction,
   even though the identity provider enforces cross-origin isolation headers
   on its authentication pages
 
-#### Scenario: Silent token refresh with a live identity-provider session
+#### Scenario: Silent token refresh with a live identity-provider session and no browser privacy restriction
 
-- **WHEN** the application attempts a silent background token refresh and the
-  identity provider has a live session for the active account
+- **WHEN** the application attempts a silent background token refresh, the
+  identity provider has a live session for the active account, and the
+  browser does not block the storage or cookies the refresh relies on
 - **THEN** the refresh succeeds without any user-visible interaction, even
   though the identity provider enforces cross-origin isolation headers on its
   authentication pages
+
+#### Scenario: Browser privacy restrictions block a silent attempt despite a live identity-provider session
+
+- **WHEN** the browser blocks the third-party storage or cookies a silent
+  attempt relies on, even though the identity provider has a live session
+  for the account
+- **THEN** the silent attempt fails, this is not treated as a defect in the
+  cross-origin isolation handling, and the system falls back to interactive
+  sign-in
 
 ### Requirement: Authentication responses are never exposed as visible URLs or cached
 
