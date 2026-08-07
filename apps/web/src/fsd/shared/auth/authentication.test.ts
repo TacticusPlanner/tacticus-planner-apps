@@ -216,6 +216,7 @@ describe("authentication", () => {
         "success"
       )
       expect(mocks.instance.ssoSilent).toHaveBeenCalledWith({
+        account: cachedAccount,
         scopes: ["api://planner/access"],
       })
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(

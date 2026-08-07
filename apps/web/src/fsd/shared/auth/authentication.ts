@@ -173,12 +173,20 @@ export type SilentSignInOutcome = "success" | "no-cached-account" | "failed"
 export async function attemptSilentSignIn(
   instance: IPublicClientApplication
 ): Promise<SilentSignInOutcome> {
-  if (instance.getAllAccounts().length === 0) {
+  const [cachedAccount] = instance.getAllAccounts()
+
+  if (!cachedAccount) {
     return "no-cached-account"
   }
 
   try {
-    const result = await instance.ssoSilent(loginRequest)
+    // Without an account/sid/loginHint, ssoSilent can't tell which session to restore once more
+    // than one account is cached, and fails with an ambiguity error even though a valid session
+    // exists for one of them.
+    const result = await instance.ssoSilent({
+      ...loginRequest,
+      account: cachedAccount,
+    })
 
     instance.setActiveAccount(result.account)
 

@@ -120,7 +120,8 @@ call site rather than introducing new disabled-state logic to test.
   this is exactly why failure must be silent and fall back to the existing
   manual flow — it's a pure upside attempt, never a regression, since the
   manual path is untouched.
-- **[Trade-off]** A `useEffect` + ref guard is a lighter-weight mechanism
-  than a request-deduplication library; acceptable because there is exactly
-  one call site (`AuthProvider`) and exactly one instance, not a general
-  concurrent-request problem.
+- **[Trade-off]** A `useEffect` + module-level guard (in `shared/auth`, not a
+  component ref — see "Correction found during implementation" above) is a
+  lighter-weight mechanism than a request-deduplication library; acceptable
+  because there is exactly one call site (`AuthProvider`) and exactly one
+  instance, not a general concurrent-request problem.
