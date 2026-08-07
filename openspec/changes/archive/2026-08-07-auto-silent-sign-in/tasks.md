@@ -66,7 +66,7 @@
       references `auth-account-trigger` and related selectors) still
       passes unchanged, since this change only conditionally alters label
       content, not element structure/`data-testid`s.
-- [ ] 4.3 Manually verify via the full local stack (Aspire AppHost, not a
+- [x] 4.3 Manually verify via the full local stack (Aspire AppHost, not a
       standalone Vite server) using a real Entra test account: (a) sign
       out, reload with an expired-but-cached local session and confirm
       silent restore lands on `/home` with no click; (b) clear all site
