@@ -8,7 +8,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { useMsal } from "@azure/msal-react"
 
-import { loginRequest } from "@/shared/auth"
+import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import {
   TourButton,
   useTour,
@@ -36,6 +36,10 @@ export function MobileHeader({
   const { t } = useTranslation()
   const { instance } = useMsal()
   const { isRunning, startTour } = useTour()
+  const isCheckingSilentSignIn = useSilentSignInStatus() === "checking"
+  const signInLabel = isCheckingSilentSignIn
+    ? t("auth.checkingSignIn")
+    : t("auth.signIn")
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest)
@@ -62,7 +66,7 @@ export function MobileHeader({
             <>
               <Button size="sm" onClick={handleSignIn}>
                 <LogIn />
-                {t("auth.signIn")}
+                {signInLabel}
               </Button>
               <MobileGuestSettings />
             </>

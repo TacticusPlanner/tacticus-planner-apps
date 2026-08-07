@@ -34,6 +34,7 @@ import {
   loginRequest,
   requestApiAccess,
   signOut,
+  useSilentSignInStatus,
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
@@ -82,6 +83,8 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const [isV1ImportOpen, setIsV1ImportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
   const hasRequestedApiAccess = useRef(false)
+  const silentSignInStatus = useSilentSignInStatus()
+  const isCheckingSilentSignIn = silentSignInStatus === "checking"
 
   const handleSignIn = () => {
     void instance.loginRedirect(loginRequest).catch((error: unknown) => {
@@ -118,7 +121,13 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   if (!isAuthenticated || !account) {
     return (
       <Button
-        aria-label={compact ? t("auth.signIn") : undefined}
+        aria-label={
+          compact
+            ? isCheckingSilentSignIn
+              ? t("auth.checkingSignIn")
+              : t("auth.signIn")
+            : undefined
+        }
         data-testid="auth-sign-in"
         disabled={isInteractionInProgress}
         onClick={handleSignIn}
@@ -126,7 +135,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
         variant="outline"
       >
         <LogIn data-icon={compact ? undefined : "inline-start"} />
-        {compact ? null : t("auth.signIn")}
+        {compact
+          ? null
+          : isCheckingSilentSignIn
+            ? t("auth.checkingSignIn")
+            : t("auth.signIn")}
       </Button>
     )
   }

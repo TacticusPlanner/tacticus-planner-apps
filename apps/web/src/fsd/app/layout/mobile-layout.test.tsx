@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -9,11 +9,20 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
+const loginRedirect = vi.fn().mockResolvedValue(undefined)
+
 vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({ instance: { loginRedirect: () => Promise.resolve() } }),
+  useMsal: () => ({
+    instance: { loginRedirect: (...args: unknown[]) => loginRedirect(...args) },
+  }),
 }))
 
-vi.mock("@/shared/auth", () => ({ loginRequest: { scopes: ["api"] } }))
+const silentSignInStatus = vi.fn(() => "idle")
+
+vi.mock("@/shared/auth", () => ({
+  loginRequest: { scopes: ["api"] },
+  useSilentSignInStatus: () => silentSignInStatus(),
+}))
 
 // Mirrors desktop-layout.test.tsx's reasoning: nav-items.ts reads `isUiKitEnabled` from the real
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
@@ -69,6 +78,24 @@ function renderShell(
 }
 
 describe("MobileHeader", () => {
+  beforeEach(() => {
+    silentSignInStatus.mockReturnValue("idle")
+    loginRedirect.mockClear().mockResolvedValue(undefined)
+  })
+
+  it("shows a 'checking' label on the sign-in button while a silent restore is in progress, and still signs in manually on click", async () => {
+    silentSignInStatus.mockReturnValue("checking")
+    renderShell()
+
+    const signIn = screen.getByRole("button", { name: "auth.checkingSignIn" })
+
+    fireEvent.click(signIn)
+
+    await vi.waitFor(() => {
+      expect(loginRedirect).toHaveBeenCalledTimes(1)
+    })
+  })
+
   it("renders the page description beneath the page title", () => {
     renderShell()
 

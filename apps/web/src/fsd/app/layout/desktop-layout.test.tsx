@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { MemoryRouter, useLocation } from "react-router"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 import { InteractionStatus } from "@azure/msal-browser"
@@ -9,14 +9,21 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
+const loginRedirect = vi.fn().mockResolvedValue(undefined)
+
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
     inProgress: InteractionStatus.None,
-    instance: { loginRedirect: () => Promise.resolve() },
+    instance: { loginRedirect: (...args: unknown[]) => loginRedirect(...args) },
   }),
 }))
 
-vi.mock("@/shared/auth", () => ({ loginRequest: { scopes: ["api"] } }))
+const silentSignInStatus = vi.fn(() => "idle")
+
+vi.mock("@/shared/auth", () => ({
+  loginRequest: { scopes: ["api"] },
+  useSilentSignInStatus: () => silentSignInStatus(),
+}))
 
 // `./nav-items` reads `isUiKitEnabled` from the real module's barrel, which also re-exports the
 // i18n setup that calls `initReactI18next` at import time — incompatible with the plain
@@ -74,6 +81,40 @@ function EntryPathHarness() {
 }
 
 describe("DesktopShell", () => {
+  beforeEach(() => {
+    silentSignInStatus.mockReturnValue("idle")
+    loginRedirect.mockClear().mockResolvedValue(undefined)
+  })
+
+  it("shows a 'checking' label on the sidebar sign-in button while a silent restore is in progress, and still signs in manually on click", async () => {
+    silentSignInStatus.mockReturnValue("checking")
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated={false}
+            visibleItems={navItems as NavItem[]}
+            activeSection={homeItem}
+            pageDescription="Home description"
+            sectionTitle="Home"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    const signIn = screen.getByRole("button", { name: "auth.checkingSignIn" })
+
+    // Clicking while a silent attempt is still in progress falls through to manual sign-in
+    // immediately, rather than waiting for that attempt to finish.
+    fireEvent.click(signIn)
+
+    await vi.waitFor(() => {
+      expect(loginRedirect).toHaveBeenCalledTimes(1)
+    })
+  })
+
   it("has a single sidebar trigger, living inside the collapsible sidebar itself", () => {
     render(
       <MemoryRouter>

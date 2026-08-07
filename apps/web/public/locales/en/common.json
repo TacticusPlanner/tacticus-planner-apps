@@ -8,6 +8,7 @@
   "auth": {
     "account": "Signed-in account",
     "accountLoading": "Loading account",
+    "checkingSignIn": "Account detected — signing you in…",
     "error": "Authentication could not be completed. Please try again.",
     "manageAccount": "Manage Account",
     "signIn": "Sign in",

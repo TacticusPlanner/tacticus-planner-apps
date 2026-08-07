@@ -7,3 +7,4 @@ export {
 } from "./authentication"
 export { useActiveAccountId } from "./use-active-account-id"
 export { signOut } from "./sign-out"
+export { startSilentSignInOnce, useSilentSignInStatus } from "./silent-sign-in"

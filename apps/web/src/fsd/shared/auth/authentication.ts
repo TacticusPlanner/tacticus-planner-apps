@@ -9,6 +9,7 @@ import {
   type AuthenticationResult,
   type Configuration,
   type EventMessage,
+  type IPublicClientApplication,
   type RedirectRequest,
 } from "@azure/msal-browser"
 
@@ -165,4 +166,31 @@ export function requestApiAccess() {
     account,
     scopes: loginRequest.scopes,
   })
+}
+
+export type SilentSignInOutcome = "success" | "no-cached-account" | "failed"
+
+export async function attemptSilentSignIn(
+  instance: IPublicClientApplication
+): Promise<SilentSignInOutcome> {
+  if (instance.getAllAccounts().length === 0) {
+    return "no-cached-account"
+  }
+
+  try {
+    const result = await instance.ssoSilent(loginRequest)
+
+    instance.setActiveAccount(result.account)
+
+    return "success"
+  } catch (error) {
+    // A rejected/timed-out silent attempt is an expected, common outcome (no live IdP session,
+    // third-party storage blocked) and is never surfaced to the user - only log the cases
+    // isInteractionRequired() doesn't already account for, since those are genuinely unexpected.
+    if (!isInteractionRequired(error)) {
+      console.error("[MSAL] silent sign-in failed unexpectedly", error)
+    }
+
+    return "failed"
+  }
 }

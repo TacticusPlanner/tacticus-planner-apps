@@ -8,6 +8,7 @@
   "auth": {
     "account": "Cuenta conectada",
     "accountLoading": "Cargando cuenta",
+    "checkingSignIn": "Cuenta detectada; iniciando sesión…",
     "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
     "manageAccount": "Gestionar cuenta",
     "signIn": "Iniciar sesión",

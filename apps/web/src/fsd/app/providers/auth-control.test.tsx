@@ -18,6 +18,7 @@ const logoutRedirect = vi.fn().mockResolvedValue(undefined)
 const isInteractionRequired = vi.fn<(error: unknown) => boolean>(() => false)
 const requestApiAccess = vi.fn().mockResolvedValue(undefined)
 const signOut = vi.fn().mockResolvedValue(undefined)
+const silentSignInStatus = vi.fn(() => "idle")
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -65,6 +66,7 @@ vi.mock("@/shared/auth", () => ({
   loginRequest: { scopes: ["api"] },
   requestApiAccess: (...args: unknown[]) => requestApiAccess(...args),
   signOut: (...args: unknown[]) => signOut(...args),
+  useSilentSignInStatus: () => silentSignInStatus(),
 }))
 
 // Real switchers need a ThemeProvider/i18n config this test doesn't set up — only their presence
@@ -104,6 +106,7 @@ describe("AuthControl", () => {
     requestApiAccess.mockClear().mockResolvedValue(undefined)
     signOut.mockClear().mockResolvedValue(undefined)
     useCurrentUser.mockReturnValue({ state: { status: "loading" } })
+    silentSignInStatus.mockReturnValue("idle")
   })
 
   it("opens a user menu with manage-account and sign-out on desktop", () => {
@@ -197,6 +200,33 @@ describe("AuthControl", () => {
     renderAuthControl()
 
     expect(screen.getByTestId("auth-sign-in")).toBeDisabled()
+  })
+
+  it("shows a 'checking' label while a silent restore is in progress, compact or not", () => {
+    useIsAuthenticated.mockReturnValue(false)
+    silentSignInStatus.mockReturnValue("checking")
+    renderAuthControl()
+
+    expect(
+      screen.getByRole("button", { name: "auth.checkingSignIn" })
+    ).toBeInTheDocument()
+
+    renderAuthControl({ compact: true })
+    expect(
+      screen.getAllByRole("button", { name: "auth.checkingSignIn" })
+    ).toHaveLength(2)
+  })
+
+  it("still signs in on click while a silent restore is in progress", async () => {
+    useIsAuthenticated.mockReturnValue(false)
+    silentSignInStatus.mockReturnValue("checking")
+    renderAuthControl()
+
+    fireEvent.click(screen.getByRole("button", { name: "auth.checkingSignIn" }))
+
+    await vi.waitFor(() => {
+      expect(loginRedirect).toHaveBeenCalledTimes(1)
+    })
   })
 
   it("signs in on click and toasts on a failed sign-in redirect", async () => {
