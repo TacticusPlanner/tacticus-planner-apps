@@ -7,9 +7,10 @@ description: Check this repo's npm/pnpm dependency tree for known vulnerabilitie
 
 Scans this pnpm workspace's dependency tree (`apps/web`, `packages/ui`, and
 the other workspace packages) for known CVEs, and fixes them with the
-smallest safe change. Validated end-to-end: 14 open GitHub Dependabot
-alerts, all closed by a routine within-range update with zero manual
-overrides needed.
+smallest safe change. Validated end-to-end on 2026-08-07: 14 open GitHub
+Dependabot alerts at the time, all closed by a routine within-range update
+with zero manual overrides needed. Treat that count as historical — re-run
+the scan (step 1 below) rather than trusting this number as current.
 
 ## Scan
 
@@ -34,6 +35,21 @@ because most transitive vulnerabilities sit just past the top of an
 already-allowed semver range. Overrides are for what's left after that, not
 the default tool — this keeps the diff small and avoids stale pins nobody
 remembers to remove.
+
+`pnpm update -r` bumps **every** package within its range, not just the
+ones the scanner flagged — including devDependencies like linters and
+build tooling that have nothing to do with the vulnerabilities being fixed.
+That's intentional (a workspace-wide freshness pass, not a scalpel), but it
+means step 5's full verification is not optional: it caught a real
+regression this way once already — a routine update brought `knip` from
+6.23.0 to 6.32.0, and 6.30.0+ broke pnpm workspace `catalog:` specifier
+resolution, failing every package's `lint` script with "Unresolved catalog
+references" even though `typecheck` and `test:run` stayed green. Skipping
+`pnpm lint` in step 5 because typecheck/tests passed would have shipped
+that breakage. The fix was pinning `knip` to `6.29.0` (no caret) in
+`pnpm-workspace.yaml`'s catalog — treat any similarly-scoped devDependency
+regression the same way: bisect to the last good version, pin it exactly,
+and note why in the commit message.
 
 ## Process
 
@@ -64,13 +80,17 @@ remembers to remove.
      to the user with the advisory, the affected package, and what the
      major bump would touch — that's a judgment call about breaking
      changes, not a routine dependency fix.
-5. **Verify nothing broke:**
+5. **Verify nothing broke — run the full validation suite, not just
+   typecheck/tests:**
    ```bash
-   pnpm install && pnpm audit && pnpm typecheck && pnpm test:run
+   pnpm install && pnpm audit && pnpm lint && pnpm lint:fsd && pnpm typecheck && pnpm test:run && pnpm build
    ```
-   Also spot-check `pnpm-lock.yaml` directly for a couple of the
-   previously-flagged packages to confirm their resolved version clears the
-   patched threshold — `pnpm audit` can lag a fresh install.
+   `lint` and `build` are not optional extras here — they're the only steps
+   that would have caught the `knip` regression above; typecheck and tests
+   stayed green through it. Also spot-check `pnpm-lock.yaml` directly for a
+   couple of the previously-flagged packages to confirm their resolved
+   version clears the patched threshold — `pnpm audit` can lag a fresh
+   install.
 6. **Commit on a topic branch, not `main`** (this repo's convention — see
    root `AGENTS.md`). Do not push unless the user explicitly asks; creating
    the branch and committing locally is the deliverable of this skill.
