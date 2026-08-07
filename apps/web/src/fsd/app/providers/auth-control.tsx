@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import {
-  LoaderCircle,
-  Download,
-  LogIn,
-  LogOut,
-  Settings,
-  UserRound,
-} from "lucide-react"
+import { LoaderCircle, Download, LogIn, LogOut, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -21,6 +14,7 @@ import {
 } from "@workspace/ui/components/drawer"
 import {
   Popover,
+  PopoverArrow,
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
@@ -258,12 +252,16 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             type="button"
             aria-label={t("auth.userMenu")}
             className={cn(
-              "flex min-w-0 items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
+              "flex min-w-0 items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
               compact ? "size-8 justify-center" : "max-w-56 px-1.5 py-1"
             )}
             data-testid="auth-account-trigger"
           >
-            <UserRound className="size-4 shrink-0" aria-hidden="true" />
+            <AccountAvatar
+              applicationAccountId={applicationAccountId}
+              className="size-6 shrink-0 text-xs"
+              displayName={accountName}
+            />
             {compact ? null : (
               <div
                 className="min-w-0 text-left leading-tight"
@@ -292,7 +290,30 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             )}
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-56 gap-2">
+        <PopoverContent align="start" className="w-80 gap-3" side="top">
+          <PopoverArrow />
+          <div
+            className="flex items-center gap-3"
+            data-testid="auth-account-identity"
+          >
+            <AccountAvatar
+              applicationAccountId={applicationAccountId}
+              className="size-10 shrink-0 text-base"
+              displayName={accountName}
+            />
+            <div className="min-w-0 text-left leading-tight">
+              <div className="truncate font-medium" title={accountName}>
+                {accountName}
+              </div>
+              <div
+                className="truncate text-xs text-muted-foreground"
+                title={accountEmail}
+              >
+                {accountEmail}
+              </div>
+            </div>
+          </div>
+          <Separator />
           <Button
             aria-label={t("goals.v1Import.menu")}
             className="w-full justify-start"
@@ -318,9 +339,10 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             <Settings data-icon="inline-start" />
             {t("auth.manageAccount")}
           </Button>
+          <Separator />
           <Button
             aria-label={t("auth.signOut")}
-            className="w-full justify-start"
+            className="w-full justify-start text-destructive hover:text-destructive"
             data-testid="auth-sign-out"
             disabled={isInteractionInProgress}
             onClick={handleSignOut}

@@ -14,6 +14,7 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavChildRow } from "./nav-child-row"
 import { filterNavigationItems } from "./navigation-filter"
 import type { NavItem } from "./nav-items"
 
@@ -88,25 +89,12 @@ export function DesktopNavigationDialog({
                   {item.children?.length ? (
                     <div className="mt-1 ml-8 space-y-1 border-l pl-3">
                       {item.children.map((child) => (
-                        <Link
+                        <NavChildRow
                           key={child.path}
-                          aria-current={
-                            pathname === child.path ? "page" : undefined
-                          }
-                          className={cn(
-                            "flex min-h-9 flex-col rounded-md px-3 py-1.5 text-sm transition-colors",
-                            pathname === child.path
-                              ? "bg-accent text-accent-foreground"
-                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                          )}
-                          onClick={() => handleOpenChange(false)}
-                          to={child.path}
-                        >
-                          <span className="truncate">{t(child.labelKey)}</span>
-                          <span className="truncate text-xs font-normal opacity-80">
-                            {t(child.descriptionKey)}
-                          </span>
-                        </Link>
+                          child={child}
+                          isActive={pathname === child.path}
+                          onSelect={() => handleOpenChange(false)}
+                        />
                       ))}
                     </div>
                   ) : null}

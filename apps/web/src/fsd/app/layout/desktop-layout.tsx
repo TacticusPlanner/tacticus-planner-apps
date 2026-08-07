@@ -1,8 +1,13 @@
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { LogIn, PlusCircle, Search } from "lucide-react"
+import { ChevronRight, LogIn, PlusCircle, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { CommandShortcut } from "@workspace/ui/components/command"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@workspace/ui/components/hover-card"
 import {
   Sidebar,
   SidebarContent,
@@ -33,6 +38,7 @@ import { AppLogo } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import { DesktopSectionHeader } from "./desktop-section-header"
 import { isMacPlatform } from "./is-mac-platform"
+import { NavChildrenFlyout } from "./nav-children-flyout"
 import type { NavItem } from "./nav-items"
 
 function LoadingFill() {
@@ -249,6 +255,17 @@ function NavMenuItem({
   const isActive =
     pathname === item.path || pathname.startsWith(item.path + "/")
 
+  if (item.children?.length) {
+    return (
+      <NavMenuItemWithFlyout
+        getEntryPath={getEntryPath}
+        isActive={isActive}
+        item={item}
+        pathname={pathname}
+      />
+    )
+  }
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -265,6 +282,77 @@ function NavMenuItem({
           <span>{t(item.labelKey)}</span>
         </Link>
       </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
+/**
+ * A sidebar row for a section with child pages: clicking it still navigates via `getEntryPath`
+ * (unchanged), but hovering or clicking it also opens a flyout listing its children beside the
+ * row, in both the expanded and icon-collapsed sidebar states. The `›` chevron is a static hint
+ * that the row has more behind it, independent of hover state.
+ */
+function NavMenuItemWithFlyout({
+  getEntryPath,
+  isActive,
+  item,
+  pathname,
+}: {
+  getEntryPath: (item: NavItem) => string
+  isActive: boolean
+  item: NavItem
+  pathname: string
+}) {
+  const { t } = useTranslation(["common", "dailies"])
+  const [open, setOpen] = useState(false)
+  const triggerRef = useRef<HTMLAnchorElement>(null)
+
+  const closeAndRefocus = () => {
+    setOpen(false)
+    triggerRef.current?.focus()
+  }
+
+  return (
+    <SidebarMenuItem>
+      <HoverCard onOpenChange={setOpen} open={open}>
+        <HoverCardTrigger asChild>
+          <SidebarMenuButton
+            asChild
+            data-open={open || undefined}
+            data-testid={`desktop-nav-${item.path.slice(1)}`}
+            isActive={isActive}
+          >
+            <Link
+              aria-current={pathname === item.path ? "page" : undefined}
+              onClick={() => setOpen(true)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") closeAndRefocus()
+              }}
+              ref={triggerRef}
+              to={getEntryPath(item)}
+            >
+              <item.icon />
+              <span className="truncate">{t(item.labelKey)}</span>
+              <ChevronRight
+                aria-hidden="true"
+                className="ml-auto size-3.5 shrink-0 text-sidebar-foreground/50 group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:top-0.5 group-data-[collapsible=icon]:right-0.5 group-data-[collapsible=icon]:ml-0 group-data-[collapsible=icon]:size-2.5"
+              />
+            </Link>
+          </SidebarMenuButton>
+        </HoverCardTrigger>
+        <HoverCardContent
+          align="start"
+          data-testid={`desktop-nav-flyout-${item.path.slice(1)}`}
+          onEscapeKeyDown={closeAndRefocus}
+          side="right"
+        >
+          <NavChildrenFlyout
+            item={item}
+            onSelect={() => setOpen(false)}
+            pathname={pathname}
+          />
+        </HoverCardContent>
+      </HoverCard>
     </SidebarMenuItem>
   )
 }

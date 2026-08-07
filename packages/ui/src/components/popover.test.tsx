@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest"
 import {
   Popover,
   PopoverAnchor,
+  PopoverArrow,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,
@@ -24,6 +25,7 @@ describe("Popover", () => {
               More information
             </PopoverDescription>
           </PopoverHeader>
+          <PopoverArrow className="custom-arrow" />
         </PopoverContent>
       </Popover>
     )
@@ -43,5 +45,10 @@ describe("Popover", () => {
     expect(screen.getByText("Details")).toHaveClass("custom-title")
     expect(content).toHaveClass("custom-description")
     expect(content.parentElement).toHaveClass("custom-header")
+    expect(
+      content
+        .closest('[data-slot="popover-content"]')
+        ?.querySelector('[data-slot="popover-arrow"]')
+    ).toHaveClass("custom-arrow")
   })
 })

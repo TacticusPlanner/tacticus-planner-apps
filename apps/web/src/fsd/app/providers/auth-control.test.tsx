@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
@@ -111,6 +111,12 @@ describe("AuthControl", () => {
     renderAuthControl()
 
     expect(screen.queryByTestId("auth-sign-out")).not.toBeInTheDocument()
+    // The trigger shows the account avatar, not a generic icon, before the menu is even open.
+    expect(
+      within(screen.getByTestId("auth-account-trigger")).getByTestId(
+        "auth-account-avatar"
+      )
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
 
@@ -118,6 +124,20 @@ describe("AuthControl", () => {
     expect(screen.getByTestId("auth-sign-out")).toBeVisible()
     expect(screen.queryByTestId("theme-switcher")).not.toBeInTheDocument()
     expect(screen.queryByTestId("language-switcher")).not.toBeInTheDocument()
+  })
+
+  it("shows the signed-in user's identity above the menu actions on desktop", () => {
+    isMobile.mockReturnValue(false)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    const identity = screen.getByTestId("auth-account-identity")
+    expect(
+      within(identity).getByTestId("auth-account-avatar")
+    ).toBeInTheDocument()
+    expect(within(identity).getByText("Test User")).toBeInTheDocument()
+    expect(within(identity).getByText("test@example.com")).toBeInTheDocument()
   })
 
   it("also surfaces theme and language switchers in the user menu on mobile", () => {
