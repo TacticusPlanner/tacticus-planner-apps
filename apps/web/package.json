@@ -19,24 +19,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@azure/msal-browser": "^5.15.0",
-    "@azure/msal-react": "^5.5.0",
-    "@tanstack/react-query": "^5.101.2",
+    "@azure/msal-browser": "^5.18.0",
+    "@azure/msal-react": "^5.5.5",
+    "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-table": "^8.21.3",
     "@workspace/game-catalog": "workspace:*",
     "@workspace/game-domain": "workspace:*",
     "@workspace/player-data": "workspace:*",
     "@workspace/ui": "workspace:*",
     "dexie-react-hooks": "^4.4.0",
-    "i18next": "^26.3.4",
+    "i18next": "^26.3.6",
     "i18next-browser-languagedetector": "^8.2.1",
-    "i18next-http-backend": "^4.0.0",
+    "i18next-http-backend": "^4.0.1",
     "lucide-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-i18next": "^17.0.8",
-    "react-joyride": "^3.1.0",
-    "react-router": "^8.1.0",
+    "react-i18next": "^17.0.11",
+    "react-joyride": "^3.2.0",
+    "react-router": "^8.3.0",
     "sonner": "^2.0.7"
   },
   "devDependencies": {
@@ -49,7 +49,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-react": "^6.0.5",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
@@ -61,7 +61,7 @@
     "steiger": "^0.5.13",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
-    "vite": "^8.1.2",
+    "vite": "^8.2.1",
     "vitest": "catalog:"
   }
 }
