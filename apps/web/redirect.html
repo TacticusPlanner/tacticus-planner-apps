@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Signing in</title>
+  </head>
+  <body>
+    <script type="module">
+      import { broadcastResponseToMainFrame } from "@azure/msal-browser/redirect-bridge"
+
+      broadcastResponseToMainFrame().catch((error) => {
+        console.error("[MSAL] redirect bridge failed", error)
+      })
+    </script>
+  </body>
+</html>

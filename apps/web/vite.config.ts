@@ -15,6 +15,17 @@ export default defineConfig({
         strictPort: true,
       }
     : undefined,
+  build: {
+    rollupOptions: {
+      // The MSAL redirect bridge (apps/web/redirect.html) is a standalone, unrouted page — it
+      // needs its own build entry so `@azure/msal-browser/redirect-bridge` (a package subpath
+      // export, not a browser-loadable URL) gets resolved and emitted as a real asset.
+      input: {
+        main: path.resolve(__dirname, "./index.html"),
+        redirect: path.resolve(__dirname, "./redirect.html"),
+      },
+    },
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
