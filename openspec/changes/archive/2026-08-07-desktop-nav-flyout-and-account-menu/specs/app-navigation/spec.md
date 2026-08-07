@@ -91,7 +91,7 @@ On mobile, each top-level section that has child pages (`NavItem.children`) SHAL
 
 On desktop, the header no longer hosts a child-page picker at all — a section's child pages are discovered through the desktop sidebar's flyout instead (see the sidebar flyout requirement above), and the desktop header shows only a static breadcrumb (see the breadcrumb requirement above). On mobile, the menu drawer also lists a section's child pages, per the earlier drawer requirement — that duplication with the mobile header's tab row is intentional and out of scope for this capability to remove.
 
-#### Scenario: The mobile header's tab row lists all of a section's child pages
+#### Scenario: The header's child-picker lists all of a section's child pages
 
 - **WHEN** a user is on any page within a section that has child pages, on mobile
 - **THEN** the shared header shows a tab row listing every child page of that section directly beneath the title and description, and allows switching between them, and no separate tab row is rendered within the page's own content

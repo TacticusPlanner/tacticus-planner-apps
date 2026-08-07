@@ -6,20 +6,6 @@ Defines the behavior of the app-wide navigation shell — the desktop sidebar, t
 
 ## Requirements
 
-### Requirement: Desktop sidebar lists top-level sections only
-
-The desktop sidebar SHALL list only top-level navigation sections (Home, Lookup, Goals, Dailies, Progress, Guild, and any future top-level section). It SHALL NOT render a section's child pages, expand/collapse chevrons, or an expanded-branch sub-list for any section.
-
-#### Scenario: Sidebar renders no child items
-
-- **WHEN** the desktop sidebar renders, for a section that has child pages (e.g. Lookup)
-- **THEN** only the section's own top-level entry is shown in the sidebar, with no child links, chevron, or expanded sub-list beneath it, regardless of whether that section is the active route
-
-#### Scenario: Sidebar highlights the active top-level section
-
-- **WHEN** the current route is a top-level section's path or any path nested under it (e.g. `/lookup/mow`)
-- **THEN** that section's sidebar entry is shown in its active state, and no other sidebar entry is active
-
 ### Requirement: Mobile menu drawer lists top-level sections with their child pages nested beneath them
 
 The mobile bottom navigation's "Menu" drawer SHALL continue to list every top-level navigation section, with each section's child pages (if any) shown nested beneath it as direct links — unchanged from its behavior before this capability. This capability does not remove or restructure anything from the mobile drawer.
@@ -138,30 +124,6 @@ The page header SHALL display a short description beneath its title, on both des
 - **WHEN** a user on desktop switches from one child page to a sibling child page within the same section (e.g. `/lookup/character` to `/lookup/mow`), by any means (the header's own child-picker, the mobile drawer's equivalent state, or search)
 - **THEN** the header description updates to the newly active child's own description, while the header title continues to show the section's own label per the following requirement
 
-### Requirement: Desktop header title stays fixed to the top-level section, with a child-picker beside it
-
-On desktop, the page header's title SHALL always show the active top-level section's own label (e.g. "Lookup"), never an active child's label, regardless of which child page is active. When that section has child pages, the header SHALL also show a child-picker in the same row as the title: for a section with 6 or fewer children (today, every section), a row of plain nav-style links listing every child inline beside the title, not a boxed/pill-styled tab control; for a section with more than 6 children (none today), a dropdown control that replaces the plain title with a "Section › Active child" label, opening a menu that lists every child page — selecting one navigates to it, equivalent to clicking a link.
-
-#### Scenario: Desktop header title does not swap to the active child
-
-- **WHEN** a user on desktop navigates to a child page of a multi-child section (e.g. `/lookup/mow`)
-- **THEN** the header title continues to show the section's own label ("Lookup"), not the child's label
-
-#### Scenario: A section with few children shows an inline row of nav links beside the title
-
-- **WHEN** a user on desktop is on any page within a section that has 6 or fewer child pages (today, every section — Lookup, Goals, Progress, Guild, Dailies)
-- **THEN** the header shows the section's title followed by a row of plain nav-style links, in the same row, listing every child page of that section, with the active one visually distinguished (not boxed/pill-styled)
-
-#### Scenario: A section with many children shows a breadcrumb dropdown instead of a plain title
-
-- **WHEN** a user on desktop is on any page within a section that has more than 6 child pages (none today)
-- **THEN** the header's title row shows a dropdown control reading "Section › Active child" instead of the plain section title, and opening it lists every child page of that section
-
-#### Scenario: Selecting a child from the breadcrumb dropdown navigates to it
-
-- **WHEN** a user on desktop opens the breadcrumb dropdown and selects a different child page from the menu
-- **THEN** the app navigates to that child page's route, the dropdown's label updates to reflect the newly active child, and this counts as visiting that child for the last-visited-child requirement below
-
 ### Requirement: Entering a section navigates to its last-visited child on desktop, defaulting to that section's default child on first entry
 
 For a top-level section with more than one child page, activating that section's entry point in the desktop sidebar SHALL navigate to the child route the user most recently visited within that section during the current session. Before the user has visited any child of that section in the session, it SHALL navigate to that section's existing default child route.
@@ -175,12 +137,12 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 #### Scenario: Re-entering a multi-child section returns to its last-visited child
 
-- **WHEN** a user views `/lookup/mow` (via Lookup's own header tab row, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Lookup entry in the desktop sidebar
+- **WHEN** a user views `/lookup/mow` (via the sidebar flyout, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Lookup entry in the desktop sidebar
 - **THEN** they land on `/lookup/mow`, not Lookup's default child
 
 #### Scenario: Directly visiting a child route counts as visiting it
 
-- **WHEN** a user opens a child route directly (e.g. via a bookmark, search, the mobile drawer, or the header's own child-picker — a tab row or, on desktop, a breadcrumb dropdown) without first clicking the section's desktop sidebar entry
+- **WHEN** a user opens a child route directly (e.g. via a bookmark, search, the mobile drawer, the mobile header's own tab row, or the desktop sidebar's flyout) without first clicking the section's desktop sidebar entry
 - **THEN** that route is recorded as the section's last-visited child for the remainder of the session, so a later desktop sidebar click into that section honors it
 
 #### Scenario: Last-visited child survives a page reload within the same session
@@ -195,19 +157,95 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 #### Scenario: Dailies follows the same multi-child behavior as any other section
 
-- **WHEN** a user visits `/dailies/shops` (via Dailies' own header tab row, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
+- **WHEN** a user visits `/dailies/shops` (via the sidebar flyout, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
 - **THEN** they land on `/dailies/shops`, not Dailies' default child (`/dailies/raids`) — Dailies is not special-cased once it has more than one child route
 
 ### Requirement: The shared page header hosts a section's child-page picker
 
-Each top-level section that has child pages (`NavItem.children`) SHALL expose them via a control rendered in the shared app-shell header, on both desktop and mobile — replacing any tab row a page previously rendered on its own. On mobile this is a routed tab row directly beneath the title and description (unchanged from the original header-tabs design). On desktop this is the child-picker described in the previous requirement (an inline row of nav links or a breadcrumb dropdown, beside the title). This applies to every multi-child section, including Dailies. A third level of tabs nested within a specific child page (e.g. Dailies > Raids' own Today/Raids Plan sub-tabs) is out of scope for this requirement and continues to render inside that child page's own content, unaffected. On desktop, the header's child-picker is the only place in the app chrome that lists a section's child pages outside of search. On mobile, the menu drawer also lists them, per the requirement above — that duplication is intentional and out of scope for this capability to remove.
+On mobile, each top-level section that has child pages (`NavItem.children`) SHALL continue to expose them via a routed tab row directly beneath the header's title and description, replacing any tab row a page previously rendered on its own — unchanged from the original header-tabs design. This applies to every multi-child section, including Dailies. A third level of tabs nested within a specific child page (e.g. Dailies > Raids' own Today/Raids Plan sub-tabs) is out of scope for this requirement and continues to render inside that child page's own content, unaffected.
+
+On desktop, the header no longer hosts a child-page picker at all — a section's child pages are discovered through the desktop sidebar's flyout instead (see the sidebar flyout requirement above), and the desktop header shows only a static breadcrumb (see the breadcrumb requirement above). On mobile, the menu drawer also lists a section's child pages, per the earlier drawer requirement — that duplication with the mobile header's tab row is intentional and out of scope for this capability to remove.
 
 #### Scenario: The header's child-picker lists all of a section's child pages
 
-- **WHEN** a user is on any page within a section that has child pages, on either platform
-- **THEN** the shared header lists every child page of that section (as a tab row on mobile always, and on desktop as a row of nav links when there are 6 or fewer children; as a breadcrumb dropdown's menu on desktop when there are more than 6) and allows switching between them, and no separate tab row is rendered within the page's own content
+- **WHEN** a user is on any page within a section that has child pages, on mobile
+- **THEN** the shared header shows a tab row listing every child page of that section directly beneath the title and description, and allows switching between them, and no separate tab row is rendered within the page's own content
+
+#### Scenario: Desktop header offers no child-picker
+
+- **WHEN** a user is on any page within a section that has child pages, on desktop
+- **THEN** the shared header shows only the static breadcrumb title (and, beneath it, the active page's description) — no tab row, dropdown, or other interactive picker is rendered in the header
 
 #### Scenario: A third-level tab row is unaffected
 
-- **WHEN** a user is on `/dailies/raids/today` or `/dailies/raids/plan`
-- **THEN** the shared header shows Dailies' six top-level child pages (Raids active) via its platform-appropriate control, and Raids' own Today/Raids Plan sub-tabs continue to render within the page's own content, below the header, exactly as before this change
+- **WHEN** a user is on `/dailies/raids/today` or `/dailies/raids/plan`, on either platform
+- **THEN** Raids' own Today/Raids Plan sub-tabs continue to render within the page's own content, below the header, exactly as before this change, unaffected by how the header or sidebar shows Dailies' own child pages
+
+### Requirement: Desktop sidebar exposes each section's child pages via a hover/click flyout
+
+For any top-level section that has child pages, the desktop sidebar SHALL render a small chevron indicator on that section's own row, in both the expanded and icon-collapsed sidebar states, as a static hint that it has child pages. Hovering that row (after a short delay, to avoid opening for a pointer only passing through) or clicking it while it is not already the active navigation target SHALL open a flyout positioned beside that row, in both sidebar states. Every section that has at least one child page SHALL get this flyout, including a section with only one child.
+
+The flyout SHALL show the parent section's own title at the top, styled as a quiet, non-interactive label (not a link, not visually prominent), followed by one row per child page. Each child row SHALL show that child's label and its short description, and SHALL be visually distinguished when it is the currently active route. Selecting a child row SHALL navigate to that child's route and close the flyout.
+
+The flyout SHALL be dismissible via Escape and via moving focus or the pointer away from both the triggering row and the flyout itself, and SHALL be operable via keyboard alone (not hover-only), without trapping focus in a way that prevents continuing to navigate the rest of the sidebar.
+
+Clicking the section's own row (as opposed to a row inside its flyout) SHALL continue to navigate using the existing entry-path resolution (the section's last-visited child this session, or its default child) — the flyout is an additional way to reach a specific child directly, not a replacement for that existing click behavior.
+
+#### Scenario: Hovering a section with children opens its flyout
+
+- **WHEN** a user's pointer rests on a top-level section's sidebar row that has child pages, for longer than the flyout's open delay
+- **THEN** a flyout opens beside that row listing the section's child pages, with the section's own title shown as a quiet label above them
+
+#### Scenario: Flyout opens the same way when the sidebar is collapsed to icons
+
+- **WHEN** the sidebar is in its icon-collapsed state and a user hovers or clicks a section's icon that has child pages
+- **THEN** the same flyout opens beside that icon, rather than the plain label-only tooltip a childless section's icon shows
+
+#### Scenario: A passing pointer does not open the flyout
+
+- **WHEN** a user's pointer moves across a section's sidebar row that has children without pausing for the flyout's open delay
+- **THEN** no flyout opens
+
+#### Scenario: Clicking a section row still uses last-visited-child navigation
+
+- **WHEN** a user clicks a section's own sidebar row (not a row inside its flyout)
+- **THEN** the app navigates using that section's existing entry-path resolution, unaffected by whether its flyout is open
+
+#### Scenario: Selecting a child in the flyout navigates to it and closes the flyout
+
+- **WHEN** a user selects a child page's row inside an open flyout
+- **THEN** the app navigates to that child's route and the flyout closes
+
+#### Scenario: A single-child section still gets a flyout
+
+- **WHEN** a user hovers or clicks the Guild section's sidebar row
+- **THEN** its flyout opens showing Guild's own title as the quiet label and its one child page ("Members") as a selectable row, the same as any multi-child section
+
+#### Scenario: Escape closes an open flyout
+
+- **WHEN** a flyout is open and the user presses Escape
+- **THEN** the flyout closes and focus returns to the triggering sidebar row
+
+#### Scenario: A childless section shows no chevron and no flyout
+
+- **WHEN** a user views or hovers a top-level section's sidebar row that has no child pages (e.g. Home)
+- **THEN** no chevron is shown on that row and no flyout opens
+
+### Requirement: Desktop header shows a static section/child breadcrumb, with no picker
+
+On desktop, when the active top-level section has child pages, the page header's title SHALL be rendered as a plain, non-interactive breadcrumb reading "{Section label} › {Active child label}". Neither the section segment nor the child segment SHALL be clickable or otherwise interactive — switching to a different child happens only through the sidebar flyout, navigation search, or a bookmark/direct link, never through the header itself. When the active top-level section has no child pages, the header title SHALL remain the section's own plain label, unchanged from today.
+
+#### Scenario: A section with children shows a plain breadcrumb title
+
+- **WHEN** a user on desktop is on any child page of a section that has children (e.g. `/lookup/mow`)
+- **THEN** the header title reads "Lookup › Machines of War" as plain text, with neither segment clickable
+
+#### Scenario: Breadcrumb updates when the active child changes
+
+- **WHEN** a user on desktop switches from one child page to a sibling child page within the same section, by any means (the sidebar flyout, navigation search, or a direct link)
+- **THEN** the header breadcrumb's child segment updates to the newly active child's label
+
+#### Scenario: A childless section keeps a plain title
+
+- **WHEN** a user on desktop is on a top-level section's own page that has no child pages (e.g. Home)
+- **THEN** the header shows only that section's own label as the title, with no breadcrumb separator
