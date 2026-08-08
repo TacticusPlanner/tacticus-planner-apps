@@ -24,8 +24,9 @@ export const eventDefinitionSchema = z.looseObject({
 
 // One calendar entry: either an authored occurrence (confirmed, occurrenceId set) or a server-projected
 // placeholder (confirmed: false, occurrenceId null). No display text — same id-based resolution as above,
-// using `definitionId` and `parameters`.
-export const eventsCalendarEntrySchema = z.looseObject({
+// using `definitionId` and `parameters`. Kept as a plain object (not yet refined) so `.extend()` below can
+// still build on it — the time-window refinement is applied to each exported schema separately.
+const eventsCalendarEntryObjectSchema = z.looseObject({
   occurrenceId: z.string().nullable(),
   definitionId: z.string(),
   confirmed: z.boolean(),
@@ -33,6 +34,21 @@ export const eventsCalendarEntrySchema = z.looseObject({
   endUtc: z.string(),
   parameters: z.record(z.string(), z.unknown()).nullable(),
 })
+
+// A backend validation gap this schema also guards client-side: an occurrence whose startUtc isn't
+// strictly before its endUtc would otherwise silently disappear from every active/upcoming query instead
+// of failing loudly.
+function hasPositiveTimeWindow(entry: {
+  startUtc: string
+  endUtc: string
+}): boolean {
+  return Date.parse(entry.startUtc) < Date.parse(entry.endUtc)
+}
+
+export const eventsCalendarEntrySchema = eventsCalendarEntryObjectSchema.refine(
+  hasPositiveTimeWindow,
+  { message: "startUtc must be strictly before endUtc" }
+)
 
 // The served events-calendar payload is date-indexed (ISO date string -> entries), not a plain array like
 // every other dataset — the one exception in this package's "every payload is an array" convention.
@@ -44,6 +60,8 @@ export const eventsCalendarPayloadSchema = z.record(
 // The flattened storage-row shape used once events-calendar is split into individual IndexedDB rows: the
 // served payload's object key (`date`) is injected as a real field so each entry has a place to carry it
 // once flattened (see game-catalog.mapper.ts's `byCalendarDate`).
-export const eventsCalendarRowSchema = eventsCalendarEntrySchema.extend({
-  date: z.string(),
-})
+export const eventsCalendarRowSchema = eventsCalendarEntryObjectSchema
+  .extend({ date: z.string() })
+  .refine(hasPositiveTimeWindow, {
+    message: "startUtc must be strictly before endUtc",
+  })

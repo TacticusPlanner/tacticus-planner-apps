@@ -49,6 +49,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
       opts?.defaultValue ?? key,
+    i18n: { resolvedLanguage: "en" },
   }),
 }))
 

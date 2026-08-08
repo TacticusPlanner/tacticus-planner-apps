@@ -21,14 +21,25 @@ export function parseLocalDate(isoDate: string): Date {
   return new Date(year, month - 1, day)
 }
 
+/**
+ * Adds `days` local calendar days to `date` via `setDate`, not raw millisecond arithmetic — a local day
+ * isn't always exactly 24h (DST spring-forward/fall-back days are 23h/25h), so `+ days * DAY_MS` can land
+ * on the wrong side of local midnight and either mis-bucket an entry or make a "week" span 6 or 8 days.
+ */
+export function addLocalDays(date: Date, days: number): Date {
+  const result = new Date(date)
+  result.setDate(result.getDate() + days)
+  return result
+}
+
 /** Every calendar date (local) from `rangeStart` (inclusive) to `rangeEnd` (exclusive). */
 function buildDateRange(rangeStart: Date, rangeEnd: Date): Date[] {
   const dates: Date[] = []
-  const cursor = new Date(rangeStart)
+  let cursor = new Date(rangeStart)
 
   while (cursor < rangeEnd) {
-    dates.push(new Date(cursor))
-    cursor.setDate(cursor.getDate() + 1)
+    dates.push(cursor)
+    cursor = addLocalDays(cursor, 1)
   }
 
   return dates
@@ -51,7 +62,7 @@ export function buildEventsCalendarDays(
 
   return buildDateRange(rangeStart, rangeEnd).map((date) => {
     const dayStartMs = date.getTime()
-    const dayEndMs = dayStartMs + 24 * 60 * 60 * 1000
+    const dayEndMs = addLocalDays(date, 1).getTime()
 
     const dayEntries: EventEntryViewModel[] = entries
       .filter((entry) => {

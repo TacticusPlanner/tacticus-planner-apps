@@ -22,6 +22,15 @@ Every event occurrence SHALL carry explicit `startUtc` and `endUtc` timestamps. 
 - **WHEN** an event occurrence is scheduled
 - **THEN** it has both an explicit `startUtc` and an explicit `endUtc`
 
+### Requirement: Occurrence time windows are positive
+
+Every calendar entry's `startUtc` SHALL be strictly before its `endUtc`. The client SHALL reject an entry that violates this at the validation boundary rather than silently accepting it (an inverted or zero-length window would otherwise never match any active-at/overlap query, making the entry effectively disappear without any error).
+
+#### Scenario: Inverted or zero-length window fails client-side validation
+
+- **WHEN** a calendar entry's `startUtc` is at or after its `endUtc`
+- **THEN** the client's schema validation rejects the entry rather than silently accepting an entry that can never be returned as active or upcoming
+
 ### Requirement: Active event determination from UTC time
 
 The system SHALL determine whether an occurrence is active by comparing the current UTC time against its `startUtc` (inclusive) and `endUtc` (exclusive).
@@ -123,9 +132,14 @@ Projected placeholders for `campaign-event` and `incursion` SHALL be usable as-i
 
 ### Requirement: Client exposes active and upcoming event selectors
 
-The client SHALL provide selectors to retrieve events active at a given time, events active right now, and upcoming events, without requiring callers to join `eventsCalendar` against `eventDefinitions` themselves.
+The client SHALL provide selectors to retrieve calendar entries active at a given time, active right now, and upcoming within a date range, each deduped to one result per occurrence identity even though a multi-day entry is stored once per date it spans. The client SHALL separately provide a selector to retrieve event definitions (individually and id-keyed), so a caller can resolve a returned entry's definition (e.g. its `type`, for icon selection) — consistent with how every other cross-dataset relationship in this package's query layer is resolved by the caller, not pre-joined by the selector.
 
 #### Scenario: Retrieving currently active events
 
 - **WHEN** a caller requests events active now
-- **THEN** the result includes every occurrence whose window contains the current time, with its definition's rules resolvable from the same result
+- **THEN** the result includes one entry per occurrence whose window contains the current time (not one per stored date-row), each carrying its `definitionId` for the caller to resolve via the event-definitions selector
+
+#### Scenario: Resolving a calendar entry's definition
+
+- **WHEN** a caller has a calendar entry and needs its definition's rules (e.g. `type`)
+- **THEN** the event-definitions selector resolves that `definitionId` to its definition

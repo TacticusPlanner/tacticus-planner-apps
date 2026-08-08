@@ -1,19 +1,23 @@
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsCalendarDay } from "../../../model/events-calendar.types"
 import { EventEntryCard } from "../event-entry-card"
 
-const dayHeaderFormatter = new Intl.DateTimeFormat(undefined, {
-  weekday: "long",
-  month: "short",
-  day: "numeric",
-})
-
 // Stacked day sections rather than desktop's 7-column grid — a week-wide grid doesn't fit a phone
 // viewport, and only days that actually have events are rendered, for a compact, scannable list.
 export function EventsCalendarMobile({ days }: { days: EventsCalendarDay[] }) {
-  const { t } = useTranslation("events")
+  const { t, i18n } = useTranslation("events")
+  const dayHeaderFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+      }),
+    [i18n.resolvedLanguage]
+  )
   const daysWithEntries = days.filter((day) => day.entries.length > 0)
 
   if (daysWithEntries.length === 0) {

@@ -9,10 +9,9 @@ import {
   getUpcomingEvents,
 } from "@workspace/game-catalog/queries"
 
-import { buildEventsCalendarDays } from "./events-calendar-calc"
+import { addLocalDays, buildEventsCalendarDays } from "./events-calendar-calc"
 import type { EventsCalendarViewModel } from "./events-calendar.types"
 
-const DAY_MS = 24 * 60 * 60 * 1000
 const WEEK_DAYS = 7
 
 // `useLiveQuery` throws to an error boundary if its querier's promise rejects — it has no built-in
@@ -49,14 +48,11 @@ export function useEventsCalendar(): EventsCalendarViewModel {
   const [retryToken, setRetryToken] = useState(0)
 
   const rangeStart = useMemo(
-    () =>
-      new Date(
-        startOfDay(new Date()).getTime() + weekOffset * WEEK_DAYS * DAY_MS
-      ),
+    () => addLocalDays(startOfDay(new Date()), weekOffset * WEEK_DAYS),
     [weekOffset]
   )
   const rangeEnd = useMemo(
-    () => new Date(rangeStart.getTime() + WEEK_DAYS * DAY_MS),
+    () => addLocalDays(rangeStart, WEEK_DAYS),
     [rangeStart]
   )
 

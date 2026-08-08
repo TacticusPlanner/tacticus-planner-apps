@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { buildEventsCalendarDays } from "./events-calendar-calc"
+import { addLocalDays, buildEventsCalendarDays } from "./events-calendar-calc"
 
 const definitionsById = new Map([
   ["legendary-event", { id: "legendary-event", type: "LegendaryEvent" }],
@@ -128,5 +128,68 @@ describe("buildEventsCalendarDays", () => {
 
     expect(entry?.definitionType).toBe("HomeScreenEvent")
     expect(entry?.confirmed).toBe(false)
+  })
+})
+
+describe("DST-crossing day boundaries", () => {
+  beforeEach(() => {
+    // A real, DST-observing zone — America/New_York springs forward (23h day) on 2026-03-08 and falls
+    // back (25h day) on 2026-11-01. Raw `+ 24 * 60 * 60 * 1000` arithmetic lands on the wrong side of
+    // local midnight on either of these days; `addLocalDays` (via `setDate`) must not.
+    vi.stubEnv("TZ", "America/New_York")
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it("addLocalDays lands on the next local midnight across a spring-forward transition (23h day)", () => {
+    const beforeSpringForward = new Date(2026, 2, 8, 0, 0, 0) // 8 Mar 2026 00:00 local
+    const next = addLocalDays(beforeSpringForward, 1)
+
+    expect(next.getDate()).toBe(9)
+    expect(next.getHours()).toBe(0)
+    // The real elapsed time is 23h, not 24h — confirms this isn't landing on 23:00 the same day.
+    expect(next.getTime() - beforeSpringForward.getTime()).toBe(
+      23 * 60 * 60 * 1000
+    )
+  })
+
+  it("addLocalDays lands on the next local midnight across a fall-back transition (25h day)", () => {
+    const beforeFallBack = new Date(2026, 10, 1, 0, 0, 0) // 1 Nov 2026 00:00 local
+    const next = addLocalDays(beforeFallBack, 1)
+
+    expect(next.getDate()).toBe(2)
+    expect(next.getHours()).toBe(0)
+    expect(next.getTime() - beforeFallBack.getTime()).toBe(25 * 60 * 60 * 1000)
+  })
+
+  it("buckets an entry late on a spring-forward day under that day, not the next one", () => {
+    const rangeStart = new Date(2026, 2, 8) // 8 Mar 2026 (spring-forward day)
+    const rangeEnd = addLocalDays(rangeStart, 3)
+    const lateOnTransitionDay = new Date(2026, 2, 8, 23, 0, 0) // 23:00 local on the 23h day
+    const entries = [
+      {
+        occurrenceId: "occ-1",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: lateOnTransitionDay.toISOString(),
+        endUtc: addLocalDays(lateOnTransitionDay, 1).toISOString(),
+        parameters: null,
+      },
+    ]
+
+    const days = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      rangeStart
+    )
+
+    const daysWithEntry = days
+      .filter((day) => day.entries.length > 0)
+      .map((day) => day.date)
+    expect(daysWithEntry).toContain("2026-03-08")
   })
 })

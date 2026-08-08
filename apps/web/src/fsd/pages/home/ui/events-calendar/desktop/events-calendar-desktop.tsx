@@ -1,13 +1,21 @@
+import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
+
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsCalendarDay } from "../../../model/events-calendar.types"
 import { EventEntryCard } from "../event-entry-card"
 
-const weekdayFormatter = new Intl.DateTimeFormat(undefined, {
-  weekday: "short",
-})
-const dayFormatter = new Intl.DateTimeFormat(undefined, { day: "numeric" })
-
 export function EventsCalendarDesktop({ days }: { days: EventsCalendarDay[] }) {
+  const { i18n } = useTranslation()
+  const weekdayFormatter = useMemo(
+    () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { weekday: "short" }),
+    [i18n.resolvedLanguage]
+  )
+  const dayFormatter = useMemo(
+    () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { day: "numeric" }),
+    [i18n.resolvedLanguage]
+  )
+
   return (
     <div
       className="grid grid-cols-7 gap-2"

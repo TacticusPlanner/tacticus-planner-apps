@@ -23,7 +23,7 @@
 
 - [x] 3.1 Extend `Validation/*.cs` to cross-reference every occurrence's `definitionId` against `eventDefinitions`, and to fail the build when an occurrence omits a value for any of its definition's `requiredParameters`.
 - [x] 3.2 Register `eventDefinitions`, `eventOccurrences`, and `eventsCalendar` in `GameCatalogHashing.cs` for manifest hashing.
-- [x] 3.3 Add served endpoints for the three new dataset keys via the existing `ServedDatasetEndpoint<T>` pattern in `GetGameCatalogDatasetEndpoints.cs`.
+- [x] 3.3 Add served endpoints for the two served dataset keys (`eventDefinitions`, `eventsCalendar` — not `eventOccurrences`, per the deviation noted above) via the existing `ServedDatasetEndpoint<T>` pattern in `GetGameCatalogDatasetEndpoints.cs`.
 - [x] 3.4 Update the Verify-based manifest snapshot test to cover the new datasets.
 
 ## 4. Client: game-catalog package dataset wiring

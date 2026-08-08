@@ -1,13 +1,9 @@
+import { useMemo } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
 import type { EventsCalendarViewModel } from "../../model/events-calendar.types"
-
-const rangeFormatter = new Intl.DateTimeFormat(undefined, {
-  month: "short",
-  day: "numeric",
-})
 
 export function EventsCalendarNavigation({
   calendar,
@@ -21,7 +17,15 @@ export function EventsCalendarNavigation({
     | "goToToday"
   >
 }) {
-  const { t } = useTranslation("events")
+  const { t, i18n } = useTranslation("events")
+  const rangeFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+        month: "short",
+        day: "numeric",
+      }),
+    [i18n.resolvedLanguage]
+  )
   const lastVisibleDay = new Date(calendar.rangeEnd.getTime() - 1)
 
   return (
