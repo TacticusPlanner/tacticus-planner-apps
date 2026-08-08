@@ -6,6 +6,9 @@ import type {
   characterViewSchema,
   equipmentSchema,
   equipmentUpgradeCostSchema,
+  eventDefinitionSchema,
+  eventRecurrenceSchema,
+  eventsCalendarEntrySchema,
   farmLocationSchema,
   lreBattleSchema,
   lreBattleViewSchema,
@@ -51,4 +54,9 @@ export type GameCatalogUnlockShardCost = z.infer<typeof unlockShardCostSchema>
 export type GameCatalogOnslaughtReward = z.infer<typeof onslaughtRewardSchema>
 export type GameCatalogEquipmentUpgradeCost = z.infer<
   typeof equipmentUpgradeCostSchema
+>
+export type GameCatalogEventDefinition = z.infer<typeof eventDefinitionSchema>
+export type GameCatalogEventRecurrence = z.infer<typeof eventRecurrenceSchema>
+export type GameCatalogEventsCalendarEntry = z.infer<
+  typeof eventsCalendarEntrySchema
 >

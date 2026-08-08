@@ -1,0 +1,57 @@
+{
+  "title": "Events Calendar",
+  "navigation": {
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "today": "Today"
+  },
+  "states": {
+    "loading": "Loading events…",
+    "error": "Couldn't load events.",
+    "retry": "Retry",
+    "empty": "No events in this range."
+  },
+  "badges": {
+    "active": "Live now",
+    "projected": "Projected",
+    "confirmed": "Confirmed"
+  },
+  "withFaction": "{{name}}: {{faction}}",
+  "withCharacter": "{{name}}: {{character}}",
+  "withVersion": "{{name}} {{version}}",
+  "definitions": {
+    "campaign-event": "Campaign Event",
+    "incursion": "Incursion",
+    "legendary-event": "Legendary Event",
+    "always-double-xp-sunday": "Double XP",
+    "always-double-gold-saturday": "Double Gold",
+    "new-character-event": "New Character Event",
+    "game-version-release": "Update",
+    "hse-faction-boost": "Faction Boost",
+    "hse-faction-focus": "Faction Focus",
+    "hse-warp-surge": "Warp Surge",
+    "ta-faction-war": "Tournament Arena: Faction War",
+    "ta-power-ups": "Tournament Arena: Power-Ups",
+    "ta-conquest": "Tournament Arena: Conquest",
+    "ta-draft-power-ups": "Tournament Arena: Draft Power-Ups",
+    "ta-infested-power-ups": "Tournament Arena: Infested Power-Ups"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "title": {
+          "title": "Events Calendar",
+          "content": "See what's running right now and what's coming up, all in one place."
+        },
+        "navigation": {
+          "title": "Browse other weeks",
+          "content": "Step forward or back a week, or jump back to today."
+        },
+        "calendar": {
+          "title": "Confirmed vs. projected",
+          "content": "Confirmed events are locked in; projected ones are a preview based on the game's normal schedule and may still change."
+        }
+      }
+    }
+  }
+}

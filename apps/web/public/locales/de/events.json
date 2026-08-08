@@ -1,0 +1,57 @@
+{
+  "title": "Event-Kalender",
+  "navigation": {
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "today": "Heute"
+  },
+  "states": {
+    "loading": "Events werden geladen…",
+    "error": "Events konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "empty": "Keine Events in diesem Zeitraum."
+  },
+  "badges": {
+    "active": "Jetzt aktiv",
+    "projected": "Voraussichtlich",
+    "confirmed": "Bestätigt"
+  },
+  "withFaction": "{{name}}: {{faction}}",
+  "withCharacter": "{{name}}: {{character}}",
+  "withVersion": "{{name}} {{version}}",
+  "definitions": {
+    "campaign-event": "Kampagnen-Event",
+    "incursion": "Incursion",
+    "legendary-event": "Legendäres Event",
+    "always-double-xp-sunday": "Doppelte EP",
+    "always-double-gold-saturday": "Doppeltes Gold",
+    "new-character-event": "Neuer-Charakter-Event",
+    "game-version-release": "Update",
+    "hse-faction-boost": "Fraktions-Boost",
+    "hse-faction-focus": "Fraktions-Fokus",
+    "hse-warp-surge": "Warpsturm",
+    "ta-faction-war": "Turnierarena: Fraktionskrieg",
+    "ta-power-ups": "Turnierarena: Power-Ups",
+    "ta-conquest": "Turnierarena: Eroberung",
+    "ta-draft-power-ups": "Turnierarena: Draft-Power-Ups",
+    "ta-infested-power-ups": "Turnierarena: Befallene Power-Ups"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "title": {
+          "title": "Event-Kalender",
+          "content": "Sieh auf einen Blick, was gerade läuft und was als Nächstes kommt."
+        },
+        "navigation": {
+          "title": "Andere Wochen ansehen",
+          "content": "Springe eine Woche vor oder zurück, oder kehre zu Heute zurück."
+        },
+        "calendar": {
+          "title": "Bestätigt vs. voraussichtlich",
+          "content": "Bestätigte Events stehen fest; voraussichtliche basieren auf dem üblichen Ablauf des Spiels und können sich noch ändern."
+        }
+      }
+    }
+  }
+}

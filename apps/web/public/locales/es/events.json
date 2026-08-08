@@ -1,0 +1,57 @@
+{
+  "title": "Calendario de eventos",
+  "navigation": {
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "today": "Hoy"
+  },
+  "states": {
+    "loading": "Cargando eventos…",
+    "error": "No se pudieron cargar los eventos.",
+    "retry": "Reintentar",
+    "empty": "No hay eventos en este rango."
+  },
+  "badges": {
+    "active": "En curso",
+    "projected": "Previsto",
+    "confirmed": "Confirmado"
+  },
+  "withFaction": "{{name}}: {{faction}}",
+  "withCharacter": "{{name}}: {{character}}",
+  "withVersion": "{{name}} {{version}}",
+  "definitions": {
+    "campaign-event": "Evento de campaña",
+    "incursion": "Incursión",
+    "legendary-event": "Evento legendario",
+    "always-double-xp-sunday": "Doble XP",
+    "always-double-gold-saturday": "Doble oro",
+    "new-character-event": "Evento de nuevo personaje",
+    "game-version-release": "Actualización",
+    "hse-faction-boost": "Impulso de facción",
+    "hse-faction-focus": "Enfoque de facción",
+    "hse-warp-surge": "Sobrecarga del Warp",
+    "ta-faction-war": "Arena de Torneos: Guerra de facciones",
+    "ta-power-ups": "Arena de Torneos: Potenciadores",
+    "ta-conquest": "Arena de Torneos: Conquista",
+    "ta-draft-power-ups": "Arena de Torneos: Potenciadores por selección",
+    "ta-infested-power-ups": "Arena de Torneos: Potenciadores infestados"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "title": {
+          "title": "Calendario de eventos",
+          "content": "Consulta de un vistazo lo que está en curso y lo que viene a continuación."
+        },
+        "navigation": {
+          "title": "Explorar otras semanas",
+          "content": "Avanza o retrocede una semana, o vuelve directamente a hoy."
+        },
+        "calendar": {
+          "title": "Confirmado frente a previsto",
+          "content": "Los eventos confirmados son definitivos; los previstos se basan en el calendario habitual del juego y aún podrían cambiar."
+        }
+      }
+    }
+  }
+}

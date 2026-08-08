@@ -4,6 +4,11 @@ import type { GameCatalogDatasetKey } from "../dataset-keys"
 import { campaignBattleViewSchema, campaignDefinitionSchema } from "./campaign"
 import { characterViewSchema } from "./character"
 import { equipmentSchema } from "./equipment"
+import {
+  eventDefinitionSchema,
+  eventsCalendarPayloadSchema,
+  eventsCalendarRowSchema,
+} from "./events"
 import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { npcSchema } from "./npc"
@@ -29,6 +34,9 @@ export const datasetPayloadSchemas = {
   lres: z.array(lreViewSchema),
   "lre-battles": z.array(lreBattleViewSchema),
   "lre-common": z.array(lreCommonSchema),
+  "event-definitions": z.array(eventDefinitionSchema),
+  // The one exception to "every payload is a plain array" — see events.ts.
+  "events-calendar": eventsCalendarPayloadSchema,
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -48,4 +56,8 @@ export type GameCatalogRecordByKey = {
   lres: z.infer<typeof lreViewSchema>
   "lre-battles": z.infer<typeof lreBattleViewSchema>
   "lre-common": z.infer<typeof lreCommonSchema>
+  "event-definitions": z.infer<typeof eventDefinitionSchema>
+  // The flattened storage-row shape (entry + injected `date`), not the raw date-keyed payload — see
+  // events.ts and game-catalog.mapper.ts's `byCalendarDate`.
+  "events-calendar": z.infer<typeof eventsCalendarRowSchema>
 }

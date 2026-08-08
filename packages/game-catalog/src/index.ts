@@ -18,6 +18,9 @@ export {
   type GameCatalogEquipment,
   type GameCatalogCampaignDefinitionView,
   type GameCatalogLreView,
+  type GameCatalogEventDefinition,
+  type GameCatalogEventRecurrence,
+  type GameCatalogEventsCalendarEntry,
 } from "./types"
 
 export type {
@@ -73,6 +76,8 @@ export {
   type EquipmentStorageModel,
   type CampaignBattleStorageModel,
   type CampaignDefinitionStorageModel,
+  type EventDefinitionStorageModel,
+  type EventsCalendarStorageModel,
 } from "./game-catalog.storage"
 
 export {
