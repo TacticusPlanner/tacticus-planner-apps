@@ -9,6 +9,8 @@ import type {
   CampaignDefinitionStorageModel,
   CharacterStorageModel,
   EquipmentStorageModel,
+  EventDefinitionStorageModel,
+  EventsCalendarStorageModel,
   MowStorageModel,
   OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
@@ -92,4 +94,71 @@ export function getCampaignDefinitions(): Promise<
   CampaignDefinitionStorageModel[]
 > {
   return getDatasetRecords("campaign-definitions")
+}
+
+export function getEventDefinitions(): Promise<EventDefinitionStorageModel[]> {
+  return getDatasetRecords("event-definitions")
+}
+
+export async function getEventDefinitionsMap(): Promise<
+  Map<string, EventDefinitionStorageModel>
+> {
+  const definitions = await getEventDefinitions()
+  return new Map(definitions.map((definition) => [definition.id, definition]))
+}
+
+// events-calendar is stored one row per (date, entry) pair (see game-catalog.mapper.ts's
+// byCalendarDate), so a multi-day entry appears once per date it spans — dedupe by occurrence identity
+// (an authored occurrence's own id, or definitionId+startUtc for a projected placeholder, which has no
+// occurrence id of its own) before returning results to a caller.
+function dedupeCalendarEntries(
+  rows: EventsCalendarStorageModel[]
+): EventsCalendarStorageModel[] {
+  const byIdentity = new Map<string, EventsCalendarStorageModel>()
+
+  for (const row of rows) {
+    const identity = row.occurrenceId ?? `${row.definitionId}::${row.startUtc}`
+    if (!byIdentity.has(identity)) {
+      byIdentity.set(identity, row)
+    }
+  }
+
+  return [...byIdentity.values()]
+}
+
+/**
+ * Events whose window contains `at` (start inclusive, end exclusive — see
+ * specs/game-events-calendar in the integrate-game-events-calendar change).
+ */
+export async function getEventsActiveAt(
+  at: Date
+): Promise<EventsCalendarStorageModel[]> {
+  const atMs = at.getTime()
+  const rows = await getDatasetRecords("events-calendar")
+  const active = rows.filter(
+    (row) => Date.parse(row.startUtc) <= atMs && atMs < Date.parse(row.endUtc)
+  )
+
+  return dedupeCalendarEntries(active)
+}
+
+export function getEventsActiveNow(): Promise<EventsCalendarStorageModel[]> {
+  return getEventsActiveAt(new Date())
+}
+
+/** Events whose window overlaps [rangeStart, rangeEnd). */
+export async function getUpcomingEvents(
+  rangeStart: Date,
+  rangeEnd: Date
+): Promise<EventsCalendarStorageModel[]> {
+  const rangeStartMs = rangeStart.getTime()
+  const rangeEndMs = rangeEnd.getTime()
+  const rows = await getDatasetRecords("events-calendar")
+  const inRange = rows.filter(
+    (row) =>
+      Date.parse(row.startUtc) < rangeEndMs &&
+      Date.parse(row.endUtc) > rangeStartMs
+  )
+
+  return dedupeCalendarEntries(inRange)
 }

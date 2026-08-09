@@ -29,6 +29,9 @@ export type {
   GameCatalogAscensionCost,
   GameCatalogUnlockShardCost,
   GameCatalogOnslaughtReward,
+  GameCatalogEventDefinition,
+  GameCatalogEventRecurrence,
+  GameCatalogEventsCalendarEntry,
 } from "./record-types"
 
 // All catalog API shapes are inferred from the zod schemas that validate them at runtime.

@@ -29,6 +29,26 @@ function byRarity(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.rarity, ...row }))
 }
 
+// events-calendar is the one dataset whose payload isn't a plain array — it's a date-indexed object
+// (ISO date string -> entries). Flatten it into one row per (date, entry) pair, injecting `date` as a
+// real field, with an id unique per date+definition+occurrence (an occurrence's own id is unique across
+// dates on its own, but a projected placeholder has no occurrence id, so definitionId disambiguates
+// between different definitions' placeholders sharing the same date).
+function byCalendarDate(data: unknown): Record<string, unknown>[] {
+  if (typeof data !== "object" || data === null) {
+    return []
+  }
+
+  return Object.entries(data as Record<string, unknown>).flatMap(
+    ([date, entries]) =>
+      asArray(entries).map((entry) => ({
+        id: `${date}::${entry.definitionId}::${entry.occurrenceId ?? "projected"}`,
+        date,
+        ...entry,
+      }))
+  )
+}
+
 export const datasetToStorageModels: Record<
   GameCatalogDatasetKey,
   DatasetToStorageModels
@@ -47,6 +67,8 @@ export const datasetToStorageModels: Record<
   lres: asArray,
   "lre-battles": asArray,
   "lre-common": asArray,
+  "event-definitions": asArray,
+  "events-calendar": byCalendarDate,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

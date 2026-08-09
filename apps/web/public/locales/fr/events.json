@@ -1,0 +1,96 @@
+{
+  "title": "Calendrier des événements",
+  "navigation": {
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "today": "Aujourd'hui"
+  },
+  "states": {
+    "loading": "Chargement des événements…",
+    "error": "Impossible de charger les événements.",
+    "retry": "Réessayer",
+    "empty": "Aucun événement sur cette période."
+  },
+  "badges": {
+    "active": "En cours",
+    "projected": "Prévu",
+    "confirmed": "Confirmé"
+  },
+  "wikiLink": "Voir sur le wiki",
+  "withFaction": "{{name}} : {{faction}}",
+  "withCharacter": "{{name}} : {{character}}",
+  "withVersion": "{{name}} {{version}}",
+  "withIteration": "{{name}} (Itération {{iteration}})",
+  "withSeason": "{{name}} Saison {{season}}",
+  "withNewCampaign": "{{name}} (Nouvelle Campagne)",
+  "withNewMow": "{{name}} (Nouveau MoW)",
+  "withEventNumber": "{{name}} {{number}}",
+  "withMow": "{{name}} : {{mow}}",
+  "withEnemyFaction": "{{name}} contre {{faction}}",
+  "withWeek": "{{name}} Semaine {{week}}",
+  "withRarityCap": "{{name}} ({{rarityCap}})",
+  "withMowFlag": "{{name}} MoW",
+  "withNoMowFlag": "{{name}} Sans MoW",
+  "definitions": {
+    "campaign-event": "Événement de campagne",
+    "incursion": "Incursion",
+    "legendary-event": "Événement légendaire",
+    "always-double-xp-sunday": "XP doublée",
+    "always-double-gold-saturday": "Or doublé",
+    "new-character-event": "Événement de nouveau personnage",
+    "game-version-release": "Mise à jour",
+    "hse-faction-boost": "Bonus de faction",
+    "hse-faction-focus": "Focus de faction",
+    "hse-warp-surge": "Déferlante du Warp",
+    "hse-training-rush": "Entraînement Intensif",
+    "hse-global-conflict-operations": "Global : Opérations de Conflit",
+    "hse-arsenal-of-war": "Arsenal de Guerre",
+    "hse-machine-hunt": "Chasse aux Machines",
+    "hse-terminator-boost": "Bonus Terminator",
+    "ta-faction-war": "Arène des Tournois : Guerre des factions",
+    "ta-power-ups": "Arène des Tournois : Bonus",
+    "ta-conquest": "Arène des Tournois : Conquête",
+    "ta-draft-power-ups": "Arène des Tournois : Bonus par sélection",
+    "ta-infested-power-ups": "Arène des Tournois : Bonus infestés",
+    "battle-pass": "Passe de combat",
+    "quest": "Quête",
+    "guild-raid-season": "Raid de guilde",
+    "guild-war-season": "Guerre de guilde",
+    "anniversary-event": "Événement Anniversaire",
+    "crusade-season": "Saison de Croisade"
+  },
+  "legend": {
+    "campaign": "Événement de campagne",
+    "incursion": "Incursion",
+    "legendary": "Événement légendaire",
+    "battlePass": "Passe de combat",
+    "guildWar": "Guerre de guilde",
+    "guildRaid": "Raid de guilde",
+    "tournament": "Arène des Tournois",
+    "homeScreen": "Événement d'écran d'accueil",
+    "quest": "Quête",
+    "newCharacter": "Nouveau personnage",
+    "gameVersion": "Mise à jour",
+    "shop": "Événement Anniversaire",
+    "crusade": "Saison de Croisade",
+    "default": "Autre"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "title": {
+          "title": "Calendrier des événements",
+          "content": "Voyez d'un coup d'œil ce qui se passe en ce moment et ce qui arrive bientôt."
+        },
+        "navigation": {
+          "title": "Parcourir d'autres semaines",
+          "content": "Avancez ou reculez d'une semaine, ou revenez directement à aujourd'hui."
+        },
+        "calendar": {
+          "title": "Confirmé ou prévu",
+          "content": "Les événements confirmés sont définitifs ; les événements prévus se basent sur le calendrier habituel du jeu et peuvent encore changer."
+        }
+      }
+    }
+  }
+}

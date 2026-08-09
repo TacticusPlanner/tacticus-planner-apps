@@ -119,6 +119,26 @@
   --diff-event-std: oklch(0.6 0.18 320);
   --diff-event-ext: oklch(0.55 0.2 20);
   --diff-event-chal: oklch(0.55 0.2 340);
+
+  /* Event-type colors — hues picked to match Snowprint's own in-game calendar spreadsheets: Campaign
+     Event cyan, Incursion bright green, HSE steel-blue, TA magenta, Quest orange, Guild War Season
+     sage-green, Battle Pass pale mint, Always Double XP/Gold pink/yellow headers. */
+  --event-campaign: #5cc3d9;
+  --event-incursion: #7ed957;
+  --event-legendary: #a9c8ec;
+  --event-home-screen: #7c98ab;
+  --event-tournament: #df70a8;
+  --event-quest: #e69a5c;
+  --event-guild-war: #9cb37a;
+  --event-guild-raid: #6fb8ad;
+  --event-battle-pass: #a9d18e;
+  --event-new-character: #8a93d6;
+  --event-game-version: #978acc;
+  --event-double-xp: #d9a1c4;
+  --event-double-gold: #e9cf4f;
+  --event-shop: #d9b3bc;
+  --event-crusade: #b58a5c;
+  --event-bar-foreground: oklch(0.243 0.015 261.655);
 }
 
 .dark {
@@ -188,6 +208,25 @@
   --diff-event-std: oklch(0.7 0.16 320);
   --diff-event-ext: oklch(0.7 0.2 20);
   --diff-event-chal: oklch(0.7 0.18 340);
+
+  /* Same hue families as :root, darkened/desaturated to sit on the dark background — mirrors how the
+     rarity and rank tokens above are re-tuned per theme rather than reused verbatim. */
+  --event-campaign: #31798a;
+  --event-incursion: #3f7c2c;
+  --event-legendary: #47719b;
+  --event-home-screen: #55707f;
+  --event-tournament: #a8386f;
+  --event-quest: #9c6436;
+  --event-guild-war: #66764d;
+  --event-guild-raid: #417b73;
+  --event-battle-pass: #577945;
+  --event-new-character: #5c63a3;
+  --event-game-version: #6a5aa3;
+  --event-double-xp: #945e81;
+  --event-double-gold: #7f6f20;
+  --event-shop: #90636e;
+  --event-crusade: #8a6540;
+  --event-bar-foreground: oklch(0.97 0.005 264.532);
 }
 
 @layer base {

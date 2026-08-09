@@ -1,0 +1,96 @@
+{
+  "title": "Event-Kalender",
+  "navigation": {
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "today": "Heute"
+  },
+  "states": {
+    "loading": "Events werden geladen…",
+    "error": "Events konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "empty": "Keine Events in diesem Zeitraum."
+  },
+  "badges": {
+    "active": "Jetzt aktiv",
+    "projected": "Voraussichtlich",
+    "confirmed": "Bestätigt"
+  },
+  "wikiLink": "Im Wiki ansehen",
+  "withFaction": "{{name}}: {{faction}}",
+  "withCharacter": "{{name}}: {{character}}",
+  "withVersion": "{{name}} {{version}}",
+  "withIteration": "{{name}} (Iteration {{iteration}})",
+  "withSeason": "{{name}} Saison {{season}}",
+  "withNewCampaign": "{{name}} (Neue Kampagne)",
+  "withNewMow": "{{name}} (Neue MoW)",
+  "withEventNumber": "{{name}} {{number}}",
+  "withMow": "{{name}}: {{mow}}",
+  "withEnemyFaction": "{{name}} vs. {{faction}}",
+  "withWeek": "{{name}} Woche {{week}}",
+  "withRarityCap": "{{name}} ({{rarityCap}})",
+  "withMowFlag": "{{name}} MoW",
+  "withNoMowFlag": "{{name}} Ohne MoW",
+  "definitions": {
+    "campaign-event": "Kampagnen-Event",
+    "incursion": "Incursion",
+    "legendary-event": "Legendäres Event",
+    "always-double-xp-sunday": "Doppelte EP",
+    "always-double-gold-saturday": "Doppeltes Gold",
+    "new-character-event": "Neuer-Charakter-Event",
+    "game-version-release": "Update",
+    "hse-faction-boost": "Fraktions-Boost",
+    "hse-faction-focus": "Fraktions-Fokus",
+    "hse-warp-surge": "Warpsturm",
+    "hse-training-rush": "Trainings-Ansturm",
+    "hse-global-conflict-operations": "Global: Konfliktoperationen",
+    "hse-arsenal-of-war": "Kriegsarsenal",
+    "hse-machine-hunt": "Maschinenjagd",
+    "hse-terminator-boost": "Terminator-Boost",
+    "ta-faction-war": "Turnierarena: Fraktionskrieg",
+    "ta-power-ups": "Turnierarena: Power-Ups",
+    "ta-conquest": "Turnierarena: Eroberung",
+    "ta-draft-power-ups": "Turnierarena: Draft-Power-Ups",
+    "ta-infested-power-ups": "Turnierarena: Befallene Power-Ups",
+    "battle-pass": "Battle Pass",
+    "quest": "Quest",
+    "guild-raid-season": "Gilden-Überfall",
+    "guild-war-season": "Gildenkrieg",
+    "anniversary-event": "Jubiläums-Event",
+    "crusade-season": "Kreuzzug-Saison"
+  },
+  "legend": {
+    "campaign": "Kampagnen-Event",
+    "incursion": "Incursion",
+    "legendary": "Legendäres Event",
+    "battlePass": "Battle Pass",
+    "guildWar": "Gildenkrieg",
+    "guildRaid": "Gilden-Überfall",
+    "tournament": "Turnierarena",
+    "homeScreen": "Home-Screen-Event",
+    "quest": "Quest",
+    "newCharacter": "Neuer Charakter",
+    "gameVersion": "Update",
+    "shop": "Jubiläums-Event",
+    "crusade": "Kreuzzug-Saison",
+    "default": "Sonstiges"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "title": {
+          "title": "Event-Kalender",
+          "content": "Sieh auf einen Blick, was gerade läuft und was als Nächstes kommt."
+        },
+        "navigation": {
+          "title": "Andere Wochen ansehen",
+          "content": "Springe eine Woche vor oder zurück, oder kehre zu Heute zurück."
+        },
+        "calendar": {
+          "title": "Bestätigt vs. voraussichtlich",
+          "content": "Bestätigte Events stehen fest; voraussichtliche basieren auf dem üblichen Ablauf des Spiels und können sich noch ändern."
+        }
+      }
+    }
+  }
+}
