@@ -25,7 +25,7 @@ const definitions = [
     config: null,
   },
   {
-    id: "hse-faction-focus",
+    id: "hse-terminator-boost",
     type: "HomeScreenEvent",
     recurrence: noneRecurrence,
     config: null,
@@ -165,7 +165,7 @@ describe("EventsCalendar", () => {
       },
       {
         occurrenceId: null,
-        definitionId: "hse-faction-focus",
+        definitionId: "hse-terminator-boost",
         confirmed: false,
         startUtc: isoDaysFromNow(2),
         endUtc: isoDaysFromNow(3),

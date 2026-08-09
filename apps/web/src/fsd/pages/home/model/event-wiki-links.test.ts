@@ -23,7 +23,7 @@ describe("resolveEventWikiUrl", () => {
   })
 
   it("returns undefined for a definition without a wiki article", () => {
-    expect(resolveEventWikiUrl("hse-faction-focus")).toBeUndefined()
+    expect(resolveEventWikiUrl("hse-terminator-boost")).toBeUndefined()
     expect(resolveEventWikiUrl("crusade-season")).toBeUndefined()
   })
 
@@ -33,6 +33,9 @@ describe("resolveEventWikiUrl", () => {
     )
     expect(resolveEventWikiUrl("hse-faction-boost")).toBe(
       "https://tacticus.wiki.gg/wiki/Faction_Boost"
+    )
+    expect(resolveEventWikiUrl("hse-faction-focus")).toBe(
+      "https://tacticus.wiki.gg/wiki/Faction_Focus"
     )
     expect(resolveEventWikiUrl("hse-training-rush")).toBe(
       "https://tacticus.wiki.gg/wiki/Training_Rush"
