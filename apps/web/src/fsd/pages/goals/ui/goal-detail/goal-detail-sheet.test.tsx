@@ -78,6 +78,10 @@ vi.mock("@/entities/goal", () => ({
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
+    goals: (projectId: string) => ({
+      queryFn: () => Promise.resolve({ goals: [] }),
+      queryKey: ["projects", projectId, "goals"],
+    }),
     list: () => ({
       queryFn: () => listProjects(),
       queryKey: ["projects", "list"],
@@ -119,10 +123,12 @@ vi.mock("../../model/shared/use-goal-catalog", () => ({
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {
     readonly status: number
+    readonly details: unknown
 
-    constructor(status: number, message: string) {
+    constructor(status: number, message: string, details?: unknown) {
       super(message)
       this.status = status
+      this.details = details
     }
   },
 }))
@@ -436,16 +442,45 @@ describe("GoalDetailSheet", () => {
     )
   })
 
+  it("links a stale server slot conflict to its existing goal", async () => {
+    const user = userEvent.setup()
+    const onGoalChange = vi.fn()
+    updateGoal.mockRejectedValueOnce(
+      new ApiError(409, "Event Prep already has this goal", {
+        issueCode: "projectGoalSlotOccupied",
+        message: "Event Prep already has this goal",
+        projectId: "project-2",
+        projectName: "Event Prep",
+        entityType: "Character",
+        entityId: "hero-1",
+        goalType: "Ability",
+        existingGoalId: "goal-conflict",
+      })
+    )
+    renderSheet({ onGoalChange })
+    await enterEditMode(user)
+
+    await user.click(screen.getByTestId("goal-detail-save"))
+    await user.click(
+      await screen.findByRole("button", {
+        name: "goals.project.reviewConflictingGoal",
+      })
+    )
+
+    expect(onGoalChange).toHaveBeenCalledWith("goal-conflict")
+  })
+
   it("adds the goal to another project on save", async () => {
     const user = userEvent.setup()
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
     await enterEditMode(user)
 
-    const eventPrep = await screen.findByRole("checkbox", {
-      name: "Event Prep",
+    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.click(await screen.findByText("Event Prep"))
+    await vi.waitFor(() => {
+      expect(screen.getByText("goals.detail.save")).not.toBeDisabled()
     })
-    await user.click(eventPrep)
     await user.click(screen.getByText("goals.detail.save"))
 
     await vi.waitFor(() => {
@@ -456,20 +491,23 @@ describe("GoalDetailSheet", () => {
     })
   })
 
-  it("disables save and shows a validation message when every project is unchecked", async () => {
+  it("protects the last project membership", async () => {
     const user = userEvent.setup()
     renderSheet()
     await enterEditMode(user)
 
-    const myGoals = await screen.findByRole("checkbox", {
-      name: "My Goals (goals.project.currentPlan)",
-    })
-    await user.click(myGoals)
+    await user.click(
+      screen.getByRole("button", {
+        name: /^goals\.project\.removeMembership/,
+      })
+    )
 
     expect(
       screen.getByText("goals.detail.projectsRequired")
     ).toBeInTheDocument()
-    expect(screen.getByText("goals.detail.save")).toBeDisabled()
+    expect(
+      screen.getByTestId("goal-detail-project-chip-project-1")
+    ).toBeInTheDocument()
     expect(updateGoalProjects).not.toHaveBeenCalled()
   })
 

@@ -62,6 +62,7 @@ function member(status: string, priority: number): ProjectGoalSummary {
       goalType: "Rank",
       status,
       notes: null,
+      dependsOn: [],
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-01T00:00:00.000Z",
     },

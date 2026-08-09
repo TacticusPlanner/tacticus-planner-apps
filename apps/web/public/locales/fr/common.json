@@ -250,12 +250,49 @@
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
     "project": {
+      "noProjectTitle": "Aucun projet pour le moment",
+      "noProjectDescription": "Créez un projet pour organiser et prioriser des objectifs associés.",
       "notFoundTitle": "Projet introuvable",
       "notFoundDescription": "Ce projet n'existe pas, ou vous n'y avez pas accès.",
+      "membership": "Projets contenant cet objectif",
+      "addMembership": "Ajouter au projet",
+      "removeMembership": "Retirer {{project}}",
+      "searchProjects": "Rechercher des projets",
+      "noAddableProjects": "Aucun projet disponible trouvé.",
+      "membershipConflict": "{{project}} contient déjà un objectif {{types}} actif ou en pause pour cette unité.",
+      "reviewConflictingGoal": "Voir l’objectif en conflit",
+      "filterAll": "Tous les projets",
+      "filterLabel": "Projet",
+      "currentPlan": "Plan actuel",
+      "makeCurrent": "Définir comme actuel",
+      "otherProjects": "Autres projets",
+      "noOtherProjects": "Aucun autre projet disponible pour le moment.",
+      "archivedProjects": "Projets archivés ({{count}})",
+      "backToProjects": "Retour aux projets",
+      "reprioritizeUnits": "Reprioriser les unités",
+      "reprioritizeUnitsDescription": "Faites glisser les unités dans l'ordre de priorité. Déplacer une unité déplace tous ses objectifs ; les objectifs qu'elle contient sont triés automatiquement.",
+      "dragUnit": "Faire glisser {{unit}} pour reprioriser",
+      "unitGoalSummary": "{{units}} unités · {{goals}} objectifs",
+      "reachedSummary": "{{count}} atteints",
+      "blockedSummary": "{{count}} bloqués",
+      "completionSummary": "Cible {{date}}",
+      "summaryUnavailable": "Résumé indisponible — réessayer",
+      "moreActions": "Autres actions du projet",
+      "archiveUnavailable": "Le plan actuel ou par défaut ne peut pas être archivé",
+      "cancel": "Annuler",
       "edit": "Modifier",
       "editTitle": "Modifier le projet",
       "newProjectTitle": "Nouveau projet",
-      "formDescription": "Nommez, décrivez et colorez ce projet."
+      "formDescription": "Nommez, décrivez et colorez ce projet.",
+      "newProject": "Nouveau projet",
+      "name": "Nom",
+      "description": "Description",
+      "color": "Couleur",
+      "customColor": "Couleur personnalisée",
+      "archive": "Archiver le projet",
+      "restore": "Restaurer le projet",
+      "save": "Enregistrer le projet",
+      "create": "Créer le projet"
     }
   },
   "language": {
@@ -322,7 +359,7 @@
         },
         "addGoal": {
           "title": "Ajouter un objectif",
-          "content": "Créez un nouvel objectif de progression depuis n'importe quelle page."
+          "content": "Créez des objectifs de personnage ou de machine de guerre, puis choisissez un ou plusieurs projets. Le projet par défaut est sélectionné automatiquement."
         },
         "sync": {
           "title": "Synchroniser",
@@ -386,19 +423,23 @@
       "steps": {
         "list": {
           "title": "Vos projets",
-          "content": "Tous vos projets sont listés ici, y compris les archivés — chaque ligne a ses propres actions."
+          "content": "Comparez votre plan actuel aux autres projets et à leurs résumés chargés progressivement. Les projets archivés restent repliés."
         },
         "newProject": {
           "title": "Créer un projet",
-          "content": "Démarrez ici un nouveau projet, ou utilisez l'action Modifier d'une ligne pour renommer, décrire ou recolorer un projet existant."
+          "content": "Créez un projet ici ou utilisez son menu d'actions pour le renommer, le décrire, le recolorer, l'archiver ou le restaurer."
         }
       }
     },
     "projectDetail": {
       "steps": {
-        "row": {
-          "title": "Ce projet",
-          "content": "La propre ligne de ce projet avec les mêmes actions que sur la liste des projets — l'activer, le modifier ou l'archiver."
+        "header": {
+          "title": "Le projet en un coup d'œil",
+          "content": "Retrouvez ici l'identité, l'état Plan actuel, les indicateurs, le sélecteur de projet et les actions."
+        },
+        "reprioritize": {
+          "title": "Prioriser par unité",
+          "content": "Réordonnez les blocs de personnages et machines de guerre. Tous les objectifs d'une unité se déplacent ensemble ; les dépendances fixent leur ordre interne."
         },
         "selector": {
           "title": "Choisir un projet",
@@ -406,7 +447,7 @@
         },
         "goals": {
           "title": "Objectifs du projet",
-          "content": "Les objectifs de ce projet apparaissent ici, par ordre de priorité."
+          "content": "Les objectifs apparaissent dans l'ordre aplati des unités utilisé par les calculs de planification."
         }
       }
     }

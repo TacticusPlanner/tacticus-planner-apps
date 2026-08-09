@@ -7,8 +7,8 @@ import type { UnitId } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import { UnitCombobox } from "@/shared/ui"
-import { projectMarkerSuffix } from "@/entities/project"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
+import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalTypeCards } from ".//goal-type-cards"
 import { GoalTypeToggleGroup } from "../shared/goal-visuals"
 import { UnitInfoCard } from ".//unit-info-card"
@@ -32,7 +32,7 @@ type GoalForm = ReturnType<typeof useCreateGoalForm>
 /**
  * The "Unit" pill's entire form body, in display order: unit picker, goal-type toggles, every
  * enabled goal-type's `GoalTypeCard` (assembled by `GoalTypeCards`), prerequisite suggestions,
- * project selection + per-project priority, then the combined-goal review list ("What will be
+ * project membership selection, then the combined-goal review list ("What will be
  * created", with each selected project's own duration estimate) last. Split out of
  * `create-goal-sheet.tsx` purely for that file's own max-lines budget (same reason
  * `UpgradeGoalFields`/`GoalProjectsField`/`GoalTypeCards` live in their own
@@ -199,40 +199,14 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.entityId ? (
-        <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">
-            {t("goals.create.projectLabel")}
-          </Label>
-          {form.projects.length > 0 ? (
-            <div className="grid gap-2">
-              {form.projects.map((project) => {
-                const selected = form.selectedProjectIds.includes(
-                  project.projectId
-                )
-                return (
-                  <Field key={project.projectId} orientation="horizontal">
-                    <Checkbox
-                      checked={selected}
-                      data-testid={`create-goal-project-${project.projectId}`}
-                      onCheckedChange={(checked) =>
-                        form.toggleProject(project.projectId, checked === true)
-                      }
-                    />
-                    <FieldLabel className="flex-1 font-normal">
-                      {project.name}
-                      {projectMarkerSuffix(t, project)}
-                    </FieldLabel>
-                  </Field>
-                )
-              })}
-            </div>
-          ) : null}
-          {form.selectedProjectIds.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.projectDefault")}
-            </p>
-          ) : null}
-        </div>
+        <GoalProjectsField
+          conflicts={form.projectConflicts}
+          onToggle={form.toggleProject}
+          projects={form.projects}
+          projectsValid={form.selectedProjectIds.length > 0}
+          selectedProjectIds={form.selectedProjectIds}
+          testIdPrefix="create-goal"
+        />
       ) : null}
 
       {form.entityId && form.reviewItems.length > 0 ? (

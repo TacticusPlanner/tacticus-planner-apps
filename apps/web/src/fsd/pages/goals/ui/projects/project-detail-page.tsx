@@ -1,7 +1,13 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
-import { ArrowLeft } from "lucide-react"
+import {
+  Archive,
+  ArchiveRestore,
+  ArrowLeft,
+  MoreHorizontal,
+  Pencil,
+} from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -10,6 +16,12 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 
 import {
   ManageProjectsSheet,
@@ -70,7 +82,6 @@ export function ProjectDetailPage() {
   const { result: insights } = usePlanInsights(projectId, projectGoals.goals)
 
   const allRows = projectGoals.goals.map(goalRowFromProjectMember)
-  const units = projectUnitPlans(allRows)
   const nonArchivedRows = allRows.filter((row) => row.status !== "Archived")
   const filteredAllRows = allRows.filter(
     (row) => goalType === "all" || row.goalType === goalType
@@ -103,6 +114,13 @@ export function ProjectDetailPage() {
     candidateRows.map((row) => row.goalId),
     insights.estimates
   )
+  const units = projectUnitPlans(allRows, overviewMetrics, insights.estimates)
+  const reachedCount = nonArchivedRows.filter((row) =>
+    isReached(row.goalId)
+  ).length
+  const blockedCount = nonArchivedRows.filter(
+    (row) => overviewMetrics.get(row.goalId)?.blockers.isBlocked
+  ).length
   const baseRows =
     tab === "blocked"
       ? candidateRows.filter(
@@ -167,7 +185,7 @@ export function ProjectDetailPage() {
       data-testid="project-detail-page"
       data-project-id={projectId}
     >
-      <Card>
+      <Card data-testid="project-detail-header">
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -193,7 +211,7 @@ export function ProjectDetailPage() {
                 <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                   {t("goals.project.currentPlan")}
                 </span>
-              ) : (
+              ) : project.status !== "Archived" ? (
                 <Button
                   disabled={projectActions.pending}
                   onClick={() =>
@@ -203,15 +221,61 @@ export function ProjectDetailPage() {
                 >
                   {t("goals.project.makeCurrent")}
                 </Button>
-              )}
+              ) : null}
               {units.length > 1 ? (
-                <Button onClick={() => setReprioritizeOpen(true)}>
+                <Button
+                  data-testid="project-reprioritize-units"
+                  onClick={() => setReprioritizeOpen(true)}
+                >
                   {t("goals.project.reprioritizeUnits")}
                 </Button>
               ) : null}
-              <Button onClick={() => setEditOpen(true)} variant="outline">
-                {t("goals.project.edit")}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    aria-label={t("goals.project.moreActions")}
+                    size="icon"
+                    variant="outline"
+                  >
+                    <MoreHorizontal />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+                    <Pencil />
+                    {t("goals.project.edit")}
+                  </DropdownMenuItem>
+                  {project.status === "Archived" ? (
+                    <DropdownMenuItem
+                      onSelect={() =>
+                        void projectActions.save(project, {
+                          ...project,
+                          status: "Active",
+                        })
+                      }
+                    >
+                      <ArchiveRestore />
+                      {t("goals.project.restore")}
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      disabled={project.isDefault || project.isActivePlan}
+                      onSelect={() =>
+                        void projectActions.save(project, {
+                          ...project,
+                          status: "Archived",
+                        })
+                      }
+                      variant="destructive"
+                    >
+                      <Archive />
+                      {project.isDefault || project.isActivePlan
+                        ? t("goals.project.archiveUnavailable")
+                        : t("goals.project.archive")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -220,25 +284,40 @@ export function ProjectDetailPage() {
               goals: allRows.length,
             })}
           </p>
+          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+            <span>
+              {t("goals.project.reachedSummary", { count: reachedCount })}
+            </span>
+            <span>
+              {t("goals.project.blockedSummary", { count: blockedCount })}
+            </span>
+            {insights.completionDate ? (
+              <span>
+                {t("goals.project.completionSummary", {
+                  date: insights.completionDate,
+                })}
+              </span>
+            ) : null}
+          </div>
+          <ProjectSelect
+            onProjectIdChange={(nextId) => {
+              if (nextId) void navigate(`/goals/projects/${nextId}`)
+            }}
+            projectId={projectId}
+            projects={projects.projects}
+            testId="projects-goal-project-select"
+          />
         </CardHeader>
       </Card>
 
       {/* goals-navigation spec: the project selector is trailing, paired in the same row as the
           status filter - here it switches which project's detail route is shown. */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2">
         <StatusFilterSelect
           counts={counts}
           onValueChange={setTab}
           testId="projects-status-filter"
           value={tab}
-        />
-        <ProjectSelect
-          onProjectIdChange={(nextId) => {
-            if (nextId) void navigate(`/goals/projects/${nextId}`)
-          }}
-          projectId={projectId}
-          projects={projects.projects}
-          testId="projects-goal-project-select"
         />
       </div>
 
@@ -251,36 +330,38 @@ export function ProjectDetailPage() {
         sort={sort}
       />
 
-      {projectGoals.fetchState.status === "error" ? (
-        <div
-          className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
-          role="alert"
-        >
-          {projectGoals.fetchState.message}
-        </div>
-      ) : projectGoals.loading ? (
-        <div
-          className="flex flex-col gap-3"
-          data-testid="project-detail-page-loading"
-        >
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-        </div>
-      ) : rows.length === 0 ? (
-        <p className="py-10 text-center text-muted-foreground">
-          {t("goals.empty.filtered")}
-        </p>
-      ) : (
-        <GoalsList
-          actions={goalActions}
-          estimates={insights.estimates}
-          metrics={overviewMetrics}
-          potentialProgress={insights.potentialProgressByGoalId}
-          onView={setDetailGoalId}
-          reorderEnabled={false}
-          rows={rows}
-        />
-      )}
+      <div data-testid="project-detail-goals">
+        {projectGoals.fetchState.status === "error" ? (
+          <div
+            className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
+            role="alert"
+          >
+            {projectGoals.fetchState.message}
+          </div>
+        ) : projectGoals.loading ? (
+          <div
+            className="flex flex-col gap-3"
+            data-testid="project-detail-page-loading"
+          >
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        ) : rows.length === 0 ? (
+          <p className="py-10 text-center text-muted-foreground">
+            {t("goals.empty.filtered")}
+          </p>
+        ) : (
+          <GoalsList
+            actions={goalActions}
+            estimates={insights.estimates}
+            metrics={overviewMetrics}
+            potentialProgress={insights.potentialProgressByGoalId}
+            onView={setDetailGoalId}
+            reorderEnabled={false}
+            rows={rows}
+          />
+        )}
+      </div>
 
       <ManageProjectsSheet
         actions={projectActions}

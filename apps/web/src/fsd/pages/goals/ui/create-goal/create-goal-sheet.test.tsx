@@ -524,8 +524,12 @@ describe("CreateGoalSheet", () => {
       expect(screen.getByTestId("create-goal-level-target")).toHaveTextContent(
         "42"
       )
-      expect(screen.getByTestId("create-goal-project-proj-2")).toBeChecked()
-      expect(screen.getByTestId("create-goal-project-proj-1")).not.toBeChecked()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-1")
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -617,14 +621,20 @@ describe("CreateGoalSheet", () => {
 
   it('shows a per-project estimated duration in "What will be created" once the required material is farmable', async () => {
     listProjects.mockResolvedValue({
-      projects: [{ projectId: "proj-1", name: "My Goals", isActivePlan: true }],
+      projects: [
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isActivePlan: true,
+          isDefault: true,
+          status: "Active",
+        },
+      ],
     })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
-
     await vi.waitFor(() => {
       expect(
         screen.getByTestId("create-goal-project-estimate-proj-1")
@@ -670,7 +680,7 @@ describe("CreateGoalSheet", () => {
     const unlockSuggestion = await screen.findByTestId(
       "create-goal-include-unlock"
     )
-    const projectLabel = screen.getByText("goals.create.projectLabel")
+    const projectLabel = screen.getByText("goals.detail.projectsTitle")
     const review = await screen.findByTestId("create-goal-review")
 
     // Node.DOCUMENT_POSITION_FOLLOWING set on the bitmask means the argument comes after `this` in
@@ -1326,8 +1336,20 @@ describe("CreateGoalSheet", () => {
   it("submits every checked project when several are selected", async () => {
     listProjects.mockResolvedValue({
       projects: [
-        { projectId: "proj-1", name: "My Goals", isActivePlan: true },
-        { projectId: "proj-2", name: "Event Prep", isActivePlan: false },
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isActivePlan: true,
+          isDefault: true,
+          status: "Active",
+        },
+        {
+          projectId: "proj-2",
+          name: "Event Prep",
+          isActivePlan: false,
+          isDefault: false,
+          status: "Active",
+        },
       ],
     })
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
@@ -1335,8 +1357,11 @@ describe("CreateGoalSheet", () => {
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-2"))
+    fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+    fireEvent.click(await screen.findByText("Event Prep"))
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+    })
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
     await vi.waitFor(() => {

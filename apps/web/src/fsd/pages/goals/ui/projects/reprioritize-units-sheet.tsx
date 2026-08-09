@@ -1,4 +1,20 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { GripVertical } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -12,9 +28,55 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import type { ProjectUnitKey } from "@/entities/project"
-import type { ProjectUnitPlan } from "../../model/projects/project-unit-plans"
+import {
+  reorderProjectUnits,
+  type ProjectUnitPlan,
+} from "../../model/projects/project-unit-plans"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalUnitIcon } from "../shared/goal-visuals"
+
+function unitKey(unit: ProjectUnitPlan) {
+  return `${unit.entityType}:${unit.entityId}`
+}
+
+function SortableUnit({ unit, name }: { unit: ProjectUnitPlan; name: string }) {
+  const { t } = useTranslation()
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: unitKey(unit) })
+
+  return (
+    <li
+      className="flex items-center gap-3 rounded-2xl border bg-card p-3"
+      data-testid="project-unit-order-item"
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        aria-label={t("goals.project.dragUnit", { unit: name })}
+        className="cursor-grab touch-none rounded-md p-2 text-muted-foreground hover:bg-muted active:cursor-grabbing"
+        type="button"
+      >
+        <GripVertical />
+      </button>
+      <GoalUnitIcon
+        entityId={unit.entityId}
+        entityType={unit.entityType}
+        name={name}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">{name}</p>
+        <p className="text-sm text-muted-foreground">
+          {unit.goals.map((goal) => goal.goalType).join(" · ")}
+        </p>
+      </div>
+    </li>
+  )
+}
 
 export function ReprioritizeUnitsSheet({
   open,
@@ -32,16 +94,20 @@ export function ReprioritizeUnitsSheet({
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
   const [draft, setDraft] = useState(units)
-  const [dragged, setDragged] = useState<number | null>(null)
+  const wasOpen = useRef(false)
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
-  const move = (from: number, to: number) => {
-    if (from === to || to < 0 || to >= draft.length) return
-    setDraft((current) => {
-      const next = [...current]
-      const [unit] = next.splice(from, 1)
-      if (unit) next.splice(to, 0, unit)
-      return next
-    })
+  useEffect(() => {
+    if (open && !wasOpen.current) setDraft(units)
+    wasOpen.current = open
+  }, [open, units])
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return
+    setDraft((current) => reorderProjectUnits(current, active.id, over.id))
   }
 
   return (
@@ -53,54 +119,26 @@ export function ReprioritizeUnitsSheet({
             {t("goals.project.reprioritizeUnitsDescription")}
           </p>
         </SheetHeader>
-        <ol className="grid flex-1 content-start gap-3 overflow-y-auto px-6">
-          {draft.map((unit, index) => {
-            const name = getEntityName(unit.entityType, unit.entityId)
-            return (
-              <li
-                className="flex items-center gap-3 rounded-2xl border bg-card p-3"
-                data-testid="project-unit-order-item"
-                key={`${unit.entityType}:${unit.entityId}`}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={() => {
-                  if (dragged !== null) move(dragged, index)
-                  setDragged(null)
-                }}
-              >
-                <button
-                  aria-label={t("goals.project.dragUnit", { unit: name })}
-                  className="cursor-grab rounded-md p-2 text-muted-foreground hover:bg-muted"
-                  draggable
-                  onDragEnd={() => setDragged(null)}
-                  onDragStart={() => setDragged(index)}
-                  onKeyDown={(event) => {
-                    if (event.key === "ArrowUp") {
-                      event.preventDefault()
-                      move(index, index - 1)
-                    } else if (event.key === "ArrowDown") {
-                      event.preventDefault()
-                      move(index, index + 1)
-                    }
-                  }}
-                  type="button"
-                >
-                  <GripVertical />
-                </button>
-                <GoalUnitIcon
-                  entityId={unit.entityId}
-                  entityType={unit.entityType}
-                  name={name}
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
+          <SortableContext
+            items={draft.map(unitKey)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ol className="grid flex-1 content-start gap-3 overflow-y-auto px-6">
+              {draft.map((unit) => (
+                <SortableUnit
+                  key={unitKey(unit)}
+                  name={getEntityName(unit.entityType, unit.entityId)}
+                  unit={unit}
                 />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {unit.goals.map((goal) => goal.goalType).join(" · ")}
-                  </p>
-                </div>
-              </li>
-            )
-          })}
-        </ol>
+              ))}
+            </ol>
+          </SortableContext>
+        </DndContext>
         <SheetFooter>
           <Button
             disabled={pending}

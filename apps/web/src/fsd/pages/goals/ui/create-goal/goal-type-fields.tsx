@@ -107,7 +107,7 @@ function AdditionalTargetLabel({
  * — Rank only). The current rank is read-only — it always reflects the unit's actual current rank,
  * with a small "N/total" badge showing how many of that rank's own upgrade slots are already applied.
  * The day-by-day duration estimate for this range no longer renders here — it's shown per selected
- * project in the drawer's "What will be created" review instead (per-project priority changes the
+ * project in the drawer's "What will be created" review instead (project order changes the
  * estimate, so one combined isolated number here would be misleading). */
 export function RankGoalFields({
   rankStart,

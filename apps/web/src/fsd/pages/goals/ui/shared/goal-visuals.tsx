@@ -149,7 +149,7 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
         <Badge className="gap-1" key={project.projectId} variant="secondary">
           <ProjectColorDot color={project.color} />
           {project.name}
-          {project.isActivePlan ? ` · ${t("goals.project.active")}` : ""}
+          {project.isActivePlan ? ` · ${t("goals.project.currentPlan")}` : ""}
         </Badge>
       ))}
     </div>

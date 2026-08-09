@@ -275,7 +275,7 @@ describe("ProjectDetailPage", () => {
     expect(await screen.findByText("Project A")).toBeInTheDocument()
     expect(screen.getByText("goals.project.currentPlan")).toBeInTheDocument()
     expect(
-      screen.getByRole("button", { name: "goals.project.edit" })
+      screen.getByRole("button", { name: "goals.project.moreActions" })
     ).toBeInTheDocument()
   })
 
@@ -353,7 +353,12 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     await screen.findByTestId("project-detail-page")
-    await user.click(screen.getByRole("button", { name: "goals.project.edit" }))
+    await user.click(
+      screen.getByRole("button", { name: "goals.project.moreActions" })
+    )
+    await user.click(
+      screen.getByRole("menuitem", { name: "goals.project.edit" })
+    )
     expect(
       await screen.findByText("goals.project.editTitle")
     ).toBeInTheDocument()

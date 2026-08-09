@@ -1,4 +1,4 @@
-import type { ProjectPriority } from "@/entities/goal"
+import type { ProjectMembership } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 
 import { buildCombinedGoalSpecs } from "../estimate/goal-spec-builder"
@@ -8,7 +8,7 @@ import { usePerProjectEstimates } from "../estimate/use-per-project-estimates"
 type SpecParams = Parameters<typeof buildCombinedGoalSpecs>[0]
 
 /**
- * "What will be created"'s per-project priority list and per-project duration preview — split out
+ * "What will be created" project memberships and per-project duration preview — split out
  * of use-create-goal-form.ts purely for that file's own max-lines budget. `specParams` is the exact
  * same object `useGoalSubmit` builds `CombinedGoalSpec[]` from at submit time (owned by the caller,
  * not this hook, since `useGoalSubmit` needs it too) — the preview here mirrors that build with
@@ -26,10 +26,7 @@ export function useGoalCreationReview(params: {
   open: boolean
   specParams: SpecParams
 }) {
-  // One entry per selected project, with its priority parsed from the raw input text — blank or
-  // non-positive/unparseable means "append after the project's current goals" (omitted from the
-  // request, same as the pre-per-project-priority default).
-  const selectedProjects: ProjectPriority[] = params.selectedProjectIds.map(
+  const selectedProjects: ProjectMembership[] = params.selectedProjectIds.map(
     (projectId) => ({ projectId })
   )
 

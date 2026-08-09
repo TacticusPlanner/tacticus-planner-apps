@@ -424,10 +424,14 @@
       "notFoundTitle": "Project not found",
       "notFoundDescription": "This project doesn't exist, or you don't have access to it.",
       "membership": "Projects containing this goal",
+      "addMembership": "Add to project",
+      "removeMembership": "Remove {{project}}",
+      "searchProjects": "Search projects",
+      "noAddableProjects": "No available projects found.",
+      "membershipConflict": "{{project}} already contains an active or paused {{types}} goal for this unit.",
+      "reviewConflictingGoal": "Review conflicting goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
-      "setActive": "Set as active plan",
-      "active": "active",
       "currentPlan": "Current plan",
       "makeCurrent": "Make current",
       "otherProjects": "Other projects",
@@ -438,6 +442,12 @@
       "reprioritizeUnitsDescription": "Drag units into priority order. Moving a unit moves all of its goals; goals inside it are ordered automatically.",
       "dragUnit": "Drag {{unit}} to reprioritize",
       "unitGoalSummary": "{{units}} units · {{goals}} goals",
+      "reachedSummary": "{{count}} reached",
+      "blockedSummary": "{{count}} blocked",
+      "completionSummary": "Target {{date}}",
+      "summaryUnavailable": "Summary unavailable — retry",
+      "moreActions": "More project actions",
+      "archiveUnavailable": "Archive unavailable for Current plan or Default",
       "cancel": "Cancel",
       "edit": "Edit",
       "editTitle": "Edit project",
@@ -456,7 +466,7 @@
     "toasts": {
       "statusChanged": "Goal updated.",
       "deleted": "Goal deleted.",
-      "activated": "Active plan updated.",
+      "activated": "Current plan updated.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
       "projectUpdated": "Project updated."
@@ -464,8 +474,7 @@
     "create": {
       "title": "Create a goal",
       "entityType": {
-        "unit": "Unit",
-        "equipment": "Item"
+        "unit": "Unit"
       },
       "unitLabel": "Unit",
       "unitPlaceholder": "Select a unit",
@@ -473,10 +482,7 @@
       "info": {
         "title": "Current status",
         "shards": "Shards",
-        "mythicShards": "Mythic shards",
-        "equipmentOwnedTitle": "Owned",
-        "equipmentOwnedNone": "None owned yet",
-        "equipmentLevelCount": "Lv {{level}} × {{count}}"
+        "mythicShards": "Mythic shards"
       },
       "goalTypeLabel": "Goal type",
       "goalTypes": {
@@ -574,13 +580,6 @@
         "required": "required × {{count}}",
         "empty": "Add at least one upgrade to farm toward a target quantity."
       },
-      "equipment": {
-        "label": "Equipment",
-        "placeholder": "Select an item",
-        "empty": "No equipment found.",
-        "targetLevel": "Target level",
-        "relicGroup": "Relic"
-      },
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
       "showLess": "Show less",
@@ -589,10 +588,7 @@
       "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
       "projectLabel": "Projects",
       "projectDefault": "No projects selected — the goal will be added to your default project.",
-      "projectActive": "active",
       "projectDefaultMarker": "default",
-      "projectPriority": "Priority within {{project}}",
-      "projectPriorityAuto": "auto",
       "createAnother": "Create another goal",
       "submit": "Create goal",
       "close": "Close",
@@ -790,7 +786,7 @@
         },
         "addGoal": {
           "title": "Add Goal",
-          "content": "Create a new progression goal from anywhere in the app."
+          "content": "Create Character or Machine of War goals, then choose one or more projects. The default project is selected automatically."
         },
         "sync": {
           "title": "Sync",
@@ -854,19 +850,23 @@
       "steps": {
         "list": {
           "title": "Your projects",
-          "content": "Every project you've created is listed here, including archived ones — each row has its own actions."
+          "content": "Compare your Current plan with other projects and their progressively loaded summaries. Archived projects stay collapsed until you need them."
         },
         "newProject": {
           "title": "Create a project",
-          "content": "Start a new project here, or use a row's Edit action to rename, describe, or recolor an existing one."
+          "content": "Start a new project here, or use a project's action menu to rename, describe, recolor, archive, or restore it."
         }
       }
     },
     "projectDetail": {
       "steps": {
-        "row": {
-          "title": "This project",
-          "content": "This project's own row, with the same actions as on the Projects list — set it active, edit it, or archive it."
+        "header": {
+          "title": "Project at a glance",
+          "content": "See this project's identity, Current plan state, progress metrics, project switcher, and actions here."
+        },
+        "reprioritize": {
+          "title": "Prioritize by unit",
+          "content": "Reorder Character and Machine of War blocks. Every goal for a unit moves together, while dependencies determine their inner order."
         },
         "selector": {
           "title": "Choose a project",
@@ -874,7 +874,7 @@
         },
         "goals": {
           "title": "Project goals",
-          "content": "This project's goals appear here, in priority order."
+          "content": "This project's goals appear here in the flattened unit order used by planning calculations."
         }
       }
     }

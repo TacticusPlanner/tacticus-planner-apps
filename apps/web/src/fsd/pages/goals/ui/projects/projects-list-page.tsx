@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
+import { useQueries } from "@tanstack/react-query"
 import {
   Card,
   CardContent,
@@ -12,10 +13,18 @@ import {
   ManageProjectsSheet,
   NewProjectFab,
   ProjectList,
+  type ProjectCardSummary,
   useProjectActions,
 } from "@/features/project-management"
-import { useProjects, type ProjectSummary } from "@/entities/project"
+import {
+  projectQueries,
+  useProjects,
+  type ProjectSummary,
+} from "@/entities/project"
 
+import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
+import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
+import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
 /**
@@ -32,6 +41,7 @@ export function ProjectsListPage() {
   const projects = useProjects()
   const hasProjects = projects.projects.length > 0
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [archivedOpen, setArchivedOpen] = useState(false)
   const [sheetProject, setSheetProject] = useState<ProjectSummary | undefined>(
     undefined
   )
@@ -43,6 +53,72 @@ export function ProjectsListPage() {
   const archived = projects.projects.filter(
     (project) => project.status === "Archived"
   )
+  const summaryProjects = projects.projects.filter(
+    (project) => project.status !== "Archived" || archivedOpen
+  )
+  const summaryQueries = useQueries({
+    queries: summaryProjects.map((project) =>
+      projectQueries.goals(project.projectId)
+    ),
+  })
+  const currentIndex = current
+    ? summaryProjects.findIndex(
+        (project) => project.projectId === current.projectId
+      )
+    : -1
+  const currentGoals =
+    currentIndex >= 0 ? (summaryQueries[currentIndex]?.data?.goals ?? []) : []
+  const currentGoalIds = currentGoals.map((entry) => entry.goal.goalId)
+  const currentAttainment = useGoalAttainment(currentGoalIds)
+  const { result: currentInsights } = usePlanInsights(
+    current?.projectId,
+    currentGoals
+  )
+  const currentMetrics = useGoalsOverviewMetrics(
+    currentGoalIds,
+    currentInsights.estimates
+  )
+  const summaries = new Map<string, ProjectCardSummary>()
+  summaryProjects.forEach((project, index) => {
+    const query = summaryQueries[index]
+    if (!query || query.isPending) {
+      summaries.set(project.projectId, { status: "loading" })
+      return
+    }
+    if (query.isError) {
+      summaries.set(project.projectId, {
+        status: "error",
+        retry: () => void query.refetch(),
+      })
+      return
+    }
+    const members = query.data.goals
+    const units = new Set(
+      members
+        .filter(
+          (entry) =>
+            entry.goal.status === "Active" || entry.goal.status === "Paused"
+        )
+        .map((entry) => `${entry.goal.entityType}:${entry.goal.entityId}`)
+    ).size
+    summaries.set(project.projectId, {
+      status: "success",
+      units,
+      goals: members.length,
+      ...(project.isActivePlan
+        ? {
+            reached: members.filter(
+              (entry) => currentAttainment.get(entry.goal.goalId)?.reached
+            ).length,
+            blocked: members.filter(
+              (entry) =>
+                currentMetrics.get(entry.goal.goalId)?.blockers.isBlocked
+            ).length,
+            completionDate: currentInsights.completionDate,
+          }
+        : {}),
+    })
+  })
 
   const openNewProject = () => {
     setSheetProject(undefined)
@@ -70,6 +146,7 @@ export function ProjectsListPage() {
                 onEdit={openEditProject}
                 onSelect={openProjectDetail}
                 projects={[current]}
+                summaries={summaries}
               />
             </section>
           ) : null}
@@ -83,6 +160,7 @@ export function ProjectsListPage() {
                 onEdit={openEditProject}
                 onSelect={openProjectDetail}
                 projects={available}
+                summaries={summaries}
               />
             ) : (
               <p className="text-sm text-muted-foreground">
@@ -91,7 +169,10 @@ export function ProjectsListPage() {
             )}
           </section>
           {archived.length > 0 ? (
-            <details>
+            <details
+              onToggle={(event) => setArchivedOpen(event.currentTarget.open)}
+              open={archivedOpen}
+            >
               <summary className="cursor-pointer text-lg font-semibold">
                 {t("goals.project.archivedProjects", {
                   count: archived.length,
@@ -103,6 +184,7 @@ export function ProjectsListPage() {
                   onEdit={openEditProject}
                   onSelect={openProjectDetail}
                   projects={archived}
+                  summaries={summaries}
                 />
               </div>
             </details>

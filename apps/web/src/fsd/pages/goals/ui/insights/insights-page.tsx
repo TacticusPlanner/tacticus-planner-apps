@@ -24,7 +24,7 @@ import { InsightsSummary } from ".//insights-summary"
 export function InsightsPage() {
   const { t } = useTranslation()
   const projects = useProjects()
-  // No explicit user choice yet -> default to the active plan, computed on read rather than synced
+  // No explicit user choice yet -> default to the Current plan, computed on read rather than synced
   // into state via an effect (there is nothing to select from until `projects` loads anyway).
   const [selectedProjectId, setSelectedProjectId] = useState<
     string | undefined

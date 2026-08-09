@@ -7,12 +7,10 @@ import {
   useQueryClient,
 } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { Button } from "@workspace/ui/components/button"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet"
@@ -21,7 +19,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
-import { ConfirmationDialog } from "@/shared/ui"
 import {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
@@ -33,17 +30,20 @@ import { useGoalLocationGroups } from "../../model/farming/use-goal-location-gro
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
 import type { BlockerReason } from "../../model/blockers/goal-blockers"
 import { prerequisitePrefill } from "../../model/blockers/prerequisite-prefill"
+import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
+import { projectGoalSlotConflictDetails } from "../../model/projects/project-membership"
 import { GoalProgressDisplay, GoalProjectBadges } from "../shared/goal-visuals"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   GoalDetailEditForm,
   type GoalDetailDraft,
-} from ".//goal-detail-edit-form"
-import { GoalDetailView } from ".//goal-detail-view"
-import { goalDetailProjects } from ".//goal-detail-projects"
-
-type Mode = "view" | "edit"
-
+} from "./goal-detail-edit-form"
+import { GoalDetailView } from "./goal-detail-view"
+import { GoalDetailFooter } from "./goal-detail-footer"
+import { GoalDetailError } from "./goal-detail-error"
+import type { GoalDetailSaveError } from "./goal-detail-error"
+import { goalDetailProjects } from "./goal-detail-projects"
+import { GoalDetailUnsavedDialog } from "./goal-detail-unsaved-dialog"
 export function GoalDetailSheet({
   goalId,
   estimate,
@@ -66,17 +66,14 @@ export function GoalDetailSheet({
   const queryClient = useQueryClient()
   const launchCreateGoal = useCreateGoalLauncher()
   const { getEntityName, upgradesById, charactersById } = useGoalCatalog()
-  const [mode, setMode] = useState<Mode>("view")
+  const [mode, setMode] = useState<"view" | "edit">("view")
   const [confirmAction, setConfirmAction] = useState<"cancel" | "close" | null>(
     null
   )
   const [draftState, setDraftState] = useState<
     (GoalDetailDraft & { key: string }) | null
   >(null)
-  const [saveError, setSaveError] = useState<{
-    goalId: string
-    message: string
-  } | null>(null)
+  const [saveError, setSaveError] = useState<GoalDetailSaveError | null>(null)
   const detailQuery = useQuery({
     ...goalQueries.detail(goalId ?? "unselected"),
     enabled: Boolean(isAuthenticated && goalId),
@@ -108,6 +105,15 @@ export function GoalDetailSheet({
     enabled: isAuthenticated,
   })
   const projects = projectsQuery.data?.projects ?? []
+  const membershipConflicts = useProjectGoalConflicts({
+    projects,
+    selectedProjectIds: draft.selectedProjectIds,
+    entityType: detail?.entityType ?? "Character",
+    entityId: detail?.entityId,
+    goalTypes: detail ? [detail.goalType] : [],
+    excludeGoalId: detail?.goalId,
+    enabled: mode === "edit",
+  })
 
   const overviewMetrics = useGoalsOverviewMetrics(
     goalId ? [goalId] : [],
@@ -159,7 +165,10 @@ export function GoalDetailSheet({
       draft.selectedLocations
     )
 
-  const projectsValid = draft.selectedProjectIds.length > 0
+  const projectsValid =
+    draft.selectedProjectIds.length > 0 &&
+    !membershipConflicts.loading &&
+    membershipConflicts.conflicts.length === 0
   const projectsChanged =
     draft.selectedProjectIds.length !== (detail?.projectIds.length ?? 0) ||
     draft.selectedProjectIds.some((id) => !detail?.projectIds.includes(id))
@@ -232,12 +241,17 @@ export function GoalDetailSheet({
       setMode("view")
       onUpdated()
     } catch (reason) {
+      const conflict =
+        reason instanceof ApiError
+          ? projectGoalSlotConflictDetails(reason.details)
+          : null
       setSaveError({
         goalId: detail.goalId,
         message:
           reason instanceof ApiError
             ? reason.message
             : t("goals.detail.saveError"),
+        existingGoalId: conflict?.existingGoalId,
       })
     }
   }
@@ -315,9 +329,15 @@ export function GoalDetailSheet({
         </SheetHeader>
         {!detail && !error ? <Skeleton className="mx-4 h-48" /> : null}
         {error ? (
-          <p className="px-4 text-sm text-destructive" role="alert">
-            {error}
-          </p>
+          <GoalDetailError
+            error={error}
+            existingGoalId={
+              saveError?.goalId === goalId
+                ? saveError.existingGoalId
+                : undefined
+            }
+            onGoalChange={onGoalChange}
+          />
         ) : null}
         {detail ? (
           <>
@@ -359,6 +379,7 @@ export function GoalDetailSheet({
               <GoalDetailEditForm
                 allLocations={allLocations}
                 detail={detail}
+                conflicts={membershipConflicts.conflicts}
                 draft={draft}
                 isLevel={isLevel}
                 isRank={isRank}
@@ -374,46 +395,25 @@ export function GoalDetailSheet({
           </>
         ) : null}
         {detail ? (
-          <SheetFooter>
-            {mode === "view" ? (
-              <Button data-testid="goal-detail-edit" onClick={enterEdit}>
-                {t("goals.detail.edit")}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  data-testid="goal-detail-cancel"
-                  onClick={requestLeaveEdit}
-                  variant="outline"
-                >
-                  {t("goals.detail.cancel")}
-                </Button>
-                <Button
-                  data-testid="goal-detail-save"
-                  disabled={
-                    updateMutation.isPending ||
-                    updateProjectsMutation.isPending ||
-                    !overrideValid ||
-                    !projectsValid
-                  }
-                  onClick={() => void save()}
-                >
-                  {t("goals.detail.save")}
-                </Button>
-              </>
-            )}
-          </SheetFooter>
+          <GoalDetailFooter
+            mode={mode}
+            onCancel={requestLeaveEdit}
+            onEdit={enterEdit}
+            onSave={() => void save()}
+            saveDisabled={
+              updateMutation.isPending ||
+              updateProjectsMutation.isPending ||
+              !overrideValid ||
+              !projectsValid
+            }
+          />
         ) : null}
       </SheetContent>
 
-      <ConfirmationDialog
-        cancelLabel={t("goals.detail.unsavedChangesCancel")}
-        confirmLabel={t("goals.detail.unsavedChangesConfirm")}
-        description={t("goals.detail.unsavedChangesDescription")}
+      <GoalDetailUnsavedDialog
         onCancel={() => setConfirmAction(null)}
         onConfirm={confirmDiscard}
         open={confirmAction !== null}
-        title={t("goals.detail.unsavedChangesTitle")}
       />
     </Sheet>
   )

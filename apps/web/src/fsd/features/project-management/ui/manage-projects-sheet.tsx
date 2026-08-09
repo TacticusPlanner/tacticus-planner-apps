@@ -22,7 +22,7 @@ import { ProjectColorPicker } from ".//project-color-picker"
  * embedded project list/selection; that list now lives permanently on the Projects page itself (see
  * `ProjectList`). `project` undefined means "New project" (blank form); a `ProjectSummary` means
  * "Edit" (pre-filled). Submitting saves the change and closes the Sheet either way. Lifecycle
- * actions (Set active/Archive/Restore) are no longer available here - they moved to each project
+ * actions (Make current/Archive/Restore) are no longer available here - they moved to each project
  * list row.
  */
 export function ManageProjectsSheet({

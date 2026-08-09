@@ -27,13 +27,10 @@ type CreateGoalSheetProps = {
 }
 
 /**
- * Goal-creation side panel — a Unit/Equipment top-level pill switch over two independent forms:
- * "Unit" is the combined multi-goal-type composer (plan §6/§16 phase 5) for a single Character or
- * Mow (picked from one combined combobox — its actual kind is inferred, not chosen via a separate
- * tab — and which goal kinds are offered depends on that inferred kind, e.g. Rank never for a Mow),
- * "Equipment" is a single equipment/relic piece plus a target level. Both forms' hooks run
- * unconditionally (hooks can't be called conditionally); only the active pill's fields/submit are
- * shown. Mirrors `manage-account-dialog.tsx`'s controlled-form shape (reset-and-stay-open on
+ * Goal-creation side panel for the combined multi-goal-type composer (plan §6/§16 phase 5) for a
+ * single Character or Mow. One combined combobox infers the unit kind, and the offered goal kinds
+ * adapt to it (for example, Rank is never offered for a Mow). Mirrors
+ * `manage-account-dialog.tsx`'s controlled-form shape (reset-and-stay-open on
  * "create another", Unit pill only), but hosted in a `Sheet` instead of a `Dialog`.
  */
 export function CreateGoalSheet({

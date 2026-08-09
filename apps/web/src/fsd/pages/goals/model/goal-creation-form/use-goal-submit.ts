@@ -7,7 +7,7 @@ import type { UnitId } from "@workspace/game-domain"
 import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
-  type ProjectPriority,
+  type ProjectMembership,
 } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
@@ -41,7 +41,7 @@ export function useGoalSubmit({
   entityId: UnitId | undefined
   entityType: EntityType
   canSubmit: boolean
-  selectedProjects: ProjectPriority[]
+  selectedProjects: ProjectMembership[]
   specParams: SpecParams
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void

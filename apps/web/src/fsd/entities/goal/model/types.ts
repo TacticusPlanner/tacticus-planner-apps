@@ -59,9 +59,6 @@ export type UpgradeTarget = {
   targets: UpgradeMaterialTarget[]
 }
 
-/** Target level for a specific piece of equipment/relic gear (`GoalEntityType` `"Item"`
- * only). Uncosted — no gold/salvage/mythic-salvage farming engine exists in this app; "complete"
- * is simply the player's synced level for this equipment reaching `targetLevel`. */
 export type GoalConfig = {
   rank: RankTarget | null
   progression: ProgressionTarget | null
@@ -103,6 +100,7 @@ export type GoalSummary = {
   goalType: GoalKind
   status: GoalStatus
   notes: string | null
+  dependsOn: string[]
   createdAt: string
   updatedAt: string
 }
@@ -128,10 +126,8 @@ export type CreateGoalConfigRequest = {
   level?: LevelTarget | null
 }
 
-/** One target project for a newly created goal, with an optional caller-chosen priority within that
- * project (per-project priority). `priority` omitted/null means "append after the project's current
- * goals" — the server's `GetNextPriorityAsync` fallback. */
-export type ProjectPriority = {
+/** One project membership for a newly created goal. Unit placement is assigned automatically. */
+export type ProjectMembership = {
   projectId: string
 }
 
@@ -141,9 +137,8 @@ export type CreateGoalRequest = {
   goalType: string
   config: CreateGoalConfigRequest
   // Omitted/empty falls back to the caller's default project; otherwise the goal is added to every
-  // listed project (a goal may belong to several projects at once), at that project's given priority
-  // when supplied.
-  projects?: ProjectPriority[] | null
+  // listed project (a goal may belong to several projects at once).
+  projects?: ProjectMembership[] | null
   snapshot?: CreateGoalSnapshotRequest | null
 }
 
@@ -166,8 +161,7 @@ export type CombinedGoalSpec = {
 export type CreateCombinedGoalsRequest = {
   entityType: string
   entityId: string
-  // Same fallback/multi-project-with-priority semantics as CreateGoalRequest.projects — a given
-  // project's priority becomes the base for the whole set, with each later goal placed right after.
-  projects?: ProjectPriority[] | null
+  // Same fallback and multi-project semantics as CreateGoalRequest.projects.
+  projects?: ProjectMembership[] | null
   goals: CombinedGoalSpec[]
 }

@@ -4,12 +4,9 @@ import { useQuery } from "@tanstack/react-query"
 import { projectQueries } from "@/entities/project"
 
 /**
- * The Create Goal drawer's project checkbox list + per-project priority inputs — split out of
- * use-create-goal-form.ts purely for that file's own max-lines budget. Empty `selectedProjectIds`
- * means "use the caller's default project" (goal.api.ts omits `projects` in that case) — a goal may
- * belong to several projects at once. `projectPriorities` holds one raw (possibly blank, mid-typing)
- * priority input per selected project, keyed by projectId; blank/unparseable means "append after the
- * project's current goals" (goal.api.ts omits that project's `priority`).
+ * The Create Goal drawer's project-membership selection, split out of
+ * use-create-goal-form.ts for that file's max-lines budget. A newly opened
+ * form derives its initial membership from the user's default project.
  */
 export function useProjectSelection({ open }: { open: boolean }) {
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([])
@@ -19,13 +16,30 @@ export function useProjectSelection({ open }: { open: boolean }) {
     enabled: open,
   })
   const projects = projectsQuery.data?.projects ?? []
+  const defaultProjectId = projects.find(
+    (project) => project.isDefault
+  )?.projectId
+  const effectiveProjectIds =
+    selectedProjectIds.length > 0
+      ? selectedProjectIds
+      : open && defaultProjectId
+        ? [defaultProjectId]
+        : []
 
   const toggleProject = (projectId: string, enabled: boolean) => {
-    setSelectedProjectIds((current) =>
-      enabled
-        ? [...current, projectId]
-        : current.filter((id) => id !== projectId)
-    )
+    setSelectedProjectIds((current) => {
+      const selection =
+        current.length > 0
+          ? current
+          : defaultProjectId
+            ? [defaultProjectId]
+            : []
+      return enabled
+        ? selection.includes(projectId)
+          ? selection
+          : [...selection, projectId]
+        : selection.filter((id) => id !== projectId)
+    })
   }
 
   const selectProjects = (projectIds: readonly string[]) => {
@@ -38,7 +52,7 @@ export function useProjectSelection({ open }: { open: boolean }) {
 
   return {
     projects,
-    selectedProjectIds,
+    selectedProjectIds: effectiveProjectIds,
     toggleProject,
     selectProjects,
     reset,

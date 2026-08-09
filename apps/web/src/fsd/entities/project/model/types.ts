@@ -45,6 +45,7 @@ export type ProjectMemberGoal = {
   goalType: string
   status: string
   notes: string | null
+  dependsOn: string[]
   createdAt: string
   updatedAt: string
 }

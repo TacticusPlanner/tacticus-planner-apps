@@ -3,11 +3,13 @@ import { acquireAccessToken } from "@/shared/auth"
 
 export class ApiError extends Error {
   readonly status: number
+  readonly details: unknown
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, details?: unknown) {
     super(message)
     this.name = "ApiError"
     this.status = status
+    this.details = details
   }
 }
 
@@ -21,9 +23,9 @@ type ApiWriteOptions = ApiRequestOptions & {
 
 // FastEndpoints' default validation-failure body: { statusCode, message, errors: { field: [messages] } }.
 // Surface the first field error when present (it's the actionable one), otherwise fall back to `message`.
-async function readErrorMessage(
+async function readError(
   response: Response
-): Promise<string | undefined> {
+): Promise<{ message?: string; details?: unknown }> {
   try {
     const body = (await response.clone().json()) as {
       message?: string
@@ -34,9 +36,9 @@ async function readErrorMessage(
       ? Object.values(body.errors)[0]?.[0]
       : undefined
 
-    return firstFieldError ?? body.message
+    return { message: firstFieldError ?? body.message, details: body }
   } catch {
-    return undefined
+    return {}
   }
 }
 
@@ -64,10 +66,11 @@ async function request<T>(
   })
 
   if (!response.ok) {
-    const message = await readErrorMessage(response)
+    const error = await readError(response)
     throw new ApiError(
       response.status,
-      message ?? `API request failed: ${response.status}`
+      error.message ?? `API request failed: ${response.status}`,
+      error.details
     )
   }
 
