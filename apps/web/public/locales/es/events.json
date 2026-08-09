@@ -19,6 +19,8 @@
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
+  "withIteration": "{{name}} (Iteración {{iteration}})",
+  "withSeason": "{{name}}: Temporada {{season}}",
   "definitions": {
     "campaign-event": "Evento de campaña",
     "incursion": "Incursión",

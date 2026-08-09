@@ -4,9 +4,37 @@ import { render, screen, waitFor } from "@/test/render"
 
 import { EventsCalendar } from "./events-calendar"
 
+const noneRecurrence = {
+  kind: "None" as const,
+  intervalDays: null,
+  durationDays: null,
+  anchorUtc: null,
+}
+
 const definitions = [
-  { id: "legendary-event", type: "LegendaryEvent" },
-  { id: "hse-warp-surge", type: "HomeScreenEvent" },
+  {
+    id: "legendary-event",
+    type: "LegendaryEvent",
+    recurrence: noneRecurrence,
+    config: null,
+  },
+  {
+    id: "hse-warp-surge",
+    type: "HomeScreenEvent",
+    recurrence: noneRecurrence,
+    config: null,
+  },
+  {
+    id: "always-double-xp-sunday",
+    type: "StandingModifier",
+    recurrence: {
+      kind: "Fixed" as const,
+      intervalDays: 7,
+      durationDays: 1,
+      anchorUtc: "2024-01-07T00:00:00Z",
+    },
+    config: null,
+  },
 ]
 
 let entries: unknown[] = []
@@ -138,6 +166,35 @@ describe("EventsCalendar", () => {
     const legend = screen.getByTestId("events-calendar-legend")
     expect(legend).toHaveTextContent("legend.legendary")
     expect(legend).not.toHaveTextContent("legend.homeScreen")
+  })
+
+  it("omits Double XP/Double Gold from the legend even when they're in the visible range", async () => {
+    entries = [
+      {
+        occurrenceId: "occ-double-xp",
+        definitionId: "always-double-xp-sunday",
+        confirmed: true,
+        startUtc: isoDaysFromNow(1),
+        endUtc: isoDaysFromNow(2),
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: isoDaysFromNow(1),
+        endUtc: isoDaysFromNow(8),
+        parameters: null,
+      },
+    ]
+
+    render(<EventsCalendar />)
+
+    await screen.findAllByTestId("event-entry-card")
+
+    const legend = screen.getByTestId("events-calendar-legend")
+    expect(legend).toHaveTextContent("legend.legendary")
+    expect(legend).not.toHaveTextContent("legend.doubleXp")
   })
 
   it("marks an entry active when the current time falls within its window", async () => {

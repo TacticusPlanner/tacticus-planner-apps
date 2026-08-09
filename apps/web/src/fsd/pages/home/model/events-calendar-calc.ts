@@ -47,6 +47,71 @@ function buildDateRange(rangeStart: Date, rangeEnd: Date): Date[] {
   return dates
 }
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Whether `entry` should be considered part of the local window `[windowStartMs, windowEndMs)` — used
+ * both for a single calendar day and for the whole visible range, so a sub-24h entry's membership test
+ * is identical at every granularity (see below). Multi-day entries use a standard overlap test. Entries
+ * lasting a day or less (e.g. the weekly Double XP/Double Gold modifiers, anchored at UTC midnight) are
+ * instead attributed only to the window containing their `startUtc` — for any viewer whose UTC offset
+ * isn't zero, a UTC-midnight-anchored 24h window can cross local midnight, which would otherwise smear a
+ * single-day event across two local day-columns (or, at the whole-range granularity, let an entry whose
+ * real local day falls just *before* the visible range sneak in via a few hours of overlap spillover and
+ * then fail every per-day membership test, leaving it with no valid day-column to render in).
+ */
+function entryOccupiesWindow(
+  entry: { startUtc: string; endUtc: string },
+  windowStartMs: number,
+  windowEndMs: number
+): boolean {
+  const startMs = Date.parse(entry.startUtc)
+  const endMs = Date.parse(entry.endUtc)
+
+  if (endMs - startMs <= ONE_DAY_MS) {
+    return startMs >= windowStartMs && startMs < windowEndMs
+  }
+
+  return startMs < windowEndMs && endMs > windowStartMs
+}
+
+/**
+ * A Fixed-recurrence definition's season/slot number at `entry`, derived from how many `intervalDays`
+ * steps separate its `startUtc` from the definition's own `anchorUtc` plus the definition's known season
+ * number at that anchor (`config.seasonNumberAtAnchor` — e.g. Battle Pass's anchor is Season 40). Applies
+ * to every slot, projected or authored, so the season number always shows without needing it re-authored
+ * on every occurrence.
+ */
+function deriveSeasonNumber(
+  entry: RawEventsCalendarEntry,
+  definition: RawEventDefinition | undefined
+): number | undefined {
+  if (!definition || definition.recurrence?.kind !== "Fixed") {
+    return undefined
+  }
+
+  const { intervalDays, anchorUtc } = definition.recurrence
+  if (!intervalDays || !anchorUtc) {
+    return undefined
+  }
+
+  const config = definition.config
+  const seasonNumberAtAnchor =
+    config && typeof config === "object" && "seasonNumberAtAnchor" in config
+      ? (config as { seasonNumberAtAnchor: unknown }).seasonNumberAtAnchor
+      : undefined
+  if (typeof seasonNumberAtAnchor !== "number") {
+    return undefined
+  }
+
+  const intervalMs = intervalDays * 24 * 60 * 60 * 1000
+  const slotsSinceAnchor = Math.round(
+    (Date.parse(entry.startUtc) - Date.parse(anchorUtc)) / intervalMs
+  )
+
+  return seasonNumberAtAnchor + slotsSinceAnchor
+}
+
 function toViewModel(
   entry: RawEventsCalendarEntry,
   definitionsById: ReadonlyMap<string, RawEventDefinition>,
@@ -54,17 +119,19 @@ function toViewModel(
 ): EventEntryViewModel {
   const startMs = Date.parse(entry.startUtc)
   const endMs = Date.parse(entry.endUtc)
+  const definition = definitionsById.get(entry.definitionId)
 
   return {
     key: `${entry.occurrenceId ?? "projected"}::${entry.definitionId}::${entry.startUtc}`,
     definitionId: entry.definitionId,
-    definitionType: definitionsById.get(entry.definitionId)?.type,
+    definitionType: definition?.type,
     occurrenceId: entry.occurrenceId,
     confirmed: entry.confirmed,
     startUtc: entry.startUtc,
     endUtc: entry.endUtc,
     parameters: entry.parameters,
     isActiveNow: startMs <= nowMs && nowMs < endMs,
+    derivedSeasonNumber: deriveSeasonNumber(entry, definition),
   }
 }
 
@@ -86,11 +153,7 @@ function collectVisibleEntries(
   const nowMs = now.getTime()
 
   return entries
-    .filter((entry) => {
-      const startMs = Date.parse(entry.startUtc)
-      const endMs = Date.parse(entry.endUtc)
-      return startMs < rangeEndMs && endMs > rangeStartMs
-    })
+    .filter((entry) => entryOccupiesWindow(entry, rangeStartMs, rangeEndMs))
     .map((entry) => toViewModel(entry, definitionsById, nowMs))
     .sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
 }
@@ -120,11 +183,9 @@ export function buildEventsCalendarDays(
     const dayStartMs = date.getTime()
     const dayEndMs = addLocalDays(date, 1).getTime()
 
-    const dayEntries = visible.filter((entry) => {
-      const startMs = Date.parse(entry.startUtc)
-      const endMs = Date.parse(entry.endUtc)
-      return startMs < dayEndMs && endMs > dayStartMs
-    })
+    const dayEntries = visible.filter((entry) =>
+      entryOccupiesWindow(entry, dayStartMs, dayEndMs)
+    )
 
     return { date: toIsoDate(date), entries: dayEntries }
   })
@@ -155,26 +216,29 @@ export function buildEventsCalendarLanes(
   )
   const dateRange = buildDateRange(rangeStart, rangeEnd)
 
-  const positioned: PositionedEventEntry[] = visible.map((entry) => {
-    const startMs = Date.parse(entry.startUtc)
-    const endMs = Date.parse(entry.endUtc)
+  const positioned: PositionedEventEntry[] = visible
+    .map((entry) => {
+      let startColumn = 0
+      let endColumn = 0
 
-    let startColumn = 0
-    let endColumn = 0
-
-    dateRange.forEach((date, index) => {
-      const dayStartMs = date.getTime()
-      const dayEndMs = addLocalDays(date, 1).getTime()
-      if (startMs < dayEndMs && endMs > dayStartMs) {
-        if (startColumn === 0) {
-          startColumn = index + 1
+      dateRange.forEach((date, index) => {
+        const dayStartMs = date.getTime()
+        const dayEndMs = addLocalDays(date, 1).getTime()
+        if (entryOccupiesWindow(entry, dayStartMs, dayEndMs)) {
+          if (startColumn === 0) {
+            startColumn = index + 1
+          }
+          endColumn = index + 2
         }
-        endColumn = index + 2
-      }
-    })
+      })
 
-    return { ...entry, startColumn, span: endColumn - startColumn }
-  })
+      return { ...entry, startColumn, span: endColumn - startColumn }
+    })
+    // `collectVisibleEntries` and the per-day window test above use the same membership rule, so every
+    // visible entry should land on exactly one day-column — this only guards against a degenerate
+    // startColumn 0/span 0 (which CSS grid would otherwise silently render at column 1) if that
+    // invariant is ever broken by a future change.
+    .filter((entry) => entry.span > 0)
 
   const sortedForPacking = [...positioned].sort(
     (a, b) => a.startColumn - b.startColumn || b.span - a.span

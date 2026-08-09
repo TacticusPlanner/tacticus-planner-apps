@@ -15,6 +15,12 @@ export type EventEntryViewModel = {
   endUtc: string
   parameters: Record<string, unknown> | null
   isActiveNow: boolean
+  /**
+   * A Fixed-recurrence definition's season/slot number, derived from this entry's position relative to
+   * the definition's own anchor (see `deriveSeasonNumber` in events-calendar-calc.ts) — not authored
+   * data, so it's kept separate from `parameters` rather than merged into it.
+   */
+  derivedSeasonNumber: number | undefined
 }
 
 export type EventsCalendarDay = {
@@ -58,5 +64,5 @@ export type RawEventsCalendarEntry = Pick<
 
 export type RawEventDefinition = Pick<
   EventDefinitionStorageModel,
-  "id" | "type"
+  "id" | "type" | "recurrence" | "config"
 >

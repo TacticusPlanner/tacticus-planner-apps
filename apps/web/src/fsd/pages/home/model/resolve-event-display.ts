@@ -10,25 +10,35 @@ function stringParam(
   return typeof value === "string" ? value : undefined
 }
 
+function numberParam(
+  parameters: Record<string, unknown> | null,
+  key: string
+): number | undefined {
+  const value = parameters?.[key]
+  return typeof value === "number" ? value : undefined
+}
+
 /**
  * Every event's display name is resolved from its `definitionId` (and, for a few parameterized types,
- * a faction/character id carried in `parameters`) — never from a stored display string. Mirrors the
- * `t(\`characters:${id}\`, { defaultValue: id })` id-based resolution pattern already used elsewhere in
- * this app (e.g. Character Lookup), reusing the existing `characters`/`factions` namespaces so events
- * referencing a character or faction don't need their own translated copy of those names.
+ * a faction/character/iteration/season id carried in `parameters` or `derivedSeasonNumber`) — never from
+ * a stored display string. Mirrors the `t(\`characters:${id}\`, { defaultValue: id })` id-based
+ * resolution pattern already used elsewhere in this app (e.g. Character Lookup), reusing the existing
+ * `characters`/`factions` namespaces so events referencing a character or faction don't need their own
+ * translated copy of those names. Suffixes chain (not early-return) so e.g. a Legendary Event entry
+ * shows both its featured character and its iteration number.
  */
 export function resolveEventDisplayName(
   t: TFunction<["events", "characters", "factions"]>,
   entry: EventEntryViewModel
 ): string {
-  const baseName = t(`events:definitions.${entry.definitionId}`, {
+  let name = t(`events:definitions.${entry.definitionId}`, {
     defaultValue: entry.definitionId,
   })
 
   const targetFactionId = stringParam(entry.parameters, "targetFactionId")
   if (targetFactionId) {
-    return t("events:withFaction", {
-      name: baseName,
+    name = t("events:withFaction", {
+      name,
       faction: t(`factions:${targetFactionId}`, {
         defaultValue: targetFactionId,
       }),
@@ -40,8 +50,8 @@ export function resolveEventDisplayName(
     "featuredCharacterId"
   )
   if (featuredCharacterId) {
-    return t("events:withCharacter", {
-      name: baseName,
+    name = t("events:withCharacter", {
+      name,
       character: t(`characters:${featuredCharacterId}`, {
         defaultValue: featuredCharacterId,
       }),
@@ -50,8 +60,17 @@ export function resolveEventDisplayName(
 
   const version = stringParam(entry.parameters, "version")
   if (version) {
-    return t("events:withVersion", { name: baseName, version })
+    name = t("events:withVersion", { name, version })
   }
 
-  return baseName
+  const iterationNumber = numberParam(entry.parameters, "iterationNumber")
+  if (iterationNumber !== undefined) {
+    name = t("events:withIteration", { name, iteration: iterationNumber })
+  }
+
+  if (entry.derivedSeasonNumber !== undefined) {
+    name = t("events:withSeason", { name, season: entry.derivedSeasonNumber })
+  }
+
+  return name
 }

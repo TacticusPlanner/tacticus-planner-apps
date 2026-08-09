@@ -44,11 +44,12 @@ export function resolveEventColorKey(
   definitionId: string,
   definitionType: string | undefined
 ): EventColorKey {
-  return (
-    colorKeyByDefinitionId[definitionId] ??
-    (definitionType && colorKeyByDefinitionType[definitionType]) ??
-    "default"
-  )
+  const byId = colorKeyByDefinitionId[definitionId]
+  const byType = definitionType
+    ? colorKeyByDefinitionType[definitionType]
+    : undefined
+
+  return byId ?? byType ?? "default"
 }
 
 // Every class string below is written out in full (not composed via string interpolation) because
@@ -105,7 +106,9 @@ export function eventAccentClass(colorKey: EventColorKey): string {
 }
 
 // Every color key in legend display order (matches the reference calendars' left-to-right ordering:
-// broad recurring content first, then the smaller irregular events, then standing modifiers last).
+// broad recurring content first, then the smaller irregular events last). `doubleXp`/`doubleGold` are
+// deliberately omitted — their bars are already self-explanatory ("Double XP"/"Double Gold" labels on a
+// fixed weekday), so a legend entry would just be noise.
 export const EVENT_COLOR_KEYS_IN_LEGEND_ORDER: EventColorKey[] = [
   "campaign",
   "incursion",
@@ -118,7 +121,5 @@ export const EVENT_COLOR_KEYS_IN_LEGEND_ORDER: EventColorKey[] = [
   "quest",
   "newCharacter",
   "gameVersion",
-  "doubleXp",
-  "doubleGold",
   "default",
 ]
