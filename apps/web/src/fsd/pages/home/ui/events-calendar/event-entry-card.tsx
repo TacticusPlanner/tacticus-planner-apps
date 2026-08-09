@@ -1,3 +1,4 @@
+import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
@@ -9,6 +10,7 @@ import {
 } from "../../model/event-colors"
 import type { EventEntryViewModel } from "../../model/events-calendar.types"
 import { resolveEventDisplayName } from "../../model/resolve-event-display"
+import { resolveEventWikiUrl } from "../../model/event-wiki-links"
 import { EventTypeIcon } from "./event-type-icon"
 
 export function EventEntryCard({
@@ -30,6 +32,7 @@ export function EventEntryCard({
     entry.definitionId,
     entry.definitionType
   )
+  const wikiUrl = resolveEventWikiUrl(entry.definitionId)
 
   if (variant === "bar") {
     return (
@@ -53,6 +56,19 @@ export function EventEntryCard({
           definitionType={entry.definitionType}
         />
         <span className="min-w-0 flex-1 truncate">{displayName}</span>
+        {wikiUrl ? (
+          <a
+            aria-label={t("events:wikiLink")}
+            className="shrink-0 opacity-70 hover:opacity-100"
+            href={wikiUrl}
+            onClick={(event) => event.stopPropagation()}
+            rel="noopener noreferrer"
+            target="_blank"
+            title={t("events:wikiLink")}
+          >
+            <ExternalLink className="size-3" />
+          </a>
+        ) : null}
         {/* Visual state is carried by border style (confirmed vs projected) and the ring (active) — these
             stay for assistive tech and existing test coverage without cluttering the compact bar. */}
         {entry.isActiveNow ? (
@@ -87,6 +103,19 @@ export function EventEntryCard({
         <span className="min-w-0 flex-1 truncate text-xs font-medium">
           {displayName}
         </span>
+        {wikiUrl ? (
+          <a
+            aria-label={t("events:wikiLink")}
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+            href={wikiUrl}
+            onClick={(event) => event.stopPropagation()}
+            rel="noopener noreferrer"
+            target="_blank"
+            title={t("events:wikiLink")}
+          >
+            <ExternalLink className="size-3.5" />
+          </a>
+        ) : null}
       </div>
       <div className="flex flex-wrap items-center gap-1">
         {entry.isActiveNow ? (

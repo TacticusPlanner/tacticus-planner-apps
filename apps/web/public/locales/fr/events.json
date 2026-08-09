@@ -16,6 +16,7 @@
     "projected": "Prévu",
     "confirmed": "Confirmé"
   },
+  "wikiLink": "Voir sur le wiki",
   "withFaction": "{{name}} : {{faction}}",
   "withCharacter": "{{name}} : {{character}}",
   "withVersion": "{{name}} {{version}}",

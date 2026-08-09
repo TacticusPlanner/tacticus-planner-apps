@@ -147,6 +147,40 @@ describe("EventsCalendar", () => {
     ).toBe(true)
   })
 
+  it("links to the wiki for a definition that has an article, but not for one that doesn't", async () => {
+    entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: isoDaysFromNow(1),
+        endUtc: isoDaysFromNow(8),
+        parameters: null,
+      },
+      {
+        occurrenceId: null,
+        definitionId: "hse-warp-surge",
+        confirmed: false,
+        startUtc: isoDaysFromNow(2),
+        endUtc: isoDaysFromNow(3),
+        parameters: null,
+      },
+    ]
+
+    render(<EventsCalendar />)
+
+    await screen.findAllByTestId("event-entry-card")
+
+    const wikiLinks = screen.getAllByRole("link", { name: "events:wikiLink" })
+    expect(wikiLinks).toHaveLength(1)
+    expect(wikiLinks[0]).toHaveAttribute(
+      "href",
+      "https://tacticus.fandom.com/wiki/Legendary_Character_Events"
+    )
+    expect(wikiLinks[0]).toHaveAttribute("target", "_blank")
+    expect(wikiLinks[0]).toHaveAttribute("rel", "noopener noreferrer")
+  })
+
   it("shows a legend swatch only for color categories present in the visible range", async () => {
     entries = [
       {
