@@ -199,7 +199,7 @@ export function GoalProgressDisplay({
           total: progress.required,
         })}
       </span>
-    ) : progress.kind === "Level" || progress.kind === "UpgradeItem" ? (
+    ) : progress.kind === "Level" ? (
       <span>
         {t("goals.overview.levelProgress", {
           current: progress.current,

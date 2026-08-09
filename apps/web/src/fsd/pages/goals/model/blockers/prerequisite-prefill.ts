@@ -13,7 +13,6 @@ export function prerequisitePrefill(
   detail: GoalDetail,
   reason: MissingPrerequisite
 ): CreateGoalPrefill | null {
-  if (detail.entityType === "Item") return null
   if (reason.kind === "MissingLevelPrerequisite") {
     if (detail.entityType !== "Character") return null
     return {

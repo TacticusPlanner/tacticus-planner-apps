@@ -54,7 +54,7 @@ export type GoalAttainmentParams = {
   playerCharacter: PlayerCharacter | undefined
   playerMow: PlayerMow | undefined
   /** `undefined` means the synced table hasn't loaded yet (distinct from a loaded, empty table) —
-   *  the Upgrade/UpgradeItem branches below report `UNKNOWN` rather than mistaking "not loaded" for
+   *  the Upgrade branch below reports `UNKNOWN` rather than mistaking "not loaded" for
    *  "loaded, and none owned". */
   inventoryUpgrades: readonly InventoryUpgrade[] | undefined
   inventoryItems: readonly InventoryItem[] | undefined
@@ -112,20 +112,6 @@ export function computeGoalAttainment(
       const target = detail.config.level
       if (!target || !owned) return UNKNOWN
       return fromBoolean(owned.xpLevel >= target.end)
-    }
-    case "UpgradeItem": {
-      // entityType "Item" — entityId is the equipment id itself, tracked via the un-equipped
-      // inventory stock rather than a per-character/MoW record.
-      const target = detail.config.item
-      if (!target) return UNKNOWN
-      if (!params.inventoryItems) return UNKNOWN
-      const entry = params.inventoryItems.find(
-        (item) => item.itemId === detail.entityId
-      )
-      // A confirmed absence (synced inventory loaded, nothing at this id) is a known "not reached",
-      // not "unknown" — only a not-yet-loaded inventory chunk is unknown (checked above).
-      if (!entry) return NOT_REACHED
-      return fromBoolean(entry.level >= target.targetLevel && entry.amount > 0)
     }
     case "Upgrade": {
       const target = detail.config.upgrade

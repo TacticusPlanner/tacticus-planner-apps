@@ -21,7 +21,6 @@ const GOAL_TYPE_VALUES: readonly GoalKind[] = [
   "Ability",
   "Unlock",
   "Upgrade",
-  "UpgradeItem",
 ]
 const SORT_VALUES: readonly GoalSortValue[] = [
   "entity",

@@ -267,13 +267,16 @@ describe("ProjectDetailPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("shows the current project's own row with the same inline actions as the list route", async () => {
+  it("shows a semantic header for the current project", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({ goals: [] })
     renderPage("proj-a")
 
     expect(await screen.findByText("Project A")).toBeInTheDocument()
-    expect(screen.getByTestId("project-row-archive-proj-a")).toBeInTheDocument()
+    expect(screen.getByText("goals.project.currentPlan")).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "goals.project.edit" })
+    ).toBeInTheDocument()
   })
 
   it("shows an archived project's own name in the ProjectSelect instead of falling back to the placeholder", async () => {
@@ -350,7 +353,7 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     await screen.findByTestId("project-detail-page")
-    await user.click(screen.getByTestId("project-row-edit-proj-a"))
+    await user.click(screen.getByRole("button", { name: "goals.project.edit" }))
     expect(
       await screen.findByText("goals.project.editTitle")
     ).toBeInTheDocument()
@@ -421,7 +424,7 @@ describe("ProjectDetailPage", () => {
     expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
   })
 
-  it("hides the reorder controls once a non-default sort is applied", async () => {
+  it("keeps unit reprioritization separate from goal-list sorting", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
@@ -433,7 +436,9 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     await screen.findByTestId("goals-list-table")
-    expect(screen.getByTestId("goal-row-move-up-goal-1")).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "goals.project.reprioritizeUnits" })
+    ).toBeInTheDocument()
 
     await user.click(screen.getByTestId("goals-sort"))
     await user.click(
@@ -442,7 +447,7 @@ describe("ProjectDetailPage", () => {
 
     await screen.findByTestId("goals-list-table")
     expect(
-      screen.queryByTestId("goal-row-move-up-goal-1")
-    ).not.toBeInTheDocument()
+      screen.getByRole("button", { name: "goals.project.reprioritizeUnits" })
+    ).toBeInTheDocument()
   })
 })

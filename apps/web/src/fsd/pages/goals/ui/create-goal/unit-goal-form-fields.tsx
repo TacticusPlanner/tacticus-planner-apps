@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
-import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 
 import type { UnitId } from "@workspace/game-domain"
@@ -36,7 +35,7 @@ type GoalForm = ReturnType<typeof useCreateGoalForm>
  * project selection + per-project priority, then the combined-goal review list ("What will be
  * created", with each selected project's own duration estimate) last. Split out of
  * `create-goal-sheet.tsx` purely for that file's own max-lines budget (same reason
- * `EquipmentGoalFields`/`UpgradeGoalFields`/`GoalProjectsField`/`GoalTypeCards` live in their own
+ * `UpgradeGoalFields`/`GoalProjectsField`/`GoalTypeCards` live in their own
  * files) — this is a coordinator-level component, not a leaf presentational field, so taking the
  * whole `form` is the same posture as the sheet already had.
  */
@@ -107,8 +106,7 @@ export function UnitGoalFormFields({
               (kind === "Level" && form.atMaxLevel) ||
               (kind === "Upgrade" &&
                 form.entityType === "Character" &&
-                form.atMaxRank) ||
-              form.hasActiveOrPausedGoal(kind)
+                form.atMaxRank)
             }
             entityType={form.entityType}
           />
@@ -144,15 +142,6 @@ export function UnitGoalFormFields({
           {/* One line per kind that already has an in-flight (Active/Paused) goal for this unit — a
               unit may still accumulate any number of Completed/Archived goals of the same type, so
               only these count (mirrors the backend's create/resume conflict check). */}
-          {goalKinds
-            .filter((kind) => form.hasActiveOrPausedGoal(kind))
-            .map((kind) => (
-              <p className="text-xs text-muted-foreground" key={kind}>
-                {t("goals.create.validation.activeOrPausedGoalExists", {
-                  goalType: t(`goals.create.goalTypes.${kind}`),
-                })}
-              </p>
-            ))}
         </div>
       ) : null}
 
@@ -233,25 +222,6 @@ export function UnitGoalFormFields({
                       {project.name}
                       {projectMarkerSuffix(t, project)}
                     </FieldLabel>
-                    {selected ? (
-                      <Input
-                        aria-label={t("goals.create.projectPriority", {
-                          project: project.name,
-                        })}
-                        className="w-20"
-                        data-testid={`create-goal-project-priority-${project.projectId}`}
-                        min={1}
-                        onChange={(event) =>
-                          form.setProjectPriority(
-                            project.projectId,
-                            event.target.value
-                          )
-                        }
-                        placeholder={t("goals.create.projectPriorityAuto")}
-                        type="number"
-                        value={form.projectPriorities[project.projectId] ?? ""}
-                      />
-                    ) : null}
                   </Field>
                 )
               })}

@@ -462,7 +462,7 @@ describe("GoalDetailSheet", () => {
     await enterEditMode(user)
 
     const myGoals = await screen.findByRole("checkbox", {
-      name: "My Goals (goals.create.projectActive)",
+      name: "My Goals (goals.project.currentPlan)",
     })
     await user.click(myGoals)
 

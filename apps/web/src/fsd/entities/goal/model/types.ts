@@ -1,15 +1,9 @@
 // Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).
-export type GoalEntityType = "Character" | "Mow" | "Item"
+export type GoalEntityType = "Character" | "Mow"
 export type GoalKind =
-  | "Rank"
-  | "Ascension"
-  | "Ability"
-  | "Unlock"
-  | "Upgrade"
-  | "UpgradeItem"
-  | "Level"
+  "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade" | "Level"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
 export type AscensionFarmingSource = "Campaign" | "Onslaught" | "Both"
@@ -56,22 +50,18 @@ export type AscensionFarmingConfig = {
   mythicShardBattleIds: string[]
 }
 
-export type UpgradeItemTarget = {
+export type UpgradeMaterialTarget = {
   upgradeId: string
   quantity: number
 }
 
 export type UpgradeTarget = {
-  targets: UpgradeItemTarget[]
+  targets: UpgradeMaterialTarget[]
 }
 
 /** Target level for a specific piece of equipment/relic gear (`GoalEntityType` `"Item"`
  * only). Uncosted — no gold/salvage/mythic-salvage farming engine exists in this app; "complete"
  * is simply the player's synced level for this equipment reaching `targetLevel`. */
-export type ItemTarget = {
-  targetLevel: number
-}
-
 export type GoalConfig = {
   rank: RankTarget | null
   progression: ProgressionTarget | null
@@ -82,7 +72,6 @@ export type GoalConfig = {
   // lowest-energy selection.
   farmingLocationIds: string[] | null
   upgrade: UpgradeTarget | null
-  item: ItemTarget | null
   level: LevelTarget | null
 }
 
@@ -136,7 +125,6 @@ export type CreateGoalConfigRequest = {
   ascensionFarming?: AscensionFarmingConfig | null
   farmingLocationIds?: string[] | null
   upgrade?: UpgradeTarget | null
-  item?: ItemTarget | null
   level?: LevelTarget | null
 }
 
@@ -145,7 +133,6 @@ export type CreateGoalConfigRequest = {
  * goals" — the server's `GetNextPriorityAsync` fallback. */
 export type ProjectPriority = {
   projectId: string
-  priority?: number | null
 }
 
 export type CreateGoalRequest = {

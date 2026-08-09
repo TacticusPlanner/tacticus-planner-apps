@@ -17,7 +17,7 @@ type GoalForm = ReturnType<typeof useCreateGoalForm>
  * Every enabled goal-type's `GoalTypeCard`, in the same order as the toggle group above it
  * (`goalKinds`) — one switch per kind rather than one hardcoded block per kind, so the two can never
  * drift apart again. Split out of unit-goal-form-fields.tsx purely for that file's own max-lines
- * budget (same reason `EquipmentGoalFields`/`UpgradeGoalFields`/`GoalProjectsField` live in their own
+ * budget (same reason `UpgradeGoalFields`/`GoalProjectsField` live in their own
  * files) — a coordinator, not a leaf field, so it still takes the whole `form`.
  */
 export function GoalTypeCards({
@@ -207,10 +207,8 @@ export function GoalTypeCards({
                   )}
                 </GoalTypeCard>
               )
-            case "UpgradeItem":
-              // Item goals use the sheet's separate "Item" pill/form entirely —
-              // never offered in CHARACTER_GOAL_KINDS/MOW_GOAL_KINDS, so unreachable here.
-              return null
+            // Item goals use the sheet's separate "Item" pill/form entirely —
+            // never offered in CHARACTER_GOAL_KINDS/MOW_GOAL_KINDS, so unreachable here.
           }
         })}
     </>

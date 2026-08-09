@@ -42,7 +42,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       ascensionFarming: null,
       farmingLocationIds: null,
       upgrade: null,
-      item: null,
       level: null,
     },
     snapshot: null,
@@ -224,7 +223,6 @@ describe("daily raid derivation", () => {
         { entityType: "Character", entityId: "hero1" },
         { entityType: "Character", entityId: "hero1" },
         { entityType: "Mow", entityId: "mow1" },
-        { entityType: "Item", entityId: "item1" },
       ])
     ).toEqual({
       characterIds: [unitIdSchema.parse("hero1")],
@@ -288,7 +286,6 @@ describe("daily raid derivation", () => {
           ascensionFarming: null,
           farmingLocationIds: null,
           upgrade: null,
-          item: null,
           level: null,
         },
       })

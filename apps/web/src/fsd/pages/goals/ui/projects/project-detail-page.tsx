@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
+import { ArrowLeft } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -11,8 +13,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   ManageProjectsSheet,
-  ProjectRow,
-  reorderedMemberIds,
   useProjectActions,
 } from "@/features/project-management"
 import { ProjectSelect, useProjects } from "@/entities/project"
@@ -31,10 +31,12 @@ import { goalRowFromProjectMember } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { useProjectGoals } from "../../model/projects/use-project-goals"
+import { projectUnitPlans } from "../../model/projects/project-unit-plans"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { GoalsList } from "../goals-board/goals-list"
 import { useProjectDetailTutorial } from "./project-detail-page.tutorial"
+import { ReprioritizeUnitsSheet } from "./reprioritize-units-sheet"
 
 type Tab = GoalStatusFilterValue
 
@@ -59,6 +61,7 @@ export function ProjectDetailPage() {
   const [group, setGroup] = useState<GoalGroupValue>("none")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
+  const [reprioritizeOpen, setReprioritizeOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
 
   const projectGoals = useProjectGoals(projectId)
@@ -67,6 +70,7 @@ export function ProjectDetailPage() {
   const { result: insights } = usePlanInsights(projectId, projectGoals.goals)
 
   const allRows = projectGoals.goals.map(goalRowFromProjectMember)
+  const units = projectUnitPlans(allRows)
   const nonArchivedRows = allRows.filter((row) => row.status !== "Archived")
   const filteredAllRows = allRows.filter(
     (row) => goalType === "all" || row.goalType === goalType
@@ -133,23 +137,6 @@ export function ProjectDetailPage() {
   // adjacent without changing priority, so reorder is only offered on the unfiltered, default-sort
   // Unfulfilled view, the same set of conditions that always determined priority order before this
   // page had Sort/Group controls at all.
-  const reorderEnabled =
-    tab === "toReach" &&
-    sort === "updated" &&
-    group === "none" &&
-    goalType === "all"
-
-  const handleMove = (goalId: string, direction: "up" | "down") => {
-    if (!projectId) return
-    const orderedIds = reorderedMemberIds(
-      projectGoals.goals,
-      goalId,
-      direction,
-      rows.map((row) => row.goalId)
-    )
-    if (orderedIds) void projectActions.reorder(projectId, orderedIds)
-  }
-
   if (!projectId) return null
 
   if (projects.loading) {
@@ -180,13 +167,61 @@ export function ProjectDetailPage() {
       data-testid="project-detail-page"
       data-project-id={projectId}
     >
-      <ul className="flex flex-col gap-2">
-        <ProjectRow
-          actions={projectActions}
-          onEdit={() => setEditOpen(true)}
-          project={project}
-        />
-      </ul>
+      <Card>
+        <CardHeader className="gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Button
+                aria-label={t("goals.project.backToProjects")}
+                onClick={() => void navigate("/goals/projects")}
+                size="icon-sm"
+                variant="ghost"
+              >
+                <ArrowLeft />
+              </Button>
+              <div>
+                <CardTitle>{project.name}</CardTitle>
+                {project.description ? (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {project.description}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {project.isActivePlan ? (
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                  {t("goals.project.currentPlan")}
+                </span>
+              ) : (
+                <Button
+                  disabled={projectActions.pending}
+                  onClick={() =>
+                    void projectActions.activate(project.projectId)
+                  }
+                  variant="outline"
+                >
+                  {t("goals.project.makeCurrent")}
+                </Button>
+              )}
+              {units.length > 1 ? (
+                <Button onClick={() => setReprioritizeOpen(true)}>
+                  {t("goals.project.reprioritizeUnits")}
+                </Button>
+              ) : null}
+              <Button onClick={() => setEditOpen(true)} variant="outline">
+                {t("goals.project.edit")}
+              </Button>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t("goals.project.unitGoalSummary", {
+              units: units.length,
+              goals: allRows.length,
+            })}
+          </p>
+        </CardHeader>
+      </Card>
 
       {/* goals-navigation spec: the project selector is trailing, paired in the same row as the
           status filter - here it switches which project's detail route is shown. */}
@@ -241,9 +276,8 @@ export function ProjectDetailPage() {
           estimates={insights.estimates}
           metrics={overviewMetrics}
           potentialProgress={insights.potentialProgressByGoalId}
-          onMove={handleMove}
           onView={setDetailGoalId}
-          reorderEnabled={reorderEnabled}
+          reorderEnabled={false}
           rows={rows}
         />
       )}
@@ -254,6 +288,17 @@ export function ProjectDetailPage() {
         open={editOpen}
         project={project}
       />
+      {reprioritizeOpen ? (
+        <ReprioritizeUnitsSheet
+          onOpenChange={setReprioritizeOpen}
+          onSave={(orderedUnits) =>
+            projectActions.reorderUnits(project.projectId, orderedUnits)
+          }
+          open
+          pending={projectActions.pending}
+          units={units}
+        />
+      ) : null}
       <GoalDetailSheet
         estimate={
           detailGoalId ? insights.estimates.get(detailGoalId) : undefined

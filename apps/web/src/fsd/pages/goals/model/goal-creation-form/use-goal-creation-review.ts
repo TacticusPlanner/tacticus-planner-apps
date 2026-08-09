@@ -20,7 +20,6 @@ export function useGoalCreationReview(params: {
   canSubmit: boolean
   selectedProjectIds: string[]
   projects: ProjectSummary[]
-  projectPriorities: Record<string, string>
   dailyEnergy: number
   inventoryUpgrades:
     readonly { upgradeId: string; amount: number }[] | undefined
@@ -31,14 +30,7 @@ export function useGoalCreationReview(params: {
   // non-positive/unparseable means "append after the project's current goals" (omitted from the
   // request, same as the pre-per-project-priority default).
   const selectedProjects: ProjectPriority[] = params.selectedProjectIds.map(
-    (projectId) => {
-      const raw = params.projectPriorities[projectId]
-      const parsed = raw ? Number.parseInt(raw, 10) : Number.NaN
-      return {
-        projectId,
-        priority: Number.isFinite(parsed) && parsed > 0 ? parsed : undefined,
-      }
-    }
+    (projectId) => ({ projectId })
   )
 
   // Placeholder GoalDetails for the per-project duration preview — never sent to the server (see
@@ -69,7 +61,7 @@ export function useGoalCreationReview(params: {
 
   const perProjectEstimates = usePerProjectEstimates({
     selectedProjectIds: estimatedProjectIds,
-    projectPriorities: params.projectPriorities,
+    projectPriorities: {},
     newDetails: previewGoalDetails,
     dailyEnergy: params.dailyEnergy,
     inventoryUpgrades: params.inventoryUpgrades ?? [],

@@ -37,14 +37,25 @@ export function ProjectRow({ project, actions, onEdit, onSelect }: Props) {
       data-testid={`project-row-${project.projectId}`}
       onClick={onSelect}
     >
-      <div className="flex min-w-0 items-center gap-2">
+      <div className="flex min-w-0 items-start gap-3">
         <ProjectColorDot color={project.color} />
-        <span className="truncate font-medium">{project.name}</span>
-        {archived ? (
-          <Badge variant="secondary">{t("goals.status.Archived")}</Badge>
-        ) : project.isActivePlan ? (
-          <Badge variant="secondary">{t("goals.project.active")}</Badge>
-        ) : null}
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="truncate font-medium">{project.name}</span>
+            {archived ? (
+              <Badge variant="secondary">{t("goals.status.Archived")}</Badge>
+            ) : project.isActivePlan ? (
+              <Badge variant="secondary">
+                {t("goals.project.currentPlan")}
+              </Badge>
+            ) : null}
+          </div>
+          {project.description ? (
+            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+              {project.description}
+            </p>
+          ) : null}
+        </div>
       </div>
 
       {/* Each icon stops its own click from bubbling to the row's onClick above, mirroring
@@ -82,18 +93,19 @@ export function ProjectRow({ project, actions, onEdit, onSelect }: Props) {
           <>
             {!project.isActivePlan ? (
               <Button
-                aria-label={t("goals.project.setActive")}
+                aria-label={t("goals.project.makeCurrent")}
                 data-testid={`project-row-set-active-${project.projectId}`}
                 disabled={actions.pending}
                 onClick={(event) => {
                   event.stopPropagation()
                   void actions.activate(project.projectId)
                 }}
-                size="icon-sm"
-                title={t("goals.project.setActive")}
+                size="sm"
+                title={t("goals.project.makeCurrent")}
                 variant="ghost"
               >
                 <Star />
+                {t("goals.project.makeCurrent")}
               </Button>
             ) : null}
             <Button

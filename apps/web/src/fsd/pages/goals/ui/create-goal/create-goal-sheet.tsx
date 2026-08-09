@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -11,18 +10,13 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
-import { useCreateEquipmentGoalForm } from "../../model/goal-creation-form/use-create-equipment-goal-form"
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
-import { EquipmentGoalFields } from ".//equipment-goal-fields"
 import { UnitGoalFormFields } from ".//unit-goal-form-fields"
-
-type Pill = "Unit" | "Equipment"
 
 type CreateGoalSheetProps = {
   open: boolean
@@ -49,13 +43,7 @@ export function CreateGoalSheet({
   prefill,
 }: CreateGoalSheetProps) {
   const { t } = useTranslation()
-  const [pill, setPill] = useState<Pill>("Unit")
   const form = useCreateGoalForm({ open, onOpenChange, onCreated, prefill })
-  const equipmentForm = useCreateEquipmentGoalForm({
-    open,
-    onOpenChange,
-    onCreated,
-  })
 
   const unitIcon = (id: UnitId) =>
     form.charactersById?.has(id) ? characterIcon(id) : mowIcon(id)
@@ -70,78 +58,31 @@ export function CreateGoalSheet({
           <SheetTitle>{t("goals.create.title")}</SheetTitle>
         </SheetHeader>
 
-        <Tabs
-          className="px-6"
-          onValueChange={(value) => setPill(value as Pill)}
-          value={pill}
-        >
-          <TabsList>
-            <TabsTrigger data-testid="create-goal-pill-unit" value="Unit">
-              {t("goals.create.entityType.unit")}
-            </TabsTrigger>
-            <TabsTrigger
-              data-testid="create-goal-pill-equipment"
-              value="Equipment"
-            >
-              {t("goals.create.entityType.equipment")}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {pill === "Unit" ? (
-          <UnitGoalFormFields form={form} unitIcon={unitIcon} />
-        ) : (
-          <EquipmentGoalFields
-            equipmentById={equipmentForm.equipmentById}
-            equipmentId={equipmentForm.equipmentId}
-            handleEquipmentChange={equipmentForm.handleEquipmentChange}
-            targetLevel={equipmentForm.targetLevel}
-            setTargetLevel={equipmentForm.setTargetLevel}
-            maxLevel={equipmentForm.maxLevel}
-            ownedByLevel={equipmentForm.ownedByLevel}
-            status={equipmentForm.status}
-            errorMessage={equipmentForm.errorMessage}
-            handleSubmit={equipmentForm.handleSubmit}
-          />
-        )}
+        <UnitGoalFormFields form={form} unitIcon={unitIcon} />
 
         <SheetFooter>
-          {pill === "Unit" ? (
-            <Field orientation="horizontal">
-              <Checkbox
-                id="create-goal-another"
-                checked={form.createAnother}
-                onCheckedChange={(checked) =>
-                  form.setCreateAnother(checked === true)
-                }
-              />
-              <FieldLabel
-                className="font-normal text-muted-foreground"
-                htmlFor="create-goal-another"
-              >
-                {t("goals.create.createAnother")}
-              </FieldLabel>
-            </Field>
-          ) : null}
+          <Field orientation="horizontal">
+            <Checkbox
+              id="create-goal-another"
+              checked={form.createAnother}
+              onCheckedChange={(checked) =>
+                form.setCreateAnother(checked === true)
+              }
+            />
+            <FieldLabel
+              className="font-normal text-muted-foreground"
+              htmlFor="create-goal-another"
+            >
+              {t("goals.create.createAnother")}
+            </FieldLabel>
+          </Field>
           <Button
             data-testid="create-goal-submit"
-            disabled={
-              pill === "Unit"
-                ? !form.canSubmit || form.status === "submitting"
-                : !equipmentForm.canSubmit ||
-                  equipmentForm.status === "submitting"
-            }
-            form={
-              pill === "Unit"
-                ? "create-goal-form"
-                : "create-equipment-goal-form"
-            }
+            disabled={!form.canSubmit || form.status === "submitting"}
+            form="create-goal-form"
             type="submit"
           >
-            {(pill === "Unit" ? form.status : equipmentForm.status) ===
-            "submitting" ? (
-              <Spinner />
-            ) : null}
+            {form.status === "submitting" ? <Spinner /> : null}
             {t("goals.create.submit")}
           </Button>
           <Button

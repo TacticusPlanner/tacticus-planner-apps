@@ -36,6 +36,13 @@ export function ProjectsListPage() {
     undefined
   )
   const projectActions = useProjectActions()
+  const current = projects.projects.find((project) => project.isActivePlan)
+  const available = projects.projects.filter(
+    (project) => !project.isActivePlan && project.status !== "Archived"
+  )
+  const archived = projects.projects.filter(
+    (project) => project.status === "Archived"
+  )
 
   const openNewProject = () => {
     setSheetProject(undefined)
@@ -52,12 +59,55 @@ export function ProjectsListPage() {
   return (
     <div className="flex flex-col gap-6" data-testid="projects-page">
       {hasProjects ? (
-        <ProjectList
-          actions={projectActions}
-          onEdit={openEditProject}
-          onSelect={openProjectDetail}
-          projects={projects.projects}
-        />
+        <div className="grid gap-8">
+          {current ? (
+            <section className="grid gap-3">
+              <h2 className="text-lg font-semibold">
+                {t("goals.project.currentPlan")}
+              </h2>
+              <ProjectList
+                actions={projectActions}
+                onEdit={openEditProject}
+                onSelect={openProjectDetail}
+                projects={[current]}
+              />
+            </section>
+          ) : null}
+          <section className="grid gap-3">
+            <h2 className="text-lg font-semibold">
+              {t("goals.project.otherProjects")}
+            </h2>
+            {available.length > 0 ? (
+              <ProjectList
+                actions={projectActions}
+                onEdit={openEditProject}
+                onSelect={openProjectDetail}
+                projects={available}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t("goals.project.noOtherProjects")}
+              </p>
+            )}
+          </section>
+          {archived.length > 0 ? (
+            <details>
+              <summary className="cursor-pointer text-lg font-semibold">
+                {t("goals.project.archivedProjects", {
+                  count: archived.length,
+                })}
+              </summary>
+              <div className="mt-3">
+                <ProjectList
+                  actions={projectActions}
+                  onEdit={openEditProject}
+                  onSelect={openProjectDetail}
+                  projects={archived}
+                />
+              </div>
+            </details>
+          ) : null}
+        </div>
       ) : (
         <Card data-testid="projects-page-empty">
           <CardHeader>

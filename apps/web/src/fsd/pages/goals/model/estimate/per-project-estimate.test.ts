@@ -50,7 +50,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       ascensionFarming: null,
       farmingLocationIds: null,
       upgrade: null,
-      item: null,
       level: null,
     },
     snapshot: null,
@@ -199,7 +198,6 @@ describe("estimateNewGoalsForProject", () => {
         ascensionFarming: null,
         farmingLocationIds: null,
         upgrade: null,
-        item: null,
         level: null,
       },
     })

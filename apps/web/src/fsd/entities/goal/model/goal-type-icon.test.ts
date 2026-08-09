@@ -14,7 +14,7 @@ describe("goalTypeIcon", () => {
   })
 
   it("returns a distinct icon per other goal kind", () => {
-    const kinds = ["Ascension", "Unlock", "UpgradeItem", "Level"] as const
+    const kinds = ["Ascension", "Unlock", "Upgrade", "Level"] as const
     const icons = new Set(kinds.map((kind) => goalTypeIcon(kind)))
     expect(icons.size).toBe(kinds.length)
   })

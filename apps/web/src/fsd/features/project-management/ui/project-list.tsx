@@ -17,7 +17,7 @@ type Props = {
  */
 export function ProjectList({ projects, actions, onEdit, onSelect }: Props) {
   return (
-    <ul className="flex flex-col gap-2" data-testid="project-list">
+    <ul className="grid gap-3 md:grid-cols-2" data-testid="project-list">
       {projects.map((project) => (
         <ProjectRow
           actions={actions}
