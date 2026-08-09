@@ -98,6 +98,13 @@ function deriveOrdinalFromAnchor(
     return undefined
   }
 
+  // anchorUtc's schema only guarantees it's a non-null string, not a parseable date — an invalid value
+  // here would otherwise silently propagate as a "Season NaN" suffix instead of just omitting the number.
+  const anchorMs = Date.parse(anchorUtc)
+  if (!Number.isFinite(anchorMs)) {
+    return undefined
+  }
+
   const config = definition.config
   const numberAtAnchor =
     config && typeof config === "object" && configKey in config
@@ -109,7 +116,7 @@ function deriveOrdinalFromAnchor(
 
   const intervalMs = intervalDays * 24 * 60 * 60 * 1000
   const slotsSinceAnchor = Math.round(
-    (Date.parse(entry.startUtc) - Date.parse(anchorUtc)) / intervalMs
+    (Date.parse(entry.startUtc) - anchorMs) / intervalMs
   )
 
   return numberAtAnchor + slotsSinceAnchor

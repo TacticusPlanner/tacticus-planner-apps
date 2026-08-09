@@ -60,6 +60,20 @@ const definitionsById = new Map([
       config: { seasonNumberAtAnchor: 40 },
     },
   ],
+  [
+    "battle-pass-invalid-anchor",
+    {
+      id: "battle-pass-invalid-anchor",
+      type: "BattlePass",
+      recurrence: {
+        kind: "Fixed" as const,
+        intervalDays: 35,
+        durationDays: 34,
+        anchorUtc: "not-a-date",
+      },
+      config: { seasonNumberAtAnchor: 40 },
+    },
+  ],
 ])
 
 describe("buildEventsCalendarDays", () => {
@@ -247,6 +261,32 @@ describe("buildEventsCalendarDays", () => {
         confirmed: true,
         startUtc: new Date(2026, 6, 26).toISOString(),
         endUtc: new Date(2026, 6, 27).toISOString(),
+        parameters: null,
+      },
+    ]
+
+    const days = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      rangeStart
+    )
+    const entry = days.find((day) => day.entries.length > 0)?.entries[0]
+
+    expect(entry?.derivedSeasonNumber).toBeUndefined()
+  })
+
+  it("leaves derivedSeasonNumber undefined (not NaN) when a Fixed definition's anchorUtc doesn't parse", () => {
+    const rangeStart = new Date(2026, 7, 2)
+    const rangeEnd = addLocalDays(rangeStart, 7)
+    const entries = [
+      {
+        occurrenceId: null,
+        definitionId: "battle-pass-invalid-anchor",
+        confirmed: false,
+        startUtc: "2026-08-02T00:00:00Z",
+        endUtc: "2026-09-05T00:00:00Z",
         parameters: null,
       },
     ]
@@ -562,5 +602,9 @@ describe("DST-crossing day boundaries", () => {
       .filter((day) => day.entries.length > 0)
       .map((day) => day.date)
     expect(daysWithEntry).toContain("2026-03-08")
+    // A regression using naive `+24h` arithmetic would land this on both the 8th and the 9th (the
+    // entry's raw 24h-later end instant is 2026-03-09T23:00 local, inside the 9th) and still pass the
+    // assertion above — this negative assertion is what actually catches that.
+    expect(daysWithEntry).not.toContain("2026-03-09")
   })
 })

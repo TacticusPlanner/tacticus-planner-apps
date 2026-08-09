@@ -127,13 +127,13 @@
   --event-incursion: #7ed957;
   --event-legendary: #a9c8ec;
   --event-home-screen: #7c98ab;
-  --event-tournament: #d6488f;
+  --event-tournament: #df70a8;
   --event-quest: #e69a5c;
   --event-guild-war: #9cb37a;
   --event-guild-raid: #6fb8ad;
   --event-battle-pass: #a9d18e;
   --event-new-character: #8a93d6;
-  --event-game-version: #9083c9;
+  --event-game-version: #978acc;
   --event-double-xp: #d9a1c4;
   --event-double-gold: #e9cf4f;
   --event-shop: #d9b3bc;
@@ -211,20 +211,20 @@
 
   /* Same hue families as :root, darkened/desaturated to sit on the dark background — mirrors how the
      rarity and rank tokens above are re-tuned per theme rather than reused verbatim. */
-  --event-campaign: #3a8fa3;
-  --event-incursion: #5bb33f;
-  --event-legendary: #4d7ba8;
+  --event-campaign: #31798a;
+  --event-incursion: #3f7c2c;
+  --event-legendary: #47719b;
   --event-home-screen: #55707f;
   --event-tournament: #a8386f;
-  --event-quest: #b8763f;
-  --event-guild-war: #6f8054;
-  --event-guild-raid: #47867d;
-  --event-battle-pass: #6f9a58;
+  --event-quest: #9c6436;
+  --event-guild-war: #66764d;
+  --event-guild-raid: #417b73;
+  --event-battle-pass: #577945;
   --event-new-character: #5c63a3;
   --event-game-version: #6a5aa3;
-  --event-double-xp: #a76a92;
-  --event-double-gold: #b8a12e;
-  --event-shop: #a3707c;
+  --event-double-xp: #945e81;
+  --event-double-gold: #7f6f20;
+  --event-shop: #90636e;
   --event-crusade: #8a6540;
   --event-bar-foreground: oklch(0.97 0.005 264.532);
 }
