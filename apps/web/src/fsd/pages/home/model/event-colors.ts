@@ -17,6 +17,8 @@ export type EventColorKey =
   | "gameVersion"
   | "doubleXp"
   | "doubleGold"
+  | "shop"
+  | "crusade"
   | "default"
 
 // Two definitions share the `StandingModifier` type but are visually distinct in every reference
@@ -38,6 +40,8 @@ const colorKeyByDefinitionType: Record<string, EventColorKey> = {
   BattlePass: "battlePass",
   NewCharacterEvent: "newCharacter",
   GameVersionRelease: "gameVersion",
+  ShopEvent: "shop",
+  CrusadeSeason: "crusade",
 }
 
 export function resolveEventColorKey(
@@ -76,6 +80,8 @@ const barClassByColorKey: Record<EventColorKey, string> = {
   doubleXp: "bg-[var(--event-double-xp)] text-[var(--event-bar-foreground)]",
   doubleGold:
     "bg-[var(--event-double-gold)] text-[var(--event-bar-foreground)]",
+  shop: "bg-[var(--event-shop)] text-[var(--event-bar-foreground)]",
+  crusade: "bg-[var(--event-crusade)] text-[var(--event-bar-foreground)]",
   default: "bg-muted text-muted-foreground",
 }
 
@@ -94,6 +100,8 @@ const accentClassByColorKey: Record<EventColorKey, string> = {
   gameVersion: "border-l-[var(--event-game-version)]",
   doubleXp: "border-l-[var(--event-double-xp)]",
   doubleGold: "border-l-[var(--event-double-gold)]",
+  shop: "border-l-[var(--event-shop)]",
+  crusade: "border-l-[var(--event-crusade)]",
   default: "border-l-border",
 }
 
@@ -105,11 +113,15 @@ export function eventAccentClass(colorKey: EventColorKey): string {
   return accentClassByColorKey[colorKey]
 }
 
+// `doubleXp`/`doubleGold` are deliberately excluded from the legend — their bars are already
+// self-explanatory ("Double XP"/"Double Gold" labels on a fixed weekday), so a legend entry would just
+// be noise. Typed (not just filtered at runtime) so `events:legend.*` lookups built from this array's
+// element type can never reference the two keys events.json's "legend" object doesn't define.
+export type LegendColorKey = Exclude<EventColorKey, "doubleXp" | "doubleGold">
+
 // Every color key in legend display order (matches the reference calendars' left-to-right ordering:
-// broad recurring content first, then the smaller irregular events last). `doubleXp`/`doubleGold` are
-// deliberately omitted — their bars are already self-explanatory ("Double XP"/"Double Gold" labels on a
-// fixed weekday), so a legend entry would just be noise.
-export const EVENT_COLOR_KEYS_IN_LEGEND_ORDER: EventColorKey[] = [
+// broad recurring content first, then the smaller irregular events last).
+export const EVENT_COLOR_KEYS_IN_LEGEND_ORDER: LegendColorKey[] = [
   "campaign",
   "incursion",
   "legendary",
@@ -121,5 +133,7 @@ export const EVENT_COLOR_KEYS_IN_LEGEND_ORDER: EventColorKey[] = [
   "quest",
   "newCharacter",
   "gameVersion",
+  "shop",
+  "crusade",
   "default",
 ]

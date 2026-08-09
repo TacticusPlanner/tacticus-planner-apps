@@ -16,11 +16,14 @@ export type EventEntryViewModel = {
   parameters: Record<string, unknown> | null
   isActiveNow: boolean
   /**
-   * A Fixed-recurrence definition's season/slot number, derived from this entry's position relative to
-   * the definition's own anchor (see `deriveSeasonNumber` in events-calendar-calc.ts) — not authored
-   * data, so it's kept separate from `parameters` rather than merged into it.
+   * A Fixed-recurrence definition's season/event number, derived from this entry's position relative to
+   * the definition's own anchor (see `deriveOrdinalFromAnchor` in events-calendar-calc.ts) — not
+   * authored data, so it's kept separate from `parameters` rather than merged into it.
+   * `derivedSeasonNumber` reads as "Season N" (Battle Pass, Guild War Season); `derivedEventNumber`
+   * reads as a bare number (Campaign Event "17").
    */
   derivedSeasonNumber: number | undefined
+  derivedEventNumber: number | undefined
 }
 
 export type EventsCalendarDay = {

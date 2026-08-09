@@ -136,6 +136,8 @@
   --event-game-version: #9083c9;
   --event-double-xp: #d9a1c4;
   --event-double-gold: #e9cf4f;
+  --event-shop: #d9b3bc;
+  --event-crusade: #b58a5c;
   --event-bar-foreground: oklch(0.243 0.015 261.655);
 }
 
@@ -222,6 +224,8 @@
   --event-game-version: #6a5aa3;
   --event-double-xp: #a76a92;
   --event-double-gold: #b8a12e;
+  --event-shop: #a3707c;
+  --event-crusade: #8a6540;
   --event-bar-foreground: oklch(0.97 0.005 264.532);
 }
 

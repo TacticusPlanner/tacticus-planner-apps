@@ -19,7 +19,12 @@ export function EventEntryCard({
   /** "list" (default): mobile's stacked cards. "bar": desktop's colored Gantt-lane bars. */
   variant?: "list" | "bar"
 }) {
-  const { t } = useTranslation(["events", "characters", "factions"])
+  const { t } = useTranslation([
+    "events",
+    "characters",
+    "factions",
+    "progression",
+  ])
   const displayName = resolveEventDisplayName(t, entry)
   const colorKey = resolveEventColorKey(
     entry.definitionId,

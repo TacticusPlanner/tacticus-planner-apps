@@ -76,15 +76,18 @@ function entryOccupiesWindow(
 }
 
 /**
- * A Fixed-recurrence definition's season/slot number at `entry`, derived from how many `intervalDays`
- * steps separate its `startUtc` from the definition's own `anchorUtc` plus the definition's known season
- * number at that anchor (`config.seasonNumberAtAnchor` — e.g. Battle Pass's anchor is Season 40). Applies
- * to every slot, projected or authored, so the season number always shows without needing it re-authored
- * on every occurrence.
+ * A Fixed-recurrence definition's ordinal number (season, event number, ...) at `entry`, derived from
+ * how many `intervalDays` steps separate its `startUtc` from the definition's own `anchorUtc` plus the
+ * definition's known ordinal at that anchor — read from `config[configKey]` (e.g. Battle Pass's
+ * `seasonNumberAtAnchor` is 40, Campaign Event's `eventNumberAtAnchor` is 15). Applies to every slot,
+ * projected or authored, so the number always shows without needing it re-authored on every occurrence.
+ * `configKey` lets the same math back two visually distinct fields (`derivedSeasonNumber` reads "Season
+ * N"; `derivedEventNumber` reads as a bare number, "Campaign Event N") without duplicating this logic.
  */
-function deriveSeasonNumber(
+function deriveOrdinalFromAnchor(
   entry: RawEventsCalendarEntry,
-  definition: RawEventDefinition | undefined
+  definition: RawEventDefinition | undefined,
+  configKey: string
 ): number | undefined {
   if (!definition || definition.recurrence?.kind !== "Fixed") {
     return undefined
@@ -96,11 +99,11 @@ function deriveSeasonNumber(
   }
 
   const config = definition.config
-  const seasonNumberAtAnchor =
-    config && typeof config === "object" && "seasonNumberAtAnchor" in config
-      ? (config as { seasonNumberAtAnchor: unknown }).seasonNumberAtAnchor
+  const numberAtAnchor =
+    config && typeof config === "object" && configKey in config
+      ? (config as Record<string, unknown>)[configKey]
       : undefined
-  if (typeof seasonNumberAtAnchor !== "number") {
+  if (typeof numberAtAnchor !== "number") {
     return undefined
   }
 
@@ -109,7 +112,7 @@ function deriveSeasonNumber(
     (Date.parse(entry.startUtc) - Date.parse(anchorUtc)) / intervalMs
   )
 
-  return seasonNumberAtAnchor + slotsSinceAnchor
+  return numberAtAnchor + slotsSinceAnchor
 }
 
 function toViewModel(
@@ -131,7 +134,16 @@ function toViewModel(
     endUtc: entry.endUtc,
     parameters: entry.parameters,
     isActiveNow: startMs <= nowMs && nowMs < endMs,
-    derivedSeasonNumber: deriveSeasonNumber(entry, definition),
+    derivedSeasonNumber: deriveOrdinalFromAnchor(
+      entry,
+      definition,
+      "seasonNumberAtAnchor"
+    ),
+    derivedEventNumber: deriveOrdinalFromAnchor(
+      entry,
+      definition,
+      "eventNumberAtAnchor"
+    ),
   }
 }
 

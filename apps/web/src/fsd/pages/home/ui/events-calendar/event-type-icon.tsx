@@ -6,8 +6,10 @@ import {
   Rocket,
   ScrollText,
   ShieldAlert,
+  ShoppingBag,
   Star,
   Swords,
+  Tent,
   Ticket,
   Trophy,
   UserPlus,
@@ -31,6 +33,8 @@ const iconByDefinitionType: Record<string, LucideIcon> = {
   Quest: ScrollText,
   GuildRaidSeason: Swords,
   GuildWarSeason: Crosshair,
+  ShopEvent: ShoppingBag,
+  CrusadeSeason: Tent,
 }
 
 export function EventTypeIcon({

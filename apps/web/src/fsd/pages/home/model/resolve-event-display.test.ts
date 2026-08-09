@@ -14,6 +14,13 @@ const templates: Record<string, string> = {
   "events:withSeason": "{{name}} Season {{season}}",
   "events:withNewCampaign": "{{name}} (New Campaign)",
   "events:withNewMow": "{{name}} (New MoW)",
+  "events:withEventNumber": "{{name}} {{number}}",
+  "events:withMow": "{{name}}: {{mow}}",
+  "events:withEnemyFaction": "{{name}} vs {{faction}}",
+  "events:withWeek": "{{name}} Week {{week}}",
+  "events:withRarityCap": "{{name}} ({{rarityCap}})",
+  "events:withMowFlag": "{{name}} MoW",
+  "events:withNoMowFlag": "{{name}} No MoW",
 }
 
 const t = ((key: string, options?: Record<string, unknown>) => {
@@ -42,6 +49,7 @@ function baseEntry(
     parameters: null,
     isActiveNow: false,
     derivedSeasonNumber: undefined,
+    derivedEventNumber: undefined,
     ...overrides,
   }
 }
@@ -96,6 +104,19 @@ describe("resolveEventDisplayName", () => {
     expect(name).toBe("battle-pass Season 40: darkaSternguard")
   })
 
+  it("puts the bare event number right after the name for a campaign event", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "campaign-event",
+        definitionType: "CampaignEvent",
+        derivedEventNumber: 17,
+      })
+    )
+
+    expect(name).toBe("campaign-event 17")
+  })
+
   it("indicates a new campaign for a campaign-event debut", () => {
     const name = resolveEventDisplayName(
       t,
@@ -133,5 +154,74 @@ describe("resolveEventDisplayName", () => {
     )
 
     expect(name).not.toContain("New Campaign")
+  })
+
+  it("shows the featured MoW for an incursion", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "incursion",
+        definitionType: "Incursion",
+        parameters: { featuredMowId: "tauBroadside", newContentDebut: true },
+      })
+    )
+
+    expect(name).toContain("tauBroadside")
+    expect(name).toContain("New MoW")
+  })
+
+  it("combines featured character and opposing faction for a quest", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "quest",
+        definitionType: "Quest",
+        parameters: {
+          featuredCharacterId: "bloodTerminator",
+          enemyFactionId: "Tyranids",
+        },
+      })
+    )
+
+    expect(name).toBe("quest: bloodTerminator vs Tyranids")
+  })
+
+  it("shows the week number for an anniversary event", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "anniversary-event",
+        definitionType: "ShopEvent",
+        parameters: { weekNumber: 2 },
+      })
+    )
+
+    expect(name).toBe("anniversary-event Week 2")
+  })
+
+  it("shows rarity cap and MoW flag for a tournament arena entry", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "ta-power-ups",
+        definitionType: "TournamentArena",
+        parameters: { rarityCap: "Legendary", includesMow: true },
+      })
+    )
+
+    expect(name).toBe("ta-power-ups (Legendary) MoW")
+  })
+
+  it("shows 'No MoW' when includesMow is false", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "ta-faction-war",
+        definitionType: "TournamentArena",
+        parameters: { rarityCap: "Legendary", includesMow: false },
+      })
+    )
+
+    expect(name).toBe("ta-faction-war (Legendary) No MoW")
   })
 })
