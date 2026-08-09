@@ -21,6 +21,8 @@
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Itération {{iteration}})",
   "withSeason": "{{name}} : Saison {{season}}",
+  "withNewCampaign": "{{name}} (Nouvelle Campagne)",
+  "withNewMow": "{{name}} (Nouveau MoW)",
   "definitions": {
     "campaign-event": "Événement de campagne",
     "incursion": "Incursion",

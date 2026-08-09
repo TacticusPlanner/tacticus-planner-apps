@@ -12,6 +12,8 @@ const templates: Record<string, string> = {
   "events:withVersion": "{{name}} {{version}}",
   "events:withIteration": "{{name}} (Iteration {{iteration}})",
   "events:withSeason": "{{name}}: Season {{season}}",
+  "events:withNewCampaign": "{{name}} (New Campaign)",
+  "events:withNewMow": "{{name}} (New MoW)",
 }
 
 const t = ((key: string, options?: Record<string, unknown>) => {
@@ -78,5 +80,44 @@ describe("resolveEventDisplayName", () => {
 
     expect(name).toContain("battle-pass")
     expect(name).toContain("40")
+  })
+
+  it("indicates a new campaign for a campaign-event debut", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "campaign-event",
+        definitionType: "CampaignEvent",
+        parameters: { newContentDebut: true },
+      })
+    )
+
+    expect(name).toContain("New Campaign")
+  })
+
+  it("indicates a new MoW for an incursion debut", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "incursion",
+        definitionType: "Incursion",
+        parameters: { newContentDebut: true },
+      })
+    )
+
+    expect(name).toContain("New MoW")
+  })
+
+  it("shows no debut indicator when newContentDebut is false", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "campaign-event",
+        definitionType: "CampaignEvent",
+        parameters: { newContentDebut: false },
+      })
+    )
+
+    expect(name).not.toContain("New Campaign")
   })
 })

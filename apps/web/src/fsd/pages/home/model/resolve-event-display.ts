@@ -18,6 +18,14 @@ function numberParam(
   return typeof value === "number" ? value : undefined
 }
 
+function booleanParam(
+  parameters: Record<string, unknown> | null,
+  key: string
+): boolean | undefined {
+  const value = parameters?.[key]
+  return typeof value === "boolean" ? value : undefined
+}
+
 /**
  * Every event's display name is resolved from its `definitionId` (and, for a few parameterized types,
  * a faction/character/iteration/season id carried in `parameters` or `derivedSeasonNumber`) — never from
@@ -66,6 +74,16 @@ export function resolveEventDisplayName(
   const iterationNumber = numberParam(entry.parameters, "iterationNumber")
   if (iterationNumber !== undefined) {
     name = t("events:withIteration", { name, iteration: iterationNumber })
+  }
+
+  // Campaign Event slots debut new campaign content; Incursion slots debut a new/revamped MoW — same
+  // underlying `newContentDebut` flag, worded per definition since the two mean different things.
+  if (booleanParam(entry.parameters, "newContentDebut")) {
+    if (entry.definitionId === "campaign-event") {
+      name = t("events:withNewCampaign", { name })
+    } else if (entry.definitionId === "incursion") {
+      name = t("events:withNewMow", { name })
+    }
   }
 
   if (entry.derivedSeasonNumber !== undefined) {
