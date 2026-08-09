@@ -23,7 +23,31 @@ describe("resolveEventWikiUrl", () => {
   })
 
   it("returns undefined for a definition without a wiki article", () => {
-    expect(resolveEventWikiUrl("hse-warp-surge")).toBeUndefined()
+    expect(resolveEventWikiUrl("hse-faction-focus")).toBeUndefined()
     expect(resolveEventWikiUrl("crusade-season")).toBeUndefined()
+  })
+
+  it("returns a wiki URL for HSEs and Double XP with known articles", () => {
+    expect(resolveEventWikiUrl("hse-warp-surge")).toBe(
+      "https://tacticus.wiki.gg/wiki/Warp_Surge"
+    )
+    expect(resolveEventWikiUrl("hse-faction-boost")).toBe(
+      "https://tacticus.wiki.gg/wiki/Faction_Boost"
+    )
+    expect(resolveEventWikiUrl("hse-training-rush")).toBe(
+      "https://tacticus.wiki.gg/wiki/Training_Rush"
+    )
+    expect(resolveEventWikiUrl("hse-global-conflict-operations")).toBe(
+      "https://tacticus.wiki.gg/wiki/Conflict_Operations"
+    )
+    expect(resolveEventWikiUrl("hse-arsenal-of-war")).toBe(
+      "https://tacticus.wiki.gg/wiki/Arsenal_of_War"
+    )
+    expect(resolveEventWikiUrl("hse-machine-hunt")).toBe(
+      "https://tacticus.wiki.gg/wiki/Machine_Hunt"
+    )
+    expect(resolveEventWikiUrl("always-double-xp-sunday")).toBe(
+      "https://tacticus.fandom.com/wiki/HDTW_XP"
+    )
   })
 })

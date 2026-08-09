@@ -19,6 +19,14 @@ const wikiUrlByDefinitionId: Partial<Record<string, string>> = {
   "ta-conquest": "https://tacticus.fandom.com/wiki/Tournament_Arena",
   "ta-draft-power-ups": "https://tacticus.fandom.com/wiki/Tournament_Arena",
   "ta-infested-power-ups": "https://tacticus.fandom.com/wiki/Tournament_Arena",
+  "hse-warp-surge": "https://tacticus.wiki.gg/wiki/Warp_Surge",
+  "hse-training-rush": "https://tacticus.wiki.gg/wiki/Training_Rush",
+  "hse-global-conflict-operations":
+    "https://tacticus.wiki.gg/wiki/Conflict_Operations",
+  "hse-arsenal-of-war": "https://tacticus.wiki.gg/wiki/Arsenal_of_War",
+  "hse-machine-hunt": "https://tacticus.wiki.gg/wiki/Machine_Hunt",
+  "hse-faction-boost": "https://tacticus.wiki.gg/wiki/Faction_Boost",
+  "always-double-xp-sunday": "https://tacticus.fandom.com/wiki/HDTW_XP",
 }
 
 export function resolveEventWikiUrl(definitionId: string): string | undefined {
