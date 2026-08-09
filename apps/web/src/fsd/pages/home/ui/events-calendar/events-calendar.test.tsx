@@ -119,6 +119,27 @@ describe("EventsCalendar", () => {
     ).toBe(true)
   })
 
+  it("shows a legend swatch only for color categories present in the visible range", async () => {
+    entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: isoDaysFromNow(1),
+        endUtc: isoDaysFromNow(8),
+        parameters: null,
+      },
+    ]
+
+    render(<EventsCalendar />)
+
+    await screen.findAllByTestId("event-entry-card")
+
+    const legend = screen.getByTestId("events-calendar-legend")
+    expect(legend).toHaveTextContent("legend.legendary")
+    expect(legend).not.toHaveTextContent("legend.homeScreen")
+  })
+
   it("marks an entry active when the current time falls within its window", async () => {
     entries = [
       {

@@ -22,9 +22,21 @@ export type EventsCalendarDay = {
   entries: EventEntryViewModel[]
 }
 
+export type PositionedEventEntry = EventEntryViewModel & {
+  /** 1-indexed day-column within the visible range (matches CSS grid's 1-indexed columns). */
+  startColumn: number
+  /** Number of day-columns this entry spans, clipped to the visible range. */
+  span: number
+}
+
+export type EventLane = {
+  entries: PositionedEventEntry[]
+}
+
 export type EventsCalendarViewModel = {
   status: EventsCalendarStatus
   days: EventsCalendarDay[]
+  lanes: EventLane[]
   rangeStart: Date
   rangeEnd: Date
   weekOffset: number

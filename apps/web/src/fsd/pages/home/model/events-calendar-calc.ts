@@ -1,6 +1,8 @@
 import type {
   EventEntryViewModel,
+  EventLane,
   EventsCalendarDay,
+  PositionedEventEntry,
   RawEventDefinition,
   RawEventsCalendarEntry,
 } from "./events-calendar.types"
@@ -45,6 +47,54 @@ function buildDateRange(rangeStart: Date, rangeEnd: Date): Date[] {
   return dates
 }
 
+function toViewModel(
+  entry: RawEventsCalendarEntry,
+  definitionsById: ReadonlyMap<string, RawEventDefinition>,
+  nowMs: number
+): EventEntryViewModel {
+  const startMs = Date.parse(entry.startUtc)
+  const endMs = Date.parse(entry.endUtc)
+
+  return {
+    key: `${entry.occurrenceId ?? "projected"}::${entry.definitionId}::${entry.startUtc}`,
+    definitionId: entry.definitionId,
+    definitionType: definitionsById.get(entry.definitionId)?.type,
+    occurrenceId: entry.occurrenceId,
+    confirmed: entry.confirmed,
+    startUtc: entry.startUtc,
+    endUtc: entry.endUtc,
+    parameters: entry.parameters,
+    isActiveNow: startMs <= nowMs && nowMs < endMs,
+  }
+}
+
+/**
+ * Every raw entry overlapping `[rangeStart, rangeEnd)`, resolved to a view model and sorted by start
+ * time — the shared first step behind both `buildEventsCalendarDays` (bucketed per day) and
+ * `buildEventsCalendarLanes` (packed into Gantt-style rows), so a day window ⊆ the full range means
+ * filtering here first and re-filtering per day below is equivalent to filtering per day directly.
+ */
+function collectVisibleEntries(
+  entries: readonly RawEventsCalendarEntry[],
+  definitionsById: ReadonlyMap<string, RawEventDefinition>,
+  rangeStart: Date,
+  rangeEnd: Date,
+  now: Date
+): EventEntryViewModel[] {
+  const rangeStartMs = rangeStart.getTime()
+  const rangeEndMs = rangeEnd.getTime()
+  const nowMs = now.getTime()
+
+  return entries
+    .filter((entry) => {
+      const startMs = Date.parse(entry.startUtc)
+      const endMs = Date.parse(entry.endUtc)
+      return startMs < rangeEndMs && endMs > rangeStartMs
+    })
+    .map((entry) => toViewModel(entry, definitionsById, nowMs))
+    .sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
+}
+
 /**
  * Groups already-fetched, already-deduped calendar entries (see `getUpcomingEvents`) into one
  * day-bucket per visible date, mirroring the backend's own date-membership rule (start inclusive, end
@@ -58,36 +108,93 @@ export function buildEventsCalendarDays(
   rangeEnd: Date,
   now: Date
 ): EventsCalendarDay[] {
-  const nowMs = now.getTime()
+  const visible = collectVisibleEntries(
+    entries,
+    definitionsById,
+    rangeStart,
+    rangeEnd,
+    now
+  )
 
   return buildDateRange(rangeStart, rangeEnd).map((date) => {
     const dayStartMs = date.getTime()
     const dayEndMs = addLocalDays(date, 1).getTime()
 
-    const dayEntries: EventEntryViewModel[] = entries
-      .filter((entry) => {
-        const startMs = Date.parse(entry.startUtc)
-        const endMs = Date.parse(entry.endUtc)
-        return startMs < dayEndMs && endMs > dayStartMs
-      })
-      .map((entry) => {
-        const startMs = Date.parse(entry.startUtc)
-        const endMs = Date.parse(entry.endUtc)
-
-        return {
-          key: `${entry.occurrenceId ?? "projected"}::${entry.definitionId}::${entry.startUtc}`,
-          definitionId: entry.definitionId,
-          definitionType: definitionsById.get(entry.definitionId)?.type,
-          occurrenceId: entry.occurrenceId,
-          confirmed: entry.confirmed,
-          startUtc: entry.startUtc,
-          endUtc: entry.endUtc,
-          parameters: entry.parameters,
-          isActiveNow: startMs <= nowMs && nowMs < endMs,
-        }
-      })
-      .sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
+    const dayEntries = visible.filter((entry) => {
+      const startMs = Date.parse(entry.startUtc)
+      const endMs = Date.parse(entry.endUtc)
+      return startMs < dayEndMs && endMs > dayStartMs
+    })
 
     return { date: toIsoDate(date), entries: dayEntries }
   })
+}
+
+/**
+ * The same visible entries as `buildEventsCalendarDays`, but packed into Gantt-style lanes for the
+ * desktop grid: each entry gets a `startColumn`/`span` (1-indexed, in day-columns of the visible range)
+ * computed via the exact same day-membership test as the day buckets above (so a bar's edges always
+ * line up with the day-header columns, including on DST transition days). Lane assignment is greedy —
+ * sort by start column then by longest-first, and place each entry in the first lane whose last entry
+ * doesn't overlap it, else open a new lane — which keeps same-day entries stacked in as few rows as the
+ * overlap structure allows, same as the reference calendars.
+ */
+export function buildEventsCalendarLanes(
+  entries: readonly RawEventsCalendarEntry[],
+  definitionsById: ReadonlyMap<string, RawEventDefinition>,
+  rangeStart: Date,
+  rangeEnd: Date,
+  now: Date
+): EventLane[] {
+  const visible = collectVisibleEntries(
+    entries,
+    definitionsById,
+    rangeStart,
+    rangeEnd,
+    now
+  )
+  const dateRange = buildDateRange(rangeStart, rangeEnd)
+
+  const positioned: PositionedEventEntry[] = visible.map((entry) => {
+    const startMs = Date.parse(entry.startUtc)
+    const endMs = Date.parse(entry.endUtc)
+
+    let startColumn = 0
+    let endColumn = 0
+
+    dateRange.forEach((date, index) => {
+      const dayStartMs = date.getTime()
+      const dayEndMs = addLocalDays(date, 1).getTime()
+      if (startMs < dayEndMs && endMs > dayStartMs) {
+        if (startColumn === 0) {
+          startColumn = index + 1
+        }
+        endColumn = index + 2
+      }
+    })
+
+    return { ...entry, startColumn, span: endColumn - startColumn }
+  })
+
+  const sortedForPacking = [...positioned].sort(
+    (a, b) => a.startColumn - b.startColumn || b.span - a.span
+  )
+
+  const lanes: { entries: PositionedEventEntry[]; lastColumn: number }[] = []
+  for (const entry of sortedForPacking) {
+    const lane = lanes.find(
+      (candidate) => candidate.lastColumn <= entry.startColumn
+    )
+    if (lane) {
+      lane.entries.push(entry)
+      lane.lastColumn = entry.startColumn + entry.span
+    } else {
+      lanes.push({
+        entries: [entry],
+        lastColumn: entry.startColumn + entry.span,
+      })
+    }
+  }
+
+  return lanes.map(({ entries: laneEntries }) => ({ entries: laneEntries }))
 }

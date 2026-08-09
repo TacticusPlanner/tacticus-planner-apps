@@ -1,10 +1,14 @@
 import {
   Calendar,
   Compass,
+  Crosshair,
   Flag,
   Rocket,
+  ScrollText,
   ShieldAlert,
   Star,
+  Swords,
+  Ticket,
   Trophy,
   UserPlus,
   Zap,
@@ -23,6 +27,10 @@ const iconByDefinitionType: Record<string, LucideIcon> = {
   GameVersionRelease: Rocket,
   HomeScreenEvent: Flag,
   TournamentArena: Trophy,
+  BattlePass: Ticket,
+  Quest: ScrollText,
+  GuildRaidSeason: Swords,
+  GuildWarSeason: Crosshair,
 }
 
 export function EventTypeIcon({

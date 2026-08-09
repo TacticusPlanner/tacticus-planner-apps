@@ -34,7 +34,27 @@
     "ta-power-ups": "Tournament Arena: Power-Ups",
     "ta-conquest": "Tournament Arena: Conquest",
     "ta-draft-power-ups": "Tournament Arena: Draft Power-Ups",
-    "ta-infested-power-ups": "Tournament Arena: Infested Power-Ups"
+    "ta-infested-power-ups": "Tournament Arena: Infested Power-Ups",
+    "battle-pass": "Battle Pass",
+    "quest": "Quest",
+    "guild-raid-season": "Guild Raid Season",
+    "guild-war-season": "Guild War Season"
+  },
+  "legend": {
+    "campaign": "Campaign Event",
+    "incursion": "Incursion",
+    "legendary": "Legendary Event",
+    "battlePass": "Battle Pass",
+    "guildWar": "Guild War Season",
+    "guildRaid": "Guild Raid Season",
+    "tournament": "Tournament Arena",
+    "homeScreen": "Home Screen Event",
+    "quest": "Quest",
+    "newCharacter": "New Character",
+    "gameVersion": "Game Update",
+    "doubleXp": "Double XP",
+    "doubleGold": "Double Gold",
+    "default": "Other"
   },
   "tour": {
     "home": {

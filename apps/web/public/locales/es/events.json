@@ -34,7 +34,27 @@
     "ta-power-ups": "Arena de Torneos: Potenciadores",
     "ta-conquest": "Arena de Torneos: Conquista",
     "ta-draft-power-ups": "Arena de Torneos: Potenciadores por selección",
-    "ta-infested-power-ups": "Arena de Torneos: Potenciadores infestados"
+    "ta-infested-power-ups": "Arena de Torneos: Potenciadores infestados",
+    "battle-pass": "Pase de batalla",
+    "quest": "Misión",
+    "guild-raid-season": "Temporada de asalto de hermandad",
+    "guild-war-season": "Temporada de guerra de hermandades"
+  },
+  "legend": {
+    "campaign": "Evento de campaña",
+    "incursion": "Incursión",
+    "legendary": "Evento legendario",
+    "battlePass": "Pase de batalla",
+    "guildWar": "Temporada de guerra de hermandades",
+    "guildRaid": "Temporada de asalto de hermandad",
+    "tournament": "Arena de Torneos",
+    "homeScreen": "Evento de pantalla principal",
+    "quest": "Misión",
+    "newCharacter": "Nuevo personaje",
+    "gameVersion": "Actualización",
+    "doubleXp": "Doble XP",
+    "doubleGold": "Doble oro",
+    "default": "Otro"
   },
   "tour": {
     "home": {

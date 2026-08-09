@@ -2,6 +2,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useEventsCalendar } from "../../model/use-events-calendar"
 import { EventsCalendarDesktop } from "./desktop/events-calendar-desktop"
+import { EventsCalendarLegend } from "./events-calendar-legend"
 import { EventsCalendarMobile } from "./mobile/events-calendar-mobile"
 import { EventsCalendarNavigation } from "./events-calendar-navigation"
 import { EventsCalendarState } from "./events-calendar-state"
@@ -9,10 +10,12 @@ import { EventsCalendarState } from "./events-calendar-state"
 export function EventsCalendar() {
   const calendar = useEventsCalendar()
   const isMobile = useIsMobile()
+  const showLegend = calendar.status === "ready"
 
   return (
     <div className="flex w-full flex-col gap-4" data-testid="events-calendar">
       <EventsCalendarNavigation calendar={calendar} />
+      {showLegend ? <EventsCalendarLegend days={calendar.days} /> : null}
       {calendar.status === "loading" ? (
         <EventsCalendarState state="loading" />
       ) : calendar.status === "error" ? (
@@ -25,7 +28,7 @@ export function EventsCalendar() {
       ) : isMobile ? (
         <EventsCalendarMobile days={calendar.days} />
       ) : (
-        <EventsCalendarDesktop days={calendar.days} />
+        <EventsCalendarDesktop days={calendar.days} lanes={calendar.lanes} />
       )}
     </div>
   )

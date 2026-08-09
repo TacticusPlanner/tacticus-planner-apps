@@ -34,7 +34,27 @@
     "ta-power-ups": "Arène des Tournois : Bonus",
     "ta-conquest": "Arène des Tournois : Conquête",
     "ta-draft-power-ups": "Arène des Tournois : Bonus par sélection",
-    "ta-infested-power-ups": "Arène des Tournois : Bonus infestés"
+    "ta-infested-power-ups": "Arène des Tournois : Bonus infestés",
+    "battle-pass": "Passe de combat",
+    "quest": "Quête",
+    "guild-raid-season": "Saison de raid de guilde",
+    "guild-war-season": "Saison de guerre de guilde"
+  },
+  "legend": {
+    "campaign": "Événement de campagne",
+    "incursion": "Incursion",
+    "legendary": "Événement légendaire",
+    "battlePass": "Passe de combat",
+    "guildWar": "Saison de guerre de guilde",
+    "guildRaid": "Saison de raid de guilde",
+    "tournament": "Arène des Tournois",
+    "homeScreen": "Événement d'écran d'accueil",
+    "quest": "Quête",
+    "newCharacter": "Nouveau personnage",
+    "gameVersion": "Mise à jour",
+    "doubleXp": "XP doublée",
+    "doubleGold": "Or doublé",
+    "default": "Autre"
   },
   "tour": {
     "home": {

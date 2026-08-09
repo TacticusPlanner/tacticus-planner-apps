@@ -9,7 +9,11 @@ import {
   getUpcomingEvents,
 } from "@workspace/game-catalog/queries"
 
-import { addLocalDays, buildEventsCalendarDays } from "./events-calendar-calc"
+import {
+  addLocalDays,
+  buildEventsCalendarDays,
+  buildEventsCalendarLanes,
+} from "./events-calendar-calc"
 import type { EventsCalendarViewModel } from "./events-calendar.types"
 
 const WEEK_DAYS = 7
@@ -89,6 +93,20 @@ export function useEventsCalendar(): EventsCalendarViewModel {
     [entriesResult, definitionsById, rangeStart, rangeEnd]
   )
 
+  const lanes = useMemo(
+    () =>
+      entriesResult?.status === "ok"
+        ? buildEventsCalendarLanes(
+            entriesResult.data,
+            definitionsById,
+            rangeStart,
+            rangeEnd,
+            new Date()
+          )
+        : [],
+    [entriesResult, definitionsById, rangeStart, rangeEnd]
+  )
+
   const status = useMemo(() => {
     if (
       definitionsResult?.status === "error" ||
@@ -119,6 +137,7 @@ export function useEventsCalendar(): EventsCalendarViewModel {
   return {
     status,
     days,
+    lanes,
     rangeStart,
     rangeEnd,
     weekOffset,

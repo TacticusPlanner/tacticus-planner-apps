@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { addLocalDays, buildEventsCalendarDays } from "./events-calendar-calc"
+import {
+  addLocalDays,
+  buildEventsCalendarDays,
+  buildEventsCalendarLanes,
+} from "./events-calendar-calc"
 
 const definitionsById = new Map([
   ["legendary-event", { id: "legendary-event", type: "LegendaryEvent" }],
@@ -128,6 +132,141 @@ describe("buildEventsCalendarDays", () => {
 
     expect(entry?.definitionType).toBe("HomeScreenEvent")
     expect(entry?.confirmed).toBe(false)
+  })
+})
+
+describe("buildEventsCalendarLanes", () => {
+  it("positions a single-day entry at the column matching its day offset, span 1", () => {
+    const rangeStart = new Date(2026, 6, 26) // 26 Jul 2026 local
+    const rangeEnd = new Date(2026, 7, 2)
+    const entries = [
+      {
+        occurrenceId: "occ-warp",
+        definitionId: "hse-warp-surge",
+        confirmed: true,
+        startUtc: new Date(2026, 6, 27).toISOString(), // second visible day
+        endUtc: new Date(2026, 6, 28).toISOString(),
+        parameters: null,
+      },
+    ]
+
+    const lanes = buildEventsCalendarLanes(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      new Date(2026, 6, 26)
+    )
+
+    expect(lanes).toHaveLength(1)
+    expect(lanes[0]?.entries).toHaveLength(1)
+    expect(lanes[0]?.entries[0]).toMatchObject({
+      occurrenceId: "occ-warp",
+      startColumn: 2,
+      span: 1,
+    })
+  })
+
+  it("clips a multi-day entry's span to the visible range", () => {
+    const rangeStart = new Date(2026, 6, 26)
+    const rangeEnd = new Date(2026, 7, 2) // 7-day window
+    const entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        // Starts 2 days before the range and ends 2 days after it — only the 7 visible days should count.
+        startUtc: new Date(2026, 6, 24).toISOString(),
+        endUtc: new Date(2026, 7, 4).toISOString(),
+        parameters: null,
+      },
+    ]
+
+    const lanes = buildEventsCalendarLanes(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      new Date(2026, 6, 26)
+    )
+
+    expect(lanes[0]?.entries[0]).toMatchObject({ startColumn: 1, span: 7 })
+  })
+
+  it("packs two non-overlapping entries into the same lane", () => {
+    const rangeStart = new Date(2026, 6, 26)
+    const rangeEnd = new Date(2026, 7, 2)
+    const entries = [
+      {
+        occurrenceId: "occ-early",
+        definitionId: "hse-warp-surge",
+        confirmed: true,
+        startUtc: new Date(2026, 6, 26).toISOString(),
+        endUtc: new Date(2026, 6, 27).toISOString(),
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-later",
+        definitionId: "hse-warp-surge",
+        confirmed: true,
+        startUtc: new Date(2026, 6, 28).toISOString(),
+        endUtc: new Date(2026, 6, 29).toISOString(),
+        parameters: null,
+      },
+    ]
+
+    const lanes = buildEventsCalendarLanes(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      new Date(2026, 6, 26)
+    )
+
+    expect(lanes).toHaveLength(1)
+    expect(lanes[0]?.entries.map((entry) => entry.occurrenceId)).toEqual([
+      "occ-early",
+      "occ-later",
+    ])
+  })
+
+  it("places two same-day overlapping entries into separate lanes", () => {
+    const rangeStart = new Date(2026, 6, 26)
+    const rangeEnd = new Date(2026, 7, 2)
+    const entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: new Date(2026, 6, 26).toISOString(),
+        endUtc: new Date(2026, 7, 2).toISOString(),
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-warp",
+        definitionId: "hse-warp-surge",
+        confirmed: true,
+        startUtc: new Date(2026, 6, 27).toISOString(),
+        endUtc: new Date(2026, 6, 28).toISOString(),
+        parameters: null,
+      },
+    ]
+
+    const lanes = buildEventsCalendarLanes(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      new Date(2026, 6, 26)
+    )
+
+    expect(lanes).toHaveLength(2)
+    expect(
+      lanes
+        .flatMap((lane) => lane.entries)
+        .map((entry) => entry.occurrenceId)
+        .sort()
+    ).toEqual(["occ-lucius", "occ-warp"].sort())
   })
 })
 
