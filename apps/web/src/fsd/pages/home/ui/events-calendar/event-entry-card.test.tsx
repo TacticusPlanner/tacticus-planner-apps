@@ -35,6 +35,7 @@ describe("EventEntryCard (list variant)", () => {
     const card = screen.getByTestId("event-entry-card")
     expect(card.className).not.toContain("border-primary")
     expect(card.className).toContain("border-l-[var(--event-battle-pass)]")
+    expect(card.className).toContain("data-[active=true]:bg-primary/5")
   })
 
   it("keeps the same left accent color whether or not it's active", () => {

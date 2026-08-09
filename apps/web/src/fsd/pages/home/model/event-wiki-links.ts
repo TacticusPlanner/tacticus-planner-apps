@@ -1,8 +1,10 @@
-// Static, definition-level links to the Tacticus Fandom wiki — not backend data, since this is a purely
-// presentational concern (which reference page best explains this event), same as icon/color resolution
-// elsewhere in this feature. Only definitions with a real, existing wiki article are listed here; the
-// rest render without a link rather than guessing at a URL that doesn't exist (verified against the live
-// wiki, not assumed from a definition's name — e.g. no Home Screen Event article exists at all).
+// Static, definition-level links to the Tacticus wiki (tacticus.fandom.com and
+// tacticus.wiki.gg, whichever hosts the best article) — not backend data, since
+// this is a purely presentational concern (which reference page best explains
+// this event), same as icon/color resolution elsewhere in this feature. Only
+// definitions with a real, existing wiki article are listed here; the rest
+// render without a link rather than guessing at a URL that doesn't exist
+// (verified against the live wiki, not assumed from a definition's name).
 const wikiUrlByDefinitionId: Partial<Record<string, string>> = {
   "campaign-event": "https://tacticus.fandom.com/wiki/Campaign",
   incursion: "https://tacticus.fandom.com/wiki/Incursion",
