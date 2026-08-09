@@ -20,7 +20,7 @@
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Iteración {{iteration}})",
-  "withSeason": "{{name}}: Temporada {{season}}",
+  "withSeason": "{{name}} Temporada {{season}}",
   "withNewCampaign": "{{name}} (Nueva Campaña)",
   "withNewMow": "{{name}} (Nuevo MoW)",
   "definitions": {

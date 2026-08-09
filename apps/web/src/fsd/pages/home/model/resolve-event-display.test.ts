@@ -11,7 +11,7 @@ const templates: Record<string, string> = {
   "events:withCharacter": "{{name}}: {{character}}",
   "events:withVersion": "{{name}} {{version}}",
   "events:withIteration": "{{name}} (Iteration {{iteration}})",
-  "events:withSeason": "{{name}}: Season {{season}}",
+  "events:withSeason": "{{name}} Season {{season}}",
   "events:withNewCampaign": "{{name}} (New Campaign)",
   "events:withNewMow": "{{name}} (New MoW)",
 }
@@ -80,6 +80,20 @@ describe("resolveEventDisplayName", () => {
 
     expect(name).toContain("battle-pass")
     expect(name).toContain("40")
+  })
+
+  it("puts the season right after the name and the character after that", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "battle-pass",
+        definitionType: "BattlePass",
+        derivedSeasonNumber: 40,
+        parameters: { featuredCharacterId: "darkaSternguard" },
+      })
+    )
+
+    expect(name).toBe("battle-pass Season 40: darkaSternguard")
   })
 
   it("indicates a new campaign for a campaign-event debut", () => {

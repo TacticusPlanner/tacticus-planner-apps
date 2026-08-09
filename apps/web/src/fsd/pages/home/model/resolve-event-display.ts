@@ -43,6 +43,13 @@ export function resolveEventDisplayName(
     defaultValue: entry.definitionId,
   })
 
+  // Season comes right after the base name ("Battle Pass Season 40"), before who/what it features, so
+  // a featured character reads as "Battle Pass Season 40: Ramus" rather than burying the season at the
+  // end behind the character.
+  if (entry.derivedSeasonNumber !== undefined) {
+    name = t("events:withSeason", { name, season: entry.derivedSeasonNumber })
+  }
+
   const targetFactionId = stringParam(entry.parameters, "targetFactionId")
   if (targetFactionId) {
     name = t("events:withFaction", {
@@ -84,10 +91,6 @@ export function resolveEventDisplayName(
     } else if (entry.definitionId === "incursion") {
       name = t("events:withNewMow", { name })
     }
-  }
-
-  if (entry.derivedSeasonNumber !== undefined) {
-    name = t("events:withSeason", { name, season: entry.derivedSeasonNumber })
   }
 
   return name
