@@ -23,8 +23,8 @@ describe("resolveEventWikiUrl", () => {
   })
 
   it("returns undefined for a definition without a wiki article", () => {
-    expect(resolveEventWikiUrl("hse-terminator-boost")).toBeUndefined()
-    expect(resolveEventWikiUrl("crusade-season")).toBeUndefined()
+    expect(resolveEventWikiUrl("game-version-release")).toBeUndefined()
+    expect(resolveEventWikiUrl("always-double-gold-saturday")).toBeUndefined()
   })
 
   it("returns a wiki URL for HSEs and Double XP with known articles", () => {
@@ -36,6 +36,15 @@ describe("resolveEventWikiUrl", () => {
     )
     expect(resolveEventWikiUrl("hse-faction-focus")).toBe(
       "https://tacticus.wiki.gg/wiki/Faction_Focus"
+    )
+    expect(resolveEventWikiUrl("hse-terminator-boost")).toBe(
+      "https://tacticus.wiki.gg/wiki/Boost"
+    )
+    expect(resolveEventWikiUrl("anniversary-event")).toBe(
+      "https://tacticus.wiki.gg/wiki/War_Amongst_the_Stars"
+    )
+    expect(resolveEventWikiUrl("crusade-season")).toBe(
+      "https://tacticus.wiki.gg/wiki/Crusade"
     )
     expect(resolveEventWikiUrl("hse-training-rush")).toBe(
       "https://tacticus.wiki.gg/wiki/Training_Rush"

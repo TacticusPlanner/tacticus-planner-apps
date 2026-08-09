@@ -25,8 +25,8 @@ const definitions = [
     config: null,
   },
   {
-    id: "hse-terminator-boost",
-    type: "HomeScreenEvent",
+    id: "game-version-release",
+    type: "GameVersionRelease",
     recurrence: noneRecurrence,
     config: null,
   },
@@ -165,7 +165,7 @@ describe("EventsCalendar", () => {
       },
       {
         occurrenceId: null,
-        definitionId: "hse-terminator-boost",
+        definitionId: "game-version-release",
         confirmed: false,
         startUtc: isoDaysFromNow(2),
         endUtc: isoDaysFromNow(3),

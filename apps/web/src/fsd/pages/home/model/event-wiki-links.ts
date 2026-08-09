@@ -27,6 +27,9 @@ const wikiUrlByDefinitionId: Partial<Record<string, string>> = {
   "hse-machine-hunt": "https://tacticus.wiki.gg/wiki/Machine_Hunt",
   "hse-faction-boost": "https://tacticus.wiki.gg/wiki/Faction_Boost",
   "hse-faction-focus": "https://tacticus.wiki.gg/wiki/Faction_Focus",
+  "hse-terminator-boost": "https://tacticus.wiki.gg/wiki/Boost",
+  "anniversary-event": "https://tacticus.wiki.gg/wiki/War_Amongst_the_Stars",
+  "crusade-season": "https://tacticus.wiki.gg/wiki/Crusade",
   "always-double-xp-sunday": "https://tacticus.fandom.com/wiki/HDTW_XP",
 }
 
