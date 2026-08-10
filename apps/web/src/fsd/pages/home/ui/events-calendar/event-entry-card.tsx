@@ -89,7 +89,10 @@ export function EventEntryCard({
     <div
       className={cn(
         "flex flex-col gap-1 rounded-lg border border-l-4 bg-card px-2 py-1.5 text-sm",
-        "data-[active=true]:border-primary data-[active=true]:bg-primary/5",
+        // Background tint only. `border-primary` would set all border colors
+        // and override the category-color left accent. The "Live now" badge
+        // already conveys active state, so no border treatment is needed.
+        "data-[active=true]:bg-primary/5",
         eventAccentClass(colorKey)
       )}
       data-active={entry.isActiveNow}
