@@ -1,15 +1,14 @@
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
-import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 
 import type { UnitId } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import { UnitCombobox } from "@/shared/ui"
-import { projectMarkerSuffix } from "@/entities/project"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
+import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalTypeCards } from ".//goal-type-cards"
 import { GoalTypeToggleGroup } from "../shared/goal-visuals"
 import { UnitInfoCard } from ".//unit-info-card"
@@ -33,18 +32,20 @@ type GoalForm = ReturnType<typeof useCreateGoalForm>
 /**
  * The "Unit" pill's entire form body, in display order: unit picker, goal-type toggles, every
  * enabled goal-type's `GoalTypeCard` (assembled by `GoalTypeCards`), prerequisite suggestions,
- * project selection + per-project priority, then the combined-goal review list ("What will be
+ * project membership selection, then the combined-goal review list ("What will be
  * created", with each selected project's own duration estimate) last. Split out of
  * `create-goal-sheet.tsx` purely for that file's own max-lines budget (same reason
- * `EquipmentGoalFields`/`UpgradeGoalFields`/`GoalProjectsField`/`GoalTypeCards` live in their own
+ * `UpgradeGoalFields`/`GoalProjectsField`/`GoalTypeCards` live in their own
  * files) — this is a coordinator-level component, not a leaf presentational field, so taking the
  * whole `form` is the same posture as the sheet already had.
  */
 export function UnitGoalFormFields({
   form,
+  portalContainer,
   unitIcon,
 }: {
   form: GoalForm
+  portalContainer: HTMLElement | null
   unitIcon: (id: UnitId) => string | undefined
 }) {
   const { t } = useTranslation()
@@ -107,8 +108,7 @@ export function UnitGoalFormFields({
               (kind === "Level" && form.atMaxLevel) ||
               (kind === "Upgrade" &&
                 form.entityType === "Character" &&
-                form.atMaxRank) ||
-              form.hasActiveOrPausedGoal(kind)
+                form.atMaxRank)
             }
             entityType={form.entityType}
           />
@@ -144,15 +144,6 @@ export function UnitGoalFormFields({
           {/* One line per kind that already has an in-flight (Active/Paused) goal for this unit — a
               unit may still accumulate any number of Completed/Archived goals of the same type, so
               only these count (mirrors the backend's create/resume conflict check). */}
-          {goalKinds
-            .filter((kind) => form.hasActiveOrPausedGoal(kind))
-            .map((kind) => (
-              <p className="text-xs text-muted-foreground" key={kind}>
-                {t("goals.create.validation.activeOrPausedGoalExists", {
-                  goalType: t(`goals.create.goalTypes.${kind}`),
-                })}
-              </p>
-            ))}
         </div>
       ) : null}
 
@@ -210,59 +201,15 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.entityId ? (
-        <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">
-            {t("goals.create.projectLabel")}
-          </Label>
-          {form.projects.length > 0 ? (
-            <div className="grid gap-2">
-              {form.projects.map((project) => {
-                const selected = form.selectedProjectIds.includes(
-                  project.projectId
-                )
-                return (
-                  <Field key={project.projectId} orientation="horizontal">
-                    <Checkbox
-                      checked={selected}
-                      data-testid={`create-goal-project-${project.projectId}`}
-                      onCheckedChange={(checked) =>
-                        form.toggleProject(project.projectId, checked === true)
-                      }
-                    />
-                    <FieldLabel className="flex-1 font-normal">
-                      {project.name}
-                      {projectMarkerSuffix(t, project)}
-                    </FieldLabel>
-                    {selected ? (
-                      <Input
-                        aria-label={t("goals.create.projectPriority", {
-                          project: project.name,
-                        })}
-                        className="w-20"
-                        data-testid={`create-goal-project-priority-${project.projectId}`}
-                        min={1}
-                        onChange={(event) =>
-                          form.setProjectPriority(
-                            project.projectId,
-                            event.target.value
-                          )
-                        }
-                        placeholder={t("goals.create.projectPriorityAuto")}
-                        type="number"
-                        value={form.projectPriorities[project.projectId] ?? ""}
-                      />
-                    ) : null}
-                  </Field>
-                )
-              })}
-            </div>
-          ) : null}
-          {form.selectedProjectIds.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.projectDefault")}
-            </p>
-          ) : null}
-        </div>
+        <GoalProjectsField
+          conflicts={form.projectConflicts}
+          onToggle={form.toggleProject}
+          portalContainer={portalContainer}
+          projects={form.projects}
+          projectsValid={form.selectedProjectIds.length > 0}
+          selectedProjectIds={form.selectedProjectIds}
+          testIdPrefix="create-goal"
+        />
       ) : null}
 
       {form.entityId && form.reviewItems.length > 0 ? (

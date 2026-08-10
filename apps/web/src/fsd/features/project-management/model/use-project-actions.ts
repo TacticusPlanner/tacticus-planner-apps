@@ -8,15 +8,13 @@ import {
   activateProject,
   createProject,
   updateProject,
-  updateProjectGoals,
+  updateProjectUnitOrder,
   projectQueries,
-  type ProjectGoalSummary,
   type ProjectSummary,
+  type ProjectUnitKey,
 } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
-
-const PRIORITY_STEP = 10
 
 /**
  * Swaps `goalId` with its adjacent *visible* neighbor (the reorder buttons only ever act within the
@@ -27,34 +25,6 @@ const PRIORITY_STEP = 10
  * Swapping index positions (rather than reassigning priority values in place) keeps every other member's
  * relative order untouched.
  */
-export function reorderedMemberIds(
-  members: ProjectGoalSummary[],
-  goalId: string,
-  direction: "up" | "down",
-  visibleGoalIds: string[]
-): string[] | undefined {
-  const visibleIndex = visibleGoalIds.indexOf(goalId)
-  const neighborId =
-    direction === "up"
-      ? visibleGoalIds[visibleIndex - 1]
-      : visibleGoalIds[visibleIndex + 1]
-
-  if (visibleIndex === -1 || neighborId === undefined) {
-    return undefined
-  }
-
-  const ids = members.map((member) => member.goal.goalId)
-  const a = ids.indexOf(goalId)
-  const b = ids.indexOf(neighborId)
-  if (a === -1 || b === -1) {
-    return undefined
-  }
-
-  const reordered = [...ids]
-  ;[reordered[a], reordered[b]] = [reordered[b], reordered[a]]
-  return reordered
-}
-
 /**
  * Project-level mutations: active-plan toggle, bulk pause/resume, and per-project reorder. Reorder takes
  * the *full* desired member ordering (see `reorderedMemberIds`) and recomputes spaced priorities before
@@ -117,20 +87,11 @@ export function useProjectActions(_onChanged?: () => void) {
     }
   }
 
-  const reorder = async (projectId: string, orderedGoalIds: string[]) => {
-    if (!isAuthenticated) {
-      return
-    }
-
-    await run(() =>
-      updateProjectGoals(
-        projectId,
-        orderedGoalIds.map((goalId, index) => ({
-          goalId,
-          priority: (index + 1) * PRIORITY_STEP,
-        }))
-      )
-    )
+  const reorderUnits = async (projectId: string, units: ProjectUnitKey[]) => {
+    if (!isAuthenticated) return false
+    const ok = await run(() => updateProjectUnitOrder(projectId, units))
+    if (ok) toast.success(t("goals.toasts.projectUpdated"))
+    return ok
   }
 
   const create = async (
@@ -159,5 +120,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { activate, reorder, create, save, pending }
+  return { activate, reorderUnits, create, save, pending }
 }

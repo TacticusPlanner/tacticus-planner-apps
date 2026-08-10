@@ -31,6 +31,7 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 const listProjects = vi.fn()
+const listProjectGoals = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
@@ -46,6 +47,10 @@ vi.mock("@/entities/project", async (importOriginal) => {
     listProjects: (...args: unknown[]) => listProjects(...args),
     projectQueries: {
       all: () => ["projects"],
+      goals: (projectId: string) => ({
+        queryKey: ["projects", projectId, "goals"],
+        queryFn: () => listProjectGoals(projectId),
+      }),
       list: () => ({
         queryKey: ["projects", "list"],
         queryFn: () => listProjects(),
@@ -133,6 +138,7 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
 describe("ProjectsListPage", () => {
   beforeEach(() => {
     listProjects.mockReset()
+    listProjectGoals.mockReset().mockResolvedValue({ goals: [] })
   })
 
   it("shows only the New project affordance (FAB) when there are no projects yet", async () => {
@@ -161,6 +167,8 @@ describe("ProjectsListPage", () => {
     expect(
       screen.queryByRole("heading", { name: /goals\.project\.listTitle/ })
     ).not.toBeInTheDocument()
+    expect(listProjectGoals).toHaveBeenCalledWith(projectA.projectId)
+    expect(listProjectGoals).not.toHaveBeenCalledWith(archived.projectId)
   })
 
   it("opens a blank Sheet from the FAB and a pre-filled Sheet from a row's Edit icon", async () => {
@@ -177,6 +185,9 @@ describe("ProjectsListPage", () => {
     expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
     await user.keyboard("{Escape}")
 
+    await user.click(
+      screen.getByTestId(`project-row-actions-${projectA.projectId}`)
+    )
     await user.click(
       screen.getByTestId(`project-row-edit-${projectA.projectId}`)
     )
@@ -203,6 +214,9 @@ describe("ProjectsListPage", () => {
     renderPage()
 
     await screen.findByText("Project A")
+    await user.click(
+      screen.getByTestId(`project-row-actions-${projectA.projectId}`)
+    )
     await user.click(
       screen.getByTestId(`project-row-edit-${projectA.projectId}`)
     )

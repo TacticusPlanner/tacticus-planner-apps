@@ -250,12 +250,51 @@
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
     "project": {
+      "noProjectTitle": "Aún no hay proyectos",
+      "noProjectDescription": "Crea un proyecto para organizar y priorizar objetivos relacionados.",
       "notFoundTitle": "Proyecto no encontrado",
       "notFoundDescription": "Este proyecto no existe, o no tienes acceso a él.",
+      "membership": "Proyectos que contienen este objetivo",
+      "addMembership": "Añadir al proyecto",
+      "removeMembership": "Quitar {{project}}",
+      "searchProjects": "Buscar proyectos",
+      "noAddableProjects": "No se encontraron proyectos disponibles.",
+      "membershipConflict": "{{project}} ya contiene un objetivo {{types}} activo o pausado para esta unidad.",
+      "reviewConflictingGoal": "Revisar objetivo en conflicto",
+      "filterAll": "Todos los proyectos",
+      "filterLabel": "Proyecto",
+      "currentPlan": "Plan actual",
+      "makeCurrent": "Marcar como actual",
+      "otherProjects": "Otros proyectos",
+      "noOtherProjects": "Aún no hay otros proyectos disponibles.",
+      "archivedProjects": "Proyectos archivados ({{count}})",
+      "backToProjects": "Volver a proyectos",
+      "reprioritizeUnits": "Repriorizar unidades",
+      "reprioritizeUnitsDescription": "Arrastra las unidades al orden de prioridad. Al mover una unidad se mueven todos sus objetivos; los objetivos internos se ordenan automáticamente.",
+      "dragUnit": "Arrastrar {{unit}} para repriorizar",
+      "reprioritizeStaleError": "Este proyecto cambió mientras la repriorización estaba abierta. Revisa las unidades actuales e inténtalo de nuevo.",
+      "reprioritizeSaveError": "No se pudo guardar el orden de unidades. Tu borrador sigue aquí; revísalo e inténtalo de nuevo.",
+      "unitGoalSummary": "{{units}} unidades · {{goals}} objetivos",
+      "reachedSummary": "{{count}} alcanzados",
+      "blockedSummary": "{{count}} bloqueados",
+      "completionSummary": "Objetivo {{date}}",
+      "summaryUnavailable": "Resumen no disponible — reintentar",
+      "moreActions": "Más acciones del proyecto",
+      "archiveUnavailable": "No se puede archivar el plan actual ni el predeterminado",
+      "cancel": "Cancelar",
       "edit": "Editar",
       "editTitle": "Editar proyecto",
       "newProjectTitle": "Nuevo proyecto",
-      "formDescription": "Asigna nombre, descripción y color a este proyecto."
+      "formDescription": "Asigna nombre, descripción y color a este proyecto.",
+      "newProject": "Nuevo proyecto",
+      "name": "Nombre",
+      "description": "Descripción",
+      "color": "Color",
+      "customColor": "Color personalizado",
+      "archive": "Archivar proyecto",
+      "restore": "Restaurar proyecto",
+      "save": "Guardar proyecto",
+      "create": "Crear proyecto"
     }
   },
   "language": {
@@ -322,7 +361,7 @@
         },
         "addGoal": {
           "title": "Añadir objetivo",
-          "content": "Crea un nuevo objetivo de progreso desde cualquier parte de la aplicación."
+          "content": "Crea objetivos de Personaje o Máquina de Guerra y elige uno o varios proyectos. El proyecto predeterminado se selecciona automáticamente."
         },
         "sync": {
           "title": "Sincronizar",
@@ -386,19 +425,23 @@
       "steps": {
         "list": {
           "title": "Tus proyectos",
-          "content": "Todos tus proyectos aparecen aquí, incluidos los archivados — cada fila tiene sus propias acciones."
+          "content": "Compara tu plan actual con otros proyectos y sus resúmenes cargados progresivamente. Los proyectos archivados permanecen contraídos."
         },
         "newProject": {
           "title": "Crea un proyecto",
-          "content": "Inicia aquí un nuevo proyecto, o usa la acción Editar de una fila para renombrar, describir o recolorear uno existente."
+          "content": "Crea un proyecto aquí o usa su menú de acciones para renombrarlo, describirlo, cambiar su color, archivarlo o restaurarlo."
         }
       }
     },
     "projectDetail": {
       "steps": {
-        "row": {
-          "title": "Este proyecto",
-          "content": "La fila propia de este proyecto con las mismas acciones que en la lista de proyectos — actívalo, edítalo o archívalo."
+        "header": {
+          "title": "Proyecto de un vistazo",
+          "content": "Aquí puedes ver la identidad, el estado de plan actual, las métricas, el selector de proyecto y las acciones."
+        },
+        "reprioritize": {
+          "title": "Priorizar por unidad",
+          "content": "Reordena bloques de Personajes y Máquinas de Guerra. Todos los objetivos de una unidad se mueven juntos; las dependencias fijan su orden interno."
         },
         "selector": {
           "title": "Elige un proyecto",
@@ -406,7 +449,7 @@
         },
         "goals": {
           "title": "Objetivos del proyecto",
-          "content": "Los objetivos de este proyecto aparecen aquí, en orden de prioridad."
+          "content": "Los objetivos aparecen en el orden aplanado de unidades que usan los cálculos de planificación."
         }
       }
     }

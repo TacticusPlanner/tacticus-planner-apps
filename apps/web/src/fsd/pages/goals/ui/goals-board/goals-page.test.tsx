@@ -500,7 +500,7 @@ describe("GoalsPage", () => {
     renderPage()
 
     expect(
-      await screen.findByText("My Goals · goals.project.active")
+      await screen.findByText("My Goals · goals.project.currentPlan")
     ).toBeInTheDocument()
     expect(screen.queryByTestId("goals-project-filter")).not.toBeInTheDocument()
     expect(listProjectGoals).toHaveBeenCalledWith("proj-1")

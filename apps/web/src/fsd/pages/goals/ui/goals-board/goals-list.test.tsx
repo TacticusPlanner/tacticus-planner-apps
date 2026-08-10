@@ -90,42 +90,6 @@ const rows: GoalRow[] = [
 ]
 
 describe("GoalsList", () => {
-  it("calls onMove with the correct direction when a move button is clicked", async () => {
-    const onMove = vi.fn()
-    render(
-      <GoalsList
-        actions={stubActions}
-        onMove={onMove}
-        reorderEnabled
-        rows={rows}
-      />
-    )
-
-    expect(await screen.findByText("Hero One")).toBeInTheDocument()
-
-    fireEvent.click(screen.getByTestId("goal-row-move-down-goal-1"))
-    expect(onMove).toHaveBeenCalledWith("goal-1", "down")
-
-    fireEvent.click(screen.getByTestId("goal-row-move-up-goal-2"))
-    expect(onMove).toHaveBeenCalledWith("goal-2", "up")
-  })
-
-  it("disables move-up on the first row and move-down on the last row", async () => {
-    render(
-      <GoalsList
-        actions={stubActions}
-        onMove={vi.fn()}
-        reorderEnabled
-        rows={rows}
-      />
-    )
-
-    await screen.findByText("Hero One")
-
-    expect(screen.getByTestId("goal-row-move-up-goal-1")).toBeDisabled()
-    expect(screen.getByTestId("goal-row-move-down-goal-2")).toBeDisabled()
-  })
-
   it("hides move buttons when reorder is disabled", async () => {
     render(
       <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />

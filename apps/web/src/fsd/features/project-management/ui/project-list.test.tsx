@@ -96,6 +96,9 @@ describe("ProjectList", () => {
     )
 
     await user.click(
+      screen.getByTestId(`project-row-actions-${otherProject.projectId}`)
+    )
+    await user.click(
       screen.getByTestId(`project-row-edit-${otherProject.projectId}`)
     )
     expect(onEdit).toHaveBeenCalledWith(otherProject)

@@ -5,6 +5,7 @@ export {
   listProjectGoals,
   listProjects,
   updateProjectGoals,
+  updateProjectUnitOrder,
   updateProjectGoalsStatus,
 } from "./api/project.api"
 export { projectQueries } from "./api/project.queries"
@@ -19,4 +20,5 @@ export type {
   ProjectGoalSummary,
   ProjectMemberGoal,
   ProjectSummary,
+  ProjectUnitKey,
 } from "./model/types"

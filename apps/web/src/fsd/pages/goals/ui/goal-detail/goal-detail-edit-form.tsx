@@ -11,6 +11,7 @@ import { FarmingStrategyField } from "../create-goal/farming-strategy-field"
 import { GoalLevelSummary } from "../create-goal/goal-level-summary"
 import { GoalLocationsField } from "../create-goal/goal-locations-field"
 import { GoalProjectsField } from "../projects/goal-projects-field"
+import type { ProjectMembershipConflict } from "../../model/projects/project-membership"
 
 export type GoalDetailDraft = {
   notes: string
@@ -35,6 +36,8 @@ export function GoalDetailEditForm({
   isUnlock,
   allLocations,
   overrideValid,
+  conflicts,
+  portalContainer,
 }: {
   detail: GoalDetail
   draft: GoalDetailDraft
@@ -46,6 +49,8 @@ export function GoalDetailEditForm({
   isUnlock: boolean
   allLocations: string[]
   overrideValid: boolean
+  conflicts: ProjectMembershipConflict[]
+  portalContainer: HTMLElement | null
 }) {
   const { t } = useTranslation()
 
@@ -70,6 +75,7 @@ export function GoalDetailEditForm({
       </Field>
 
       <GoalProjectsField
+        conflicts={conflicts}
         projects={projects}
         selectedProjectIds={draft.selectedProjectIds}
         projectsValid={projectsValid}
@@ -81,6 +87,7 @@ export function GoalDetailEditForm({
               : draft.selectedProjectIds.filter((id) => id !== projectId),
           })
         }
+        portalContainer={portalContainer}
       />
 
       {isRank && detail.config.rank ? (

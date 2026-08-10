@@ -25,8 +25,6 @@ export function goalTypeIcon(kind: GoalKind, entityType?: string): string {
         : `${ASSET_BASE_PATH}/misc/ability_badges_generic.png`
     case "Unlock":
       return `${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`
-    case "UpgradeItem":
-      return `${ASSET_BASE_PATH}/misc/forge_badges_generic.png`
     case "Level":
       return genericLevelIcon
   }

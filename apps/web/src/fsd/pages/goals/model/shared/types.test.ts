@@ -9,6 +9,7 @@ const goalRow = {
   goalType: "Rank" as const,
   status: "Active" as const,
   notes: "Promote next",
+  dependsOn: [],
   updatedAt: "2026-07-16T12:00:00Z",
 }
 

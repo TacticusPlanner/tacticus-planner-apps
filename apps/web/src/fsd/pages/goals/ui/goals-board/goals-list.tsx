@@ -1,6 +1,6 @@
 import type { SyntheticEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, ChevronUp, LockKeyhole } from "lucide-react"
+import { LockKeyhole } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Table,
@@ -35,7 +35,7 @@ import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 type Props = {
   rows: GoalRow[]
   actions: ReturnType<typeof useGoalActions>
-  reorderEnabled: boolean
+  reorderEnabled?: boolean
   onMove?: (goalId: string, direction: "up" | "down") => void
   onView?: (goalId: string) => void
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
@@ -60,8 +60,6 @@ function stopRowNavigation(event: SyntheticEvent<HTMLElement>): void {
 export function GoalsList({
   rows,
   actions,
-  reorderEnabled,
-  onMove,
   onView = () => undefined,
   estimates,
   metrics,
@@ -79,9 +77,7 @@ export function GoalsList({
       estimates={estimates}
       metrics={metrics}
       potentialProgress={potentialProgress}
-      onMove={onMove}
       onView={onView}
-      reorderEnabled={reorderEnabled}
       rows={rows}
     />
   ) : (
@@ -90,9 +86,7 @@ export function GoalsList({
       estimates={estimates}
       metrics={metrics}
       potentialProgress={potentialProgress}
-      onMove={onMove}
       onView={onView}
-      reorderEnabled={reorderEnabled}
       rows={rows}
     />
   )
@@ -136,8 +130,6 @@ function estimateEnergy(estimate: EstimateOutcome | undefined) {
 function GoalsTable({
   rows,
   actions,
-  reorderEnabled,
-  onMove,
   estimates,
   metrics,
   potentialProgress,
@@ -163,7 +155,7 @@ function GoalsTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row, index) => (
+        {rows.map((row) => (
           <TableRow
             className="cursor-pointer"
             data-testid="goal-row"
@@ -248,30 +240,6 @@ function GoalsTable({
               onKeyDown={stopRowNavigation}
             >
               <div className="flex items-center justify-end gap-1">
-                {reorderEnabled ? (
-                  <>
-                    <Button
-                      aria-label={t("goals.actions.moveUp")}
-                      data-testid={`goal-row-move-up-${row.goalId}`}
-                      disabled={index === 0}
-                      onClick={() => onMove?.(row.goalId, "up")}
-                      size="icon-sm"
-                      variant="ghost"
-                    >
-                      <ChevronUp />
-                    </Button>
-                    <Button
-                      aria-label={t("goals.actions.moveDown")}
-                      data-testid={`goal-row-move-down-${row.goalId}`}
-                      disabled={index === rows.length - 1}
-                      onClick={() => onMove?.(row.goalId, "down")}
-                      size="icon-sm"
-                      variant="ghost"
-                    >
-                      <ChevronDown />
-                    </Button>
-                  </>
-                ) : null}
                 <GoalRowActions
                   actions={actions}
                   goalId={row.goalId}
@@ -289,8 +257,6 @@ function GoalsTable({
 function GoalsMobileCards({
   rows,
   actions,
-  reorderEnabled,
-  onMove,
   estimates,
   metrics,
   potentialProgress,
@@ -301,7 +267,7 @@ function GoalsMobileCards({
 
   return (
     <ul className="flex flex-col gap-3" data-testid="goals-list-cards">
-      {rows.map((row, index) => (
+      {rows.map((row) => (
         <li
           className="flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm"
           data-testid="goal-row"
@@ -371,28 +337,6 @@ function GoalsMobileCards({
             onClick={stopRowNavigation}
             onKeyDown={stopRowNavigation}
           >
-            {reorderEnabled ? (
-              <>
-                <Button
-                  aria-label={t("goals.actions.moveUp")}
-                  disabled={index === 0}
-                  onClick={() => onMove?.(row.goalId, "up")}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <ChevronUp />
-                </Button>
-                <Button
-                  aria-label={t("goals.actions.moveDown")}
-                  disabled={index === rows.length - 1}
-                  onClick={() => onMove?.(row.goalId, "down")}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <ChevronDown />
-                </Button>
-              </>
-            ) : null}
             <GoalRowActions
               actions={actions}
               goalId={row.goalId}

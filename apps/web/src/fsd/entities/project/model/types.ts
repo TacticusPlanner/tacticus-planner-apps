@@ -30,6 +30,11 @@ export type ProjectGoalEntry = {
   priority: number
 }
 
+export type ProjectUnitKey = {
+  entityType: "Character" | "Mow"
+  entityId: string
+}
+
 // Mirrors the backend's GoalSummaryResponse shape (also duplicated in entities/goal/model/types.ts as
 // GoalSummary) — FSD forbids cross-entity imports, so each entity that references another by value keeps
 // its own copy of the shape it needs rather than importing the other entity's type.
@@ -40,6 +45,7 @@ export type ProjectMemberGoal = {
   goalType: string
   status: string
   notes: string | null
+  dependsOn: string[]
   createdAt: string
   updatedAt: string
 }

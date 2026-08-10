@@ -22,12 +22,12 @@ import { useGoalFormReset } from ".//use-goal-form-reset"
 import { useGoalPrefill } from ".//use-goal-prefill"
 import { useGoalPrerequisitesAndReview } from ".//use-goal-prerequisites-and-review"
 import { useGoalSubmit } from ".//use-goal-submit"
-import { useGoalTypeConflicts } from ".//use-goal-type-conflicts"
 import { useGoalValidationState } from ".//use-goal-validation-state"
 import { useLevelFields } from ".//use-level-fields"
 import { useLevelGoalCost } from ".//use-level-goal-cost"
 import { useLockedUnitIds } from ".//use-locked-unit-ids"
 import { useProjectSelection } from "../projects/use-project-selection"
+import { useProjectGoalConflicts } from "../projects/use-project-goal-conflicts"
 import { useRankFields } from ".//use-rank-fields"
 import { useRankUpgradeSlotsSummary } from ".//use-rank-upgrade-slots-summary"
 import { useShardLocationSelection } from ".//use-shard-location-selection"
@@ -82,13 +82,7 @@ export function useCreateGoalForm({
     useState<FarmingStrategy>("TotalUpgrades")
 
   const projectSelection = useProjectSelection({ open })
-  const {
-    projects,
-    selectedProjectIds,
-    toggleProject,
-    projectPriorities,
-    setProjectPriority,
-  } = projectSelection
+  const { projects, selectedProjectIds, toggleProject } = projectSelection
 
   const {
     playerEntity,
@@ -222,12 +216,6 @@ export function useCreateGoalForm({
 
   const lockedUnitIds = useLockedUnitIds(characterGroups, mowGroups)
 
-  const { hasActiveOrPausedGoal } = useGoalTypeConflicts({
-    entityId,
-    entityType,
-    enabled: open && !!entityId,
-  })
-
   const { missingUpgrades, snapshotUpgrades, estimatePreview } =
     useCreationPreview({
       entityType,
@@ -335,6 +323,18 @@ export function useCreateGoalForm({
     selectedMythicShardLocationIds,
   }
 
+  const projectConflictState = useProjectGoalConflicts({
+    projects,
+    selectedProjectIds,
+    entityType,
+    entityId,
+    goalTypes: reviewItems.map((item) => item.goalType),
+  })
+  const submissionAllowed =
+    canSubmit &&
+    !projectConflictState.loading &&
+    projectConflictState.conflicts.length === 0
+
   const { selectedProjects, perProjectEstimates, estimatedProjectIds } =
     useGoalCreationReview({
       entityId,
@@ -342,7 +342,6 @@ export function useCreateGoalForm({
       canSubmit,
       selectedProjectIds,
       projects,
-      projectPriorities,
       dailyEnergy: planningSettings.dailyEnergy,
       inventoryUpgrades,
       open,
@@ -352,7 +351,7 @@ export function useCreateGoalForm({
   const submission = useGoalSubmit({
     entityId,
     entityType,
-    canSubmit,
+    canSubmit: submissionAllowed,
     selectedProjects,
     specParams: combinedSpecParams,
     snapshotContext: {
@@ -389,7 +388,6 @@ export function useCreateGoalForm({
     lockedShards,
     lockedUnitIds,
     unlockRequirement,
-    hasActiveOrPausedGoal,
     toggleType,
     prerequisites,
     includeSuggestedUnlock,
@@ -418,8 +416,7 @@ export function useCreateGoalForm({
     projects,
     selectedProjectIds,
     toggleProject,
-    projectPriorities,
-    setProjectPriority,
+    projectConflicts: projectConflictState.conflicts,
     perProjectEstimates,
     estimatedProjectIds,
     ...submission,
@@ -428,6 +425,6 @@ export function useCreateGoalForm({
     planningSettings,
     progressionPreview,
     validationMessage,
-    canSubmit,
+    canSubmit: submissionAllowed,
   }
 }

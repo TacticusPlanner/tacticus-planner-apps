@@ -1,12 +1,13 @@
 import type { ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
-import { ProjectRow } from "./project-row"
+import { ProjectRow, type ProjectCardSummary } from "./project-row"
 
 type Props = {
   projects: ProjectSummary[]
   actions: ReturnType<typeof useProjectActions>
   onEdit: (project: ProjectSummary) => void
   onSelect: (project: ProjectSummary) => void
+  summaries?: ReadonlyMap<string, ProjectCardSummary>
 }
 
 /**
@@ -15,9 +16,15 @@ type Props = {
  * archived, as its own row (`ProjectRow`). Activating a row outside its action icons navigates to
  * that project's detail route via `onSelect`; the icons themselves never do.
  */
-export function ProjectList({ projects, actions, onEdit, onSelect }: Props) {
+export function ProjectList({
+  projects,
+  actions,
+  onEdit,
+  onSelect,
+  summaries,
+}: Props) {
   return (
-    <ul className="flex flex-col gap-2" data-testid="project-list">
+    <ul className="grid gap-3 md:grid-cols-2" data-testid="project-list">
       {projects.map((project) => (
         <ProjectRow
           actions={actions}
@@ -25,6 +32,7 @@ export function ProjectList({ projects, actions, onEdit, onSelect }: Props) {
           onEdit={onEdit}
           onSelect={() => onSelect(project)}
           project={project}
+          summary={summaries?.get(project.projectId)}
         />
       ))}
     </ul>

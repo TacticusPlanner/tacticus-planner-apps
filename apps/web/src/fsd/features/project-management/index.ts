@@ -1,8 +1,5 @@
-export {
-  reorderedMemberIds,
-  useProjectActions,
-} from "./model/use-project-actions"
+export { useProjectActions } from "./model/use-project-actions"
 export { ManageProjectsSheet } from "./ui/manage-projects-sheet"
 export { NewProjectFab } from "./ui/new-project-fab"
 export { ProjectList } from "./ui/project-list"
-export { ProjectRow } from "./ui/project-row"
+export type { ProjectCardSummary } from "./ui/project-row"

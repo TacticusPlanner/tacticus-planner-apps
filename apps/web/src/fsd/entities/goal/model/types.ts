@@ -1,15 +1,9 @@
 // Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).
-export type GoalEntityType = "Character" | "Mow" | "Item"
+export type GoalEntityType = "Character" | "Mow"
 export type GoalKind =
-  | "Rank"
-  | "Ascension"
-  | "Ability"
-  | "Unlock"
-  | "Upgrade"
-  | "UpgradeItem"
-  | "Level"
+  "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade" | "Level"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
 export type AscensionFarmingSource = "Campaign" | "Onslaught" | "Both"
@@ -56,20 +50,13 @@ export type AscensionFarmingConfig = {
   mythicShardBattleIds: string[]
 }
 
-export type UpgradeItemTarget = {
+export type UpgradeMaterialTarget = {
   upgradeId: string
   quantity: number
 }
 
 export type UpgradeTarget = {
-  targets: UpgradeItemTarget[]
-}
-
-/** Target level for a specific piece of equipment/relic gear (`GoalEntityType` `"Item"`
- * only). Uncosted — no gold/salvage/mythic-salvage farming engine exists in this app; "complete"
- * is simply the player's synced level for this equipment reaching `targetLevel`. */
-export type ItemTarget = {
-  targetLevel: number
+  targets: UpgradeMaterialTarget[]
 }
 
 export type GoalConfig = {
@@ -82,7 +69,6 @@ export type GoalConfig = {
   // lowest-energy selection.
   farmingLocationIds: string[] | null
   upgrade: UpgradeTarget | null
-  item: ItemTarget | null
   level: LevelTarget | null
 }
 
@@ -114,6 +100,7 @@ export type GoalSummary = {
   goalType: GoalKind
   status: GoalStatus
   notes: string | null
+  dependsOn: string[]
   createdAt: string
   updatedAt: string
 }
@@ -136,16 +123,12 @@ export type CreateGoalConfigRequest = {
   ascensionFarming?: AscensionFarmingConfig | null
   farmingLocationIds?: string[] | null
   upgrade?: UpgradeTarget | null
-  item?: ItemTarget | null
   level?: LevelTarget | null
 }
 
-/** One target project for a newly created goal, with an optional caller-chosen priority within that
- * project (per-project priority). `priority` omitted/null means "append after the project's current
- * goals" — the server's `GetNextPriorityAsync` fallback. */
-export type ProjectPriority = {
+/** One project membership for a newly created goal. Unit placement is assigned automatically. */
+export type ProjectMembership = {
   projectId: string
-  priority?: number | null
 }
 
 export type CreateGoalRequest = {
@@ -154,9 +137,8 @@ export type CreateGoalRequest = {
   goalType: string
   config: CreateGoalConfigRequest
   // Omitted/empty falls back to the caller's default project; otherwise the goal is added to every
-  // listed project (a goal may belong to several projects at once), at that project's given priority
-  // when supplied.
-  projects?: ProjectPriority[] | null
+  // listed project (a goal may belong to several projects at once).
+  projects?: ProjectMembership[] | null
   snapshot?: CreateGoalSnapshotRequest | null
 }
 
@@ -179,8 +161,7 @@ export type CombinedGoalSpec = {
 export type CreateCombinedGoalsRequest = {
   entityType: string
   entityId: string
-  // Same fallback/multi-project-with-priority semantics as CreateGoalRequest.projects — a given
-  // project's priority becomes the base for the whole set, with each later goal placed right after.
-  projects?: ProjectPriority[] | null
+  // Same fallback and multi-project semantics as CreateGoalRequest.projects.
+  projects?: ProjectMembership[] | null
   goals: CombinedGoalSpec[]
 }

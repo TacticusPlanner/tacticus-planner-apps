@@ -80,19 +80,22 @@ describe("API client", () => {
   })
 
   it("surfaces the first validation error", async () => {
+    const details = {
+      code: "project_goal_slot_conflict",
+      conflicts: [{ projectId: "project-1", existingGoalId: "goal-1" }],
+      errors: { name: ["Name is required"] },
+      message: "Validation failed",
+    }
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          errors: { name: ["Name is required"] },
-          message: "Validation failed",
-        }),
-        { status: 400 }
-      )
+      new Response(JSON.stringify(details), { status: 400 })
     )
 
-    await expect(apiGet("/items", {})).rejects.toEqual(
-      new ApiError(400, "Name is required")
-    )
+    const request = apiGet("/items", {})
+    await expect(request).rejects.toMatchObject({
+      status: 400,
+      message: "Name is required",
+      details,
+    })
   })
 
   it("uses response or status fallbacks for other failures", async () => {
@@ -103,7 +106,7 @@ describe("API client", () => {
     fetchMock.mockResolvedValueOnce(new Response("not-json", { status: 500 }))
 
     await expect(apiGet("/forbidden", {})).rejects.toEqual(
-      new ApiError(403, "Forbidden")
+      new ApiError(403, "Forbidden", { message: "Forbidden" })
     )
     await expect(apiGet("/broken", {})).rejects.toEqual(
       new ApiError(500, "API request failed: 500")

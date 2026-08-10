@@ -20,6 +20,7 @@ import {
   updateProject,
   updateProjectGoals,
   updateProjectGoalsStatus,
+  updateProjectUnitOrder,
 } from "./project.api"
 
 describe("project API", () => {
@@ -51,6 +52,11 @@ describe("project API", () => {
     activateProject("project-1")
     updateProjectGoals("project-1", goals)
     updateProjectGoalsStatus("project-1", "Paused")
+    const units = [
+      { entityType: "Character" as const, entityId: "ragnar" },
+      { entityType: "Mow" as const, entityId: "forgefiend" },
+    ]
+    updateProjectUnitOrder("project-1", units)
 
     expect(api.post).toHaveBeenNthCalledWith(1, "/api/v1/me/projects", {
       body: create,
@@ -74,6 +80,11 @@ describe("project API", () => {
       3,
       "/api/v1/me/projects/project-1/goals/status",
       { body: { status: "Paused" } }
+    )
+    expect(api.put).toHaveBeenNthCalledWith(
+      3,
+      "/api/v1/me/projects/project-1/unit-order",
+      { body: { units } }
     )
   })
 })

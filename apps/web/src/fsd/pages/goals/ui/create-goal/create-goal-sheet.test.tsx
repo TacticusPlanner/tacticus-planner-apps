@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen, within } from "@/test/render"
-import userEvent from "@testing-library/user-event"
 import { lastRank } from "@workspace/game-domain"
 
 // Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
@@ -525,8 +524,12 @@ describe("CreateGoalSheet", () => {
       expect(screen.getByTestId("create-goal-level-target")).toHaveTextContent(
         "42"
       )
-      expect(screen.getByTestId("create-goal-project-proj-2")).toBeChecked()
-      expect(screen.getByTestId("create-goal-project-proj-1")).not.toBeChecked()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-1")
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -618,14 +621,20 @@ describe("CreateGoalSheet", () => {
 
   it('shows a per-project estimated duration in "What will be created" once the required material is farmable', async () => {
     listProjects.mockResolvedValue({
-      projects: [{ projectId: "proj-1", name: "My Goals", isActivePlan: true }],
+      projects: [
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isActivePlan: true,
+          isDefault: true,
+          status: "Active",
+        },
+      ],
     })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
-
     await vi.waitFor(() => {
       expect(
         screen.getByTestId("create-goal-project-estimate-proj-1")
@@ -671,7 +680,7 @@ describe("CreateGoalSheet", () => {
     const unlockSuggestion = await screen.findByTestId(
       "create-goal-include-unlock"
     )
-    const projectLabel = screen.getByText("goals.create.projectLabel")
+    const projectLabel = screen.getByText("goals.detail.projectsTitle")
     const review = await screen.findByTestId("create-goal-review")
 
     // Node.DOCUMENT_POSITION_FOLLOWING set on the bitmask means the argument comes after `this` in
@@ -1327,8 +1336,20 @@ describe("CreateGoalSheet", () => {
   it("submits every checked project when several are selected", async () => {
     listProjects.mockResolvedValue({
       projects: [
-        { projectId: "proj-1", name: "My Goals", isActivePlan: true },
-        { projectId: "proj-2", name: "Event Prep", isActivePlan: false },
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isActivePlan: true,
+          isDefault: true,
+          status: "Active",
+        },
+        {
+          projectId: "proj-2",
+          name: "Event Prep",
+          isActivePlan: false,
+          isDefault: false,
+          status: "Active",
+        },
       ],
     })
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
@@ -1336,8 +1357,11 @@ describe("CreateGoalSheet", () => {
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-2"))
+    fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+    fireEvent.click(await screen.findByText("Event Prep"))
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+    })
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
     await vi.waitFor(() => {
@@ -1345,155 +1369,8 @@ describe("CreateGoalSheet", () => {
     })
     const [request] = createCombinedGoals.mock.calls[0]
     expect(request.projects).toEqual([
-      { projectId: "proj-1", priority: undefined },
-      { projectId: "proj-2", priority: undefined },
+      { projectId: "proj-1" },
+      { projectId: "proj-2" },
     ])
-  })
-
-  it("includes a project's typed priority in the submission", async () => {
-    listProjects.mockResolvedValue({
-      projects: [
-        { projectId: "proj-1", name: "My Goals", isActivePlan: true },
-        { projectId: "proj-2", name: "Event Prep", isActivePlan: false },
-      ],
-    })
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
-
-    await selectCharacter()
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-1"))
-    fireEvent.click(await screen.findByTestId("create-goal-project-proj-2"))
-    fireEvent.change(
-      screen.getByTestId("create-goal-project-priority-proj-1"),
-      { target: { value: "3" } }
-    )
-    fireEvent.click(screen.getByTestId("create-goal-submit"))
-
-    await vi.waitFor(() => {
-      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
-    })
-    const [request] = createCombinedGoals.mock.calls[0]
-    expect(request.projects).toEqual([
-      { projectId: "proj-1", priority: 3 },
-      { projectId: "proj-2", priority: undefined },
-    ])
-  })
-
-  it("creates an UpgradeEquipment goal for the selected equipment and target level", async () => {
-    createGoal.mockResolvedValue({ goalId: "goal-1" })
-    const onOpenChange = vi.fn()
-    const onCreated = vi.fn()
-    render(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
-    )
-
-    const user = userEvent.setup()
-    await user.click(screen.getByTestId("create-goal-pill-equipment"))
-    fireEvent.click(
-      screen.getByRole("combobox", {
-        name: "goals.create.equipment.placeholder",
-      })
-    )
-    const listbox = await screen.findByRole("listbox")
-    fireEvent.click(within(listbox).getByText("Refractor Field"))
-
-    const levelInput = screen.getByDisplayValue("2")
-    fireEvent.change(levelInput, { target: { value: "3" } })
-
-    fireEvent.click(screen.getByTestId("create-goal-submit"))
-
-    await vi.waitFor(() => {
-      expect(createGoal).toHaveBeenCalledTimes(1)
-    })
-    expect(createGoal.mock.calls[0][0]).toEqual({
-      entityType: "Item",
-      entityId: "I_Block_C002",
-      goalType: "UpgradeItem",
-      config: { item: { targetLevel: 3 } },
-    })
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(onCreated).toHaveBeenCalledTimes(1)
-  })
-
-  it("groups the Equipment picker by rarity (highest first), relics above Mythic, with an icon per option", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
-
-    const user = userEvent.setup()
-    await user.click(screen.getByTestId("create-goal-pill-equipment"))
-    fireEvent.click(
-      screen.getByRole("combobox", {
-        name: "goals.create.equipment.placeholder",
-      })
-    )
-    const listbox = await screen.findByRole("listbox")
-    const options = within(listbox).getAllByRole("option")
-
-    // Refractor Field is a relic (rarity Legendary) — its own "Relic" group sorts above even the
-    // non-relic Mythic Edge, ahead of Common Blade.
-    expect(options.map((option) => option.textContent)).toEqual([
-      "Refractor Field",
-      "Mythic Edge",
-      "Common Blade",
-    ])
-    expect(
-      within(listbox).getByText("goals.create.equipment.relicGroup")
-    ).toBeInTheDocument()
-    for (const option of options) {
-      expect(option.querySelector("img")).not.toBeNull()
-    }
-  })
-
-  it("shows the owned equipment count grouped by level once a piece of equipment is selected", async () => {
-    getPlayerInventoryItems.mockReturnValue([
-      { itemId: "I_Block_C002", level: 1, amount: 5 },
-      { itemId: "I_Block_C002", level: 1, amount: 2 },
-      { itemId: "I_Block_C002", level: 3, amount: 1 },
-      { itemId: "some-other-item", level: 1, amount: 99 },
-    ])
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
-
-    const user = userEvent.setup()
-    await user.click(screen.getByTestId("create-goal-pill-equipment"))
-    fireEvent.click(
-      screen.getByRole("combobox", {
-        name: "goals.create.equipment.placeholder",
-      })
-    )
-    const listbox = await screen.findByRole("listbox")
-    fireEvent.click(within(listbox).getByText("Refractor Field"))
-
-    const info = await screen.findByTestId("create-goal-equipment-info")
-    await vi.waitFor(() =>
-      expect(info).toHaveTextContent("goals.create.info.equipmentLevelCount")
-    )
-    expect(info).not.toHaveTextContent("99")
-  })
-
-  it("shows a 'none owned' hint when the selected equipment has no owned stock", async () => {
-    getPlayerInventoryItems.mockReturnValue([])
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
-
-    const user = userEvent.setup()
-    await user.click(screen.getByTestId("create-goal-pill-equipment"))
-    fireEvent.click(
-      screen.getByRole("combobox", {
-        name: "goals.create.equipment.placeholder",
-      })
-    )
-    const listbox = await screen.findByRole("listbox")
-    fireEvent.click(within(listbox).getByText("Refractor Field"))
-
-    const info = await screen.findByTestId("create-goal-equipment-info")
-    expect(info).toHaveTextContent("goals.create.info.equipmentOwnedNone")
-  })
-
-  it("disables submit on the Equipment pill until a piece of equipment is selected", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
-
-    const user = userEvent.setup()
-    await user.click(screen.getByTestId("create-goal-pill-equipment"))
-
-    expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
   })
 })

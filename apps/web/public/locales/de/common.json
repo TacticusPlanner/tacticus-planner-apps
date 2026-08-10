@@ -250,12 +250,51 @@
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
     },
     "project": {
+      "noProjectTitle": "Noch keine Projekte",
+      "noProjectDescription": "Erstelle ein Projekt, um zusammengehörige Ziele zu organisieren und zu priorisieren.",
       "notFoundTitle": "Projekt nicht gefunden",
       "notFoundDescription": "Dieses Projekt existiert nicht, oder du hast keinen Zugriff darauf.",
+      "membership": "Projekte mit diesem Ziel",
+      "addMembership": "Zu Projekt hinzufügen",
+      "removeMembership": "{{project}} entfernen",
+      "searchProjects": "Projekte suchen",
+      "noAddableProjects": "Keine verfügbaren Projekte gefunden.",
+      "membershipConflict": "{{project}} enthält bereits ein aktives oder pausiertes {{types}}-Ziel für diese Einheit.",
+      "reviewConflictingGoal": "Konfliktziel ansehen",
+      "filterAll": "Alle Projekte",
+      "filterLabel": "Projekt",
+      "currentPlan": "Aktueller Plan",
+      "makeCurrent": "Als aktuell festlegen",
+      "otherProjects": "Weitere Projekte",
+      "noOtherProjects": "Noch keine weiteren verfügbaren Projekte.",
+      "archivedProjects": "Archivierte Projekte ({{count}})",
+      "backToProjects": "Zurück zu Projekten",
+      "reprioritizeUnits": "Einheiten neu priorisieren",
+      "reprioritizeUnitsDescription": "Ziehe Einheiten in die gewünschte Reihenfolge. Beim Verschieben einer Einheit werden alle ihre Ziele verschoben; Ziele innerhalb der Einheit werden automatisch sortiert.",
+      "dragUnit": "{{unit}} ziehen, um neu zu priorisieren",
+      "reprioritizeStaleError": "Dieses Projekt wurde während der Neugewichtung geändert. Prüfe die aktuellen Einheiten und versuche es erneut.",
+      "reprioritizeSaveError": "Die Einheitenreihenfolge konnte nicht gespeichert werden. Dein Entwurf bleibt erhalten; prüfe ihn und versuche es erneut.",
+      "unitGoalSummary": "{{units}} Einheiten · {{goals}} Ziele",
+      "reachedSummary": "{{count}} erreicht",
+      "blockedSummary": "{{count}} blockiert",
+      "completionSummary": "Ziel {{date}}",
+      "summaryUnavailable": "Zusammenfassung nicht verfügbar — erneut versuchen",
+      "moreActions": "Weitere Projektaktionen",
+      "archiveUnavailable": "Der aktuelle oder Standardplan kann nicht archiviert werden",
+      "cancel": "Abbrechen",
       "edit": "Bearbeiten",
       "editTitle": "Projekt bearbeiten",
       "newProjectTitle": "Neues Projekt",
-      "formDescription": "Benenne, beschreibe und färbe dieses Projekt."
+      "formDescription": "Benenne, beschreibe und färbe dieses Projekt.",
+      "newProject": "Neues Projekt",
+      "name": "Name",
+      "description": "Beschreibung",
+      "color": "Farbe",
+      "customColor": "Eigene Farbe",
+      "archive": "Projekt archivieren",
+      "restore": "Projekt wiederherstellen",
+      "save": "Projekt speichern",
+      "create": "Projekt erstellen"
     }
   },
   "language": {
@@ -322,7 +361,7 @@
         },
         "addGoal": {
           "title": "Ziel hinzufügen",
-          "content": "Erstelle überall in der App ein neues Fortschrittsziel."
+          "content": "Erstelle Ziele für Charaktere oder Kriegsmaschinen und wähle ein oder mehrere Projekte. Das Standardprojekt ist automatisch ausgewählt."
         },
         "sync": {
           "title": "Synchronisieren",
@@ -386,19 +425,23 @@
       "steps": {
         "list": {
           "title": "Deine Projekte",
-          "content": "Alle deine Projekte werden hier aufgelistet, auch archivierte — jede Zeile hat eigene Aktionen."
+          "content": "Vergleiche deinen aktuellen Plan mit anderen Projekten und ihren nachgeladenen Zusammenfassungen. Archivierte Projekte bleiben zunächst eingeklappt."
         },
         "newProject": {
           "title": "Ein Projekt erstellen",
-          "content": "Starte hier ein neues Projekt, oder nutze die Bearbeiten-Aktion einer Zeile, um ein bestehendes umzubenennen, zu beschreiben oder umzufärben."
+          "content": "Starte hier ein neues Projekt oder nutze das Aktionsmenü eines Projekts zum Umbenennen, Beschreiben, Färben, Archivieren oder Wiederherstellen."
         }
       }
     },
     "projectDetail": {
       "steps": {
-        "row": {
-          "title": "Dieses Projekt",
-          "content": "Die eigene Zeile dieses Projekts mit denselben Aktionen wie in der Projektliste — als aktiv festlegen, bearbeiten oder archivieren."
+        "header": {
+          "title": "Projekt auf einen Blick",
+          "content": "Hier siehst du Identität, aktuellen Planstatus, Fortschrittswerte, Projektauswahl und Aktionen."
+        },
+        "reprioritize": {
+          "title": "Nach Einheit priorisieren",
+          "content": "Ordne Charakter- und Kriegsmaschinenblöcke neu. Alle Ziele einer Einheit bewegen sich gemeinsam; Abhängigkeiten bestimmen ihre interne Reihenfolge."
         },
         "selector": {
           "title": "Ein Projekt auswählen",
@@ -406,7 +449,7 @@
         },
         "goals": {
           "title": "Projektziele",
-          "content": "Die Ziele dieses Projekts erscheinen hier, in Prioritätsreihenfolge."
+          "content": "Die Ziele dieses Projekts erscheinen in der abgeflachten Einheitenreihenfolge, die auch Berechnungen verwenden."
         }
       }
     }

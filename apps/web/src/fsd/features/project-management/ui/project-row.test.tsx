@@ -51,6 +51,13 @@ function actionsHarness(overrides: Partial<Record<string, unknown>> = {}) {
 }
 
 describe("ProjectRow", () => {
+  async function openActions(
+    user: ReturnType<typeof userEvent.setup>,
+    projectId: string
+  ) {
+    await user.click(screen.getByTestId(`project-row-actions-${projectId}`))
+  }
+
   it("renders the project's name and color dot, with no status badge for a non-active, non-archived project", () => {
     render(
       <ul>
@@ -62,6 +69,53 @@ describe("ProjectRow", () => {
       </ul>
     )
     expect(screen.getByText("Other plan")).toBeInTheDocument()
+  })
+
+  it("renders lightweight and Current-plan metrics when a summary is ready", () => {
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onEdit={vi.fn()}
+          project={defaultProject}
+          summary={{
+            status: "success",
+            units: 3,
+            goals: 7,
+            reached: 2,
+            blocked: 1,
+            completionDate: "2026-09-01",
+          }}
+        />
+      </ul>
+    )
+
+    expect(
+      screen.getByText("goals.project.unitGoalSummary")
+    ).toBeInTheDocument()
+    expect(screen.getByText("goals.project.reachedSummary")).toBeInTheDocument()
+    expect(screen.getByText("goals.project.blockedSummary")).toBeInTheDocument()
+    expect(
+      screen.getByText("goals.project.completionSummary")
+    ).toBeInTheDocument()
+  })
+
+  it("isolates summary failure and retries only that project", async () => {
+    const user = userEvent.setup()
+    const retry = vi.fn()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onEdit={vi.fn()}
+          project={otherProject}
+          summary={{ status: "error", retry }}
+        />
+      </ul>
+    )
+
+    await user.click(screen.getByText("goals.project.summaryUnavailable"))
+    expect(retry).toHaveBeenCalledTimes(1)
   })
 
   it("calls onEdit with the row's project when the Edit icon is activated", async () => {
@@ -77,6 +131,7 @@ describe("ProjectRow", () => {
       </ul>
     )
 
+    await openActions(user, otherProject.projectId)
     await user.click(
       screen.getByTestId(`project-row-edit-${otherProject.projectId}`)
     )
@@ -130,6 +185,7 @@ describe("ProjectRow", () => {
       </ul>
     )
 
+    await openActions(user, otherProject.projectId)
     await user.click(
       screen.getByTestId(`project-row-archive-${otherProject.projectId}`)
     )
@@ -139,7 +195,8 @@ describe("ProjectRow", () => {
     )
   })
 
-  it("disables Archive for the default project", () => {
+  it("disables Archive for the default project", async () => {
+    const user = userEvent.setup()
     render(
       <ul>
         <ProjectRow
@@ -149,9 +206,10 @@ describe("ProjectRow", () => {
         />
       </ul>
     )
+    await openActions(user, defaultProject.projectId)
     expect(
       screen.getByTestId(`project-row-archive-${defaultProject.projectId}`)
-    ).toBeDisabled()
+    ).toHaveAttribute("aria-disabled", "true")
   })
 
   it("restores an archived project via the inline Restore icon", async () => {
@@ -167,6 +225,7 @@ describe("ProjectRow", () => {
       </ul>
     )
 
+    await openActions(user, archivedProject.projectId)
     await user.click(
       screen.getByTestId(`project-row-restore-${archivedProject.projectId}`)
     )
@@ -194,6 +253,27 @@ describe("ProjectRow", () => {
     expect(onSelect).toHaveBeenCalledTimes(1)
   })
 
+  it("navigates from the semantic project control with the keyboard", async () => {
+    const user = userEvent.setup()
+    const onSelect = vi.fn()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onEdit={vi.fn()}
+          onSelect={onSelect}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    const projectControl = screen.getByRole("button", { name: /Other plan/ })
+    projectControl.focus()
+    await user.keyboard("{Enter}")
+    await user.keyboard(" ")
+    expect(onSelect).toHaveBeenCalledTimes(2)
+  })
+
   it("does not call onSelect when an action icon is activated", async () => {
     const user = userEvent.setup()
     const onSelect = vi.fn()
@@ -209,6 +289,7 @@ describe("ProjectRow", () => {
       </ul>
     )
 
+    await openActions(user, otherProject.projectId)
     await user.click(
       screen.getByTestId(`project-row-edit-${otherProject.projectId}`)
     )

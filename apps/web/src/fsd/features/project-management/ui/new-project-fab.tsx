@@ -14,13 +14,14 @@ export function NewProjectFab({ onClick }: { onClick: () => void }) {
   return (
     <Button
       aria-label={t("goals.project.newProject")}
-      className="fixed right-4 bottom-[calc(var(--mobile-nav-height)+1rem)] z-40 size-14 rounded-full shadow-lg md:bottom-4 [&_svg]:size-6"
+      className="fixed right-4 bottom-[calc(var(--mobile-nav-height)+1rem)] z-40 rounded-full shadow-lg md:bottom-4"
       data-testid="projects-new-project"
       onClick={onClick}
-      size="icon"
+      size="lg"
       title={t("goals.project.newProject")}
     >
       <Plus />
+      {t("goals.project.newProject")}
     </Button>
   )
 }

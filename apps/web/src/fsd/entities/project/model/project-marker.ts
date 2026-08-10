@@ -15,7 +15,7 @@ export function projectMarkerSuffix(
 ): string {
   const markers = [
     project.isDefault ? t("goals.create.projectDefaultMarker") : null,
-    project.isActivePlan ? t("goals.create.projectActive") : null,
+    project.isActivePlan ? t("goals.project.currentPlan") : null,
   ].filter((marker): marker is string => marker !== null)
   return markers.length > 0 ? ` (${markers.join(", ")})` : ""
 }

@@ -20,6 +20,7 @@ export type GoalRow = {
   status: GoalStatus
   notes: string | null
   updatedAt: string
+  dependsOn?: string[]
   priority?: number
   projects?: GoalProject[]
 }
@@ -36,6 +37,7 @@ export function goalRowFromSummary(
     status: goal.status,
     notes: goal.notes,
     updatedAt: goal.updatedAt,
+    dependsOn: goal.dependsOn,
     ...(projects.length > 0 ? { projects } : {}),
   }
 }
@@ -49,6 +51,7 @@ export function goalRowFromProjectMember(entry: ProjectGoalSummary): GoalRow {
     status: entry.goal.status as GoalStatus,
     notes: entry.goal.notes,
     updatedAt: entry.goal.updatedAt,
+    dependsOn: entry.goal.dependsOn,
     priority: entry.priority,
   }
 }

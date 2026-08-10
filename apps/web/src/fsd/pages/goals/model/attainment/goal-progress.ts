@@ -39,7 +39,6 @@ export type GoalProgress =
     }
   | { kind: "Unlock"; owned: number; required: number; ratio: number | null }
   | { kind: "Level"; current: number; target: number; ratio: number }
-  | { kind: "UpgradeItem"; current: number; target: number; ratio: number }
   | { kind: "Upgrade"; ratio: number | null }
   | { kind: "Unknown" }
 
@@ -178,29 +177,6 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
           clampedCurrent - target.start,
           target.end - target.start
         ),
-      }
-    }
-    case "UpgradeItem": {
-      const target = detail.config.item
-      if (!target) return UNKNOWN_PROGRESS
-      if (!params.inventoryItems) return UNKNOWN_PROGRESS
-      const entry = params.inventoryItems.find(
-        (item) => item.itemId === detail.entityId
-      )
-      const current = entry?.level ?? 0
-      const meetsLevel = current >= target.targetLevel
-      // Mirrors `computeGoalAttainment`'s requirement that the item also has positive stock — at the
-      // target level with none in stock isn't "done" (used up), so never show a full bar for it.
-      const hasStock = (entry?.amount ?? 0) > 0
-      return {
-        kind: "UpgradeItem",
-        current,
-        target: target.targetLevel,
-        ratio: meetsLevel
-          ? hasStock
-            ? 1
-            : 0.99
-          : clampRatio(current, target.targetLevel),
       }
     }
     case "Upgrade": {

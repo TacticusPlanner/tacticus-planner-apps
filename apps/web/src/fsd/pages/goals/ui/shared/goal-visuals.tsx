@@ -149,7 +149,7 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
         <Badge className="gap-1" key={project.projectId} variant="secondary">
           <ProjectColorDot color={project.color} />
           {project.name}
-          {project.isActivePlan ? ` · ${t("goals.project.active")}` : ""}
+          {project.isActivePlan ? ` · ${t("goals.project.currentPlan")}` : ""}
         </Badge>
       ))}
     </div>
@@ -199,7 +199,7 @@ export function GoalProgressDisplay({
           total: progress.required,
         })}
       </span>
-    ) : progress.kind === "Level" || progress.kind === "UpgradeItem" ? (
+    ) : progress.kind === "Level" ? (
       <span>
         {t("goals.overview.levelProgress", {
           current: progress.current,

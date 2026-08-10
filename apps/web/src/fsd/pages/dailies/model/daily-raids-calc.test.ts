@@ -42,7 +42,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       ascensionFarming: null,
       farmingLocationIds: null,
       upgrade: null,
-      item: null,
       level: null,
     },
     snapshot: null,
@@ -63,6 +62,7 @@ function member(status: string, priority: number): ProjectGoalSummary {
       goalType: "Rank",
       status,
       notes: null,
+      dependsOn: [],
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-01T00:00:00.000Z",
     },
@@ -224,7 +224,6 @@ describe("daily raid derivation", () => {
         { entityType: "Character", entityId: "hero1" },
         { entityType: "Character", entityId: "hero1" },
         { entityType: "Mow", entityId: "mow1" },
-        { entityType: "Item", entityId: "item1" },
       ])
     ).toEqual({
       characterIds: [unitIdSchema.parse("hero1")],
@@ -288,7 +287,6 @@ describe("daily raid derivation", () => {
           ascensionFarming: null,
           farmingLocationIds: null,
           upgrade: null,
-          item: null,
           level: null,
         },
       })
