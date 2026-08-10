@@ -441,6 +441,8 @@
       "reprioritizeUnits": "Reprioritize units",
       "reprioritizeUnitsDescription": "Drag units into priority order. Moving a unit moves all of its goals; goals inside it are ordered automatically.",
       "dragUnit": "Drag {{unit}} to reprioritize",
+      "reprioritizeStaleError": "This project changed while reprioritization was open. Review the current units and try again.",
+      "reprioritizeSaveError": "The unit order could not be saved. Your draft is still here; review it and try again.",
       "unitGoalSummary": "{{units}} units · {{goals}} goals",
       "reachedSummary": "{{count}} reached",
       "blockedSummary": "{{count}} blocked",

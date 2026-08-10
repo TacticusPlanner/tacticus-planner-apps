@@ -272,6 +272,8 @@
       "reprioritizeUnits": "Reprioriser les unités",
       "reprioritizeUnitsDescription": "Faites glisser les unités dans l'ordre de priorité. Déplacer une unité déplace tous ses objectifs ; les objectifs qu'elle contient sont triés automatiquement.",
       "dragUnit": "Faire glisser {{unit}} pour reprioriser",
+      "reprioritizeStaleError": "Ce projet a changé pendant la repriorisation. Vérifiez les unités actuelles et réessayez.",
+      "reprioritizeSaveError": "L'ordre des unités n'a pas pu être enregistré. Votre brouillon est conservé ; vérifiez-le et réessayez.",
       "unitGoalSummary": "{{units}} unités · {{goals}} objectifs",
       "reachedSummary": "{{count}} atteints",
       "blockedSummary": "{{count}} bloqués",

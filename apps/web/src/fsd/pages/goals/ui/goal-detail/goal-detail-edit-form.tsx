@@ -37,6 +37,7 @@ export function GoalDetailEditForm({
   allLocations,
   overrideValid,
   conflicts,
+  portalContainer,
 }: {
   detail: GoalDetail
   draft: GoalDetailDraft
@@ -49,6 +50,7 @@ export function GoalDetailEditForm({
   allLocations: string[]
   overrideValid: boolean
   conflicts: ProjectMembershipConflict[]
+  portalContainer: HTMLElement | null
 }) {
   const { t } = useTranslation()
 
@@ -85,6 +87,7 @@ export function GoalDetailEditForm({
               : draft.selectedProjectIds.filter((id) => id !== projectId),
           })
         }
+        portalContainer={portalContainer}
       />
 
       {isRank && detail.config.rank ? (

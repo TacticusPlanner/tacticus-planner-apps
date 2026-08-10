@@ -39,6 +39,19 @@ function unitKey(unit: ProjectUnitPlan) {
   return `${unit.entityType}:${unit.entityId}`
 }
 
+function isCompleteUnitPermutation(
+  draft: ProjectUnitPlan[],
+  current: ProjectUnitPlan[]
+) {
+  const draftKeys = draft.map(unitKey)
+  const currentKeys = new Set(current.map(unitKey))
+  return (
+    draftKeys.length === current.length &&
+    new Set(draftKeys).size === draftKeys.length &&
+    draftKeys.every((key) => currentKeys.has(key))
+  )
+}
+
 function SortableUnit({ unit, name }: { unit: ProjectUnitPlan; name: string }) {
   const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -94,6 +107,7 @@ export function ReprioritizeUnitsSheet({
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
   const [draft, setDraft] = useState(units)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const wasOpen = useRef(false)
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -101,7 +115,10 @@ export function ReprioritizeUnitsSheet({
   )
 
   useEffect(() => {
-    if (open && !wasOpen.current) setDraft(units)
+    if (open && !wasOpen.current) {
+      setDraft(units)
+      setSaveError(null)
+    }
     wasOpen.current = open
   }, [open, units])
 
@@ -140,9 +157,19 @@ export function ReprioritizeUnitsSheet({
           </SortableContext>
         </DndContext>
         <SheetFooter>
+          {saveError ? (
+            <p className="text-sm text-destructive" role="alert">
+              {saveError}
+            </p>
+          ) : null}
           <Button
             disabled={pending}
             onClick={async () => {
+              setSaveError(null)
+              if (!isCompleteUnitPermutation(draft, units)) {
+                setSaveError(t("goals.project.reprioritizeStaleError"))
+                return
+              }
               if (
                 await onSave(
                   draft.map(({ entityType, entityId }) => ({
@@ -152,6 +179,7 @@ export function ReprioritizeUnitsSheet({
                 )
               )
                 onOpenChange(false)
+              else setSaveError(t("goals.project.reprioritizeSaveError"))
             }}
           >
             {pending ? <Spinner /> : null}

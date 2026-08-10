@@ -272,6 +272,8 @@
       "reprioritizeUnits": "Repriorizar unidades",
       "reprioritizeUnitsDescription": "Arrastra las unidades al orden de prioridad. Al mover una unidad se mueven todos sus objetivos; los objetivos internos se ordenan automáticamente.",
       "dragUnit": "Arrastrar {{unit}} para repriorizar",
+      "reprioritizeStaleError": "Este proyecto cambió mientras la repriorización estaba abierta. Revisa las unidades actuales e inténtalo de nuevo.",
+      "reprioritizeSaveError": "No se pudo guardar el orden de unidades. Tu borrador sigue aquí; revísalo e inténtalo de nuevo.",
       "unitGoalSummary": "{{units}} unidades · {{goals}} objetivos",
       "reachedSummary": "{{count}} alcanzados",
       "blockedSummary": "{{count}} bloqueados",

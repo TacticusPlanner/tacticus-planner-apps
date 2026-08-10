@@ -13,6 +13,11 @@ Every Goals or Dailies subpage that includes a project selector SHALL use the sh
 - **WHEN** the user opens Goals Insights
 - **THEN** its shared project selector identifies the persisted current project with the “Current plan” marker
 
+#### Scenario: Insights uses the shared project selector
+
+- **WHEN** the user opens Goals Insights
+- **THEN** its project selector uses the shared presentation, including project color and default/Current plan markers
+
 #### Scenario: Goal lifecycle remains Active
 
 - **WHEN** a goal with lifecycle status `Active` is shown near a Current plan marker

@@ -58,7 +58,7 @@ Persisted scheduler order
 
 **5. Unit reprioritization is a dedicated mode.**
 
-“Reprioritize units” opens a focused Sheet/dialog on desktop and full-height Sheet on mobile. It lists one draggable block per Character/MoW with icon, name, goal-type summary, and optional estimate. Save submits the ordered unit keys atomically; Cancel discards local order. Normal goal rows have no priority arrows, and sorting/filtering the normal view cannot affect priority.
+“Reprioritize units” opens a focused Sheet/dialog on desktop and full-height Sheet on mobile. It lists one draggable block per Character/MoW with icon, name, goal-type summary, and optional estimate. Save first validates that the draft contains every current in-flight unit key exactly once, then submits those ordered unit keys atomically. A stale or rejected save keeps the draft open and shows a recoverable error; Cancel discards local order. Normal goal rows have no priority arrows, and sorting/filtering the normal view cannot affect priority.
 
 No separate visible Move before/after menu is added. The drag handle receives an accessible name and uses keyboard drag support supplied by the selected drag-and-drop library where practical.
 
@@ -75,6 +75,8 @@ Client-side validation queries selected projects rather than globally disabling 
 **8. Project membership is chips plus a searchable picker.**
 
 Selected projects render as removable chips with color and Current plan/default/archive markers. Search offers non-archived, unselected projects. An existing archived membership stays visible/removable. The last membership cannot be removed. Conflict state is attached to the relevant chip/result rather than expressed as a global goal-type error.
+
+When goal creation starts before any project exists, the client omits explicit memberships and the API creates the Default project on first use, returning the new goal with that membership. The goal is therefore never persisted without a project.
 
 **9. Independent equipment goals are removed, while unit Upgrade goals remain.**
 

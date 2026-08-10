@@ -272,6 +272,8 @@
       "reprioritizeUnits": "Einheiten neu priorisieren",
       "reprioritizeUnitsDescription": "Ziehe Einheiten in die gewünschte Reihenfolge. Beim Verschieben einer Einheit werden alle ihre Ziele verschoben; Ziele innerhalb der Einheit werden automatisch sortiert.",
       "dragUnit": "{{unit}} ziehen, um neu zu priorisieren",
+      "reprioritizeStaleError": "Dieses Projekt wurde während der Neugewichtung geändert. Prüfe die aktuellen Einheiten und versuche es erneut.",
+      "reprioritizeSaveError": "Die Einheitenreihenfolge konnte nicht gespeichert werden. Dein Entwurf bleibt erhalten; prüfe ihn und versuche es erneut.",
       "unitGoalSummary": "{{units}} Einheiten · {{goals}} Ziele",
       "reachedSummary": "{{count}} erreicht",
       "blockedSummary": "{{count}} blockiert",

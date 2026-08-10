@@ -76,6 +76,28 @@ describe("GoalProjectsField", () => {
     expect(onToggle).toHaveBeenCalledWith("Event plan", true)
   })
 
+  it("portals the picker into the enclosing Sheet container", async () => {
+    const user = userEvent.setup()
+    const portalContainer = document.createElement("div")
+    document.body.append(portalContainer)
+
+    render(
+      <GoalProjectsField
+        onToggle={vi.fn()}
+        portalContainer={portalContainer}
+        projects={[project("selected"), project("available")]}
+        projectsValid
+        selectedProjectIds={["selected"]}
+      />
+    )
+
+    await user.click(screen.getByTestId("goal-detail-add-project"))
+    expect(portalContainer).toContainElement(
+      screen.getByPlaceholderText("goals.project.searchProjects")
+    )
+    portalContainer.remove()
+  })
+
   it("shows Current plan and Default markers with a project-specific conflict", () => {
     render(
       <GoalProjectsField

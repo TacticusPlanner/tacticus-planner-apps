@@ -13,6 +13,16 @@ The system SHALL present the project dashboard at `/goals/projects` and an owned
 - **WHEN** the user opens either project route
 - **THEN** the requested dashboard or project detail renders at its stable URL
 
+#### Scenario: The list route shows every project
+
+- **WHEN** the user navigates to `/goals/projects`
+- **THEN** the project dashboard renders, with no single project's goal table shown
+
+#### Scenario: The detail route shows one project
+
+- **WHEN** the user navigates to `/goals/projects/{id}` for a project they own
+- **THEN** that project's semantic header renders above its unit-grouped goal content
+
 #### Scenario: Browsing does not change Current plan
 
 - **GIVEN** project A is Current plan
@@ -35,6 +45,11 @@ The dashboard SHALL show Current plan first, other non-archived projects separat
 - **WHEN** the dashboard initially renders
 - **THEN** archived projects are grouped in a collapsed section
 
+#### Scenario: All projects are visible without extra navigation
+
+- **WHEN** the user opens the list route
+- **THEN** every owned project remains available on the dashboard, including archived projects in their expandable section, and no goal table is rendered
+
 ### Requirement: A project row navigates to its detail route
 
 Activating a project card outside its controls SHALL navigate to its detail route. Card controls SHALL NOT navigate or implicitly change Current plan.
@@ -48,6 +63,16 @@ Activating a project card outside its controls SHALL navigate to its detail rout
 
 - **WHEN** the user invokes Make current or an overflow action
 - **THEN** that action runs without also opening the card
+
+#### Scenario: Clicking a row opens its detail route
+
+- **WHEN** the user activates a project card outside its action controls
+- **THEN** the app navigates to that project's `/goals/projects/{id}` route
+
+#### Scenario: Clicking an action icon does not navigate
+
+- **WHEN** the user activates Make current or an Edit, Archive, or Restore menu item
+- **THEN** that action runs without navigating away from the dashboard
 
 ### Requirement: Project lifecycle actions render as inline icons on each row
 
@@ -64,6 +89,30 @@ Project actions SHALL no longer render as an always-visible inline icon cluster.
 - **WHEN** a project action menu opens
 - **THEN** applicable Edit and Archive or Restore actions appear with text labels
 
+#### Scenario: Setting a project active
+
+- **GIVEN** a non-current available project
+- **WHEN** the user activates its Make current action
+- **THEN** that project becomes Current plan and its marker updates accordingly
+
+#### Scenario: Archiving a project
+
+- **GIVEN** a project that is neither the default project nor Current plan
+- **WHEN** the user activates Archive from its action menu
+- **THEN** the project moves to the archived section and offers Restore
+
+#### Scenario: Restoring an archived project
+
+- **GIVEN** an archived project
+- **WHEN** the user activates Restore from its action menu
+- **THEN** the project returns to the available-project section
+
+#### Scenario: Archive is unavailable for the default or active project
+
+- **GIVEN** a project that is the default project or Current plan
+- **WHEN** its action menu renders
+- **THEN** Archive is unavailable and explanatory text identifies the restriction
+
 ### Requirement: The detail route's current-project row matches the list route's row
 
 The detail route SHALL replace the reused list row with a semantic project header containing back navigation, identity, description, Current plan state/action, summary metrics, a project switcher, and overflow management actions. Goal controls and unit-grouped content SHALL render below it.
@@ -78,6 +127,12 @@ The detail route SHALL replace the reused list row with a semantic project heade
 - **WHEN** an available non-current detail opens
 - **THEN** its header offers Make current
 
+#### Scenario: Archiving from the detail route behaves like archiving from the list
+
+- **GIVEN** the user is on an eligible project's detail route
+- **WHEN** the user activates Archive from the header action menu
+- **THEN** the project is archived with the same lifecycle result as archiving it from the dashboard
+
 ### Requirement: The detail route's project selector switches which project's detail route is shown
 
 The project switcher SHALL be integrated into the detail header/navigation area. Changing it SHALL navigate to the selected project's route and SHALL NOT change Current plan.
@@ -88,6 +143,18 @@ The project switcher SHALL be integrated into the detail header/navigation area.
 - **WHEN** the user switches to project C
 - **THEN** project C's route opens and A remains Current plan
 
+#### Scenario: Changing the selector navigates to a different project's detail route
+
+- **GIVEN** the user is on project A's detail route
+- **WHEN** the user changes the project switcher to project B
+- **THEN** the app navigates to project B's detail route without changing Current plan
+
+#### Scenario: Acting on a different project's row does not navigate
+
+- **GIVEN** the user is on project A's detail route
+- **WHEN** the detail header renders
+- **THEN** no other project row is available to act on without first switching routes
+
 ### Requirement: The detail route shares Overview's goal filters
 
 The detail route SHALL continue to offer status, Type, Sort, and Group controls for normal browsing. Those controls SHALL NOT affect stored unit priority. Unit reprioritization SHALL occur only in its dedicated mode.
@@ -97,6 +164,17 @@ The detail route SHALL continue to offer status, Type, Sort, and Group controls 
 - **WHEN** the user changes Sort or Group on project detail
 - **THEN** the visible presentation changes but the stored unit order does not
 
+#### Scenario: Type filter narrows the current project's goals
+
+- **GIVEN** a project with goals of multiple types, shown on its detail route
+- **WHEN** the user selects a specific Type filter
+- **THEN** only that project's goals of the selected type are shown
+
+#### Scenario: Group by unit groups the current project's goals
+
+- **WHEN** the user selects Group by unit on a project's detail route
+- **THEN** that project's goals are grouped by unit without altering stored unit priority
+
 ### Requirement: No project exists yet
 
 When no projects exist, the dashboard SHALL explain that projects group unit goals into alternative prioritized plans and provide a prominent labeled Create project action. It SHALL not render empty project sections or metrics.
@@ -105,6 +183,12 @@ When no projects exist, the dashboard SHALL explain that projects group unit goa
 
 - **WHEN** a user with no projects opens the dashboard
 - **THEN** explanatory copy and Create project are shown
+
+#### Scenario: Empty project list prompts creation
+
+- **GIVEN** the user has never created a project
+- **WHEN** the user opens the dashboard
+- **THEN** the prominent Create project action is shown without project sections, rows, metrics, or a goal table
 
 ## ADDED Requirements
 
@@ -141,7 +225,7 @@ Project detail SHALL group every Active/Paused Character or MoW goal by `(entity
 
 ### Requirement: Users prioritize units rather than goals
 
-Project detail SHALL provide a dedicated Reprioritize units action for projects with at least two in-flight unit blocks. The mode SHALL let the user drag whole unit blocks, save once, or cancel. Normal goal rows SHALL not render move-up/down priority controls or numeric priority inputs.
+Project detail SHALL provide a dedicated Reprioritize units action for projects with at least two in-flight unit blocks. The mode SHALL let the user drag whole unit blocks, save once, or cancel. Save SHALL submit a complete permutation containing every current Active/Paused Character or MoW unit exactly once and SHALL reject duplicate or missing unit keys locally. If the API rejects a stale draft, the mode SHALL preserve that draft and show a recoverable error. Normal goal rows SHALL not render move-up/down priority controls or numeric priority inputs.
 
 #### Scenario: Moving a unit moves all its goals
 
@@ -153,6 +237,12 @@ Project detail SHALL provide a dedicated Reprioritize units action for projects 
 
 - **WHEN** the user reorders units and cancels
 - **THEN** stored priority remains unchanged
+
+#### Scenario: Stale draft remains recoverable
+
+- **GIVEN** project membership changed after reprioritization opened
+- **WHEN** the user attempts to save an incomplete or stale unit permutation
+- **THEN** the draft remains visible and a recoverable error explains that the project changed
 
 #### Scenario: Reordering is unavailable with fewer than two units
 

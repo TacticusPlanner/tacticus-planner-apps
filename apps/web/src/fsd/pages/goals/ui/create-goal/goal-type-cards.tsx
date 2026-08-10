@@ -207,8 +207,6 @@ export function GoalTypeCards({
                   )}
                 </GoalTypeCard>
               )
-            // Item goals use the sheet's separate "Item" pill/form entirely —
-            // never offered in CHARACTER_GOAL_KINDS/MOW_GOAL_KINDS, so unreachable here.
           }
         })}
     </>

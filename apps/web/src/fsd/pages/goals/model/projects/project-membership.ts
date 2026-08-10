@@ -1,10 +1,12 @@
+import type { GoalKind } from "@/entities/goal"
+
 export type ProjectMembershipConflict = {
   projectId: string
   existingGoalId: string
-  goalTypes: string[]
+  goalTypes: GoalKind[]
 }
 
-export type ProjectGoalSlotConflictDetails = {
+export type ProjectGoalSlotConflictDetailsDto = {
   issueCode: "projectGoalSlotOccupied"
   message: string
   projectId: string
@@ -17,14 +19,17 @@ export type ProjectGoalSlotConflictDetails = {
 
 export function projectGoalSlotConflictDetails(
   details: unknown
-): ProjectGoalSlotConflictDetails | null {
+): ProjectGoalSlotConflictDetailsDto | null {
   if (!details || typeof details !== "object") return null
-  const value = details as Partial<ProjectGoalSlotConflictDetails>
+  const value = details as Partial<ProjectGoalSlotConflictDetailsDto>
   return value.issueCode === "projectGoalSlotOccupied" &&
     typeof value.existingGoalId === "string" &&
     typeof value.projectId === "string" &&
     typeof value.projectName === "string" &&
+    typeof value.entityType === "string" &&
+    typeof value.entityId === "string" &&
+    typeof value.goalType === "string" &&
     typeof value.message === "string"
-    ? (value as ProjectGoalSlotConflictDetails)
+    ? (value as ProjectGoalSlotConflictDetailsDto)
     : null
 }

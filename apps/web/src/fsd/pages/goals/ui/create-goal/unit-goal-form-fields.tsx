@@ -41,9 +41,11 @@ type GoalForm = ReturnType<typeof useCreateGoalForm>
  */
 export function UnitGoalFormFields({
   form,
+  portalContainer,
   unitIcon,
 }: {
   form: GoalForm
+  portalContainer: HTMLElement | null
   unitIcon: (id: UnitId) => string | undefined
 }) {
   const { t } = useTranslation()
@@ -202,6 +204,7 @@ export function UnitGoalFormFields({
         <GoalProjectsField
           conflicts={form.projectConflicts}
           onToggle={form.toggleProject}
+          portalContainer={portalContainer}
           projects={form.projects}
           projectsValid={form.selectedProjectIds.length > 0}
           selectedProjectIds={form.selectedProjectIds}

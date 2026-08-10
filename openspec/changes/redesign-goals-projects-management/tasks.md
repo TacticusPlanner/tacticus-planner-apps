@@ -1,6 +1,6 @@
 ## 1. Adopt the coordinated API contract
 
-- [x] 1.1 Implement and merge the matching `tacticus-planner-api` change first: project-scoped goal slots, unit-order endpoint, equipment-goal removal, migration, and regenerated OpenAPI.
+- [ ] 1.1 Merge and deploy the implemented matching `tacticus-planner-api` change in PR #39: project-scoped goal slots, unit-order endpoint, equipment-goal removal, migration, and regenerated OpenAPI.
 - [x] 1.2 Regenerate/update client request and response types for the unit-order endpoint, structured project conflict errors, removal of `Item`/`UpgradeItem`, removal of numeric creation priority, and upgrade-material target renaming.
 - [x] 1.3 Inventory user-facing `active plan` references separately from legitimate goal/project lifecycle Active labels and establish shared Current plan marker helpers.
 - [x] 1.4 Add contract tests for supported Character/MoW goal kinds, project-scoped conflicts, and unit-order request/response mapping.
@@ -65,3 +65,11 @@
 - [x] 8.5 Verify no Item/UpgradeItem option remains in UI or generated client types while Character/MoW Upgrade remains functional.
 - [ ] 8.6 Run authenticated flows through Aspire and verify updated tutorials on both sides of 768px.
 - [x] 8.7 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`.
+
+## 9. Review follow-up
+
+- [x] 9.1 Reconcile zero-project creation, final archived membership, and exact unit-permutation requirements across the design and specs.
+- [x] 9.2 Make project-card navigation semantic and keyboard accessible while preserving sibling actions.
+- [x] 9.3 Fully validate the project-slot conflict DTO and localize conflict goal-type labels.
+- [x] 9.4 Keep the project-membership picker portal inside its enclosing Sheet in create and edit flows.
+- [x] 9.5 Preserve and validate reprioritization drafts on stale saves, remove obsolete Item commentary, and run the full apps verification suite.

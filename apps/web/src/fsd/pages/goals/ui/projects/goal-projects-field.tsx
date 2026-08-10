@@ -27,6 +27,7 @@ export function GoalProjectsField({
   projectsValid,
   conflicts = [],
   onToggle,
+  portalContainer,
   testIdPrefix = "goal-detail",
 }: {
   projects: ProjectSummary[]
@@ -34,6 +35,7 @@ export function GoalProjectsField({
   projectsValid: boolean
   conflicts?: ProjectMembershipConflict[]
   onToggle: (projectId: string, checked: boolean) => void
+  portalContainer?: HTMLElement | null
   testIdPrefix?: string
 }) {
   const { t } = useTranslation()
@@ -104,7 +106,11 @@ export function GoalProjectsField({
                 <p className="max-w-64 text-xs text-destructive" role="alert">
                   {t("goals.project.membershipConflict", {
                     project: project.name,
-                    types: conflict.goalTypes.join(", "),
+                    types: conflict.goalTypes
+                      .map((goalType) =>
+                        t(`goals.create.goalTypes.${goalType}`)
+                      )
+                      .join(", "),
                   })}
                 </p>
               ) : null}
@@ -128,6 +134,7 @@ export function GoalProjectsField({
         <PopoverContent
           align="start"
           className="w-[min(24rem,calc(100vw-2rem))] p-0"
+          container={portalContainer ?? undefined}
         >
           <Command>
             <CommandInput placeholder={t("goals.project.searchProjects")} />

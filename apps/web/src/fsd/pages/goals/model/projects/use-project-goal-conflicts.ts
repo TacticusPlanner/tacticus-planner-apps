@@ -91,7 +91,9 @@ export function findProjectGoalConflicts({
       {
         projectId: project.projectId,
         existingGoalId: matches[0]!.goal.goalId,
-        goalTypes: [...new Set(matches.map((entry) => entry.goal.goalType))],
+        goalTypes: [
+          ...new Set(matches.map((entry) => entry.goal.goalType as GoalKind)),
+        ],
       },
     ]
   })

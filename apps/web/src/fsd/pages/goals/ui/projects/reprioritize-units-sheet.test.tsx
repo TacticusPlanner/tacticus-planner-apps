@@ -113,10 +113,48 @@ describe("ReprioritizeUnitsSheet", () => {
 
     await user.click(screen.getByRole("button", { name: "goals.project.save" }))
     expect(onOpenChange).not.toHaveBeenCalled()
+    expect(
+      screen.getByText("goals.project.reprioritizeSaveError")
+    ).toBeInTheDocument()
 
     await user.click(
       screen.getByRole("button", { name: "goals.project.cancel" })
     )
     expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it("rejects a stale draft locally while preserving its unit blocks", async () => {
+    const user = userEvent.setup()
+    const onSave = vi.fn().mockResolvedValue(true)
+    const onOpenChange = vi.fn()
+    const { rerender } = render(
+      <ReprioritizeUnitsSheet
+        onOpenChange={onOpenChange}
+        onSave={onSave}
+        open
+        pending={false}
+        units={units}
+      />
+    )
+
+    rerender(
+      <ReprioritizeUnitsSheet
+        onOpenChange={onOpenChange}
+        onSave={onSave}
+        open
+        pending={false}
+        units={[...units, unit("celestine", ["Rank"])]}
+      />
+    )
+    await user.click(screen.getByRole("button", { name: "goals.project.save" }))
+
+    expect(onSave).not.toHaveBeenCalled()
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(
+      screen.getByText("goals.project.reprioritizeStaleError")
+    ).toBeInTheDocument()
+    expect(screen.getByText("RAGNAR")).toBeInTheDocument()
+    expect(screen.getByText("CALGAR")).toBeInTheDocument()
+    expect(screen.queryByText("CELESTINE")).not.toBeInTheDocument()
   })
 })

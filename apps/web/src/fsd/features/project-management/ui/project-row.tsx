@@ -15,8 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { cn } from "@workspace/ui/lib/utils"
-
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
 
@@ -53,88 +51,90 @@ export function ProjectRow({
   const archived = project.status === "Archived"
   const archiveDisabled =
     actions.pending || project.isDefault || project.isActivePlan
+  const projectContent = (
+    <>
+      <ProjectColorDot color={project.color} />
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="truncate font-medium">{project.name}</span>
+          {archived ? (
+            <Badge variant="secondary">{t("goals.status.Archived")}</Badge>
+          ) : project.isActivePlan ? (
+            <Badge variant="secondary">{t("goals.project.currentPlan")}</Badge>
+          ) : null}
+        </div>
+        {project.description ? (
+          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+            {project.description}
+          </p>
+        ) : null}
+        {summary?.status === "loading" ? (
+          <Skeleton className="mt-2 h-4 w-36" />
+        ) : summary?.status === "success" ? (
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            <span>{t("goals.project.unitGoalSummary", summary)}</span>
+            {summary.reached !== undefined ? (
+              <span>
+                {t("goals.project.reachedSummary", {
+                  count: summary.reached,
+                })}
+              </span>
+            ) : null}
+            {summary.blocked !== undefined ? (
+              <span>
+                {t("goals.project.blockedSummary", {
+                  count: summary.blocked,
+                })}
+              </span>
+            ) : null}
+            {summary.completionDate ? (
+              <span>
+                {t("goals.project.completionSummary", {
+                  date: summary.completionDate,
+                })}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    </>
+  )
 
   return (
     <li
-      className={cn(
-        "flex items-center justify-between gap-2 rounded-2xl border p-3",
-        onSelect ? "cursor-pointer" : undefined
-      )}
+      className="flex items-center justify-between gap-2 rounded-2xl border p-3"
       data-testid={`project-row-${project.projectId}`}
-      onClick={onSelect}
     >
-      <div className="flex min-w-0 items-start gap-3">
-        <ProjectColorDot color={project.color} />
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="truncate font-medium">{project.name}</span>
-            {archived ? (
-              <Badge variant="secondary">{t("goals.status.Archived")}</Badge>
-            ) : project.isActivePlan ? (
-              <Badge variant="secondary">
-                {t("goals.project.currentPlan")}
-              </Badge>
-            ) : null}
-          </div>
-          {project.description ? (
-            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-              {project.description}
-            </p>
-          ) : null}
-          {summary?.status === "loading" ? (
-            <Skeleton className="mt-2 h-4 w-36" />
-          ) : summary?.status === "error" ? (
-            <button
-              className="mt-2 text-sm text-destructive underline"
-              onClick={(event) => {
-                event.stopPropagation()
-                summary.retry()
-              }}
-              type="button"
-            >
-              {t("goals.project.summaryUnavailable")}
-            </button>
-          ) : summary?.status === "success" ? (
-            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-              <span>{t("goals.project.unitGoalSummary", summary)}</span>
-              {summary.reached !== undefined ? (
-                <span>
-                  {t("goals.project.reachedSummary", {
-                    count: summary.reached,
-                  })}
-                </span>
-              ) : null}
-              {summary.blocked !== undefined ? (
-                <span>
-                  {t("goals.project.blockedSummary", {
-                    count: summary.blocked,
-                  })}
-                </span>
-              ) : null}
-              {summary.completionDate ? (
-                <span>
-                  {t("goals.project.completionSummary", {
-                    date: summary.completionDate,
-                  })}
-                </span>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+      <div className="min-w-0 flex-1">
+        {onSelect ? (
+          <button
+            className="flex w-full min-w-0 cursor-pointer items-start gap-3 rounded-xl text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            onClick={onSelect}
+            type="button"
+          >
+            {projectContent}
+          </button>
+        ) : (
+          <div className="flex min-w-0 items-start gap-3">{projectContent}</div>
+        )}
+        {summary?.status === "error" ? (
+          <button
+            className="mt-2 ml-7 text-sm text-destructive underline"
+            onClick={summary.retry}
+            type="button"
+          >
+            {t("goals.project.summaryUnavailable")}
+          </button>
+        ) : null}
       </div>
 
-      {/* Each icon stops its own click from bubbling to the row's onClick above, mirroring
-          goals-list.tsx's stopRowNavigation pattern - so acting on a row never also navigates. */}
       <div className="flex items-center gap-1">
         {!archived && !project.isActivePlan ? (
           <Button
             aria-label={t("goals.project.makeCurrent")}
             data-testid={`project-row-set-active-${project.projectId}`}
             disabled={actions.pending}
-            onClick={(event) => {
-              event.stopPropagation()
-              void actions.activate(project.projectId)
-            }}
+            onClick={() => void actions.activate(project.projectId)}
             size="sm"
             title={t("goals.project.makeCurrent")}
             variant="ghost"
@@ -148,17 +148,13 @@ export function ProjectRow({
             <Button
               aria-label={t("goals.project.moreActions")}
               data-testid={`project-row-actions-${project.projectId}`}
-              onClick={(event) => event.stopPropagation()}
               size="icon-sm"
               variant="ghost"
             >
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            onClick={(event) => event.stopPropagation()}
-          >
+          <DropdownMenuContent align="end">
             <DropdownMenuItem
               data-testid={`project-row-edit-${project.projectId}`}
               onSelect={() => onEdit(project)}

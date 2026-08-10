@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -40,6 +41,9 @@ export function CreateGoalSheet({
   prefill,
 }: CreateGoalSheetProps) {
   const { t } = useTranslation()
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
+    null
+  )
   const form = useCreateGoalForm({ open, onOpenChange, onCreated, prefill })
 
   const unitIcon = (id: UnitId) =>
@@ -50,12 +54,17 @@ export function CreateGoalSheet({
       <SheetContent
         data-testid="create-goal-sheet"
         onPointerDownOutside={(event) => event.preventDefault()}
+        ref={setPortalContainer}
       >
         <SheetHeader>
           <SheetTitle>{t("goals.create.title")}</SheetTitle>
         </SheetHeader>
 
-        <UnitGoalFormFields form={form} unitIcon={unitIcon} />
+        <UnitGoalFormFields
+          form={form}
+          portalContainer={portalContainer}
+          unitIcon={unitIcon}
+        />
 
         <SheetFooter>
           <Field orientation="horizontal">

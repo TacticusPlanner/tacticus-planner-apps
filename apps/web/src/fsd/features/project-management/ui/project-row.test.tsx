@@ -253,6 +253,27 @@ describe("ProjectRow", () => {
     expect(onSelect).toHaveBeenCalledTimes(1)
   })
 
+  it("navigates from the semantic project control with the keyboard", async () => {
+    const user = userEvent.setup()
+    const onSelect = vi.fn()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onEdit={vi.fn()}
+          onSelect={onSelect}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    const projectControl = screen.getByRole("button", { name: /Other plan/ })
+    projectControl.focus()
+    await user.keyboard("{Enter}")
+    await user.keyboard(" ")
+    expect(onSelect).toHaveBeenCalledTimes(2)
+  })
+
   it("does not call onSelect when an action icon is activated", async () => {
     const user = userEvent.setup()
     const onSelect = vi.fn()

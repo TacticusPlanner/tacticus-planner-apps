@@ -45,7 +45,7 @@ An Add to project picker SHALL search non-archived projects by name and exclude 
 
 ### Requirement: Every goal retains at least one project membership
 
-At least one project SHALL remain selected. The last chip cannot be removed and the field SHALL explain why. New goals without explicit context SHALL initially select Default project.
+At least one project SHALL remain selected. The last chip cannot be removed and the field SHALL explain why. New goals without explicit context SHALL initially select Default project when it exists. If no project exists yet, creation SHALL omit explicit membership so the API creates the Default project on first use; the returned goal SHALL belong to that project.
 
 #### Scenario: Last membership is protected
 
@@ -53,14 +53,26 @@ At least one project SHALL remain selected. The last chip cannot be removed and 
 - **WHEN** removal is attempted
 - **THEN** it remains selected with an inline explanation
 
+#### Scenario: First goal creates the Default project
+
+- **GIVEN** the user has no projects
+- **WHEN** a valid goal is created without explicit membership
+- **THEN** the API creates the Default project and the goal belongs to it
+
 ### Requirement: Existing archived memberships remain understandable
 
-An existing archived membership SHALL remain visible, marked Archived, and removable, but archived projects SHALL not be addable.
+An existing archived membership SHALL remain visible and marked Archived, but archived projects SHALL not be addable. It SHALL be removable only when another membership remains; last-membership protection takes precedence.
 
 #### Scenario: Archived membership remains visible
 
 - **WHEN** a goal's project is later archived
 - **THEN** its marked membership chip remains visible during editing
+
+#### Scenario: Final archived membership remains protected
+
+- **GIVEN** an archived project is the goal's only membership
+- **WHEN** its chip renders during editing
+- **THEN** the chip remains selected, its remove action is disabled, and the existing last-membership explanation is shown
 
 ### Requirement: In-flight goal-type uniqueness is scoped to a project
 

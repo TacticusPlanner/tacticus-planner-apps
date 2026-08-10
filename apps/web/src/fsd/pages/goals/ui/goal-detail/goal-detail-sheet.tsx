@@ -44,6 +44,14 @@ import { GoalDetailError } from "./goal-detail-error"
 import type { GoalDetailSaveError } from "./goal-detail-error"
 import { goalDetailProjects } from "./goal-detail-projects"
 import { GoalDetailUnsavedDialog } from "./goal-detail-unsaved-dialog"
+import {
+  hasGoalDetailDraftChanged,
+  hasSelectionChanged,
+} from "./goal-detail-draft"
+
+type ConfirmAction = "cancel" | "close" | null
+type KeyedGoalDetailDraft = GoalDetailDraft & { key: string }
+
 export function GoalDetailSheet({
   goalId,
   estimate,
@@ -67,13 +75,12 @@ export function GoalDetailSheet({
   const launchCreateGoal = useCreateGoalLauncher()
   const { getEntityName, upgradesById, charactersById } = useGoalCatalog()
   const [mode, setMode] = useState<"view" | "edit">("view")
-  const [confirmAction, setConfirmAction] = useState<"cancel" | "close" | null>(
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
+  const [draftState, setDraftState] = useState<KeyedGoalDetailDraft | null>(
     null
   )
-  const [draftState, setDraftState] = useState<
-    (GoalDetailDraft & { key: string }) | null
-  >(null)
   const [saveError, setSaveError] = useState<GoalDetailSaveError | null>(null)
+  const [sheetNode, setSheetNode] = useState<HTMLElement | null>(null)
   const detailQuery = useQuery({
     ...goalQueries.detail(goalId ?? "unselected"),
     enabled: Boolean(isAuthenticated && goalId),
@@ -169,24 +176,10 @@ export function GoalDetailSheet({
     draft.selectedProjectIds.length > 0 &&
     !membershipConflicts.loading &&
     membershipConflicts.conflicts.length === 0
-  const projectsChanged =
-    draft.selectedProjectIds.length !== (detail?.projectIds.length ?? 0) ||
-    draft.selectedProjectIds.some((id) => !detail?.projectIds.includes(id))
-  // Set comparison, not array equality — toggling a checkbox off and back on reorders
-  // `selectedLocations` (see `GoalLocationsField`'s onToggle) without changing the actual selection.
-  const locationsChanged =
-    draft.selectedLocations.length !==
-      (detail?.config.farmingLocationIds?.length ?? 0) ||
-    draft.selectedLocations.some(
-      (id) => !(detail?.config.farmingLocationIds ?? []).includes(id)
-    )
   const hasUnsavedChanges =
-    mode === "edit" &&
-    !!detail &&
-    (draft.notes.trim() !== (detail.notes ?? "") ||
-      draft.farmingStrategy !== detail.config.farmingStrategy ||
-      projectsChanged ||
-      locationsChanged)
+    mode === "edit" && !!detail && hasGoalDetailDraftChanged(detail, draft)
+  const projectsChanged =
+    !!detail && hasSelectionChanged(detail.projectIds, draft.selectedProjectIds)
 
   const resetDraft = () => setDraftState(null)
 
@@ -316,6 +309,7 @@ export function GoalDetailSheet({
         className="overflow-y-auto"
         data-testid="goal-detail-sheet"
         onPointerDownOutside={(event) => event.preventDefault()}
+        ref={setSheetNode}
       >
         <SheetHeader>
           <SheetTitle>
@@ -388,6 +382,7 @@ export function GoalDetailSheet({
                   setDraftState({ ...next, key: draftKey })
                 }
                 overrideValid={overrideValid}
+                portalContainer={sheetNode}
                 projects={projects}
                 projectsValid={projectsValid}
               />
