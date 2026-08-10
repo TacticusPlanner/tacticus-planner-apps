@@ -25,6 +25,12 @@ const definitions = [
     config: null,
   },
   {
+    id: "game-version-release",
+    type: "GameVersionRelease",
+    recurrence: noneRecurrence,
+    config: null,
+  },
+  {
     id: "always-double-xp-sunday",
     type: "StandingModifier",
     recurrence: {
@@ -159,7 +165,7 @@ describe("EventsCalendar", () => {
       },
       {
         occurrenceId: null,
-        definitionId: "hse-warp-surge",
+        definitionId: "game-version-release",
         confirmed: false,
         startUtc: isoDaysFromNow(2),
         endUtc: isoDaysFromNow(3),

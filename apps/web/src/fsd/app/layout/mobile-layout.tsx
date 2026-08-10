@@ -66,7 +66,7 @@ export function MobileShell({
         pageDescription={pageDescription}
         pageTitle={pageTitle}
       />
-      <div className="flex-1 pb-(--mobile-nav-height)">
+      <div className="flex-1 pb-(--mobile-scroll-clearance)">
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
         </Suspense>

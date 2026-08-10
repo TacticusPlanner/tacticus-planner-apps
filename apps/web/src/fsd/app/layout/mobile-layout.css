@@ -7,4 +7,9 @@
 :root {
   --mobile-header-height: calc(7.75rem + env(safe-area-inset-top, 0px));
   --mobile-nav-height: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  /* The scroll-to-top FAB floats `1rem` above the nav bar at `size-12` (3rem) tall, so its top edge
+     sits `4rem` above the nav — reserve that plus a bit of breathing room as scrollable-content
+     bottom padding, or the last item in a long list ends up permanently hidden behind the FAB once
+     scrolled all the way down. */
+  --mobile-scroll-clearance: calc(var(--mobile-nav-height) + 4.5rem);
 }
