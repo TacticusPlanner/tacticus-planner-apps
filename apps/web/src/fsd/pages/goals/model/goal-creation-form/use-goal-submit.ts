@@ -79,6 +79,7 @@ export function useGoalSubmit({
         resetForm()
         setStatus("idle")
       } else {
+        setStatus("idle")
         onOpenChange(false)
         onCreated()
       }
