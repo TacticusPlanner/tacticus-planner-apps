@@ -146,19 +146,6 @@
     "armour": "Armour",
     "current": "Current",
     "target": "Target",
-    "tabs": {
-      "characters": "Characters",
-      "charactersDescription": "Browse character details and stats",
-      "machinesOfWar": "Machines of War",
-      "machinesOfWarDescription": "Browse Machine of War details and stats",
-      "npcs": "NPCs",
-      "npcsDescription": "Browse NPC details and stats",
-      "raidBosses": "Raid Bosses",
-      "raidBossesDescription": "Browse Raid Boss details and stats",
-      "mowComingSoon": "Machines of War lookup is coming soon.",
-      "npcComingSoon": "NPC library is coming soon.",
-      "raidBossComingSoon": "Raid Bosses are not available in the catalog yet."
-    },
     "share": {
       "action": "Share",
       "copied": "Link copied to clipboard.",
@@ -171,8 +158,6 @@
     "dailiesDescription": "Daily and periodic in-game tasks",
     "home": "Home",
     "homeDescription": "Your account overview and quick links",
-    "library": "Library",
-    "libraryDescription": "Browse characters, Machines of War, NPCs, and Raid Bosses",
     "createGoal": "Create Goal",
     "goals": "Goals",
     "goalsDescription": "Track progress toward your targets",

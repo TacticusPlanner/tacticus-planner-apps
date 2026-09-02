@@ -1,0 +1,30 @@
+{
+  "section": {
+    "label": "Library",
+    "description": "Browse characters, Machines of War, NPCs, and Raid Bosses"
+  },
+  "collections": {
+    "characters": {
+      "label": "Characters",
+      "description": "Browse character details and stats"
+    },
+    "machinesOfWar": {
+      "label": "Machines of War",
+      "description": "Browse Machine of War details and stats"
+    },
+    "npcs": { "label": "NPCs", "description": "Browse NPC details and stats" },
+    "raidBosses": {
+      "label": "Raid Bosses",
+      "description": "Browse Raid Boss information"
+    },
+    "noRecords": "No selectable entities are available.",
+    "raidBossesNoRecords": "Raid Bosses are not available in the catalog yet."
+  },
+  "loading": "Loading Library records…",
+  "selector": {
+    "label": "Select an entity",
+    "placeholder": "Select an entity",
+    "selected": "Selected: {{name}}",
+    "clear": "Clear selection"
+  }
+}

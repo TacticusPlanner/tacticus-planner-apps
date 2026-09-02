@@ -13,7 +13,7 @@ export function MobileNavLink({
 }) {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies"])
+  const { t } = useTranslation(["common", "dailies", "library"])
   const isCurrent = pathname === item.path
   const isActive = isCurrent || pathname.startsWith(item.path + "/")
 

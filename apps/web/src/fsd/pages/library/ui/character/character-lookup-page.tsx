@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -14,6 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
 import { useTourPageSteps } from "@/shared/tour"
 
+import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
@@ -33,9 +34,7 @@ export function CharacterLookupPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
-  const { characterId: routeCharacterId } = useParams()
-  const location = useLocation()
-  const navigate = useNavigate()
+  const { entityId: routeCharacterId } = useParams()
 
   useTourPageSteps(useCharacterLookupTutorial())
 
@@ -47,6 +46,16 @@ export function CharacterLookupPage() {
     characterGroups,
     loading,
   } = useCharacterLookupCatalog()
+  const characterIds = useMemo(
+    () => (charactersById ? [...charactersById.keys()] : undefined),
+    [charactersById]
+  )
+  const routeSelection = useLibraryRouteSelection({
+    collectionPath: "/library/characters",
+    entityId: routeCharacterId,
+    entityIds: characterIds,
+    loading,
+  })
 
   const {
     applied,
@@ -57,41 +66,15 @@ export function CharacterLookupPage() {
     setDraftProgressionRange,
     setDraftPointFive,
     handleApply,
-  } = useLookupSelection(routeCharacterId)
+  } = useLookupSelection(routeSelection.selectedId)
 
   const handleCharacterChange = (id: UnitId) => {
     setDraftCharacterId(id)
-    navigate({
-      pathname: `/library/characters/${id}`,
-      search: location.search,
-    })
+    routeSelection.select(id)
   }
 
   const draftCharacterId =
     draft.characterId ?? characterGroups[0]?.members[0]?.id
-
-  useEffect(() => {
-    const firstCharacterId = characterGroups[0]?.members[0]?.id
-    const routeCharacterIsAvailable =
-      !!routeCharacterId && !!charactersById?.has(routeCharacterId)
-
-    if (!loading && firstCharacterId && !routeCharacterIsAvailable) {
-      navigate(
-        {
-          pathname: `/library/characters/${firstCharacterId}`,
-          search: location.search,
-        },
-        { replace: true }
-      )
-    }
-  }, [
-    charactersById,
-    characterGroups,
-    loading,
-    location.search,
-    navigate,
-    routeCharacterId,
-  ])
 
   // Synced player record for the currently selected character only (not the whole roster) — used
   // just to prefill the "from" rank/progression once it loads, see the effect below. MoWs are

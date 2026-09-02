@@ -13,16 +13,16 @@ import { isUiKitEnabled } from "@/shared/config"
 
 type NavLabelKey =
   | "nav.home"
-  | "nav.library"
   | "nav.goals"
   | "nav.progress"
   | "nav.uiKit"
   | "nav.guild"
   | "nav.dailies"
-  | "unitLookup.tabs.characters"
-  | "unitLookup.tabs.machinesOfWar"
-  | "unitLookup.tabs.npcs"
-  | "unitLookup.tabs.raidBosses"
+  | "library:section.label"
+  | "library:collections.characters.label"
+  | "library:collections.machinesOfWar.label"
+  | "library:collections.npcs.label"
+  | "library:collections.raidBosses.label"
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
@@ -47,7 +47,20 @@ type NavLabelKey =
 // Follows the sibling-leaf naming convention: a description key is always the matching label key
 // with "Description" appended, keeping descriptions co-located with their labels in each locale
 // file (e.g. `nav.home` -> `nav.homeDescription`).
-type NavDescriptionKey = `${NavLabelKey}Description`
+type NavDescriptionKey =
+  | `${Exclude<
+      NavLabelKey,
+      | "library:section.label"
+      | "library:collections.characters.label"
+      | "library:collections.machinesOfWar.label"
+      | "library:collections.npcs.label"
+      | "library:collections.raidBosses.label"
+    >}Description`
+  | "library:section.description"
+  | "library:collections.characters.description"
+  | "library:collections.machinesOfWar.description"
+  | "library:collections.npcs.description"
+  | "library:collections.raidBosses.description"
 
 export interface NavSubItem {
   path: string
@@ -79,31 +92,31 @@ export const navItems: NavItem[] = [
   },
   {
     path: "/library",
-    labelKey: "nav.library",
-    descriptionKey: "nav.libraryDescription",
+    labelKey: "library:section.label",
+    descriptionKey: "library:section.description",
     icon: Search,
     anonymousAllowed: true,
     mobilePlacement: "menu",
     children: [
       {
         path: "/library/characters",
-        labelKey: "unitLookup.tabs.characters",
-        descriptionKey: "unitLookup.tabs.charactersDescription",
+        labelKey: "library:collections.characters.label",
+        descriptionKey: "library:collections.characters.description",
       },
       {
         path: "/library/machines-of-war",
-        labelKey: "unitLookup.tabs.machinesOfWar",
-        descriptionKey: "unitLookup.tabs.machinesOfWarDescription",
+        labelKey: "library:collections.machinesOfWar.label",
+        descriptionKey: "library:collections.machinesOfWar.description",
       },
       {
         path: "/library/npcs",
-        labelKey: "unitLookup.tabs.npcs",
-        descriptionKey: "unitLookup.tabs.npcsDescription",
+        labelKey: "library:collections.npcs.label",
+        descriptionKey: "library:collections.npcs.description",
       },
       {
         path: "/library/raid-bosses",
-        labelKey: "unitLookup.tabs.raidBosses",
-        descriptionKey: "unitLookup.tabs.raidBossesDescription",
+        labelKey: "library:collections.raidBosses.label",
+        descriptionKey: "library:collections.raidBosses.description",
       },
     ],
   },

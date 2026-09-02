@@ -47,12 +47,12 @@ describe("DesktopSectionHeader", () => {
   })
 
   it("renders a plain, non-interactive '{Section} РІР‚С” {Active child}' breadcrumb for a section with children", () => {
-    renderHeader(lookupItem, "Lookup", "/library/machines-of-war")
+    renderHeader(lookupItem, "Library", "/library/machines-of-war")
 
     const title = screen.getByTestId("section-header-title")
-    expect(title).toHaveTextContent("Lookup")
-    expect(title).toHaveTextContent("РІР‚С”")
-    expect(title).toHaveTextContent("unitLookup.tabs.machinesOfWar")
+    expect(title).toHaveTextContent("Library")
+    expect(title).toHaveTextContent("›")
+    expect(title).toHaveTextContent("library:collections.machinesOfWar.label")
     // Neither segment is a link or a button - switching children happens only via the sidebar
     // flyout, search, or a direct link now.
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
@@ -60,10 +60,10 @@ describe("DesktopSectionHeader", () => {
   })
 
   it("falls back to the section's default child when the route matches no specific child", () => {
-    renderHeader(lookupItem, "Lookup", "/library")
+    renderHeader(lookupItem, "Library", "/library")
 
     expect(screen.getByTestId("section-header-title")).toHaveTextContent(
-      "unitLookup.tabs.characters"
+      "library:collections.characters.label"
     )
   })
 })

@@ -1,0 +1,33 @@
+{
+  "section": {
+    "label": "Biblioteca",
+    "description": "Explora personajes, Máquinas de Guerra, PNJ y jefes de incursión"
+  },
+  "collections": {
+    "characters": {
+      "label": "Personajes",
+      "description": "Explora detalles y estadísticas de personajes"
+    },
+    "machinesOfWar": {
+      "label": "Máquinas de Guerra",
+      "description": "Explora detalles y estadísticas de Máquinas de Guerra"
+    },
+    "npcs": {
+      "label": "PNJ",
+      "description": "Explora detalles y estadísticas de PNJ"
+    },
+    "raidBosses": {
+      "label": "Jefes de incursión",
+      "description": "Explora información de jefes de incursión"
+    },
+    "noRecords": "No hay entidades seleccionables disponibles.",
+    "raidBossesNoRecords": "Los jefes de incursión aún no están disponibles en el catálogo."
+  },
+  "loading": "Cargando registros de la biblioteca…",
+  "selector": {
+    "label": "Selecciona una entidad",
+    "placeholder": "Selecciona una entidad",
+    "selected": "Seleccionado: {{name}}",
+    "clear": "Borrar selección"
+  }
+}

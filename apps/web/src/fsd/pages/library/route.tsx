@@ -3,15 +3,21 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
+import { getMows, getNpcs } from "@workspace/game-catalog/queries"
 
 const CharacterLookupPage = lazy(() =>
   import("./ui/character/character-lookup-page").then((m) => ({
     default: m.CharacterLookupPage,
   }))
 )
-const LookupPlaceholder = lazy(() =>
-  import("./ui/library-placeholder").then((m) => ({
-    default: m.LookupPlaceholder,
+const LibraryCollectionPage = lazy(() =>
+  import("./ui/library-collection-page").then((m) => ({
+    default: m.LibraryCollectionPage,
+  }))
+)
+const LibraryNoRecordsPage = lazy(() =>
+  import("./ui/library-collection-page").then((m) => ({
+    default: m.LibraryNoRecordsPage,
   }))
 )
 
@@ -20,17 +26,36 @@ const LookupPlaceholder = lazy(() =>
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/library/characters" /> },
   { path: "characters", element: <CharacterLookupPage /> },
-  { path: "characters/:characterId", element: <CharacterLookupPage /> },
-  { path: "machines-of-war", element: <LookupPlaceholder tab="mow" /> },
+  { path: "characters/:entityId", element: <CharacterLookupPage /> },
+  {
+    path: "machines-of-war",
+    element: (
+      <LibraryCollectionPage
+        collection="machines-of-war"
+        getRecords={getMows}
+      />
+    ),
+  },
   {
     path: "machines-of-war/:entityId",
-    element: <LookupPlaceholder tab="mow" />,
+    element: (
+      <LibraryCollectionPage
+        collection="machines-of-war"
+        getRecords={getMows}
+      />
+    ),
   },
-  { path: "npcs", element: <LookupPlaceholder tab="npc" /> },
-  { path: "npcs/:entityId", element: <LookupPlaceholder tab="npc" /> },
-  { path: "raid-bosses", element: <LookupPlaceholder tab="raidBoss" /> },
+  {
+    path: "npcs",
+    element: <LibraryCollectionPage collection="npcs" getRecords={getNpcs} />,
+  },
+  {
+    path: "npcs/:entityId",
+    element: <LibraryCollectionPage collection="npcs" getRecords={getNpcs} />,
+  },
+  { path: "raid-bosses", element: <LibraryNoRecordsPage /> },
   {
     path: "raid-bosses/:entityId",
-    element: <LookupPlaceholder tab="raidBoss" />,
+    element: <LibraryNoRecordsPage />,
   },
 ]

@@ -4,10 +4,10 @@ import { filterNavigationItems } from "./navigation-filter"
 import { navItems } from "./nav-items"
 
 const labels: Record<string, string> = {
-  "nav.library": "Nachschlagen",
-  "unitLookup.tabs.characters": "Charaktere",
-  "unitLookup.tabs.machinesOfWar": "Kriegsmaschinen",
-  "unitLookup.tabs.npcs": "NPCs",
+  "library:section.label": "Nachschlagen",
+  "library:collections.characters.label": "Charaktere",
+  "library:collections.machinesOfWar.label": "Kriegsmaschinen",
+  "library:collections.npcs.label": "NPCs",
 }
 
 describe("filterNavigationItems", () => {
@@ -32,7 +32,7 @@ describe("filterNavigationItems", () => {
       (key) => labels[key] ?? key
     )
 
-    expect(results[0]?.children).toHaveLength(3)
+    expect(results[0]?.children).toHaveLength(4)
   })
 
   it(
@@ -40,8 +40,8 @@ describe("filterNavigationItems", () => {
       " doesn't match",
     () => {
       const descriptions: Record<string, string> = {
-        "nav.libraryDescription": "Nachschlagen",
-        "unitLookup.tabs.machinesOfWarDescription":
+        "library:section.description": "Nachschlagen",
+        "library:collections.machinesOfWar.description":
           "Kriegsmaschinen nachschlagen",
       }
       const results = filterNavigationItems(

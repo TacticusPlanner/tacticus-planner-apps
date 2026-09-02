@@ -191,7 +191,7 @@ describe("DesktopShell", () => {
 
     const title = screen.getByTestId("section-header-title")
     expect(title).toHaveTextContent("Lookup")
-    expect(title).toHaveTextContent("unitLookup.tabs.machinesOfWar")
+    expect(title).toHaveTextContent("library:collections.machinesOfWar.label")
     // Child navigation no longer lives in the header at all - neither segment is interactive.
     expect(within(title).queryByRole("link")).not.toBeInTheDocument()
     expect(within(title).queryByRole("button")).not.toBeInTheDocument()
@@ -224,7 +224,7 @@ describe("DesktopShell", () => {
     const header = document.querySelector("header")!
     expect(
       within(header).queryByRole("link", {
-        name: "unitLookup.tabs.machinesOfWar",
+        name: "library:collections.machinesOfWar.label",
       })
     ).not.toBeInTheDocument()
 
@@ -234,13 +234,24 @@ describe("DesktopShell", () => {
 
     const flyout = screen.getByTestId("desktop-nav-flyout-library")
     expect(
-      within(flyout).getByRole("link", { name: /unitLookup\.tabs\.mow/ })
+      within(flyout).getByRole("link", {
+        name: /library:collections\.machinesOfWar\.label/,
+      })
     ).toHaveAttribute("aria-current", "page")
     expect(
-      within(flyout).getByRole("link", { name: /unitLookup\.tabs\.character/ })
+      within(flyout).getByRole("link", {
+        name: /library:collections\.characters\.label/,
+      })
     ).not.toHaveAttribute("aria-current")
     expect(
-      within(flyout).getByRole("link", { name: /unitLookup\.tabs\.npc/ })
+      within(flyout).getByRole("link", {
+        name: /library:collections\.npcs\.label/,
+      })
+    ).toBeInTheDocument()
+    expect(
+      within(flyout).getByRole("link", {
+        name: /library:collections\.raidBosses\.label/,
+      })
     ).toBeInTheDocument()
   })
 
@@ -288,19 +299,21 @@ describe("DesktopShell", () => {
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
     fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
-      target: { value: "unitLookup.tabs.machinesOfWar" },
+      target: { value: "library:collections.machinesOfWar.label" },
     })
 
     expect(
-      screen.getByRole("link", { name: /^nav\.lookup/ })
+      screen.getByRole("link", { name: /^library:section\.label/ })
     ).toBeInTheDocument()
     const mowResult = screen.getByRole("link", {
-      name: /^unitLookup\.tabs\.mow/,
+      name: /^library:collections\.machinesOfWar\.label/,
     })
     expect(mowResult).toHaveAttribute("aria-current", "page")
     expect(mowResult).toHaveAttribute("href", "/library/machines-of-war")
     expect(
-      screen.queryByRole("link", { name: /^unitLookup\.tabs\.character/ })
+      screen.queryByRole("link", {
+        name: /^library:collections\.characters\.label/,
+      })
     ).not.toBeInTheDocument()
   })
 
@@ -325,10 +338,10 @@ describe("DesktopShell", () => {
     const dialog = screen.getByTestId("desktop-navigation-dialog")
 
     expect(
-      within(dialog).getByText("nav.libraryDescription")
+      within(dialog).getByText("library:section.description")
     ).toBeInTheDocument()
     expect(
-      within(dialog).getByText("unitLookup.tabs.machinesOfWarDescription")
+      within(dialog).getByText("library:collections.machinesOfWar.description")
     ).toBeInTheDocument()
   })
 
@@ -351,11 +364,11 @@ describe("DesktopShell", () => {
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
     fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
-      target: { value: "unitLookup.tabs.npcsDescription" },
+      target: { value: "library:collections.npcs.description" },
     })
 
     expect(
-      screen.getByRole("link", { name: /^unitLookup\.tabs\.npc/ })
+      screen.getByRole("link", { name: /^library:collections\.npcs\.label/ })
     ).toBeInTheDocument()
   })
 

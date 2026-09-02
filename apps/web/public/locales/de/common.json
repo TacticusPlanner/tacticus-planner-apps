@@ -134,8 +134,6 @@
     "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben",
     "home": "Startseite",
     "homeDescription": "Kontoübersicht und Schnellzugriffe",
-    "lookup": "Rang-Nachschlag",
-    "lookupDescription": "Charaktere, Kriegsmaschinen und NPCs durchsuchen",
     "createGoal": "Ziel erstellen",
     "goals": "Ziele",
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
@@ -217,16 +215,6 @@
       "coLeader": "Ko-Anführer",
       "officer": "Offizier",
       "member": "Mitglied"
-    }
-  },
-  "unitLookup": {
-    "tabs": {
-      "character": "Charakter",
-      "characterDescription": "Charakterdetails und Werte nachschlagen",
-      "mow": "Kriegsmaschinen",
-      "mowDescription": "Details und Werte von Kriegsmaschinen nachschlagen",
-      "npc": "NPC",
-      "npcDescription": "NPC-Details und Werte nachschlagen"
     }
   },
   "progress": {

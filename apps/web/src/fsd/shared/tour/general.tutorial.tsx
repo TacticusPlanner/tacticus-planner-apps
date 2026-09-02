@@ -11,12 +11,12 @@ const MOBILE_MENU_OPEN_DELAY_MS = 300
 /** The general layout/navigation tutorial - used for Home and as the fallback for any page (e.g.
  *  UI Kit) that doesn't register its own steps via useTourPageSteps. */
 export function useDesktopTutorialSteps(): Step[] {
-  const { t } = useTranslation()
+  const { t } = useTranslation(["common", "library"])
 
   return useMemo<Step[]>(() => {
     const navigationSteps: Step[] = [
       { target: "home", title: t("nav.home") },
-      { target: "lookup", title: t("nav.library") },
+      { target: "library", title: t("library:section.label") },
       { target: "goals", title: t("nav.goals") },
       { target: "dailies", title: t("nav.dailies") },
       { target: "progress", title: t("nav.progress") },

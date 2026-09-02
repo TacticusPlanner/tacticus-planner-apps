@@ -71,10 +71,10 @@ describe("LandingPage", () => {
     expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
   })
 
-  it("links to the public Unit Lookup page", () => {
+  it("links to the public Library", () => {
     renderLanding()
 
-    const link = screen.getByTestId("landing-unit-lookup-link")
+    const link = screen.getByTestId("landing-library-characters-link")
     expect(link).toHaveAttribute("href", "/library")
   })
 

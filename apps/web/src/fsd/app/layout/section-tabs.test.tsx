@@ -42,12 +42,11 @@ describe("SectionTabs", () => {
     const lookup = navItems.find((item) => item.path === "/library")!
     renderTabs(lookup, "/library/machines-of-war")
 
-    expect(screen.getByTestId("section-tab-library-character")).toBeVisible()
-    expect(screen.getByTestId("section-tab-library-mow")).toHaveAttribute(
-      "data-state",
-      "active"
-    )
-    expect(screen.getByTestId("section-tab-library-npc")).toHaveAttribute(
+    expect(screen.getByTestId("section-tab-library-characters")).toBeVisible()
+    expect(
+      screen.getByTestId("section-tab-library-machines-of-war")
+    ).toHaveAttribute("data-state", "active")
+    expect(screen.getByTestId("section-tab-library-npcs")).toHaveAttribute(
       "data-state",
       "inactive"
     )
@@ -58,7 +57,7 @@ describe("SectionTabs", () => {
     const lookup = navItems.find((item) => item.path === "/library")!
     renderTabs(lookup, "/library/characters")
 
-    await user.click(screen.getByTestId("section-tab-library-npc"))
+    await user.click(screen.getByTestId("section-tab-library-npcs"))
 
     expect(screen.getByTestId("current-path")).toHaveTextContent(
       "/library/npcs"

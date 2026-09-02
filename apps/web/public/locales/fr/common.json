@@ -134,8 +134,6 @@
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
     "home": "Accueil",
     "homeDescription": "Aperçu de votre compte et raccourcis",
-    "lookup": "Recherche de rang",
-    "lookupDescription": "Recherchez des personnages, Machines de guerre et PNJ",
     "createGoal": "Créer un objectif",
     "goals": "Objectifs",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
@@ -217,16 +215,6 @@
       "coLeader": "Co-chef",
       "officer": "Officier",
       "member": "Membre"
-    }
-  },
-  "unitLookup": {
-    "tabs": {
-      "character": "Personnage",
-      "characterDescription": "Consultez les détails et statistiques des personnages",
-      "mow": "Machines de guerre",
-      "mowDescription": "Consultez les détails et statistiques des Machines de guerre",
-      "npc": "PNJ",
-      "npcDescription": "Consultez les détails et statistiques des PNJ"
     }
   },
   "progress": {
