@@ -135,6 +135,7 @@ function ready(
         { kind: "shard" as const, unitId: "bellator" as never },
       ])
     ),
+    resourceUrgencyByGoalAndResource: new Map(),
     resourceProgressByDay: new Map([
       [
         1,
@@ -272,7 +273,7 @@ describe("Dailies raid pages", () => {
     expect(screen.getByText("0%")).toBeInTheDocument()
   })
 
-  it("shows every real attempt today in Today's Attempts, account-wide, labeling exhausted locations distinctly", () => {
+  it("shows every real attempt today in Today's Attempts with its actual numeric count", () => {
     useDailyRaids.mockReturnValue(
       ready({
         todaysAttempts: [
@@ -284,7 +285,12 @@ describe("Dailies raid pages", () => {
 
     const todaysAttempts = within(screen.getByTestId("todays-attempts"))
     expect(todaysAttempts.getByText("Indomitus Elite")).toBeInTheDocument()
-    expect(todaysAttempts.getByText("schedule.maxRaids")).toBeInTheDocument()
+    expect(
+      todaysAttempts.getByText('schedule.raids:{"count":10}')
+    ).toBeInTheDocument()
+    expect(
+      todaysAttempts.queryByText("schedule.maxRaids")
+    ).not.toBeInTheDocument()
   })
 
   it("shows a raids-performed badge for an attempt that still has real attempts left", () => {

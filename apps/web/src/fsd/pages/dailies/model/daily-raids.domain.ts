@@ -37,6 +37,11 @@ export type DailyRaidResourceProgress = {
   target: number
 }
 
+export type DailyRaidResourceUrgency = {
+  days: number
+  energyTotal: number
+}
+
 export type DailyRaidLocationViewModel = {
   id: string
   // Full campaign/tier name (e.g. "Indomitus Elite") for the location-primary Today/Bonus rendering.
@@ -62,6 +67,10 @@ export type DailyRaidsReadyViewModel = {
   goalsById: ReadonlyMap<string, DailyRaidGoalViewModel>
   resourceLabels: ReadonlyMap<string, string>
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
+  resourceUrgencyByGoalAndResource: ReadonlyMap<
+    string,
+    DailyRaidResourceUrgency
+  >
   resourceProgressByDay: ReadonlyMap<
     number,
     ReadonlyMap<string, DailyRaidResourceProgress>
