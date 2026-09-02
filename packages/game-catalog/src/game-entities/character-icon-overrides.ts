@@ -10,6 +10,7 @@ export const characterIconOverrides = new Map([
   [unitIdSchema.parse("eldarAutarch"), "aelda_autarch"],
   [unitIdSchema.parse("eldarFarseer"), "aelda_farseer"],
   [unitIdSchema.parse("eldarJainZar"), "aelda_jainzar"],
+  [unitIdSchema.parse("eldarLhykhis"), "aelda_lhykhis"],
   [unitIdSchema.parse("eldarMauganRa"), "aelda_maugan"],
   [unitIdSchema.parse("eldarRanger"), "aelda_ranger"],
   [unitIdSchema.parse("emperFlawlessBlade"), "emper_blade"],
