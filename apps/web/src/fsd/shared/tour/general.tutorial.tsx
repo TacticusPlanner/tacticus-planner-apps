@@ -16,7 +16,7 @@ export function useDesktopTutorialSteps(): Step[] {
   return useMemo<Step[]>(() => {
     const navigationSteps: Step[] = [
       { target: "home", title: t("nav.home") },
-      { target: "lookup", title: t("nav.lookup") },
+      { target: "lookup", title: t("nav.library") },
       { target: "goals", title: t("nav.goals") },
       { target: "dailies", title: t("nav.dailies") },
       { target: "progress", title: t("nav.progress") },

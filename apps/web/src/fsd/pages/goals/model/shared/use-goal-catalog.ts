@@ -27,7 +27,7 @@ import {
 /**
  * The static-catalog reads the goal-creation Sheet needs (character picker + upgrade requirements
  * for the Rank-goal preview), id-keyed for O(1) lookup by the rank-lookup calc functions. This
- * mirrors `pages/lookup/.../hooks/use-character-lookup-catalog.ts` rather than importing it — FSD
+ * mirrors `pages/library/.../hooks/use-character-lookup-catalog.ts` rather than importing it вЂ” FSD
  * forbids a page depending on another page, so the (small) catalog-loading logic is duplicated here
  * from the same lower-layer (`features`/`shared`) building blocks instead of reaching across pages.
  * `t` is bound with its own `useTranslation` call for the same reason as that hook: i18next's
@@ -47,8 +47,8 @@ export function useGoalCatalog() {
     [upgrades]
   )
 
-  // Battle economics (energy cost) for the estimation engine (plan §16 phase 4) — mirrors
-  // `pages/lookup/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
+  // Battle economics (energy cost) for the estimation engine (plan В§16 phase 4) вЂ” mirrors
+  // `pages/library/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
   // page-can't-import-page reason as the rest of this hook.
   const campaignBattles = useLiveQuery(() => getCampaignBattles(), [])
   const battlesById = useMemo(
@@ -62,8 +62,8 @@ export function useGoalCatalog() {
     [campaignBattles]
   )
 
-  // Event-vs-standing-campaign detection for the Insights view's campaign/event scoring (plan §16
-  // phase 7) — mirrors `pages/lookup/.../use-character-lookup-catalog.ts`'s `releaseTypeByGroupId`,
+  // Event-vs-standing-campaign detection for the Insights view's campaign/event scoring (plan В§16
+  // phase 7) вЂ” mirrors `pages/library/.../use-character-lookup-catalog.ts`'s `releaseTypeByGroupId`,
   // duplicated for the same page-can't-import-page reason as the rest of this hook.
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
   const releaseTypeByGroupId = useMemo(
@@ -90,7 +90,7 @@ export function useGoalCatalog() {
     [charactersById, t]
   )
 
-  // Machines of War (plan §16 phase 6) — no `mows` i18n namespace exists (MoW catalog records already
+  // Machines of War (plan В§16 phase 6) вЂ” no `mows` i18n namespace exists (MoW catalog records already
   // carry a plain display `name`, unlike character ids which key into translated strings), so this
   // groups on the raw catalog name directly rather than going through `t()`.
   const mowsById = useLiveQuery(() => getMowsMap(), [])
@@ -107,7 +107,7 @@ export function useGoalCatalog() {
     [mowsById, t]
   )
 
-  // Combined "Unit" picker (plan: merge the Character/Mow tabs into one) — same faction, same
+  // Combined "Unit" picker (plan: merge the Character/Mow tabs into one) вЂ” same faction, same
   // group, Characters and Mows interleaved together rather than shown as separate faction lists.
   const unitGroups = useMemo(
     () => mergeUnitGroups(characterGroups, mowGroups),
@@ -121,14 +121,14 @@ export function useGoalCatalog() {
 
   const getMow = (unitId: UnitId) => mowsById?.get(unitId)
 
-  // The shared ascension-orb/shard cost ladder + per-rarity unlock-shard table (plan §16 phase 7) —
+  // The shared ascension-orb/shard cost ladder + per-rarity unlock-shard table (plan В§16 phase 7) вЂ”
   // both single catalog-wide tables, not per-character, so no grouping/id-lookup helper beyond the
   // map itself is needed.
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
 
   /** Display name for a goal row (list/grid). Character and Mow entities resolve via the catalog
-   * (upgrade entity types fall back to the raw id — see Phase 3 scope notes). */
+   * (upgrade entity types fall back to the raw id вЂ” see Phase 3 scope notes). */
   const getEntityName = (entityType: string, entityId: string) => {
     if (entityType === "Mow") {
       return mowsById?.get(entityId)?.name ?? entityId

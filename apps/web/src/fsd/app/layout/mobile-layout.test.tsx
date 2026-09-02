@@ -110,11 +110,11 @@ describe("MobileHeader", () => {
   })
 
   it("renders the active section's child pages as a tab row in the header", () => {
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    renderShell(vi.fn(), true, "/lookup/mow", lookup)
+    const lookup = navItems.find((item) => item.path === "/library")!
+    renderShell(vi.fn(), true, "/library/machines-of-war", lookup)
 
     expect(screen.getByTestId("section-tabs")).toBeInTheDocument()
-    expect(screen.getByTestId("section-tab-lookup-mow")).toHaveAttribute(
+    expect(screen.getByTestId("section-tab-library-mow")).toHaveAttribute(
       "data-state",
       "active"
     )
@@ -175,7 +175,7 @@ describe("MobileBottomNav actions", () => {
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
 
-    expect(drawer.getByText("unitLookup.tabs.character")).toBeVisible()
+    expect(drawer.getByText("unitLookup.tabs.characters")).toBeVisible()
     expect(drawer.getByText("goals.tabs.projects")).toBeVisible()
     expect(drawer.getByText("Campaign Events")).toBeVisible()
     expect(drawer.getByText("guild.tabs.members")).toBeVisible()
@@ -193,7 +193,7 @@ describe("MobileBottomNav actions", () => {
     expect(
       drawer.queryByText("progress.tabs.campaigns")
     ).not.toBeInTheDocument()
-    expect(drawer.queryByText("nav.lookup")).not.toBeInTheDocument()
+    expect(drawer.queryByText("nav.library")).not.toBeInTheDocument()
     // Clicking the filtered result links directly to that child page's own route.
     expect(drawer.getByText("Campaign Events").closest("a")).toHaveAttribute(
       "href",
@@ -207,9 +207,9 @@ describe("MobileBottomNav actions", () => {
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
 
-    expect(drawer.getByText("nav.lookupDescription")).toBeVisible()
+    expect(drawer.getByText("nav.libraryDescription")).toBeVisible()
     expect(
-      drawer.getByText("unitLookup.tabs.characterDescription")
+      drawer.getByText("unitLookup.tabs.charactersDescription")
     ).toBeVisible()
   })
 
@@ -220,13 +220,13 @@ describe("MobileBottomNav actions", () => {
     const drawer = within(screen.getByTestId("mobile-menu"))
 
     fireEvent.change(screen.getByLabelText("nav.search"), {
-      target: { value: "unitLookup.tabs.npcDescription" },
+      target: { value: "unitLookup.tabs.npcsDescription" },
     })
 
-    expect(drawer.getByText("nav.lookup")).toBeVisible()
-    expect(drawer.getByText("unitLookup.tabs.npc")).toBeVisible()
+    expect(drawer.getByText("nav.library")).toBeVisible()
+    expect(drawer.getByText("unitLookup.tabs.npcs")).toBeVisible()
     expect(
-      drawer.queryByText("unitLookup.tabs.character")
+      drawer.queryByText("unitLookup.tabs.characters")
     ).not.toBeInTheDocument()
   })
 
@@ -283,7 +283,7 @@ describe("MobileBottomNav actions", () => {
     usePlayerDataSyncStatusMock.mockReturnValue({
       status: "syncing",
       isSyncing: true,
-      statusText: "Syncing…",
+      statusText: "SyncingР Р†Р вЂљР’В¦",
       syncNow: vi.fn(),
     })
     renderShell()

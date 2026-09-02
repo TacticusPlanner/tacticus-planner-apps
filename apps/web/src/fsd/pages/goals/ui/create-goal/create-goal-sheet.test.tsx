@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen, within } from "@/test/render"
 import { lastRank } from "@workspace/game-domain"
 
-// Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
-// pages/lookup/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
+// Minimal stand-in for dexie-react-hooks' real `useLiveQuery` вЂ” mirrors
+// pages/library/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
 // directly below, so it only needs to handle a synchronous value and a resolving promise.
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
@@ -79,7 +79,7 @@ vi.mock("@azure/msal-react", () => ({
     accounts: [account],
     instance: { getActiveAccount: () => account },
   }),
-  // true so useGoalPrefill actually calls getPlayerCharacter (below) — its per-test mocked
+  // true so useGoalPrefill actually calls getPlayerCharacter (below) вЂ” its per-test mocked
   // resolution is how these tests control whether the selected character reads as locked/owned.
   useIsAuthenticated: () => true,
 }))
@@ -91,11 +91,11 @@ const characters = new Map([
       id: "hero1",
       name: "Hero One",
       faction: "Ultramarines",
-      // Backs the Unlock card's "X out of Y shards required to unlock at R" — R is this.
+      // Backs the Unlock card's "X out of Y shards required to unlock at R" вЂ” R is this.
       initialRarity: "Common",
       // guaranteed: true (dropRate 1) against B1's energyCost: 10 below gives a clean 10-energy-
       // per-shard figure for the shard-location selector's energy math. ASE28 is a mythic-shard
-      // node (isMythic: true) — present in the catalog data purely to back the "Unlock never
+      // node (isMythic: true) вЂ” present in the catalog data purely to back the "Unlock never
       // offers a mythic location, Ascension offers it only once its range needs mythic shards"
       // tests below; it must never appear on the Unlock card regardless of range.
       shardLocations: [
@@ -118,7 +118,7 @@ const upgrades = [
     stat: "Health",
     craftable: false,
     recipe: [],
-    // Farmable at a guaranteed-drop node so the estimate preview (plan §16 phase 4) has something to
+    // Farmable at a guaranteed-drop node so the estimate preview (plan В§16 phase 4) has something to
     // compute for the default Stone1 -> Stone2 range selectCharacter() lands on.
     farmLocations: [
       {
@@ -229,7 +229,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignBattles: () => battles,
   getCampaignDefinitions: () => [],
   // Common:None -> Common:OneStar (the default range a locked character's Ascension card lands
-  // on) costs 20 regular shards — backs the Ascension card's own energy-for-remaining-shards line.
+  // on) costs 20 regular shards вЂ” backs the Ascension card's own energy-for-remaining-shards line.
   getAscensionCostsMap: () =>
     new Map([
       [
@@ -242,7 +242,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
           orbRarity: null,
         },
       ],
-      // Crossing into this step costs mythic shards — backs the "Ascension only offers the
+      // Crossing into this step costs mythic shards вЂ” backs the "Ascension only offers the
       // mythic shard-location group once its range actually needs mythic shards" test below.
       // "TwoBlueStars" (unlike "OneBlueStar") has no Legendary-tier counterpart in
       // progressionOrder, so its star label is unambiguous in the progression-end picker.
@@ -257,7 +257,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
         },
       ],
     ]),
-  // Y in the Unlock card's "X out of Y shards required to unlock at R" — 30 total for Common.
+  // Y in the Unlock card's "X out of Y shards required to unlock at R" вЂ” 30 total for Common.
   getUnlockShardCostsMap: () =>
     new Map([["Common", { rarity: "Common", shards: 30 }]]),
   getOnslaughtRewards: () => [],
@@ -270,7 +270,7 @@ const getInventoryUpgrades = vi.fn()
 const getInventoryXpBooks = vi.fn()
 const getPlayerInventoryItems = vi.fn()
 const getInventoryShard = vi.fn()
-// Backs the picker's locked-unit lookup — empty roster by default (no test here asserts on the
+// Backs the picker's locked-unit lookup вЂ” empty roster by default (no test here asserts on the
 // lock badge itself, that's covered by unit-combobox.test.tsx).
 const getPlayerCharacters = vi.fn(() => Promise.resolve([]))
 const getPlayerMows = vi.fn(() => Promise.resolve([]))
@@ -296,14 +296,14 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
-  // Backs useGoalTypeConflicts' active/paused-goal lookup — empty by default (no test here asserts
+  // Backs useGoalTypeConflicts' active/paused-goal lookup вЂ” empty by default (no test here asserts
   // on the same-kind-goal-exists disable message, that's covered by use-goal-type-conflicts.test.ts).
   goalQueries: {
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
       queryFn: () => listGoals(),
     }),
-    // Backs use-per-project-estimates.ts's per-goal detail fetch — never actually called while
+    // Backs use-per-project-estimates.ts's per-goal detail fetch вЂ” never actually called while
     // projectQueries.goals (above) returns no members, but stubbed defensively all the same.
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
@@ -316,7 +316,7 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
   projectQueries: {
-    // Backs use-per-project-estimates.ts's per-project member lookup — empty by default (no test
+    // Backs use-per-project-estimates.ts's per-project member lookup вЂ” empty by default (no test
     // here asserts on the per-project duration preview itself, that's covered by
     // per-project-estimate.test.ts), which also keeps it from ever needing goalQueries.detail.
     goals: (projectId: string) => ({
@@ -360,7 +360,7 @@ describe("CreateGoalSheet", () => {
     listGoals.mockReset()
     listGoals.mockResolvedValue({ goals: [] })
 
-    // Owned, nothing applied yet — numerically identical missingUpgrades/estimate math to an
+    // Owned, nothing applied yet вЂ” numerically identical missingUpgrades/estimate math to an
     // undefined playerCharacter, but not locked, so most tests exercise the plain (no
     // auto-suggestion) composer path. Locked-character tests override this per test.
     getPlayerCharacter.mockReset()
@@ -369,7 +369,7 @@ describe("CreateGoalSheet", () => {
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
       // High enough that no test's Rank/Ability target implies a level the character hasn't
-      // already reached (see needsLevel in use-goal-prerequisites.ts) — otherwise a Level goal
+      // already reached (see needsLevel in use-goal-prerequisites.ts) вЂ” otherwise a Level goal
       // gets auto-suggested and included, changing review-item/submitted-goal counts most tests
       // here don't expect. Below MAX_CHARACTER_LEVEL so the Level toggle itself stays enabled.
       // Tests specifically covering Level auto-suggestion/creation override this per test.
@@ -396,7 +396,7 @@ describe("CreateGoalSheet", () => {
     )
 
     await selectCharacter()
-    // Wait for useGoalPrefill's getPlayerCharacter() to resolve (owned, per the beforeEach mock) —
+    // Wait for useGoalPrefill's getPlayerCharacter() to resolve (owned, per the beforeEach mock) вЂ”
     // before it resolves, isLocked reads its pre-resolution default (locked), which would also
     // include an auto-suggested Unlock in the submission this test isn't testing for.
     await vi.waitFor(() => {
@@ -404,7 +404,7 @@ describe("CreateGoalSheet", () => {
         screen.getByTestId("create-goal-type-toggle-Rank")
       ).not.toBeDisabled()
     })
-    // No goal type is preselected — turn Rank on explicitly.
+    // No goal type is preselected вЂ” turn Rank on explicitly.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
     await vi.waitFor(() => {
       expect(
@@ -463,7 +463,7 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(within(await screen.findByRole("listbox")).getByText("42"))
 
     // 31 -> 42 with 0 partial xp needs a non-zero books/gold cost (exact figures are covered by
-    // level-xp-cost.test.ts's own unit coverage — this file's `t` mock doesn't interpolate options,
+    // level-xp-cost.test.ts's own unit coverage вЂ” this file's `t` mock doesn't interpolate options,
     // so the count/gold values themselves aren't observable through rendered text here).
     await vi.waitFor(() => {
       const cost = screen.getByTestId("create-goal-level-cost")
@@ -579,7 +579,7 @@ describe("CreateGoalSheet", () => {
     )
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
-    // Wait for the actual reset (not just the createCombinedGoals call) — the mocked call
+    // Wait for the actual reset (not just the createCombinedGoals call) вЂ” the mocked call
     // registers synchronously, before its resolved promise lets handleSubmit's resetForm() run.
     await vi.waitFor(() => {
       expect(
@@ -658,7 +658,7 @@ describe("CreateGoalSheet", () => {
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
-    // No project checkbox clicked — the estimate still resolves, against the default project.
+    // No project checkbox clicked вЂ” the estimate still resolves, against the default project.
     await vi.waitFor(() => {
       expect(
         screen.getByTestId("create-goal-project-estimate-proj-1")
@@ -669,7 +669,7 @@ describe("CreateGoalSheet", () => {
   it("renders sections in order: config cards, then prerequisite suggestions, then project selection, then the review", async () => {
     // A locked character (getPlayerCharacter unresolved) is what puts a prerequisite-suggestion
     // checkbox and a config card and the review on screen simultaneously (see the auto-suggests
-    // test below) — reused here purely to compare their DOM positions.
+    // test below) вЂ” reused here purely to compare their DOM positions.
     getPlayerCharacter.mockResolvedValue(undefined)
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
@@ -714,7 +714,7 @@ describe("CreateGoalSheet", () => {
 
     const location = await screen.findByTestId("create-goal-shard-location-B1")
     // Full campaign battle name (resolved from the "campaign1"/Standard descriptor + node number),
-    // not the raw battle id — the mocked t() returns each key's defaultValue, so the campaign's own
+    // not the raw battle id вЂ” the mocked t() returns each key's defaultValue, so the campaign's own
     // name resolves to its untranslated nameKey ("indomitus") while the "Standard" difficulty word
     // (no defaultValue passed for it) falls back to its raw i18n key.
     expect(location).toHaveTextContent("indomitus")
@@ -724,7 +724,7 @@ describe("CreateGoalSheet", () => {
       "goals.create.shardLocations.energyPerShard"
     )
     // B1 is the character's only regular shard location, so it's selected by default without any
-    // click — the user is never required to pick a location before an estimate is available.
+    // click вЂ” the user is never required to pick a location before an estimate is available.
     await vi.waitFor(() => {
       expect(
         screen.getByTestId("create-goal-shard-location-checkbox-B1")
@@ -805,7 +805,7 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
 
     // The default Common:None -> Common:None range needs no shards at all, so the selector
-    // correctly stays hidden until the target actually crosses a step that costs regular shards —
+    // correctly stays hidden until the target actually crosses a step that costs regular shards вЂ”
     // advance to Common:OneStar (20 regular shards per the ascension-costs fixture above).
     fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
     const listbox = await screen.findByRole("listbox")
@@ -819,7 +819,7 @@ describe("CreateGoalSheet", () => {
       1
     )
 
-    // Enabling Unlock alongside it moves the (shared, single) selector to Unlock's card — never
+    // Enabling Unlock alongside it moves the (shared, single) selector to Unlock's card вЂ” never
     // duplicated across both at once.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
     await vi.waitFor(() => {
@@ -862,12 +862,12 @@ describe("CreateGoalSheet", () => {
     })
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
 
-    // Default Common:None -> Common:None range needs nothing yet — no mythic group.
+    // Default Common:None -> Common:None range needs nothing yet вЂ” no mythic group.
     expect(
       screen.queryByTestId("create-goal-shard-locations-mythic")
     ).not.toBeInTheDocument()
 
-    // Advance all the way to Mythic:TwoBlueStars (8 mythic shards per the fixture above) — now the
+    // Advance all the way to Mythic:TwoBlueStars (8 mythic shards per the fixture above) вЂ” now the
     // mythic group appears, listing ASE28 (never B1, which is regular-only).
     fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
     const listbox = await screen.findByRole("listbox")
@@ -898,7 +898,7 @@ describe("CreateGoalSheet", () => {
       )
     })
 
-    // Milestones needs a range spanning at least 2 milestone tiers — the default Stone1 -> Stone2
+    // Milestones needs a range spanning at least 2 milestone tiers вЂ” the default Stone1 -> Stone2
     // range is too short, so widen the target first.
     fireEvent.click(screen.getByTestId("create-goal-rank-end"))
     fireEvent.click(
@@ -978,7 +978,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    // No goal type is preselected — turn Unlock on explicitly.
+    // No goal type is preselected вЂ” turn Unlock on explicitly.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -989,7 +989,7 @@ describe("CreateGoalSheet", () => {
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Unlock",
-        // farmingLocationIds defaults to the character's only regular shard location (B1) — no
+        // farmingLocationIds defaults to the character's only regular shard location (B1) вЂ” no
         // rank/progression/ability target exists for Unlock, which is what this test guards.
         config: { farmingLocationIds: ["B1"] },
         dependsOnIndex: [],
@@ -1048,7 +1048,7 @@ describe("CreateGoalSheet", () => {
     expect(
       within(listbox).getByText("goals.create.upgrade.required")
     ).toBeInTheDocument()
-    // "Crafted Attack" (c1) is crafted — never offered as a direct Upgrade-goal target, only its
+    // "Crafted Attack" (c1) is crafted вЂ” never offered as a direct Upgrade-goal target, only its
     // own base upgrade(s) are (see characterRelevantUpgradeQuantities's own doc comment).
     expect(
       within(listbox).queryByText("Crafted Attack")
@@ -1095,7 +1095,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    // Wait for getPlayerCharacter() to resolve (owned, per the beforeEach mock) — the pre-resolution
+    // Wait for getPlayerCharacter() to resolve (owned, per the beforeEach mock) вЂ” the pre-resolution
     // window still reads as locked, same caveat the other tests here call out.
     await vi.waitFor(() => {
       expect(
@@ -1118,7 +1118,7 @@ describe("CreateGoalSheet", () => {
         screen.getByTestId("create-goal-type-toggle-Unlock")
       ).not.toBeDisabled()
     })
-    // No goal type is preselected — turn Unlock on explicitly.
+    // No goal type is preselected вЂ” turn Unlock on explicitly.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -1142,7 +1142,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
-    // No goal type is preselected — turn Rank on explicitly, which is what triggers the auto-
+    // No goal type is preselected вЂ” turn Rank on explicitly, which is what triggers the auto-
     // suggested Unlock prerequisite for a locked entity, and (Stone1 -> Stone2 implies level 3, a
     // locked character conservatively assumed to start at level 1) the auto-suggested Level goal.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -1274,7 +1274,7 @@ describe("CreateGoalSheet", () => {
 
   it("creates an Ability goal for the selected Machine of War, with no Rank toggle offered", async () => {
     // Owned (mirrors the Character "plain" tests' getPlayerCharacter override) so this test exercises
-    // the no-auto-suggestion path — an undefined playerMow would auto-suggest Unlock, like the locked-
+    // the no-auto-suggestion path вЂ” an undefined playerMow would auto-suggest Unlock, like the locked-
     // character test above.
     getPlayerMow.mockResolvedValue({
       progressionIndex: "Common:None",
@@ -1285,7 +1285,7 @@ describe("CreateGoalSheet", () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectMow()
-    // Wait for useGoalPrefill's getPlayerMow() to resolve (owned) — before it resolves, isLocked
+    // Wait for useGoalPrefill's getPlayerMow() to resolve (owned) вЂ” before it resolves, isLocked
     // reads its pre-resolution default (locked), which would also auto-suggest Unlock once Ability
     // is turned on below. The Unlock toggle going disabled is the observable sign that the owned
     // data has landed.
@@ -1302,7 +1302,7 @@ describe("CreateGoalSheet", () => {
       screen.getByTestId("create-goal-type-toggle-Ability")
     ).toBeInTheDocument()
 
-    // No goal type is preselected — turn Ability on explicitly.
+    // No goal type is preselected вЂ” turn Ability on explicitly.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
 
     await vi.waitFor(() => {

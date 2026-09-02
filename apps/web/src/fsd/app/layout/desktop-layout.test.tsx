@@ -26,7 +26,7 @@ vi.mock("@/shared/auth", () => ({
 }))
 
 // `./nav-items` reads `isUiKitEnabled` from the real module's barrel, which also re-exports the
-// i18n setup that calls `initReactI18next` at import time — incompatible with the plain
+// i18n setup calls `initReactI18next` at import time, which is incompatible with the plain
 // `useTranslation` mock above. `true` matches the non-production default so `navItems` keeps its
 // UI Kit entry.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
@@ -55,7 +55,7 @@ function identityEntryPath(item: NavItem) {
 }
 
 const homeItem = navItems.find((item) => item.path === "/home")!
-const lookupItem = navItems.find((item) => item.path === "/lookup")!
+const lookupItem = navItems.find((item) => item.path === "/library")!
 
 // Exercises `DesktopShell` together with the real `useSectionEntryPath` hook, the same way
 // `ShellContent` wires them in `app-shell.tsx`, so entry-path resolution is tested end to end.
@@ -133,7 +133,7 @@ describe("DesktopShell", () => {
     )
 
     // The sidebar collapses to an icon rail rather than going off-canvas (see sidebar.tsx's "icon"
-    // mode), so it stays reachable while collapsed — only one trigger is needed, and it lives in
+    // mode), so it stays reachable while collapsed: only one trigger is needed, and it lives in
     // the sidebar itself rather than being duplicated in the persistent content header.
     const sidebar = document.querySelector('[data-slot="sidebar"]')
     expect(sidebar).not.toBeNull()
@@ -172,9 +172,9 @@ describe("DesktopShell", () => {
     expect(screen.getByText("Your account overview")).toBeInTheDocument()
   })
 
-  it("shows a plain '{Section} › {Active child}' breadcrumb in the header for a section with children", () => {
+  it("shows a plain '{Section} Р В Р вЂ Р В РІР‚С™Р РЋРІР‚Сњ {Active child}' breadcrumb in the header for a section with children", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
@@ -191,7 +191,7 @@ describe("DesktopShell", () => {
 
     const title = screen.getByTestId("section-header-title")
     expect(title).toHaveTextContent("Lookup")
-    expect(title).toHaveTextContent("unitLookup.tabs.mow")
+    expect(title).toHaveTextContent("unitLookup.tabs.machinesOfWar")
     // Child navigation no longer lives in the header at all - neither segment is interactive.
     expect(within(title).queryByRole("link")).not.toBeInTheDocument()
     expect(within(title).queryByRole("button")).not.toBeInTheDocument()
@@ -201,7 +201,7 @@ describe("DesktopShell", () => {
 
   it("renders every child page as a row in the sidebar's own flyout, not the header", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
@@ -211,9 +211,9 @@ describe("DesktopShell", () => {
             sectionTitle="Lookup"
             onCreateGoal={vi.fn()}
             // Real `getEntryPath` implementations never resolve to the bare, unrouted parent path
-            // (see use-section-entry-path.ts) - matching that here keeps the route on /lookup/mow
+            // (see use-section-entry-path.ts) - matching that here keeps the route on /library/machines-of-war
             // across the click below, the same as production, so the active-child assertions hold.
-            getEntryPath={() => "/lookup/mow"}
+            getEntryPath={() => "/library/machines-of-war"}
           />
         </TooltipProvider>
       </MemoryRouter>
@@ -223,14 +223,16 @@ describe("DesktopShell", () => {
     // assertion to the header, the thing this change flattened.
     const header = document.querySelector("header")!
     expect(
-      within(header).queryByRole("link", { name: "unitLookup.tabs.mow" })
+      within(header).queryByRole("link", {
+        name: "unitLookup.tabs.machinesOfWar",
+      })
     ).not.toBeInTheDocument()
 
     // The flyout's content only mounts once open - the row's own click handler opens it
     // immediately (alongside navigating), so use that instead of simulating a hover delay.
-    fireEvent.click(screen.getByTestId("desktop-nav-lookup"))
+    fireEvent.click(screen.getByTestId("desktop-nav-library"))
 
-    const flyout = screen.getByTestId("desktop-nav-flyout-lookup")
+    const flyout = screen.getByTestId("desktop-nav-flyout-library")
     expect(
       within(flyout).getByRole("link", { name: /unitLookup\.tabs\.mow/ })
     ).toHaveAttribute("aria-current", "page")
@@ -244,7 +246,7 @@ describe("DesktopShell", () => {
 
   it("still navigates a section's own sidebar row via its entry path when the row also has a flyout", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
@@ -253,7 +255,7 @@ describe("DesktopShell", () => {
             pageDescription="Lookup description"
             sectionTitle="Lookup"
             onCreateGoal={vi.fn()}
-            getEntryPath={() => "/lookup/npc"}
+            getEntryPath={() => "/library/npcs"}
           />
         </TooltipProvider>
       </MemoryRouter>
@@ -261,15 +263,15 @@ describe("DesktopShell", () => {
 
     // Clicking the section's own row uses whatever `getEntryPath` resolves - not a child clicked
     // inside its flyout - confirming the flyout is additive rather than a replacement for it.
-    expect(screen.getByTestId("desktop-nav-lookup")).toHaveAttribute(
+    expect(screen.getByTestId("desktop-nav-library")).toHaveAttribute(
       "href",
-      "/lookup/npc"
+      "/library/npcs"
     )
   })
 
   it("still finds and searches the full hierarchy via navigation search", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
@@ -286,7 +288,7 @@ describe("DesktopShell", () => {
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
     fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
-      target: { value: "unitLookup.tabs.mow" },
+      target: { value: "unitLookup.tabs.machinesOfWar" },
     })
 
     expect(
@@ -296,7 +298,7 @@ describe("DesktopShell", () => {
       name: /^unitLookup\.tabs\.mow/,
     })
     expect(mowResult).toHaveAttribute("aria-current", "page")
-    expect(mowResult).toHaveAttribute("href", "/lookup/mow")
+    expect(mowResult).toHaveAttribute("href", "/library/machines-of-war")
     expect(
       screen.queryByRole("link", { name: /^unitLookup\.tabs\.character/ })
     ).not.toBeInTheDocument()
@@ -304,7 +306,7 @@ describe("DesktopShell", () => {
 
   it("shows each result's description beneath its label in navigation search, for top-level and child items", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
@@ -323,16 +325,16 @@ describe("DesktopShell", () => {
     const dialog = screen.getByTestId("desktop-navigation-dialog")
 
     expect(
-      within(dialog).getByText("nav.lookupDescription")
+      within(dialog).getByText("nav.libraryDescription")
     ).toBeInTheDocument()
     expect(
-      within(dialog).getByText("unitLookup.tabs.mowDescription")
+      within(dialog).getByText("unitLookup.tabs.machinesOfWarDescription")
     ).toBeInTheDocument()
   })
 
   it("finds an item by a query that only matches its description", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
             isAuthenticated
@@ -349,7 +351,7 @@ describe("DesktopShell", () => {
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
     fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
-      target: { value: "unitLookup.tabs.npcDescription" },
+      target: { value: "unitLookup.tabs.npcsDescription" },
     })
 
     expect(
@@ -427,15 +429,15 @@ describe("DesktopShell", () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByTestId("desktop-nav-lookup")).toHaveAttribute(
+    expect(screen.getByTestId("desktop-nav-library")).toHaveAttribute(
       "href",
-      "/lookup"
+      "/library"
     )
   })
 
   it("navigates a multi-child section to its last-visited child after visiting one", () => {
     render(
-      <MemoryRouter initialEntries={["/lookup/mow"]}>
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <EntryPathHarness />
         </TooltipProvider>
@@ -445,9 +447,9 @@ describe("DesktopShell", () => {
     // Switch to a different top-level section - Lookup's sidebar link should now remember /mow.
     fireEvent.click(screen.getByTestId("desktop-nav-progress"))
 
-    expect(screen.getByTestId("desktop-nav-lookup")).toHaveAttribute(
+    expect(screen.getByTestId("desktop-nav-library")).toHaveAttribute(
       "href",
-      "/lookup/mow"
+      "/library/machines-of-war"
     )
   })
 

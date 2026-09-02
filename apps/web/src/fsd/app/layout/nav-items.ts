@@ -13,15 +13,16 @@ import { isUiKitEnabled } from "@/shared/config"
 
 type NavLabelKey =
   | "nav.home"
-  | "nav.lookup"
+  | "nav.library"
   | "nav.goals"
   | "nav.progress"
   | "nav.uiKit"
   | "nav.guild"
   | "nav.dailies"
-  | "unitLookup.tabs.character"
-  | "unitLookup.tabs.mow"
-  | "unitLookup.tabs.npc"
+  | "unitLookup.tabs.characters"
+  | "unitLookup.tabs.machinesOfWar"
+  | "unitLookup.tabs.npcs"
+  | "unitLookup.tabs.raidBosses"
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
@@ -77,27 +78,32 @@ export const navItems: NavItem[] = [
     mobilePlacement: "primary",
   },
   {
-    path: "/lookup",
-    labelKey: "nav.lookup",
-    descriptionKey: "nav.lookupDescription",
+    path: "/library",
+    labelKey: "nav.library",
+    descriptionKey: "nav.libraryDescription",
     icon: Search,
     anonymousAllowed: true,
     mobilePlacement: "menu",
     children: [
       {
-        path: "/lookup/character",
-        labelKey: "unitLookup.tabs.character",
-        descriptionKey: "unitLookup.tabs.characterDescription",
+        path: "/library/characters",
+        labelKey: "unitLookup.tabs.characters",
+        descriptionKey: "unitLookup.tabs.charactersDescription",
       },
       {
-        path: "/lookup/mow",
-        labelKey: "unitLookup.tabs.mow",
-        descriptionKey: "unitLookup.tabs.mowDescription",
+        path: "/library/machines-of-war",
+        labelKey: "unitLookup.tabs.machinesOfWar",
+        descriptionKey: "unitLookup.tabs.machinesOfWarDescription",
       },
       {
-        path: "/lookup/npc",
-        labelKey: "unitLookup.tabs.npc",
-        descriptionKey: "unitLookup.tabs.npcDescription",
+        path: "/library/npcs",
+        labelKey: "unitLookup.tabs.npcs",
+        descriptionKey: "unitLookup.tabs.npcsDescription",
+      },
+      {
+        path: "/library/raid-bosses",
+        labelKey: "unitLookup.tabs.raidBosses",
+        descriptionKey: "unitLookup.tabs.raidBossesDescription",
       },
     ],
   },

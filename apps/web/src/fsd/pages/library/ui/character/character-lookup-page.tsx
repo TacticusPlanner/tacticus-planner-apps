@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -32,6 +33,9 @@ export function CharacterLookupPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
+  const { characterId: routeCharacterId } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   useTourPageSteps(useCharacterLookupTutorial())
 
@@ -53,14 +57,41 @@ export function CharacterLookupPage() {
     setDraftProgressionRange,
     setDraftPointFive,
     handleApply,
-  } = useLookupSelection()
+  } = useLookupSelection(routeCharacterId)
 
   const handleCharacterChange = (id: UnitId) => {
     setDraftCharacterId(id)
+    navigate({
+      pathname: `/library/characters/${id}`,
+      search: location.search,
+    })
   }
 
   const draftCharacterId =
     draft.characterId ?? characterGroups[0]?.members[0]?.id
+
+  useEffect(() => {
+    const firstCharacterId = characterGroups[0]?.members[0]?.id
+    const routeCharacterIsAvailable =
+      !!routeCharacterId && !!charactersById?.has(routeCharacterId)
+
+    if (!loading && firstCharacterId && !routeCharacterIsAvailable) {
+      navigate(
+        {
+          pathname: `/library/characters/${firstCharacterId}`,
+          search: location.search,
+        },
+        { replace: true }
+      )
+    }
+  }, [
+    charactersById,
+    characterGroups,
+    loading,
+    location.search,
+    navigate,
+    routeCharacterId,
+  ])
 
   // Synced player record for the currently selected character only (not the whole roster) — used
   // just to prefill the "from" rank/progression once it loads, see the effect below. MoWs are

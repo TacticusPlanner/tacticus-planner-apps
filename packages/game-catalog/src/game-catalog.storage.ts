@@ -12,6 +12,7 @@ export type StorageModel<K extends GameCatalogDatasetKey> =
 // each time.
 export type CharacterStorageModel = StorageModel<"characters">
 export type MowStorageModel = StorageModel<"mows">
+export type NpcStorageModel = StorageModel<"npcs">
 export type AscensionCostStorageModel = StorageModel<"ascension-costs">
 export type UnlockShardCostStorageModel = StorageModel<"unlock-shard-costs">
 export type OnslaughtRewardStorageModel = StorageModel<"onslaught-rewards">

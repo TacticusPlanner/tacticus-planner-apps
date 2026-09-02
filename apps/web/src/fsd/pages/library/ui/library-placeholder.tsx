@@ -1,7 +1,11 @@
 import { useTranslation } from "react-i18next"
 
-/** "Coming soon" placeholder for the Lookup tabs that don't have real content yet. */
-export function LookupPlaceholder({ tab }: { tab: "mow" | "npc" }) {
+/** Placeholder for Library collections that do not have a detail view yet. */
+export function LookupPlaceholder({
+  tab,
+}: {
+  tab: "mow" | "npc" | "raidBoss"
+}) {
   const { t } = useTranslation()
 
   return (

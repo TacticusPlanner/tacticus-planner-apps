@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
@@ -58,6 +58,12 @@ export function AppShell() {
   // Desktop's header title stays pinned to the top-level section (never swaps to the active
   // child, unlike `pageTitle` above) — see design.md's "Desktop header composition" decision.
   const sectionTitle = activeItem ? t(activeItem.labelKey) : undefined
+
+  useEffect(() => {
+    document.title = pageTitle
+      ? `${pageTitle} | ${t("app.name")}`
+      : t("app.name")
+  }, [pageTitle, t])
 
   return (
     <GameCatalogProvider baseUrl={apiBaseUrl}>

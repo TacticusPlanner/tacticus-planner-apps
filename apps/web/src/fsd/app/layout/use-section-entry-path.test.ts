@@ -18,32 +18,32 @@ describe("useSectionEntryPath", () => {
   it("falls back to the section's own path on first visit", () => {
     const { result } = renderHook(() => useSectionEntryPath(navItems, "/home"))
 
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    expect(result.current.getEntryPath(lookup)).toBe("/lookup")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    expect(result.current.getEntryPath(lookup)).toBe("/library")
   })
 
   it("records a child route visited directly, not via the sidebar", () => {
     const { rerender, result } = renderHook(
       ({ pathname }) => useSectionEntryPath(navItems, pathname),
-      { initialProps: { pathname: "/lookup/mow" } }
+      { initialProps: { pathname: "/library/machines-of-war" } }
     )
     // Re-render on a different route so the effect from the initial mount has run.
     rerender({ pathname: "/home" })
 
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    expect(result.current.getEntryPath(lookup)).toBe("/lookup/mow")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    expect(result.current.getEntryPath(lookup)).toBe("/library/machines-of-war")
   })
 
   it("returns the previously recorded child after visiting a different section", () => {
     const { rerender, result } = renderHook(
       ({ pathname }) => useSectionEntryPath(navItems, pathname),
-      { initialProps: { pathname: "/lookup/npc" } }
+      { initialProps: { pathname: "/library/npcs" } }
     )
     rerender({ pathname: "/progress" })
-    rerender({ pathname: "/lookup" })
+    rerender({ pathname: "/library" })
 
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    expect(result.current.getEntryPath(lookup)).toBe("/lookup/npc")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    expect(result.current.getEntryPath(lookup)).toBe("/library/npcs")
   })
 
   it("treats Dailies as a multi-child section too, once it has children", () => {
@@ -73,25 +73,25 @@ describe("useSectionEntryPath", () => {
   it("honors a value persisted to sessionStorage on a fresh mount", () => {
     sessionStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ "/lookup": "/lookup/mow" })
+      JSON.stringify({ "/library": "/library/machines-of-war" })
     )
 
     const { result } = renderHook(() => useSectionEntryPath(navItems, "/home"))
 
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    expect(result.current.getEntryPath(lookup)).toBe("/lookup/mow")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    expect(result.current.getEntryPath(lookup)).toBe("/library/machines-of-war")
   })
 
   it("falls back to the default child when the stored path is no longer a current child", () => {
     sessionStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ "/lookup": "/lookup/retired-tab" })
+      JSON.stringify({ "/library": "/library/retired-tab" })
     )
 
     const { result } = renderHook(() => useSectionEntryPath(navItems, "/home"))
 
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    expect(result.current.getEntryPath(lookup)).toBe("/lookup")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    expect(result.current.getEntryPath(lookup)).toBe("/library")
   })
 
   it("falls back to the in-memory default when sessionStorage read/write throws", () => {
@@ -108,13 +108,13 @@ describe("useSectionEntryPath", () => {
 
     const { rerender, result } = renderHook(
       ({ pathname }) => useSectionEntryPath(navItems, pathname),
-      { initialProps: { pathname: "/lookup/mow" } }
+      { initialProps: { pathname: "/library/machines-of-war" } }
     )
 
     expect(() => rerender({ pathname: "/home" })).not.toThrow()
-    const lookup = navItems.find((item) => item.path === "/lookup")!
+    const lookup = navItems.find((item) => item.path === "/library")!
     // The write failed, but the in-memory state from this session still resolves correctly.
-    expect(result.current.getEntryPath(lookup)).toBe("/lookup/mow")
+    expect(result.current.getEntryPath(lookup)).toBe("/library/machines-of-war")
 
     getItemSpy.mockRestore()
     setItemSpy.mockRestore()

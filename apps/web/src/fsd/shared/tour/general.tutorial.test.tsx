@@ -22,7 +22,7 @@ describe("useDesktopTutorialSteps", () => {
     expect(targets).toContain('[data-testid="desktop-navigation-search"]')
     expect(targets.slice(-7)).toEqual([
       '[data-testid="desktop-nav-home"]',
-      '[data-testid="desktop-nav-lookup"]',
+      '[data-testid="desktop-nav-library"]',
       '[data-testid="desktop-nav-goals"]',
       '[data-testid="desktop-nav-dailies"]',
       '[data-testid="desktop-nav-progress"]',

@@ -74,10 +74,10 @@ export function LandingPage() {
             {t("lookups.subtitle")}
           </p>
         </div>
-        {/* Public reference pages. Add future lookups (MoW, NPC, Upgrades, Equipment, …) here. */}
+        {/* Public reference pages. Add future lookups (MoW, NPC, Upgrades, Equipment, вЂ¦) here. */}
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
-            to="/lookup"
+            to="/library"
             data-testid="landing-unit-lookup-link"
             className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >

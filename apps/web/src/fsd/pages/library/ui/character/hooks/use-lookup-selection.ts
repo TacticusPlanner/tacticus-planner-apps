@@ -35,13 +35,16 @@ export interface LookupSelection {
 const clampToCurrentMax = (rank: Rank): Rank =>
   rankIndex(rank) > rankIndex(lastRank) ? lastRank : rank
 
-function selectionFromParams(params: URLSearchParams): LookupSelection {
+function selectionFromParams(
+  params: URLSearchParams,
+  characterId?: string
+): LookupSelection {
   const start = params.get("rankStart")
   const end = params.get("rankEnd")
   const progressionStart = params.get("progressionStart")
   const progressionEnd = params.get("progressionEnd")
   return {
-    characterId: unitIdSchema.safeParse(params.get("character")).data,
+    characterId: unitIdSchema.safeParse(characterId).data,
     rankStart: clampToCurrentMax(start && isRank(start) ? start : firstRank),
     rankEnd: clampToCurrentMax(end && isRank(end) ? end : rankAt(1)),
     progressionStart:
@@ -64,20 +67,30 @@ function selectionFromParams(params: URLSearchParams): LookupSelection {
  * the rank slider from recomputing + re-rendering the whole results tree on every intermediate
  * value.
  */
-export function useLookupSelection() {
+export function useLookupSelection(characterId?: string) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [applied, setApplied] = useState<LookupSelection>(() =>
-    selectionFromParams(searchParams)
+    selectionFromParams(searchParams, characterId)
   )
   const [draft, setDraft] = useState<LookupSelection>(applied)
+  const selectionKey = `${characterId ?? ""}?${searchParams}`
+  const [trackedSelectionKey, setTrackedSelectionKey] = useState(selectionKey)
+
+  // Route/search changes must become the source of truth during the same
+  // render, before controls read draft selection state.
+  if (selectionKey !== trackedSelectionKey) {
+    const selection = selectionFromParams(searchParams, characterId)
+    setTrackedSelectionKey(selectionKey)
+    setApplied(selection)
+    setDraft(selection)
+  }
 
   const commitSelection = (selection: LookupSelection) => {
     setApplied(selection)
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev)
-        if (selection.characterId) next.set("character", selection.characterId)
-        else next.delete("character")
+        next.delete("character")
         next.set("rankStart", selection.rankStart)
         next.set("rankEnd", selection.rankEnd)
         next.set("progressionStart", selection.progressionStart)
