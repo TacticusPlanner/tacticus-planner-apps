@@ -30,6 +30,6 @@
 
 ## 6. Verify the complete public flow
 
-- [ ] 6.1 Start the full Aspire stack and manually verify at one viewport below 768px and one at or above 768px using populated Character, Machine of War, and NPC catalog data: all navigation surfaces show Library; collection URLs canonicalize to the first record; direct entity URLs, selection changes, query-state preservation, refresh, sharing, and browser history work.
-- [ ] 6.2 In the same running app, manually verify the empty Raid Boss collection remains at `/library/raid-bosses` with its no-records state, and that former `/lookup/...` URLs and `character` query identity are not treated as supported Library routes.
+- [x] 6.1 Start the full Aspire stack and manually verify at one viewport below 768px and one at or above 768px using populated Character, Machine of War, and NPC catalog data: all navigation surfaces show Library; collection URLs canonicalize to the first record; direct entity URLs, selection changes, query-state preservation, refresh, sharing, and browser history work.
+- [x] 6.2 In the same running app, manually verify the empty Raid Boss collection remains at `/library/raid-bosses` with its no-records state, and that former `/lookup/...` URLs and `character` query identity are not treated as supported Library routes.
 - [x] 6.3 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; resolve all regressions before marking the change complete.
