@@ -7,13 +7,13 @@ import type { NavItem } from "./nav-items"
 /**
  * Renders the active top-level section's child pages as a routed tab row, shared by both the
  * desktop and mobile headers - replacing each page's own previously-separate `Tabs` block
- * (`GoalsLayout`, `ProgressLayout`, `LookupPage`, `GuildRegisteredView`, `DailiesLayout`). Renders
+ * (`GoalsLayout`, `ProgressLayout`, `LibraryPage`, `GuildRegisteredView`, `DailiesLayout`). Renders
  * nothing for a section with no children (e.g. Home).
  */
 export function SectionTabs({ item }: { item: NavItem }) {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies"])
+  const { t } = useTranslation(["common", "dailies", "library"])
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const children = item.children

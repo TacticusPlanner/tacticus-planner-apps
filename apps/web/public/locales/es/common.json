@@ -134,8 +134,6 @@
     "dailiesDescription": "Tareas diarias y periódicas del juego",
     "home": "Inicio",
     "homeDescription": "Resumen de tu cuenta y accesos directos",
-    "lookup": "Consulta de rango",
-    "lookupDescription": "Consulta personajes, Máquinas de Guerra y PNJ",
     "createGoal": "Crear objetivo",
     "goals": "Objetivos",
     "goalsDescription": "Sigue tu progreso hacia tus objetivos",
@@ -217,16 +215,6 @@
       "coLeader": "Colíder",
       "officer": "Oficial",
       "member": "Miembro"
-    }
-  },
-  "unitLookup": {
-    "tabs": {
-      "character": "Personaje",
-      "characterDescription": "Consulta detalles y estadísticas de personajes",
-      "mow": "Máquinas de Guerra",
-      "mowDescription": "Consulta detalles y estadísticas de Máquinas de Guerra",
-      "npc": "PNJ",
-      "npcDescription": "Consulta detalles y estadísticas de PNJ"
     }
   },
   "progress": {

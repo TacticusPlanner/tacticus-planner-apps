@@ -1,0 +1,33 @@
+{
+  "section": {
+    "label": "Bibliothèque",
+    "description": "Parcourez les personnages, Machines de guerre, PNJ et boss de raid"
+  },
+  "collections": {
+    "characters": {
+      "label": "Personnages",
+      "description": "Parcourez les détails et statistiques des personnages"
+    },
+    "machinesOfWar": {
+      "label": "Machines de guerre",
+      "description": "Parcourez les détails et statistiques des Machines de guerre"
+    },
+    "npcs": {
+      "label": "PNJ",
+      "description": "Parcourez les détails et statistiques des PNJ"
+    },
+    "raidBosses": {
+      "label": "Boss de raid",
+      "description": "Parcourez les informations des boss de raid"
+    },
+    "noRecords": "Aucune entité sélectionnable n’est disponible.",
+    "raidBossesNoRecords": "Les boss de raid ne sont pas encore disponibles dans le catalogue."
+  },
+  "loading": "Chargement des données de la bibliothèque…",
+  "selector": {
+    "label": "Sélectionner une entité",
+    "placeholder": "Sélectionner une entité",
+    "selected": "Sélectionné : {{name}}",
+    "clear": "Effacer la sélection"
+  }
+}

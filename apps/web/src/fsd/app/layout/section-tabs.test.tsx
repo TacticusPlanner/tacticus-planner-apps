@@ -39,15 +39,14 @@ describe("SectionTabs", () => {
   })
 
   it("lists every child page and marks the active one", () => {
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    renderTabs(lookup, "/lookup/mow")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    renderTabs(lookup, "/library/machines-of-war")
 
-    expect(screen.getByTestId("section-tab-lookup-character")).toBeVisible()
-    expect(screen.getByTestId("section-tab-lookup-mow")).toHaveAttribute(
-      "data-state",
-      "active"
-    )
-    expect(screen.getByTestId("section-tab-lookup-npc")).toHaveAttribute(
+    expect(screen.getByTestId("section-tab-library-characters")).toBeVisible()
+    expect(
+      screen.getByTestId("section-tab-library-machines-of-war")
+    ).toHaveAttribute("data-state", "active")
+    expect(screen.getByTestId("section-tab-library-npcs")).toHaveAttribute(
       "data-state",
       "inactive"
     )
@@ -55,12 +54,14 @@ describe("SectionTabs", () => {
 
   it("navigates to a child's route when its tab is clicked", async () => {
     const user = userEvent.setup()
-    const lookup = navItems.find((item) => item.path === "/lookup")!
-    renderTabs(lookup, "/lookup/character")
+    const lookup = navItems.find((item) => item.path === "/library")!
+    renderTabs(lookup, "/library/characters")
 
-    await user.click(screen.getByTestId("section-tab-lookup-npc"))
+    await user.click(screen.getByTestId("section-tab-library-npcs"))
 
-    expect(screen.getByTestId("current-path")).toHaveTextContent("/lookup/npc")
+    expect(screen.getByTestId("current-path")).toHaveTextContent(
+      "/library/npcs"
+    )
   })
 
   it("still renders a single-tab row for a single-child section", () => {

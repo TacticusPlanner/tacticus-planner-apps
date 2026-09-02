@@ -4,7 +4,7 @@ import { fireEvent, render, screen, within } from "@/test/render"
 import { lastRank } from "@workspace/game-domain"
 
 // Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
-// pages/lookup/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
+// pages/library/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
 // directly below, so it only needs to handle a synchronous value and a resolving promise.
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (

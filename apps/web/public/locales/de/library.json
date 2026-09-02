@@ -1,0 +1,33 @@
+{
+  "section": {
+    "label": "Bibliothek",
+    "description": "Durchsuche Charaktere, Kriegsmaschinen, NPCs und Raid-Bosse"
+  },
+  "collections": {
+    "characters": {
+      "label": "Charaktere",
+      "description": "Charakterdetails und Werte durchsuchen"
+    },
+    "machinesOfWar": {
+      "label": "Kriegsmaschinen",
+      "description": "Details und Werte von Kriegsmaschinen durchsuchen"
+    },
+    "npcs": {
+      "label": "NPCs",
+      "description": "NPC-Details und Werte durchsuchen"
+    },
+    "raidBosses": {
+      "label": "Raid-Bosse",
+      "description": "Informationen zu Raid-Bossen durchsuchen"
+    },
+    "noRecords": "Keine auswählbaren Einheiten verfügbar.",
+    "raidBossesNoRecords": "Raid-Bosse sind noch nicht im Katalog verfügbar."
+  },
+  "loading": "Bibliotheksdaten werden geladen…",
+  "selector": {
+    "label": "Einheit auswählen",
+    "placeholder": "Einheit auswählen",
+    "selected": "Ausgewählt: {{name}}",
+    "clear": "Auswahl aufheben"
+  }
+}

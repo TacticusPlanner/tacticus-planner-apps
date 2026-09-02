@@ -69,6 +69,7 @@ export {
   type StorageModel,
   type CharacterStorageModel,
   type MowStorageModel,
+  type NpcStorageModel,
   type AscensionCostStorageModel,
   type UnlockShardCostStorageModel,
   type OnslaughtRewardStorageModel,

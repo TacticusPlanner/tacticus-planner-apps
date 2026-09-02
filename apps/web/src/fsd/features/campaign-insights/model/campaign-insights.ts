@@ -13,14 +13,14 @@ import {
 
 import type { Battle, FarmLocation } from "@/shared/lib"
 
-// Promoted from pages/lookup (Character Lookup, its original single consumer) once the Goals Insights
-// view (plan §16 phase 7) became a second — a page can't import another page's internals under this
+// Promoted from pages/library (Character Lookup, its original single consumer) once the Goals Insights
+// view (plan В§16 phase 7) became a second вЂ” a page can't import another page's internals under this
 // repo's FSD rules, and duplicating ~250 lines of scoring logic isn't reasonable the way the small
 // `dropRate` helper is elsewhere. It lives in the features layer (rather than shared/lib alongside
 // `Battle`/`FarmLocation`) since both consuming pages (goals, lookup) may import from `features/`.
 
 // `TId` defaults to `UpgradeId` (Character Lookup, the original single consumer, never needs to name
-// it explicitly) but widens to any resource-id type — e.g. Goals Insights (plan §16 phase 7) scores
+// it explicitly) but widens to any resource-id type вЂ” e.g. Goals Insights (plan В§16 phase 7) scores
 // farmable character shards through the same engine via `EstimateResourceId`, which a plain `UpgradeId`
 // can't represent.
 export interface CampaignInsightNeed<TId extends string = UpgradeId> {
@@ -29,7 +29,7 @@ export interface CampaignInsightNeed<TId extends string = UpgradeId> {
 }
 
 /** The minimal shape `computeCampaignInsights` needs from an upgrade (or other farmable resource)
- *  record — any richer record type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`)
+ *  record вЂ” any richer record type (e.g. the rank-lookup feature's `UpgradeWithFarmLocations`)
  *  satisfies this structurally. */
 export interface CampaignInsightUpgrade<TId extends string = UpgradeId> {
   id: TId
@@ -60,7 +60,7 @@ export interface CampaignInsight<TId extends string = UpgradeId> {
   id: string
   label: string
   icon?: string
-  /** Value-per-energy score — a relative ranking signal, not a meaningful absolute number. */
+  /** Value-per-energy score вЂ” a relative ranking signal, not a meaningful absolute number. */
   score: number
   /** Only set for event insights: the combined score split back into its Standard/Extremis tiers. */
   tierScores?: CampaignInsightTierScore[]
@@ -113,16 +113,16 @@ interface ChipAccumulator<TId extends string> {
 
 /**
  * Ranks each campaign a character's still-needed base upgrades can drop from, by a value-per-energy
- * score: `Σ(rarityWeight × count × dropRate)` across every upgrade droppable there, divided by the
+ * score: `ОЈ(rarityWeight Г— count Г— dropRate)` across every upgrade droppable there, divided by the
  * summed energy cost of the chip's distinct battle nodes (a node's cost counts once even if several
  * needed upgrades drop from it). Regular campaigns are kept one chip per difficulty (Standard and
  * Elite farm different node sets), but event difficulty tiers (Standard/Extremis/Challenge) are
- * merged into one chip per event so the event's total usefulness isn't split across its tiers —
+ * merged into one chip per event so the event's total usefulness isn't split across its tiers вЂ”
  * each event insight also carries a `tierScores` breakdown so the Standard and Extremis portions of
  * that combined score stay visible. Regular campaigns and events are ranked and returned separately
  * since events are time-limited and shouldn't compete with standing campaigns.
  *
- * `resolveLabel` translates a chip's `CampaignDescriptor` into display text — kept as a callback
+ * `resolveLabel` translates a chip's `CampaignDescriptor` into display text вЂ” kept as a callback
  * (rather than importing react-i18next here) so this calc function stays pure/i18n-free and
  * testable without a translation setup; callers pass `useCampaignDisplay()`'s bound resolvers.
  */

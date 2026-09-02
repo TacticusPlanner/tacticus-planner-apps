@@ -1,11 +1,11 @@
 import type { LucideIcon } from "lucide-react"
 import {
   CalendarCheck,
+  BookOpen,
   Home,
   LayoutGrid,
   ListTodo,
   TrendingUp,
-  Search,
   Users,
 } from "lucide-react"
 
@@ -13,15 +13,16 @@ import { isUiKitEnabled } from "@/shared/config"
 
 type NavLabelKey =
   | "nav.home"
-  | "nav.lookup"
   | "nav.goals"
   | "nav.progress"
   | "nav.uiKit"
   | "nav.guild"
   | "nav.dailies"
-  | "unitLookup.tabs.character"
-  | "unitLookup.tabs.mow"
-  | "unitLookup.tabs.npc"
+  | "library:section.label"
+  | "library:collections.characters.label"
+  | "library:collections.machinesOfWar.label"
+  | "library:collections.npcs.label"
+  | "library:collections.raidBosses.label"
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
@@ -46,7 +47,20 @@ type NavLabelKey =
 // Follows the sibling-leaf naming convention: a description key is always the matching label key
 // with "Description" appended, keeping descriptions co-located with their labels in each locale
 // file (e.g. `nav.home` -> `nav.homeDescription`).
-type NavDescriptionKey = `${NavLabelKey}Description`
+type NavDescriptionKey =
+  | `${Exclude<
+      NavLabelKey,
+      | "library:section.label"
+      | "library:collections.characters.label"
+      | "library:collections.machinesOfWar.label"
+      | "library:collections.npcs.label"
+      | "library:collections.raidBosses.label"
+    >}Description`
+  | "library:section.description"
+  | "library:collections.characters.description"
+  | "library:collections.machinesOfWar.description"
+  | "library:collections.npcs.description"
+  | "library:collections.raidBosses.description"
 
 export interface NavSubItem {
   path: string
@@ -77,27 +91,32 @@ export const navItems: NavItem[] = [
     mobilePlacement: "primary",
   },
   {
-    path: "/lookup",
-    labelKey: "nav.lookup",
-    descriptionKey: "nav.lookupDescription",
-    icon: Search,
+    path: "/library",
+    labelKey: "library:section.label",
+    descriptionKey: "library:section.description",
+    icon: BookOpen,
     anonymousAllowed: true,
     mobilePlacement: "menu",
     children: [
       {
-        path: "/lookup/character",
-        labelKey: "unitLookup.tabs.character",
-        descriptionKey: "unitLookup.tabs.characterDescription",
+        path: "/library/characters",
+        labelKey: "library:collections.characters.label",
+        descriptionKey: "library:collections.characters.description",
       },
       {
-        path: "/lookup/mow",
-        labelKey: "unitLookup.tabs.mow",
-        descriptionKey: "unitLookup.tabs.mowDescription",
+        path: "/library/machines-of-war",
+        labelKey: "library:collections.machinesOfWar.label",
+        descriptionKey: "library:collections.machinesOfWar.description",
       },
       {
-        path: "/lookup/npc",
-        labelKey: "unitLookup.tabs.npc",
-        descriptionKey: "unitLookup.tabs.npcDescription",
+        path: "/library/npcs",
+        labelKey: "library:collections.npcs.label",
+        descriptionKey: "library:collections.npcs.description",
+      },
+      {
+        path: "/library/raid-bosses",
+        labelKey: "library:collections.raidBosses.label",
+        descriptionKey: "library:collections.raidBosses.description",
       },
     ],
   },

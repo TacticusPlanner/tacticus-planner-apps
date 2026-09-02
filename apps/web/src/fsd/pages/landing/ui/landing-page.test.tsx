@@ -26,7 +26,7 @@ vi.mock("@/shared/auth", () => ({
 }))
 
 // The real module re-exports `@/shared/config`'s i18n setup, which calls `initReactI18next` at
-// import time — incompatible with the plain `useTranslation` mock above (see auth-control.test.tsx
+// import time вЂ” incompatible with the plain `useTranslation` mock above (see auth-control.test.tsx
 // for the same issue). Only `isUiKitEnabled`'s value is used by the component under test.
 vi.mock("@/shared/config", () => ({
   get isUiKitEnabled() {
@@ -71,11 +71,11 @@ describe("LandingPage", () => {
     expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
   })
 
-  it("links to the public Unit Lookup page", () => {
+  it("links to the public Library", () => {
     renderLanding()
 
-    const link = screen.getByTestId("landing-unit-lookup-link")
-    expect(link).toHaveAttribute("href", "/lookup")
+    const link = screen.getByTestId("landing-library-characters-link")
+    expect(link).toHaveAttribute("href", "/library")
   })
 
   it("links to the UI Kit when enabled for this environment", () => {

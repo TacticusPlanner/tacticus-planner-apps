@@ -2,7 +2,7 @@ import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
 // Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) — the cumulative XP required to reach
 // each character level, 0 through 65 (V1's own table max; V2's Level goal only ever targets up to
-// MAX_CHARACTER_LEVEL, see goal-validation.ts, but the full curve is kept for completeness/lookup
+// MAX_CHARACTER_LEVEL, see goal-validation.ts, but the full curve is kept for completeness/library
 // symmetry with V1). `totalXp` is cumulative from level 0, `xpToNextLevel` unused here.
 const xpTotalAtLevel: readonly number[] = [
   0, 25, 60, 120, 200, 300, 420, 560, 720, 900, 1100, 1350, 1650, 2000, 2400,

@@ -30,11 +30,11 @@ void i18n
       escapeValue: false,
     },
     load: "languageOnly",
-    // `dailies` is preloaded alongside `common` (rather than lazy-loaded on demand like other
+    // `dailies` and `library` are preloaded alongside `common` (rather than lazy-loaded on demand like other
     // page-specific namespaces) because `nav-items.ts` references it for Dailies' child labels and
     // descriptions, and those need to resolve correctly in the always-mounted app shell (sidebar,
     // header, drawer, search) - not just once a Dailies page has been visited.
-    ns: ["common", "dailies"],
+    ns: ["common", "dailies", "library"],
     react: {
       useSuspense: true,
     },

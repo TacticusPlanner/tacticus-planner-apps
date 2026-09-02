@@ -5,6 +5,7 @@ import type enCampaigns from "../../../../../public/locales/en/campaigns.json"
 import type enEquipment from "../../../../../public/locales/en/equipment.json"
 import type enDailies from "../../../../../public/locales/en/dailies.json"
 import type enEvents from "../../../../../public/locales/en/events.json"
+import type enLibrary from "../../../../../public/locales/en/library.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -18,6 +19,7 @@ declare module "i18next" {
       equipment: typeof enEquipment
       dailies: typeof enDailies
       events: typeof enEvents
+      library: typeof enLibrary
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       upgrades: Record<string, string>

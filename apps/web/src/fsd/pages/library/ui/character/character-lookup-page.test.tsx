@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen, within } from "@testing-library/react"
-import { MemoryRouter } from "react-router"
+import { MemoryRouter, Route, Routes } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 // The page must work for unauthenticated users with no user data — it reads only the public catalog
@@ -330,7 +330,13 @@ function renderPage(initialEntries = ["/"]) {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <TooltipProvider>
-        <CharacterLookupPage />
+        <Routes>
+          <Route
+            path="/library/characters/:entityId?"
+            element={<CharacterLookupPage />}
+          />
+          <Route path="*" element={<CharacterLookupPage />} />
+        </Routes>
       </TooltipProvider>
     </MemoryRouter>
   )
@@ -353,6 +359,14 @@ describe("CharacterLookupPage", () => {
     const table = within(screen.getByRole("table"))
     expect(table.getByText("Health Base")).toBeInTheDocument()
     expect(table.getByText("Armour Base")).toBeInTheDocument()
+  })
+
+  it("takes character identity from a direct Library entity path", () => {
+    renderPage(["/library/characters/hero1?rankStart=Bronze1"])
+
+    expect(
+      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
+    ).toHaveTextContent("Hero One")
   })
 
   it("renders the unit profile with movement, melee hits, and current/target Health for the default character", () => {

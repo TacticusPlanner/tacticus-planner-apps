@@ -27,7 +27,7 @@ import {
 /**
  * The static-catalog reads the goal-creation Sheet needs (character picker + upgrade requirements
  * for the Rank-goal preview), id-keyed for O(1) lookup by the rank-lookup calc functions. This
- * mirrors `pages/lookup/.../hooks/use-character-lookup-catalog.ts` rather than importing it — FSD
+ * mirrors `pages/library/.../hooks/use-character-lookup-catalog.ts` rather than importing it — FSD
  * forbids a page depending on another page, so the (small) catalog-loading logic is duplicated here
  * from the same lower-layer (`features`/`shared`) building blocks instead of reaching across pages.
  * `t` is bound with its own `useTranslation` call for the same reason as that hook: i18next's
@@ -48,7 +48,7 @@ export function useGoalCatalog() {
   )
 
   // Battle economics (energy cost) for the estimation engine (plan §16 phase 4) — mirrors
-  // `pages/lookup/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
+  // `pages/library/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
   // page-can't-import-page reason as the rest of this hook.
   const campaignBattles = useLiveQuery(() => getCampaignBattles(), [])
   const battlesById = useMemo(
@@ -63,7 +63,7 @@ export function useGoalCatalog() {
   )
 
   // Event-vs-standing-campaign detection for the Insights view's campaign/event scoring (plan §16
-  // phase 7) — mirrors `pages/lookup/.../use-character-lookup-catalog.ts`'s `releaseTypeByGroupId`,
+  // phase 7) — mirrors `pages/library/.../use-character-lookup-catalog.ts`'s `releaseTypeByGroupId`,
   // duplicated for the same page-can't-import-page reason as the rest of this hook.
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
   const releaseTypeByGroupId = useMemo(

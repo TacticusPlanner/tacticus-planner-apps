@@ -17,6 +17,8 @@ import {
   getEventsActiveNow,
   getMows,
   getMowsMap,
+  getNpcs,
+  getNpcsMap,
   getOnslaughtRewards,
   getUnlockShardCosts,
   getUnlockShardCostsMap,
@@ -65,6 +67,19 @@ describe("named dataset queries", () => {
     expect(await getMows()).toHaveLength(1)
     const byId = await getMowsMap()
     expect(byId.get("tauBroadside")?.name).toBe("Broadside")
+  })
+
+  it("getNpcs/getNpcsMap round-trip", async () => {
+    await replaceGameCatalogDataset(
+      "npcs",
+      [{ id: "tyranidWarrior", name: "Tyranid Warrior" }],
+      metadata("npcs")
+    )
+
+    expect(await getNpcs()).toHaveLength(1)
+    expect((await getNpcsMap()).get("tyranidWarrior")?.name).toBe(
+      "Tyranid Warrior"
+    )
   })
 
   it("getAscensionCosts/getAscensionCostsMap round-trip, keyed by progression step", async () => {

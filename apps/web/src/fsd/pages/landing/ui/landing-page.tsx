@@ -66,30 +66,30 @@ export function LandingPage() {
 
       <section
         className="flex w-full max-w-2xl flex-col gap-4"
-        data-testid="landing-lookups"
+        data-testid="landing-library"
       >
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">{t("lookups.title")}</h2>
+          <h2 className="text-lg font-semibold">{t("library.title")}</h2>
           <p className="text-sm text-muted-foreground">
-            {t("lookups.subtitle")}
+            {t("library.subtitle")}
           </p>
         </div>
-        {/* Public reference pages. Add future lookups (MoW, NPC, Upgrades, Equipment, …) here. */}
+        {/* Public Library collections. Add future collections here. */}
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
-            to="/lookup"
-            data-testid="landing-unit-lookup-link"
+            to="/library"
+            data-testid="landing-library-characters-link"
             className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             <Card className="h-full text-left transition-colors hover:border-primary/50 hover:bg-accent/40">
               <CardHeader>
                 <ListChecks className="size-5 text-primary" />
                 <CardTitle className="flex items-center justify-between gap-2">
-                  {t("lookups.character.title")}
+                  {t("library.characters.title")}
                   <ArrowRight className="size-4 text-muted-foreground" />
                 </CardTitle>
                 <CardDescription>
-                  {t("lookups.character.description")}
+                  {t("library.characters.description")}
                 </CardDescription>
               </CardHeader>
             </Card>

@@ -31,19 +31,19 @@ describe("resolveActiveNavigation", () => {
   it("resolves the active child when the route matches a child page", () => {
     const { activeChild, activeItem } = resolveActiveNavigation(
       navItems,
-      "/lookup/mow"
+      "/library/machines-of-war"
     )
 
-    expect(activeItem?.path).toBe("/lookup")
-    expect(activeChild?.path).toBe("/lookup/mow")
+    expect(activeItem?.path).toBe("/library")
+    expect(activeChild?.path).toBe("/library/machines-of-war")
   })
 
   it("swaps the active child when the route moves to a sibling child page", () => {
-    const first = resolveActiveNavigation(navItems, "/lookup/character")
-    const second = resolveActiveNavigation(navItems, "/lookup/mow")
+    const first = resolveActiveNavigation(navItems, "/library/characters")
+    const second = resolveActiveNavigation(navItems, "/library/machines-of-war")
 
-    expect(first.activeChild?.path).toBe("/lookup/character")
-    expect(second.activeChild?.path).toBe("/lookup/mow")
+    expect(first.activeChild?.path).toBe("/library/characters")
+    expect(second.activeChild?.path).toBe("/library/machines-of-war")
   })
 
   it("resolves nothing for an unmatched route", () => {

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -13,6 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
 import { useTourPageSteps } from "@/shared/tour"
 
+import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
@@ -32,6 +34,7 @@ export function CharacterLookupPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
+  const { entityId: routeCharacterId } = useParams()
 
   useTourPageSteps(useCharacterLookupTutorial())
 
@@ -43,6 +46,16 @@ export function CharacterLookupPage() {
     characterGroups,
     loading,
   } = useCharacterLookupCatalog()
+  const characterIds = useMemo(
+    () => (charactersById ? [...charactersById.keys()] : undefined),
+    [charactersById]
+  )
+  const routeSelection = useLibraryRouteSelection({
+    collectionPath: "/library/characters",
+    entityId: routeCharacterId,
+    entityIds: characterIds,
+    loading,
+  })
 
   const {
     applied,
@@ -53,10 +66,11 @@ export function CharacterLookupPage() {
     setDraftProgressionRange,
     setDraftPointFive,
     handleApply,
-  } = useLookupSelection()
+  } = useLookupSelection(routeSelection.selectedId)
 
   const handleCharacterChange = (id: UnitId) => {
     setDraftCharacterId(id)
+    routeSelection.select(id)
   }
 
   const draftCharacterId =

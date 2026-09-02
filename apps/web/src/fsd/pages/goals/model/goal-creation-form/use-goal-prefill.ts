@@ -10,7 +10,7 @@ import {
 // A unique sentinel (not a plain value) so it can be distinguished from a legitimately-resolved
 // result via reference equality — the documented Dexie pattern for detecting "still loading" with
 // useLiveQuery, since its `defaultResult` argument is only returned before the first resolution.
-// Mirrors pages/lookup/.../character-lookup-page.tsx's PLAYER_CHARACTER_LOADING (not imported —
+// Mirrors pages/library/.../character-lookup-page.tsx's PLAYER_CHARACTER_LOADING (not imported —
 // see use-goal-catalog.ts's note on why pages don't import from each other).
 const LOADING = Symbol("loading")
 

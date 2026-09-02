@@ -12,6 +12,7 @@ import type {
   EventDefinitionStorageModel,
   EventsCalendarStorageModel,
   MowStorageModel,
+  NpcStorageModel,
   OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
   UpgradeStorageModel,
@@ -33,6 +34,15 @@ export async function getCharactersMap(): Promise<
 
 export function getMows(): Promise<MowStorageModel[]> {
   return getDatasetRecords("mows")
+}
+
+export function getNpcs(): Promise<NpcStorageModel[]> {
+  return getDatasetRecords("npcs")
+}
+
+export async function getNpcsMap(): Promise<Map<string, NpcStorageModel>> {
+  const npcs = await getNpcs()
+  return new Map(npcs.map((npc) => [npc.id, npc]))
 }
 
 // Mirrors getCharactersMap() — the common case of indexing Machines of War by id.

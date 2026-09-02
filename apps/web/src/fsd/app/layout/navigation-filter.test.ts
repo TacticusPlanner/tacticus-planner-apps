@@ -4,10 +4,10 @@ import { filterNavigationItems } from "./navigation-filter"
 import { navItems } from "./nav-items"
 
 const labels: Record<string, string> = {
-  "nav.lookup": "Nachschlagen",
-  "unitLookup.tabs.character": "Charaktere",
-  "unitLookup.tabs.mow": "Kriegsmaschinen",
-  "unitLookup.tabs.npc": "NPCs",
+  "library:section.label": "Nachschlagen",
+  "library:collections.characters.label": "Charaktere",
+  "library:collections.machinesOfWar.label": "Kriegsmaschinen",
+  "library:collections.npcs.label": "NPCs",
 }
 
 describe("filterNavigationItems", () => {
@@ -19,9 +19,9 @@ describe("filterNavigationItems", () => {
     )
 
     expect(results).toHaveLength(1)
-    expect(results[0]?.path).toBe("/lookup")
+    expect(results[0]?.path).toBe("/library")
     expect(results[0]?.children?.map((child) => child.path)).toEqual([
-      "/lookup/mow",
+      "/library/machines-of-war",
     ])
   })
 
@@ -32,7 +32,7 @@ describe("filterNavigationItems", () => {
       (key) => labels[key] ?? key
     )
 
-    expect(results[0]?.children).toHaveLength(3)
+    expect(results[0]?.children).toHaveLength(4)
   })
 
   it(
@@ -40,8 +40,9 @@ describe("filterNavigationItems", () => {
       " doesn't match",
     () => {
       const descriptions: Record<string, string> = {
-        "nav.lookupDescription": "Nachschlagen",
-        "unitLookup.tabs.mowDescription": "Kriegsmaschinen nachschlagen",
+        "library:section.description": "Nachschlagen",
+        "library:collections.machinesOfWar.description":
+          "Kriegsmaschinen nachschlagen",
       }
       const results = filterNavigationItems(
         navItems,
@@ -50,9 +51,9 @@ describe("filterNavigationItems", () => {
       )
 
       expect(results).toHaveLength(1)
-      expect(results[0]?.path).toBe("/lookup")
+      expect(results[0]?.path).toBe("/library")
       expect(results[0]?.children?.map((child) => child.path)).toEqual([
-        "/lookup/mow",
+        "/library/machines-of-war",
       ])
     }
   )

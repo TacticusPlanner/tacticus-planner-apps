@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
@@ -15,6 +15,7 @@ import {
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { DesktopShell } from "./desktop-layout"
+import { documentTitle } from "./document-title"
 import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
@@ -32,7 +33,7 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 export function AppShell() {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies"])
+  const { t } = useTranslation(["common", "dailies", "library"])
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
   const { pathname } = useLocation()
@@ -58,6 +59,10 @@ export function AppShell() {
   // Desktop's header title stays pinned to the top-level section (never swaps to the active
   // child, unlike `pageTitle` above) — see design.md's "Desktop header composition" decision.
   const sectionTitle = activeItem ? t(activeItem.labelKey) : undefined
+
+  useEffect(() => {
+    document.title = documentTitle(pageTitle, t("app.name"))
+  }, [pageTitle, t])
 
   return (
     <GameCatalogProvider baseUrl={apiBaseUrl}>

@@ -4,11 +4,11 @@
   "title": "Plane deinen Tacticus-Kader",
   "subtitle": "Verwalte Charaktere, Verbesserungen, Ausrüstung, Kampagnen und legendäre Events — alles an einem Ort.",
   "getStarted": "Anmelden / Loslegen",
-  "lookups": {
-    "title": "Nachschlagen & Referenz",
+  "library": {
+    "title": "Bibliothek",
     "subtitle": "Durchsuche Spieldaten ohne Konto.",
-    "ranks": {
-      "title": "Rang-Nachschlag",
+    "characters": {
+      "title": "Charaktere",
       "description": "Sieh dir die Verbesserungen und Materialien an, die zum Aufstufen eines Charakters nötig sind."
     }
   }
