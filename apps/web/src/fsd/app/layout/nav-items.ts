@@ -1,11 +1,11 @@
 import type { LucideIcon } from "lucide-react"
 import {
   CalendarCheck,
+  BookOpen,
   Home,
   LayoutGrid,
   ListTodo,
   TrendingUp,
-  Search,
   Users,
 } from "lucide-react"
 
@@ -94,7 +94,7 @@ export const navItems: NavItem[] = [
     path: "/library",
     labelKey: "library:section.label",
     descriptionKey: "library:section.description",
-    icon: Search,
+    icon: BookOpen,
     anonymousAllowed: true,
     mobilePlacement: "menu",
     children: [
