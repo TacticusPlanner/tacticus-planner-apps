@@ -35,7 +35,7 @@ describe("DesktopSectionHeader", () => {
 
     const title = screen.getByTestId("section-header-title")
     expect(title).toHaveTextContent("Home")
-    expect(title).not.toHaveTextContent("РІР‚С”")
+    expect(title).not.toHaveTextContent("›")
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
     expect(screen.queryByRole("button")).not.toBeInTheDocument()
   })
@@ -46,7 +46,7 @@ describe("DesktopSectionHeader", () => {
     expect(container.querySelector("h1")).toBeNull()
   })
 
-  it("renders a plain, non-interactive '{Section} РІР‚С” {Active child}' breadcrumb for a section with children", () => {
+  it("renders a plain, non-interactive '{Section} › {Active child}' breadcrumb for a section with children", () => {
     renderHeader(lookupItem, "Library", "/library/machines-of-war")
 
     const title = screen.getByTestId("section-header-title")

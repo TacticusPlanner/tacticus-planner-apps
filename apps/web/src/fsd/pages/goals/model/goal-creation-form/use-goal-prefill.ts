@@ -8,18 +8,18 @@ import {
 } from "@workspace/player-data/queries"
 
 // A unique sentinel (not a plain value) so it can be distinguished from a legitimately-resolved
-// result via reference equality вЂ” the documented Dexie pattern for detecting "still loading" with
+// result via reference equality — the documented Dexie pattern for detecting "still loading" with
 // useLiveQuery, since its `defaultResult` argument is only returned before the first resolution.
-// Mirrors pages/library/.../character-lookup-page.tsx's PLAYER_CHARACTER_LOADING (not imported вЂ”
+// Mirrors pages/library/.../character-lookup-page.tsx's PLAYER_CHARACTER_LOADING (not imported —
 // see use-goal-catalog.ts's note on why pages don't import from each other).
 const LOADING = Symbol("loading")
 
 /**
  * The caller's synced record for `entityId` (rank/progressionIndex/abilities/appliedUpgradeSlots for
- * a Character; progressionIndex/abilities/appliedUpgradeSlots вЂ” no rank вЂ” for a MoW, plan В§16 phase
+ * a Character; progressionIndex/abilities/appliedUpgradeSlots — no rank — for a MoW, plan §16 phase
  * 6), or `undefined` when signed out, not yet synced, or the unit isn't owned. Used to prefill a
  * goal's "start" fields with the entity's actual current state. The returned record's shape follows
- * `entityType` вЂ” callers narrow via `"rank" in` or simply gate on the `entityType` they passed in,
+ * `entityType` — callers narrow via `"rank" in` or simply gate on the `entityType` they passed in,
  * since a Character's synced record is the only one that ever carries a `rank`.
  */
 export function useGoalPrefill(
@@ -58,7 +58,7 @@ export function useGoalPrefill(
       result.entityType !== entityType)
 
   // Narrowed by `entityType` (the same value `playerEntity` was itself fetched by) rather than by
-  // inspecting its shape вЂ” a Character's synced record is the only one that ever carries `rank`,
+  // inspecting its shape — a Character's synced record is the only one that ever carries `rank`,
   // but TS can't correlate two separately-computed variables through a shape check alone, so this
   // documents an invariant the types can't express. Exposed alongside the union `playerEntity` so
   // callers needing the narrowed shape (e.g. a Character's `rank`/`xp`) don't each redo the cast.

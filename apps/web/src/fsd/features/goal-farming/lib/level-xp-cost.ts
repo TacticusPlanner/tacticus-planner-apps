@@ -1,6 +1,6 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
-// Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) вЂ” the cumulative XP required to reach
+// Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) — the cumulative XP required to reach
 // each character level, 0 through 65 (V1's own table max; V2's Level goal only ever targets up to
 // MAX_CHARACTER_LEVEL, see goal-validation.ts, but the full curve is kept for completeness/library
 // symmetry with V1). `totalXp` is cumulative from level 0, `xpToNextLevel` unused here.
@@ -14,7 +14,7 @@ const xpTotalAtLevel: readonly number[] = [
   6645200, 7000200, 7360200,
 ]
 
-/** Ported from V1's `XP_BOOK_VALUE` (`rarity.enum.ts`) вЂ” the XP a single book of each rarity is
+/** Ported from V1's `XP_BOOK_VALUE` (`rarity.enum.ts`) — the XP a single book of each rarity is
  * worth when applied. */
 const xpBookValueByRarity: Record<Rarity, number> = {
   Common: 20,
@@ -29,7 +29,7 @@ const xpBookValueByRarity: Record<Rarity, number> = {
 const XP_BOOK_APPLY_GOLD = 500
 
 /** Best-guess `xpBookId` -> rarity mapping (no real Tacticus API ids are documented anywhere in
- * this repo вЂ” V1 never tracked xp books by id, only by rarity вЂ” so this follows the naming pattern
+ * this repo — V1 never tracked xp books by id, only by rarity — so this follows the naming pattern
  * already used by the `player-data-sync.test.ts` fixture, e.g. "bookCommon"). Correct this once the
  * real synced ids are known; until then, an unrecognized id simply contributes nothing to netting
  * (see `netXpAgainstOwnedBooks`), so a wrong guess degrades to "don't net that book" rather than
@@ -48,7 +48,7 @@ function totalXpAtLevel(level: number): number | undefined {
 }
 
 /** The XP still needed to go from `currentLevel` (with `currentXp` already earned toward the next
- * level) to `targetLevel` вЂ” mirrors V1's `CharactersXpService.getLegendaryTomesCount`'s own xpLeft
+ * level) to `targetLevel` — mirrors V1's `CharactersXpService.getLegendaryTomesCount`'s own xpLeft
  * calc. 0 for an invalid/already-reached range. */
 export function xpNeededForLevelRange(
   currentLevel: number,
@@ -66,7 +66,7 @@ export function xpNeededForLevelRange(
 }
 
 /** Nets `xpNeeded` against owned books, highest-value rarity first (most XP-efficient use of what's
- * owned), then spends any single remaining book of the lowest rarity that still has stock вЂ” mirrors
+ * owned), then spends any single remaining book of the lowest rarity that still has stock — mirrors
  * V1's `GoalsService.adjustNeededXp`. `ownedByRarity` isn't mutated. */
 export function netXpAgainstOwnedBooks(
   xpNeeded: number,
@@ -99,7 +99,7 @@ export function netXpAgainstOwnedBooks(
 }
 
 /** Collapses a `{xpBookId, amount}[]` inventory into owned-by-rarity, via the best-guess
- * `xpBookIdRarity` map (see its own doc comment) вЂ” an unrecognized id is simply skipped. */
+ * `xpBookIdRarity` map (see its own doc comment) — an unrecognized id is simply skipped. */
 export function ownedBooksByRarity(
   inventory: readonly { xpBookId: string; amount: number }[] | undefined
 ): Partial<Record<Rarity, number>> {
@@ -118,7 +118,7 @@ export type LevelGoalCost = {
 }
 
 /** The Level goal's resource-cost preview (plan scope decision: books required + gold to apply,
- * netted against owned books вЂ” no "days left" estimate, since XP books aren't farmed from campaign
+ * netted against owned books — no "days left" estimate, since XP books aren't farmed from campaign
  * energy the way upgrade materials are; V1 only computes that from a manually-configured per-day
  * income rate this app doesn't have). Remaining XP after netting is expressed as a Legendary-book
  * count (V1's own default reference rarity). `null` when nothing is actually needed. */
