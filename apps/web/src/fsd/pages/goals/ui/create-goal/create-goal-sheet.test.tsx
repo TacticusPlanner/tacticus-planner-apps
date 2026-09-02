@@ -433,6 +433,52 @@ describe("CreateGoalSheet", () => {
     expect(onCreated).toHaveBeenCalledTimes(1)
   })
 
+  it("returns a persisted sheet to idle when reopening after a successful creation", async () => {
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    const onOpenChange = vi.fn()
+    const onCreated = vi.fn()
+    const { rerender } = render(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
+    )
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Rank")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    // AppShell keeps CreateGoalSheet mounted while its controlled `open` prop changes.
+    rerender(
+      <CreateGoalSheet
+        open={false}
+        onOpenChange={onOpenChange}
+        onCreated={onCreated}
+      />
+    )
+    rerender(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
+    )
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+    })
+    expect(
+      screen
+        .getByTestId("create-goal-submit")
+        .querySelector('[data-slot="spinner"]')
+    ).toBeNull()
+  })
+
   it("creates a Level goal for the selected character, current level read-only, prefilled from synced xpLevel, with a books/gold cost preview", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
     getPlayerCharacter.mockResolvedValue({
@@ -590,6 +636,11 @@ describe("CreateGoalSheet", () => {
     })
     expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     expect(onOpenChange).not.toHaveBeenCalledWith(false)
+    expect(
+      screen
+        .getByTestId("create-goal-submit")
+        .querySelector('[data-slot="spinner"]')
+    ).toBeNull()
   })
 
   it("shows the ApiError message when creation fails", async () => {
