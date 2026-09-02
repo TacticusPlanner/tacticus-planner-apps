@@ -8,6 +8,7 @@ import type {
   DailyRaidGoalViewModel,
   DailyRaidLocationViewModel,
   DailyRaidResourceProgress,
+  DailyRaidResourceUrgency,
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import { dailyRaidResourceKey } from "../model/daily-raids.domain"
@@ -17,6 +18,8 @@ import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
 // Stable default so callers that never use "location" emphasis (Raids Plan) don't need to pass
 // this prop, and don't allocate a new Map identity on every render.
 const NO_ATTEMPTS_LEFT_DATA: ReadonlyMap<BattleId, number> = new Map()
+const NO_RESOURCE_URGENCY_DATA: ReadonlyMap<string, DailyRaidResourceUrgency> =
+  new Map()
 
 type GoalGroup = ReturnType<typeof groupEntries>[number]
 
@@ -31,6 +34,7 @@ export function RaidSchedule({
   locationsByBattleId,
   resourceLabels,
   resourceProgress,
+  resourceUrgencyByGoalAndResource = NO_RESOURCE_URGENCY_DATA,
   resourceVisuals,
   compact = false,
   emphasis = "material",
@@ -53,14 +57,24 @@ export function RaidSchedule({
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
   resourceLabels: ReadonlyMap<string, string>
   resourceProgress: ReadonlyMap<string, DailyRaidResourceProgress>
+  resourceUrgencyByGoalAndResource?: ReadonlyMap<
+    string,
+    DailyRaidResourceUrgency
+  >
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
   compact?: boolean
   emphasis?: "material" | "location"
   layout?: "wide" | "column"
   testId: string
 }) {
-  const grouped = groupEntries(entries, goalsById)
-  const bonusGrouped = bonusEntries ? groupEntries(bonusEntries, goalsById) : []
+  const grouped = groupEntries(
+    entries,
+    goalsById,
+    resourceUrgencyByGoalAndResource
+  )
+  const bonusGrouped = bonusEntries
+    ? groupEntries(bonusEntries, goalsById, resourceUrgencyByGoalAndResource)
+    : []
 
   const isGroupVisible = (resources: GoalGroup["resources"]) =>
     emphasis !== "location" ||
@@ -196,7 +210,11 @@ function GoalHeader({ goal }: { goal: DailyRaidGoalViewModel }) {
 
 function groupEntries(
   entries: RaidBreakdownEntry[],
-  goalsById: ReadonlyMap<string, DailyRaidGoalViewModel>
+  goalsById: ReadonlyMap<string, DailyRaidGoalViewModel>,
+  resourceUrgencyByGoalAndResource: ReadonlyMap<
+    string,
+    DailyRaidResourceUrgency
+  >
 ) {
   const byGoal = new Map<string, Map<string, RaidBreakdownEntry[]>>()
   for (const entry of entries) {
@@ -217,12 +235,25 @@ function groupEntries(
         targetLabel: "",
         goalKind: "Unlock" as const,
       },
-      resources: [...resources.entries()].map(
-        ([resourceId, resourceEntries]) => ({
+      resources: [...resources.entries()]
+        .map(([resourceId, resourceEntries]) => ({
           resourceId,
           entries: resourceEntries,
-        })
-      ),
+        }))
+        .sort((left, right) => {
+          const leftUrgency = resourceUrgencyByGoalAndResource.get(
+            dailyRaidResourceKey(goalId, left.resourceId)
+          )
+          const rightUrgency = resourceUrgencyByGoalAndResource.get(
+            dailyRaidResourceKey(goalId, right.resourceId)
+          )
+          const byDays = (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)
+          if (byDays !== 0) return byDays
+          const byEnergy =
+            (rightUrgency?.energyTotal ?? -1) - (leftUrgency?.energyTotal ?? -1)
+          if (byEnergy !== 0) return byEnergy
+          return left.resourceId.localeCompare(right.resourceId)
+        }),
     }))
     .sort((left, right) => left.goal.priority - right.goal.priority)
 }

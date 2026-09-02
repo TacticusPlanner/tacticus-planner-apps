@@ -140,6 +140,9 @@ export function TodayPage() {
             locationsByBattleId={raids.locationsByBattleId}
             resourceLabels={raids.resourceLabels}
             resourceProgress={todayProgress}
+            resourceUrgencyByGoalAndResource={
+              raids.resourceUrgencyByGoalAndResource
+            }
             resourceVisuals={raids.resourceVisuals}
             testId="today-raid-list"
           />
@@ -166,7 +169,7 @@ export function TodayPage() {
   )
 }
 
-function TodaysAttemptsList({
+export function TodaysAttemptsList({
   attempts,
   locationsByBattleId,
   resourceByBattle,
@@ -182,7 +185,7 @@ function TodaysAttemptsList({
 
   return (
     <div className="grid gap-2 md:gap-3" data-testid="todays-attempts-list">
-      {attempts.map(({ battleId, attemptsUsed, attemptsLeft }) => {
+      {attempts.map(({ battleId, attemptsUsed }) => {
         const location = locationsByBattleId.get(battleId)
         const resource = resourceByBattle.get(battleId)
         return (
@@ -215,13 +218,8 @@ function TodaysAttemptsList({
                 })}
               </div>
             </div>
-            <Badge
-              className="shrink-0"
-              variant={attemptsLeft === 0 ? "secondary" : "outline"}
-            >
-              {attemptsLeft === 0
-                ? t("schedule.maxRaids")
-                : t("schedule.raids", { count: attemptsUsed })}
+            <Badge className="shrink-0" variant="outline">
+              {t("schedule.raids", { count: attemptsUsed })}
             </Badge>
           </div>
         )

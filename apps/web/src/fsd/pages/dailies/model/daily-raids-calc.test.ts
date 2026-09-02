@@ -20,6 +20,7 @@ import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
 import {
   activeProjectMembers,
   availableCampaignBattles,
+  calculateResourceUrgency,
   calculateDailyRaids,
 } from "./daily-raids-calc"
 import { playerUnitIds } from "./use-daily-raids"
@@ -70,6 +71,78 @@ function member(status: string, priority: number): ProjectGoalSummary {
 }
 
 describe("daily raid derivation", () => {
+  it("derives per-resource urgency after priority-shared inventory allocation", () => {
+    const fastId = upgradeIdSchema.parse("fast")
+    const slowId = upgradeIdSchema.parse("slow")
+    const nodeId = battleIdSchema.parse("B1")
+    const upgrade = (id: typeof fastId): FarmingUpgrade => ({
+      id,
+      label: id,
+      rarity: "Common",
+      stat: "health",
+      crafted: false,
+      recipe: [],
+      farmLocations: [
+        {
+          battleId: nodeId,
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+          isMythic: false,
+        },
+      ],
+    })
+
+    const urgency = calculateResourceUrgency(
+      [
+        {
+          goalId: "higher-priority",
+          priority: 1,
+          needs: [
+            { id: fastId, count: 1 },
+            { id: slowId, count: 2 },
+          ],
+        },
+        {
+          goalId: "lower-priority",
+          priority: 2,
+          needs: [{ id: fastId, count: 1 }],
+        },
+      ],
+      [{ id: fastId, count: 1 }],
+      new Map([
+        [fastId, upgrade(fastId)],
+        [slowId, upgrade(slowId)],
+      ]),
+      new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            energyCost: 6,
+            dailyAttempts: 1,
+          },
+        ],
+      ]),
+      60,
+      new Date("2026-01-01T00:00:00.000Z")
+    )
+
+    expect(urgency.has("higher-priority:fast")).toBe(false)
+    expect(urgency.get("higher-priority:slow")).toEqual({
+      days: 2,
+      energyTotal: 12,
+    })
+    expect(urgency.get("lower-priority:fast")).toEqual({
+      days: 1,
+      energyTotal: 6,
+    })
+  })
+
   it("includes only the active campaign event alongside standing campaigns", () => {
     const battles = [
       { id: "standing", campaignGroupId: "Octarius" },

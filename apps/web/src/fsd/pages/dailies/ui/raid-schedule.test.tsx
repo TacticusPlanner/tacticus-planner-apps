@@ -79,6 +79,134 @@ function bonusEntry(
 }
 
 describe("RaidSchedule location emphasis", () => {
+  it("orders resources by duration, energy, then resource identity within a goal", () => {
+    const resources = [
+      { ...entry(b1, 1), resourceId: "fast" as never },
+      { ...entry(b2, 1), resourceId: "slow" as never },
+      { ...entry(b1, 1), resourceId: "energy-low" as never },
+      { ...entry(b2, 1), resourceId: "energy-high" as never },
+      { ...entry(b1, 1), resourceId: "beta" as never },
+      { ...entry(b2, 1), resourceId: "alpha" as never },
+    ]
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        entries={resources}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus Elite", 4)],
+            [b2, location("B2", "Fall of Cadia Standard", 7)],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:fast", { days: 1, energyTotal: 6 }],
+            ["g1:slow", { days: 3, energyTotal: 18 }],
+            ["g1:energy-low", { days: 2, energyTotal: 12 }],
+            ["g1:energy-high", { days: 2, energyTotal: 18 }],
+            ["g1:beta", { days: 1, energyTotal: 6 }],
+            ["g1:alpha", { days: 1, energyTotal: 6 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const resourceIds = [
+      ...screen
+        .getByTestId("raid-resource-grid-g1")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-card-g1-']"),
+    ].map((element) => element.dataset.testid?.replace("raid-card-g1-", ""))
+    expect(resourceIds).toEqual([
+      "slow",
+      "energy-high",
+      "energy-low",
+      "alpha",
+      "beta",
+      "fast",
+    ])
+  })
+
+  it("uses the same urgency order for Bonus Raids", () => {
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        bonusEntries={[
+          { ...entry(b1, 1), resourceId: "fast" as never },
+          { ...entry(b2, 1), resourceId: "slow" as never },
+        ]}
+        bonusLabel="Bonus raids"
+        entries={[]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus Elite", 4)],
+            [b2, location("B2", "Fall of Cadia Standard", 7)],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:fast", { days: 1, energyTotal: 6 }],
+            ["g1:slow", { days: 3, energyTotal: 18 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const bonusIds = [
+      ...screen
+        .getByTestId("raid-resource-grid-g1")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-card-g1-']"),
+    ].map((element) => element.dataset.testid?.replace("raid-card-g1-", ""))
+    expect(bonusIds).toEqual(["slow", "fast"])
+  })
+
+  it("keeps higher-priority goal groups first", () => {
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        entries={[
+          { ...entry(b2, 1), goalId: "g2", resourceId: "lower" as never },
+          { ...entry(b1, 1), goalId: "g1", resourceId: "higher" as never },
+        ]}
+        goalsById={
+          new Map([
+            ["g1", goal],
+            ["g2", bonusGoal],
+          ])
+        }
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus Elite", 4)],
+            [b2, location("B2", "Fall of Cadia Standard", 7)],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const resourceGridIds = [
+      ...screen
+        .getByTestId("schedule")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-resource-grid-']"),
+    ].map((element) => element.dataset.testid)
+    expect(resourceGridIds).toEqual([
+      "raid-resource-grid-g1",
+      "raid-resource-grid-g2",
+    ])
+  })
+
   it("renders the full campaign name and battle number as the card's primary content", () => {
     render(
       <RaidSchedule

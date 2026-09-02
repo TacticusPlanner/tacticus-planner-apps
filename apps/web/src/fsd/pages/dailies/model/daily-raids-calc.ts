@@ -20,6 +20,7 @@ import {
   calculateGoalResourceNeed,
   createCraftedInventoryPool,
   estimateBonusRaids,
+  estimateGoal,
   estimatePlanSchedule,
   estimateTodaySchedule,
   type EstimatePlanParams,
@@ -36,6 +37,7 @@ import type {
   DailyRaidGoalViewModel,
   DailyRaidsCalculationViewModel,
   DailyRaidResourceProgress,
+  DailyRaidResourceUrgency,
   DailyRaidResourceVisual,
 } from "./daily-raids.domain"
 import { dailyRaidResourceKey } from "./daily-raids.domain"
@@ -244,9 +246,59 @@ export function calculateDailyRaids(
     goalsById,
     resourceLabels,
     resourceVisuals,
+    resourceUrgencyByGoalAndResource: calculateResourceUrgency(
+      goals,
+      inventory,
+      upgradesById,
+      params.battlesById,
+      params.dailyEnergy,
+      params.referenceDate
+    ),
     resourceProgressByDay: projectResourceProgress(plan.days, initialProgress),
     attemptsUsedByBattle: today.attemptsUsedByBattle,
   }
+}
+
+export function calculateResourceUrgency(
+  goals: readonly GoalNeed[],
+  inventory: readonly { id: EstimateResourceId; count: number }[],
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
+  battlesById: ReadonlyMap<BattleId, Battle>,
+  dailyEnergy: number,
+  referenceDate?: Date
+): ReadonlyMap<string, DailyRaidResourceUrgency> {
+  const result = new Map<string, DailyRaidResourceUrgency>()
+  const allocations = allocatePlanInventory([...goals], [...inventory])
+
+  for (const goal of goals) {
+    const remainingByResource = new Map<EstimateResourceId, number>()
+    for (const stage of allocations.get(goal.goalId)?.stages ?? []) {
+      for (const need of stage.remaining) {
+        remainingByResource.set(
+          need.id,
+          (remainingByResource.get(need.id) ?? 0) + need.count
+        )
+      }
+    }
+
+    for (const [resourceId, count] of remainingByResource) {
+      const outcome = estimateGoal({
+        needs: [{ id: resourceId, count }],
+        upgradesById,
+        battlesById,
+        dailyEnergy,
+        farmingLocationIds: goal.farmingLocationIds,
+        referenceDate,
+      })
+      if (outcome.status !== "Estimated") continue
+      result.set(dailyRaidResourceKey(goal.goalId, resourceId), {
+        days: outcome.days,
+        energyTotal: outcome.energyTotal,
+      })
+    }
+  }
+
+  return result
 }
 
 function resourceProgress(
