@@ -14,6 +14,14 @@ describe("Library routes", () => {
       "npcs/:entityId",
       "raid-bosses",
       "raid-bosses/:entityId",
+      "shops",
     ])
+  })
+
+  it("routes Shops as a standalone reference page with no entity path", () => {
+    const shopPaths = routes
+      .map((route) => route.path)
+      .filter((path) => path?.startsWith("shops"))
+    expect(shopPaths).toEqual(["shops"])
   })
 })

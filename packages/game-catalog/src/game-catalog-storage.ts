@@ -13,7 +13,10 @@ import {
 import type { StorageModel } from "./game-catalog.storage"
 
 export const catalogDbName = "tacticus-planner-game-catalog"
-export const catalogDbVersion = 4
+// v5: add the `shops` store (daily-shop catalog data). Purely additive — the store list below is
+// derived from `servedDatasetKeys`, which now includes `"shops"`, so the bumped `.version(5).stores()`
+// block already lists it; Dexie's version cascade creates the store for any client still on v4.
+export const catalogDbVersion = 5
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is

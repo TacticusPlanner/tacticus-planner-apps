@@ -20,6 +20,11 @@ const LibraryNoRecordsPage = lazy(() =>
     default: m.LibraryNoRecordsPage,
   }))
 )
+const ShopsBrowsePage = lazy(() =>
+  import("./ui/shops/shops-browse-page").then((m) => ({
+    default: m.ShopsBrowsePage,
+  }))
+)
 
 // Nested under "/library" вЂ” see app/routes.tsx, which owns the top-level path and the (unprotected)
 // layout element, and just splices this array in as `children`.
@@ -58,4 +63,7 @@ export const routes: RouteObject[] = [
     path: "raid-bosses/:entityId",
     element: <LibraryNoRecordsPage />,
   },
+  // Shops is a standalone reference route, not an entity collection — no `/:entityId` variant, so it
+  // is outside the `library-entity-routes` contract.
+  { path: "shops", element: <ShopsBrowsePage /> },
 ]

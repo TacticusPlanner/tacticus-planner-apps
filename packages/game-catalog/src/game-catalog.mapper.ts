@@ -69,6 +69,8 @@ export const datasetToStorageModels: Record<
   "lre-common": asArray,
   "event-definitions": asArray,
   "events-calendar": byCalendarDate,
+  // Plain-array passthrough — each shop record already carries its `id` (guild / war / ...).
+  shops: asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

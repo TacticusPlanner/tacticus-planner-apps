@@ -23,6 +23,7 @@ type NavLabelKey =
   | "library:collections.machinesOfWar.label"
   | "library:collections.npcs.label"
   | "library:collections.raidBosses.label"
+  | "library:collections.shops.label"
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
@@ -55,12 +56,14 @@ type NavDescriptionKey =
       | "library:collections.machinesOfWar.label"
       | "library:collections.npcs.label"
       | "library:collections.raidBosses.label"
+      | "library:collections.shops.label"
     >}Description`
   | "library:section.description"
   | "library:collections.characters.description"
   | "library:collections.machinesOfWar.description"
   | "library:collections.npcs.description"
   | "library:collections.raidBosses.description"
+  | "library:collections.shops.description"
 
 export interface NavSubItem {
   path: string
@@ -117,6 +120,11 @@ export const navItems: NavItem[] = [
         path: "/library/raid-bosses",
         labelKey: "library:collections.raidBosses.label",
         descriptionKey: "library:collections.raidBosses.description",
+      },
+      {
+        path: "/library/shops",
+        labelKey: "library:collections.shops.label",
+        descriptionKey: "library:collections.shops.description",
       },
     ],
   },

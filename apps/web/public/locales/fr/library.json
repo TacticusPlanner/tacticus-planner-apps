@@ -21,7 +21,11 @@
       "description": "Parcourez les informations des boss de raid"
     },
     "noRecords": "Aucune entité sélectionnable n’est disponible.",
-    "raidBossesNoRecords": "Les boss de raid ne sont pas encore disponibles dans le catalogue."
+    "raidBossesNoRecords": "Les boss de raid ne sont pas encore disponibles dans le catalogue.",
+    "shops": {
+      "label": "Boutiques quotidiennes",
+      "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
+    }
   },
   "loading": "Chargement des données de la bibliothèque…",
   "selector": {
@@ -29,5 +33,60 @@
     "placeholder": "Sélectionner une entité",
     "selected": "Sélectionné : {{name}}",
     "clear": "Effacer la sélection"
+  },
+  "shops": {
+    "title": "Boutiques quotidiennes",
+    "subtitle": "Chaque emplacement que chaque boutique quotidienne peut proposer le jour sélectionné",
+    "dayLabel": "Jour",
+    "shopLabel": "Boutique",
+    "days": {
+      "MON": "Lundi",
+      "TUE": "Mardi",
+      "WED": "Mercredi",
+      "THU": "Jeudi",
+      "FRI": "Vendredi",
+      "SAT": "Samedi",
+      "SUN": "Dimanche"
+    },
+    "shopName": {
+      "guild": "Boutique de guilde",
+      "war": "Boutique de guerre de guilde",
+      "rogue-trader": "Marchand indépendant",
+      "crusade": "Boutique de croisade"
+    },
+    "availableOn": "Disponible dans {{shop}} le {{day}}",
+    "randomSlot": "{{count}} récompenses possibles",
+    "randomSlotHint": "Une seule d'entre elles sera proposée ce jour-là",
+    "randomBadge": "Aléatoire",
+    "costEachSuffix": "chacun",
+    "andMore": "+{{count}} de plus",
+    "costVaries": "Coût variable",
+    "availableOne": "1×{{qty}} disponible",
+    "availableUpTo": "Jusqu'à {{max}}×{{qty}} disponible",
+    "freeOffer": "+ {{reward}} offert",
+    "state": {
+      "loading": "Chargement des données de boutique…",
+      "error": "Impossible de charger les données de boutique.",
+      "retry": "Réessayer",
+      "empty": "Rien de disponible ce jour-là."
+    },
+    "tour": {
+      "libraryShops": {
+        "steps": {
+          "day": {
+            "title": "Choisissez un jour",
+            "content": "Choisissez n'importe quel jour de la semaine pour voir ce que les boutiques proposent ce jour-là."
+          },
+          "shop": {
+            "title": "Choisissez une boutique",
+            "content": "Basculez entre les boutiques de Guilde, de Guerre de guilde, de Croisade et du Marchand indépendant."
+          },
+          "random": {
+            "title": "Emplacements aléatoires",
+            "content": "Une carte « N récompenses possibles » signifie que l'emplacement est aléatoire : une seule des récompenses listées est réellement proposée ce jour-là."
+          }
+        }
+      }
+    }
   }
 }

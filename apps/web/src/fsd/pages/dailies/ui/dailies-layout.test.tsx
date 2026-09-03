@@ -49,6 +49,9 @@ vi.mock("@/entities/project", async (importOriginal) => {
 vi.mock("../model/use-daily-raids", () => ({
   useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
 }))
+vi.mock("../model/use-shop-recommendations", () => ({
+  useShopRecommendations: () => ({ status: "ready", sections: [] }),
+}))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 
 function renderDailies(path = "/dailies") {
@@ -77,9 +80,9 @@ describe("Dailies navigation", () => {
 
   // Primary tab navigation itself (Raids/Shops/Onslaught/Salvage Run/Arena/Guild Raids) now lives
   // in the shared app-shell header's section-tabs row, not in DailiesLayout - see
-  // section-tabs.test.tsx. This only confirms each route still renders its own placeholder page.
+  // section-tabs.test.tsx. This only confirms each still-under-construction route renders its
+  // placeholder page.
   it.each([
-    "/dailies/shops",
     "/dailies/onslaught",
     "/dailies/salvage-run",
     "/dailies/arena",
@@ -90,6 +93,12 @@ describe("Dailies navigation", () => {
     expect(
       await screen.findByTestId("dailies-placeholder-page")
     ).toBeInTheDocument()
+  })
+
+  it("routes /dailies/shops to the Shops recommendations page", async () => {
+    renderDailies("/dailies/shops")
+
+    expect(await screen.findByTestId("shops-page")).toBeInTheDocument()
   })
 
   it("keeps the selected project when switching from Today to Plan", async () => {

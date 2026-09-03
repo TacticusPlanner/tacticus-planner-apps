@@ -76,3 +76,16 @@ describe("events-calendar flattening (byCalendarDate)", () => {
     expect(flatten([])).toEqual([])
   })
 })
+
+describe("shops mapping (asArray passthrough)", () => {
+  it("maps a shops payload to one row per shop, keyed by shop id", () => {
+    const rows = datasetToStorageModels
+      .shops([
+        { id: "guild", slots: [] },
+        { id: "rogue-trader", slots: [] },
+      ])
+      .map(mapDatasetRowToStorageModel)
+
+    expect(rows.map((row) => row.id)).toEqual(["guild", "rogue-trader"])
+  })
+})

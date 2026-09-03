@@ -12,13 +12,20 @@
       "label": "Machines of War",
       "description": "Browse Machine of War details and stats"
     },
-    "npcs": { "label": "NPCs", "description": "Browse NPC details and stats" },
+    "npcs": {
+      "label": "NPCs",
+      "description": "Browse NPC details and stats"
+    },
     "raidBosses": {
       "label": "Raid Bosses",
       "description": "Browse Raid Boss information"
     },
     "noRecords": "No selectable entities are available.",
-    "raidBossesNoRecords": "Raid Bosses are not available in the catalog yet."
+    "raidBossesNoRecords": "Raid Bosses are not available in the catalog yet.",
+    "shops": {
+      "label": "Daily Shops",
+      "description": "Browse what each daily shop can offer on any day of the week"
+    }
   },
   "loading": "Loading Library records…",
   "selector": {
@@ -26,5 +33,60 @@
     "placeholder": "Select an entity",
     "selected": "Selected: {{name}}",
     "clear": "Clear selection"
+  },
+  "shops": {
+    "title": "Daily Shops",
+    "subtitle": "Every slot each daily shop can offer on the selected day",
+    "dayLabel": "Day",
+    "shopLabel": "Shop",
+    "days": {
+      "MON": "Monday",
+      "TUE": "Tuesday",
+      "WED": "Wednesday",
+      "THU": "Thursday",
+      "FRI": "Friday",
+      "SAT": "Saturday",
+      "SUN": "Sunday"
+    },
+    "shopName": {
+      "guild": "Guild Shop",
+      "war": "Guild War Shop",
+      "rogue-trader": "Rogue Trader",
+      "crusade": "Crusade Shop"
+    },
+    "availableOn": "Available in {{shop}} on {{day}}",
+    "randomSlot": "{{count}} possible rewards",
+    "randomSlotHint": "Only one of these will be offered on this day",
+    "randomBadge": "Random",
+    "costEachSuffix": "each",
+    "andMore": "+{{count}} more",
+    "costVaries": "Cost varies",
+    "availableOne": "1×{{qty}} available",
+    "availableUpTo": "Up to {{max}}×{{qty}} available",
+    "freeOffer": "+ free {{reward}}",
+    "state": {
+      "loading": "Loading shop data…",
+      "error": "Couldn't load shop data.",
+      "retry": "Try again",
+      "empty": "Nothing available on this day."
+    },
+    "tour": {
+      "libraryShops": {
+        "steps": {
+          "day": {
+            "title": "Pick a day",
+            "content": "Choose any day of the week to see what the shops rotate in that day."
+          },
+          "shop": {
+            "title": "Pick a shop",
+            "content": "Switch between the Guild, Guild War, Crusade, and Rogue Trader shops."
+          },
+          "random": {
+            "title": "Random slots",
+            "content": "A “N possible rewards” card means the slot is randomized — only one of the listed rewards is actually offered that day."
+          }
+        }
+      }
+    }
   }
 }

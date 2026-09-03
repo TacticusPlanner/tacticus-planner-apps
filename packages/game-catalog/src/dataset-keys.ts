@@ -17,6 +17,7 @@ export const servedDatasetKeys = [
   "lre-common",
   "event-definitions",
   "events-calendar",
+  "shops",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]

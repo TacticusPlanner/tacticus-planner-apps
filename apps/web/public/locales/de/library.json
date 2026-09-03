@@ -21,7 +21,11 @@
       "description": "Informationen zu Raid-Bossen durchsuchen"
     },
     "noRecords": "Keine auswählbaren Einheiten verfügbar.",
-    "raidBossesNoRecords": "Raid-Bosse sind noch nicht im Katalog verfügbar."
+    "raidBossesNoRecords": "Raid-Bosse sind noch nicht im Katalog verfügbar.",
+    "shops": {
+      "label": "Tages-Shops",
+      "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
+    }
   },
   "loading": "Bibliotheksdaten werden geladen…",
   "selector": {
@@ -29,5 +33,60 @@
     "placeholder": "Einheit auswählen",
     "selected": "Ausgewählt: {{name}}",
     "clear": "Auswahl aufheben"
+  },
+  "shops": {
+    "title": "Tages-Shops",
+    "subtitle": "Jeder Platz, den jeder Tages-Shop am gewählten Tag anbieten kann",
+    "dayLabel": "Tag",
+    "shopLabel": "Shop",
+    "days": {
+      "MON": "Montag",
+      "TUE": "Dienstag",
+      "WED": "Mittwoch",
+      "THU": "Donnerstag",
+      "FRI": "Freitag",
+      "SAT": "Samstag",
+      "SUN": "Sonntag"
+    },
+    "shopName": {
+      "guild": "Gildenshop",
+      "war": "Gildenkriegsshop",
+      "rogue-trader": "Freihändler",
+      "crusade": "Kreuzzugsshop"
+    },
+    "availableOn": "Verfügbar im {{shop}} am {{day}}",
+    "randomSlot": "{{count}} mögliche Belohnungen",
+    "randomSlotHint": "Nur eine davon wird an diesem Tag angeboten",
+    "randomBadge": "Zufall",
+    "costEachSuffix": "pro Stück",
+    "andMore": "+{{count}} weitere",
+    "costVaries": "Kosten variieren",
+    "availableOne": "1×{{qty}} verfügbar",
+    "availableUpTo": "Bis zu {{max}}×{{qty}} verfügbar",
+    "freeOffer": "+ gratis {{reward}}",
+    "state": {
+      "loading": "Shop-Daten werden geladen …",
+      "error": "Shop-Daten konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "empty": "An diesem Tag ist nichts verfügbar."
+    },
+    "tour": {
+      "libraryShops": {
+        "steps": {
+          "day": {
+            "title": "Wähle einen Tag",
+            "content": "Wähle einen beliebigen Wochentag, um zu sehen, was die Shops an diesem Tag anbieten."
+          },
+          "shop": {
+            "title": "Wähle einen Shop",
+            "content": "Wechsle zwischen Gilden-, Gildenkriegs-, Kreuzzugs- und Freihändler-Shop."
+          },
+          "random": {
+            "title": "Zufallsplätze",
+            "content": "Eine Karte „N mögliche Belohnungen“ bedeutet, dass der Platz zufällig ist – nur eine der aufgeführten Belohnungen wird an diesem Tag angeboten."
+          }
+        }
+      }
+    }
   }
 }

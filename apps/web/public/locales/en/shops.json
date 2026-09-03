@@ -1,0 +1,71 @@
+{
+  "title": "Shop recommendations",
+  "subtitle": "Today's daily-shop offers worth buying for {{project}}'s active goals",
+  "shopName": {
+    "guild": "Guild Shop",
+    "war": "Guild War Shop",
+    "rogue-trader": "Rogue Trader",
+    "crusade": "Crusade Shop"
+  },
+  "currency": {
+    "guildCredits": "Guild Credits",
+    "guildWarCurrency": "Guild War Coins",
+    "elderShopCurrency": "Rogue Trader Currency",
+    "crusadeCurrency": "Crusade Coins"
+  },
+  "group": {
+    "guaranteed": "Guaranteed today",
+    "possible": "Possible today"
+  },
+  "card": {
+    "progress": "{{acquired}} / {{required}}",
+    "costEachSuffix": "each",
+    "totalLabel": "Total",
+    "availableOne": "1×{{qty}} available",
+    "availableUpTo": "Up to {{max}}×{{qty}} available",
+    "freeOffer": "+ free {{reward}}",
+    "randomHint": "This slot is random — it may not appear today",
+    "neededByLabel": "Needed by",
+    "neededByEntry": "{{unit}} ({{count}})"
+  },
+  "reward": {
+    "shards": "{{unit}} shards",
+    "mythicShards": "{{unit}} mythic shards",
+    "gold": "Gold",
+    "dust": "Salvage",
+    "mythicDust": "Mythic salvage",
+    "xpBook": "XP book ({{rarity}})",
+    "forgeBadge": "{{rarity}} forge badge",
+    "abilityBadge": "{{rarity}} ability badge",
+    "mowToken": "{{alliance}} MoW token",
+    "orb": "{{rarity}} ascension orb",
+    "expeditionSpeedUp": "Expedition speed-up",
+    "equipmentPool": "{{rarity}} {{type}} item",
+    "generic": "{{name}}"
+  },
+  "state": {
+    "loading": "Loading shop recommendations…",
+    "error": "Couldn't load shop recommendations.",
+    "retry": "Try again",
+    "noProject": "Create or select a project to see shop recommendations for its goals.",
+    "nothingToBuy": "Nothing worth buying today for this project's active goals."
+  },
+  "tour": {
+    "shops": {
+      "steps": {
+        "purpose": {
+          "title": "Shop recommendations",
+          "content": "Each card is a daily-shop offer that one of the selected project's active goals still needs."
+        },
+        "availability": {
+          "title": "Guaranteed vs. possible",
+          "content": "Guaranteed offers are on sale today for sure. Possible offers come from a random slot and may not appear."
+        },
+        "card": {
+          "title": "Reading a card",
+          "content": "A card shows the reward, how many you have vs. need, the per-purchase cost, the remaining total cost, and which goal units need it."
+        }
+      }
+    }
+  }
+}

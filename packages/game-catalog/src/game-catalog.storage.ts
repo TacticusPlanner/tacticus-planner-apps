@@ -23,3 +23,4 @@ export type CampaignDefinitionStorageModel =
   StorageModel<"campaign-definitions">
 export type EventDefinitionStorageModel = StorageModel<"event-definitions">
 export type EventsCalendarStorageModel = StorageModel<"events-calendar">
+export type ShopStorageModel = StorageModel<"shops">

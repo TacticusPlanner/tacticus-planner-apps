@@ -62,6 +62,14 @@ export function getLiveProgress(): Promise<
   return getChunkData("live-progress")
 }
 
+// The caller's account summary ({ name, powerLevel }) — powerLevel gates some daily-shop offers by
+// account power (see the Dailies Shops page's shop resolution).
+export function getPlayerDetails(): Promise<
+  PlayerDataChunkDto<"player-details"> | undefined
+> {
+  return getChunkData("player-details")
+}
+
 export function getCampaignProgress(): Promise<
   PlayerDataChunkDto<"campaign-progress"> | undefined
 > {

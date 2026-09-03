@@ -321,6 +321,54 @@ describe("catalog schemas", () => {
     expect(result.success).toBe(false)
   })
 
+  it("validates a shops payload and rejects a malformed variant", () => {
+    const validShop = {
+      id: "guild",
+      displayLocation: "guildMerchant",
+      refreshWithAdWatch: true,
+      allowedRefreshesPerDay: 1,
+      refreshCost: { resourceType: "gems", amount: 50 },
+      slots: [
+        {
+          variants: [
+            {
+              reward: { type: "shards_eldarFarseer", qty: 5 },
+              unitId: "eldarFarseer",
+              cost: { currency: "guildCredits", amount: 525 },
+              maxPurchasesPerDay: 2,
+              weight: 1,
+              days: ["MON", "THU"],
+            },
+          ],
+        },
+      ],
+    }
+
+    expect(datasetPayloadSchemas.shops.safeParse([validShop]).success).toBe(
+      true
+    )
+
+    const badVariant = {
+      ...validShop,
+      slots: [
+        {
+          variants: [
+            {
+              reward: { type: "gold", qty: 0 }, // qty must be a positive integer
+              cost: { currency: "guildCredits", amount: 50 },
+              maxPurchasesPerDay: 1,
+              days: ["MON"],
+            },
+          ],
+        },
+      ],
+    }
+
+    expect(datasetPayloadSchemas.shops.safeParse([badVariant]).success).toBe(
+      false
+    )
+  })
+
   it("validates a manifest", () => {
     const result = manifestSchema.safeParse({
       version: "dev-1",

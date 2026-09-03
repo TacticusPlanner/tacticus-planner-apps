@@ -20,6 +20,8 @@ import {
   getNpcs,
   getNpcsMap,
   getOnslaughtRewards,
+  getShops,
+  getShopsMap,
   getUnlockShardCosts,
   getUnlockShardCostsMap,
   getUpgrades,
@@ -114,6 +116,21 @@ describe("named dataset queries", () => {
     )
 
     expect(await getOnslaughtRewards()).toHaveLength(1)
+  })
+
+  it("getShops/getShopsMap round-trip, keyed by shop id", async () => {
+    await replaceGameCatalogDataset(
+      "shops",
+      [
+        { id: "guild", slots: [] },
+        { id: "rogue-trader", slots: [] },
+      ],
+      metadata("shops")
+    )
+
+    expect(await getShops()).toHaveLength(2)
+    const byId = await getShopsMap()
+    expect(byId.get("rogue-trader")?.id).toBe("rogue-trader")
   })
 
   it("getUpgrades returns stored records", async () => {
