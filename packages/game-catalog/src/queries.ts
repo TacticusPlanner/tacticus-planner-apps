@@ -14,6 +14,7 @@ import type {
   MowStorageModel,
   NpcStorageModel,
   OnslaughtRewardStorageModel,
+  ShopStorageModel,
   UnlockShardCostStorageModel,
   UpgradeStorageModel,
 } from "./game-catalog.storage"
@@ -104,6 +105,17 @@ export function getCampaignDefinitions(): Promise<
   CampaignDefinitionStorageModel[]
 > {
   return getDatasetRecords("campaign-definitions")
+}
+
+export function getShops(): Promise<ShopStorageModel[]> {
+  return getDatasetRecords("shops")
+}
+
+// Indexes the four daily shops by their stable id (guild / war / rogue-trader / crusade) — the common
+// case for a page that resolves one shop at a time (the Library browser) or all four (recommendations).
+export async function getShopsMap(): Promise<Map<string, ShopStorageModel>> {
+  const shops = await getShops()
+  return new Map(shops.map((shop) => [shop.id, shop]))
 }
 
 export function getEventDefinitions(): Promise<EventDefinitionStorageModel[]> {

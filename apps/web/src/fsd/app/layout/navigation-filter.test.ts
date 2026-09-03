@@ -32,7 +32,7 @@ describe("filterNavigationItems", () => {
       (key) => labels[key] ?? key
     )
 
-    expect(results[0]?.children).toHaveLength(4)
+    expect(results[0]?.children).toHaveLength(5)
   })
 
   it(

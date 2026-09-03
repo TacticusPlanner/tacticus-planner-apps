@@ -35,7 +35,35 @@ export type {
   GameCatalogUpgradeRecipeIngredient,
   GameCatalogMowUpgradeCost,
   GameCatalogEquipmentUpgradeCost,
+  GameCatalogShop,
+  GameCatalogShopSlot,
+  GameCatalogShopVariant,
 } from "./record-types"
+
+export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
+
+export {
+  resolveShopOffersForToday,
+  resolveShopSlotsForDay,
+  computeShopLockContext,
+  plTier,
+  hasBlueStarUnit,
+  shardRewardEligible,
+  lockIsActive,
+  resolveEventLockId,
+  bpSeasonStartMs,
+  todayDow,
+  DOW_MAP,
+  PL_MEDIUM,
+  MYTHIC_UNCRAFTABLE_UPGRADES,
+  MYTHIC_UNCRAFTABLE_UPGRADE_IDS,
+  type ResolvedShopOffer,
+  type ResolvedShopSlot,
+  type ShopLockContext,
+  type RosterUnit,
+  type ResolveShopOffersForTodayOptions,
+  type ResolveShopSlotsForDayOptions,
+} from "./shops/shop-resolve"
 
 export {
   manifestSchema,
@@ -79,6 +107,7 @@ export {
   type CampaignDefinitionStorageModel,
   type EventDefinitionStorageModel,
   type EventsCalendarStorageModel,
+  type ShopStorageModel,
 } from "./game-catalog.storage"
 
 export {

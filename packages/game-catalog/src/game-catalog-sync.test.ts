@@ -65,6 +65,12 @@ const datasetData: Record<string, unknown> = {
     { id: "emperLucius-alpha-1", lreId: "emperLucius", track: "alpha" },
   ],
   "lre-common": [{ id: "lre-common", shardsPerChest: 1 }],
+  shops: [
+    { id: "guild", slots: [] },
+    { id: "war", slots: [] },
+    { id: "rogue-trader", slots: [] },
+    { id: "crusade", slots: [] },
+  ],
 }
 
 function createManifest(
@@ -302,5 +308,21 @@ describe("syncGameCatalog", () => {
     expect(result.status).toBe("ready")
     expect(await hasCompleteGameCatalogCache()).toBe(true)
     expect((await getDatasetRecords("lre-common"))[0]?.id).toBe("lre-common")
+  })
+
+  it("creates the v5 `shops` store for a client seeded at v4 and populates it", async () => {
+    await seedDbMissingStore("shops")
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+    expect(
+      (await getDatasetRecords("shops")).map((row) => row.id).sort()
+    ).toEqual(["crusade", "guild", "rogue-trader", "war"])
+    // Other datasets seeded at v4 survive the upgrade.
+    expect((await getDatasetRecords("characters"))[0]?.id).toBe("c1")
   })
 })

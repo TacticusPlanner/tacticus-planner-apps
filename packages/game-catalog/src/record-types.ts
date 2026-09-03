@@ -23,6 +23,9 @@ import type {
   onslaughtRewardSchema,
   ascensionCostSchema,
   unlockShardCostSchema,
+  shopSchema,
+  shopSlotSchema,
+  shopVariantSchema,
   upgradeViewSchema,
 } from "./schemas"
 
@@ -60,3 +63,6 @@ export type GameCatalogEventRecurrence = z.infer<typeof eventRecurrenceSchema>
 export type GameCatalogEventsCalendarEntry = z.infer<
   typeof eventsCalendarEntrySchema
 >
+export type GameCatalogShop = z.infer<typeof shopSchema>
+export type GameCatalogShopSlot = z.infer<typeof shopSlotSchema>
+export type GameCatalogShopVariant = z.infer<typeof shopVariantSchema>

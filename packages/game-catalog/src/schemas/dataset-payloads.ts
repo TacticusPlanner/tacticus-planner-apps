@@ -14,6 +14,7 @@ import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { npcSchema } from "./npc"
 import { onslaughtRewardSchema } from "./onslaught"
 import { ascensionCostSchema, unlockShardCostSchema } from "./progression-costs"
+import { shopSchema } from "./shops"
 import { upgradeViewSchema } from "./upgrade"
 
 // ---- dataset payloads (the envelope `data`) --------------------------------------------------
@@ -37,6 +38,7 @@ export const datasetPayloadSchemas = {
   "event-definitions": z.array(eventDefinitionSchema),
   // The one exception to "every payload is a plain array" — see events.ts.
   "events-calendar": eventsCalendarPayloadSchema,
+  shops: z.array(shopSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -60,4 +62,5 @@ export type GameCatalogRecordByKey = {
   // The flattened storage-row shape (entry + injected `date`), not the raw date-keyed payload — see
   // events.ts and game-catalog.mapper.ts's `byCalendarDate`.
   "events-calendar": z.infer<typeof eventsCalendarRowSchema>
+  shops: z.infer<typeof shopSchema>
 }

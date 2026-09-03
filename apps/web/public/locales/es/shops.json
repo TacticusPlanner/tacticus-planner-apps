@@ -1,0 +1,71 @@
+{
+  "title": "Recomendaciones de tienda",
+  "subtitle": "Ofertas de las tiendas diarias que vale la pena comprar hoy para los objetivos activos de {{project}}",
+  "shopName": {
+    "guild": "Tienda de gremio",
+    "war": "Tienda de guerra de gremio",
+    "rogue-trader": "Comerciante independiente",
+    "crusade": "Tienda de cruzada"
+  },
+  "currency": {
+    "guildCredits": "Créditos de gremio",
+    "guildWarCurrency": "Monedas de guerra de gremio",
+    "elderShopCurrency": "Moneda del comerciante independiente",
+    "crusadeCurrency": "Monedas de cruzada"
+  },
+  "group": {
+    "guaranteed": "Garantizado hoy",
+    "possible": "Posible hoy"
+  },
+  "card": {
+    "progress": "{{acquired}} / {{required}}",
+    "costEachSuffix": "cada uno",
+    "totalLabel": "Total",
+    "availableOne": "1×{{qty}} disponible",
+    "availableUpTo": "Hasta {{max}}×{{qty}} disponible",
+    "freeOffer": "+ {{reward}} gratis",
+    "randomHint": "Esta ranura es aleatoria: puede que hoy no aparezca",
+    "neededByLabel": "Necesario para",
+    "neededByEntry": "{{unit}} ({{count}})"
+  },
+  "reward": {
+    "shards": "Fragmentos de {{unit}}",
+    "mythicShards": "Fragmentos míticos de {{unit}}",
+    "gold": "Oro",
+    "dust": "Chatarra",
+    "mythicDust": "Chatarra mítica",
+    "xpBook": "Libro de EXP ({{rarity}})",
+    "forgeBadge": "Insignia de forja {{rarity}}",
+    "abilityBadge": "Insignia de habilidad {{rarity}}",
+    "mowToken": "Ficha de máquina de guerra {{alliance}}",
+    "orb": "Orbe de ascensión {{rarity}}",
+    "expeditionSpeedUp": "Aceleración de expedición",
+    "equipmentPool": "Objeto {{type}} {{rarity}}",
+    "generic": "{{name}}"
+  },
+  "state": {
+    "loading": "Cargando recomendaciones de tienda…",
+    "error": "No se pudieron cargar las recomendaciones de tienda.",
+    "retry": "Reintentar",
+    "noProject": "Crea o selecciona un proyecto para ver recomendaciones de tienda para sus objetivos.",
+    "nothingToBuy": "Hoy no hay nada que valga la pena comprar para los objetivos activos de este proyecto."
+  },
+  "tour": {
+    "shops": {
+      "steps": {
+        "purpose": {
+          "title": "Recomendaciones de tienda",
+          "content": "Cada tarjeta es una oferta de tienda diaria que uno de los objetivos activos del proyecto seleccionado todavía necesita."
+        },
+        "availability": {
+          "title": "Garantizado frente a posible",
+          "content": "Las ofertas garantizadas están hoy a la venta con seguridad. Las ofertas posibles provienen de una ranura aleatoria y puede que no aparezcan."
+        },
+        "card": {
+          "title": "Leer una tarjeta",
+          "content": "Una tarjeta muestra la recompensa, cuánto tienes frente a lo que necesitas, el coste por compra, el coste total restante y qué unidades objetivo la necesitan."
+        }
+      }
+    }
+  }
+}

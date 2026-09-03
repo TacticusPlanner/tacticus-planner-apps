@@ -1,0 +1,71 @@
+{
+  "title": "Recommandations de boutique",
+  "subtitle": "Offres des boutiques quotidiennes qui valent la peine d'être achetées aujourd'hui pour les objectifs actifs de {{project}}",
+  "shopName": {
+    "guild": "Boutique de guilde",
+    "war": "Boutique de guerre de guilde",
+    "rogue-trader": "Marchand indépendant",
+    "crusade": "Boutique de croisade"
+  },
+  "currency": {
+    "guildCredits": "Crédits de guilde",
+    "guildWarCurrency": "Pièces de guerre de guilde",
+    "elderShopCurrency": "Monnaie du marchand indépendant",
+    "crusadeCurrency": "Pièces de croisade"
+  },
+  "group": {
+    "guaranteed": "Garanti aujourd'hui",
+    "possible": "Possible aujourd'hui"
+  },
+  "card": {
+    "progress": "{{acquired}} / {{required}}",
+    "costEachSuffix": "pièce",
+    "totalLabel": "Total",
+    "availableOne": "1×{{qty}} disponible",
+    "availableUpTo": "Jusqu'à {{max}}×{{qty}} disponible",
+    "freeOffer": "+ {{reward}} offert",
+    "randomHint": "Cet emplacement est aléatoire — il peut ne pas apparaître aujourd'hui",
+    "neededByLabel": "Nécessaire pour",
+    "neededByEntry": "{{unit}} ({{count}})"
+  },
+  "reward": {
+    "shards": "Fragments de {{unit}}",
+    "mythicShards": "Fragments mythiques de {{unit}}",
+    "gold": "Or",
+    "dust": "Récupération",
+    "mythicDust": "Récupération mythique",
+    "xpBook": "Manuel d'XP ({{rarity}})",
+    "forgeBadge": "Insigne de forge {{rarity}}",
+    "abilityBadge": "Insigne de compétence {{rarity}}",
+    "mowToken": "Jeton de machine de guerre {{alliance}}",
+    "orb": "Orbe d'ascension {{rarity}}",
+    "expeditionSpeedUp": "Accélération d'expédition",
+    "equipmentPool": "Objet {{type}} {{rarity}}",
+    "generic": "{{name}}"
+  },
+  "state": {
+    "loading": "Chargement des recommandations de boutique…",
+    "error": "Impossible de charger les recommandations de boutique.",
+    "retry": "Réessayer",
+    "noProject": "Créez ou sélectionnez un projet pour voir des recommandations de boutique pour ses objectifs.",
+    "nothingToBuy": "Rien à acheter aujourd'hui pour les objectifs actifs de ce projet."
+  },
+  "tour": {
+    "shops": {
+      "steps": {
+        "purpose": {
+          "title": "Recommandations de boutique",
+          "content": "Chaque carte est une offre de boutique quotidienne dont l'un des objectifs actifs du projet sélectionné a encore besoin."
+        },
+        "availability": {
+          "title": "Garanti ou possible",
+          "content": "Les offres garanties sont assurément en vente aujourd'hui. Les offres possibles proviennent d'un emplacement aléatoire et peuvent ne pas apparaître."
+        },
+        "card": {
+          "title": "Lire une carte",
+          "content": "Une carte indique la récompense, ce que vous possédez par rapport à ce qu'il vous faut, le coût par achat, le coût total restant et les unités-objectifs qui en ont besoin."
+        }
+      }
+    }
+  }
+}

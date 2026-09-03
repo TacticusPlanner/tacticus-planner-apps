@@ -1,0 +1,71 @@
+{
+  "title": "Shop-Empfehlungen",
+  "subtitle": "Heutige Tages-Shop-Angebote, die sich für die aktiven Ziele von {{project}} lohnen",
+  "shopName": {
+    "guild": "Gildenshop",
+    "war": "Gildenkriegsshop",
+    "rogue-trader": "Freihändler",
+    "crusade": "Kreuzzugsshop"
+  },
+  "currency": {
+    "guildCredits": "Gildenkredits",
+    "guildWarCurrency": "Gildenkriegsmünzen",
+    "elderShopCurrency": "Freihändler-Währung",
+    "crusadeCurrency": "Kreuzzugsmünzen"
+  },
+  "group": {
+    "guaranteed": "Heute garantiert",
+    "possible": "Heute möglich"
+  },
+  "card": {
+    "progress": "{{acquired}} / {{required}}",
+    "costEachSuffix": "pro Stück",
+    "totalLabel": "Gesamt",
+    "availableOne": "1×{{qty}} verfügbar",
+    "availableUpTo": "Bis zu {{max}}×{{qty}} verfügbar",
+    "freeOffer": "+ gratis {{reward}}",
+    "randomHint": "Dieser Platz ist zufällig – er erscheint heute vielleicht nicht",
+    "neededByLabel": "Benötigt von",
+    "neededByEntry": "{{unit}} ({{count}})"
+  },
+  "reward": {
+    "shards": "{{unit}}-Splitter",
+    "mythicShards": "{{unit}}-Mythische Splitter",
+    "gold": "Gold",
+    "dust": "Bergungsgut",
+    "mythicDust": "Mythisches Bergungsgut",
+    "xpBook": "EP-Buch ({{rarity}})",
+    "forgeBadge": "{{rarity}}-Schmiedeabzeichen",
+    "abilityBadge": "{{rarity}}-Fähigkeitsabzeichen",
+    "mowToken": "{{alliance}}-Kriegsmaschinen-Marke",
+    "orb": "{{rarity}}-Aufstiegskugel",
+    "expeditionSpeedUp": "Expeditions-Beschleunigung",
+    "equipmentPool": "{{rarity}}-{{type}}-Gegenstand",
+    "generic": "{{name}}"
+  },
+  "state": {
+    "loading": "Shop-Empfehlungen werden geladen …",
+    "error": "Shop-Empfehlungen konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "noProject": "Erstelle oder wähle ein Projekt, um Shop-Empfehlungen für dessen Ziele zu sehen.",
+    "nothingToBuy": "Heute lohnt sich für die aktiven Ziele dieses Projekts kein Kauf."
+  },
+  "tour": {
+    "shops": {
+      "steps": {
+        "purpose": {
+          "title": "Shop-Empfehlungen",
+          "content": "Jede Karte ist ein Tages-Shop-Angebot, das eines der aktiven Ziele des gewählten Projekts noch benötigt."
+        },
+        "availability": {
+          "title": "Garantiert vs. möglich",
+          "content": "Garantierte Angebote sind heute sicher im Verkauf. Mögliche Angebote stammen aus einem Zufallsplatz und erscheinen eventuell nicht."
+        },
+        "card": {
+          "title": "Eine Karte lesen",
+          "content": "Eine Karte zeigt die Belohnung, deinen Bestand im Verhältnis zum Bedarf, die Kosten pro Kauf, die verbleibenden Gesamtkosten und welche Ziel-Einheiten sie benötigen."
+        }
+      }
+    }
+  }
+}

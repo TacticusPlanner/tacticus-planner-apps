@@ -1,33 +1,92 @@
 {
   "section": {
     "label": "Biblioteca",
-    "description": "Explora personajes, Máquinas de Guerra, PNJ y jefes de incursión"
+    "description": "Explora personajes, MГЎquinas de Guerra, PNJ y jefes de incursiГіn"
   },
   "collections": {
     "characters": {
       "label": "Personajes",
-      "description": "Explora detalles y estadísticas de personajes"
+      "description": "Explora detalles y estadГ­sticas de personajes"
     },
     "machinesOfWar": {
-      "label": "Máquinas de Guerra",
-      "description": "Explora detalles y estadísticas de Máquinas de Guerra"
+      "label": "MГЎquinas de Guerra",
+      "description": "Explora detalles y estadГ­sticas de MГЎquinas de Guerra"
     },
     "npcs": {
       "label": "PNJ",
-      "description": "Explora detalles y estadísticas de PNJ"
+      "description": "Explora detalles y estadГ­sticas de PNJ"
     },
     "raidBosses": {
-      "label": "Jefes de incursión",
-      "description": "Explora información de jefes de incursión"
+      "label": "Jefes de incursiГіn",
+      "description": "Explora informaciГіn de jefes de incursiГіn"
+    },
+    "shops": {
+      "label": "Tiendas diarias",
+      "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana"
     },
     "noRecords": "No hay entidades seleccionables disponibles.",
-    "raidBossesNoRecords": "Los jefes de incursión aún no están disponibles en el catálogo."
+    "raidBossesNoRecords": "Los jefes de incursiГіn aГєn no estГЎn disponibles en el catГЎlogo."
   },
-  "loading": "Cargando registros de la biblioteca…",
+  "loading": "Cargando registros de la bibliotecaвЂ¦",
   "selector": {
     "label": "Selecciona una entidad",
     "placeholder": "Selecciona una entidad",
     "selected": "Seleccionado: {{name}}",
-    "clear": "Borrar selección"
+    "clear": "Borrar selecciГіn"
+  },
+  "shops": {
+    "title": "Tiendas diarias",
+    "subtitle": "Cada ranura que cada tienda diaria puede ofrecer el día seleccionado",
+    "dayLabel": "Día",
+    "shopLabel": "Tienda",
+    "days": {
+      "MON": "Lunes",
+      "TUE": "Martes",
+      "WED": "Miércoles",
+      "THU": "Jueves",
+      "FRI": "Viernes",
+      "SAT": "Sábado",
+      "SUN": "Domingo"
+    },
+    "shopName": {
+      "guild": "Tienda de gremio",
+      "war": "Tienda de guerra de gremio",
+      "rogue-trader": "Comerciante independiente",
+      "crusade": "Tienda de cruzada"
+    },
+    "availableOn": "Disponible en {{shop}} el {{day}}",
+    "randomSlot": "{{count}} recompensas posibles",
+    "randomSlotHint": "Solo se ofrecerá una de ellas ese día",
+    "randomBadge": "Aleatorio",
+    "costEachSuffix": "cada uno",
+    "andMore": "+{{count}} más",
+    "costVaries": "El coste varía",
+    "availableOne": "1×{{qty}} disponible",
+    "availableUpTo": "Hasta {{max}}×{{qty}} disponible",
+    "freeOffer": "+ {{reward}} gratis",
+    "state": {
+      "loading": "Cargando datos de tienda…",
+      "error": "No se pudieron cargar los datos de tienda.",
+      "retry": "Reintentar",
+      "empty": "No hay nada disponible este día."
+    },
+    "tour": {
+      "libraryShops": {
+        "steps": {
+          "day": {
+            "title": "Elige un día",
+            "content": "Elige cualquier día de la semana para ver lo que las tiendas rotan ese día."
+          },
+          "shop": {
+            "title": "Elige una tienda",
+            "content": "Cambia entre las tiendas de Gremio, Guerra de gremio, Cruzada y Comerciante independiente."
+          },
+          "random": {
+            "title": "Ranuras aleatorias",
+            "content": "Una tarjeta de «N recompensas posibles» significa que la ranura es aleatoria: ese día solo se ofrece una de las recompensas indicadas."
+          }
+        }
+      }
+    }
   }
 }
