@@ -1,38 +1,38 @@
 {
   "section": {
     "label": "Biblioteca",
-    "description": "Explora personajes, MГЎquinas de Guerra, PNJ y jefes de incursiГіn"
+    "description": "Explora personajes, Máquinas de Guerra, PNJ y jefes de incursión"
   },
   "collections": {
     "characters": {
       "label": "Personajes",
-      "description": "Explora detalles y estadГ­sticas de personajes"
+      "description": "Explora detalles y estadísticas de personajes"
     },
     "machinesOfWar": {
-      "label": "MГЎquinas de Guerra",
-      "description": "Explora detalles y estadГ­sticas de MГЎquinas de Guerra"
+      "label": "Máquinas de Guerra",
+      "description": "Explora detalles y estadísticas de Máquinas de Guerra"
     },
     "npcs": {
       "label": "PNJ",
-      "description": "Explora detalles y estadГ­sticas de PNJ"
+      "description": "Explora detalles y estadísticas de PNJ"
     },
     "raidBosses": {
-      "label": "Jefes de incursiГіn",
-      "description": "Explora informaciГіn de jefes de incursiГіn"
+      "label": "Jefes de incursión",
+      "description": "Explora información de jefes de incursión"
     },
+    "noRecords": "No hay entidades seleccionables disponibles.",
+    "raidBossesNoRecords": "Los jefes de incursión aún no están disponibles en el catálogo.",
     "shops": {
       "label": "Tiendas diarias",
       "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana"
-    },
-    "noRecords": "No hay entidades seleccionables disponibles.",
-    "raidBossesNoRecords": "Los jefes de incursiГіn aГєn no estГЎn disponibles en el catГЎlogo."
+    }
   },
-  "loading": "Cargando registros de la bibliotecaвЂ¦",
+  "loading": "Cargando registros de la biblioteca…",
   "selector": {
     "label": "Selecciona una entidad",
     "placeholder": "Selecciona una entidad",
     "selected": "Seleccionado: {{name}}",
-    "clear": "Borrar selecciГіn"
+    "clear": "Borrar selección"
   },
   "shops": {
     "title": "Tiendas diarias",

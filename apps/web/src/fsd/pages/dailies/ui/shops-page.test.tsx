@@ -184,5 +184,7 @@ describe("ShopsPage", () => {
     expect(card).toHaveTextContent(
       'card.progress:{"acquired":30,"required":130}'
     )
+    // the per-day availability note must survive the mobile layout, not just desktop
+    expect(card).toHaveTextContent('card.availableUpTo:{"max":2,"qty":5}')
   })
 })

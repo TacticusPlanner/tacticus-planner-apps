@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useQueries, useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -71,6 +71,23 @@ export type ShopRecommendationsViewModel =
 // Shop dataset order — sections render in this order regardless of the stored row order.
 const SHOP_ORDER = ["guild", "war", "rogue-trader", "crusade"]
 
+// `useLiveQuery` turns a rejected querier into a permanent `undefined`, indistinguishable from "still
+// loading" — the player-data reads below wrap their body and return this sentinel instead, so a Dexie
+// failure surfaces as a real, retry-able error state. (Catalog reads stay unwrapped: a catalog failure
+// is owned by the global GameCatalogProvider gate.)
+const LIVE_QUERY_ERROR = Symbol("live-query-error")
+type OrLiveQueryError<T> = T | typeof LIVE_QUERY_ERROR
+
+async function safeLiveRead<T>(
+  read: () => Promise<T>
+): Promise<OrLiveQueryError<T>> {
+  try {
+    return await read()
+  } catch {
+    return LIVE_QUERY_ERROR
+  }
+}
+
 function playerUnitIds(
   details: readonly Pick<GoalDetail, "entityId" | "entityType">[]
 ) {
@@ -90,6 +107,7 @@ export function useShopRecommendations(
 ): ShopRecommendationsViewModel {
   const { t } = useTranslation(["shops", "characters", "upgrades"])
   const isAuthenticated = useIsAuthenticated()
+  const [retryNonce, setRetryNonce] = useState(0)
 
   const membersQuery = useQuery({
     ...projectQueries.goals(projectId ?? "unselected"),
@@ -113,42 +131,72 @@ export function useShopRecommendations(
   const upgrades = useLiveQuery(() => getUpgrades(), [])
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
-  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
-  const shops = useLiveQuery(() => getShops(), [])
-  const playerDetails = useLiveQuery(
-    async () => ({ value: await getPlayerDetails() }),
-    []
+  const inventoryUpgradesRaw = useLiveQuery(
+    () => safeLiveRead(() => getInventoryUpgrades()),
+    [retryNonce]
   )
-  const roster = useLiveQuery(
-    async () => ({
-      characters: (await getPlayerCharacters()) ?? [],
-      mows: (await getPlayerMows()) ?? [],
-    }),
-    []
+  const shopsRaw = useLiveQuery(
+    () => safeLiveRead(() => getShops()),
+    [retryNonce]
   )
-  const playerState = useLiveQuery(async () => {
-    const { characterIds, mowIds } = playerUnitIds(details)
-    const [characters, mows, inventoryShards] = await Promise.all([
-      Promise.all(
-        characterIds.map(
-          async (id) => [id, await getPlayerCharacter(id)] as const
-        )
-      ),
-      Promise.all(
-        mowIds.map(async (id) => [id, await getPlayerMow(id)] as const)
-      ),
-      Promise.all(
-        characterIds.map(
-          async (id) => [id, await getInventoryShard(id)] as const
-        )
-      ),
-    ])
-    return {
-      playerCharacterById: new Map(characters),
-      playerMowById: new Map(mows),
-      inventoryShardById: new Map(inventoryShards),
-    }
-  }, [detailKey])
+  const playerDetailsRaw = useLiveQuery(
+    () => safeLiveRead(async () => ({ value: await getPlayerDetails() })),
+    [retryNonce]
+  )
+  const rosterRaw = useLiveQuery(
+    () =>
+      safeLiveRead(async () => ({
+        characters: (await getPlayerCharacters()) ?? [],
+        mows: (await getPlayerMows()) ?? [],
+      })),
+    [retryNonce]
+  )
+  const playerStateRaw = useLiveQuery(
+    () =>
+      safeLiveRead(async () => {
+        const { characterIds, mowIds } = playerUnitIds(details)
+        const [characters, mows, inventoryShards] = await Promise.all([
+          Promise.all(
+            characterIds.map(
+              async (id) => [id, await getPlayerCharacter(id)] as const
+            )
+          ),
+          Promise.all(
+            mowIds.map(async (id) => [id, await getPlayerMow(id)] as const)
+          ),
+          Promise.all(
+            characterIds.map(
+              async (id) => [id, await getInventoryShard(id)] as const
+            )
+          ),
+        ])
+        return {
+          playerCharacterById: new Map(characters),
+          playerMowById: new Map(mows),
+          inventoryShardById: new Map(inventoryShards),
+        }
+      }),
+    [detailKey, retryNonce]
+  )
+
+  const liveQueryFailed = [
+    inventoryUpgradesRaw,
+    shopsRaw,
+    playerDetailsRaw,
+    rosterRaw,
+    playerStateRaw,
+  ].some((result) => result === LIVE_QUERY_ERROR)
+
+  // Treat the failure sentinel as "not loaded" for the rest of the hook — the error branch below
+  // short-circuits before any of these are read, but this keeps the downstream types clean.
+  function unwrap<T>(result: OrLiveQueryError<T> | undefined): T | undefined {
+    return result === LIVE_QUERY_ERROR ? undefined : result
+  }
+  const inventoryUpgrades = unwrap(inventoryUpgradesRaw)
+  const shops = unwrap(shopsRaw)
+  const playerDetails = unwrap(playerDetailsRaw)
+  const roster = unwrap(rosterRaw)
+  const playerState = unwrap(playerStateRaw)
 
   const upgradesById = useMemo(
     () =>
@@ -278,15 +326,19 @@ export function useShopRecommendations(
     t,
   ])
 
+  const retry = () => {
+    void membersQuery.refetch()
+    for (const query of detailQueries) void query.refetch()
+    setRetryNonce((nonce) => nonce + 1)
+  }
+
   if (!projectId) return { status: "no-project" }
-  if (membersQuery.isError || detailQueries.some((query) => query.isError)) {
-    return {
-      status: "error",
-      retry: () => {
-        void membersQuery.refetch()
-        for (const query of detailQueries) void query.refetch()
-      },
-    }
+  if (
+    membersQuery.isError ||
+    detailQueries.some((query) => query.isError) ||
+    liveQueryFailed
+  ) {
+    return { status: "error", retry }
   }
   if (!sections) return { status: "loading" }
   return { status: "ready", sections }

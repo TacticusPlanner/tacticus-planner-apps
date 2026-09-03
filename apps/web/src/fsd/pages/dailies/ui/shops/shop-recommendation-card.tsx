@@ -117,6 +117,15 @@ export function ShopRecommendationCard({
               </>
             ) : null}
           </div>
+          <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
+            <span>{text.availability}</span>
+            {text.freeOffer ? (
+              <>
+                <span>·</span>
+                <span>{text.freeOffer}</span>
+              </>
+            ) : null}
+          </div>
           <div className="truncate text-xs text-muted-foreground">
             {text.neededByLabel}: {text.neededBy.join(", ")}
           </div>

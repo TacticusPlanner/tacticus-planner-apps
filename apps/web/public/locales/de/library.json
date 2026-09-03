@@ -20,18 +20,18 @@
       "label": "Raid-Bosse",
       "description": "Informationen zu Raid-Bossen durchsuchen"
     },
+    "noRecords": "Keine auswählbaren Einheiten verfügbar.",
+    "raidBossesNoRecords": "Raid-Bosse sind noch nicht im Katalog verfügbar.",
     "shops": {
       "label": "Tages-Shops",
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
-    },
-    "noRecords": "Keine auswГ¤hlbaren Einheiten verfГјgbar.",
-    "raidBossesNoRecords": "Raid-Bosse sind noch nicht im Katalog verfГјgbar."
+    }
   },
-  "loading": "Bibliotheksdaten werden geladenвЂ¦",
+  "loading": "Bibliotheksdaten werden geladen…",
   "selector": {
-    "label": "Einheit auswГ¤hlen",
-    "placeholder": "Einheit auswГ¤hlen",
-    "selected": "AusgewГ¤hlt: {{name}}",
+    "label": "Einheit auswählen",
+    "placeholder": "Einheit auswählen",
+    "selected": "Ausgewählt: {{name}}",
     "clear": "Auswahl aufheben"
   },
   "shops": {

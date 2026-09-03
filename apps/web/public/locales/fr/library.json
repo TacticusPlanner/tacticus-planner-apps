@@ -1,38 +1,38 @@
 {
   "section": {
-    "label": "BibliothГЁque",
+    "label": "Bibliothèque",
     "description": "Parcourez les personnages, Machines de guerre, PNJ et boss de raid"
   },
   "collections": {
     "characters": {
       "label": "Personnages",
-      "description": "Parcourez les dГ©tails et statistiques des personnages"
+      "description": "Parcourez les détails et statistiques des personnages"
     },
     "machinesOfWar": {
       "label": "Machines de guerre",
-      "description": "Parcourez les dГ©tails et statistiques des Machines de guerre"
+      "description": "Parcourez les détails et statistiques des Machines de guerre"
     },
     "npcs": {
       "label": "PNJ",
-      "description": "Parcourez les dГ©tails et statistiques des PNJ"
+      "description": "Parcourez les détails et statistiques des PNJ"
     },
     "raidBosses": {
       "label": "Boss de raid",
       "description": "Parcourez les informations des boss de raid"
     },
+    "noRecords": "Aucune entité sélectionnable n’est disponible.",
+    "raidBossesNoRecords": "Les boss de raid ne sont pas encore disponibles dans le catalogue.",
     "shops": {
       "label": "Boutiques quotidiennes",
       "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
-    },
-    "noRecords": "Aucune entitГ© sГ©lectionnable nвЂ™est disponible.",
-    "raidBossesNoRecords": "Les boss de raid ne sont pas encore disponibles dans le catalogue."
+    }
   },
-  "loading": "Chargement des donnГ©es de la bibliothГЁqueвЂ¦",
+  "loading": "Chargement des données de la bibliothèque…",
   "selector": {
-    "label": "SГ©lectionner une entitГ©",
-    "placeholder": "SГ©lectionner une entitГ©",
-    "selected": "SГ©lectionnГ© : {{name}}",
-    "clear": "Effacer la sГ©lection"
+    "label": "Sélectionner une entité",
+    "placeholder": "Sélectionner une entité",
+    "selected": "Sélectionné : {{name}}",
+    "clear": "Effacer la sélection"
   },
   "shops": {
     "title": "Boutiques quotidiennes",
@@ -58,7 +58,7 @@
     "randomSlot": "{{count}} récompenses possibles",
     "randomSlotHint": "Une seule d'entre elles sera proposée ce jour-là",
     "randomBadge": "Aléatoire",
-    "costEachSuffix": "pièce",
+    "costEachSuffix": "chacun",
     "andMore": "+{{count}} de plus",
     "costVaries": "Coût variable",
     "availableOne": "1×{{qty}} disponible",

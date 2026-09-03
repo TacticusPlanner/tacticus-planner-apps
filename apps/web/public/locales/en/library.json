@@ -20,14 +20,14 @@
       "label": "Raid Bosses",
       "description": "Browse Raid Boss information"
     },
+    "noRecords": "No selectable entities are available.",
+    "raidBossesNoRecords": "Raid Bosses are not available in the catalog yet.",
     "shops": {
       "label": "Daily Shops",
       "description": "Browse what each daily shop can offer on any day of the week"
-    },
-    "noRecords": "No selectable entities are available.",
-    "raidBossesNoRecords": "Raid Bosses are not available in the catalog yet."
+    }
   },
-  "loading": "Loading Library recordsРІР‚В¦",
+  "loading": "Loading Library records…",
   "selector": {
     "label": "Select an entity",
     "placeholder": "Select an entity",

@@ -19,7 +19,7 @@
   },
   "card": {
     "progress": "{{acquired}} / {{required}}",
-    "costEachSuffix": "pièce",
+    "costEachSuffix": "chacun",
     "totalLabel": "Total",
     "availableOne": "1×{{qty}} disponible",
     "availableUpTo": "Jusqu'à {{max}}×{{qty}} disponible",
