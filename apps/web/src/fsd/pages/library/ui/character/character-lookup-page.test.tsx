@@ -376,9 +376,9 @@ describe("CharacterLookupPage", () => {
     expect(profile.getByText("Hero One")).toBeInTheDocument()
     expect(profile.getByText("4")).toBeInTheDocument() // movement
     expect(profile.getByText("3")).toBeInTheDocument() // melee hits
-    // Health at Stone1 (current, 100 * 1.25205^0) and Stone2 (target, 100 * 1.25205^1), no progression.
+    // Health at Stone1 (current, 100 * 1.25205^0) and Stone2 (target, with one progression step).
     expect(profile.getByText("100")).toBeInTheDocument()
-    expect(profile.getByText("125")).toBeInTheDocument()
+    expect(profile.getByText("137")).toBeInTheDocument()
   })
 
   it("computes current/target Health from independent from/to progression values", () => {
@@ -434,7 +434,7 @@ describe("CharacterLookupPage", () => {
     expect(applyButton).toBeDisabled()
   })
 
-  it("prefills the 'from' rank from synced player data when authenticated", async () => {
+  it("prefills an advancing range from synced player data when authenticated", async () => {
     useIsAuthenticatedMock.mockReturnValue(true)
     playerChunkMocks.characters.mockImplementation((id) =>
       Promise.resolve(
@@ -457,12 +457,50 @@ describe("CharacterLookupPage", () => {
     fireEvent.click(screen.getByText("Hero Two"))
     await act(async () => {})
 
-    // "Iron3" is the synced unit's rank, not the firstRank ("Stone1") default. The range's "to"
-    // also gets bumped up to match (it defaults below "from" otherwise), so both the "from" and
-    // "to" badges read "Iron3" here.
+    // "Iron3" is the synced unit's rank, not the firstRank ("Stone1") default. Its target now
+    // advances to Bronze1 rather than collapsing both controls to the synced rank.
     expect(screen.getAllByText("Iron3").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Bronze1").length).toBeGreaterThan(0)
     expect(screen.queryByText("Stone1")).not.toBeInTheDocument()
     expect(screen.queryByText("Stone2")).not.toBeInTheDocument()
+  })
+
+  it("ignores a stale player prefill after switching characters", async () => {
+    useIsAuthenticatedMock.mockReturnValue(true)
+    let resolveHeroOne: (value: PlayerUnitFixture | undefined) => void
+    const heroOne = new Promise<PlayerUnitFixture | undefined>((resolve) => {
+      resolveHeroOne = resolve
+    })
+    playerChunkMocks.characters.mockImplementation((id) =>
+      id === "hero1"
+        ? heroOne
+        : Promise.resolve({
+            unitId: "hero2",
+            rank: "Bronze1",
+            progressionIndex: "Uncommon:FourStars",
+          })
+    )
+
+    renderPage(["/library/characters/hero1"])
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
+    )
+    fireEvent.click(screen.getByText("Hero Two"))
+    await act(async () => {})
+
+    expect(screen.getAllByText("Bronze1").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Bronze2").length).toBeGreaterThan(0)
+
+    resolveHeroOne!({
+      unitId: "hero1",
+      rank: "Gold1",
+      progressionIndex: "Epic:RedOneStar",
+    })
+    await act(async () => {})
+
+    expect(screen.queryByText("Gold1")).not.toBeInTheDocument()
+    expect(screen.queryByText("Gold2")).not.toBeInTheDocument()
   })
 
   it("keeps the default 'from' rank when authenticated but the selected unit has no synced data", async () => {

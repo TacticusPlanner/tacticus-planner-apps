@@ -62,6 +62,7 @@ export function CharacterLookupPage() {
     draft,
     isDirty,
     setDraftCharacterId,
+    applyPlayerPrefill,
     setDraftRange,
     setDraftProgressionRange,
     setDraftPointFive,
@@ -104,9 +105,9 @@ export function CharacterLookupPage() {
 
   // Applies the synced rank/progression prefill once per character selection, as soon as it's
   // available — never on a later background refresh of the same character, so it can't clobber
-  // rank/progression edits the user has since made via the slider. Falls back to
-  // setDraftCharacterId's normal default behavior whenever signed out, the record hasn't finished
-  // loading, or the unit isn't in the synced chunk at all.
+  // rank/progression edits the user has since made via the slider. The selection hook keeps its
+  // generated default whenever signed out, the record hasn't finished loading, or the unit isn't
+  // in the synced chunk at all.
   const prefilledCharacterIdRef = useRef<UnitId | undefined>(undefined)
 
   useEffect(() => {
@@ -127,7 +128,7 @@ export function CharacterLookupPage() {
 
     // The synced chunk's rank/progressionIndex are already the catalog's own Rank/Progression
     // string values (see @workspace/player-data's schemas) — no numeric-index conversion needed.
-    setDraftCharacterId(draftCharacterId, {
+    applyPlayerPrefill(draftCharacterId, {
       rankStart: playerCharacter.rank,
       progressionStart: playerCharacter.progressionIndex,
     })
@@ -136,7 +137,7 @@ export function CharacterLookupPage() {
     draftCharacterId,
     playerCharacter,
     playerCharacterLoading,
-    setDraftCharacterId,
+    applyPlayerPrefill,
   ])
 
   // Whether to net the player's already-applied/owned upgrades out of the required totals below —
