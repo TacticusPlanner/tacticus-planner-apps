@@ -7,8 +7,10 @@ import {
   isAdamantineRank,
   isProgression,
   isRank,
+  lastProgression,
   maxRankForProgression,
   minProgressionForRank,
+  progressionAt,
   progressionIndex,
   rankAt,
   rankIndex,
@@ -27,6 +29,13 @@ export interface LookupSelection {
   pointFive: boolean
 }
 
+type RangeAuthority = "generated" | "url" | "user"
+
+type RangeSelection = Pick<
+  LookupSelection,
+  "rankStart" | "rankEnd" | "progressionStart" | "progressionEnd"
+>
+
 // Adamantine3 is planned but currently absent from the ladder entirely (see lastRank's own comment
 // in @workspace/game-catalog) — clamp any rank entering this page's selection (a shared URL, a
 // prefill from synced player data, or a range change) down to lastRank. Currently a no-op (nothing
@@ -35,27 +44,96 @@ export interface LookupSelection {
 const clampToCurrentMax = (rank: Rank): Rank =>
   rankIndex(rank) > rankIndex(lastRank) ? lastRank : rank
 
+/**
+ * Builds a meaningful lookup interval from a character's current state. The
+ * rank and progression ends are calculated together so the target rank is
+ * always attainable at the target progression.
+ */
+function deriveLookupRange(
+  sourceRank: Rank,
+  sourceProgression: Progression
+): RangeSelection {
+  const rankEnd = clampToCurrentMax(sourceRank)
+  const rankStart =
+    rankEnd === lastRank ? rankAt(rankIndex(lastRank) - 1) : rankEnd
+  const nextRank =
+    rankEnd === lastRank ? lastRank : rankAt(rankIndex(rankEnd) + 1)
+
+  const progressionEnd =
+    sourceProgression === lastProgression
+      ? lastProgression
+      : progressionAt(
+          Math.max(
+            progressionIndex(sourceProgression) + 1,
+            progressionIndex(minProgressionForRank(nextRank))
+          )
+        )
+  const progressionStart =
+    progressionEnd === lastProgression && sourceProgression === lastProgression
+      ? progressionAt(progressionIndex(lastProgression) - 1)
+      : sourceProgression
+
+  return {
+    rankStart,
+    rankEnd: nextRank,
+    progressionStart,
+    progressionEnd,
+  }
+}
+
+function hasCompleteValidRange(params: URLSearchParams): boolean {
+  const rankStart = params.get("rankStart")
+  const rankEnd = params.get("rankEnd")
+  const progressionStart = params.get("progressionStart")
+  const progressionEnd = params.get("progressionEnd")
+
+  return (
+    !!rankStart &&
+    !!rankEnd &&
+    !!progressionStart &&
+    !!progressionEnd &&
+    isRank(rankStart) &&
+    isRank(rankEnd) &&
+    isProgression(progressionStart) &&
+    isProgression(progressionEnd) &&
+    rankIndex(rankStart) < rankIndex(rankEnd) &&
+    progressionIndex(progressionStart) <= progressionIndex(progressionEnd) &&
+    rankIndex(maxRankForProgression(progressionStart)) >=
+      rankIndex(rankStart) &&
+    rankIndex(maxRankForProgression(progressionEnd)) >= rankIndex(rankEnd)
+  )
+}
+
 function selectionFromParams(
   params: URLSearchParams,
   characterId?: string
-): LookupSelection {
-  const start = params.get("rankStart")
-  const end = params.get("rankEnd")
+): { selection: LookupSelection; rangeAuthority: RangeAuthority } {
+  const rankStart = params.get("rankStart")
   const progressionStart = params.get("progressionStart")
-  const progressionEnd = params.get("progressionEnd")
+  const defaultRange = deriveLookupRange(
+    clampToCurrentMax(rankStart && isRank(rankStart) ? rankStart : firstRank),
+    progressionStart && isProgression(progressionStart)
+      ? progressionStart
+      : firstProgression
+  )
+  const rangeAuthority: RangeAuthority = hasCompleteValidRange(params)
+    ? "url"
+    : "generated"
+
   return {
-    characterId: unitIdSchema.safeParse(characterId).data,
-    rankStart: clampToCurrentMax(start && isRank(start) ? start : firstRank),
-    rankEnd: clampToCurrentMax(end && isRank(end) ? end : rankAt(1)),
-    progressionStart:
-      progressionStart && isProgression(progressionStart)
-        ? progressionStart
-        : firstProgression,
-    progressionEnd:
-      progressionEnd && isProgression(progressionEnd)
-        ? progressionEnd
-        : firstProgression,
-    pointFive: params.get("pointFive") === "true",
+    selection: {
+      characterId: unitIdSchema.safeParse(characterId).data,
+      ...(rangeAuthority === "url"
+        ? {
+            rankStart: clampToCurrentMax(params.get("rankStart") as Rank),
+            rankEnd: clampToCurrentMax(params.get("rankEnd") as Rank),
+            progressionStart: params.get("progressionStart") as Progression,
+            progressionEnd: params.get("progressionEnd") as Progression,
+          }
+        : defaultRange),
+      pointFive: params.get("pointFive") === "true",
+    },
+    rangeAuthority,
   }
 }
 
@@ -69,23 +147,41 @@ function selectionFromParams(
  */
 export function useLookupSelection(characterId?: string) {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [applied, setApplied] = useState<LookupSelection>(() =>
-    selectionFromParams(searchParams, characterId)
+  const initialSelection = selectionFromParams(searchParams, characterId)
+  const [applied, setApplied] = useState<LookupSelection>(
+    initialSelection.selection
   )
   const [draft, setDraft] = useState<LookupSelection>(applied)
+  const [rangeAuthority, setRangeAuthority] = useState<RangeAuthority>(
+    initialSelection.rangeAuthority
+  )
   const selectionKey = `${characterId ?? ""}?${searchParams}`
   const [trackedSelectionKey, setTrackedSelectionKey] = useState(selectionKey)
+  const [pendingSearchParams, setPendingSearchParams] = useState<
+    { characterId?: string; value: string } | undefined
+  >(undefined)
 
   // Route/search changes must become the source of truth during the same
   // render, before controls read draft selection state.
   if (selectionKey !== trackedSelectionKey) {
-    const selection = selectionFromParams(searchParams, characterId)
+    const parsed = selectionFromParams(searchParams, characterId)
+    const isInternalNavigation =
+      pendingSearchParams?.value === searchParams.toString()
     setTrackedSelectionKey(selectionKey)
-    setApplied(selection)
-    setDraft(selection)
+    setApplied(parsed.selection)
+    setDraft(parsed.selection)
+    if (!isInternalNavigation) {
+      setRangeAuthority(parsed.rangeAuthority)
+    }
+    if (pendingSearchParams?.characterId === characterId) {
+      setPendingSearchParams(undefined)
+    }
   }
 
-  const commitSelection = (selection: LookupSelection) => {
+  const commitSelection = (
+    selection: LookupSelection,
+    pendingCharacterId = characterId
+  ) => {
     setApplied(selection)
     setSearchParams(
       (prev) => {
@@ -96,6 +192,10 @@ export function useLookupSelection(characterId?: string) {
         next.set("progressionStart", selection.progressionStart)
         next.set("progressionEnd", selection.progressionEnd)
         next.set("pointFive", String(selection.pointFive))
+        setPendingSearchParams({
+          characterId: pendingCharacterId,
+          value: next.toString(),
+        })
         return next
       },
       { replace: true }
@@ -104,35 +204,25 @@ export function useLookupSelection(characterId?: string) {
 
   // Picking a character is the primary action on this page, so it commits immediately instead of
   // waiting on Apply — Apply stays reserved for the rank range/progression/point-five tweaks.
-  // `prefill` lets a caller seed the "from" rank/progression from the player's synced roster data
-  // instead of the firstRank/firstProgression defaults (see character-lookup-page.tsx); it is only
-  // ever supplied when that data is actually available, so behavior is unchanged otherwise.
-  const setDraftCharacterId = (
-    id: UnitId,
-    prefill?: { rankStart: Rank; progressionStart: Progression }
-  ) => {
+  const setDraftCharacterId = (id: UnitId) => {
     const next: LookupSelection = { ...draft, characterId: id }
-
-    if (prefill) {
-      next.rankStart = clampToCurrentMax(prefill.rankStart)
-      next.progressionStart = prefill.progressionStart
-      // A prefilled "from" can exceed the range's current "to" (e.g. a highly-ranked unit selected
-      // while the range still sits at its firstRank/firstProgression default) — bump "to" up to
-      // match so start <= end always holds, the same invariant setDraftRange/
-      // setDraftProgressionRange maintain below.
-      if (rankIndex(next.rankEnd) < rankIndex(next.rankStart)) {
-        next.rankEnd = next.rankStart
-      }
-      if (
-        progressionIndex(next.progressionEnd) <
-        progressionIndex(next.progressionStart)
-      ) {
-        next.progressionEnd = next.progressionStart
-      }
-    }
-
     setDraft(next)
-    commitSelection(next)
+    commitSelection(next, id)
+  }
+
+  const applyPlayerPrefill = (
+    id: UnitId,
+    prefill: { rankStart: Rank; progressionStart: Progression }
+  ) => {
+    if (rangeAuthority !== "generated" || draft.characterId !== id) return
+
+    const next: LookupSelection = {
+      ...draft,
+      ...deriveLookupRange(prefill.rankStart, prefill.progressionStart),
+      characterId: id,
+    }
+    setDraft(next)
+    commitSelection(next, id)
   }
 
   // A character can only be ranked up as far as its rarity/stars allow (see
@@ -155,7 +245,8 @@ export function useLookupSelection(characterId?: string) {
     return rankIndex(rank) > rankIndex(maxRank) ? maxRank : rank
   }
 
-  const setDraftRange = (start: Rank, end: Rank) =>
+  const setDraftRange = (start: Rank, end: Rank) => {
+    setRangeAuthority("user")
     setDraft((prev) => {
       const clampedStart = clampToCurrentMax(start)
       const clampedEnd = clampToCurrentMax(end)
@@ -184,8 +275,10 @@ export function useLookupSelection(characterId?: string) {
         pointFive: isAdamantineRank(nextEnd) ? false : prev.pointFive,
       }
     })
+  }
 
-  const setDraftProgressionRange = (start: Progression, end: Progression) =>
+  const setDraftProgressionRange = (start: Progression, end: Progression) => {
+    setRangeAuthority("user")
     setDraft((prev) => {
       const rankEnd = clampRankForProgression(prev.rankEnd, end)
       // Clamping rankEnd down for a lowered "to" progression can leave rankStart above it —
@@ -204,6 +297,7 @@ export function useLookupSelection(characterId?: string) {
         rankEnd,
       }
     })
+  }
 
   const setDraftPointFive = (value: boolean) =>
     setDraft((prev) => ({ ...prev, pointFive: value }))
@@ -223,6 +317,7 @@ export function useLookupSelection(characterId?: string) {
     draft,
     isDirty,
     setDraftCharacterId,
+    applyPlayerPrefill,
     setDraftRange,
     setDraftProgressionRange,
     setDraftPointFive,

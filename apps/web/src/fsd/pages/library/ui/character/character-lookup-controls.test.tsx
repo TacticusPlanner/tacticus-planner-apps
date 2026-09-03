@@ -53,7 +53,7 @@ function baseProps() {
     rankEnd: "Iron1" as const,
     onRangeChange: vi.fn(),
     progressionStart: "Common:None" as const,
-    progressionEnd: "Common:None" as const,
+    progressionEnd: "Common:OneStar" as const,
     onProgressionRangeChange: vi.fn(),
     pointFive: false,
     pointFiveDisabled: false,
