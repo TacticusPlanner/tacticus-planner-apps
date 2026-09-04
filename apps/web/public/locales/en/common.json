@@ -515,7 +515,8 @@
         "shopOfferAvailable": "Up to {{qty}}×{{amount}} · {{cost}} {{currency}} each",
         "shopOfferPossibleReward": "One of several possible rewards for this slot",
         "shopOfferChance": "≈{{percent}}% chance on {{days}}",
-        "shopOfferDays": "Available {{days}}"
+        "shopOfferDays": "Available {{days}}",
+        "ascensionOnlyMythicLabel": "Ascension-only mythic sources"
       },
       "ability": {
         "activeStart": "Active ability, current level",

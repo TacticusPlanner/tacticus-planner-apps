@@ -943,6 +943,48 @@ describe("CreateGoalSheet", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("keeps Ascension-only mythic sources selectable once Unlock is also enabled (tacticus-planner-apps#103)", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so both Unlock and Ascension are offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ascension")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
+
+    // Advance to a range needing mythic shards before Unlock is enabled — same fixture/target as
+    // "offers the mythic shard-location group..." above.
+    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(
+      within(listbox).getByAltText("TwoBlueStars").closest('[role="option"]')!
+    )
+    await screen.findByTestId("create-goal-shard-location-ASE28")
+
+    // Enabling Unlock alongside it moves the shared Campaigns group's regular-only sources to
+    // Unlock's card, but the mythic-only node — which Unlock's card never offers — must stay
+    // selectable somewhere, not disappear entirely.
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    const mythicBlock = await screen.findByTestId(
+      "create-goal-ascension-only-mythic-sources"
+    )
+    const mythicCheckbox = within(mythicBlock).getByTestId(
+      "create-goal-shard-location-checkbox-ASE28"
+    )
+    expect(mythicCheckbox).toBeInTheDocument()
+    const wasChecked = mythicCheckbox.getAttribute("aria-checked") === "true"
+
+    fireEvent.click(mythicCheckbox)
+    await vi.waitFor(() => {
+      expect(mythicCheckbox.getAttribute("aria-checked")).toBe(
+        wasChecked ? "false" : "true"
+      )
+    })
+  })
+
   it("shows a checkpoint-chain preview and explanation that updates with the selected farming strategy", async () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 

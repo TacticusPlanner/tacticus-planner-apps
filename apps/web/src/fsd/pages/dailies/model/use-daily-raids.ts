@@ -219,7 +219,11 @@ export function useDailyRaids(
   )
 
   if (!projectId) return { status: "no-project" }
-  if (membersQuery.isError || detailQueries.some((query) => query.isError)) {
+  if (
+    membersQuery.isError ||
+    detailQueries.some((query) => query.isError) ||
+    onslaughtProgressQuery.isError
+  ) {
     return { status: "error" }
   }
   const ready =

@@ -57,9 +57,15 @@ export function useGoalDetailAcquisition({
     [characterView]
   )
   const { offers: shopOffers } = useUnitShopShardSupply(detail?.entityId)
+  // A goal predating this control (or not yet round-tripped through it) has no persisted
+  // `acquisitionSources` — that must seed as "untouched, use the live default" (`null`), not as an
+  // explicit empty selection, or every campaign node renders unchecked and Cancel always confirms a
+  // discard the user never made (tacticus-planner-apps#103).
+  const hasPersistedSources =
+    (detail?.config.acquisitionSources?.length ?? 0) > 0
   const acquisitionSeed = useMemo(
     () =>
-      usesAcquisitionSources
+      usesAcquisitionSources && hasPersistedSources
         ? acquisitionSourceSeed(
             detail?.config.acquisitionSources,
             regularShardLocations,
@@ -68,6 +74,7 @@ export function useGoalDetailAcquisition({
         : null,
     [
       usesAcquisitionSources,
+      hasPersistedSources,
       detail?.config,
       regularShardLocations,
       mythicShardLocations,
@@ -84,11 +91,19 @@ export function useGoalDetailAcquisition({
     shopOffers,
     seed: acquisitionSeed,
   })
+  // Baselined against the seeded/default plan rather than the raw saved array — a goal with no
+  // persisted sources has no saved array to compare against, and its live default is not the empty
+  // selection a bare `?? []` would imply.
+  const baselineAcquisitionSources = hasPersistedSources
+    ? (detail?.config.acquisitionSources ?? [])
+    : acquisitionSourcesFromPlan(acquisitionSelection.defaultPlan, {
+        isUnlock,
+      })
   const hasAcquisitionSourcesChanged =
     mode === "edit" &&
     usesAcquisitionSources &&
     !!detail &&
-    normalizeAcquisitionSources(detail.config.acquisitionSources ?? []) !==
+    normalizeAcquisitionSources(baselineAcquisitionSources) !==
       normalizeAcquisitionSources(
         acquisitionSourcesFromPlan(acquisitionSelection.plan, { isUnlock })
       )

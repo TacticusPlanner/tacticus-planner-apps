@@ -189,6 +189,7 @@ function SourceGroup({
     >
       <div className="flex items-center gap-2">
         <Checkbox
+          aria-label={label}
           checked={checked}
           data-testid={`create-goal-acquisition-group-${testId}-toggle`}
           onCheckedChange={(value) => onCheckedChange(value === true)}
@@ -208,7 +209,9 @@ function SourceGroup({
   )
 }
 
-function ShopOfferRow({
+/** Exported for the Ascension card's own mythic-only shop-offer row when Unlock is also enabled —
+ *  see `goal-type-cards.tsx`'s `sharedWithUnlock` handling. */
+export function ShopOfferRow({
   offer,
   checked,
   onToggle,

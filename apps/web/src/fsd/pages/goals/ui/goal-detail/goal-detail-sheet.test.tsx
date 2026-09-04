@@ -602,6 +602,18 @@ describe("GoalDetailSheet", () => {
     ).toBeInTheDocument()
   })
 
+  it("returns to view mode directly on Cancel for an Unlock goal with no persisted acquisitionSources (tacticus-planner-apps#103)", async () => {
+    getGoal.mockReset().mockResolvedValue(unlockDetail)
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    await user.click(screen.getByTestId("goal-detail-cancel"))
+    expect(screen.queryByTestId("confirmation-dialog")).not.toBeInTheDocument()
+    expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
+  })
+
   it("restores an Ascension goal's saved Campaign + Onslaught selection on entering edit", async () => {
     getGoal.mockReset().mockResolvedValue(ascensionDetail)
     const user = userEvent.setup()

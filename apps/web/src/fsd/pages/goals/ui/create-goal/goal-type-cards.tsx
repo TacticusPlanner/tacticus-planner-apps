@@ -2,9 +2,13 @@ import { useTranslation } from "react-i18next"
 
 import type { GoalKind } from "@/entities/goal"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
-import { AcquisitionSourceField } from ".//acquisition-source-field"
+import {
+  AcquisitionSourceField,
+  ShopOfferRow,
+} from ".//acquisition-source-field"
 import { FarmingStrategyField } from ".//farming-strategy-field"
 import { AscensionFarmingFields } from ".//goal-farming-fields"
+import { GoalShardLocationsField } from ".//goal-shard-locations-field"
 import { AbilityGoalFields, RankGoalFields } from ".//goal-type-fields"
 import { GoalTypeCard } from "../shared/goal-visuals"
 import { LevelGoalFields } from ".//level-goal-fields"
@@ -72,9 +76,23 @@ export function GoalTypeCards({
               // Shops are additionally suppressed here when Unlock is also enabled, since they're
               // the same shared selection state and Unlock's own card already shows them (avoids
               // duplicating the checkbox lists and their testids on both cards at once); Onslaught
-              // has no such conflict — Unlock never shows that group.
+              // has no such conflict — Unlock never shows that group. Unlock's own card never shows
+              // mythic sources (it's always regular-only), so when the range needs mythic and Unlock
+              // is also enabled, those mythic-only rows would otherwise have no home at all — a
+              // small block below (outside the shared Campaigns/Shops groups, so no testid
+              // collision with Unlock's card) keeps them selectable/clearable
+              // (tacticus-planner-apps#103).
               const isCharacter = form.entityType === "Character"
               const sharedWithUnlock = form.enabledTypes.has("Unlock")
+              const needsMythic =
+                isCharacter &&
+                (form.progressionPreview?.ascensionNeedsMythicShards ?? false)
+              const ascensionOnlyMythicShardLocations =
+                sharedWithUnlock && needsMythic ? form.mythicShardLocations : []
+              const ascensionOnlyMythicShopOffers =
+                sharedWithUnlock && needsMythic
+                  ? (form.shopOffers ?? []).filter((offer) => offer.isMythic)
+                  : []
               return (
                 <GoalTypeCard key={kind} kind="Ascension">
                   <AscensionFarmingFields
@@ -87,8 +105,7 @@ export function GoalTypeCards({
                     battlesById={form.battlesById}
                     campaignEnabled={form.campaignEnabled}
                     mythicShardLocations={
-                      isCharacter &&
-                      form.progressionPreview?.ascensionNeedsMythicShards
+                      needsMythic && !sharedWithUnlock
                         ? form.mythicShardLocations
                         : []
                     }
@@ -123,6 +140,40 @@ export function GoalTypeCards({
                     }
                     showOnslaught={isCharacter}
                   />
+                  {ascensionOnlyMythicShardLocations.length > 0 ||
+                  ascensionOnlyMythicShopOffers.length > 0 ? (
+                    <div
+                      className="grid gap-1.5 rounded-2xl border p-3"
+                      data-testid="create-goal-ascension-only-mythic-sources"
+                    >
+                      <p className="text-xs text-muted-foreground">
+                        {t(
+                          "goals.create.acquisitionSources.ascensionOnlyMythicLabel"
+                        )}
+                      </p>
+                      <GoalShardLocationsField
+                        battlesById={form.battlesById}
+                        onToggle={form.toggleShardLocation}
+                        selectedIds={form.shardLocationIds}
+                        shardLocations={ascensionOnlyMythicShardLocations}
+                        shardType="Mythic"
+                      />
+                      {ascensionOnlyMythicShopOffers.length > 0 ? (
+                        <div className="grid gap-1.5 sm:grid-cols-2">
+                          {ascensionOnlyMythicShopOffers.map((offer) => (
+                            <ShopOfferRow
+                              checked={form.selectedShopOfferIds.includes(
+                                offer.offerId
+                              )}
+                              key={offer.offerId}
+                              offer={offer}
+                              onToggle={form.toggleShopOffer}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </GoalTypeCard>
               )
             }

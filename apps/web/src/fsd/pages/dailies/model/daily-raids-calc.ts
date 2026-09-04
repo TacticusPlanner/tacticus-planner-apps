@@ -319,6 +319,7 @@ export function calculateResourceUrgency(
         battlesById,
         dailyEnergy,
         farmingLocationIds: goal.farmingLocationIds,
+        flatSuppliers: goal.flatSuppliers,
         referenceDate,
       })
       if (outcome.status !== "Estimated") continue

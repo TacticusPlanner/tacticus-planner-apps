@@ -134,6 +134,10 @@ export function computeGoalAcquisition(params: {
   if (shopSource && params.shops?.length) {
     const offers = resolveUnitShardShopOffers(params.shops, detail.entityId)
     for (const offer of offers) {
+      // Today/Insights/Raids Plan track mythic shards as a count only, never as day-loop demand
+      // (`need.shardId` covers the regular resource alone; campaign mythic locations aren't fed into
+      // this consumer's farm-location set either) — pre-existing scope this change doesn't extend, so
+      // a selected mythic Shop offer is intentionally excluded from `flatSuppliers` here.
       if (offer.isMythic || !shopSource.ids.includes(offer.offerId)) continue
       flatSuppliers.push(projectShopSupply(offer, params.referenceDate))
     }

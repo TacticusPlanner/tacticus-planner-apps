@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react"
-import { useQueries } from "@tanstack/react-query"
+import { useQueries, useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
+import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import {
   getInventoryShard,
   getPlayerCharacter,
   getPlayerMow,
 } from "@workspace/player-data/queries"
+import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 
 import { goalQueries, type GoalDetail } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
+import { onslaughtProgressQueries } from "@/entities/player-data-override"
 
 import { estimateNewGoalsForProject } from ".//per-project-estimate"
 import type { EstimateOutcome } from "@/features/goal-farming"
@@ -64,6 +67,15 @@ export function usePerProjectEstimates({
     releaseTypeByGroupId,
     getCharacter,
   } = useGoalCatalog()
+  // A new goal's selected Onslaught/Shop acquisition sources (tacticus-planner-apps#103) need these
+  // to contribute to this preview the same way they do for Today/Insights/Raids Plan — mirrors
+  // `useProgressionPreview`'s own fetch of the same three, react-query/Dexie-deduped against it.
+  const shops = useLiveQuery(() => getShops(), [])
+  const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
+  const { data: onslaughtProgress } = useQuery({
+    ...onslaughtProgressQueries.current(),
+    enabled: isAuthenticated,
+  })
 
   const hasQuery = enabled && isAuthenticated && selectedProjectIds.length > 0
 
@@ -239,6 +251,9 @@ export function usePerProjectEstimates({
             releaseTypeByGroupId,
             getCharacter,
             dailyEnergy,
+            onslaughtProgress,
+            onslaughtRewards,
+            shops,
           })
 
           results.set(

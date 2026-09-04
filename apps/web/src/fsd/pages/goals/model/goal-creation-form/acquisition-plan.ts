@@ -43,9 +43,18 @@ export function acquisitionSourceSeed(
   regularShardLocations: readonly FarmLocation[],
   mythicShardLocations: readonly FarmLocation[]
 ): AcquisitionSourceSeed {
-  if (!sources || sources.length === 0) {
+  if (!sources) {
     return {
       campaignEnabled: true,
+      regularBattleIds: [],
+      mythicBattleIds: [],
+      onslaughtEnabled: false,
+      shopOfferIds: [],
+    }
+  }
+  if (sources.length === 0) {
+    return {
+      campaignEnabled: false,
       regularBattleIds: [],
       mythicBattleIds: [],
       onslaughtEnabled: false,

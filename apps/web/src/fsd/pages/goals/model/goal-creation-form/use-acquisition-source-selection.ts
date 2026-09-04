@@ -198,6 +198,34 @@ export function useAcquisitionSourceSelection(params: {
     [params.shopOffers, selectedShopOfferIds]
   )
 
+  // The plan a null seed resolves to (Campaigns-only, cheapest-node default, no manual edits) —
+  // exposed so a caller can tell "untouched since seeding" apart from "user made an empty
+  // selection" without re-deriving the same default-node logic itself (goal-detail's dirty check).
+  const defaultRegularShardLocationIds = useMemo(() => {
+    const regularIds = new Set<string>(
+      regularShardLocations.map((location) => location.battleId)
+    )
+    return defaultShardLocationIds.filter((id) => regularIds.has(id))
+  }, [defaultShardLocationIds, regularShardLocations])
+  const defaultMythicShardLocationIds = useMemo(() => {
+    const mythicIds = new Set<string>(
+      mythicShardLocations.map((location) => location.battleId)
+    )
+    return defaultShardLocationIds.filter((id) => mythicIds.has(id))
+  }, [defaultShardLocationIds, mythicShardLocations])
+  const defaultPlan: GoalAcquisitionPlan = useMemo(
+    () => ({
+      campaign: {
+        enabled: true,
+        regularBattleIds: defaultRegularShardLocationIds,
+        mythicBattleIds: defaultMythicShardLocationIds,
+      },
+      onslaught: { enabled: false },
+      shops: { enabled: false, offers: [] },
+    }),
+    [defaultRegularShardLocationIds, defaultMythicShardLocationIds]
+  )
+
   const plan: GoalAcquisitionPlan = useMemo(
     () => ({
       campaign: {
@@ -279,6 +307,7 @@ export function useAcquisitionSourceSelection(params: {
     toggleShopOffer,
     // Canonical plan + reset/reseed.
     plan,
+    defaultPlan,
     reset,
     reseed,
   }

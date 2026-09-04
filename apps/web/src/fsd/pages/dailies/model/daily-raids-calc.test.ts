@@ -17,7 +17,11 @@ import {
 
 import type { GoalDetail } from "@/entities/goal"
 import type { ProjectGoalSummary } from "@/entities/project"
-import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
+import type {
+  FarmingCharacter,
+  FarmingUpgrade,
+  FlatSupplier,
+} from "@/features/goal-farming"
 
 import {
   activeProjectMembers,
@@ -142,6 +146,34 @@ describe("daily raid derivation", () => {
     expect(urgency.get("lower-priority:fast")).toEqual({
       days: 1,
       energyTotal: 6,
+    })
+  })
+
+  it("resolves a goal's urgency for a resource with no farm locations when a flat supplier covers it (tacticus-planner-apps#103)", () => {
+    const shopOnlyId = upgradeIdSchema.parse("shopOnly")
+    const flatSuppliers: FlatSupplier[] = [
+      { resourceId: shopOnlyId, supplyOnDay: () => 5 },
+    ]
+
+    const urgency = calculateResourceUrgency(
+      [
+        {
+          goalId: "shop-goal",
+          priority: 1,
+          needs: [{ id: shopOnlyId, count: 10 }],
+          flatSuppliers,
+        },
+      ],
+      [],
+      new Map(),
+      new Map(),
+      60,
+      new Date("2026-01-01T00:00:00.000Z")
+    )
+
+    expect(urgency.get("shop-goal:shopOnly")).toEqual({
+      days: 2,
+      energyTotal: 0,
     })
   })
 
