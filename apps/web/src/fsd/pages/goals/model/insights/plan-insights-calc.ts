@@ -2,6 +2,7 @@ import type {
   AscensionCostStorageModel,
   CampaignDescriptor,
   CharacterStorageModel,
+  GameCatalogShop,
   MowStorageModel,
   OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
@@ -19,11 +20,7 @@ import type {
   UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
-import {
-  onslaughtReward,
-  progressForAlliance,
-  type OnslaughtProgress,
-} from "@/entities/player-data-override"
+import type { OnslaughtProgress } from "@/entities/player-data-override"
 import { computeCampaignInsights } from "@/features/campaign-insights"
 
 import {
@@ -42,6 +39,8 @@ import { resourceLabel } from "@/features/goal-farming"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
+  computeGoalAcquisition,
+  isMowDetail,
 } from "@/features/goal-farming"
 import { computeGoalProgress } from "../attainment/goal-progress"
 import { computePotentialProgressRatio } from "./potential-progress"
@@ -86,6 +85,11 @@ export function computePlanInsights(params: {
   onslaughtProgress?: OnslaughtProgress
   currentOnslaughtTokens?: number
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
+  /** The daily-shop dataset, used to resolve a goal's selected `Shop` acquisition-source ids back
+   *  into offers with their per-day supply (tacticus-planner-apps#103). Omitting it treats every
+   *  goal as if it selected no shop sources — the shared estimate still runs, just without that
+   *  contribution. */
+  shops?: readonly GameCatalogShop[]
 }): PlanInsightsResult {
   const totals: PlanInsightsTotals = {
     upgradesByRarity: {},
@@ -107,6 +111,9 @@ export function computePlanInsights(params: {
     { primary: Set<number>; secondary: Set<number> }
   >()
   let onslaughtTokens = 0
+  // One reference date for every goal's shop-supply projection in this pass, so two goals sharing a
+  // shop offer see the same weekday-probability schedule.
+  const referenceDate = new Date()
   const craftedInventory = createCraftedInventoryPool(
     params.inventoryUpgrades,
     params.upgradesById
@@ -157,41 +164,25 @@ export function computePlanInsights(params: {
         : calculateGoalResourceNeed(needParams)
     if (!need) continue
 
-    if (
-      detail.goalType === "Ascension" &&
-      detail.config.progression &&
-      (detail.config.ascensionFarming?.source === "Onslaught" ||
-        detail.config.ascensionFarming?.source === "Both") &&
-      params.onslaughtProgress
-    ) {
-      const entity = isMowDetail(detail)
-        ? params.mowsById.get(detail.entityId)
-        : params.charactersById.get(detail.entityId)
-      const allianceProgress = progressForAlliance(
-        params.onslaughtProgress,
-        entity?.alliance ?? "Imperial"
-      )
-      const currentProgression = isMowDetail(detail)
-        ? params.playerMowById.get(detail.entityId)?.progressionIndex
-        : params.playerCharacterById.get(detail.entityId)?.progressionIndex
-      const rarity = (
-        currentProgression ?? detail.config.progression.start
-      ).split(":")[0]
-      const regularReward = onslaughtReward(
-        params.onslaughtRewards ?? [],
-        allianceProgress.sector,
-        allianceProgress.tier,
-        regularRewardKey(rarity)
-      )
-      const mythicReward = onslaughtReward(
-        params.onslaughtRewards ?? [],
-        allianceProgress.sector,
-        allianceProgress.tier,
-        "Mythic"
-      )
-      onslaughtTokens += tokensFor(need.shards, regularReward)
-      onslaughtTokens += tokensFor(need.mythicShards, mythicReward)
-    }
+    const {
+      acquisitionSources,
+      campaignSource,
+      campaignShardsEnabled,
+      flatSuppliers,
+      onslaughtTokensDelta,
+    } = computeGoalAcquisition({
+      detail,
+      need,
+      mowsById: params.mowsById,
+      charactersById: params.charactersById,
+      playerCharacterById: params.playerCharacterById,
+      playerMowById: params.playerMowById,
+      onslaughtProgress: params.onslaughtProgress,
+      onslaughtRewards: params.onslaughtRewards,
+      shops: params.shops,
+      referenceDate,
+    })
+    onslaughtTokens += onslaughtTokensDelta
 
     totals.shards += need.shards
     totals.mythicShards += need.mythicShards
@@ -215,10 +206,7 @@ export function computePlanInsights(params: {
       needs.push(material)
     }
 
-    const campaignShardsEnabled =
-      detail.goalType !== "Ascension" ||
-      detail.config.ascensionFarming?.source !== "Onslaught"
-    if (need.shardId && need.shards > 0 && campaignShardsEnabled) {
+    if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
       needs.push({ id: need.shardId, count: need.shards })
       addProvenance(need.shardId, detail.goalId)
       campaignNeeds.push({ id: need.shardId, count: need.shards })
@@ -228,11 +216,15 @@ export function computePlanInsights(params: {
         // `rarity` here is only for computeCampaignInsights's value-weighting formula (it has no
         // farmable-resource concept of its own rarity) — the character's own starting rarity is the
         // natural stand-in, mirroring how a higher-rarity character's shards are scarcer/more
-        // valuable in-game. The estimate engine below never reads this field.
+        // valuable in-game. The estimate engine below never reads this field. `farmLocations` is
+        // empty when the Campaigns group is unselected (spec: excludes campaign farming entirely),
+        // leaving the shop/Onslaught flat suppliers above as the need's only coverage.
         shardCatalogEntries.set(need.shardId, {
           id: need.shardId,
           rarity: characterView.initialRarity,
-          farmLocations: characterView.shardLocations,
+          farmLocations: campaignShardsEnabled
+            ? characterView.shardLocations
+            : [],
         })
       }
     }
@@ -256,12 +248,15 @@ export function computePlanInsights(params: {
         priority,
         needs,
         stages: stages ?? undefined,
-        // Unlock is the only goal type that stores its shard-location selection directly on
-        // `config.farmingLocationIds` (Ascension's own selection lives on `config.ascensionFarming`
-        // instead, and isn't restricted here) — without threading it through, `estimatePlan` falls
-        // back to auto-picking every one of the character's shard locations regardless of what the
-        // user actually selected, so a duration estimate never reflects the selection at all.
-        farmingLocationIds: detail.config.farmingLocationIds ?? undefined,
+        // Rank/Ability restrict their upgrade-node farming via `config.farmingLocationIds`; Unlock/
+        // Ascension restrict shard-node farming via their selected `Campaign` acquisition source's
+        // ids instead (see `campaignSource` above) — without threading it through, `estimatePlan`
+        // falls back to auto-picking every one of the character's shard locations regardless of
+        // what the user actually selected, so a duration estimate never reflects the selection.
+        farmingLocationIds: acquisitionSources
+          ? campaignSource?.ids
+          : (detail.config.farmingLocationIds ?? undefined),
+        flatSuppliers: flatSuppliers.length > 0 ? flatSuppliers : undefined,
       })
     }
   }
@@ -412,20 +407,4 @@ export function computePlanInsights(params: {
     eventInsights,
     benefitingGoalIdsByInsightId,
   }
-}
-
-function isMowDetail(detail: GoalDetail) {
-  return detail.entityType === "Mow"
-}
-
-function regularRewardKey(rarity: string) {
-  return (
-    ["Common", "Uncommon", "Rare", "Epic", "Legendary"].includes(rarity)
-      ? rarity
-      : "Legendary"
-  ) as "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
-}
-
-function tokensFor(shards: number, reward: { min: number; max: number }) {
-  return shards <= 0 ? 0 : Math.ceil(shards / ((reward.min + reward.max) / 2))
 }

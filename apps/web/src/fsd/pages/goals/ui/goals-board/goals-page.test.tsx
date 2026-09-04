@@ -108,6 +108,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
   getOnslaughtRewards: () => [],
+  getShops: () => Promise.resolve([]),
 }))
 
 const getPlayerCharacters = vi.fn<() => unknown[]>(() => [])

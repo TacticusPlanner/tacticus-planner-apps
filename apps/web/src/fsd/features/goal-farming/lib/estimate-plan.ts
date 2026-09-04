@@ -15,6 +15,7 @@ import type {
 import { blocked, unavailableReason } from "./estimate-blocked"
 import {
   allocatePlanInventory,
+  applyFlatSuppliers,
   formatDate,
   inclusiveCompletionDate,
   selectFarmNodes,
@@ -58,10 +59,14 @@ function runPlanSchedule(
     const stages: StageState[] = []
     let blockedOutcome: EstimateOutcome | null = null
     const allocation = allocations.get(goal.goalId)
+    const suppliedResourceIds = new Set(
+      goal.flatSuppliers?.map((supplier) => supplier.resourceId)
+    )
     for (const sourceStage of allocation?.stages ?? []) {
       const remaining = new Map<EstimateResourceId, number>()
       const nodesById = new Map<EstimateResourceId, FarmNode[]>()
       for (const need of sourceStage.remaining) {
+        const hasSupplier = suppliedResourceIds.has(need.id)
         const unavailable = unavailableReason(
           need,
           upgradesById,
@@ -69,17 +74,19 @@ function runPlanSchedule(
           goal.farmingLocationIds,
           dailyEnergy
         )
-        if (unavailable) {
+        if (unavailable && !hasSupplier) {
           blockedOutcome = blocked(unavailable, [need.id])
           break
         }
-        const nodes = selectFarmNodes(
-          need,
-          upgradesById,
-          battlesById,
-          goal.farmingLocationIds
-        )
-        if (nodes.length === 0) {
+        const nodes = unavailable
+          ? []
+          : selectFarmNodes(
+              need,
+              upgradesById,
+              battlesById,
+              goal.farmingLocationIds
+            )
+        if (nodes.length === 0 && !unavailable && !hasSupplier) {
           blockedOutcome = blocked("NoFarmLocation", [need.id])
           break
         }
@@ -99,6 +106,7 @@ function runPlanSchedule(
         date: formatDate(referenceDate),
         energyTotal: 0,
         raidsTotal: 0,
+        flatSupplyTotal: new Map(),
       })
     } else {
       stagesByGoal.set(goal.goalId, stages)
@@ -113,6 +121,13 @@ function runPlanSchedule(
   const raidsTotalByGoal = new Map<string, number>(
     [...pending].map((id) => [id, 0])
   )
+  const flatSupplyTotalByGoal = new Map<
+    string,
+    Map<EstimateResourceId, number>
+  >()
+  const flatSuppliersByGoal = new Map(
+    ordered.map((goal) => [goal.goalId, goal.flatSuppliers])
+  )
   const scheduleDays: RaidDaySchedule[] = []
 
   while (pending.size > 0 && days < maxDays) {
@@ -122,10 +137,35 @@ function runPlanSchedule(
     const entries: RaidBreakdownEntry[] = []
 
     for (const goal of ordered) {
-      if (!pending.has(goal.goalId) || energy <= 0) continue
+      if (!pending.has(goal.goalId)) continue
       const stages = stagesByGoal.get(goal.goalId)!
       let goalEnergySpent = 0
       let goalRaids = 0
+
+      // Flat suppliers (a shop offer, Onslaught) are energy-free — apply them to the goal's current
+      // stage before spending the shared daily energy pool, and regardless of whether that pool is
+      // already exhausted for the day (a lower-priority goal can still complete purely from its own
+      // shop/Onslaught sources even with zero energy left).
+      if (stages.length > 0) {
+        const appliedToday = applyFlatSuppliers(
+          stages[0]!.remaining,
+          flatSuppliersByGoal.get(goal.goalId),
+          days - 1
+        )
+        if (appliedToday.size > 0) {
+          const goalTotals =
+            flatSupplyTotalByGoal.get(goal.goalId) ??
+            new Map<EstimateResourceId, number>()
+          for (const [id, amount] of appliedToday) {
+            goalTotals.set(id, (goalTotals.get(id) ?? 0) + amount)
+          }
+          flatSupplyTotalByGoal.set(goal.goalId, goalTotals)
+        }
+        while (stages.length > 0 && stages[0]!.remaining.size === 0) {
+          stages.shift()
+        }
+      }
+
       while (stages.length > 0 && energy > 0) {
         const stage = stages[0]!
         const spent = spendDay(
@@ -158,6 +198,7 @@ function runPlanSchedule(
           date: formatDate(inclusiveCompletionDate(referenceDate, days)),
           energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
           raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
+          flatSupplyTotal: flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
         })
         pending.delete(goal.goalId)
       }

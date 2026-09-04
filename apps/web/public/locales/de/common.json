@@ -409,6 +409,14 @@
         }
       }
     },
+    "createGoal": {
+      "steps": {
+        "acquisitionSources": {
+          "title": "Bezugsquellen",
+          "content": "Kombiniere Kampagnen-Farming, Onslaught und tägliche Shops — wähle eine beliebige Kombination, um die geschätzte Zeit für dieses Ziel zu verkürzen."
+        }
+      }
+    },
     "projectsList": {
       "steps": {
         "list": {

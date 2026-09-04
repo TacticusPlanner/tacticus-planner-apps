@@ -2,9 +2,9 @@ import { useTranslation } from "react-i18next"
 
 import type { GoalKind } from "@/entities/goal"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
+import { AcquisitionSourceField } from ".//acquisition-source-field"
 import { FarmingStrategyField } from ".//farming-strategy-field"
 import { AscensionFarmingFields } from ".//goal-farming-fields"
-import { GoalShardLocationsField } from ".//goal-shard-locations-field"
 import { AbilityGoalFields, RankGoalFields } from ".//goal-type-fields"
 import { GoalTypeCard } from "../shared/goal-visuals"
 import { LevelGoalFields } from ".//level-goal-fields"
@@ -64,50 +64,68 @@ export function GoalTypeCards({
                   />
                 </GoalTypeCard>
               )
-            case "Ascension":
+            case "Ascension": {
+              // Each shard-type sub-list, and the Shops group's offers, are shown only when
+              // Ascension's own current range actually needs that type (plan: don't recommend a
+              // mythic-only node/offer for a below-Mythic range, or vice versa — see
+              // use-progression-preview.ts's ascensionNeeds{Regular,Mythic}Shards). Campaigns and
+              // Shops are additionally suppressed here when Unlock is also enabled, since they're
+              // the same shared selection state and Unlock's own card already shows them (avoids
+              // duplicating the checkbox lists and their testids on both cards at once); Onslaught
+              // has no such conflict — Unlock never shows that group.
+              const isCharacter = form.entityType === "Character"
+              const sharedWithUnlock = form.enabledTypes.has("Unlock")
               return (
                 <GoalTypeCard key={kind} kind="Ascension">
                   <AscensionFarmingFields
-                    progressionStart={form.progressionStart}
                     progressionEnd={form.progressionEnd}
-                    onProgressionEndChange={form.setProgressionEnd}
-                    ascensionFarmingSource={form.ascensionFarmingSource}
-                    onAscensionFarmingSourceChange={
-                      form.setAscensionFarmingSource
-                    }
                     progressionPreview={form.progressionPreview}
+                    progressionStart={form.progressionStart}
+                    onProgressionEndChange={form.setProgressionEnd}
                   />
-                  {/* Each group is shown only when Ascension's own current range actually needs
-                      that shard type (plan: don't recommend a mythic-only node for a below-
-                      Mythic range, or vice versa) — see use-progression-preview.ts's
-                      ascensionNeeds{Regular,Mythic}Shards. The regular group is additionally
-                      suppressed here when Unlock is also enabled, since it's the same shared
-                      selection state and Unlock's own card already shows it (avoids duplicating
-                      the checkbox list and its testids on both cards at once); the mythic group
-                      has no such conflict, since Unlock never shows one. */}
-                  {form.entityType === "Character" &&
-                  !form.enabledTypes.has("Unlock") &&
-                  form.progressionPreview?.ascensionNeedsRegularShards ? (
-                    <GoalShardLocationsField
-                      battlesById={form.battlesById}
-                      onToggle={form.toggleShardLocation}
-                      selectedIds={form.shardLocationIds}
-                      shardLocations={form.regularShardLocations}
-                      shardType="Regular"
-                    />
-                  ) : null}
-                  {form.entityType === "Character" &&
-                  form.progressionPreview?.ascensionNeedsMythicShards ? (
-                    <GoalShardLocationsField
-                      battlesById={form.battlesById}
-                      onToggle={form.toggleShardLocation}
-                      selectedIds={form.shardLocationIds}
-                      shardLocations={form.mythicShardLocations}
-                      shardType="Mythic"
-                    />
-                  ) : null}
+                  <AcquisitionSourceField
+                    battlesById={form.battlesById}
+                    campaignEnabled={form.campaignEnabled}
+                    mythicShardLocations={
+                      isCharacter &&
+                      form.progressionPreview?.ascensionNeedsMythicShards
+                        ? form.mythicShardLocations
+                        : []
+                    }
+                    onCampaignEnabledChange={form.setCampaignEnabled}
+                    onOnslaughtEnabledChange={form.setOnslaughtEnabled}
+                    onShopsEnabledChange={form.setShopsEnabled}
+                    onToggleShardLocation={form.toggleShardLocation}
+                    onToggleShopOffer={form.toggleShopOffer}
+                    onslaughtEnabled={form.onslaughtEnabled}
+                    onslaughtProgressSaved={
+                      form.progressionPreview?.onslaughtProgressSaved ?? false
+                    }
+                    onslaughtShardsPerRun={
+                      form.progressionPreview?.onslaughtShardsPerRun ?? 0
+                    }
+                    regularShardLocations={
+                      isCharacter &&
+                      !sharedWithUnlock &&
+                      form.progressionPreview?.ascensionNeedsRegularShards
+                        ? form.regularShardLocations
+                        : []
+                    }
+                    selectedShardLocationIds={form.shardLocationIds}
+                    selectedShopOfferIds={form.selectedShopOfferIds}
+                    shopOffers={sharedWithUnlock ? [] : form.shopOffers}
+                    shopsEnabled={form.shopsEnabled}
+                    showCampaigns={
+                      isCharacter &&
+                      !sharedWithUnlock &&
+                      (form.regularShardLocations.length > 0 ||
+                        form.mythicShardLocations.length > 0)
+                    }
+                    showOnslaught={isCharacter}
+                  />
                 </GoalTypeCard>
               )
+            }
             case "Ability":
               return (
                 <GoalTypeCard
@@ -196,12 +214,27 @@ export function GoalTypeCards({
                           totalShards={form.unlockRequirement.totalShards}
                         />
                       ) : null}
-                      <GoalShardLocationsField
+                      <AcquisitionSourceField
                         battlesById={form.battlesById}
-                        onToggle={form.toggleShardLocation}
-                        selectedIds={form.shardLocationIds}
-                        shardLocations={form.regularShardLocations}
-                        shardType="Regular"
+                        campaignEnabled={form.campaignEnabled}
+                        mythicShardLocations={[]}
+                        onCampaignEnabledChange={form.setCampaignEnabled}
+                        onOnslaughtEnabledChange={form.setOnslaughtEnabled}
+                        onShopsEnabledChange={form.setShopsEnabled}
+                        onToggleShardLocation={form.toggleShardLocation}
+                        onToggleShopOffer={form.toggleShopOffer}
+                        onslaughtEnabled={false}
+                        onslaughtProgressSaved={false}
+                        onslaughtShardsPerRun={0}
+                        regularShardLocations={form.regularShardLocations}
+                        selectedShardLocationIds={form.shardLocationIds}
+                        selectedShopOfferIds={form.selectedShopOfferIds}
+                        shopOffers={(form.shopOffers ?? []).filter(
+                          (offer) => !offer.isMythic
+                        )}
+                        shopsEnabled={form.shopsEnabled}
+                        showCampaigns={form.regularShardLocations.length > 0}
+                        showOnslaught={false}
                       />
                     </>
                   )}

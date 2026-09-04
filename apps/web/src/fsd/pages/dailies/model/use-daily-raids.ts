@@ -16,6 +16,8 @@ import {
   getCampaignDefinitions,
   getCharactersMap,
   getMowsMap,
+  getOnslaughtRewards,
+  getShops,
   getUnlockShardCostsMap,
   getUpgrades,
 } from "@workspace/game-catalog/queries"
@@ -28,6 +30,7 @@ import {
 } from "@workspace/player-data/queries"
 
 import { goalQueries, type GoalDetail } from "@/entities/goal"
+import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { projectQueries } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
@@ -85,6 +88,12 @@ export function useDailyRaids(
   )
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
+  const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
+  const shops = useLiveQuery(() => getShops(), [])
+  const onslaughtProgressQuery = useQuery({
+    ...onslaughtProgressQueries.current(),
+    enabled: isAuthenticated,
+  })
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const playerState = useLiveQuery(async () => {
     const { characterIds, mowIds } = playerUnitIds(details)
@@ -224,6 +233,9 @@ export function useDailyRaids(
     liveProgressResult &&
     ascensionCostsById &&
     unlockShardCostsById &&
+    onslaughtRewards &&
+    shops &&
+    onslaughtProgressQuery.isSuccess &&
     inventoryUpgrades &&
     playerState &&
     !settingsLoading
@@ -240,6 +252,9 @@ export function useDailyRaids(
     mowsById,
     ascensionCostsById,
     unlockShardCostsById,
+    onslaughtProgress: onslaughtProgressQuery.data,
+    onslaughtRewards,
+    shops,
     getCharacter: (id) => {
       const record = charactersById.get(id)
       return record ? mapCharacterStorageToDomain(record) : undefined

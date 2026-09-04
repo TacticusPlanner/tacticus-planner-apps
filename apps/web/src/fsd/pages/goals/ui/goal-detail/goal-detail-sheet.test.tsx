@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const getGoal = vi.fn()
@@ -90,6 +91,19 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   },
 }))
 
+vi.mock("@/entities/planning-setting", () => ({
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 288, revision: 1 },
+    save: () => {},
+  }),
+}))
+
+vi.mock("@workspace/game-catalog/queries", () => ({
+  // No shop currently offers any unit's shards — keeps the acquisition-source picker's Shops
+  // group hidden and avoids the real Dexie/IndexedDB-backed getShops() in this jsdom test.
+  getShops: () => Promise.resolve([]),
+}))
+
 vi.mock("../../model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({
     getEntityName: (_type: string, id: string) => `Entity ${id}`,
@@ -114,6 +128,7 @@ vi.mock("../../model/shared/use-goal-catalog", () => ({
       ],
     ]),
     mowsById: new Map(),
+    battlesById: new Map(),
     ascensionCostsById: new Map(),
     unlockShardCostsById: new Map(),
     getCharacter: () => undefined,
@@ -200,6 +215,22 @@ const unlockDetail = {
   snapshot: { ...detail.snapshot, initialRequirement: [] },
 }
 
+const ascensionDetail = {
+  ...detail,
+  goalType: "Ascension",
+  dependsOn: [],
+  config: {
+    farmingLocationIds: [],
+    farmingStrategy: "TotalUpgrades",
+    progression: { start: "Common:None", end: "Common:OneStar" },
+    acquisitionSources: [
+      { kind: "Campaign", ids: ["shard-battle-1"] },
+      { kind: "Onslaught", ids: [] },
+    ],
+  },
+  snapshot: { ...detail.snapshot, initialRequirement: [] },
+}
+
 const levelDetail = {
   ...detail,
   goalType: "Level",
@@ -218,16 +249,20 @@ function renderSheet(
   queryClient?: QueryClient
 ) {
   const sheet = (
-    <CreateGoalLauncherProvider onLaunch={vi.fn()}>
-      <GoalDetailSheet
-        estimate={{ date: "2026-01-08", days: 3, status: "Estimated" } as never}
-        goalId="goal-1"
-        isolated
-        onOpenChange={vi.fn()}
-        onUpdated={vi.fn()}
-        {...props}
-      />
-    </CreateGoalLauncherProvider>
+    <MemoryRouter>
+      <CreateGoalLauncherProvider onLaunch={vi.fn()}>
+        <GoalDetailSheet
+          estimate={
+            { date: "2026-01-08", days: 3, status: "Estimated" } as never
+          }
+          goalId="goal-1"
+          isolated
+          onOpenChange={vi.fn()}
+          onUpdated={vi.fn()}
+          {...props}
+        />
+      </CreateGoalLauncherProvider>
+    </MemoryRouter>
   )
   return render(
     queryClient ? (
@@ -543,26 +578,65 @@ describe("GoalDetailSheet", () => {
     })
   })
 
-  it("shows shard locations (not upgrade farm locations) for an Unlock goal", async () => {
+  it("shows the acquisition-source picker's Campaigns group (not the upgrade-node checklist) for an Unlock goal", async () => {
     getGoal.mockReset().mockResolvedValue(unlockDetail)
     const user = userEvent.setup()
     renderSheet()
     expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
     await enterEditMode(user)
 
-    expect(screen.getByText("goals.detail.shardsTitle")).toBeInTheDocument()
     expect(
-      screen.queryByText("goals.detail.farmingTitle")
+      screen.getByTestId("create-goal-acquisition-sources")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goal-detail-locations")
     ).not.toBeInTheDocument()
     expect(
       screen.queryByTestId("create-goal-farming-strategy")
     ).not.toBeInTheDocument()
     expect(
-      screen.getByRole("checkbox", { name: "shard-battle-1" })
+      screen.getByTestId("create-goal-shard-location-checkbox-shard-battle-1")
     ).toBeInTheDocument()
     expect(
-      screen.getByRole("checkbox", { name: "shard-battle-2" })
+      screen.getByTestId("create-goal-shard-location-checkbox-shard-battle-2")
     ).toBeInTheDocument()
+  })
+
+  it("restores an Ascension goal's saved Campaign + Onslaught selection on entering edit", async () => {
+    getGoal.mockReset().mockResolvedValue(ascensionDetail)
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    expect(
+      screen.getByTestId("create-goal-shard-location-checkbox-shard-battle-1")
+    ).toBeChecked()
+    expect(
+      screen.getByTestId("create-goal-acquisition-group-onslaught-toggle")
+    ).toBeChecked()
+  })
+
+  it("saves an edited acquisition-source selection as acquisitionSources, not farmingLocationIds", async () => {
+    getGoal.mockReset().mockResolvedValue(ascensionDetail)
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    await user.click(
+      screen.getByTestId("create-goal-acquisition-group-onslaught-toggle")
+    )
+    fireEvent.click(screen.getByText("goals.detail.save"))
+
+    await vi.waitFor(() => {
+      expect(updateGoal).toHaveBeenCalledWith(
+        "goal-1",
+        expect.objectContaining({
+          acquisitionSources: [{ kind: "Campaign", ids: ["shard-battle-1"] }],
+        })
+      )
+    })
   })
 
   it("shows the current/target level for a Level goal, with no farming strategy or location picker", async () => {

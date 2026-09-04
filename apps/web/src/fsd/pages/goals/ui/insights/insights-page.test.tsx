@@ -135,6 +135,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
   getOnslaughtRewards: () => [],
+  getShops: () => [],
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
@@ -231,7 +232,7 @@ const rankGoalDetail = {
     progression: null,
     ability: null,
     farmingStrategy: "TotalUpgrades",
-    ascensionFarming: null,
+    acquisitionSources: null,
     farmingLocationIds: null,
   },
   milestones: [],

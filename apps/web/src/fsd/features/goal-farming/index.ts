@@ -37,10 +37,14 @@ export {
   type ResourceNeed,
 } from "./lib/progression-cost-calc"
 export { estimateRemainingShardEnergy } from "./lib/shard-energy-estimate"
+export { projectOnslaughtSupply, projectShopSupply } from "./lib/shop-supply"
+export { computeGoalAcquisition, isMowDetail } from "./lib/goal-acquisition"
+export { useUnitShopShardSupply } from "./model/use-unit-shop-shard-supply"
 export { farmingStageTargets } from "./lib/farming-stages"
 export { createCraftedInventoryPool } from "./lib/upgrade-recipe"
 export {
   shardResourceId,
+  mythicShardResourceId,
   type Battle,
   type CountedResourceNeed,
   type EstimateBlockedReason,
@@ -50,6 +54,7 @@ export {
   type FarmLocation,
   type FarmingCharacter,
   type FarmingUpgrade,
+  type FlatSupplier,
   type GoalInventoryAllocation,
   type GoalNeed,
   type InventoryAllocationGoal,

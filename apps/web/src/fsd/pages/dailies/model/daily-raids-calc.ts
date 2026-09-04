@@ -1,7 +1,9 @@
 import type {
   AscensionCostStorageModel,
   CharacterStorageModel,
+  GameCatalogShop,
   MowStorageModel,
+  OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -13,11 +15,13 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
+import type { OnslaughtProgress } from "@/entities/player-data-override"
 import type { ProjectGoalSummary } from "@/entities/project"
 import {
   allocatePlanInventory,
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
+  computeGoalAcquisition,
   createCraftedInventoryPool,
   estimateBonusRaids,
   estimateGoal,
@@ -64,6 +68,9 @@ export type DailyRaidsCalculationInput = {
   getTargetLabel?: (detail: GoalDetail) => string
   dailyEnergy: number
   referenceDate?: Date
+  onslaughtProgress?: OnslaughtProgress
+  onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
+  shops?: readonly GameCatalogShop[]
 }
 
 export function activeProjectMembers(members: ProjectGoalSummary[]) {
@@ -107,6 +114,9 @@ export function calculateDailyRaids(
     params.inventoryUpgrades,
     params.upgradesById
   )
+  // One reference date for every goal's shop-supply projection in this pass, mirroring
+  // plan-insights-calc.ts, so two goals sharing a shop offer see the same weekday schedule.
+  const referenceDate = params.referenceDate ?? new Date()
 
   for (const member of activeMembers) {
     const detail = detailById.get(member.goal.goalId)
@@ -146,10 +156,28 @@ export function calculateDailyRaids(
     if (!need) continue
 
     const needs = [...need.upgrades]
-    const campaignShardsEnabled =
-      detail.goalType !== "Ascension" ||
-      detail.config.ascensionFarming?.source !== "Onslaught"
-    if (need.shardId && need.shards > 0 && campaignShardsEnabled) {
+    // Unlock/Ascension's selected acquisition sources (tacticus-planner-apps#103), resolved into
+    // Onslaught/Shop flat suppliers and Campaign gating — same shared helper `plan-insights-calc.ts`
+    // uses, so Today/Raids Plan derive the same demand Insights does for a shop/Onslaught-sourced
+    // goal (spec: *Shared estimate consumers use the same derived demand*).
+    const {
+      acquisitionSources,
+      campaignSource,
+      campaignShardsEnabled,
+      flatSuppliers,
+    } = computeGoalAcquisition({
+      detail,
+      need,
+      mowsById: params.mowsById,
+      charactersById: params.charactersById,
+      playerCharacterById: params.playerCharacterById,
+      playerMowById: params.playerMowById,
+      onslaughtProgress: params.onslaughtProgress,
+      onslaughtRewards: params.onslaughtRewards,
+      shops: params.shops,
+      referenceDate,
+    })
+    if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
       needs.push({ id: need.shardId, count: need.shards })
       const character = params.charactersById.get(detail.entityId)
       if (character) {
@@ -164,7 +192,7 @@ export function calculateDailyRaids(
         })
         shardCatalog.set(need.shardId, {
           id: need.shardId,
-          farmLocations: character.shardLocations,
+          farmLocations: campaignShardsEnabled ? character.shardLocations : [],
         })
         shardProgress.set(dailyRaidResourceKey(detail.goalId, need.shardId), {
           owned: ownedShards,
@@ -191,7 +219,10 @@ export function calculateDailyRaids(
       priority: member.priority,
       needs,
       stages: stages ?? undefined,
-      farmingLocationIds: detail.config.farmingLocationIds ?? undefined,
+      farmingLocationIds: acquisitionSources
+        ? campaignSource?.ids
+        : (detail.config.farmingLocationIds ?? undefined),
+      flatSuppliers: flatSuppliers.length > 0 ? flatSuppliers : undefined,
     })
     goalsById.set(detail.goalId, {
       goalId: detail.goalId,

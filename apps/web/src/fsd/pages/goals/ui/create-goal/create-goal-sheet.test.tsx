@@ -39,6 +39,10 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
+vi.mock("@/shared/tour", () => ({
+  useTourPageSteps: () => undefined,
+}))
+
 vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
     current: () => ({
@@ -262,6 +266,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
     new Map([["Common", { rarity: "Common", shards: 30 }]]),
   getOnslaughtRewards: () => [],
   getEquipmentMap: () => Promise.resolve(equipmentItems),
+  // No shop currently offers any unit's shards by default — the acquisition-source picker's
+  // Shops group stays hidden unless a test overrides this.
+  getShops: () => Promise.resolve([]),
 }))
 
 const getPlayerCharacter = vi.fn()
@@ -791,7 +798,9 @@ describe("CreateGoalSheet", () => {
     const unlockSpec = request.goals.find(
       (goal: { goalType: string }) => goal.goalType === "Unlock"
     )
-    expect(unlockSpec.config.farmingLocationIds).toEqual(["B1"])
+    expect(unlockSpec.config.acquisitionSources).toEqual([
+      { kind: "Campaign", ids: ["B1"] },
+    ])
   })
 
   it('shows "{{owned}} / {{total}} shards" + "{{remaining}} remaining" and an energy/days line on the Unlock card by default, with no mythic shard row', async () => {
@@ -1040,9 +1049,9 @@ describe("CreateGoalSheet", () => {
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Unlock",
-        // farmingLocationIds defaults to the character's only regular shard location (B1) — no
-        // rank/progression/ability target exists for Unlock, which is what this test guards.
-        config: { farmingLocationIds: ["B1"] },
+        // The Campaigns source defaults to the character's only regular shard location (B1) —
+        // no rank/progression/ability target exists for Unlock, which is what this test guards.
+        config: { acquisitionSources: [{ kind: "Campaign", ids: ["B1"] }] },
         dependsOnIndex: [],
       }),
     ])
@@ -1181,7 +1190,10 @@ describe("CreateGoalSheet", () => {
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Unlock",
-        config: {},
+        // A MoW has no campaign shard locations at all — the Campaigns source still defaults to
+        // enabled, just with nothing to restrict to (unrestricted/auto-pick, the pre-picker
+        // default), rather than an empty config.
+        config: { acquisitionSources: [{ kind: "Campaign", ids: [] }] },
         dependsOnIndex: [],
       }),
     ])

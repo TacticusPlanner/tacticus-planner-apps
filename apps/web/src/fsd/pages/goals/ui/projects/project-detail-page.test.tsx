@@ -99,6 +99,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
   getOnslaughtRewards: () => [],
+  getShops: () => Promise.resolve([]),
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({

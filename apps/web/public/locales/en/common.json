@@ -499,17 +499,23 @@
       "ascension": {
         "start": "Current progression",
         "end": "Target progression",
-        "source": "Shard source",
-        "Campaign": "Campaign",
-        "Onslaught": "Onslaught",
-        "Both": "Campaign and Onslaught",
-        "onslaughtProgressHint": "The estimate uses the saved sector and tier for this unit's alliance.",
-        "editOnslaughtProgress": "Edit Onslaught progress",
         "shards": "{{regular}} shards · {{mythic}} mythic shards",
         "orbs": "orbs × {{count}}",
-        "campaignEstimate": "Campaign: {{energy}} energy · {{raids}} raids · {{days}} days",
-        "onslaughtEstimate": "Onslaught: {{tokens}} tokens · {{days}} days",
         "combinedEstimate": "Combined duration: {{days}} days"
+      },
+      "acquisitionSources": {
+        "label": "Acquisition sources",
+        "campaignsGroup": "Campaigns",
+        "onslaughtGroup": "Onslaught",
+        "shopsGroup": "Shops",
+        "combinedEstimate": "{{energy}} energy · {{raids}} raids · {{days}} days",
+        "onslaughtYield": "≈{{shards}} shards per Onslaught run",
+        "onslaughtNoProgress": "Set your Onslaught progress to see this run's yield.",
+        "editOnslaughtProgress": "Edit Onslaught progress",
+        "shopOfferAvailable": "Up to {{qty}}×{{amount}} · {{cost}} {{currency}} each",
+        "shopOfferPossibleReward": "One of several possible rewards for this slot",
+        "shopOfferChance": "≈{{percent}}% chance on {{days}}",
+        "shopOfferDays": "Available {{days}}"
       },
       "ability": {
         "activeStart": "Active ability, current level",
@@ -833,6 +839,14 @@
         "list": {
           "title": "Your goals",
           "content": "Every active goal appears below, matching your current filters."
+        }
+      }
+    },
+    "createGoal": {
+      "steps": {
+        "acquisitionSources": {
+          "title": "Acquisition sources",
+          "content": "Combine campaign farming, Onslaught, and daily shops — select any mix to lower this goal's estimated time."
         }
       }
     },

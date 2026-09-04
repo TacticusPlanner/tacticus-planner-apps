@@ -20,7 +20,7 @@ function toGoalConfig(config: CreateGoalConfigRequest): GoalConfig {
     progression: config.progression ?? null,
     ability: config.ability ?? null,
     farmingStrategy: config.farmingStrategy ?? "TotalUpgrades",
-    ascensionFarming: config.ascensionFarming ?? null,
+    acquisitionSources: config.acquisitionSources ?? null,
     farmingLocationIds: config.farmingLocationIds ?? null,
     upgrade: config.upgrade ?? null,
     level: config.level ?? null,

@@ -45,6 +45,7 @@ export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
 export {
   resolveShopOffersForToday,
   resolveShopSlotsForDay,
+  resolveUnitShardShopOffers,
   computeShopLockContext,
   plTier,
   hasBlueStarUnit,
@@ -59,10 +60,12 @@ export {
   MYTHIC_UNCRAFTABLE_UPGRADE_IDS,
   type ResolvedShopOffer,
   type ResolvedShopSlot,
+  type ShopShardOffer,
   type ShopLockContext,
   type RosterUnit,
   type ResolveShopOffersForTodayOptions,
   type ResolveShopSlotsForDayOptions,
+  type ResolveUnitShardShopOffersOptions,
 } from "./shops/shop-resolve"
 
 export {

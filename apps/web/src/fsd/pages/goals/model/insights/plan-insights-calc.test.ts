@@ -3,6 +3,7 @@ import type {
   AscensionCostStorageModel,
   CampaignDescriptor,
   CharacterStorageModel,
+  GameCatalogShop,
   MowStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
@@ -45,7 +46,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       progression: null,
       ability: null,
       farmingStrategy: "TotalUpgrades",
-      ascensionFarming: null,
+      acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
       level: null,
@@ -145,7 +146,7 @@ describe("computePlanInsights", () => {
           progression: null,
           ability: null,
           farmingStrategy: "TotalUpgrades",
-          ascensionFarming: null,
+          acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
           level: null,
@@ -198,7 +199,7 @@ describe("computePlanInsights", () => {
       progression: null,
       ability: null,
       farmingStrategy: "TotalUpgrades" as const,
-      ascensionFarming: null,
+      acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
       level: null,
@@ -250,7 +251,7 @@ describe("computePlanInsights", () => {
           progression: null,
           ability: null,
           farmingStrategy: "TotalUpgrades",
-          ascensionFarming: null,
+          acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
           level: null,
@@ -301,7 +302,7 @@ describe("computePlanInsights", () => {
           progression: null,
           ability: null,
           farmingStrategy: "TotalUpgrades",
-          ascensionFarming: null,
+          acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
           level: null,
@@ -366,7 +367,7 @@ describe("computePlanInsights", () => {
           progression: null,
           ability: null,
           farmingStrategy: "TotalUpgrades",
-          ascensionFarming: null,
+          acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
           level: null,
@@ -399,11 +400,7 @@ describe("computePlanInsights", () => {
           farmingLocationIds: null,
           upgrade: null,
           level: null,
-          ascensionFarming: {
-            source: "Onslaught",
-            shardBattleIds: [],
-            mythicShardBattleIds: [],
-          },
+          acquisitionSources: [{ kind: "Onslaught", ids: [] }],
         },
       }),
     ]
@@ -450,6 +447,90 @@ describe("computePlanInsights", () => {
 
     expect(result.onslaughtTokens).toBe(3)
     expect(result.onslaughtDays).toBeCloseTo(2 / 1.5)
+  })
+
+  it("reduces the campaign schedule by a selected Shop source's daily supply (tacticus-planner-apps#103)", () => {
+    const shops: GameCatalogShop[] = [
+      {
+        id: "guild",
+        displayLocation: "guildMerchant",
+        refreshWithAdWatch: true,
+        allowedRefreshesPerDay: 1,
+        slots: [
+          {
+            variants: [
+              {
+                reward: { type: "shards_hero1", qty: 5 },
+                days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                cost: { currency: "guildCredits", amount: 100 },
+                maxPurchasesPerDay: 1,
+                weight: 1,
+                unitId: "hero1",
+              },
+            ],
+          },
+        ],
+      } as GameCatalogShop,
+    ]
+    const details = [
+      goalDetail({
+        goalType: "Ascension",
+        config: {
+          rank: null,
+          progression: { start: "Common:None", end: "Common:OneStar" },
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          farmingLocationIds: null,
+          upgrade: null,
+          level: null,
+          acquisitionSources: [{ kind: "Shop", ids: ["guild:shards_hero1"] }],
+        },
+      }),
+    ]
+
+    const withShop = computePlanInsights({
+      ...baseParams,
+      details,
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      ascensionCostsById: new Map([
+        [
+          "Common:OneStar",
+          {
+            id: "Common:OneStar",
+            progression: "Common:OneStar",
+            shards: 20,
+            mythicShards: 0,
+            orbs: 0,
+            orbRarity: null,
+          } as AscensionCostStorageModel,
+        ],
+      ]),
+      shops,
+    })
+    const campaignOnly = computePlanInsights({
+      ...baseParams,
+      details,
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      ascensionCostsById: new Map([
+        [
+          "Common:OneStar",
+          {
+            id: "Common:OneStar",
+            progression: "Common:OneStar",
+            shards: 20,
+            mythicShards: 0,
+            orbs: 0,
+            orbRarity: null,
+          } as AscensionCostStorageModel,
+        ],
+      ]),
+    })
+
+    // Character has no campaign shard-farm locations in this fixture, so without the shop source
+    // the goal is unreachable; with it, the guaranteed 5/day offer alone clears the 20-shard need.
+    expect(campaignOnly.completionDate).toBeNull()
+    expect(withShop.completionDate).not.toBeNull()
+    expect(withShop.energyTotal).toBe(0)
   })
 
   it("derives Ascension potential from owned alliance orbs", () => {

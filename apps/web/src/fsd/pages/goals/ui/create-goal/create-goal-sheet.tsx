@@ -17,6 +17,7 @@ import type { UnitId } from "@workspace/game-domain"
 
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
+import { CreateGoalSheetTourRegistration } from ".//create-goal-sheet.tutorial"
 import { UnitGoalFormFields } from ".//unit-goal-form-fields"
 
 type CreateGoalSheetProps = {
@@ -51,6 +52,7 @@ export function CreateGoalSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
+      {open ? <CreateGoalSheetTourRegistration /> : null}
       <SheetContent
         data-testid="create-goal-sheet"
         onPointerDownOutside={(event) => event.preventDefault()}

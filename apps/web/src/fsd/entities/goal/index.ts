@@ -47,8 +47,7 @@ export type {
   RankTarget,
   UpgradeMaterialTarget,
   UpgradeTarget,
-  AscensionFarmingConfig,
-  AscensionFarmingSource,
+  AcquisitionSource,
   FarmingStrategy,
   UpdateGoalRequest,
 } from "./model/types"

@@ -409,6 +409,14 @@
         }
       }
     },
+    "createGoal": {
+      "steps": {
+        "acquisitionSources": {
+          "title": "Sources d'acquisition",
+          "content": "Combinez le farming de campagne, l'Onslaught et les boutiques quotidiennes : sélectionnez n'importe quelle combinaison pour réduire le temps estimé de cet objectif."
+        }
+      }
+    },
     "projectsList": {
       "steps": {
         "list": {

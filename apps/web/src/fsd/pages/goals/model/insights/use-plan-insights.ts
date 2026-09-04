@@ -3,7 +3,7 @@ import { useQueries, useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
-import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
+import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 import {
   getInventoryShard,
   getInventoryOrbs,
@@ -67,6 +67,7 @@ export function usePlanInsights(
   const inventoryOrbs = useLiveQuery(() => getInventoryOrbs(), [])
   const liveProgress = useLiveQuery(() => getLiveProgress(), [])
   const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
+  const shops = useLiveQuery(() => getShops(), [])
   const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
@@ -105,6 +106,7 @@ export function usePlanInsights(
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards &&
+    !!shops &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
 
@@ -195,6 +197,7 @@ export function usePlanInsights(
             currentOnslaughtTokens:
               liveProgress?.gameModeTokens.onslaught?.current ?? 0,
             onslaughtRewards: onslaughtRewards!,
+            shops,
           })
 
           setFetchState({ status: "success", key: calculationKey, result })
