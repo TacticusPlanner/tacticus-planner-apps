@@ -6,6 +6,7 @@ import {
   resolveEventLockId,
   resolveShopOffersForToday,
   resolveShopSlotsForDay,
+  resolveUnitShardShopOffers,
   todayDow,
 } from "./shop-resolve"
 
@@ -304,5 +305,152 @@ describe("todayDow", () => {
   it("maps a UTC timestamp to its day token", () => {
     expect(todayDow(Date.UTC(2026, 8, 6))).toBe("SUN") // 2026-09-06 is a Sunday
     expect(todayDow(Date.UTC(2026, 8, 7))).toBe("MON")
+  })
+})
+
+describe("resolveUnitShardShopOffers (goal-planning form, tacticus-planner-apps#103)", () => {
+  it("is guaranteed every day for a single-variant slot", () => {
+    const eldarFarseerShop = shop([
+      variant({
+        reward: { type: "shards_eldarFarseer", qty: 5 },
+        maxPurchasesPerDay: 2,
+        days: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+      }),
+    ])
+
+    const offers = resolveUnitShardShopOffers(
+      [eldarFarseerShop],
+      "eldarFarseer"
+    )
+
+    expect(offers).toHaveLength(1)
+    expect(offers[0]).toMatchObject({
+      offerId: "guild:shards_eldarFarseer",
+      shopId: "guild",
+      rewardType: "shards_eldarFarseer",
+      isMythic: false,
+      rewardQty: 5,
+      maxPerDay: 2,
+    })
+    expect(offers[0]!.days.sort()).toEqual(
+      ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].sort()
+    )
+    for (const day of offers[0]!.days) {
+      expect(offers[0]!.probabilityByDay[day]).toBe(1)
+    }
+  })
+
+  it("credits a rotating slot at its weighted share, and only on the shared days", () => {
+    // The real Guild slot: bloodIntercessor vs worldExecutions, both weight 1, TUE/FRI only.
+    const guildShop = shop([
+      variant({
+        reward: { type: "shards_bloodIntercessor", qty: 5 },
+        days: ["TUE", "FRI"],
+        weight: 1,
+      }),
+      variant({
+        reward: { type: "shards_worldExecutions", qty: 5 },
+        days: ["TUE", "FRI"],
+        weight: 1,
+      }),
+    ])
+
+    const offers = resolveUnitShardShopOffers([guildShop], "bloodIntercessor")
+
+    expect(offers).toHaveLength(1)
+    expect(offers[0]!.days.sort()).toEqual(["FRI", "TUE"])
+    expect(offers[0]!.probabilityByDay.TUE).toBeCloseTo(0.5)
+    expect(offers[0]!.probabilityByDay.FRI).toBeCloseTo(0.5)
+    expect(offers[0]!.probabilityByDay.MON).toBeUndefined()
+  })
+
+  it("raises the survivor's probability when a same-slot variant is excluded by power level", () => {
+    const gatedShop = shop([
+      variant({
+        reward: { type: "shards_worldJakhal", qty: 5 },
+        days: ["MON"],
+        weight: 1,
+      }),
+      variant({
+        reward: { type: "shards_worldExecutions", qty: 5 },
+        days: ["MON"],
+        weight: 1,
+        minPowerLevel: 999,
+      }),
+    ])
+
+    const offers = resolveUnitShardShopOffers([gatedShop], "worldJakhal", {
+      powerLevel: 30,
+    })
+
+    expect(offers).toHaveLength(1)
+    expect(offers[0]!.probabilityByDay.MON).toBe(1)
+  })
+
+  it("returns nothing for a unit no shop offers", () => {
+    const guildShop = shop([
+      variant({
+        reward: { type: "shards_eldarFarseer", qty: 5 },
+        days: ["MON"],
+      }),
+    ])
+
+    expect(resolveUnitShardShopOffers([guildShop], "nobody")).toEqual([])
+  })
+
+  it("distinguishes a unit's regular and mythic shard offers", () => {
+    const rogueTraderShop = {
+      ...shop(
+        [
+          variant({
+            reward: { type: "shards_eldarFarseer", qty: 5 },
+            days: ["MON"],
+          }),
+        ],
+        [
+          variant({
+            reward: { type: "mythicShards_eldarFarseer", qty: 3 },
+            days: ["MON"],
+          }),
+        ]
+      ),
+      id: "rogue-trader",
+    }
+
+    const offers = resolveUnitShardShopOffers([rogueTraderShop], "eldarFarseer")
+
+    expect(offers).toHaveLength(2)
+    const regular = offers.find((offer) => !offer.isMythic)!
+    const mythic = offers.find((offer) => offer.isMythic)!
+    expect(regular.offerId).toBe("rogue-trader:shards_eldarFarseer")
+    expect(mythic.offerId).toBe("rogue-trader:mythicShards_eldarFarseer")
+    expect(regular.offerId).not.toBe(mythic.offerId)
+  })
+
+  it("merges the same offer across two slots of one shop", () => {
+    const shopWithTwoSlots = shop(
+      [
+        variant({
+          reward: { type: "shards_eldarFarseer", qty: 5 },
+          days: ["MON"],
+        }),
+      ],
+      [
+        variant({
+          reward: { type: "shards_eldarFarseer", qty: 5 },
+          days: ["THU"],
+        }),
+      ]
+    )
+
+    const offers = resolveUnitShardShopOffers(
+      [shopWithTwoSlots],
+      "eldarFarseer"
+    )
+
+    expect(offers).toHaveLength(1)
+    expect(offers[0]!.days.sort()).toEqual(["MON", "THU"])
+    expect(offers[0]!.probabilityByDay.MON).toBe(1)
+    expect(offers[0]!.probabilityByDay.THU).toBe(1)
   })
 })

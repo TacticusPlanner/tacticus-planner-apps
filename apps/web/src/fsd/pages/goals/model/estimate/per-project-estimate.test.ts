@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import type {
   AscensionCostStorageModel,
   CharacterStorageModel,
+  GameCatalogShop,
   MowStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
@@ -19,7 +20,11 @@ import type {
   Character,
   UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
-import type { CombinedGoalSpec, GoalDetail } from "@/entities/goal"
+import type {
+  AcquisitionSource,
+  CombinedGoalSpec,
+  GoalDetail,
+} from "@/entities/goal"
 
 import type { Battle } from "@/features/goal-farming"
 import {
@@ -47,7 +52,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       progression: null,
       ability: null,
       farmingStrategy: "TotalUpgrades",
-      ascensionFarming: null,
+      acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
       level: null,
@@ -195,7 +200,7 @@ describe("estimateNewGoalsForProject", () => {
         progression: null,
         ability: null,
         farmingStrategy: "TotalUpgrades",
-        ascensionFarming: null,
+        acquisitionSources: null,
         farmingLocationIds: null,
         upgrade: null,
         level: null,
@@ -253,5 +258,114 @@ describe("estimateNewGoalsForProject", () => {
     })
 
     expect(outcome).toMatchObject({ status: "Blocked" })
+  })
+
+  it("shortens the preview when a new goal's selected Shop source is forwarded (tacticus-planner-apps#103)", () => {
+    const shardCharacterView = {
+      ...characterView,
+      shardLocations: [
+        {
+          battleId: battleId("B1"),
+          guaranteed: true,
+          numerator: null,
+          denominator: null,
+          effectiveRate: null,
+          isMythic: false,
+        },
+      ],
+    } as unknown as CharacterStorageModel
+    const ascensionCostsById = new Map<string, AscensionCostStorageModel>([
+      [
+        "Common:OneStar",
+        {
+          id: "Common:OneStar",
+          progression: "Common:OneStar",
+          shards: 20,
+          mythicShards: 0,
+          orbs: 0,
+          orbRarity: null,
+        } as AscensionCostStorageModel,
+      ],
+    ])
+    const shops: GameCatalogShop[] = [
+      {
+        id: "guild",
+        displayLocation: "guildMerchant",
+        refreshWithAdWatch: true,
+        allowedRefreshesPerDay: 1,
+        slots: [
+          {
+            variants: [
+              {
+                reward: { type: "shards_hero1", qty: 5 },
+                days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                cost: { currency: "guildCredits", amount: 100 },
+                maxPurchasesPerDay: 1,
+                weight: 1,
+                unitId: "hero1",
+              },
+            ],
+          },
+        ],
+      } as GameCatalogShop,
+    ]
+    const ascensionSpecDetail = (
+      goalId: string,
+      acquisitionSources: AcquisitionSource[]
+    ) =>
+      goalDetail({
+        goalId,
+        goalType: "Ascension",
+        config: {
+          rank: null,
+          progression: { start: "Common:None", end: "Common:OneStar" },
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          acquisitionSources,
+          farmingLocationIds: null,
+          upgrade: null,
+          level: null,
+        },
+      })
+
+    const charactersById = new Map([["hero1", shardCharacterView]])
+
+    const campaignOnly = estimateNewGoalsForProject({
+      ...baseParams,
+      charactersById,
+      ascensionCostsById,
+      existingDetails: [],
+      existingPriorities: new Map(),
+      newDetails: [
+        ascensionSpecDetail("preview-0", [{ kind: "Campaign", ids: ["B1"] }]),
+      ],
+      newBasePriority: 1,
+    })
+
+    const withShop = estimateNewGoalsForProject({
+      ...baseParams,
+      charactersById,
+      ascensionCostsById,
+      shops,
+      existingDetails: [],
+      existingPriorities: new Map(),
+      newDetails: [
+        ascensionSpecDetail("preview-0", [
+          { kind: "Campaign", ids: ["B1"] },
+          { kind: "Shop", ids: ["guild:shards_hero1"] },
+        ]),
+      ],
+      newBasePriority: 1,
+    })
+
+    expect(campaignOnly).toMatchObject({ status: "Estimated" })
+    expect(withShop).toMatchObject({ status: "Estimated" })
+    if (
+      campaignOnly?.status !== "Estimated" ||
+      withShop?.status !== "Estimated"
+    ) {
+      return
+    }
+    expect(withShop.energyTotal).toBeLessThan(campaignOnly.energyTotal)
   })
 })

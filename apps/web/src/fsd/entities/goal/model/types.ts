@@ -6,7 +6,6 @@ export type GoalKind =
   "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade" | "Level"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
-export type AscensionFarmingSource = "Campaign" | "Onslaught" | "Both"
 export type GoalStatus = "Active" | "Paused" | "Completed" | "Archived"
 export type GoalEventType =
   | "Created"
@@ -44,10 +43,13 @@ export type LevelTarget = {
   end: number
 }
 
-export type AscensionFarmingConfig = {
-  source: AscensionFarmingSource
-  shardBattleIds: string[]
-  mythicShardBattleIds: string[]
+// The server's growable acquisition-source allow-list — kept as `string` rather than a union so
+// adding a value there (e.g. a future "Incursion", tacticus-planner-apps#106) needs no client type
+// change. `ids` holds campaign battle ids for "Campaign", shop-offer ids (`<shopId>:<rewardType>`)
+// for "Shop", and is empty for run-based kinds ("Onslaught").
+export type AcquisitionSource = {
+  kind: string
+  ids: string[]
 }
 
 export type UpgradeMaterialTarget = {
@@ -64,9 +66,12 @@ export type GoalConfig = {
   progression: ProgressionTarget | null
   ability: AbilityTarget | null
   farmingStrategy: FarmingStrategy
-  ascensionFarming: AscensionFarmingConfig | null
-  // Campaign battle ids (opaque string codes) the goal is farmed from; empty/null means auto
-  // lowest-energy selection.
+  // Unlock/Ascension shard-source selection (Campaigns/Onslaught/Shops picker). Null/absent means
+  // unrestricted campaign farming — the pre-picker default.
+  acquisitionSources: AcquisitionSource[] | null
+  // Campaign battle ids (opaque string codes) a Rank/Ability goal farms its upgrade materials from;
+  // empty/null means auto lowest-energy selection. Unlock/Ascension's shard-node role moved to
+  // `acquisitionSources`.
   farmingLocationIds: string[] | null
   upgrade: UpgradeTarget | null
   level: LevelTarget | null
@@ -120,7 +125,7 @@ export type CreateGoalConfigRequest = {
   progression?: ProgressionTarget | null
   ability?: AbilityTarget | null
   farmingStrategy?: FarmingStrategy
-  ascensionFarming?: AscensionFarmingConfig | null
+  acquisitionSources?: AcquisitionSource[] | null
   farmingLocationIds?: string[] | null
   upgrade?: UpgradeTarget | null
   level?: LevelTarget | null
@@ -146,6 +151,7 @@ export type UpdateGoalRequest = {
   notes: string | null
   farmingLocationIds: string[] | null
   farmingStrategy?: FarmingStrategy
+  acquisitionSources?: AcquisitionSource[] | null
 }
 
 /** One goal within a combined-creation request (plan §6/§16 phase 5). `dependsOnIndex` holds indices

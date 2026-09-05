@@ -13,18 +13,27 @@ import type { Battle, FarmLocation } from "@/shared/lib"
 
 /** A farmable character shard resource (plan §16 phase 7) — folded into the same day-by-day engine
  *  as upgrade materials via a synthetic `EstimateUpgrade` entry keyed by this id, since a character's
- *  `shardLocations` use the identical `FarmLocation` shape as an upgrade's. Mythic shards and orbs
- *  have no campaign-node farm source (Onslaught/events only), so they never get one of these ids and
- *  stay count-only in the Insights breakdown rather than entering the simulator. */
+ *  `shardLocations` use the identical `FarmLocation` shape as an upgrade's. */
 export type ShardResourceId = `shard:${string}`
 
 export function shardResourceId(entityId: string): ShardResourceId {
   return `shard:${entityId}`
 }
 
+/** A mythic character shard resource (tacticus-planner-apps#103) — mythic shards have no campaign-
+ *  node farm source (Onslaught/Shops only, never a `FarmLocation`), so a mythic need only ever enters
+ *  the simulator via a `FlatSupplier` (an Onslaught or Shop acquisition source); with none selected it
+ *  stays count-only, as it always has. */
+export type MythicShardResourceId = `mythic-shard:${string}`
+
+export function mythicShardResourceId(entityId: string): MythicShardResourceId {
+  return `mythic-shard:${entityId}`
+}
+
 /** Any resource the engine can farm a day-by-day estimate for: an upgrade material, or (phase 7) a
- *  farmable character shard. */
-export type EstimateResourceId = UpgradeId | ShardResourceId
+ *  farmable character shard (regular or, via a flat supplier only, mythic). */
+export type EstimateResourceId =
+  UpgradeId | ShardResourceId | MythicShardResourceId
 
 /** How much of one farmable resource is still needed. */
 export interface CountedResourceNeed<TId extends string> {
@@ -60,6 +69,16 @@ export interface FarmingUpgrade extends EstimateUpgrade {
   stat: string
   crafted: boolean
   recipe: FarmingRecipeIngredient[]
+}
+
+/** An energy-free per-day contributor to a resource's need — a selected daily-shop offer or an
+ *  Onslaught source (plan: acquisition-source picker, tacticus-planner-apps#103). `supplyOnDay` is
+ *  called once per simulated day with a 0-based day index (day 1 of the simulation = index 0) and
+ *  returns that day's available amount (already accounting for weekday availability / expected-value
+ *  weighting) — never consulted for daily energy or raid counts. */
+export interface FlatSupplier {
+  resourceId: EstimateResourceId
+  supplyOnDay: (dayIndex: number) => number
 }
 
 /** One battle node's farming economics for a single material. */
@@ -121,6 +140,9 @@ export interface GoalNeed extends InventoryAllocationGoal<EstimateResourceId> {
   /** Restricts farming to these battle ids when set (goal's `config.farmingLocationIds`); otherwise
    *  the engine auto-selects the least-energy node(s) per material. */
   farmingLocationIds?: readonly string[] | null
+  /** This goal's selected non-campaign acquisition sources (shop offers, Onslaught), if any — see
+   *  `FlatSupplier`. */
+  flatSuppliers?: readonly FlatSupplier[]
 }
 
 interface InventoryAllocationStage<TId extends string> {
@@ -144,6 +166,10 @@ interface EstimateResult {
   date: string
   energyTotal: number
   raidsTotal: number
+  /** How much of each resource's need was covered by a `FlatSupplier` rather than campaign farming —
+   *  present whenever any `FlatSupplier` contributed. UI reads a source's own contribution from here
+   *  rather than recomputing it (plan: one canonical result structure). */
+  flatSupplyTotal?: ReadonlyMap<EstimateResourceId, number>
 }
 
 export type EstimateBlockedReason =

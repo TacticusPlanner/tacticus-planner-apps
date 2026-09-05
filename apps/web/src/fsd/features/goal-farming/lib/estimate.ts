@@ -8,6 +8,7 @@ import type {
   EstimateUpgrade,
   FarmLocation,
   FarmNode,
+  FlatSupplier,
   GoalInventoryAllocation,
   GoalNeed,
   InventoryAllocationGoal,
@@ -96,6 +97,45 @@ export function selectFarmNodes(
   return candidates.filter(
     (c) => c.energyCost / c.dropRate === minEnergyPerItem
   )
+}
+
+/**
+ * Applies each supplier's day-`dayIndex` amount against `remaining` (mutated in place), capped at
+ * what's still needed and never negative, and returns how much of each resource was actually applied
+ * that day. Shared by `estimateGoal`'s and `estimatePlan`'s day loops so both simulate flat
+ * (energy-free) suppliers — a daily-shop offer, an Onslaught run — concurrently alongside campaign
+ * farming against one shared remaining requirement (plan: acquisition-source picker,
+ * tacticus-planner-apps#103), rather than as a separate estimate combined afterward.
+ */
+export function applyFlatSuppliers(
+  remaining: Map<EstimateResourceId, number>,
+  suppliers: readonly FlatSupplier[] | undefined,
+  dayIndex: number
+): Map<EstimateResourceId, number> {
+  const applied = new Map<EstimateResourceId, number>()
+  if (!suppliers?.length) return applied
+
+  for (const supplier of suppliers) {
+    const need = remaining.get(supplier.resourceId)
+    if (!need || need <= 0) continue
+
+    const supply = Math.max(0, supplier.supplyOnDay(dayIndex))
+    const amount = Math.min(supply, need)
+    if (amount <= 0) continue
+
+    const next = need - amount
+    if (next <= 0) {
+      remaining.delete(supplier.resourceId)
+    } else {
+      remaining.set(supplier.resourceId, next)
+    }
+    applied.set(
+      supplier.resourceId,
+      (applied.get(supplier.resourceId) ?? 0) + amount
+    )
+  }
+
+  return applied
 }
 
 function addDays(base: Date, days: number): Date {
@@ -206,6 +246,7 @@ export function estimateGoal({
   battlesById,
   dailyEnergy,
   farmingLocationIds,
+  flatSuppliers,
   referenceDate = new Date(),
 }: {
   needs: UpgradeNeed[]
@@ -213,13 +254,20 @@ export function estimateGoal({
   battlesById: ReadonlyMap<BattleId, Battle>
   dailyEnergy: number
   farmingLocationIds?: readonly string[] | null
+  /** Selected non-campaign acquisition sources (shop offers, Onslaught) — see `FlatSupplier`. A
+   *  need with no campaign farm location is estimable, not blocked, when a supplier covers it. */
+  flatSuppliers?: readonly FlatSupplier[]
   referenceDate?: Date
 }): EstimateOutcome {
   const remaining = new Map<EstimateResourceId, number>()
   const nodesById = new Map<EstimateResourceId, FarmNode[]>()
+  const suppliedResourceIds = new Set(
+    flatSuppliers?.map((supplier) => supplier.resourceId)
+  )
 
   for (const need of needs) {
     if (need.count <= 0) continue
+    const hasSupplier = suppliedResourceIds.has(need.id)
     const unavailable = unavailableReason(
       need,
       upgradesById,
@@ -227,24 +275,13 @@ export function estimateGoal({
       farmingLocationIds,
       dailyEnergy
     )
-    if (unavailable) return blocked(unavailable, [need.id])
-    const nodes = selectFarmNodes(
-      need,
-      upgradesById,
-      battlesById,
-      farmingLocationIds
-    )
-    if (nodes.length === 0) {
-      return blocked(
-        unavailableReason(
-          need,
-          upgradesById,
-          battlesById,
-          farmingLocationIds,
-          dailyEnergy
-        ) ?? "NoFarmLocation",
-        [need.id]
-      )
+    if (unavailable && !hasSupplier) return blocked(unavailable, [need.id])
+
+    const nodes = unavailable
+      ? []
+      : selectFarmNodes(need, upgradesById, battlesById, farmingLocationIds)
+    if (nodes.length === 0 && !unavailable && !hasSupplier) {
+      return blocked("NoFarmLocation", [need.id])
     }
     remaining.set(need.id, need.count)
     nodesById.set(need.id, nodes)
@@ -257,15 +294,22 @@ export function estimateGoal({
       date: formatDate(referenceDate),
       energyTotal: 0,
       raidsTotal: 0,
+      flatSupplyTotal: new Map(),
     }
   }
 
   let days = 0
   let energyTotal = 0
   let raidsTotal = 0
+  const flatSupplyTotal = new Map<EstimateResourceId, number>()
 
   while (remaining.size > 0 && days < MAX_DAYS) {
     days++
+    const appliedToday = applyFlatSuppliers(remaining, flatSuppliers, days - 1)
+    for (const [id, amount] of appliedToday) {
+      flatSupplyTotal.set(id, (flatSupplyTotal.get(id) ?? 0) + amount)
+    }
+
     const { energySpent, raidsPerformed } = spendDay(
       remaining,
       nodesById,
@@ -283,6 +327,7 @@ export function estimateGoal({
         date: formatDate(inclusiveCompletionDate(referenceDate, days)),
         energyTotal,
         raidsTotal,
+        flatSupplyTotal,
       }
 }
 

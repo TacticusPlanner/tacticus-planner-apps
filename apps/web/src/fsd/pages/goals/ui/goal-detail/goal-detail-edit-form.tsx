@@ -7,10 +7,12 @@ import type { FarmingStrategy, GoalDetail } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 
 import { additionalTargetFromWire } from "@/features/goal-farming"
+import { AcquisitionSourceField } from "../create-goal/acquisition-source-field"
 import { FarmingStrategyField } from "../create-goal/farming-strategy-field"
 import { GoalLevelSummary } from "../create-goal/goal-level-summary"
 import { GoalLocationsField } from "../create-goal/goal-locations-field"
 import { GoalProjectsField } from "../projects/goal-projects-field"
+import type { useAcquisitionSourceSelection } from "../../model/goal-creation-form/use-acquisition-source-selection"
 import type { ProjectMembershipConflict } from "../../model/projects/project-membership"
 
 export type GoalDetailDraft = {
@@ -34,10 +36,14 @@ export function GoalDetailEditForm({
   isRank,
   isLevel,
   isUnlock,
+  isAscension,
   allLocations,
   overrideValid,
   conflicts,
   portalContainer,
+  acquisitionSelection,
+  battlesById,
+  shopOffers,
 }: {
   detail: GoalDetail
   draft: GoalDetailDraft
@@ -47,10 +53,18 @@ export function GoalDetailEditForm({
   isRank: boolean
   isLevel: boolean
   isUnlock: boolean
+  isAscension: boolean
   allLocations: string[]
   overrideValid: boolean
   conflicts: ProjectMembershipConflict[]
   portalContainer: HTMLElement | null
+  /** Only meaningful (and only used) for Unlock/Ascension — see `usesAcquisitionSources` in
+   *  `goal-detail-sheet.tsx`. */
+  acquisitionSelection: ReturnType<typeof useAcquisitionSourceSelection>
+  battlesById: Parameters<
+    typeof useAcquisitionSourceSelection
+  >[0]["battlesById"]
+  shopOffers: Parameters<typeof useAcquisitionSourceSelection>[0]["shopOffers"]
 }) {
   const { t } = useTranslation()
 
@@ -114,7 +128,34 @@ export function GoalDetailEditForm({
         <GoalLevelSummary target={detail.config.level} />
       ) : null}
 
-      {!isRank && !isLevel ? (
+      {isUnlock || isAscension ? (
+        <AcquisitionSourceField
+          battlesById={battlesById}
+          campaignEnabled={acquisitionSelection.campaignEnabled}
+          mythicShardLocations={
+            isAscension ? acquisitionSelection.mythicShardLocations : []
+          }
+          onCampaignEnabledChange={acquisitionSelection.setCampaignEnabled}
+          onOnslaughtEnabledChange={acquisitionSelection.setOnslaughtEnabled}
+          onShopsEnabledChange={acquisitionSelection.setShopsEnabled}
+          onToggleShardLocation={acquisitionSelection.toggleShardLocation}
+          onToggleShopOffer={acquisitionSelection.toggleShopOffer}
+          onslaughtEnabled={acquisitionSelection.onslaughtEnabled}
+          onslaughtProgressSaved={false}
+          onslaughtShardsPerRun={0}
+          regularShardLocations={acquisitionSelection.regularShardLocations}
+          selectedShardLocationIds={acquisitionSelection.shardLocationIds}
+          selectedShopOfferIds={acquisitionSelection.selectedShopOfferIds}
+          shopOffers={shopOffers}
+          shopsEnabled={acquisitionSelection.shopsEnabled}
+          showCampaigns={
+            acquisitionSelection.regularShardLocations.length > 0 ||
+            acquisitionSelection.mythicShardLocations.length > 0
+          }
+          showOnslaught={isAscension && detail.entityType === "Character"}
+        />
+      ) : null}
+      {!isRank && !isLevel && !isUnlock && !isAscension ? (
         <GoalLocationsField
           allLocations={allLocations}
           isUnlock={isUnlock}

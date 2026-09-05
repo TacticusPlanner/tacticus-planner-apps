@@ -8,7 +8,7 @@ import type { useAscensionFields } from ".//use-ascension-fields"
 import type { useLevelFields } from ".//use-level-fields"
 import type { useProjectSelection } from "../projects/use-project-selection"
 import type { useRankFields } from ".//use-rank-fields"
-import type { useShardLocationSelection } from ".//use-shard-location-selection"
+import type { useAcquisitionSourceSelection } from ".//use-acquisition-source-selection"
 import type { useUpgradeFields } from ".//use-upgrade-fields"
 
 type EntityType = "Character" | "Mow"
@@ -25,7 +25,7 @@ export function useGoalFormReset(params: {
   abilityFields: ReturnType<typeof useAbilityFields>
   levelFields: ReturnType<typeof useLevelFields>
   upgradeFields: ReturnType<typeof useUpgradeFields>
-  shardLocationSelection: ReturnType<typeof useShardLocationSelection>
+  acquisitionSourceSelection: ReturnType<typeof useAcquisitionSourceSelection>
   projectSelection: ReturnType<typeof useProjectSelection>
   setFarmingStrategy: (value: FarmingStrategy) => void
   setEnabledTypes: (
@@ -60,7 +60,7 @@ export function useGoalFormReset(params: {
     params.levelFields.reset()
     params.upgradeFields.reset()
     params.setFarmingStrategy("TotalUpgrades")
-    params.shardLocationSelection.reset()
+    params.acquisitionSourceSelection.reset()
   }
 
   // Shared by resetForm (also clears entity selection + projects) and handleEntityChange (also

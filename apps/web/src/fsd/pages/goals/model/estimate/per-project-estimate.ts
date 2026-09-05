@@ -20,7 +20,7 @@ function toGoalConfig(config: CreateGoalConfigRequest): GoalConfig {
     progression: config.progression ?? null,
     ability: config.ability ?? null,
     farmingStrategy: config.farmingStrategy ?? "TotalUpgrades",
-    ascensionFarming: config.ascensionFarming ?? null,
+    acquisitionSources: config.acquisitionSources ?? null,
     farmingLocationIds: config.farmingLocationIds ?? null,
     upgrade: config.upgrade ?? null,
     level: config.level ?? null,
@@ -93,6 +93,9 @@ export function estimateNewGoalsForProject(
     | "releaseTypeByGroupId"
     | "getCharacter"
     | "dailyEnergy"
+    | "onslaughtProgress"
+    | "onslaughtRewards"
+    | "shops"
   >
 ): EstimateOutcome | null {
   const {
@@ -108,10 +111,10 @@ export function estimateNewGoalsForProject(
     priorityByGoalId.set(detail.goalId, newBasePriority + index)
   })
 
-  // Onslaught progress/rewards are intentionally omitted (optional on computePlanInsights) — they
-  // only feed the separate onslaughtTokens/onslaughtDays aggregate, never the per-goal `estimates`
-  // map this function reads, so skipping them here avoids a second batch-fetch for a figure this
-  // preview doesn't use.
+  // Onslaught progress/rewards and the shop catalog are forwarded so a new goal's selected
+  // Onslaught/Shop acquisition sources (tacticus-planner-apps#103) reduce this preview's per-goal
+  // `estimates` the same way they do for Today/Insights/Raids Plan — the shared day-loop demand,
+  // not a separate calculation path (spec: *Shared estimate consumers use the same derived demand*).
   const result = computePlanInsights({
     details: [...existingDetails, ...newDetails],
     priorityByGoalId,

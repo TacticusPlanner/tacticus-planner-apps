@@ -381,3 +381,113 @@ export function resolveShopSlotsForDay(
       (extraFilter?.(variant) ?? true)
   )
 }
+
+// --- goal-planning form: a unit's shard offers across every shop, with per-weekday probability ------
+
+/**
+ * One shop's character-/mythic-shard offer for a specific unit, aggregated across every weekday it can
+ * appear on (plan: acquisition-source picker's Shops group, tacticus-planner-apps#103). `days` is the
+ * union of weekdays the offer's slot can resolve to this unit's reward; `probabilityByDay` is, for each
+ * of those days, the chance the slot actually resolves to this unit rather than another reward sharing
+ * the same rotating slot — 1 for a day where this is the slot's only day-matching reward (guaranteed).
+ */
+export interface ShopShardOffer {
+  offerId: string
+  shopId: string
+  unitId: string
+  /** `shards_<unitId>` or `mythicShards_<unitId>`. */
+  rewardType: string
+  isMythic: boolean
+  rewardQty: number
+  cost: { currency: string; amount: number }
+  maxPerDay: number
+  days: ShopDayOfWeek[]
+  probabilityByDay: Partial<Record<ShopDayOfWeek, number>>
+}
+
+export interface ResolveUnitShardShopOffersOptions {
+  powerLevel?: number
+  lockContext?: ShopLockContext
+  now?: number
+}
+
+/**
+ * Every shop offer for `unitId`'s character shards (regular and mythic), across all shops and every
+ * weekday — not just today — each carrying the per-weekday probability that its slot actually resolves
+ * to this unit's reward rather than another reward the slot could yield that day. A slot with only one
+ * day-matching reward on a given day is guaranteed there (probability 1); a rotating slot's probability
+ * is that variant's `weight` (default 1) over the sum of weights of every day-matching variant surviving
+ * the power-level/lock filter for that day. The same `<shopId>:<rewardType>` offer appearing in more than
+ * one slot of one shop is merged: its `days` are unioned and its per-day probabilities summed (clamped to
+ * 1) rather than kept as separate entries — see the design's `offerId` trade-off note. No roster/lock
+ * context is required (unresolvable locks default to shown, matching the permissive browsing resolver);
+ * an optional `powerLevel`/`lockContext` narrows the result the same way `resolveShopSlotsForDay` does.
+ */
+export function resolveUnitShardShopOffers(
+  shops: readonly GameCatalogShop[],
+  unitId: string,
+  {
+    powerLevel,
+    lockContext = {},
+    now = Date.now(),
+  }: ResolveUnitShardShopOffersOptions = {}
+): ShopShardOffer[] {
+  const byOfferId = new Map<string, ShopShardOffer>()
+
+  for (const shop of shops) {
+    for (const slot of shop.slots) {
+      for (const day of DOW_MAP) {
+        const matching = slot.variants.filter(
+          (variant) =>
+            dayMatches(variant, day) &&
+            variantMatchesPl(variant, powerLevel) &&
+            resolveEventLockId(variant.lockId, lockContext, now)
+        )
+        if (matching.length === 0) continue
+
+        const totalWeight = matching.reduce(
+          (sum, variant) => sum + (variant.weight ?? 1),
+          0
+        )
+        if (totalWeight <= 0) continue
+
+        for (const variant of matching) {
+          if (variant.unitId !== unitId) continue
+          const rewardType = variant.reward.type
+          const isMythic = rewardType.startsWith("mythicShards_")
+          if (!isMythic && !rewardType.startsWith("shards_")) continue
+
+          const offerId = `${shop.id}:${rewardType}`
+          const probability = (variant.weight ?? 1) / totalWeight
+
+          const existing = byOfferId.get(offerId)
+          if (existing) {
+            if (!existing.days.includes(day)) existing.days.push(day)
+            existing.probabilityByDay[day] = Math.min(
+              1,
+              (existing.probabilityByDay[day] ?? 0) + probability
+            )
+          } else {
+            byOfferId.set(offerId, {
+              offerId,
+              shopId: shop.id,
+              unitId,
+              rewardType,
+              isMythic,
+              rewardQty: variant.reward.qty,
+              cost: {
+                currency: variant.cost.currency,
+                amount: variant.cost.amount,
+              },
+              maxPerDay: variant.maxPurchasesPerDay,
+              days: [day],
+              probabilityByDay: { [day]: probability },
+            })
+          }
+        }
+      }
+    }
+  }
+
+  return [...byOfferId.values()]
+}

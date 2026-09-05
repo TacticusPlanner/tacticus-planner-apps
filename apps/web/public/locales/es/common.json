@@ -409,6 +409,14 @@
         }
       }
     },
+    "createGoal": {
+      "steps": {
+        "acquisitionSources": {
+          "title": "Fuentes de obtención",
+          "content": "Combina el farmeo de campaña, Onslaught y las tiendas diarias: selecciona cualquier combinación para reducir el tiempo estimado de este objetivo."
+        }
+      }
+    },
     "projectsList": {
       "steps": {
         "list": {

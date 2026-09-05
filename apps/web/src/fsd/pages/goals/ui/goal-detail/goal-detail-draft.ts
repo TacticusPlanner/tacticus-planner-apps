@@ -1,5 +1,19 @@
-import type { GoalDetail } from "@/entities/goal"
+import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
 import type { GoalDetailDraft } from "./goal-detail-edit-form"
+
+/** Order-independent comparison key for an acquisition-source set — a saved goal's entry order
+ *  and a freshly-rebuilt `acquisitionSourcesFromPlan(...)`'s order aren't guaranteed to match even
+ *  when the actual selection is identical, so `hasAcquisitionSourcesChanged` compares this instead
+ *  of the raw arrays. */
+export function normalizeAcquisitionSources(
+  sources: readonly AcquisitionSource[]
+): string {
+  return JSON.stringify(
+    [...sources]
+      .map((source) => ({ kind: source.kind, ids: [...source.ids].sort() }))
+      .sort((a, b) => a.kind.localeCompare(b.kind))
+  )
+}
 
 export function hasSelectionChanged(
   current: string[],

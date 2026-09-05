@@ -6,26 +6,22 @@ import {
   type Progression,
 } from "@workspace/game-domain"
 
-import type { AscensionFarmingSource } from "@/entities/goal"
-
 /**
  * The Ascension goal's own target-range state — a read-only start progression (always the unit's
- * live synced progression, never user-editable — see `prefillFrom`), the target progression step,
- * and the shard-farming source toggle. Split out of `use-create-goal-form.ts` purely for that
- * file's own max-lines budget.
+ * live synced progression, never user-editable — see `prefillFrom`) and the target progression
+ * step. Split out of `use-create-goal-form.ts` purely for that file's own max-lines budget. The
+ * shard-source selection (Campaigns/Onslaught/Shops) lives in `useAcquisitionSourceSelection`
+ * instead — it's shared with Unlock, not Ascension-specific.
  */
 export function useAscensionFields() {
   const [progressionStart, setProgressionStart] =
     useState<Progression>(firstProgression)
   const [progressionEnd, setProgressionEnd] =
     useState<Progression>(firstProgression)
-  const [ascensionFarmingSource, setAscensionFarmingSource] =
-    useState<AscensionFarmingSource>("Campaign")
 
   const reset = () => {
     setProgressionStart(firstProgression)
     setProgressionEnd(firstProgression)
-    setAscensionFarmingSource("Campaign")
   }
 
   // Applies the synced current-progression prefill once per entity selection — called from the
@@ -46,8 +42,6 @@ export function useAscensionFields() {
       progressionStart,
       progressionEnd,
       setProgressionEnd,
-      ascensionFarmingSource,
-      setAscensionFarmingSource,
     },
     reset,
     prefillFrom,

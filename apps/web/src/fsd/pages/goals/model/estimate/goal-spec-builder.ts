@@ -13,10 +13,11 @@ import {
 } from "@/features/rank-lookup"
 import type {
   CombinedGoalSpec,
-  AscensionFarmingSource,
   FarmingStrategy,
   GoalKind,
 } from "@/entities/goal"
+import { acquisitionSourcesFromPlan } from "../goal-creation-form/acquisition-plan"
+import type { GoalAcquisitionPlan } from "../goal-creation-form/acquisition-plan"
 
 // Pure helpers behind the combined-creation composer (plan §6/§7) — split out of
 // `use-create-goal-form.ts` purely to keep that file under this repo's max-lines rule; all plain
@@ -290,7 +291,6 @@ export function buildCombinedGoalSpecs(params: {
   rankEndAppliedUpgrades: number
   progressionStart: Progression
   progressionEnd: Progression
-  ascensionFarmingSource: AscensionFarmingSource
   abilityActiveStart: number
   abilityActiveEnd: number
   abilityPassiveStart: number
@@ -299,15 +299,10 @@ export function buildCombinedGoalSpecs(params: {
   levelEnd: number
   farmingStrategy: FarmingStrategy
   upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
-  /** The shard-location selector's checked battle ids (plan: Unlock/Ascension shard-location
-   * picker), pre-split by shard type (a battle id is unambiguously one or the other, per the
-   * catalog's own `isMythic` tag — see use-shard-location-selection.ts) — empty means unrestricted
-   * for that type, so the specs below omit/empty that field rather than pinning it, identical to
-   * today's behavior before this selector existed. Unlock only ever uses the regular set (it never
-   * costs mythic shards); Ascension routes regular selections to `shardBattleIds` and mythic ones to
-   * `mythicShardBattleIds`. */
-  selectedRegularShardLocationIds: readonly string[]
-  selectedMythicShardLocationIds: readonly string[]
+  /** The acquisition-source picker's selection (plan: Campaigns/Onslaught/Shops picker,
+   * tacticus-planner-apps#103) — the same plan feeds both Unlock and Ascension specs; each is
+   * translated to the wire `acquisitionSources` set independently since they're separate goals. */
+  plan: GoalAcquisitionPlan
 }): CombinedGoalSpec[] {
   const { enabledTypes, includesUnlock, includesAscension, includesLevel } =
     params
@@ -320,10 +315,9 @@ export function buildCombinedGoalSpecs(params: {
     specs.push({
       goalType: "Unlock",
       config: {
-        farmingLocationIds:
-          params.selectedRegularShardLocationIds.length > 0
-            ? [...params.selectedRegularShardLocationIds]
-            : undefined,
+        acquisitionSources: acquisitionSourcesFromPlan(params.plan, {
+          isUnlock: true,
+        }),
       },
       dependsOnIndex: [],
     })
@@ -338,11 +332,7 @@ export function buildCombinedGoalSpecs(params: {
       goalType: "Ascension",
       config: {
         progression: ascension,
-        ascensionFarming: {
-          source: params.ascensionFarmingSource,
-          shardBattleIds: [...params.selectedRegularShardLocationIds],
-          mythicShardBattleIds: [...params.selectedMythicShardLocationIds],
-        },
+        acquisitionSources: acquisitionSourcesFromPlan(params.plan),
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
     })

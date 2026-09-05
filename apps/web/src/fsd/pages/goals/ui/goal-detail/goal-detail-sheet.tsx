@@ -1,11 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
+import { useQueries, useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import {
   Sheet,
@@ -16,8 +11,9 @@ import {
 } from "@workspace/ui/components/sheet"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { goalQueries, updateGoal, updateGoalProjects } from "@/entities/goal"
+import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
 import {
   NO_BLOCKERS,
@@ -31,7 +27,6 @@ import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goa
 import type { BlockerReason } from "../../model/blockers/goal-blockers"
 import { prerequisitePrefill } from "../../model/blockers/prerequisite-prefill"
 import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
-import { projectGoalSlotConflictDetails } from "../../model/projects/project-membership"
 import { GoalProgressDisplay, GoalProjectBadges } from "../shared/goal-visuals"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
@@ -41,13 +36,14 @@ import {
 import { GoalDetailView } from "./goal-detail-view"
 import { GoalDetailFooter } from "./goal-detail-footer"
 import { GoalDetailError } from "./goal-detail-error"
-import type { GoalDetailSaveError } from "./goal-detail-error"
 import { goalDetailProjects } from "./goal-detail-projects"
 import { GoalDetailUnsavedDialog } from "./goal-detail-unsaved-dialog"
 import {
   hasGoalDetailDraftChanged,
   hasSelectionChanged,
 } from "./goal-detail-draft"
+import { useGoalDetailAcquisition } from "./use-goal-detail-acquisition"
+import { useGoalDetailSave } from "./use-goal-detail-save"
 
 type ConfirmAction = "cancel" | "close" | null
 type KeyedGoalDetailDraft = GoalDetailDraft & { key: string }
@@ -71,15 +67,20 @@ export function GoalDetailSheet({
 }) {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
-  const queryClient = useQueryClient()
   const launchCreateGoal = useCreateGoalLauncher()
-  const { getEntityName, upgradesById, charactersById } = useGoalCatalog()
+  const {
+    getEntityName,
+    upgradesById,
+    charactersById,
+    battlesById,
+    unlockShardCostsById,
+  } = useGoalCatalog()
+  const { settings: planningSettings } = usePlanningSettings()
   const [mode, setMode] = useState<"view" | "edit">("view")
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
   const [draftState, setDraftState] = useState<KeyedGoalDetailDraft | null>(
     null
   )
-  const [saveError, setSaveError] = useState<GoalDetailSaveError | null>(null)
   const [sheetNode, setSheetNode] = useState<HTMLElement | null>(null)
   const detailQuery = useQuery({
     ...goalQueries.detail(goalId ?? "unselected"),
@@ -128,42 +129,6 @@ export function GoalDetailSheet({
   )
   const metrics = goalId ? overviewMetrics.get(goalId) : undefined
 
-  const updateMutation = useMutation({
-    mutationFn: (request: {
-      goalId: string
-      notes: string | null
-      farmingLocationIds: string[] | null
-      farmingStrategy: GoalDetailDraft["farmingStrategy"]
-    }) =>
-      updateGoal(request.goalId, {
-        notes: request.notes,
-        farmingLocationIds: request.farmingLocationIds,
-        farmingStrategy: request.farmingStrategy,
-      }),
-    onSuccess: async (updated) => {
-      queryClient.setQueryData(
-        goalQueries.detail(updated.goalId).queryKey,
-        updated
-      )
-      await queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
-    },
-  })
-
-  const updateProjectsMutation = useMutation({
-    mutationFn: (request: { goalId: string; projectIds: string[] }) =>
-      updateGoalProjects(request.goalId, request.projectIds),
-    onSuccess: async (updated) => {
-      queryClient.setQueryData(
-        goalQueries.detail(updated.goalId).queryKey,
-        updated
-      )
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: goalQueries.lists() }),
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-      ])
-    },
-  })
-
   const { isRank, isUnlock, isLevel, allLocations, overrideValid } =
     useGoalLocationGroups(
       detail,
@@ -172,12 +137,31 @@ export function GoalDetailSheet({
       draft.selectedLocations
     )
 
+  const {
+    isAscension,
+    usesAcquisitionSources,
+    acquisitionSeed,
+    acquisitionSelection,
+    hasAcquisitionSourcesChanged,
+    shopOffers,
+  } = useGoalDetailAcquisition({
+    detail,
+    mode,
+    isUnlock,
+    charactersById,
+    unlockShardCostsById,
+    battlesById,
+    dailyEnergy: planningSettings.dailyEnergy,
+  })
+
   const projectsValid =
     draft.selectedProjectIds.length > 0 &&
     !membershipConflicts.loading &&
     membershipConflicts.conflicts.length === 0
   const hasUnsavedChanges =
-    mode === "edit" && !!detail && hasGoalDetailDraftChanged(detail, draft)
+    mode === "edit" &&
+    !!detail &&
+    (hasGoalDetailDraftChanged(detail, draft) || hasAcquisitionSourcesChanged)
   const projectsChanged =
     !!detail && hasSelectionChanged(detail.projectIds, draft.selectedProjectIds)
 
@@ -192,6 +176,7 @@ export function GoalDetailSheet({
       selectedProjectIds: detail.projectIds,
       farmingStrategy: detail.config.farmingStrategy,
     })
+    acquisitionSelection.reseed(acquisitionSeed)
     setMode("edit")
   }
   const requestLeaveEdit = () => {
@@ -204,50 +189,29 @@ export function GoalDetailSheet({
   }
   const confirmDiscard = () => {
     resetDraft()
+    acquisitionSelection.reseed(acquisitionSeed)
     setMode("view")
     if (confirmAction === "close") onOpenChange(false)
     setConfirmAction(null)
   }
 
-  const save = async () => {
-    if (!detail || !isAuthenticated || !overrideValid || !projectsValid) return
-    setSaveError(null)
-    try {
-      await updateMutation.mutateAsync({
-        goalId: detail.goalId,
-        notes: draft.notes.trim() || null,
-        farmingLocationIds:
-          isRank || isLevel
-            ? null
-            : draft.selectedLocations.length > 0
-              ? draft.selectedLocations
-              : null,
-        farmingStrategy: draft.farmingStrategy,
-      })
-      if (projectsChanged) {
-        await updateProjectsMutation.mutateAsync({
-          goalId: detail.goalId,
-          projectIds: draft.selectedProjectIds,
-        })
-      }
-      resetDraft()
-      setMode("view")
-      onUpdated()
-    } catch (reason) {
-      const conflict =
-        reason instanceof ApiError
-          ? projectGoalSlotConflictDetails(reason.details)
-          : null
-      setSaveError({
-        goalId: detail.goalId,
-        message:
-          reason instanceof ApiError
-            ? reason.message
-            : t("goals.detail.saveError"),
-        existingGoalId: conflict?.existingGoalId,
-      })
-    }
-  }
+  const { saveError, updateMutation, updateProjectsMutation, save } =
+    useGoalDetailSave({
+      detail,
+      draft,
+      isRank,
+      isLevel,
+      usesAcquisitionSources,
+      isUnlock,
+      overrideValid,
+      projectsValid,
+      projectsChanged,
+      acquisitionPlan: acquisitionSelection.plan,
+      isAuthenticated,
+      onUpdated,
+      resetDraft,
+      setMode,
+    })
 
   const error = detailQuery.isError
     ? detailQuery.error instanceof ApiError
@@ -371,10 +335,13 @@ export function GoalDetailSheet({
               />
             ) : (
               <GoalDetailEditForm
+                acquisitionSelection={acquisitionSelection}
                 allLocations={allLocations}
+                battlesById={battlesById}
                 detail={detail}
                 conflicts={membershipConflicts.conflicts}
                 draft={draft}
+                isAscension={isAscension}
                 isLevel={isLevel}
                 isRank={isRank}
                 isUnlock={isUnlock}
@@ -385,6 +352,7 @@ export function GoalDetailSheet({
                 portalContainer={sheetNode}
                 projects={projects}
                 projectsValid={projectsValid}
+                shopOffers={shopOffers}
               />
             )}
           </>

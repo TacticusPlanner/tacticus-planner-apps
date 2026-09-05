@@ -2,10 +2,11 @@ import { useMemo } from "react"
 
 import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
-import type { AscensionFarmingSource, GoalKind } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 
 import { buildReviewItems } from "../estimate/goal-spec-builder"
 import type { RankAdditionalTarget } from "@/features/goal-farming"
+import type { GoalAcquisitionPlan } from "./acquisition-plan"
 import { useGoalPrerequisites } from ".//use-goal-prerequisites"
 import { useProgressionPreview } from ".//use-progression-preview"
 
@@ -36,13 +37,11 @@ export function useGoalPrerequisitesAndReview({
   includeSuggestedLevel,
   progressionStart,
   progressionEnd,
-  ascensionFarmingSource,
+  plan,
   ascensionCostsById,
   unlockShardCostsById,
   battlesById,
   dailyEnergy,
-  selectedRegularShardLocationIds,
-  selectedMythicShardLocationIds,
 }: {
   entityId: UnitId | undefined
   entityType: "Character" | "Mow"
@@ -59,13 +58,11 @@ export function useGoalPrerequisitesAndReview({
   includeSuggestedLevel: boolean
   progressionStart: Progression
   progressionEnd: Progression
-  ascensionFarmingSource: AscensionFarmingSource
+  plan: GoalAcquisitionPlan
   ascensionCostsById: ProgressionPreviewParams["ascensionCostsById"]
   unlockShardCostsById: ProgressionPreviewParams["unlockShardCostsById"]
   battlesById: ProgressionPreviewParams["battlesById"]
   dailyEnergy: number
-  selectedRegularShardLocationIds: readonly string[]
-  selectedMythicShardLocationIds: readonly string[]
 }) {
   const prerequisites = useGoalPrerequisites({
     entityType,
@@ -102,13 +99,11 @@ export function useGoalPrerequisitesAndReview({
     progressionEnd,
     ascensionEnabled: includesAscension,
     unlockEnabled: includesUnlock,
-    source: ascensionFarmingSource,
+    plan,
     ascensionCostsById,
     unlockShardCostsById,
     battlesById,
     dailyEnergy,
-    regularFarmingLocationIds: selectedRegularShardLocationIds,
-    mythicFarmingLocationIds: selectedMythicShardLocationIds,
   })
 
   // "What will be created" review list (plan §7) — in submit order, flagging entries the user

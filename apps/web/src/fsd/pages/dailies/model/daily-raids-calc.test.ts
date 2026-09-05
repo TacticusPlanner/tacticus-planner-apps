@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 import type {
+  AscensionCostStorageModel,
   CharacterStorageModel,
+  GameCatalogShop,
   MowStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
@@ -15,7 +17,11 @@ import {
 
 import type { GoalDetail } from "@/entities/goal"
 import type { ProjectGoalSummary } from "@/entities/project"
-import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
+import type {
+  FarmingCharacter,
+  FarmingUpgrade,
+  FlatSupplier,
+} from "@/features/goal-farming"
 
 import {
   activeProjectMembers,
@@ -40,7 +46,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       progression: null,
       ability: null,
       farmingStrategy: "TotalUpgrades",
-      ascensionFarming: null,
+      acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
       level: null,
@@ -140,6 +146,34 @@ describe("daily raid derivation", () => {
     expect(urgency.get("lower-priority:fast")).toEqual({
       days: 1,
       energyTotal: 6,
+    })
+  })
+
+  it("resolves a goal's urgency for a resource with no farm locations when a flat supplier covers it (tacticus-planner-apps#103)", () => {
+    const shopOnlyId = upgradeIdSchema.parse("shopOnly")
+    const flatSuppliers: FlatSupplier[] = [
+      { resourceId: shopOnlyId, supplyOnDay: () => 5 },
+    ]
+
+    const urgency = calculateResourceUrgency(
+      [
+        {
+          goalId: "shop-goal",
+          priority: 1,
+          needs: [{ id: shopOnlyId, count: 10 }],
+          flatSuppliers,
+        },
+      ],
+      [],
+      new Map(),
+      new Map(),
+      60,
+      new Date("2026-01-01T00:00:00.000Z")
+    )
+
+    expect(urgency.get("shop-goal:shopOnly")).toEqual({
+      days: 2,
+      energyTotal: 0,
     })
   })
 
@@ -265,6 +299,150 @@ describe("daily raid derivation", () => {
     ).toEqual({ owned: 5, target: 40 })
   })
 
+  it("shortens the Raids Plan schedule when a Shop source supplements the campaign farm (tacticus-planner-apps#103)", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const nodeId = battleIdSchema.parse("B1")
+    const character = {
+      id: heroId,
+      name: "Hero One",
+      initialRarity: "Common",
+      shardLocations: [
+        {
+          battleId: nodeId,
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+          isMythic: false,
+        },
+      ],
+    } as unknown as CharacterStorageModel
+    const battlesById = new Map([
+      [
+        nodeId,
+        {
+          campaignGroupId: campaignIdSchema.parse("CG1"),
+          type: "Normal",
+          challenge: false,
+          nodeNumber: 1,
+          energyCost: 6,
+          dailyAttempts: 999,
+        },
+      ],
+    ])
+    const ascensionCostsById = new Map<string, AscensionCostStorageModel>([
+      [
+        "Common:OneStar",
+        {
+          id: "Common:OneStar",
+          progression: "Common:OneStar",
+          shards: 20,
+          mythicShards: 0,
+          orbs: 0,
+          orbRarity: null,
+        } as AscensionCostStorageModel,
+      ],
+    ])
+    const shops: GameCatalogShop[] = [
+      {
+        id: "guild",
+        displayLocation: "guildMerchant",
+        refreshWithAdWatch: true,
+        allowedRefreshesPerDay: 1,
+        slots: [
+          {
+            variants: [
+              {
+                reward: { type: "shards_hero1", qty: 5 },
+                days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                cost: { currency: "guildCredits", amount: 100 },
+                maxPurchasesPerDay: 1,
+                weight: 1,
+                unitId: "hero1",
+              },
+            ],
+          },
+        ],
+      } as GameCatalogShop,
+    ]
+    const baseInput = {
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      inventoryShardById: new Map(),
+      inventoryUpgrades: [],
+      upgradesById: new Map(),
+      battlesById,
+      charactersById: new Map([[heroId, character]]),
+      mowsById: new Map(),
+      ascensionCostsById,
+      unlockShardCostsById: new Map<string, UnlockShardCostStorageModel>(),
+      getCharacter: () => undefined,
+      dailyEnergy: 36,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    }
+
+    const detail = goalDetail({
+      goalType: "Ascension",
+      entityId: heroId,
+      config: {
+        rank: null,
+        progression: { start: "Common:None", end: "Common:OneStar" },
+        ability: null,
+        farmingStrategy: "TotalUpgrades",
+        farmingLocationIds: null,
+        upgrade: null,
+        level: null,
+        acquisitionSources: [{ kind: "Campaign", ids: [nodeId] }],
+      },
+    })
+    const campaignOnly = calculateDailyRaids({
+      ...baseInput,
+      members: [{ priority: 1, goal: detail }],
+      details: [detail],
+    })
+
+    const detailWithShop = goalDetail({
+      goalType: "Ascension",
+      entityId: heroId,
+      config: {
+        rank: null,
+        progression: { start: "Common:None", end: "Common:OneStar" },
+        ability: null,
+        farmingStrategy: "TotalUpgrades",
+        farmingLocationIds: null,
+        upgrade: null,
+        level: null,
+        acquisitionSources: [
+          { kind: "Campaign", ids: [nodeId] },
+          { kind: "Shop", ids: ["guild:shards_hero1"] },
+        ],
+      },
+    })
+    const withShop = calculateDailyRaids({
+      ...baseInput,
+      members: [{ priority: 1, goal: detailWithShop }],
+      details: [detailWithShop],
+      shops,
+    })
+
+    expect(campaignOnly?.status).toBe("ready")
+    expect(withShop?.status).toBe("ready")
+    if (
+      !campaignOnly ||
+      campaignOnly.status !== "ready" ||
+      !withShop ||
+      withShop.status !== "ready"
+    ) {
+      return
+    }
+    expect(withShop.planSummary.totalDays).toBeLessThan(
+      campaignOnly.planSummary.totalDays
+    )
+    expect(withShop.planSummary.totalEnergy).toBeLessThan(
+      campaignOnly.planSummary.totalEnergy
+    )
+  })
+
   it("does not invent a shard farm for a MoW unlock without catalog shard data", () => {
     const mowId = unitIdSchema.parse("mow1")
     const detail = goalDetail({ entityType: "Mow", entityId: mowId })
@@ -357,7 +535,7 @@ describe("daily raid derivation", () => {
           progression: null,
           ability: null,
           farmingStrategy: "TotalUpgrades",
-          ascensionFarming: null,
+          acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
           level: null,

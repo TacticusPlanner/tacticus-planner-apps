@@ -16,6 +16,7 @@ import {
   mowRelevantUpgradeIds,
   mowRelevantUpgradeQuantities,
 } from ".//goal-spec-builder"
+import { emptyAcquisitionPlan } from "../goal-creation-form/acquisition-plan"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
@@ -30,7 +31,6 @@ const baseSpecParams = {
   rankEndAppliedUpgrades: 0,
   progressionStart: "Common:None" as const,
   progressionEnd: "Common:OneStar" as const,
-  ascensionFarmingSource: "Campaign" as const,
   abilityActiveStart: 0,
   abilityActiveEnd: 0,
   abilityPassiveStart: 0,
@@ -39,8 +39,7 @@ const baseSpecParams = {
   levelEnd: 2,
   farmingStrategy: "TotalUpgrades" as const,
   upgradeTargets: [],
-  selectedRegularShardLocationIds: [],
-  selectedMythicShardLocationIds: [],
+  plan: emptyAcquisitionPlan(),
 }
 
 describe("buildReviewItems", () => {
@@ -125,6 +124,59 @@ describe("buildCombinedGoalSpecs", () => {
     expect(specs[1].dependsOnIndex).toEqual([0]) // Ascension -> Unlock
     expect(specs[2].dependsOnIndex).toEqual([0, 1]) // Rank -> Unlock, Ascension
     expect(specs[3].dependsOnIndex).toEqual([0]) // Ability -> Unlock only, not Ascension
+  })
+
+  it("submits campaign+shop+Onslaught for Ascension but drops Onslaught and mythic for Unlock", () => {
+    const shopOffer = {
+      offerId: "guild:shards_hero1",
+      shopId: "guild",
+      unitId: "hero1",
+      rewardType: "shards_hero1",
+      isMythic: false,
+      rewardQty: 5,
+      cost: { currency: "guildCredits", amount: 525 },
+      maxPerDay: 2,
+      days: ["MON" as const],
+      probabilityByDay: { MON: 1 },
+    }
+    const mythicShopOffer = {
+      ...shopOffer,
+      offerId: "rogue-trader:mythicShards_hero1",
+      shopId: "rogue-trader",
+      rewardType: "mythicShards_hero1",
+      isMythic: true,
+    }
+    const specs = buildCombinedGoalSpecs({
+      ...baseSpecParams,
+      enabledTypes: new Set(["Unlock", "Ascension"]),
+      includesUnlock: true,
+      includesAscension: true,
+      plan: {
+        campaign: {
+          enabled: true,
+          regularBattleIds: ["node-regular"],
+          mythicBattleIds: ["node-mythic"],
+        },
+        onslaught: { enabled: true },
+        shops: { enabled: true, offers: [shopOffer, mythicShopOffer] },
+      },
+    })
+
+    const unlock = specs.find((spec) => spec.goalType === "Unlock")!
+    const ascension = specs.find((spec) => spec.goalType === "Ascension")!
+
+    expect(unlock.config.acquisitionSources).toEqual([
+      { kind: "Campaign", ids: ["node-regular"] },
+      { kind: "Shop", ids: ["guild:shards_hero1"] },
+    ])
+    expect(ascension.config.acquisitionSources).toEqual([
+      { kind: "Campaign", ids: ["node-regular", "node-mythic"] },
+      { kind: "Onslaught", ids: [] },
+      {
+        kind: "Shop",
+        ids: ["guild:shards_hero1", "rogue-trader:mythicShards_hero1"],
+      },
+    ])
   })
 
   it("uses the auto-suggested Ascension target when Ascension wasn't explicitly toggled", () => {
