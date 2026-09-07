@@ -104,12 +104,19 @@ export function GoalTypeCards({
                   <AcquisitionSourceField
                     battlesById={form.battlesById}
                     campaignEnabled={form.campaignEnabled}
+                    campaignMythicShardsPerDay={
+                      form.progressionPreview?.campaignMythicShardsPerDay ?? 0
+                    }
+                    campaignShardsPerDay={
+                      form.progressionPreview?.campaignShardsPerDay ?? 0
+                    }
                     mythicShardLocations={
                       needsMythic && !sharedWithUnlock
                         ? form.mythicShardLocations
                         : []
                     }
                     onCampaignEnabledChange={form.setCampaignEnabled}
+                    onNavigateAway={form.onNavigateAway}
                     onOnslaughtEnabledChange={form.setOnslaughtEnabled}
                     onShopsEnabledChange={form.setShopsEnabled}
                     onToggleShardLocation={form.toggleShardLocation}
@@ -118,8 +125,8 @@ export function GoalTypeCards({
                     onslaughtProgressSaved={
                       form.progressionPreview?.onslaughtProgressSaved ?? false
                     }
-                    onslaughtShardsPerRun={
-                      form.progressionPreview?.onslaughtShardsPerRun ?? 0
+                    onslaughtShardsPerDay={
+                      form.progressionPreview?.onslaughtShardsPerDay ?? 0
                     }
                     regularShardLocations={
                       isCharacter &&
@@ -131,6 +138,9 @@ export function GoalTypeCards({
                     selectedShardLocationIds={form.shardLocationIds}
                     selectedShopOfferIds={form.selectedShopOfferIds}
                     shopOffers={sharedWithUnlock ? [] : form.shopOffers}
+                    shopShardsPerDaySelected={
+                      form.progressionPreview?.shopShardsPerDaySelected ?? 0
+                    }
                     shopsEnabled={form.shopsEnabled}
                     showCampaigns={
                       isCharacter &&
@@ -268,6 +278,9 @@ export function GoalTypeCards({
                       <AcquisitionSourceField
                         battlesById={form.battlesById}
                         campaignEnabled={form.campaignEnabled}
+                        campaignShardsPerDay={
+                          form.progressionPreview?.campaignShardsPerDay ?? 0
+                        }
                         mythicShardLocations={[]}
                         onCampaignEnabledChange={form.setCampaignEnabled}
                         onOnslaughtEnabledChange={form.setOnslaughtEnabled}
@@ -276,13 +289,15 @@ export function GoalTypeCards({
                         onToggleShopOffer={form.toggleShopOffer}
                         onslaughtEnabled={false}
                         onslaughtProgressSaved={false}
-                        onslaughtShardsPerRun={0}
                         regularShardLocations={form.regularShardLocations}
                         selectedShardLocationIds={form.shardLocationIds}
                         selectedShopOfferIds={form.selectedShopOfferIds}
                         shopOffers={(form.shopOffers ?? []).filter(
                           (offer) => !offer.isMythic
                         )}
+                        shopShardsPerDaySelected={
+                          form.progressionPreview?.shopShardsPerDaySelected ?? 0
+                        }
                         shopsEnabled={form.shopsEnabled}
                         showCampaigns={form.regularShardLocations.length > 0}
                         showOnslaught={false}

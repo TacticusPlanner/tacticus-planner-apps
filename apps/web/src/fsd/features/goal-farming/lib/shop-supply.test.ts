@@ -35,6 +35,7 @@ describe("projectShopSupply", () => {
 
     const supplier = projectShopSupply(guaranteed, tuesday)
 
+    expect(supplier.key).toBe("guild:shards_hero1")
     expect(supplier.resourceId).toBe(shardResourceId("hero1"))
     expect(supplier.supplyOnDay(0)).toBe(10) // Tuesday itself: 5 * 2 * 1
   })
@@ -76,6 +77,7 @@ describe("projectShopSupply", () => {
 
     const supplier = projectShopSupply(mythic, tuesday)
 
+    expect(supplier.key).toBe("rogue-trader:mythicShards_eldarFarseer")
     expect(supplier.resourceId).toBe(mythicShardResourceId("eldarFarseer"))
   })
 })
@@ -88,6 +90,7 @@ describe("projectOnslaughtSupply", () => {
       avgShardsPerRun: 4.5,
     })
 
+    expect(supplier.key).toBe("onslaught:regular")
     expect(supplier.resourceId).toBe(shardResourceId("hero1"))
     expect(supplier.supplyOnDay(0)).toBeCloseTo(6.75) // 4.5 * 1.5
     expect(supplier.supplyOnDay(10)).toBeCloseTo(6.75)
@@ -96,10 +99,11 @@ describe("projectOnslaughtSupply", () => {
   it("never supplies a negative amount", () => {
     const supplier = projectOnslaughtSupply({
       entityId: "hero1",
-      isMythic: false,
+      isMythic: true,
       avgShardsPerRun: -5,
     })
 
+    expect(supplier.key).toBe("onslaught:mythic")
     expect(supplier.supplyOnDay(0)).toBe(0)
   })
 })

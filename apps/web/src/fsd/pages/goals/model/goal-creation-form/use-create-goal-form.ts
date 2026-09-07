@@ -360,6 +360,10 @@ export function useCreateGoalForm({
     entityType,
     entityId,
     handleEntityChange,
+    // Closes the sheet without resetting the form (state is held in this hook and only cleared on
+    // a "create another" success) — for the picker's "Edit Onslaught progress" link, so the user
+    // can resume the in-progress goal after editing their Onslaught progress.
+    onNavigateAway: () => onOpenChange(false),
     enabledTypes,
     unlockAvailable,
     atMaxRank,

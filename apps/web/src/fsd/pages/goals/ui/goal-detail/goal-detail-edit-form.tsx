@@ -142,7 +142,6 @@ export function GoalDetailEditForm({
           onToggleShopOffer={acquisitionSelection.toggleShopOffer}
           onslaughtEnabled={acquisitionSelection.onslaughtEnabled}
           onslaughtProgressSaved={false}
-          onslaughtShardsPerRun={0}
           regularShardLocations={acquisitionSelection.regularShardLocations}
           selectedShardLocationIds={acquisitionSelection.shardLocationIds}
           selectedShopOfferIds={acquisitionSelection.selectedShopOfferIds}

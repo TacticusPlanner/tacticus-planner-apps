@@ -107,6 +107,7 @@ function runPlanSchedule(
         energyTotal: 0,
         raidsTotal: 0,
         flatSupplyTotal: new Map(),
+        flatSupplyBySupplier: new Map(),
       })
     } else {
       stagesByGoal.set(goal.goalId, stages)
@@ -125,6 +126,7 @@ function runPlanSchedule(
     string,
     Map<EstimateResourceId, number>
   >()
+  const flatSupplyBySupplierByGoal = new Map<string, Map<string, number>>()
   const flatSuppliersByGoal = new Map(
     ordered.map((goal) => [goal.goalId, goal.flatSuppliers])
   )
@@ -152,14 +154,22 @@ function runPlanSchedule(
           flatSuppliersByGoal.get(goal.goalId),
           days - 1
         )
-        if (appliedToday.size > 0) {
+        if (appliedToday.byResource.size > 0) {
           const goalTotals =
             flatSupplyTotalByGoal.get(goal.goalId) ??
             new Map<EstimateResourceId, number>()
-          for (const [id, amount] of appliedToday) {
+          for (const [id, amount] of appliedToday.byResource) {
             goalTotals.set(id, (goalTotals.get(id) ?? 0) + amount)
           }
           flatSupplyTotalByGoal.set(goal.goalId, goalTotals)
+
+          const goalBySupplier =
+            flatSupplyBySupplierByGoal.get(goal.goalId) ??
+            new Map<string, number>()
+          for (const [key, amount] of appliedToday.bySupplier) {
+            goalBySupplier.set(key, (goalBySupplier.get(key) ?? 0) + amount)
+          }
+          flatSupplyBySupplierByGoal.set(goal.goalId, goalBySupplier)
         }
         while (stages.length > 0 && stages[0]!.remaining.size === 0) {
           stages.shift()
@@ -199,6 +209,8 @@ function runPlanSchedule(
           energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
           raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
           flatSupplyTotal: flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
+          flatSupplyBySupplier:
+            flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
         })
         pending.delete(goal.goalId)
       }

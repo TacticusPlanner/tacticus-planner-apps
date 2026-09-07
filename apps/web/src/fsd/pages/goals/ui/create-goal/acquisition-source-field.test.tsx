@@ -100,16 +100,20 @@ function baseProps() {
     battlesById,
     selectedShardLocationIds: [] as string[],
     onToggleShardLocation: vi.fn(),
+    campaignShardsPerDay: 0,
+    campaignMythicShardsPerDay: 0,
     showOnslaught: false,
     onslaughtEnabled: false,
     onOnslaughtEnabledChange: vi.fn(),
-    onslaughtShardsPerRun: 0,
+    onslaughtShardsPerDay: 0,
     onslaughtProgressSaved: false,
+    onNavigateAway: vi.fn(),
     shopOffers: undefined as ShopShardOffer[] | undefined,
     shopsEnabled: false,
     onShopsEnabledChange: vi.fn(),
     selectedShopOfferIds: [] as string[],
     onToggleShopOffer: vi.fn(),
+    shopShardsPerDaySelected: 0,
   }
 }
 
@@ -173,37 +177,87 @@ describe("AcquisitionSourceField", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("shows the Onslaught yield when checked and progress is saved", () => {
+  it("shows the Onslaught shards/day yield even while the group is unchecked, once progress is saved", () => {
     render(
       <AcquisitionSourceField
         {...baseProps()}
-        onslaughtEnabled
+        onslaughtEnabled={false}
         onslaughtProgressSaved
-        onslaughtShardsPerRun={4.5}
+        onslaughtShardsPerDay={6.75}
         showOnslaught
       />
     )
 
-    const panel = screen.getByTestId("create-goal-onslaught-panel")
-    expect(panel).toHaveTextContent(
-      "goals.create.acquisitionSources.onslaughtYield"
+    const yieldNote = screen.getByTestId(
+      "create-goal-acquisition-yield-onslaught"
     )
+    expect(yieldNote).toHaveTextContent(
+      "goals.create.acquisitionSources.shardsPerDay"
+    )
+    expect(
+      screen.getByTestId("create-goal-acquisition-group-onslaught-toggle")
+    ).not.toBeChecked()
   })
 
-  it("shows the set-progress prompt when checked but no progress is saved", () => {
+  it("shows the set-progress prompt when no progress is saved", () => {
     render(
       <AcquisitionSourceField
         {...baseProps()}
-        onslaughtEnabled
         onslaughtProgressSaved={false}
         showOnslaught
       />
     )
 
-    const panel = screen.getByTestId("create-goal-onslaught-panel")
-    expect(panel).toHaveTextContent(
-      "goals.create.acquisitionSources.onslaughtNoProgress"
+    expect(
+      screen.getByTestId("create-goal-acquisition-yield-onslaught")
+    ).toHaveTextContent("goals.create.acquisitionSources.onslaughtNoProgress")
+  })
+
+  it("links Edit Onslaught progress to the progress page and closes the sheet via onNavigateAway", async () => {
+    const onNavigateAway = vi.fn()
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        onNavigateAway={onNavigateAway}
+        onslaughtProgressSaved
+        onslaughtShardsPerDay={6.75}
+        showOnslaught
+      />
     )
+
+    const link = screen.getByRole("link", {
+      name: "goals.create.acquisitionSources.editOnslaughtProgress",
+    })
+    expect(link).toHaveAttribute("href", "/progress/onslaught")
+    await userEvent.click(link)
+    expect(onNavigateAway).toHaveBeenCalledTimes(1)
+  })
+
+  it("shows each source group's yield as a comparable shards/day figure", () => {
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        campaignShardsPerDay={6.2}
+        onslaughtProgressSaved
+        onslaughtShardsPerDay={6.75}
+        regularShardLocations={[location("B1")]}
+        shopOffers={[guaranteedOffer]}
+        showCampaigns
+        showOnslaught
+      />
+    )
+
+    expect(
+      screen.getByTestId("create-goal-acquisition-yield-campaigns")
+    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDay")
+    expect(
+      screen.getByTestId("create-goal-acquisition-yield-onslaught")
+    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDay")
+    expect(
+      screen.getByTestId(
+        `create-goal-shop-offer-yield-${guaranteedOffer.offerId}`
+      )
+    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDay")
   })
 
   it("marks a rotating-slot offer as a possible reward but not a guaranteed one", () => {

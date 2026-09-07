@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { ASSET_BASE_PATH } from "@workspace/game-catalog"
 import type { Progression } from "@workspace/game-domain"
 
+import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
 import { AscensionGoalFields } from ".//goal-type-fields"
@@ -31,12 +32,12 @@ export function AscensionFarmingFields({
 
 type ProgressionPreviewResult = ReturnType<typeof useProgressionPreview>
 
-function ProgressionPreview({
+export function ProgressionPreview({
   preview,
 }: {
   preview: ProgressionPreviewResult
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(["common", "shops"])
   if (!preview) return null
   return (
     <div
@@ -65,6 +66,44 @@ function ProgressionPreview({
           {rarity} {t("goals.create.ascension.orbs", { count })}
         </p>
       ))}
+      {/* Each selected non-campaign source's contribution over the estimate window (contribution-
+          share basis) — how many Onslaught runs, and how much shop currency per currency type
+          (align-acquisition-source-yield-estimates). */}
+      {preview.onslaughtTokens > 0 ? (
+        <p
+          className="flex items-center gap-1.5"
+          data-testid="create-goal-preview-onslaught-tokens"
+        >
+          <EntityIcon
+            alt=""
+            className="size-5"
+            src={`${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`}
+          />
+          {t("goals.create.acquisitionSources.onslaughtTokens", {
+            count: preview.onslaughtTokens,
+          })}
+        </p>
+      ) : null}
+      {preview.shopCurrencySpend.map(({ currency, amount }) => {
+        const icon = shopCurrencyIcon(currency)
+        return (
+          <p
+            className="flex items-center gap-1.5"
+            data-testid={`create-goal-preview-currency-${currency}`}
+            key={currency}
+          >
+            {icon ? (
+              <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
+            ) : null}
+            {t("goals.create.acquisitionSources.shopCurrencySpend", {
+              amount,
+              currency: t(`shops:currency.${currency}`, {
+                defaultValue: currency,
+              }),
+            })}
+          </p>
+        )
+      })}
       {/* Ascension's own energy-for-remaining-shards line (plan: shard-location selector) —
           isolated to Ascension's net regular-shard need, distinct from the combined `preview`
           below (which also folds in an enabled Unlock's own shard need, plus every selected
