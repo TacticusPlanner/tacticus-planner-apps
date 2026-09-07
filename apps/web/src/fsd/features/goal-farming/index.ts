@@ -37,7 +37,12 @@ export {
   type ResourceNeed,
 } from "./lib/progression-cost-calc"
 export { estimateRemainingShardEnergy } from "./lib/shard-energy-estimate"
-export { projectOnslaughtSupply, projectShopSupply } from "./lib/shop-supply"
+export {
+  ONSLAUGHT_RUNS_PER_DAY,
+  projectOnslaughtSupply,
+  projectShopSupply,
+  shopOfferShardsPerDay,
+} from "./lib/shop-supply"
 export { computeGoalAcquisition, isMowDetail } from "./lib/goal-acquisition"
 export { useUnitShopShardSupply } from "./model/use-unit-shop-shard-supply"
 export { farmingStageTargets } from "./lib/farming-stages"

@@ -483,6 +483,48 @@ describe("estimatePlan", () => {
     expect(results.get("b")?.days).toBe(4)
   })
 
+  it("reports each goal's flat supply split by individual supplier (align-acquisition-source-yield-estimates)", () => {
+    const shardId = shardResourceId("hero1")
+    const goals: GoalNeed[] = [
+      {
+        goalId: "shard-goal",
+        priority: 1,
+        needs: [{ id: shardId, count: 40 }],
+        flatSuppliers: [
+          {
+            key: "onslaught:regular",
+            resourceId: shardId,
+            supplyOnDay: () => 6,
+          },
+          {
+            key: "guild:shards_hero1",
+            resourceId: shardId,
+            supplyOnDay: () => 9,
+          },
+        ],
+      },
+    ]
+
+    const results = estimatePlan({
+      goals,
+      upgradesById: new Map(),
+      battlesById: new Map(),
+      dailyEnergy: 0,
+      inventory: [],
+      referenceDate: REFERENCE_DATE,
+    })
+
+    const outcome = results.get("shard-goal")
+    if (outcome?.status !== "Estimated") throw new Error("expected an estimate")
+    const bySupplier = outcome.flatSupplyBySupplier
+    expect(bySupplier?.get("onslaught:regular")).toBeGreaterThan(0)
+    expect(bySupplier?.get("guild:shards_hero1")).toBeGreaterThan(0)
+    expect(
+      (bySupplier?.get("onslaught:regular") ?? 0) +
+        (bySupplier?.get("guild:shards_hero1") ?? 0)
+    ).toBe(40)
+  })
+
   it("returns null for a goal whose material can never be farmed", () => {
     const goals: GoalNeed[] = [
       {
@@ -578,6 +620,74 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
       energyTotal: 30,
       raidsTotal: 3,
     })
+  })
+
+  it("attributes contributed shards to each flat supplier separately when several feed one resource (align-acquisition-source-yield-estimates)", () => {
+    const shardId = shardResourceId("hero1")
+    const result = estimateGoal({
+      needs: [{ id: shardId, count: 100 }],
+      upgradesById: new Map(),
+      battlesById: new Map(),
+      dailyEnergy: 0,
+      referenceDate: REFERENCE_DATE,
+      flatSuppliers: [
+        {
+          key: "onslaught:regular",
+          resourceId: shardId,
+          supplyOnDay: () => 7,
+        },
+        {
+          key: "guild:shards_hero1",
+          resourceId: shardId,
+          supplyOnDay: () => 10,
+        },
+      ],
+    })
+
+    if (result?.status !== "Estimated") throw new Error("expected an estimate")
+    const bySupplier = result.flatSupplyBySupplier
+    expect(bySupplier?.get("onslaught:regular")).toBeGreaterThan(0)
+    expect(bySupplier?.get("guild:shards_hero1")).toBeGreaterThan(0)
+    expect(
+      (bySupplier?.get("onslaught:regular") ?? 0) +
+        (bySupplier?.get("guild:shards_hero1") ?? 0)
+    ).toBe(100)
+    expect(result.flatSupplyTotal?.get(shardId)).toBe(100)
+    expect(result.energyTotal).toBe(0)
+    expect(result.raidsTotal).toBe(0)
+  })
+
+  it("attributes the same per-supplier totals regardless of supplier array order (align-acquisition-source-yield-estimates)", () => {
+    const shardId = shardResourceId("hero1")
+    const onslaught = {
+      key: "onslaught:regular",
+      resourceId: shardId,
+      supplyOnDay: () => 7,
+    }
+    const shop = {
+      key: "guild:shards_hero1",
+      resourceId: shardId,
+      supplyOnDay: () => 10,
+    }
+    const run = (flatSuppliers: (typeof onslaught)[]) =>
+      estimateGoal({
+        needs: [{ id: shardId, count: 53 }],
+        upgradesById: new Map(),
+        battlesById: new Map(),
+        dailyEnergy: 0,
+        referenceDate: REFERENCE_DATE,
+        flatSuppliers,
+      })
+
+    const a = run([onslaught, shop])
+    const b = run([shop, onslaught])
+    if (a?.status !== "Estimated" || b?.status !== "Estimated") {
+      throw new Error("expected estimates")
+    }
+    expect([...(a.flatSupplyBySupplier ?? [])].sort()).toEqual(
+      [...(b.flatSupplyBySupplier ?? [])].sort()
+    )
+    expect(a.days).toBe(b.days)
   })
 
   it("mixes a shard resource and a material need in the same estimate", () => {

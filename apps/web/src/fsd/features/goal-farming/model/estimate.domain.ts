@@ -75,8 +75,12 @@ export interface FarmingUpgrade extends EstimateUpgrade {
  *  Onslaught source (plan: acquisition-source picker, tacticus-planner-apps#103). `supplyOnDay` is
  *  called once per simulated day with a 0-based day index (day 1 of the simulation = index 0) and
  *  returns that day's available amount (already accounting for weekday availability / expected-value
- *  weighting) — never consulted for daily energy or raid counts. */
+ *  weighting) — never consulted for daily energy or raid counts. `key` is a stable identity for
+ *  this individual source (a shop offer id, or `onslaught:regular`/`onslaught:mythic`) so a
+ *  consumer can read back how many shards this one source contributed even when several suppliers
+ *  feed the same `resourceId`. */
 export interface FlatSupplier {
+  key: string
   resourceId: EstimateResourceId
   supplyOnDay: (dayIndex: number) => number
 }
@@ -170,6 +174,10 @@ interface EstimateResult {
    *  present whenever any `FlatSupplier` contributed. UI reads a source's own contribution from here
    *  rather than recomputing it (plan: one canonical result structure). */
   flatSupplyTotal?: ReadonlyMap<EstimateResourceId, number>
+  /** The same contribution split by the individual `FlatSupplier.key` that supplied it, so a
+   *  consumer can attribute shards to one shop offer or the Onslaught source when several feed the
+   *  same resource — present whenever any `FlatSupplier` contributed. */
+  flatSupplyBySupplier?: ReadonlyMap<string, number>
 }
 
 export type EstimateBlockedReason =

@@ -1,7 +1,18 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactElement, type ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen, within } from "@/test/render"
+import type { RenderOptions } from "@testing-library/react"
+import { MemoryRouter } from "react-router"
+import { fireEvent, render as baseRender, screen, within } from "@/test/render"
 import { lastRank } from "@workspace/game-domain"
+
+// The acquisition-source picker's Onslaught group renders a react-router `<Link>` to the progress
+// page, so every render needs a router in scope.
+function MemoryRouterWrapper({ children }: { children: ReactNode }) {
+  return <MemoryRouter>{children}</MemoryRouter>
+}
+function render(ui: ReactElement, options: RenderOptions = {}) {
+  return baseRender(ui, { ...options, wrapper: MemoryRouterWrapper })
+}
 
 // Minimal stand-in for dexie-react-hooks' real `useLiveQuery` — mirrors
 // pages/library/.../character-lookup-page.test.tsx's version. The query fns it calls are mocked
@@ -850,6 +861,53 @@ describe("CreateGoalSheet", () => {
     expect(requirement).not.toHaveTextContent(
       "goals.create.shardLocations.energyValue"
     )
+  })
+
+  it("follows Edit Onslaught progress to the progress page, closing the sheet without losing the in-progress goal (align-acquisition-source-yield-estimates)", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Ascension (and its Onslaught group) is offered
+    const onOpenChange = vi.fn()
+    const { rerender } = render(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+    )
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ascension")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
+    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
+    const targetList = await screen.findByRole("listbox")
+    fireEvent.click(
+      within(targetList).getByAltText("OneStar").closest('[role="option"]')!
+    )
+    await screen.findByTestId("create-goal-shard-location-B1")
+
+    // Following the link closes the sheet (via onNavigateAway) — it must not reset the form.
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "goals.create.acquisitionSources.editOnslaughtProgress",
+      })
+    )
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+
+    // AppShell keeps the sheet mounted while `open` toggles — reopening shows the same goal.
+    rerender(
+      <CreateGoalSheet
+        open={false}
+        onOpenChange={onOpenChange}
+        onCreated={vi.fn()}
+      />
+    )
+    rerender(
+      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+    )
+
+    // The Ascension goal and its advanced target survived the close: the shard-location selector
+    // only renders while Ascension is enabled AND its range needs regular shards (past the default
+    // Common:None) — a reset form would show neither.
+    await screen.findByTestId("create-goal-shard-location-B1")
   })
 
   it("shows the shard-location selector on the Ascension card too, but only once when Unlock is also enabled", async () => {

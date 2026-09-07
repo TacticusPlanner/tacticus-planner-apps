@@ -101,8 +101,10 @@ export function selectFarmNodes(
 
 /**
  * Applies each supplier's day-`dayIndex` amount against `remaining` (mutated in place), capped at
- * what's still needed and never negative, and returns how much of each resource was actually applied
- * that day. Shared by `estimateGoal`'s and `estimatePlan`'s day loops so both simulate flat
+ * what's still needed and never negative, and returns how much was actually applied that day —
+ * both rolled up per resource (`byResource`) and split by the individual `FlatSupplier.key`
+ * (`bySupplier`) so a consumer can attribute the contribution to one shop offer or the Onslaught
+ * source. Shared by `estimateGoal`'s and `estimatePlan`'s day loops so both simulate flat
  * (energy-free) suppliers — a daily-shop offer, an Onslaught run — concurrently alongside campaign
  * farming against one shared remaining requirement (plan: acquisition-source picker,
  * tacticus-planner-apps#103), rather than as a separate estimate combined afterward.
@@ -111,11 +113,22 @@ export function applyFlatSuppliers(
   remaining: Map<EstimateResourceId, number>,
   suppliers: readonly FlatSupplier[] | undefined,
   dayIndex: number
-): Map<EstimateResourceId, number> {
-  const applied = new Map<EstimateResourceId, number>()
-  if (!suppliers?.length) return applied
+): {
+  byResource: Map<EstimateResourceId, number>
+  bySupplier: Map<string, number>
+} {
+  const byResource = new Map<EstimateResourceId, number>()
+  const bySupplier = new Map<string, number>()
+  if (!suppliers?.length) return { byResource, bySupplier }
 
-  for (const supplier of suppliers) {
+  // Allocate in a stable order (by key), not caller array order: on the day the shared need is
+  // exhausted, whichever supplier is consulted first absorbs the remainder, so array order would
+  // otherwise make each source's attributed total depend on selection order.
+  const ordered = [...suppliers].sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+  )
+
+  for (const supplier of ordered) {
     const need = remaining.get(supplier.resourceId)
     if (!need || need <= 0) continue
 
@@ -129,13 +142,14 @@ export function applyFlatSuppliers(
     } else {
       remaining.set(supplier.resourceId, next)
     }
-    applied.set(
+    byResource.set(
       supplier.resourceId,
-      (applied.get(supplier.resourceId) ?? 0) + amount
+      (byResource.get(supplier.resourceId) ?? 0) + amount
     )
+    bySupplier.set(supplier.key, (bySupplier.get(supplier.key) ?? 0) + amount)
   }
 
-  return applied
+  return { byResource, bySupplier }
 }
 
 function addDays(base: Date, days: number): Date {
@@ -295,6 +309,7 @@ export function estimateGoal({
       energyTotal: 0,
       raidsTotal: 0,
       flatSupplyTotal: new Map(),
+      flatSupplyBySupplier: new Map(),
     }
   }
 
@@ -302,12 +317,19 @@ export function estimateGoal({
   let energyTotal = 0
   let raidsTotal = 0
   const flatSupplyTotal = new Map<EstimateResourceId, number>()
+  const flatSupplyBySupplier = new Map<string, number>()
 
   while (remaining.size > 0 && days < MAX_DAYS) {
     days++
     const appliedToday = applyFlatSuppliers(remaining, flatSuppliers, days - 1)
-    for (const [id, amount] of appliedToday) {
+    for (const [id, amount] of appliedToday.byResource) {
       flatSupplyTotal.set(id, (flatSupplyTotal.get(id) ?? 0) + amount)
+    }
+    for (const [key, amount] of appliedToday.bySupplier) {
+      flatSupplyBySupplier.set(
+        key,
+        (flatSupplyBySupplier.get(key) ?? 0) + amount
+      )
     }
 
     const { energySpent, raidsPerformed } = spendDay(
@@ -328,6 +350,7 @@ export function estimateGoal({
         energyTotal,
         raidsTotal,
         flatSupplyTotal,
+        flatSupplyBySupplier,
       }
 }
 

@@ -10,7 +10,11 @@ import type { BattleId } from "@workspace/game-domain"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
-import type { Battle, FarmLocation } from "@/features/goal-farming"
+import {
+  shopOfferShardsPerDay,
+  type Battle,
+  type FarmLocation,
+} from "@/features/goal-farming"
 import { GoalShardLocationsField } from ".//goal-shard-locations-field"
 
 const ASSET_ROOT = "/game_catalog"
@@ -42,16 +46,21 @@ export function AcquisitionSourceField({
   battlesById,
   selectedShardLocationIds,
   onToggleShardLocation,
+  campaignShardsPerDay = 0,
+  campaignMythicShardsPerDay = 0,
   showOnslaught,
   onslaughtEnabled,
   onOnslaughtEnabledChange,
-  onslaughtShardsPerRun,
+  onslaughtShardsPerDay = 0,
+  onslaughtCurrentIsMythic = false,
   onslaughtProgressSaved,
+  onNavigateAway,
   shopOffers,
   shopsEnabled,
   onShopsEnabledChange,
   selectedShopOfferIds,
   onToggleShopOffer,
+  shopShardsPerDaySelected = 0,
 }: {
   showCampaigns: boolean
   campaignEnabled: boolean
@@ -61,22 +70,58 @@ export function AcquisitionSourceField({
   battlesById: ReadonlyMap<BattleId, Battle>
   selectedShardLocationIds: readonly string[]
   onToggleShardLocation: (battleId: string, checked: boolean) => void
+  campaignShardsPerDay?: number
+  campaignMythicShardsPerDay?: number
   showOnslaught: boolean
   onslaughtEnabled: boolean
   onOnslaughtEnabledChange: (enabled: boolean) => void
-  onslaughtShardsPerRun: number
+  onslaughtShardsPerDay?: number
+  /** True when the character's current progression is already in the Mythic tier, so the Onslaught
+   *  yield is mythic shards — labels the shards/day figure accordingly. */
+  onslaughtCurrentIsMythic?: boolean
   onslaughtProgressSaved: boolean
+  /** Called when the user follows the "Edit Onslaught progress" link, so the host can close the
+   *  goal-creation sheet without discarding its form state. */
+  onNavigateAway?: () => void
   shopOffers: readonly ShopShardOffer[] | undefined
   shopsEnabled: boolean
   onShopsEnabledChange: (enabled: boolean) => void
   selectedShopOfferIds: readonly string[]
   onToggleShopOffer: (offerId: string, checked: boolean) => void
+  shopShardsPerDaySelected?: number
 }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const showShops = (shopOffers?.length ?? 0) > 0
 
   if (!showCampaigns && !showOnslaught && !showShops) return null
+
+  const shardsPerDayNote = (shards: number, mythic: boolean) => (
+    <span className="flex items-center gap-1.5">
+      <EntityIcon alt="" className="size-4 shrink-0" src={SHARD_ICON} />
+      {t(
+        mythic
+          ? "goals.create.acquisitionSources.shardsPerDayMythic"
+          : "goals.create.acquisitionSources.shardsPerDay",
+        { shards: shards.toFixed(1) }
+      )}
+    </span>
+  )
+
+  const campaignNote =
+    campaignShardsPerDay > 0 || campaignMythicShardsPerDay > 0 ? (
+      <span
+        className="flex flex-wrap gap-x-3 gap-y-0.5"
+        data-testid="create-goal-acquisition-yield-campaigns"
+      >
+        {campaignShardsPerDay > 0
+          ? shardsPerDayNote(campaignShardsPerDay, false)
+          : null}
+        {campaignMythicShardsPerDay > 0
+          ? shardsPerDayNote(campaignMythicShardsPerDay, true)
+          : null}
+      </span>
+    ) : undefined
 
   return (
     <div className="grid gap-2" data-testid="create-goal-acquisition-sources">
@@ -85,6 +130,7 @@ export function AcquisitionSourceField({
         <SourceGroup
           checked={campaignEnabled}
           defaultExpanded={!isMobile}
+          headerNote={campaignNote}
           label={t("goals.create.acquisitionSources.campaignsGroup")}
           onCheckedChange={onCampaignEnabledChange}
           testId="campaigns"
@@ -109,41 +155,48 @@ export function AcquisitionSourceField({
         <SourceGroup
           checked={onslaughtEnabled}
           defaultExpanded={!isMobile}
+          headerNote={
+            <span
+              className="flex items-center gap-1.5"
+              data-testid="create-goal-acquisition-yield-onslaught"
+            >
+              {onslaughtProgressSaved && onslaughtShardsPerDay > 0
+                ? shardsPerDayNote(
+                    onslaughtShardsPerDay,
+                    onslaughtCurrentIsMythic
+                  )
+                : t("goals.create.acquisitionSources.onslaughtNoProgress")}
+            </span>
+          }
           label={t("goals.create.acquisitionSources.onslaughtGroup")}
           onCheckedChange={onOnslaughtEnabledChange}
           testId="onslaught"
         >
-          {onslaughtEnabled ? (
-            <div
-              className="grid gap-1 text-sm text-muted-foreground"
-              data-testid="create-goal-onslaught-panel"
+          <div
+            className="grid gap-1 text-sm text-muted-foreground"
+            data-testid="create-goal-onslaught-panel"
+          >
+            <Link
+              className="font-medium text-primary underline"
+              onClick={() => onNavigateAway?.()}
+              to="/progress/onslaught"
             >
-              {onslaughtProgressSaved ? (
-                <p className="flex items-center gap-1.5">
-                  <EntityIcon alt="" className="size-5" src={SHARD_ICON} />
-                  {t("goals.create.acquisitionSources.onslaughtYield", {
-                    shards: onslaughtShardsPerRun.toFixed(1),
-                  })}
-                </p>
-              ) : (
-                <p>
-                  {t("goals.create.acquisitionSources.onslaughtNoProgress")}
-                </p>
-              )}
-              <Link
-                className="font-medium text-primary underline"
-                to="/onslaught"
-              >
-                {t("goals.create.acquisitionSources.editOnslaughtProgress")}
-              </Link>
-            </div>
-          ) : null}
+              {t("goals.create.acquisitionSources.editOnslaughtProgress")}
+            </Link>
+          </div>
         </SourceGroup>
       ) : null}
       {showShops ? (
         <SourceGroup
           checked={shopsEnabled}
           defaultExpanded={!isMobile}
+          headerNote={
+            shopShardsPerDaySelected > 0 ? (
+              <span data-testid="create-goal-acquisition-yield-shops">
+                {shardsPerDayNote(shopShardsPerDaySelected, false)}
+              </span>
+            ) : undefined
+          }
           label={t("goals.create.acquisitionSources.shopsGroup")}
           onCheckedChange={onShopsEnabledChange}
           testId="shops"
@@ -170,6 +223,7 @@ function SourceGroup({
   onCheckedChange,
   defaultExpanded,
   testId,
+  headerNote,
   children,
 }: {
   label: string
@@ -177,6 +231,9 @@ function SourceGroup({
   onCheckedChange: (checked: boolean) => void
   defaultExpanded: boolean
   testId: string
+  /** A compact yield line shown under the header at every viewport, expanded or not — so the
+   *  groups' "shards/day" figures stay comparable at a glance. */
+  headerNote?: React.ReactNode
   children: React.ReactNode
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded)
@@ -204,6 +261,9 @@ function SourceGroup({
           <Chevron className="size-4 shrink-0 text-muted-foreground" />
         </button>
       </div>
+      {headerNote ? (
+        <div className="pl-6 text-xs text-muted-foreground">{headerNote}</div>
+      ) : null}
       {expanded ? <div className="grid gap-2 pl-6">{children}</div> : null}
     </div>
   )
@@ -256,6 +316,17 @@ export function ShopOfferRow({
         </span>
         <span className="text-xs text-muted-foreground">
           {t("goals.create.acquisitionSources.shopOfferDays", { days })}
+        </span>
+        <span
+          className="text-xs text-muted-foreground"
+          data-testid={`create-goal-shop-offer-yield-${offer.offerId}`}
+        >
+          {t(
+            offer.isMythic
+              ? "goals.create.acquisitionSources.shardsPerDayMythic"
+              : "goals.create.acquisitionSources.shardsPerDay",
+            { shards: shopOfferShardsPerDay(offer).toFixed(1) }
+          )}
         </span>
         {rotating ? (
           <span

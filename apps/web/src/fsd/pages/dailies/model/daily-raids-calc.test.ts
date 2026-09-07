@@ -152,7 +152,7 @@ describe("daily raid derivation", () => {
   it("resolves a goal's urgency for a resource with no farm locations when a flat supplier covers it (tacticus-planner-apps#103)", () => {
     const shopOnlyId = upgradeIdSchema.parse("shopOnly")
     const flatSuppliers: FlatSupplier[] = [
-      { resourceId: shopOnlyId, supplyOnDay: () => 5 },
+      { key: "shop:shopOnly", resourceId: shopOnlyId, supplyOnDay: () => 5 },
     ]
 
     const urgency = calculateResourceUrgency(
