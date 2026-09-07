@@ -121,6 +121,9 @@ export function GoalTypeCards({
                     onShopsEnabledChange={form.setShopsEnabled}
                     onToggleShardLocation={form.toggleShardLocation}
                     onToggleShopOffer={form.toggleShopOffer}
+                    onslaughtCurrentIsMythic={
+                      form.progressionPreview?.onslaughtCurrentIsMythic ?? false
+                    }
                     onslaughtEnabled={form.onslaughtEnabled}
                     onslaughtProgressSaved={
                       form.progressionPreview?.onslaughtProgressSaved ?? false

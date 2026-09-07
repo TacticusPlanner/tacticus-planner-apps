@@ -58,6 +58,13 @@ per-goal accumulation (its per-goal loop already mirrors `estimateGoal`).
 - **Why key over array index:** call sites rebuild the supplier array on every render;
   a semantic key (`"onslaught:regular"` / `"onslaught:mythic"`, and `offer.offerId` for
   shops) survives reordering and is what the preview needs to map back to an offer.
+- **Deterministic allocation order:** `applyFlatSuppliers` allocates against one shared
+  remaining need, so on the day the need is exhausted the supplier consulted first absorbs the
+  remainder. Caller array order is "selection order" (arbitrary), which would make each
+  source's attributed total — and therefore the `onslaughtTokens` / `shopCurrencySpend`
+  figures — depend on the order the user checked things. It sorts a copy of the suppliers by
+  `key` before allocating so the split is stable; totals, day count, energy, and raids are
+  unaffected either way.
 - **Alternative rejected — separate resource ids per source:** would ripple into node
   selection, blocked-reason logic, and the `needs` array; attribution is a reporting concern,
   not a demand-modeling one.

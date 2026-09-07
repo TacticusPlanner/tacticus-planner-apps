@@ -657,6 +657,39 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
     expect(result.raidsTotal).toBe(0)
   })
 
+  it("attributes the same per-supplier totals regardless of supplier array order (align-acquisition-source-yield-estimates)", () => {
+    const shardId = shardResourceId("hero1")
+    const onslaught = {
+      key: "onslaught:regular",
+      resourceId: shardId,
+      supplyOnDay: () => 7,
+    }
+    const shop = {
+      key: "guild:shards_hero1",
+      resourceId: shardId,
+      supplyOnDay: () => 10,
+    }
+    const run = (flatSuppliers: (typeof onslaught)[]) =>
+      estimateGoal({
+        needs: [{ id: shardId, count: 53 }],
+        upgradesById: new Map(),
+        battlesById: new Map(),
+        dailyEnergy: 0,
+        referenceDate: REFERENCE_DATE,
+        flatSuppliers,
+      })
+
+    const a = run([onslaught, shop])
+    const b = run([shop, onslaught])
+    if (a?.status !== "Estimated" || b?.status !== "Estimated") {
+      throw new Error("expected estimates")
+    }
+    expect([...(a.flatSupplyBySupplier ?? [])].sort()).toEqual(
+      [...(b.flatSupplyBySupplier ?? [])].sort()
+    )
+    expect(a.days).toBe(b.days)
+  })
+
   it("mixes a shard resource and a material need in the same estimate", () => {
     const shardId = shardResourceId("hero1")
     const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([

@@ -52,6 +52,7 @@ export function AcquisitionSourceField({
   onslaughtEnabled,
   onOnslaughtEnabledChange,
   onslaughtShardsPerDay = 0,
+  onslaughtCurrentIsMythic = false,
   onslaughtProgressSaved,
   onNavigateAway,
   shopOffers,
@@ -75,6 +76,9 @@ export function AcquisitionSourceField({
   onslaughtEnabled: boolean
   onOnslaughtEnabledChange: (enabled: boolean) => void
   onslaughtShardsPerDay?: number
+  /** True when the character's current progression is already in the Mythic tier, so the Onslaught
+   *  yield is mythic shards — labels the shards/day figure accordingly. */
+  onslaughtCurrentIsMythic?: boolean
   onslaughtProgressSaved: boolean
   /** Called when the user follows the "Edit Onslaught progress" link, so the host can close the
    *  goal-creation sheet without discarding its form state. */
@@ -157,7 +161,10 @@ export function AcquisitionSourceField({
               data-testid="create-goal-acquisition-yield-onslaught"
             >
               {onslaughtProgressSaved && onslaughtShardsPerDay > 0
-                ? shardsPerDayNote(onslaughtShardsPerDay, false)
+                ? shardsPerDayNote(
+                    onslaughtShardsPerDay,
+                    onslaughtCurrentIsMythic
+                  )
                 : t("goals.create.acquisitionSources.onslaughtNoProgress")}
             </span>
           }
@@ -314,9 +321,12 @@ export function ShopOfferRow({
           className="text-xs text-muted-foreground"
           data-testid={`create-goal-shop-offer-yield-${offer.offerId}`}
         >
-          {t("goals.create.acquisitionSources.shardsPerDay", {
-            shards: shopOfferShardsPerDay(offer).toFixed(1),
-          })}
+          {t(
+            offer.isMythic
+              ? "goals.create.acquisitionSources.shardsPerDayMythic"
+              : "goals.create.acquisitionSources.shardsPerDay",
+            { shards: shopOfferShardsPerDay(offer).toFixed(1) }
+          )}
         </span>
         {rotating ? (
           <span

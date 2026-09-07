@@ -121,7 +121,14 @@ export function applyFlatSuppliers(
   const bySupplier = new Map<string, number>()
   if (!suppliers?.length) return { byResource, bySupplier }
 
-  for (const supplier of suppliers) {
+  // Allocate in a stable order (by key), not caller array order: on the day the shared need is
+  // exhausted, whichever supplier is consulted first absorbs the remainder, so array order would
+  // otherwise make each source's attributed total depend on selection order.
+  const ordered = [...suppliers].sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+  )
+
+  for (const supplier of ordered) {
     const need = remaining.get(supplier.resourceId)
     if (!need || need <= 0) continue
 

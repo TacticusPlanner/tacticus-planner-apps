@@ -90,6 +90,13 @@ const rotatingOffer: ShopShardOffer = {
   probabilityByDay: { TUE: 0.5, FRI: 0.5 },
 }
 
+const mythicOffer: ShopShardOffer = {
+  ...guaranteedOffer,
+  offerId: "rogue-trader:mythicShards_hero1",
+  rewardType: "mythicShards_hero1",
+  isMythic: true,
+}
+
 function baseProps() {
   return {
     showCampaigns: false,
@@ -197,6 +204,32 @@ describe("AcquisitionSourceField", () => {
     expect(
       screen.getByTestId("create-goal-acquisition-group-onslaught-toggle")
     ).not.toBeChecked()
+  })
+
+  it("labels the Onslaught yield as mythic shards/day for a Mythic-tier character", () => {
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        onslaughtCurrentIsMythic
+        onslaughtProgressSaved
+        onslaughtShardsPerDay={3}
+        showOnslaught
+      />
+    )
+
+    expect(
+      screen.getByTestId("create-goal-acquisition-yield-onslaught")
+    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDayMythic")
+  })
+
+  it("labels a mythic shop offer's row yield as mythic shards/day", () => {
+    render(
+      <AcquisitionSourceField {...baseProps()} shopOffers={[mythicOffer]} />
+    )
+
+    expect(
+      screen.getByTestId(`create-goal-shop-offer-yield-${mythicOffer.offerId}`)
+    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDayMythic")
   })
 
   it("shows the set-progress prompt when no progress is saved", () => {

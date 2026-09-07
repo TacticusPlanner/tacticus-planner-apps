@@ -36,3 +36,10 @@ completed), SHALL be attributed zero.
 - **WHEN** the estimate is derived with and without reading the per-source attribution
 - **THEN** the goal's day count, completion date, energy total, and raid total are identical;
   only the additional per-source breakdown is new
+
+#### Scenario: Attribution is independent of the order sources were selected
+
+- **GIVEN** two selected sources that supply the same shard resource
+- **WHEN** the estimate is derived twice with those two sources in opposite order
+- **THEN** each source's attributed contribution is identical between the two runs (the split on
+  the day the requirement is exhausted does not depend on selection order)
