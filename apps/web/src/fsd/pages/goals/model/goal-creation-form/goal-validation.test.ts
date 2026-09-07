@@ -46,6 +46,36 @@ describe("getGoalValidationIssue", () => {
     ).toBe("abilityRange")
   })
 
+  it("accepts an asymmetric ability goal where only the passive track advances", () => {
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        abilityActiveEnd: 20, // active static at its current level
+        abilityPassiveEnd: 25, // passive advances
+      })
+    ).toBeNull()
+  })
+
+  it("accepts an asymmetric ability goal where only the active track advances", () => {
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        abilityActiveEnd: 30, // active advances
+        abilityPassiveEnd: 18, // passive static at its current level
+      })
+    ).toBeNull()
+  })
+
+  it("rejects an ability goal where neither track advances past its current level", () => {
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        abilityActiveEnd: 20,
+        abilityPassiveEnd: 18,
+      })
+    ).toBe("abilityRange")
+  })
+
   it("rejects owned unlocks and reached rank targets", () => {
     expect(
       getGoalValidationIssue({

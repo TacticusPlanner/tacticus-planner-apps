@@ -9,7 +9,8 @@ import {
 import { FarmingStrategyField } from ".//farming-strategy-field"
 import { AscensionFarmingFields } from ".//goal-farming-fields"
 import { GoalShardLocationsField } from ".//goal-shard-locations-field"
-import { AbilityGoalFields, RankGoalFields } from ".//goal-type-fields"
+import { AbilityGoalFields } from ".//ability-goal-fields"
+import { RankGoalFields } from ".//goal-type-fields"
 import { GoalTypeCard } from "../shared/goal-visuals"
 import { LevelGoalFields } from ".//level-goal-fields"
 import { UnlockRequirementField } from ".//unlock-requirement-field"
@@ -198,10 +199,13 @@ export function GoalTypeCards({
                   kind="Ability"
                 >
                   <AbilityGoalFields
+                    entityType={form.entityType}
                     activeStart={form.abilityActiveStart}
                     passiveStart={form.abilityPassiveStart}
-                    targetLevel={form.abilityTargetLevel}
-                    onTargetLevelChange={form.setAbilityTargetLevel}
+                    activeTarget={form.abilityActiveTarget}
+                    passiveTarget={form.abilityPassiveTarget}
+                    onActiveTargetChange={form.setAbilityActiveTarget}
+                    onPassiveTargetChange={form.setAbilityPassiveTarget}
                     missingUpgrades={form.missingUpgrades}
                     costingSupported={form.entityType === "Mow"}
                   />

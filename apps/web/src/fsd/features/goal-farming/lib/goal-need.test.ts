@@ -338,4 +338,52 @@ describe("abilityResourceNeed", () => {
       })
     ).toEqual([{ id: base, count: 3 }])
   })
+
+  it("sums both ability tracks when a goal raises primary and secondary together", () => {
+    const pA = upgradeId("pA")
+    const pB = upgradeId("pB")
+    const sA = upgradeId("sA")
+    const upgradesById = new Map(
+      [pA, pB, sA].map((id) => [
+        id,
+        {
+          id,
+          label: id,
+          rarity: "Common",
+          stat: "health",
+          crafted: false,
+          recipe: [],
+          farmLocations: [],
+        } as FarmingUpgrade,
+      ])
+    )
+
+    const need = abilityResourceNeed({
+      detail: {
+        config: {
+          ability: {
+            activeStart: 1,
+            activeEnd: 3, // primary raises through recipes[0] (pA) and recipes[1] (pB)
+            passiveStart: 1,
+            passiveEnd: 2, // secondary raises through recipes[0] (sA)
+          },
+        },
+      } as GoalDetail,
+      mow: {
+        primaryAbility: { recipes: [[pA], [pB]] },
+        secondaryAbility: { recipes: [[sA], [sA]] },
+      } as unknown as MowStorageModel,
+      playerMow: undefined,
+      upgradesById,
+    })
+
+    expect(need).toEqual(
+      expect.arrayContaining([
+        { id: pA, count: 1 },
+        { id: pB, count: 1 },
+        { id: sA, count: 1 },
+      ])
+    )
+    expect(need).toHaveLength(3)
+  })
 })

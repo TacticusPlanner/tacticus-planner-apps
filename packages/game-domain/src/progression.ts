@@ -122,3 +122,38 @@ export function minProgressionForRank(rank: RankType): Progression {
     ) ?? lastProgression
   )
 }
+
+// The ability-level ceiling per rarity tier — mirrors the backend's `AbilityCaps` table
+// (`ProgressionRules.AbilityCapForProgression` in GoalTargetValidationService.cs). An ability
+// track can never level past its unit's current rarity cap until the unit Ascends into the next
+// tier, which is exactly when a higher target becomes reachable.
+export const abilityCapByRarity: Record<Rarity, number> = {
+  Common: 8,
+  Uncommon: 17,
+  Rare: 26,
+  Epic: 35,
+  Legendary: 50,
+  Mythic: 60,
+}
+
+/** The highest level any ability track can ever reach — the Mythic-tier cap (currently 60). The
+ *  single source of truth for an Ability goal's target-range ceiling. */
+export const maxAbilityLevel: number = abilityCapByRarity.Mythic
+
+/** The ability-level ceiling for a unit whose progression is at the given step's rarity tier. */
+export function abilityCapForProgression(value: Progression): number {
+  return abilityCapByRarity[progressionRarity(value)]
+}
+
+/**
+ * The lowest progression whose rarity ability cap is at least `level` — the Ascension target an
+ * above-cap Ability goal implies, mirroring `minProgressionForRank`. Levels at or below the
+ * Common cap resolve to the first progression; levels above the Mythic cap resolve to the last.
+ */
+export function minProgressionForAbilityLevel(level: number): Progression {
+  return (
+    progressionOrder.find(
+      (value) => abilityCapForProgression(value) >= level
+    ) ?? lastProgression
+  )
+}

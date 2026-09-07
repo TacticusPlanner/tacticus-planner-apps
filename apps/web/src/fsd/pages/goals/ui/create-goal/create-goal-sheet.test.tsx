@@ -1496,6 +1496,108 @@ describe("CreateGoalSheet", () => {
     })
   })
 
+  it("creates a Character Ability goal with independent active and passive targets", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Silver1",
+      progressionIndex: "Rare:FourStars", // ability cap 26
+      appliedUpgradeSlots: [],
+      xpLevel: 59,
+      abilities: [
+        { abilityId: "a1", level: 12 },
+        { abilityId: "a2", level: 9 },
+      ],
+    })
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "g1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
+
+    // Full range per track: current level selectable, an intermediate level present, above-cap
+    // levels present, nothing below the current level.
+    fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
+    const activeList = await screen.findByRole("listbox")
+    expect(within(activeList).getByRole("option", { name: "12" })).toBeVisible()
+    expect(within(activeList).getByRole("option", { name: "14" })).toBeVisible()
+    expect(within(activeList).getByRole("option", { name: "30" })).toBeVisible()
+    expect(
+      within(activeList).queryByRole("option", { name: "11" })
+    ).not.toBeInTheDocument()
+    fireEvent.click(within(activeList).getByRole("option", { name: "20" }))
+
+    // Leave the passive track alone by selecting its own current level.
+    fireEvent.click(screen.getByTestId("create-goal-ability-passive-target"))
+    const passiveList = await screen.findByRole("listbox")
+    fireEvent.click(within(passiveList).getByRole("option", { name: "9" }))
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(request.goals).toHaveLength(1)
+    expect(request.goals[0]).toMatchObject({
+      goalType: "Ability",
+      dependsOnIndex: [],
+      config: {
+        ability: {
+          activeStart: 12,
+          activeEnd: 20,
+          passiveStart: 9,
+          passiveEnd: 9,
+        },
+      },
+    })
+  })
+
+  it("auto-suggests Ascension and Level when a Character Ability target is above the current rarity cap", async () => {
+    getPlayerCharacter.mockResolvedValue({
+      rank: "Silver1",
+      progressionIndex: "Rare:FourStars", // ability cap 26
+      appliedUpgradeSlots: [],
+      xpLevel: 20,
+      abilities: [
+        { abilityId: "a1", level: 12 },
+        { abilityId: "a2", level: 9 },
+      ],
+    })
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "g1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
+
+    fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
+    const activeList = await screen.findByRole("listbox")
+    fireEvent.click(within(activeList).getByRole("option", { name: "35" }))
+
+    // Above the Rare ability cap (26) and above the current character level (20) — both
+    // prerequisites are offered.
+    await screen.findByTestId("create-goal-include-ascension")
+    expect(screen.getByTestId("create-goal-include-level")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(
+      request.goals.map((goal: { goalType: string }) => goal.goalType)
+    ).toEqual(["Ascension", "Level", "Ability"])
+    const ability = request.goals.find(
+      (goal: { goalType: string }) => goal.goalType === "Ability"
+    )
+    expect(ability.config.ability).toMatchObject({
+      activeStart: 12,
+      activeEnd: 35,
+    })
+  })
+
   it("submits every checked project when several are selected", async () => {
     listProjects.mockResolvedValue({
       projects: [

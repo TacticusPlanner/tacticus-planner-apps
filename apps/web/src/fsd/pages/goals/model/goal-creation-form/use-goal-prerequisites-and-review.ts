@@ -14,12 +14,12 @@ type ProgressionPreviewParams = Parameters<typeof useProgressionPreview>[0]
 
 /**
  * Combined-creation prerequisite detection (plan §6) — a locked entity (Character or MoW) needs
- * Unlock first; a Rank target beyond what a Character's current Ascension allows needs Ascension
- * first (never triggers for a MoW, since Rank is never in `enabledTypes` there) — plus the
- * "what will actually be submitted" flags those prerequisites feed into (`includesUnlock`/
- * `includesAscension`), the Ascension day-by-day preview, and the "what will be created" review
- * list (plan §7), all of which derive from the same prerequisite state. Split out of
- * `use-create-goal-form.ts` purely for that file's own max-lines budget.
+ * Unlock first; a Rank or Ability target beyond what the entity's current Ascension allows needs
+ * Ascension first (an Ability target can trigger this for a MoW too, even though Rank never does)
+ * — plus the "what will actually be submitted" flags those prerequisites feed into
+ * (`includesUnlock`/`includesAscension`), the Ascension day-by-day preview, and the "what will be
+ * created" review list (plan §7), all of which derive from the same prerequisite state. Split out
+ * of `use-create-goal-form.ts` purely for that file's own max-lines budget.
  */
 export function useGoalPrerequisitesAndReview({
   entityId,

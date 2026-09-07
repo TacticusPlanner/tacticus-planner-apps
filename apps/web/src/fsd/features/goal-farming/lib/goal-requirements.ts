@@ -164,54 +164,78 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
     detail.config.ability
   ) {
     const ability = detail.config.ability
-    const primary = ability.activeEnd > ability.activeStart
-    let start = primary ? ability.activeStart : ability.passiveStart
-    const endTarget = primary ? ability.activeEnd : ability.passiveEnd
+    // One shared coverage accumulator across every stage of *both* tracks — its `primary`/
+    // `secondary` sets are keyed independently, so raising both tracks in one goal never
+    // double-claims a shared base upgrade.
     const coverage = params.coveredAbilityTransitions ?? {
       primary: new Set<number>(),
       secondary: new Set<number>(),
     }
-    const targets = farmingStageTargets(
-      "ability",
-      start,
-      endTarget,
-      detail.config.farmingStrategy
-    )
-    if (targets.length === 0) return null
-    return targets
-      .map((end) => {
-        const stageAbility = primary
-          ? {
-              activeStart: start,
-              activeEnd: end,
-              passiveStart: ability.passiveStart,
-              passiveEnd: ability.passiveStart,
-            }
-          : {
-              activeStart: ability.activeStart,
-              activeEnd: ability.activeStart,
-              passiveStart: start,
-              passiveEnd: end,
-            }
-        const stageDetail = {
-          ...detail,
-          config: { ...detail.config, ability: stageAbility },
-        }
-        start = end
-        return {
-          target: String(end),
-          needs:
-            abilityResourceNeed({
-              detail: stageDetail,
-              mow: params.mow,
-              playerMow: params.playerMow,
-              upgradesById: params.upgradesById,
-              coveredTransitions: coverage,
-              craftedInventory: params.craftedInventory,
-            }) ?? [],
-        }
-      })
-      .filter((stage) => stage.needs.length > 0)
+
+    // True once at least one track produced stage targets — distinguishes "nothing to raise"
+    // (return null, like a Rank goal with an empty range) from "raised, but crafted inventory
+    // covers every material" (return the empty-after-filter array, an applicable empty result).
+    let anyStageTargets = false
+
+    // Stages for one advancing track — the other track is pinned to its own start so this stage's
+    // `abilityResourceNeed` yields only this track's materials.
+    const trackStages = (
+      track: "primary" | "secondary",
+      trackStart: number,
+      trackEnd: number
+    ) => {
+      if (trackEnd <= trackStart) return []
+      const targets = farmingStageTargets(
+        "ability",
+        trackStart,
+        trackEnd,
+        detail.config.farmingStrategy
+      )
+      if (targets.length === 0) return []
+      anyStageTargets = true
+      let start = trackStart
+      return targets
+        .map((end) => {
+          const stageAbility =
+            track === "primary"
+              ? {
+                  activeStart: start,
+                  activeEnd: end,
+                  passiveStart: ability.passiveStart,
+                  passiveEnd: ability.passiveStart,
+                }
+              : {
+                  activeStart: ability.activeStart,
+                  activeEnd: ability.activeStart,
+                  passiveStart: start,
+                  passiveEnd: end,
+                }
+          const stageDetail = {
+            ...detail,
+            config: { ...detail.config, ability: stageAbility },
+          }
+          start = end
+          return {
+            target: String(end),
+            needs:
+              abilityResourceNeed({
+                detail: stageDetail,
+                mow: params.mow,
+                playerMow: params.playerMow,
+                upgradesById: params.upgradesById,
+                coveredTransitions: coverage,
+                craftedInventory: params.craftedInventory,
+              }) ?? [],
+          }
+        })
+        .filter((stage) => stage.needs.length > 0)
+    }
+
+    const stages = [
+      ...trackStages("primary", ability.activeStart, ability.activeEnd),
+      ...trackStages("secondary", ability.passiveStart, ability.passiveEnd),
+    ]
+    return anyStageTargets ? stages : null
   }
   return null
 }

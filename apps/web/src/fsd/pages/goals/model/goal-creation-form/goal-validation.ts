@@ -1,4 +1,5 @@
 import {
+  abilityCapByRarity,
   lastProgression,
   lastRank,
   progressionIndex,
@@ -12,21 +13,10 @@ import {
 
 import type { GoalKind } from "@/entities/goal"
 
-// Mirrors the backend's `AbilityCaps` table (`GoalTargetValidationService.cs`) — the ability-level
-// ceiling for a unit's current rarity tier. An Ability goal can never target above this until the
-// unit is Ascended further, which is exactly when "already at max" should disable the toggle.
-const abilityCapByRarity: Record<Rarity, number> = {
-  Common: 8,
-  Uncommon: 17,
-  Rare: 26,
-  Epic: 35,
-  Legendary: 50,
-  Mythic: 60,
-}
-
-/** The same caps as `abilityCapByRarity`, in rarity order — every fixed level an Ability goal's
- * Target dropdown can ever offer, one per rarity tier (an ability only ever levels up to its
- * current rarity's cap; reaching it requires Ascending into the next tier first). */
+/** The rarity ability caps (see `abilityCapByRarity` in `@workspace/game-domain`, which mirrors
+ * the backend's `AbilityCaps` table) paired with their rarity tier, in rarity order — used to
+ * label the Ability goal's target range with rarity-tier section headers and to map a target
+ * level back to the tier that first permits it. */
 export const abilityLevelsByRarity: readonly {
   rarity: Rarity
   level: number
