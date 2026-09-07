@@ -1,9 +1,9 @@
 import { useMemo } from "react"
 import {
   firstProgression,
-  maxRankForProgression,
+  minProgressionForAbilityLevel,
   minProgressionForRank,
-  rankIndex,
+  progressionIndex,
   type Progression,
   type Rank,
 } from "@workspace/game-domain"
@@ -39,13 +39,13 @@ const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
 ])
 
 /**
- * Detects the two prerequisite gaps the combined-creation composer (plan §6) auto-suggests: a locked
- * character needs an Unlock goal before Rank/Ascension/Ability can make sense, and a Rank target beyond
- * what the character's current Ascension progression allows needs an Ascension goal first.
- *
- * Detection stays this simple by design (plan §16 phase 4/5 scope notes): there's no ability-level
- * rank-gating data anywhere in the domain model, so ability gaps are never detected — only locked-entity
- * and rank-reachability are.
+ * Detects the prerequisite gaps the combined-creation composer (plan §6) auto-suggests: a locked
+ * character needs an Unlock goal before Rank/Ascension/Ability can make sense; a Rank *or* Ability
+ * target beyond what the character's current Ascension progression allows needs an Ascension goal
+ * first; and a Rank/Ability target implying a character level beyond the current one needs a Level
+ * goal first. The Ability rarity ceiling (`minProgressionForAbilityLevel`) and the character-level
+ * ceiling (`requiredLevelForRankTarget` / the ability target's own level) are handled the same way
+ * a too-high Rank target is.
  */
 export function useGoalPrerequisites({
   entityType,
@@ -77,19 +77,42 @@ export function useGoalPrerequisites({
     [...enabledTypes].some((kind) => TYPES_REQUIRING_UNLOCK.has(kind))
 
   const needsAscension = useMemo<AscensionSuggestion | null>(() => {
-    if (!enabledTypes.has("Rank") || enabledTypes.has("Ascension")) {
-      return null
-    }
+    if (enabledTypes.has("Ascension")) return null
 
     // A locked character has no synced progression to reason from — conservatively assume the
     // lowest possible starting point, since a freshly-unlocked unit starts there.
     const start = currentProgression ?? firstProgression
-    if (rankIndex(rankEnd) <= rankIndex(maxRankForProgression(start))) {
-      return null
-    }
 
-    return { start, end: minProgressionForRank(rankEnd) }
-  }, [enabledTypes, rankEnd, currentProgression])
+    // The lowest progression each enabled target needs: a Rank target needs a rarity that permits
+    // that rank; an Ability target needs a rarity whose ability cap covers the higher of the two
+    // tracks. Whichever demands more wins.
+    const required: Progression[] = []
+    if (enabledTypes.has("Rank")) {
+      required.push(minProgressionForRank(rankEnd))
+    }
+    if (enabledTypes.has("Ability")) {
+      const abilityTarget = Math.max(abilityActiveEnd, abilityPassiveEnd)
+      if (abilityTarget > 0) {
+        required.push(minProgressionForAbilityLevel(abilityTarget))
+      }
+    }
+    if (required.length === 0) return null
+
+    const end = required.reduce((highest, candidate) =>
+      progressionIndex(candidate) > progressionIndex(highest)
+        ? candidate
+        : highest
+    )
+    if (progressionIndex(end) <= progressionIndex(start)) return null
+
+    return { start, end }
+  }, [
+    enabledTypes,
+    rankEnd,
+    currentProgression,
+    abilityActiveEnd,
+    abilityPassiveEnd,
+  ])
 
   // Ranking up (and applying each upgrade slot beyond a clean rank boundary) and leveling an
   // ability both require having already reached a specific character level — Ability's own target

@@ -523,8 +523,13 @@
       },
       "ability": {
         "activeStart": "Active ability, current level",
+        "activeTarget": "Active ability, target level",
         "passiveStart": "Passive ability, current level",
-        "target": "Target level"
+        "passiveTarget": "Passive ability, target level",
+        "primaryStart": "Primary ability, current level",
+        "primaryTarget": "Primary ability, target level",
+        "secondaryStart": "Secondary ability, current level",
+        "secondaryTarget": "Secondary ability, target level"
       },
       "level": {
         "current": "Current level",

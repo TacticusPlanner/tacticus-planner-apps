@@ -72,10 +72,22 @@ export function UnitInfoCard({
                 {level}
               </ReadOnlyField>
             ) : null}
-            <ReadOnlyField label={t("goals.create.ability.activeStart")}>
+            <ReadOnlyField
+              label={t(
+                entityType === "Mow"
+                  ? "goals.create.ability.primaryStart"
+                  : "goals.create.ability.activeStart"
+              )}
+            >
               {abilityActiveLevel}
             </ReadOnlyField>
-            <ReadOnlyField label={t("goals.create.ability.passiveStart")}>
+            <ReadOnlyField
+              label={t(
+                entityType === "Mow"
+                  ? "goals.create.ability.secondaryStart"
+                  : "goals.create.ability.passiveStart"
+              )}
+            >
               {abilityPassiveLevel}
             </ReadOnlyField>
             {entityType === "Character" && rank ? (

@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  abilityCapForProgression,
+  maxAbilityLevel,
   maxRankForProgression,
+  minProgressionForAbilityLevel,
   minProgressionForRank,
   progressionOrder,
   progressionRarity,
@@ -56,6 +59,32 @@ describe("progression rank limits", () => {
       expect(maxRankForProgression(progression)).toBe(rank)
     }
     expect(minProgressionForRank("Stone1")).toBe("Common:None")
+  })
+})
+
+describe("ability level limits", () => {
+  it("exposes the Mythic-tier cap as the maximum ability level", () => {
+    expect(maxAbilityLevel).toBe(60)
+  })
+
+  it("returns the rarity ability cap for a progression", () => {
+    expect(abilityCapForProgression("Common:None")).toBe(8)
+    expect(abilityCapForProgression("Uncommon:TwoStars")).toBe(17)
+    expect(abilityCapForProgression("Epic:RedOneStar")).toBe(35)
+    expect(abilityCapForProgression("Mythic:MythicWings")).toBe(60)
+  })
+
+  it("finds the lowest progression whose ability cap covers a level", () => {
+    expect(minProgressionForAbilityLevel(8)).toBe("Common:None")
+    expect(minProgressionForAbilityLevel(17)).toBe("Uncommon:TwoStars")
+    expect(minProgressionForAbilityLevel(18)).toBe("Rare:FourStars")
+    expect(minProgressionForAbilityLevel(35)).toBe("Epic:RedOneStar")
+    expect(minProgressionForAbilityLevel(42)).toBe("Legendary:RedThreeStars")
+    expect(minProgressionForAbilityLevel(60)).toBe("Mythic:OneBlueStar")
+  })
+
+  it("clamps a level above the Mythic cap to the last progression", () => {
+    expect(minProgressionForAbilityLevel(99)).toBe("Mythic:MythicWings")
   })
 })
 

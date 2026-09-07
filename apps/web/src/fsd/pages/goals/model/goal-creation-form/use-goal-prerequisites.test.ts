@@ -94,6 +94,84 @@ describe("useGoalPrerequisites", () => {
     expect(result.current.needsAscension).toBeNull()
   })
 
+  it("suggests Ascension when an Ability target exceeds the current rarity's ability cap", () => {
+    const { result } = renderHook(() =>
+      useGoalPrerequisites({
+        ...baseParams,
+        isLocked: false,
+        currentProgression: "Epic:RedOneStar", // ability cap 35
+        currentLevel: 30,
+        enabledTypes: types("Ability"),
+        rankEnd: "Gold1",
+        abilityActiveEnd: 42,
+        abilityPassiveEnd: 10,
+      })
+    )
+
+    expect(result.current.needsAscension).toEqual({
+      start: "Epic:RedOneStar",
+      end: "Legendary:RedThreeStars",
+    })
+    // The Ability target's own level is the character level it implies.
+    expect(result.current.needsLevel).toEqual({ start: 30, end: 42 })
+  })
+
+  it("does not suggest Ascension for an Ability target within the current rarity cap", () => {
+    const { result } = renderHook(() =>
+      useGoalPrerequisites({
+        ...baseParams,
+        isLocked: false,
+        currentProgression: "Legendary:RedThreeStars", // ability cap 50
+        currentLevel: 50,
+        enabledTypes: types("Ability"),
+        rankEnd: "Gold1",
+        abilityActiveEnd: 45,
+        abilityPassiveEnd: 45,
+      })
+    )
+
+    expect(result.current.needsAscension).toBeNull()
+  })
+
+  it("does not suggest Ascension for an above-cap Ability target once Ascension is toggled", () => {
+    const { result } = renderHook(() =>
+      useGoalPrerequisites({
+        ...baseParams,
+        isLocked: false,
+        currentProgression: "Epic:RedOneStar",
+        currentLevel: 30,
+        enabledTypes: types("Ability", "Ascension"),
+        rankEnd: "Gold1",
+        abilityActiveEnd: 42,
+        abilityPassiveEnd: 10,
+      })
+    )
+
+    expect(result.current.needsAscension).toBeNull()
+  })
+
+  it("suggests Ascension only (no Level) for a Mow whose Ability target is above the cap", () => {
+    const { result } = renderHook(() =>
+      useGoalPrerequisites({
+        ...baseParams,
+        entityType: "Mow",
+        isLocked: false,
+        currentProgression: "Epic:RedOneStar",
+        currentLevel: 30,
+        enabledTypes: types("Ability"),
+        rankEnd: "Gold1",
+        abilityActiveEnd: 42,
+        abilityPassiveEnd: 10,
+      })
+    )
+
+    expect(result.current.needsAscension).toEqual({
+      start: "Epic:RedOneStar",
+      end: "Legendary:RedThreeStars",
+    })
+    expect(result.current.needsLevel).toBeNull()
+  })
+
   it("suggests neither when the character is owned and the target rank is already reachable", () => {
     const { result } = renderHook(() =>
       useGoalPrerequisites({

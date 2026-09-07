@@ -39,6 +39,10 @@ export {
   statAtRank,
   maxRankForProgression,
   minProgressionForRank,
+  abilityCapByRarity,
+  maxAbilityLevel,
+  abilityCapForProgression,
+  minProgressionForAbilityLevel,
   type Progression,
 } from "./progression"
 export {

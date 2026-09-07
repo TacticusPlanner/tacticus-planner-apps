@@ -4,9 +4,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
@@ -24,7 +22,6 @@ import {
   ReadOnlyField,
   UpgradeIcon,
 } from "@/shared/ui"
-import { abilityLevelsByRarity } from "../../model/goal-creation-form/goal-validation"
 import { rowCount, type RankAdditionalTarget } from "@/features/goal-farming"
 
 export type MissingUpgrade = { id: string; label: string; missing: number }
@@ -33,7 +30,7 @@ const RESOURCES_NEEDED_VISIBLE_COUNT = 3
 
 /** "Resources needed" upgrade list, collapsed to the first 3 entries until expanded — shared between
  * Rank's and Ability's own resource-requirement preview. */
-function ResourcesNeededList({
+export function ResourcesNeededList({
   missingUpgrades,
 }: {
   missingUpgrades: MissingUpgrade[]
@@ -296,93 +293,6 @@ export function AscensionGoalFields({
           </SelectContent>
         </Select>
       </div>
-    </div>
-  )
-}
-
-export function AbilityGoalFields({
-  activeStart,
-  passiveStart,
-  targetLevel,
-  onTargetLevelChange,
-  missingUpgrades,
-  costingSupported,
-}: {
-  activeStart: number
-  passiveStart: number
-  targetLevel: number
-  onTargetLevelChange: (value: number) => void
-  missingUpgrades: MissingUpgrade[]
-  costingSupported: boolean
-}) {
-  const { t } = useTranslation("progression")
-  const { t: tGoals } = useTranslation()
-  const targetTriggerRef = useRef<HTMLButtonElement>(null)
-  const [targetContainer, setTargetContainer] = useState<HTMLElement>()
-  const minCurrent = Math.min(activeStart, passiveStart)
-
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      <ReadOnlyField label={tGoals("goals.create.ability.activeStart")}>
-        {activeStart}
-      </ReadOnlyField>
-      <ReadOnlyField label={tGoals("goals.create.ability.passiveStart")}>
-        {passiveStart}
-      </ReadOnlyField>
-      <div className="col-span-2 grid gap-1.5">
-        <label className="text-xs text-muted-foreground">
-          {tGoals("goals.create.ability.target")}
-        </label>
-        <Select
-          onOpenChange={(open) => {
-            if (open) {
-              setTargetContainer(
-                (targetTriggerRef.current?.closest(
-                  '[data-slot="sheet-content"]'
-                ) as HTMLElement | null) ?? undefined
-              )
-            }
-          }}
-          onValueChange={(value) => onTargetLevelChange(Number(value))}
-          value={String(targetLevel)}
-        >
-          <SelectTrigger
-            className="w-full"
-            data-testid="create-goal-ability-target"
-            ref={targetTriggerRef}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent container={targetContainer}>
-            {abilityLevelsByRarity.map(({ rarity, level }) => (
-              <SelectGroup key={rarity}>
-                <SelectLabel>
-                  {t(`rarities.${rarity}`, { defaultValue: rarity })}
-                </SelectLabel>
-                <SelectItem
-                  disabled={level <= minCurrent}
-                  value={String(level)}
-                >
-                  {level}
-                </SelectItem>
-              </SelectGroup>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {costingSupported ? (
-        <div
-          className="col-span-2 grid gap-1 rounded-2xl border p-3 text-sm"
-          data-testid="create-goal-ability-preview"
-        >
-          <p className="font-medium">{tGoals("goals.create.previewTitle")}</p>
-          <ResourcesNeededList missingUpgrades={missingUpgrades} />
-        </div>
-      ) : (
-        <p className="col-span-2 text-xs text-muted-foreground">
-          {tGoals("goals.create.characterAbilityCostUnsupported")}
-        </p>
-      )}
     </div>
   )
 }
