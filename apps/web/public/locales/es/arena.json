@@ -4,8 +4,14 @@
   "mode": {
     "xp": "XP",
     "power": "Power",
-    "xpHint": "Prefers characters that can still earn XP and that your goals or active project need.",
+    "xpHint": "Prefers characters that can still earn XP and that your selected project or goals need.",
     "powerHint": "Ignores XP and fields your strongest possible team."
+  },
+  "project": {
+    "label": "Project"
+  },
+  "teamSize": {
+    "label": "Team size"
   },
   "state": {
     "error": "Couldn't load your roster, goals, or project. Try again.",
@@ -13,33 +19,26 @@
     "noCharacters": "You need at least three characters to get a team recommendation."
   },
   "category": {
-    "active-project": {
-      "title": "Active project team",
-      "description": "Tuned to the characters your active project is working on."
-    },
-    "overall-goals": {
-      "title": "Overall goals team",
-      "description": "Tuned across every active goal, whichever project it belongs to."
+    "plan": {
+      "title": "Plan team",
+      "description": "Tuned to your selected project first, then your other active goals, then the rest of your roster."
     },
     "random": {
       "title": "Random team",
-      "description": "A random draw from your whole roster."
+      "description": "A random draw from your roster. Lock the ones you like before you regenerate."
     },
     "broadenedNote": "Not enough matching characters, so this team was widened beyond its own pool.",
-    "cappedNote": "Fewer than three characters can still earn XP, so XP-capped characters were included."
+    "cappedNote": "Fewer than three characters can still earn XP, so XP-capped characters were included.",
+    "fewerThanRequested": "Only {{delivered}} of the requested {{requested}} characters were available."
   },
-  "empty": {
-    "no-active-project": "No active project. Mark one as your active plan to get a project-tuned team.",
-    "no-active-goals": "No active goals for your characters. Add a goal to get a goals-tuned team."
-  },
-  "variant": {
-    "label": "Team size",
-    "option": "{{count}}-character team"
+  "lock": {
+    "lock": "Lock this character",
+    "unlock": "Unlock this character"
   },
   "regenerate": "Regenerate",
   "rationale": {
     "goal": "You have an active goal for this character.",
-    "projectGoal": "In your active project.",
+    "projectGoal": "In your selected project.",
     "strength": "Chosen for combat strength ({{power}}).",
     "minimumSize": "Added to complete the team.",
     "random": "Drawn at random."
@@ -49,23 +48,31 @@
       "steps": {
         "purpose": {
           "title": "Arena team recommendations",
-          "content": "Suggested Arena teams built from your active project, active goals, and roster, so your daily battles also advance your plan."
+          "content": "Suggested Arena teams built from your selected project, active goals, and roster, so your daily battles also advance your plan."
         },
         "mode": {
           "title": "XP or Power",
           "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered."
         },
-        "category": {
-          "title": "Team categories",
-          "content": "One team per priority: your active project, all your goals, and a random draw. A category shows an empty note when it has nothing to build from."
+        "project": {
+          "title": "Driving project",
+          "content": "Pick which project the Plan team is tuned to. This is the same project selection used on the other Dailies tabs."
         },
-        "variants": {
+        "teamSize": {
           "title": "Team size",
-          "content": "In XP Mode, the three-character team is the top pick because a battle's XP is shared among fewer characters. Larger teams are offered as alternatives."
+          "content": "Choose 3, 4, or 5 characters for both teams. A smaller team concentrates each battle's shared XP, so 3 is the default. Your choice is remembered."
+        },
+        "plan": {
+          "title": "Plan team",
+          "content": "One team tuned to your selected project, widening to your other goals and the full roster when it needs more characters. A note shows when it was widened."
+        },
+        "locks": {
+          "title": "Lock what you like",
+          "content": "Lock a character in the Random team and it stays put when you regenerate. Locks reset when you reload."
         },
         "regenerate": {
           "title": "Regenerate",
-          "content": "Shuffle a new random team. This only affects the random category."
+          "content": "Shuffle a new Random team. Only the unlocked slots change; it is disabled once every slot is locked."
         }
       }
     }

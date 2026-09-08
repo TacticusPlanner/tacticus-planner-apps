@@ -1,11 +1,12 @@
-import type { Progression, Rank, UnitId } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity, UnitId } from "@workspace/game-domain"
 
 /** Team-generation mode. XP Mode is the default (see `use-arena-recommendations`). */
 export type ArenaMode = "xp" | "power"
 
-/** The recommended-team categories shown on the Arena page. The Home Screen Event category is
- * deferred (issue #111) and is not produced here. */
-export type ArenaCategoryId = "active-project" | "overall-goals" | "random"
+/** The recommended-team categories shown on the Arena page. The single **Plan Team** replaces the
+ * former Active Project / Overall Goals split; the Home Screen Event category is deferred
+ * (issue #111) and is not produced here. */
+export type ArenaCategoryId = "plan" | "random"
 
 /** Candidate pools, in the fixed priority order the engine widens through. */
 export type ArenaPool = "active-project" | "overall-goals" | "full-roster"
@@ -18,8 +19,8 @@ export const ARENA_POOL_ORDER: readonly ArenaPool[] = [
 
 /** Every recommended team holds at least this many characters. */
 export const ARENA_MIN_TEAM_SIZE = 3
-/** An Arena team holds at most this many characters. */
-export const ARENA_MAX_TEAM_SIZE = 5
+/** The team sizes the page-level "Team size" control offers (also the max Arena team size). */
+export const ARENA_TEAM_SIZES: readonly number[] = [3, 4, 5]
 
 /** Why a character ended up in a recommended team. */
 export type ArenaMemberRationale =
@@ -30,20 +31,15 @@ export type ArenaMemberRationale =
 
 export type ArenaTeamMember = {
   unitId: UnitId
+  /** The character's current rank, shown on the team row. */
+  rank: Rank
+  /** The character's current rarity (from its progression tier), shown on the team row. */
+  rarity: Rarity
+  /** Random Team only: the player has locked this character so it survives Regenerate. Always
+   * `false` for the Plan Team. */
+  locked: boolean
   rationale: ArenaMemberRationale
 }
-
-export type ArenaTeamVariant = {
-  /** Number of characters in this variant (3–5). */
-  size: number
-  /** The variant shown as the category's primary recommendation. In XP Mode this is the
-   * three-character variant; in Power Mode it is the sole variant. */
-  isPrimary: boolean
-  members: ArenaTeamMember[]
-}
-
-/** Set when a category has no basis of its own to build from. */
-type ArenaCategoryEmptyReason = "no-active-project" | "no-active-goals"
 
 export type ArenaCategory = {
   id: ArenaCategoryId
@@ -53,10 +49,12 @@ export type ArenaCategory = {
   broadened: boolean
   /** XP Mode only: true when XP-capped characters were included to reach the minimum size. */
   includedCappedCharacters: boolean
-  emptyReason?: ArenaCategoryEmptyReason
-  /** Empty when `emptyReason` is set. XP Mode: up to three variants (sizes 3/4/5). Power Mode and
-   * the random category: exactly one. */
-  variants: ArenaTeamVariant[]
+  /** The team size the page-level control asked for. */
+  requestedSize: number
+  /** How many characters the team actually holds — below `requestedSize` when the pool could not
+   * fill it. */
+  deliveredSize: number
+  members: ArenaTeamMember[]
 }
 
 export type ArenaRecommendations = {
@@ -76,7 +74,7 @@ export type ArenaRosterCharacter = {
 }
 
 /** A character that is the target of an active goal. `projectId` is set only for the
- * active-project contribution list. */
+ * selected-project contribution list. */
 export type ArenaGoalContribution = {
   unitId: UnitId
   goalId: string
@@ -106,18 +104,23 @@ export type BuildArenaRecommendationsInput = {
   mode: ArenaMode
   /** Owned characters only. The caller guarantees at least `ARENA_MIN_TEAM_SIZE`. */
   roster: readonly ArenaRosterCharacter[]
-  /** Whether the player has a project marked as their active plan. */
-  hasActiveProject: boolean
-  /** Active-status character goals belonging to the active project. Empty when there is no active
-   * project or it has no such goals. */
+  /** The project the player has selected to drive the Plan Team, or `undefined` when the player has
+   * no selectable project. Its active goals arrive in `activeProjectContributions`. */
+  selectedProjectId: string | undefined
+  /** Active-status character goals belonging to the selected project. Empty when there is no
+   * selected project or it has no such goals. */
   activeProjectContributions: readonly ArenaGoalContribution[]
   /** Every active-status character goal, across all projects. */
   activeGoalContributions: readonly ArenaGoalContribution[]
+  /** The page-level requested team size (3–5) — applies to both the Plan Team and the Random Team. */
+  teamSize: number
+  /** Random Team characters the player has locked; kept in place across Regenerate, even when a
+   * mode filter would otherwise drop them. */
+  lockedRandomUnitIds: readonly UnitId[]
   /**
    * Reshuffle token for the random category — starts at 0 and increments by one per regenerate, so
-   * a build can reconstruct the immediately-previous random team from `randomSeed - 1` and
-   * guarantee the new one differs when the roster is large enough. Resets to 0 on reload (the
-   * random team is never persisted).
+   * consecutive Regenerates can be guaranteed to differ across the unlocked slots. Resets to 0 on
+   * reload (the random team is never persisted).
    */
   randomSeed: number
 }
@@ -131,6 +134,14 @@ export type ArenaRecommendationsViewModel =
       status: "ready"
       mode: ArenaMode
       setMode: (mode: ArenaMode) => void
+      /** The requested team size (3–5) and its setter. */
+      teamSize: number
+      setTeamSize: (size: number) => void
+      /** The subset of `ARENA_TEAM_SIZES` the current roster can deliver. */
+      availableSizes: number[]
+      /** Lock/unlock a character in the Random Team. */
+      toggleRandomLock: (unitId: UnitId) => void
+      lockedRandomUnitIds: UnitId[]
       /** Reshuffle only the Random Team. */
       regenerate: () => void
       recommendations: ArenaRecommendations
