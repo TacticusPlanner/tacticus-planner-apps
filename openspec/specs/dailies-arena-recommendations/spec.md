@@ -372,12 +372,12 @@ project it contributes to, that it was chosen for combat strength, that it was
 included to meet the minimum team size, or that it was drawn at random. Team
 members SHALL be presented as a single vertical list (one character per row).
 
-When a Preferred trait or Preferred damage type is selected, each row SHALL show
-a marker on the characters that match it — the preferred trait's icon on a
-character with that trait, the preferred damage type's icon on a character that
-deals that damage type — each with a hover/focus tooltip naming what it matches.
-No marker is shown for characters that do not match, or when no preference is
-set.
+When a Preferred trait or Preferred damage type is selected, every row SHALL
+show a marker for it: an emphasised marker with that attribute's icon on a
+character that matches, and a de-emphasised marker with the same icon on a
+character that does not, each with a hover/focus tooltip naming whether it is
+satisfied and which attribute. No preference markers are shown when no
+preference is set.
 
 #### Scenario: Contributing character shows its rationale
 
@@ -408,8 +408,9 @@ set.
 
 - **WHEN** the player selects a Preferred trait and a team includes both a
   character with that trait and a character without it
-- **THEN** the matching character's row shows the preferred trait's icon with a
-  tooltip, and the non-matching character's row shows no such marker
+- **THEN** the matching character's row shows the emphasised trait marker and
+  the non-matching character's row shows the de-emphasised "does not match"
+  trait marker, each with its own tooltip
 
 ### Requirement: Distinct loading, failure, and empty states
 

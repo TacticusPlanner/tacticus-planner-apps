@@ -12,11 +12,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import type {
   TeamMember,
+  TeamMemberPreferenceMatch,
   TeamMemberRationale,
 } from "../../model/team-recommendations.types"
 
@@ -41,21 +43,31 @@ export function TeamList({
   ])
 
   const preferenceMarker = (
-    value: string | undefined,
+    preference: TeamMemberPreferenceMatch | undefined,
     iconOf: (value: string) => string,
     labelNs: "traits" | "damageTypes",
-    tooltipKey: "preferences.matchesTrait" | "preferences.matchesDamageType"
+    matchKey: "preferences.matchesTrait" | "preferences.matchesDamageType",
+    missKey: "preferences.missingTrait" | "preferences.missingDamageType"
   ) => {
-    if (!value) return null
-    const attribute = t(`${labelNs}:${value}`, { defaultValue: value })
+    if (!preference) return null
+    const attribute = t(`${labelNs}:${preference.id}`, {
+      defaultValue: preference.id,
+    })
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15">
-            <EntityIcon src={iconOf(value)} alt="" className="size-4" />
+          <span
+            className={cn(
+              "flex size-6 shrink-0 items-center justify-center rounded-full",
+              preference.matched ? "bg-primary/15" : "opacity-40 grayscale"
+            )}
+          >
+            <EntityIcon src={iconOf(preference.id)} alt="" className="size-4" />
           </span>
         </TooltipTrigger>
-        <TooltipContent>{t(tooltipKey, { attribute })}</TooltipContent>
+        <TooltipContent>
+          {t(preference.matched ? matchKey : missKey, { attribute })}
+        </TooltipContent>
       </Tooltip>
     )
   }
@@ -104,16 +116,18 @@ export function TeamList({
               data-testid={`${testIdPrefix}-match-${member.unitId}`}
             >
               {preferenceMarker(
-                member.matchedTrait,
+                member.preferredTrait,
                 traitIcon,
                 "traits",
-                "preferences.matchesTrait"
+                "preferences.matchesTrait",
+                "preferences.missingTrait"
               )}
               {preferenceMarker(
-                member.matchedDamageType,
+                member.preferredDamageType,
                 damageTypeIcon,
                 "damageTypes",
-                "preferences.matchesDamageType"
+                "preferences.matchesDamageType",
+                "preferences.missingDamageType"
               )}
               <RarityIcon rarity={member.rarity} className="size-5" />
               <RankBadge rank={member.rank} showLabel={false} tooltip />

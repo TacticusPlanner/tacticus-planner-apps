@@ -237,12 +237,12 @@ rationale supplied by the winning priority pool, or that it was chosen for
 combat strength, added to meet the minimum size, or drawn at random.
 
 When a preference filter is active (a preferred trait, a preferred damage type,
-or both), each row SHALL show a marker on the characters that satisfy it — the
-preferred trait's icon on a character with that trait, the preferred damage
-type's icon on a character that deals that damage type — each marker exposing
-what it matches as a hover/focus tooltip. Rows for characters that do not
-satisfy an active preference show no marker for it, and when no preference is
-active no markers appear.
+or both), every row SHALL show a marker for each active preference: an emphasised
+marker with that attribute's icon on a character that satisfies it, and a
+visually distinct, de-emphasised marker with the same icon on a character that
+does not. Each marker SHALL name its meaning — satisfied or not satisfied, and
+which attribute — as a hover/focus tooltip. When no preference is active, no
+preference markers appear on any row.
 
 #### Scenario: Rationale and progression are shown per row
 
@@ -259,10 +259,11 @@ active no markers appear.
 
 - **WHEN** a preferred trait is active and a team holds both a character with
   that trait and one without
-- **THEN** the matching character's row shows the preferred trait's icon with a
-  tooltip naming it, and the non-matching character's row does not
+- **THEN** the matching character's row shows the emphasised trait marker and
+  the non-matching character's row shows the de-emphasised "does not match"
+  trait marker, each with its own tooltip
 
 #### Scenario: No markers without a preference
 
 - **WHEN** no preferred trait or damage type is set
-- **THEN** no team row shows a preference-match marker
+- **THEN** no team row shows a preference marker

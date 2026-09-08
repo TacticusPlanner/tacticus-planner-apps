@@ -261,7 +261,7 @@ describe("buildTeamRecommendations — preferences", () => {
     expect(JSON.stringify(withPref)).toBe(JSON.stringify(withoutPref))
   })
 
-  it("marks members that carry an active preferred trait / damage type", () => {
+  it("tags every member with the active preferred trait / damage type and whether it matches", () => {
     const roster = [
       character("a", { traits: ["Flying"], damageTypes: ["Bolter"] }),
       character("b", { traits: ["Flying"], damageTypes: ["Physical"] }),
@@ -277,23 +277,39 @@ describe("buildTeamRecommendations — preferences", () => {
       })
     )
     const byId = new Map(plan.members.map((m) => [m.unitId, m]))
-    expect(byId.get(id("a"))).toMatchObject({
-      matchedTrait: "Flying",
-      matchedDamageType: "Bolter",
+    expect(byId.get(id("a"))?.preferredTrait).toEqual({
+      id: "Flying",
+      matched: true,
     })
-    expect(byId.get(id("b"))?.matchedTrait).toBe("Flying")
-    expect(byId.get(id("b"))?.matchedDamageType).toBeUndefined()
-    expect(byId.get(id("c"))?.matchedTrait).toBeUndefined()
-    expect(byId.get(id("c"))?.matchedDamageType).toBeUndefined()
+    expect(byId.get(id("a"))?.preferredDamageType).toEqual({
+      id: "Bolter",
+      matched: true,
+    })
+    expect(byId.get(id("b"))?.preferredTrait).toEqual({
+      id: "Flying",
+      matched: true,
+    })
+    expect(byId.get(id("b"))?.preferredDamageType).toEqual({
+      id: "Bolter",
+      matched: false,
+    })
+    expect(byId.get(id("c"))?.preferredTrait).toEqual({
+      id: "Flying",
+      matched: false,
+    })
+    expect(byId.get(id("c"))?.preferredDamageType).toEqual({
+      id: "Bolter",
+      matched: false,
+    })
   })
 
-  it("sets no match fields when no preference is active", () => {
+  it("sets no preference tags when no preference is active", () => {
     const roster = ["a", "b", "c"].map((v) =>
       character(v, { traits: ["Flying"], damageTypes: ["Bolter"] })
     )
     for (const member of planOf(build({ roster, teamSize: 3 })).members) {
-      expect(member.matchedTrait).toBeUndefined()
-      expect(member.matchedDamageType).toBeUndefined()
+      expect(member.preferredTrait).toBeUndefined()
+      expect(member.preferredDamageType).toBeUndefined()
     }
   })
 

@@ -17,7 +17,9 @@
     "any": "Cualquiera",
     "note": "Una preferencia inclina la selección hacia personajes que coinciden; el equipo se amplía para mantenerse completo en lugar de reducirse.",
     "matchesTrait": "Tiene tu rasgo preferido ({{attribute}})",
-    "matchesDamageType": "Inflige tu tipo de daño preferido ({{attribute}})"
+    "matchesDamageType": "Inflige tu tipo de daño preferido ({{attribute}})",
+    "missingTrait": "No tiene tu rasgo preferido ({{attribute}})",
+    "missingDamageType": "No inflige tu tipo de daño preferido ({{attribute}})"
   },
   "state": {
     "error": "No se pudo cargar tu plantilla, tus objetivos o tu proyecto. Inténtalo de nuevo.",

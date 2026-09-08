@@ -19,6 +19,15 @@ export type TeamMemberRationale =
   | { kind: "minimum-size" }
   | { kind: "random" }
 
+/** One active preference (trait or damage type) evaluated against a team member — drives the row's
+ * "matches / does not match your preference" marker. */
+export type TeamMemberPreferenceMatch = {
+  /** The active preferred trait / damage-type id (for its icon and translated label). */
+  id: string
+  /** Whether this character satisfies the preference. */
+  matched: boolean
+}
+
 export type TeamMember = {
   unitId: UnitId
   /** The character's current rank, shown on the team row. */
@@ -29,12 +38,11 @@ export type TeamMember = {
    * `false` for the Plan Team. */
   locked: boolean
   rationale: TeamMemberRationale
-  /** Set only when a preferred trait is active and this character has it — the trait id, for the
-   * row's "matches your preference" marker. */
-  matchedTrait?: string
-  /** Set only when a preferred damage type is active and this character deals it — the damage-type
-   * id, for the row's marker. */
-  matchedDamageType?: string
+  /** Present only when a preferred trait is active (after narrowing) — with whether this character
+   * has it. */
+  preferredTrait?: TeamMemberPreferenceMatch
+  /** Present only when a preferred damage type is active — with whether this character deals it. */
+  preferredDamageType?: TeamMemberPreferenceMatch
 }
 
 export type TeamCategory = {

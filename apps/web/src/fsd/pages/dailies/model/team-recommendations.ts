@@ -194,7 +194,7 @@ function memberOf(
 ): TeamMember {
   const character = ctx.characterById.get(id)!
   // `ctx.preferences` is already narrowed, so an unsatisfiable preference is absent here and never
-  // produces a marker.
+  // produces a marker; an active one produces a marker on every row (match or miss).
   const { trait, damageType } = ctx.preferences
   return {
     unitId: id,
@@ -202,11 +202,21 @@ function memberOf(
     rarity: progressionRarity(character.progression),
     locked,
     rationale,
-    ...(trait && character.traits.includes(trait)
-      ? { matchedTrait: trait }
+    ...(trait
+      ? {
+          preferredTrait: {
+            id: trait,
+            matched: character.traits.includes(trait),
+          },
+        }
       : {}),
-    ...(damageType && character.damageTypes.includes(damageType)
-      ? { matchedDamageType: damageType }
+    ...(damageType
+      ? {
+          preferredDamageType: {
+            id: damageType,
+            matched: character.damageTypes.includes(damageType),
+          },
+        }
       : {}),
   }
 }
