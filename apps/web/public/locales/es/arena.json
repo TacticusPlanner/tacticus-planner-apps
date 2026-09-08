@@ -1,40 +1,40 @@
 {
   "title": "Arena",
-  "subtitle": "Team suggestions that move your plan forward while you clear your daily Arena battles.",
+  "subtitle": "Sugerencias de equipo que hacen avanzar tu plan mientras completas tus combates diarios de Arena.",
   "tour": {
     "arena": {
       "steps": {
         "purpose": {
-          "title": "Arena team recommendations",
-          "content": "Suggested Arena teams built from your selected project, active goals, and roster, so your daily battles also advance your plan."
+          "title": "Recomendaciones de equipo de Arena",
+          "content": "Equipos de Arena sugeridos a partir de tu proyecto seleccionado, tus objetivos activos y tu plantilla, para que tus combates diarios también hagan avanzar tu plan."
         },
         "mode": {
-          "title": "XP or Power",
-          "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered."
+          "title": "XP o Potencia",
+          "content": "El modo XP prefiere personajes que aún pueden ganar XP. El modo Potencia ignora la XP y elige tu equipo más fuerte. Tu elección se recuerda."
         },
         "project": {
-          "title": "Driving project",
-          "content": "Pick which project the Plan team is tuned to. This is the same project selection used on the other Dailies tabs."
+          "title": "Proyecto rector",
+          "content": "Elige a qué proyecto se ajusta el equipo del plan. Es la misma selección de proyecto que se usa en las otras pestañas de Diarias."
         },
         "teamSize": {
-          "title": "Team size",
-          "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP on fewer characters. Your choice is remembered."
+          "title": "Tamaño del equipo",
+          "content": "Elige 3, 4 o 5 personajes para ambos equipos. Un equipo completo de 5 es la opción predeterminada; baja a 3 o 4 para concentrar la XP compartida de cada combate en menos personajes. Tu elección se recuerda."
         },
         "preferences": {
-          "title": "Preferred trait and damage type",
-          "content": "Bias both teams toward a trait or damage type you want to field. It is a soft nudge — the team widens to stay full rather than shrink, and a preference nobody matches is ignored. Your choice is remembered."
+          "title": "Rasgo y tipo de daño preferidos",
+          "content": "Inclina ambos equipos hacia un rasgo o un tipo de daño que quieras desplegar. Es un empujón suave: el equipo se amplía para mantenerse completo en lugar de reducirse, y una preferencia que nadie cumple se ignora. Tu elección se recuerda."
         },
         "plan": {
-          "title": "Plan team",
-          "content": "One team tuned to your selected project, widening to your other goals and the full roster when it needs more characters. A note shows when it was widened."
+          "title": "Equipo del plan",
+          "content": "Un equipo ajustado a tu proyecto seleccionado, que se amplía a tus otros objetivos y a toda la plantilla cuando necesita más personajes. Una nota indica cuándo se amplió."
         },
         "locks": {
-          "title": "Lock what you like",
-          "content": "Lock a character in the Random team and it stays put when you regenerate. Locks reset when you reload."
+          "title": "Bloquea lo que te guste",
+          "content": "Bloquea un personaje en el equipo aleatorio y se mantendrá al volver a generar. Los bloqueos se restablecen al recargar."
         },
         "regenerate": {
-          "title": "Regenerate",
-          "content": "Shuffle a new Random team. Only the unlocked slots change; it is disabled once every slot is locked."
+          "title": "Volver a generar",
+          "content": "Genera un nuevo equipo aleatorio. Solo cambian los espacios no bloqueados; se desactiva cuando todos los espacios están bloqueados."
         }
       }
     }

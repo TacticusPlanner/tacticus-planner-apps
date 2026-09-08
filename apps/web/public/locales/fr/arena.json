@@ -1,40 +1,40 @@
 {
   "title": "Arena",
-  "subtitle": "Team suggestions that move your plan forward while you clear your daily Arena battles.",
+  "subtitle": "Des suggestions d'équipe qui font avancer votre plan pendant que vous terminez vos combats d'Arena quotidiens.",
   "tour": {
     "arena": {
       "steps": {
         "purpose": {
-          "title": "Arena team recommendations",
-          "content": "Suggested Arena teams built from your selected project, active goals, and roster, so your daily battles also advance your plan."
+          "title": "Recommandations d'équipe pour l'Arena",
+          "content": "Des équipes d'Arena suggérées à partir de votre projet sélectionné, de vos objectifs actifs et de votre effectif, pour que vos combats quotidiens fassent aussi avancer votre plan."
         },
         "mode": {
-          "title": "XP or Power",
-          "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered."
+          "title": "XP ou Puissance",
+          "content": "Le mode XP privilégie les personnages qui peuvent encore gagner de l'XP. Le mode Puissance ignore l'XP et choisit votre équipe la plus forte. Votre choix est mémorisé."
         },
         "project": {
-          "title": "Driving project",
-          "content": "Pick which project the Plan team is tuned to. This is the same project selection used on the other Dailies tabs."
+          "title": "Projet directeur",
+          "content": "Choisissez le projet auquel l'équipe du plan est ajustée. C'est la même sélection de projet que sur les autres onglets Quotidiennes."
         },
         "teamSize": {
-          "title": "Team size",
-          "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP on fewer characters. Your choice is remembered."
+          "title": "Taille de l'équipe",
+          "content": "Choisissez 3, 4 ou 5 personnages pour les deux équipes. Une équipe complète de 5 est l'option par défaut ; descendez à 3 ou 4 pour concentrer l'XP partagée de chaque combat sur moins de personnages. Votre choix est mémorisé."
         },
         "preferences": {
-          "title": "Preferred trait and damage type",
-          "content": "Bias both teams toward a trait or damage type you want to field. It is a soft nudge — the team widens to stay full rather than shrink, and a preference nobody matches is ignored. Your choice is remembered."
+          "title": "Trait et type de dégâts préférés",
+          "content": "Orientez les deux équipes vers un trait ou un type de dégâts que vous voulez aligner. C'est une incitation légère : l'équipe s'élargit pour rester complète plutôt que de se réduire, et une préférence que personne ne remplit est ignorée. Votre choix est mémorisé."
         },
         "plan": {
-          "title": "Plan team",
-          "content": "One team tuned to your selected project, widening to your other goals and the full roster when it needs more characters. A note shows when it was widened."
+          "title": "Équipe du plan",
+          "content": "Une équipe ajustée à votre projet sélectionné, qui s'élargit à vos autres objectifs et à tout l'effectif quand elle a besoin de plus de personnages. Une note indique quand elle a été élargie."
         },
         "locks": {
-          "title": "Lock what you like",
-          "content": "Lock a character in the Random team and it stays put when you regenerate. Locks reset when you reload."
+          "title": "Verrouillez ce que vous aimez",
+          "content": "Verrouillez un personnage dans l'équipe aléatoire et il reste en place quand vous régénérez. Les verrous sont réinitialisés au rechargement."
         },
         "regenerate": {
-          "title": "Regenerate",
-          "content": "Shuffle a new Random team. Only the unlocked slots change; it is disabled once every slot is locked."
+          "title": "Régénérer",
+          "content": "Générez une nouvelle équipe aléatoire. Seuls les emplacements non verrouillés changent ; désactivé une fois tous les emplacements verrouillés."
         }
       }
     }

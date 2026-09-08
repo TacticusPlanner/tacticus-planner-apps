@@ -1,40 +1,40 @@
 {
   "title": "Arena",
-  "subtitle": "Team suggestions that move your plan forward while you clear your daily Arena battles.",
+  "subtitle": "Team-Vorschläge, die deinen Plan voranbringen, während du deine täglichen Arena-Kämpfe abschließt.",
   "tour": {
     "arena": {
       "steps": {
         "purpose": {
-          "title": "Arena team recommendations",
-          "content": "Suggested Arena teams built from your selected project, active goals, and roster, so your daily battles also advance your plan."
+          "title": "Arena-Team-Empfehlungen",
+          "content": "Vorgeschlagene Arena-Teams aus deinem ausgewählten Projekt, deinen aktiven Zielen und deinem Kader, damit deine täglichen Kämpfe auch deinen Plan voranbringen."
         },
         "mode": {
-          "title": "XP or Power",
-          "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered."
+          "title": "XP oder Stärke",
+          "content": "Der XP-Modus bevorzugt Charaktere, die noch XP sammeln können. Der Stärke-Modus ignoriert XP und wählt dein stärkstes Team. Deine Wahl wird gespeichert."
         },
         "project": {
-          "title": "Driving project",
-          "content": "Pick which project the Plan team is tuned to. This is the same project selection used on the other Dailies tabs."
+          "title": "Bestimmendes Projekt",
+          "content": "Wähle, auf welches Projekt das Planungsteam abgestimmt wird. Es ist dieselbe Projektauswahl wie auf den anderen Tabs im Bereich Tägliches."
         },
         "teamSize": {
-          "title": "Team size",
-          "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP on fewer characters. Your choice is remembered."
+          "title": "Teamgröße",
+          "content": "Wähle 3, 4 oder 5 Charaktere für beide Teams. Ein volles Team mit 5 ist Standard; reduziere auf 3 oder 4, um die geteilte XP eines Kampfes auf weniger Charaktere zu konzentrieren. Deine Wahl wird gespeichert."
         },
         "preferences": {
-          "title": "Preferred trait and damage type",
-          "content": "Bias both teams toward a trait or damage type you want to field. It is a soft nudge — the team widens to stay full rather than shrink, and a preference nobody matches is ignored. Your choice is remembered."
+          "title": "Bevorzugte Eigenschaft und bevorzugter Schadenstyp",
+          "content": "Lenke beide Teams zu einer Eigenschaft oder einem Schadenstyp, den du einsetzen möchtest. Es ist ein sanfter Hinweis — das Team wird erweitert, um vollständig zu bleiben, statt zu schrumpfen, und eine Präferenz, die niemand erfüllt, wird ignoriert. Deine Wahl wird gespeichert."
         },
         "plan": {
-          "title": "Plan team",
-          "content": "One team tuned to your selected project, widening to your other goals and the full roster when it needs more characters. A note shows when it was widened."
+          "title": "Planungsteam",
+          "content": "Ein Team, das auf dein ausgewähltes Projekt abgestimmt ist und auf deine anderen Ziele und den gesamten Kader erweitert wird, wenn es mehr Charaktere braucht. Ein Hinweis zeigt an, wann es erweitert wurde."
         },
         "locks": {
-          "title": "Lock what you like",
-          "content": "Lock a character in the Random team and it stays put when you regenerate. Locks reset when you reload."
+          "title": "Sperre, was dir gefällt",
+          "content": "Sperre einen Charakter im Zufallsteam, dann bleibt er beim Neuwürfeln erhalten. Sperren werden beim Neuladen zurückgesetzt."
         },
         "regenerate": {
-          "title": "Regenerate",
-          "content": "Shuffle a new Random team. Only the unlocked slots change; it is disabled once every slot is locked."
+          "title": "Neu würfeln",
+          "content": "Würfle ein neues Zufallsteam. Nur die nicht gesperrten Plätze ändern sich; deaktiviert, sobald alle Plätze gesperrt sind."
         }
       }
     }

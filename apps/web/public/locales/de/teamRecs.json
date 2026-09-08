@@ -1,50 +1,50 @@
 {
   "mode": {
     "xp": "XP",
-    "power": "Power",
-    "xpHint": "Prefers characters that can still earn XP and that your selected project or goals need.",
-    "powerHint": "Ignores XP and fields your strongest possible team."
+    "power": "Stärke",
+    "xpHint": "Bevorzugt Charaktere, die noch XP sammeln können und die dein ausgewähltes Projekt oder deine Ziele brauchen.",
+    "powerHint": "Ignoriert XP und stellt dein stärkstmögliches Team auf."
   },
   "project": {
-    "label": "Project"
+    "label": "Projekt"
   },
   "teamSize": {
-    "label": "Team size"
+    "label": "Teamgröße"
   },
   "preferences": {
-    "trait": "Preferred trait",
-    "damageType": "Preferred damage type",
-    "any": "Any",
-    "note": "A preference nudges the picks toward matching characters; the team widens to keep a full roster rather than shrink."
+    "trait": "Bevorzugte Eigenschaft",
+    "damageType": "Bevorzugter Schadenstyp",
+    "any": "Beliebig",
+    "note": "Eine Präferenz lenkt die Auswahl zu passenden Charakteren; das Team wird erweitert, um vollständig zu bleiben, statt zu schrumpfen."
   },
   "state": {
-    "error": "Couldn't load your roster, goals, or project. Try again.",
-    "retry": "Retry",
-    "noCharacters": "You need at least three characters to get a team recommendation."
+    "error": "Kader, Ziele oder Projekt konnten nicht geladen werden. Bitte erneut versuchen.",
+    "retry": "Erneut versuchen",
+    "noCharacters": "Du brauchst mindestens drei Charaktere für eine Team-Empfehlung."
   },
   "category": {
     "plan": {
-      "title": "Plan team",
-      "description": "Tuned to your selected project first, then your other active goals, then the rest of your roster."
+      "title": "Planungsteam",
+      "description": "Zuerst auf dein ausgewähltes Projekt abgestimmt, dann auf deine anderen aktiven Ziele und dann auf den Rest deines Kaders."
     },
     "random": {
-      "title": "Random team",
-      "description": "A random draw from your roster. Lock the ones you like before you regenerate."
+      "title": "Zufallsteam",
+      "description": "Eine zufällige Auswahl aus deinem Kader. Sperre deine Favoriten, bevor du neu würfelst."
     },
-    "broadenedNote": "Not enough matching characters, so this team was widened beyond its own pool.",
-    "cappedNote": "Fewer than three characters can still earn XP, so XP-capped characters were included.",
-    "fewerThanRequested": "Only {{delivered}} of the requested {{requested}} characters were available."
+    "broadenedNote": "Nicht genug passende Charaktere, daher wurde dieses Team über seinen eigenen Pool hinaus erweitert.",
+    "cappedNote": "Weniger als drei Charaktere können noch XP sammeln, daher wurden Charaktere mit XP-Limit aufgenommen.",
+    "fewerThanRequested": "Nur {{delivered}} der angeforderten {{requested}} Charaktere waren verfügbar."
   },
   "lock": {
-    "lock": "Lock this character",
-    "unlock": "Unlock this character"
+    "lock": "Diesen Charakter sperren",
+    "unlock": "Diesen Charakter entsperren"
   },
-  "regenerate": "Regenerate",
+  "regenerate": "Neu würfeln",
   "rationale": {
-    "goal": "You have an active goal for this character.",
-    "projectGoal": "In your selected project.",
-    "strength": "Chosen for combat strength ({{power}}).",
-    "minimumSize": "Added to complete the team.",
-    "random": "Drawn at random."
+    "goal": "Du hast ein aktives Ziel für diesen Charakter.",
+    "projectGoal": "In deinem ausgewählten Projekt.",
+    "strength": "Wegen Kampfstärke ausgewählt ({{power}}).",
+    "minimumSize": "Hinzugefügt, um das Team zu vervollständigen.",
+    "random": "Zufällig ausgewählt."
   }
 }
