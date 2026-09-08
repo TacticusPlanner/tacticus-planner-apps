@@ -50,29 +50,46 @@ characters were included to reach the minimum.
 
 Every recommended team SHALL contain at least three characters whenever the
 mode-eligible roster holds at least three. For the Plan team the engine SHALL
-start from the highest-priority pool and, only while the current candidate set
-holds fewer than three **eligible** characters, widen it one pool at a time down
-the configured priority order, ending with the full mode-eligible roster. Once
-the candidate set holds at least three eligible characters, the team SHALL be
-generated from it per the mode and the requested size. When the delivered team
-drew on a pool below its primary pool, the team SHALL be marked as broadened.
+start from the highest-priority pool and, while the current candidate set holds
+fewer **eligible** characters than the requested team size, widen it one pool at
+a time down the configured priority order, ending with the full mode-eligible
+roster. Once the candidate set holds at least the requested number of eligible
+characters — or every pool has been consumed — the team SHALL be generated from
+it per the mode and the requested size, with higher-priority-pool members ranked
+ahead of characters pulled in only by the widening. When the delivered team drew
+on a pool below its primary pool, the team SHALL be marked as broadened.
 
 Assumptions:
 
 - "Eligible" depends on the mode (XP-eligible in XP mode; every owned character
   in Power mode) and on the active preference filters (see "Preference filters
   narrow eligibility").
-- Pool widening is governed by the three-character minimum, not by the requested
-  size; a requested size the widest pool still cannot fill with eligible
-  characters yields a smaller delivered team.
+- Pool widening chases the requested team size and never stops short of the
+  three-character minimum: the pool widens until it holds at least the requested
+  number of eligible characters or the full roster has been reached. A requested
+  size the full roster still cannot fill with eligible characters yields a
+  smaller delivered team.
+- Widening to reach the requested size does not override the mode rules — XP
+  mode still never pads past three with XP-capped characters (see "XP mode
+  ordering").
 - The Random team draws from the full mode-eligible roster and is never
   broadened.
 
 #### Scenario: Thin primary pool is widened
 
-- **WHEN** the highest-priority pool holds only two eligible characters
+- **WHEN** the highest-priority pool holds only two eligible characters and the
+  requested team size is three
 - **THEN** the candidate set expands down the priority order until at least three
   eligible characters are available, and the Plan team is marked broadened
+
+#### Scenario: Pool widens to fill the requested size
+
+- **WHEN** the requested team size is five, the configured priority pools
+  together supply four eligible characters, and the full mode-eligible roster
+  supplies more
+- **THEN** the Plan team is delivered with five characters — the four
+  higher-priority-pool members plus the strongest eligible character from the
+  wider roster — and is marked broadened
 
 #### Scenario: Roster smaller than the minimum
 
@@ -219,6 +236,14 @@ tooltip. For each character the team SHALL convey why it was chosen — the
 rationale supplied by the winning priority pool, or that it was chosen for
 combat strength, added to meet the minimum size, or drawn at random.
 
+When a preference filter is active (a preferred trait, a preferred damage type,
+or both), every row SHALL show a marker for each active preference: an emphasised
+marker with that attribute's icon on a character that satisfies it, and a
+visually distinct, de-emphasised marker with the same icon on a character that
+does not. Each marker SHALL name its meaning — satisfied or not satisfied, and
+which attribute — as a hover/focus tooltip. When no preference is active, no
+preference markers appear on any row.
+
 #### Scenario: Rationale and progression are shown per row
 
 - **WHEN** a character is chosen because it belongs to a priority pool
@@ -229,3 +254,16 @@ combat strength, added to meet the minimum size, or drawn at random.
 
 - **WHEN** a team of four or five characters is shown at any viewport
 - **THEN** the characters are listed one per row in a single column
+
+#### Scenario: Matching characters are marked when a preference is active
+
+- **WHEN** a preferred trait is active and a team holds both a character with
+  that trait and one without
+- **THEN** the matching character's row shows the emphasised trait marker and
+  the non-matching character's row shows the de-emphasised "does not match"
+  trait marker, each with its own tooltip
+
+#### Scenario: No markers without a preference
+
+- **WHEN** no preferred trait or damage type is set
+- **THEN** no team row shows a preference marker

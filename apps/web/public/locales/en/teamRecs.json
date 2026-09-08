@@ -15,7 +15,11 @@
     "trait": "Preferred trait",
     "damageType": "Preferred damage type",
     "any": "Any",
-    "note": "A preference nudges the picks toward matching characters; the team widens to keep a full roster rather than shrink."
+    "note": "A preference nudges the picks toward matching characters; the team widens to keep a full roster rather than shrink.",
+    "matchesTrait": "Has your preferred trait ({{attribute}})",
+    "matchesDamageType": "Deals your preferred damage type ({{attribute}})",
+    "missingTrait": "Missing your preferred trait ({{attribute}})",
+    "missingDamageType": "Doesn't deal your preferred damage type ({{attribute}})"
   },
   "state": {
     "error": "Couldn't load your roster, goals, or project. Try again.",

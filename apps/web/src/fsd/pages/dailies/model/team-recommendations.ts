@@ -193,12 +193,31 @@ function memberOf(
   locked: boolean
 ): TeamMember {
   const character = ctx.characterById.get(id)!
+  // `ctx.preferences` is already narrowed, so an unsatisfiable preference is absent here and never
+  // produces a marker; an active one produces a marker on every row (match or miss).
+  const { trait, damageType } = ctx.preferences
   return {
     unitId: id,
     rank: character.rank,
     rarity: progressionRarity(character.progression),
     locked,
     rationale,
+    ...(trait
+      ? {
+          preferredTrait: {
+            id: trait,
+            matched: character.traits.includes(trait),
+          },
+        }
+      : {}),
+    ...(damageType
+      ? {
+          preferredDamageType: {
+            id: damageType,
+            matched: character.damageTypes.includes(damageType),
+          },
+        }
+      : {}),
   }
 }
 
@@ -233,6 +252,9 @@ function buildPlanTeam(ctx: BuildContext): TeamCategory {
     rosterIds: ctx.rosterIds,
     pools: ctx.pools,
     isEligible: (id) => isEligible(id, ctx),
+    // Widen past the three-character minimum to fill the requested size from the wider roster when
+    // the priority pools fall short — the roster fillers sort after the pool members.
+    targetEligible: ctx.requestedSize,
   })
 
   const ordered = orderCandidates(expanded.candidateIds, ctx)

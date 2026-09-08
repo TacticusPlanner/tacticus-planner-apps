@@ -8,6 +8,10 @@ import teamRecsDe from "../../../../../public/locales/de/teamRecs.json"
 import teamRecsEn from "../../../../../public/locales/en/teamRecs.json"
 import teamRecsEs from "../../../../../public/locales/es/teamRecs.json"
 import teamRecsFr from "../../../../../public/locales/fr/teamRecs.json"
+import salvageRunDe from "../../../../../public/locales/de/salvageRun.json"
+import salvageRunEn from "../../../../../public/locales/en/salvageRun.json"
+import salvageRunEs from "../../../../../public/locales/es/salvageRun.json"
+import salvageRunFr from "../../../../../public/locales/fr/salvageRun.json"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -23,6 +27,11 @@ describe("Dailies team-recommendation translations", () => {
       "teamRecs",
       teamRecsEn,
       { de: teamRecsDe, es: teamRecsEs, fr: teamRecsFr },
+    ],
+    [
+      "salvageRun",
+      salvageRunEn,
+      { de: salvageRunDe, es: salvageRunEs, fr: salvageRunFr },
     ],
   ] as const)(
     "keeps every locale of %s aligned with English",
@@ -42,6 +51,10 @@ describe("Dailies team-recommendation translations", () => {
       expect(locale.preferences.trait).toBeTruthy()
       expect(locale.preferences.damageType).toBeTruthy()
       expect(locale.preferences.any).toBeTruthy()
+      expect(locale.preferences.matchesTrait).toContain("{{attribute}}")
+      expect(locale.preferences.matchesDamageType).toContain("{{attribute}}")
+      expect(locale.preferences.missingTrait).toContain("{{attribute}}")
+      expect(locale.preferences.missingDamageType).toContain("{{attribute}}")
       expect(locale.category.plan.title).toBeTruthy()
       expect(locale.category.random.title).toBeTruthy()
       expect(locale.category.fewerThanRequested).toContain("{{delivered}}")
@@ -66,6 +79,36 @@ describe("Dailies team-recommendation translations", () => {
         "purpose",
         "regenerate",
         "teamSize",
+      ])
+    }
+  })
+
+  it("provides the track copy and the full tour in salvageRun", () => {
+    for (const locale of [
+      salvageRunEn,
+      salvageRunDe,
+      salvageRunEs,
+      salvageRunFr,
+    ]) {
+      expect(locale.title).toBeTruthy()
+      expect(locale.subtitle).toBeTruthy()
+      expect(locale.track.label).toBeTruthy()
+      expect(locale.track.imperial).toBeTruthy()
+      expect(locale.track.chaos).toBeTruthy()
+      expect(locale.track.xenos).toBeTruthy()
+      expect(locale.track.shortfallTitle).toContain("{{track}}")
+      expect(locale.track.shortfall).toContain("{{owned}}")
+      expect(locale.track.shortfall).toContain("{{needed}}")
+      expect(Object.keys(locale.tour.salvageRun.steps).sort()).toEqual([
+        "locks",
+        "mode",
+        "plan",
+        "preferences",
+        "project",
+        "purpose",
+        "regenerate",
+        "teamSize",
+        "track",
       ])
     }
   })

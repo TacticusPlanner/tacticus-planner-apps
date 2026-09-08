@@ -43,9 +43,11 @@ export type ExpandedPool = {
 
 /**
  * Widens the candidate set from the highest-priority pool down the configured `pools` list — and
- * finally into the implicit full-roster pool — while it holds fewer than `MIN_TEAM_SIZE`
- * characters the `isEligible` predicate accepts. Returns the union of every pool visited (roster
- * order, de-duplicated) and the widest pool reached.
+ * finally into the implicit full-roster pool — while it holds fewer eligible characters (per the
+ * `isEligible` predicate) than `targetEligible`. `targetEligible` defaults to `MIN_TEAM_SIZE` but
+ * the Plan team passes the requested team size, so the pool keeps widening past the bare minimum
+ * to fill a full team from the wider roster when the priority pools fall short. Returns the union
+ * of every pool visited (roster order, de-duplicated) and the widest pool reached.
  */
 export function expandCandidatePool(params: {
   rosterIds: readonly UnitId[]
@@ -53,7 +55,11 @@ export function expandCandidatePool(params: {
    * here. */
   pools: readonly TeamPoolSpec[]
   isEligible: (id: UnitId) => boolean
+  /** Widen until this many eligible candidates are reachable (or every pool is consumed). Clamped
+   * up to `MIN_TEAM_SIZE`; defaults to it. */
+  targetEligible?: number
 }): ExpandedPool {
+  const target = Math.max(MIN_TEAM_SIZE, params.targetEligible ?? MIN_TEAM_SIZE)
   const orderedPools: { id: string; unitIds: ReadonlySet<UnitId> }[] = [
     ...params.pools,
     { id: FULL_ROSTER_POOL_ID, unitIds: new Set(params.rosterIds) },
@@ -74,7 +80,7 @@ export function expandCandidatePool(params: {
         candidateIds.push(id)
       }
     }
-    if (candidateIds.filter(params.isEligible).length >= MIN_TEAM_SIZE) break
+    if (candidateIds.filter(params.isEligible).length >= target) break
   }
 
   // "Broadened" means the final candidate set actually pulled in a character from outside the

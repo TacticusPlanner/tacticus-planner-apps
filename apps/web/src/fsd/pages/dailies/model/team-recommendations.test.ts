@@ -94,6 +94,47 @@ describe("buildTeamRecommendations — pool configuration", () => {
     })
   })
 
+  it("widens past the minimum to fill the requested size, roster fillers ranked last", () => {
+    const roster = Array.from({ length: 8 }, (_, index) =>
+      character(`u${index}`)
+    )
+    const plan = planOf(
+      build({
+        roster,
+        teamSize: 5,
+        pools: [
+          pool("primary", [id("u0"), id("u1")], "g-primary"),
+          pool("secondary", [id("u2"), id("u3")], "g-secondary"),
+        ],
+      })
+    )
+    // Two pools supply four eligible; a fifth is drawn from the wider roster.
+    expect(plan.deliveredSize).toBe(5)
+    expect(plan.members.map((m) => m.unitId)).toEqual([
+      id("u0"),
+      id("u1"),
+      id("u2"),
+      id("u3"),
+      id("u4"),
+    ])
+    expect(plan.broadened).toBe(true)
+    expect(plan.poolUsed).toBe("full-roster")
+    expect(plan.members[4].rationale).toEqual({ kind: "minimum-size" })
+  })
+
+  it("still stops at three in XP mode when only two are XP-eligible, even at size five", () => {
+    const roster = [
+      character("a"),
+      character("b"),
+      ...Array.from({ length: 6 }, (_, index) =>
+        character(`c${index}`, { progression: "Common:None", xpLevel: 8 })
+      ),
+    ]
+    const plan = planOf(build({ roster, mode: "xp", teamSize: 5 }))
+    expect(plan.deliveredSize).toBe(3)
+    expect(plan.includedCappedCharacters).toBe(true)
+  })
+
   it("never re-adds a character the caller left out of the roster", () => {
     const roster = ["a", "b", "c"].map((v) => character(v))
     const result = buildTeamRecommendations(
@@ -218,6 +259,58 @@ describe("buildTeamRecommendations — preferences", () => {
       build({ roster, teamSize: 5, preferences: {} })
     )
     expect(JSON.stringify(withPref)).toBe(JSON.stringify(withoutPref))
+  })
+
+  it("tags every member with the active preferred trait / damage type and whether it matches", () => {
+    const roster = [
+      character("a", { traits: ["Flying"], damageTypes: ["Bolter"] }),
+      character("b", { traits: ["Flying"], damageTypes: ["Physical"] }),
+      character("c"),
+      character("d"),
+      character("e"),
+    ]
+    const plan = planOf(
+      build({
+        roster,
+        teamSize: 5,
+        preferences: { trait: "Flying", damageType: "Bolter" },
+      })
+    )
+    const byId = new Map(plan.members.map((m) => [m.unitId, m]))
+    expect(byId.get(id("a"))?.preferredTrait).toEqual({
+      id: "Flying",
+      matched: true,
+    })
+    expect(byId.get(id("a"))?.preferredDamageType).toEqual({
+      id: "Bolter",
+      matched: true,
+    })
+    expect(byId.get(id("b"))?.preferredTrait).toEqual({
+      id: "Flying",
+      matched: true,
+    })
+    expect(byId.get(id("b"))?.preferredDamageType).toEqual({
+      id: "Bolter",
+      matched: false,
+    })
+    expect(byId.get(id("c"))?.preferredTrait).toEqual({
+      id: "Flying",
+      matched: false,
+    })
+    expect(byId.get(id("c"))?.preferredDamageType).toEqual({
+      id: "Bolter",
+      matched: false,
+    })
+  })
+
+  it("sets no preference tags when no preference is active", () => {
+    const roster = ["a", "b", "c"].map((v) =>
+      character(v, { traits: ["Flying"], damageTypes: ["Bolter"] })
+    )
+    for (const member of planOf(build({ roster, teamSize: 3 })).members) {
+      expect(member.preferredTrait).toBeUndefined()
+      expect(member.preferredDamageType).toBeUndefined()
+    }
   })
 
   it("leaves Power-mode ordering identical when no preference is set", () => {

@@ -15,7 +15,11 @@
     "trait": "Trait préféré",
     "damageType": "Type de dégâts préféré",
     "any": "Indifférent",
-    "note": "Une préférence oriente la sélection vers les personnages correspondants ; l'équipe s'élargit pour rester complète plutôt que de se réduire."
+    "note": "Une préférence oriente la sélection vers les personnages correspondants ; l'équipe s'élargit pour rester complète plutôt que de se réduire.",
+    "matchesTrait": "A votre trait préféré ({{attribute}})",
+    "matchesDamageType": "Inflige votre type de dégâts préféré ({{attribute}})",
+    "missingTrait": "N'a pas votre trait préféré ({{attribute}})",
+    "missingDamageType": "N'inflige pas votre type de dégâts préféré ({{attribute}})"
   },
   "state": {
     "error": "Impossible de charger votre effectif, vos objectifs ou votre projet. Réessayez.",

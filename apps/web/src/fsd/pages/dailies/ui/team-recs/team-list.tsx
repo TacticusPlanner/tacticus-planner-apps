@@ -1,6 +1,10 @@
 import { Lock, LockOpen } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { characterIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  damageTypeIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -8,11 +12,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import type {
   TeamMember,
+  TeamMemberPreferenceMatch,
   TeamMemberRationale,
 } from "../../model/team-recommendations.types"
 
@@ -29,7 +35,42 @@ export function TeamList({
   onToggleLock?: (unitId: UnitId) => void
   testIdPrefix?: string
 }) {
-  const { t } = useTranslation(["teamRecs", "characters"])
+  const { t } = useTranslation([
+    "teamRecs",
+    "characters",
+    "traits",
+    "damageTypes",
+  ])
+
+  const preferenceMarker = (
+    preference: TeamMemberPreferenceMatch | undefined,
+    iconOf: (value: string) => string,
+    labelNs: "traits" | "damageTypes",
+    matchKey: "preferences.matchesTrait" | "preferences.matchesDamageType",
+    missKey: "preferences.missingTrait" | "preferences.missingDamageType"
+  ) => {
+    if (!preference) return null
+    const attribute = t(`${labelNs}:${preference.id}`, {
+      defaultValue: preference.id,
+    })
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={cn(
+              "flex size-6 shrink-0 items-center justify-center rounded-full",
+              preference.matched ? "bg-primary/15" : "opacity-40 grayscale"
+            )}
+          >
+            <EntityIcon src={iconOf(preference.id)} alt="" className="size-4" />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          {t(preference.matched ? matchKey : missKey, { attribute })}
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
 
   const rationaleText = (rationale: TeamMemberRationale): string => {
     switch (rationale.kind) {
@@ -70,7 +111,24 @@ export function TeamList({
                 {rationaleText(member.rationale)}
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-2">
+            <div
+              className="flex shrink-0 items-center gap-2"
+              data-testid={`${testIdPrefix}-match-${member.unitId}`}
+            >
+              {preferenceMarker(
+                member.preferredTrait,
+                traitIcon,
+                "traits",
+                "preferences.matchesTrait",
+                "preferences.missingTrait"
+              )}
+              {preferenceMarker(
+                member.preferredDamageType,
+                damageTypeIcon,
+                "damageTypes",
+                "preferences.matchesDamageType",
+                "preferences.missingDamageType"
+              )}
               <RarityIcon rarity={member.rarity} className="size-5" />
               <RankBadge rank={member.rank} showLabel={false} tooltip />
             </div>

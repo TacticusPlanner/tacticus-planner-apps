@@ -116,4 +116,45 @@ describe("expandCandidatePool", () => {
     expect(result.poolUsed).toBe("full-roster")
     expect(result.broadened).toBe(true)
   })
+
+  it("stops at the three-character minimum when no target is given", () => {
+    const result = expandCandidatePool({
+      rosterIds,
+      pools: [
+        pool("active-project", [id("a"), id("b"), id("c"), id("d")]),
+        pool("overall-goals", [id("e")]),
+      ],
+      isEligible: () => true,
+    })
+    // Four eligible in the primary pool already clears the default minimum of three.
+    expect(result.broadened).toBe(false)
+    expect(result.candidateIds).toEqual([id("a"), id("b"), id("c"), id("d")])
+  })
+
+  it("keeps widening past three when targetEligible asks for more", () => {
+    const result = expandCandidatePool({
+      rosterIds,
+      pools: [
+        pool("active-project", [id("a"), id("b")]),
+        pool("overall-goals", [id("c"), id("d")]),
+      ],
+      isEligible: () => true,
+      targetEligible: 5,
+    })
+    // The two pools supply four eligible; a fifth is still wanted, so it widens into the roster.
+    expect(result.poolUsed).toBe("full-roster")
+    expect(result.broadened).toBe(true)
+    expect(result.candidateIds).toEqual(rosterIds)
+  })
+
+  it("clamps targetEligible up to the three-character minimum", () => {
+    const result = expandCandidatePool({
+      rosterIds,
+      pools: [pool("active-project", [id("a"), id("b")])],
+      isEligible: () => true,
+      targetEligible: 1,
+    })
+    expect(result.candidateIds).toEqual(rosterIds)
+    expect(result.broadened).toBe(true)
+  })
 })

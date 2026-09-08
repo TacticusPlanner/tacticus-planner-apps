@@ -16,6 +16,11 @@ import {
   mapRosterCharacter,
 } from "./arena-recommendations"
 import {
+  usePersistedMode,
+  usePersistedPreferences,
+  usePersistedTeamSize as usePersistedTeamSizeForKey,
+} from "./team-recommendation-prefs"
+import {
   ARENA_MIN_TEAM_SIZE,
   ARENA_TEAM_SIZES,
   type ArenaMode,
@@ -28,119 +33,39 @@ import type { TeamPreferences } from "./team-recommendations.types"
 const ARENA_MODE_STORAGE_KEY = "tp.dailies.arena.mode"
 const ARENA_TEAM_SIZE_STORAGE_KEY = "tp.dailies.arena.teamSize"
 const ARENA_PREFERENCES_STORAGE_KEY = "tp.dailies.arena.preferences"
-// A full five-character team by default — the player narrows it with the Team size control when
-// they want to concentrate a battle's shared XP.
-const DEFAULT_TEAM_SIZE = 5
 // Stable empty reference so the recommendations memo does not re-run on every render while the
 // roster key is still settling.
 const EMPTY_LOCK_IDS: UnitId[] = []
 const EMPTY_PREFERENCES: TeamPreferences = {}
 
-function readStoredMode(): ArenaMode {
-  try {
-    const raw = window.localStorage.getItem(ARENA_MODE_STORAGE_KEY)
-    return raw === "power" || raw === "xp" ? raw : "xp"
-  } catch {
-    return "xp"
-  }
-}
-
 /**
- * The XP/Power mode toggle, persisted per browser so it survives navigation away from the Arena
- * page and a full reload. Both `localStorage` ends are guarded — a private window or a browser that
- * blocks site data degrades to an in-memory default of `"xp"`.
+ * The XP/Power mode toggle, persisted per browser under the Arena key. Thin wrapper over the shared
+ * `usePersistedMode` so the other Dailies team pages keep their own independent mode.
  */
 export function usePersistedArenaMode(): [
   ArenaMode,
   (mode: ArenaMode) => void,
 ] {
-  const [mode, setModeState] = useState<ArenaMode>(readStoredMode)
-  const setMode = useCallback((next: ArenaMode) => {
-    setModeState(next)
-    try {
-      window.localStorage.setItem(ARENA_MODE_STORAGE_KEY, next)
-    } catch {
-      // Best-effort — the in-memory value still updates.
-    }
-  }, [])
-  return [mode, setMode]
-}
-
-function readStoredTeamSize(): number {
-  try {
-    const raw = Number(window.localStorage.getItem(ARENA_TEAM_SIZE_STORAGE_KEY))
-    return ARENA_TEAM_SIZES.includes(raw) ? raw : DEFAULT_TEAM_SIZE
-  } catch {
-    return DEFAULT_TEAM_SIZE
-  }
+  return usePersistedMode(ARENA_MODE_STORAGE_KEY)
 }
 
 /**
- * The page-level Team size (3–5), persisted per browser exactly like the XP/Power mode. A stored
- * value outside the offered set, or a `localStorage` failure, falls back to the five-character
- * default.
+ * The page-level Team size (3–5), persisted per browser under the Arena key. Thin wrapper over the
+ * shared `usePersistedTeamSize`.
  */
 export function usePersistedTeamSize(): [number, (size: number) => void] {
-  const [teamSize, setTeamSizeState] = useState<number>(readStoredTeamSize)
-  const setTeamSize = useCallback((next: number) => {
-    setTeamSizeState(next)
-    try {
-      window.localStorage.setItem(ARENA_TEAM_SIZE_STORAGE_KEY, String(next))
-    } catch {
-      // Best-effort — the in-memory value still updates.
-    }
-  }, [])
-  return [teamSize, setTeamSize]
-}
-
-function readStoredPreferences(): TeamPreferences {
-  try {
-    const raw = window.localStorage.getItem(ARENA_PREFERENCES_STORAGE_KEY)
-    if (!raw) return {}
-    const parsed = JSON.parse(raw) as Record<string, unknown>
-    const next: TeamPreferences = {}
-    if (typeof parsed.trait === "string" && parsed.trait) {
-      next.trait = parsed.trait
-    }
-    if (typeof parsed.damageType === "string" && parsed.damageType) {
-      next.damageType = parsed.damageType
-    }
-    return next
-  } catch {
-    return {}
-  }
+  return usePersistedTeamSizeForKey(ARENA_TEAM_SIZE_STORAGE_KEY)
 }
 
 /**
- * The Preferred trait / Preferred damage type selection, persisted per browser as one JSON value
- * (same guard shape as the mode toggle). `setPreferences` is a merge-patch — pass `{ trait:
- * undefined }` to clear just that field. A stored value that is not a plain `{ trait?, damageType? }`
- * of strings degrades to "no preference".
+ * The Preferred trait / Preferred damage type selection, persisted per browser under the Arena key.
+ * Thin wrapper over the shared `usePersistedPreferences`.
  */
 export function usePersistedArenaPreferences(): [
   TeamPreferences,
   (next: Partial<TeamPreferences>) => void,
 ] {
-  const [preferences, setPreferencesState] = useState<TeamPreferences>(
-    readStoredPreferences
-  )
-  const setPreferences = useCallback((patch: Partial<TeamPreferences>) => {
-    setPreferencesState((prev) => {
-      const merged: TeamPreferences = { ...prev, ...patch }
-      if (!merged.trait) delete merged.trait
-      if (!merged.damageType) delete merged.damageType
-      try {
-        window.localStorage.setItem(
-          ARENA_PREFERENCES_STORAGE_KEY,
-          JSON.stringify(merged)
-        )
-      } catch {
-        // Best-effort — the in-memory value still updates.
-      }
-      return merged
-    })
-  }, [])
-  return [preferences, setPreferences]
+  return usePersistedPreferences(ARENA_PREFERENCES_STORAGE_KEY)
 }
 
 // `useLiveQuery` turns a rejected querier into a permanent `undefined`, indistinguishable from

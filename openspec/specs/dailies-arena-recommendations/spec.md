@@ -121,20 +121,22 @@ Assumptions:
 
 Every recommended team SHALL contain at least three characters. For the Plan
 Team, the engine SHALL start from the selected project's contributing characters
-and, only while the current candidate set has fewer than three eligible
-characters, progressively widen it in this fixed priority order:
+and, while the current candidate set has fewer eligible characters than the
+requested team size, progressively widen it in this fixed priority order:
 
 1. Selected Project (the selected project's contributing characters)
 2. Overall Goals (all active goals' contributing characters)
 3. Full Roster (every owned character)
 
-Once the candidate set holds at least three eligible characters, the team SHALL
-be generated from it according to the selected mode and the requested team size
-(see "Team size is a single page-level control"). When the Plan Team draws on a
-pool wider than the selected project, the section SHALL indicate that it was
-broadened. This ordering and widening behaviour is provided by the shared
-`dailies-team-recommendations` engine, which the Arena page configures with the
-three pools above.
+Once the candidate set holds at least the requested number of eligible
+characters — or the full roster has been consumed — the team SHALL be generated
+from it according to the selected mode and the requested team size (see "Team
+size is a single page-level control"), with selected-project and active-goal
+contributors ranked ahead of characters pulled in only to reach the requested
+size. When the Plan Team draws on a pool wider than the selected project, the
+section SHALL indicate that it was broadened. This ordering and widening
+behaviour is provided by the shared `dailies-team-recommendations` engine, which
+the Arena page configures with the three pools above.
 
 Assumptions:
 
@@ -146,9 +148,10 @@ Assumptions:
   failure state.
 - The Random Team draws from the full owned roster (mode-filtered, then
   preference-filtered) and never needs broadening.
-- Pool widening is governed by the three-character minimum, not by the requested
-  team size; a requested size the widened pool still cannot fill with eligible
-  characters yields a smaller delivered team (see the mode requirements).
+- Pool widening chases the requested team size and never stops short of the
+  three-character minimum: a requested size the full roster still cannot fill
+  with eligible characters yields a smaller delivered team, and XP Mode still
+  never pads past three with XP-capped characters (see the mode requirements).
 
 #### Scenario: Thin project pool is broadened
 
@@ -156,6 +159,15 @@ Assumptions:
 - **THEN** the Plan Team pool expands to include active-goal contributors, then
   the full roster if still short, until at least three eligible characters are
   available, and the section shows that it was broadened beyond the project
+
+#### Scenario: Widening fills the requested team size from the roster
+
+- **WHEN** the requested team size is five and the selected project and active
+  goals together contribute only four eligible characters, and the player owns
+  more eligible characters overall
+- **THEN** the Plan Team is filled to five by adding the strongest eligible
+  characters from the rest of the roster, those roster additions are ranked
+  after the four contributors, and the section shows it was broadened
 
 #### Scenario: Roster too small for any team
 
@@ -360,6 +372,13 @@ project it contributes to, that it was chosen for combat strength, that it was
 included to meet the minimum team size, or that it was drawn at random. Team
 members SHALL be presented as a single vertical list (one character per row).
 
+When a Preferred trait or Preferred damage type is selected, every row SHALL
+show a marker for it: an emphasised marker with that attribute's icon on a
+character that matches, and a de-emphasised marker with the same icon on a
+character that does not, each with a hover/focus tooltip naming whether it is
+satisfied and which attribute. No preference markers are shown when no
+preference is set.
+
 #### Scenario: Contributing character shows its rationale
 
 - **WHEN** a character is selected because it is the target of an active goal
@@ -384,6 +403,14 @@ members SHALL be presented as a single vertical list (one character per row).
   the Random Team's lock toggle
 - **THEN** a tooltip names the rarity, the rank, or the lock/unlock action
   respectively
+
+#### Scenario: Preferred-attribute matches are marked on the rows
+
+- **WHEN** the player selects a Preferred trait and a team includes both a
+  character with that trait and a character without it
+- **THEN** the matching character's row shows the emphasised trait marker and
+  the non-matching character's row shows the de-emphasised "does not match"
+  trait marker, each with its own tooltip
 
 ### Requirement: Distinct loading, failure, and empty states
 
