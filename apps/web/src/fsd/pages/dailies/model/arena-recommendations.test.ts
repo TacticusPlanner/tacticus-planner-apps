@@ -281,6 +281,36 @@ describe("buildArenaRecommendations", () => {
       expect(identical).toBe(false)
     })
 
+    it("keeps consecutive regenerations distinct even on a small roster with sample collisions", () => {
+      // A 6-character roster has only C(6,5) = 6 possible teams, so raw seeded samples for adjacent
+      // seeds collide often (e.g. seeds 2 and 3). Every displayed team must still differ from the
+      // one before it.
+      const roster = Array.from({ length: 6 }, (_, index) =>
+        character(`u${index}`)
+      )
+      const teams = Array.from({ length: 12 }, (_, seed) =>
+        unitIds(
+          categoryOf(build({ roster, randomSeed: seed }), "random").variants[0]
+            .members
+        )
+      )
+      for (let seed = 1; seed < teams.length; seed++) {
+        const previous = teams[seed - 1]
+        const current = teams[seed]
+        const identical =
+          previous.length === current.length &&
+          new Set([...previous, ...current]).size === previous.length
+        expect(identical, `seed ${seed} matched seed ${seed - 1}`).toBe(false)
+      }
+      // A given seed is stable no matter how far the chain is walked to reach it.
+      expect(
+        unitIds(
+          categoryOf(build({ roster, randomSeed: 3 }), "random").variants[0]
+            .members
+        )
+      ).toEqual(teams[3])
+    })
+
     it("uses the whole roster when it is smaller than a full team", () => {
       const random = categoryOf(
         build({

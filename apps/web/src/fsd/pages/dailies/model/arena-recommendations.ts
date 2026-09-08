@@ -91,6 +91,36 @@ function sameUnitSet(a: readonly UnitId[], b: readonly UnitId[]): boolean {
   return a.every((id) => setB.has(id))
 }
 
+/**
+ * The random team to display for a given `seed` (`randomSeed`, which increments by one per
+ * Regenerate). Walks the whole seed chain `0..seed` so each step is compared against the team the
+ * *previous* step actually displayed — not `seededSample(seed - 1)`, which diverges from the shown
+ * team as soon as a collision is skipped. On a collision it advances to off-sequence seeds (never a
+ * value a later Regenerate lands on naturally), so consecutive Regenerates always differ whenever
+ * the roster has more characters than a team holds. The work is O(seed × size) — negligible for a
+ * button press count.
+ */
+function randomTeamForSeed(
+  ids: readonly UnitId[],
+  size: number,
+  seed: number
+): UnitId[] {
+  const canDiffer = ids.length > size
+  let shown: UnitId[] = seededSample(ids, size, 0)
+  for (let step = 1; step <= seed; step++) {
+    let team = seededSample(ids, size, step)
+    for (
+      let bump = 1;
+      canDiffer && bump <= ids.length && sameUnitSet(team, shown);
+      bump++
+    ) {
+      team = seededSample(ids, size, (step + 1) * 100_003 + bump)
+    }
+    shown = team
+  }
+  return shown
+}
+
 type BuildContext = {
   mode: ArenaMode
   rosterIds: UnitId[]
@@ -242,15 +272,7 @@ function buildRandomCategory(
   ctx: BuildContext
 ): ArenaCategory {
   const size = Math.min(ARENA_MAX_TEAM_SIZE, ctx.rosterIds.length)
-  let picked = seededSample(ctx.rosterIds, size, input.randomSeed)
-  // `randomSeed` increments by one per regenerate, so `randomSeed - 1` is the team the previous
-  // press produced. When the roster is large enough for the result to differ, make sure it does.
-  if (input.randomSeed > 0 && ctx.rosterIds.length > size) {
-    const previous = seededSample(ctx.rosterIds, size, input.randomSeed - 1)
-    if (sameUnitSet(picked, previous)) {
-      picked = seededSample(ctx.rosterIds, size, input.randomSeed + 1)
-    }
-  }
+  const picked = randomTeamForSeed(ctx.rosterIds, size, input.randomSeed)
   return {
     id: "random",
     poolUsed: "full-roster",
