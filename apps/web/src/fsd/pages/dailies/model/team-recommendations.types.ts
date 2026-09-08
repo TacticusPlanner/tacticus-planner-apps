@@ -29,6 +29,12 @@ export type TeamMember = {
    * `false` for the Plan Team. */
   locked: boolean
   rationale: TeamMemberRationale
+  /** Set only when a preferred trait is active and this character has it — the trait id, for the
+   * row's "matches your preference" marker. */
+  matchedTrait?: string
+  /** Set only when a preferred damage type is active and this character deals it — the damage-type
+   * id, for the row's marker. */
+  matchedDamageType?: string
 }
 
 export type TeamCategory = {

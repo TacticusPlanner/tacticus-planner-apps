@@ -261,6 +261,42 @@ describe("buildTeamRecommendations — preferences", () => {
     expect(JSON.stringify(withPref)).toBe(JSON.stringify(withoutPref))
   })
 
+  it("marks members that carry an active preferred trait / damage type", () => {
+    const roster = [
+      character("a", { traits: ["Flying"], damageTypes: ["Bolter"] }),
+      character("b", { traits: ["Flying"], damageTypes: ["Physical"] }),
+      character("c"),
+      character("d"),
+      character("e"),
+    ]
+    const plan = planOf(
+      build({
+        roster,
+        teamSize: 5,
+        preferences: { trait: "Flying", damageType: "Bolter" },
+      })
+    )
+    const byId = new Map(plan.members.map((m) => [m.unitId, m]))
+    expect(byId.get(id("a"))).toMatchObject({
+      matchedTrait: "Flying",
+      matchedDamageType: "Bolter",
+    })
+    expect(byId.get(id("b"))?.matchedTrait).toBe("Flying")
+    expect(byId.get(id("b"))?.matchedDamageType).toBeUndefined()
+    expect(byId.get(id("c"))?.matchedTrait).toBeUndefined()
+    expect(byId.get(id("c"))?.matchedDamageType).toBeUndefined()
+  })
+
+  it("sets no match fields when no preference is active", () => {
+    const roster = ["a", "b", "c"].map((v) =>
+      character(v, { traits: ["Flying"], damageTypes: ["Bolter"] })
+    )
+    for (const member of planOf(build({ roster, teamSize: 3 })).members) {
+      expect(member.matchedTrait).toBeUndefined()
+      expect(member.matchedDamageType).toBeUndefined()
+    }
+  })
+
   it("leaves Power-mode ordering identical when no preference is set", () => {
     const roster = ["a", "b", "c", "d", "e", "f"].map((v, index) =>
       character(v, { rank: index % 2 === 0 ? "Iron1" : "Bronze1" })

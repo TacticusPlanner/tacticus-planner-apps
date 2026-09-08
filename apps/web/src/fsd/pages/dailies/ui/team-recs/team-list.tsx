@@ -1,6 +1,10 @@
 import { Lock, LockOpen } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { characterIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  damageTypeIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -29,7 +33,32 @@ export function TeamList({
   onToggleLock?: (unitId: UnitId) => void
   testIdPrefix?: string
 }) {
-  const { t } = useTranslation(["teamRecs", "characters"])
+  const { t } = useTranslation([
+    "teamRecs",
+    "characters",
+    "traits",
+    "damageTypes",
+  ])
+
+  const preferenceMarker = (
+    value: string | undefined,
+    iconOf: (value: string) => string,
+    labelNs: "traits" | "damageTypes",
+    tooltipKey: "preferences.matchesTrait" | "preferences.matchesDamageType"
+  ) => {
+    if (!value) return null
+    const attribute = t(`${labelNs}:${value}`, { defaultValue: value })
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15">
+            <EntityIcon src={iconOf(value)} alt="" className="size-4" />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{t(tooltipKey, { attribute })}</TooltipContent>
+      </Tooltip>
+    )
+  }
 
   const rationaleText = (rationale: TeamMemberRationale): string => {
     switch (rationale.kind) {
@@ -70,7 +99,22 @@ export function TeamList({
                 {rationaleText(member.rationale)}
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-2">
+            <div
+              className="flex shrink-0 items-center gap-2"
+              data-testid={`${testIdPrefix}-match-${member.unitId}`}
+            >
+              {preferenceMarker(
+                member.matchedTrait,
+                traitIcon,
+                "traits",
+                "preferences.matchesTrait"
+              )}
+              {preferenceMarker(
+                member.matchedDamageType,
+                damageTypeIcon,
+                "damageTypes",
+                "preferences.matchesDamageType"
+              )}
               <RarityIcon rarity={member.rarity} className="size-5" />
               <RankBadge rank={member.rank} showLabel={false} tooltip />
             </div>

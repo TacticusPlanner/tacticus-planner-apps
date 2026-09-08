@@ -15,7 +15,9 @@
     "trait": "Bevorzugte Eigenschaft",
     "damageType": "Bevorzugter Schadenstyp",
     "any": "Beliebig",
-    "note": "Eine Präferenz lenkt die Auswahl zu passenden Charakteren; das Team wird erweitert, um vollständig zu bleiben, statt zu schrumpfen."
+    "note": "Eine Präferenz lenkt die Auswahl zu passenden Charakteren; das Team wird erweitert, um vollständig zu bleiben, statt zu schrumpfen.",
+    "matchesTrait": "Hat deine bevorzugte Eigenschaft ({{attribute}})",
+    "matchesDamageType": "Verursacht deinen bevorzugten Schadenstyp ({{attribute}})"
   },
   "state": {
     "error": "Kader, Ziele oder Projekt konnten nicht geladen werden. Bitte erneut versuchen.",

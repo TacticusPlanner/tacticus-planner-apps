@@ -51,6 +51,8 @@ describe("Dailies team-recommendation translations", () => {
       expect(locale.preferences.trait).toBeTruthy()
       expect(locale.preferences.damageType).toBeTruthy()
       expect(locale.preferences.any).toBeTruthy()
+      expect(locale.preferences.matchesTrait).toContain("{{attribute}}")
+      expect(locale.preferences.matchesDamageType).toContain("{{attribute}}")
       expect(locale.category.plan.title).toBeTruthy()
       expect(locale.category.random.title).toBeTruthy()
       expect(locale.category.fewerThanRequested).toContain("{{delivered}}")

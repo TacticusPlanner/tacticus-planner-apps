@@ -193,12 +193,21 @@ function memberOf(
   locked: boolean
 ): TeamMember {
   const character = ctx.characterById.get(id)!
+  // `ctx.preferences` is already narrowed, so an unsatisfiable preference is absent here and never
+  // produces a marker.
+  const { trait, damageType } = ctx.preferences
   return {
     unitId: id,
     rank: character.rank,
     rarity: progressionRarity(character.progression),
     locked,
     rationale,
+    ...(trait && character.traits.includes(trait)
+      ? { matchedTrait: trait }
+      : {}),
+    ...(damageType && character.damageTypes.includes(damageType)
+      ? { matchedDamageType: damageType }
+      : {}),
   }
 }
 
