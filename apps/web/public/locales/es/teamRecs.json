@@ -47,6 +47,7 @@
   "rationale": {
     "goal": "Tienes un objetivo activo para este personaje.",
     "projectGoal": "En tu proyecto seleccionado.",
+    "onslaughtGoal": "Objetivo de una meta de Ascensión de Onslaught.",
     "strength": "Elegido por potencia de combate ({{power}}).",
     "minimumSize": "Añadido para completar el equipo.",
     "random": "Elegido al azar."

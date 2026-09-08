@@ -10,6 +10,7 @@ import type enShops from "../../../../../public/locales/en/shops.json"
 import type enArena from "../../../../../public/locales/en/arena.json"
 import type enTeamRecs from "../../../../../public/locales/en/teamRecs.json"
 import type enSalvageRun from "../../../../../public/locales/en/salvageRun.json"
+import type enOnslaught from "../../../../../public/locales/en/onslaught.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -28,6 +29,7 @@ declare module "i18next" {
       arena: typeof enArena
       teamRecs: typeof enTeamRecs
       salvageRun: typeof enSalvageRun
+      onslaught: typeof enOnslaught
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       upgrades: Record<string, string>

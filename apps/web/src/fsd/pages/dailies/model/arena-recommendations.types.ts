@@ -3,6 +3,7 @@ import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 import type {
   TeamCategory,
   TeamMode,
+  TeamPoolSpec,
   TeamPreferences,
   TeamRecommendations,
 } from "./team-recommendations.types"
@@ -94,6 +95,9 @@ export type BuildArenaRecommendationsInput = {
   /** Catalog traits / damage types per owned unit, for the preference filters. Omitted in unit
    * tests that do not exercise preferences. */
   rosterCatalog?: ArenaRosterCatalog
+  /** Extra priority pools ranked ABOVE the active-project and overall-goals pools — the Onslaught
+   * page's Ascension-goal pool. Empty / omitted for Arena and Salvage Run. */
+  leadingPools?: readonly TeamPoolSpec[]
 }
 
 /** What `useArenaRecommendations` exposes to the Arena page. */

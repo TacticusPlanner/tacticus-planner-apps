@@ -12,9 +12,12 @@ export const MIN_TEAM_SIZE = 3
 export const TEAM_SIZES: readonly number[] = [3, 4, 5]
 
 /** Why a character ended up in a recommended team. `goal` is the generic "a configured priority
- * pool claimed this character" rationale — the pool supplies its own `goalId`/`projectId`. */
+ * pool claimed this character" rationale — the pool supplies its own `goalId`/`projectId`.
+ * `onslaught-goal` is the same, narrowed to an active Onslaught-farming Ascension goal (the
+ * Onslaught page's highest-priority pool) so the row can name that distinct reason. */
 export type TeamMemberRationale =
   | { kind: "goal"; goalId: string; projectId?: string }
+  | { kind: "onslaught-goal"; goalId: string; projectId?: string }
   | { kind: "strength"; combatPower: number }
   | { kind: "minimum-size" }
   | { kind: "random" }

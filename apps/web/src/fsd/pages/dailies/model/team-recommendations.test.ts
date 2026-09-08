@@ -150,6 +150,34 @@ describe("buildTeamRecommendations — pool configuration", () => {
       }
     }
   })
+
+  it("surfaces whatever rationale the winning pool supplies, including onslaught-goal", () => {
+    const roster = ["a", "b", "c", "d"].map((v) => character(v))
+    const plan = planOf(
+      build({
+        roster,
+        teamSize: 3,
+        pools: [
+          {
+            id: "onslaught-ascension",
+            unitIds: new Set([id("d")]),
+            rationaleFor: (unit) => ({
+              kind: "onslaught-goal",
+              goalId: `og-${unit}`,
+              projectId: "p1",
+            }),
+          },
+          pool("overall-goals", [id("a")]),
+        ],
+      })
+    )
+    expect(plan.members[0].unitId).toBe(id("d"))
+    expect(plan.members[0].rationale).toEqual({
+      kind: "onslaught-goal",
+      goalId: "og-d",
+      projectId: "p1",
+    })
+  })
 })
 
 describe("buildTeamRecommendations — XP mode", () => {

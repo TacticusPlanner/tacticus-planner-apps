@@ -1,0 +1,78 @@
+{
+  "title": "Assaut",
+  "subtitle": "Des équipes d'Assaut limitées par alliance qui font avancer vos objectifs d'Ascension, plus le personnage ou la Machine de guerre à choisir pour la récompense en fragments après le combat.",
+  "track": {
+    "label": "Voie d'alliance",
+    "imperial": "Imperium",
+    "chaos": "Chaos",
+    "xenos": "Xenos"
+  },
+  "recipient": {
+    "title": "Destinataire des fragments après le combat",
+    "none": "Aucune cible de fragments n'est configurée pour cette voie. Ajoutez un objectif d'Ascension qui farme des fragments d'Assaut pour obtenir une recommandation ici.",
+    "unitKind": {
+      "character": "Personnage",
+      "mow": "Machine de guerre"
+    },
+    "currentRarity": "Rareté actuelle",
+    "targetRarity": "Rareté cible",
+    "currentShards": "Fragments actuels",
+    "requiredShards": "Fragments requis",
+    "remainingShards": "Fragments restants",
+    "project": "Projet",
+    "goal": "Objectif",
+    "ascendGoal": "Ascension vers {{rarity}}",
+    "reason": {
+      "onlyCandidate": "La seule unité avec un objectif d'Ascension Assaut actif sur cette voie.",
+      "inSelectedProject": "Son objectif d'Ascension fait partie de votre projet sélectionné.",
+      "overallGoalPriority": "Objectif d'Ascension Assaut le plus prioritaire de votre liste d'objectifs.",
+      "fewestRemainingShards": "Le plus proche de sa rareté cible parmi vos objectifs d'Ascension Assaut."
+    }
+  },
+  "tour": {
+    "onslaught": {
+      "steps": {
+        "purpose": {
+          "title": "Recommandations d'équipe pour l'Assaut",
+          "content": "Des équipes d'Assaut suggérées pour une voie d'alliance à la fois, et l'unité à choisir pour la récompense en fragments après le combat, afin que vos combats quotidiens fassent avancer vos objectifs d'Ascension."
+        },
+        "track": {
+          "title": "Voie d'alliance",
+          "content": "Choisissez la voie Imperium, Chaos ou Xenos. Chaque recommandation ci-dessous — équipes et destinataire des fragments — est limitée à cette alliance. Votre choix est mémorisé."
+        },
+        "mode": {
+          "title": "XP ou Puissance",
+          "content": "Le mode XP privilégie les personnages qui peuvent encore gagner de l'XP. Le mode Puissance ignore l'XP et choisit votre équipe la plus forte. Votre choix est mémorisé par page."
+        },
+        "project": {
+          "title": "Projet moteur",
+          "content": "Choisissez le projet auquel l'équipe du plan et le destinataire des fragments sont adaptés. C'est la même sélection de projet que sur les autres onglets Quotidien."
+        },
+        "teamSize": {
+          "title": "Taille de l'équipe",
+          "content": "Choisissez 3, 4 ou 5 personnages pour les deux équipes. Une équipe complète de 5 est la valeur par défaut ; descendez à 3 ou 4 pour concentrer l'XP partagée de chaque combat. Votre choix est mémorisé."
+        },
+        "preferences": {
+          "title": "Trait et type de dégâts préférés",
+          "content": "Orientez les deux équipes vers un trait ou un type de dégâts que vous voulez aligner. C'est un léger coup de pouce : l'équipe s'élargit au sein de l'alliance de la voie pour rester complète plutôt que de se réduire."
+        },
+        "plan": {
+          "title": "Équipe du plan",
+          "content": "Une équipe menée par les personnages que vous faites ascensionner via le farm de fragments d'Assaut, puis votre projet sélectionné, puis vos autres objectifs et l'effectif de la voie. Une note indique quand elle a été élargie."
+        },
+        "shardRecipient": {
+          "title": "Destinataire des fragments après le combat",
+          "content": "Après le combat, vous choisissez une unité pour la récompense en fragments. Ce panneau recommande le meilleur personnage ou la meilleure Machine de guerre parmi vos objectifs d'Ascension Assaut actifs — elle n'a pas besoin d'être dans l'équipe de combat."
+        },
+        "locks": {
+          "title": "Verrouillez ce qui vous plaît",
+          "content": "Verrouillez un personnage dans l'équipe aléatoire et il reste en place quand vous régénérez. Les verrous sont réinitialisés au rechargement ou au changement de voie."
+        },
+        "regenerate": {
+          "title": "Régénérer",
+          "content": "Tirez une nouvelle équipe aléatoire. Seuls les emplacements déverrouillés changent ; désactivé une fois que tous les emplacements sont verrouillés."
+        }
+      }
+    }
+  }
+}

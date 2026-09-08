@@ -78,6 +78,8 @@ export function TeamList({
         return rationale.projectId
           ? t("rationale.projectGoal")
           : t("rationale.goal")
+      case "onslaught-goal":
+        return t("rationale.onslaughtGoal")
       case "strength":
         return t("rationale.strength", {
           power: rationale.combatPower.toLocaleString(),
