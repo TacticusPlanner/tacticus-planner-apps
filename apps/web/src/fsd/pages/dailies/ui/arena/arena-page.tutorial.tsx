@@ -5,13 +5,20 @@ import type { Step } from "react-joyride"
 import { useTourPageSteps } from "@/shared/tour"
 
 type StepKey =
-  "purpose" | "mode" | "project" | "teamSize" | "plan" | "locks" | "regenerate"
+  | "purpose"
+  | "mode"
+  | "project"
+  | "teamSize"
+  | "preferences"
+  | "plan"
+  | "locks"
+  | "regenerate"
 
 /**
  * Joyride tour for the Dailies Arena recommendations page: the page's purpose, the XP/Power mode
- * switch, the driving-project selector, the team-size control, the Plan Team, the Random Team's
- * per-character locks, and its Regenerate control. Desktop and mobile share the same targets (both
- * layouts carry the same `data-testid`s).
+ * switch, the driving-project selector, the team-size control, the preferred trait / damage type
+ * selects, the Plan Team, the Random Team's per-character locks, and its Regenerate control.
+ * Desktop and mobile share the same targets (both layouts carry the same `data-testid`s).
  */
 export function useArenaTutorial() {
   const { t } = useTranslation("arena")
@@ -28,6 +35,7 @@ export function useArenaTutorial() {
       step("arena-mode-toggle", "mode"),
       step("arena-project-select", "project"),
       step("arena-team-size", "teamSize"),
+      step("arena-preferences", "preferences"),
       step("arena-category-plan", "plan"),
       step("arena-category-random", "locks"),
       step("arena-random-regenerate", "regenerate"),

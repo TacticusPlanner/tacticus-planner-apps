@@ -2,20 +2,18 @@ import { describe, expect, it } from "vitest"
 
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 
-import {
-  contributionByUnitId,
-  expandCandidatePool,
-  isXpCapped,
-  poolUnitIds,
-} from "./arena-eligibility"
-import type { ArenaRosterCharacter } from "./arena-recommendations.types"
+import { expandCandidatePool, isXpCapped } from "./team-eligibility"
+import type {
+  TeamPoolSpec,
+  TeamRosterCharacter,
+} from "./team-recommendations.types"
 
 const id = (value: string): UnitId => unitIdSchema.parse(value)
 
 const character = (
   value: string,
-  over: Partial<ArenaRosterCharacter> = {}
-): ArenaRosterCharacter => ({
+  over: Partial<TeamRosterCharacter> = {}
+): TeamRosterCharacter => ({
   unitId: id(value),
   rank: "Stone1",
   progression: "Common:None",
@@ -23,7 +21,15 @@ const character = (
   appliedUpgradeCount: 0,
   activeAbilityLevel: 1,
   passiveAbilityLevel: 1,
+  traits: [],
+  damageTypes: [],
   ...over,
+})
+
+const pool = (id: string, unitIds: UnitId[]): TeamPoolSpec => ({
+  id,
+  unitIds: new Set(unitIds),
+  rationaleFor: () => undefined,
 })
 
 describe("isXpCapped", () => {
@@ -57,46 +63,14 @@ describe("isXpCapped", () => {
   })
 })
 
-describe("contributionByUnitId", () => {
-  it("keeps the first contribution per unit id", () => {
-    const map = contributionByUnitId([
-      { unitId: id("x"), goalId: "g1" },
-      { unitId: id("x"), goalId: "g2" },
-      { unitId: id("y"), goalId: "g3", projectId: "p1" },
-    ])
-    expect(map.get(id("x"))?.goalId).toBe("g1")
-    expect(map.get(id("y"))?.projectId).toBe("p1")
-    expect(map.size).toBe(2)
-  })
-})
-
-describe("poolUnitIds", () => {
-  const params = {
-    rosterIds: [id("a"), id("b"), id("c"), id("d")],
-    ownedProjectContributorIds: new Set([id("b")]),
-    ownedGoalContributorIds: new Set([id("b"), id("d")]),
-  }
-
-  it("returns pool members in roster order", () => {
-    expect(poolUnitIds("active-project", params)).toEqual([id("b")])
-    expect(poolUnitIds("overall-goals", params)).toEqual([id("b"), id("d")])
-    expect(poolUnitIds("full-roster", params)).toEqual(params.rosterIds)
-  })
-})
-
 describe("expandCandidatePool", () => {
   const rosterIds = [id("a"), id("b"), id("c"), id("d"), id("e")]
-  const base = {
-    rosterIds,
-    ownedProjectContributorIds: new Set([id("a"), id("b"), id("c")]),
-    ownedGoalContributorIds: new Set([id("a"), id("b"), id("c"), id("d")]),
-    isEligible: () => true,
-  }
 
   it("does not broaden when the primary pool already has enough eligible characters", () => {
     const result = expandCandidatePool({
-      ...base,
-      primaryPool: "active-project",
+      rosterIds,
+      pools: [pool("active-project", [id("a"), id("b"), id("c")])],
+      isEligible: () => true,
     })
     expect(result.poolUsed).toBe("active-project")
     expect(result.broadened).toBe(false)
@@ -105,21 +79,26 @@ describe("expandCandidatePool", () => {
 
   it("widens to the next pool when the primary one is short of the minimum", () => {
     const result = expandCandidatePool({
-      ...base,
-      ownedProjectContributorIds: new Set([id("a"), id("b")]),
-      primaryPool: "active-project",
+      rosterIds,
+      pools: [
+        pool("active-project", [id("a"), id("b")]),
+        pool("overall-goals", [id("a"), id("b"), id("c"), id("d")]),
+      ],
+      isEligible: () => true,
     })
     expect(result.poolUsed).toBe("overall-goals")
     expect(result.broadened).toBe(true)
     expect(result.candidateIds).toEqual([id("a"), id("b"), id("c"), id("d")])
   })
 
-  it("keeps widening to the full roster and de-duplicates across pools", () => {
+  it("keeps widening into the implicit full roster and de-duplicates across pools", () => {
     const result = expandCandidatePool({
-      ...base,
-      ownedProjectContributorIds: new Set([id("a")]),
-      ownedGoalContributorIds: new Set([id("a"), id("b")]),
-      primaryPool: "active-project",
+      rosterIds,
+      pools: [
+        pool("active-project", [id("a")]),
+        pool("overall-goals", [id("a"), id("b")]),
+      ],
+      isEligible: () => true,
     })
     expect(result.poolUsed).toBe("full-roster")
     expect(result.broadened).toBe(true)
@@ -129,11 +108,11 @@ describe("expandCandidatePool", () => {
   it("counts only eligible characters toward the minimum", () => {
     const eligible = new Set([id("d"), id("e")])
     const result = expandCandidatePool({
-      ...base,
-      primaryPool: "active-project",
+      rosterIds,
+      pools: [pool("active-project", [id("a"), id("b"), id("c")])],
       isEligible: (unitId) => eligible.has(unitId),
     })
-    // a/b/c are contributors but ineligible, so the pool widens until 3 eligible are reachable.
+    // a/b/c are in the primary pool but ineligible, so it widens until 3 eligible are reachable.
     expect(result.poolUsed).toBe("full-roster")
     expect(result.broadened).toBe(true)
   })

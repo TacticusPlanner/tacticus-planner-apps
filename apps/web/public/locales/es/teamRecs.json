@@ -1,0 +1,50 @@
+{
+  "mode": {
+    "xp": "XP",
+    "power": "Power",
+    "xpHint": "Prefers characters that can still earn XP and that your selected project or goals need.",
+    "powerHint": "Ignores XP and fields your strongest possible team."
+  },
+  "project": {
+    "label": "Project"
+  },
+  "teamSize": {
+    "label": "Team size"
+  },
+  "preferences": {
+    "trait": "Preferred trait",
+    "damageType": "Preferred damage type",
+    "any": "Any",
+    "note": "A preference nudges the picks toward matching characters; the team widens to keep a full roster rather than shrink."
+  },
+  "state": {
+    "error": "Couldn't load your roster, goals, or project. Try again.",
+    "retry": "Retry",
+    "noCharacters": "You need at least three characters to get a team recommendation."
+  },
+  "category": {
+    "plan": {
+      "title": "Plan team",
+      "description": "Tuned to your selected project first, then your other active goals, then the rest of your roster."
+    },
+    "random": {
+      "title": "Random team",
+      "description": "A random draw from your roster. Lock the ones you like before you regenerate."
+    },
+    "broadenedNote": "Not enough matching characters, so this team was widened beyond its own pool.",
+    "cappedNote": "Fewer than three characters can still earn XP, so XP-capped characters were included.",
+    "fewerThanRequested": "Only {{delivered}} of the requested {{requested}} characters were available."
+  },
+  "lock": {
+    "lock": "Lock this character",
+    "unlock": "Unlock this character"
+  },
+  "regenerate": "Regenerate",
+  "rationale": {
+    "goal": "You have an active goal for this character.",
+    "projectGoal": "In your selected project.",
+    "strength": "Chosen for combat strength ({{power}}).",
+    "minimumSize": "Added to complete the team.",
+    "random": "Drawn at random."
+  }
+}

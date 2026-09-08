@@ -1,68 +1,28 @@
-import type { Progression, Rank, Rarity, UnitId } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
+
+import type {
+  TeamCategory,
+  TeamMode,
+  TeamPreferences,
+  TeamRecommendations,
+} from "./team-recommendations.types"
+
+export {
+  MIN_TEAM_SIZE as ARENA_MIN_TEAM_SIZE,
+  TEAM_SIZES as ARENA_TEAM_SIZES,
+} from "./team-recommendations.types"
 
 /** Team-generation mode. XP Mode is the default (see `use-arena-recommendations`). */
-export type ArenaMode = "xp" | "power"
+export type ArenaMode = TeamMode
 
-/** The recommended-team categories shown on the Arena page. The single **Plan Team** replaces the
- * former Active Project / Overall Goals split; the Home Screen Event category is deferred
- * (issue #111) and is not produced here. */
-export type ArenaCategoryId = "plan" | "random"
+/** The recommended-team categories shown on the Arena page. */
+export type ArenaCategoryId = TeamCategory["id"]
 
-/** Candidate pools, in the fixed priority order the engine widens through. */
-export type ArenaPool = "active-project" | "overall-goals" | "full-roster"
-
-export const ARENA_POOL_ORDER: readonly ArenaPool[] = [
-  "active-project",
-  "overall-goals",
-  "full-roster",
-]
-
-/** Every recommended team holds at least this many characters. */
-export const ARENA_MIN_TEAM_SIZE = 3
-/** The team sizes the page-level "Team size" control offers (also the max Arena team size). */
-export const ARENA_TEAM_SIZES: readonly number[] = [3, 4, 5]
-
-/** Why a character ended up in a recommended team. */
-export type ArenaMemberRationale =
-  | { kind: "goal"; goalId: string; projectId?: string }
-  | { kind: "strength"; combatPower: number }
-  | { kind: "minimum-size" }
-  | { kind: "random" }
-
-export type ArenaTeamMember = {
-  unitId: UnitId
-  /** The character's current rank, shown on the team row. */
-  rank: Rank
-  /** The character's current rarity (from its progression tier), shown on the team row. */
-  rarity: Rarity
-  /** Random Team only: the player has locked this character so it survives Regenerate. Always
-   * `false` for the Plan Team. */
-  locked: boolean
-  rationale: ArenaMemberRationale
-}
-
-export type ArenaCategory = {
-  id: ArenaCategoryId
-  /** The widest pool the final team drew on. */
-  poolUsed: ArenaPool
-  /** True when `poolUsed` is wider than this category's primary pool. */
-  broadened: boolean
-  /** XP Mode only: true when XP-capped characters were included to reach the minimum size. */
-  includedCappedCharacters: boolean
-  /** The team size the page-level control asked for. */
-  requestedSize: number
-  /** How many characters the team actually holds — below `requestedSize` when the pool could not
-   * fill it. */
-  deliveredSize: number
-  members: ArenaTeamMember[]
-}
-
-export type ArenaRecommendations = {
-  categories: ArenaCategory[]
-}
+export type ArenaRecommendations = TeamRecommendations
 
 /** One owned character, with the raw fields the engine needs. `progression` is the synced
- * progression step (the player-data `progressionIndex` field). */
+ * progression step (the player-data `progressionIndex` field). Catalog-sourced traits and damage
+ * types are merged in by `buildArenaRecommendations` for the preference filters. */
 export type ArenaRosterCharacter = {
   unitId: UnitId
   rank: Rank
@@ -72,6 +32,12 @@ export type ArenaRosterCharacter = {
   activeAbilityLevel: number
   passiveAbilityLevel: number
 }
+
+/** Catalog-sourced attributes the preference controls filter on, keyed by unit id. */
+export type ArenaRosterCatalog = ReadonlyMap<
+  UnitId,
+  { traits: readonly string[]; damageTypes: readonly string[] }
+>
 
 /** A character that is the target of an active goal. `projectId` is set only for the
  * selected-project contribution list. */
@@ -123,6 +89,11 @@ export type BuildArenaRecommendationsInput = {
    * reload (the random team is never persisted).
    */
   randomSeed: number
+  /** Preferred trait / damage type (soft filters). Absent or all-empty means no preference. */
+  preferences?: TeamPreferences
+  /** Catalog traits / damage types per owned unit, for the preference filters. Omitted in unit
+   * tests that do not exercise preferences. */
+  rosterCatalog?: ArenaRosterCatalog
 }
 
 /** What `useArenaRecommendations` exposes to the Arena page. */
@@ -139,6 +110,12 @@ export type ArenaRecommendationsViewModel =
       setTeamSize: (size: number) => void
       /** The subset of `ARENA_TEAM_SIZES` the current roster can deliver. */
       availableSizes: number[]
+      /** Preferred trait / damage type and its setter (merge-patch; `undefined` clears a field). */
+      preferences: TeamPreferences
+      setPreferences: (next: Partial<TeamPreferences>) => void
+      /** The traits / damage types the owned roster actually covers, for the control options. */
+      availableTraits: string[]
+      availableDamageTypes: string[]
       /** Lock/unlock a character in the Random Team. */
       toggleRandomLock: (unitId: UnitId) => void
       lockedRandomUnitIds: UnitId[]

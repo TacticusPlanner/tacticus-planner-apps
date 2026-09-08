@@ -10,31 +10,33 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import type { ArenaCategory } from "../../model/arena-recommendations.types"
-import { ArenaTeam } from "./arena-team"
+import type { TeamCategory } from "../../model/team-recommendations.types"
+import { TeamList } from "./team-list"
 
 /**
  * One recommended-team category: its title/description, any "broadened" / "capped included" /
  * "fewer than requested" note, and the team itself. The Random category also gets a Regenerate
  * control (disabled when every slot is locked) and per-character lock toggles.
  */
-export function ArenaCategorySection({
+export function TeamCategorySection({
   category,
+  testIdPrefix = "arena",
   onRegenerate,
   onToggleLock,
 }: {
-  category: ArenaCategory
+  category: TeamCategory
+  testIdPrefix?: string
   onRegenerate?: () => void
   onToggleLock?: (unitId: UnitId) => void
 }) {
-  const { t } = useTranslation("arena")
+  const { t } = useTranslation("teamRecs")
 
   const allLocked =
     category.members.length > 0 &&
     category.members.every((member) => member.locked)
 
   return (
-    <Card data-testid={`arena-category-${category.id}`}>
+    <Card data-testid={`${testIdPrefix}-category-${category.id}`}>
       <CardHeader>
         <CardTitle>{t(`category.${category.id}.title`)}</CardTitle>
         <CardDescription>
@@ -55,7 +57,7 @@ export function ArenaCategorySection({
         {category.deliveredSize < category.requestedSize ? (
           <p
             className="text-xs text-muted-foreground"
-            data-testid={`arena-shortfall-${category.id}`}
+            data-testid={`${testIdPrefix}-shortfall-${category.id}`}
           >
             {t("category.fewerThanRequested", {
               delivered: category.deliveredSize,
@@ -69,15 +71,16 @@ export function ArenaCategorySection({
             size="sm"
             onClick={onRegenerate}
             disabled={allLocked}
-            data-testid="arena-random-regenerate"
+            data-testid={`${testIdPrefix}-random-regenerate`}
           >
             <RefreshCw className="size-4" />
             {t("regenerate")}
           </Button>
         ) : null}
-        <ArenaTeam
+        <TeamList
           members={category.members}
-          testId={`arena-team-${category.id}`}
+          testId={`${testIdPrefix}-team-${category.id}`}
+          testIdPrefix={testIdPrefix}
           onToggleLock={onToggleLock}
         />
       </CardContent>

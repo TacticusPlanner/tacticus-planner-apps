@@ -1,48 +1,6 @@
 {
   "title": "Arena",
   "subtitle": "Team suggestions that move your plan forward while you clear your daily Arena battles.",
-  "mode": {
-    "xp": "XP",
-    "power": "Power",
-    "xpHint": "Prefers characters that can still earn XP and that your selected project or goals need.",
-    "powerHint": "Ignores XP and fields your strongest possible team."
-  },
-  "project": {
-    "label": "Project"
-  },
-  "teamSize": {
-    "label": "Team size"
-  },
-  "state": {
-    "error": "Couldn't load your roster, goals, or project. Try again.",
-    "retry": "Retry",
-    "noCharacters": "You need at least three characters to get a team recommendation."
-  },
-  "category": {
-    "plan": {
-      "title": "Plan team",
-      "description": "Tuned to your selected project first, then your other active goals, then the rest of your roster."
-    },
-    "random": {
-      "title": "Random team",
-      "description": "A random draw from your roster. Lock the ones you like before you regenerate."
-    },
-    "broadenedNote": "Not enough matching characters, so this team was widened beyond its own pool.",
-    "cappedNote": "Fewer than three characters can still earn XP, so XP-capped characters were included.",
-    "fewerThanRequested": "Only {{delivered}} of the requested {{requested}} characters were available."
-  },
-  "lock": {
-    "lock": "Lock this character",
-    "unlock": "Unlock this character"
-  },
-  "regenerate": "Regenerate",
-  "rationale": {
-    "goal": "You have an active goal for this character.",
-    "projectGoal": "In your selected project.",
-    "strength": "Chosen for combat strength ({{power}}).",
-    "minimumSize": "Added to complete the team.",
-    "random": "Drawn at random."
-  },
   "tour": {
     "arena": {
       "steps": {
@@ -61,6 +19,10 @@
         "teamSize": {
           "title": "Team size",
           "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP on fewer characters. Your choice is remembered."
+        },
+        "preferences": {
+          "title": "Preferred trait and damage type",
+          "content": "Bias both teams toward a trait or damage type you want to field. It is a soft nudge — the team widens to stay full rather than shrink, and a preference nobody matches is ignored. Your choice is remembered."
         },
         "plan": {
           "title": "Plan team",
