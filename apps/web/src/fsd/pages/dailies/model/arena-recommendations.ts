@@ -96,6 +96,7 @@ export function buildArenaRecommendations(
   )
 
   const pools: TeamPoolSpec[] = [
+    ...(input.leadingPools ?? []),
     {
       id: "active-project",
       unitIds: new Set(projectContributionById.keys()),

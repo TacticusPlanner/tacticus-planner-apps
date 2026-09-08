@@ -1,0 +1,78 @@
+{
+  "title": "Onslaught",
+  "subtitle": "Equipos de Onslaught restringidos por alianza que hacen avanzar tus metas de Ascensión, además del personaje o Máquina de Guerra que elegir para la recompensa de fragmentos posterior al combate.",
+  "track": {
+    "label": "Vía de alianza",
+    "imperial": "Imperial",
+    "chaos": "Caos",
+    "xenos": "Xenos"
+  },
+  "recipient": {
+    "title": "Receptor de fragmentos posterior al combate",
+    "none": "No hay ningún objetivo de fragmentos configurado para esta vía. Añade una meta de Ascensión que farmee fragmentos de Onslaught para obtener una recomendación aquí.",
+    "unitKind": {
+      "character": "Personaje",
+      "mow": "Máquina de Guerra"
+    },
+    "currentRarity": "Rareza actual",
+    "targetRarity": "Rareza objetivo",
+    "currentShards": "Fragmentos actuales",
+    "requiredShards": "Fragmentos necesarios",
+    "remainingShards": "Fragmentos restantes",
+    "project": "Proyecto",
+    "goal": "Meta",
+    "ascendGoal": "Ascender a {{rarity}}",
+    "reason": {
+      "onlyCandidate": "La única unidad con una meta de Ascensión de Onslaught activa en esta vía.",
+      "inSelectedProject": "Su meta de Ascensión está en tu proyecto seleccionado.",
+      "overallGoalPriority": "Meta de Ascensión de Onslaught con mayor prioridad en tu lista de metas.",
+      "fewestRemainingShards": "La más cercana a su rareza objetivo entre tus metas de Ascensión de Onslaught."
+    }
+  },
+  "tour": {
+    "onslaught": {
+      "steps": {
+        "purpose": {
+          "title": "Recomendaciones de equipo de Onslaught",
+          "content": "Equipos de Onslaught sugeridos para una vía de alianza cada vez, y la unidad que elegir para la recompensa de fragmentos posterior al combate, para que tus batallas diarias hagan avanzar tus metas de Ascensión."
+        },
+        "track": {
+          "title": "Vía de alianza",
+          "content": "Elige la vía Imperial, Caos o Xenos. Cada recomendación de abajo —equipos y receptor de fragmentos— se limita a esa alianza. Tu elección se recuerda."
+        },
+        "mode": {
+          "title": "XP o Potencia",
+          "content": "El modo XP prefiere personajes que aún pueden ganar XP. El modo Potencia ignora la XP y elige tu equipo más fuerte. Tu elección se recuerda por página."
+        },
+        "project": {
+          "title": "Proyecto impulsor",
+          "content": "Elige a qué proyecto se ajustan el equipo del plan y el receptor de fragmentos. Es la misma selección de proyecto que usan las demás pestañas de Diarias."
+        },
+        "teamSize": {
+          "title": "Tamaño del equipo",
+          "content": "Elige 3, 4 o 5 personajes para ambos equipos. Un equipo completo de 5 es el valor por defecto; baja a 3 o 4 para concentrar la XP compartida de cada combate. Tu elección se recuerda."
+        },
+        "preferences": {
+          "title": "Rasgo y tipo de daño preferidos",
+          "content": "Inclina ambos equipos hacia un rasgo o tipo de daño que quieras desplegar. Es un empujón suave: el equipo se amplía dentro de la alianza de la vía para mantenerse completo en lugar de reducirse."
+        },
+        "plan": {
+          "title": "Equipo del plan",
+          "content": "Un equipo liderado por personajes que estás ascendiendo con farmeo de fragmentos de Onslaught, luego tu proyecto seleccionado, luego tus otras metas y la plantilla de la vía. Una nota indica cuándo se amplió."
+        },
+        "shardRecipient": {
+          "title": "Receptor de fragmentos posterior al combate",
+          "content": "Tras la batalla eliges una unidad para la recompensa de fragmentos. Este panel recomienda el mejor personaje o Máquina de Guerra de tus metas de Ascensión de Onslaught activas; no tiene que estar en el equipo de combate."
+        },
+        "locks": {
+          "title": "Bloquea lo que te guste",
+          "content": "Bloquea un personaje en el equipo aleatorio y se queda al volver a generar. Los bloqueos se restablecen al recargar o cambiar de vía."
+        },
+        "regenerate": {
+          "title": "Volver a generar",
+          "content": "Baraja un nuevo equipo aleatorio. Solo cambian las ranuras desbloqueadas; se desactiva cuando todas están bloqueadas."
+        }
+      }
+    }
+  }
+}

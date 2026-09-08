@@ -517,4 +517,46 @@ describe("buildArenaRecommendations", () => {
       expect(random.includedCappedCharacters).toBe(false)
     })
   })
+
+  describe("leadingPools", () => {
+    it("ranks leading-pool members ahead of the project and goals pools in XP Mode", () => {
+      const roster = ["a", "b", "c", "d", "e"].map((name) => character(name))
+      const plan = categoryOf(
+        build({
+          roster,
+          teamSize: 3,
+          activeProjectContributions: [goal("a", "g-a", "p1")],
+          activeGoalContributions: [goal("b", "g-b")],
+          leadingPools: [
+            {
+              id: "lead",
+              unitIds: new Set([id("e")]),
+              rationaleFor: (unit) => ({
+                kind: "onslaught-goal",
+                goalId: `lead-${unit}`,
+              }),
+            },
+          ],
+        }),
+        "plan"
+      )
+      expect(unitIds(plan.members)[0]).toBe(id("e"))
+      expect(plan.members[0].rationale).toEqual({
+        kind: "onslaught-goal",
+        goalId: "lead-e",
+      })
+    })
+
+    it("is absent-safe — omitting leadingPools matches passing an empty list", () => {
+      const roster = ["a", "b", "c", "d"].map((name) => character(name))
+      const args = {
+        roster,
+        teamSize: 3,
+        activeProjectContributions: [goal("a", "g-a", "p1")],
+      }
+      const withOmitted = categoryOf(build(args), "plan")
+      const withEmpty = categoryOf(build({ ...args, leadingPools: [] }), "plan")
+      expect(unitIds(withEmpty.members)).toEqual(unitIds(withOmitted.members))
+    })
+  })
 })

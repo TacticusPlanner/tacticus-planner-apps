@@ -31,6 +31,7 @@ import {
   usePersistedMode,
   usePersistedPreferences,
   usePersistedTeamSize,
+  usePersistedTrack,
 } from "./team-recommendation-prefs"
 import { MIN_TEAM_SIZE, TEAM_SIZES } from "./team-recommendations.types"
 import type { TeamPreferences } from "./team-recommendations.types"
@@ -47,34 +48,20 @@ const DEFAULT_TRACK: SalvageTrack = SALVAGE_TRACKS[0]
 const EMPTY_LOCK_IDS: UnitId[] = []
 const EMPTY_PREFERENCES: TeamPreferences = {}
 
-function readStoredTrack(): SalvageTrack {
-  try {
-    const raw = window.localStorage.getItem(SALVAGE_TRACK_STORAGE_KEY)
-    return isSalvageTrack(raw) ? raw : DEFAULT_TRACK
-  } catch {
-    return DEFAULT_TRACK
-  }
-}
-
 /**
  * The selected Salvage Run alliance track, persisted per browser so it survives navigation away
- * from the page and a full reload. Guarded the same way as the mode toggle — a private window
- * degrades to the Imperial default.
+ * from the page and a full reload. A thin wrapper over the shared `usePersistedTrack` with the
+ * Salvage-Run key — a private window degrades to the Imperial default.
  */
 export function usePersistedSalvageTrack(): [
   SalvageTrack,
   (track: SalvageTrack) => void,
 ] {
-  const [track, setTrackState] = useState<SalvageTrack>(readStoredTrack)
-  const setTrack = useCallback((next: SalvageTrack) => {
-    setTrackState(next)
-    try {
-      window.localStorage.setItem(SALVAGE_TRACK_STORAGE_KEY, next)
-    } catch {
-      // Best-effort — the in-memory value still updates.
-    }
-  }, [])
-  return [track, setTrack]
+  return usePersistedTrack(
+    SALVAGE_TRACK_STORAGE_KEY,
+    isSalvageTrack,
+    DEFAULT_TRACK
+  )
 }
 
 // `useLiveQuery` turns a rejected querier into a permanent `undefined`, indistinguishable from

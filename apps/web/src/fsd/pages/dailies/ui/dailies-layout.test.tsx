@@ -58,6 +58,9 @@ vi.mock("../model/use-arena-recommendations", () => ({
 vi.mock("../model/use-salvage-recommendations", () => ({
   useSalvageRecommendations: () => ({ status: "loading" }),
 }))
+vi.mock("../model/use-onslaught-recommendations", () => ({
+  useOnslaughtRecommendations: () => ({ status: "loading" }),
+}))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 
 function renderDailies(path = "/dailies") {
@@ -88,7 +91,7 @@ describe("Dailies navigation", () => {
   // in the shared app-shell header's section-tabs row, not in DailiesLayout - see
   // section-tabs.test.tsx. This only confirms each still-under-construction route renders its
   // placeholder page.
-  it.each(["/dailies/onslaught", "/dailies/guild-raids"])(
+  it.each(["/dailies/guild-raids"])(
     "routes %s to its own placeholder page",
     async (path) => {
       renderDailies(path)
@@ -103,6 +106,15 @@ describe("Dailies navigation", () => {
     renderDailies("/dailies/salvage-run")
 
     expect(await screen.findByTestId("salvage-run-page")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("dailies-placeholder-page")
+    ).not.toBeInTheDocument()
+  })
+
+  it("routes /dailies/onslaught to the Onslaught recommendations page", async () => {
+    renderDailies("/dailies/onslaught")
+
+    expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
     expect(
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()

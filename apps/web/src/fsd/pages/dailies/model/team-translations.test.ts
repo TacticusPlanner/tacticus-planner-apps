@@ -12,6 +12,10 @@ import salvageRunDe from "../../../../../public/locales/de/salvageRun.json"
 import salvageRunEn from "../../../../../public/locales/en/salvageRun.json"
 import salvageRunEs from "../../../../../public/locales/es/salvageRun.json"
 import salvageRunFr from "../../../../../public/locales/fr/salvageRun.json"
+import onslaughtDe from "../../../../../public/locales/de/onslaught.json"
+import onslaughtEn from "../../../../../public/locales/en/onslaught.json"
+import onslaughtEs from "../../../../../public/locales/es/onslaught.json"
+import onslaughtFr from "../../../../../public/locales/fr/onslaught.json"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -32,6 +36,11 @@ describe("Dailies team-recommendation translations", () => {
       "salvageRun",
       salvageRunEn,
       { de: salvageRunDe, es: salvageRunEs, fr: salvageRunFr },
+    ],
+    [
+      "onslaught",
+      onslaughtEn,
+      { de: onslaughtDe, es: onslaughtEs, fr: onslaughtFr },
     ],
   ] as const)(
     "keeps every locale of %s aligned with English",
@@ -55,6 +64,7 @@ describe("Dailies team-recommendation translations", () => {
       expect(locale.preferences.matchesDamageType).toContain("{{attribute}}")
       expect(locale.preferences.missingTrait).toContain("{{attribute}}")
       expect(locale.preferences.missingDamageType).toContain("{{attribute}}")
+      expect(locale.rationale.onslaughtGoal).toBeTruthy()
       expect(locale.category.plan.title).toBeTruthy()
       expect(locale.category.random.title).toBeTruthy()
       expect(locale.category.fewerThanRequested).toContain("{{delivered}}")
@@ -107,6 +117,40 @@ describe("Dailies team-recommendation translations", () => {
         "project",
         "purpose",
         "regenerate",
+        "teamSize",
+        "track",
+      ])
+    }
+  })
+
+  it("provides the track copy, the shard recipient copy, and the full tour in onslaught", () => {
+    for (const locale of [onslaughtEn, onslaughtDe, onslaughtEs, onslaughtFr]) {
+      expect(locale.title).toBeTruthy()
+      expect(locale.subtitle).toBeTruthy()
+      expect(locale.track.label).toBeTruthy()
+      expect(locale.track.imperial).toBeTruthy()
+      expect(locale.track.chaos).toBeTruthy()
+      expect(locale.track.xenos).toBeTruthy()
+      expect(locale.recipient.title).toBeTruthy()
+      expect(locale.recipient.none).toBeTruthy()
+      expect(locale.recipient.unitKind.character).toBeTruthy()
+      expect(locale.recipient.unitKind.mow).toBeTruthy()
+      expect(locale.recipient.ascendGoal).toContain("{{rarity}}")
+      expect(Object.keys(locale.recipient.reason).sort()).toEqual([
+        "fewestRemainingShards",
+        "inSelectedProject",
+        "onlyCandidate",
+        "overallGoalPriority",
+      ])
+      expect(Object.keys(locale.tour.onslaught.steps).sort()).toEqual([
+        "locks",
+        "mode",
+        "plan",
+        "preferences",
+        "project",
+        "purpose",
+        "regenerate",
+        "shardRecipient",
         "teamSize",
         "track",
       ])

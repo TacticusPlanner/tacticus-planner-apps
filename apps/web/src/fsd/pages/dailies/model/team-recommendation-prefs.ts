@@ -72,6 +72,41 @@ export function usePersistedTeamSize(
   return [teamSize, setTeamSize]
 }
 
+/**
+ * The selected alliance track, persisted per browser under `storageKey` (same guard shape as the
+ * mode toggle). `isValid` validates a stored string and `fallback` is used on a first visit, a bad
+ * stored value, or a `localStorage` failure. Shared by the Salvage Run and Onslaught pages, each
+ * with its own key so the pages do not share a track.
+ */
+export function usePersistedTrack<T extends string>(
+  storageKey: string,
+  isValid: (value: unknown) => value is T,
+  fallback: T
+): [T, (track: T) => void] {
+  const read = useCallback((): T => {
+    try {
+      const raw = window.localStorage.getItem(storageKey)
+      return isValid(raw) ? raw : fallback
+    } catch {
+      return fallback
+    }
+  }, [storageKey, isValid, fallback])
+
+  const [track, setTrackState] = useState<T>(read)
+  const setTrack = useCallback(
+    (next: T) => {
+      setTrackState(next)
+      try {
+        window.localStorage.setItem(storageKey, next)
+      } catch {
+        // Best-effort — the in-memory value still updates.
+      }
+    },
+    [storageKey]
+  )
+  return [track, setTrack]
+}
+
 function readStoredPreferences(storageKey: string): TeamPreferences {
   try {
     const raw = window.localStorage.getItem(storageKey)

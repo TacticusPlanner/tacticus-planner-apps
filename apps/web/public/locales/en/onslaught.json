@@ -1,0 +1,78 @@
+{
+  "title": "Onslaught",
+  "subtitle": "Alliance-locked Onslaught teams that push your Ascend goals forward, plus the character or Machine of War to pick for the post-battle shard reward.",
+  "track": {
+    "label": "Alliance track",
+    "imperial": "Imperial",
+    "chaos": "Chaos",
+    "xenos": "Xenos"
+  },
+  "recipient": {
+    "title": "Post-battle shard recipient",
+    "none": "No shard target is configured for this track. Add an Ascend goal that farms Onslaught shards to get a recommendation here.",
+    "unitKind": {
+      "character": "Character",
+      "mow": "Machine of War"
+    },
+    "currentRarity": "Current rarity",
+    "targetRarity": "Target rarity",
+    "currentShards": "Current shards",
+    "requiredShards": "Required shards",
+    "remainingShards": "Remaining shards",
+    "project": "Project",
+    "goal": "Goal",
+    "ascendGoal": "Ascend to {{rarity}}",
+    "reason": {
+      "onlyCandidate": "The only unit with an active Onslaught Ascend goal on this track.",
+      "inSelectedProject": "Its Ascend goal is in your selected project.",
+      "overallGoalPriority": "Highest-priority Onslaught Ascend goal in your goal list.",
+      "fewestRemainingShards": "Closest to its target rarity of your Onslaught Ascend goals."
+    }
+  },
+  "tour": {
+    "onslaught": {
+      "steps": {
+        "purpose": {
+          "title": "Onslaught team recommendations",
+          "content": "Suggested Onslaught teams for one alliance track at a time, and the unit to pick for the post-battle shard reward, so your daily battles advance your Ascend goals."
+        },
+        "track": {
+          "title": "Alliance track",
+          "content": "Pick the Imperial, Chaos, or Xenos track. Every recommendation below — teams and shard recipient — is limited to that alliance. Your choice is remembered."
+        },
+        "mode": {
+          "title": "XP or Power",
+          "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered per page."
+        },
+        "project": {
+          "title": "Driving project",
+          "content": "Pick which project the Plan team and the shard recipient are tuned to. This is the same project selection used on the other Dailies tabs."
+        },
+        "teamSize": {
+          "title": "Team size",
+          "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP. Your choice is remembered."
+        },
+        "preferences": {
+          "title": "Preferred trait and damage type",
+          "content": "Bias both teams toward a trait or damage type you want to field. It is a soft nudge — the team widens within the track's alliance to stay full rather than shrink."
+        },
+        "plan": {
+          "title": "Plan team",
+          "content": "One team led by characters you are ascending with Onslaught shard farming, then your selected project, then your other goals and the track's roster. A note shows when it was widened."
+        },
+        "shardRecipient": {
+          "title": "Post-battle shard recipient",
+          "content": "After the battle you pick one unit for the shard reward. This panel recommends the best character or Machine of War from your active Onslaught Ascend goals — it does not have to be on the battle team."
+        },
+        "locks": {
+          "title": "Lock what you like",
+          "content": "Lock a character in the Random team and it stays put when you regenerate. Locks reset when you reload or switch track."
+        },
+        "regenerate": {
+          "title": "Regenerate",
+          "content": "Shuffle a new Random team. Only the unlocked slots change; it is disabled once every slot is locked."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "title": "Ansturm",
+  "subtitle": "Allianzgebundene Ansturm-Teams, die deine Aufstiegsziele voranbringen, plus der Charakter oder die Kriegsmaschine für die Splitter-Belohnung nach dem Kampf.",
+  "track": {
+    "label": "Allianz-Strang",
+    "imperial": "Imperium",
+    "chaos": "Chaos",
+    "xenos": "Xenos"
+  },
+  "recipient": {
+    "title": "Splitter-Empfänger nach dem Kampf",
+    "none": "Für diesen Strang ist kein Splitter-Ziel eingerichtet. Lege ein Aufstiegsziel an, das Ansturm-Splitter farmt, um hier eine Empfehlung zu erhalten.",
+    "unitKind": {
+      "character": "Charakter",
+      "mow": "Kriegsmaschine"
+    },
+    "currentRarity": "Aktuelle Seltenheit",
+    "targetRarity": "Ziel-Seltenheit",
+    "currentShards": "Aktuelle Splitter",
+    "requiredShards": "Benötigte Splitter",
+    "remainingShards": "Verbleibende Splitter",
+    "project": "Projekt",
+    "goal": "Ziel",
+    "ascendGoal": "Aufstieg zu {{rarity}}",
+    "reason": {
+      "onlyCandidate": "Die einzige Einheit mit einem aktiven Ansturm-Aufstiegsziel auf diesem Strang.",
+      "inSelectedProject": "Ihr Aufstiegsziel gehört zu deinem ausgewählten Projekt.",
+      "overallGoalPriority": "Ansturm-Aufstiegsziel mit der höchsten Priorität in deiner Zielliste.",
+      "fewestRemainingShards": "Deinem Ziel am nächsten unter deinen Ansturm-Aufstiegszielen."
+    }
+  },
+  "tour": {
+    "onslaught": {
+      "steps": {
+        "purpose": {
+          "title": "Ansturm-Team-Empfehlungen",
+          "content": "Vorgeschlagene Ansturm-Teams für jeweils einen Allianz-Strang und die Einheit für die Splitter-Belohnung nach dem Kampf, damit deine täglichen Kämpfe deine Aufstiegsziele voranbringen."
+        },
+        "track": {
+          "title": "Allianz-Strang",
+          "content": "Wähle den Strang Imperium, Chaos oder Xenos. Jede Empfehlung unten – Teams und Splitter-Empfänger – ist auf diese Allianz beschränkt. Deine Wahl wird gespeichert."
+        },
+        "mode": {
+          "title": "XP oder Stärke",
+          "content": "Der XP-Modus bevorzugt Charaktere, die noch XP verdienen können. Der Stärke-Modus ignoriert XP und wählt dein stärkstes Team. Deine Wahl wird pro Seite gespeichert."
+        },
+        "project": {
+          "title": "Treibendes Projekt",
+          "content": "Wähle, auf welches Projekt das Plan-Team und der Splitter-Empfänger abgestimmt sind. Dies ist dieselbe Projektauswahl wie auf den anderen Täglich-Tabs."
+        },
+        "teamSize": {
+          "title": "Teamgröße",
+          "content": "Wähle 3, 4 oder 5 Charaktere für beide Teams. Ein volles Team mit 5 ist die Vorgabe; gehe auf 3 oder 4 herunter, um die geteilte XP jedes Kampfes zu bündeln. Deine Wahl wird gespeichert."
+        },
+        "preferences": {
+          "title": "Bevorzugte Eigenschaft und Schadensart",
+          "content": "Lenke beide Teams zu einer Eigenschaft oder Schadensart, die du einsetzen willst. Es ist ein sanfter Anstoß – das Team weitet sich innerhalb der Allianz des Strangs aus, um voll zu bleiben, statt zu schrumpfen."
+        },
+        "plan": {
+          "title": "Plan-Team",
+          "content": "Ein Team, angeführt von Charakteren, die du per Ansturm-Splitterfarming aufsteigen lässt, dann deinem ausgewählten Projekt, dann deinen anderen Zielen und dem Kader des Strangs. Ein Hinweis zeigt an, wann es ausgeweitet wurde."
+        },
+        "shardRecipient": {
+          "title": "Splitter-Empfänger nach dem Kampf",
+          "content": "Nach dem Kampf wählst du eine Einheit für die Splitter-Belohnung. Dieses Feld empfiehlt den besten Charakter oder die beste Kriegsmaschine aus deinen aktiven Ansturm-Aufstiegszielen – sie muss nicht im Kampfteam sein."
+        },
+        "locks": {
+          "title": "Sperre, was dir gefällt",
+          "content": "Sperre einen Charakter im Zufallsteam, und er bleibt beim Neuwürfeln erhalten. Sperren werden beim Neuladen oder Strang-Wechsel zurückgesetzt."
+        },
+        "regenerate": {
+          "title": "Neu würfeln",
+          "content": "Mische ein neues Zufallsteam. Nur die nicht gesperrten Plätze ändern sich; deaktiviert, sobald alle Plätze gesperrt sind."
+        }
+      }
+    }
+  }
+}
