@@ -88,5 +88,57 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Bosses",
+    "primes": "Primes",
+    "primarch": "Primarch",
+    "progression": "Progression",
+    "progressionPrev": "Previous progression step",
+    "progressionNext": "Next progression step",
+    "stats": "Stats",
+    "health": "Health",
+    "damage": "Damage",
+    "armor": "Armor",
+    "rank": "Rank",
+    "stars": "Stars",
+    "baseRarity": "Base rarity",
+    "abilityLevel": "Ability level",
+    "movement": "Movement",
+    "critChance": "Crit chance",
+    "critDamage": "Crit damage",
+    "blockChance": "Block chance",
+    "weapons": "Weapons",
+    "rangedHits": "{{hits}} hits · range {{range}}",
+    "meleeHits": "{{hits}} hits · melee",
+    "abilities": "Abilities",
+    "traits": "Traits",
+    "encounters": "Encounters",
+    "noEncounterData": "No season encounter data for this unit.",
+    "encounterType": "{{type}} encounter",
+    "disallowed": "No {{faction}}",
+    "fieldEnemies": "Field enemies",
+    "atHpLost": "At {{hpLost}} HP lost",
+    "noModifiers": "No modifiers.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Raid bosses",
+          "content": "Every guild raid boss. Pick one to see its stats, abilities, and encounter modifiers."
+        },
+        "primes": {
+          "title": "Primes",
+          "content": "The prime enemies fought alongside each boss — browsable in their own right."
+        },
+        "progression": {
+          "title": "Progression step",
+          "content": "Step through the boss's progression ladder to see how its stats scale."
+        },
+        "encounters": {
+          "title": "Encounters & modifiers",
+          "content": "Per encounter: the field enemies and the modifiers that activate as the boss loses HP."
+        }
+      }
+    }
   }
 }

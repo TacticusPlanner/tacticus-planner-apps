@@ -88,5 +88,57 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Boss",
+    "primes": "Primes",
+    "primarch": "Primarque",
+    "progression": "Progression",
+    "progressionPrev": "Palier de progression précédent",
+    "progressionNext": "Palier de progression suivant",
+    "stats": "Statistiques",
+    "health": "Points de vie",
+    "damage": "Dégâts",
+    "armor": "Armure",
+    "rank": "Rang",
+    "stars": "Étoiles",
+    "baseRarity": "Rareté de base",
+    "abilityLevel": "Niveau de capacité",
+    "movement": "Déplacement",
+    "critChance": "Chance de critique",
+    "critDamage": "Dégâts critiques",
+    "blockChance": "Chance de blocage",
+    "weapons": "Armes",
+    "rangedHits": "{{hits}} coups · portée {{range}}",
+    "meleeHits": "{{hits}} coups · corps à corps",
+    "abilities": "Capacités",
+    "traits": "Traits",
+    "encounters": "Rencontres",
+    "noEncounterData": "Aucune donnée de rencontre de saison pour cette unité.",
+    "encounterType": "Rencontre {{type}}",
+    "disallowed": "Aucun {{faction}}",
+    "fieldEnemies": "Ennemis de terrain",
+    "atHpLost": "À {{hpLost}} PV perdus",
+    "noModifiers": "Aucun modificateur.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Boss de raid",
+          "content": "Tous les boss de raid de guilde. Sélectionnez-en un pour voir ses statistiques, ses capacités et ses modificateurs de rencontre."
+        },
+        "primes": {
+          "title": "Primes",
+          "content": "Les ennemis primes qui combattent aux côtés de chaque boss, consultables individuellement."
+        },
+        "progression": {
+          "title": "Palier de progression",
+          "content": "Parcourez l'échelle de progression du boss pour voir comment ses statistiques évoluent."
+        },
+        "encounters": {
+          "title": "Rencontres et modificateurs",
+          "content": "Par rencontre : les ennemis de terrain et les modificateurs qui s'activent à mesure que le boss perd des PV."
+        }
+      }
+    }
   }
 }

@@ -36,6 +36,11 @@ declare module "i18next" {
       factions: Record<string, string>
       traits: Record<string, string>
       damageTypes: Record<string, string>
+      // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys). English-only; other
+      // locales fall back to English (see the raid-bosses-library change).
+      raidBosses: Record<string, string>
+      raidBossAbilities: Record<string, string>
+      raidBossTraits: Record<string, string>
     }
   }
 }

@@ -15,9 +15,9 @@ const LibraryCollectionPage = lazy(() =>
     default: m.LibraryCollectionPage,
   }))
 )
-const LibraryNoRecordsPage = lazy(() =>
-  import("./ui/library-collection-page").then((m) => ({
-    default: m.LibraryNoRecordsPage,
+const RaidBossesPage = lazy(() =>
+  import("./ui/raid-bosses/raid-bosses-page").then((m) => ({
+    default: m.RaidBossesPage,
   }))
 )
 const ShopsBrowsePage = lazy(() =>
@@ -58,11 +58,8 @@ export const routes: RouteObject[] = [
     path: "npcs/:entityId",
     element: <LibraryCollectionPage collection="npcs" getRecords={getNpcs} />,
   },
-  { path: "raid-bosses", element: <LibraryNoRecordsPage /> },
-  {
-    path: "raid-bosses/:entityId",
-    element: <LibraryNoRecordsPage />,
-  },
+  { path: "raid-bosses", element: <RaidBossesPage /> },
+  { path: "raid-bosses/:entityId", element: <RaidBossesPage /> },
   // Shops is a standalone reference route, not an entity collection — no `/:entityId` variant, so it
   // is outside the `library-entity-routes` contract.
   { path: "shops", element: <ShopsBrowsePage /> },

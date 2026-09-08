@@ -88,5 +88,57 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Jefes",
+    "primes": "Primes",
+    "primarch": "Primarca",
+    "progression": "Progresión",
+    "progressionPrev": "Paso de progresión anterior",
+    "progressionNext": "Paso de progresión siguiente",
+    "stats": "Estadísticas",
+    "health": "Salud",
+    "damage": "Daño",
+    "armor": "Armadura",
+    "rank": "Rango",
+    "stars": "Estrellas",
+    "baseRarity": "Rareza base",
+    "abilityLevel": "Nivel de habilidad",
+    "movement": "Movimiento",
+    "critChance": "Prob. de crítico",
+    "critDamage": "Daño crítico",
+    "blockChance": "Prob. de bloqueo",
+    "weapons": "Armas",
+    "rangedHits": "{{hits}} golpes · alcance {{range}}",
+    "meleeHits": "{{hits}} golpes · cuerpo a cuerpo",
+    "abilities": "Habilidades",
+    "traits": "Rasgos",
+    "encounters": "Encuentros",
+    "noEncounterData": "No hay datos de encuentros de temporada para esta unidad.",
+    "encounterType": "Encuentro {{type}}",
+    "disallowed": "Sin {{faction}}",
+    "fieldEnemies": "Enemigos de campo",
+    "atHpLost": "Con {{hpLost}} de salud perdida",
+    "noModifiers": "Sin modificadores.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Jefes de incursión",
+          "content": "Todos los jefes de incursión de gremio. Elige uno para ver sus estadísticas, habilidades y modificadores de encuentro."
+        },
+        "primes": {
+          "title": "Primes",
+          "content": "Los enemigos prime que luchan junto a cada jefe, consultables por sí mismos."
+        },
+        "progression": {
+          "title": "Paso de progresión",
+          "content": "Recorre la escala de progresión del jefe para ver cómo escalan sus estadísticas."
+        },
+        "encounters": {
+          "title": "Encuentros y modificadores",
+          "content": "Por encuentro: los enemigos de campo y los modificadores que se activan a medida que el jefe pierde salud."
+        }
+      }
+    }
   }
 }

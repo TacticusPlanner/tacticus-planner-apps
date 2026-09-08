@@ -23,6 +23,9 @@ import type {
   onslaughtRewardSchema,
   ascensionCostSchema,
   unlockShardCostSchema,
+  raidBossesPayloadSchema,
+  raidBossSchema,
+  raidBossSeasonSchema,
   shopSchema,
   shopSlotSchema,
   shopVariantSchema,
@@ -66,3 +69,6 @@ export type GameCatalogEventsCalendarEntry = z.infer<
 export type GameCatalogShop = z.infer<typeof shopSchema>
 export type GameCatalogShopSlot = z.infer<typeof shopSlotSchema>
 export type GameCatalogShopVariant = z.infer<typeof shopVariantSchema>
+export type GameCatalogRaidBosses = z.infer<typeof raidBossesPayloadSchema>
+export type GameCatalogRaidBoss = z.infer<typeof raidBossSchema>
+export type GameCatalogRaidBossSeason = z.infer<typeof raidBossSeasonSchema>

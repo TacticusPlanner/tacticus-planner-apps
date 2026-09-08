@@ -88,5 +88,57 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Bosse",
+    "primes": "Prime",
+    "primarch": "Primarch",
+    "progression": "Fortschritt",
+    "progressionPrev": "Vorherige Fortschrittsstufe",
+    "progressionNext": "Nächste Fortschrittsstufe",
+    "stats": "Werte",
+    "health": "Leben",
+    "damage": "Schaden",
+    "armor": "Rüstung",
+    "rank": "Rang",
+    "stars": "Sterne",
+    "baseRarity": "Basisseltenheit",
+    "abilityLevel": "Fähigkeitsstufe",
+    "movement": "Bewegung",
+    "critChance": "Kritische Chance",
+    "critDamage": "Kritischer Schaden",
+    "blockChance": "Blockchance",
+    "weapons": "Waffen",
+    "rangedHits": "{{hits}} Treffer · Reichweite {{range}}",
+    "meleeHits": "{{hits}} Treffer · Nahkampf",
+    "abilities": "Fähigkeiten",
+    "traits": "Eigenschaften",
+    "encounters": "Begegnungen",
+    "noEncounterData": "Keine Saison-Begegnungsdaten für diese Einheit.",
+    "encounterType": "{{type}}-Begegnung",
+    "disallowed": "Kein {{faction}}",
+    "fieldEnemies": "Feldgegner",
+    "atHpLost": "Bei {{hpLost}} verlorenem Leben",
+    "noModifiers": "Keine Modifikatoren.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Raid-Bosse",
+          "content": "Jeder Gildenraid-Boss. Wähle einen aus, um seine Werte, Fähigkeiten und Begegnungsmodifikatoren zu sehen."
+        },
+        "primes": {
+          "title": "Prime",
+          "content": "Die Prime-Gegner, die neben jedem Boss kämpfen – auch einzeln durchsuchbar."
+        },
+        "progression": {
+          "title": "Fortschrittsstufe",
+          "content": "Gehe die Fortschrittsleiter des Bosses durch, um zu sehen, wie seine Werte skalieren."
+        },
+        "encounters": {
+          "title": "Begegnungen & Modifikatoren",
+          "content": "Pro Begegnung: die Feldgegner und die Modifikatoren, die aktiv werden, wenn der Boss Leben verliert."
+        }
+      }
+    }
   }
 }
