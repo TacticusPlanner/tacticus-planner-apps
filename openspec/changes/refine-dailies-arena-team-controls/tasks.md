@@ -61,8 +61,8 @@ max(ARENA_MIN_TEAM_SIZE, eligibleCount) : ordered.length))`; set
 
 - [x] 4.1 Add `usePersistedTeamSize()` to `use-arena-recommendations.ts`
       mirroring `usePersistedArenaMode()` (`localStorage` key
-      `tp.dailies.arena.teamSize`, parse to `3|4|5`, default 3, try/catch both
-      ends). Verify unit tests: default 3, round-trips a set value, throw-safe.
+      `tp.dailies.arena.teamSize`, parse to `3|4|5`, default 5, try/catch both
+      ends). Verify unit tests: default 5, round-trips a set value, throw-safe.
 - [x] 4.2 Make `selectedProjectId` a parameter of `useArenaRecommendations`;
       swap the `activeProjectId` goals query for
       `projectQueries.goals(selectedProjectId ?? "none")` with the matching
@@ -99,6 +99,10 @@ max(ARENA_MIN_TEAM_SIZE, eligibleCount) : ordered.length))`; set
 - [x] 6.1 `arena-team.tsx`: single column (`flex flex-col gap-2`); add trailing
       `<RarityIcon>` + `<RankBadge showLabel={false}>` from `@/shared/ui` per row.
       Verify a render test asserts rarity/rank nodes appear for each member.
+- [x] 6.5 Give the rank icon (`RankBadge` gains an opt-in `tooltip` prop,
+      mirroring `RarityIcon`) and the lock toggle a hover/focus tooltip naming the
+      rank / the lock-or-unlock action. Verify `rank-badge.test.tsx` (tooltip on,
+      tooltip off) and a lock-tooltip assertion in `arena-page.test.tsx`.
 - [x] 6.2 `arena-team.tsx`: when an `onToggleLock` prop is present, render a
       `Lock`/`LockOpen` icon `Button` per row (`aria-pressed`,
       `data-testid="arena-lock-${unitId}"`). Verify a test toggles a lock and sees

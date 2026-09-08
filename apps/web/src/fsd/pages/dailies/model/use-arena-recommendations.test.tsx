@@ -102,25 +102,25 @@ describe("usePersistedArenaMode", () => {
 })
 
 describe("usePersistedTeamSize", () => {
-  it("defaults to a three-character team with nothing stored", () => {
+  it("defaults to a five-character team with nothing stored", () => {
     const { result } = renderHook(() => usePersistedTeamSize())
-    expect(result.current[0]).toBe(3)
+    expect(result.current[0]).toBe(5)
   })
 
   it("round-trips a chosen size through localStorage", () => {
     const first = renderHook(() => usePersistedTeamSize())
-    act(() => first.result.current[1](5))
-    expect(first.result.current[0]).toBe(5)
-    expect(window.localStorage.getItem("tp.dailies.arena.teamSize")).toBe("5")
+    act(() => first.result.current[1](3))
+    expect(first.result.current[0]).toBe(3)
+    expect(window.localStorage.getItem("tp.dailies.arena.teamSize")).toBe("3")
 
     const second = renderHook(() => usePersistedTeamSize())
-    expect(second.result.current[0]).toBe(5)
+    expect(second.result.current[0]).toBe(3)
   })
 
   it("ignores an out-of-range stored value", () => {
     window.localStorage.setItem("tp.dailies.arena.teamSize", "9")
     const { result } = renderHook(() => usePersistedTeamSize())
-    expect(result.current[0]).toBe(3)
+    expect(result.current[0]).toBe(5)
   })
 })
 
@@ -263,6 +263,6 @@ describe("useArenaRecommendations", () => {
       for (let i = 0; i < 8; i++) result.current.toggleRandomLock(uid(`u${i}`))
     })
     if (result.current.status !== "ready") throw new Error("expected ready")
-    expect(result.current.lockedRandomUnitIds).toHaveLength(3)
+    expect(result.current.lockedRandomUnitIds).toHaveLength(5)
   })
 })

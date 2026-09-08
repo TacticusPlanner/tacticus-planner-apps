@@ -203,6 +203,17 @@ describe("ArenaPage", () => {
     expect(setProjectId).toHaveBeenCalledWith("p2")
   })
 
+  it("gives the lock control a hover tooltip", async () => {
+    render(<ArenaPage />)
+    await userEvent.hover(
+      within(screen.getByTestId("arena-team-random")).getByTestId(
+        "arena-lock-a"
+      )
+    )
+    const tooltips = await screen.findAllByRole("tooltip")
+    expect(tooltips.some((node) => node.textContent === "lock.lock")).toBe(true)
+  })
+
   it("renders the same categories, team members, and controls on desktop and mobile", () => {
     const { unmount } = render(<ArenaPage />)
     const desktopNames = within(screen.getByTestId("arena-desktop"))

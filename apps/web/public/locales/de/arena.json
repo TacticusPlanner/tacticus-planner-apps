@@ -60,7 +60,7 @@
         },
         "teamSize": {
           "title": "Team size",
-          "content": "Choose 3, 4, or 5 characters for both teams. A smaller team concentrates each battle's shared XP, so 3 is the default. Your choice is remembered."
+          "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP on fewer characters. Your choice is remembered."
         },
         "plan": {
           "title": "Plan team",

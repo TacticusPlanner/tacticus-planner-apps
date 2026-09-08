@@ -3,6 +3,11 @@ import { useTranslation } from "react-i18next"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
@@ -65,24 +70,33 @@ export function ArenaTeam({
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <RarityIcon rarity={member.rarity} className="size-5" />
-              <RankBadge rank={member.rank} showLabel={false} />
+              <RankBadge rank={member.rank} showLabel={false} tooltip />
             </div>
             {onToggleLock ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-pressed={member.locked}
-                aria-label={member.locked ? t("lock.unlock") : t("lock.lock")}
-                data-testid={`arena-lock-${member.unitId}`}
-                onClick={() => onToggleLock(member.unitId)}
-              >
-                {member.locked ? (
-                  <Lock className="size-4" />
-                ) : (
-                  <LockOpen className="size-4 text-muted-foreground" />
-                )}
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-pressed={member.locked}
+                    aria-label={
+                      member.locked ? t("lock.unlock") : t("lock.lock")
+                    }
+                    data-testid={`arena-lock-${member.unitId}`}
+                    onClick={() => onToggleLock(member.unitId)}
+                  >
+                    {member.locked ? (
+                      <Lock className="size-4" />
+                    ) : (
+                      <LockOpen className="size-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {member.locked ? t("lock.unlock") : t("lock.lock")}
+                </TooltipContent>
+              </Tooltip>
             ) : null}
           </li>
         )

@@ -23,7 +23,9 @@ import {
 
 const ARENA_MODE_STORAGE_KEY = "tp.dailies.arena.mode"
 const ARENA_TEAM_SIZE_STORAGE_KEY = "tp.dailies.arena.teamSize"
-const DEFAULT_TEAM_SIZE = ARENA_MIN_TEAM_SIZE
+// A full five-character team by default — the player narrows it with the Team size control when
+// they want to concentrate a battle's shared XP.
+const DEFAULT_TEAM_SIZE = 5
 // Stable empty reference so the recommendations memo does not re-run on every render while the
 // roster key is still settling.
 const EMPTY_LOCK_IDS: UnitId[] = []

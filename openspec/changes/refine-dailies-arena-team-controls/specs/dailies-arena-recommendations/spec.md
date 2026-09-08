@@ -162,8 +162,9 @@ Assumptions:
 - The progression tier's rarity is read from the character's synced progression
   step; ascension into the next tier raises the cap.
 - A battle's shared XP is divided among the characters deployed, so a smaller
-  team advances each of its characters faster; the requested team size defaults
-  to three for this reason (see "Team size is a single page-level control").
+  team advances each of its characters faster; the Team size control lets the
+  player trade roster coverage for per-character XP (see "Team size is a single
+  page-level control").
 
 #### Scenario: XP-capped character is deprioritized
 
@@ -175,10 +176,9 @@ Assumptions:
 
 #### Scenario: Three-character variant is the primary recommendation
 
-- **WHEN** a user opens the Arena page for the first time and has not changed
-  the Team size control
-- **THEN** the requested team size is three, so each team is built for three
-  characters — the smallest team, which concentrates a battle's shared XP
+- **WHEN** the player sets the Team size control to three
+- **THEN** each team is built for three characters — the smallest team, which
+  concentrates a battle's shared XP among the fewest characters
 
 #### Scenario: Requested size above three is not padded with capped characters
 
@@ -295,11 +295,13 @@ Assumptions:
 Each recommended team SHALL identify every character by its in-game name and
 portrait, resolved from the character id through the shared catalog and
 translations used elsewhere in the app, and SHALL show each character's current
-rarity and rank. For each selected character the team SHALL convey why it was
-chosen — the active goal(s) or project it contributes to, that it was chosen for
-combat strength, that it was included to meet the minimum team size, or that it
-was drawn at random. Team members SHALL be presented as a single vertical list
-(one character per row).
+rarity and rank. The rarity icon, the rank icon, and the Random Team's lock
+toggle SHALL each expose their meaning as a text label on hover/focus (a
+tooltip), so the icon-only presentation stays legible. For each selected
+character the team SHALL convey why it was chosen — the active goal(s) or
+project it contributes to, that it was chosen for combat strength, that it was
+included to meet the minimum team size, or that it was drawn at random. Team
+members SHALL be presented as a single vertical list (one character per row).
 
 #### Scenario: Contributing character shows its rationale
 
@@ -318,6 +320,13 @@ was drawn at random. Team members SHALL be presented as a single vertical list
 - **WHEN** a recommended team of four or five characters is shown at any
   viewport
 - **THEN** the characters are listed one per row in a single column
+
+#### Scenario: Icon controls carry a tooltip
+
+- **WHEN** the player hovers or focuses a team row's rarity icon, rank icon, or
+  the Random Team's lock toggle
+- **THEN** a tooltip names the rarity, the rank, or the lock/unlock action
+  respectively
 
 ### Requirement: Distinct loading, failure, and empty states
 
@@ -377,13 +386,14 @@ characters, and every rationale SHALL be identical across viewports.
 
 The Arena page SHALL provide one page-level **Team size** control — a radio
 group offering the values 3, 4, and 5 — that sets the requested size for both
-the Plan Team and the Random Team. It SHALL default to 3 on a first visit. The
-chosen size SHALL persist, per browser, across navigating away from and back to
-the Arena page and across a full page reload, in the same way as the XP/Power
-mode. A size the current data cannot deliver (for example, a value above the
-owned roster size) SHALL be shown as an unavailable option rather than being
-hidden, and selecting an undeliverable size SHALL yield the largest deliverable
-team with a note explaining the shortfall.
+the Plan Team and the Random Team. It SHALL default to 5 on a first visit (a
+full Arena team), which the player can narrow to 4 or 3. The chosen size SHALL
+persist, per browser, across navigating away from and back to the Arena page and
+across a full page reload, in the same way as the XP/Power mode. A size the
+current data cannot deliver (for example, a value above the owned roster size)
+SHALL be shown as an unavailable option rather than being hidden, and selecting
+an undeliverable size SHALL yield the largest deliverable team with a note
+explaining the shortfall.
 
 Assumptions:
 
@@ -392,17 +402,19 @@ Assumptions:
 - "Deliverable" is mode-dependent: XP Mode counts XP-eligible characters (plus
   capped fillers only up to three), Power Mode counts owned characters in the
   pool.
+- The default of 5 is also clamped to the owned roster size for a player with
+  fewer than five characters.
 
-#### Scenario: First visit defaults to a three-character team
+#### Scenario: First visit defaults to a five-character team
 
 - **WHEN** a user opens the Arena page for the first time in a browser
-- **THEN** the Team size control shows 3 selected and both teams are built for
-  three characters
+- **THEN** the Team size control shows 5 selected and both teams are built for
+  five characters (clamped to the roster size for a smaller roster)
 
 #### Scenario: Changing team size resizes both teams
 
-- **WHEN** the user selects team size 5
-- **THEN** the Plan Team and the Random Team are both rebuilt targeting five
+- **WHEN** the user selects team size 3
+- **THEN** the Plan Team and the Random Team are both rebuilt targeting three
   characters
 
 #### Scenario: Team size survives navigation and reload
