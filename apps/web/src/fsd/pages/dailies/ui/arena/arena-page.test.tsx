@@ -15,6 +15,7 @@ let view: ArenaRecommendationsViewModel
 let isMobileValue = false
 const setMode = vi.fn()
 const setTeamSize = vi.fn()
+const setPreferences = vi.fn()
 const toggleRandomLock = vi.fn()
 const regenerate = vi.fn()
 const retry = vi.fn()
@@ -62,6 +63,8 @@ vi.mock("@workspace/game-catalog", () => ({
   characterIcon: (id: string) => `/icons/${id}.png`,
   rankIcon: (rank: string) => `/ranks/${rank}.png`,
   rarityIcon: (rarity: string) => `/rarities/${rarity}.png`,
+  traitIcon: (trait: string) => `/traits/${trait}.png`,
+  damageTypeIcon: (type: string) => `/damage/${type}.png`,
 }))
 vi.mock("../../model/use-arena-recommendations", () => ({
   useArenaRecommendations: () => view,
@@ -106,6 +109,10 @@ const readyView = (): ArenaRecommendationsViewModel => ({
   teamSize: 3,
   setTeamSize,
   availableSizes: [3, 4, 5],
+  preferences: {},
+  setPreferences,
+  availableTraits: ["Flying", "Healer"],
+  availableDamageTypes: ["Bolter"],
   toggleRandomLock,
   lockedRandomUnitIds: [],
   regenerate,
@@ -161,6 +168,20 @@ describe("ArenaPage", () => {
     render(<ArenaPage />)
     await userEvent.click(screen.getByTestId("arena-team-size-5"))
     expect(setTeamSize).toHaveBeenCalledWith(5)
+  })
+
+  it("renders the preferred trait and damage-type selects and reports a change", async () => {
+    render(<ArenaPage />)
+    expect(screen.getByTestId("arena-preferred-trait")).toBeInTheDocument()
+    expect(
+      screen.getByTestId("arena-preferred-damage-type")
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByTestId("arena-preferred-trait"))
+    await userEvent.click(
+      await screen.findByRole("option", { name: /traits:Flying/ })
+    )
+    expect(setPreferences).toHaveBeenCalledWith({ trait: "Flying" })
   })
 
   it("regenerates only from the random category", async () => {
@@ -220,6 +241,7 @@ describe("ArenaPage", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent)
     expect(screen.getByTestId("arena-team-size")).toBeInTheDocument()
+    expect(screen.getByTestId("arena-preferences")).toBeInTheDocument()
     unmount()
 
     isMobileValue = true
@@ -228,6 +250,7 @@ describe("ArenaPage", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent)
     expect(screen.getByTestId("arena-team-size")).toBeInTheDocument()
+    expect(screen.getByTestId("arena-preferences")).toBeInTheDocument()
     expect(mobileNames).toEqual(desktopNames)
   })
 
@@ -238,6 +261,7 @@ describe("ArenaPage", () => {
       "arena-mode-toggle",
       "arena-project-select",
       "arena-team-size",
+      "arena-preferences",
       "arena-category-plan",
       "arena-category-random",
       "arena-random-regenerate",

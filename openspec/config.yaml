@@ -107,15 +107,22 @@ rules:
     - When introducing a new i18next namespace, include tasks to add it to
       every supported locale, register its TypeScript resource type, migrate
       any replaced keys out of their previous namespace, and update tests.
-    - An i18n key task is complete only when every supported locale file has
-      the keys present. English-copied placeholders in de/es/fr are an
-      acceptable minimum and count as done; "translate de/es/fr later" is
-      not an acceptable outcome — if real translations are out of scope, the
-      task reads "placeholders; real translation tracked in #NNN".
-    - Put work that genuinely cannot finish in this session (manual
-      verification needing the Aspire stack, real translations) under an
-      explicit "Deferred / out-of-session" heading with a tracking issue, so
-      it is not silently checked off and does not block archive.
+    - An i18n key task is complete only when every supported locale file
+      carries real de/es/fr translations of the new keys, at the quality of
+      the sibling namespaces already in `apps/web/public/locales` (common,
+      dailies, shops, ...). Translate the strings as part of the task —
+      English text left in a de/es/fr file is an unfinished task, not a
+      deferral, and "placeholders; translate later" is not an acceptable
+      outcome.
+    - Put work that genuinely cannot finish in this session under an explicit
+      "Deferred / out-of-session" heading with a tracking issue, so it is not
+      silently checked off and does not block archive — a narrow escape
+      hatch, not a home for i18n or verification that merely needs effort.
+      Manual browser verification is not automatically such work — before
+      deferring it, check whether the Aspire stack is already running (its
+      processes, the dev-server port) and whether a connected browser already
+      holds a signed-in session, and run the verification when either is
+      available.
     - For materially changed responsive pages, include automated tutorial
       coverage and manual tour verification at one viewport below 768px and
       one viewport at or above 768px.

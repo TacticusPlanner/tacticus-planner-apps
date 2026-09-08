@@ -1,7 +1,7 @@
 import type { UnitId } from "@workspace/game-domain"
 
 import type { ArenaRecommendations } from "../../../model/arena-recommendations.types"
-import { ArenaCategorySection } from "../arena-category-section"
+import { TeamCategorySection } from "../../team-recs/category-section"
 
 /** Desktop layout: the Plan Team and Random Team sections sit side by side. */
 export function ArenaDesktop({
@@ -16,7 +16,7 @@ export function ArenaDesktop({
   return (
     <div className="grid gap-4 md:grid-cols-2" data-testid="arena-desktop">
       {recommendations.categories.map((category) => (
-        <ArenaCategorySection
+        <TeamCategorySection
           key={category.id}
           category={category}
           onRegenerate={category.id === "random" ? onRegenerate : undefined}

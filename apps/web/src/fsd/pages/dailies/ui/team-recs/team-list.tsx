@@ -12,24 +12,26 @@ import {
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import type {
-  ArenaMemberRationale,
-  ArenaTeamMember,
-} from "../../model/arena-recommendations.types"
+  TeamMember,
+  TeamMemberRationale,
+} from "../../model/team-recommendations.types"
 
 /** One recommended team — one character per row: portrait, name + why-chosen line, current rarity
  * and rank, and (Random Team only) a lock toggle that keeps the character across Regenerate. */
-export function ArenaTeam({
+export function TeamList({
   members,
   testId,
   onToggleLock,
+  testIdPrefix = "arena",
 }: {
-  members: readonly ArenaTeamMember[]
+  members: readonly TeamMember[]
   testId?: string
   onToggleLock?: (unitId: UnitId) => void
+  testIdPrefix?: string
 }) {
-  const { t } = useTranslation(["arena", "characters"])
+  const { t } = useTranslation(["teamRecs", "characters"])
 
-  const rationaleText = (rationale: ArenaMemberRationale): string => {
+  const rationaleText = (rationale: TeamMemberRationale): string => {
     switch (rationale.kind) {
       case "goal":
         return rationale.projectId
@@ -83,7 +85,7 @@ export function ArenaTeam({
                     aria-label={
                       member.locked ? t("lock.unlock") : t("lock.lock")
                     }
-                    data-testid={`arena-lock-${member.unitId}`}
+                    data-testid={`${testIdPrefix}-lock-${member.unitId}`}
                     onClick={() => onToggleLock(member.unitId)}
                   >
                     {member.locked ? (

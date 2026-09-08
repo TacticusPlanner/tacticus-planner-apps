@@ -23,7 +23,11 @@ import {
   type RecipeIngredient,
   type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
-import { useCampaignDisplay, type Battle } from "@/shared/lib"
+import {
+  characterDamageTypes,
+  useCampaignDisplay,
+  type Battle,
+} from "@/shared/lib"
 import { computeCampaignInsights } from "@/features/campaign-insights"
 
 import type { LookupSelection } from "./use-lookup-selection"
@@ -335,19 +339,7 @@ export function useCharacterLookupCalc({
   const profile = useMemo<UnitProfileViewModel | undefined>(() => {
     if (!character) return undefined
 
-    const damageTypes = [
-      ...new Set(
-        [
-          character.meleeDamage,
-          character.rangedDamage ?? undefined,
-          // Zod's `.default([])` only backfills these on freshly-parsed network responses; catalog
-          // data cached in IndexedDB before this schema change won't have gone through that parse,
-          // so the field can still be `undefined` on an already-synced device.
-          ...(character.activeAbilityDamage ?? []),
-          ...(character.passiveAbilityDamage ?? []),
-        ].filter((type): type is string => Boolean(type))
-      ),
-    ]
+    const damageTypes = characterDamageTypes(character)
 
     const statPair = (base: number) => ({
       current: statAtRank(base, applied.rankStart, applied.progressionStart),

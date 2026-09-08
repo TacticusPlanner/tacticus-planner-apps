@@ -1,0 +1,50 @@
+{
+  "mode": {
+    "xp": "XP",
+    "power": "Stärke",
+    "xpHint": "Bevorzugt Charaktere, die noch XP sammeln können und die dein ausgewähltes Projekt oder deine Ziele brauchen.",
+    "powerHint": "Ignoriert XP und stellt dein stärkstmögliches Team auf."
+  },
+  "project": {
+    "label": "Projekt"
+  },
+  "teamSize": {
+    "label": "Teamgröße"
+  },
+  "preferences": {
+    "trait": "Bevorzugte Eigenschaft",
+    "damageType": "Bevorzugter Schadenstyp",
+    "any": "Beliebig",
+    "note": "Eine Präferenz lenkt die Auswahl zu passenden Charakteren; das Team wird erweitert, um vollständig zu bleiben, statt zu schrumpfen."
+  },
+  "state": {
+    "error": "Kader, Ziele oder Projekt konnten nicht geladen werden. Bitte erneut versuchen.",
+    "retry": "Erneut versuchen",
+    "noCharacters": "Du brauchst mindestens drei Charaktere für eine Team-Empfehlung."
+  },
+  "category": {
+    "plan": {
+      "title": "Planungsteam",
+      "description": "Zuerst auf dein ausgewähltes Projekt abgestimmt, dann auf deine anderen aktiven Ziele und dann auf den Rest deines Kaders."
+    },
+    "random": {
+      "title": "Zufallsteam",
+      "description": "Eine zufällige Auswahl aus deinem Kader. Sperre deine Favoriten, bevor du neu würfelst."
+    },
+    "broadenedNote": "Nicht genug passende Charaktere, daher wurde dieses Team über seinen eigenen Pool hinaus erweitert.",
+    "cappedNote": "Weniger als drei Charaktere können noch XP sammeln, daher wurden Charaktere mit XP-Limit aufgenommen.",
+    "fewerThanRequested": "Nur {{delivered}} der angeforderten {{requested}} Charaktere waren verfügbar."
+  },
+  "lock": {
+    "lock": "Diesen Charakter sperren",
+    "unlock": "Diesen Charakter entsperren"
+  },
+  "regenerate": "Neu würfeln",
+  "rationale": {
+    "goal": "Du hast ein aktives Ziel für diesen Charakter.",
+    "projectGoal": "In deinem ausgewählten Projekt.",
+    "strength": "Wegen Kampfstärke ausgewählt ({{power}}).",
+    "minimumSize": "Hinzugefügt, um das Team zu vervollständigen.",
+    "random": "Zufällig ausgewählt."
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "mode": {
+    "xp": "XP",
+    "power": "Puissance",
+    "xpHint": "Privilégie les personnages qui peuvent encore gagner de l'XP et dont votre projet ou vos objectifs sélectionnés ont besoin.",
+    "powerHint": "Ignore l'XP et aligne l'équipe la plus forte possible."
+  },
+  "project": {
+    "label": "Projet"
+  },
+  "teamSize": {
+    "label": "Taille de l'équipe"
+  },
+  "preferences": {
+    "trait": "Trait préféré",
+    "damageType": "Type de dégâts préféré",
+    "any": "Indifférent",
+    "note": "Une préférence oriente la sélection vers les personnages correspondants ; l'équipe s'élargit pour rester complète plutôt que de se réduire."
+  },
+  "state": {
+    "error": "Impossible de charger votre effectif, vos objectifs ou votre projet. Réessayez.",
+    "retry": "Réessayer",
+    "noCharacters": "Il vous faut au moins trois personnages pour obtenir une recommandation d'équipe."
+  },
+  "category": {
+    "plan": {
+      "title": "Équipe du plan",
+      "description": "Ajustée d'abord à votre projet sélectionné, puis à vos autres objectifs actifs, puis au reste de votre effectif."
+    },
+    "random": {
+      "title": "Équipe aléatoire",
+      "description": "Un tirage aléatoire dans votre effectif. Verrouillez ceux que vous aimez avant de régénérer."
+    },
+    "broadenedNote": "Pas assez de personnages correspondants : cette équipe a été élargie au-delà de son propre groupe.",
+    "cappedNote": "Moins de trois personnages peuvent encore gagner de l'XP : des personnages au plafond d'XP ont été inclus.",
+    "fewerThanRequested": "Seuls {{delivered}} des {{requested}} personnages demandés étaient disponibles."
+  },
+  "lock": {
+    "lock": "Verrouiller ce personnage",
+    "unlock": "Déverrouiller ce personnage"
+  },
+  "regenerate": "Régénérer",
+  "rationale": {
+    "goal": "Vous avez un objectif actif pour ce personnage.",
+    "projectGoal": "Dans votre projet sélectionné.",
+    "strength": "Choisi pour sa puissance de combat ({{power}}).",
+    "minimumSize": "Ajouté pour compléter l'équipe.",
+    "random": "Tiré au hasard."
+  }
+}

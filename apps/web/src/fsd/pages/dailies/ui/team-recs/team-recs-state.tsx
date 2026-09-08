@@ -3,27 +3,29 @@ import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-export type ArenaStateKind = "loading" | "error" | "no-characters"
+export type TeamRecsStateKind = "loading" | "error" | "no-characters"
 
 /**
- * The Arena page's own whole-page states: data still loading, a retryable load failure, and the
+ * The Dailies team pages' whole-page states: data still loading, a retryable load failure, and the
  * signed-in player owning too few characters for any team. A total game-catalog sync failure is
- * handled by the global gate before this page mounts.
+ * handled by the global gate before the page mounts.
  */
-export function ArenaState({
+export function TeamRecsState({
   state,
   onRetry,
+  testIdPrefix = "arena",
 }: {
-  state: ArenaStateKind
+  state: TeamRecsStateKind
   onRetry?: () => void
+  testIdPrefix?: string
 }) {
-  const { t } = useTranslation("arena")
+  const { t } = useTranslation("teamRecs")
 
   if (state === "loading") {
     return (
       <div
         className="flex min-h-48 items-center justify-center"
-        data-testid="arena-loading"
+        data-testid={`${testIdPrefix}-loading`}
       >
         <Spinner className="size-8" />
       </div>
@@ -31,7 +33,7 @@ export function ArenaState({
   }
 
   return (
-    <Card data-testid={`arena-${state}`}>
+    <Card data-testid={`${testIdPrefix}-${state}`}>
       <CardContent className="grid justify-items-center gap-4 py-10 text-center text-muted-foreground">
         <p>{state === "error" ? t("state.error") : t("state.noCharacters")}</p>
         {state === "error" && onRetry ? (

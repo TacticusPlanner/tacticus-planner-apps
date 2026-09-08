@@ -1,0 +1,50 @@
+{
+  "mode": {
+    "xp": "XP",
+    "power": "Potencia",
+    "xpHint": "Prefiere personajes que aún pueden ganar XP y que tu proyecto o tus objetivos seleccionados necesitan.",
+    "powerHint": "Ignora la XP y despliega el equipo más fuerte posible."
+  },
+  "project": {
+    "label": "Proyecto"
+  },
+  "teamSize": {
+    "label": "Tamaño del equipo"
+  },
+  "preferences": {
+    "trait": "Rasgo preferido",
+    "damageType": "Tipo de daño preferido",
+    "any": "Cualquiera",
+    "note": "Una preferencia inclina la selección hacia personajes que coinciden; el equipo se amplía para mantenerse completo en lugar de reducirse."
+  },
+  "state": {
+    "error": "No se pudo cargar tu plantilla, tus objetivos o tu proyecto. Inténtalo de nuevo.",
+    "retry": "Reintentar",
+    "noCharacters": "Necesitas al menos tres personajes para obtener una recomendación de equipo."
+  },
+  "category": {
+    "plan": {
+      "title": "Equipo del plan",
+      "description": "Ajustado primero a tu proyecto seleccionado, luego a tus otros objetivos activos y después al resto de tu plantilla."
+    },
+    "random": {
+      "title": "Equipo aleatorio",
+      "description": "Una selección aleatoria de tu plantilla. Bloquea los que te gusten antes de volver a generar."
+    },
+    "broadenedNote": "No hay suficientes personajes que coincidan, así que este equipo se amplió más allá de su propio grupo.",
+    "cappedNote": "Menos de tres personajes pueden ganar XP todavía, así que se incluyeron personajes con la XP al máximo.",
+    "fewerThanRequested": "Solo había {{delivered}} de los {{requested}} personajes solicitados."
+  },
+  "lock": {
+    "lock": "Bloquear este personaje",
+    "unlock": "Desbloquear este personaje"
+  },
+  "regenerate": "Volver a generar",
+  "rationale": {
+    "goal": "Tienes un objetivo activo para este personaje.",
+    "projectGoal": "En tu proyecto seleccionado.",
+    "strength": "Elegido por potencia de combate ({{power}}).",
+    "minimumSize": "Añadido para completar el equipo.",
+    "random": "Elegido al azar."
+  }
+}

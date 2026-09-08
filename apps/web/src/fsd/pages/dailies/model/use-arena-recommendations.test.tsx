@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   useArenaRecommendations,
   usePersistedArenaMode,
+  usePersistedArenaPreferences,
   usePersistedTeamSize,
 } from "./use-arena-recommendations"
 
@@ -26,9 +27,18 @@ const makeResult = (over: Partial<QueryResult> = {}): QueryResult => ({
 let goalsResult: QueryResult
 let projectGoalsResult: QueryResult
 let rosterState: unknown
+let catalogState: unknown
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => rosterState }))
+vi.mock("@workspace/game-catalog/queries", () => ({
+  getCharactersMap: vi.fn(),
+}))
+vi.mock("dexie-react-hooks", () => ({
+  // Two live queries now — the roster and the character catalog. Branch on the querier's source so
+  // each gets its own canned value.
+  useLiveQuery: (querier: () => unknown) =>
+    querier.toString().includes("safeReadCatalog") ? catalogState : rosterState,
+}))
 vi.mock("@tanstack/react-query", () => ({
   useQuery: (options: { queryKey: readonly unknown[] }) =>
     options.queryKey[0] === "goals" ? goalsResult : projectGoalsResult,
@@ -60,10 +70,38 @@ const character = (unitId: string, over: Record<string, unknown> = {}) => ({
 
 const uid = (value: string) => value as UnitId
 
+/** A minimal catalog map covering whatever ids `rosterState` holds. Pass `traits` / `damageTypes`
+ * per id to exercise the preference filters. */
+const catalogMap = (
+  entries: Record<
+    string,
+    { traits?: string[]; meleeDamage?: string; rangedDamage?: string | null }
+  > = {}
+) => {
+  const state = rosterState
+  const ids = Array.isArray(state)
+    ? (state as { unitId: string }[]).map((c) => c.unitId)
+    : []
+  return new Map(
+    ids.map((id) => [
+      id,
+      {
+        id,
+        traits: entries[id]?.traits ?? [],
+        meleeDamage: entries[id]?.meleeDamage ?? "Physical",
+        rangedDamage: entries[id]?.rangedDamage ?? null,
+        activeAbilityDamage: [],
+        passiveAbilityDamage: [],
+      },
+    ])
+  )
+}
+
 beforeEach(() => {
   goalsResult = makeResult()
   projectGoalsResult = makeResult()
   rosterState = [character("a"), character("b"), character("c")]
+  catalogState = catalogMap()
 })
 
 afterEach(() => {
@@ -124,11 +162,117 @@ describe("usePersistedTeamSize", () => {
   })
 })
 
+describe("usePersistedArenaPreferences", () => {
+  it("defaults to no preference with nothing stored", () => {
+    const { result } = renderHook(() => usePersistedArenaPreferences())
+    expect(result.current[0]).toEqual({})
+  })
+
+  it("round-trips and merge-patches a preference through localStorage", () => {
+    const first = renderHook(() => usePersistedArenaPreferences())
+    act(() => first.result.current[1]({ trait: "Flying" }))
+    act(() => first.result.current[1]({ damageType: "Bolter" }))
+    expect(first.result.current[0]).toEqual({
+      trait: "Flying",
+      damageType: "Bolter",
+    })
+
+    const second = renderHook(() => usePersistedArenaPreferences())
+    expect(second.result.current[0]).toEqual({
+      trait: "Flying",
+      damageType: "Bolter",
+    })
+
+    act(() => second.result.current[1]({ trait: undefined }))
+    expect(second.result.current[0]).toEqual({ damageType: "Bolter" })
+  })
+
+  it("degrades a malformed stored value to no preference", () => {
+    window.localStorage.setItem(
+      "tp.dailies.arena.preferences",
+      '{"trait":42,"damageType":["nope"]}'
+    )
+    const { result } = renderHook(() => usePersistedArenaPreferences())
+    expect(result.current[0]).toEqual({})
+  })
+})
+
 describe("useArenaRecommendations", () => {
   it("reports loading while the roster has not resolved", () => {
     rosterState = undefined
     const { result } = renderHook(() => useArenaRecommendations("p1"))
     expect(result.current.status).toBe("loading")
+  })
+
+  it("reports loading while the character catalog has not resolved", () => {
+    catalogState = undefined
+    const { result } = renderHook(() => useArenaRecommendations("p1"))
+    expect(result.current.status).toBe("loading")
+  })
+
+  it("exposes the traits and damage types the owned roster covers", () => {
+    rosterState = [character("a"), character("b"), character("c")]
+    catalogState = catalogMap({
+      a: { traits: ["Flying", "Healer"], meleeDamage: "Physical" },
+      b: { traits: ["Flying"], meleeDamage: "Bolter" },
+      c: { traits: [], meleeDamage: "Psychic" },
+    })
+    const { result } = renderHook(() => useArenaRecommendations("p1"))
+    if (result.current.status !== "ready") throw new Error("expected ready")
+    expect(result.current.availableTraits).toEqual(["Flying", "Healer"])
+    expect(result.current.availableDamageTypes).toEqual([
+      "Bolter",
+      "Physical",
+      "Psychic",
+    ])
+  })
+
+  it("restricts both teams to a satisfiable preferred trait", () => {
+    rosterState = Array.from({ length: 8 }, (_, index) =>
+      character(`u${index}`)
+    )
+    catalogState = catalogMap(
+      Object.fromEntries(
+        Array.from({ length: 8 }, (_, index) => [
+          `u${index}`,
+          { traits: index < 5 ? ["Flying"] : [] },
+        ])
+      )
+    )
+    const { result } = renderHook(() => useArenaRecommendations("p1"))
+    if (result.current.status !== "ready") throw new Error("expected ready")
+
+    act(() => {
+      if (result.current.status === "ready")
+        result.current.setPreferences({ trait: "Flying" })
+    })
+    if (result.current.status !== "ready") throw new Error("expected ready")
+
+    const flyers = new Set(["u0", "u1", "u2", "u3", "u4"])
+    for (const category of result.current.recommendations.categories) {
+      for (const member of category.members) {
+        expect(flyers.has(member.unitId)).toBe(true)
+      }
+    }
+  })
+
+  it("falls back to full teams when no owned character matches the preference", () => {
+    rosterState = Array.from({ length: 8 }, (_, index) =>
+      character(`u${index}`)
+    )
+    catalogState = catalogMap()
+    const { result } = renderHook(() => useArenaRecommendations("p1"))
+    if (result.current.status !== "ready") throw new Error("expected ready")
+
+    act(() => {
+      if (result.current.status === "ready")
+        result.current.setPreferences({ trait: "Nonexistent" })
+    })
+    if (result.current.status !== "ready") throw new Error("expected ready")
+
+    for (const category of result.current.recommendations.categories) {
+      expect(category.members).toHaveLength(5)
+    }
   })
 
   it("reports a retryable error when a data source fails", () => {

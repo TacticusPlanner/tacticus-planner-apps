@@ -21,7 +21,7 @@ describe("useArenaTutorial", () => {
     }
 
     expect(steps.desktop).toEqual(steps.mobile)
-    expect(steps.desktop).toHaveLength(7)
+    expect(steps.desktop).toHaveLength(8)
     for (const step of steps.desktop) {
       expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
       expect(step.title).toContain("localized:tour.arena.steps")
@@ -32,6 +32,7 @@ describe("useArenaTutorial", () => {
       '[data-testid="arena-mode-toggle"]',
       '[data-testid="arena-project-select"]',
       '[data-testid="arena-team-size"]',
+      '[data-testid="arena-preferences"]',
       '[data-testid="arena-category-plan"]',
       '[data-testid="arena-category-random"]',
       '[data-testid="arena-random-regenerate"]',
