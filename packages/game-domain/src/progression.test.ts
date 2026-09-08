@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest"
 
 import {
   abilityCapForProgression,
+  levelCapByRarity,
+  levelCapForProgression,
   maxAbilityLevel,
+  maxCharacterLevel,
   maxRankForProgression,
   minProgressionForAbilityLevel,
   minProgressionForRank,
@@ -85,6 +88,32 @@ describe("ability level limits", () => {
 
   it("clamps a level above the Mythic cap to the last progression", () => {
     expect(minProgressionForAbilityLevel(99)).toBe("Mythic:MythicWings")
+  })
+})
+
+describe("character level limits", () => {
+  it("exposes a level cap per rarity tier", () => {
+    expect(levelCapByRarity).toEqual({
+      Common: 8,
+      Uncommon: 17,
+      Rare: 26,
+      Epic: 35,
+      Legendary: 50,
+      Mythic: 60,
+    })
+  })
+
+  it("exposes the Mythic-tier cap as the maximum character level", () => {
+    expect(maxCharacterLevel).toBe(60)
+  })
+
+  it("returns the rarity level cap for a progression step", () => {
+    expect(levelCapForProgression("Common:None")).toBe(8)
+    expect(levelCapForProgression("Uncommon:TwoStars")).toBe(17)
+    expect(levelCapForProgression("Rare:FourStars")).toBe(26)
+    expect(levelCapForProgression("Epic:RedOneStar")).toBe(35)
+    expect(levelCapForProgression("Legendary:RedThreeStars")).toBe(50)
+    expect(levelCapForProgression("Mythic:MythicWings")).toBe(60)
   })
 })
 

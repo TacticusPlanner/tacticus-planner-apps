@@ -157,3 +157,27 @@ export function minProgressionForAbilityLevel(level: number): Progression {
     ) ?? lastProgression
   )
 }
+
+/**
+ * The character-level ceiling per rarity tier — a character cannot earn XP past this level until it
+ * Ascends into the next tier, which raises the cap. Ported from V1's `maxLevelForRarity`
+ * (`plan-teams2/teams2.service.ts`); V1 uses 65 for Mythic, but V2 models the Mythic ceiling as 60
+ * (see `maxCharacterLevel`). These values currently coincide with `abilityCapByRarity` except at
+ * Mythic, but the two are semantically distinct caps and are kept separate.
+ */
+export const levelCapByRarity: Record<Rarity, number> = {
+  Common: 8,
+  Uncommon: 17,
+  Rare: 26,
+  Epic: 35,
+  Legendary: 50,
+  Mythic: 60,
+}
+
+/** The highest level any character can reach — the Mythic-tier level cap. */
+export const maxCharacterLevel: number = levelCapByRarity.Mythic
+
+/** The character-level ceiling for a unit whose progression is at the given step's rarity tier. */
+export function levelCapForProgression(value: Progression): number {
+  return levelCapByRarity[progressionRarity(value)]
+}

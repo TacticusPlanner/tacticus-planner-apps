@@ -43,8 +43,19 @@ export {
   maxAbilityLevel,
   abilityCapForProgression,
   minProgressionForAbilityLevel,
+  levelCapByRarity,
+  maxCharacterLevel,
+  levelCapForProgression,
   type Progression,
 } from "./progression"
+
+export {
+  characterCombatPower,
+  characterAttributePower,
+  characterAbilityPower,
+  abilityCoeff,
+  type CharacterCombatPowerInput,
+} from "./combat-power"
 export {
   factionOrder,
   factionRank,

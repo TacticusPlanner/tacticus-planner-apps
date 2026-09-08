@@ -52,6 +52,9 @@ vi.mock("../model/use-daily-raids", () => ({
 vi.mock("../model/use-shop-recommendations", () => ({
   useShopRecommendations: () => ({ status: "ready", sections: [] }),
 }))
+vi.mock("../model/use-arena-recommendations", () => ({
+  useArenaRecommendations: () => ({ status: "no-characters" }),
+}))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 
 function renderDailies(path = "/dailies") {
@@ -85,7 +88,6 @@ describe("Dailies navigation", () => {
   it.each([
     "/dailies/onslaught",
     "/dailies/salvage-run",
-    "/dailies/arena",
     "/dailies/guild-raids",
   ])("routes %s to its own placeholder page", async (path) => {
     renderDailies(path)
@@ -99,6 +101,15 @@ describe("Dailies navigation", () => {
     renderDailies("/dailies/shops")
 
     expect(await screen.findByTestId("shops-page")).toBeInTheDocument()
+  })
+
+  it("routes /dailies/arena to the Arena recommendations page, not the placeholder", async () => {
+    renderDailies("/dailies/arena")
+
+    expect(await screen.findByTestId("arena-page")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("dailies-placeholder-page")
+    ).not.toBeInTheDocument()
   })
 
   it("keeps the selected project when switching from Today to Plan", async () => {
