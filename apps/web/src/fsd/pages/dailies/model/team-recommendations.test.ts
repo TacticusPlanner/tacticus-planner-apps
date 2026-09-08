@@ -94,6 +94,47 @@ describe("buildTeamRecommendations — pool configuration", () => {
     })
   })
 
+  it("widens past the minimum to fill the requested size, roster fillers ranked last", () => {
+    const roster = Array.from({ length: 8 }, (_, index) =>
+      character(`u${index}`)
+    )
+    const plan = planOf(
+      build({
+        roster,
+        teamSize: 5,
+        pools: [
+          pool("primary", [id("u0"), id("u1")], "g-primary"),
+          pool("secondary", [id("u2"), id("u3")], "g-secondary"),
+        ],
+      })
+    )
+    // Two pools supply four eligible; a fifth is drawn from the wider roster.
+    expect(plan.deliveredSize).toBe(5)
+    expect(plan.members.map((m) => m.unitId)).toEqual([
+      id("u0"),
+      id("u1"),
+      id("u2"),
+      id("u3"),
+      id("u4"),
+    ])
+    expect(plan.broadened).toBe(true)
+    expect(plan.poolUsed).toBe("full-roster")
+    expect(plan.members[4].rationale).toEqual({ kind: "minimum-size" })
+  })
+
+  it("still stops at three in XP mode when only two are XP-eligible, even at size five", () => {
+    const roster = [
+      character("a"),
+      character("b"),
+      ...Array.from({ length: 6 }, (_, index) =>
+        character(`c${index}`, { progression: "Common:None", xpLevel: 8 })
+      ),
+    ]
+    const plan = planOf(build({ roster, mode: "xp", teamSize: 5 }))
+    expect(plan.deliveredSize).toBe(3)
+    expect(plan.includedCappedCharacters).toBe(true)
+  })
+
   it("never re-adds a character the caller left out of the roster", () => {
     const roster = ["a", "b", "c"].map((v) => character(v))
     const result = buildTeamRecommendations(

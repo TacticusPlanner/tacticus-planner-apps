@@ -233,6 +233,9 @@ function buildPlanTeam(ctx: BuildContext): TeamCategory {
     rosterIds: ctx.rosterIds,
     pools: ctx.pools,
     isEligible: (id) => isEligible(id, ctx),
+    // Widen past the three-character minimum to fill the requested size from the wider roster when
+    // the priority pools fall short — the roster fillers sort after the pool members.
+    targetEligible: ctx.requestedSize,
   })
 
   const ordered = orderCandidates(expanded.candidateIds, ctx)

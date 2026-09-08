@@ -284,6 +284,40 @@ describe("buildArenaRecommendations", () => {
       expect(plan.deliveredSize).toBe(3)
     })
 
+    it("fills the requested size from the roster when project and goals fall short", () => {
+      const roster = ["a", "b", "c", "d", "e", "f", "g", "h"].map((name) =>
+        character(name)
+      )
+      const plan = categoryOf(
+        build({
+          roster,
+          teamSize: 5,
+          activeProjectContributions: [
+            goal("a", "g1", "p1"),
+            goal("b", "g2", "p1"),
+          ],
+          activeGoalContributions: [
+            goal("a", "g1", "p1"),
+            goal("b", "g2", "p1"),
+            goal("c", "g3"),
+            goal("d", "g4"),
+          ],
+        }),
+        "plan"
+      )
+      // Four contributors (a,b in the project; c,d in other goals) plus one roster filler.
+      expect(plan.deliveredSize).toBe(5)
+      expect(unitIds(plan.members)).toEqual([
+        id("a"),
+        id("b"),
+        id("c"),
+        id("d"),
+        id("e"),
+      ])
+      expect(plan.broadened).toBe(true)
+      expect(plan.members[4].rationale).toEqual({ kind: "minimum-size" })
+    })
+
     it("broadens a thin selected project beyond its own contributors", () => {
       const roster = ["a", "b", "c", "d", "e"].map((name) => character(name))
       const projectContributions = [
