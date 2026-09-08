@@ -21,24 +21,28 @@ describe("Arena translations", () => {
     expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
   })
 
-  it("provides the page, mode, category, and tour copy", () => {
+  it("provides the page, mode, category, control, and tour copy", () => {
     for (const locale of [en, de, es, fr]) {
       expect(locale.title).toBeTruthy()
       expect(locale.mode.xp).toBeTruthy()
       expect(locale.mode.power).toBeTruthy()
-      expect(locale.category["active-project"].title).toBeTruthy()
-      expect(locale.category["overall-goals"].title).toBeTruthy()
+      expect(locale.project.label).toBeTruthy()
+      expect(locale.teamSize.label).toBeTruthy()
+      expect(locale.category.plan.title).toBeTruthy()
       expect(locale.category.random.title).toBeTruthy()
-      expect(locale.empty["no-active-project"]).toBeTruthy()
-      expect(locale.empty["no-active-goals"]).toBeTruthy()
-      expect(locale.variant.option).toContain("{{count}}")
+      expect(locale.category.fewerThanRequested).toContain("{{delivered}}")
+      expect(locale.category.fewerThanRequested).toContain("{{requested}}")
+      expect(locale.lock.lock).toBeTruthy()
+      expect(locale.lock.unlock).toBeTruthy()
       expect(locale.rationale.strength).toContain("{{power}}")
       expect(Object.keys(locale.tour.arena.steps).sort()).toEqual([
-        "category",
+        "locks",
         "mode",
+        "plan",
+        "project",
         "purpose",
         "regenerate",
-        "variants",
+        "teamSize",
       ])
     }
   })

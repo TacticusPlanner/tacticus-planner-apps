@@ -1,26 +1,26 @@
+import type { UnitId } from "@workspace/game-domain"
+
 import type { ArenaRecommendations } from "../../../model/arena-recommendations.types"
 import { ArenaCategorySection } from "../arena-category-section"
 
-/** Desktop layout: the category sections sit side by side, and each XP-mode team-size switcher is
- * shown inline as a segmented control. */
+/** Desktop layout: the Plan Team and Random Team sections sit side by side. */
 export function ArenaDesktop({
   recommendations,
   onRegenerate,
+  onToggleLock,
 }: {
   recommendations: ArenaRecommendations
   onRegenerate: () => void
+  onToggleLock: (unitId: UnitId) => void
 }) {
   return (
-    <div
-      className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-      data-testid="arena-desktop"
-    >
+    <div className="grid gap-4 md:grid-cols-2" data-testid="arena-desktop">
       {recommendations.categories.map((category) => (
         <ArenaCategorySection
           key={category.id}
           category={category}
-          switcherLayout="inline"
           onRegenerate={category.id === "random" ? onRegenerate : undefined}
+          onToggleLock={category.id === "random" ? onToggleLock : undefined}
         />
       ))}
     </div>
