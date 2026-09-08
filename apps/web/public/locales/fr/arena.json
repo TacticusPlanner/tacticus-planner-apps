@@ -1,0 +1,73 @@
+{
+  "title": "Arena",
+  "subtitle": "Team suggestions that move your plan forward while you clear your daily Arena battles.",
+  "mode": {
+    "xp": "XP",
+    "power": "Power",
+    "xpHint": "Prefers characters that can still earn XP and that your goals or active project need.",
+    "powerHint": "Ignores XP and fields your strongest possible team."
+  },
+  "state": {
+    "error": "Couldn't load your roster, goals, or project. Try again.",
+    "retry": "Retry",
+    "noCharacters": "You need at least three characters to get a team recommendation."
+  },
+  "category": {
+    "active-project": {
+      "title": "Active project team",
+      "description": "Tuned to the characters your active project is working on."
+    },
+    "overall-goals": {
+      "title": "Overall goals team",
+      "description": "Tuned across every active goal, whichever project it belongs to."
+    },
+    "random": {
+      "title": "Random team",
+      "description": "A random draw from your whole roster."
+    },
+    "broadenedNote": "Not enough matching characters, so this team was widened beyond its own pool.",
+    "cappedNote": "Fewer than three characters can still earn XP, so XP-capped characters were included."
+  },
+  "empty": {
+    "no-active-project": "No active project. Mark one as your active plan to get a project-tuned team.",
+    "no-active-goals": "No active goals for your characters. Add a goal to get a goals-tuned team."
+  },
+  "variant": {
+    "label": "Team size",
+    "option": "{{count}}-character team"
+  },
+  "regenerate": "Regenerate",
+  "rationale": {
+    "goal": "You have an active goal for this character.",
+    "projectGoal": "In your active project.",
+    "strength": "Chosen for combat strength ({{power}}).",
+    "minimumSize": "Added to complete the team.",
+    "random": "Drawn at random."
+  },
+  "tour": {
+    "arena": {
+      "steps": {
+        "purpose": {
+          "title": "Arena team recommendations",
+          "content": "Suggested Arena teams built from your active project, active goals, and roster, so your daily battles also advance your plan."
+        },
+        "mode": {
+          "title": "XP or Power",
+          "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered."
+        },
+        "category": {
+          "title": "Team categories",
+          "content": "One team per priority: your active project, all your goals, and a random draw. A category shows an empty note when it has nothing to build from."
+        },
+        "variants": {
+          "title": "Team size",
+          "content": "In XP Mode, the three-character team is the top pick because a battle's XP is shared among fewer characters. Larger teams are offered as alternatives."
+        },
+        "regenerate": {
+          "title": "Regenerate",
+          "content": "Shuffle a new random team. This only affects the random category."
+        }
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ import {
   abilityCapByRarity,
   lastProgression,
   lastRank,
+  maxCharacterLevel,
   progressionIndex,
   progressionRarity,
   rankIndex,
@@ -25,10 +26,11 @@ export const abilityLevelsByRarity: readonly {
   level: abilityCapByRarity[rarity],
 }))
 
-/** The highest character level a Level goal can ever target (Adamantine2, the frontend's current
- * rank-ladder ceiling — see `rankToLevel` in rank-additional-target.ts). Character-only; MoWs also
- * carry a synced `xpLevel` but Level goals aren't offered for them yet. */
-export const MAX_CHARACTER_LEVEL = 60
+/** The highest character level a Level goal can ever target — the Mythic-tier level cap, owned by
+ * `@workspace/game-domain` (`maxCharacterLevel` / `levelCapByRarity`). Re-exported here under its
+ * long-standing name for this feature's callers. Character-only; MoWs also carry a synced `xpLevel`
+ * but Level goals aren't offered for them yet. */
+export const MAX_CHARACTER_LEVEL = maxCharacterLevel
 
 /** True once a unit has climbed its entire rank ladder — a Rank goal (and, for a Character, an
  * Upgrade goal's rank-range picker) has nowhere left to target. */
