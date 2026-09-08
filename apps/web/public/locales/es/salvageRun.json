@@ -1,0 +1,54 @@
+{
+  "title": "Recuperación",
+  "subtitle": "Sugerencias de equipo restringidas por alianza que hacen avanzar tu plan mientras completas tus combates diarios de Recuperación.",
+  "track": {
+    "label": "Vía de alianza",
+    "imperial": "Imperial",
+    "chaos": "Caos",
+    "xenos": "Xenos",
+    "shortfallTitle": "No hay suficientes personajes de {{track}}",
+    "shortfall": "Tienes {{owned}} personajes de {{track}}. Un equipo completo necesita tres, así que faltan {{needed}} más. En esta vía solo se pueden usar personajes de {{track}}."
+  },
+  "tour": {
+    "salvageRun": {
+      "steps": {
+        "purpose": {
+          "title": "Recomendaciones de equipo de Recuperación",
+          "content": "Equipos de Recuperación sugeridos para una vía de alianza a la vez, a partir de tu proyecto seleccionado, tus objetivos activos y tu plantilla, para que tus combates diarios también hagan avanzar tu plan."
+        },
+        "track": {
+          "title": "Vía de alianza",
+          "content": "Elige la vía Imperial, Caos o Xenos. Todas las recomendaciones de abajo se limitan a esa alianza: nunca se sugiere un personaje de otra alianza. Tu elección se recuerda."
+        },
+        "mode": {
+          "title": "XP o Potencia",
+          "content": "El modo XP prefiere personajes que aún pueden ganar XP. El modo Potencia ignora la XP y elige tu equipo más fuerte. Tu elección se recuerda por página."
+        },
+        "project": {
+          "title": "Proyecto rector",
+          "content": "Elige a qué proyecto se ajusta el equipo del plan. Es la misma selección de proyecto que se usa en las otras pestañas de Diarias."
+        },
+        "teamSize": {
+          "title": "Tamaño del equipo",
+          "content": "Elige 3, 4 o 5 personajes para ambos equipos. Un equipo completo de 5 es la opción predeterminada; baja a 3 o 4 para concentrar la XP compartida de cada combate en menos personajes. Tu elección se recuerda."
+        },
+        "preferences": {
+          "title": "Rasgo y tipo de daño preferidos",
+          "content": "Inclina ambos equipos hacia un rasgo o un tipo de daño que quieras desplegar. Es un empujón suave: el equipo se amplía dentro de la alianza de la vía para mantenerse completo en lugar de reducirse, y una preferencia que nadie de la vía cumple se ignora."
+        },
+        "plan": {
+          "title": "Equipo del plan",
+          "content": "Un equipo ajustado a tu proyecto seleccionado, que se amplía a tus otros objetivos y a toda la plantilla de la vía cuando necesita más personajes. Una nota indica cuándo se amplió."
+        },
+        "locks": {
+          "title": "Bloquea lo que te guste",
+          "content": "Bloquea un personaje en el equipo aleatorio y se mantendrá al volver a generar. Los bloqueos se restablecen al recargar o al cambiar de vía."
+        },
+        "regenerate": {
+          "title": "Volver a generar",
+          "content": "Genera un nuevo equipo aleatorio. Solo cambian los espacios no bloqueados; se desactiva cuando todos los espacios están bloqueados."
+        }
+      }
+    }
+  }
+}

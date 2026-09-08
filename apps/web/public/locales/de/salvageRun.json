@@ -1,0 +1,54 @@
+{
+  "title": "Bergungslauf",
+  "subtitle": "Allianzgebundene Team-Vorschläge, die deinen Plan voranbringen, während du deine täglichen Bergungslauf-Kämpfe abschließt.",
+  "track": {
+    "label": "Allianz-Strang",
+    "imperial": "Imperium",
+    "chaos": "Chaos",
+    "xenos": "Xenos",
+    "shortfallTitle": "Nicht genug {{track}}-Charaktere",
+    "shortfall": "Du besitzt {{owned}} {{track}}-Charaktere. Ein volles Team braucht drei, also werden {{needed}} weitere benötigt. Auf diesem Strang können nur {{track}}-Charaktere eingesetzt werden."
+  },
+  "tour": {
+    "salvageRun": {
+      "steps": {
+        "purpose": {
+          "title": "Bergungslauf-Team-Empfehlungen",
+          "content": "Vorgeschlagene Bergungslauf-Teams für jeweils einen Allianz-Strang, erstellt aus deinem ausgewählten Projekt, deinen aktiven Zielen und deinem Kader, damit deine täglichen Kämpfe auch deinen Plan voranbringen."
+        },
+        "track": {
+          "title": "Allianz-Strang",
+          "content": "Wähle den Strang Imperium, Chaos oder Xenos. Jede Empfehlung darunter ist auf diese Allianz beschränkt — ein Charakter einer anderen Allianz wird nie vorgeschlagen. Deine Wahl wird gespeichert."
+        },
+        "mode": {
+          "title": "XP oder Stärke",
+          "content": "Der XP-Modus bevorzugt Charaktere, die noch XP sammeln können. Der Stärke-Modus ignoriert XP und wählt dein stärkstes Team. Deine Wahl wird pro Seite gespeichert."
+        },
+        "project": {
+          "title": "Bestimmendes Projekt",
+          "content": "Wähle, auf welches Projekt das Planungsteam abgestimmt wird. Es ist dieselbe Projektauswahl wie auf den anderen Tabs im Bereich Tägliches."
+        },
+        "teamSize": {
+          "title": "Teamgröße",
+          "content": "Wähle 3, 4 oder 5 Charaktere für beide Teams. Ein volles Team mit 5 ist Standard; reduziere auf 3 oder 4, um die geteilte XP eines Kampfes auf weniger Charaktere zu konzentrieren. Deine Wahl wird gespeichert."
+        },
+        "preferences": {
+          "title": "Bevorzugte Eigenschaft und bevorzugter Schadenstyp",
+          "content": "Lenke beide Teams zu einer Eigenschaft oder einem Schadenstyp, den du einsetzen möchtest. Es ist ein sanfter Hinweis — das Team wird innerhalb der Allianz des Strangs erweitert, um vollständig zu bleiben, statt zu schrumpfen, und eine Präferenz, die niemand auf dem Strang erfüllt, wird ignoriert."
+        },
+        "plan": {
+          "title": "Planungsteam",
+          "content": "Ein Team, das auf dein ausgewähltes Projekt abgestimmt ist und auf deine anderen Ziele und den gesamten Kader des Strangs erweitert wird, wenn es mehr Charaktere braucht. Ein Hinweis zeigt an, wann es erweitert wurde."
+        },
+        "locks": {
+          "title": "Sperre, was dir gefällt",
+          "content": "Sperre einen Charakter im Zufallsteam, dann bleibt er beim Neuwürfeln erhalten. Sperren werden beim Neuladen oder beim Wechsel des Strangs zurückgesetzt."
+        },
+        "regenerate": {
+          "title": "Neu würfeln",
+          "content": "Würfle ein neues Zufallsteam. Nur die nicht gesperrten Plätze ändern sich; deaktiviert, sobald alle Plätze gesperrt sind."
+        }
+      }
+    }
+  }
+}

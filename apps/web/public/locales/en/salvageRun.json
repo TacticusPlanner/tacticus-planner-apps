@@ -1,0 +1,54 @@
+{
+  "title": "Salvage Run",
+  "subtitle": "Alliance-locked team suggestions that move your plan forward while you clear your daily Salvage Run battles.",
+  "track": {
+    "label": "Alliance track",
+    "imperial": "Imperial",
+    "chaos": "Chaos",
+    "xenos": "Xenos",
+    "shortfallTitle": "Not enough {{track}} characters",
+    "shortfall": "You own {{owned}} {{track}} characters. A full team needs three, so {{needed}} more are required. Only {{track}} characters can be used on this track."
+  },
+  "tour": {
+    "salvageRun": {
+      "steps": {
+        "purpose": {
+          "title": "Salvage Run team recommendations",
+          "content": "Suggested Salvage Run teams for one alliance track at a time, built from your selected project, active goals, and roster, so your daily battles also advance your plan."
+        },
+        "track": {
+          "title": "Alliance track",
+          "content": "Pick the Imperial, Chaos, or Xenos track. Every recommendation below is limited to that alliance — no character from another alliance is ever suggested. Your choice is remembered."
+        },
+        "mode": {
+          "title": "XP or Power",
+          "content": "XP Mode prefers characters that can still earn XP. Power Mode ignores XP and picks your strongest team. Your choice is remembered per page."
+        },
+        "project": {
+          "title": "Driving project",
+          "content": "Pick which project the Plan team is tuned to. This is the same project selection used on the other Dailies tabs."
+        },
+        "teamSize": {
+          "title": "Team size",
+          "content": "Choose 3, 4, or 5 characters for both teams. A full team of 5 is the default; drop to 3 or 4 to concentrate each battle's shared XP on fewer characters. Your choice is remembered."
+        },
+        "preferences": {
+          "title": "Preferred trait and damage type",
+          "content": "Bias both teams toward a trait or damage type you want to field. It is a soft nudge — the team widens within the track's alliance to stay full rather than shrink, and a preference nobody on the track matches is ignored."
+        },
+        "plan": {
+          "title": "Plan team",
+          "content": "One team tuned to your selected project, widening to your other goals and the track's full roster when it needs more characters. A note shows when it was widened."
+        },
+        "locks": {
+          "title": "Lock what you like",
+          "content": "Lock a character in the Random team and it stays put when you regenerate. Locks reset when you reload or switch track."
+        },
+        "regenerate": {
+          "title": "Regenerate",
+          "content": "Shuffle a new Random team. Only the unlocked slots change; it is disabled once every slot is locked."
+        }
+      }
+    }
+  }
+}

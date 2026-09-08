@@ -1,0 +1,54 @@
+{
+  "title": "Récupération",
+  "subtitle": "Des suggestions d'équipe limitées par alliance qui font avancer votre plan pendant que vous terminez vos combats quotidiens de Récupération.",
+  "track": {
+    "label": "Voie d'alliance",
+    "imperial": "Imperium",
+    "chaos": "Chaos",
+    "xenos": "Xenos",
+    "shortfallTitle": "Pas assez de personnages {{track}}",
+    "shortfall": "Vous possédez {{owned}} personnages {{track}}. Une équipe complète en demande trois, il en manque donc {{needed}}. Sur cette voie, seuls les personnages {{track}} peuvent être utilisés."
+  },
+  "tour": {
+    "salvageRun": {
+      "steps": {
+        "purpose": {
+          "title": "Recommandations d'équipe pour Récupération",
+          "content": "Des équipes de Récupération suggérées pour une voie d'alliance à la fois, à partir de votre projet sélectionné, de vos objectifs actifs et de votre effectif, pour que vos combats quotidiens fassent aussi avancer votre plan."
+        },
+        "track": {
+          "title": "Voie d'alliance",
+          "content": "Choisissez la voie Imperium, Chaos ou Xenos. Toutes les recommandations ci-dessous sont limitées à cette alliance : un personnage d'une autre alliance n'est jamais suggéré. Votre choix est mémorisé."
+        },
+        "mode": {
+          "title": "XP ou Puissance",
+          "content": "Le mode XP privilégie les personnages qui peuvent encore gagner de l'XP. Le mode Puissance ignore l'XP et choisit votre équipe la plus forte. Votre choix est mémorisé par page."
+        },
+        "project": {
+          "title": "Projet directeur",
+          "content": "Choisissez le projet auquel l'équipe du plan est ajustée. C'est la même sélection de projet que sur les autres onglets Quotidiennes."
+        },
+        "teamSize": {
+          "title": "Taille de l'équipe",
+          "content": "Choisissez 3, 4 ou 5 personnages pour les deux équipes. Une équipe complète de 5 est l'option par défaut ; descendez à 3 ou 4 pour concentrer l'XP partagée de chaque combat sur moins de personnages. Votre choix est mémorisé."
+        },
+        "preferences": {
+          "title": "Trait et type de dégâts préférés",
+          "content": "Orientez les deux équipes vers un trait ou un type de dégâts que vous voulez aligner. C'est une incitation légère : l'équipe s'élargit au sein de l'alliance de la voie pour rester complète plutôt que de se réduire, et une préférence que personne sur la voie ne remplit est ignorée."
+        },
+        "plan": {
+          "title": "Équipe du plan",
+          "content": "Une équipe ajustée à votre projet sélectionné, qui s'élargit à vos autres objectifs et à tout l'effectif de la voie quand elle a besoin de plus de personnages. Une note indique quand elle a été élargie."
+        },
+        "locks": {
+          "title": "Verrouillez ce que vous aimez",
+          "content": "Verrouillez un personnage dans l'équipe aléatoire et il reste en place quand vous régénérez. Les verrous sont réinitialisés au rechargement ou au changement de voie."
+        },
+        "regenerate": {
+          "title": "Régénérer",
+          "content": "Générez une nouvelle équipe aléatoire. Seuls les emplacements non verrouillés changent ; désactivé une fois tous les emplacements verrouillés."
+        }
+      }
+    }
+  }
+}
