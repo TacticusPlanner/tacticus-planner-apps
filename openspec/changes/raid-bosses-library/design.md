@@ -45,15 +45,16 @@ V1 source (`tacticusplanner`, `develop`):
 
 **3. Desktop vs mobile is a real split, documented here.**
 
-| Aspect                                                                                                                                                | Desktop (≥768px)                                       | Mobile (<768px)                                        |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------ |
-| List                                                                                                                                                  | Two-section portrait grid, persistent alongside detail | Two stacked sections, tap-through to detail route view |
-| Detail stats                                                                                                                                          | Stat table + ability panels side by side               | Stacked cards                                          |
-| Progression control                                                                                                                                   | Labeled `Select` / segmented control                   | Compact stepper (`- step N +`)                         |
-| Abilities/traits/encounters                                                                                                                           | Expanded panels                                        | Accordions, collapsed by default                       |
-| Prime modifiers                                                                                                                                       | Dual-panel compare (V1 parity, restyled)               | Single panel with a modifier toggle list               |
-| Joyride targets                                                                                                                                       | `data-testid` on grid, step selector, modifier panel   | `data-testid` on section headers, stepper, accordion   |
-| Different Joyride target selectors and different layout structure per platform → two step sets in `raid-bosses.tutorial.tsx` (`{ desktop, mobile }`). |
+| Aspect                      | Desktop (≥768px)                                       | Mobile (<768px)                                        |
+| --------------------------- | ------------------------------------------------------ | ------------------------------------------------------ |
+| List                        | Two-section portrait grid, persistent alongside detail | Two stacked sections, tap-through to detail route view |
+| Detail stats                | Stat table + ability panels side by side               | Stacked cards                                          |
+| Progression control         | Labeled `Select` / segmented control                   | Compact stepper (`- step N +`)                         |
+| Abilities/traits/encounters | Expanded panels                                        | Accordions, collapsed by default                       |
+| Prime modifiers             | Dual-panel compare (V1 parity, restyled)               | Single panel with a modifier toggle list               |
+| Joyride targets             | `data-testid` on grid, step selector, modifier panel   | `data-testid` on section headers, stepper, accordion   |
+
+Different Joyride target selectors and different layout structure per platform → two step sets in `raid-bosses.tutorial.tsx` (`{ desktop, mobile }`).
 
 **4. Detail view state (progression step, active modifiers) is not URL-backed; only the selected entity is.**
 `library-entity-routes` puts the selected `unitSetId` in the path and preserves secondary query params. Progression step and active-modifier selection are ephemeral exploration state, reset on entity change, kept in component state — consistent with how Character Lookup keeps its non-identity controls. If sharing a specific step/modifier view is later wanted, it can move to query params without a contract change.
