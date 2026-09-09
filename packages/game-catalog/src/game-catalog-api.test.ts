@@ -9,6 +9,12 @@ const charactersDataset: GameCatalogManifestDataset = {
   url: "/api/v1/game-catalog/characters",
 }
 
+const guildRaidMetaDataset: GameCatalogManifestDataset = {
+  key: "guild-raid-meta",
+  hash: "guild-raid-meta-h1",
+  url: "/api/v1/game-catalog/guild-raid-meta",
+}
+
 const validCharacter = {
   id: "c1",
   name: "Apothecary",
@@ -72,6 +78,35 @@ describe("GameCatalogHttpClient", () => {
     const client = new GameCatalogHttpClient("http://localhost")
 
     await expect(client.getDataset(charactersDataset)).rejects.toThrow(
+      /failed validation/
+    )
+  })
+
+  it("rejects malformed Guild Raid Meta before synchronization can write it", async () => {
+    stubFetch({
+      ...envelope({
+        sourceId: "terminus-maximus-guild-raid-boss-meta",
+        updatedOn: "2026-07-01",
+        comps: [],
+        bosses: [],
+      }),
+      datasetKey: "guild-raid-meta",
+      datasetHash: "guild-raid-meta-h1",
+    })
+    const client = new GameCatalogHttpClient("http://localhost")
+
+    await expect(
+      client.getDataset(guildRaidMetaDataset)
+    ).resolves.toMatchObject({
+      data: { sourceId: "terminus-maximus-guild-raid-boss-meta" },
+    })
+
+    stubFetch({
+      ...envelope({ sourceId: "known", updatedOn: "not-a-date", comps: [] }),
+      datasetKey: "guild-raid-meta",
+      datasetHash: "guild-raid-meta-h1",
+    })
+    await expect(client.getDataset(guildRaidMetaDataset)).rejects.toThrow(
       /failed validation/
     )
   })

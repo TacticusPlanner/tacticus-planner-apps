@@ -52,12 +52,12 @@ function byCalendarDate(data: unknown): Record<string, unknown>[] {
 // raid-bosses is the second non-array payload (after events-calendar): a single object
 // ({ seasonConfigRotation, bosses[], primes[], seasons{} }) the Library always reads whole. Stored as
 // one row under a fixed id rather than flattened, since nothing queries it by sub-key.
-function asSingleRow(data: unknown): Record<string, unknown>[] {
+function asSingleRow(id: string, data: unknown): Record<string, unknown>[] {
   if (typeof data !== "object" || data === null || Array.isArray(data)) {
     return []
   }
 
-  return [{ id: "raid-bosses", ...(data as Record<string, unknown>) }]
+  return [{ id, ...(data as Record<string, unknown>) }]
 }
 
 export const datasetToStorageModels: Record<
@@ -82,7 +82,8 @@ export const datasetToStorageModels: Record<
   "events-calendar": byCalendarDate,
   // Plain-array passthrough — each shop record already carries its `id` (guild / war / ...).
   shops: asArray,
-  "raid-bosses": asSingleRow,
+  "raid-bosses": (data) => asSingleRow("raid-bosses", data),
+  "guild-raid-meta": (data) => asSingleRow("guild-raid-meta", data),
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

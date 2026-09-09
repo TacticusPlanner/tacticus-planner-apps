@@ -10,6 +10,7 @@ import {
   eventsCalendarRowSchema,
 } from "./events"
 import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
+import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { npcSchema } from "./npc"
 import { onslaughtRewardSchema } from "./onslaught"
@@ -42,6 +43,8 @@ export const datasetPayloadSchemas = {
   shops: z.array(shopSchema),
   // The other non-array payload — an object stored as a single row (see raid-bosses.ts).
   "raid-bosses": raidBossesPayloadSchema,
+  // The third non-array payload — another complete object stored as one row.
+  "guild-raid-meta": guildRaidMetaPayloadSchema,
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -68,4 +71,5 @@ export type GameCatalogRecordByKey = {
   shops: z.infer<typeof shopSchema>
   // The whole payload object is one stored row (see game-catalog.mapper.ts's `asSingleRow`).
   "raid-bosses": z.infer<typeof raidBossesPayloadSchema>
+  "guild-raid-meta": z.infer<typeof guildRaidMetaPayloadSchema>
 }
