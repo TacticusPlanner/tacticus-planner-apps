@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
 import { fieldNpcIcon } from "@workspace/game-catalog"
 import { getNpcs } from "@workspace/game-catalog/queries"
 import { Button } from "@workspace/ui/components/button"
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
@@ -14,13 +15,16 @@ import {
   maxKnownProgressionIndex,
   resolveFieldNpcName,
   resolveFieldNpcRosterId,
+  unitDisplayName,
 } from "@/entities/raid-boss"
+import { useGuildRaidMetaCatalog } from "@/entities/guild-raid-meta"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { RaidBossesDesktopPage } from "./desktop/raid-bosses-desktop-page"
 import { RaidBossesMobilePage } from "./mobile/raid-bosses-mobile-page"
 import { useRaidBossesCatalog } from "./hooks/use-raid-bosses-catalog"
+import { GuildRaidMetaView, GuildRaidSeasonsView } from "./guild-raid-views"
 import { useRaidBossesTutorial } from "./raid-bosses.tutorial"
 import type { RaidBossesPageViewProps } from "./raid-bosses-page.view-model"
 
@@ -28,10 +32,11 @@ export function RaidBossesPage() {
   const { t } = useTranslation("library")
   const isMobile = useIsMobile()
   const { entityId } = useParams()
-
-  useTourPageSteps(useRaidBossesTutorial())
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const catalog = useRaidBossesCatalog()
+  const metaCatalog = useGuildRaidMetaCatalog()
   const npcs = useLiveQuery(() => getNpcs(), [], [])
 
   const entityIds = useMemo(
@@ -48,6 +53,85 @@ export function RaidBossesPage() {
     entityIds,
     loading: catalog.status === "loading",
   })
+
+  const query = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  )
+  const requestedTab = query.get("tab")
+  const tab =
+    requestedTab === "seasons" ||
+    requestedTab === "meta" ||
+    requestedTab === "details"
+      ? requestedTab
+      : "details"
+  const requestedSeason = query.get("season")
+  const selectedSeasonId = catalog.payload?.seasonConfigRotation.includes(
+    requestedSeason ?? ""
+  )
+    ? requestedSeason!
+    : catalog.payload?.seasonConfigRotation[0]
+  const requestedComp = query.get("comp")
+  const compId =
+    metaCatalog.status === "ready" &&
+    metaCatalog.meta.comps.some((comp) => comp.id === requestedComp)
+      ? requestedComp!
+      : undefined
+
+  const updateQuery = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const next = new URLSearchParams(location.search)
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === undefined) next.delete(key)
+        else next.set(key, value)
+      }
+      const search = next.toString()
+      void navigate({
+        pathname: location.pathname,
+        search: search ? `?${search}` : "",
+      })
+    },
+    [location.pathname, location.search, navigate]
+  )
+
+  useEffect(() => {
+    if (catalog.status !== "ready") return
+    const repairs: Record<string, string | undefined> = {}
+    if (requestedTab && requestedTab !== tab) repairs.tab = "details"
+    if (requestedSeason && requestedSeason !== selectedSeasonId)
+      repairs.season = selectedSeasonId
+    if (
+      metaCatalog.status === "ready" &&
+      requestedComp &&
+      requestedComp !== compId
+    )
+      repairs.comp = undefined
+    if (Object.keys(repairs).length === 0) return
+    const next = new URLSearchParams(location.search)
+    for (const [key, value] of Object.entries(repairs)) {
+      if (value === undefined) next.delete(key)
+      else next.set(key, value)
+    }
+    const search = next.toString()
+    void navigate(
+      { pathname: location.pathname, search: search ? `?${search}` : "" },
+      { replace: true }
+    )
+  }, [
+    catalog.status,
+    compId,
+    location.pathname,
+    location.search,
+    metaCatalog.status,
+    navigate,
+    requestedComp,
+    requestedSeason,
+    requestedTab,
+    selectedSeasonId,
+    tab,
+  ])
+
+  useTourPageSteps(useRaidBossesTutorial(tab))
 
   const selectedUnit = selection.selectedId
     ? catalog.byId.get(selection.selectedId)
@@ -166,7 +250,7 @@ export function RaidBossesPage() {
         className="py-10 text-center text-muted-foreground"
         data-testid="raid-bosses-library-page"
       >
-        {t("loading")}
+        {t("raidBosses.loading")}
       </p>
     )
   }
@@ -177,7 +261,7 @@ export function RaidBossesPage() {
         className="py-10 text-center text-muted-foreground"
         data-testid="raid-bosses-library-page"
       >
-        {t("collections.raidBossesNoRecords")}
+        {t("raidBosses.unavailable")}
       </p>
     )
   }
@@ -217,11 +301,47 @@ export function RaidBossesPage() {
       <p className="text-muted-foreground">
         {t("collections.raidBosses.description")}
       </p>
-      {isMobile ? (
-        <RaidBossesMobilePage {...viewProps} />
-      ) : (
-        <RaidBossesDesktopPage {...viewProps} />
-      )}
+      <Tabs value={tab} onValueChange={(value) => updateQuery({ tab: value })}>
+        <TabsList
+          className="max-w-full overflow-x-auto"
+          data-testid="raid-boss-tabs"
+        >
+          <TabsTrigger value="seasons">
+            {t("raidBosses.tabs.seasons")}
+          </TabsTrigger>
+          <TabsTrigger value="meta">{t("raidBosses.tabs.meta")}</TabsTrigger>
+          <TabsTrigger value="details">
+            {t("raidBosses.tabs.details")}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {tab === "details" ? (
+        isMobile ? (
+          <RaidBossesMobilePage {...viewProps} />
+        ) : (
+          <RaidBossesDesktopPage {...viewProps} />
+        )
+      ) : null}
+      {tab === "seasons" && catalog.payload && selectedSeasonId ? (
+        <GuildRaidSeasonsView
+          payload={catalog.payload}
+          selectedSeasonId={selectedSeasonId}
+          onSelectSeason={(season) => updateQuery({ season })}
+          encounterName={(unitSetId) =>
+            catalog.nameById.get(unitSetId) ?? unitDisplayName(unitSetId)
+          }
+          encounterPortrait={(unitSetId) => catalog.portraitById.get(unitSetId)}
+          mobile={isMobile}
+        />
+      ) : null}
+      {tab === "meta" ? (
+        <GuildRaidMetaView
+          catalog={metaCatalog}
+          compId={compId}
+          onCompChange={(comp) => updateQuery({ comp })}
+          mobile={isMobile}
+        />
+      ) : null}
     </div>
   )
 }

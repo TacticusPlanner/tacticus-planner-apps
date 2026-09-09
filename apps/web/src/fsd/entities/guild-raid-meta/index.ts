@@ -7,4 +7,8 @@ export {
   type GuildRaidMetaSourcePresentation,
   type GuildRaidMetaUnitPresentation,
 } from "./lib/resolve-guild-raid-meta"
-export { useGuildRaidMetaPresentation } from "./lib/use-guild-raid-meta-presentation"
+export {
+  useGuildRaidMetaCatalog,
+  useGuildRaidMetaPresentation,
+  type GuildRaidMetaCatalog,
+} from "./lib/use-guild-raid-meta-presentation"

@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Bibliothèque",
-    "description": "Parcourez les personnages, Machines de guerre, PNJ et boss de raid"
+    "description": "Parcourez les personnages, Machines de guerre, PNJ et boss de raid de guilde"
   },
   "collections": {
     "characters": {
@@ -17,11 +17,11 @@
       "description": "Parcourez les détails et statistiques des PNJ"
     },
     "raidBosses": {
-      "label": "Boss de raid",
-      "description": "Parcourez les informations des boss de raid"
+      "label": "Boss de raid de guilde",
+      "description": "Parcourez les informations des boss de raid de guilde"
     },
     "noRecords": "Aucune entité sélectionnable n’est disponible.",
-    "raidBossesNoRecords": "Les boss de raid ne sont pas encore disponibles dans le catalogue.",
+    "raidBossesNoRecords": "Les boss de raid de guilde ne sont pas encore disponibles dans le catalogue.",
     "shops": {
       "label": "Boutiques quotidiennes",
       "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
@@ -118,7 +118,7 @@
     "tour": {
       "steps": {
         "bosses": {
-          "title": "Boss de raid",
+          "title": "Boss de raid de guilde",
           "content": "Tous les boss de raid de guilde. Sélectionnez-en un pour voir ses statistiques, ses capacités et ses modificateurs de rencontre."
         },
         "primes": {
@@ -136,6 +136,30 @@
         "adjustedStats": {
           "title": "Statistiques ajustées",
           "content": "Choisissez un seuil de PV perdus pour chaque prime afin de voir les statistiques, capacités et ennemis du boss une fois ces modificateurs actifs."
+        },
+        "tabs": {
+          "title": "Vues des boss de raid de guilde",
+          "content": "Basculez entre les configurations de saison, les recommandations Meta actuelles et les détails de chaque boss ou prime."
+        },
+        "season": {
+          "title": "Choisissez une saison",
+          "content": "Choisissez la configuration de saison dont vous souhaitez consulter les paliers et ensembles de rencontres."
+        },
+        "seasonContent": {
+          "title": "Ensembles de rencontres par palier",
+          "content": "Consultez chaque palier et ensemble, avec son coffre, son EXP de guilde, ses rencontres et sa limite de tours."
+        },
+        "metaRecommendations": {
+          "title": "Recommandations Meta",
+          "content": "Comparez les compositions de héros recommandées et alternatives pour chaque boss de raid de guilde."
+        },
+        "metaFilter": {
+          "title": "Filtrer par Comp",
+          "content": "Limitez les recommandations et le guide des Comps à un archétype d’équipe précis."
+        },
+        "metaGuidance": {
+          "title": "Guide des Comps",
+          "content": "Dépliez une Comp pour voir son unité signature, ses héros centraux et flexibles, ainsi que les Machines de guerre adaptées."
         }
       }
     },
@@ -159,7 +183,38 @@
     "adjustedColumn": "Ajustée",
     "weaponHits": "Touches d'arme",
     "enemyRemoved": "{{count}}× {{name}} retiré",
-    "syncFailed": "Impossible de charger les boss de raid. Le catalogue est peut-être encore en cours de synchronisation.",
+    "syncFailed": "Impossible de charger les boss de raid de guilde. Le catalogue est peut-être encore en cours de synchronisation.",
+    "loading": "Chargement des données des boss de raid de guilde…",
+    "unavailable": "Les données des boss de raid de guilde ne sont pas encore disponibles dans le catalogue.",
+    "tabs": {
+      "seasons": "Configuration des saisons",
+      "meta": "Meta",
+      "details": "Détails boss / prime"
+    },
+    "season": "Configuration de saison",
+    "tier": "Palier {{tier}}",
+    "set": "Ensemble {{set}}",
+    "tierSet": "Palier {{tier}} · Ensemble {{set}}",
+    "chest": "Coffre : {{chest}}",
+    "guildXp": "{{xp}} EXP de guilde",
+    "turns": "{{count}} tours",
+    "meta": {
+      "loading": "Chargement de la Meta des boss de raid de guilde…",
+      "unavailable": "La Meta des boss de raid de guilde n’est pas encore disponible.",
+      "failed": "Impossible de charger la Meta des boss de raid de guilde.",
+      "compFilter": "Filtrer par Comp",
+      "allComps": "Tous les Comps",
+      "updated": "Mis à jour {{date}} · Source :",
+      "noResults": "Aucune recommandation ne correspond à ce Comp.",
+      "meta": "Meta",
+      "alternate": "Alternative",
+      "mow": "Machine de guerre",
+      "evidence": "{{replays}} replays · {{average}} dégâts moyens · {{maximum}} dégâts maximum",
+      "signature": "Signature",
+      "core": "Noyau",
+      "flex": "Flexible",
+      "suitableMows": "Machines de guerre adaptées"
+    },
     "retry": "Réessayer"
   }
 }
