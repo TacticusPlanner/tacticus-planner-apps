@@ -1,4 +1,5 @@
 import type { RaidBossEncounterModifier } from "../model/types"
+import { unitDisplayName } from "./unit-name"
 
 /** Splits a camelCase / PascalCase identifier into space-separated words. */
 export function humanizeToken(token: string): string {
@@ -9,15 +10,16 @@ export function humanizeToken(token: string): string {
     .trim()
 }
 
-// Modifier `type` values seen in the datamine (see V1 guild-boss-modifiers.ts). `pct` variants express
-// `amount` as a fraction; the rest are flat amounts. This produces a readable one-line description; it
-// does NOT compute the adjusted stat/ability values (that math port is tracked separately).
-const PERCENT_TYPES = new Set([
+// Modifier `type` values seen in the datamine (see V1 guild-boss-modifiers.ts). Only two express a
+// plain percentage of a game stat (`amount` is a whole-number percent, e.g. 15 -> "−15%"); one is a
+// flat stat delta (`amount` is the literal value, e.g. 1 -> "−1 movement"). Every other type scales an
+// ability's internal variables/constants by an `amount` that is meaningless without the full modifier
+// math (tracked separately) — those render as a direction + target only.
+const STAT_PERCENT_TYPES = new Set([
   "bossStatPctDecrease",
-  "bossAbilityAllStatsPctDecrease",
   "unitStatPctDecrease",
-  "bossAbilityVariablePctDecrease",
 ])
+const FLAT_STAT_TYPES = new Set(["bossStatDecrease"])
 
 const DIRECTION: Record<string, "up" | "down"> = {
   bossStatDecrease: "down",
@@ -32,17 +34,36 @@ const DIRECTION: Record<string, "up" | "down"> = {
   bossAbilityVariablePctDecrease: "down",
 }
 
-export function formatModifierAmount(
-  modifier: RaidBossEncounterModifier
-): string {
-  const magnitude = PERCENT_TYPES.has(modifier.type)
-    ? `${Math.round(Math.abs(modifier.amount) * 100)}%`
-    : `${Math.abs(modifier.amount)}`
-  const sign = DIRECTION[modifier.type] === "up" ? "+" : "−"
-  return `${sign}${magnitude}`
+/** The thing a modifier acts on, as a readable label — a raw `GuildBoss…` unit id is name-resolved. */
+function targetLabel(modifier: RaidBossEncounterModifier): string {
+  const raw = modifier.subtarget ?? modifier.target
+  return /^GuildBoss\d+/.test(raw) ? unitDisplayName(raw) : humanizeToken(raw)
 }
 
-export function describeModifier(modifier: RaidBossEncounterModifier): string {
-  const target = humanizeToken(modifier.subtarget ?? modifier.target)
-  return `${formatModifierAmount(modifier)} ${target}`.trim()
+/**
+ * A modifier rendered for display. `amount` variants carry a fully-formed magnitude string; `effect`
+ * variants only know a direction + target and are wrapped in UI copy by the caller (so "reduces" /
+ * "increases" stay translatable).
+ */
+export type ModifierDescription =
+  | { kind: "amount"; text: string }
+  | { kind: "effect"; direction: "reduces" | "increases"; label: string }
+
+export function describeModifier(
+  modifier: RaidBossEncounterModifier
+): ModifierDescription {
+  const label = targetLabel(modifier)
+  const magnitude = Math.abs(modifier.amount)
+
+  if (STAT_PERCENT_TYPES.has(modifier.type)) {
+    return { kind: "amount", text: `−${magnitude}% ${label}` }
+  }
+  if (FLAT_STAT_TYPES.has(modifier.type)) {
+    return { kind: "amount", text: `−${magnitude} ${label}` }
+  }
+  return {
+    kind: "effect",
+    direction: DIRECTION[modifier.type] === "up" ? "increases" : "reduces",
+    label,
+  }
 }

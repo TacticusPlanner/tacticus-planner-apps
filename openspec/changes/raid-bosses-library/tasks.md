@@ -55,6 +55,19 @@
 - [x] 9.2 `pnpm --filter web typecheck` / `lint` / `lint:fsd` clean; `git diff --check` clean.
 - [ ] 9.3 Manual browser verification via the Aspire stack — **blocked on the API companion being deployed/synced** (PR TacticusPlanner/tacticus-planner-api#46). Until `raid-bosses` is in a running catalog the page shows the (correct) feature-unavailable state. Tracked below.
 
+## 10. V1-parity pass (post-live-comparison)
+
+Live comparison against V1 `learn/guildBosses` + `guildBossDetail` on the running Aspire stack surfaced parity gaps; addressed here (deferred items in D.1 untouched):
+
+- [x] 10.1 **Prime names from the roster.** `entities/raid-boss/lib/unit-name.ts` — `resolvePrimeName` (strip `MiniBoss/Minion` prefix → lowercase → `getCharactersMap()` lookup) + `unitDisplayName` (V1 `getUnitDisplayName` port). `use-raid-bosses-catalog.ts` resolves a prime to its playable-character name (`GuildBoss4MiniBoss1OrksBigMek` → "Gibbascrapz"), falling back to the id-keyed i18n name. 22/29 primes now show their real name. Covered by `unit-name.test.ts`.
+- [x] 10.2 **Field-enemy npc names.** `resolveFieldNpcName` fuzzy-matches the `npcs` catalog dataset by faction abbreviation, dropping the hive-fleet suffix (`GuildBoss1Npc1TyranTermagantLeviathan` → "Termagant"); humanized-token fallback. Page pulls `getNpcs()` and passes resolved names into the detail.
+- [x] 10.3 **Ability grouping + hidden ids.** Detail renders Active / Passive / Relic groups. `GuildBossRunAway` filtered via a local `HIDDEN_ABILITY_IDS` set (V1 parity). The generator drops the `formatWords` fallback for **traits** so an unresolved id (`Boss`, `Hero`) has no entry and the detail skips it via `hasTraitName` (`i18n.exists`). `raidBossTraits.json` 35 → 33.
+- [x] 10.4 **Modifier rendering.** `describeModifier` returns a discriminated `ModifierDescription`: genuine stat-percent / flat-stat types keep their value (`−15% dmg`, `−1 movement`; the old ×100 bug that produced `−1500%` is fixed); ability-scaling types render as `Reduces <target>` / `Increases <target>` with no raw amount. `atHpLost` copy now `At {{hpLost}}% HP lost`. New `modifierReduces` / `modifierIncreases` UI keys ×4 locales.
+- [x] 10.5 **Encounters section → Prime Modifiers.** Flat repeated-encounter list replaced (`entities/raid-boss/lib/encounters.ts` `buildModifierContext` / `fieldNpcIdsForStep`): a boss shows the primes of its representative set with each prime's modifier list; a prime shows its own. `data-testid` `raid-boss-encounters` → `raid-boss-prime-modifiers`; tour step + copy updated. New `primeModifiers` / `modifiers` / `noPrimeModifiers` keys ×4 locales.
+- [x] 10.6 **Progression annotation.** The stepper now shows the selected step's `baseRarity` + `starLevel`.
+- [x] 10.7 Gates re-run: web `test:run` 1067 pass (166 files), `typecheck` / `lint` (eslint + knip) / `lint:fsd` clean, `git diff --check` clean. i18n regenerated; all 4 `library.json` locales structurally aligned.
+- [ ] 10.8 Re-verify live against V1 on the Aspire stack (see D.2).
+
 ## Deferred / out-of-session
 
 - [ ] D.1 Modifier-application math + "adjusted stats" compare UI, ability-text variable interpolation, portrait assets, distinct sync-failure state — [TacticusPlanner/tacticus-planner-apps#122](https://github.com/TacticusPlanner/tacticus-planner-apps/issues/122).

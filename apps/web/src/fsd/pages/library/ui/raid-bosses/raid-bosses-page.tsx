@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "react-router"
 import { useTranslation } from "react-i18next"
+import { useLiveQuery } from "dexie-react-hooks"
+import { getNpcs } from "@workspace/game-catalog/queries"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
-  findEncountersForUnit,
+  buildModifierContext,
+  fieldNpcIdsForStep,
   maxKnownProgressionIndex,
+  resolveFieldNpcName,
 } from "@/entities/raid-boss"
 import { useTourPageSteps } from "@/shared/tour"
 
@@ -24,6 +28,7 @@ export function RaidBossesPage() {
   useTourPageSteps(useRaidBossesTutorial())
 
   const catalog = useRaidBossesCatalog()
+  const npcs = useLiveQuery(() => getNpcs(), [], [])
 
   const entityIds = useMemo(
     () =>
@@ -44,13 +49,9 @@ export function RaidBossesPage() {
     ? catalog.byId.get(selection.selectedId)
     : undefined
 
-  const selectedName = useMemo(
-    () =>
-      [...catalog.bosses, ...catalog.primes].find(
-        (item) => item.unitSetId === selection.selectedId
-      )?.name ?? "",
-    [catalog.bosses, catalog.primes, selection.selectedId]
-  )
+  const selectedName = selection.selectedId
+    ? (catalog.nameById.get(selection.selectedId) ?? "")
+    : ""
 
   // Progression step is ephemeral exploration state (not URL-backed) — reset to the max known step
   // whenever the selected entity changes.
@@ -71,12 +72,29 @@ export function RaidBossesPage() {
     )
   }, [selectedUnit, catalog.payload])
 
-  const encounters = useMemo(
+  const modifierContext = useMemo(
     () =>
       catalog.payload && selectedUnit
-        ? findEncountersForUnit(catalog.payload, selectedUnit.unitSetId)
+        ? buildModifierContext(
+            catalog.payload,
+            selectedUnit,
+            stepIndex,
+            (id) => catalog.nameById.get(id) ?? id
+          )
+        : ({ kind: "none" } as const),
+    [catalog.payload, catalog.nameById, selectedUnit, stepIndex]
+  )
+
+  const fieldEnemyNames = useMemo(
+    () =>
+      catalog.payload && selectedUnit
+        ? fieldNpcIdsForStep(
+            catalog.payload,
+            selectedUnit.unitSetId,
+            stepIndex
+          ).map((id) => resolveFieldNpcName(id, selectedUnit.factionId, npcs))
         : [],
-    [catalog.payload, selectedUnit]
+    [catalog.payload, selectedUnit, stepIndex, npcs]
   )
 
   if (catalog.status === "loading") {
@@ -110,7 +128,8 @@ export function RaidBossesPage() {
     onSelect: selection.select,
     stepIndex,
     onStepChange: setStepIndex,
-    encounters,
+    modifierContext,
+    fieldEnemyNames,
   }
 
   return (

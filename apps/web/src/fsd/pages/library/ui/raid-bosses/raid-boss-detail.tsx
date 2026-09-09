@@ -13,8 +13,9 @@ import {
   describeModifier,
   humanizeToken,
   useRaidBossLabels,
+  type ModifierContext,
   type RaidBoss,
-  type RaidBossEncounter,
+  type RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
 
 export type RaidBossDetailProps = {
@@ -22,9 +23,13 @@ export type RaidBossDetailProps = {
   name: string
   stepIndex: number
   onStepChange: (index: number) => void
-  encounters: RaidBossEncounter[]
+  modifierContext: ModifierContext
+  fieldEnemyNames: string[]
   compact?: boolean
 }
+
+// Internal engine ability with no player-facing description — V1 hides it the same way.
+const HIDDEN_ABILITY_IDS = new Set(["GuildBossRunAway"])
 
 function StatRow({ label, value }: { label: string; value: string | number }) {
   return (
@@ -37,16 +42,87 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
   )
 }
 
+function ModifierRows({
+  modifiers,
+}: {
+  modifiers: RaidBossEncounterModifier[]
+}) {
+  const { t } = useTranslation("library")
+
+  // The raw `hpLost` values are an `i/N` fraction of an authoring-time HP baseline, not a usable
+  // absolute or percent (see V1's `scaleModifierHpLost`). They only order the schedule, so the row
+  // shows the positional threshold: the k-th of N modifiers activates at k/N of the unit's HP lost.
+  const total = modifiers.length
+
+  return (
+    <ul className="flex flex-col gap-1">
+      {modifiers.map((modifier, index) => {
+        const described = describeModifier(modifier)
+        return (
+          <li
+            key={`${modifier.modifierId}-${index}`}
+            className="flex justify-between gap-3"
+          >
+            <span className="text-muted-foreground">
+              {t("raidBosses.atHpLost", {
+                hpLost: Math.round((100 * (index + 1)) / total),
+              })}
+            </span>
+            <span className="text-right font-medium">
+              {described.kind === "amount"
+                ? described.text
+                : t(
+                    described.direction === "increases"
+                      ? "raidBosses.modifierIncreases"
+                      : "raidBosses.modifierReduces",
+                    { name: described.label }
+                  )}
+            </span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+function AbilityGroup({
+  label,
+  ids,
+}: {
+  label: string
+  ids: string[] | undefined
+}) {
+  const { abilityName } = useRaidBossLabels()
+  const shown = (ids ?? []).filter((id) => !HIDDEN_ABILITY_IDS.has(id))
+  if (shown.length === 0) return null
+
+  return (
+    <div>
+      <h4 className="mb-1 text-xs font-medium text-muted-foreground">
+        {label}
+      </h4>
+      <div className="flex flex-wrap gap-1">
+        {shown.map((id) => (
+          <Badge key={id} variant="secondary">
+            {abilityName(id)}
+          </Badge>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function RaidBossDetail({
   unit,
   name,
   stepIndex,
   onStepChange,
-  encounters,
+  modifierContext,
+  fieldEnemyNames,
   compact = false,
 }: RaidBossDetailProps) {
   const { t } = useTranslation("library")
-  const { abilityName, traitName } = useRaidBossLabels()
+  const { traitName, hasTraitName } = useRaidBossLabels()
 
   const ladder = unit.statProgression
   const clamped = Math.min(
@@ -55,11 +131,12 @@ export function RaidBossDetail({
   )
   const step = ladder[clamped]
 
-  const abilityIds = [
-    ...(unit.activeAbilityIds ?? []),
-    ...(unit.passiveAbilityIds ?? []),
-    ...(unit.relicAbilityIds ?? []),
-  ]
+  const traitIds = (unit.traitIds ?? []).filter(hasTraitName)
+  const hasAbilities =
+    (unit.activeAbilityIds?.length ?? 0) +
+      (unit.passiveAbilityIds?.length ?? 0) +
+      (unit.relicAbilityIds?.length ?? 0) >
+    0
 
   return (
     <div className="flex flex-col gap-6" data-testid="raid-boss-detail">
@@ -73,7 +150,7 @@ export function RaidBossDetail({
 
       {ladder.length > 1 ? (
         <div
-          className="flex items-center gap-3"
+          className="flex flex-wrap items-center gap-3"
           data-testid="raid-boss-progression"
         >
           <span className="text-sm text-muted-foreground">
@@ -100,6 +177,9 @@ export function RaidBossDetail({
           >
             +
           </Button>
+          <span className="text-xs text-muted-foreground">
+            {humanizeToken(step.baseRarity)} · ★{step.starLevel}
+          </span>
         </div>
       ) : null}
 
@@ -182,28 +262,35 @@ export function RaidBossDetail({
             </div>
           ) : null}
 
-          {abilityIds.length ? (
-            <div>
+          {hasAbilities ? (
+            <div data-testid="raid-boss-abilities">
               <h3 className="mb-2 text-sm font-semibold">
                 {t("raidBosses.abilities")}
               </h3>
-              <div className="flex flex-wrap gap-1">
-                {abilityIds.map((id) => (
-                  <Badge key={id} variant="secondary">
-                    {abilityName(id)}
-                  </Badge>
-                ))}
+              <div className="flex flex-col gap-2">
+                <AbilityGroup
+                  label={t("raidBosses.abilitiesActive")}
+                  ids={unit.activeAbilityIds}
+                />
+                <AbilityGroup
+                  label={t("raidBosses.abilitiesPassive")}
+                  ids={unit.passiveAbilityIds}
+                />
+                <AbilityGroup
+                  label={t("raidBosses.abilitiesRelic")}
+                  ids={unit.relicAbilityIds}
+                />
               </div>
             </div>
           ) : null}
 
-          {unit.traitIds?.length ? (
+          {traitIds.length ? (
             <div>
               <h3 className="mb-2 text-sm font-semibold">
                 {t("raidBosses.traits")}
               </h3>
               <div className="flex flex-wrap gap-1">
-                {unit.traitIds.map((id) => (
+                {traitIds.map((id) => (
                   <Badge key={id} variant="outline">
                     {traitName(id)}
                   </Badge>
@@ -216,61 +303,46 @@ export function RaidBossDetail({
 
       <Separator />
 
-      <div data-testid="raid-boss-encounters">
+      {fieldEnemyNames.length ? (
+        <div data-testid="raid-boss-field-enemies">
+          <h3 className="mb-1 text-sm font-semibold">
+            {t("raidBosses.fieldEnemies")}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {fieldEnemyNames.join(", ")}
+          </p>
+        </div>
+      ) : null}
+
+      <div data-testid="raid-boss-prime-modifiers">
         <h3 className="mb-2 text-sm font-semibold">
-          {t("raidBosses.encounters")}
+          {modifierContext.kind === "boss"
+            ? t("raidBosses.primeModifiers")
+            : t("raidBosses.modifiers")}
         </h3>
-        {encounters.length === 0 ? (
+
+        {modifierContext.kind === "none" ? (
           <p className="text-sm text-muted-foreground">
             {t("raidBosses.noEncounterData")}
           </p>
-        ) : (
+        ) : modifierContext.kind === "prime" ? (
+          modifierContext.modifiers.length ? (
+            <ModifierRows modifiers={modifierContext.modifiers} />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t("raidBosses.noModifiers")}
+            </p>
+          )
+        ) : modifierContext.primes.some((prime) => prime.modifiers.length) ? (
           <ul className="flex flex-col gap-4">
-            {encounters.map((encounter, index) => (
+            {modifierContext.primes.map((prime) => (
               <li
-                key={`${encounter.encounterIndex}-${index}`}
+                key={prime.unitSetId}
                 className="rounded-lg border p-3 text-sm"
               >
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <Badge variant="outline">
-                    {t("raidBosses.encounterType", {
-                      type: humanizeToken(encounter.encounterType),
-                    })}
-                  </Badge>
-                  {encounter.disallowedFactionIds.map((factionId) => (
-                    <Badge key={factionId} variant="secondary">
-                      {t("raidBosses.disallowed", {
-                        faction: humanizeToken(factionId),
-                      })}
-                    </Badge>
-                  ))}
-                </div>
-
-                {encounter.fieldNpcIds.length ? (
-                  <p className="mb-2 text-muted-foreground">
-                    {t("raidBosses.fieldEnemies")}:{" "}
-                    {encounter.fieldNpcIds.map(humanizeToken).join(", ")}
-                  </p>
-                ) : null}
-
-                {encounter.modifiers.length ? (
-                  <ul className="flex flex-col gap-1">
-                    {encounter.modifiers.map((modifier, modifierIndex) => (
-                      <li
-                        key={modifierIndex}
-                        className="flex justify-between gap-3"
-                      >
-                        <span className="text-muted-foreground">
-                          {t("raidBosses.atHpLost", {
-                            hpLost: modifier.hpLost,
-                          })}
-                        </span>
-                        <span className="font-medium">
-                          {describeModifier(modifier)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                <h4 className="mb-2 font-medium">{prime.name}</h4>
+                {prime.modifiers.length ? (
+                  <ModifierRows modifiers={prime.modifiers} />
                 ) : (
                   <p className="text-muted-foreground">
                     {t("raidBosses.noModifiers")}
@@ -279,6 +351,10 @@ export function RaidBossDetail({
               </li>
             ))}
           </ul>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {t("raidBosses.noPrimeModifiers")}
+          </p>
         )}
       </div>
     </div>

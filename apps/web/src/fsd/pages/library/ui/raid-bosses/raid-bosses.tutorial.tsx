@@ -24,10 +24,10 @@ function useSharedSteps() {
         title: t("raidBosses.tour.steps.progression.title"),
         content: t("raidBosses.tour.steps.progression.content"),
       } satisfies Step,
-      encounters: {
-        target: '[data-testid="raid-boss-encounters"]',
-        title: t("raidBosses.tour.steps.encounters.title"),
-        content: t("raidBosses.tour.steps.encounters.content"),
+      primeModifiers: {
+        target: '[data-testid="raid-boss-prime-modifiers"]',
+        title: t("raidBosses.tour.steps.primeModifiers.title"),
+        content: t("raidBosses.tour.steps.primeModifiers.content"),
       } satisfies Step,
     }),
     [t]
@@ -35,16 +35,16 @@ function useSharedSteps() {
 }
 
 export function useRaidBossesTutorial(): TourPageSteps {
-  const { bosses, primes, progression, encounters } = useSharedSteps()
+  const { bosses, primes, progression, primeModifiers } = useSharedSteps()
 
   const desktop = useMemo<Step[]>(
     () => [
       { ...bosses, placement: "right" },
       { ...primes, placement: "right" },
       { ...progression, placement: "bottom" },
-      { ...encounters, placement: "left" },
+      { ...primeModifiers, placement: "left" },
     ],
-    [bosses, primes, progression, encounters]
+    [bosses, primes, progression, primeModifiers]
   )
 
   const mobile = useMemo<Step[]>(
@@ -52,9 +52,9 @@ export function useRaidBossesTutorial(): TourPageSteps {
       { ...bosses, placement: "bottom" },
       { ...primes, placement: "bottom" },
       { ...progression, placement: "bottom" },
-      { ...encounters, placement: "top" },
+      { ...primeModifiers, placement: "top" },
     ],
-    [bosses, primes, progression, encounters]
+    [bosses, primes, progression, primeModifiers]
   )
 
   return useMemo<TourPageSteps>(() => ({ desktop, mobile }), [desktop, mobile])

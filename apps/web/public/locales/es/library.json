@@ -113,12 +113,9 @@
     "meleeHits": "{{hits}} golpes · cuerpo a cuerpo",
     "abilities": "Habilidades",
     "traits": "Rasgos",
-    "encounters": "Encuentros",
     "noEncounterData": "No hay datos de encuentros de temporada para esta unidad.",
-    "encounterType": "Encuentro {{type}}",
-    "disallowed": "Sin {{faction}}",
     "fieldEnemies": "Enemigos de campo",
-    "atHpLost": "Con {{hpLost}} de salud perdida",
+    "atHpLost": "Con {{hpLost}} % de salud perdida",
     "noModifiers": "Sin modificadores.",
     "tour": {
       "steps": {
@@ -134,11 +131,19 @@
           "title": "Paso de progresión",
           "content": "Recorre la escala de progresión del jefe para ver cómo escalan sus estadísticas."
         },
-        "encounters": {
-          "title": "Encuentros y modificadores",
-          "content": "Por encuentro: los enemigos de campo y los modificadores que se activan a medida que el jefe pierde salud."
+        "primeModifiers": {
+          "title": "Modificadores de prime",
+          "content": "Para cada prime que lucha junto a este jefe, los modificadores que se activan a medida que baja su salud."
         }
       }
-    }
+    },
+    "abilitiesActive": "Activas",
+    "abilitiesPassive": "Pasivas",
+    "abilitiesRelic": "Reliquia",
+    "primeModifiers": "Modificadores de prime",
+    "modifiers": "Modificadores",
+    "noPrimeModifiers": "Sin modificadores de prime para este jefe.",
+    "modifierReduces": "Reduce {{name}}",
+    "modifierIncreases": "Aumenta {{name}}"
   }
 }

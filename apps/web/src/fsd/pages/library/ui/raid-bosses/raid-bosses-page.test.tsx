@@ -46,6 +46,8 @@ const { getRaidBossesMock } = vi.hoisted(() => ({
 
 vi.mock("@workspace/game-catalog/queries", () => ({
   getRaidBosses: getRaidBossesMock,
+  getCharactersMap: () => Promise.resolve(new Map()),
+  getNpcs: () => Promise.resolve([]),
 }))
 
 // Resolve i18n keys to the key itself (plus interpolated values) so assertions can match on keys.
@@ -55,6 +57,7 @@ vi.mock("react-i18next", () => ({
       opts && Object.keys(opts).filter((k) => k !== "defaultValue").length
         ? `${key} ${JSON.stringify(opts)}`
         : ((opts?.defaultValue as string) ?? key),
+    i18n: { exists: () => true },
   }),
 }))
 
@@ -119,6 +122,17 @@ const payload = {
                   progressionIndex: 3,
                   fieldNpcIds: ["GuildBoss1Npc1Termagant"],
                   disallowedFactionIds: ["Tyranids"],
+                  modifiers: [],
+                },
+                {
+                  encounterIndex: 1,
+                  encounterType: "Crystal",
+                  boardId: "GB_02",
+                  maxNrOfTurns: 6,
+                  unitSetId: "GuildBoss1MiniBoss1Warrior",
+                  progressionIndex: 3,
+                  fieldNpcIds: [],
+                  disallowedFactionIds: [],
                   modifiers: [
                     {
                       hpLost: 180,
@@ -198,18 +212,21 @@ describe("RaidBossesPage", () => {
       within(primes).getByText("GuildBoss1MiniBoss1Warrior")
     ).toBeInTheDocument()
 
-    // Detail for the first boss, including its inlined encounter modifier.
+    // Detail for the first boss: the Prime Modifiers section lists its set's prime with its modifier.
     const detail = screen.getByTestId("raid-boss-detail")
-    expect(
-      within(detail).getByTestId("raid-boss-encounters")
-    ).toHaveTextContent("−2 damage")
+    const primeModifiers = within(detail).getByTestId(
+      "raid-boss-prime-modifiers"
+    )
+    expect(primeModifiers).toHaveTextContent("GuildBoss1MiniBoss1Warrior")
+    expect(primeModifiers).toHaveTextContent("−2 damage")
   })
 
   it("selecting a prime navigates to its detail route", async () => {
     getRaidBossesMock.mockResolvedValue(payload)
     renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
-    fireEvent.click(await screen.findByText("GuildBoss1MiniBoss1Warrior"))
+    const primes = await screen.findByTestId("raid-boss-list-primes")
+    fireEvent.click(within(primes).getByText("GuildBoss1MiniBoss1Warrior"))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(

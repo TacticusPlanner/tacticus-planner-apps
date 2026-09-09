@@ -11,7 +11,8 @@ export function RaidBossesMobilePage({
   onSelect,
   stepIndex,
   onStepChange,
-  encounters,
+  modifierContext,
+  fieldEnemyNames,
 }: RaidBossesPageViewProps) {
   return (
     <div className="flex flex-col gap-6">
@@ -28,7 +29,8 @@ export function RaidBossesMobilePage({
             name={selectedName}
             stepIndex={stepIndex}
             onStepChange={onStepChange}
-            encounters={encounters}
+            modifierContext={modifierContext}
+            fieldEnemyNames={fieldEnemyNames}
             compact
           />
         </div>

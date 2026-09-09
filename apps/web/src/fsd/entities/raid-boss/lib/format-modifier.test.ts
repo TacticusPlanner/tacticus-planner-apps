@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  describeModifier,
-  formatModifierAmount,
-  humanizeToken,
-} from "./format-modifier"
+import { describeModifier, humanizeToken } from "./format-modifier"
 import type { RaidBossEncounterModifier } from "../model/types"
 
 const modifier = (
@@ -13,7 +9,7 @@ const modifier = (
   hpLost: 100,
   modifierId: "m",
   type: "bossStatDecrease",
-  target: "damage",
+  target: "movement",
   amount: 1,
   ...over,
 })
@@ -24,50 +20,69 @@ describe("humanizeToken", () => {
     expect(humanizeToken("MassiveScythingTalons")).toBe(
       "Massive Scything Talons"
     )
-    expect(humanizeToken("worldEaters")).toBe("world Eaters")
-  })
-})
-
-describe("formatModifierAmount", () => {
-  it("renders a flat decrease with a minus sign", () => {
-    expect(
-      formatModifierAmount(modifier({ type: "bossStatDecrease", amount: 2 }))
-    ).toBe("−2")
-  })
-
-  it("renders a percent type as a rounded percentage", () => {
-    expect(
-      formatModifierAmount(
-        modifier({ type: "bossStatPctDecrease", amount: 0.15 })
-      )
-    ).toBe("−15%")
-  })
-
-  it("renders an increase type with a plus sign", () => {
-    expect(
-      formatModifierAmount(
-        modifier({ type: "bossAbilityConstantIncrease", amount: 3 })
-      )
-    ).toBe("+3")
   })
 })
 
 describe("describeModifier", () => {
-  it("prefers the subtarget over the target and humanizes it", () => {
+  it("renders a flat stat delta with its literal value", () => {
+    expect(
+      describeModifier(
+        modifier({ type: "bossStatDecrease", target: "movement" })
+      )
+    ).toEqual({ kind: "amount", text: "−1 movement" })
+  })
+
+  it("renders a genuine stat percent as a whole-number percentage (no ×100)", () => {
+    expect(
+      describeModifier(
+        modifier({ type: "bossStatPctDecrease", target: "dmg", amount: 15 })
+      )
+    ).toEqual({ kind: "amount", text: "−15% dmg" })
+  })
+
+  it("renders an ability-scaling modifier as a direction + target, dropping the raw amount", () => {
     expect(
       describeModifier(
         modifier({
-          type: "bossStatPctDecrease",
-          subtarget: "critChance",
-          amount: 0.1,
+          type: "bossAbilityAllStatsPctDecrease",
+          target: "MassiveScythingTalons",
+          amount: 1500,
         })
       )
-    ).toBe("−10% crit Chance")
+    ).toEqual({
+      kind: "effect",
+      direction: "reduces",
+      label: "Massive Scything Talons",
+    })
   })
 
-  it("falls back to the target when there is no subtarget", () => {
-    expect(describeModifier(modifier({ target: "movement", amount: 1 }))).toBe(
-      "−1 movement"
-    )
+  it("uses the up direction for increase types", () => {
+    expect(
+      describeModifier(
+        modifier({
+          type: "bossAbilityVariableIncrease",
+          target: "WeakerRearArmour",
+          subtarget: "extraCritChance",
+          amount: 10,
+        })
+      )
+    ).toEqual({
+      kind: "effect",
+      direction: "increases",
+      label: "extra Crit Chance",
+    })
+  })
+
+  it("name-resolves a raw unit id in the subtarget", () => {
+    expect(
+      describeModifier(
+        modifier({
+          type: "unitAmountDecrease",
+          target: "unitId",
+          subtarget: "GuildBoss6Npc5TyranBarbgaunt",
+          amount: 1,
+        })
+      )
+    ).toEqual({ kind: "effect", direction: "reduces", label: "Barbgaunt" })
   })
 })

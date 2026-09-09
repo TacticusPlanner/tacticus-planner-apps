@@ -23,3 +23,19 @@ export type RaidBossListItem = {
   factionId: string
   name: string
 }
+
+/** One prime a boss is fought alongside, with its label and scaled modifier list. */
+export type RaidBossPrimeModifiers = {
+  unitSetId: string
+  name: string
+  modifiers: RaidBossEncounterModifier[]
+}
+
+/**
+ * The modifier detail shown for the selected unit at the viewed step: a boss shows its set's primes
+ * and their modifiers; a prime shows its own; `none` when the unit has no encounter data.
+ */
+export type ModifierContext =
+  | { kind: "boss"; primes: RaidBossPrimeModifiers[] }
+  | { kind: "prime"; modifiers: RaidBossEncounterModifier[] }
+  | { kind: "none" }

@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next"
 /**
  * id -> display label resolution for raid-boss game data, via dedicated id-keyed namespaces
  * (`raidBosses`, `raidBossAbilities`, `raidBossTraits`). English carries real values; other locales
- * fall back to English (the namespaces are en-only, like `traits`/`characters`). Every resolver takes
- * a `fallback` so a missing key degrades to a readable string, never a raw id.
+ * fall back to English (the namespaces are en-only, like `traits`/`characters`). `raidBossTraits` only
+ * carries ids that resolve to a real game trait — `hasTraitName` lets a caller drop the `Boss`
+ * pseudo-trait that V1 also hides.
  */
 export function useRaidBossLabels() {
-  const { t } = useTranslation([
+  const { t, i18n } = useTranslation([
     "raidBosses",
     "raidBossAbilities",
     "raidBossTraits",
@@ -34,5 +35,10 @@ export function useRaidBossLabels() {
     [t]
   )
 
-  return { bossName, abilityName, traitName }
+  const hasTraitName = useCallback(
+    (traitId: string) => i18n.exists(`raidBossTraits:${traitId}`),
+    [i18n]
+  )
+
+  return { bossName, abilityName, traitName, hasTraitName }
 }

@@ -53,36 +53,48 @@ The detail view SHALL provide a control to choose a progression step across the 
 
 ### Requirement: The detail view shows weapons, abilities, and traits resolved from ids
 
-The detail view SHALL render the entity's weapons as attack-profile rows (hits, damage profile, and range for ranged weapons), and its active, passive, and relic abilities and its traits resolved from their ids to names (and icons where available). Ability descriptions with level-scaled variables SHALL render at the selected step's ability level, reusing the app's existing ability-text rendering. An id with no known name SHALL display the id rather than nothing.
+The detail view SHALL render the entity's weapons as attack-profile rows (hits, damage profile, and range for ranged weapons), and its abilities and traits resolved from their ids to names. Abilities SHALL be grouped by kind — Active, Passive, Relic — each group shown only when it has an entry. An id that resolves to no player-facing game name SHALL be omitted, matching V1: the internal `GuildBossRunAway` ability and the `Boss` / `Hero` pseudo-traits do not appear. The progression stepper SHALL also show the selected step's base rarity and star level.
+
+Ability and trait rules-text (including level-scaled variable rendering) is out of scope for this change and tracked in the deferred follow-up (`tacticus-planner-apps#122`); this change shows names only.
 
 #### Scenario: Ranged and melee weapons
 
 - **WHEN** the entity has a ranged weapon and a melee weapon
 - **THEN** the ranged weapon's row shows its range and the melee weapon's row does not
 
-#### Scenario: Ability text scales with the step
+#### Scenario: Abilities are grouped and internal ids hidden
 
-- **WHEN** the user changes the progression step and an ability's description contains a level-scaled variable
-- **THEN** the rendered ability text reflects the ability level of the newly selected step
+- **WHEN** an entity's ability ids include `GuildBossRunAway` alongside real abilities
+- **THEN** the abilities are shown under Active / Passive / Relic headings and `GuildBossRunAway` is not rendered
 
-### Requirement: The detail view shows per-encounter field enemies and modifiers
+#### Scenario: Prime names resolve from the character roster
 
-For an entity that appears in season encounters, the detail view SHALL show, per relevant encounter, its field enemies (resolved from `fieldNpcIds`) and its encounter modifiers — each modifier's activation threshold (`hpLost`) and its effect (`type`, `target`, `subtarget(s)`, `amount`) resolved to human-readable text. Where V1 applies active modifiers to the boss's stats and ability variables, the V2 detail SHALL offer the same adjusted view, computed client-side from the served modifier definitions.
+- **WHEN** a prime's unit-set id maps to a playable character (e.g. `GuildBoss4MiniBoss1OrksBigMek`)
+- **THEN** the list and detail show that character's name ("Gibbascrapz"), falling back to the id-keyed i18n name for primes that are not playable characters
 
-#### Scenario: Modifiers list their thresholds and effects
+### Requirement: The detail view shows field enemies and prime modifiers
 
-- **WHEN** an encounter for the selected entity carries modifiers
-- **THEN** each is shown with the HP-lost threshold at which it activates and a readable description of its effect
+For the selected entity at the viewed progression step, the detail view SHALL resolve a representative encounter (exact step match, else the nearest lower step, else any) and show its field enemies, with each `fieldNpcId` resolved to an npc name by fuzzy-matching the `npcs` catalog dataset on the faction abbreviation (falling back to a humanized token). It SHALL then show a modifier section:
 
-#### Scenario: Adjusted stats reflect active modifiers
+- for a **boss**: a **Prime Modifiers** panel listing the primes fought alongside it in that encounter's set (its two `Crystal` encounters), each with its prime name and its modifier list;
+- for a **prime**: a **Modifiers** panel listing its own modifiers.
 
-- **WHEN** the user views the entity with a set of modifiers marked active (per the V1 interaction, redesigned)
-- **THEN** the stat block and affected ability variables show the modifier-adjusted values, and clearing the modifiers restores the base values
+Each modifier row SHALL show its activation threshold (`hpLost`, as a percentage) and its effect: a genuine stat-percent or flat-stat decrease renders with its value (`−15% dmg`, `−1 movement`); every other modifier type — which scales an ability's internal variables by an amount that is meaningless without the full modifier math — renders as a direction plus target only (`Reduces Massive Scything Talons`). The modifier-application math and an adjusted-stats view are out of scope and tracked in `tacticus-planner-apps#122`.
+
+#### Scenario: Prime modifiers for a boss
+
+- **WHEN** a boss is selected and its set has two `Crystal` prime encounters
+- **THEN** the Prime Modifiers panel lists each prime by name with its modifiers, ordered by `hpLost`
+
+#### Scenario: Modifier effect rendering
+
+- **WHEN** a modifier is a `bossStatPctDecrease` of `dmg` by 15 and another is a `bossAbilityAllStatsPctDecrease` of `MassiveScythingTalons`
+- **THEN** the first renders as `−15% dmg` and the second as `Reduces Massive Scything Talons` (no raw amount)
 
 #### Scenario: Entity with no encounter data
 
 - **WHEN** the selected entity has no season encounter referencing it
-- **THEN** the field-enemies and modifiers area shows an explicit "no encounter data" state, not an empty gap
+- **THEN** the modifier section shows an explicit "no encounter data" state, not an empty gap
 
 ### Requirement: Desktop and mobile present distinct layouts
 

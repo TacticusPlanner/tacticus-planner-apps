@@ -1,6 +1,6 @@
 import type {
+  ModifierContext,
   RaidBoss,
-  RaidBossEncounter,
   RaidBossListItem,
 } from "@/entities/raid-boss"
 
@@ -14,5 +14,7 @@ export type RaidBossesPageViewProps = {
   onSelect: (unitSetId: string) => void
   stepIndex: number
   onStepChange: (index: number) => void
-  encounters: RaidBossEncounter[]
+  modifierContext: ModifierContext
+  /** Resolved field-enemy names for the selected unit's encounter at the viewed step. */
+  fieldEnemyNames: string[]
 }
