@@ -1,6 +1,12 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 import { Separator } from "@workspace/ui/components/separator"
 import {
   Table,
@@ -149,38 +155,37 @@ export function RaidBossDetail({
       </div>
 
       {ladder.length > 1 ? (
-        <div
-          className="flex flex-wrap items-center gap-3"
+        <label
+          className="flex flex-wrap items-center gap-3 text-sm"
           data-testid="raid-boss-progression"
         >
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground">
             {t("raidBosses.progression")}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label={t("raidBosses.progressionPrev")}
-            disabled={clamped <= 0}
-            onClick={() => onStepChange(clamped - 1)}
+          <Select
+            value={String(clamped)}
+            onValueChange={(value) => onStepChange(Number(value))}
           >
-            −
-          </Button>
-          <span className="min-w-16 text-center text-sm font-medium tabular-nums">
-            {clamped + 1} / {ladder.length}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label={t("raidBosses.progressionNext")}
-            disabled={clamped >= ladder.length - 1}
-            onClick={() => onStepChange(clamped + 1)}
-          >
-            +
-          </Button>
-          <span className="text-xs text-muted-foreground">
-            {humanizeToken(step.baseRarity)} · ★{step.starLevel}
-          </span>
-        </div>
+            <SelectTrigger
+              className="w-56"
+              data-testid="raid-boss-progression-select"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ladder.map((entry, index) => (
+                <SelectItem key={index} value={String(index)}>
+                  {t("raidBosses.progressionStep", {
+                    step: index + 1,
+                    total: ladder.length,
+                    rarity: humanizeToken(entry.baseRarity),
+                    stars: entry.starLevel,
+                  })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </label>
       ) : null}
 
       <div

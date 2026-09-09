@@ -94,8 +94,6 @@
     "primes": "Primes",
     "primarch": "Primarca",
     "progression": "Progresión",
-    "progressionPrev": "Paso de progresión anterior",
-    "progressionNext": "Paso de progresión siguiente",
     "stats": "Estadísticas",
     "health": "Salud",
     "damage": "Daño",
@@ -144,6 +142,7 @@
     "modifiers": "Modificadores",
     "noPrimeModifiers": "Sin modificadores de prime para este jefe.",
     "modifierReduces": "Reduce {{name}}",
-    "modifierIncreases": "Aumenta {{name}}"
+    "modifierIncreases": "Aumenta {{name}}",
+    "progressionStep": "Paso {{step}}/{{total}} · {{rarity}} · ★{{stars}}"
   }
 }

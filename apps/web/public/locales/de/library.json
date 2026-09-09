@@ -94,8 +94,6 @@
     "primes": "Prime",
     "primarch": "Primarch",
     "progression": "Fortschritt",
-    "progressionPrev": "Vorherige Fortschrittsstufe",
-    "progressionNext": "Nächste Fortschrittsstufe",
     "stats": "Werte",
     "health": "Leben",
     "damage": "Schaden",
@@ -144,6 +142,7 @@
     "modifiers": "Modifikatoren",
     "noPrimeModifiers": "Keine Prime-Modifikatoren für diesen Boss.",
     "modifierReduces": "Reduziert {{name}}",
-    "modifierIncreases": "Erhöht {{name}}"
+    "modifierIncreases": "Erhöht {{name}}",
+    "progressionStep": "Stufe {{step}}/{{total}} · {{rarity}} · ★{{stars}}"
   }
 }

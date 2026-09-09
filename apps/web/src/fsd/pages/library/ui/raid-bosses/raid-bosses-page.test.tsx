@@ -7,6 +7,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
@@ -246,19 +247,20 @@ describe("RaidBossesPage", () => {
     )
   })
 
-  it("steps through the progression ladder", async () => {
+  it("changes the progression step via the dropdown", async () => {
+    const user = userEvent.setup()
     getRaidBossesMock.mockResolvedValue(payload)
     renderPage("/library/raid-bosses/GuildBoss4Boss1Ghazghkull")
 
-    const progression = await screen.findByTestId("raid-boss-progression")
-    // Ghazghkull is never in an encounter -> defaults to step 1 of 3.
-    expect(progression).toHaveTextContent("1 / 3")
+    // Ghazghkull is never in an encounter -> defaults to the first step (rank 0 in the fixture).
+    const stats = await screen.findByTestId("raid-boss-stats")
+    expect(stats).toHaveTextContent("raidBosses.rank0")
 
-    fireEvent.click(
-      within(progression).getByRole("button", {
-        name: "raidBosses.progressionNext",
-      })
-    )
-    await waitFor(() => expect(progression).toHaveTextContent("2 / 3"))
+    await user.click(screen.getByTestId("raid-boss-progression-select"))
+    const options = await screen.findAllByRole("option")
+    expect(options).toHaveLength(3)
+    await user.click(options[1])
+
+    await waitFor(() => expect(stats).toHaveTextContent("raidBosses.rank1"))
   })
 })

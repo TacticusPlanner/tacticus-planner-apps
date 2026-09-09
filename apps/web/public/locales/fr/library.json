@@ -94,8 +94,6 @@
     "primes": "Primes",
     "primarch": "Primarque",
     "progression": "Progression",
-    "progressionPrev": "Palier de progression précédent",
-    "progressionNext": "Palier de progression suivant",
     "stats": "Statistiques",
     "health": "Points de vie",
     "damage": "Dégâts",
@@ -144,6 +142,7 @@
     "modifiers": "Modificateurs",
     "noPrimeModifiers": "Aucun modificateur de prime pour ce boss.",
     "modifierReduces": "Réduit {{name}}",
-    "modifierIncreases": "Augmente {{name}}"
+    "modifierIncreases": "Augmente {{name}}",
+    "progressionStep": "Palier {{step}}/{{total}} · {{rarity}} · ★{{stars}}"
   }
 }
