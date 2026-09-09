@@ -26,6 +26,10 @@ import type {
   raidBossesPayloadSchema,
   raidBossSchema,
   raidBossSeasonSchema,
+  guildRaidMetaBossSchema,
+  guildRaidMetaCompSchema,
+  guildRaidMetaPayloadSchema,
+  guildRaidMetaRecommendationSchema,
   shopSchema,
   shopSlotSchema,
   shopVariantSchema,
@@ -72,3 +76,15 @@ export type GameCatalogShopVariant = z.infer<typeof shopVariantSchema>
 export type GameCatalogRaidBosses = z.infer<typeof raidBossesPayloadSchema>
 export type GameCatalogRaidBoss = z.infer<typeof raidBossSchema>
 export type GameCatalogRaidBossSeason = z.infer<typeof raidBossSeasonSchema>
+export type GameCatalogGuildRaidMeta = z.infer<
+  typeof guildRaidMetaPayloadSchema
+>
+export type GameCatalogGuildRaidMetaComp = z.infer<
+  typeof guildRaidMetaCompSchema
+>
+export type GameCatalogGuildRaidMetaBoss = z.infer<
+  typeof guildRaidMetaBossSchema
+>
+export type GameCatalogGuildRaidMetaRecommendation = z.infer<
+  typeof guildRaidMetaRecommendationSchema
+>

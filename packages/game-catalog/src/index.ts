@@ -21,6 +21,7 @@ export {
   type GameCatalogEventDefinition,
   type GameCatalogEventRecurrence,
   type GameCatalogEventsCalendarEntry,
+  type GameCatalogGuildRaidMeta,
 } from "./types"
 
 export type {
@@ -41,6 +42,9 @@ export type {
   GameCatalogRaidBosses,
   GameCatalogRaidBoss,
   GameCatalogRaidBossSeason,
+  GameCatalogGuildRaidMetaComp,
+  GameCatalogGuildRaidMetaBoss,
+  GameCatalogGuildRaidMetaRecommendation,
 } from "./record-types"
 
 export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
@@ -115,6 +119,7 @@ export {
   type EventsCalendarStorageModel,
   type ShopStorageModel,
   type RaidBossesStorageModel,
+  type GuildRaidMetaStorageModel,
 } from "./game-catalog.storage"
 
 export {

@@ -19,6 +19,7 @@ export const servedDatasetKeys = [
   "events-calendar",
   "shops",
   "raid-bosses",
+  "guild-raid-meta",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
