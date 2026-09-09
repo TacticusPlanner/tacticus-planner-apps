@@ -36,6 +36,15 @@ declare module "i18next" {
       factions: Record<string, string>
       traits: Record<string, string>
       damageTypes: Record<string, string>
+      // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys). English-only; other
+      // locales fall back to English (see the raid-bosses-library change).
+      raidBosses: Record<string, string>
+      raidBossAbilities: Record<string, string>
+      raidBossTraits: Record<string, string>
+      // Structured rules-text (description + per-level variable/constant tables), keyed by ability /
+      // trait id. Read via `i18n.getResource`, not `t()` — see `entities/raid-boss` use-raid-boss-text.
+      raidBossAbilityText: Record<string, unknown>
+      raidBossTraitText: Record<string, unknown>
     }
   }
 }

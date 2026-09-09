@@ -88,5 +88,78 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Bosse",
+    "primes": "Prime",
+    "primarch": "Primarch",
+    "progression": "Fortschritt",
+    "stats": "Werte",
+    "health": "Leben",
+    "damage": "Schaden",
+    "armor": "Rüstung",
+    "rank": "Rang",
+    "stars": "Sterne",
+    "baseRarity": "Basisseltenheit",
+    "abilityLevel": "Fähigkeitsstufe",
+    "movement": "Bewegung",
+    "critChance": "Kritische Chance",
+    "critDamage": "Kritischer Schaden",
+    "blockChance": "Blockchance",
+    "weapons": "Waffen",
+    "rangedHits": "{{hits}} Treffer · Reichweite {{range}}",
+    "meleeHits": "{{hits}} Treffer · Nahkampf",
+    "abilities": "Fähigkeiten",
+    "traits": "Eigenschaften",
+    "noEncounterData": "Keine Saison-Begegnungsdaten für diese Einheit.",
+    "fieldEnemies": "Feldgegner",
+    "atHpLost": "Bei {{hpLost}} % Leben verloren",
+    "noModifiers": "Keine Modifikatoren.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Raid-Bosse",
+          "content": "Jeder Gildenraid-Boss. Wähle einen aus, um seine Werte, Fähigkeiten und Begegnungsmodifikatoren zu sehen."
+        },
+        "primes": {
+          "title": "Prime",
+          "content": "Die Prime-Gegner, die neben jedem Boss kämpfen – auch einzeln durchsuchbar."
+        },
+        "progression": {
+          "title": "Fortschrittsstufe",
+          "content": "Gehe die Fortschrittsleiter des Bosses durch, um zu sehen, wie seine Werte skalieren."
+        },
+        "primeModifiers": {
+          "title": "Prime-Modifikatoren",
+          "content": "Für jeden Prime, der neben diesem Boss kämpft, die Modifikatoren, die aktiv werden, wenn seine Lebenspunkte sinken."
+        },
+        "adjustedStats": {
+          "title": "Angepasste Werte",
+          "content": "Wähle für jeden Prime einen Punkt des Lebensverlusts, um die Werte, Fähigkeiten und Gegner des Bosses zu sehen, sobald diese Modifikatoren aktiv werden."
+        }
+      }
+    },
+    "abilitiesActive": "Aktiv",
+    "abilitiesPassive": "Passiv",
+    "abilitiesRelic": "Relikt",
+    "primeModifiers": "Prime-Modifikatoren",
+    "modifiers": "Modifikatoren",
+    "noPrimeModifiers": "Keine Prime-Modifikatoren für diesen Boss.",
+    "modifierReduces": "Reduziert {{name}}",
+    "modifierIncreases": "Erhöht {{name}}",
+    "progressionStep": "Stufe {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Werte für Fähigkeitsstufe {{level}}",
+    "adjustedStatsHeading": "Angepasste Werte",
+    "showAdjusted": "Angepasst anzeigen",
+    "hideAdjusted": "Angepasst ausblenden",
+    "fullHp": "Volles Leben",
+    "hpLostAmount": "{{hpLost}} / {{total}} Leben verloren",
+    "noActiveModifiers": "An diesem Punkt sind keine Modifikatoren aktiv.",
+    "baseColumn": "Basis",
+    "adjustedColumn": "Angepasst",
+    "weaponHits": "Waffentreffer",
+    "enemyRemoved": "{{count}}× {{name}} entfernt",
+    "syncFailed": "Raidbosse konnten nicht geladen werden. Der Katalog wird möglicherweise noch synchronisiert.",
+    "retry": "Erneut versuchen"
   }
 }

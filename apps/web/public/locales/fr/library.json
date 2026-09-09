@@ -88,5 +88,78 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Boss",
+    "primes": "Primes",
+    "primarch": "Primarque",
+    "progression": "Progression",
+    "stats": "Statistiques",
+    "health": "Points de vie",
+    "damage": "Dégâts",
+    "armor": "Armure",
+    "rank": "Rang",
+    "stars": "Étoiles",
+    "baseRarity": "Rareté de base",
+    "abilityLevel": "Niveau de capacité",
+    "movement": "Déplacement",
+    "critChance": "Chance de critique",
+    "critDamage": "Dégâts critiques",
+    "blockChance": "Chance de blocage",
+    "weapons": "Armes",
+    "rangedHits": "{{hits}} coups · portée {{range}}",
+    "meleeHits": "{{hits}} coups · corps à corps",
+    "abilities": "Capacités",
+    "traits": "Traits",
+    "noEncounterData": "Aucune donnée de rencontre de saison pour cette unité.",
+    "fieldEnemies": "Ennemis de terrain",
+    "atHpLost": "À {{hpLost}} % de PV perdus",
+    "noModifiers": "Aucun modificateur.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Boss de raid",
+          "content": "Tous les boss de raid de guilde. Sélectionnez-en un pour voir ses statistiques, ses capacités et ses modificateurs de rencontre."
+        },
+        "primes": {
+          "title": "Primes",
+          "content": "Les ennemis primes qui combattent aux côtés de chaque boss, consultables individuellement."
+        },
+        "progression": {
+          "title": "Palier de progression",
+          "content": "Parcourez l'échelle de progression du boss pour voir comment ses statistiques évoluent."
+        },
+        "primeModifiers": {
+          "title": "Modificateurs de prime",
+          "content": "Pour chaque prime combattant aux côtés de ce boss, les modificateurs qui s'activent à mesure que ses PV baissent."
+        },
+        "adjustedStats": {
+          "title": "Statistiques ajustées",
+          "content": "Choisissez un seuil de PV perdus pour chaque prime afin de voir les statistiques, capacités et ennemis du boss une fois ces modificateurs actifs."
+        }
+      }
+    },
+    "abilitiesActive": "Actives",
+    "abilitiesPassive": "Passives",
+    "abilitiesRelic": "Relique",
+    "primeModifiers": "Modificateurs de prime",
+    "modifiers": "Modificateurs",
+    "noPrimeModifiers": "Aucun modificateur de prime pour ce boss.",
+    "modifierReduces": "Réduit {{name}}",
+    "modifierIncreases": "Augmente {{name}}",
+    "progressionStep": "Palier {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}",
+    "adjustedStatsHeading": "Statistiques ajustées",
+    "showAdjusted": "Afficher ajustées",
+    "hideAdjusted": "Masquer ajustées",
+    "fullHp": "PV complets",
+    "hpLostAmount": "{{hpLost}} / {{total}} PV perdus",
+    "noActiveModifiers": "Aucun modificateur actif à ce stade.",
+    "baseColumn": "Base",
+    "adjustedColumn": "Ajustée",
+    "weaponHits": "Touches d'arme",
+    "enemyRemoved": "{{count}}× {{name}} retiré",
+    "syncFailed": "Impossible de charger les boss de raid. Le catalogue est peut-être encore en cours de synchronisation.",
+    "retry": "Réessayer"
   }
 }

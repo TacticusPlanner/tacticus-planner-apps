@@ -88,5 +88,78 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Jefes",
+    "primes": "Primes",
+    "primarch": "Primarca",
+    "progression": "Progresión",
+    "stats": "Estadísticas",
+    "health": "Salud",
+    "damage": "Daño",
+    "armor": "Armadura",
+    "rank": "Rango",
+    "stars": "Estrellas",
+    "baseRarity": "Rareza base",
+    "abilityLevel": "Nivel de habilidad",
+    "movement": "Movimiento",
+    "critChance": "Prob. de crítico",
+    "critDamage": "Daño crítico",
+    "blockChance": "Prob. de bloqueo",
+    "weapons": "Armas",
+    "rangedHits": "{{hits}} golpes · alcance {{range}}",
+    "meleeHits": "{{hits}} golpes · cuerpo a cuerpo",
+    "abilities": "Habilidades",
+    "traits": "Rasgos",
+    "noEncounterData": "No hay datos de encuentros de temporada para esta unidad.",
+    "fieldEnemies": "Enemigos de campo",
+    "atHpLost": "Con {{hpLost}} % de salud perdida",
+    "noModifiers": "Sin modificadores.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Jefes de incursión",
+          "content": "Todos los jefes de incursión de gremio. Elige uno para ver sus estadísticas, habilidades y modificadores de encuentro."
+        },
+        "primes": {
+          "title": "Primes",
+          "content": "Los enemigos prime que luchan junto a cada jefe, consultables por sí mismos."
+        },
+        "progression": {
+          "title": "Paso de progresión",
+          "content": "Recorre la escala de progresión del jefe para ver cómo escalan sus estadísticas."
+        },
+        "primeModifiers": {
+          "title": "Modificadores de prime",
+          "content": "Para cada prime que lucha junto a este jefe, los modificadores que se activan a medida que baja su salud."
+        },
+        "adjustedStats": {
+          "title": "Estadísticas ajustadas",
+          "content": "Elige un punto de salud perdida para cada prime para ver las estadísticas, habilidades y enemigos del jefe cuando esos modificadores se activan."
+        }
+      }
+    },
+    "abilitiesActive": "Activas",
+    "abilitiesPassive": "Pasivas",
+    "abilitiesRelic": "Reliquia",
+    "primeModifiers": "Modificadores de prime",
+    "modifiers": "Modificadores",
+    "noPrimeModifiers": "Sin modificadores de prime para este jefe.",
+    "modifierReduces": "Reduce {{name}}",
+    "modifierIncreases": "Aumenta {{name}}",
+    "progressionStep": "Paso {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Valores mostrados para el nivel de habilidad {{level}}",
+    "adjustedStatsHeading": "Estadísticas ajustadas",
+    "showAdjusted": "Mostrar ajustadas",
+    "hideAdjusted": "Ocultar ajustadas",
+    "fullHp": "Salud completa",
+    "hpLostAmount": "{{hpLost}} / {{total}} de salud perdida",
+    "noActiveModifiers": "No hay modificadores activos en este punto.",
+    "baseColumn": "Base",
+    "adjustedColumn": "Ajustada",
+    "weaponHits": "Impactos de arma",
+    "enemyRemoved": "{{count}}× {{name}} eliminado",
+    "syncFailed": "No se pudieron cargar los jefes de incursión. Puede que el catálogo aún se esté sincronizando.",
+    "retry": "Reintentar"
   }
 }

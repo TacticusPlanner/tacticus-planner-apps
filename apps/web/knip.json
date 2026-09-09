@@ -3,6 +3,7 @@
   "entry": [
     "steiger.config.ts",
     "src/fsd/shared/config/i18n/i18next.d.ts",
-    "src/fsd/entities/*/index.ts"
+    "src/fsd/entities/*/index.ts",
+    "scripts/*.mjs"
   ]
 }

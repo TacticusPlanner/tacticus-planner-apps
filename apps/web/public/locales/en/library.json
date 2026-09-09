@@ -88,5 +88,78 @@
         }
       }
     }
+  },
+  "raidBosses": {
+    "bosses": "Bosses",
+    "primes": "Primes",
+    "primarch": "Primarch",
+    "progression": "Progression",
+    "stats": "Stats",
+    "health": "Health",
+    "damage": "Damage",
+    "armor": "Armor",
+    "rank": "Rank",
+    "stars": "Stars",
+    "baseRarity": "Base rarity",
+    "abilityLevel": "Ability level",
+    "movement": "Movement",
+    "critChance": "Crit chance",
+    "critDamage": "Crit damage",
+    "blockChance": "Block chance",
+    "weapons": "Weapons",
+    "rangedHits": "{{hits}} hits · range {{range}}",
+    "meleeHits": "{{hits}} hits · melee",
+    "abilities": "Abilities",
+    "traits": "Traits",
+    "noEncounterData": "No season encounter data for this unit.",
+    "fieldEnemies": "Field enemies",
+    "atHpLost": "At {{hpLost}}% HP lost",
+    "noModifiers": "No modifiers.",
+    "tour": {
+      "steps": {
+        "bosses": {
+          "title": "Raid bosses",
+          "content": "Every guild raid boss. Pick one to see its stats, abilities, and encounter modifiers."
+        },
+        "primes": {
+          "title": "Primes",
+          "content": "The prime enemies fought alongside each boss — browsable in their own right."
+        },
+        "progression": {
+          "title": "Progression step",
+          "content": "Step through the boss's progression ladder to see how its stats scale."
+        },
+        "primeModifiers": {
+          "title": "Prime modifiers",
+          "content": "For each prime fought alongside this boss, the modifiers that activate as its HP drops."
+        },
+        "adjustedStats": {
+          "title": "Adjusted stats",
+          "content": "Pick an HP-lost point for each prime to see the boss's stats, abilities, and field enemies once those modifiers activate."
+        }
+      }
+    },
+    "abilitiesActive": "Active",
+    "abilitiesPassive": "Passive",
+    "abilitiesRelic": "Relic",
+    "primeModifiers": "Prime modifiers",
+    "modifiers": "Modifiers",
+    "noPrimeModifiers": "No prime modifiers for this boss.",
+    "modifierReduces": "Reduces {{name}}",
+    "modifierIncreases": "Increases {{name}}",
+    "progressionStep": "Step {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Values shown for ability level {{level}}",
+    "adjustedStatsHeading": "Adjusted stats",
+    "showAdjusted": "Show adjusted",
+    "hideAdjusted": "Hide adjusted",
+    "fullHp": "Full HP",
+    "hpLostAmount": "{{hpLost}} / {{total}} HP lost",
+    "noActiveModifiers": "No modifiers active at this point.",
+    "baseColumn": "Base",
+    "adjustedColumn": "Adjusted",
+    "weaponHits": "Weapon hits",
+    "enemyRemoved": "{{count}}× {{name}} removed",
+    "syncFailed": "Couldn't load raid bosses. The catalog may still be syncing.",
+    "retry": "Retry"
   }
 }

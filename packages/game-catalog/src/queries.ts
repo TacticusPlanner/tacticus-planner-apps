@@ -14,6 +14,7 @@ import type {
   MowStorageModel,
   NpcStorageModel,
   OnslaughtRewardStorageModel,
+  RaidBossesStorageModel,
   ShopStorageModel,
   UnlockShardCostStorageModel,
   UpgradeStorageModel,
@@ -116,6 +117,35 @@ export function getShops(): Promise<ShopStorageModel[]> {
 export async function getShopsMap(): Promise<Map<string, ShopStorageModel>> {
   const shops = await getShops()
   return new Map(shops.map((shop) => [shop.id, shop]))
+}
+
+// raid-bosses is stored as a single row (see game-catalog.mapper.ts's asSingleRow). Returns the whole
+// payload — `{ seasonConfigRotation, bosses[], primes[], seasons{} }` — or `null` when the dataset has
+// never synced into this client (distinct from a synced-but-empty payload, which the API forbids), so a
+// consumer can show a feature-unavailable state.
+export async function getRaidBosses(): Promise<RaidBossesStorageModel | null> {
+  const rows = await getDatasetRecords("raid-bosses")
+  return rows[0] ?? null
+}
+
+// The Bosses / Primes split plus an id -> record index, for a page that renders the two sections and
+// resolves a selected entity. Returns `null` when the dataset has not synced.
+export async function getRaidBossRoster(): Promise<{
+  bosses: RaidBossesStorageModel["bosses"]
+  primes: RaidBossesStorageModel["primes"]
+  byId: Map<string, RaidBossesStorageModel["bosses"][number]>
+} | null> {
+  const raidBosses = await getRaidBosses()
+  if (!raidBosses) {
+    return null
+  }
+
+  const all = [...raidBosses.bosses, ...raidBosses.primes]
+  return {
+    bosses: raidBosses.bosses,
+    primes: raidBosses.primes,
+    byId: new Map(all.map((unit) => [unit.unitSetId, unit])),
+  }
 }
 
 export function getEventDefinitions(): Promise<EventDefinitionStorageModel[]> {

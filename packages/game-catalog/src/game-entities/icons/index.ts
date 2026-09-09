@@ -12,6 +12,11 @@ export {
 export { shardIcon } from "./shard"
 export { characterIcon, mowIcon } from "./character"
 export {
+  raidBossPortrait,
+  fieldNpcIcon,
+  raidBossSplashPortrait,
+} from "./raid-boss"
+export {
   campaignDescriptor,
   campaignIcon,
   type CampaignDescriptor,

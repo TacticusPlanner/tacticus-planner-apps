@@ -38,6 +38,9 @@ export type {
   GameCatalogShop,
   GameCatalogShopSlot,
   GameCatalogShopVariant,
+  GameCatalogRaidBosses,
+  GameCatalogRaidBoss,
+  GameCatalogRaidBossSeason,
 } from "./record-types"
 
 export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
@@ -111,6 +114,7 @@ export {
   type EventDefinitionStorageModel,
   type EventsCalendarStorageModel,
   type ShopStorageModel,
+  type RaidBossesStorageModel,
 } from "./game-catalog.storage"
 
 export {
@@ -124,6 +128,9 @@ export {
   shardIcon,
   characterIcon,
   mowIcon,
+  raidBossPortrait,
+  fieldNpcIcon,
+  raidBossSplashPortrait,
   campaignIcon,
   campaignDescriptor,
   type CampaignDescriptor,
