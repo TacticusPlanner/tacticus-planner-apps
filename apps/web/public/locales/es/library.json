@@ -94,6 +94,7 @@
     "seasonLabel": "Temporada {{season}}",
     "tier": "Nivel {{tier}}",
     "set": "Conjunto {{set}}",
+    "viewSeasonReference": "Ver referencia de temporada",
     "noSeasonReference": "No hay datos de temporada de jefes de incursión disponibles.",
     "bosses": "Jefes",
     "primes": "Primes",

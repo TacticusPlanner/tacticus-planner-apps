@@ -94,6 +94,7 @@
     "seasonLabel": "Saison {{season}}",
     "tier": "Stufe {{tier}}",
     "set": "Set {{set}}",
+    "viewSeasonReference": "Saisonübersicht anzeigen",
     "noSeasonReference": "Keine Raid-Boss-Saisondaten verfügbar.",
     "bosses": "Bosse",
     "primes": "Prime",

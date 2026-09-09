@@ -76,6 +76,14 @@ independent board, modifier, and adjusted-stat lookup paths.
 Alternative rejected: pass raw query parameters independently to each display
 component. It invites partial validation and divergent context selection.
 
+### 2a. Entity details expose an explicit return to the season reference
+
+Every valid entity detail renders a localized **View season reference** action.
+It navigates to the bare collection route, retains a valid selected `season`,
+and clears exact `tier`, `set`, and `encounter` parameters. This makes the
+board/detail relationship discoverable on desktop and mobile without changing
+the existing all-entity chooser or direct-link fallback behavior.
+
 ### 3. Board and detail are different responsive forms with route-aware tours
 
 Desktop displays a compact selector and tier sections containing horizontal

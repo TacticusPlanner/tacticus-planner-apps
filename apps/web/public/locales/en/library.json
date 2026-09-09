@@ -94,6 +94,7 @@
     "seasonLabel": "Season {{season}}",
     "tier": "Tier {{tier}}",
     "set": "Set {{set}}",
+    "viewSeasonReference": "View season reference",
     "noSeasonReference": "No raid-boss season data is available.",
     "bosses": "Bosses",
     "primes": "Primes",

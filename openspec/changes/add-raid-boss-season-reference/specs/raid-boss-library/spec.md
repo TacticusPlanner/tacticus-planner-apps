@@ -49,6 +49,17 @@ readable badge or name and never a broken image.
 - **THEN** they can select any served boss or prime and the selected entity opens
   as a first-class detail view
 
+#### Scenario: Detail explicitly returns to the selected season reference
+
+- **WHEN** a user views a valid boss or prime detail
+- **THEN** a localized View season reference action is available
+- **AND WHEN** they activate it from an exact season-board detail
+- **THEN** the app returns to `/library/raid-bosses` with that selected season
+  retained and exact tier, set, and encounter parameters cleared
+- **AND WHEN** they activate it from a direct detail link
+- **THEN** the app returns to the default season reference without inventing an
+  encounter context
+
 #### Scenario: Both sections render
 
 - **WHEN** an anonymous user opens a valid entity detail after the dataset has

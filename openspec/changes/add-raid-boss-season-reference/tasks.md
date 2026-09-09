@@ -28,3 +28,7 @@
 - [x] 5.3 Start or reuse the full Aspire stack and manually verify with synced raid-boss catalog data at one viewport below 768px and one at or above 768px: default and changed season selection, descending tier/set board, a boss and a Crystal-prime card opening exact contextual details, direct entity-link fallback, and the route-appropriate tour. Record the verified season, tier, set, and encounter state in the implementation handoff.
 
   Manual verification (2026-09-09, Chrome DevTools against the local Aspire stack): the default Season 1 board and changed Season 2 board rendered in descending tier and set order at desktop. In Season 2, Tier 5 / Set 0 / encounter 0 opened Riptide at Step 23/27, and Tier 0 / Set 3 / encounter 2 opened Winged Prime at Step 4/27 with the complete context query. The direct Riptide entity link without context used its highest known Step 25/27 fallback. The landing-view tour presented the season-selector and encounter-board steps. At 390px, the Season 2 board remained reachable in the vertical document flow with touch-sized cards and no horizontal-only content.
+
+## 6. Explicit board/detail navigation
+
+- [x] 6.1 Add a localized View season reference action to valid desktop and mobile entity details. It returns to the bare board while retaining a valid selected season and clearing exact encounter context; direct details return to the default board. Verify route tests cover contextual and direct details plus both layouts.

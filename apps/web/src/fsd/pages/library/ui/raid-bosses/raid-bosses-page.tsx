@@ -318,6 +318,19 @@ export function RaidBossesPage() {
     [location.search, navigate]
   )
 
+  const onViewSeasonReference = useCallback(() => {
+    const next = new URLSearchParams(location.search)
+    if (seasonId === seasonIds[0]) next.delete("season")
+    else if (seasonId) next.set("season", seasonId)
+    next.delete("tier")
+    next.delete("set")
+    next.delete("encounter")
+    void navigate({
+      pathname: "/library/raid-bosses",
+      search: next.toString(),
+    })
+  }, [location.search, navigate, seasonId, seasonIds])
+
   if (catalog.status === "loading") {
     return (
       <p
@@ -383,11 +396,21 @@ export function RaidBossesPage() {
           onEncounterSelect={onEncounterSelect}
         />
       ) : entityId && selectedUnit ? (
-        isMobile ? (
-          <RaidBossesMobilePage {...viewProps} />
-        ) : (
-          <RaidBossesDesktopPage {...viewProps} />
-        )
+        <>
+          <Button
+            className="w-fit"
+            data-testid="raid-boss-view-season-reference"
+            onClick={onViewSeasonReference}
+            variant="outline"
+          >
+            {t("raidBosses.viewSeasonReference")}
+          </Button>
+          {isMobile ? (
+            <RaidBossesMobilePage {...viewProps} />
+          ) : (
+            <RaidBossesDesktopPage {...viewProps} />
+          )}
+        </>
       ) : seasonReference ? (
         <RaidBossSeasonReference
           viewModel={seasonReference}

@@ -313,6 +313,41 @@ describe("RaidBossesPage", () => {
     )
   })
 
+  it("returns a contextual detail to its selected season reference", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage(
+      "/library/raid-bosses/GuildBoss1Boss1Tervigon?season=s2&tier=5&set=1&encounter=0"
+    )
+
+    await screen.findByTestId("raid-boss-detail")
+    await user.click(screen.getByTestId("raid-boss-view-season-reference"))
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses?season=s2"
+      )
+    )
+    expect(screen.getByTestId("raid-boss-season-reference")).toBeInTheDocument()
+  })
+
+  it("returns a direct mobile detail to the default season reference", async () => {
+    const user = userEvent.setup()
+    useIsMobileMock.mockReturnValue(true)
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+
+    await screen.findByTestId("raid-boss-detail")
+    await user.click(screen.getByTestId("raid-boss-view-season-reference"))
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses"
+      )
+    )
+    expect(screen.getByTestId("raid-boss-season-reference")).toBeInTheDocument()
+  })
+
   it("restores and shares a non-default season without dropping unrelated query parameters", async () => {
     getRaidBossesMock.mockResolvedValue(payload)
     renderPage("/library/raid-bosses?season=s2&view=compact")

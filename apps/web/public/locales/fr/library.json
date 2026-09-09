@@ -94,6 +94,7 @@
     "seasonLabel": "Saison {{season}}",
     "tier": "Palier {{tier}}",
     "set": "Ensemble {{set}}",
+    "viewSeasonReference": "Voir la référence de saison",
     "noSeasonReference": "Aucune donnée de saison de boss de raid n'est disponible.",
     "bosses": "Boss",
     "primes": "Primes",

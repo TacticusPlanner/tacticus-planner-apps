@@ -23,6 +23,9 @@ but the page does not expose it or preserve an encounter context into detail.
 - Retain an all-entities navigation affordance in the detail experience. This
   change integrates with the separately planned mobile grouped picker and does
   not duplicate its implementation.
+- Add an explicit, localized action on every entity detail to return to the
+  selected season reference, rather than making users depend on general
+  Library navigation.
 - Update desktop and mobile tours, localized copy, automated coverage, and
   live verification for the season-board flow.
 
