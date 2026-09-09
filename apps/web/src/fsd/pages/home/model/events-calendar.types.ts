@@ -26,9 +26,14 @@ export type EventEntryViewModel = {
   derivedEventNumber: number | undefined
 }
 
+export type EventsCalendarDayEntry = EventEntryViewModel & {
+  isOccurrenceStart: boolean
+  isOccurrenceEnd: boolean
+}
+
 export type EventsCalendarDay = {
   date: string
-  entries: EventEntryViewModel[]
+  entries: EventsCalendarDayEntry[]
 }
 
 export type PositionedEventEntry = EventEntryViewModel & {

@@ -52,4 +52,46 @@ describe("EventEntryCard (list variant)", () => {
     expect(inactiveClass).toContain(accentClass)
     expect(activeClass).toContain(accentClass)
   })
+
+  it("shows occurrence boundary tags without visible active or projected tags", () => {
+    render(
+      <EventEntryCard
+        entry={baseEntry({ confirmed: false, isActiveNow: true })}
+        isOccurrenceEnd
+        isOccurrenceStart
+      />
+    )
+
+    expect(
+      screen.getByTestId("event-occurrence-start-badge")
+    ).toHaveTextContent("events:badges.starts")
+    expect(screen.getByTestId("event-occurrence-end-badge")).toHaveTextContent(
+      "events:badges.ends"
+    )
+    expect(screen.getByTestId("event-active-badge")).toHaveClass("sr-only")
+    expect(screen.getByTestId("event-confirmed-badge")).toHaveClass("sr-only")
+  })
+
+  it("renders the Wiki destination as a labeled button", () => {
+    render(
+      <EventEntryCard entry={baseEntry({ definitionId: "legendary-event" })} />
+    )
+
+    const wikiLink = screen.getByRole("link", { name: "events:wikiLink" })
+    expect(wikiLink).toHaveTextContent("events:wikiLink")
+    expect(wikiLink).toHaveAttribute("data-slot", "button")
+    expect(wikiLink).toHaveAttribute("data-variant", "outline")
+    expect(wikiLink).toHaveAttribute("target", "_blank")
+    expect(wikiLink).toHaveAttribute("rel", "noopener noreferrer")
+  })
+
+  it("does not render a Wiki action when the definition has no Wiki URL", () => {
+    render(
+      <EventEntryCard entry={baseEntry({ definitionId: "unknown-event" })} />
+    )
+
+    expect(
+      screen.queryByRole("link", { name: "events:wikiLink" })
+    ).not.toBeInTheDocument()
+  })
 })

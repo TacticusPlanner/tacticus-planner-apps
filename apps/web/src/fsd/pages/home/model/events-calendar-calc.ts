@@ -2,6 +2,7 @@ import type {
   EventEntryViewModel,
   EventLane,
   EventsCalendarDay,
+  EventsCalendarDayEntry,
   PositionedEventEntry,
   RawEventDefinition,
   RawEventsCalendarEntry,
@@ -48,6 +49,7 @@ function buildDateRange(rangeStart: Date, rangeEnd: Date): Date[] {
 }
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
+const SEVEN_DAYS_MS = 7 * ONE_DAY_MS
 
 /**
  * Whether `entry` should be considered part of the local window `[windowStartMs, windowEndMs)` — used
@@ -154,6 +156,65 @@ function toViewModel(
   }
 }
 
+function isRecurringOneDayModifier(
+  entry: EventEntryViewModel,
+  definition: RawEventDefinition | undefined
+): boolean {
+  return (
+    definition?.recurrence?.kind === "Fixed" &&
+    Date.parse(entry.endUtc) - Date.parse(entry.startUtc) <= ONE_DAY_MS
+  )
+}
+
+function mobileDayEntryPriority(
+  entry: EventEntryViewModel,
+  definitionsById: ReadonlyMap<string, RawEventDefinition>
+): number {
+  const durationMs = Date.parse(entry.endUtc) - Date.parse(entry.startUtc)
+
+  if (durationMs > SEVEN_DAYS_MS) return 2
+  if (
+    isRecurringOneDayModifier(entry, definitionsById.get(entry.definitionId))
+  ) {
+    return 1
+  }
+
+  return 0
+}
+
+function compareMobileDayEntries(
+  a: EventEntryViewModel,
+  b: EventEntryViewModel,
+  definitionsById: ReadonlyMap<string, RawEventDefinition>
+): number {
+  const priorityDifference =
+    mobileDayEntryPriority(a, definitionsById) -
+    mobileDayEntryPriority(b, definitionsById)
+  if (priorityDifference !== 0) return priorityDifference
+
+  return (
+    Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
+    a.key.localeCompare(b.key)
+  )
+}
+
+function toDayEntry(
+  entry: EventEntryViewModel,
+  dayStartMs: number,
+  dayEndMs: number
+): EventsCalendarDayEntry {
+  const startMs = Date.parse(entry.startUtc)
+  const endMs = Date.parse(entry.endUtc)
+  const isMultiDay = endMs - startMs > ONE_DAY_MS
+
+  return {
+    ...entry,
+    isOccurrenceStart:
+      isMultiDay && startMs >= dayStartMs && startMs < dayEndMs,
+    isOccurrenceEnd: isMultiDay && endMs > dayStartMs && endMs <= dayEndMs,
+  }
+}
+
 /**
  * Every raw entry overlapping `[rangeStart, rangeEnd)`, resolved to a view model and sorted by start
  * time — the shared first step behind both `buildEventsCalendarDays` (bucketed per day) and
@@ -202,9 +263,10 @@ export function buildEventsCalendarDays(
     const dayStartMs = date.getTime()
     const dayEndMs = addLocalDays(date, 1).getTime()
 
-    const dayEntries = visible.filter((entry) =>
-      entryOccupiesWindow(entry, dayStartMs, dayEndMs)
-    )
+    const dayEntries = visible
+      .filter((entry) => entryOccupiesWindow(entry, dayStartMs, dayEndMs))
+      .map((entry) => toDayEntry(entry, dayStartMs, dayEndMs))
+      .sort((a, b) => compareMobileDayEntries(a, b, definitionsById))
 
     return { date: toIsoDate(date), entries: dayEntries }
   })

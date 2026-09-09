@@ -14,9 +14,11 @@
   "badges": {
     "active": "En cours",
     "projected": "Prévu",
-    "confirmed": "Confirmé"
+    "confirmed": "Confirmé",
+    "starts": "Débute",
+    "ends": "Se termine"
   },
-  "wikiLink": "Voir sur le wiki",
+  "wikiLink": "Wiki",
   "withFaction": "{{name}} : {{faction}}",
   "withCharacter": "{{name}} : {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -87,8 +89,8 @@
           "content": "Avancez ou reculez d'une semaine, ou revenez directement à aujourd'hui."
         },
         "calendar": {
-          "title": "Confirmé ou prévu",
-          "content": "Les événements confirmés sont définitifs ; les événements prévus se basent sur le calendrier habituel du jeu et peuvent encore changer."
+          "title": "Détails de l'événement",
+          "content": "Les cartes distinguent les événements actifs et provisoires, et marquent le premier et le dernier jour des événements de plusieurs jours."
         }
       }
     }

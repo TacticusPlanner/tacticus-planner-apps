@@ -14,9 +14,11 @@
   "badges": {
     "active": "En curso",
     "projected": "Previsto",
-    "confirmed": "Confirmado"
+    "confirmed": "Confirmado",
+    "starts": "Empieza",
+    "ends": "Termina"
   },
-  "wikiLink": "Ver en la wiki",
+  "wikiLink": "Wiki",
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -87,8 +89,8 @@
           "content": "Avanza o retrocede una semana, o vuelve directamente a hoy."
         },
         "calendar": {
-          "title": "Confirmado frente a previsto",
-          "content": "Los eventos confirmados son definitivos; los previstos se basan en el calendario habitual del juego y aún podrían cambiar."
+          "title": "Detalles del evento",
+          "content": "Las tarjetas distinguen eventos activos y provisionales, y marcan el primer y el último día de los eventos de varios días."
         }
       }
     }

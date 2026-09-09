@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -15,9 +16,13 @@ import { EventTypeIcon } from "./event-type-icon"
 
 export function EventEntryCard({
   entry,
+  isOccurrenceEnd = false,
+  isOccurrenceStart = false,
   variant = "list",
 }: {
   entry: EventEntryViewModel
+  isOccurrenceEnd?: boolean
+  isOccurrenceStart?: boolean
   /** "list" (default): mobile's stacked cards. "bar": desktop's colored Gantt-lane bars. */
   variant?: "list" | "bar"
 }) {
@@ -57,17 +62,17 @@ export function EventEntryCard({
         />
         <span className="min-w-0 flex-1 truncate">{displayName}</span>
         {wikiUrl ? (
-          <a
-            aria-label={t("events:wikiLink")}
-            className="shrink-0 opacity-70 hover:opacity-100"
-            href={wikiUrl}
-            onClick={(event) => event.stopPropagation()}
-            rel="noopener noreferrer"
-            target="_blank"
-            title={t("events:wikiLink")}
-          >
-            <ExternalLink className="size-3" />
-          </a>
+          <Button asChild size="xs" variant="outline">
+            <a
+              href={wikiUrl}
+              onClick={(event) => event.stopPropagation()}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {t("events:wikiLink")}
+              <ExternalLink data-icon="inline-end" />
+            </a>
+          </Button>
         ) : null}
         {/* Visual state is carried by border style (confirmed vs projected) and the ring (active) — these
             stay for assistive tech and existing test coverage without cluttering the compact bar. */}
@@ -89,10 +94,12 @@ export function EventEntryCard({
     <div
       className={cn(
         "flex flex-col gap-1 rounded-lg border border-l-4 bg-card px-2 py-1.5 text-sm",
-        // Background tint only. `border-primary` would set all border colors
-        // and override the category-color left accent. The "Live now" badge
-        // already conveys active state, so no border treatment is needed.
+        // Background tint preserves the category-color left accent while the
+        // dashed border differentiates projected entries without a text chip.
         "data-[active=true]:bg-primary/5",
+        entry.confirmed
+          ? "border-border"
+          : "border-dashed border-current/40 opacity-80",
         eventAccentClass(colorKey)
       )}
       data-active={entry.isActiveNow}
@@ -107,34 +114,41 @@ export function EventEntryCard({
           {displayName}
         </span>
         {wikiUrl ? (
-          <a
-            aria-label={t("events:wikiLink")}
-            className="shrink-0 text-muted-foreground hover:text-foreground"
-            href={wikiUrl}
-            onClick={(event) => event.stopPropagation()}
-            rel="noopener noreferrer"
-            target="_blank"
-            title={t("events:wikiLink")}
-          >
-            <ExternalLink className="size-3.5" />
-          </a>
+          <Button asChild size="xs" variant="outline">
+            <a
+              href={wikiUrl}
+              onClick={(event) => event.stopPropagation()}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {t("events:wikiLink")}
+              <ExternalLink data-icon="inline-end" />
+            </a>
+          </Button>
         ) : null}
       </div>
       <div className="flex flex-wrap items-center gap-1">
-        {entry.isActiveNow ? (
-          <Badge data-testid="event-active-badge" variant="default">
-            {t("events:badges.active")}
+        {isOccurrenceStart ? (
+          <Badge data-testid="event-occurrence-start-badge" variant="secondary">
+            {t("events:badges.starts")}
           </Badge>
         ) : null}
-        <Badge
-          data-testid="event-confirmed-badge"
-          variant={entry.confirmed ? "outline" : "secondary"}
-        >
-          {entry.confirmed
-            ? t("events:badges.confirmed")
-            : t("events:badges.projected")}
-        </Badge>
+        {isOccurrenceEnd ? (
+          <Badge data-testid="event-occurrence-end-badge" variant="secondary">
+            {t("events:badges.ends")}
+          </Badge>
+        ) : null}
       </div>
+      {entry.isActiveNow ? (
+        <span className="sr-only" data-testid="event-active-badge">
+          {t("events:badges.active")}
+        </span>
+      ) : null}
+      <span className="sr-only" data-testid="event-confirmed-badge">
+        {entry.confirmed
+          ? t("events:badges.confirmed")
+          : t("events:badges.projected")}
+      </span>
     </div>
   )
 }
