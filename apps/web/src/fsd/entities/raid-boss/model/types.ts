@@ -13,6 +13,20 @@ export type RaidBossEncounter =
   RaidBossSeason["tiers"][number]["sets"][number]["encounters"][number]
 export type RaidBossEncounterModifier = RaidBossEncounter["modifiers"][number]
 
+/** A complete, URL-safe location of one encounter in the served raid-boss tree. */
+export type RaidBossEncounterLocation = {
+  seasonId: string
+  tier: number
+  set: number
+  encounterIndex: number
+}
+
+/** A validated encounter location with its containing-set context. */
+export type ResolvedRaidBossEncounterLocation = RaidBossEncounterLocation & {
+  encounter: RaidBossEncounter
+  setEncounters: RaidBossEncounter[]
+}
+
 export type RaidBossKind = RaidBoss["kind"]
 
 /** A boss/prime with its resolved display label, ready for the list and detail views. */

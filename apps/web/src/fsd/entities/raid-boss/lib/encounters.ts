@@ -5,6 +5,7 @@ import type {
   RaidBossEncounter,
   RaidBossEncounterModifier,
   RaidBossesPayload,
+  ResolvedRaidBossEncounterLocation,
 } from "../model/types"
 import {
   buildModifierHpLostOptions,
@@ -20,6 +21,15 @@ type EncounterSlot = {
   encounter: RaidBossEncounter
   /** Every encounter in the containing set — a boss encounter plus its two `Crystal` prime encounters. */
   setEncounters: RaidBossEncounter[]
+}
+
+function slotFor(
+  exact: ResolvedRaidBossEncounterLocation | undefined,
+  fallback: () => EncounterSlot | undefined
+): EncounterSlot | undefined {
+  return exact
+    ? { encounter: exact.encounter, setEncounters: exact.setEncounters }
+    : fallback()
 }
 
 /** Every (encounter, containing-set) pair across the rotation that targets the given unit-set id. */
@@ -98,11 +108,11 @@ export function buildModifierContext(
   raidBosses: RaidBossesPayload,
   unit: RaidBoss,
   stepIndex: number,
-  primeName: (unitSetId: string) => string
+  primeName: (unitSetId: string) => string,
+  exact?: ResolvedRaidBossEncounterLocation
 ): ModifierContext {
-  const slot = pickSlot(
-    findEncounterSlots(raidBosses, unit.unitSetId),
-    stepIndex + 1
+  const slot = slotFor(exact, () =>
+    pickSlot(findEncounterSlots(raidBosses, unit.unitSetId), stepIndex + 1)
   )
   if (!slot) return { kind: "none" }
 
@@ -126,11 +136,11 @@ export function buildModifierContext(
 export function fieldNpcIdsForStep(
   raidBosses: RaidBossesPayload,
   unitSetId: string,
-  stepIndex: number
+  stepIndex: number,
+  exact?: ResolvedRaidBossEncounterLocation
 ): string[] {
-  const slot = pickSlot(
-    findEncounterSlots(raidBosses, unitSetId),
-    stepIndex + 1
+  const slot = slotFor(exact, () =>
+    pickSlot(findEncounterSlots(raidBosses, unitSetId), stepIndex + 1)
   )
   return slot?.encounter.fieldNpcIds ?? []
 }
@@ -154,13 +164,13 @@ export function buildAdjustedView(
   raidBosses: RaidBossesPayload,
   unit: RaidBoss,
   stepIndex: number,
-  hpLostByPrime: Record<string, number>
+  hpLostByPrime: Record<string, number>,
+  exact?: ResolvedRaidBossEncounterLocation
 ): AdjustedStatsView | null {
   if (unit.kind !== "boss") return null
 
-  const slot = pickSlot(
-    findEncounterSlots(raidBosses, unit.unitSetId),
-    stepIndex + 1
+  const slot = slotFor(exact, () =>
+    pickSlot(findEncounterSlots(raidBosses, unit.unitSetId), stepIndex + 1)
   )
   if (!slot) return null
 

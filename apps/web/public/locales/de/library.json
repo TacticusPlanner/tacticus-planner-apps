@@ -90,6 +90,12 @@
     }
   },
   "raidBosses": {
+    "season": "Saison",
+    "seasonLabel": "Saison {{season}}",
+    "tier": "Stufe {{tier}}",
+    "set": "Set {{set}}",
+    "viewSeasonReference": "Saisonübersicht anzeigen",
+    "noSeasonReference": "Keine Raid-Boss-Saisondaten verfügbar.",
     "bosses": "Bosse",
     "primes": "Prime",
     "primarch": "Primarch",
@@ -136,6 +142,14 @@
         "adjustedStats": {
           "title": "Angepasste Werte",
           "content": "Wähle für jeden Prime einen Punkt des Lebensverlusts, um die Werte, Fähigkeiten und Gegner des Bosses zu sehen, sobald diese Modifikatoren aktiv werden."
+        },
+        "season": {
+          "title": "Saison wählen",
+          "content": "Wähle eine Raid-Boss-Saison, um ihre vollständige Begegnungsrotation zu sehen."
+        },
+        "seasonBoard": {
+          "title": "Saisonbegegnungen",
+          "content": "Stufen enthalten Begegnungssets. Wähle einen Boss oder Prime, um genau diesen Kampf zu prüfen."
         }
       }
     },

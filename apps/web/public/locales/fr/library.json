@@ -90,6 +90,12 @@
     }
   },
   "raidBosses": {
+    "season": "Saison",
+    "seasonLabel": "Saison {{season}}",
+    "tier": "Palier {{tier}}",
+    "set": "Ensemble {{set}}",
+    "viewSeasonReference": "Voir la référence de saison",
+    "noSeasonReference": "Aucune donnée de saison de boss de raid n'est disponible.",
     "bosses": "Boss",
     "primes": "Primes",
     "primarch": "Primarque",
@@ -136,6 +142,14 @@
         "adjustedStats": {
           "title": "Statistiques ajustées",
           "content": "Choisissez un seuil de PV perdus pour chaque prime afin de voir les statistiques, capacités et ennemis du boss une fois ces modificateurs actifs."
+        },
+        "season": {
+          "title": "Choisir une saison",
+          "content": "Choisissez une saison de boss de raid pour voir toute sa rotation de rencontres."
+        },
+        "seasonBoard": {
+          "title": "Rencontres de saison",
+          "content": "Les paliers contiennent des ensembles de rencontres. Sélectionnez un boss ou un prime pour examiner ce combat précis."
         }
       }
     },

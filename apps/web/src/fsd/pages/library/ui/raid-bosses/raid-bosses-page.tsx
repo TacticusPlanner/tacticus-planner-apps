@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
 import { fieldNpcIcon } from "@workspace/game-catalog"
@@ -11,50 +11,149 @@ import {
   buildAdjustedView,
   buildModifierContext,
   fieldNpcIdsForStep,
+  buildRaidBossSeasonBoard,
+  encounterProgressionStepIndex,
   maxKnownProgressionIndex,
+  resolveRaidBossEncounterLocation,
   resolveFieldNpcName,
   resolveFieldNpcRosterId,
+  resolveRaidBossSeasonId,
+  validRaidBossSeasonIds,
 } from "@/entities/raid-boss"
 import { useTourPageSteps } from "@/shared/tour"
 
-import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { RaidBossesDesktopPage } from "./desktop/raid-bosses-desktop-page"
 import { RaidBossesMobilePage } from "./mobile/raid-bosses-mobile-page"
 import { useRaidBossesCatalog } from "./hooks/use-raid-bosses-catalog"
 import { useRaidBossesTutorial } from "./raid-bosses.tutorial"
 import type { RaidBossesPageViewProps } from "./raid-bosses-page.view-model"
+import { RaidBossSeasonReference } from "./raid-boss-season-reference"
+import { buildRaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
 
 export function RaidBossesPage() {
   const { t } = useTranslation("library")
   const isMobile = useIsMobile()
   const { entityId } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  useTourPageSteps(useRaidBossesTutorial())
+  useTourPageSteps(useRaidBossesTutorial(Boolean(entityId)))
 
   const catalog = useRaidBossesCatalog()
   const npcs = useLiveQuery(() => getNpcs(), [], [])
 
-  const entityIds = useMemo(
-    () =>
-      catalog.status === "ready"
-        ? [...catalog.bosses, ...catalog.primes].map((item) => item.unitSetId)
-        : undefined,
-    [catalog]
+  const search = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
   )
+  const seasonIds = useMemo(
+    () => (catalog.payload ? validRaidBossSeasonIds(catalog.payload) : []),
+    [catalog.payload]
+  )
+  const seasonId = useMemo(
+    () =>
+      catalog.payload
+        ? resolveRaidBossSeasonId(catalog.payload, search.get("season"))
+        : undefined,
+    [catalog.payload, search]
+  )
+  const board = useMemo(
+    () =>
+      catalog.payload && seasonId
+        ? buildRaidBossSeasonBoard(catalog.payload, seasonId)
+        : undefined,
+    [catalog.payload, seasonId]
+  )
+  const selectedUnit = entityId ? catalog.byId.get(entityId) : undefined
+  const itemsById = useMemo(
+    () =>
+      new Map(
+        [...catalog.bosses, ...catalog.primes].map((item) => [
+          item.unitSetId,
+          item,
+        ])
+      ),
+    [catalog.bosses, catalog.primes]
+  )
+  const seasonReference = useMemo(
+    () =>
+      board
+        ? buildRaidBossSeasonReferenceViewModel(board, itemsById)
+        : undefined,
+    [board, itemsById]
+  )
+  const exactLocation = useMemo(() => {
+    if (!catalog.payload || !selectedUnit) return undefined
+    const tier = Number(search.get("tier"))
+    const set = Number(search.get("set"))
+    const encounterIndex = Number(search.get("encounter"))
+    return resolveRaidBossEncounterLocation(
+      catalog.payload,
+      selectedUnit.unitSetId,
+      {
+        seasonId: search.get("season") ?? "",
+        tier,
+        set,
+        encounterIndex,
+      }
+    )
+  }, [catalog.payload, search, selectedUnit])
 
-  const selection = useLibraryRouteSelection({
-    collectionPath: "/library/raid-bosses",
+  useEffect(() => {
+    if (catalog.status !== "ready" || !seasonId) return
+
+    const next = new URLSearchParams(location.search)
+    let needsNavigation = false
+    const requestedSeasonId = search.get("season")
+
+    if (requestedSeasonId && requestedSeasonId !== seasonId) {
+      if (seasonId === seasonIds[0]) next.delete("season")
+      else next.set("season", seasonId)
+      needsNavigation = true
+    }
+
+    const hasContextParameter = ["tier", "set", "encounter"].some((key) =>
+      search.has(key)
+    )
+    if (entityId && selectedUnit && hasContextParameter && !exactLocation) {
+      next.delete("tier")
+      next.delete("set")
+      next.delete("encounter")
+      needsNavigation = true
+    }
+
+    if (entityId && !selectedUnit) {
+      next.delete("tier")
+      next.delete("set")
+      next.delete("encounter")
+      void navigate(
+        { pathname: "/library/raid-bosses", search: next.toString() },
+        { replace: true }
+      )
+      return
+    }
+
+    if (needsNavigation) {
+      void navigate(
+        { pathname: location.pathname, search: next.toString() },
+        { replace: true }
+      )
+    }
+  }, [
+    catalog.status,
     entityId,
-    entityIds,
-    loading: catalog.status === "loading",
-  })
+    location.pathname,
+    location.search,
+    navigate,
+    search,
+    seasonId,
+    seasonIds,
+    selectedUnit,
+    exactLocation,
+  ])
 
-  const selectedUnit = selection.selectedId
-    ? catalog.byId.get(selection.selectedId)
-    : undefined
-
-  const selectedName = selection.selectedId
-    ? (catalog.nameById.get(selection.selectedId) ?? "")
+  const selectedName = selectedUnit
+    ? (catalog.nameById.get(selectedUnit.unitSetId) ?? "")
     : ""
 
   // Progression step and per-prime HP-lost points are ephemeral exploration state (not URL-backed) —
@@ -65,18 +164,26 @@ export function RaidBossesPage() {
 
   useEffect(() => {
     if (!selectedUnit || !catalog.payload) return
-    if (stepForUnitRef.current === selectedUnit.unitSetId) return
+    const key = exactLocation
+      ? `${selectedUnit.unitSetId}:${exactLocation.seasonId}:${exactLocation.tier}:${exactLocation.set}:${exactLocation.encounterIndex}`
+      : selectedUnit.unitSetId
+    if (stepForUnitRef.current === key) return
 
-    stepForUnitRef.current = selectedUnit.unitSetId
+    stepForUnitRef.current = key
     setHpLostByPrime({})
     setStepIndex(
-      maxKnownProgressionIndex(
-        catalog.payload,
-        selectedUnit.unitSetId,
-        selectedUnit.statProgression.length
-      )
+      exactLocation
+        ? encounterProgressionStepIndex(
+            exactLocation.encounter.progressionIndex,
+            selectedUnit.statProgression.length
+          )
+        : maxKnownProgressionIndex(
+            catalog.payload,
+            selectedUnit.unitSetId,
+            selectedUnit.statProgression.length
+          )
     )
-  }, [selectedUnit, catalog.payload])
+  }, [selectedUnit, catalog.payload, exactLocation])
 
   const onHpLostChange = useCallback(
     (primeUnitSetId: string, hpLost: number) =>
@@ -91,10 +198,11 @@ export function RaidBossesPage() {
             catalog.payload,
             selectedUnit,
             stepIndex,
-            (id) => catalog.nameById.get(id) ?? id
+            (id) => catalog.nameById.get(id) ?? id,
+            exactLocation
           )
         : ({ kind: "none" } as const),
-    [catalog.payload, catalog.nameById, selectedUnit, stepIndex]
+    [catalog.payload, catalog.nameById, selectedUnit, stepIndex, exactLocation]
   )
 
   const fieldEnemies = useMemo(
@@ -103,7 +211,8 @@ export function RaidBossesPage() {
         ? fieldNpcIdsForStep(
             catalog.payload,
             selectedUnit.unitSetId,
-            stepIndex
+            stepIndex,
+            exactLocation
           ).map((id) => ({
             name: resolveFieldNpcName(id, selectedUnit.factionId, npcs),
             iconSrc: fieldNpcIcon({
@@ -116,7 +225,7 @@ export function RaidBossesPage() {
             }),
           }))
         : [],
-    [catalog.payload, selectedUnit, stepIndex, npcs]
+    [catalog.payload, selectedUnit, stepIndex, npcs, exactLocation]
   )
 
   const adjusted = useMemo(() => {
@@ -125,7 +234,8 @@ export function RaidBossesPage() {
       catalog.payload,
       selectedUnit,
       stepIndex,
-      hpLostByPrime
+      hpLostByPrime,
+      exactLocation
     )
     if (!view) return null
     return {
@@ -158,7 +268,68 @@ export function RaidBossesPage() {
     hpLostByPrime,
     onHpLostChange,
     npcs,
+    exactLocation,
   ])
+
+  const onSeasonChange = useCallback(
+    (nextSeasonId: string) => {
+      const next = new URLSearchParams(location.search)
+      if (nextSeasonId === seasonIds[0]) next.delete("season")
+      else next.set("season", nextSeasonId)
+      next.delete("tier")
+      next.delete("set")
+      next.delete("encounter")
+      void navigate({
+        pathname: "/library/raid-bosses",
+        search: next.toString(),
+      })
+    },
+    [location.search, navigate, seasonIds]
+  )
+
+  const onEncounterSelect = useCallback(
+    (
+      located: import("@/entities/raid-boss").ResolvedRaidBossEncounterLocation
+    ) => {
+      const next = new URLSearchParams(location.search)
+      next.set("season", located.seasonId)
+      next.set("tier", String(located.tier))
+      next.set("set", String(located.set))
+      next.set("encounter", String(located.encounterIndex))
+      void navigate({
+        pathname: `/library/raid-bosses/${located.encounter.unitSetId}`,
+        search: next.toString(),
+      })
+    },
+    [location.search, navigate]
+  )
+
+  const onEntitySelect = useCallback(
+    (id: string) => {
+      const next = new URLSearchParams(location.search)
+      next.delete("tier")
+      next.delete("set")
+      next.delete("encounter")
+      void navigate({
+        pathname: `/library/raid-bosses/${id}`,
+        search: next.toString(),
+      })
+    },
+    [location.search, navigate]
+  )
+
+  const onViewSeasonReference = useCallback(() => {
+    const next = new URLSearchParams(location.search)
+    if (seasonId === seasonIds[0]) next.delete("season")
+    else if (seasonId) next.set("season", seasonId)
+    next.delete("tier")
+    next.delete("set")
+    next.delete("encounter")
+    void navigate({
+      pathname: "/library/raid-bosses",
+      search: next.toString(),
+    })
+  }, [location.search, navigate, seasonId, seasonIds])
 
   if (catalog.status === "loading") {
     return (
@@ -201,10 +372,10 @@ export function RaidBossesPage() {
   const viewProps: RaidBossesPageViewProps = {
     bosses: catalog.bosses,
     primes: catalog.primes,
-    selectedId: selection.selectedId,
+    selectedId: selectedUnit?.unitSetId,
     selectedUnit,
     selectedName,
-    onSelect: selection.select,
+    onSelect: onEntitySelect,
     stepIndex,
     onStepChange: setStepIndex,
     modifierContext,
@@ -217,10 +388,40 @@ export function RaidBossesPage() {
       <p className="text-muted-foreground">
         {t("collections.raidBosses.description")}
       </p>
-      {isMobile ? (
-        <RaidBossesMobilePage {...viewProps} />
+      {!entityId && seasonReference ? (
+        <RaidBossSeasonReference
+          viewModel={seasonReference}
+          seasonIds={seasonIds}
+          onSeasonChange={onSeasonChange}
+          onEncounterSelect={onEncounterSelect}
+        />
+      ) : entityId && selectedUnit ? (
+        <>
+          <Button
+            className="w-fit"
+            data-testid="raid-boss-view-season-reference"
+            onClick={onViewSeasonReference}
+            variant="outline"
+          >
+            {t("raidBosses.viewSeasonReference")}
+          </Button>
+          {isMobile ? (
+            <RaidBossesMobilePage {...viewProps} />
+          ) : (
+            <RaidBossesDesktopPage {...viewProps} />
+          )}
+        </>
+      ) : seasonReference ? (
+        <RaidBossSeasonReference
+          viewModel={seasonReference}
+          seasonIds={seasonIds}
+          onSeasonChange={onSeasonChange}
+          onEncounterSelect={onEncounterSelect}
+        />
       ) : (
-        <RaidBossesDesktopPage {...viewProps} />
+        <p className="text-muted-foreground">
+          {t("raidBosses.noSeasonReference")}
+        </p>
       )}
     </div>
   )

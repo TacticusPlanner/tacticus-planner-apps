@@ -90,6 +90,12 @@
     }
   },
   "raidBosses": {
+    "season": "Temporada",
+    "seasonLabel": "Temporada {{season}}",
+    "tier": "Nivel {{tier}}",
+    "set": "Conjunto {{set}}",
+    "viewSeasonReference": "Ver referencia de temporada",
+    "noSeasonReference": "No hay datos de temporada de jefes de incursión disponibles.",
     "bosses": "Jefes",
     "primes": "Primes",
     "primarch": "Primarca",
@@ -136,6 +142,14 @@
         "adjustedStats": {
           "title": "Estadísticas ajustadas",
           "content": "Elige un punto de salud perdida para cada prime para ver las estadísticas, habilidades y enemigos del jefe cuando esos modificadores se activan."
+        },
+        "season": {
+          "title": "Elige una temporada",
+          "content": "Elige una temporada de jefes de incursión para ver toda su rotación de encuentros."
+        },
+        "seasonBoard": {
+          "title": "Encuentros de temporada",
+          "content": "Los niveles contienen conjuntos de encuentros. Selecciona un jefe o prime para revisar ese combate exacto."
         }
       }
     },
