@@ -14,7 +14,7 @@
       implementation). Verify `pnpm test:run` runs them green.
 - [x] 1.3 Add `buildAdjustedView(raidBosses, unit, stepIndex, hpLostByPrime)` to
       `encounters.ts` returning `{ primes[], activeModifiers, statAdjustments,
-    enemies }` (boss-only, matching V1 — a prime shows only its own modifier
+  enemies }` (boss-only, matching V1 — a prime shows only its own modifier
       list); unit-test that full-HP yields no adjustment and a known modifier
       set yields the summed adjustments + unit removals.
 - [x] 1.4 Re-export the new helpers, `buildAdjustedView`, and the adjusted-view
