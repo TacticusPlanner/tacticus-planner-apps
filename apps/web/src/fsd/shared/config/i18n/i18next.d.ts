@@ -41,6 +41,10 @@ declare module "i18next" {
       raidBosses: Record<string, string>
       raidBossAbilities: Record<string, string>
       raidBossTraits: Record<string, string>
+      // Structured rules-text (description + per-level variable/constant tables), keyed by ability /
+      // trait id. Read via `i18n.getResource`, not `t()` — see `entities/raid-boss` use-raid-boss-text.
+      raidBossAbilityText: Record<string, unknown>
+      raidBossTraitText: Record<string, unknown>
     }
   }
 }

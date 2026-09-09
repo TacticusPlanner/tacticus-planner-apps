@@ -143,6 +143,7 @@
     "noPrimeModifiers": "No prime modifiers for this boss.",
     "modifierReduces": "Reduces {{name}}",
     "modifierIncreases": "Increases {{name}}",
-    "progressionStep": "Step {{step}}/{{total}} · {{rarity}} · ★{{stars}}"
+    "progressionStep": "Step {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Values shown for ability level {{level}}"
   }
 }

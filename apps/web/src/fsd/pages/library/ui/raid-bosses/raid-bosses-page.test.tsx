@@ -52,13 +52,27 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 }))
 
 // Resolve i18n keys to the key itself (plus interpolated values) so assertions can match on keys.
+const abilityTextFixture: Record<string, unknown> = {
+  AbilityX: {
+    description: "Deals {[dmg]} damage",
+    variables: { dmg: [10, 20, 30] },
+    constants: {},
+    scaled: [],
+  },
+}
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       opts && Object.keys(opts).filter((k) => k !== "defaultValue").length
         ? `${key} ${JSON.stringify(opts)}`
         : ((opts?.defaultValue as string) ?? key),
-    i18n: { exists: () => true },
+    i18n: {
+      exists: () => true,
+      language: "en",
+      getResource: (_lng: string, ns: string, key: string) =>
+        ns === "raidBossAbilityText" ? abilityTextFixture[key] : undefined,
+    },
   }),
 }))
 
@@ -245,6 +259,22 @@ describe("RaidBossesPage", () => {
         "/library/raid-bosses/GuildBoss1Boss1Tervigon"
       )
     )
+  })
+
+  it("renders ability rules-text scaled to the selected progression step", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+
+    // Default step is the highest known (encounter progressionIndex 3 -> ability level 3 -> dmg[2]).
+    const abilities = await screen.findByTestId("raid-boss-abilities")
+    expect(abilities).toHaveTextContent("Deals 30 damage")
+
+    await user.click(screen.getByTestId("raid-boss-progression-select"))
+    const options = await screen.findAllByRole("option")
+    await user.click(options[0]) // step 1 -> ability level 1 -> dmg[0]
+
+    await waitFor(() => expect(abilities).toHaveTextContent("Deals 10 damage"))
   })
 
   it("changes the progression step via the dropdown", async () => {

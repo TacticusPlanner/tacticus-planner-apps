@@ -143,6 +143,7 @@
     "noPrimeModifiers": "Sin modificadores de prime para este jefe.",
     "modifierReduces": "Reduce {{name}}",
     "modifierIncreases": "Aumenta {{name}}",
-    "progressionStep": "Paso {{step}}/{{total}} · {{rarity}} · ★{{stars}}"
+    "progressionStep": "Paso {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Valores mostrados para el nivel de habilidad {{level}}"
   }
 }

@@ -143,6 +143,7 @@
     "noPrimeModifiers": "Aucun modificateur de prime pour ce boss.",
     "modifierReduces": "Réduit {{name}}",
     "modifierIncreases": "Augmente {{name}}",
-    "progressionStep": "Palier {{step}}/{{total}} · {{rarity}} · ★{{stars}}"
+    "progressionStep": "Palier {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}"
   }
 }

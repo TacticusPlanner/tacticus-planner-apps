@@ -18,11 +18,12 @@ import {
 import {
   describeModifier,
   humanizeToken,
-  useRaidBossLabels,
   type ModifierContext,
   type RaidBoss,
   type RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
+
+import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
 
 export type RaidBossDetailProps = {
   unit: RaidBoss
@@ -33,9 +34,6 @@ export type RaidBossDetailProps = {
   fieldEnemyNames: string[]
   compact?: boolean
 }
-
-// Internal engine ability with no player-facing description — V1 hides it the same way.
-const HIDDEN_ABILITY_IDS = new Set(["GuildBossRunAway"])
 
 function StatRow({ label, value }: { label: string; value: string | number }) {
   return (
@@ -91,33 +89,6 @@ function ModifierRows({
   )
 }
 
-function AbilityGroup({
-  label,
-  ids,
-}: {
-  label: string
-  ids: string[] | undefined
-}) {
-  const { abilityName } = useRaidBossLabels()
-  const shown = (ids ?? []).filter((id) => !HIDDEN_ABILITY_IDS.has(id))
-  if (shown.length === 0) return null
-
-  return (
-    <div>
-      <h4 className="mb-1 text-xs font-medium text-muted-foreground">
-        {label}
-      </h4>
-      <div className="flex flex-wrap gap-1">
-        {shown.map((id) => (
-          <Badge key={id} variant="secondary">
-            {abilityName(id)}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export function RaidBossDetail({
   unit,
   name,
@@ -128,7 +99,6 @@ export function RaidBossDetail({
   compact = false,
 }: RaidBossDetailProps) {
   const { t } = useTranslation("library")
-  const { traitName, hasTraitName } = useRaidBossLabels()
 
   const ladder = unit.statProgression
   const clamped = Math.min(
@@ -136,13 +106,6 @@ export function RaidBossDetail({
     Math.max(ladder.length - 1, 0)
   )
   const step = ladder[clamped]
-
-  const traitIds = (unit.traitIds ?? []).filter(hasTraitName)
-  const hasAbilities =
-    (unit.activeAbilityIds?.length ?? 0) +
-      (unit.passiveAbilityIds?.length ?? 0) +
-      (unit.relicAbilityIds?.length ?? 0) >
-    0
 
   return (
     <div className="flex flex-col gap-6" data-testid="raid-boss-detail">
@@ -267,42 +230,7 @@ export function RaidBossDetail({
             </div>
           ) : null}
 
-          {hasAbilities ? (
-            <div data-testid="raid-boss-abilities">
-              <h3 className="mb-2 text-sm font-semibold">
-                {t("raidBosses.abilities")}
-              </h3>
-              <div className="flex flex-col gap-2">
-                <AbilityGroup
-                  label={t("raidBosses.abilitiesActive")}
-                  ids={unit.activeAbilityIds}
-                />
-                <AbilityGroup
-                  label={t("raidBosses.abilitiesPassive")}
-                  ids={unit.passiveAbilityIds}
-                />
-                <AbilityGroup
-                  label={t("raidBosses.abilitiesRelic")}
-                  ids={unit.relicAbilityIds}
-                />
-              </div>
-            </div>
-          ) : null}
-
-          {traitIds.length ? (
-            <div>
-              <h3 className="mb-2 text-sm font-semibold">
-                {t("raidBosses.traits")}
-              </h3>
-              <div className="flex flex-wrap gap-1">
-                {traitIds.map((id) => (
-                  <Badge key={id} variant="outline">
-                    {traitName(id)}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          <RaidBossAbilityPanel unit={unit} step={step} name={name} />
         </div>
       </div>
 

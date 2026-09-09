@@ -1,0 +1,198 @@
+{
+  "BeastSlayer": {
+    "description": "This unit deals <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> with melee attacks to <style=\"Big_Target\">Big Targets</style> and <style=\"Vehicle\">Vehicles</style>. It also has an added <style=\"Stat_Chance\">{[blockChance]}% chance</style> to <style=\"Stat_Block\">Block</style> Damage equal to its current <style=\"Stat_Armor\">Armour</style>.",
+    "styledName": "<style=\"Beast_Snagga\">Beast Slayer</style>",
+    "variables": {
+      "extraDmgPct": [20],
+      "blockChance": [10]
+    }
+  },
+  "BigTarget": {
+    "description": "Due to its size, this unit benefits less from cover but also provides some obstruction to enemy sighting. Does not get any bonuses from <style=\"Tile_Grass\">Tall Grass</style> and <style=\"Tile_Trench\">Trenches</style>. Adjacent friendly units receive <style=\"Stat_Hits\">-1 hit</style> from <style=\"Stat_Range\">ranged</style> attacks, to a minimum of 1. Cannot be displaced.",
+    "styledName": "<style=\"Big_Target\">Big Target</style>",
+    "variables": {}
+  },
+  "Camouflage": {
+    "description": "<style=\"Stat_Range\">Ranged</style> attacks against this character score <style=\"Stat_Hits\">-1 hit</style>. This increases to <style=\"Stat_Hits\">-2 hits</style> if this character is more than 2 hexes away from the attacker or to <style=\"Stat_Hits\">-3 hits</style> when in <style=\"Tile_Grass\">Tall Grass</style>. Attackers always score at least <style=\"Stat_Hits\">1 hit</style>.",
+    "styledName": "<style=\"Camouflage\">Camouflage</style>",
+    "variables": {}
+  },
+  "ContagionsOfNurgle": {
+    "description": "This unit is surrounded by an aura that expands over time. Enemies have {[armorReduction]}% <style=\"Stat_Armor\">Armour</style> while in this aura. If they stand in two or more overlapping enemy auras, they have {[armorReduction2]}% <style=\"Stat_Armor\">Armour</style> instead.\n\nAura:\nRound 1-2: <style=\"Stat_Range\">range 1</style>\nRound 3-4: <style=\"Stat_Range\">range 2</style>\nRound 5+: <style=\"Stat_Range\">range 3</style>",
+    "styledName": "<style=\"ContagionsOfNurgle\">Contagions of Nurgle</style>",
+    "variables": {
+      "armorReduction": [-20],
+      "armorReduction2": [-40]
+    }
+  },
+  "CrushingStrike": {
+    "description": "This unit deals <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> with normal <style=\"Stat_Melee\">Melee</style> attacks if it has not moved this turn.",
+    "styledName": "<style=\"CrushingStrike\">Crushing Strike</style>",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "Daemon": {
+    "description": "This unit has an additional <style=\"Stat_Chance\">{[blockChance]}% chance</style> to <style=\"Stat_Block\">Block</style> up to {[blockDmgPct]}% of its own current <style=\"Stat_Damage\">Damage</style> stat.",
+    "styledName": "<style=\"Daemon\">Daemon</style>",
+    "variables": {
+      "blockChance": [25],
+      "blockDmgPct": [50]
+    }
+  },
+  "Dakka": {
+    "description": "For attacks with <style=\"Stat_Range\">range 3</style> or more, has <style=\"Stat_Hits\">+{[extraHit]} hits</style> if the target is at <style=\"Stat_Range\">range 2</style>.",
+    "styledName": "<style=\"Dakka\">Dakka</style>",
+    "variables": {
+      "extraHit": [2]
+    }
+  },
+  "Explodes": {
+    "description": "This unit <style=\"Explodes\">explodes</style> on death, dealing <style=\"Stat\">25%</style> of its max <style=\"Stat_Health\">Health</style> as <style=\"DMG_Direct\">Direct Damage</style> to all adjacent units",
+    "styledName": "<style=\"Explodes\">Explodes</style>",
+    "variables": {}
+  },
+  "FinalJustice": {
+    "description": "When this unit loses its last <style=\"Stat_Health\">Health</style>, it immediately performs a <style=\"NormalAttack\">normal attack</style> on an eligible target and is then defeated as normal, unless <style=\"Overkill\">Overkilled</style>",
+    "styledName": "<style=\"FinalJustice\">Final Vengeance</style>",
+    "variables": {}
+  },
+  "Flying": {
+    "description": "Can traverse impassable hexes and enemies and move between any elevation.",
+    "styledName": "<style=\"Flying\">Flying</style>",
+    "variables": {}
+  },
+  "GetStuckIn": {
+    "description": "For every 2 hits this unit scores with an attack against an enemy within range 2, it has a <style=\"STAT\">{[chance]}%</style> chance to score an additional <style=\"Stat_Hits\">hit</style>. If 2 or more friendly <style=\"Faction_Orks\">Orks</style> or 4 or more friendly units are adjacent to the target, the chance is increased to <style=\"STAT\">{[chance_2]}%</style>.",
+    "styledName": "<style=\"GetStuckIn\">Get Stuck In</style>",
+    "variables": {
+      "chance": [30],
+      "chance_2": [100]
+    }
+  },
+  "Healer": {
+    "description": "Can <style=\"Healing\">heal</style> a friendly unit as its action.\nThe amount of <style=\"Stat_Health\">Health</style> restored equals the Healer’s <style=\"Stat_Damage\">Damage</style> multiplied by the highest number of <style=\"Stat_Hits\">hits</style> of any of their weapons. ",
+    "styledName": "<style=\"Healer\">Healer</style>",
+    "variables": {}
+  },
+  "HeavyWeapon": {
+    "description": "When this unit has not moved this turn, it deals <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> with ranged attacks.",
+    "styledName": "<style=\"Heavy_Weapon\">Heavy Weapon</style>",
+    "variables": {
+      "extraDmgPct": [25]
+    }
+  },
+  "Immune": {
+    "description": "This unit is immune to special hexes and <style=\"HexEffect\">hex effects</style>, and cannot have its <style=\"Stat_Armor\">Armour</style>, <style=\"Stat_Hits\">hits</style>, <style=\"Stat_Movement\">Movement</style> or <style=\"Stat_Range\">Range</style> reduced.\n\nAdditionally, this unit cannot be <style=\"Debuff_Stunned\">Stunned</style>, <style=\"Debuff_Pinned\">Suppressed</style> or <style=\"Debuff_Taunted\">Taunted</style>, and does not receive knockback damage.",
+    "styledName": "<style=\"Immune\">Immune</style>",
+    "variables": {}
+  },
+  "IndirectFire": {
+    "description": "Can fire over <style=\"Out_Of_Sight\">obscuring</style> hexes and hit targets in <style=\"Tile_Trench\">Trenches</style>",
+    "styledName": "<style=\"Indirect_Fire\">Indirect Fire</style>",
+    "variables": {}
+  },
+  "Infiltrate": {
+    "description": "This unit does not trigger <style=\"Overwatch\">Overwatch</style>",
+    "styledName": "<style=\"Infiltrate\">Infiltrate</style>",
+    "variables": {}
+  },
+  "InstinctiveBehaviour": {
+    "description": "This unit always tries to attack the closest enemy unit. If there are targets in range, this unit does not move before attacking.",
+    "styledName": "<style=\"Instinctive_Behaviour\">Instinctive Behaviour</style>",
+    "variables": {}
+  },
+  "LivingMetal": {
+    "description": "<style=\"Regenerate\">Regenerates</style> <style=\"Stat\">{[hpPct]}%</style> of its max <style=\"Stat_Health\">Health</style> at the start of the players' turn. This unit is also <style=\"Mechanical\">Mechanical</style>",
+    "styledName": "<style=\"Living_Metal\">Living Metal</style>",
+    "variables": {
+      "hpPct": [10]
+    }
+  },
+  "Mechanic": {
+    "description": "Can <style=\"Repairing\">repair</style> a friendly <style=\"Mechanical\">Mechanical</style> unit as its action.\nThe amount of <style=\"Stat_Health\">Health</style> restored equals the <style=\"Mechanic\">Mechanic</style>'s Damage multiplied by the highest number of <style=\"Stat_Hits\">hits</style> of any of their weapons.",
+    "styledName": "<style=\"Mechanic\">Mechanic</style>",
+    "variables": {}
+  },
+  "Mechanical": {
+    "description": "Cannot be <style=\"Healing\">healed</style>, but can be <style=\"Repairing\">repaired</style> instead.\n<i>Note: units with the <style=\"Living_Metal\">Living Metal</style> trait also count as being <style=\"Mechanical\">Mechanical</style></i>",
+    "styledName": "<style=\"Mechanical\">Mechanical</style>",
+    "variables": {}
+  },
+  "Overwatch": {
+    "description": "If this unit has not attacked during its turn, nor after that, it attacks when an enemy moves within range during the enemy's turn",
+    "styledName": "<style=\"Overwatch\">Overwatch</style>",
+    "variables": {}
+  },
+  "Parry": {
+    "description": "This unit reduces incoming <style=\"Stat_Melee\">melee</style> multi-hit attacks by <style=\"Stat_Hits\">{[hitsReduction]} hit</style>, to a minimum of 1.",
+    "styledName": "<style=\"Parry\">Parry</style>",
+    "variables": {
+      "hitsReduction": [1]
+    }
+  },
+  "Psyker": {
+    "description": "When this unit performs a <style=\"NormalAttack\">normal ranged attack</style>, it also deals {[extraDmgPct]}% of its <style=\"Stat_Damage\">Damage</style> to a random enemy adjacent to the target.",
+    "styledName": "<style=\"Psyker\">Psyker</style>",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "RangedSpecialist": {
+    "description": "If this unit did not start its turn adjacent to an enemy unit, it deals <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> with ranged attacks.",
+    "styledName": "<style=\"RangedSpecialist\">Ranged Specialist</style>",
+    "variables": {
+      "extraDmgPct": [33]
+    }
+  },
+  "Resilient": {
+    "description": "If this unit is not already at <style=\"Stat_Health\">1 Health</style> and would be defeated, its <style=\"Stat_Health\">Health</style> is instead reduced to <style=\"Stat_Health\">1 Health</style>, unless <style=\"Overkill\">Overkilled</style>.",
+    "styledName": "<style=\"Resilient\">Resilient</style>",
+    "variables": {}
+  },
+  "ShadowInTheWarp": {
+    "description": "Enemy <style=\"Psyker\">Psykers</style> within {[range]} hexes deal {[dmgPct]}% <style=\"DMG_Psychic\">Psychic Damage</style>. Does not affect <style=\"Faction_Tyranids\">Tyranid</style> <style=\"Psyker\">Psykers</style>.",
+    "styledName": "<style=\"Shadow_In_The_Warp\">Shadow in the Warp</style>",
+    "variables": {
+      "range": [2],
+      "dmgPct": [-25]
+    }
+  },
+  "SuppressiveFire": {
+    "description": "An enemy hit by this unit’s ranged attack becomes <style=\"Debuff_Pinned\">Suppressed</style>.",
+    "styledName": "<style=\"Suppressive_Fire\">Suppressive Fire</style>",
+    "variables": {}
+  },
+  "Synapse": {
+    "description": "Friendly units within 2 hexes ignore the effects of <style=\"Instinctive_Behaviour\">Instinctive Behaviour</style> and <style=\"Battle_Fatigue\">Battle Fatigue</style>.",
+    "styledName": "<style=\"Synapse\">Synapse</style>",
+    "variables": {}
+  },
+  "TeleportStrike": {
+    "description": "This unit starts the battle in Deep Strike. \n\nUnits in Deep Strike can move to any free hex on the battlefield that is not adjacent to an enemy, or they can move normally from their current position. They cannot be targeted or damaged until they have taken an action or ended their turn.",
+    "styledName": "<style=\"Teleport_Strike\">Deep Strike</style>",
+    "variables": {}
+  },
+  "TerminatorArmour": {
+    "description": "The first attack each turn against this unit deals <style=\"Stat\">{[dmgPctReduction]}% Damage</style>. <style=\"Stat_Hits\">Hits</style> dealing <style=\"DMG_Psychic\">Psychic</style> or <style=\"DMG_Direct\">Direct</style> Damage are excluded. This unit cannot be <style=\"Debuff_Pinned\">Suppressed</style>.",
+    "styledName": "<style=\"Terminator_Armor\">Terminator Armour</style>",
+    "variables": {
+      "dmgPctReduction": [-75]
+    }
+  },
+  "Unstoppable": {
+    "description": "This unit does not have to stop on special hexes and <style=\"HexEffect\">hex effects</style> that would normally force a unit to end their <style=\"Stat_Movement\">Movement</style>.",
+    "styledName": "<style=\"Unstoppable\">Unstoppable</style>",
+    "variables": {}
+  },
+  "Vehicle": {
+    "description": "This unit does not have to stop on special hexes and <style=\"HexEffect\">hex effects</style> that would normally force a unit to end their <style=\"Stat_Movement\">Movement</style>. Does not get any bonuses from <style=\"Tile_Grass\">Tall Grass</style> and <style=\"Tile_Trench\">Trenches</style>. This unit is also <style=\"Mechanical\">Mechanical</style>.",
+    "styledName": "<style=\"Vehicle\">Vehicle</style>",
+    "variables": {}
+  },
+  "WeaverOfFate": {
+    "description": "In any turn where 3 or more enemy units have taken <style=\"DMG_Psychic\">Psychic Damage</style>, this unit will deal the maximum possible <style=\"Stat_Damage\">Damage</style> with its attacks and abilities on that turn.",
+    "styledName": "<style=\"WeaverOfFate\">Weaver of Fates</style>",
+    "variables": {}
+  }
+}

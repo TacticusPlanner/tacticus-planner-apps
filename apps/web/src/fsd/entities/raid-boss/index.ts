@@ -11,6 +11,11 @@ export type {
   ModifierContext,
 } from "./model/types"
 export { useRaidBossLabels } from "./lib/use-raid-boss-labels"
+export {
+  useRaidBossText,
+  type RaidBossAbilityTextEntry,
+  type RaidBossTraitTextEntry,
+} from "./lib/use-raid-boss-text"
 export { RaidBossPortrait } from "./ui/raid-boss-portrait"
 export {
   describeModifier,
