@@ -47,6 +47,20 @@ const definitionsById = new Map([
     },
   ],
   [
+    "always-double-gold-saturday",
+    {
+      id: "always-double-gold-saturday",
+      type: "StandingModifier",
+      recurrence: {
+        kind: "Fixed" as const,
+        intervalDays: 7,
+        durationDays: 1,
+        anchorUtc: "2024-01-06T00:00:00Z",
+      },
+      config: null,
+    },
+  ],
+  [
     "battle-pass",
     {
       id: "battle-pass",
@@ -301,6 +315,155 @@ describe("buildEventsCalendarDays", () => {
     const entry = days.find((day) => day.entries.length > 0)?.entries[0]
 
     expect(entry?.derivedSeasonNumber).toBeUndefined()
+  })
+
+  it("marks only the first and last local days of a multi-day occurrence", () => {
+    const rangeStart = new Date(2026, 7, 2)
+    const rangeEnd = addLocalDays(rangeStart, 7)
+    const entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: "2026-08-02T00:00:00Z",
+        endUtc: "2026-08-06T00:00:00Z",
+        parameters: null,
+      },
+    ]
+
+    const occurrenceDays = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      rangeStart
+    ).flatMap((day) => day.entries)
+
+    expect(occurrenceDays[0]).toMatchObject({ isOccurrenceStart: true })
+    expect(occurrenceDays.at(-1)).toMatchObject({ isOccurrenceEnd: true })
+    expect(
+      occurrenceDays
+        .slice(1, -1)
+        .every((entry) => !entry.isOccurrenceStart && !entry.isOccurrenceEnd)
+    ).toBe(true)
+  })
+
+  it("does not mark one-day recurring modifier occurrences as boundaries", () => {
+    const rangeStart = new Date(2026, 7, 2)
+    const rangeEnd = addLocalDays(rangeStart, 7)
+    const entries = [
+      {
+        occurrenceId: "occ-double-xp",
+        definitionId: "always-double-xp-sunday",
+        confirmed: true,
+        startUtc: "2026-08-02T00:00:00Z",
+        endUtc: "2026-08-03T00:00:00Z",
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-double-gold",
+        definitionId: "always-double-gold-saturday",
+        confirmed: true,
+        startUtc: "2026-08-08T00:00:00Z",
+        endUtc: "2026-08-09T00:00:00Z",
+        parameters: null,
+      },
+    ]
+
+    const modifierEntries = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      rangeStart
+    ).flatMap((day) => day.entries)
+
+    expect(
+      modifierEntries.every(
+        (entry) => !entry.isOccurrenceStart && !entry.isOccurrenceEnd
+      )
+    ).toBe(true)
+  })
+
+  it("orders a limited event, a recurring modifier, and a long-running event by daily relevance", () => {
+    const rangeStart = new Date(2026, 7, 2)
+    const rangeEnd = addLocalDays(rangeStart, 7)
+    const entries = [
+      {
+        occurrenceId: "occ-battle-pass",
+        definitionId: "battle-pass",
+        confirmed: true,
+        startUtc: "2026-07-11T00:00:00Z",
+        endUtc: "2026-08-10T00:00:00Z",
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-double-gold",
+        definitionId: "always-double-gold-saturday",
+        confirmed: true,
+        startUtc: "2026-08-02T00:00:00Z",
+        endUtc: "2026-08-03T00:00:00Z",
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: "2026-08-02T00:00:00Z",
+        endUtc: "2026-08-09T00:00:00Z",
+        parameters: null,
+      },
+    ]
+
+    const firstDayEntries = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      rangeStart
+    )[0]?.entries
+
+    expect(firstDayEntries?.map((entry) => entry.definitionId)).toEqual([
+      "legendary-event",
+      "always-double-gold-saturday",
+      "battle-pass",
+    ])
+  })
+
+  it("uses chronological order to break daily-priority ties", () => {
+    const rangeStart = new Date(2026, 7, 2)
+    const rangeEnd = addLocalDays(rangeStart, 7)
+    const entries = [
+      {
+        occurrenceId: "occ-later",
+        definitionId: "hse-warp-surge",
+        confirmed: true,
+        startUtc: "2026-08-02T12:00:00Z",
+        endUtc: "2026-08-03T12:00:00Z",
+        parameters: null,
+      },
+      {
+        occurrenceId: "occ-earlier",
+        definitionId: "hse-warp-surge",
+        confirmed: true,
+        startUtc: "2026-08-02T03:00:00Z",
+        endUtc: "2026-08-03T03:00:00Z",
+        parameters: null,
+      },
+    ]
+
+    const firstDayEntries = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      rangeStart
+    )[0]?.entries
+
+    expect(firstDayEntries?.map((entry) => entry.occurrenceId)).toEqual([
+      "occ-earlier",
+      "occ-later",
+    ])
   })
 })
 

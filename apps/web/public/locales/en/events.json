@@ -14,9 +14,11 @@
   "badges": {
     "active": "Live now",
     "projected": "Projected",
-    "confirmed": "Confirmed"
+    "confirmed": "Confirmed",
+    "starts": "Starts",
+    "ends": "Ends"
   },
-  "wikiLink": "View on wiki",
+  "wikiLink": "Wiki",
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -87,8 +89,8 @@
           "content": "Step forward or back a week, or jump back to today."
         },
         "calendar": {
-          "title": "Confirmed vs. projected",
-          "content": "Confirmed events are locked in; projected ones are a preview based on the game's normal schedule and may still change."
+          "title": "Event details",
+          "content": "Cards distinguish active and tentative events, and mark the first and last days of multi-day events."
         }
       }
     }

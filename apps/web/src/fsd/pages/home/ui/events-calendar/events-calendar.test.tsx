@@ -102,6 +102,8 @@ describe("EventsCalendar", () => {
   it("shows a loading state, then an empty state when there are no entries in range", async () => {
     render(<EventsCalendar />)
 
+    expect(screen.getByTestId("events-calendar")).toHaveClass("px-4", "md:px-0")
+
     expect(screen.getByTestId("events-calendar-loading")).toBeInTheDocument()
 
     await waitFor(() =>

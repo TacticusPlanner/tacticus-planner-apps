@@ -47,7 +47,12 @@ export function EventsCalendarMobile({ days }: { days: EventsCalendarDay[] }) {
             </h3>
             <div className="flex flex-col gap-1">
               {day.entries.map((entry) => (
-                <EventEntryCard entry={entry} key={entry.key} />
+                <EventEntryCard
+                  entry={entry}
+                  isOccurrenceEnd={entry.isOccurrenceEnd}
+                  isOccurrenceStart={entry.isOccurrenceStart}
+                  key={entry.key}
+                />
               ))}
             </div>
           </div>

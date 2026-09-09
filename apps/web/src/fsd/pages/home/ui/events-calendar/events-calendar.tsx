@@ -13,7 +13,10 @@ export function EventsCalendar() {
   const showLegend = calendar.status === "ready"
 
   return (
-    <div className="flex w-full flex-col gap-4" data-testid="events-calendar">
+    <div
+      className="flex w-full flex-col gap-4 px-4 md:px-0"
+      data-testid="events-calendar"
+    >
       <EventsCalendarNavigation calendar={calendar} />
       {showLegend ? <EventsCalendarLegend days={calendar.days} /> : null}
       {calendar.status === "loading" ? (
