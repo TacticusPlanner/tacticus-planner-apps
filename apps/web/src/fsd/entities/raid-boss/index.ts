@@ -27,7 +27,9 @@ export {
 export {
   unitDisplayName,
   resolvePrimeName,
+  resolvePrimeCharacterId,
   resolveFieldNpcName,
+  resolveFieldNpcRosterId,
 } from "./lib/unit-name"
 export {
   buildModifierContext,

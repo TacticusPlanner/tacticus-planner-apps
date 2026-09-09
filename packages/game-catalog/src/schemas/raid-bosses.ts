@@ -40,6 +40,9 @@ export const raidBossSchema = z.looseObject({
   passiveAbilityIds: z.array(z.string()).optional(),
   relicAbilityIds: z.array(z.string()).optional(),
   traitIds: z.array(z.string()).optional(),
+  // The canonical npc id this unit set represents (served since add-raid-boss-portraits); the client
+  // resolves its portrait. Absent when the source omits it.
+  questUnitId: z.string().optional(),
 })
 
 // An encounter modifier with its definition inlined (server-resolved). `hpLost` is the boss-HP-lost

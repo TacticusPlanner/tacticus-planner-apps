@@ -13,9 +13,10 @@ function initials(name: string): string {
 }
 
 /**
- * A raid boss / prime portrait. Raid-boss portrait assets are not yet bundled in V2 (tracked
- * separately), so `src` is normally absent and this renders a readable initials badge; when a portrait
- * asset does resolve, `EntityIcon` shows it and falls back to the badge on load error.
+ * A raid boss / prime portrait. `src` is the round-portrait URL resolved from the unit-set id (see the
+ * game-catalog `raidBossPortrait` helper); when it is absent — an id with no bundled asset, as some
+ * Necron minions / Tyranid Warrior variants have none even in V1 — this renders a readable initials
+ * badge instead. `EntityIcon` also falls back to the badge on a load error.
  */
 export function RaidBossPortrait({
   name,

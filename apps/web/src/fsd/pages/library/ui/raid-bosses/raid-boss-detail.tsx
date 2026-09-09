@@ -18,6 +18,7 @@ import {
 import {
   describeModifier,
   humanizeToken,
+  RaidBossPortrait,
   type ModifierContext,
   type RaidBoss,
   type RaidBossEncounterModifier,
@@ -35,7 +36,7 @@ export type RaidBossDetailProps = {
   stepIndex: number
   onStepChange: (index: number) => void
   modifierContext: ModifierContext
-  fieldEnemyNames: string[]
+  fieldEnemies: { name: string; iconSrc?: string }[]
   /** The boss-only adjusted-stats model + its HP-lost controls; `null` for a prime or no encounter. */
   adjusted: RaidBossAdjustedProps | null
   compact?: boolean
@@ -101,7 +102,7 @@ export function RaidBossDetail({
   stepIndex,
   onStepChange,
   modifierContext,
-  fieldEnemyNames,
+  fieldEnemies,
   adjusted,
   compact = false,
 }: RaidBossDetailProps) {
@@ -248,14 +249,26 @@ export function RaidBossDetail({
 
       <Separator />
 
-      {fieldEnemyNames.length ? (
+      {fieldEnemies.length ? (
         <div data-testid="raid-boss-field-enemies">
-          <h3 className="mb-1 text-sm font-semibold">
+          <h3 className="mb-2 text-sm font-semibold">
             {t("raidBosses.fieldEnemies")}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            {fieldEnemyNames.join(", ")}
-          </p>
+          <ul className="flex flex-wrap gap-3">
+            {fieldEnemies.map((enemy, index) => (
+              <li
+                key={`${enemy.name}-${index}`}
+                className="flex items-center gap-2 text-sm"
+              >
+                <RaidBossPortrait
+                  name={enemy.name}
+                  src={enemy.iconSrc}
+                  className="size-8"
+                />
+                <span className="text-muted-foreground">{enemy.name}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
 

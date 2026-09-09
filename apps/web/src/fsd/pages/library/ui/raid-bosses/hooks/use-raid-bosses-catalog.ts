@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
+import { raidBossPortrait } from "@workspace/game-catalog"
 import {
   getCharactersMap,
   getRaidBosses,
 } from "@workspace/game-catalog/queries"
 
 import {
+  resolvePrimeCharacterId,
   resolvePrimeName,
   useRaidBossLabels,
   type RaidBoss,
@@ -23,6 +25,8 @@ export type RaidBossesCatalog = {
   byId: Map<string, RaidBoss>
   /** unit-set id -> resolved display label, for every boss and prime. */
   nameById: Map<string, string>
+  /** unit-set id -> resolved round-portrait URL; only present for ids that resolve to an asset. */
+  portraitById: Map<string, string>
   /** Re-runs the dataset read; meaningful only in the `failed` state. */
   retry: () => void
 }
@@ -35,6 +39,7 @@ const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
   primes: [],
   byId: new Map(),
   nameById: new Map(),
+  portraitById: new Map(),
 }
 
 /**
@@ -74,15 +79,25 @@ export function useRaidBossesCatalog(): RaidBossesCatalog {
     }
 
     const nameById = new Map<string, string>()
+    const portraitById = new Map<string, string>()
     const toItem = (unit: RaidBoss): RaidBossListItem => {
       const name = nameFor(unit)
       nameById.set(unit.unitSetId, name)
+
+      const rosterId =
+        unit.kind === "prime" && charactersById
+          ? resolvePrimeCharacterId(unit.unitSetId, charactersById)
+          : undefined
+      const portrait = raidBossPortrait(unit.unitSetId, rosterId)
+      if (portrait) portraitById.set(unit.unitSetId, portrait)
+
       return {
         unitSetId: unit.unitSetId,
         kind: unit.kind,
         isPrimarch: unit.isPrimarch,
         factionId: unit.factionId,
         name,
+        portraitSrc: portrait,
       }
     }
 
@@ -101,6 +116,7 @@ export function useRaidBossesCatalog(): RaidBossesCatalog {
         ])
       ),
       nameById,
+      portraitById,
       retry,
     }
   }, [result, charactersById, bossName])

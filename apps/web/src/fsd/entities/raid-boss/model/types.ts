@@ -22,6 +22,8 @@ export type RaidBossListItem = {
   isPrimarch: boolean
   factionId: string
   name: string
+  /** Resolved round-portrait URL, or `undefined` when no asset resolves (render a badge). */
+  portraitSrc?: string
 }
 
 /** One prime a boss is fought alongside, with its label and scaled modifier list. */

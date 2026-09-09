@@ -38,7 +38,11 @@ function Section({
                 : "border-border"
             )}
           >
-            <RaidBossPortrait name={item.name} className="size-14" />
+            <RaidBossPortrait
+              name={item.name}
+              src={item.portraitSrc}
+              className="size-14"
+            />
             <span className="line-clamp-2 text-xs font-medium">
               {item.name}
             </span>

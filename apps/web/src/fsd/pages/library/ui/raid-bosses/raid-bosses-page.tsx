@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
+import { fieldNpcIcon } from "@workspace/game-catalog"
 import { getNpcs } from "@workspace/game-catalog/queries"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -12,6 +13,7 @@ import {
   fieldNpcIdsForStep,
   maxKnownProgressionIndex,
   resolveFieldNpcName,
+  resolveFieldNpcRosterId,
 } from "@/entities/raid-boss"
 import { useTourPageSteps } from "@/shared/tour"
 
@@ -95,14 +97,24 @@ export function RaidBossesPage() {
     [catalog.payload, catalog.nameById, selectedUnit, stepIndex]
   )
 
-  const fieldEnemyNames = useMemo(
+  const fieldEnemies = useMemo(
     () =>
       catalog.payload && selectedUnit
         ? fieldNpcIdsForStep(
             catalog.payload,
             selectedUnit.unitSetId,
             stepIndex
-          ).map((id) => resolveFieldNpcName(id, selectedUnit.factionId, npcs))
+          ).map((id) => ({
+            name: resolveFieldNpcName(id, selectedUnit.factionId, npcs),
+            iconSrc: fieldNpcIcon({
+              id,
+              questUnitId: resolveFieldNpcRosterId(
+                id,
+                selectedUnit.factionId,
+                npcs
+              ),
+            }),
+          }))
         : [],
     [catalog.payload, selectedUnit, stepIndex, npcs]
   )
@@ -196,7 +208,7 @@ export function RaidBossesPage() {
     stepIndex,
     onStepChange: setStepIndex,
     modifierContext,
-    fieldEnemyNames,
+    fieldEnemies,
     adjusted,
   }
 

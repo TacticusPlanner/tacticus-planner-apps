@@ -76,11 +76,20 @@ export function resolvePrimeName(
   unitSetId: string,
   charactersById: Map<string, { name: string }>
 ): string | undefined {
+  const characterId = resolvePrimeCharacterId(unitSetId, charactersById)
+  return characterId ? charactersById.get(characterId)?.name : undefined
+}
+
+/** The catalog character id a prime unit-set id maps to, when it is a playable character. */
+export function resolvePrimeCharacterId(
+  unitSetId: string,
+  charactersById: Map<string, { name: string }>
+): string | undefined {
   const match = PRIME_TOKEN_RE.exec(unitSetId)
   if (!match) return undefined
   const token = match[1]
   const characterId = token.charAt(0).toLowerCase() + token.slice(1)
-  return charactersById.get(characterId)?.name
+  return charactersById.has(characterId) ? characterId : undefined
 }
 
 /**
@@ -88,29 +97,45 @@ export function resolvePrimeName(
  * fuzzily against the npc catalog by faction abbreviation, dropping the fleet skin. Falls back to a
  * humanized token when nothing resolves. Ported from V1 `fuzzyResolveNpc`.
  */
+function fuzzyMatchFieldNpc(
+  fieldNpcId: string,
+  bossFactionId: string,
+  npcs: readonly { id: string; name: string }[]
+): { id: string; name: string } | undefined {
+  const prefixMatch = NPC_PREFIX_RE.exec(fieldNpcId)
+  const abbreviation = FACTION_ABBREVIATIONS[bossFactionId]
+  if (!prefixMatch || !abbreviation) return undefined
+
+  let rest = stripFactionPrefix(fieldNpcId.slice(prefixMatch[0].length))
+  for (const fleet of FLEET_SUFFIXES) {
+    if (rest.endsWith(fleet)) {
+      rest = rest.slice(0, -fleet.length)
+      break
+    }
+  }
+  const fuzzy = new RegExp(
+    `^${abbreviation}Npc\\d+${rest}(?:Leviathan|Kronos|Gorgon)?(?:_SyncPvp.*)?$`,
+    "i"
+  )
+  return npcs.find((npc) => fuzzy.test(npc.id))
+}
+
 export function resolveFieldNpcName(
   fieldNpcId: string,
   bossFactionId: string,
   npcs: readonly { id: string; name: string }[]
 ): string {
-  const prefixMatch = NPC_PREFIX_RE.exec(fieldNpcId)
-  const abbreviation = FACTION_ABBREVIATIONS[bossFactionId]
+  return (
+    fuzzyMatchFieldNpc(fieldNpcId, bossFactionId, npcs)?.name ??
+    unitDisplayName(fieldNpcId)
+  )
+}
 
-  if (prefixMatch && abbreviation) {
-    let rest = stripFactionPrefix(fieldNpcId.slice(prefixMatch[0].length))
-    for (const fleet of FLEET_SUFFIXES) {
-      if (rest.endsWith(fleet)) {
-        rest = rest.slice(0, -fleet.length)
-        break
-      }
-    }
-    const fuzzy = new RegExp(
-      `^${abbreviation}Npc\\d+${rest}(?:Leviathan|Kronos|Gorgon)?(?:_SyncPvp.*)?$`,
-      "i"
-    )
-    const hit = npcs.find((npc) => fuzzy.test(npc.id))
-    if (hit) return hit.name
-  }
-
-  return unitDisplayName(fieldNpcId)
+/** The npc-roster id a field-npc id fuzzy-matches to, for portrait resolution (`undefined` if none). */
+export function resolveFieldNpcRosterId(
+  fieldNpcId: string,
+  bossFactionId: string,
+  npcs: readonly { id: string; name: string }[]
+): string | undefined {
+  return fuzzyMatchFieldNpc(fieldNpcId, bossFactionId, npcs)?.id
 }

@@ -12,7 +12,7 @@ export function RaidBossesMobilePage({
   stepIndex,
   onStepChange,
   modifierContext,
-  fieldEnemyNames,
+  fieldEnemies,
   adjusted,
 }: RaidBossesPageViewProps) {
   return (
@@ -31,7 +31,7 @@ export function RaidBossesMobilePage({
             stepIndex={stepIndex}
             onStepChange={onStepChange}
             modifierContext={modifierContext}
-            fieldEnemyNames={fieldEnemyNames}
+            fieldEnemies={fieldEnemies}
             adjusted={adjusted}
             compact
           />

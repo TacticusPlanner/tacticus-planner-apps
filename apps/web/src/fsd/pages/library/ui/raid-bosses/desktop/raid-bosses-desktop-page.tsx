@@ -12,7 +12,7 @@ export function RaidBossesDesktopPage({
   stepIndex,
   onStepChange,
   modifierContext,
-  fieldEnemyNames,
+  fieldEnemies,
   adjusted,
 }: RaidBossesPageViewProps) {
   return (
@@ -33,7 +33,7 @@ export function RaidBossesDesktopPage({
             stepIndex={stepIndex}
             onStepChange={onStepChange}
             modifierContext={modifierContext}
-            fieldEnemyNames={fieldEnemyNames}
+            fieldEnemies={fieldEnemies}
             adjusted={adjusted}
           />
         ) : null}

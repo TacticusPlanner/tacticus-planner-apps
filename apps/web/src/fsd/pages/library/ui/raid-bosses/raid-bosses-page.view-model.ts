@@ -17,8 +17,8 @@ export type RaidBossesPageViewProps = {
   stepIndex: number
   onStepChange: (index: number) => void
   modifierContext: ModifierContext
-  /** Resolved field-enemy names for the selected unit's encounter at the viewed step. */
-  fieldEnemyNames: string[]
+  /** Resolved field enemies (name + optional portrait) for the selected unit's encounter at the step. */
+  fieldEnemies: { name: string; iconSrc?: string }[]
   /** Boss-only adjusted-stats model + HP-lost controls; `null` for a prime or no encounter. */
   adjusted: RaidBossAdjustedProps | null
 }
