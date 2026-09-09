@@ -10,7 +10,13 @@ import {
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 
-vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
+const { useIsMobileMock } = vi.hoisted(() => ({
+  useIsMobileMock: vi.fn(() => false),
+}))
+
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: useIsMobileMock,
+}))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 
 // Minimal stand-in for dexie-react-hooks' useLiveQuery — runs the querier, resolves its promise, and
@@ -103,7 +109,7 @@ const unit = (
 
 const payload = {
   id: "raid-bosses",
-  seasonConfigRotation: ["s1"],
+  seasonConfigRotation: ["s1", "s2"],
   bosses: [
     unit("GuildBoss1Boss1Tervigon", "boss", {
       weapons: [
@@ -134,7 +140,7 @@ const payload = {
                   boardId: "GB_01",
                   maxNrOfTurns: 6,
                   unitSetId: "GuildBoss1Boss1Tervigon",
-                  progressionIndex: 3,
+                  progressionIndex: 2,
                   fieldNpcIds: ["GuildBoss1Npc1Termagant"],
                   disallowedFactionIds: ["Tyranids"],
                   modifiers: [],
@@ -143,6 +149,53 @@ const payload = {
                   encounterIndex: 1,
                   encounterType: "Crystal",
                   boardId: "GB_02",
+                  maxNrOfTurns: 6,
+                  unitSetId: "GuildBoss1MiniBoss1Warrior",
+                  progressionIndex: 3,
+                  fieldNpcIds: [],
+                  disallowedFactionIds: [],
+                  modifiers: [
+                    {
+                      hpLost: 180,
+                      modifierId: "mod-a",
+                      type: "bossStatPctDecrease",
+                      target: "dmg",
+                      amount: 20,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    s2: {
+      seasonConfigId: "s2",
+      tiers: [
+        {
+          tier: 5,
+          sets: [
+            {
+              set: 1,
+              chestId: "chest-1",
+              guildXp: 200,
+              encounters: [
+                {
+                  encounterIndex: 0,
+                  encounterType: "Boss",
+                  boardId: "GB_03",
+                  maxNrOfTurns: 6,
+                  unitSetId: "GuildBoss1Boss1Tervigon",
+                  progressionIndex: 3,
+                  fieldNpcIds: [],
+                  disallowedFactionIds: [],
+                  modifiers: [],
+                },
+                {
+                  encounterIndex: 1,
+                  encounterType: "Crystal",
+                  boardId: "GB_04",
                   maxNrOfTurns: 6,
                   unitSetId: "GuildBoss1MiniBoss1Warrior",
                   progressionIndex: 3,
@@ -198,6 +251,7 @@ const { RaidBossesPage } = await import("./raid-bosses-page")
 describe("RaidBossesPage", () => {
   beforeEach(() => {
     getRaidBossesMock.mockReset()
+    useIsMobileMock.mockReturnValue(false)
   })
 
   it("shows the feature-unavailable state when the dataset has not synced", async () => {
@@ -224,34 +278,105 @@ describe("RaidBossesPage", () => {
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/raid-bosses/GuildBoss1Boss1Tervigon"
+        "/library/raid-bosses"
+      )
+    )
+    expect(screen.getByTestId("raid-boss-season-reference")).toBeInTheDocument()
+  })
+
+  it("renders the season reference and opens a contextual encounter detail", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage()
+
+    await screen.findByTestId("raid-boss-season-reference")
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/library/raid-bosses"
+    )
+    expect(screen.getByTestId("raid-boss-season-tier-6")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-boss-season-set-0")).toHaveTextContent(
+      "GuildBoss1MiniBoss1Warrior"
+    )
+
+    await user.click(
+      screen.getByRole("button", { name: "GuildBoss1Boss1Tervigon" })
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1Boss1Tervigon?season=s1&tier=6&set=0&encounter=0"
+      )
+    )
+    expect(screen.getByTestId("raid-boss-detail")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-boss-abilities")).toHaveTextContent(
+      "Deals 20 damage"
+    )
+  })
+
+  it("restores and shares a non-default season without dropping unrelated query parameters", async () => {
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses?season=s2&view=compact")
+
+    await screen.findByTestId("raid-boss-season-reference")
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/library/raid-bosses?season=s2&view=compact"
+    )
+    expect(screen.getByTestId("raid-boss-season-tier-5")).toBeInTheDocument()
+  })
+
+  it("records a changed season while preserving unrelated query parameters", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses?view=compact")
+
+    await screen.findByTestId("raid-boss-season-reference")
+    await user.click(screen.getByRole("combobox"))
+    await user.click(
+      screen.getByRole("option", {
+        name: 'raidBosses.seasonLabel {"season":2}',
+      })
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses?view=compact&season=s2"
       )
     )
   })
 
-  it("renders Bosses and Primes sections and canonicalizes to the first entity", async () => {
+  it("canonicalizes an invalid season to the default selection", async () => {
     getRaidBossesMock.mockResolvedValue(payload)
-    renderPage()
+    renderPage("/library/raid-bosses?season=missing&view=compact")
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/raid-bosses/GuildBoss1Boss1Tervigon"
+        "/library/raid-bosses?view=compact"
       )
     )
+    expect(screen.getByTestId("raid-boss-season-reference")).toBeInTheDocument()
+  })
 
-    expect(screen.getByTestId("raid-boss-list-bosses")).toBeInTheDocument()
-    const primes = screen.getByTestId("raid-boss-list-primes")
+  it("keeps every season-board card reachable on the mobile form", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage()
+
+    await screen.findByTestId("raid-boss-season-reference")
     expect(
-      within(primes).getByText("GuildBoss1MiniBoss1Warrior")
+      screen.getByRole("button", { name: "GuildBoss1MiniBoss1Warrior" })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "GuildBoss1Boss1Tervigon" })
+    ).toBeInTheDocument()
+  })
 
-    // Detail for the first boss: the Prime Modifiers section lists its set's prime with its modifier.
-    const detail = screen.getByTestId("raid-boss-detail")
-    const primeModifiers = within(detail).getByTestId(
-      "raid-boss-prime-modifiers"
-    )
-    expect(primeModifiers).toHaveTextContent("GuildBoss1MiniBoss1Warrior")
-    expect(primeModifiers).toHaveTextContent("−20% dmg")
+  it("retains the compact mobile entity detail form", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+
+    await screen.findByTestId("raid-boss-detail")
+    expect(screen.getByTestId("raid-boss-list-bosses")).toBeInTheDocument()
   })
 
   it("recomputes the boss's stats when a prime HP-lost point is chosen", async () => {
@@ -290,14 +415,31 @@ describe("RaidBossesPage", () => {
     )
   })
 
-  it("falls back to the first entity for an unknown id in the path", async () => {
+  it("returns an unknown detail id to the season reference", async () => {
     getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/not-a-real-id")
+    renderPage("/library/raid-bosses/not-a-real-id?season=s2")
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/raid-bosses/GuildBoss1Boss1Tervigon"
+        "/library/raid-bosses?season=s2"
       )
+    )
+    expect(screen.getByTestId("raid-boss-season-reference")).toBeInTheDocument()
+  })
+
+  it("drops tampered encounter context as a group and retains direct-detail fallback", async () => {
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage(
+      "/library/raid-bosses/GuildBoss1Boss1Tervigon?season=s1&tier=6&set=0&encounter=1&view=compact"
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1Boss1Tervigon?season=s1&view=compact"
+      )
+    )
+    expect(screen.getByTestId("raid-boss-abilities")).toHaveTextContent(
+      "Deals 30 damage"
     )
   })
 

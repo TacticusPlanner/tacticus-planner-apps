@@ -5,6 +5,8 @@ export type {
   RaidBossStatStep,
   RaidBossEncounter,
   RaidBossEncounterModifier,
+  RaidBossEncounterLocation,
+  ResolvedRaidBossEncounterLocation,
   RaidBossKind,
   RaidBossListItem,
   RaidBossPrimeModifiers,
@@ -12,6 +14,14 @@ export type {
   AdjustedPrimePanel,
   AdjustedStatsView,
 } from "./model/types"
+export {
+  buildRaidBossSeasonBoard,
+  resolveRaidBossEncounterLocation,
+  resolveRaidBossSeasonId,
+  validRaidBossSeasonIds,
+  encounterProgressionStepIndex,
+  type RaidBossSeasonBoard,
+} from "./lib/season-reference"
 export { useRaidBossLabels } from "./lib/use-raid-boss-labels"
 export {
   useRaidBossText,

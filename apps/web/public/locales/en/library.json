@@ -90,6 +90,11 @@
     }
   },
   "raidBosses": {
+    "season": "Season",
+    "seasonLabel": "Season {{season}}",
+    "tier": "Tier {{tier}}",
+    "set": "Set {{set}}",
+    "noSeasonReference": "No raid-boss season data is available.",
     "bosses": "Bosses",
     "primes": "Primes",
     "primarch": "Primarch",
@@ -136,6 +141,14 @@
         "adjustedStats": {
           "title": "Adjusted stats",
           "content": "Pick an HP-lost point for each prime to see the boss's stats, abilities, and field enemies once those modifiers activate."
+        },
+        "season": {
+          "title": "Choose a season",
+          "content": "Choose a raid-boss season to see its complete encounter rotation."
+        },
+        "seasonBoard": {
+          "title": "Season encounters",
+          "content": "Tiers contain encounter sets. Select a boss or prime to inspect that exact fight."
         }
       }
     },
