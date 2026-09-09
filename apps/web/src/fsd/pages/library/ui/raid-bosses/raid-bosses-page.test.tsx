@@ -152,9 +152,9 @@ const payload = {
                     {
                       hpLost: 180,
                       modifierId: "mod-a",
-                      type: "bossStatDecrease",
-                      target: "damage",
-                      amount: 2,
+                      type: "bossStatPctDecrease",
+                      target: "dmg",
+                      amount: 20,
                     },
                   ],
                 },
@@ -211,6 +211,24 @@ describe("RaidBossesPage", () => {
     )
   })
 
+  it("shows a retry-able failure state when the dataset read throws, and recovers on retry", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockRejectedValueOnce(new Error("boom"))
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage()
+
+    const failure = await screen.findByTestId("raid-bosses-sync-failed")
+    expect(failure).toHaveTextContent("raidBosses.syncFailed")
+
+    await user.click(screen.getByRole("button", { name: "raidBosses.retry" }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1Boss1Tervigon"
+      )
+    )
+  })
+
   it("renders Bosses and Primes sections and canonicalizes to the first entity", async () => {
     getRaidBossesMock.mockResolvedValue(payload)
     renderPage()
@@ -233,7 +251,29 @@ describe("RaidBossesPage", () => {
       "raid-boss-prime-modifiers"
     )
     expect(primeModifiers).toHaveTextContent("GuildBoss1MiniBoss1Warrior")
-    expect(primeModifiers).toHaveTextContent("−2 damage")
+    expect(primeModifiers).toHaveTextContent("−20% dmg")
+  })
+
+  it("recomputes the boss's stats when a prime HP-lost point is chosen", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+
+    const adjusted = await screen.findByTestId("raid-boss-adjusted-stats")
+    // Full HP by default -> no modifiers active.
+    expect(adjusted).toHaveTextContent("raidBosses.noActiveModifiers")
+
+    // One prime panel, one HP-lost select; choose its threshold.
+    const [primeSelect] = within(adjusted).getAllByRole("combobox")
+    await user.click(primeSelect)
+    const options = await screen.findAllByRole("option")
+    await user.click(options[options.length - 1])
+
+    // bossStatPctDecrease dmg 20 -> damage row shows base 10 -> adjusted 8 (round(10 * 0.8)).
+    await waitFor(() =>
+      expect(within(adjusted).getByText("8")).toBeInTheDocument()
+    )
+    expect(within(adjusted).getByText("10")).toBeInTheDocument()
   })
 
   it("selecting a prime navigates to its detail route", async () => {

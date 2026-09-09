@@ -132,6 +132,10 @@
         "primeModifiers": {
           "title": "Prime-Modifikatoren",
           "content": "Für jeden Prime, der neben diesem Boss kämpft, die Modifikatoren, die aktiv werden, wenn seine Lebenspunkte sinken."
+        },
+        "adjustedStats": {
+          "title": "Angepasste Werte",
+          "content": "Wähle für jeden Prime einen Punkt des Lebensverlusts, um die Werte, Fähigkeiten und Gegner des Bosses zu sehen, sobald diese Modifikatoren aktiv werden."
         }
       }
     },
@@ -144,6 +148,18 @@
     "modifierReduces": "Reduziert {{name}}",
     "modifierIncreases": "Erhöht {{name}}",
     "progressionStep": "Stufe {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
-    "abilityTextLevelCaption": "Werte für Fähigkeitsstufe {{level}}"
+    "abilityTextLevelCaption": "Werte für Fähigkeitsstufe {{level}}",
+    "adjustedStatsHeading": "Angepasste Werte",
+    "showAdjusted": "Angepasst anzeigen",
+    "hideAdjusted": "Angepasst ausblenden",
+    "fullHp": "Volles Leben",
+    "hpLostAmount": "{{hpLost}} / {{total}} Leben verloren",
+    "noActiveModifiers": "An diesem Punkt sind keine Modifikatoren aktiv.",
+    "baseColumn": "Basis",
+    "adjustedColumn": "Angepasst",
+    "weaponHits": "Waffentreffer",
+    "enemyRemoved": "{{count}}× {{name}} entfernt",
+    "syncFailed": "Raidbosse konnten nicht geladen werden. Der Katalog wird möglicherweise noch synchronisiert.",
+    "retry": "Erneut versuchen"
   }
 }

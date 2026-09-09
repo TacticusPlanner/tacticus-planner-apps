@@ -3,9 +3,13 @@ import { type Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 
 import {
+  applyAbilityConstantAdjustments,
+  applyAbilityVariableAdjustments,
+  computeAbilityAdjustments,
   useRaidBossLabels,
   useRaidBossText,
   type RaidBoss,
+  type RaidBossEncounterModifier,
   type RaidBossStatStep,
 } from "@/entities/raid-boss"
 import { AbilityText } from "@/shared/ability-text"
@@ -20,6 +24,7 @@ function AbilityGroup({
   rarity,
   unitName,
   factionId,
+  activeModifiers,
 }: {
   label: string
   ids: string[] | undefined
@@ -27,6 +32,8 @@ function AbilityGroup({
   rarity: Rarity
   unitName: string
   factionId: string
+  /** When non-empty, each affected ability's variables/constants are shown modifier-adjusted. */
+  activeModifiers: RaidBossEncounterModifier[]
 }) {
   const { abilityName } = useRaidBossLabels()
   const { abilityText } = useRaidBossText()
@@ -41,23 +48,37 @@ function AbilityGroup({
       <div className="flex flex-col gap-2">
         {shown.map((id) => {
           const text = abilityText(id)
+          if (!text) {
+            return (
+              <Badge key={id} variant="secondary" className="self-start">
+                {abilityName(id)}
+              </Badge>
+            )
+          }
+          const adj = activeModifiers.length
+            ? computeAbilityAdjustments(activeModifiers, id)
+            : undefined
+          const variables = adj
+            ? applyAbilityVariableAdjustments(text.variables, adj)
+            : text.variables
+          const constants = adj
+            ? applyAbilityConstantAdjustments(text.constants, adj)
+            : text.constants
           return (
             <div key={id} className="flex flex-col gap-1">
               <Badge variant="secondary" className="self-start">
                 {abilityName(id)}
               </Badge>
-              {text ? (
-                <AbilityText
-                  text={text.description}
-                  level={level}
-                  variables={text.variables}
-                  constants={text.constants}
-                  scaledVariableNames={text.scaled}
-                  rarity={rarity}
-                  unitName={unitName}
-                  factionId={factionId}
-                />
-              ) : null}
+              <AbilityText
+                text={text.description}
+                level={level}
+                variables={variables}
+                constants={constants}
+                scaledVariableNames={text.scaled}
+                rarity={rarity}
+                unitName={unitName}
+                factionId={factionId}
+              />
             </div>
           )
         })}
@@ -72,10 +93,12 @@ export function RaidBossAbilityPanel({
   unit,
   step,
   name,
+  activeModifiers = [],
 }: {
   unit: RaidBoss
   step: RaidBossStatStep
   name: string
+  activeModifiers?: RaidBossEncounterModifier[]
 }) {
   const { t } = useTranslation("library")
   const { traitName, hasTraitName } = useRaidBossLabels()
@@ -109,6 +132,7 @@ export function RaidBossAbilityPanel({
               rarity={rarity}
               unitName={name}
               factionId={unit.factionId}
+              activeModifiers={activeModifiers}
             />
             <AbilityGroup
               label={t("raidBosses.abilitiesPassive")}
@@ -117,6 +141,7 @@ export function RaidBossAbilityPanel({
               rarity={rarity}
               unitName={name}
               factionId={unit.factionId}
+              activeModifiers={activeModifiers}
             />
             <AbilityGroup
               label={t("raidBosses.abilitiesRelic")}
@@ -125,6 +150,7 @@ export function RaidBossAbilityPanel({
               rarity={rarity}
               unitName={name}
               factionId={unit.factionId}
+              activeModifiers={activeModifiers}
             />
           </div>
         </div>

@@ -1,9 +1,20 @@
 import type {
+  AdjustedStatsView,
   ModifierContext,
   RaidBoss,
   RaidBossEncounter,
+  RaidBossEncounterModifier,
   RaidBossesPayload,
 } from "../model/types"
+import {
+  buildModifierHpLostOptions,
+  computeStatAdjustments,
+  computeUnitRemovals,
+  getActiveModifiers,
+  applyUnitRemovals,
+  scaleModifierHpLost,
+  sortModifiersByHpLost,
+} from "./modifier-math"
 
 type EncounterSlot = {
   encounter: RaidBossEncounter
@@ -122,4 +133,71 @@ export function fieldNpcIdsForStep(
     stepIndex + 1
   )
   return slot?.encounter.fieldNpcIds ?? []
+}
+
+const stepHealthAt = (unit: RaidBoss, stepIndex: number): number => {
+  const ladder = unit.statProgression
+  const step =
+    ladder[Math.min(Math.max(stepIndex, 0), Math.max(ladder.length - 1, 0))]
+  return step?.health ?? 0
+}
+
+/**
+ * The adjusted-stats model for a **boss** at the viewed step: one panel per prime it is fought
+ * alongside (that prime's modifier schedule rescaled to the prime's own HP), and — for the HP-lost
+ * point chosen per prime in `hpLostByPrime` — the combined stat adjustments, the combined active
+ * modifier list (for recomputing ability variables), and the boss's field enemies with
+ * `unitAmountDecrease` removals applied. Returns `null` for a prime, or a boss with no resolved
+ * encounter (V1 shows the adjusted view for bosses only).
+ */
+export function buildAdjustedView(
+  raidBosses: RaidBossesPayload,
+  unit: RaidBoss,
+  stepIndex: number,
+  hpLostByPrime: Record<string, number>
+): AdjustedStatsView | null {
+  if (unit.kind !== "boss") return null
+
+  const slot = pickSlot(
+    findEncounterSlots(raidBosses, unit.unitSetId),
+    stepIndex + 1
+  )
+  if (!slot) return null
+
+  const primeById = new Map(raidBosses.primes.map((p) => [p.unitSetId, p]))
+  const crystalEncounters = slot.setEncounters
+    .filter((encounter) => encounter.encounterType === "Crystal")
+    .sort((a, b) => a.encounterIndex - b.encounterIndex)
+
+  const primes = crystalEncounters.map((encounter) => {
+    const prime = primeById.get(encounter.unitSetId)
+    const totalHp = prime ? stepHealthAt(prime, stepIndex) : 0
+    const scaledModifiers = scaleModifierHpLost(
+      sortModifiersByHpLost(encounter.modifiers),
+      totalHp
+    )
+    return {
+      id: String(encounter.encounterIndex),
+      unitSetId: encounter.unitSetId,
+      totalHp,
+      scaledModifiers,
+      hpLostPoints: buildModifierHpLostOptions(scaledModifiers),
+    }
+  })
+
+  const activeModifiers: RaidBossEncounterModifier[] = primes.flatMap((panel) =>
+    getActiveModifiers(panel.scaledModifiers, hpLostByPrime[panel.id] ?? 0)
+  )
+
+  const enemies = applyUnitRemovals(
+    slot.encounter.fieldNpcIds,
+    computeUnitRemovals(activeModifiers)
+  )
+
+  return {
+    primes,
+    activeModifiers,
+    statAdjustments: computeStatAdjustments(activeModifiers),
+    enemies,
+  }
 }

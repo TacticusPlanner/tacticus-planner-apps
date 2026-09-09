@@ -24,6 +24,10 @@ import {
 } from "@/entities/raid-boss"
 
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
+import {
+  RaidBossAdjustedStats,
+  type RaidBossAdjustedProps,
+} from "./raid-boss-adjusted-stats"
 
 export type RaidBossDetailProps = {
   unit: RaidBoss
@@ -32,6 +36,8 @@ export type RaidBossDetailProps = {
   onStepChange: (index: number) => void
   modifierContext: ModifierContext
   fieldEnemyNames: string[]
+  /** The boss-only adjusted-stats model + its HP-lost controls; `null` for a prime or no encounter. */
+  adjusted: RaidBossAdjustedProps | null
   compact?: boolean
 }
 
@@ -96,6 +102,7 @@ export function RaidBossDetail({
   onStepChange,
   modifierContext,
   fieldEnemyNames,
+  adjusted,
   compact = false,
 }: RaidBossDetailProps) {
   const { t } = useTranslation("library")
@@ -230,7 +237,12 @@ export function RaidBossDetail({
             </div>
           ) : null}
 
-          <RaidBossAbilityPanel unit={unit} step={step} name={name} />
+          <RaidBossAbilityPanel
+            unit={unit}
+            step={step}
+            name={name}
+            activeModifiers={adjusted?.view.activeModifiers}
+          />
         </div>
       </div>
 
@@ -290,6 +302,18 @@ export function RaidBossDetail({
           </p>
         )}
       </div>
+
+      {adjusted && adjusted.view.primes.length ? (
+        <>
+          <Separator />
+          <RaidBossAdjustedStats
+            unit={unit}
+            step={step}
+            compact={compact}
+            {...adjusted}
+          />
+        </>
+      ) : null}
     </div>
   )
 }

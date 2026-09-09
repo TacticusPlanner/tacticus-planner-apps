@@ -132,6 +132,10 @@
         "primeModifiers": {
           "title": "Modificateurs de prime",
           "content": "Pour chaque prime combattant aux côtés de ce boss, les modificateurs qui s'activent à mesure que ses PV baissent."
+        },
+        "adjustedStats": {
+          "title": "Statistiques ajustées",
+          "content": "Choisissez un seuil de PV perdus pour chaque prime afin de voir les statistiques, capacités et ennemis du boss une fois ces modificateurs actifs."
         }
       }
     },
@@ -144,6 +148,18 @@
     "modifierReduces": "Réduit {{name}}",
     "modifierIncreases": "Augmente {{name}}",
     "progressionStep": "Palier {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
-    "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}"
+    "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}",
+    "adjustedStatsHeading": "Statistiques ajustées",
+    "showAdjusted": "Afficher ajustées",
+    "hideAdjusted": "Masquer ajustées",
+    "fullHp": "PV complets",
+    "hpLostAmount": "{{hpLost}} / {{total}} PV perdus",
+    "noActiveModifiers": "Aucun modificateur actif à ce stade.",
+    "baseColumn": "Base",
+    "adjustedColumn": "Ajustée",
+    "weaponHits": "Touches d'arme",
+    "enemyRemoved": "{{count}}× {{name}} retiré",
+    "syncFailed": "Impossible de charger les boss de raid. Le catalogue est peut-être encore en cours de synchronisation.",
+    "retry": "Réessayer"
   }
 }

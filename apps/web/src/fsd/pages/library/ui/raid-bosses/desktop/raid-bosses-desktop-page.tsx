@@ -13,6 +13,7 @@ export function RaidBossesDesktopPage({
   onStepChange,
   modifierContext,
   fieldEnemyNames,
+  adjusted,
 }: RaidBossesPageViewProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(220px,300px)_1fr]">
@@ -33,6 +34,7 @@ export function RaidBossesDesktopPage({
             onStepChange={onStepChange}
             modifierContext={modifierContext}
             fieldEnemyNames={fieldEnemyNames}
+            adjusted={adjusted}
           />
         ) : null}
       </div>

@@ -132,6 +132,10 @@
         "primeModifiers": {
           "title": "Modificadores de prime",
           "content": "Para cada prime que lucha junto a este jefe, los modificadores que se activan a medida que baja su salud."
+        },
+        "adjustedStats": {
+          "title": "Estadísticas ajustadas",
+          "content": "Elige un punto de salud perdida para cada prime para ver las estadísticas, habilidades y enemigos del jefe cuando esos modificadores se activan."
         }
       }
     },
@@ -144,6 +148,18 @@
     "modifierReduces": "Reduce {{name}}",
     "modifierIncreases": "Aumenta {{name}}",
     "progressionStep": "Paso {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
-    "abilityTextLevelCaption": "Valores mostrados para el nivel de habilidad {{level}}"
+    "abilityTextLevelCaption": "Valores mostrados para el nivel de habilidad {{level}}",
+    "adjustedStatsHeading": "Estadísticas ajustadas",
+    "showAdjusted": "Mostrar ajustadas",
+    "hideAdjusted": "Ocultar ajustadas",
+    "fullHp": "Salud completa",
+    "hpLostAmount": "{{hpLost}} / {{total}} de salud perdida",
+    "noActiveModifiers": "No hay modificadores activos en este punto.",
+    "baseColumn": "Base",
+    "adjustedColumn": "Ajustada",
+    "weaponHits": "Impactos de arma",
+    "enemyRemoved": "{{count}}× {{name}} eliminado",
+    "syncFailed": "No se pudieron cargar los jefes de incursión. Puede que el catálogo aún se esté sincronizando.",
+    "retry": "Reintentar"
   }
 }

@@ -13,6 +13,7 @@ export function RaidBossesMobilePage({
   onStepChange,
   modifierContext,
   fieldEnemyNames,
+  adjusted,
 }: RaidBossesPageViewProps) {
   return (
     <div className="flex flex-col gap-6">
@@ -31,6 +32,7 @@ export function RaidBossesMobilePage({
             onStepChange={onStepChange}
             modifierContext={modifierContext}
             fieldEnemyNames={fieldEnemyNames}
+            adjusted={adjusted}
             compact
           />
         </div>

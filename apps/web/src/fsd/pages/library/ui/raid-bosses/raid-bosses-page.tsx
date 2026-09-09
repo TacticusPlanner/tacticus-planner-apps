@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useLiveQuery } from "dexie-react-hooks"
 import { getNpcs } from "@workspace/game-catalog/queries"
+import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
+  buildAdjustedView,
   buildModifierContext,
   fieldNpcIdsForStep,
   maxKnownProgressionIndex,
@@ -53,9 +55,10 @@ export function RaidBossesPage() {
     ? (catalog.nameById.get(selection.selectedId) ?? "")
     : ""
 
-  // Progression step is ephemeral exploration state (not URL-backed) — reset to the max known step
-  // whenever the selected entity changes.
+  // Progression step and per-prime HP-lost points are ephemeral exploration state (not URL-backed) —
+  // reset whenever the selected entity changes.
   const [stepIndex, setStepIndex] = useState(0)
+  const [hpLostByPrime, setHpLostByPrime] = useState<Record<string, number>>({})
   const stepForUnitRef = useRef<string | undefined>(undefined)
 
   useEffect(() => {
@@ -63,6 +66,7 @@ export function RaidBossesPage() {
     if (stepForUnitRef.current === selectedUnit.unitSetId) return
 
     stepForUnitRef.current = selectedUnit.unitSetId
+    setHpLostByPrime({})
     setStepIndex(
       maxKnownProgressionIndex(
         catalog.payload,
@@ -71,6 +75,12 @@ export function RaidBossesPage() {
       )
     )
   }, [selectedUnit, catalog.payload])
+
+  const onHpLostChange = useCallback(
+    (primeUnitSetId: string, hpLost: number) =>
+      setHpLostByPrime((prev) => ({ ...prev, [primeUnitSetId]: hpLost })),
+    []
+  )
 
   const modifierContext = useMemo(
     () =>
@@ -97,6 +107,47 @@ export function RaidBossesPage() {
     [catalog.payload, selectedUnit, stepIndex, npcs]
   )
 
+  const adjusted = useMemo(() => {
+    if (!catalog.payload || !selectedUnit) return null
+    const view = buildAdjustedView(
+      catalog.payload,
+      selectedUnit,
+      stepIndex,
+      hpLostByPrime
+    )
+    if (!view) return null
+    return {
+      view,
+      hpLostByPrime,
+      onHpLostChange,
+      primeLabels: Object.fromEntries(
+        view.primes.map((panel) => [
+          panel.id,
+          catalog.nameById.get(panel.unitSetId) ?? panel.unitSetId,
+        ])
+      ),
+      enemyNames: view.enemies.ids.map((id) =>
+        resolveFieldNpcName(id, selectedUnit.factionId, npcs)
+      ),
+      removed: view.enemies.removed.map((entry) => ({
+        name: resolveFieldNpcName(
+          entry.unitSetId,
+          selectedUnit.factionId,
+          npcs
+        ),
+        count: entry.count,
+      })),
+    }
+  }, [
+    catalog.payload,
+    catalog.nameById,
+    selectedUnit,
+    stepIndex,
+    hpLostByPrime,
+    onHpLostChange,
+    npcs,
+  ])
+
   if (catalog.status === "loading") {
     return (
       <p
@@ -119,6 +170,22 @@ export function RaidBossesPage() {
     )
   }
 
+  if (catalog.status === "failed") {
+    return (
+      <div
+        className="flex flex-col items-center gap-4 py-10 text-center text-muted-foreground"
+        data-testid="raid-bosses-library-page"
+      >
+        <p data-testid="raid-bosses-sync-failed">
+          {t("raidBosses.syncFailed")}
+        </p>
+        <Button variant="outline" onClick={catalog.retry}>
+          {t("raidBosses.retry")}
+        </Button>
+      </div>
+    )
+  }
+
   const viewProps: RaidBossesPageViewProps = {
     bosses: catalog.bosses,
     primes: catalog.primes,
@@ -130,6 +197,7 @@ export function RaidBossesPage() {
     onStepChange: setStepIndex,
     modifierContext,
     fieldEnemyNames,
+    adjusted,
   }
 
   return (

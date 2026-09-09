@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  buildAdjustedView,
   buildModifierContext,
   fieldNpcIdsForStep,
   findEncountersForUnit,
@@ -194,5 +195,123 @@ describe("fieldNpcIdsForStep", () => {
   it("returns the representative encounter's field npc ids", () => {
     expect(fieldNpcIdsForStep(withPrimes, "the-boss", 2)).toEqual(["npc-x"])
     expect(fieldNpcIdsForStep(withPrimes, "nope", 0)).toEqual([])
+  })
+})
+
+describe("buildAdjustedView", () => {
+  const prime = (unitSetId: string, health: number): RaidBoss =>
+    ({
+      unitSetId,
+      kind: "prime",
+      statProgression: [{ health }],
+    }) as unknown as RaidBoss
+
+  // Boss set with two Crystal primes, each carrying two modifiers at different HP-lost thresholds.
+  const adjPayload: RaidBossesPayload = {
+    seasonConfigRotation: ["s1"],
+    bosses: [],
+    primes: [prime("prime-a", 200), prime("prime-b", 400)],
+    seasons: {
+      s1: {
+        seasonConfigId: "s1",
+        tiers: [
+          {
+            tier: 6,
+            sets: [
+              {
+                set: 0,
+                chestId: "c0",
+                guildXp: 1,
+                encounters: [
+                  encounter("the-boss", 1, {
+                    encounterType: "Boss",
+                    fieldNpcIds: ["ripper", "ripper", "grot"],
+                  }),
+                  encounter("prime-a", 1, {
+                    encounterType: "Crystal",
+                    encounterIndex: 1,
+                    modifiers: [
+                      {
+                        hpLost: 1,
+                        modifierId: "a1",
+                        type: "bossStatPctDecrease",
+                        target: "dmg",
+                        amount: 30,
+                      },
+                      {
+                        hpLost: 2,
+                        modifierId: "a2",
+                        type: "unitAmountDecrease",
+                        target: "unitId",
+                        subtarget: "ripper",
+                        amount: 1,
+                      },
+                    ],
+                  }),
+                  encounter("prime-b", 1, {
+                    encounterType: "Crystal",
+                    encounterIndex: 2,
+                    modifiers: [
+                      {
+                        hpLost: 1,
+                        modifierId: "b1",
+                        type: "bossStatDecrease",
+                        target: "movement",
+                        amount: 1,
+                      },
+                    ],
+                  }),
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
+  }
+
+  it("returns null for a prime and for a boss with no encounter", () => {
+    expect(
+      buildAdjustedView(adjPayload, prime("prime-a", 200), 0, {})
+    ).toBeNull()
+    expect(
+      buildAdjustedView(adjPayload, boss("boss", "nope"), 0, {})
+    ).toBeNull()
+  })
+
+  it("builds one panel per Crystal prime, keyed by encounterIndex, rescaled to that prime's step HP", () => {
+    const view = buildAdjustedView(adjPayload, boss("boss", "the-boss"), 0, {})!
+    expect(view.primes.map((p) => p.id)).toEqual(["1", "2"])
+    expect(view.primes.map((p) => p.unitSetId)).toEqual(["prime-a", "prime-b"])
+    // prime-a: 2 modifiers, health 200 -> thresholds [100, 200]; options prepend 0
+    expect(view.primes[0].hpLostPoints).toEqual([0, 100, 200])
+    // prime-b: 1 modifier, health 400 -> [400]
+    expect(view.primes[1].hpLostPoints).toEqual([0, 400])
+  })
+
+  it("full HP (no selection) leaves nothing active and no adjustment", () => {
+    const view = buildAdjustedView(adjPayload, boss("boss", "the-boss"), 0, {})!
+    expect(view.activeModifiers).toHaveLength(0)
+    expect(view.statAdjustments).toEqual({ pctByStat: {}, flatByStat: {} })
+    expect(view.enemies.ids).toEqual(["ripper", "ripper", "grot"])
+    expect(view.enemies.removed).toEqual([])
+  })
+
+  it("combines active modifiers across primes and applies unit removals", () => {
+    const view = buildAdjustedView(adjPayload, boss("boss", "the-boss"), 0, {
+      "1": 200, // both prime-a (encounterIndex 1) modifiers active (thresholds 100 & 200)
+      "2": 400, // prime-b (encounterIndex 2) modifier active
+    })!
+    expect(view.activeModifiers.map((m) => m.modifierId).sort()).toEqual([
+      "a1",
+      "a2",
+      "b1",
+    ])
+    expect(view.statAdjustments).toEqual({
+      pctByStat: { dmg: -30 },
+      flatByStat: { movement: -1 },
+    })
+    expect(view.enemies.ids).toEqual(["ripper", "grot"])
+    expect(view.enemies.removed).toEqual([{ unitSetId: "ripper", count: 1 }])
   })
 })

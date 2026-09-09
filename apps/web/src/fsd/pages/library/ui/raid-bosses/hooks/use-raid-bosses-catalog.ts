@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
   getCharactersMap,
@@ -13,7 +13,7 @@ import {
   type RaidBossListItem,
 } from "@/entities/raid-boss"
 
-type RaidBossesCatalogStatus = "loading" | "absent" | "ready"
+type RaidBossesCatalogStatus = "loading" | "absent" | "failed" | "ready"
 
 export type RaidBossesCatalog = {
   status: RaidBossesCatalogStatus
@@ -23,11 +23,13 @@ export type RaidBossesCatalog = {
   byId: Map<string, RaidBoss>
   /** unit-set id -> resolved display label, for every boss and prime. */
   nameById: Map<string, string>
+  /** Re-runs the dataset read; meaningful only in the `failed` state. */
+  retry: () => void
 }
 
-const LOADING = Symbol("loading")
+const FAILED = Symbol("failed")
 
-const EMPTY: Omit<RaidBossesCatalog, "status"> = {
+const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
   payload: undefined,
   bosses: [],
   primes: [],
@@ -44,13 +46,24 @@ const EMPTY: Omit<RaidBossesCatalog, "status"> = {
  */
 export function useRaidBossesCatalog(): RaidBossesCatalog {
   const { bossName } = useRaidBossLabels()
+  const [retryNonce, setRetryNonce] = useState(0)
+  const retry = () => setRetryNonce((value) => value + 1)
 
-  const result = useLiveQuery(() => getRaidBosses(), [], LOADING)
+  // `useLiveQuery` swallows a thrown error into `undefined` forever — indistinguishable from
+  // "still loading". Wrapping the read lets the page show a real, retry-able failure state.
+  const result = useLiveQuery(async () => {
+    try {
+      return await getRaidBosses()
+    } catch {
+      return FAILED
+    }
+  }, [retryNonce])
   const charactersById = useLiveQuery(() => getCharactersMap(), [], undefined)
 
   return useMemo<RaidBossesCatalog>(() => {
-    if (result === LOADING) return { status: "loading", ...EMPTY }
-    if (result === null) return { status: "absent", ...EMPTY }
+    if (result === undefined) return { status: "loading", ...EMPTY, retry }
+    if (result === FAILED) return { status: "failed", ...EMPTY, retry }
+    if (result === null) return { status: "absent", ...EMPTY, retry }
 
     const nameFor = (unit: RaidBoss): string => {
       if (unit.kind === "prime" && charactersById) {
@@ -88,6 +101,7 @@ export function useRaidBossesCatalog(): RaidBossesCatalog {
         ])
       ),
       nameById,
+      retry,
     }
   }, [result, charactersById, bossName])
 }

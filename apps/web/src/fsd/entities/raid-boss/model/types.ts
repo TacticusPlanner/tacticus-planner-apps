@@ -39,3 +39,30 @@ export type ModifierContext =
   | { kind: "boss"; primes: RaidBossPrimeModifiers[] }
   | { kind: "prime"; modifiers: RaidBossEncounterModifier[] }
   | { kind: "none" }
+
+/** One prime's panel in the adjusted-stats view: its modifier schedule rescaled to its own HP. */
+export type AdjustedPrimePanel = {
+  /** Stable per-panel id — the containing set's `encounterIndex`; the two crystals of a set can
+   *  reference the same prime unit-set id, so that cannot be the key. */
+  id: string
+  unitSetId: string
+  totalHp: number
+  scaledModifiers: RaidBossEncounterModifier[]
+  /** `0` (full HP) plus each rescaled threshold — the HP-lost selector's options. */
+  hpLostPoints: number[]
+}
+
+/** The boss's stats/abilities/enemies as adjusted by the modifiers active at the chosen HP-lost points. */
+export type AdjustedStatsView = {
+  primes: AdjustedPrimePanel[]
+  /** The union of modifiers active across all prime panels at their selected HP-lost points. */
+  activeModifiers: RaidBossEncounterModifier[]
+  statAdjustments: {
+    pctByStat: Record<string, number>
+    flatByStat: Record<string, number>
+  }
+  enemies: {
+    ids: string[]
+    removed: { unitSetId: string; count: number }[]
+  }
+}
