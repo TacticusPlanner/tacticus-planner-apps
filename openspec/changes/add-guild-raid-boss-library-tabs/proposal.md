@@ -18,7 +18,7 @@ information findable without fragmenting navigation.
 - Render the existing catalog's season rotation as a selectable configuration
   view of ordered tiers, sets, rewards, and encounters.
 - Render synced curated Meta and alternate exact teams for each boss, with
-  Comp badges/filtering, evidence/source information, and expandable Comp
+  Comp badges/filtering, source information, and expandable Comp
   guidance covering core heroes, flex heroes, and suitable Machines of War.
 - Update responsive layouts, loading/absent states, onboarding tours, and tests;
   coordinate the layout with the already-planned mobile picker and detail-parity

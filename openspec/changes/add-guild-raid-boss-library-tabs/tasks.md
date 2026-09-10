@@ -12,7 +12,7 @@
 
 ## 3. Meta recommendations and Comp guidance
 
-- [x] 3.1 Consume only the `entities/guild-raid-meta` public API to render boss-grouped Meta and alternate exact recommendations, including ordered five-hero and Machine-of-War lineups, Comp badges, evidence, update date, known-source attribution, and readable asset fallbacks, and verify a representative recommendation card test.
+- [x] 3.1 Consume only the `entities/guild-raid-meta` public API to render boss-grouped Meta and alternate exact recommendations, including ordered five-hero and Machine-of-War lineups, Comp badges, update date, known-source attribution, and readable asset fallbacks, and verify a representative recommendation card test.
 - [x] 3.2 Add the optional URL-backed Comp filter and no-results behavior, and verify a recommendation appears when any of its Comp ids matches while an unknown filter is removed from the URL.
 - [x] 3.3 Render accessible expandable Comp guidance with signature, core heroes, flex heroes, and suitable Machines of War in authored order, and verify expand/collapse leaves the Comp filter and URL unchanged.
 - [x] 3.4 Add independent Meta loading, absent, retry-able failure, and valid-no-recommendation states without blocking Details or Seasons Config, and verify each state with catalog-query fixtures.

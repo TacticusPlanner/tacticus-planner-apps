@@ -30,13 +30,6 @@ function Unit({ unit }: { unit: GuildRaidMetaUnitPresentation }) {
   )
 }
 
-function damage(value: number) {
-  return new Intl.NumberFormat(undefined, {
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
 export function GuildRaidSeasonsView({
   payload,
   selectedSeasonId,
@@ -295,19 +288,6 @@ export function GuildRaidMetaView({
                         </span>
                         <Unit unit={lineup.mow} />
                       </div>
-                      {recommendation.evidence ? (
-                        <p className="mt-3 text-xs text-muted-foreground">
-                          {t("raidBosses.meta.evidence", {
-                            replays: recommendation.evidence.replayCount,
-                            average: damage(
-                              recommendation.evidence.averageDamage
-                            ),
-                            maximum: damage(
-                              recommendation.evidence.maximumDamage
-                            ),
-                          })}
-                        </p>
-                      ) : null}
                     </div>
                   )
                 })}

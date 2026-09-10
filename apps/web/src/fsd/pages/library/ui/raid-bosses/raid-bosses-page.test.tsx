@@ -255,11 +255,6 @@ const metaPayload = {
           heroIds: ["heroA", "heroB", "heroC", "heroD", "missingHero"],
           mowId: "mowA",
           compIds: ["admech"],
-          evidence: {
-            replayCount: 12,
-            averageDamage: 123456,
-            maximumDamage: 234567,
-          },
         },
       ],
     },

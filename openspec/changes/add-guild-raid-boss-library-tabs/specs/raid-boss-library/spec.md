@@ -216,9 +216,9 @@ a resolvable portrait SHALL use the normal readable fallback.
 
 The Meta tab SHALL render authored Meta and alternate recommendations grouped
 by Guild Raid Boss. A recommendation SHALL show five ordered hero portraits
-and names, one Machine-of-War portrait and name, its Comp badges, evidence in
-damage units when authored, the curated-data update date, and source
-attribution. A missing image SHALL use the normal readable fallback.
+and names, one Machine-of-War portrait and name, its Comp badges, the
+curated-data update date, and source attribution. A missing image SHALL use
+the normal readable fallback.
 
 The tab SHALL expose an optional Comp filter. It SHALL show the matching boss
 recommendation when any of that recommendation's Comp ids matches the filter.
@@ -229,9 +229,9 @@ or collapsing guidance does not change the URL or filter.
 #### Scenario: A player examines a Meta team
 
 - **WHEN** a boss has a Meta recommendation with five heroes, one Machine of
-  War, evidence, and linked Comps
+  War, and linked Comps
 - **THEN** the player can see the exact ordered team, the Machine of War,
-  evidence labelled in damage, source/update attribution, and its Comp badges
+  source/update attribution, and its Comp badges
 
 #### Scenario: A player filters recommendations by Comp
 
