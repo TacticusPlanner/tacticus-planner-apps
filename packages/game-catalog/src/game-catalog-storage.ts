@@ -13,11 +13,10 @@ import {
 import type { StorageModel } from "./game-catalog.storage"
 
 export const catalogDbName = "tacticus-planner-game-catalog"
-// v6: add the `raid-bosses` store (raid-boss / raid-boss-prime catalog data, one row). Purely additive
-// — the store list below is derived from `servedDatasetKeys`, which now includes `"raid-bosses"`, so
-// the bumped `.version(6).stores()` block already lists it; Dexie's version cascade creates the store
-// for any client still on v5 or lower, preserving the other datasets' rows.
-export const catalogDbVersion = 6
+// v7: add the `guild-raid-meta` store (one complete guidance object). Purely additive — the store
+// list below is derived from `servedDatasetKeys`, so Dexie's version cascade preserves all earlier
+// catalog rows while creating the new store for clients currently on v6 or lower.
+export const catalogDbVersion = 7
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is

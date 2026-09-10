@@ -71,6 +71,20 @@ const datasetData: Record<string, unknown> = {
     { id: "rogue-trader", slots: [] },
     { id: "crusade", slots: [] },
   ],
+  "guild-raid-meta": {
+    sourceId: "terminus-maximus-guild-raid-boss-meta",
+    updatedOn: "2026-07-01",
+    comps: [
+      {
+        id: "admech",
+        signatureUnitId: "admecActus",
+        coreCharacterIds: ["admecActus"],
+        flexCharacterIds: [],
+        mowIds: ["mowBiovore"],
+      },
+    ],
+    bosses: [],
+  },
 }
 
 function createManifest(
@@ -260,6 +274,18 @@ describe("syncGameCatalog", () => {
     expect(result.status).toBe("ready")
   })
 
+  it("synchronizes a changed guild-raid-meta hash without re-downloading raid bosses", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+
+    const client = new FakeGameCatalogClient(
+      createManifest({ "guild-raid-meta": "guild-raid-meta-h2" })
+    )
+    const result = await syncGameCatalog(client)
+
+    expect(client.downloaded).toEqual(["guild-raid-meta"])
+    expect(result.downloaded).toEqual(["guild-raid-meta"])
+  })
+
   it("wipes and replaces a changed chunk's store (stale records removed)", async () => {
     await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
     expect(
@@ -298,6 +324,20 @@ describe("syncGameCatalog", () => {
     expect(await getDatasetRecords("characters")).toHaveLength(1)
   })
 
+  it("leaves no guild-raid-meta row when validation rejects its download", async () => {
+    const client = new FakeGameCatalogClient(
+      createManifest(),
+      false,
+      {},
+      new Set(["guild-raid-meta"])
+    )
+
+    await expect(syncGameCatalog(client)).rejects.toThrow(/guild-raid-meta/)
+
+    expect(await getDatasetRecords("guild-raid-meta")).toHaveLength(0)
+    expect(await hasCompleteGameCatalogCache()).toBe(false)
+  })
+
   it("uses Dexie's own version-upgrade cascade to create a store a client is behind on, instead of wedging the sync", async () => {
     await seedDbMissingStore("lre-common")
 
@@ -323,6 +363,20 @@ describe("syncGameCatalog", () => {
       (await getDatasetRecords("shops")).map((row) => row.id).sort()
     ).toEqual(["crusade", "guild", "rogue-trader", "war"])
     // Other datasets seeded at v4 survive the upgrade.
+    expect((await getDatasetRecords("characters"))[0]?.id).toBe("c1")
+  })
+
+  it("creates the v7 guild-raid-meta store for a client seeded at v6 and preserves earlier rows", async () => {
+    await seedDbMissingStore("guild-raid-meta")
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect((await getDatasetRecords("guild-raid-meta"))[0]?.id).toBe(
+      "guild-raid-meta"
+    )
     expect((await getDatasetRecords("characters"))[0]?.id).toBe("c1")
   })
 })

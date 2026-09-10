@@ -10,6 +10,7 @@ import type {
   CharacterStorageModel,
   EquipmentStorageModel,
   EventDefinitionStorageModel,
+  GuildRaidMetaStorageModel,
   EventsCalendarStorageModel,
   MowStorageModel,
   NpcStorageModel,
@@ -145,6 +146,29 @@ export async function getRaidBossRoster(): Promise<{
     bosses: raidBosses.bosses,
     primes: raidBosses.primes,
     byId: new Map(all.map((unit) => [unit.unitSetId, unit])),
+  }
+}
+
+// Guild Raid Meta is one curated payload. `null` means it has not synchronized yet; a present value
+// with `boss: null` from the lookup below means this known dataset has no authored group for that boss.
+export async function getGuildRaidMeta(): Promise<GuildRaidMetaStorageModel | null> {
+  const rows = await getDatasetRecords("guild-raid-meta")
+  return rows[0] ?? null
+}
+
+export async function getGuildRaidMetaForBoss(bossUnitSetId: string): Promise<{
+  meta: GuildRaidMetaStorageModel
+  boss: GuildRaidMetaStorageModel["bosses"][number] | null
+} | null> {
+  const meta = await getGuildRaidMeta()
+  if (!meta) {
+    return null
+  }
+
+  return {
+    meta,
+    boss:
+      meta.bosses.find((boss) => boss.bossUnitSetId === bossUnitSetId) ?? null,
   }
 }
 

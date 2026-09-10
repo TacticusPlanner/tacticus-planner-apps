@@ -9,31 +9,12 @@ vi.mock("react-i18next", () => ({
 vi.mock("@/shared/tour", () => ({}))
 
 describe("useRaidBossesTutorial", () => {
-  it("guides the season-reference landing page on both platforms", () => {
-    const { result } = renderHook(() => useRaidBossesTutorial())
-    const { desktop, mobile } = result.current
-    expect(mobile).toBeDefined()
+  it("covers the detail view on both platforms", () => {
+    const { result } = renderHook(() => useRaidBossesTutorial("details"))
 
-    for (const set of [desktop, mobile ?? []]) {
-      const targets = set.map((step) => step.target)
-      expect(targets).toEqual([
-        '[data-testid="raid-boss-season-selector"]',
-        '[data-testid="raid-boss-season-reference"]',
-      ])
-      for (const step of set) {
-        expect(step.title).toContain("localized:raidBosses.tour.steps")
-        expect(step.content).toContain("localized:raidBosses.tour.steps")
-      }
-    }
-  })
-
-  it("guides the detail page including its adjusted-stats area", () => {
-    const { result } = renderHook(() => useRaidBossesTutorial(true))
-    const { desktop, mobile } = result.current
-    expect(mobile).toBeDefined()
-
-    for (const set of [desktop, mobile ?? []]) {
+    for (const set of [result.current.desktop, result.current.mobile ?? []]) {
       expect(set.map((step) => step.target)).toEqual([
+        '[data-testid="raid-boss-tabs"]',
         '[data-testid="raid-boss-list-bosses"]',
         '[data-testid="raid-boss-list-primes"]',
         '[data-testid="raid-boss-progression"]',
@@ -44,6 +25,39 @@ describe("useRaidBossesTutorial", () => {
         expect(step.title).toContain("localized:raidBosses.tour.steps")
         expect(step.content).toContain("localized:raidBosses.tour.steps")
       }
+    }
+  })
+
+  it("guides the season-reference landing page", () => {
+    const { result } = renderHook(() => useRaidBossesTutorial("seasons", false))
+
+    expect(result.current.desktop.map((step) => step.target)).toEqual([
+      '[data-testid="raid-boss-tabs"]',
+      '[data-testid="raid-boss-season-reference"]',
+    ])
+  })
+
+  it.each([
+    [
+      "seasons",
+      ["raid-boss-tabs", "raid-boss-season-select", "raid-boss-season-content"],
+    ],
+    [
+      "meta",
+      [
+        "raid-boss-tabs",
+        "raid-boss-meta-recommendations",
+        "raid-boss-meta-filter",
+        "raid-boss-meta-comps",
+      ],
+    ],
+  ] as const)("targets the active %s tab", (tab, testIds) => {
+    const { result } = renderHook(() => useRaidBossesTutorial(tab))
+
+    for (const set of [result.current.desktop, result.current.mobile ?? []]) {
+      expect(set.map((step) => step.target)).toEqual(
+        testIds.map((testId) => `[data-testid="${testId}"]`)
+      )
     }
   })
 })

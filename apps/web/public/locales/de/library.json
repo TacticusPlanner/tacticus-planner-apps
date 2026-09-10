@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Bibliothek",
-    "description": "Durchsuche Charaktere, Kriegsmaschinen, NPCs und Raid-Bosse"
+    "description": "Durchsuche Charaktere, Kriegsmaschinen, NPCs und Gildenraid-Bosse"
   },
   "collections": {
     "characters": {
@@ -17,11 +17,11 @@
       "description": "NPC-Details und Werte durchsuchen"
     },
     "raidBosses": {
-      "label": "Raid-Bosse",
-      "description": "Informationen zu Raid-Bossen durchsuchen"
+      "label": "Gildenraid-Bosse",
+      "description": "Informationen zu Gildenraid-Bossen durchsuchen"
     },
     "noRecords": "Keine auswählbaren Einheiten verfügbar.",
-    "raidBossesNoRecords": "Raid-Bosse sind noch nicht im Katalog verfügbar.",
+    "raidBossesNoRecords": "Gildenraid-Bosse sind noch nicht im Katalog verfügbar.",
     "shops": {
       "label": "Tages-Shops",
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
@@ -124,7 +124,7 @@
     "tour": {
       "steps": {
         "bosses": {
-          "title": "Raid-Bosse",
+          "title": "Gildenraid-Bosse",
           "content": "Jeder Gildenraid-Boss. Wähle einen aus, um seine Werte, Fähigkeiten und Begegnungsmodifikatoren zu sehen."
         },
         "primes": {
@@ -143,13 +143,33 @@
           "title": "Angepasste Werte",
           "content": "Wähle für jeden Prime einen Punkt des Lebensverlusts, um die Werte, Fähigkeiten und Gegner des Bosses zu sehen, sobald diese Modifikatoren aktiv werden."
         },
+        "tabs": {
+          "title": "Gildenraid-Boss-Ansichten",
+          "content": "Wechsle zwischen Saisonkonfigurationen, aktuellen Meta-Empfehlungen und Details einzelner Bosse oder Primes."
+        },
         "season": {
           "title": "Saison wählen",
-          "content": "Wähle eine Raid-Boss-Saison, um ihre vollständige Begegnungsrotation zu sehen."
+          "content": "Wähle die Saisonkonfiguration, deren Stufen und Begegnungssätze du prüfen möchtest."
         },
         "seasonBoard": {
           "title": "Saisonbegegnungen",
           "content": "Stufen enthalten Begegnungssets. Wähle einen Boss oder Prime, um genau diesen Kampf zu prüfen."
+        },
+        "seasonContent": {
+          "title": "Stufen-Begegnungssätze",
+          "content": "Prüfe jede Stufe und jeden Satz mit Truhe, Gilden-XP, Begegnungen und Zuglimit."
+        },
+        "metaRecommendations": {
+          "title": "Meta-Empfehlungen",
+          "content": "Vergleiche empfohlene und alternative Heldenaufstellungen für jeden Gildenraid-Boss."
+        },
+        "metaFilter": {
+          "title": "Nach Comp filtern",
+          "content": "Grenze Empfehlungen und Comp-Leitfaden auf einen bestimmten Team-Archetyp ein."
+        },
+        "metaGuidance": {
+          "title": "Comp-Leitfaden",
+          "content": "Klappe einen Comp auf, um Signatureinheit, Kern- und flexible Helden sowie geeignete Kriegsmaschinen zu sehen."
         }
       }
     },
@@ -173,7 +193,37 @@
     "adjustedColumn": "Angepasst",
     "weaponHits": "Waffentreffer",
     "enemyRemoved": "{{count}}× {{name}} entfernt",
-    "syncFailed": "Raidbosse konnten nicht geladen werden. Der Katalog wird möglicherweise noch synchronisiert.",
+    "syncFailed": "Gildenraid-Bosse konnten nicht geladen werden. Der Katalog wird möglicherweise noch synchronisiert.",
+    "loading": "Gildenraid-Boss-Daten werden geladen…",
+    "unavailable": "Gildenraid-Boss-Daten sind noch nicht im Katalog verfügbar.",
+    "tabs": {
+      "seasons": "Saisonkonfiguration",
+      "meta": "Meta",
+      "details": "Boss-/Prime-Details"
+    },
+    "season": "Saisonkonfiguration",
+    "tier": "Stufe {{tier}}",
+    "set": "Satz {{set}}",
+    "tierSet": "Stufe {{tier}} · Satz {{set}}",
+    "chest": "Truhe: {{chest}}",
+    "guildXp": "{{xp}} Gilden-XP",
+    "turns": "{{count}} Züge",
+    "meta": {
+      "loading": "Gildenraid-Boss-Meta wird geladen…",
+      "unavailable": "Gildenraid-Boss-Meta ist noch nicht verfügbar.",
+      "failed": "Gildenraid-Boss-Meta konnte nicht geladen werden.",
+      "compFilter": "Nach Comp filtern",
+      "allComps": "Alle Comps",
+      "updated": "Aktualisiert {{date}} · Quelle:",
+      "noResults": "Keine Empfehlungen entsprechen diesem Comp.",
+      "meta": "Meta",
+      "alternate": "Alternative",
+      "mow": "Kriegsmaschine",
+      "signature": "Signatur",
+      "core": "Kern",
+      "flex": "Flexibel",
+      "suitableMows": "Geeignete Kriegsmaschinen"
+    },
     "retry": "Erneut versuchen"
   }
 }

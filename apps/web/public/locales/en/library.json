@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Library",
-    "description": "Browse characters, Machines of War, NPCs, and Raid Bosses"
+    "description": "Browse characters, Machines of War, NPCs, and Guild Raid Bosses"
   },
   "collections": {
     "characters": {
@@ -17,11 +17,11 @@
       "description": "Browse NPC details and stats"
     },
     "raidBosses": {
-      "label": "Raid Bosses",
-      "description": "Browse Raid Boss information"
+      "label": "Guild Raid Bosses",
+      "description": "Browse Guild Raid Boss information"
     },
     "noRecords": "No selectable entities are available.",
-    "raidBossesNoRecords": "Raid Bosses are not available in the catalog yet.",
+    "raidBossesNoRecords": "Guild Raid Bosses are not available in the catalog yet.",
     "shops": {
       "label": "Daily Shops",
       "description": "Browse what each daily shop can offer on any day of the week"
@@ -124,7 +124,7 @@
     "tour": {
       "steps": {
         "bosses": {
-          "title": "Raid bosses",
+          "title": "Guild Raid Bosses",
           "content": "Every guild raid boss. Pick one to see its stats, abilities, and encounter modifiers."
         },
         "primes": {
@@ -143,13 +143,33 @@
           "title": "Adjusted stats",
           "content": "Pick an HP-lost point for each prime to see the boss's stats, abilities, and field enemies once those modifiers activate."
         },
+        "tabs": {
+          "title": "Guild Raid Boss views",
+          "content": "Switch between season configurations, current Meta recommendations, and individual boss or prime details."
+        },
         "season": {
           "title": "Choose a season",
-          "content": "Choose a raid-boss season to see its complete encounter rotation."
+          "content": "Choose the season configuration whose tiers and encounter sets you want to inspect."
         },
         "seasonBoard": {
           "title": "Season encounters",
           "content": "Tiers contain encounter sets. Select a boss or prime to inspect that exact fight."
+        },
+        "seasonContent": {
+          "title": "Tier encounter sets",
+          "content": "Review each tier and set, including its chest, Guild XP, encounters, and turn limit."
+        },
+        "metaRecommendations": {
+          "title": "Meta recommendations",
+          "content": "Compare the recommended and alternate hero lineups for each Guild Raid Boss."
+        },
+        "metaFilter": {
+          "title": "Filter by Comp",
+          "content": "Narrow the recommendations and Comp guidance to a specific team archetype."
+        },
+        "metaGuidance": {
+          "title": "Comp guidance",
+          "content": "Expand a Comp to see its signature unit, core and flex heroes, and suitable Machines of War."
         }
       }
     },
@@ -173,7 +193,37 @@
     "adjustedColumn": "Adjusted",
     "weaponHits": "Weapon hits",
     "enemyRemoved": "{{count}}× {{name}} removed",
-    "syncFailed": "Couldn't load raid bosses. The catalog may still be syncing.",
+    "syncFailed": "Couldn't load Guild Raid Bosses. The catalog may still be syncing.",
+    "loading": "Loading Guild Raid Boss data…",
+    "unavailable": "Guild Raid Boss data is not available in the catalog yet.",
+    "tabs": {
+      "seasons": "Seasons Config",
+      "meta": "Meta",
+      "details": "Boss / Prime Details"
+    },
+    "season": "Season configuration",
+    "tier": "Tier {{tier}}",
+    "set": "Set {{set}}",
+    "tierSet": "Tier {{tier}} · Set {{set}}",
+    "chest": "Chest: {{chest}}",
+    "guildXp": "{{xp}} Guild XP",
+    "turns": "{{count}} turns",
+    "meta": {
+      "loading": "Loading Guild Raid Boss Meta…",
+      "unavailable": "Guild Raid Boss Meta is not available yet.",
+      "failed": "Couldn't load Guild Raid Boss Meta.",
+      "compFilter": "Filter by Comp",
+      "allComps": "All Comps",
+      "updated": "Updated {{date}} · Source:",
+      "noResults": "No recommendations match this Comp.",
+      "meta": "Meta",
+      "alternate": "Alternate",
+      "mow": "Machine of War",
+      "signature": "Signature",
+      "core": "Core",
+      "flex": "Flex",
+      "suitableMows": "Suitable Machines of War"
+    },
     "retry": "Retry"
   }
 }
