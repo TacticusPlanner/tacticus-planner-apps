@@ -144,19 +144,19 @@ export function useRaidBossesTutorial(
         { ...tabs, placement: "bottom" },
         ...(hasEntityDetail
           ? [
-              { ...season, placement: "bottom" },
-              { ...seasonContent, placement: "right" },
+              { ...season, placement: "bottom" as const },
+              { ...seasonContent, placement: "right" as const },
             ]
-          : [{ ...seasonBoard, placement: "bottom" }]),
+          : [{ ...seasonBoard, placement: "bottom" as const }]),
       ],
       mobile: [
         { ...tabs, placement: "bottom" },
         ...(hasEntityDetail
           ? [
-              { ...season, placement: "bottom" },
-              { ...seasonContent, placement: "bottom" },
+              { ...season, placement: "bottom" as const },
+              { ...seasonContent, placement: "bottom" as const },
             ]
-          : [{ ...seasonBoard, placement: "top" }]),
+          : [{ ...seasonBoard, placement: "top" as const }]),
       ],
     }),
     [hasEntityDetail, season, seasonBoard, seasonContent, tabs]

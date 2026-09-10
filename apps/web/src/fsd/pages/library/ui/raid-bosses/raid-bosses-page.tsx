@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
@@ -129,8 +130,16 @@ export function RaidBossesPage() {
       next.delete("tier")
       next.delete("set")
       next.delete("encounter")
+      const firstEntityId =
+        catalog.bosses[0]?.unitSetId ?? catalog.primes[0]?.unitSetId
       void navigate(
-        { pathname: "/library/raid-bosses", search: next.toString() },
+        {
+          pathname:
+            search.has("tab") && firstEntityId
+              ? `/library/raid-bosses/${firstEntityId}`
+              : "/library/raid-bosses",
+          search: next.toString(),
+        },
         { replace: true }
       )
       return
@@ -144,6 +153,8 @@ export function RaidBossesPage() {
     }
   }, [
     catalog.status,
+    catalog.bosses,
+    catalog.primes,
     entityId,
     location.pathname,
     location.search,
@@ -183,12 +194,24 @@ export function RaidBossesPage() {
         else next.set(key, value)
       }
       const search = next.toString()
+      const firstEntityId =
+        catalog.bosses[0]?.unitSetId ?? catalog.primes[0]?.unitSetId
       void navigate({
-        pathname: location.pathname,
+        pathname:
+          !entityId && updates.tab && updates.tab !== "details" && firstEntityId
+            ? `/library/raid-bosses/${firstEntityId}`
+            : location.pathname,
         search: search ? `?${search}` : "",
       })
     },
-    [location.pathname, location.search, navigate]
+    [
+      catalog.bosses,
+      catalog.primes,
+      entityId,
+      location.pathname,
+      location.search,
+      navigate,
+    ]
   )
 
   useEffect(() => {
@@ -196,7 +219,10 @@ export function RaidBossesPage() {
     const repairs: Record<string, string | undefined> = {}
     if (requestedTab && requestedTab !== tab) repairs.tab = "details"
     if (requestedSeason && requestedSeason !== selectedSeasonId)
-      repairs.season = selectedSeasonId
+      repairs.season =
+        selectedSeasonId === seasonIds[0] && !entityId && !requestedTab
+          ? undefined
+          : selectedSeasonId
     if (
       metaCatalog.status === "ready" &&
       requestedComp &&
@@ -217,6 +243,7 @@ export function RaidBossesPage() {
   }, [
     catalog.status,
     compId,
+    entityId,
     location.pathname,
     location.search,
     metaCatalog.status,
@@ -224,11 +251,10 @@ export function RaidBossesPage() {
     requestedComp,
     requestedSeason,
     requestedTab,
+    seasonIds,
     selectedSeasonId,
     tab,
   ])
-
-  useTourPageSteps(useRaidBossesTutorial(tab))
 
   useTourPageSteps(useRaidBossesTutorial(tab, Boolean(entityId)))
 
