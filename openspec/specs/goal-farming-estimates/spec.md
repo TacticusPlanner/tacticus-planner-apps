@@ -217,3 +217,79 @@ estimate SHALL NOT be affected by Onslaught selection.
 
 - **WHEN** Onslaught's shard supply is projected over a period
 - **THEN** it uses the current Onslaught run cadence rather than a campaign raid schedule
+
+### Requirement: The estimator attributes contributed shards to each selected source
+
+When the estimator simulates an Unlock or Ascension goal's selected acquisition sources
+concurrently across farming days, it SHALL record how many shards **each individual selected
+non-campaign source** contributed over the whole run — separately per shop offer and for the
+Onslaught source — not only the combined flat supply per shard resource. This per-source
+attribution SHALL be available to estimate consumers alongside the goal's day count, energy,
+and raid totals.
+
+The sum of every source's attributed contribution plus the campaign-farmed amount SHALL equal
+the goal's satisfied shard requirement. A source that was offered but not selected, or that
+contributed nothing (for example an offer whose weekdays never came up before the goal
+completed), SHALL be attributed zero.
+
+#### Scenario: Two shop offers and Onslaught each attributed separately
+
+- **GIVEN** an Ascension goal needing 100 regular shards with Onslaught and two different shop
+  offers selected, all supplying the same shard resource
+- **WHEN** the estimate is derived
+- **THEN** the result reports each shop offer's contributed shard total and Onslaught's
+  contributed shard total separately, and those plus the campaign-farmed shards sum to 100
+
+#### Scenario: Unavailable-day offer attributed zero
+
+- **GIVEN** a selected shop offer available only on a weekday the simulation never reaches
+  before the goal completes
+- **WHEN** the estimate is derived
+- **THEN** that offer's attributed contribution is zero and the other sources' attributions
+  are unchanged
+
+#### Scenario: Contribution attribution does not change day count or energy
+
+- **GIVEN** the same goal and selected sources
+- **WHEN** the estimate is derived with and without reading the per-source attribution
+- **THEN** the goal's day count, completion date, energy total, and raid total are identical;
+  only the additional per-source breakdown is new
+
+#### Scenario: Attribution is independent of the order sources were selected
+
+- **GIVEN** two selected sources that supply the same shard resource
+- **WHEN** the estimate is derived twice with those two sources in opposite order
+- **THEN** each source's attributed contribution is identical between the two runs (the split on
+  the day the requirement is exhausted does not depend on selection order)
+
+### Requirement: A Machine-of-War Ability goal costs every advancing ability track
+
+For a Machine-of-War Ability goal, the farming demand and resource-cost derivation SHALL
+account for **every** ability track whose target is above its start, not only the first.
+When both the primary and secondary tracks advance in one goal, the derived material needs,
+farming stages, and any day-by-day estimate SHALL include the level transitions of both
+tracks. A goal that advances only one track SHALL be unaffected by this requirement.
+
+#### Scenario: Both tracks advance
+
+- **GIVEN** a Machine-of-War Ability goal whose primary track runs from level 3 to level 6
+  and whose secondary track runs from level 2 to level 5
+- **WHEN** the goal's material needs and farming stages are derived
+- **THEN** the result includes the badge and component needs for the primary 3→6
+  transitions and for the secondary 2→5 transitions
+
+#### Scenario: Only one track advances
+
+- **GIVEN** a Machine-of-War Ability goal whose primary track runs from level 3 to level 6
+  and whose secondary track starts and ends at level 2
+- **WHEN** the goal's material needs are derived
+- **THEN** the result covers only the primary 3→6 transitions, unchanged from prior
+  behavior
+
+#### Scenario: Estimate reflects both tracks
+
+- **GIVEN** a Machine-of-War Ability goal advancing both tracks and a farming strategy that
+  splits the range into stages
+- **WHEN** the day-by-day completion estimate is computed
+- **THEN** the estimate reflects the combined material demand of both tracks rather than a
+  single track's demand
