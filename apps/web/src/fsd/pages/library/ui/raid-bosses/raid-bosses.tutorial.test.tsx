@@ -29,9 +29,7 @@ describe("useRaidBossesTutorial", () => {
   })
 
   it("guides the season-reference landing page", () => {
-    const { result } = renderHook(() =>
-      useRaidBossesTutorial("seasons", false)
-    )
+    const { result } = renderHook(() => useRaidBossesTutorial("seasons", false))
 
     expect(result.current.desktop.map((step) => step.target)).toEqual([
       '[data-testid="raid-boss-tabs"]',
