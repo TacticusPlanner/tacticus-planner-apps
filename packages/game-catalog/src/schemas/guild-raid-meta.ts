@@ -4,12 +4,6 @@ import { z } from "zod"
 // concern: the API deliberately supplies no names, portraits, or source URL.
 const unitIdSchema = z.string().min(1)
 
-const guildRaidMetaEvidenceSchema = z.looseObject({
-  replayCount: z.number().int().nonnegative(),
-  averageDamage: z.number().nonnegative(),
-  maximumDamage: z.number().nonnegative(),
-})
-
 export const guildRaidMetaCompSchema = z.looseObject({
   id: unitIdSchema,
   signatureUnitId: unitIdSchema,
@@ -23,7 +17,6 @@ export const guildRaidMetaRecommendationSchema = z.looseObject({
   heroIds: z.array(unitIdSchema).length(5),
   mowId: unitIdSchema,
   compIds: z.array(unitIdSchema),
-  evidence: guildRaidMetaEvidenceSchema.optional(),
 })
 
 export const guildRaidMetaBossSchema = z.looseObject({

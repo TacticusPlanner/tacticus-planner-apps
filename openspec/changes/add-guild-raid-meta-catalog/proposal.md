@@ -9,8 +9,8 @@ stable ids rather than duplicate editorial data in UI components.
 
 - Add `guild-raid-meta` to the game-catalog client's manifest sync, schema
   validation, IndexedDB storage, and query surface.
-- Expose typed Meta recommendations, Comp profiles, evidence metadata, and
-  source/update identifiers to consuming features.
+- Expose typed Meta recommendations, Comp profiles, and source/update
+  identifiers to consuming features.
 - Resolve heroes, Machines of War, boss names, Comp signature icons, and source
   presentation from existing client catalog/i18n data; the served API data
   remains id-only.

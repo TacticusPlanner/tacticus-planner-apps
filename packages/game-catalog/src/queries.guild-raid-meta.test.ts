@@ -49,11 +49,6 @@ const payload = {
           ],
           mowId: "mowBiovore",
           compIds: ["admech"],
-          evidence: {
-            replayCount: 7,
-            averageDamage: 1770000,
-            maximumDamage: 2190000,
-          },
         },
       ],
     },

@@ -12,7 +12,7 @@ The client SHALL recognize `guild-raid-meta` as a served game-catalog dataset,
 validate its `sourceId`, `updatedOn`, `comps`, and `bosses` payload structure,
 and store the whole object reactively under a stable local record id. The
 payload SHALL retain the API contract's ordered Comp profiles, boss groups,
-recommendations, hero ids, Machine-of-War ids, evidence, and source/update
+recommendations, hero ids, Machine-of-War ids, and source/update
 identifiers without adding presentation fields.
 
 The client SHALL distinguish an absent local dataset from a valid synced
@@ -42,8 +42,8 @@ record; a database upgrade SHALL preserve all existing catalog records.
 
 The game-catalog query surface SHALL expose the full Meta object and a lookup
 by `bossUnitSetId`. A returned recommendation SHALL expose its `kind`, exactly
-five ordered hero ids, one Machine-of-War id, ordered Comp ids, and optional
-replay evidence. A returned Comp SHALL expose its id, signature-unit id,
+five ordered hero ids, one Machine-of-War id, and ordered Comp ids. A returned
+Comp SHALL expose its id, signature-unit id,
 ordered core-character ids, flex-character ids, and Machine-of-War ids.
 
 The query surface SHALL preserve the source ordering and SHALL not infer,
