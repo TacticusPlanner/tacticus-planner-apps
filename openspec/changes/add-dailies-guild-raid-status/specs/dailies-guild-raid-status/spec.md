@@ -10,6 +10,8 @@ The Guild Raids page SHALL request status only after shared guild access is read
 
 The app SHALL resolve boss/prime names, portraits, difficulty labels, and modifier descriptions from the raid-boss catalog and localized resources using server-supplied ids. It SHALL not render raw hit history.
 
+When a prime's HP or modifier activation values are null, the page SHALL label the affected HP/threshold as unavailable and the modifier activation state as unknown. It SHALL NOT fabricate a threshold, render a numeric HP-progress bar from missing values, or label the modifier active or inactive.
+
 #### Scenario: Active raid status loads
 
 - **WHEN** a ready guild member opens Guild Raids and the API returns an active mapped season
@@ -19,6 +21,11 @@ The app SHALL resolve boss/prime names, portraits, difficulty labels, and modifi
 
 - **WHEN** active status has `endsAt: null`
 - **THEN** the page labels the remaining season time as unavailable without hiding the boss status
+
+#### Scenario: Prime HP and activation are unknown
+
+- **WHEN** a current prime has null HP and its modifier has `activationRemainingHp: null` and `active: null`
+- **THEN** the page shows unavailable HP/threshold and unknown activation without a fabricated progress value or active/inactive label
 
 ### Requirement: Current status has distinct desktop and mobile layouts
 
@@ -57,7 +64,7 @@ Assumptions:
 
 ### Requirement: Status refresh preserves useful cached data
 
-The page SHALL show cached status immediately when present, treat status as stale after five minutes, and revalidate stale status automatically. A manual refresh SHALL request forced refresh and SHALL be disabled while that refresh is active so the page cannot issue overlapping refresh actions.
+The page SHALL show cached status immediately when present and SHALL measure its five-minute freshness window from the API payload's `observedAt`, not from the browser fetch time. A payload marked `stale` SHALL be stale immediately. A `fresh` payload SHALL revalidate automatically when its remaining observation lifetime reaches zero, including while the page remains mounted. Client/server clock skew SHALL NOT extend freshness beyond five minutes from browser receipt. A manual refresh SHALL request forced refresh and SHALL be disabled while that refresh is active so the page cannot issue overlapping refresh actions.
 
 When refresh returns retained stale data, the page SHALL keep it visible with a stale warning and observation time. When refresh fails and no retained status exists, the page SHALL show a retryable error. Manual status refresh SHALL NOT trigger guild roster synchronization or player-data synchronization.
 
@@ -65,6 +72,11 @@ When refresh returns retained stale data, the page SHALL keep it visible with a 
 
 - **WHEN** cached status is older than five minutes
 - **THEN** the page continues showing it while one background revalidation runs
+
+#### Scenario: Fresh response is near expiry
+
+- **WHEN** a freshly fetched payload is marked `fresh` but its `observedAt` is four minutes and fifty-nine seconds old
+- **THEN** the page schedules background revalidation in approximately one second rather than granting another five-minute window
 
 #### Scenario: Manual refresh is already running
 

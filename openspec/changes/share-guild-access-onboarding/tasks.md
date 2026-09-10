@@ -1,7 +1,7 @@
 ## 1. Shared Guild Access Feature
 
 - [ ] 1.1 Create the `features/guild-access` public slice and pure six-state resolver over `guildQueries.current()`, and verify unit tests cover loading, failure, Tacticus-user-id-required, unregistered, never-synchronized, and ready states.
-- [ ] 1.2 Move/rebuild the existing prerequisite forms and sync handoff inside the shared feature without changing API semantics, and verify component tests cover successful query refresh, API errors, authorized sync, and Leader/Co-Leader guidance.
+- [ ] 1.2 Move/rebuild the existing prerequisite forms and sync handoff inside the shared feature without changing API semantics, and verify component tests cover the role-unknown unregistered form, successful query refresh, registration authorization rejection with Leader/Co-Leader handoff, authorized sync, and registered-member guidance.
 - [ ] 1.3 Migrate `/guild` to render its management experience through the shared ready slot and verify existing Guild page/member/sync/purge regression tests pass.
 
 ## 2. Guild Raids Page Shell

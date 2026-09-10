@@ -26,9 +26,11 @@ The entity owns the API DTO, mapper, query options, freshness constants, and id-
 
 This avoids extending `entities/guild` with encounter concerns and avoids page-local network types.
 
-### Let the API own raid normalization and the query own revalidation
+### Let the API own raid normalization and anchor revalidation to the observation
 
-TanStack Query uses a five-minute `staleTime`, shows retained data during refetch, and relies on the API's persisted per-guild/per-season observation plus same-guild single-flight behavior. The manual action calls the same endpoint with forced refresh and is disabled by mutation/query pending state. It does not invalidate guild membership or player data.
+The query derives remaining freshness from the payload instead of granting every browser fetch a new five-minute window. An API payload already marked `stale` is stale immediately. For `fresh`, remaining lifetime is `max(0, five minutes - (now - observedAt))`, capped at five minutes when client/server clocks disagree. Query freshness uses that remaining lifetime, and an observation-expiry timer triggers one background revalidation when it reaches zero even while the page stays mounted. Retained data remains visible during refetch, and the API's persisted per-guild/per-season observation plus same-guild single-flight behavior prevents redundant upstream work.
+
+The manual action calls the same endpoint with forced refresh and is disabled by mutation/query pending state. It does not invalidate guild membership or player data.
 
 ### Use one canonical page view model
 

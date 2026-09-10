@@ -8,7 +8,7 @@ Builds deterministic, roster-achievable Guild Raid team variants from explicit a
 
 For each exact recommendation, the system SHALL keep an owned ideal hero in its original slot. For each missing ideal hero, it SHALL consider only owned characters listed in that slot's `replacementCharacterIds`. One character SHALL fill at most one slot, and a character already retained in an ideal slot SHALL not be used as a replacement elsewhere.
 
-The system SHALL choose a complete assignment that minimizes the number of substitutions. Among assignments with the same substitution count, it SHALL prefer higher existing character combat-power estimates for substituted slots and then authored replacement order and unit id for stable ties. It SHALL never pull a character from a Comp pool or the general roster without an explicit rule.
+The system SHALL evaluate complete and partial assignments rather than greedily consuming candidates. It SHALL first maximize the number of filled essential slots, then maximize total filled slots. Among assignments tied on those objectives, it SHALL compare replacement choices in authored slot order, preferring higher existing character combat-power estimates, then authored replacement order, then unit id. It SHALL never pull a character from a Comp pool or the general roster without an explicit rule.
 
 #### Scenario: One explicit replacement completes a lineup
 
@@ -20,17 +20,22 @@ The system SHALL choose a complete assignment that minimizes the number of subst
 - **WHEN** the same owned candidate is allowed for two missing slots
 - **THEN** the assignment uses it in at most one slot and searches the remaining authored candidates for the other
 
+#### Scenario: Impossible completion reserves a shared candidate for an essential slot
+
+- **WHEN** an essential and a non-essential missing slot share the only owned allowed candidate and neither has another owned candidate
+- **THEN** the partial assignment fills the essential slot, leaves the non-essential slot unfilled, and does not use greedy slot order to produce an Unavailable result
+
 #### Scenario: Comp member is not an explicit replacement
 
 - **WHEN** an owned character appears in a referenced Comp but in no missing slot's replacement list
 - **THEN** that character is not placed in the recommended variant
 
-### Requirement: Four-state readiness follows fillability and essential rules
+### Requirement: Variant availability follows fillability and essential rules
 
-The system SHALL classify a recommendation as:
+Alongside the existing exact-readiness result, the system SHALL classify variant availability as:
 
-- `Ready` when all five ideal heroes are owned;
-- `Playable Variant` when all five hero slots can be filled by unique owned ideal/replacement characters and at least one substitution is used;
+- `Exact` when all five ideal heroes are owned;
+- `Playable` when all five hero slots can be filled by unique owned ideal/replacement characters and at least one substitution is used;
 - `Unavailable` when any missing slot marked `essential` cannot be filled, or when no hero slot can be filled;
 - `Partial` otherwise, when at least one but fewer than five slots can be filled.
 
@@ -39,53 +44,62 @@ Machine-of-War ownership SHALL be evaluated after hero assignment. The ideal own
 #### Scenario: Complete substituted team is playable
 
 - **WHEN** every hero slot is filled by unique owned units and at least one is an allowed replacement
-- **THEN** the result is Playable Variant
+- **THEN** variant availability is Playable while exact readiness remains based only on exact-hero ownership
 
 #### Scenario: Essential slot cannot be filled
 
 - **WHEN** an essential ideal hero is missing and none of that slot's explicit replacements is owned and unused
-- **THEN** the result is Unavailable even if other slots are filled
+- **THEN** variant availability is Unavailable even if other slots are filled
 
 #### Scenario: Non-essential gaps remain partial
 
 - **WHEN** no essential slot is unfillable but only four unique hero slots can be filled
-- **THEN** the result is Partial
+- **THEN** variant availability is Partial
+
+### Requirement: Exact readiness remains a separate unchanged signal
+
+Exact readiness SHALL continue to be calculated only from ownership of the five exact `heroIds` as Ready, Partial, or Unavailable. Substitution availability, essential flags, Machine-of-War selection, and candidate investment SHALL NOT change that value. Recommendations SHALL remain in authored order rather than being reordered by exact readiness or variant availability.
+
+#### Scenario: Substitution completes an exact-partial recommendation
+
+- **WHEN** an exact recommendation is Partial because one ideal hero is missing but an allowed replacement completes the variant
+- **THEN** exact readiness remains Partial, variant availability is Playable, and the recommendation keeps its authored position
 
 ### Requirement: Ideal and recommended lineups are clearly separated
 
-Each recommendation SHALL retain the ideal Meta lineup and SHALL additionally show the recommended owned lineup when at least one slot is fillable. Every substitution SHALL identify the ideal hero, selected replacement, role, and that it was selected from the authored allowed list. The UI SHALL not state an effectiveness reduction or damage expectation because the rules contain no performance model.
+Each recommendation SHALL retain the ideal Meta lineup and existing exact-readiness label and SHALL additionally show the separately labeled variant availability and recommended owned lineup when at least one slot is fillable. Every substitution SHALL identify the ideal hero, selected replacement, role, and that it was selected from the authored allowed list. The UI SHALL not state an effectiveness reduction or damage expectation because the rules contain no performance model.
 
 At or above 768px, ideal and recommended lineups SHALL be comparable side by side. Below 768px, the recommended lineup and readiness SHALL appear first, with the ideal lineup and replacement details in expandable secondary content.
 
-#### Scenario: Desktop compares ideal and playable variant
+#### Scenario: Desktop compares ideal and Playable variant
 
-- **WHEN** a Playable Variant is viewed at or above 768px
+- **WHEN** a recommendation with Playable variant availability is viewed at or above 768px
 - **THEN** the ideal and recommended lineups plus replacement mappings are visible together
 
 #### Scenario: Mobile prioritizes the usable team
 
-- **WHEN** a Playable Variant is viewed below 768px
+- **WHEN** a recommendation with Playable variant availability is viewed below 768px
 - **THEN** the recommended owned lineup appears before expandable ideal/replacement detail without horizontal scrolling
 
-### Requirement: Recommendation ordering is useful without performance scoring
+### Requirement: Recommendation ordering preserves editorial intent
 
-Results SHALL be ordered by readiness (`Ready`, `Playable Variant`, `Partial`, `Unavailable`), then by fewer substitutions, then by authored recommendation order. Combat power used to choose between allowed replacement candidates SHALL NOT be exposed as expected effectiveness and SHALL NOT reorder different authored recommendations within the same readiness/substitution group.
+Results SHALL remain in authored recommendation order. Exact readiness, variant availability, substitution count, and combat power SHALL NOT reorder different recommendations. Combat power used to choose between otherwise equivalent allowed assignments SHALL NOT be exposed as expected effectiveness.
 
 The results SHALL recompute when active boss, roster, or variant-rule data changes.
 
-#### Scenario: Buildable team precedes unavailable Meta
+#### Scenario: Earlier unavailable recommendation retains its position
 
-- **WHEN** one authored recommendation is Playable Variant and an earlier authored recommendation is Unavailable
-- **THEN** the Playable Variant is displayed first without claiming it has higher expected damage
+- **WHEN** one authored recommendation has Playable variant availability and an earlier authored recommendation is Unavailable
+- **THEN** the earlier recommendation remains first and both availability states are shown without a performance claim
 
 #### Scenario: Equal results preserve editorial order
 
-- **WHEN** two recommendations have the same readiness and substitution count
+- **WHEN** two recommendations have any exact-readiness or variant-availability values
 - **THEN** their authored order is preserved
 
 ### Requirement: Missing rules and no viable team are explicit
 
-The system SHALL distinguish an older/absent rules payload from valid rules that yield no Ready or Playable Variant result. Missing or malformed rules SHALL leave the exact-readiness experience intact and explain that variants are unavailable. Valid rules with no viable team SHALL show Partial/Unavailable results and their unfilled slots.
+The system SHALL distinguish an older/absent rules payload from valid rules that yield no Exact or Playable variant result. Missing or malformed rules SHALL leave the exact-readiness experience intact and explain that variants are unavailable. Valid rules with no viable team SHALL show Partial/Unavailable variant results and their unfilled slots.
 
 #### Scenario: Variant rules are not available
 
@@ -94,5 +108,5 @@ The system SHALL distinguish an older/absent rules payload from valid rules that
 
 #### Scenario: Player cannot build a viable team
 
-- **WHEN** rules and roster are valid but no result is Ready or Playable Variant
+- **WHEN** rules and roster are valid but no variant availability is Exact or Playable
 - **THEN** the page reports that no viable authored variant is currently buildable and shows the blocking slots

@@ -1,12 +1,12 @@
 ## 1. Status and Resource Model
 
-- [ ] 1.1 Add the `entities/guild-raid-status` DTO, mapper, API call, and query factory matching regenerated OpenAPI, and verify tests cover active/no-season payloads, nullable fields, five-minute staleness, forced refresh, and API failures.
-- [ ] 1.2 Add the canonical Guild Raids status/resource view-model mapper and verify tests cover boss/catalog resolution, unknown ids/configs, fresh/stale status, known/unknown season end, and independent missing token data.
+- [ ] 1.1 Add the `entities/guild-raid-status` DTO, mapper, API call, and query factory matching regenerated OpenAPI, derive remaining freshness from `observedAt`/server `freshness`, and verify fake-time tests cover stale payloads, near-expiry fresh payloads, clock-skew capping, mounted expiry revalidation, forced refresh, and API failures.
+- [ ] 1.2 Add the canonical Guild Raids status/resource view-model mapper and verify tests cover boss/catalog resolution, unknown ids/configs, fresh/stale status, known/unknown season end, nullable prime HP/threshold/activation fallbacks, and independent missing token data.
 - [ ] 1.3 Add observation-anchored season/token/bomb countdown helpers and verify fake-time tests cover full buckets, positive countdowns, zero/due values, and stale snapshots without locally inventing regenerated tokens.
 
 ## 2. Responsive Guild Raid Status UI
 
-- [ ] 2.1 Implement the desktop status region with boss HP, tier progress, prime modifiers/thresholds, freshness, guild-sync time, and resources, and verify component tests assert all active-state fields and refresh behavior without a subsequent-boss preview.
+- [ ] 2.1 Implement the desktop status region with boss HP, tier progress, prime modifiers/thresholds, freshness, guild-sync time, and resources, and verify component tests assert all active-state fields, unknown prime HP/activation presentation, and refresh behavior without a subsequent-boss preview.
 - [ ] 2.2 Implement the mobile boss-first layout with compact secondary cards and expandable modifier detail, and verify viewport tests assert ordering and absence of horizontal-overflow structures below 768px.
 - [ ] 2.3 Implement loading, no-season, unmapped-catalog, stale fallback, initial error/retry, and missing-player-resource states while preserving independent useful data, and verify each discriminated component state has coverage.
 

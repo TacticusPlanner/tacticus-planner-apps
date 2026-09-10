@@ -28,9 +28,11 @@ Putting this under either page was rejected because pages cannot import pages. P
 
 The feature calls the existing `guildQueries.current()` and derives the six UI states. Successful mutations invalidate/refetch that same query key. The registered response is ready only when `lastSyncSucceededAt` exists. There is no second local readiness flag.
 
-### Preserve authorization-sensitive actions
+### Preserve authorization-sensitive actions without inferring unregistered roles
 
-The flow uses `canSynchronize` to decide whether to show a working sync action or guidance to contact a Leader/Co-Leader. Registration continues to rely on server authorization; the client does not claim to prove upstream role before the token is submitted. Error responses remain visible in the shared flow.
+The registered response uses `canSynchronize` to decide whether to show a working sync action or guidance to contact a Leader/Co-Leader. The `unregistered` response has `guild: null`, so it exposes neither `callerRole` nor `canSynchronize`; the shared surface therefore shows the existing credential form to every unregistered caller with an explicit Leader/Co-Leader eligibility notice and does not claim that the caller is authorized.
+
+Registration remains server-authorized. When the server rejects a registration for role/credential authorization, the flow stays gated, shows the actionable API error plus Leader/Co-Leader handoff guidance, and lets the Dailies consumer link to Guild management. Adding a role-discovery API solely to pre-hide the form was rejected because the existing server decision is authoritative and this extraction does not need a new contract.
 
 ### Establish the Guild Raids page shell now
 
@@ -43,7 +45,7 @@ The prerequisite cards use the same interaction hierarchy on both breakpoints, s
 ## Risks / Trade-offs
 
 - [Risk] Extracting current Guild components can alter `/guild` behavior → Keep API/mutation semantics unchanged and add regression tests for every existing Guild page state.
-- [Risk] Members cannot self-register a guild under current backend rules → Make the Leader/Co-Leader handoff explicit instead of exposing a dead-end action.
+- [Risk] Unregistered responses cannot distinguish members from leaders before token submission → Explain eligibility before the form and turn an authorization rejection into explicit Leader/Co-Leader handoff guidance.
 - [Risk] The ready slot is initially sparse → Use a neutral page-owned shell that later changes can fill, not another Under Construction state.
 
 ## Migration Plan

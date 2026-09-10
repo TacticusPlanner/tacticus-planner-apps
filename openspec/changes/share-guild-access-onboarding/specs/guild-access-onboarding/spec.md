@@ -27,22 +27,27 @@ The system SHALL expose a shared guild-access surface with these mutually exclus
 
 The shared surface SHALL reuse the existing Tacticus user-id setup and guild registration behavior. A successful setup, registration, or synchronization SHALL refresh the shared current-guild query and advance all consumers to the resulting state without a full-page reload.
 
-Only a current Leader or Co-Leader may register or synchronize a guild, as enforced by the existing API. A member who cannot perform the required guild-level action SHALL be told to ask a Leader or Co-Leader and SHALL receive a link to the Guild page instead of an unusable credential form.
+Only a current Leader or Co-Leader may register or synchronize a guild, as enforced by the existing API. Because the `unregistered` current-guild response contains no caller role or synchronization permission, the shared surface SHALL show the credential form with Leader/Co-Leader eligibility guidance and SHALL NOT claim that the caller is authorized. If registration is rejected for role or credential authorization, the surface SHALL remain gated, show the server error with Leader/Co-Leader handoff guidance, and provide Guild Raids consumers a link to Guild management.
 
 #### Scenario: Tacticus user id is required
 
 - **WHEN** the current-guild state is `tacticusUserIdRequired`
 - **THEN** the shared flow presents the existing integration action and refreshes guild state after it succeeds
 
+#### Scenario: Unregistered caller is offered server-authorized registration
+
+- **WHEN** current-guild returns `unregistered` without caller-role information
+- **THEN** the shared flow shows the credential form with eligibility guidance and relies on the server to authorize submission
+
+#### Scenario: Registration authorization is rejected
+
+- **WHEN** an unregistered caller submits a token and the server rejects role or credential authorization
+- **THEN** the flow remains gated, shows the rejection and Leader/Co-Leader handoff, and does not expose Guild Raid content
+
 #### Scenario: Authorized user registers a guild
 
 - **WHEN** an eligible Leader or Co-Leader completes the existing guild registration flow
 - **THEN** both Guild and Guild Raids consumers observe the refreshed registered state
-
-#### Scenario: Ordinary member cannot register the guild
-
-- **WHEN** the player belongs to a Tacticus guild but cannot supply an authorized guild registration
-- **THEN** the Guild Raids flow explains the Leader/Co-Leader prerequisite and links to Guild management without exposing recommendations
 
 ### Requirement: Unsynchronized guilds remain gated
 
