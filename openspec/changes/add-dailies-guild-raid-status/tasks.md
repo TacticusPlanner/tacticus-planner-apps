@@ -6,7 +6,7 @@
 
 ## 2. Responsive Guild Raid Status UI
 
-- [ ] 2.1 Implement the desktop status region with boss HP, tier progress, next boss, prime modifiers/thresholds, freshness, guild-sync time, and resources, and verify component tests assert all active-state fields and refresh behavior.
+- [ ] 2.1 Implement the desktop status region with boss HP, tier progress, prime modifiers/thresholds, freshness, guild-sync time, and resources, and verify component tests assert all active-state fields and refresh behavior without a subsequent-boss preview.
 - [ ] 2.2 Implement the mobile boss-first layout with compact secondary cards and expandable modifier detail, and verify viewport tests assert ordering and absence of horizontal-overflow structures below 768px.
 - [ ] 2.3 Implement loading, no-season, unmapped-catalog, stale fallback, initial error/retry, and missing-player-resource states while preserving independent useful data, and verify each discriminated component state has coverage.
 

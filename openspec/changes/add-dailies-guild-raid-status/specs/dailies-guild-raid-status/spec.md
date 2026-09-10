@@ -6,7 +6,7 @@ Shows a guild member the current raid position and personal raid resources neede
 
 ### Requirement: Ready guild members see current raid status
 
-The Guild Raids page SHALL request status only after shared guild access is ready. For an active season it SHALL show season number, current boss, zero-based source tier/set as localized one-based labels, difficulty, remaining and maximum HP, progress through the current tier, next boss, current prime modifiers and remaining thresholds, remaining season time when known, observation freshness, and last guild synchronization time.
+The Guild Raids page SHALL request status only after shared guild access is ready. For an active season it SHALL show season number, current boss, zero-based source tier/set as localized one-based labels, difficulty, remaining and maximum HP, progress through the current tier, current prime modifiers and remaining thresholds, remaining season time when known, observation freshness, and last guild synchronization time. It SHALL NOT calculate or display a subsequent-boss preview in this change.
 
 The app SHALL resolve boss/prime names, portraits, difficulty labels, and modifier descriptions from the raid-boss catalog and localized resources using server-supplied ids. It SHALL not render raw hit history.
 
@@ -22,12 +22,12 @@ The app SHALL resolve boss/prime names, portraits, difficulty labels, and modifi
 
 ### Requirement: Current status has distinct desktop and mobile layouts
 
-At or above 768px, the page SHALL present the boss, progression, next-boss, and modifier details in a scan-friendly multi-column status region. Below 768px, it SHALL present one primary boss summary followed by compact progression, next-boss, and expandable modifier sections without horizontal scrolling.
+At or above 768px, the page SHALL present the boss, progression, and modifier details in a scan-friendly multi-column status region. Below 768px, it SHALL present one primary boss summary followed by compact progression and expandable modifier sections without horizontal scrolling.
 
 #### Scenario: Desktop status is scannable
 
 - **WHEN** active status is viewed at or above 768px
-- **THEN** current boss and the supporting progression/next/modifier details are simultaneously visible in the status region
+- **THEN** current boss and the supporting progression/modifier details are simultaneously visible in the status region
 
 #### Scenario: Mobile status prioritizes the current boss
 

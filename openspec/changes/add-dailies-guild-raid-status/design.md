@@ -28,7 +28,7 @@ This avoids extending `entities/guild` with encounter concerns and avoids page-l
 
 ### Let the API own raid normalization and the query own revalidation
 
-TanStack Query uses a five-minute `staleTime`, shows retained data during refetch, and relies on the API's same-guild cache/single-flight behavior. The manual action calls the same endpoint with forced refresh and is disabled by mutation/query pending state. It does not invalidate guild membership or player data.
+TanStack Query uses a five-minute `staleTime`, shows retained data during refetch, and relies on the API's persisted per-guild/per-season observation plus same-guild single-flight behavior. The manual action calls the same endpoint with forced refresh and is disabled by mutation/query pending state. It does not invalidate guild membership or player data.
 
 ### Use one canonical page view model
 
@@ -36,7 +36,7 @@ A page-level mapper combines mapped status, raid-boss presentation, and token bu
 
 ### Desktop and mobile are separate presentation components
 
-Desktop uses a primary boss card with adjacent progression/next-boss and modifier cards. Mobile leads with boss/HP, follows with compact resource/progression cards, and collapses modifier detail. The shared page chooses with `useIsMobile()`. Both variants expose stable test ids, with separate Joyride arrays where targets differ.
+Desktop uses a primary boss card with adjacent progression and modifier cards. Mobile leads with boss/HP, follows with compact resource/progression cards, and collapses modifier detail. The shared page chooses with `useIsMobile()`. Both variants expose stable test ids, with separate Joyride arrays where targets differ.
 
 ### Countdown behavior is observation-anchored
 
@@ -48,7 +48,7 @@ Guild access gates the page. Status loading/error/no-season/mapping-warning bran
 
 ### V1 parity checklist
 
-- Current/next boss navigation and HP: keep the behavior, but consume the V2 normalized endpoint instead of raw-hit calculations.
+- Current boss navigation and HP: keep the behavior, but consume the V2 normalized endpoint instead of raw-hit calculations; omit subsequent-boss preview from this slice.
 - Prime modifier progress/thresholds: keep, redesigned as concise status detail; use V2 id-based labels/icons.
 - Season/player selectors: drop from this current-only Dailies slice.
 - Overview, Damage, Performance, Leaderboards, Loops, Token Usage, Historical tabs: drop; they belong to deferred guild analytics.
