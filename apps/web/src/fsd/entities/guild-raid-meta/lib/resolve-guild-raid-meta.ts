@@ -10,7 +10,7 @@ import type { UnitId } from "@workspace/game-domain"
 const terminusMaximusSourceId = "terminus-maximus-guild-raid-boss-meta"
 
 export const guildRaidMetaSourceUrl =
-  "https://terminusmaximus.com/guild-raid/boss-meta"
+  "https://terminusmaximus.com/guild-raid/boss-meta/"
 
 type CatalogUnit = { id: string; name: string }
 

@@ -541,6 +541,12 @@ describe("RaidBossesPage", () => {
     expect(recommendations).toHaveTextContent("Hero D")
     expect(recommendations).toHaveTextContent("missing Hero")
     expect(recommendations).toHaveTextContent("MoW A")
+    expect(
+      screen.getByRole("link", { name: "Terminus Maximus" })
+    ).toHaveAttribute(
+      "href",
+      "https://terminusmaximus.com/guild-raid/boss-meta/"
+    )
     expect(screen.getByTestId("raid-boss-meta-comps")).toHaveTextContent(
       "admech"
     )
