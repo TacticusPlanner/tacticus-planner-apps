@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Biblioteca",
-    "description": "Explora personajes, Máquinas de Guerra, PNJ y jefes de incursión"
+    "description": "Explora personajes, Máquinas de Guerra, PNJ y jefes de incursión de gremio"
   },
   "collections": {
     "characters": {
@@ -17,11 +17,11 @@
       "description": "Explora detalles y estadísticas de PNJ"
     },
     "raidBosses": {
-      "label": "Jefes de incursión",
-      "description": "Explora información de jefes de incursión"
+      "label": "Jefes de incursión de gremio",
+      "description": "Explora información de jefes de incursión de gremio"
     },
     "noRecords": "No hay entidades seleccionables disponibles.",
-    "raidBossesNoRecords": "Los jefes de incursión aún no están disponibles en el catálogo.",
+    "raidBossesNoRecords": "Los jefes de incursión de gremio aún no están disponibles en el catálogo.",
     "shops": {
       "label": "Tiendas diarias",
       "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana"
@@ -124,7 +124,7 @@
     "tour": {
       "steps": {
         "bosses": {
-          "title": "Jefes de incursión",
+          "title": "Jefes de incursión de gremio",
           "content": "Todos los jefes de incursión de gremio. Elige uno para ver sus estadísticas, habilidades y modificadores de encuentro."
         },
         "primes": {
@@ -143,13 +143,33 @@
           "title": "Estadísticas ajustadas",
           "content": "Elige un punto de salud perdida para cada prime para ver las estadísticas, habilidades y enemigos del jefe cuando esos modificadores se activan."
         },
+        "tabs": {
+          "title": "Vistas de jefes de incursión de gremio",
+          "content": "Cambia entre configuraciones de temporada, recomendaciones Meta actuales y detalles de cada jefe o prime."
+        },
         "season": {
           "title": "Elige una temporada",
-          "content": "Elige una temporada de jefes de incursión para ver toda su rotación de encuentros."
+          "content": "Elige la configuración de temporada cuyos niveles y conjuntos de encuentros quieres consultar."
         },
         "seasonBoard": {
           "title": "Encuentros de temporada",
           "content": "Los niveles contienen conjuntos de encuentros. Selecciona un jefe o prime para revisar ese combate exacto."
+        },
+        "seasonContent": {
+          "title": "Conjuntos de encuentros por nivel",
+          "content": "Revisa cada nivel y conjunto, incluido su cofre, EXP de gremio, encuentros y límite de turnos."
+        },
+        "metaRecommendations": {
+          "title": "Recomendaciones Meta",
+          "content": "Compara las alineaciones de héroes recomendadas y alternativas para cada jefe de incursión de gremio."
+        },
+        "metaFilter": {
+          "title": "Filtrar por Comp",
+          "content": "Limita las recomendaciones y la guía de Comp a un arquetipo de equipo concreto."
+        },
+        "metaGuidance": {
+          "title": "Guía de Comp",
+          "content": "Despliega un Comp para ver su unidad característica, héroes de núcleo y flexibles, y Máquinas de Guerra adecuadas."
         }
       }
     },
@@ -173,7 +193,38 @@
     "adjustedColumn": "Ajustada",
     "weaponHits": "Impactos de arma",
     "enemyRemoved": "{{count}}× {{name}} eliminado",
-    "syncFailed": "No se pudieron cargar los jefes de incursión. Puede que el catálogo aún se esté sincronizando.",
+    "syncFailed": "No se pudieron cargar los jefes de incursión de gremio. Puede que el catálogo aún se esté sincronizando.",
+    "loading": "Cargando datos de jefes de incursión de gremio…",
+    "unavailable": "Los datos de jefes de incursión de gremio aún no están disponibles en el catálogo.",
+    "tabs": {
+      "seasons": "Configuración de temporadas",
+      "meta": "Meta",
+      "details": "Detalles de jefe / prime"
+    },
+    "season": "Configuración de temporada",
+    "tier": "Nivel {{tier}}",
+    "set": "Conjunto {{set}}",
+    "tierSet": "Nivel {{tier}} · Conjunto {{set}}",
+    "chest": "Cofre: {{chest}}",
+    "guildXp": "{{xp}} EXP de gremio",
+    "turns": "{{count}} turnos",
+    "meta": {
+      "loading": "Cargando Meta de jefes de incursión de gremio…",
+      "unavailable": "La Meta de jefes de incursión de gremio aún no está disponible.",
+      "failed": "No se pudo cargar la Meta de jefes de incursión de gremio.",
+      "compFilter": "Filtrar por Comp",
+      "allComps": "Todos los Comps",
+      "updated": "Actualizado {{date}} · Fuente:",
+      "noResults": "Ninguna recomendación coincide con este Comp.",
+      "meta": "Meta",
+      "alternate": "Alternativa",
+      "mow": "Máquina de Guerra",
+      "evidence": "{{replays}} repeticiones · {{average}} de daño medio · {{maximum}} de daño máximo",
+      "signature": "Firma",
+      "core": "Núcleo",
+      "flex": "Flexible",
+      "suitableMows": "Máquinas de Guerra adecuadas"
+    },
     "retry": "Reintentar"
   }
 }

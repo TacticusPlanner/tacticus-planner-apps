@@ -10,9 +10,11 @@ import {
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 
-const { useIsMobileMock } = vi.hoisted(() => ({
-  useIsMobileMock: vi.fn(() => false),
-}))
+const { isMobileMock, useIsMobileMock } = vi.hoisted(() => {
+  const isMobileMock = { value: false }
+  const useIsMobileMock = vi.fn(() => isMobileMock.value)
+  return { isMobileMock, useIsMobileMock }
+})
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: useIsMobileMock,
@@ -47,13 +49,25 @@ vi.mock("dexie-react-hooks", () => ({
   },
 }))
 
-const { getRaidBossesMock } = vi.hoisted(() => ({
+const { getRaidBossesMock, getGuildRaidMetaMock } = vi.hoisted(() => ({
   getRaidBossesMock: vi.fn(),
+  getGuildRaidMetaMock: vi.fn(),
 }))
 
 vi.mock("@workspace/game-catalog/queries", () => ({
   getRaidBosses: getRaidBossesMock,
-  getCharactersMap: () => Promise.resolve(new Map()),
+  getGuildRaidMeta: getGuildRaidMetaMock,
+  getCharactersMap: () =>
+    Promise.resolve(
+      new Map([
+        ["heroA", { id: "heroA", name: "Hero A" }],
+        ["heroB", { id: "heroB", name: "Hero B" }],
+        ["heroC", { id: "heroC", name: "Hero C" }],
+        ["heroD", { id: "heroD", name: "Hero D" }],
+      ])
+    ),
+  getMowsMap: () =>
+    Promise.resolve(new Map([["mowA", { id: "mowA", name: "MoW A" }]])),
   getNpcs: () => Promise.resolve([]),
 }))
 
@@ -220,6 +234,38 @@ const payload = {
   },
 }
 
+const metaPayload = {
+  sourceId: "terminus-maximus-guild-raid-boss-meta",
+  updatedOn: "2026-07-01",
+  comps: [
+    {
+      id: "admech",
+      signatureUnitId: "heroA",
+      coreCharacterIds: ["heroA"],
+      flexCharacterIds: ["heroB"],
+      mowIds: ["mowA"],
+    },
+  ],
+  bosses: [
+    {
+      bossUnitSetId: "GuildBoss1Boss1Tervigon",
+      recommendations: [
+        {
+          kind: "meta" as const,
+          heroIds: ["heroA", "heroB", "heroC", "heroD", "missingHero"],
+          mowId: "mowA",
+          compIds: ["admech"],
+          evidence: {
+            replayCount: 12,
+            averageDamage: 123456,
+            maximumDamage: 234567,
+          },
+        },
+      ],
+    },
+  ],
+}
+
 function Location() {
   const location = useLocation()
   return (
@@ -250,8 +296,12 @@ const { RaidBossesPage } = await import("./raid-bosses-page")
 
 describe("RaidBossesPage", () => {
   beforeEach(() => {
+    isMobileMock.value = false
     getRaidBossesMock.mockReset()
-    useIsMobileMock.mockReturnValue(false)
+    getGuildRaidMetaMock.mockReset()
+    getGuildRaidMetaMock.mockResolvedValue(null)
+    useIsMobileMock.mockImplementation(() => isMobileMock.value)
+    useIsMobileMock.mockClear()
   })
 
   it("shows the feature-unavailable state when the dataset has not synced", async () => {
@@ -260,7 +310,7 @@ describe("RaidBossesPage", () => {
 
     await waitFor(() =>
       expect(screen.getByTestId("raid-bosses-library-page")).toHaveTextContent(
-        "collections.raidBossesNoRecords"
+        "raidBosses.unavailable"
       )
     )
   })
@@ -412,6 +462,175 @@ describe("RaidBossesPage", () => {
 
     await screen.findByTestId("raid-boss-detail")
     expect(screen.getByTestId("raid-boss-list-bosses")).toBeInTheDocument()
+  })
+
+  it("switches to Season Config and keeps its selected season in the shareable URL", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage()
+
+    await screen.findByTestId("raid-boss-tabs")
+    await user.click(
+      screen.getByRole("tab", { name: "raidBosses.tabs.seasons" })
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons"
+      )
+    )
+    expect(screen.getByTestId("raid-boss-seasons")).toBeInTheDocument()
+    expect(
+      screen.getByTestId("raid-boss-season-desktop-table")
+    ).toHaveTextContent("chest-0")
+  })
+
+  it("uses the expandable mobile Season Config layout below the breakpoint", async () => {
+    isMobileMock.value = true
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons")
+
+    await screen.findByTestId("raid-boss-seasons")
+    expect(
+      screen.getByTestId("raid-boss-season-mobile-cards")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("raid-boss-season-desktop-table")
+    ).not.toBeInTheDocument()
+  })
+
+  it("renders a readable, image-free fallback for an unresolved season encounter", async () => {
+    const unresolvedPayload = {
+      ...payload,
+      seasons: {
+        s1: {
+          ...payload.seasons.s1,
+          tiers: [
+            {
+              ...payload.seasons.s1.tiers[0],
+              sets: [
+                {
+                  ...payload.seasons.s1.tiers[0].sets[0],
+                  encounters: [
+                    {
+                      ...payload.seasons.s1.tiers[0].sets[0].encounters[0],
+                      unitSetId: "UnknownEncounter",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    }
+    getRaidBossesMock.mockResolvedValue(unresolvedPayload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons")
+
+    expect(await screen.findByText("Unknown Encounter")).toBeInTheDocument()
+    expect(
+      screen.queryByRole("img", { name: "Unknown Encounter" })
+    ).not.toBeInTheDocument()
+  })
+
+  it("renders Meta recommendations and persists its Comp filter in the URL", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+
+    const recommendations = await screen.findByTestId(
+      "raid-boss-meta-recommendations"
+    )
+    expect(recommendations).toHaveTextContent("Hero A")
+    expect(recommendations).toHaveTextContent("Hero D")
+    expect(recommendations).toHaveTextContent("missing Hero")
+    expect(recommendations).toHaveTextContent("MoW A")
+    expect(screen.getByTestId("raid-boss-meta-comps")).toHaveTextContent(
+      "admech"
+    )
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "raidBosses.meta.compFilter" }),
+      "admech"
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta&comp=admech"
+      )
+    )
+
+    await user.click(screen.getByRole("button", { name: "admech" }))
+    expect(
+      await screen.findByTestId("raid-boss-meta-comp-guidance")
+    ).toHaveTextContent("Hero B")
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta&comp=admech"
+    )
+  })
+
+  it("uses stacked touch-friendly Meta cards below the breakpoint", async () => {
+    isMobileMock.value = true
+    getRaidBossesMock.mockResolvedValue(payload)
+    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+
+    expect(
+      await screen.findByTestId("raid-boss-meta-recommendations")
+    ).toHaveClass("flex")
+    expect(screen.getByTestId("raid-boss-tabs")).toHaveClass("overflow-x-auto")
+  })
+
+  it("keeps Details usable when Meta is absent and shows a Meta-only unavailable state", async () => {
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+
+    expect(
+      await screen.findByTestId("raid-boss-meta-unavailable")
+    ).toHaveTextContent("raidBosses.meta.unavailable")
+    expect(screen.queryByTestId("raid-boss-detail")).not.toBeInTheDocument()
+  })
+
+  it("retries a failed Meta read without blocking the tab", async () => {
+    const user = userEvent.setup()
+    getRaidBossesMock.mockResolvedValue(payload)
+    getGuildRaidMetaMock.mockRejectedValueOnce(new Error("meta unavailable"))
+    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+
+    const failure = await screen.findByTestId("raid-boss-meta-failed")
+    await user.click(
+      within(failure).getByRole("button", { name: "raidBosses.retry" })
+    )
+
+    expect(
+      await screen.findByTestId("raid-boss-meta-recommendations")
+    ).toHaveTextContent("Hero A")
+  })
+
+  it("renders an empty Meta result when valid data has no recommendations", async () => {
+    getRaidBossesMock.mockResolvedValue(payload)
+    getGuildRaidMetaMock.mockResolvedValue({ ...metaPayload, bosses: [] })
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+
+    expect(await screen.findByTestId("raid-boss-meta-empty")).toHaveTextContent(
+      "raidBosses.meta.noResults"
+    )
+  })
+
+  it("repairs invalid tab, season, and Comp parameters without losing unrelated query state", async () => {
+    getRaidBossesMock.mockResolvedValue(payload)
+    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
+    renderPage(
+      "/library/raid-bosses/not-real?tab=invalid&season=invalid&comp=invalid&source=shared"
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=details&season=s1&source=shared"
+      )
+    )
   })
 
   it("recomputes the boss's stats when a prime HP-lost point is chosen", async () => {
