@@ -108,6 +108,19 @@ compact card form and mobile entity picker, Seasons Config uses stacked
 expandable tier/set cards, and Meta uses stacked recommendation and Comp
 guidance cards. Both layouts expose the same datasets, tab state, and content.
 
+#### Scenario: Desktop season reference
+
+- **WHEN** the Seasons Config tab renders at a viewport at or above 768px
+- **THEN** the desktop season selector and dense, horizontally grouped
+  tier/set encounter rows render, while the Details tab retains its desktop
+  navigation and side-by-side detail layout
+
+#### Scenario: Mobile season reference
+
+- **WHEN** the Seasons Config tab renders below 768px
+- **THEN** every tier and set is reachable through stacked, expandable,
+  touch-oriented cards, while the Details tab retains its compact form
+
 #### Scenario: Desktop layout
 
 - **WHEN** the page renders at a viewport ≥768px
@@ -175,6 +188,20 @@ Primes, progression, encounter modifiers, and adjusted stats; the Seasons
 Config tour covers season selection and tier/set content; the Meta tour covers
 recommendations, Comp filtering, and expandable core/flex/Machine-of-War
 guidance. Desktop and mobile tours SHALL use platform-appropriate targets.
+
+#### Scenario: Tour runs on the season reference on both platforms
+
+- **WHEN** a user starts the page tour with Seasons Config active at a
+  viewport at or above 768px and again below 768px
+- **THEN** the applicable tour steps target the visible season selector and
+  tier/set content with localized copy
+
+#### Scenario: Tour runs on an entity detail on both platforms
+
+- **WHEN** a user starts the page tour with Details active on a valid entity
+  route at a viewport at or above 768px and again below 768px
+- **THEN** the applicable tour steps target only visible detail navigation,
+  progression, modifier, and adjusted-stats controls with localized copy
 
 #### Scenario: A Details tour includes adjusted stats
 
