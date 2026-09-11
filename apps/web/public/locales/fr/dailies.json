@@ -27,6 +27,12 @@
     "title": "Cette quotidienne est en construction",
     "description": "Ce planificateur sera disponible dans une prochaine mise à jour."
   },
+  "guildRaids": {
+    "title": "Raids de guilde",
+    "subtitle": "Préparez l'accès à votre guilde pour le suivi et les recommandations de raid.",
+    "readyTitle": "L'accès aux Raids de guilde est prêt",
+    "readyDescription": "Votre guilde synchronisée est prête pour la planification des Raids de guilde. Le suivi et les recommandations apparaîtront ici dans une prochaine mise à jour."
+  },
   "project": { "placeholder": "Choisir un projet" },
   "raids": {
     "tabs": { "today": "Aujourd'hui", "plan": "Plan" }
@@ -77,6 +83,18 @@
     "expand": "Développer les détails"
   },
   "tour": {
+    "guildRaids": {
+      "steps": {
+        "purpose": {
+          "title": "Raids de guilde",
+          "content": "Cette page combinera les données synchronisées de votre guilde avec les outils de planification des raids."
+        },
+        "access": {
+          "title": "Accès à la guilde",
+          "content": "Remplissez chaque condition affichée ici. Les guildes prêtes accèdent directement à l'espace des Raids de guilde."
+        }
+      }
+    },
     "today": {
       "steps": {
         "navigation": {

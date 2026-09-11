@@ -154,6 +154,13 @@
   "guild": {
     "loadError": "No se pudo cargar tu gremio.",
     "retry": "Reintentar",
+    "openManagement": "Abrir la gestión del gremio",
+    "access": {
+      "loadErrorTitle": "El acceso al gremio no está disponible",
+      "syncRequiredTitle": "Sincroniza tu gremio",
+      "syncRequiredManager": "Tu gremio está registrado, pero aún no ha completado su primera sincronización. Sincronízalo ahora para desbloquear las herramientas del gremio.",
+      "syncRequiredMember": "Tu gremio está registrado, pero aún no ha completado su primera sincronización. Pide a un líder o colíder que lo sincronice."
+    },
     "tacticusUserIdRequired": {
       "title": "Se requiere el ID de usuario de Tacticus",
       "description": "Se necesita un ID de usuario de Tacticus para identificarte en los datos del gremio antes de poder verlo o registrarlo.",
@@ -168,6 +175,8 @@
       "title": "Aún no hay ningún gremio registrado",
       "description": "Un gremio debe ser registrado primero por un líder o colíder del gremio.",
       "leaderPrompt": "¿Eres el líder o colíder del gremio? Usa el campo de abajo para pegar un token de API de gremio con alcance Guild y GuildRaids.",
+      "eligibility": "Tacticus autoriza el registro, que solo está disponible para el líder actual o un colíder.",
+      "handoff": "Pide al líder o colíder actual que complete el registro del gremio con un token autorizado.",
       "tokenLabel": "Token de API del gremio",
       "tokenPlaceholder": "Pega tu token de API del gremio",
       "register": "Registrar gremio",

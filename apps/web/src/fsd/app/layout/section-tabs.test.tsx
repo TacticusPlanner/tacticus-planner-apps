@@ -74,11 +74,18 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("marks a nested route's ancestor tab active, e.g. Dailies > Raids > Today", () => {
+  it.each([
+    ["raids", "/dailies/raids/today"],
+    ["shops", "/dailies/shops"],
+    ["onslaught", "/dailies/onslaught"],
+    ["salvage-run", "/dailies/salvage-run"],
+    ["arena", "/dailies/arena"],
+    ["guild-raids", "/dailies/guild-raids"],
+  ])("deep-links to and highlights the Dailies %s tab", (tab, path) => {
     const dailies = navItems.find((item) => item.path === "/dailies")!
-    renderTabs(dailies, "/dailies/raids/today")
+    renderTabs(dailies, path)
 
-    expect(screen.getByTestId("section-tab-dailies-raids")).toHaveAttribute(
+    expect(screen.getByTestId(`section-tab-dailies-${tab}`)).toHaveAttribute(
       "data-state",
       "active"
     )

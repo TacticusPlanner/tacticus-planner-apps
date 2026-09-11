@@ -27,6 +27,12 @@
     "title": "Esta diaria está en construcción",
     "description": "Este planificador estará disponible en una actualización futura."
   },
+  "guildRaids": {
+    "title": "Incursiones de gremio",
+    "subtitle": "Prepara el acceso al gremio para consultar el estado y las recomendaciones de incursión.",
+    "readyTitle": "El acceso a las Incursiones de gremio está listo",
+    "readyDescription": "Tu gremio sincronizado está listo para planificar las Incursiones de gremio. El estado y las recomendaciones aparecerán aquí en una actualización posterior."
+  },
   "project": { "placeholder": "Selecciona un proyecto" },
   "raids": {
     "tabs": { "today": "Hoy", "plan": "Plan" }
@@ -77,6 +83,18 @@
     "expand": "Expandir detalles"
   },
   "tour": {
+    "guildRaids": {
+      "steps": {
+        "purpose": {
+          "title": "Incursiones de gremio",
+          "content": "Esta página combinará los datos sincronizados de tu gremio con herramientas de planificación de incursiones."
+        },
+        "access": {
+          "title": "Acceso al gremio",
+          "content": "Completa cada requisito que se muestra aquí. Los gremios listos pasan directamente al espacio de Incursiones de gremio."
+        }
+      }
+    },
     "today": {
       "steps": {
         "navigation": {

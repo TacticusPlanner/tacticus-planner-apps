@@ -154,6 +154,13 @@
   "guild": {
     "loadError": "Deine Gilde konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
+    "openManagement": "Gildenverwaltung öffnen",
+    "access": {
+      "loadErrorTitle": "Gildenzugriff nicht verfügbar",
+      "syncRequiredTitle": "Synchronisiere deine Gilde",
+      "syncRequiredManager": "Deine Gilde ist registriert, hat aber ihre erste Synchronisierung noch nicht abgeschlossen. Synchronisiere sie jetzt, um gildenabhängige Werkzeuge freizuschalten.",
+      "syncRequiredMember": "Deine Gilde ist registriert, hat aber ihre erste Synchronisierung noch nicht abgeschlossen. Bitte einen Anführer oder Ko-Anführer, sie zu synchronisieren."
+    },
     "tacticusUserIdRequired": {
       "title": "Tacticus-Benutzer-ID erforderlich",
       "description": "Eine Tacticus-Benutzer-ID wird benötigt, um dich mit Gildendaten abzugleichen, bevor du eine Gilde ansehen oder registrieren kannst.",
@@ -168,6 +175,8 @@
       "title": "Noch keine Gilde registriert",
       "description": "Eine Gilde muss zuerst von einem Gildenanführer oder Ko-Anführer registriert werden.",
       "leaderPrompt": "Bist du der Gildenanführer oder Ko-Anführer? Verwende das Eingabefeld unten, um ein Gilden-API-Token mit den Berechtigungen Guild und GuildRaids einzufügen.",
+      "eligibility": "Die Registrierung wird von Tacticus autorisiert und ist nur für den aktuellen Anführer oder einen Ko-Anführer verfügbar.",
+      "handoff": "Bitte deinen aktuellen Anführer oder Ko-Anführer, die Gildenregistrierung mit einem autorisierten Token abzuschließen.",
       "tokenLabel": "Gilden-API-Token",
       "tokenPlaceholder": "Füge dein Gilden-API-Token ein",
       "register": "Gilde registrieren",

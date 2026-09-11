@@ -244,6 +244,13 @@
   "guild": {
     "loadError": "Couldn't load your guild.",
     "retry": "Retry",
+    "openManagement": "Open Guild management",
+    "access": {
+      "loadErrorTitle": "Guild access unavailable",
+      "syncRequiredTitle": "Synchronize your guild",
+      "syncRequiredManager": "Your guild is registered but has not completed its first synchronization. Synchronize it now to unlock guild-dependent tools.",
+      "syncRequiredMember": "Your guild is registered but has not completed its first synchronization. Ask a Leader or Co-Leader to synchronize it."
+    },
     "tacticusUserIdRequired": {
       "title": "Tacticus User ID required",
       "description": "A Tacticus User ID is needed to match you against guild data before you can view or register a guild.",
@@ -258,6 +265,8 @@
       "title": "No guild registered yet",
       "description": "A guild must first be registered by a Guild Leader or Co-Leader.",
       "leaderPrompt": "Are you the Guild Leader or Co-Leader? Use the input below to paste a Guild API Token with Guild and GuildRaids scope.",
+      "eligibility": "Registration is authorized by Tacticus and is available only to the current Leader or a Co-Leader.",
+      "handoff": "Ask your current Leader or Co-Leader to complete guild registration with an authorized token.",
       "tokenLabel": "Guild API token",
       "tokenPlaceholder": "Paste your Guild API token",
       "register": "Register Guild",

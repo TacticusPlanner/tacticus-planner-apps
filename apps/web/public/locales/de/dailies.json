@@ -27,6 +27,12 @@
     "title": "Dieser Bereich ist in Arbeit",
     "description": "Dieser Planer wird in einem zukünftigen Update verfügbar sein."
   },
+  "guildRaids": {
+    "title": "Gilden-Raids",
+    "subtitle": "Richte deinen Gildenzugriff für Raid-Status und Empfehlungen ein.",
+    "readyTitle": "Der Zugriff auf Gilden-Raids ist bereit",
+    "readyDescription": "Deine synchronisierte Gilde ist für die Gilden-Raid-Planung bereit. Status und Empfehlungen erscheinen hier in einem späteren Update."
+  },
   "project": { "placeholder": "Projekt auswählen" },
   "raids": {
     "tabs": { "today": "Heute", "plan": "Plan" }
@@ -77,6 +83,18 @@
     "expand": "Raid-Details ausklappen"
   },
   "tour": {
+    "guildRaids": {
+      "steps": {
+        "purpose": {
+          "title": "Gilden-Raids",
+          "content": "Diese Seite verbindet deine synchronisierten Gildendaten mit Werkzeugen zur Gilden-Raid-Planung."
+        },
+        "access": {
+          "title": "Gildenzugriff",
+          "content": "Erfülle alle hier angezeigten Voraussetzungen. Bereite Gilden gelangen direkt zum Gilden-Raid-Arbeitsbereich."
+        }
+      }
+    },
     "today": {
       "steps": {
         "navigation": {

@@ -39,44 +39,24 @@ Every primary tab and every Raids sub-tab SHALL be addressable by its own URL pa
 - **WHEN** a user switches tabs one or more times and then uses the browser's back button
 - **THEN** the previously-active tab's URL and content are restored
 
-### Requirement: Placeholder tabs show Under Construction
+### Requirement: Every Dailies primary tab opens its implemented page
 
-Every primary tab other than Raids, Shops, Arena, Salvage Run, and Onslaught
-SHALL render the shared "Under Construction" placeholder rather than an error, a
-blank page, or partial functionality. The Shops tab SHALL render the Shops page
-(daily shop recommendations for the selected project), the Arena tab SHALL
-render the Arena recommendations page, the Salvage Run tab SHALL render the
-Salvage Run recommendations page, and the Onslaught tab SHALL render the
-Onslaught recommendations page, rather than the placeholder.
+Every Dailies primary tab SHALL render its implemented page. Guild Raids SHALL render its access-aware page shell, which may show shared guild onboarding until access is ready, rather than the shared Under Construction placeholder.
 
-#### Scenario: Opening a non-Raids tab
+#### Scenario: Opening Guild Raids before guild access is ready
 
-- **WHEN** the user opens Guild Raids
-- **THEN** the shared Under Construction placeholder is shown for that tab
+- **WHEN** the user opens `/dailies/guild-raids` while a guild prerequisite is missing
+- **THEN** the Guild Raids page shows the shared guild onboarding state and the Guild Raids primary tab remains active
 
-#### Scenario: Opening Shops
+#### Scenario: Opening Guild Raids with ready access
 
-- **WHEN** the user opens the Shops tab
-- **THEN** the Shops recommendations page is shown rather than the Under
-  Construction placeholder
+- **WHEN** the user opens `/dailies/guild-raids` with ready guild access
+- **THEN** the Guild Raids page shell renders its ready content slot rather than Under Construction
 
-#### Scenario: Opening Arena
+#### Scenario: Opening another implemented primary tab
 
-- **WHEN** the user opens the Arena tab
-- **THEN** the Arena recommendations page is shown rather than the Under
-  Construction placeholder
-
-#### Scenario: Opening Salvage Run
-
-- **WHEN** the user opens the Salvage Run tab
-- **THEN** the Salvage Run recommendations page is shown rather than the Under
-  Construction placeholder
-
-#### Scenario: Opening Onslaught
-
-- **WHEN** the user opens the Onslaught tab
-- **THEN** the Onslaught recommendations page is shown rather than the Under
-  Construction placeholder
+- **WHEN** the user opens Raids, Shops, Arena, Salvage Run, or Onslaught
+- **THEN** that tab's existing implemented page is shown
 
 ### Requirement: Raids sub-navigation
 
