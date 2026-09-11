@@ -8,6 +8,7 @@ export { RarityCombobox, type RarityComboboxItem } from "./rarity-combobox"
 export { ProgressionSelect, ProgressionBadge } from "./progression-select"
 export { RankSelect } from "./rank-select"
 export { ReadOnlyField } from "./read-only-field"
+/** @knipignore Retained as a shared placeholder for upcoming pages. */
 export { UnderConstruction } from "./under-construction"
 export { ConfirmationDialog } from "./confirmation-dialog"
 export {

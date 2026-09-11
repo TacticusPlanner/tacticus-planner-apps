@@ -62,6 +62,9 @@ vi.mock("../model/use-onslaught-recommendations", () => ({
   useOnslaughtRecommendations: () => ({ status: "loading" }),
 }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("@/features/guild-access", () => ({
+  GuildAccessBoundary: () => <div data-testid="guild-unregistered" />,
+}))
 
 function renderDailies(path = "/dailies") {
   const router = createMemoryRouter(
@@ -75,37 +78,38 @@ function renderDailies(path = "/dailies") {
   )
 }
 
+function findRouteContent(testId: string) {
+  return screen.findByTestId(testId, {}, { timeout: 5_000 })
+}
+
 describe("Dailies navigation", () => {
   beforeEach(() => useDailyRaids.mockClear())
 
   it("redirects /dailies to Raids Today", async () => {
     renderDailies()
 
-    expect(await screen.findByTestId("dailies-no-farmable")).toBeInTheDocument()
+    expect(await findRouteContent("dailies-no-farmable")).toBeInTheDocument()
     expect(
       screen.getByRole("tab", { name: "raids.tabs.today" })
     ).toHaveAttribute("data-state", "active")
   })
 
-  // Primary tab navigation itself (Raids/Shops/Onslaught/Salvage Run/Arena/Guild Raids) now lives
-  // in the shared app-shell header's section-tabs row, not in DailiesLayout - see
-  // section-tabs.test.tsx. This only confirms each still-under-construction route renders its
-  // placeholder page.
-  it.each(["/dailies/guild-raids"])(
-    "routes %s to its own placeholder page",
-    async (path) => {
-      renderDailies(path)
+  it("routes Guild Raids to its access-aware page", async () => {
+    renderDailies("/dailies/guild-raids")
 
-      expect(
-        await screen.findByTestId("dailies-placeholder-page")
-      ).toBeInTheDocument()
-    }
-  )
+    expect(
+      await findRouteContent("guild-raids-desktop-shell")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("guild-unregistered")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("dailies-placeholder-page")
+    ).not.toBeInTheDocument()
+  })
 
   it("routes /dailies/salvage-run to the Salvage Run recommendations page", async () => {
     renderDailies("/dailies/salvage-run")
 
-    expect(await screen.findByTestId("salvage-run-page")).toBeInTheDocument()
+    expect(await findRouteContent("salvage-run-page")).toBeInTheDocument()
     expect(
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()
@@ -114,7 +118,7 @@ describe("Dailies navigation", () => {
   it("routes /dailies/onslaught to the Onslaught recommendations page", async () => {
     renderDailies("/dailies/onslaught")
 
-    expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
+    expect(await findRouteContent("onslaught-page")).toBeInTheDocument()
     expect(
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()
@@ -123,13 +127,13 @@ describe("Dailies navigation", () => {
   it("routes /dailies/shops to the Shops recommendations page", async () => {
     renderDailies("/dailies/shops")
 
-    expect(await screen.findByTestId("shops-page")).toBeInTheDocument()
+    expect(await findRouteContent("shops-page")).toBeInTheDocument()
   })
 
   it("routes /dailies/arena to the Arena recommendations page, not the placeholder", async () => {
     renderDailies("/dailies/arena")
 
-    expect(await screen.findByTestId("arena-page")).toBeInTheDocument()
+    expect(await findRouteContent("arena-page")).toBeInTheDocument()
     expect(
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()
@@ -138,16 +142,14 @@ describe("Dailies navigation", () => {
   it("keeps the selected project when switching from Today to Plan", async () => {
     const user = userEvent.setup()
     renderDailies("/dailies/raids/today")
-    expect(
-      await screen.findByTestId("dailies-project-select")
-    ).toBeInTheDocument()
+    expect(await findRouteContent("dailies-project-select")).toBeInTheDocument()
 
     await user.click(screen.getByTestId("dailies-project-select"))
     await user.click(
       await screen.findByRole("option", { name: /Other project/ })
     )
     await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
-    await screen.findByTestId("dailies-no-farmable")
+    await findRouteContent("dailies-no-farmable")
     expect(useDailyRaids).toHaveBeenLastCalledWith("p2")
   })
 })

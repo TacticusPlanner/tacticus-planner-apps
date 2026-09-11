@@ -154,6 +154,13 @@
   "guild": {
     "loadError": "Impossible de charger votre guilde.",
     "retry": "Réessayer",
+    "openManagement": "Ouvrir la gestion de la guilde",
+    "access": {
+      "loadErrorTitle": "Accès à la guilde indisponible",
+      "syncRequiredTitle": "Synchronisez votre guilde",
+      "syncRequiredManager": "Votre guilde est enregistrée, mais n'a pas encore terminé sa première synchronisation. Synchronisez-la maintenant pour déverrouiller les outils de guilde.",
+      "syncRequiredMember": "Votre guilde est enregistrée, mais n'a pas encore terminé sa première synchronisation. Demandez à un chef ou un co-chef de la synchroniser."
+    },
     "tacticusUserIdRequired": {
       "title": "ID utilisateur Tacticus requis",
       "description": "Un ID utilisateur Tacticus est nécessaire pour vous identifier dans les données de guilde avant de pouvoir la consulter ou l'enregistrer.",
@@ -168,6 +175,8 @@
       "title": "Aucune guilde enregistrée pour le moment",
       "description": "Une guilde doit d'abord être enregistrée par un chef ou un co-chef de guilde.",
       "leaderPrompt": "Êtes-vous le chef ou le co-chef de la guilde ? Utilisez le champ ci-dessous pour coller un jeton API de guilde avec les portées Guild et GuildRaids.",
+      "eligibility": "L'enregistrement est autorisé par Tacticus et n'est accessible qu'au chef actuel ou à un co-chef.",
+      "handoff": "Demandez au chef ou au co-chef actuel de terminer l'enregistrement de la guilde avec un jeton autorisé.",
       "tokenLabel": "Jeton API de guilde",
       "tokenPlaceholder": "Collez votre jeton API de guilde",
       "register": "Enregistrer la guilde",

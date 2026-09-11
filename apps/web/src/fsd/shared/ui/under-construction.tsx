@@ -1,6 +1,7 @@
 import { Construction } from "lucide-react"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
+/** @knipignore Retained as a shared placeholder for upcoming pages. */
 export function UnderConstruction({
   title,
   description,

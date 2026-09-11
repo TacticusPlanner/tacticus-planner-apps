@@ -12,9 +12,9 @@ const RaidsPlanPage = lazy(() =>
     default: module.RaidsPlanPage,
   }))
 )
-const DailiesPlaceholderPage = lazy(() =>
-  import("./ui/placeholder-page").then((module) => ({
-    default: module.DailiesPlaceholderPage,
+const GuildRaidsPage = lazy(() =>
+  import("./ui/guild-raids/guild-raids-page").then((module) => ({
+    default: module.GuildRaidsPage,
   }))
 )
 const ShopsPage = lazy(() =>
@@ -51,8 +51,5 @@ export const routes: RouteObject[] = [
   { path: "arena", element: <ArenaPage /> },
   { path: "salvage-run", element: <SalvageRunPage /> },
   { path: "onslaught", element: <OnslaughtPage /> },
-  ...["guild-raids"].map((path) => ({
-    path,
-    element: <DailiesPlaceholderPage />,
-  })),
+  { path: "guild-raids", element: <GuildRaidsPage /> },
 ]

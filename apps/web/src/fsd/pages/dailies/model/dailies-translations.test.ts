@@ -33,4 +33,17 @@ describe("Dailies translations", () => {
   ])("removes legacy Dailies keys from %s/common.json", (_locale, common) => {
     expect(common).not.toHaveProperty("dailies")
   })
+
+  it.each([
+    ["de", deCommon],
+    ["es", esCommon],
+    ["fr", frCommon],
+  ])(
+    "keeps the shared Guild copy aligned in %s/common.json",
+    (_locale, common) => {
+      expect(leafKeys(common.guild).sort()).toEqual(
+        leafKeys(enCommon.guild).sort()
+      )
+    }
+  )
 })

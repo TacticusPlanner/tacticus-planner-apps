@@ -27,6 +27,12 @@
     "title": "This daily is under construction",
     "description": "This planner will be available in a future update."
   },
+  "guildRaids": {
+    "title": "Guild Raids",
+    "subtitle": "Prepare your guild access for raid status and recommendations.",
+    "readyTitle": "Guild Raids access is ready",
+    "readyDescription": "Your synchronized guild is ready for Guild Raid planning. Status and recommendations will appear here in a later update."
+  },
   "project": { "placeholder": "Select a project" },
   "raids": {
     "tabs": { "today": "Today", "plan": "Plan" }
@@ -77,6 +83,18 @@
     "expand": "Expand raid details"
   },
   "tour": {
+    "guildRaids": {
+      "steps": {
+        "purpose": {
+          "title": "Guild Raids",
+          "content": "This page will combine your synchronized guild data with Guild Raid planning tools."
+        },
+        "access": {
+          "title": "Guild access",
+          "content": "Complete each prerequisite shown here. Ready guilds move directly into the Guild Raids workspace."
+        }
+      }
+    },
     "today": {
       "steps": {
         "navigation": {
