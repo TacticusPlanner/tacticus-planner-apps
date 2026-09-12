@@ -67,6 +67,12 @@ export type GuildRaidStatusResult =
 const statusPath = "/api/v1/guilds/me/raid-status"
 const refreshPath = "/api/v1/guilds/me/raid-status/refresh"
 
+// GetMyGuildRaidStatusEndpoint's exact message for its one "no observation yet" 409 (distinct from the
+// other 409 reasons ReadyGuildResolver reports — unregistered guild, never synchronized, no stored token —
+// which mean the guild isn't ready rather than that it's syncing for the first time).
+const neverObservedMessage =
+  "The linked guild has no Guild Raid status observation yet."
+
 /** Pure read — never triggers an upstream sync. See `refreshGuildRaidStatus` for the forced sync. */
 export async function getGuildRaidStatus(
   signal?: AbortSignal
@@ -75,7 +81,11 @@ export async function getGuildRaidStatus(
     const status = await apiGet<GuildRaidStatusResponse>(statusPath, { signal })
     return { kind: "observed", status }
   } catch (error) {
-    if (error instanceof ApiError && error.status === 409) {
+    if (
+      error instanceof ApiError &&
+      error.status === 409 &&
+      error.message === neverObservedMessage
+    ) {
       return { kind: "neverObserved" }
     }
     throw error

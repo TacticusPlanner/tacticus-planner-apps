@@ -151,7 +151,7 @@
         },
         "status": {
           "title": "Statut du Raid de guilde",
-          "content": "Le boss actuel de votre guilde, ses PV, la progression de palier et les modificateurs des primes, actualisés automatiquement toutes les heures ou à la demande."
+          "content": "Le boss actuel de votre guilde, ses PV, la progression de palier et les modificateurs des primes, synchronisés automatiquement à l'ouverture de la page si les données datent de plus d'une heure, ou actualisés à tout moment à la demande."
         },
         "resources": {
           "title": "Vos ressources de raid",

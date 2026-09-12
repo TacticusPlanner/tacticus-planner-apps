@@ -151,7 +151,7 @@
         },
         "status": {
           "title": "Guild Raid status",
-          "content": "Your guild's current boss, HP, tier progress, and prime modifiers, refreshed automatically once an hour or on demand."
+          "content": "Your guild's current boss, HP, tier progress, and prime modifiers — synced automatically when the page loads if the data is over an hour old, or refreshed anytime on demand."
         },
         "resources": {
           "title": "Your raid resources",

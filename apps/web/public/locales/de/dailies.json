@@ -151,7 +151,7 @@
         },
         "status": {
           "title": "Gilden-Raid-Status",
-          "content": "Der aktuelle Boss deiner Gilde, TP, Stufenfortschritt und Prime-Modifikatoren – stündlich automatisch oder auf Wunsch aktualisiert."
+          "content": "Der aktuelle Boss deiner Gilde, TP, Stufenfortschritt und Prime-Modifikatoren – beim Öffnen der Seite automatisch synchronisiert, wenn die Daten über eine Stunde alt sind, oder jederzeit auf Wunsch aktualisiert."
         },
         "resources": {
           "title": "Deine Raid-Ressourcen",

@@ -151,7 +151,7 @@
         },
         "status": {
           "title": "Estado de la Incursión de gremio",
-          "content": "El jefe actual de tu gremio, PS, progreso de nivel y modificadores de primes, actualizados automáticamente cada hora o a petición."
+          "content": "El jefe actual de tu gremio, PS, progreso de nivel y modificadores de primes, sincronizados automáticamente al abrir la página si los datos tienen más de una hora, o actualizados en cualquier momento a petición."
         },
         "resources": {
           "title": "Tus recursos de incursión",

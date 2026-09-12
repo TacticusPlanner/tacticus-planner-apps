@@ -156,7 +156,9 @@ export function buildGuildRaidStatusView(params: {
 }): GuildRaidStatusView {
   const { query, isLoading, isError, retry, catalog, nowMs } = params
 
-  if (isError) {
+  // A background refetch failure sets `isError` but TanStack Query retains the last-loaded `query.data`
+  // (see useGuildRaidStatus) — only fall back to the hard-error view when there's no retained data to show.
+  if (isError && !query) {
     return { kind: "error", retry }
   }
   if (isLoading || !query) {

@@ -110,6 +110,19 @@ describe("buildGuildRaidStatusView", () => {
     expect(result).toEqual({ kind: "error", retry })
   })
 
+  it("keeps showing retained status when a background refetch fails", () => {
+    const status = activeStatus()
+    const result = buildGuildRaidStatusView({
+      query: { kind: "observed", status },
+      isLoading: false,
+      isError: true,
+      retry: vi.fn(),
+      catalog: knownCatalog,
+      nowMs: NOW,
+    })
+    expect(result.kind).toBe("active")
+  })
+
   it("is neverObserved for the API's never-observed conflict", () => {
     const result: GuildRaidStatusResult = { kind: "neverObserved" }
     expect(
