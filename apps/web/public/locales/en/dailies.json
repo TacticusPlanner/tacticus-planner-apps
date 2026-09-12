@@ -21,17 +21,73 @@
     "arena": "Arena",
     "arenaDescription": "Recommended Arena teams for your goals and active project",
     "guild-raids": "Guild Raids",
-    "guild-raidsDescription": "Track Guild Raids energy and progress"
+    "guild-raidsDescription": "See your guild's current Guild Raid status and your personal raid resources."
   },
   "placeholder": {
     "title": "This daily is under construction",
     "description": "This planner will be available in a future update."
   },
   "guildRaids": {
-    "title": "Guild Raids",
-    "subtitle": "Prepare your guild access for raid status and recommendations.",
-    "readyTitle": "Guild Raids access is ready",
-    "readyDescription": "Your synchronized guild is ready for Guild Raid planning. Status and recommendations will appear here in a later update."
+    "status": {
+      "seasonLabel": "Season {{number}}",
+      "positionLabel": "Tier {{tier}} · Set {{set}} of {{count}}",
+      "difficulty": {
+        "common": "Common",
+        "uncommon": "Uncommon",
+        "rare": "Rare",
+        "epic": "Epic",
+        "legendary": "Legendary",
+        "mythic": "Mythic"
+      },
+      "upcomingBadge": "Upcoming",
+      "hp": "{{remaining}} / {{max}} HP",
+      "hpUnavailable": "HP unavailable",
+      "bossLabel": "Boss",
+      "primeLeftLabel": "Prime · Left",
+      "primeRightLabel": "Prime · Right",
+      "modifiersHit": "{{active}} / {{total}} modifiers hit",
+      "modifiersAllActive": "All modifiers active",
+      "modifiersDialogTitle": "{{name}} modifiers",
+      "modifierActive": "Active",
+      "modifierPending": "Not yet active",
+      "modifierUnknown": "Activation unknown",
+      "modifierThreshold": "Activates at {{hp}} HP remaining",
+      "modifierThresholdUnavailable": "Threshold unavailable",
+      "modifierReduces": "Reduces {{label}}",
+      "modifierIncreases": "Increases {{label}}",
+      "seasonEndsLabel": "Ends {{time}}",
+      "seasonEndsUnavailable": "Season end time unavailable",
+      "seasonEndingSoon": "Season ending soon",
+      "observedLabel": "Observed {{time}}",
+      "staleWarning": "This may be out of date.",
+      "guildSyncedLabel": "Guild synced {{time}}",
+      "catalogWarning": "Some raid data couldn't be matched to your local game data. Showing basic values.",
+      "refresh": "Refresh status",
+      "refreshing": "Refreshing…",
+      "refreshFailed": "Refresh failed. Showing the last known status."
+    },
+    "noActiveSeason": {
+      "title": "No active Guild Raid season",
+      "description": "Check back once your guild's next season begins."
+    },
+    "neverObserved": {
+      "title": "Syncing your guild's Guild Raid status",
+      "description": "This can take a moment the first time."
+    },
+    "loadError": {
+      "title": "Couldn't load Guild Raid status",
+      "retry": "Try again"
+    },
+    "resources": {
+      "title": "Your raid resources",
+      "tokens": "Raid tokens",
+      "bombs": "Bomb tokens",
+      "nextLabel": "Next {{time}}",
+      "due": "Ready now",
+      "full": "Full",
+      "missingTitle": "Sync your player data",
+      "missingDescription": "Your raid token counts will appear here once your player data is synchronized."
+    }
   },
   "project": { "placeholder": "Select a project" },
   "raids": {
@@ -92,6 +148,14 @@
         "access": {
           "title": "Guild access",
           "content": "Complete each prerequisite shown here. Ready guilds move directly into the Guild Raids workspace."
+        },
+        "status": {
+          "title": "Guild Raid status",
+          "content": "Your guild's current boss, HP, tier progress, and prime modifiers — synced automatically when the page loads if the data is over an hour old, or refreshed anytime on demand."
+        },
+        "resources": {
+          "title": "Your raid resources",
+          "content": "Your synced raid and bomb tokens, with when the next one becomes available."
         }
       }
     },

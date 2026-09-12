@@ -26,11 +26,13 @@ The entity owns the API DTO, mapper, query options, freshness constants, and id-
 
 This avoids extending `entities/guild` with encounter concerns and avoids page-local network types.
 
-### Let the API own raid normalization and anchor revalidation to the observation
+### Let the API own raid normalization; trigger refresh once on mount, not on a timer
 
-The query derives remaining freshness from the payload instead of granting every browser fetch a new five-minute window. An API payload already marked `stale` is stale immediately. For `fresh`, remaining lifetime is `max(0, five minutes - (now - observedAt))`, capped at five minutes when client/server clocks disagree. Query freshness uses that remaining lifetime, and an observation-expiry timer triggers one background revalidation when it reaches zero even while the page stays mounted. Retained data remains visible during refetch, and the API's persisted per-guild/per-season observation plus same-guild single-flight behavior prevents redundant upstream work.
+The API is now two calls: a side-effect-free `GET` that always returns the latest persisted observation (or a conflict when the guild has never had one), and a `POST /refresh` that performs the upstream sync under the API's own one-minute cooldown. The page reads status once on mount and renders whatever is persisted immediately — there is no freshness countdown or expiry timer to derive from the payload, since the API no longer expires observations on a fixed window.
 
-The manual action calls the same endpoint with forced refresh and is disabled by mutation/query pending state. It does not invalidate guild membership or player data.
+On mount, if the returned `observedAt` is more than one hour old, or the read comes back as the never-observed conflict, the page automatically issues exactly one `POST /refresh` call in the background (mirroring `player-data-provider.tsx`'s 1-hour staleness gate, but checked once per mount instead of on a recurring interval). While the page stays mounted past that point, no further automatic check runs; the next automatic check happens only on the next mount, e.g. navigating back to Guild Raids. This is deliberate: guild raid status is only relevant while the user is actively on this page, unlike player data which the whole app depends on.
+
+A manual refresh action, local to the Guild Raids page (not the global `PlayerDataSyncButton`), calls `POST /refresh` directly and is disabled while a refresh mutation is pending, so the page cannot issue overlapping refresh actions. The API's own cooldown means a click inside that window still returns 200 with the current persisted result rather than an error, so the client treats every refresh response as a normal success and never needs to track cooldown state itself. It does not invalidate guild membership or player data.
 
 ### Use one canonical page view model
 

@@ -1,19 +1,67 @@
-import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 
 import { GuildAccessBoundary } from "@/features/guild-access"
 
 import { useGuildRaidsTutorial } from "./guild-raids.tutorial"
+import type { GuildRaidsViewModel } from "./guild-raid-status-view-model"
+import { useGuildRaidsViewModel } from "./use-guild-raids-view-model"
+import { GuildRaidFreshnessFooter } from "./status/guild-raid-freshness-footer"
+import { GuildRaidResourcesCard } from "./status/guild-raid-resources-card"
+import { GuildRaidStatusRegion } from "./status/guild-raid-status-region"
+
+function GuildRaidSidebar({ viewModel }: { viewModel: GuildRaidsViewModel }) {
+  const { status } = viewModel
+  const freshnessStatus =
+    status.kind === "active" || status.kind === "noActiveSeason"
+      ? status
+      : undefined
+
+  return (
+    <div className="flex flex-col gap-4">
+      {freshnessStatus ? (
+        <GuildRaidFreshnessFooter
+          freshness={freshnessStatus.freshness}
+          observedAtMs={freshnessStatus.observedAtMs}
+          lastGuildSyncSucceededAtMs={
+            freshnessStatus.lastGuildSyncSucceededAtMs
+          }
+          hasRefreshError={viewModel.hasRefreshError}
+          isRefreshing={viewModel.isRefreshing}
+          refresh={viewModel.refresh}
+        />
+      ) : null}
+      <GuildRaidResourcesCard resources={viewModel.resources} />
+    </div>
+  )
+}
+
+function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
+  const viewModel = useGuildRaidsViewModel()
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col gap-4">
+        <GuildRaidSidebar viewModel={viewModel} />
+        <div data-testid="guild-raid-status-section">
+          <GuildRaidStatusRegion isMobile={true} viewModel={viewModel} />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-start gap-8">
+      <div className="sticky top-6 w-80 shrink-0">
+        <GuildRaidSidebar viewModel={viewModel} />
+      </div>
+      <div className="min-w-0 flex-1" data-testid="guild-raid-status-section">
+        <GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />
+      </div>
+    </div>
+  )
+}
 
 export function GuildRaidsPage() {
-  const { t } = useTranslation("dailies")
   const isMobile = useIsMobile()
   useGuildRaidsTutorial()
 
@@ -24,29 +72,9 @@ export function GuildRaidsPage() {
         isMobile ? "guild-raids-mobile-shell" : "guild-raids-desktop-shell"
       }
     >
-      <div className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold">{t("guildRaids.title")}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t("guildRaids.subtitle")}
-        </p>
-      </div>
-
-      <div
-        className="w-full md:mx-auto md:max-w-2xl"
-        data-testid="guild-raids-access-shell"
-      >
+      <div className="w-full" data-testid="guild-raids-access-shell">
         <GuildAccessBoundary showGuildManagementLink>
-          {() => (
-            <Card data-testid="guild-raids-ready">
-              <CardHeader>
-                <CardTitle>{t("guildRaids.readyTitle")}</CardTitle>
-                <CardDescription>
-                  {t("guildRaids.readyDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent />
-            </Card>
-          )}
+          {() => <GuildRaidsReadyContent isMobile={isMobile} />}
         </GuildAccessBoundary>
       </div>
     </div>

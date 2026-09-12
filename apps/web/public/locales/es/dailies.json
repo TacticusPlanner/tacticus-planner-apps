@@ -21,17 +21,73 @@
     "arena": "Arena",
     "arenaDescription": "Consulta las batallas y recompensas de Arena",
     "guild-raids": "Incursiones de gremio",
-    "guild-raidsDescription": "Consulta la energía y el progreso de las Incursiones de gremio"
+    "guild-raidsDescription": "Consulta el estado actual de la Incursión de gremio y tus recursos personales de incursión."
   },
   "placeholder": {
     "title": "Esta diaria está en construcción",
     "description": "Este planificador estará disponible en una actualización futura."
   },
   "guildRaids": {
-    "title": "Incursiones de gremio",
-    "subtitle": "Prepara el acceso al gremio para consultar el estado y las recomendaciones de incursión.",
-    "readyTitle": "El acceso a las Incursiones de gremio está listo",
-    "readyDescription": "Tu gremio sincronizado está listo para planificar las Incursiones de gremio. El estado y las recomendaciones aparecerán aquí en una actualización posterior."
+    "status": {
+      "seasonLabel": "Temporada {{number}}",
+      "positionLabel": "Nivel {{tier}} · Set {{set}} de {{count}}",
+      "difficulty": {
+        "common": "Común",
+        "uncommon": "Poco común",
+        "rare": "Raro",
+        "epic": "Épico",
+        "legendary": "Legendario",
+        "mythic": "Mítico"
+      },
+      "upcomingBadge": "Próximo",
+      "hp": "{{remaining}} / {{max}} PS",
+      "hpUnavailable": "PS no disponibles",
+      "bossLabel": "Jefe",
+      "primeLeftLabel": "Prime · Izquierda",
+      "primeRightLabel": "Prime · Derecha",
+      "modifiersHit": "{{active}} / {{total}} modificadores activados",
+      "modifiersAllActive": "Todos los modificadores están activos",
+      "modifiersDialogTitle": "Modificadores de {{name}}",
+      "modifierActive": "Activo",
+      "modifierPending": "Aún no activo",
+      "modifierUnknown": "Activación desconocida",
+      "modifierThreshold": "Se activa con {{hp}} PS restantes",
+      "modifierThresholdUnavailable": "Umbral no disponible",
+      "modifierReduces": "Reduce {{label}}",
+      "modifierIncreases": "Aumenta {{label}}",
+      "seasonEndsLabel": "Termina {{time}}",
+      "seasonEndsUnavailable": "Fin de temporada no disponible",
+      "seasonEndingSoon": "La temporada está terminando",
+      "observedLabel": "Observado {{time}}",
+      "staleWarning": "Esta información podría estar desactualizada.",
+      "guildSyncedLabel": "Gremio sincronizado {{time}}",
+      "catalogWarning": "Algunos datos de la incursión no coinciden con tus datos locales del juego. Se muestran valores básicos.",
+      "refresh": "Actualizar estado",
+      "refreshing": "Actualizando…",
+      "refreshFailed": "Error al actualizar. Mostrando el último estado conocido."
+    },
+    "noActiveSeason": {
+      "title": "No hay temporada de Incursión de gremio activa",
+      "description": "Vuelve más tarde cuando comience la próxima temporada de tu gremio."
+    },
+    "neverObserved": {
+      "title": "Sincronizando el estado de la Incursión de gremio",
+      "description": "Esto puede tardar un momento la primera vez."
+    },
+    "loadError": {
+      "title": "No se pudo cargar el estado de la Incursión de gremio",
+      "retry": "Reintentar"
+    },
+    "resources": {
+      "title": "Tus recursos de incursión",
+      "tokens": "Fichas de incursión",
+      "bombs": "Fichas de bomba",
+      "nextLabel": "Próxima {{time}}",
+      "due": "Disponible ahora",
+      "full": "Completo",
+      "missingTitle": "Sincroniza tus datos de jugador",
+      "missingDescription": "Tus fichas de incursión aparecerán aquí una vez que se sincronicen tus datos de jugador."
+    }
   },
   "project": { "placeholder": "Selecciona un proyecto" },
   "raids": {
@@ -92,6 +148,14 @@
         "access": {
           "title": "Acceso al gremio",
           "content": "Completa cada requisito que se muestra aquí. Los gremios listos pasan directamente al espacio de Incursiones de gremio."
+        },
+        "status": {
+          "title": "Estado de la Incursión de gremio",
+          "content": "El jefe actual de tu gremio, PS, progreso de nivel y modificadores de primes, sincronizados automáticamente al abrir la página si los datos tienen más de una hora, o actualizados en cualquier momento a petición."
+        },
+        "resources": {
+          "title": "Tus recursos de incursión",
+          "content": "Tus fichas de incursión y de bomba sincronizadas, junto con la próxima disponible."
         }
       }
     },
