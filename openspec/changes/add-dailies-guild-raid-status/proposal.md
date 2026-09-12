@@ -6,7 +6,7 @@ Once guild access is ready, players need the current boss context and their avai
 
 - Consume the companion API's normalized current Guild Raid status and show season, boss, tier/difficulty, HP, tier progress, modifiers, remaining thresholds, remaining season time, and last guild synchronization time.
 - Show the player's locally synced raid tokens, next recharge, bomb availability, and bomb recharge below the guild status.
-- Use cached data immediately, revalidate stale data automatically, offer manual refresh, and prevent overlapping refresh actions.
+- Use cached data immediately, check staleness once when the page mounts and auto-trigger a background sync when the guild's last observation is over an hour old (or none exists yet), offer a page-local manual refresh, and prevent overlapping refresh actions.
 - Handle no active season, unavailable current boss/catalog mapping, stale persisted data, upstream failure with retained data, and missing player-resource data explicitly.
 - Provide purpose-built desktop and mobile layouts plus localized loading/error/empty states and a responsive Joyride tutorial.
 - Exclude all team recommendations and performance analytics from this slice.

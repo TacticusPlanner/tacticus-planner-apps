@@ -21,6 +21,11 @@ export function useRaidBossLabels() {
     [t]
   )
 
+  const hasBossName = useCallback(
+    (unitSetId: string) => i18n.exists(`raidBosses:${unitSetId}`),
+    [i18n]
+  )
+
   const abilityName = useCallback(
     (abilityId: string, fallback?: string) =>
       t(`raidBossAbilities:${abilityId}`, {
@@ -40,5 +45,5 @@ export function useRaidBossLabels() {
     [i18n]
   )
 
-  return { bossName, abilityName, traitName, hasTraitName }
+  return { bossName, hasBossName, abilityName, traitName, hasTraitName }
 }

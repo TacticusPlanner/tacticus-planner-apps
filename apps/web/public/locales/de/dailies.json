@@ -21,17 +21,73 @@
     "arena": "Arena",
     "arenaDescription": "Arena-Kämpfe und Belohnungen verfolgen",
     "guild-raids": "Gilden-Raids",
-    "guild-raidsDescription": "Energie und Fortschritt der Gilden-Raids verfolgen"
+    "guild-raidsDescription": "Sieh dir den aktuellen Gilden-Raid-Status deiner Gilde und deine persönlichen Raid-Ressourcen an."
   },
   "placeholder": {
     "title": "Dieser Bereich ist in Arbeit",
     "description": "Dieser Planer wird in einem zukünftigen Update verfügbar sein."
   },
   "guildRaids": {
-    "title": "Gilden-Raids",
-    "subtitle": "Richte deinen Gildenzugriff für Raid-Status und Empfehlungen ein.",
-    "readyTitle": "Der Zugriff auf Gilden-Raids ist bereit",
-    "readyDescription": "Deine synchronisierte Gilde ist für die Gilden-Raid-Planung bereit. Status und Empfehlungen erscheinen hier in einem späteren Update."
+    "status": {
+      "seasonLabel": "Saison {{number}}",
+      "positionLabel": "Stufe {{tier}} · Set {{set}} von {{count}}",
+      "difficulty": {
+        "common": "Gewöhnlich",
+        "uncommon": "Ungewöhnlich",
+        "rare": "Selten",
+        "epic": "Episch",
+        "legendary": "Legendär",
+        "mythic": "Mythisch"
+      },
+      "upcomingBadge": "Bevorstehend",
+      "hp": "{{remaining}} / {{max}} TP",
+      "hpUnavailable": "TP nicht verfügbar",
+      "bossLabel": "Boss",
+      "primeLeftLabel": "Prime · Links",
+      "primeRightLabel": "Prime · Rechts",
+      "modifiersHit": "{{active}} / {{total}} Modifikatoren ausgelöst",
+      "modifiersAllActive": "Alle Modifikatoren aktiv",
+      "modifiersDialogTitle": "Modifikatoren von {{name}}",
+      "modifierActive": "Aktiv",
+      "modifierPending": "Noch nicht aktiv",
+      "modifierUnknown": "Aktivierung unbekannt",
+      "modifierThreshold": "Aktiviert bei {{hp}} verbleibenden TP",
+      "modifierThresholdUnavailable": "Schwelle nicht verfügbar",
+      "modifierReduces": "Verringert {{label}}",
+      "modifierIncreases": "Erhöht {{label}}",
+      "seasonEndsLabel": "Endet {{time}}",
+      "seasonEndsUnavailable": "Saisonende nicht verfügbar",
+      "seasonEndingSoon": "Saison endet bald",
+      "observedLabel": "Beobachtet {{time}}",
+      "staleWarning": "Diese Angaben könnten veraltet sein.",
+      "guildSyncedLabel": "Gilde synchronisiert {{time}}",
+      "catalogWarning": "Einige Raid-Daten konnten nicht deinen lokalen Spieldaten zugeordnet werden. Es werden Basiswerte angezeigt.",
+      "refresh": "Status aktualisieren",
+      "refreshing": "Wird aktualisiert…",
+      "refreshFailed": "Aktualisierung fehlgeschlagen. Zeigt den letzten bekannten Status."
+    },
+    "noActiveSeason": {
+      "title": "Keine aktive Gilden-Raid-Saison",
+      "description": "Schau später wieder vorbei, wenn die nächste Saison deiner Gilde beginnt."
+    },
+    "neverObserved": {
+      "title": "Gilden-Raid-Status deiner Gilde wird synchronisiert",
+      "description": "Das kann beim ersten Mal einen Moment dauern."
+    },
+    "loadError": {
+      "title": "Gilden-Raid-Status konnte nicht geladen werden",
+      "retry": "Erneut versuchen"
+    },
+    "resources": {
+      "title": "Deine Raid-Ressourcen",
+      "tokens": "Raid-Marken",
+      "bombs": "Bomben-Marken",
+      "nextLabel": "Nächste {{time}}",
+      "due": "Jetzt verfügbar",
+      "full": "Voll",
+      "missingTitle": "Synchronisiere deine Spielerdaten",
+      "missingDescription": "Deine Raid-Markenanzahl erscheint hier, sobald deine Spielerdaten synchronisiert sind."
+    }
   },
   "project": { "placeholder": "Projekt auswählen" },
   "raids": {
@@ -92,6 +148,14 @@
         "access": {
           "title": "Gildenzugriff",
           "content": "Erfülle alle hier angezeigten Voraussetzungen. Bereite Gilden gelangen direkt zum Gilden-Raid-Arbeitsbereich."
+        },
+        "status": {
+          "title": "Gilden-Raid-Status",
+          "content": "Der aktuelle Boss deiner Gilde, TP, Stufenfortschritt und Prime-Modifikatoren – stündlich automatisch oder auf Wunsch aktualisiert."
+        },
+        "resources": {
+          "title": "Deine Raid-Ressourcen",
+          "content": "Deine synchronisierten Raid- und Bomben-Marken, inklusive Zeitpunkt der nächsten Marke."
         }
       }
     },

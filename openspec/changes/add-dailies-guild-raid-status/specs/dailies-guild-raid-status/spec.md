@@ -62,21 +62,28 @@ Assumptions:
 - **WHEN** guild status is available but the current player's Guild Raid token record is absent
 - **THEN** the status remains visible and the resource section explains that player data must be synchronized
 
-### Requirement: Status refresh preserves useful cached data
+### Requirement: Status refresh happens once per page visit, not on a timer
 
-The page SHALL show cached status immediately when present and SHALL measure its five-minute freshness window from the API payload's `observedAt`, not from the browser fetch time. A payload marked `stale` SHALL be stale immediately. A `fresh` payload SHALL revalidate automatically when its remaining observation lifetime reaches zero, including while the page remains mounted. Client/server clock skew SHALL NOT extend freshness beyond five minutes from browser receipt. A manual refresh SHALL request forced refresh and SHALL be disabled while that refresh is active so the page cannot issue overlapping refresh actions.
+The page SHALL request status once when the Guild Raids page mounts and SHALL show cached/persisted status immediately without waiting on a sync. On mount, if the returned `observedAt` is more than one hour old, or the read indicates the guild has no observation yet, the page SHALL automatically issue exactly one forced-refresh request in the background. The page SHALL NOT schedule any further automatic revalidation while it stays mounted; the next automatic check SHALL only occur on a subsequent mount (e.g. navigating back to the page).
+
+A manual refresh action, local to the Guild Raids page, SHALL request forced refresh and SHALL be disabled while a refresh is pending so the page cannot issue overlapping refresh actions. Because the API enforces its own cooldown, a refresh request inside that window SHALL return the current persisted result rather than an error, and the page SHALL treat it as an ordinary successful response.
 
 When refresh returns retained stale data, the page SHALL keep it visible with a stale warning and observation time. When refresh fails and no retained status exists, the page SHALL show a retryable error. Manual status refresh SHALL NOT trigger guild roster synchronization or player-data synchronization.
 
-#### Scenario: Cached status becomes stale
+#### Scenario: Page mount triggers a background check for stale data
 
-- **WHEN** cached status is older than five minutes
-- **THEN** the page continues showing it while one background revalidation runs
+- **WHEN** the Guild Raids page mounts and the persisted observation is over one hour old
+- **THEN** the page renders the cached status immediately and issues one background refresh request without blocking the initial render
 
-#### Scenario: Fresh response is near expiry
+#### Scenario: Recently observed status needs no automatic refresh
 
-- **WHEN** a freshly fetched payload is marked `fresh` but its `observedAt` is four minutes and fifty-nine seconds old
-- **THEN** the page schedules background revalidation in approximately one second rather than granting another five-minute window
+- **WHEN** the page mounts and the persisted observation is under one hour old
+- **THEN** the page renders it and does not issue an automatic refresh request
+
+#### Scenario: Mounted page does not poll
+
+- **WHEN** the user keeps the page open and mounted past the one-hour threshold without navigating away
+- **THEN** no automatic refresh occurs until the next time the page mounts
 
 #### Scenario: Manual refresh is already running
 
@@ -90,7 +97,12 @@ When refresh returns retained stale data, the page SHALL keep it visible with a 
 
 ### Requirement: Status absence and mapping failures are explicit
 
-The page SHALL distinguish initial loading, request failure, no active season, active season with an unknown catalog config/current boss mapping, and active status with stale data. A valid no-active-season response SHALL show a neutral empty state rather than a retryable error. Unknown ids SHALL use readable fallbacks and explain that detailed progression is unavailable.
+The page SHALL distinguish initial loading, a guild with no observation yet, request failure, no active season, active season with an unknown catalog config/current boss mapping, and active status with stale data. A valid no-active-season response SHALL show a neutral empty state rather than a retryable error. Unknown ids SHALL use readable fallbacks and explain that detailed progression is unavailable.
+
+#### Scenario: Guild has never had a raid-status observation
+
+- **WHEN** the status request returns the API's never-observed conflict
+- **THEN** the page shows a syncing/loading state, relies on the automatic mount-triggered refresh to populate it, and renders the result once that refresh completes
 
 #### Scenario: No season is active
 

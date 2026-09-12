@@ -21,17 +21,73 @@
     "arena": "Arène",
     "arenaDescription": "Suivez les combats et récompenses de l'Arène",
     "guild-raids": "Raids de guilde",
-    "guild-raidsDescription": "Suivez l'énergie et la progression des Raids de guilde"
+    "guild-raidsDescription": "Consultez le statut actuel du Raid de guilde et vos ressources personnelles de raid."
   },
   "placeholder": {
     "title": "Cette quotidienne est en construction",
     "description": "Ce planificateur sera disponible dans une prochaine mise à jour."
   },
   "guildRaids": {
-    "title": "Raids de guilde",
-    "subtitle": "Préparez l'accès à votre guilde pour le suivi et les recommandations de raid.",
-    "readyTitle": "L'accès aux Raids de guilde est prêt",
-    "readyDescription": "Votre guilde synchronisée est prête pour la planification des Raids de guilde. Le suivi et les recommandations apparaîtront ici dans une prochaine mise à jour."
+    "status": {
+      "seasonLabel": "Saison {{number}}",
+      "positionLabel": "Palier {{tier}} · Set {{set}} sur {{count}}",
+      "difficulty": {
+        "common": "Commun",
+        "uncommon": "Peu commun",
+        "rare": "Rare",
+        "epic": "Épique",
+        "legendary": "Légendaire",
+        "mythic": "Mythique"
+      },
+      "upcomingBadge": "À venir",
+      "hp": "{{remaining}} / {{max}} PV",
+      "hpUnavailable": "PV indisponibles",
+      "bossLabel": "Boss",
+      "primeLeftLabel": "Prime · Gauche",
+      "primeRightLabel": "Prime · Droite",
+      "modifiersHit": "{{active}} / {{total}} modificateurs déclenchés",
+      "modifiersAllActive": "Tous les modificateurs sont actifs",
+      "modifiersDialogTitle": "Modificateurs de {{name}}",
+      "modifierActive": "Actif",
+      "modifierPending": "Pas encore actif",
+      "modifierUnknown": "Activation inconnue",
+      "modifierThreshold": "S'active à {{hp}} PV restants",
+      "modifierThresholdUnavailable": "Seuil indisponible",
+      "modifierReduces": "Réduit {{label}}",
+      "modifierIncreases": "Augmente {{label}}",
+      "seasonEndsLabel": "Se termine {{time}}",
+      "seasonEndsUnavailable": "Fin de saison indisponible",
+      "seasonEndingSoon": "La saison se termine bientôt",
+      "observedLabel": "Observé {{time}}",
+      "staleWarning": "Ces informations pourraient être obsolètes.",
+      "guildSyncedLabel": "Guilde synchronisée {{time}}",
+      "catalogWarning": "Certaines données de raid n'ont pas pu être associées à vos données de jeu locales. Affichage des valeurs de base.",
+      "refresh": "Actualiser le statut",
+      "refreshing": "Actualisation…",
+      "refreshFailed": "Échec de l'actualisation. Affichage du dernier statut connu."
+    },
+    "noActiveSeason": {
+      "title": "Aucune saison de Raid de guilde active",
+      "description": "Revenez lorsque la prochaine saison de votre guilde commencera."
+    },
+    "neverObserved": {
+      "title": "Synchronisation du statut du Raid de guilde",
+      "description": "Cela peut prendre un moment la première fois."
+    },
+    "loadError": {
+      "title": "Impossible de charger le statut du Raid de guilde",
+      "retry": "Réessayer"
+    },
+    "resources": {
+      "title": "Vos ressources de raid",
+      "tokens": "Jetons de raid",
+      "bombs": "Jetons de bombe",
+      "nextLabel": "Prochain {{time}}",
+      "due": "Disponible maintenant",
+      "full": "Complet",
+      "missingTitle": "Synchronisez vos données de joueur",
+      "missingDescription": "Vos jetons de raid apparaîtront ici une fois vos données de joueur synchronisées."
+    }
   },
   "project": { "placeholder": "Choisir un projet" },
   "raids": {
@@ -92,6 +148,14 @@
         "access": {
           "title": "Accès à la guilde",
           "content": "Remplissez chaque condition affichée ici. Les guildes prêtes accèdent directement à l'espace des Raids de guilde."
+        },
+        "status": {
+          "title": "Statut du Raid de guilde",
+          "content": "Le boss actuel de votre guilde, ses PV, la progression de palier et les modificateurs des primes, actualisés automatiquement toutes les heures ou à la demande."
+        },
+        "resources": {
+          "title": "Vos ressources de raid",
+          "content": "Vos jetons de raid et de bombe synchronisés, avec la disponibilité du prochain jeton."
         }
       }
     },
