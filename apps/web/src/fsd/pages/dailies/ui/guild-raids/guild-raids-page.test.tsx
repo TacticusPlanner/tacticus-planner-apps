@@ -38,6 +38,13 @@ vi.mock("./use-guild-raids-view-model", () => ({
   useGuildRaidsViewModel: () => viewModel,
 }))
 
+const useGuildRaidExactReadiness =
+  vi.fn<(bossUnitSetId: string) => { status: "absentMeta" }>()
+vi.mock("@/entities/guild-raid-meta", () => ({
+  useGuildRaidExactReadiness: (bossUnitSetId: string) =>
+    useGuildRaidExactReadiness(bossUnitSetId),
+}))
+
 import { GuildRaidsPage } from "./guild-raids-page"
 
 const NOW = Date.now()
@@ -80,6 +87,8 @@ describe("GuildRaidsPage", () => {
     register.mockClear()
     useIsMobile.mockReturnValue(false)
     viewModel = loadingViewModel
+    useGuildRaidExactReadiness.mockClear()
+    useGuildRaidExactReadiness.mockReturnValue({ status: "absentMeta" })
   })
 
   it.each([
@@ -89,6 +98,7 @@ describe("GuildRaidsPage", () => {
     "renders a valid %s tutorial target set",
     (_name, mobile, shell) => {
       useIsMobile.mockReturnValue(mobile)
+      viewModel = activeViewModel()
       render(<GuildRaidsPage />)
 
       const steps = register.mock.lastCall?.[0] as {
@@ -139,5 +149,27 @@ describe("GuildRaidsPage", () => {
     expect(
       screen.queryByTestId("guild-raid-observed-at")
     ).not.toBeInTheDocument()
+  })
+
+  it("does not render the exact-Meta section when there is no active boss", () => {
+    viewModel = loadingViewModel
+    render(<GuildRaidsPage />)
+
+    expect(
+      screen.queryByTestId("guild-raid-exact-meta-section")
+    ).not.toBeInTheDocument()
+  })
+
+  it("renders the exact-Meta section for the active boss, below the status section", () => {
+    viewModel = activeViewModel()
+    render(<GuildRaidsPage />)
+
+    expect(useGuildRaidExactReadiness).toHaveBeenLastCalledWith("boss")
+    const statusSection = screen.getByTestId("guild-raid-status-section")
+    const exactMetaSection = screen.getByTestId("guild-raid-exact-meta-section")
+    expect(
+      statusSection.compareDocumentPosition(exactMetaSection) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
   })
 })

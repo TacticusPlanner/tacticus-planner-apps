@@ -87,6 +87,45 @@
       "full": "Voll",
       "missingTitle": "Synchronisiere deine Spielerdaten",
       "missingDescription": "Deine Raid-Markenanzahl erscheint hier, sobald deine Spielerdaten synchronisiert sind."
+    },
+    "exactMeta": {
+      "title": "Exakte-Meta-Bereitschaft",
+      "description": "Kuratierte exakte Aufstellungen für diesen Boss, verglichen mit deinem synchronisierten Kader. Ersatzspieler werden noch nicht bewertet.",
+      "kind": {
+        "meta": "Meta",
+        "alternate": "Alternative"
+      },
+      "readiness": {
+        "ready": "Bereit",
+        "partial": "Teilweise",
+        "unavailable": "Nicht verfügbar",
+        "unknown": "Bereitschaft unbekannt"
+      },
+      "missingCount_one": "{{count}} Held fehlt",
+      "missingCount_other": "{{count}} Helden fehlen",
+      "mowLabel": "Kriegsmaschine",
+      "mowOwned": "Vorhanden",
+      "mowMissing": "Fehlt",
+      "compsLabel": "Referenzierte Comps",
+      "sourceLabel": "Quelle: {{name}}",
+      "updatedLabel": "Aktualisiert {{date}}",
+      "detailsToggle": "Comps und Quelle",
+      "investment": {
+        "rank": "Rang {{rank}}",
+        "level": "Stufe {{level}}"
+      },
+      "absentMeta": {
+        "title": "Gilden-Raid-Meta-Daten synchronisieren",
+        "description": "Exakte-Meta-Empfehlungen erscheinen hier, sobald der kuratierte Datensatz synchronisiert ist."
+      },
+      "noBossRecommendation": {
+        "title": "Keine kuratierte Empfehlung für diesen Boss",
+        "description": "Der Gilden-Raid-Meta-Datensatz enthält diesen Boss noch nicht."
+      },
+      "missingRoster": {
+        "title": "Synchronisiere deine Spielerdaten",
+        "description": "Ideale Aufstellungen werden unten angezeigt, aber die Bereitschaft benötigt deinen synchronisierten Kader."
+      }
     }
   },
   "project": { "placeholder": "Projekt auswählen" },
@@ -156,6 +195,14 @@
         "resources": {
           "title": "Deine Raid-Ressourcen",
           "content": "Deine synchronisierten Raid- und Bomben-Marken, inklusive Zeitpunkt der nächsten Marke."
+        },
+        "exactMetaDesktop": {
+          "title": "Exakte-Meta-Bereitschaft",
+          "content": "Kuratierte exakte Aufstellungen für den aktiven Boss, mit deinen vorhandenen und fehlenden Helden nebeneinander."
+        },
+        "exactMetaMobile": {
+          "title": "Exakte-Meta-Bereitschaft",
+          "content": "Hier steht die Bereitschaft zuerst – klappe eine Karte auf für die vollständige Aufstellung, Comps und Quelle."
         }
       }
     },

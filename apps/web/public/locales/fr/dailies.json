@@ -87,6 +87,45 @@
       "full": "Complet",
       "missingTitle": "Synchronisez vos données de joueur",
       "missingDescription": "Vos jetons de raid apparaîtront ici une fois vos données de joueur synchronisées."
+    },
+    "exactMeta": {
+      "title": "Préparation Meta exacte",
+      "description": "Compositions exactes sélectionnées pour ce boss, comparées à votre effectif synchronisé. Les remplacements ne sont pas encore évalués.",
+      "kind": {
+        "meta": "Meta",
+        "alternate": "Alternative"
+      },
+      "readiness": {
+        "ready": "Prête",
+        "partial": "Partielle",
+        "unavailable": "Indisponible",
+        "unknown": "Préparation inconnue"
+      },
+      "missingCount_one": "{{count}} héros manquant",
+      "missingCount_other": "{{count}} héros manquants",
+      "mowLabel": "Machine de guerre",
+      "mowOwned": "Disponible",
+      "mowMissing": "Manquante",
+      "compsLabel": "Comps référencées",
+      "sourceLabel": "Source : {{name}}",
+      "updatedLabel": "Mise à jour {{date}}",
+      "detailsToggle": "Comps et source",
+      "investment": {
+        "rank": "Rang {{rank}}",
+        "level": "Niveau {{level}}"
+      },
+      "absentMeta": {
+        "title": "Synchronisez les données Meta du Raid de guilde",
+        "description": "Les recommandations Meta exactes apparaîtront ici une fois le jeu de données sélectionné synchronisé."
+      },
+      "noBossRecommendation": {
+        "title": "Aucune recommandation sélectionnée pour ce boss",
+        "description": "Le jeu de données Meta du Raid de guilde n'inclut pas encore ce boss."
+      },
+      "missingRoster": {
+        "title": "Synchronisez vos données de joueur",
+        "description": "Les compositions idéales sont affichées ci-dessous, mais la préparation nécessite votre effectif synchronisé."
+      }
     }
   },
   "project": { "placeholder": "Choisir un projet" },
@@ -156,6 +195,14 @@
         "resources": {
           "title": "Vos ressources de raid",
           "content": "Vos jetons de raid et de bombe synchronisés, avec la disponibilité du prochain jeton."
+        },
+        "exactMetaDesktop": {
+          "title": "Préparation Meta exacte",
+          "content": "Compositions exactes sélectionnées pour le boss actif, avec vos héros disponibles et manquants côte à côte."
+        },
+        "exactMetaMobile": {
+          "title": "Préparation Meta exacte",
+          "content": "Ici, la préparation apparaît en premier : dépliez une carte pour voir la composition complète, les Comps et la source."
         }
       }
     },

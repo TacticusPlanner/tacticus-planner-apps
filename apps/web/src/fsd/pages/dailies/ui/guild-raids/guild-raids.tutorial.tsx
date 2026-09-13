@@ -10,7 +10,13 @@ export function useGuildRaidsTutorial() {
   const steps = useMemo<TourPageSteps>(() => {
     const step = (
       target: string,
-      key: "purpose" | "access" | "status" | "resources"
+      key:
+        | "purpose"
+        | "access"
+        | "status"
+        | "resources"
+        | "exactMetaDesktop"
+        | "exactMetaMobile"
     ): Step => ({
       target: `[data-testid="${target}"]`,
       title: t(`tour.guildRaids.steps.${key}.title`),
@@ -23,12 +29,14 @@ export function useGuildRaidsTutorial() {
         step("guild-raids-access-shell", "access"),
         step("guild-raid-status-section", "status"),
         step("guild-raid-resources-card", "resources"),
+        step("guild-raid-exact-meta-section", "exactMetaDesktop"),
       ],
       mobile: [
         step("guild-raids-mobile-shell", "purpose"),
         step("guild-raids-access-shell", "access"),
         step("guild-raid-status-section", "status"),
         step("guild-raid-resources-card", "resources"),
+        step("guild-raid-exact-meta-section", "exactMetaMobile"),
       ],
     }
   }, [t])

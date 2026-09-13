@@ -1,7 +1,9 @@
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import { useGuildRaidExactReadiness } from "@/entities/guild-raid-meta"
 import { GuildAccessBoundary } from "@/features/guild-access"
 
+import { GuildRaidExactMetaRegion } from "./exact-meta/guild-raid-exact-meta-region"
 import { useGuildRaidsTutorial } from "./guild-raids.tutorial"
 import type { GuildRaidsViewModel } from "./guild-raid-status-view-model"
 import { useGuildRaidsViewModel } from "./use-guild-raids-view-model"
@@ -37,6 +39,19 @@ function GuildRaidSidebar({ viewModel }: { viewModel: GuildRaidsViewModel }) {
 
 function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
   const viewModel = useGuildRaidsViewModel()
+  const activeBossUnitSetId =
+    viewModel.status.kind === "active"
+      ? viewModel.status.season.boss.unitSetId
+      : undefined
+  // Always called (rules of hooks): an inactive boss is resolved as a harmless "" query below and
+  // simply not rendered, since exact-Meta readiness only makes sense once a boss is active.
+  const exactMetaQuery = useGuildRaidExactReadiness(activeBossUnitSetId ?? "")
+
+  const exactMetaSection = activeBossUnitSetId ? (
+    <div data-testid="guild-raid-exact-meta-section">
+      <GuildRaidExactMetaRegion isMobile={isMobile} query={exactMetaQuery} />
+    </div>
+  ) : null
 
   if (isMobile) {
     return (
@@ -45,6 +60,7 @@ function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
         <div data-testid="guild-raid-status-section">
           <GuildRaidStatusRegion isMobile={true} viewModel={viewModel} />
         </div>
+        {exactMetaSection}
       </div>
     )
   }
@@ -54,8 +70,11 @@ function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
       <div className="sticky top-6 w-80 shrink-0">
         <GuildRaidSidebar viewModel={viewModel} />
       </div>
-      <div className="min-w-0 flex-1" data-testid="guild-raid-status-section">
-        <GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />
+      <div className="flex min-w-0 flex-1 flex-col gap-6">
+        <div data-testid="guild-raid-status-section">
+          <GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />
+        </div>
+        {exactMetaSection}
       </div>
     </div>
   )
