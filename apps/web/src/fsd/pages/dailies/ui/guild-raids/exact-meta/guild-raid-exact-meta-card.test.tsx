@@ -136,7 +136,7 @@ describe("GuildRaidExactMetaCard", () => {
       />
     )
     expect(screen.getByTestId("guild-raid-exact-meta-heroes").textContent).toBe(
-      "Hero AHero BHero CHero DHero EMow X"
+      "Hero AguildRaids.exactMeta.ownership.ownedHero BguildRaids.exactMeta.ownership.ownedHero CguildRaids.exactMeta.ownership.missingHero DguildRaids.exactMeta.ownership.missingHero EguildRaids.exactMeta.ownership.missingMow XguildRaids.exactMeta.ownership.owned"
     )
     unmount()
 
@@ -149,7 +149,7 @@ describe("GuildRaidExactMetaCard", () => {
       />
     )
     expect(screen.getByTestId("guild-raid-exact-meta-heroes").textContent).toBe(
-      "Hero AHero BHero CHero DHero EMow X"
+      "Hero AguildRaids.exactMeta.ownership.ownedHero BguildRaids.exactMeta.ownership.ownedHero CguildRaids.exactMeta.ownership.missingHero DguildRaids.exactMeta.ownership.missingHero EguildRaids.exactMeta.ownership.missingMow XguildRaids.exactMeta.ownership.owned"
     )
   })
 

@@ -45,10 +45,12 @@ export function useGuildRaidExactReadiness(
         : { status: "loading" }
     }
 
+    if (roster === undefined) {
+      return { status: "loading" }
+    }
+
     const isRosterSynced =
-      roster !== undefined &&
-      roster.characters !== undefined &&
-      roster.mows !== undefined
+      roster.characters !== undefined && roster.mows !== undefined
 
     const readinessRoster = isRosterSynced
       ? {

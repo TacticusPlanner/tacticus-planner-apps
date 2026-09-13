@@ -34,6 +34,7 @@ function UnitAvatar({
   size: "sm" | "md"
   testIdPrefix: string
 }) {
+  const { t } = useTranslation("dailies")
   const ownedState =
     unit.owned === undefined ? "unknown" : unit.owned ? "owned" : "missing"
 
@@ -52,6 +53,9 @@ function UnitAvatar({
         )}
       />
       <span className="w-full truncate text-center text-xs">{unit.name}</span>
+      <span className="sr-only">
+        {t(`guildRaids.exactMeta.ownership.${ownedState}`)}
+      </span>
       {unit.owned && unit.investment?.rank ? (
         <RankBadge
           rank={unit.investment.rank}

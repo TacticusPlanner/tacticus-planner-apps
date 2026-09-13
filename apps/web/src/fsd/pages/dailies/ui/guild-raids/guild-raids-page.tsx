@@ -46,6 +46,7 @@ function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
   // Always called (rules of hooks): an inactive boss is resolved as a harmless "" query below and
   // simply not rendered, since exact-Meta readiness only makes sense once a boss is active.
   const exactMetaQuery = useGuildRaidExactReadiness(activeBossUnitSetId ?? "")
+  useGuildRaidsTutorial(activeBossUnitSetId !== undefined)
 
   const exactMetaSection = activeBossUnitSetId ? (
     <div data-testid="guild-raid-exact-meta-section">
@@ -82,7 +83,6 @@ function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
 
 export function GuildRaidsPage() {
   const isMobile = useIsMobile()
-  useGuildRaidsTutorial()
 
   return (
     <div
