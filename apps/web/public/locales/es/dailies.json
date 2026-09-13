@@ -87,6 +87,50 @@
       "full": "Completo",
       "missingTitle": "Sincroniza tus datos de jugador",
       "missingDescription": "Tus fichas de incursión aparecerán aquí una vez que se sincronicen tus datos de jugador."
+    },
+    "exactMeta": {
+      "title": "Preparación de Meta exacta",
+      "description": "Alineaciones exactas seleccionadas para este jefe, comparadas con tu plantilla sincronizada. Las sustituciones aún no se evalúan.",
+      "kind": {
+        "meta": "Meta",
+        "alternate": "Alternativa"
+      },
+      "readiness": {
+        "ready": "Lista",
+        "partial": "Parcial",
+        "unavailable": "No disponible",
+        "unknown": "Preparación desconocida"
+      },
+      "missingCount_one": "Falta {{count}} héroe",
+      "missingCount_other": "Faltan {{count}} héroes",
+      "mowLabel": "Máquina de Guerra",
+      "mowOwned": "Disponible",
+      "mowMissing": "Falta",
+      "ownership": {
+        "owned": "Disponible",
+        "missing": "Falta",
+        "unknown": "Estado de posesión desconocido"
+      },
+      "compsLabel": "Comps referenciadas",
+      "sourceLabel": "Fuente: {{name}}",
+      "updatedLabel": "Actualizado {{date}}",
+      "detailsToggle": "Comps y fuente",
+      "investment": {
+        "rank": "Rango {{rank}}",
+        "level": "Nivel {{level}}"
+      },
+      "absentMeta": {
+        "title": "Sincroniza los datos de Meta de Incursión de gremio",
+        "description": "Las recomendaciones de Meta exacta aparecerán aquí una vez que se sincronice el conjunto de datos seleccionado."
+      },
+      "noBossRecommendation": {
+        "title": "No hay recomendación seleccionada para este jefe",
+        "description": "El conjunto de datos de Meta de Incursión de gremio todavía no incluye este jefe."
+      },
+      "missingRoster": {
+        "title": "Sincroniza tus datos de jugador",
+        "description": "Las alineaciones ideales se muestran abajo, pero la preparación necesita tu plantilla sincronizada."
+      }
     }
   },
   "project": { "placeholder": "Selecciona un proyecto" },
@@ -156,6 +200,14 @@
         "resources": {
           "title": "Tus recursos de incursión",
           "content": "Tus fichas de incursión y de bomba sincronizadas, junto con la próxima disponible."
+        },
+        "exactMetaDesktop": {
+          "title": "Preparación de Meta exacta",
+          "content": "Alineaciones exactas seleccionadas para el jefe activo, con tus héroes disponibles y faltantes uno junto al otro."
+        },
+        "exactMetaMobile": {
+          "title": "Preparación de Meta exacta",
+          "content": "Aquí la preparación aparece primero: expande una tarjeta para ver las Comps y la fuente."
         }
       }
     },
