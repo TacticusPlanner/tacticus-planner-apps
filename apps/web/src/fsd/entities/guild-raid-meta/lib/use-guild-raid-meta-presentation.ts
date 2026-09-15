@@ -59,6 +59,14 @@ export function useGuildRaidMetaCatalog(): GuildRaidMetaCatalog {
         mowsById: catalog.mowsById,
         bossName: (bossUnitSetId, fallback) =>
           t(`raidBosses:${bossUnitSetId}`, { defaultValue: fallback }),
+        roleLabel: (roleId, fallback) =>
+          t(`dailies:guildRaids.variantRules.role.${roleId}`, {
+            defaultValue: fallback,
+          }),
+        kindLabel: (kind, fallback) =>
+          t(`dailies:guildRaids.variantRules.kind.${kind}`, {
+            defaultValue: fallback,
+          }),
       }),
     }
   }, [catalog, retry, t])

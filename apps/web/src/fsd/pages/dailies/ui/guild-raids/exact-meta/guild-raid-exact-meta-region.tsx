@@ -16,13 +16,18 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import type { GuildRaidExactReadinessQuery } from "@/entities/guild-raid-meta"
 
 import { GuildRaidExactMetaCard } from "./guild-raid-exact-meta-card"
+import type { GuildRaidInvestmentReadinessQuery } from "./use-guild-raid-investment-readiness"
 
 export function GuildRaidExactMetaRegion({
   isMobile,
   query,
+  readinessQuery,
 }: {
   isMobile: boolean
   query: GuildRaidExactReadinessQuery
+  /** Omitted (or `{ status: "unavailable" }`) falls back to the plain ownership-only cards below —
+   * see `useGuildRaidInvestmentReadiness`. */
+  readinessQuery?: GuildRaidInvestmentReadinessQuery
 }) {
   const { t } = useTranslation("dailies")
 
@@ -100,13 +105,16 @@ export function GuildRaidExactMetaRegion({
       <div className="flex flex-col gap-4">
         {query.recommendations.map((recommendation) => (
           <GuildRaidExactMetaCard
-            key={`${recommendation.kind}-${recommendation.heroes
-              .map((hero) => hero.id)
-              .join(",")}`}
+            key={recommendation.id}
             isMobile={isMobile}
             recommendation={recommendation}
             source={query.source}
             updatedOn={query.updatedOn}
+            readiness={
+              readinessQuery?.status === "ready"
+                ? readinessQuery.byRecommendationId.get(recommendation.id)
+                : undefined
+            }
           />
         ))}
       </div>

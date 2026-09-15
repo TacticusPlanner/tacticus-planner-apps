@@ -4,6 +4,7 @@ import { useGuildRaidExactReadiness } from "@/entities/guild-raid-meta"
 import { GuildAccessBoundary } from "@/features/guild-access"
 
 import { GuildRaidExactMetaRegion } from "./exact-meta/guild-raid-exact-meta-region"
+import { useGuildRaidInvestmentReadiness } from "./exact-meta/use-guild-raid-investment-readiness"
 import { useGuildRaidsTutorial } from "./guild-raids.tutorial"
 import type { GuildRaidsViewModel } from "./guild-raid-status-view-model"
 import { useGuildRaidsViewModel } from "./use-guild-raids-view-model"
@@ -46,11 +47,23 @@ function GuildRaidsReadyContent({ isMobile }: { isMobile: boolean }) {
   // Always called (rules of hooks): an inactive boss is resolved as a harmless "" query below and
   // simply not rendered, since exact-Meta readiness only makes sense once a boss is active.
   const exactMetaQuery = useGuildRaidExactReadiness(activeBossUnitSetId ?? "")
+  const investmentReadinessQuery = useGuildRaidInvestmentReadiness({
+    bossUnitSetId: activeBossUnitSetId ?? "",
+    isObservationActive: viewModel.status.kind === "active",
+    liveProgressionIndex:
+      viewModel.status.kind === "active"
+        ? viewModel.status.season.boss.progressionIndex
+        : undefined,
+  })
   useGuildRaidsTutorial(activeBossUnitSetId !== undefined)
 
   const exactMetaSection = activeBossUnitSetId ? (
     <div data-testid="guild-raid-exact-meta-section">
-      <GuildRaidExactMetaRegion isMobile={isMobile} query={exactMetaQuery} />
+      <GuildRaidExactMetaRegion
+        isMobile={isMobile}
+        query={exactMetaQuery}
+        readinessQuery={investmentReadinessQuery}
+      />
     </div>
   ) : null
 

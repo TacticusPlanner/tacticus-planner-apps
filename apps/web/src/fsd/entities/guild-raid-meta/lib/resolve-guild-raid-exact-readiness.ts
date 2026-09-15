@@ -69,9 +69,9 @@ export function resolveGuildRaidExactReadiness(params: {
 
   const recommendations = boss.recommendations.map(
     (recommendation): GuildRaidExactReadinessRecommendationResult => {
-      const heroes = recommendation.heroIds.map((id) => ({
-        id,
-        owned: roster.ownedCharacterIds.has(id),
+      const heroes = recommendation.heroSlots.map((slot) => ({
+        id: slot.heroId,
+        owned: roster.ownedCharacterIds.has(slot.heroId),
       }))
       const ownedCount = heroes.filter((hero) => hero.owned).length
 

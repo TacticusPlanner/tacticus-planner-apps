@@ -1,5 +1,5 @@
 import type { GameCatalogGuildRaidMeta } from "@workspace/game-catalog"
-import type { Rank } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type {
   GuildRaidMetaPresentationResolver,
@@ -8,9 +8,71 @@ import type {
 } from "./resolve-guild-raid-meta"
 import type { GuildRaidExactReadinessResult } from "./resolve-guild-raid-exact-readiness"
 
+// A superset of `GuildRaidInvestmentFacts` (adds `xpLevel`, for display) — deliberately using the same
+// field name `progression` for the same `Progression` value, not the roster schema's own confusingly-
+// named `progressionIndex` field (which holds a `Progression` string, not a numeric index — see
+// `GuildRaidRosterUnit` below), so this type is directly usable as investment-readiness input with no
+// adapter.
 export type GuildRaidExactReadinessInvestment = {
   xpLevel: number
   rank?: Rank
+  progression: Progression
+  activeAbilityLevel: number
+  passiveAbilityLevel: number
+}
+
+/** The synced-roster fields this entity actually reads, independent of whether the caller is a
+ * character or a Machine of War record (MoWs simply have no `rank`). Field name `progressionIndex`
+ * matches the roster schema's own (confusingly-named — it holds a `Progression` string, not a numeric
+ * index) field verbatim. */
+type GuildRaidRosterUnit = {
+  unitId: string
+  xpLevel: number
+  rank?: Rank
+  progressionIndex: Progression
+  abilities: { level: number }[]
+}
+
+/**
+ * Maps the synced owned roster into the two shapes this entity's readiness calculators need: the
+ * plain owned-id sets `resolveGuildRaidExactReadiness` compares against, and the per-unit investment
+ * facts `resolveGuildRaidHeroReadiness`/`resolveGuildRaidMowReadiness` compare against the boss's
+ * threshold. `abilities[0]` is a unit's active-ability record and `abilities[1]` its passive, mirroring
+ * the same ordering convention already used by the Dailies team engine (`arena-recommendations.ts`);
+ * a unit missing either defaults to level 1 rather than 0, matching that same convention.
+ */
+export function buildGuildRaidRosterInvestment(roster: {
+  characters: readonly GuildRaidRosterUnit[]
+  mows: readonly GuildRaidRosterUnit[]
+}): {
+  ownedCharacterIds: ReadonlySet<string>
+  ownedMowIds: ReadonlySet<string>
+  investmentByCharacterId: ReadonlyMap<
+    string,
+    GuildRaidExactReadinessInvestment
+  >
+  investmentByMowId: ReadonlyMap<string, GuildRaidExactReadinessInvestment>
+} {
+  const toInvestment = (
+    unit: GuildRaidRosterUnit
+  ): GuildRaidExactReadinessInvestment => ({
+    xpLevel: unit.xpLevel,
+    rank: unit.rank,
+    progression: unit.progressionIndex,
+    activeAbilityLevel: unit.abilities[0]?.level ?? 1,
+    passiveAbilityLevel: unit.abilities[1]?.level ?? 1,
+  })
+
+  return {
+    ownedCharacterIds: new Set(roster.characters.map((unit) => unit.unitId)),
+    ownedMowIds: new Set(roster.mows.map((unit) => unit.unitId)),
+    investmentByCharacterId: new Map(
+      roster.characters.map((unit) => [unit.unitId, toInvestment(unit)])
+    ),
+    investmentByMowId: new Map(
+      roster.mows.map((unit) => [unit.unitId, toInvestment(unit)])
+    ),
+  }
 }
 
 export type GuildRaidExactReadinessUnitView = GuildRaidMetaUnitPresentation & {
@@ -20,7 +82,8 @@ export type GuildRaidExactReadinessUnitView = GuildRaidMetaUnitPresentation & {
 }
 
 export type GuildRaidExactReadinessRecommendationView = {
-  kind: "meta" | "alternate"
+  id: string
+  kind: string
   heroes: GuildRaidExactReadinessUnitView[]
   mow: GuildRaidExactReadinessUnitView
   comps: Array<{ id: string; signature: GuildRaidMetaUnitPresentation }>
@@ -82,6 +145,7 @@ export function buildGuildRaidExactReadinessView(params: {
       recommendations: readiness.recommendations.map((recommendation) => {
         const resolved = presentation.resolveRecommendation(recommendation)
         return {
+          id: recommendation.id,
           kind: recommendation.kind,
           heroes: resolved.heroes,
           mow: resolved.mow,
@@ -102,6 +166,7 @@ export function buildGuildRaidExactReadinessView(params: {
       )
 
       return {
+        id: entry.recommendation.id,
         kind: entry.recommendation.kind,
         heroes: resolved.heroes.map((hero) => ({
           ...hero,

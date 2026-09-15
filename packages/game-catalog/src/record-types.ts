@@ -28,6 +28,7 @@ import type {
   raidBossSeasonSchema,
   guildRaidMetaBossSchema,
   guildRaidMetaCompSchema,
+  guildRaidMetaHeroSlotSchema,
   guildRaidMetaPayloadSchema,
   guildRaidMetaRecommendationSchema,
   shopSchema,
@@ -87,4 +88,7 @@ export type GameCatalogGuildRaidMetaBoss = z.infer<
 >
 export type GameCatalogGuildRaidMetaRecommendation = z.infer<
   typeof guildRaidMetaRecommendationSchema
+>
+export type GameCatalogGuildRaidMetaHeroSlot = z.infer<
+  typeof guildRaidMetaHeroSlotSchema
 >

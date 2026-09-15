@@ -40,6 +40,7 @@ function activeViewModel(
           remainingHp: 1000,
           maximumHp: 5000,
           isUpcoming: false,
+          progressionIndex: 1,
         },
         primes: [
           {

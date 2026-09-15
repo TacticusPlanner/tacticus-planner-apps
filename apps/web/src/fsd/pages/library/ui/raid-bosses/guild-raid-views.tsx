@@ -261,9 +261,7 @@ export function GuildRaidMetaView({
                       data-testid="raid-boss-meta-recommendation"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <h3 className="font-medium">
-                          {t(`raidBosses.meta.${recommendation.kind}`)}
-                        </h3>
+                        <h3 className="font-medium">{lineup.kind.label}</h3>
                         <div className="flex flex-wrap gap-1">
                           {recommendation.compIds.map((id) => (
                             <span
