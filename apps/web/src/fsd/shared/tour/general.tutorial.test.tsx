@@ -20,6 +20,7 @@ describe("useDesktopTutorialSteps", () => {
     expect(targets).toContain('[data-testid="desktop-create-goal-button"]')
     expect(targets).toContain('[data-testid="player-data-sync-button"]')
     expect(targets).toContain('[data-testid="desktop-navigation-search"]')
+    expect(targets).toContain('[data-testid="userjot-feedback-button"]')
     expect(targets.slice(-7)).toEqual([
       '[data-testid="desktop-nav-home"]',
       '[data-testid="desktop-nav-library"]',
@@ -43,6 +44,9 @@ describe("useMobileTutorialSteps", () => {
     expect(targets).not.toContain('[data-testid="language-switcher"]')
     expect(targets).not.toContain('[data-testid="theme-switcher"]')
     expect(targets).not.toContain('[data-testid="tour-button"]')
+    // Mobile deliberately walks the account drawer as one collapsed surface rather than each
+    // action inside it (see the step above) - the feedback row lives there too, so no separate step.
+    expect(targets).not.toContain('[data-testid="userjot-feedback-button"]')
     expect(targets.slice(-6)).toEqual([
       '[data-testid="mobile-nav-home"]',
       '[data-testid="mobile-nav-goals"]',

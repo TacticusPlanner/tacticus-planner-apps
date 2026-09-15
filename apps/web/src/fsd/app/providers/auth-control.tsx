@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import { LoaderCircle, Download, LogIn, LogOut, Settings } from "lucide-react"
+import {
+  LoaderCircle,
+  Download,
+  LogIn,
+  LogOut,
+  MessageSquareText,
+  Settings,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -40,6 +47,7 @@ import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
+import { useUserJot } from "./userjot-provider"
 import { AccountAvatar } from "./account-avatar"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
@@ -79,6 +87,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const isInteractionInProgress = inProgress !== InteractionStatus.None
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state: accountState } = useCurrentUser()
+  const { open: openUserJot } = useUserJot()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
   const [isV1ImportOpen, setIsV1ImportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
@@ -207,6 +216,18 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
                 className="w-full justify-start"
                 onStarted={() => setMenuOpen(false)}
               />
+              <Button
+                className="w-full justify-start"
+                data-testid="auth-feedback"
+                onClick={() => {
+                  openUserJot()
+                  setMenuOpen(false)
+                }}
+                variant="outline"
+              >
+                <MessageSquareText data-icon="inline-start" />
+                {t("feedback.button")}
+              </Button>
               <Separator />
               <Button
                 className="w-full justify-start"

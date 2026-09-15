@@ -23,6 +23,10 @@ export function getCurrentUser(signal?: AbortSignal) {
   return apiGet<CurrentUser>("/api/v1/me", { signal })
 }
 
+export function getUserJotToken(signal?: AbortSignal) {
+  return apiGet<{ token: string }>("/api/v1/me/userjot-token", { signal })
+}
+
 export function updateTacticusIntegration(
   request: UpdateTacticusIntegrationRequest
 ) {

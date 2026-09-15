@@ -306,6 +306,9 @@
   "settings": {
     "label": "Configuración"
   },
+  "feedback": {
+    "button": "Comentarios"
+  },
   "theme": {
     "dark": "Oscuro",
     "label": "Tema",
@@ -338,6 +341,10 @@
       "replay": {
         "title": "Repetir el recorrido",
         "content": "Haz clic aquí cuando quieras volver a ver este recorrido."
+      },
+      "feedback": {
+        "title": "Comentarios, hoja de ruta y novedades",
+        "content": "Ábrelo para enviar comentarios, consultar lo planeado y ver las últimas novedades."
       },
       "userMenu": {
         "title": "Tu menú de cuenta",

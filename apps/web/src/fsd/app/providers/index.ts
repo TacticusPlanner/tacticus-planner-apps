@@ -7,3 +7,4 @@ export {
 } from "./game-catalog-provider"
 export { PlayerDataProvider } from "./player-data-provider"
 export { QueryProvider } from "./query-provider"
+export { UserJotProvider } from "./userjot-provider"
