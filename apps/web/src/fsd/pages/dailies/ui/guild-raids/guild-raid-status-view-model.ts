@@ -41,6 +41,9 @@ type GuildRaidBossView = {
   remainingHp: number
   maximumHp: number
   isUpcoming: boolean
+  /** 1-based index into the catalog boss's `statProgression` — the live current step used to derive
+   * the investment-readiness threshold. Mirrors the API's own `StatStepAt`. */
+  progressionIndex: number
 }
 
 export type GuildRaidSeasonView = {
@@ -209,6 +212,7 @@ export function buildGuildRaidStatusView(params: {
         remainingHp: season.boss.remainingHp,
         maximumHp: season.boss.maximumHp,
         isUpcoming: season.boss.isUpcoming,
+        progressionIndex: season.boss.progressionIndex,
       },
       primes: season.primes.map((prime, index) => ({
         encounterIndex: prime.encounterIndex,

@@ -45,6 +45,7 @@ export type {
   GameCatalogGuildRaidMetaComp,
   GameCatalogGuildRaidMetaBoss,
   GameCatalogGuildRaidMetaRecommendation,
+  GameCatalogGuildRaidMetaHeroSlot,
 } from "./record-types"
 
 export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"

@@ -93,7 +93,12 @@
       "description": "Compositions exactes sélectionnées pour ce boss, comparées à votre effectif synchronisé. Les remplacements ne sont pas encore évalués.",
       "kind": {
         "meta": "Meta",
-        "alternate": "Alternative"
+        "alternate": "Alternative",
+        "lavistodes": "Lavistodes",
+        "neuro": "Neuro",
+        "battlesuit": "Battlesuit",
+        "admech": "AdMech",
+        "custodes": "Custodes"
       },
       "readiness": {
         "ready": "Prête",
@@ -115,6 +120,9 @@
       "sourceLabel": "Source : {{name}}",
       "updatedLabel": "Mise à jour {{date}}",
       "detailsToggle": "Comps et source",
+      "teamReadiness": "Préparation d'équipe : {{percent}}%",
+      "candidatesLabel": "Alternatives :",
+      "efficiencyLabel": "{{value}}x",
       "investment": {
         "rank": "Rang {{rank}}",
         "level": "Niveau {{level}}"
@@ -131,6 +139,17 @@
         "title": "Synchronisez vos données de joueur",
         "description": "Les compositions idéales sont affichées ci-dessous, mais la préparation nécessite votre effectif synchronisé."
       }
+    },
+    "variantRules": {
+      "role": {
+        "signature": "Signature",
+        "core": "Noyau",
+        "flex": "Flexible",
+        "guest": "Invité"
+      },
+      "essential": "Essentiel",
+      "noReplacement": "Aucun remplaçant défini",
+      "unavailable": "Règles de variantes indisponibles — synchronisez Guild Raid Meta pour voir les remplacements."
     }
   },
   "project": { "placeholder": "Choisir un projet" },
@@ -203,11 +222,11 @@
         },
         "exactMetaDesktop": {
           "title": "Préparation Meta exacte",
-          "content": "Compositions exactes sélectionnées pour le boss actif, avec vos héros disponibles et manquants côte à côte."
+          "content": "Compositions exactes sélectionnées pour le boss actif, avec le pourcentage de préparation d'investissement de chaque héros et le score combiné de l'équipe, côte à côte."
         },
         "exactMetaMobile": {
           "title": "Préparation Meta exacte",
-          "content": "Ici, la préparation apparaît en premier : dépliez une carte pour voir les Comps et la source."
+          "content": "Ici, la préparation d'équipe apparaît en premier : dépliez une carte pour voir les Comps et la source."
         }
       }
     },

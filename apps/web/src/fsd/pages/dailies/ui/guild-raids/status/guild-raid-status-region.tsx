@@ -1,4 +1,5 @@
 import type { GuildRaidsViewModel } from "../guild-raid-status-view-model"
+import { GuildRaidPrimeCompCard } from "../exact-meta/guild-raid-prime-comp-card"
 import { GuildRaidBossCard } from "./guild-raid-boss-card"
 import { GuildRaidPrimeCard } from "./guild-raid-prime-card"
 import { GuildRaidCatalogWarning } from "./guild-raid-status-states"
@@ -58,18 +59,24 @@ export function GuildRaidStatusRegion({
       >
         <GuildRaidBossCard isMobile={isMobile} season={status.season} />
         {leftPrime ? (
-          <GuildRaidPrimeCard
-            isMobile={isMobile}
-            position="left"
-            prime={leftPrime}
-          />
+          <div className="flex flex-col gap-2">
+            <GuildRaidPrimeCard
+              isMobile={isMobile}
+              position="left"
+              prime={leftPrime}
+            />
+            <GuildRaidPrimeCompCard primeUnitSetId={leftPrime.unitSetId} />
+          </div>
         ) : null}
         {rightPrime ? (
-          <GuildRaidPrimeCard
-            isMobile={isMobile}
-            position="right"
-            prime={rightPrime}
-          />
+          <div className="flex flex-col gap-2">
+            <GuildRaidPrimeCard
+              isMobile={isMobile}
+              position="right"
+              prime={rightPrime}
+            />
+            <GuildRaidPrimeCompCard primeUnitSetId={rightPrime.unitSetId} />
+          </div>
         ) : null}
       </div>
     </div>

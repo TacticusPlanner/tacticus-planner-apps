@@ -78,6 +78,7 @@ describe("GuildRaidExactMetaRegion", () => {
       updatedOn: "2026-07-01",
       recommendations: [
         {
+          id: "rec-1",
           kind: "meta",
           heroes: [
             { id: "heroA", name: "Hero A", kind: "character" },
@@ -110,6 +111,7 @@ describe("GuildRaidExactMetaRegion", () => {
       updatedOn: "2026-07-01",
       recommendations: [
         {
+          id: "rec-1",
           kind: "meta",
           heroes: [
             { id: "heroA", name: "Hero A", kind: "character", owned: true },
@@ -139,5 +141,83 @@ describe("GuildRaidExactMetaRegion", () => {
     expect(
       screen.getByTestId("guild-raid-exact-meta-classification-badge")
     ).toHaveTextContent("guildRaids.exactMeta.readiness.partial")
+  })
+
+  function threeRecommendationHero(id: string) {
+    return { id, name: id, kind: "character" as const, owned: true }
+  }
+
+  it("renders all three cards for a boss authoring three recommendations, matching readiness by id", () => {
+    const query: GuildRaidExactReadinessQuery = {
+      status: "populated",
+      source,
+      updatedOn: "2026-07-01",
+      recommendations: [
+        {
+          id: "rec-lavistodes",
+          kind: "lavistodes",
+          heroes: [1, 2, 3, 4, 5].map((n) =>
+            threeRecommendationHero(`lavistodes-hero${n}`)
+          ),
+          mow: { id: "mowX", name: "Mow X", kind: "mow", owned: true },
+          comps: [],
+          classification: "ready",
+        },
+        {
+          id: "rec-neuro",
+          kind: "neuro",
+          heroes: [1, 2, 3, 4, 5].map((n) =>
+            threeRecommendationHero(`neuro-hero${n}`)
+          ),
+          mow: { id: "mowY", name: "Mow Y", kind: "mow", owned: true },
+          comps: [],
+          classification: "ready",
+        },
+        {
+          id: "rec-battlesuit",
+          kind: "battlesuit",
+          heroes: [1, 2, 3, 4, 5].map((n) =>
+            threeRecommendationHero(`battlesuit-hero${n}`)
+          ),
+          mow: { id: "mowZ", name: "Mow Z", kind: "mow", owned: true },
+          comps: [],
+          classification: "ready",
+        },
+      ],
+    }
+
+    render(
+      <GuildRaidExactMetaRegion
+        isMobile={false}
+        query={query}
+        readinessQuery={{
+          status: "ready",
+          byRecommendationId: new Map([
+            [
+              "rec-neuro",
+              {
+                recommendation: {} as never,
+                teamReadiness: 77,
+                heroSlots: [],
+                mow: { mowId: "mowY", owned: true, readiness: 100 },
+              },
+            ],
+          ]),
+        }}
+      />
+    )
+
+    expect(screen.getAllByTestId("guild-raid-exact-meta-card")).toHaveLength(3)
+    expect(
+      screen.getAllByTestId("guild-raid-exact-meta-kind-badge")
+    ).toHaveLength(3)
+
+    // Only the recommendation with a matching id in byRecommendationId shows a team-readiness badge.
+    expect(
+      screen.getAllByTestId("guild-raid-exact-meta-team-readiness")
+    ).toHaveLength(1)
+    expect(
+      screen.getByTestId("guild-raid-exact-meta-team-readiness")
+    ).toHaveTextContent('guildRaids.exactMeta.teamReadiness:{"percent":77}')
   })
 })

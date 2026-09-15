@@ -93,7 +93,12 @@
       "description": "Kuratierte exakte Aufstellungen für diesen Boss, verglichen mit deinem synchronisierten Kader. Ersatzspieler werden noch nicht bewertet.",
       "kind": {
         "meta": "Meta",
-        "alternate": "Alternative"
+        "alternate": "Alternative",
+        "lavistodes": "Lavistodes",
+        "neuro": "Neuro",
+        "battlesuit": "Battlesuit",
+        "admech": "AdMech",
+        "custodes": "Custodes"
       },
       "readiness": {
         "ready": "Bereit",
@@ -115,6 +120,9 @@
       "sourceLabel": "Quelle: {{name}}",
       "updatedLabel": "Aktualisiert {{date}}",
       "detailsToggle": "Comps und Quelle",
+      "teamReadiness": "Team-Bereitschaft: {{percent}}%",
+      "candidatesLabel": "Alternativen:",
+      "efficiencyLabel": "{{value}}x",
       "investment": {
         "rank": "Rang {{rank}}",
         "level": "Stufe {{level}}"
@@ -131,6 +139,17 @@
         "title": "Synchronisiere deine Spielerdaten",
         "description": "Ideale Aufstellungen werden unten angezeigt, aber die Bereitschaft benötigt deinen synchronisierten Kader."
       }
+    },
+    "variantRules": {
+      "role": {
+        "signature": "Signatur",
+        "core": "Kern",
+        "flex": "Flex",
+        "guest": "Gast"
+      },
+      "essential": "Unverzichtbar",
+      "noReplacement": "Kein Ersatz hinterlegt",
+      "unavailable": "Varianten-Regeln nicht verfügbar — synchronisiere Guild Raid Meta, um Ersatzoptionen zu sehen."
     }
   },
   "project": { "placeholder": "Projekt auswählen" },
@@ -203,11 +222,11 @@
         },
         "exactMetaDesktop": {
           "title": "Exakte-Meta-Bereitschaft",
-          "content": "Kuratierte exakte Aufstellungen für den aktiven Boss, mit deinen vorhandenen und fehlenden Helden nebeneinander."
+          "content": "Kuratierte exakte Aufstellungen für den aktiven Boss, mit der Investitions-Bereitschaft jedes Helden in Prozent und der Team-Gesamtwertung nebeneinander."
         },
         "exactMetaMobile": {
           "title": "Exakte-Meta-Bereitschaft",
-          "content": "Hier steht die Bereitschaft zuerst – klappe eine Karte auf für Comps und Quelle."
+          "content": "Hier steht die Team-Bereitschaft zuerst – klappe eine Karte auf für Comps und Quelle."
         }
       }
     },

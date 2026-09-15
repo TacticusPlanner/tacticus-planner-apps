@@ -7,7 +7,7 @@ import {
 
 import {
   buildGuildRaidExactReadinessView,
-  type GuildRaidExactReadinessInvestment,
+  buildGuildRaidRosterInvestment,
   type GuildRaidExactReadinessView,
 } from "./build-guild-raid-exact-readiness-view"
 import { resolveGuildRaidExactReadiness } from "./resolve-guild-raid-exact-readiness"
@@ -52,32 +52,23 @@ export function useGuildRaidExactReadiness(
     const isRosterSynced =
       roster.characters !== undefined && roster.mows !== undefined
 
-    const readinessRoster = isRosterSynced
+    const investment = isRosterSynced
+      ? buildGuildRaidRosterInvestment({
+          characters: roster.characters!,
+          mows: roster.mows!,
+        })
+      : undefined
+
+    const readinessRoster = investment
       ? {
-          ownedCharacterIds: new Set(roster.characters!.map((c) => c.unitId)),
-          ownedMowIds: new Set(roster.mows!.map((m) => m.unitId)),
+          ownedCharacterIds: investment.ownedCharacterIds,
+          ownedMowIds: investment.ownedMowIds,
         }
       : undefined
 
-    const investmentByCharacterId = new Map<
-      string,
-      GuildRaidExactReadinessInvestment
-    >(
-      isRosterSynced
-        ? roster.characters!.map((c) => [
-            c.unitId,
-            { xpLevel: c.xpLevel, rank: c.rank },
-          ])
-        : []
-    )
-    const investmentByMowId = new Map<
-      string,
-      GuildRaidExactReadinessInvestment
-    >(
-      isRosterSynced
-        ? roster.mows!.map((m) => [m.unitId, { xpLevel: m.xpLevel }])
-        : []
-    )
+    const investmentByCharacterId =
+      investment?.investmentByCharacterId ?? new Map()
+    const investmentByMowId = investment?.investmentByMowId ?? new Map()
 
     const readiness = resolveGuildRaidExactReadiness({
       bossUnitSetId,

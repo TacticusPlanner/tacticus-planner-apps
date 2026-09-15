@@ -93,7 +93,12 @@
       "description": "Curated exact lineups for this boss, compared against your synced roster. Substitutions aren't evaluated yet.",
       "kind": {
         "meta": "Meta",
-        "alternate": "Alternate"
+        "alternate": "Alternate",
+        "lavistodes": "Lavistodes",
+        "neuro": "Neuro",
+        "battlesuit": "Battlesuit",
+        "admech": "AdMech",
+        "custodes": "Custodes"
       },
       "readiness": {
         "ready": "Ready",
@@ -115,6 +120,9 @@
       "sourceLabel": "Source: {{name}}",
       "updatedLabel": "Updated {{date}}",
       "detailsToggle": "Comps and source",
+      "teamReadiness": "Team readiness: {{percent}}%",
+      "candidatesLabel": "Alternatives:",
+      "efficiencyLabel": "{{value}}x",
       "investment": {
         "rank": "Rank {{rank}}",
         "level": "Level {{level}}"
@@ -131,6 +139,17 @@
         "title": "Sync your player data",
         "description": "Ideal lineups are shown below, but readiness needs your synced roster."
       }
+    },
+    "variantRules": {
+      "role": {
+        "signature": "Signature",
+        "core": "Core",
+        "flex": "Flex",
+        "guest": "Guest"
+      },
+      "essential": "Essential",
+      "noReplacement": "No substitute authored",
+      "unavailable": "Variant rules unavailable — sync Guild Raid Meta to see substitutions."
     }
   },
   "project": { "placeholder": "Select a project" },
@@ -203,11 +222,11 @@
         },
         "exactMetaDesktop": {
           "title": "Exact Meta readiness",
-          "content": "Curated exact lineups for the active boss, with your owned and missing heroes shown side by side."
+          "content": "Curated exact lineups for the active boss, each hero's investment-readiness percentage, and the team's combined score, shown side by side."
         },
         "exactMetaMobile": {
           "title": "Exact Meta readiness",
-          "content": "Readiness comes first here — expand a card for Comps and source."
+          "content": "Team readiness comes first here — expand a card for Comps and source."
         }
       }
     },

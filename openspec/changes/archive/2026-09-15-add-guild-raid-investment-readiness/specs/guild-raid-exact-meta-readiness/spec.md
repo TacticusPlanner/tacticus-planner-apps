@@ -1,24 +1,14 @@
-# Guild Raid Exact Meta Readiness Specification
+## REMOVED Requirements
 
-## Purpose
+### Requirement: Exact readiness is deterministic and non-scored
 
-Compares curated exact Guild Raid Meta lineups with the player's owned roster so ideal teams and concrete gaps are visible before substitution logic exists.
+Reason: replaced by "Exact readiness combines ownership and investment into a
+percentage" below. Ownership-only Ready/Partial/Unavailable classification and
+the prohibition on comparing investment against a minimum are both
+superseded now that a threshold can be derived from already-synced data
+instead of being invented.
 
-## Requirements
-
-### Requirement: Exact recommendations are selected by the active boss
-
-The system SHALL use the active status boss `unitSetId` to retrieve that boss's ordered Guild Raid Meta recommendations. It SHALL preserve the authored recommendation, hero, Machine-of-War, and Comp ordering and SHALL recompute when the boss, Meta dataset, or current player roster changes.
-
-#### Scenario: Active boss has recommendations
-
-- **WHEN** the active boss id has a group in the synchronized Meta dataset
-- **THEN** its exact Meta and alternate recommendations are evaluated and displayed in authored order
-
-#### Scenario: Boss changes
-
-- **WHEN** refreshed guild status advances to a different boss
-- **THEN** the exact readiness results are replaced with that boss's authored recommendations
+## ADDED Requirements
 
 ### Requirement: Exact readiness combines ownership and investment into a percentage
 
@@ -64,6 +54,8 @@ investment against the derived threshold only.
   shortfalls
 - **THEN** the recommendation with the essential-slot shortfall has the lower
   team readiness percentage
+
+## MODIFIED Requirements
 
 ### Requirement: Ideal Meta teams and roster gaps are presented together
 

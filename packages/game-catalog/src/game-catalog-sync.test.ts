@@ -84,6 +84,7 @@ const datasetData: Record<string, unknown> = {
       },
     ],
     bosses: [],
+    primes: [],
   },
 }
 

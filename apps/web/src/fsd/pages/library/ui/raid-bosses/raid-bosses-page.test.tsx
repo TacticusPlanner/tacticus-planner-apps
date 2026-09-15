@@ -252,7 +252,14 @@ const metaPayload = {
       recommendations: [
         {
           kind: "meta" as const,
-          heroIds: ["heroA", "heroB", "heroC", "heroD", "missingHero"],
+          heroSlots: ["heroA", "heroB", "heroC", "heroD", "missingHero"].map(
+            (heroId, index) => ({
+              heroId,
+              roleId: index === 0 ? "signature" : "flex",
+              essential: index === 0,
+              replacementCharacterIds: [],
+            })
+          ),
           mowId: "mowA",
           compIds: ["admech"],
         },

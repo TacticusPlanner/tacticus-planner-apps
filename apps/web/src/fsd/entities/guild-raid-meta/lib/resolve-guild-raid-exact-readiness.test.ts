@@ -10,6 +10,15 @@ const heroC = "heroC"
 const heroD = "heroD"
 const heroE = "heroE"
 
+function heroSlots(heroIds: string[]) {
+  return heroIds.map((heroId) => ({
+    heroId,
+    roleId: "flex",
+    essential: false,
+    replacementCharacterIds: [],
+  }))
+}
+
 function meta(
   overrides: Partial<GameCatalogGuildRaidMeta> = {}
 ): GameCatalogGuildRaidMeta {
@@ -28,16 +37,21 @@ function meta(
     bosses: [
       {
         bossUnitSetId: "Boss1",
+        primeUnitSetIds: [],
         recommendations: [
           {
+            id: "Boss1-meta",
             kind: "meta",
-            heroIds: [heroA, heroB, heroC, heroD, heroE],
+            heroSlots: heroSlots([heroA, heroB, heroC, heroD, heroE]),
             mowId: "mowX",
+            mowReplacementIds: [],
             compIds: ["comp1"],
+            efficiency: 1,
           },
         ],
       },
     ],
+    primes: [],
     ...overrides,
   }
 }
@@ -68,7 +82,13 @@ describe("resolveGuildRaidExactReadiness", () => {
       resolveGuildRaidExactReadiness({
         bossUnitSetId: "Boss1",
         meta: meta({
-          bosses: [{ bossUnitSetId: "Boss1", recommendations: [] }],
+          bosses: [
+            {
+              bossUnitSetId: "Boss1",
+              primeUnitSetIds: [],
+              recommendations: [],
+            },
+          ],
         }),
         roster: { ownedCharacterIds: new Set(), ownedMowIds: new Set() },
       })
@@ -124,7 +144,7 @@ describe("resolveGuildRaidExactReadiness", () => {
     expect(result.recommendations[0]!.classification).toBe(expected)
   })
 
-  it("preserves authored heroIds order and reports each hero owned/missing", () => {
+  it("preserves authored heroSlots order and reports each hero owned/missing", () => {
     const result = resolveGuildRaidExactReadiness({
       bossUnitSetId: "Boss1",
       meta: meta(),
@@ -143,6 +163,38 @@ describe("resolveGuildRaidExactReadiness", () => {
       { id: heroD, owned: false },
       { id: heroE, owned: true },
     ])
+  })
+
+  it("tolerates a recommendation cached before variant rules existed, without heroSlots", () => {
+    const legacyMeta = meta({
+      bosses: [
+        {
+          bossUnitSetId: "Boss1",
+          primeUnitSetIds: [],
+          recommendations: [
+            {
+              kind: "meta",
+              mowId: "mowX",
+              compIds: ["comp1"],
+              // `heroSlots` is absent, as an older cached row would be.
+            } as unknown as ReturnType<
+              typeof meta
+            >["bosses"][0]["recommendations"][0],
+          ],
+        },
+      ],
+    })
+
+    const result = resolveGuildRaidExactReadiness({
+      bossUnitSetId: "Boss1",
+      meta: legacyMeta,
+      roster: { ownedCharacterIds: new Set(), ownedMowIds: new Set() },
+    })
+
+    expect(result.status).toBe("populated")
+    if (result.status !== "populated") return
+    expect(result.recommendations[0]!.heroes).toEqual([])
+    expect(result.recommendations[0]!.classification).toBe("unavailable")
   })
 
   it("reports Machine-of-War ownership separately without changing hero classification", () => {
@@ -196,12 +248,16 @@ describe("resolveGuildRaidExactReadiness", () => {
         ...meta().bosses,
         {
           bossUnitSetId: "Boss2",
+          primeUnitSetIds: [],
           recommendations: [
             {
+              id: "Boss2-alternate",
               kind: "alternate",
-              heroIds: [heroB, heroC, heroD, heroE, heroA],
+              heroSlots: heroSlots([heroB, heroC, heroD, heroE, heroA]),
               mowId: "mowY",
+              mowReplacementIds: [],
               compIds: [],
+              efficiency: 1,
             },
           ],
         },
@@ -261,18 +317,25 @@ describe("resolveGuildRaidExactReadiness", () => {
       bosses: [
         {
           bossUnitSetId: "Boss1",
+          primeUnitSetIds: [],
           recommendations: [
             {
+              id: "Boss1-meta",
               kind: "meta",
-              heroIds: [heroA, heroB, heroC, heroD, heroE],
+              heroSlots: heroSlots([heroA, heroB, heroC, heroD, heroE]),
               mowId: "mowX",
+              mowReplacementIds: [],
               compIds: [],
+              efficiency: 1,
             },
             {
+              id: "Boss1-alternate",
               kind: "alternate",
-              heroIds: [heroE, heroD, heroC, heroB, heroA],
+              heroSlots: heroSlots([heroE, heroD, heroC, heroB, heroA]),
               mowId: "mowY",
+              mowReplacementIds: [],
               compIds: [],
+              efficiency: 1,
             },
           ],
         },

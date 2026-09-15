@@ -29,6 +29,7 @@ function season(
       remainingHp: 1000,
       maximumHp: 5000,
       isUpcoming: false,
+      progressionIndex: 1,
     },
     primes: [],
     ...overrides,
@@ -68,6 +69,7 @@ describe("GuildRaidBossCard", () => {
             remainingHp: 5000,
             maximumHp: 5000,
             isUpcoming: true,
+            progressionIndex: 1,
           },
         })}
       />

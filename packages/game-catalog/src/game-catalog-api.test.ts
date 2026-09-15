@@ -89,6 +89,7 @@ describe("GameCatalogHttpClient", () => {
         updatedOn: "2026-07-01",
         comps: [],
         bosses: [],
+        primes: [],
       }),
       datasetKey: "guild-raid-meta",
       datasetHash: "guild-raid-meta-h1",

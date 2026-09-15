@@ -93,7 +93,12 @@
       "description": "Alineaciones exactas seleccionadas para este jefe, comparadas con tu plantilla sincronizada. Las sustituciones aún no se evalúan.",
       "kind": {
         "meta": "Meta",
-        "alternate": "Alternativa"
+        "alternate": "Alternativa",
+        "lavistodes": "Lavistodes",
+        "neuro": "Neuro",
+        "battlesuit": "Battlesuit",
+        "admech": "AdMech",
+        "custodes": "Custodes"
       },
       "readiness": {
         "ready": "Lista",
@@ -115,6 +120,9 @@
       "sourceLabel": "Fuente: {{name}}",
       "updatedLabel": "Actualizado {{date}}",
       "detailsToggle": "Comps y fuente",
+      "teamReadiness": "Preparación del equipo: {{percent}}%",
+      "candidatesLabel": "Alternativas:",
+      "efficiencyLabel": "{{value}}x",
       "investment": {
         "rank": "Rango {{rank}}",
         "level": "Nivel {{level}}"
@@ -131,6 +139,17 @@
         "title": "Sincroniza tus datos de jugador",
         "description": "Las alineaciones ideales se muestran abajo, pero la preparación necesita tu plantilla sincronizada."
       }
+    },
+    "variantRules": {
+      "role": {
+        "signature": "Insignia",
+        "core": "Núcleo",
+        "flex": "Flexible",
+        "guest": "Invitado"
+      },
+      "essential": "Esencial",
+      "noReplacement": "No hay sustituto definido",
+      "unavailable": "Reglas de variante no disponibles — sincroniza Guild Raid Meta para ver las sustituciones."
     }
   },
   "project": { "placeholder": "Selecciona un proyecto" },
@@ -203,11 +222,11 @@
         },
         "exactMetaDesktop": {
           "title": "Preparación de Meta exacta",
-          "content": "Alineaciones exactas seleccionadas para el jefe activo, con tus héroes disponibles y faltantes uno junto al otro."
+          "content": "Alineaciones exactas seleccionadas para el jefe activo, con el porcentaje de preparación de inversión de cada héroe y la puntuación combinada del equipo, uno junto al otro."
         },
         "exactMetaMobile": {
           "title": "Preparación de Meta exacta",
-          "content": "Aquí la preparación aparece primero: expande una tarjeta para ver las Comps y la fuente."
+          "content": "Aquí la preparación del equipo aparece primero: expande una tarjeta para ver las Comps y la fuente."
         }
       }
     },

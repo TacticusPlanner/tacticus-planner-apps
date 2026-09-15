@@ -172,6 +172,27 @@ export async function getGuildRaidMetaForBoss(bossUnitSetId: string): Promise<{
   }
 }
 
+// Mirrors getGuildRaidMetaForBoss(): `prime: null` distinguishes a prime with no curated comp yet
+// (a valid state — it may still appear in a boss's primeUnitSetIds) from an unsynced dataset.
+export async function getGuildRaidMetaForPrime(
+  primeUnitSetId: string
+): Promise<{
+  meta: GuildRaidMetaStorageModel
+  prime: GuildRaidMetaStorageModel["primes"][number] | null
+} | null> {
+  const meta = await getGuildRaidMeta()
+  if (!meta) {
+    return null
+  }
+
+  return {
+    meta,
+    prime:
+      meta.primes.find((prime) => prime.primeUnitSetId === primeUnitSetId) ??
+      null,
+  }
+}
+
 export function getEventDefinitions(): Promise<EventDefinitionStorageModel[]> {
   return getDatasetRecords("event-definitions")
 }
