@@ -55,6 +55,12 @@ export function useDesktopTutorialSteps(): Step[] {
         content: t("tour.steps.replay.content"),
       },
       {
+        target: '[data-testid="userjot-feedback-button"]',
+        placement: "bottom-end",
+        title: t("tour.steps.feedback.title"),
+        content: t("tour.steps.feedback.content"),
+      },
+      {
         target: '[data-testid="desktop-create-goal-button"]',
         placement: "right",
         title: t("tour.steps.bottomNavigation.addGoal.title"),

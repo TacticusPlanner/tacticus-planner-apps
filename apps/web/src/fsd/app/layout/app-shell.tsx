@@ -5,7 +5,11 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { GameCatalogProvider, PlayerDataProvider } from "@/app/providers"
+import {
+  GameCatalogProvider,
+  PlayerDataProvider,
+  UserJotProvider,
+} from "@/app/providers"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import {
@@ -70,15 +74,17 @@ export function AppShell() {
         {/* Unlike the catalog, player data is per-account and not required to render the shell, so it
             is not gated behind an init screen — it syncs in the background once authenticated. */}
         <PlayerDataProvider baseUrl={apiBaseUrl}>
-          <ShellContent
-            activeSection={activeItem}
-            isAuthenticated={isAuthenticated}
-            isMobile={isMobile}
-            pageDescription={pageDescription}
-            pageTitle={pageTitle}
-            sectionTitle={sectionTitle}
-            visibleItems={visibleItems}
-          />
+          <UserJotProvider>
+            <ShellContent
+              activeSection={activeItem}
+              isAuthenticated={isAuthenticated}
+              isMobile={isMobile}
+              pageDescription={pageDescription}
+              pageTitle={pageTitle}
+              sectionTitle={sectionTitle}
+              visibleItems={visibleItems}
+            />
+          </UserJotProvider>
         </PlayerDataProvider>
       </GameCatalogInitGate>
     </GameCatalogProvider>

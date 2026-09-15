@@ -77,6 +77,10 @@ vi.mock("./theme-switcher", () => ({
 vi.mock("./language-switcher", () => ({
   LanguageSwitcher: () => <div data-testid="language-switcher" />,
 }))
+const openUserJot = vi.fn()
+vi.mock("./userjot-provider", () => ({
+  useUserJot: () => ({ open: openUserJot, unreadCount: 0 }),
+}))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => <div data-testid="tour-button" />,
   useTourControlledPopoverOpen: () => {
@@ -107,6 +111,7 @@ describe("AuthControl", () => {
     signOut.mockClear().mockResolvedValue(undefined)
     useCurrentUser.mockReturnValue({ state: { status: "loading" } })
     silentSignInStatus.mockReturnValue("idle")
+    openUserJot.mockClear()
   })
 
   it("opens a user menu with manage-account and sign-out on desktop", () => {
@@ -152,6 +157,28 @@ describe("AuthControl", () => {
     expect(screen.getByTestId("auth-sign-out")).toBeVisible()
     expect(screen.getByTestId("theme-switcher")).toBeVisible()
     expect(screen.getByTestId("language-switcher")).toBeVisible()
+  })
+
+  it("opens the UserJot widget and closes the drawer from the mobile user menu", () => {
+    isMobile.mockReturnValue(true)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    expect(screen.getByTestId("auth-feedback")).toBeVisible()
+
+    fireEvent.click(screen.getByTestId("auth-feedback"))
+
+    expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
+  })
+
+  it("does not show the feedback row in the desktop user menu (it has its own header button)", () => {
+    isMobile.mockReturnValue(false)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    expect(screen.queryByTestId("auth-feedback")).not.toBeInTheDocument()
   })
 
   it("opens the manage-account dialog when the menu item is clicked", () => {

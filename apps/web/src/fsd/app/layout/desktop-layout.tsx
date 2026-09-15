@@ -34,6 +34,7 @@ import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
+import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
 import { AppLogo } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import { DesktopSectionHeader } from "./desktop-section-header"
@@ -82,6 +83,7 @@ export function DesktopShell({
               <ThemeSwitcher />
               <LanguageSwitcher />
               <TourButton iconOnly />
+              <UserJotFeedbackButton />
             </div>
           </div>
           {pageDescription ? (

@@ -306,6 +306,9 @@
   "settings": {
     "label": "Einstellungen"
   },
+  "feedback": {
+    "button": "Feedback"
+  },
   "theme": {
     "dark": "Dunkel",
     "label": "Design",
@@ -338,6 +341,10 @@
       "replay": {
         "title": "Tour wiederholen",
         "content": "Klicke hier, wenn du diese Tour erneut starten möchtest."
+      },
+      "feedback": {
+        "title": "Feedback, Roadmap und Updates",
+        "content": "Öffne dies, um Feedback zu senden, die Roadmap einzusehen und die neuesten Updates zu lesen."
       },
       "userMenu": {
         "title": "Dein Konto-Menü",

@@ -42,6 +42,9 @@ vi.mock("../providers/language-switcher", () => ({
   LanguageSwitcher: () => null,
 }))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
+vi.mock("../providers/userjot-feedback-button", () => ({
+  UserJotFeedbackButton: () => null,
+}))
 vi.mock("@/shared/tour", () => ({ TourButton: () => null }))
 
 import { DesktopShell } from "./desktop-layout"

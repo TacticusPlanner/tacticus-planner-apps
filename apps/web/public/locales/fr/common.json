@@ -306,6 +306,9 @@
   "settings": {
     "label": "Paramètres"
   },
+  "feedback": {
+    "button": "Commentaires"
+  },
   "theme": {
     "dark": "Sombre",
     "label": "Thème",
@@ -338,6 +341,10 @@
       "replay": {
         "title": "Revoir la visite",
         "content": "Cliquez ici dès que vous souhaitez relancer cette visite."
+      },
+      "feedback": {
+        "title": "Commentaires, feuille de route et nouveautés",
+        "content": "Ouvrez ceci pour envoyer des commentaires, consulter ce qui est prévu et voir les dernières nouveautés."
       },
       "userMenu": {
         "title": "Votre menu de compte",

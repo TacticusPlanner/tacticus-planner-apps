@@ -748,6 +748,9 @@
   "settings": {
     "label": "Settings"
   },
+  "feedback": {
+    "button": "Feedback"
+  },
   "theme": {
     "dark": "Dark",
     "label": "Theme",
@@ -780,6 +783,10 @@
       "replay": {
         "title": "Replay the tour",
         "content": "Click here whenever you want to run this tour again."
+      },
+      "feedback": {
+        "title": "Feedback, roadmap, and updates",
+        "content": "Open this to send feedback, check what's planned, and see the latest updates."
       },
       "userMenu": {
         "title": "Your account menu",
