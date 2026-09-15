@@ -64,7 +64,7 @@ export function useGuildRaidMetaCatalog(): GuildRaidMetaCatalog {
             defaultValue: fallback,
           }),
         kindLabel: (kind, fallback) =>
-          t(`dailies:guildRaids.variantRules.kind.${kind}`, {
+          t(`dailies:guildRaids.exactMeta.kind.${kind}`, {
             defaultValue: fallback,
           }),
       }),

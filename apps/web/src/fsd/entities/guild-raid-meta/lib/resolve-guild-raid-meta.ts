@@ -9,6 +9,8 @@ import {
 import type { UnitId } from "@workspace/game-domain"
 
 const terminusMaximusSourceId = "terminus-maximus-guild-raid-boss-meta"
+const terminusMaximusAndCognitaeSourceId =
+  "terminus-maximus-and-cognitae-guild-raid-meta"
 
 export const guildRaidMetaSourceUrl =
   "https://terminusmaximus.com/guild-raid/boss-meta/"
@@ -197,13 +199,22 @@ export function createGuildRaidMetaPresentationResolver({
         }
       }),
     }),
-    resolveSource: (sourceId) =>
-      sourceId === terminusMaximusSourceId
-        ? {
-            sourceId,
-            name: "Terminus Maximus",
-            url: guildRaidMetaSourceUrl,
-          }
-        : { sourceId, name: readableFallback(sourceId) },
+    resolveSource: (sourceId) => {
+      if (sourceId === terminusMaximusSourceId) {
+        return {
+          sourceId,
+          name: "Terminus Maximus",
+          url: guildRaidMetaSourceUrl,
+        }
+      }
+      if (sourceId === terminusMaximusAndCognitaeSourceId) {
+        return {
+          sourceId,
+          name: "Terminus Maximus & Cognitae",
+          url: guildRaidMetaSourceUrl,
+        }
+      }
+      return { sourceId, name: readableFallback(sourceId) }
+    },
   }
 }

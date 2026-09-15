@@ -165,6 +165,38 @@ describe("resolveGuildRaidExactReadiness", () => {
     ])
   })
 
+  it("tolerates a recommendation cached before variant rules existed, without heroSlots", () => {
+    const legacyMeta = meta({
+      bosses: [
+        {
+          bossUnitSetId: "Boss1",
+          primeUnitSetIds: [],
+          recommendations: [
+            {
+              kind: "meta",
+              mowId: "mowX",
+              compIds: ["comp1"],
+              // `heroSlots` is absent, as an older cached row would be.
+            } as unknown as ReturnType<
+              typeof meta
+            >["bosses"][0]["recommendations"][0],
+          ],
+        },
+      ],
+    })
+
+    const result = resolveGuildRaidExactReadiness({
+      bossUnitSetId: "Boss1",
+      meta: legacyMeta,
+      roster: { ownedCharacterIds: new Set(), ownedMowIds: new Set() },
+    })
+
+    expect(result.status).toBe("populated")
+    if (result.status !== "populated") return
+    expect(result.recommendations[0]!.heroes).toEqual([])
+    expect(result.recommendations[0]!.classification).toBe("unavailable")
+  })
+
   it("reports Machine-of-War ownership separately without changing hero classification", () => {
     const owningMowOnly = resolveGuildRaidExactReadiness({
       bossUnitSetId: "Boss1",

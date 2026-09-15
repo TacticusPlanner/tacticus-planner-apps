@@ -218,6 +218,15 @@ describe("Guild Raid Meta presentation", () => {
       name: "Terminus Maximus",
       url: guildRaidMetaSourceUrl,
     })
+    expect(
+      presentation.resolveSource(
+        "terminus-maximus-and-cognitae-guild-raid-meta"
+      )
+    ).toEqual({
+      sourceId: "terminus-maximus-and-cognitae-guild-raid-meta",
+      name: "Terminus Maximus & Cognitae",
+      url: guildRaidMetaSourceUrl,
+    })
     expect(presentation.resolveSource("new-source")).toEqual({
       sourceId: "new-source",
       name: "new source",

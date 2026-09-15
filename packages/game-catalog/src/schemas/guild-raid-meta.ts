@@ -71,7 +71,7 @@ export const guildRaidMetaBossSchema = z
     // Zero or more prime raid-bosses unit-set ids fought alongside this boss. A prime listed here may
     // or may not also have its own curated recommendations in the payload's top-level `primes[]`.
     primeUnitSetIds: z.array(unitIdSchema),
-    recommendations: z.array(guildRaidMetaRecommendationSchema),
+    recommendations: z.array(guildRaidMetaRecommendationSchema).nonempty(),
   })
   .refine(
     (boss) => uniqueKinds(boss.recommendations),
@@ -84,7 +84,7 @@ export const guildRaidMetaBossSchema = z
 export const guildRaidMetaPrimeSchema = z
   .looseObject({
     primeUnitSetId: unitIdSchema,
-    recommendations: z.array(guildRaidMetaRecommendationSchema),
+    recommendations: z.array(guildRaidMetaRecommendationSchema).nonempty(),
   })
   .refine(
     (prime) => uniqueKinds(prime.recommendations),

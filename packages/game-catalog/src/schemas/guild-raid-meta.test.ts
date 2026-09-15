@@ -189,6 +189,11 @@ describe("guildRaidMetaBossSchema", () => {
       expect(result.data.primeUnitSetIds).toEqual(["prime-2", "prime-1"])
     }
   })
+
+  it("rejects a boss group with zero recommendations", () => {
+    const result = guildRaidMetaBossSchema.safeParse(boss([]))
+    expect(result.success).toBe(false)
+  })
 })
 
 describe("guildRaidMetaPrimeSchema", () => {
@@ -207,6 +212,14 @@ describe("guildRaidMetaPrimeSchema", () => {
         recommendation({ id: "rec-1", kind: "admech" }),
         recommendation({ id: "rec-2", kind: "admech" }),
       ],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it("rejects a prime group with zero recommendations", () => {
+    const result = guildRaidMetaPrimeSchema.safeParse({
+      primeUnitSetId: "prime-1",
+      recommendations: [],
     })
     expect(result.success).toBe(false)
   })

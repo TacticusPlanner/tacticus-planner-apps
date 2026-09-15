@@ -46,7 +46,8 @@ function isBetter(candidate: SearchOutcome, best: SearchOutcome): boolean {
 function search(
   openSlots: readonly { index: number; slot: GuildRaidMatcherSlot }[],
   ownedCharacterIds: ReadonlySet<string>,
-  readinessOf: (characterId: string) => number
+  readinessOf: (characterId: string) => number,
+  lockedCharacterIds: ReadonlySet<string>
 ): SearchOutcome {
   let best: SearchOutcome = {
     assignment: new Map(),
@@ -101,7 +102,7 @@ function search(
     }
   }
 
-  backtrack(0, new Set(), new Map(), 0, 0, 0)
+  backtrack(0, lockedCharacterIds, new Map(), 0, 0, 0)
   return best
 }
 
@@ -122,16 +123,23 @@ export function matchGuildRaidCandidates(params: {
     () => null
   )
   const openSlots: { index: number; slot: GuildRaidMatcherSlot }[] = []
+  const lockedCharacterIds = new Set<string>()
 
   slots.forEach((slot, index) => {
     if (ownedCharacterIds.has(slot.heroId)) {
       assignments[index] = { characterId: slot.heroId, isIdeal: true }
+      lockedCharacterIds.add(slot.heroId)
     } else {
       openSlots.push({ index, slot })
     }
   })
 
-  const outcome = search(openSlots, ownedCharacterIds, readinessOf)
+  const outcome = search(
+    openSlots,
+    ownedCharacterIds,
+    readinessOf,
+    lockedCharacterIds
+  )
   for (const [index, characterId] of outcome.assignment) {
     assignments[index] = { characterId, isIdeal: false }
   }

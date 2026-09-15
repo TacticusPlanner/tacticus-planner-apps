@@ -9,6 +9,7 @@ import {
   getCharacters,
   getGuildRaidMeta,
   getGuildRaidMetaForBoss,
+  getGuildRaidMetaForPrime,
 } from "./queries"
 
 function resetDb() {
@@ -363,5 +364,121 @@ describe("guild-raid-meta queries", () => {
         (recommendation) => recommendation.efficiency
       )
     ).toEqual([1.43, 1.14, 1.0])
+  })
+
+  describe("getGuildRaidMetaForPrime", () => {
+    const primeUnitSetId = "GuildBoss1MiniBoss2Prime"
+
+    function recommendation(id: string) {
+      return {
+        id,
+        kind: "admech",
+        heroSlots: [
+          {
+            heroId: "admecActus",
+            roleId: "signature",
+            essential: true,
+            replacementCharacterIds: [],
+          },
+          {
+            heroId: "eldarEldryon",
+            roleId: "flex",
+            essential: false,
+            replacementCharacterIds: [],
+          },
+          {
+            heroId: "blackTemplarBellator",
+            roleId: "flex",
+            essential: false,
+            replacementCharacterIds: [],
+          },
+          {
+            heroId: "tauRevas",
+            roleId: "flex",
+            essential: false,
+            replacementCharacterIds: [],
+          },
+          {
+            heroId: "orksGibbascrapz",
+            roleId: "flex",
+            essential: false,
+            replacementCharacterIds: [],
+          },
+        ],
+        mowId: "mowBiovore",
+        mowReplacementIds: [],
+        compIds: ["admech"],
+        efficiency: 1,
+      }
+    }
+
+    function primesPayload() {
+      return {
+        sourceId: "terminus-maximus-and-cognitae-guild-raid-meta",
+        updatedOn: "2026-09-14",
+        comps: [
+          {
+            id: "admech",
+            signatureUnitId: "admecActus",
+            coreCharacterIds: ["admecActus"],
+            flexCharacterIds: [],
+            mowIds: ["mowBiovore"],
+          },
+        ],
+        bosses: [
+          {
+            bossUnitSetId: "GuildBoss1Boss1Tervigon",
+            primeUnitSetIds: [
+              primeUnitSetId,
+              "GuildBoss1MiniBoss1PrimeWithNoComp",
+            ],
+            recommendations: [recommendation("GuildBoss1Boss1Tervigon-meta")],
+          },
+        ],
+        primes: [
+          {
+            primeUnitSetId,
+            recommendations: [
+              recommendation("GuildBoss1MiniBoss2Prime-a"),
+              {
+                ...recommendation("GuildBoss1MiniBoss2Prime-b"),
+                kind: "alternate",
+              },
+            ],
+          },
+        ],
+      }
+    }
+
+    it("reports an absent dataset distinctly from a boss's prime with no curated comp", async () => {
+      expect(await getGuildRaidMetaForPrime(primeUnitSetId)).toBeNull()
+
+      await replaceGameCatalogDataset(
+        "guild-raid-meta",
+        primesPayload(),
+        metadata()
+      )
+
+      const noComp = await getGuildRaidMetaForPrime(
+        "GuildBoss1MiniBoss1PrimeWithNoComp"
+      )
+      expect(noComp?.meta.id).toBe("guild-raid-meta")
+      expect(noComp?.prime).toBeNull()
+    })
+
+    it("preserves authored prime recommendation order through sync/replace", async () => {
+      await replaceGameCatalogDataset(
+        "guild-raid-meta",
+        primesPayload(),
+        metadata()
+      )
+
+      const result = await getGuildRaidMetaForPrime(primeUnitSetId)
+      expect(
+        result?.prime?.recommendations.map(
+          (recommendation) => recommendation.id
+        )
+      ).toEqual(["GuildBoss1MiniBoss2Prime-a", "GuildBoss1MiniBoss2Prime-b"])
+    })
   })
 })

@@ -12,14 +12,16 @@ instead of being invented.
 
 ### Requirement: Exact readiness combines ownership and investment into a percentage
 
-For each recommendation, for each of the five exact `heroIds`, the system
-SHALL report a `0–100%` investment-readiness value: `0%` when the character is
-unowned; otherwise the average of three ratios, each independently capped at
-`100%`, comparing the owned character's rank, progression, and ability levels
-against a threshold derived from the boss's own catalog stat-progression at
-the guild's live current step — never an authored or invented minimum. The
-Machine of War SHALL receive its own `0–100%` value using its progression
-level alone (Machines of War carry no rank).
+For each recommendation, for each of the five ordered `heroSlots` (each with
+its own `heroId`, `essential` weighting, and `replacementCharacterIds`), the
+system SHALL report a `0–100%` investment-readiness value: `0%` when the
+character is unowned; otherwise the average of three ratios, each
+independently capped at `100%`, comparing the owned character's rank,
+progression, and ability levels against a threshold derived from the boss's
+own catalog stat-progression at the guild's live current step — never an
+authored or invented minimum. The Machine of War SHALL receive its own
+`0–100%` value using its progression level alone (Machines of War carry no
+rank).
 
 The system SHALL combine the five hero values and the Machine-of-War value
 into one team readiness percentage, weighting a slot marked `essential` higher

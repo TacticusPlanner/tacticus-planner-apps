@@ -174,6 +174,32 @@ describe("matchGuildRaidCandidates", () => {
     expect(essentialAssignments).toHaveLength(2)
   })
 
+  it("never assigns a hero already locked to its own ideal slot as a replacement for another slot", () => {
+    const slots = [
+      slot({
+        heroId: "lockedIdeal",
+        essential: true,
+        replacementCharacterIds: [],
+      }),
+      slot({
+        heroId: "missing",
+        essential: false,
+        replacementCharacterIds: ["lockedIdeal"],
+      }),
+    ]
+    const result = matchGuildRaidCandidates({
+      slots,
+      ownedCharacterIds: new Set(["lockedIdeal"]),
+      readinessOf: readinessTable({}),
+    })
+
+    expect(result.assignments[0]).toEqual({
+      characterId: "lockedIdeal",
+      isIdeal: true,
+    })
+    expect(result.assignments[1]).toBeNull()
+  })
+
   it("tie-breaks between equally-filling candidates by investment-readiness percentage", () => {
     const result = matchGuildRaidCandidates({
       slots: [
