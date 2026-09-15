@@ -151,6 +151,42 @@ describe("UserJotProvider", () => {
     expect(setLocale).toHaveBeenCalledWith("fr")
   })
 
+  it("does not apply a stale identify that resolves after signing out mid-fetch", async () => {
+    let resolveToken!: (value: { token: string }) => void
+    fetchQueryMock.mockReturnValue(
+      new Promise<{ token: string }>((resolve) => {
+        resolveToken = resolve
+      })
+    )
+
+    const { rerender } = renderProvider()
+
+    await waitFor(() => {
+      expect(fetchQueryMock).toHaveBeenCalledTimes(1)
+    })
+
+    // Sign out while the first user's token fetch is still in flight.
+    isAuthenticated.mockReturnValue(false)
+    useCurrentUserMock.mockReturnValue({ state: { status: "idle" } })
+    rerender(
+      <UserJotProvider>
+        <Consumer />
+      </UserJotProvider>
+    )
+
+    await waitFor(() => {
+      expect(logout).toHaveBeenCalledTimes(1)
+    })
+
+    // The stale fetch for the signed-out user resolves after logout already ran.
+    await act(async () => {
+      resolveToken({ token: "stale-jwt" })
+      await Promise.resolve()
+    })
+
+    expect(identify).not.toHaveBeenCalled()
+  })
+
   it("re-identifies when the widget is opened", async () => {
     renderProvider()
 

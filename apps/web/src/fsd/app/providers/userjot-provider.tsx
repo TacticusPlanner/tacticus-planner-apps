@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
@@ -58,6 +59,10 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   } = useTranslation()
   const queryClient = useQueryClient()
   const [unreadCount, setUnreadCount] = useState(0)
+  // Bumped at the start of every identify() call and rechecked after each await, so a slow call
+  // superseded by a newer one (sign-out or a different user, mid-fetch) becomes a no-op instead of
+  // applying a stale identity after the newer call already ran.
+  const identifyGenerationRef = useRef(0)
 
   const applicationUserId =
     state.status === "success" ? state.user.applicationUserId : null
@@ -70,6 +75,8 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
       return
     }
 
+    const generation = ++identifyGenerationRef.current
+
     if (!isAuthenticated || !applicationUserId) {
       sdk.logout()
       return
@@ -79,6 +86,9 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
       const { token } = await queryClient.fetchQuery(
         accountQueries.userJotToken()
       )
+      if (identifyGenerationRef.current !== generation) {
+        return
+      }
       await sdk.identify({ token })
     } catch (error) {
       console.error("Failed to identify the UserJot widget.", error)
