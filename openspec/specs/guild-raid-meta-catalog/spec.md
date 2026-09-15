@@ -11,11 +11,11 @@ existing game-data ids.
 ### Requirement: The Guild Raid Meta dataset is synced and stored as one catalog object
 
 The client SHALL recognize `guild-raid-meta` as a served game-catalog dataset,
-validate its `sourceId`, `updatedOn`, `comps`, and `bosses` payload structure,
-and store the whole object reactively under a stable local record id. The
-payload SHALL retain the API contract's ordered Comp profiles, boss groups,
-recommendations, hero ids, Machine-of-War ids, and source/update
-identifiers without adding presentation fields.
+validate its `sourceId`, `updatedOn`, `comps`, `bosses`, and `primes` payload
+structure, and store the whole object reactively under a stable local record
+id. The payload SHALL retain the API contract's ordered Comp profiles, boss
+groups, prime groups, recommendations, hero slots, Machine-of-War ids, and
+source/update identifiers without adding presentation fields.
 
 The client SHALL distinguish an absent local dataset from a valid synced
 dataset whose `bosses` collection has no group for a particular boss. A
@@ -42,26 +42,56 @@ record; a database upgrade SHALL preserve all existing catalog records.
 
 ### Requirement: Typed query access preserves the curated Meta contract
 
-The game-catalog query surface SHALL expose the full Meta object and a lookup
-by `bossUnitSetId`. A returned recommendation SHALL expose its `kind`, exactly
-five ordered hero ids, one Machine-of-War id, and ordered Comp ids. A returned
-Comp SHALL expose its id, signature-unit id,
-ordered core-character ids, flex-character ids, and Machine-of-War ids.
+The game-catalog query surface SHALL expose the full Meta object, a lookup by
+`bossUnitSetId`, and a lookup by prime `unitSetId` into `primes`. A returned
+boss group SHALL expose an ordered `primeUnitSetIds` array (zero or more prime
+unit-set ids fought alongside that boss). A returned recommendation SHALL
+expose its `kind` (a non-empty archetype id — not restricted to a fixed set),
+exactly five ordered `heroSlots` (each with its own `heroId`, `essential`
+weighting, and `replacementCharacterIds`), one Machine-of-War id, ordered
+Comp ids, and a positive `efficiency` number. A returned Comp SHALL expose
+its id, signature-unit id, ordered core-character ids, flex-character ids,
+and Machine-of-War ids.
+
+A boss or prime group MAY carry any number of recommendations (one or more);
+the query surface SHALL NOT assume or enforce exactly two.
 
 The query surface SHALL preserve the source ordering and SHALL not infer,
 rename, or rank recommendations, Comps, heroes, or Machines of War.
+`efficiency` is relative within its own boss/prime group only — the query
+surface SHALL NOT compare it across different bosses or primes or present it
+as a cross-boss difficulty ranking.
 
 #### Scenario: A feature reads a boss's recommendations
 
 - **WHEN** a feature queries a boss id present in synced Meta data
-- **THEN** it receives that boss's authored Meta/alternate recommendations in
-  authored order with their exact lineup and Comp references
+- **THEN** it receives that boss's authored recommendations, however many are
+  present, in authored order with their exact lineup, Comp references, and
+  `efficiency` value, plus that boss's `primeUnitSetIds`
 
 #### Scenario: A feature reads Comp guidance
 
 - **WHEN** a feature reads a Comp profile from synced Meta data
 - **THEN** it receives the profile's ordered core, flex, and Machine-of-War
   ids without any server-supplied label or image path
+
+#### Scenario: A feature reads a boss's primes
+
+- **WHEN** a feature queries a boss group with a non-empty `primeUnitSetIds`
+- **THEN** it receives each prime's unit-set id in authored order
+
+#### Scenario: A feature reads a prime's curated recommendations
+
+- **WHEN** a feature queries a prime id present in synced `primes` data
+- **THEN** it receives that prime's authored recommendations in authored
+  order with the same shape as a boss recommendation
+
+#### Scenario: A prime has no curated recommendation
+
+- **WHEN** a feature queries a prime id referenced by a boss's
+  `primeUnitSetIds` but absent from `primes`
+- **THEN** the query surface reports no curated recommendation for that prime
+  rather than an error, distinct from an absent dataset
 
 ### Requirement: The app resolves Meta presentation from ids and known sources
 
@@ -108,7 +138,7 @@ The query surface SHALL preserve authored order and SHALL NOT infer replacements
 
 #### Scenario: Malformed rules fail synchronization
 
-- **WHEN** a downloaded recommendation has duplicate identity, misaligned slots, or invalid replacement structure
+- **WHEN** a downloaded recommendation has duplicate identity, fewer than five hero slots, or invalid replacement structure
 - **THEN** catalog synchronization fails without replacing the previously valid local Meta record
 
 ### Requirement: Variant-rule presentation remains client-owned

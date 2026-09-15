@@ -7,8 +7,10 @@ The game-catalog query surface SHALL expose the full Meta object, a lookup by
 boss group SHALL expose an ordered `primeUnitSetIds` array (zero or more prime
 unit-set ids fought alongside that boss). A returned recommendation SHALL
 expose its `kind` (a non-empty archetype id — not restricted to a fixed set),
-exactly five ordered hero ids, one Machine-of-War id, ordered Comp ids, and a
-positive `efficiency` number. A returned Comp SHALL expose its id,
+exactly five ordered `heroSlots` (each with its own `heroId`, `essential`
+weighting, and `replacementCharacterIds`), one Machine-of-War id, ordered
+Comp ids, and a positive `efficiency` number. A returned Comp SHALL expose
+its id,
 signature-unit id, ordered core-character ids, flex-character ids, and
 Machine-of-War ids.
 

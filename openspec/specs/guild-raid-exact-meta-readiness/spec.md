@@ -20,67 +20,132 @@ The system SHALL use the active status boss `unitSetId` to retrieve that boss's 
 - **WHEN** refreshed guild status advances to a different boss
 - **THEN** the exact readiness results are replaced with that boss's authored recommendations
 
-### Requirement: Exact readiness is deterministic and non-scored
+### Requirement: Exact readiness combines ownership and investment into a percentage
 
-For each recommendation the system SHALL compare the five exact `heroIds` with owned roster character ids and SHALL report each hero as owned or missing. Readiness SHALL be:
+For each recommendation, for each of the five ordered `heroSlots` (each with
+its own `heroId`, `essential` weighting, and `replacementCharacterIds`), the
+system SHALL report a `0–100%` investment-readiness value: `0%` when the
+character is unowned; otherwise the average of three ratios, each
+independently capped at `100%`, comparing the owned character's rank,
+progression, and ability levels against a threshold derived from the boss's
+own catalog stat-progression at the guild's live current step — never an
+authored or invented minimum. The Machine of War SHALL receive its own
+`0–100%` value using its progression level alone (Machines of War carry no
+rank).
 
-- `Ready` when all five exact heroes are owned;
-- `Partial` when one to four exact heroes are owned;
-- `Unavailable` when none of the five exact heroes are owned.
+The system SHALL combine the five hero values and the Machine-of-War value
+into one team readiness percentage, weighting a slot marked `essential` higher
+than a non-essential slot. The system SHALL NOT calculate expected damage,
+turn-order/mechanic effectiveness, or synergy — the percentage measures
+investment against the derived threshold only.
 
-Machine-of-War ownership SHALL be reported separately as owned or missing and SHALL NOT change the hero readiness classification. The system SHALL NOT infer a replacement from Comp membership or another recommendation and SHALL NOT calculate effectiveness, damage, synergy, or a readiness score.
+#### Scenario: Owned, sufficiently-invested hero is fully ready
 
-#### Scenario: Exact team is owned
+- **WHEN** an owned hero's rank, progression, and ability levels each meet or
+  exceed the boss's currently-derived threshold
+- **THEN** that hero's readiness is `100%`
 
-- **WHEN** the current player's roster contains all five exact hero ids
-- **THEN** the recommendation is Ready and its Machine-of-War ownership is shown separately
+#### Scenario: Owned but under-invested hero is partially ready
 
-#### Scenario: Some exact heroes are missing
+- **WHEN** an owned hero's ability levels are below the derived threshold
+  while rank and progression meet it
+- **THEN** that hero's readiness reflects the shortfall and is below `100%`
+  without being reported as `0%`
 
-- **WHEN** the roster contains three of the five exact hero ids
-- **THEN** the recommendation is Partial with the three owned and two missing heroes identified
+#### Scenario: Unowned hero is not ready
 
-#### Scenario: No exact heroes are owned
+- **WHEN** an exact hero is not owned
+- **THEN** its readiness is `0%` regardless of any other unit's investment
 
-- **WHEN** the roster contains none of the five exact hero ids
-- **THEN** the recommendation is Unavailable without suggested replacements
+#### Scenario: Essential shortfall weighs more than flex shortfall
+
+- **WHEN** two recommendations each have exactly one under-invested hero, one
+  in an essential slot and the other in a flex slot, with identical individual
+  shortfalls
+- **THEN** the recommendation with the essential-slot shortfall has the lower
+  team readiness percentage
 
 ### Requirement: Ideal Meta teams and roster gaps are presented together
 
-Each recommendation card SHALL show whether it is Meta or alternate, the exact five heroes, recommended Machine of War, referenced Comp signatures, readiness classification, owned/missing state per unit, and the catalog source/update attribution. Available player investment facts MAY be shown per owned unit, but SHALL NOT be compared with an invented minimum or used to reorder recommendations.
+Each recommendation card SHALL show whether it is Meta or alternate, the exact
+five heroes, recommended Machine of War, referenced Comp signatures, per-hero
+and Machine-of-War investment-readiness percentages, the combined team
+readiness percentage, owned/missing state per unit, and the catalog
+source/update attribution. Investment facts MAY be compared against the
+derived threshold described above and used to compute the readiness
+percentage; they SHALL NOT be used to reorder recommendations.
 
-At or above 768px the exact lineup and readiness summary SHALL remain visible together in a horizontal/card layout. Below 768px the readiness summary SHALL precede a compact lineup and expandable Comp/source detail without horizontal scrolling.
+For a slot where the ideal hero is unowned or under-invested, the card SHALL
+also show the investment-readiness percentage of every owned character listed
+in that slot's `replacementCharacterIds`, so a player can compare alternatives
+without leaving the card.
+
+At or above 768px the exact lineup, readiness percentages, and summary SHALL
+remain visible together in a horizontal/card layout. Below 768px the team
+readiness summary SHALL precede a compact lineup and expandable Comp/source
+detail without horizontal scrolling.
 
 #### Scenario: Desktop recommendation is compared at a glance
 
 - **WHEN** exact readiness is viewed at or above 768px
-- **THEN** the lineup and its owned/missing summary are visible together
+- **THEN** the lineup, its per-hero readiness percentages, and the team
+  readiness percentage are visible together
 
 #### Scenario: Mobile recommendation prioritizes readiness
 
 - **WHEN** exact readiness is viewed below 768px
-- **THEN** classification and missing-unit summary appear before expandable secondary details
+- **THEN** the team readiness percentage and missing-unit summary appear
+  before expandable secondary details
+
+#### Scenario: Flex slot shows alternative candidates
+
+- **WHEN** a flex slot's ideal hero is unowned and the player owns two of its
+  authored replacements
+- **THEN** the card shows the readiness percentage of both owned replacements
+  alongside the ideal hero's own state
 
 ### Requirement: Meta and roster absence states remain distinct
 
-The system SHALL distinguish an absent local Meta dataset, a valid Meta dataset with no group for the active boss, an unavailable current-player roster, and valid recommendations for which no team is Ready. Guild status SHALL remain visible in every one of these states.
+The system SHALL distinguish an absent local Meta dataset, a valid Meta
+dataset with no group for the active boss, an unavailable current-player
+roster, an absent or non-`active` live Guild Raid status (so no threshold can
+be derived), and valid recommendations for which no team is Ready. Guild
+status SHALL remain visible in every one of these states.
+
+When no live Guild Raid status is available to derive a threshold, the system
+SHALL fall back to ownership-only Ready/Partial/Unavailable classification for
+that recommendation rather than reporting a fabricated percentage.
 
 #### Scenario: Meta data has not synchronized
 
 - **WHEN** no local Guild Raid Meta record exists
-- **THEN** the recommendation region asks for catalog synchronization and does not describe the boss as unsupported
+- **THEN** the recommendation region asks for catalog synchronization and does
+  not describe the boss as unsupported
 
 #### Scenario: Boss has no published Meta
 
-- **WHEN** the Meta dataset is present but contains no group for the active boss
-- **THEN** the region states that no curated recommendation is available for that boss
+- **WHEN** the Meta dataset is present but contains no group for the active
+  boss
+- **THEN** the region states that no curated recommendation is available for
+  that boss
 
 #### Scenario: Player roster is unavailable
 
-- **WHEN** recommendations exist but the current player's roster data is absent
-- **THEN** ideal lineups remain visible, readiness is withheld, and the user is prompted to synchronize player data
+- **WHEN** recommendations exist but the current player's roster data is
+  absent
+- **THEN** ideal lineups remain visible, readiness is withheld, and the user
+  is prompted to synchronize player data
+
+#### Scenario: Live guild status is unavailable
+
+- **WHEN** recommendations and roster exist but no live Guild Raid status has
+  been observed for the guild
+- **THEN** the system falls back to ownership-only readiness for that
+  recommendation instead of computing or guessing a percentage
 
 #### Scenario: No exact team is ready
 
-- **WHEN** recommendations and roster exist but each result is Partial or Unavailable
-- **THEN** the page presents the gaps without claiming that no Meta data exists or inventing a playable variant
+- **WHEN** recommendations, roster, and live status all exist but each
+  result's team readiness is below `100%`
+- **THEN** the page presents the gaps without claiming that no Meta data
+  exists or inventing a playable variant
