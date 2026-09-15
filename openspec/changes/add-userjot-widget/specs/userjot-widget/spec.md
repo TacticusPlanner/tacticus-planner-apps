@@ -43,7 +43,7 @@ When a user is signed in, the app SHALL identify that user to the widget using a
 #### Scenario: Signing in identifies the user to the widget
 
 - **WHEN** a user signs in
-- **THEN** the widget receives a signed identity matching that user's account (id, email, and display name when known)
+- **THEN** the widget receives a signed identity matching that user's account (id and display name); the user's email is never included, for privacy
 
 #### Scenario: Signing out clears the widget identity
 
