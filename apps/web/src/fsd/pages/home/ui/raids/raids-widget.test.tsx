@@ -77,6 +77,27 @@ describe("RaidsWidget", () => {
     expect(screen.getByTestId("home-raids-loading")).toBeInTheDocument()
   })
 
+  it("shows a loading state, not no-projects guidance, while the project list is still resolving", () => {
+    // While useProjects() is pending, activeProjectId/defaultProjectId are both undefined, so
+    // useDailyRaids(undefined) reports "no-project" even though the account may well have
+    // projects — the widget must not flash the no-projects message during this window.
+    useProjectsMock.mockReturnValue({
+      activeProjectId: undefined,
+      defaultProjectId: undefined,
+      fetchState: { status: "idle" },
+      loading: true,
+      projects: [],
+    })
+    useDailyRaidsMock.mockReturnValue({ status: "no-project" })
+
+    render(<RaidsWidget />)
+
+    expect(screen.getByTestId("home-raids-loading")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raids-no-projects")
+    ).not.toBeInTheDocument()
+  })
+
   it("shows an empty state when there is nothing to raid", () => {
     useProjectsMock.mockReturnValue(readyProjects)
     useDailyRaidsMock.mockReturnValue({ status: "no-farmable" })

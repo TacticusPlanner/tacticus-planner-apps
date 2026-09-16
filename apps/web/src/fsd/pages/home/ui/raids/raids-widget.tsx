@@ -30,6 +30,18 @@ export function RaidsWidget() {
   const raids = useDailyRaids(projectId)
 
   const body = (() => {
+    // Loading must be checked before "no-project": while `useProjects()` is still resolving,
+    // `activeProjectId`/`defaultProjectId` are both undefined, so `useDailyRaids(undefined)`
+    // returns `{ status: "no-project" }` immediately — checking that first would flash the
+    // no-projects empty state on every page load before the real project list arrives.
+    if (raids.status === "loading" || loading) {
+      return (
+        <div className="flex flex-col gap-2" data-testid="home-raids-loading">
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+        </div>
+      )
+    }
     if (projectsUnavailable || raids.status === "no-project") {
       return (
         <div
@@ -40,14 +52,6 @@ export function RaidsWidget() {
           <p className="text-sm text-muted-foreground">
             {t("home.projects.emptyDescription")}
           </p>
-        </div>
-      )
-    }
-    if (raids.status === "loading" || loading) {
-      return (
-        <div className="flex flex-col gap-2" data-testid="home-raids-loading">
-          <Skeleton className="h-12 w-full rounded-lg" />
-          <Skeleton className="h-12 w-full rounded-lg" />
         </div>
       )
     }
