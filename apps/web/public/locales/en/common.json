@@ -266,8 +266,7 @@
     "raids": {
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
-      "noProjects": "Create a project to see today's raid schedule.",
-      "loading": "Loading today's raids…"
+      "error": "Couldn't load today's raids."
     }
   },
   "guild": {

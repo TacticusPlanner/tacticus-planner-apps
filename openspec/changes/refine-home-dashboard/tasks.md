@@ -18,14 +18,14 @@
 
 ## 4. Build the Your Projects widget
 
-- [ ] 4.1 Build the widget shell consuming `features/project-management`'s condensed card and capped selector, including the "+N more" link to `/goals/projects` and per-card navigation to `/goals/projects/{id}`; verify against the home-projects-widget spec's truncation and navigation scenarios.
-- [ ] 4.2 Build the no-projects empty state and the loading/failure states; verify each renders distinctly.
+- [x] 4.1 Build the widget shell consuming `features/project-management`'s condensed card and capped selector, including the "+N more" link to `/goals/projects` and per-card navigation to `/goals/projects/{id}`; verify against the home-projects-widget spec's truncation and navigation scenarios. `pages/home/ui/projects/projects-widget.tsx` + 5 component tests, all passing.
+- [x] 4.2 Build the no-projects empty state and the loading/failure states; verify each renders distinctly. Done as part of 4.1 (same component/tests): loading, error+retry, and empty states each have their own test.
 
 ## 5. Build the Daily Raids widget
 
-- [ ] 5.1 Build the widget shell consuming `features/daily-raids`'s flattened schedule and compact row component, scoped to the Active/Default project; verify against the home-raids-widget spec's scenarios (plain row, exhausted-node exclusion, Bonus-Raids/Today's-Attempts exclusion, shared-node merge).
-- [ ] 5.2 Build the "nothing to raid today" empty state, the no-projects state, and the readiness-gated loading state (deferring render until real synced-attempts data is available); verify each renders distinctly.
-- [ ] 5.3 Wire whole-widget navigation to `/dailies/raids/today`.
+- [x] 5.1 Build the widget shell consuming `features/daily-raids`'s flattened schedule and compact row component, scoped to the Active/Default project; verify against the home-raids-widget spec's scenarios (plain row, exhausted-node exclusion, Bonus-Raids/Today's-Attempts exclusion, shared-node merge). `pages/home/ui/raids/raids-widget.tsx` + 6 component tests. Bonus Raids/Today's Attempts exclusion is by construction (only `raids.today.entries` is ever passed to `flattenTodayLocations`), not a runtime filter — no separate test needed for that beyond the existing `flatten-today-locations.test.ts` unit tests.
+- [x] 5.2 Build the "nothing to raid today" empty state, the no-projects state, and the readiness-gated loading state (deferring render until real synced-attempts data is available); verify each renders distinctly. Readiness gating comes for free from `useDailyRaids`'s own `status: "loading"` (it already waits on real synced-attempt data internally — see `daily-raids-today` spec); the widget just renders its loading state for that status, same as Today does.
+- [x] 5.3 Wire whole-widget navigation to `/dailies/raids/today`. Verified by test.
 
 ## 6. Compose the home page
 
