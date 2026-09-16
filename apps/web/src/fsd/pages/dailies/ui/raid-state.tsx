@@ -3,7 +3,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import type { DailyRaidsViewModel } from "../model/daily-raids.domain"
+import type { DailyRaidsViewModel } from "@/features/daily-raids"
 
 export function RaidState({
   state,
