@@ -96,12 +96,13 @@ function LandingRoute() {
   return <LandingPage />
 }
 
-// Unlike LandingRoute, an unmatched path has no authenticated-only content of its own to briefly
-// hide, so there's no need to wait out `inProgress` here — redirecting to the right home immediately
-// on the stale first-render value (see the file-level comment) is harmless, and waiting would only
-// flash a spinner before the real content for a case that's already an error state.
 function NotFoundRedirect() {
   const isAuthenticated = useIsAuthenticated()
+  const { inProgress } = useMsal()
+
+  if (inProgress !== InteractionStatus.None) {
+    return <AuthResolving />
+  }
 
   return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
 }

@@ -1,6 +1,6 @@
 # Known Issues
 
-Things to expect while using Tacticus Planner during alpha testing. None of these block normal use — they're noted here so they're not a surprise.
+Things to expect while using Tacticus Planner during alpha testing. Most of these don't block normal use — they're noted here so they're not a surprise. The exception is the first one below, which can interrupt a page until you refresh it.
 
 - **A page can occasionally get stuck showing "loading"** if your device has trouble reading its locally saved data. If a page seems to hang on loading longer than expected, try refreshing.
 - **You might briefly appear signed in and then get asked to sign in again.** This can happen if your saved session has expired since your last visit.

@@ -79,7 +79,7 @@ function renderDailies(path = "/dailies") {
 }
 
 function findRouteContent(testId: string) {
-  return screen.findByTestId(testId, {}, { timeout: 10_000 })
+  return screen.findByTestId(testId, {}, { timeout: 5_000 })
 }
 
 describe("Dailies navigation", () => {
