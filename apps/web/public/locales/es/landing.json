@@ -10,6 +10,15 @@
     "characters": {
       "title": "Personajes",
       "description": "Consulta las mejoras y los materiales necesarios para subir de rango a cualquier personaje."
+    },
+    "raidBosses": {
+      "title": "Jefes de incursión de gremio",
+      "description": "Consulta estadísticas, habilidades y modificadores de combate de cada temporada."
+    },
+    "shops": {
+      "title": "Tiendas diarias",
+      "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana."
     }
-  }
+  },
+  "uiKitLink": "Ver el kit de UI"
 }

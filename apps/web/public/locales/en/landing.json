@@ -10,6 +10,14 @@
     "characters": {
       "title": "Characters",
       "description": "Browse character stats, and the upgrades and materials needed to rank up."
+    },
+    "raidBosses": {
+      "title": "Guild Raid Bosses",
+      "description": "Browse boss stats, abilities, and encounter modifiers for every season."
+    },
+    "shops": {
+      "title": "Daily Shops",
+      "description": "See what each daily shop offers, any day of the week."
     }
   },
   "uiKitLink": "View the UI Kit"

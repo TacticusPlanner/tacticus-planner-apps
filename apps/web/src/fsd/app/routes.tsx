@@ -96,6 +96,17 @@ function LandingRoute() {
   return <LandingPage />
 }
 
+function NotFoundRedirect() {
+  const isAuthenticated = useIsAuthenticated()
+  const { inProgress } = useMsal()
+
+  if (inProgress !== InteractionStatus.None) {
+    return <AuthResolving />
+  }
+
+  return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
+}
+
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
 // are plain element wrappers вЂ” no loaders are needed yet. Post-redirect navigation (previously a
 // dedicated /auth/callback route) is now owned by the MSAL redirect bridge (apps/web/redirect.html,
@@ -162,7 +173,7 @@ export const routes: RouteObject[] = [
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
       // there regardless of how someone reaches the URL.
       ...(isUiKitEnabled ? [{ path: "/ui-kit", element: <UiKitPage /> }] : []),
-      { path: "*", element: <Navigate replace to="/" /> },
+      { path: "*", element: <NotFoundRedirect /> },
     ],
   },
 ]

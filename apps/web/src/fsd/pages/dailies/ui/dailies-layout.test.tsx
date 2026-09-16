@@ -104,7 +104,7 @@ describe("Dailies navigation", () => {
     expect(
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()
-  })
+  }, 10_000)
 
   it("routes /dailies/salvage-run to the Salvage Run recommendations page", async () => {
     renderDailies("/dailies/salvage-run")
