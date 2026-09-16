@@ -22,7 +22,7 @@ The authenticated home page SHALL render a Token Availability section, sourced f
 
 For each token type present in `gameModeTokens` (Arena, Guild Raid, Bomb, Onslaught, Salvage Run), the widget SHALL show that token's current/max count and either a countdown to its next regeneration or a capped indicator when it is at max. A token type absent from `gameModeTokens` (e.g. `null`) SHALL NOT render a card.
 
-Regeneration is computed client-side from the last-synced snapshot (`current`, `max`, `nextTokenInSeconds`, `regenDelayInSeconds`, and the sync timestamp) rather than re-fetched continuously, so elapsed time since sync must be projected forward.
+The countdown is anchored to the player-data snapshot's observation time (when the account was last synced), not re-projected across multiple elapsed regeneration intervals: `current` is shown exactly as last synced, and the countdown targets only the next token due from that snapshot (`observedAt + nextTokenInSeconds`). This deliberately does not guess a higher current count from elapsed time the way multi-interval client-side projection would — it mirrors the existing `resourceCountdown` pattern this codebase already uses for Guild Raid's own token countdowns (`pages/dailies/ui/guild-raids/guild-raid-countdowns.ts`), chosen over the alternative for consistency with that established, deliberate convention.
 
 Assumptions:
 
@@ -31,9 +31,9 @@ Assumptions:
 
 #### Scenario: Token below max counts down to its next regeneration
 
-- **GIVEN** a token bucket last synced with `current: 3`, `max: 5`, `nextTokenInSeconds: 1200`, `regenDelayInSeconds: 3600`, and the sync occurred 4500 seconds ago
+- **GIVEN** a token bucket last synced (observed) with `current: 3`, `max: 5`, `nextTokenInSeconds: 1200`, and the sync occurred 300 seconds ago
 - **WHEN** Token Availability computes that token's current state
-- **THEN** one token has already regenerated since sync (at the 1200s mark), the projected count is 4/5, and the countdown to the 5th (capping) token shows 300 seconds remaining — derived as: `1200 (first regen) + 3600 (regen delay) − 4500 (elapsed) = 300`
+- **THEN** it shows the count as 3/5 (unchanged from the synced snapshot) with a countdown to the next token in 900 seconds — derived as: `1200 (seconds until next token, as of the snapshot) − 300 (elapsed since that snapshot) = 900`
 
 #### Scenario: Token at max shows a capped indicator
 
@@ -47,15 +47,17 @@ Assumptions:
 - **WHEN** Token Availability renders
 - **THEN** no card is rendered for that token type
 
-### Requirement: Stale capped data prompts a sync
+### Requirement: Stale capped data shows a banner
 
-When a token's projected count is at max and the last sync happened more than 5 minutes ago, the widget SHALL show a banner explaining the data may be stale with an action that triggers the existing player-data sync.
+When a token's projected count is at max and the last sync happened more than 5 minutes ago, the widget SHALL show a banner explaining the data may be stale, naming when it was last synced.
+
+Implementation note: this banner is informational only, without its own sync-trigger control. The existing "sync now" action lives in the app shell's sidebar/mobile-nav (`app/providers/player-data-provider.tsx`'s `usePlayerDataStatus`), which this repo's FSD layering forbids a page from importing (pages may not import from the `app` layer). Triggering a sync from here would mean either duplicating that provider's auth/coalescing logic or relocating it to a lower layer — both out of scope for this change. The banner points the player at the existing sidebar control instead of adding a redundant one.
 
 #### Scenario: Capped token with a stale sync
 
 - **GIVEN** a token's projected count is at its max and the account was last synced 6 minutes ago
 - **WHEN** Token Availability renders
-- **THEN** it shows a stale-data banner with a sync action
+- **THEN** it shows a stale-data banner naming the last-sync time
 
 #### Scenario: Recently synced capped token
 
@@ -63,19 +65,16 @@ When a token's projected count is at max and the last sync happened more than 5 
 - **WHEN** Token Availability renders
 - **THEN** no stale-data banner is shown for that token
 
-### Requirement: Distinct loading, failure, and empty states
+### Requirement: Distinct loading and empty states
 
-The widget SHALL present a distinct state for each of: player data still loading, player data failed to load, and no token data available for the account at all.
+The widget SHALL present a distinct state for each of: player data still loading, and no token data available for the account at all.
+
+Implementation note: a distinct "failed to load" state is not implemented separately from "no data yet." The data source is a local IndexedDB read (`getLiveProgress`/`getPlayerDataMetadata`, not a network call the widget itself makes), which does not fail the way a network request does; the only load-failure signal that exists (the app shell's sync-status context) lives in the `app` layer, which a page cannot import (see the previous requirement's note). A widget-local read failure is realistically indistinguishable from "never synced yet," so both surface as the empty state.
 
 #### Scenario: Player data is loading
 
 - **WHEN** the player's synced data has not yet loaded
 - **THEN** Token Availability shows a loading state rather than an empty or partially-rendered row of cards
-
-#### Scenario: Player data fails to load
-
-- **WHEN** the player's synced data fails to load
-- **THEN** Token Availability shows an explicit failure state
 
 #### Scenario: No token data on the account
 

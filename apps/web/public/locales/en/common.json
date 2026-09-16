@@ -234,17 +234,22 @@
     "tourButton": "Show me around",
     "tokens": {
       "title": "Token Availability",
-      "capped": "Capped",
-      "overCap": "Over cap +{{time}}",
-      "fullIn": "Full in {{time}}",
+      "full": "Capped",
+      "due": "Ready now",
+      "nextLabel": "Next in {{time}}",
       "syncBanner": {
         "title": "Refresh required",
-        "description": "Last sync {{time}}",
-        "action": "Sync now"
+        "description": "Last sync {{time}} — use the sync control in the sidebar to refresh."
       },
       "loading": "Loading token status…",
-      "error": "Couldn't load your token status.",
-      "empty": "No token data available yet."
+      "empty": "No token data available yet.",
+      "labels": {
+        "arena": "Arena",
+        "guildRaid": "Guild Raid",
+        "bombTokens": "Bomb Tokens",
+        "onslaught": "Onslaught",
+        "salvageRun": "Salvage Run"
+      }
     },
     "projects": {
       "title": "Your Projects",
