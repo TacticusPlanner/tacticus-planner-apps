@@ -1,10 +1,7 @@
 export { useDailyRaids } from "./model/use-daily-raids"
 export { activeProjectMembers } from "./model/daily-raids-calc"
 export { isLocationVisible } from "./model/location-visibility"
-export {
-  flattenTodayLocations,
-  type FlattenedRaidLocation,
-} from "./model/flatten-today-locations"
+export { flattenTodayLocations } from "./model/flatten-today-locations"
 export { dailyRaidResourceKey } from "./model/daily-raids.domain"
 export type {
   DailyRaidGoalViewModel,
@@ -12,7 +9,6 @@ export type {
   DailyRaidResourceProgress,
   DailyRaidResourceUrgency,
   DailyRaidResourceVisual,
-  DailyRaidsCalculationViewModel,
   DailyRaidsReadyViewModel,
   DailyRaidsViewModel,
 } from "./model/daily-raids.domain"
