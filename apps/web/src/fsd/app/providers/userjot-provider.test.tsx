@@ -73,6 +73,7 @@ describe("UserJotProvider", () => {
           hasCompletedOnboarding: true,
           tacticusApiKeyMasked: null,
           tacticusUserIdMasked: null,
+          analyticsId: "analytics-id-1",
         },
       },
     })

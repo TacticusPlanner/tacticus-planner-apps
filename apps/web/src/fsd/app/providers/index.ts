@@ -6,5 +6,6 @@ export {
   type GameCatalogContextValue,
 } from "./game-catalog-provider"
 export { PlayerDataProvider } from "./player-data-provider"
+export { PostHogProvider } from "./posthog-provider"
 export { QueryProvider } from "./query-provider"
 export { UserJotProvider } from "./userjot-provider"

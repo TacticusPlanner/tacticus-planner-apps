@@ -8,6 +8,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import {
   GameCatalogProvider,
   PlayerDataProvider,
+  PostHogProvider,
   UserJotProvider,
 } from "@/app/providers"
 import { goalQueries } from "@/entities/goal"
@@ -75,15 +76,17 @@ export function AppShell() {
             is not gated behind an init screen — it syncs in the background once authenticated. */}
         <PlayerDataProvider baseUrl={apiBaseUrl}>
           <UserJotProvider>
-            <ShellContent
-              activeSection={activeItem}
-              isAuthenticated={isAuthenticated}
-              isMobile={isMobile}
-              pageDescription={pageDescription}
-              pageTitle={pageTitle}
-              sectionTitle={sectionTitle}
-              visibleItems={visibleItems}
-            />
+            <PostHogProvider routeGroup={activeItem?.path}>
+              <ShellContent
+                activeSection={activeItem}
+                isAuthenticated={isAuthenticated}
+                isMobile={isMobile}
+                pageDescription={pageDescription}
+                pageTitle={pageTitle}
+                sectionTitle={sectionTitle}
+                visibleItems={visibleItems}
+              />
+            </PostHogProvider>
           </UserJotProvider>
         </PlayerDataProvider>
       </GameCatalogInitGate>

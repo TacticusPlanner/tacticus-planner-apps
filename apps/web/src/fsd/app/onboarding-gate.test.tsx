@@ -34,6 +34,7 @@ describe("OnboardingGate", () => {
         hasCompletedOnboarding: false,
         tacticusApiKeyMasked: null,
         tacticusUserIdMasked: null,
+        analyticsId: "analytics-id-1",
       },
     })
 
@@ -56,6 +57,7 @@ describe("OnboardingGate", () => {
         hasCompletedOnboarding: true,
         tacticusApiKeyMasked: "••••••••abcd",
         tacticusUserIdMasked: null,
+        analyticsId: "analytics-id-1",
       },
     })
 
