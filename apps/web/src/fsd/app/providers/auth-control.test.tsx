@@ -192,6 +192,7 @@ describe("AuthControl", () => {
           hasCompletedOnboarding: true,
           tacticusApiKeyMasked: "••••••••abcd",
           tacticusUserIdMasked: "••••••••1234",
+          analyticsId: "analytics-id-1",
         },
       },
     })
