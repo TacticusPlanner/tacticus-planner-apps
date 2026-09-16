@@ -10,6 +10,15 @@
     "characters": {
       "title": "Charaktere",
       "description": "Sieh dir die Verbesserungen und Materialien an, die zum Aufstufen eines Charakters nötig sind."
+    },
+    "raidBosses": {
+      "title": "Gildenraid-Bosse",
+      "description": "Sieh dir Werte, Fähigkeiten und Kampf-Modifikatoren für jede Saison an."
+    },
+    "shops": {
+      "title": "Tages-Shops",
+      "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann."
     }
-  }
+  },
+  "uiKitLink": "UI-Kit ansehen"
 }

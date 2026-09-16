@@ -5,11 +5,20 @@
   "subtitle": "Suivez personnages, améliorations, équipement, campagnes et événements légendaires — le tout au même endroit.",
   "getStarted": "Se connecter / Commencer",
   "library": {
-    "title": "Références & recherches",
+    "title": "Bibliothèque",
     "subtitle": "Parcourez les données du jeu sans compte.",
     "characters": {
-      "title": "Recherche de rangs",
+      "title": "Personnages",
       "description": "Découvrez les améliorations et les matériaux nécessaires pour faire monter un personnage en rang."
+    },
+    "raidBosses": {
+      "title": "Boss de raid de guilde",
+      "description": "Consultez les statistiques, capacités et modificateurs de combat de chaque saison."
+    },
+    "shops": {
+      "title": "Boutiques quotidiennes",
+      "description": "Découvrez ce que propose chaque boutique quotidienne, selon le jour de la semaine."
     }
-  }
+  },
+  "uiKitLink": "Voir le kit d'interface"
 }

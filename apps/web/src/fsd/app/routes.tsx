@@ -96,6 +96,16 @@ function LandingRoute() {
   return <LandingPage />
 }
 
+// Unlike LandingRoute, an unmatched path has no authenticated-only content of its own to briefly
+// hide, so there's no need to wait out `inProgress` here — redirecting to the right home immediately
+// on the stale first-render value (see the file-level comment) is harmless, and waiting would only
+// flash a spinner before the real content for a case that's already an error state.
+function NotFoundRedirect() {
+  const isAuthenticated = useIsAuthenticated()
+
+  return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
+}
+
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
 // are plain element wrappers вЂ” no loaders are needed yet. Post-redirect navigation (previously a
 // dedicated /auth/callback route) is now owned by the MSAL redirect bridge (apps/web/redirect.html,
@@ -162,7 +172,7 @@ export const routes: RouteObject[] = [
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
       // there regardless of how someone reaches the URL.
       ...(isUiKitEnabled ? [{ path: "/ui-kit", element: <UiKitPage /> }] : []),
-      { path: "*", element: <Navigate replace to="/" /> },
+      { path: "*", element: <NotFoundRedirect /> },
     ],
   },
 ]

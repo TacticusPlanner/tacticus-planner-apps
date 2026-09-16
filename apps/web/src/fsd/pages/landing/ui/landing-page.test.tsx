@@ -71,11 +71,19 @@ describe("LandingPage", () => {
     expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
   })
 
-  it("links to the public Library", () => {
+  it("links to the public Library collections", () => {
     renderLanding()
 
-    const link = screen.getByTestId("landing-library-characters-link")
-    expect(link).toHaveAttribute("href", "/library")
+    expect(
+      screen.getByTestId("landing-library-characters-link")
+    ).toHaveAttribute("href", "/library/characters")
+    expect(
+      screen.getByTestId("landing-library-raid-bosses-link")
+    ).toHaveAttribute("href", "/library/raid-bosses")
+    expect(screen.getByTestId("landing-library-shops-link")).toHaveAttribute(
+      "href",
+      "/library/shops"
+    )
   })
 
   it("links to the UI Kit when enabled for this environment", () => {

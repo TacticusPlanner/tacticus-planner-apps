@@ -56,6 +56,7 @@
       "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     },
     "playerData": {
+      "title": "Spielerdaten-Synchronisierung",
       "statusIdle": "Nicht angemeldet",
       "statusSyncing": "Wird synchronisiert…",
       "statusReady": "Aktuell",
@@ -65,7 +66,9 @@
       "neverSynced": "Noch nie synchronisiert",
       "syncProgress": "Synchronisierung {{downloaded}} / {{total}}…",
       "retrySync": "Synchronisierung fehlgeschlagen — erneut versuchen",
-      "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}"
+      "reauthRequired": "Anmeldung abgelaufen — zum Anmelden tippen",
+      "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}",
+      "syncNow": "Jetzt synchronisieren"
     },
     "account": {
       "purgeWarningTitle": "Konto löschen",
@@ -98,7 +101,7 @@
       "submit": "Profil importieren"
     }
   },
-  "rankLookup": {
+  "unitLookup": {
     "subtitle": "Wähle einen Charakter und einen Rangbereich, um die nötigen Verbesserungen und Farm-Orte zu sehen.",
     "character": "Charakter",
     "characterPlaceholder": "Charakter auswählen",
@@ -106,22 +109,43 @@
     "rankRange": "Rangbereich",
     "start": "Von",
     "end": "Bis",
+    "progression": "Fortschritt",
     "pointFive": "Point-Five-Verbesserungen einbeziehen",
     "pointFiveShort": "Point Five",
     "pointFiveHint": "Beim Erreichen des Zielrangs kannst du sofort die erste Verbesserung jedes Werts anwenden. Aktiviere dies, um diese oberste Reihe einzubeziehen.",
     "pointFiveAdamantineDisabled": "Point-Five-Verbesserungen gelten nicht für Adamantin-Ränge.",
+    "includeOwnedUpgrades": "Meine Verbesserungen einbeziehen",
+    "includeOwnedUpgradesHint": "Verrechnet bereits an diesem Charakter angewendete Verbesserungen sowie alles in deinem Inventar (Basismaterialien und bereits hergestellte Verbesserungen) mit den unten stehenden Gesamtsummen.",
+    "includeOwnedUpgradesSignInRequired": "Melde dich an und synchronisiere dein Tacticus-Konto, um dein vorhandenes Inventar und deinen Charakterfortschritt in diese Berechnungen einzubeziehen.",
     "apply": "Anwenden",
     "baseUpgrades": "Benötigte Basis-Upgrades",
-    "distinctBaseUpgrades": "Verschiedene Basis-Upgrades",
-    "totalBaseUpgrades": "Basis-Upgrades gesamt",
+    "insights": "Einblicke",
+    "topUpgradesByRarity": "Top-Upgrade nach Seltenheit",
+    "usefulCampaigns": "Nützlichste Kampagnen",
+    "usefulEvents": "Nützlichste Kampagnen-Events",
+    "usefulnessScoreHint": "Bewertet Kampagnen nach Wert pro eingesetzter Energie: Für jedes noch benötigte, dort erbeutbare Upgrade werden Seltenheit × benötigte Menge × Dropchance summiert und durch die Energiekosten der beteiligten Kampfknoten geteilt. Ein höherer Wert bedeutet mehr nützliches Material pro Energie. Event-Schwierigkeitsstufen (Standard, Extremis) werden zu einem gemeinsamen Wert pro Event zusammengefasst.",
     "baseUpgrade": "Upgrade",
     "name": "Name",
     "count": "Anzahl",
+    "owned": "Vorhanden",
+    "missing": "Fehlend",
     "rarity": "Seltenheit",
     "campaignLocations": "Kampagnen-Orte",
     "eventLocations": "Kampagnen-Event-Orte",
     "byRank": "Verbesserungen nach Rang",
+    "alreadyApplied": "Bereits angewendet",
     "noUpgrades": "Wähle einen Charakter und einen gültigen Rangbereich, um die nötigen Verbesserungen zu sehen.",
+    "movement": "Bewegung",
+    "melee": "Nahkampf",
+    "ranged": "Fernkampf",
+    "damageTypes": "Schadensarten",
+    "equipment": "Ausrüstung",
+    "traits": "Eigenschaften",
+    "health": "Gesundheit",
+    "damage": "Schaden",
+    "armour": "Rüstung",
+    "current": "Aktuell",
+    "target": "Ziel",
     "share": {
       "action": "Teilen",
       "copied": "Link in die Zwischenablage kopiert.",
@@ -150,6 +174,63 @@
     "search": "Navigation durchsuchen",
     "sync": "Sync",
     "syncWithTacticus": "Mit Tacticus synchronisieren"
+  },
+  "onslaught": {
+    "sector": "Sektor",
+    "tier": "Stufe",
+    "tierComplete": "Stufe 4 · Sektor abgeschlossen",
+    "save": "Speichern",
+    "saving": "Wird gespeichert…",
+    "saved": "Onslaught-Fortschritt gespeichert.",
+    "loadError": "Onslaught-Fortschritt konnte nicht geladen werden.",
+    "saveError": "Onslaught-Fortschritt konnte nicht gespeichert werden. Aktualisiere und versuche es erneut.",
+    "conflict": "Der Onslaught-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an.",
+    "rewardsTitle": "Referenz für Scherben-Belohnungen",
+    "sectorTier": "Sektor / Stufe",
+    "current": "Aktueller Allianzfortschritt",
+    "rewards": {
+      "Common": "Gewöhnlich",
+      "Uncommon": "Ungewöhnlich",
+      "Rare": "Selten",
+      "Epic": "Episch",
+      "Legendary": "Legendär",
+      "LegendaryBlue": "Legendär 1★ blau",
+      "Mythic": "Mythisch"
+    }
+  },
+  "progress": {
+    "tabs": {
+      "onslaught": "Onslaught",
+      "onslaughtDescription": "Gib den aktuellen Sektor und die Stufe für jede Allianz ein. Aufstiegsschätzungen verwenden diese Werte sowie synchronisierte Onslaught-Token.",
+      "campaigns": "Kampagnen",
+      "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
+      "campaign-events": "Kampagnen-Events",
+      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
+    },
+    "loadError": "Fortschrittsdaten sind unerwartet nicht verfügbar. Aktualisiere und versuche es erneut.",
+    "campaigns": {
+      "normal": "Normale Kampagnen",
+      "mirror": "Spiegelkampagnen"
+    },
+    "events": {
+      "regular": "Reguläre Kämpfe",
+      "challenges": "Optionale Herausforderungen",
+      "regularProgress": "{{type}} regulärer Fortschritt",
+      "decrease": "Fortschritt verringern",
+      "increase": "Fortschritt erhöhen",
+      "max": "Max",
+      "useSynced": "Synchronisierten Wert verwenden",
+      "manual": "Manuell",
+      "synced": "Synchronisiert",
+      "save": "Speichern",
+      "saved": "Kampagnen-Event-Fortschritt gespeichert.",
+      "saveError": "Kampagnen-Event-Fortschritt konnte nicht gespeichert werden.",
+      "conflict": "Der Kampagnen-Event-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an."
+    }
+  },
+  "home": {
+    "subtitle": "Diese Seite befindet sich noch im Aufbau.",
+    "tourButton": "Zeig mir alles"
   },
   "guild": {
     "loadError": "Deine Gilde konnte nicht geladen werden.",
@@ -226,24 +307,104 @@
       "member": "Mitglied"
     }
   },
-  "progress": {
-    "tabs": {
-      "onslaughtDescription": "Gib den aktuellen Sektor und die Stufe für jede Allianz ein. Aufstiegsschätzungen verwenden diese Werte sowie synchronisierte Onslaught-Token.",
-      "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
-      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
-    }
-  },
   "goals": {
+    "title": "Ziele",
+    "loadError": "Deine Ziele konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "createButton": "Ziel erstellen",
+    "planningSettings": {
+      "button": "Planungseinstellungen",
+      "title": "Planungseinstellungen",
+      "description": "Wähle das tägliche Energiebudget, das für Zielschätzungen verwendet wird.",
+      "dailyEnergy": "Energie pro Tag",
+      "save": "Einstellungen speichern",
+      "cancel": "Abbrechen",
+      "error": "Die Planungseinstellungen konnten nicht gespeichert werden."
+    },
+    "v1Import": {
+      "menu": "Aus V1 importieren",
+      "title": "Aus V1 importieren",
+      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Übereinstimmende V2-Zielarten werden ersetzt, und importierte Ziele werden pausiert.",
+      "username": "V1-Benutzername",
+      "password": "V1-Passwort",
+      "selectParts": "Wähle aus, was importiert werden soll",
+      "parts": {
+        "personalKey": "Persönlicher Tacticus-API-Schlüssel",
+        "userId": "Tacticus-Benutzer-ID",
+        "guildKey": "Gilden-API-Token",
+        "goals": "Ziele",
+        "onslaughtProgress": "Onslaught-Fortschritt",
+        "campaignEventProgress": "Kampagnen-Event-Fortschritt"
+      },
+      "submit": "Ausgewählte importieren",
+      "close": "Schließen",
+      "error": "Das V1-Profil konnte nicht importiert werden.",
+      "goalCounts": "Ziele: {{created}} erstellt, {{skipped}} übersprungen, {{failed}} fehlgeschlagen"
+    },
+    "empty": {
+      "title": "Noch keine Ziele",
+      "description": "Erstelle ein Ziel, um den Fortschritt zu einem Charakter-, Kriegsmaschinen- oder Upgrade-Ziel zu verfolgen.",
+      "createButton": "Erstelle dein erstes Ziel",
+      "filtered": "Keine Ziele in dieser Ansicht."
+    },
     "tabs": {
+      "goals": "Ziele",
+      "overview": "Übersicht",
       "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
+      "projects": "Projekte",
       "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
+      "insights": "Einblicke",
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
+      "toReach": "Unerfüllt",
+      "reached": "Erreicht",
+      "archived": "Archiviert",
       "blocked": "Blockiert",
       "active": "Aktiv",
       "paused": "Pausiert"
     },
-    "filters": {
-      "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
+    "columns": {
+      "entity": "Charakter",
+      "type": "Typ",
+      "progress": "Fortschritt",
+      "status": "Status",
+      "actions": "Aktionen",
+      "estimate": "Gesch."
+    },
+    "status": {
+      "Draft": "Entwurf",
+      "Active": "Aktiv",
+      "Paused": "Pausiert",
+      "Completed": "Abgeschlossen",
+      "Archived": "Archiviert"
+    },
+    "blocked": {
+      "label": "Blockiert",
+      "reasons": {
+        "PrerequisiteNotReached": "Wartet darauf, dass zuerst ein Voraussetzungsziel erreicht wird.",
+        "PlayerDataUnavailable": "Spielerdaten für dieses Ziel wurden noch nicht synchronisiert.",
+        "CatalogDataUnavailable": "Spieldaten wurden noch nicht vollständig geladen.",
+        "MissingLevelPrerequisite": "Ein Stufen-Ziel, das Stufe {{level}} erreicht, ist erforderlich.",
+        "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich."
+      },
+      "createPrerequisite": "Voraussetzungsziel erstellen",
+      "reviewPrerequisite": "Bestehende Voraussetzung ansehen",
+      "existingPrerequisiteGuidance": "Das bestehende aktive oder pausierte Ziel erreicht dieses Ziel nicht. Archiviere oder ersetze es, bevor du ein weiteres erstellst."
+    },
+    "actions": {
+      "openMenu": "Zielaktionen öffnen",
+      "pause": "Pausieren",
+      "resume": "Fortsetzen",
+      "archive": "Archivieren",
+      "unarchive": "Aus Archiv wiederherstellen",
+      "delete": "Löschen",
+      "moveUp": "Nach oben verschieben",
+      "moveDown": "Nach unten verschieben"
+    },
+    "delete": {
+      "title": "Dieses Ziel löschen?",
+      "description": "Dies entfernt das Ziel dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+      "confirm": "Ziel löschen",
+      "cancel": "Abbrechen"
     },
     "project": {
       "noProjectTitle": "Noch keine Projekte",
@@ -291,6 +452,278 @@
       "restore": "Projekt wiederherstellen",
       "save": "Projekt speichern",
       "create": "Projekt erstellen"
+    },
+    "toasts": {
+      "statusChanged": "Ziel aktualisiert.",
+      "deleted": "Ziel gelöscht.",
+      "activated": "Aktueller Plan aktualisiert.",
+      "actionError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "projectCreated": "Projekt erstellt.",
+      "projectUpdated": "Projekt aktualisiert."
+    },
+    "create": {
+      "title": "Ziel erstellen",
+      "entityType": {
+        "unit": "Einheit"
+      },
+      "unitLabel": "Einheit",
+      "unitPlaceholder": "Einheit auswählen",
+      "unitEmpty": "Keine Einheit gefunden.",
+      "info": {
+        "title": "Aktueller Status",
+        "shards": "Scherben",
+        "mythicShards": "Mythische Scherben"
+      },
+      "goalTypeLabel": "Zieltyp",
+      "goalTypes": {
+        "Rank": "Rang",
+        "Ascension": "Aufstieg",
+        "Ability": "Fähigkeit",
+        "Unlock": "Freischalten",
+        "Upgrade": "Upgrade",
+        "Level": "Stufe"
+      },
+      "rank": {
+        "start": "Von Rang",
+        "end": "Bis Rang",
+        "current": "Aktueller Rang",
+        "target": "Zielrang",
+        "appliedUpgrades": "{{applied}}/{{total}}",
+        "additionalTarget": {
+          "label": "Zusätzliches Ziel",
+          "none": "Keines",
+          "topRow": "Oberste Reihe (Rang und ein halber)",
+          "row": "{{count}} von {{total}} — Stufe {{level}}"
+        }
+      },
+      "ascension": {
+        "start": "Aktueller Aufstieg",
+        "end": "Ziel-Aufstieg",
+        "shards": "{{regular}} Scherben · {{mythic}} mythische Scherben",
+        "orbs": "Orbs × {{count}}",
+        "combinedEstimate": "Kombinierte Dauer: {{days}} Tage"
+      },
+      "acquisitionSources": {
+        "label": "Bezugsquellen",
+        "campaignsGroup": "Kampagnen",
+        "onslaughtGroup": "Onslaught",
+        "shopsGroup": "Shops",
+        "combinedEstimate": "{{energy}} Energie · {{raids}} Raids · {{days}} Tage",
+        "shardsPerDay": "≈{{shards}} Scherben/Tag",
+        "shardsPerDayMythic": "≈{{shards}} mythische Scherben/Tag",
+        "onslaughtNoProgress": "Lege deinen Onslaught-Fortschritt fest, um den Ertrag zu sehen.",
+        "editOnslaughtProgress": "Onslaught-Fortschritt bearbeiten",
+        "onslaughtTokens": "{{count}} Onslaught-Token",
+        "shopCurrencySpend": "{{amount}} {{currency}}",
+        "shopOfferAvailable": "Bis zu {{qty}}×{{amount}} · je {{cost}} {{currency}}",
+        "shopOfferPossibleReward": "Eine von mehreren möglichen Belohnungen für diesen Slot",
+        "shopOfferChance": "≈{{percent}}% Chance an {{days}}",
+        "shopOfferDays": "Verfügbar {{days}}",
+        "ascensionOnlyMythicLabel": "Nur beim Aufstieg verfügbare mythische Quellen"
+      },
+      "ability": {
+        "activeStart": "Aktive Fähigkeit, aktuelle Stufe",
+        "activeTarget": "Aktive Fähigkeit, Zielstufe",
+        "passiveStart": "Passive Fähigkeit, aktuelle Stufe",
+        "passiveTarget": "Passive Fähigkeit, Zielstufe",
+        "primaryStart": "Primäre Fähigkeit, aktuelle Stufe",
+        "primaryTarget": "Primäre Fähigkeit, Zielstufe",
+        "secondaryStart": "Sekundäre Fähigkeit, aktuelle Stufe",
+        "secondaryTarget": "Sekundäre Fähigkeit, Zielstufe"
+      },
+      "level": {
+        "current": "Aktuelle Stufe",
+        "target": "Zielstufe",
+        "booksNeeded": "≈ {{count}} legendäre XP-Bücher",
+        "goldToApply": "≈ {{gold}} Gold zum Anwenden",
+        "costDisclaimer": "Verrechnet mit deinen vorhandenen XP-Büchern. Keine Tagesschätzung — XP-Bücher werden nicht mit Kampagnen-Energie gefarmt."
+      },
+      "farmingStrategy": {
+        "label": "Farming-Strategie",
+        "TotalUpgrades": "Gesamt-Upgrades",
+        "EveryStep": "Jeder Schritt",
+        "Milestones": "Meilensteine",
+        "MajorMilestones": "Große Meilensteine",
+        "unit": {
+          "rank": "Rang",
+          "ability": "Fähigkeitsstufe"
+        },
+        "explanation": {
+          "TotalUpgrades": "Ein Ziel für den gesamten Bereich — der Fortschritt wird erst angezeigt, wenn es vollständig abgeschlossen ist ({{count}} Kontrollpunkt).",
+          "EveryStep": "Ein Kontrollpunkt bei jedem einzelnen {{unit}} auf dem Weg — die feinste Verfolgung ({{count}} Kontrollpunkte).",
+          "Milestones": "Ein Kontrollpunkt bei jeder wichtigen {{unit}}-Stufe — ein ausgewogener Standard ({{count}} Kontrollpunkte).",
+          "MajorMilestones": "Ein Kontrollpunkt nur bei den größten {{unit}}-Stufen — die wenigsten Kontrollpunkte ({{count}})."
+        },
+        "unavailable": {
+          "singleRank": "Noch nicht genug Spielraum für mehr als einen Kontrollpunkt — wähle ein weiter entferntes Ziel.",
+          "tooFewMilestones": "Der gewählte Bereich umfasst nicht genug Meilenstein-Stufen für diese Strategie.",
+          "tooFewMajorMilestones": "Der gewählte Bereich umfasst nicht genug große Meilenstein-Stufen für diese Strategie."
+        }
+      },
+      "unlockDescription": "Dieses Ziel ist abgeschlossen, sobald der Charakter freigeschaltet ist.",
+      "unlockUnavailable": "Freischalten ist nicht verfügbar, da dieser Charakter keine Katalog-Scherbenorte hat.",
+      "unlockCostUnsupportedMow": "Freischaltungsziele werden für Kriegsmaschinen verfolgt, ihre Ressourcenkosten werden aber noch nicht unterstützt.",
+      "shardLocations": {
+        "labelRegular": "Scherben-Orte",
+        "labelMythic": "Mythische Scherben-Orte",
+        "energyPerShard": "≈{{energy}} Energie pro Scherbe",
+        "remainingEnergy": "≈{{energy}} Energie, um die verbleibenden Scherben zu erhalten",
+        "energyValue": "≈{{energy}} Energie",
+        "daysValue": "≈{{days}} Tage"
+      },
+      "unlock": {
+        "ownedOfTotal": "{{owned}} / {{total}} Scherben",
+        "remaining": "{{count}} verbleibend",
+        "unlocksAt": "Schaltet frei bei",
+        "selectLocationPrompt": "Wähle einen Scherbenort, um Energie und Zeit zu schätzen"
+      },
+      "upgrade": {
+        "add": "Ein Upgrade hinzufügen",
+        "addEmpty": "Keine passenden Upgrades gefunden.",
+        "quantity": "Menge",
+        "remove": "Entfernen",
+        "required": "benötigt × {{count}}",
+        "empty": "Füge mindestens ein Upgrade hinzu, um auf eine Zielmenge zu farmen."
+      },
+      "previewTitle": "Benötigte Ressourcen",
+      "showAll": "Alle anzeigen ({{count}})",
+      "showLess": "Weniger anzeigen",
+      "previewDisclaimer": "Die tatsächliche Schätzung kann sich je nach Priorität dieses Ziels innerhalb des gewählten Projekts und der gewählten Farming-Strategie ändern.",
+      "previewUnavailable": "Für diesen Zieltyp ist noch keine detaillierte Schätzung verfügbar.",
+      "characterAbilityCostUnsupported": "Charakter-Fähigkeitsziele werden validiert und verfolgt, ihre Ressourcenkosten werden aber noch nicht unterstützt.",
+      "projectLabel": "Projekte",
+      "projectDefault": "Keine Projekte ausgewählt — das Ziel wird deinem Standardprojekt hinzugefügt.",
+      "projectDefaultMarker": "Standard",
+      "createAnother": "Weiteres Ziel erstellen",
+      "submit": "Ziel erstellen",
+      "close": "Schließen",
+      "genericError": "Das Ziel konnte nicht erstellt werden. Bitte versuche es erneut.",
+      "previewEstimate": "≈ {{days}} Tage",
+      "previewEnergy": "{{energy}} Energie",
+      "reviewTitle": "Was erstellt wird",
+      "projectEstimateLoading": "wird berechnet…",
+      "projectEstimateUnavailable": "keine Schätzung verfügbar",
+      "suggestions": {
+        "includeUnlock": "Das vorgeschlagene Freischaltungsziel einbeziehen",
+        "includeAscension": "Das vorgeschlagene Aufstiegsziel einbeziehen",
+        "includeLevel": "Das vorgeschlagene Stufenziel einbeziehen (Stufe {{level}} erreichen)",
+        "unlockRequired": "erforderlich, dieser Charakter wird noch nicht besessen",
+        "ascensionRequired": "erforderlich, um den Zielrang zu erreichen",
+        "levelRequired": "erforderlich, um den Zielrang/die Ziel-Fähigkeitsstufe zu erreichen"
+      },
+      "validation": {
+        "alreadyUnlocked": "Dieser Charakter ist bereits freigeschaltet.",
+        "rankAlreadyReached": "Der gewählte Rang wurde bereits erreicht.",
+        "progressionAlreadyReached": "Der gewählte Aufstieg wurde bereits erreicht.",
+        "abilityRange": "Mindestens eine Fähigkeit muss steigen, und kein Bereich darf sinken.",
+        "abilityAlreadyReached": "Die gewählten Fähigkeitsstufen wurden bereits erreicht.",
+        "levelAlreadyReached": "Die gewählte Stufe wurde bereits erreicht.",
+        "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
+        "progressionMaxed": "Diese Einheit hat bereits die maximale Aufstiegsstufe erreicht.",
+        "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
+        "levelMaxed": "Dieser Charakter hat bereits die maximale Stufe erreicht.",
+        "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel."
+      }
+    },
+    "estimate": {
+      "none": "—",
+      "days": "{{days}} T",
+      "blockedLabel": "Blockiert",
+      "blocked": {
+        "NoFarmLocation": "Kein erreichbarer Farm-Ort liefert eine benötigte Ressource.",
+        "FarmingOverrideUnavailable": "Die gewählten Farm-Orte liefern nicht jede benötigte Ressource.",
+        "InsufficientDailyEnergy": "Die tägliche Energie liegt unter den Kosten des günstigsten nutzbaren Knotens.",
+        "SimulationLimit": "Das Ziel konnte innerhalb des Planungshorizonts nicht abgeschlossen werden.",
+        "UnsupportedCost": "Für dieses Ziel wird keine detaillierte Kostenberechnung unterstützt."
+      }
+    },
+    "unlockFlavor": "Sammle die Scherben des Charakters und bereite ihn darauf vor, deinem Kader beizutreten.",
+    "filters": {
+      "search": "Ziele durchsuchen",
+      "allTypes": "Alle Zieltypen",
+      "typeFilterLabel": "Zieltyp-Filter",
+      "sortByLabel": "Sortieren nach",
+      "groupByLabel": "Gruppieren nach",
+      "groupNone": "Keine Gruppierung",
+      "groupByType": "Nach Typ gruppieren",
+      "groupByUnit": "Nach Einheit gruppieren",
+      "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
+      "sort": {
+        "priority": "Priorität",
+        "entity": "Charakter",
+        "type": "Zieltyp",
+        "status": "Status",
+        "estimate": "Schätzung",
+        "updated": "Zuletzt aktualisiert"
+      }
+    },
+    "detail": {
+      "title": "Zieldetails",
+      "loadError": "Dieses Ziel konnte nicht geladen werden.",
+      "saveError": "Dieses Ziel konnte nicht gespeichert werden.",
+      "save": "Änderungen speichern",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "progressTitle": "Fortschritt & Ziel",
+      "blockersTitle": "Blockaden",
+      "unsavedChangesTitle": "Nicht gespeicherte Änderungen verwerfen?",
+      "unsavedChangesDescription": "Du hast nicht gespeicherte Änderungen an diesem Ziel. Wenn du jetzt schließt, gehen sie verloren.",
+      "unsavedChangesConfirm": "Änderungen verwerfen",
+      "unsavedChangesCancel": "Weiter bearbeiten",
+      "estimateTitle": "Schätzung",
+      "isolatedEstimate": "Isolierte Schätzung",
+      "potentialProgressDescription": "Der potenzielle Fortschritt wendet die Ressourcen an, die du bereits besitzt, nachdem Ziele mit höherer Priorität in diesem Projekt ihren Anteil reserviert haben. Er ändert nicht den tatsächlichen Status des Ziels.",
+      "unavailable": "Nicht verfügbar",
+      "dependenciesTitle": "Abhängigkeiten",
+      "historyTitle": "Verlauf",
+      "notes": "Notizen",
+      "projectsTitle": "Projekte",
+      "projectsDescription": "Ein Ziel muss mindestens einem Projekt angehören.",
+      "projectsRequired": "Wähle mindestens ein Projekt aus.",
+      "farmingTitle": "Farm-Orte",
+      "farmingDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
+      "farmingSummaryTitle": "Farming-Strategie",
+      "farmingSelected": "{{count}} Ort(e) ausgewählt",
+      "farmingAuto": "Automatisch (geringste Energie)",
+      "shardsTitle": "Scherben-Ort",
+      "shardsDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
+      "farmingInvalid": "Jede benötigte Ressource muss von mindestens einem gewählten Knoten verfügbar sein.",
+      "none": "Keine"
+    },
+    "overview": {
+      "levelProgress": "Stufe {{current}} → {{target}}",
+      "progressLabel": "Zielfortschritt",
+      "actualProgress": "Tatsächlicher Fortschritt",
+      "potentialProgress": "Potenzieller Fortschritt",
+      "remaining": {
+        "upgrades": "{{count}} Upgrades verbleibend",
+        "upgradeSlots": "{{count}} Upgrade-Slots verbleibend",
+        "energy": "{{energy}} Energie verbleibend",
+        "shards": "{{count}} Scherben verbleibend",
+        "mythicShards": "{{count}} mythische Scherben verbleibend",
+        "orbs": "{{count}} Orbs verbleibend"
+      }
+    },
+    "insights": {
+      "selectProject": "Wähle ein Projekt",
+      "noProjectTitle": "Kein Projekt ausgewählt",
+      "noProjectDescription": "Wähle oben ein Projekt aus, um seine insgesamt fehlenden Ressourcen, Farming-Engpässe und relevanten Kampagnen-Events zu sehen.",
+      "upgradesTitle": "Upgrades nach Seltenheit",
+      "shardsTitle": "Scherben & Orbs",
+      "shards": "Scherben",
+      "mythicShards": "Mythische Scherben",
+      "onslaughtTokens": "Onslaught-Token",
+      "onslaughtDays": "Onslaught-Tage",
+      "countOnlyDisclaimer": "Orbs und mythische Scherben werden nur gezählt — sie fließen nicht in die untenstehende Energieschätzung ein.",
+      "estimateTitle": "Schätzung",
+      "energyTotal": "Gesamtenergie",
+      "completionDate": "Abschlussdatum",
+      "completionUnknown": "—",
+      "bottlenecksTitle": "Engpässe",
+      "campaignsTitle": "Relevante Kampagnen",
+      "eventsTitle": "Relevante Events",
+      "noBenefitingGoals": "Derzeit benötigt kein Ziel in diesem Plan dies.",
+      "empty": "Noch nichts anzuzeigen."
     }
   },
   "language": {
@@ -302,6 +735,7 @@
       "fr": "Français"
     }
   },
+  "scrollToTop": "Nach oben scrollen",
   "settings": {
     "label": "Einstellungen"
   },

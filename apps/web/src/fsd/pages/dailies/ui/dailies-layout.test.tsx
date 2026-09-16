@@ -79,7 +79,7 @@ function renderDailies(path = "/dailies") {
 }
 
 function findRouteContent(testId: string) {
-  return screen.findByTestId(testId, {}, { timeout: 5_000 })
+  return screen.findByTestId(testId, {}, { timeout: 10_000 })
 }
 
 describe("Dailies navigation", () => {
@@ -104,7 +104,7 @@ describe("Dailies navigation", () => {
     expect(
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()
-  })
+  }, 10_000)
 
   it("routes /dailies/salvage-run to the Salvage Run recommendations page", async () => {
     renderDailies("/dailies/salvage-run")

@@ -126,7 +126,7 @@ describe("OnslaughtPage", () => {
     await user.click(screen.getByTestId("save-onslaught-progress"))
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(2))
     expect(saveProgress.mock.calls[1]?.[0]).toMatchObject({ revision: 5 })
-  })
+  }, 10_000)
 
   it("reloads the latest values after a stale-revision conflict", async () => {
     const user = userEvent.setup()

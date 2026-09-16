@@ -1,4 +1,10 @@
-import { ArrowRight, ListChecks, LogIn } from "lucide-react"
+import {
+  ArrowRight,
+  ListChecks,
+  LogIn,
+  ShoppingBag,
+  Swords,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
@@ -74,10 +80,9 @@ export function LandingPage() {
             {t("library.subtitle")}
           </p>
         </div>
-        {/* Public Library collections. Add future collections here. */}
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
-            to="/library"
+            to="/library/characters"
             data-testid="landing-library-characters-link"
             className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
@@ -90,6 +95,42 @@ export function LandingPage() {
                 </CardTitle>
                 <CardDescription>
                   {t("library.characters.description")}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link
+            to="/library/raid-bosses"
+            data-testid="landing-library-raid-bosses-link"
+            className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            <Card className="h-full text-left transition-colors hover:border-primary/50 hover:bg-accent/40">
+              <CardHeader>
+                <Swords className="size-5 text-primary" />
+                <CardTitle className="flex items-center justify-between gap-2">
+                  {t("library.raidBosses.title")}
+                  <ArrowRight className="size-4 text-muted-foreground" />
+                </CardTitle>
+                <CardDescription>
+                  {t("library.raidBosses.description")}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link
+            to="/library/shops"
+            data-testid="landing-library-shops-link"
+            className="rounded-xl ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            <Card className="h-full text-left transition-colors hover:border-primary/50 hover:bg-accent/40">
+              <CardHeader>
+                <ShoppingBag className="size-5 text-primary" />
+                <CardTitle className="flex items-center justify-between gap-2">
+                  {t("library.shops.title")}
+                  <ArrowRight className="size-4 text-muted-foreground" />
+                </CardTitle>
+                <CardDescription>
+                  {t("library.shops.description")}
                 </CardDescription>
               </CardHeader>
             </Card>
