@@ -1,5 +1,10 @@
 export { useProjectActions } from "./model/use-project-actions"
+export {
+  useHomeProjects,
+  type HomeProjectsResult,
+} from "./model/use-home-projects"
 export { ManageProjectsSheet } from "./ui/manage-projects-sheet"
 export { NewProjectFab } from "./ui/new-project-fab"
 export { ProjectList } from "./ui/project-list"
+export { ProjectSummaryRow } from "./ui/project-summary-row"
 export type { ProjectCardSummary } from "./ui/project-row"

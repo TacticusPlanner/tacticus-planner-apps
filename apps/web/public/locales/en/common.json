@@ -229,8 +229,41 @@
     }
   },
   "home": {
+    "pageTitle": "Home",
     "subtitle": "This page is still under construction.",
-    "tourButton": "Show me around"
+    "tourButton": "Show me around",
+    "tokens": {
+      "title": "Token Availability",
+      "capped": "Capped",
+      "overCap": "Over cap +{{time}}",
+      "fullIn": "Full in {{time}}",
+      "syncBanner": {
+        "title": "Refresh required",
+        "description": "Last sync {{time}}",
+        "action": "Sync now"
+      },
+      "loading": "Loading token status…",
+      "error": "Couldn't load your token status.",
+      "empty": "No token data available yet."
+    },
+    "projects": {
+      "title": "Your Projects",
+      "moreCount": "+{{count}} more",
+      "viewAll": "View all projects",
+      "summaryUnavailable": "Summary unavailable",
+      "emptyTitle": "No projects yet",
+      "emptyDescription": "Projects group unit goals into prioritized plans.",
+      "emptyAction": "Create project",
+      "loading": "Loading your projects…",
+      "error": "Couldn't load your projects.",
+      "retry": "Retry"
+    },
+    "raids": {
+      "title": "Daily Raids",
+      "empty": "Nothing to raid today.",
+      "noProjects": "Create a project to see today's raid schedule.",
+      "loading": "Loading today's raids…"
+    }
   },
   "guild": {
     "loadError": "Couldn't load your guild.",
