@@ -42,13 +42,15 @@ The widget SHALL show the player's Current plan project first, if one exists, fo
 
 ### Requirement: Project cards are condensed and identity-only
 
-Each card SHALL show that project's color, name, and available/blocked/estimate summary (the same summary data the Projects dashboard cards use), condensed for the smaller widget footprint. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
+Each card SHALL show that project's color, name, and a units/goals summary (a count of the project's in-progress unit goals, cheaply derived from its goal list), condensed for the smaller widget footprint. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
+
+Implementation note: the Projects dashboard's full available/blocked/estimate summary is computed by a larger subsystem (`use-goal-attainment.ts`, `use-plan-insights.ts`, `use-goals-overview-metrics.ts`) that lives in `pages/goals/model`, not `features/project-management`. Relocating that subsystem so a home-page glance card could reach it was judged disproportionate to this widget's purpose and descoped; the units/goals count is the permanent home-widget summary, not an interim state.
 
 #### Scenario: Card shows identity and summary
 
 - **GIVEN** a project with a color, name, and a loaded summary
 - **WHEN** its card renders in the widget
-- **THEN** the card shows the project's color, name, and available/blocked/estimate summary, without any action controls
+- **THEN** the card shows the project's color, name, and its units/goals summary, without any action controls
 
 #### Scenario: Summary still loading
 
