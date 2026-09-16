@@ -1,0 +1,50 @@
+## Why
+
+The client reports exactly one event today: `page_view`. Routes answer "which surface did they open" — and because dailies and library sections are real routes, they already answer it well. What routes cannot answer is everything the change was meant to inform: did the user _try_ something and give up, which planner settings anyone actually touches, whether the Joyride tours help or annoy, and which locales people switch **away from** (which is the only honest signal that a translation is bad).
+
+Abandonment in particular is invisible to the API by construction: a user who opens the goal sheet and closes it, or who hits the blocking onboarding dialog and leaves, makes no request at all. Nothing but the browser will ever see it.
+
+This is the frontend half of a cross-repo pair. The companion `tacticus-planner-api` change `expand-analytics-event-taxonomy` adds the outcome events these intent events pair with, and applies first. The two halves share no endpoint or DTO — they meet only in the analytics destination, as events attributed to the same analytics id.
+
+## What Changes
+
+- Extend the `AnalyticsEvent` discriminated union with three new event families. The union stays the single declaration point, so adding an event remains a type change rather than an arbitrary payload at a call site.
+- **`action`** `{ actionId, via? }` where `actionId` is a **closed union**, not a string, and `via` is an optional qualifier from its own declared enumeration. Initial ids: `onboarding.path_selected` (`via: api_key | v1_import`), `v1_import.opened`, `sync.manual`, `goal.create_opened`, `project.create_opened` — each pairs with a server-side outcome and so yields an abandonment rate rather than a bare count — plus `nav_search.opened` (`via: shortcut | control`) and `nav_search.no_results`.
+- **`preference`** `{ setting: "language", from, to }` — **language only**. A user whose browser reports French who switches to English is reporting a bad French translation; that directs translation spend. Theme is deliberately not an event (see below).
+- **`menu_item_select`** `{ itemId, surface: "desktop_sidebar" | "mobile_header" | "desktop_search", afterSearch }` — distinguishes "nobody finds this page" from "people find it and bounce", which route data alone conflates. The surface split matters because V1 traffic is ~61% mobile, and because `DesktopNavigationDialog` (the Cmd/Ctrl+K navigation search) is a third navigation surface whose usage is entirely unmeasured today. `afterSearch` separates using it as a search box from using it as a menu.
+- **Super properties** registered once per identified session — `theme`, `language`, `view_mode`, `display_mode` (browser vs installed PWA) — attached to every event including `page_view`. Four standing questions answered with zero new event names.
+- No new dependency, no new UI, no visible behavior change.
+
+### Decisions already taken
+
+| Decision              | Choice                                                                                             | Rationale                                                                                                                                                                                                                                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Event shape           | One generic `action` with a closed id union, not one named event per action                        | One declaration serves many measurements, and PostHog breaks `action` down by `action_id` on a single chart instead of needing an insight per event name. A free-form string label rots into `"Create Goal"` / `"create_goal"` / `"Goal Create"` within a quarter; a TS union makes that a compile error at zero runtime cost.  |
+| Three events, not one | `action`, `preference`, `menu_item_select` kept separate                                           | They have different property schemas. Merged, the shared value column means `"dark"` on one row and `"npcs"` on the next, which cannot be broken down.                                                                                                                                                                          |
+| `action` payload      | Pure intent — **no outcome property**                                                              | The server already owns outcomes and owns them more reliably (it survives ad blockers). Duplicating outcome here would make two sources of truth for one number.                                                                                                                                                                |
+| Theme                 | Super property, **not** an event                                                                   | "What theme do users run?" is answered by a property on every event. "How often do they toggle it?" has no decision attached — the app is not dropping either theme.                                                                                                                                                            |
+| Section/page events   | Not added                                                                                          | `/dailies/*` and `/library/*` are real routes; `page_view` already carries them. Adding `menu_item_select → Library-NPC` for the _destination_ would duplicate existing data.                                                                                                                                                   |
+| Navigation search     | Covered as a third `menu_item_select` surface plus two action ids, **not** as its own event family | It is navigation, so its selections belong on the same event as every other navigation selection — otherwise "which nav surface do people use" needs a union of two event types. Only the two things unique to it (how it was opened, and that it dead-ended) become actions.                                                   |
+| Search terms          | **Never reported**, not even for a zero-result search                                              | The terms are free text, which the capture floor forbids, and a sanitize-then-report heuristic is exactly the kind of rule that leaks eventually. The failure _rate_ is the number a decision hangs on; "what were they looking for" is a research question for the UserJot widget that already exists, not an analytics event. |
+| `filter.changed`      | **Deferred, not forgotten**                                                                        | It is the literal gap the GA4 review named ("which Daily Raids settings are used") and is the highest-value client event after these. It is also the only one with real volume risk — naive wiring fires per keystroke on a slider. It gets its own change once the debounce and the filter-key enumeration are designed.       |
+| Tour events           | Deferred with `filter.changed`                                                                     | Same wave; both are in-page instrumentation rather than funnel instrumentation.                                                                                                                                                                                                                                                 |
+
+## Capabilities
+
+### New Capabilities
+
+(none)
+
+### Modified Capabilities
+
+- `product-analytics`: adds requirements for the three new declared event families, for the closed-enumeration rule that keeps their labels from drifting, and for the super properties attached to every event. The identified-only capture lifecycle, the pseudonymous identity, sign-out clearing, the `page_view` requirement, "only declared events are captured", and the inert-when-unconfigured guarantee are all unchanged — the new events sit underneath them.
+
+## Impact
+
+- `apps/web/src/fsd/shared/analytics/analytics-event.ts`: three new members on the `AnalyticsEvent` union plus the `ActionId` union.
+- `apps/web/src/fsd/shared/analytics/analytics-provider.tsx`: new `captureEvent` branches, and super-property registration in the identify path alongside the existing `identify` + `opt_in_capturing`.
+- Call sites, all existing components: `features/account-onboarding/ui/onboarding-dialog.tsx`, `features/v1-import/ui/import-v1-dialog.tsx`, `app/providers/player-data-sync-button.tsx`, `app/providers/language-switcher.tsx`, `pages/goals/model/goal-creation-form/create-goal-launcher.tsx`, `features/project-management/ui/new-project-fab.tsx`, and the nav item renderers in `app/layout/desktop-layout.tsx` and `app/layout/mobile-header.tsx`.
+- `app/layout/desktop-navigation-dialog.tsx` and the keyboard handler in `app/layout/desktop-layout.tsx`: report opening the navigation search with its `via` qualifier, report a selection with the search surface and whether a query had been typed, and report a dead-ended search once on close. `navigation-filter.ts` is read for the match count and does not change.
+- `shared/theme` and the i18n language detector are read for super-property values; neither changes. Both are localStorage-only today, which is precisely why the server cannot report them.
+- **No UI surface.** No new component, so no i18n namespace, no new `data-testid` targets, and no Joyride tour — the call sites attach to controls that already exist.
+- Verification of the identified-only path requires the full local stack via the workspace Aspire AppHost, since capture depends on real sign-in and a real `/me` analytics id.
