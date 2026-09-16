@@ -12,12 +12,6 @@ const CampaignEventsPage = lazy(() =>
     default: m.CampaignEventsPage,
   }))
 )
-const XpIncomePlaceholderPage = lazy(() =>
-  import("./ui/xp-income-placeholder-page").then((m) => ({
-    default: m.XpIncomePlaceholderPage,
-  }))
-)
-
 // Nested under "/progress" — see app/routes.tsx, which owns the top-level path, the layout
 // element, and the ProtectedRoute wrapping, and just splices this array in as `children`. The
 // "onslaught" child lives in app/routes.tsx instead of here: it's a *different* page slice
@@ -26,5 +20,4 @@ export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/progress/onslaught" /> },
   { path: "campaigns", element: <CampaignsPage /> },
   { path: "campaign-events", element: <CampaignEventsPage /> },
-  { path: "xp-income", element: <XpIncomePlaceholderPage /> },
 ]

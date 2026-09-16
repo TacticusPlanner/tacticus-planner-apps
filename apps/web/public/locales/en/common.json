@@ -205,9 +205,7 @@
       "campaigns": "Campaigns",
       "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "campaign-events": "Campaign Events",
-      "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
-      "xp-income": "XP Income",
-      "xp-incomeDescription": "XP Income helps estimate how many XP books you earn from Arena, Guild Raids, Archeotech purchases, and other sources."
+      "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
     },
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
@@ -228,13 +226,6 @@
       "saved": "Campaign event progress saved.",
       "saveError": "Couldn't save campaign event progress.",
       "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
-    },
-    "xpIncome": {
-      "comingSoon": "This V1 feature is being considered for V2. Tell us if it should be prioritized.",
-      "interestButton": "I want XP Income in V2",
-      "interestRecorded": "Thanks for your interest",
-      "interestAcknowledgement": "Thanks. Your interest will help us prioritize future V2 features.",
-      "bookAlt": "Legendary XP book"
     }
   },
   "home": {

@@ -230,8 +230,7 @@
     "tabs": {
       "onslaughtDescription": "Introduce el sector y el nivel actuales de cada alianza. Las estimaciones de ascensión usan estos valores junto con las fichas de Onslaught sincronizadas.",
       "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
-      "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia.",
-      "xp-incomeDescription": "Los ingresos de XP ayudan a estimar cuántos libros de XP obtienes de Arena, Incursiones de gremio, compras de Archeotech y otras fuentes."
+      "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia."
     }
   },
   "goals": {

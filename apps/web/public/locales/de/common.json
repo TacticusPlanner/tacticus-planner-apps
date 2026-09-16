@@ -230,8 +230,7 @@
     "tabs": {
       "onslaughtDescription": "Gib den aktuellen Sektor und die Stufe für jede Allianz ein. Aufstiegsschätzungen verwenden diese Werte sowie synchronisierte Onslaught-Token.",
       "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
-      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis.",
-      "xp-incomeDescription": "XP-Einkommen hilft abzuschätzen, wie viele XP-Bücher du aus Arena, Gilden-Raids, Archeotech-Käufen und anderen Quellen erhältst."
+      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
     }
   },
   "goals": {

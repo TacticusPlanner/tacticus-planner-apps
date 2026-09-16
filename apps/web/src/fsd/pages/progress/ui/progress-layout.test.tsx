@@ -18,7 +18,6 @@ function renderProgress(initialEntry: string) {
             path="campaign-events"
             element={<div>Campaign events route</div>}
           />
-          <Route path="xp-income" element={<div>XP Income route</div>} />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -30,7 +29,6 @@ describe("ProgressLayout", () => {
     ["/progress/onslaught", "Onslaught route"],
     ["/progress/campaigns", "Campaigns route"],
     ["/progress/campaign-events", "Campaign events route"],
-    ["/progress/xp-income", "XP Income route"],
   ])("renders the active child route at %s", (path, expectedText) => {
     renderProgress(path)
 

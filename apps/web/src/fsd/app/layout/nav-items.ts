@@ -30,7 +30,6 @@ type NavLabelKey =
   | "progress.tabs.onslaught"
   | "progress.tabs.campaigns"
   | "progress.tabs.campaign-events"
-  | "progress.tabs.xp-income"
   | "guild.tabs.members"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
   // section's tab keys: `dailies` is its own long-standing i18n namespace/file, and duplicating
@@ -215,11 +214,6 @@ export const navItems: NavItem[] = [
         path: "/progress/campaign-events",
         labelKey: "progress.tabs.campaign-events",
         descriptionKey: "progress.tabs.campaign-eventsDescription",
-      },
-      {
-        path: "/progress/xp-income",
-        labelKey: "progress.tabs.xp-income",
-        descriptionKey: "progress.tabs.xp-incomeDescription",
       },
     ],
   },

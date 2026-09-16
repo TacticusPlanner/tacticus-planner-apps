@@ -230,8 +230,7 @@
     "tabs": {
       "onslaughtDescription": "Indiquez le secteur et le palier actuels de chaque alliance. Les estimations d'ascension utilisent ces valeurs ainsi que les jetons Onslaught synchronisés.",
       "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
-      "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence.",
-      "xp-incomeDescription": "Revenus d'XP aide à estimer le nombre de livres d'XP que vous gagnez via l'Arène, les Raids de guilde, les achats Archeotech et d'autres sources."
+      "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
     }
   },
   "goals": {
