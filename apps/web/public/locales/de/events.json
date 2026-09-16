@@ -81,8 +81,20 @@
     "home": {
       "steps": {
         "title": {
-          "title": "Event-Kalender",
-          "content": "Sieh auf einen Blick, was gerade läuft und was als Nächstes kommt."
+          "title": "Start",
+          "content": "Deine Kontoübersicht — Token-Status, Projekte, heutige Raids und kommende Events."
+        },
+        "tokenAvailability": {
+          "title": "Token-Verfügbarkeit",
+          "content": "Sieh auf einen Blick deinen Arena-, Gildenangriffs-, Ansturm- und Plünderungslauf-Token-Status."
+        },
+        "projects": {
+          "title": "Deine Projekte",
+          "content": "Steige direkt in den Plan eines Projekts ein — der aktuelle Plan wird immer zuerst angezeigt."
+        },
+        "raids": {
+          "title": "Tägliche Raids",
+          "content": "Sieh, was für dein aktives Projekt heute noch zu erledigen ist — eine Zeile pro Ort."
         },
         "navigation": {
           "title": "Andere Wochen ansehen",

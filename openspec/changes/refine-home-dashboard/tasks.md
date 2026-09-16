@@ -29,12 +29,12 @@
 
 ## 6. Compose the home page
 
-- [ ] 6.1 Update `home-page.tsx` to render Token Availability, then the Projects/Raids pair, then the calendar last — desktop side-by-side for Projects/Raids, mobile fully stacked in the same order; verify at one viewport ≥768px and one <768px.
-- [ ] 6.2 Extend `home-page.tutorial.tsx` to cover the three new sections on both desktop and mobile, registered via `useTourPageSteps`.
+- [x] 6.1 Update `home-page.tsx` to render Token Availability, then the Projects/Raids pair, then the calendar last — desktop side-by-side for Projects/Raids, mobile fully stacked in the same order; verify at one viewport ≥768px and one <768px. Layout uses `grid grid-cols-1 md:grid-cols-2` (768px breakpoint, matching this repo's convention) for the Projects/Raids pair — pure CSS reflow, no `useIsMobile()` needed since there's no behavioral difference, only stacking. Also fixed the page's own `<h1>`, which previously read the calendar's "Events Calendar" title (correct when the calendar was the only content, misleading now) — it now reads `common:home.pageTitle` ("Home"). Viewport verification: see task 8.1's manual-verification note.
+- [x] 6.2 Extend `home-page.tutorial.tsx` to cover the three new sections on both desktop and mobile, registered via `useTourPageSteps`. Steps inserted in page order (title → tokenAvailability → projects → raids → calendar navigation → calendar); updated `home-page.tutorial.test.tsx`'s expected step list to match. Also refreshed the stale "title" step copy (was calendar-specific from when the calendar was the page's only content).
 
 ## 7. i18n
 
-- [ ] 7.1 Add i18n keys for all new widget copy (Token Availability labels/banner, Your Projects labels/empty state, Daily Raids labels/empty state, new tutorial step titles/content) to the appropriate `apps/web/public/locales` namespace(s); translate to de/es/fr at the quality of sibling namespaces — no placeholder English left in non-English files.
+- [x] 7.1 Add i18n keys for all new widget copy (Token Availability labels/banner, Your Projects labels/empty state, Daily Raids labels/empty state, new tutorial step titles/content) to the appropriate `apps/web/public/locales` namespace(s); translate to de/es/fr at the quality of sibling namespaces — no placeholder English left in non-English files. Widget copy lives under `common.json`'s `home.*` (new `tokens`/`projects`/`raids` blocks); tutorial steps under `events.json`'s `tour.home.steps.*`. All four locales (en/de/es/fr) updated with real translations; `events-translations.test.ts`'s de/es/fr-vs-en key-parity check passes. Reused existing `goals.project.*` keys (`currentPlan`, `unitGoalSummary`) in `ProjectSummaryRow` and existing `dailies:schedule.*` keys (`raids`, `maxRaids`, `battle`) in `LocationRow` rather than duplicating translated copy that already exists.
 
 ## 8. Verification
 

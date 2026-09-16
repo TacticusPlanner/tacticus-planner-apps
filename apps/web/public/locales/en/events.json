@@ -81,8 +81,20 @@
     "home": {
       "steps": {
         "title": {
-          "title": "Events Calendar",
-          "content": "See what's running right now and what's coming up, all in one place."
+          "title": "Home",
+          "content": "Your account overview — token status, projects, today's raids, and upcoming events."
+        },
+        "tokenAvailability": {
+          "title": "Token Availability",
+          "content": "Check your Arena, Guild Raid, Onslaught, and Salvage Run token status at a glance."
+        },
+        "projects": {
+          "title": "Your Projects",
+          "content": "Jump into any project's plan — Current plan always shows first."
+        },
+        "raids": {
+          "title": "Daily Raids",
+          "content": "See what's left to raid today for your Active project, one location per row."
         },
         "navigation": {
           "title": "Browse other weeks",

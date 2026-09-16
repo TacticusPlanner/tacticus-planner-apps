@@ -229,8 +229,43 @@
     }
   },
   "home": {
+    "pageTitle": "Inicio",
     "subtitle": "Esta página todavía está en construcción.",
-    "tourButton": "Enséñame todo"
+    "tourButton": "Enséñame todo",
+    "tokens": {
+      "title": "Disponibilidad de fichas",
+      "full": "Completo",
+      "due": "Disponible ahora",
+      "nextLabel": "Próximo en {{time}}",
+      "syncBanner": {
+        "title": "Actualización necesaria",
+        "description": "Última sincronización {{time}} — usa el control de sincronización de la barra lateral para actualizar."
+      },
+      "loading": "Cargando el estado de las fichas…",
+      "empty": "Aún no hay datos de fichas disponibles.",
+      "labels": {
+        "arena": "Arena",
+        "guildRaid": "Incursión de Gremio",
+        "bombTokens": "Fichas de bomba",
+        "onslaught": "Asalto",
+        "salvageRun": "Carrera de Saqueo"
+      }
+    },
+    "projects": {
+      "title": "Tus proyectos",
+      "moreCount": "+{{count}} más",
+      "summaryUnavailable": "Resumen no disponible",
+      "emptyTitle": "Aún no hay proyectos",
+      "emptyDescription": "Los proyectos agrupan objetivos de unidades en planes priorizados.",
+      "emptyAction": "Crear proyecto",
+      "error": "No se pudieron cargar tus proyectos.",
+      "retry": "Reintentar"
+    },
+    "raids": {
+      "title": "Incursiones diarias",
+      "empty": "No hay nada que asaltar hoy.",
+      "error": "No se pudieron cargar las incursiones de hoy."
+    }
   },
   "guild": {
     "loadError": "No se pudo cargar tu gremio.",

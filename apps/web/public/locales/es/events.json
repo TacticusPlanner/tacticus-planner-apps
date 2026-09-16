@@ -81,8 +81,20 @@
     "home": {
       "steps": {
         "title": {
-          "title": "Calendario de eventos",
-          "content": "Consulta de un vistazo lo que está en curso y lo que viene a continuación."
+          "title": "Inicio",
+          "content": "El resumen de tu cuenta — estado de fichas, proyectos, las incursiones de hoy y próximos eventos."
+        },
+        "tokenAvailability": {
+          "title": "Disponibilidad de fichas",
+          "content": "Consulta de un vistazo el estado de tus fichas de Arena, Incursión de Gremio, Asalto y Carrera de Saqueo."
+        },
+        "projects": {
+          "title": "Tus proyectos",
+          "content": "Entra directamente en el plan de cualquier proyecto — el plan actual siempre aparece primero."
+        },
+        "raids": {
+          "title": "Incursiones diarias",
+          "content": "Consulta lo que falta por asaltar hoy para tu proyecto activo, una ubicación por fila."
         },
         "navigation": {
           "title": "Explorar otras semanas",

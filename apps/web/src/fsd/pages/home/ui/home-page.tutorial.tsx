@@ -9,7 +9,13 @@ export function useHomePageTutorial() {
   const steps = useMemo(() => {
     const createStep = (
       target: string,
-      key: "title" | "navigation" | "calendar"
+      key:
+        | "title"
+        | "tokenAvailability"
+        | "projects"
+        | "raids"
+        | "navigation"
+        | "calendar"
     ): Step => ({
       target,
       title: t(`tour.home.steps.${key}.title`),
@@ -17,6 +23,9 @@ export function useHomePageTutorial() {
     })
     const shared: Step[] = [
       createStep('[data-testid="home-page-title"]', "title"),
+      createStep('[data-testid="token-availability"]', "tokenAvailability"),
+      createStep('[data-testid="home-projects-widget"]', "projects"),
+      createStep('[data-testid="home-raids-widget"]', "raids"),
       createStep('[data-testid="events-calendar-navigation"]', "navigation"),
       createStep('[data-testid="events-calendar"]', "calendar"),
     ]

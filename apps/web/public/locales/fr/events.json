@@ -81,8 +81,20 @@
     "home": {
       "steps": {
         "title": {
-          "title": "Calendrier des événements",
-          "content": "Voyez d'un coup d'œil ce qui se passe en ce moment et ce qui arrive bientôt."
+          "title": "Accueil",
+          "content": "L'aperçu de votre compte — statut des jetons, projets, raids du jour et événements à venir."
+        },
+        "tokenAvailability": {
+          "title": "Disponibilité des jetons",
+          "content": "Consultez en un coup d'œil le statut de vos jetons Arène, Raid de guilde, Assaut et Course au pillage."
+        },
+        "projects": {
+          "title": "Vos projets",
+          "content": "Accédez directement au plan de n'importe quel projet — le plan actuel s'affiche toujours en premier."
+        },
+        "raids": {
+          "title": "Raids quotidiens",
+          "content": "Voyez ce qu'il reste à raider aujourd'hui pour votre projet actif, un emplacement par ligne."
         },
         "navigation": {
           "title": "Parcourir d'autres semaines",

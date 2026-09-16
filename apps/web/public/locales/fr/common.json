@@ -229,8 +229,43 @@
     }
   },
   "home": {
+    "pageTitle": "Accueil",
     "subtitle": "Cette page est encore en construction.",
-    "tourButton": "Faites-moi visiter"
+    "tourButton": "Faites-moi visiter",
+    "tokens": {
+      "title": "Disponibilité des jetons",
+      "full": "Plein",
+      "due": "Disponible maintenant",
+      "nextLabel": "Prochain dans {{time}}",
+      "syncBanner": {
+        "title": "Actualisation requise",
+        "description": "Dernière synchronisation {{time}} — utilisez le bouton de synchronisation dans la barre latérale pour actualiser."
+      },
+      "loading": "Chargement du statut des jetons…",
+      "empty": "Aucune donnée de jeton disponible pour le moment.",
+      "labels": {
+        "arena": "Arène",
+        "guildRaid": "Raid de guilde",
+        "bombTokens": "Jetons de bombe",
+        "onslaught": "Assaut",
+        "salvageRun": "Course au pillage"
+      }
+    },
+    "projects": {
+      "title": "Vos projets",
+      "moreCount": "+{{count}} de plus",
+      "summaryUnavailable": "Résumé indisponible",
+      "emptyTitle": "Aucun projet pour l'instant",
+      "emptyDescription": "Les projets regroupent les objectifs d'unités en plans priorisés.",
+      "emptyAction": "Créer un projet",
+      "error": "Impossible de charger vos projets.",
+      "retry": "Réessayer"
+    },
+    "raids": {
+      "title": "Raids quotidiens",
+      "empty": "Rien à raider aujourd'hui.",
+      "error": "Impossible de charger les raids du jour."
+    }
   },
   "guild": {
     "loadError": "Impossible de charger votre guilde.",
