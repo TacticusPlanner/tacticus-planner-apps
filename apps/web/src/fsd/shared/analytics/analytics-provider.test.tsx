@@ -53,14 +53,20 @@ describe("AnalyticsProvider", () => {
     expect(screen.getByText("content")).toBeInTheDocument()
   })
 
-  it("mounts the vendor SDK opted out, with no autocapture, replay, or default pageview capture", () => {
+  it("mounts the vendor SDK opted out, with no autocapture, replay, or default pageview capture", async () => {
+    // initOptions.api_host is a module-level constant baked in when analytics-provider is first
+    // imported, before this stub runs - stubbing alone wouldn't change an already-evaluated value.
+    // Reset the module cache and re-import fresh so this render picks up the stubbed host.
     vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
     vi.stubEnv("VITE_POSTHOG_HOST", "https://us.i.posthog.com")
+    vi.resetModules()
+    const { AnalyticsProvider: FreshAnalyticsProvider } =
+      await import("./analytics-provider")
 
     render(
-      <AnalyticsProvider>
+      <FreshAnalyticsProvider>
         <span>content</span>
-      </AnalyticsProvider>
+      </FreshAnalyticsProvider>
     )
 
     expect(vendorProvider).toHaveBeenCalledWith(
