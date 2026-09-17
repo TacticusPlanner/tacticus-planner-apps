@@ -4,7 +4,12 @@ import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
-import { TourProvider, useTour, useTourPageSteps } from "./tour-provider"
+import {
+  TourProvider,
+  useAutoStartTourOnce,
+  useTour,
+  useTourPageSteps,
+} from "./tour-provider"
 
 const { joyrideStepsRef } = vi.hoisted(() => ({
   joyrideStepsRef: { current: [] as Step[] },
@@ -34,6 +39,12 @@ function IsRunningProbe() {
   return <span data-testid="is-running">{String(isRunning)}</span>
 }
 
+/** Stands in for the authenticated home page, the one place that opts into the auto-start. */
+function AutoStartProbe() {
+  useAutoStartTourOnce()
+  return <IsRunningProbe />
+}
+
 const PAGE_STEPS = { desktop: [{ target: "page-step", content: "" }] }
 
 /** Registers page steps, then exposes both tour triggers plus whether a page tour exists. */
@@ -57,12 +68,12 @@ function targets() {
 }
 
 describe("TourProvider", () => {
-  it("auto-starts the tour the first time this device opens the app", () => {
+  it("auto-starts the tour the first time a page opts in on this device", () => {
     window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
 
     render(
       <TourProvider>
-        <IsRunningProbe />
+        <AutoStartProbe />
       </TourProvider>
     )
 
@@ -75,11 +86,26 @@ describe("TourProvider", () => {
 
     render(
       <TourProvider>
+        <AutoStartProbe />
+      </TourProvider>
+    )
+
+    expect(screen.getByTestId("is-running")).toHaveTextContent("false")
+  })
+
+  it("does not auto-start on its own, without a page opting in", () => {
+    // TourProvider wraps the whole app, above the router - so it also mounts on the landing page
+    // and for signed-out visitors. Auto-start must come from the authenticated home page instead.
+    window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
+
+    render(
+      <TourProvider>
         <IsRunningProbe />
       </TourProvider>
     )
 
     expect(screen.getByTestId("is-running")).toHaveTextContent("false")
+    expect(window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)).toBeNull()
   })
 
   it("reports that a page tour is available once a page registers steps", () => {

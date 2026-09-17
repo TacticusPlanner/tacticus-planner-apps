@@ -38,6 +38,10 @@ type TourContextValue = {
   /** Starts the current page's own tour. No-op when the page hasn't registered one (check
    *  `hasPageTour` before offering this to the user). */
   startPageTour: () => void
+  /** Starts the navigation tour the first time it's called on this device, then never again.
+   *  Call it only from somewhere that is both signed-in and the main page - see
+   *  `useAutoStartTourOnce`. */
+  maybeAutoStartTour: () => void
   /** Whether the current page registered its own tour steps, i.e. whether `startPageTour` does
    *  anything - drives whether a page-level "Tour this page" control renders at all. */
   hasPageTour: boolean
@@ -119,14 +123,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const isMobile = useIsMobile()
-  // Lazy initializer (not an effect): the first time this device opens the app, auto-start the
-  // tour once (Home has no page-specific steps, so this shows the general navigation tour) - and
-  // never again after that.
-  const [run, setRun] = React.useState(() => {
-    if (window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)) return false
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
-    return true
-  })
+  const [run, setRun] = React.useState(false)
   const [pageSteps, setPageSteps] = React.useState<TourPageSteps | null>(null)
   const [mobileMenuForceOpen, setMobileMenuForceOpen] = React.useState(false)
   // Which tour the running/next run shows. Defaults to "general": the auto-start above and the
@@ -206,6 +203,12 @@ export function TourProvider({ children }: { children: ReactNode }) {
     setTourKind("page")
     setRun(true)
   }, [])
+  const maybeAutoStartTour = React.useCallback(() => {
+    if (window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)) return
+    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    setTourKind("general")
+    setRun(true)
+  }, [])
   const stopTour = React.useCallback(() => setRun(false), [])
   const hasPageTour = pageSteps !== null
 
@@ -214,13 +217,22 @@ export function TourProvider({ children }: { children: ReactNode }) {
       isRunning: run,
       startTour,
       startPageTour,
+      maybeAutoStartTour,
       hasPageTour,
       stopTour,
       setPageSteps,
       mobileMenuForceOpen,
       setMobileMenuForceOpen,
     }),
-    [run, startTour, startPageTour, hasPageTour, stopTour, mobileMenuForceOpen]
+    [
+      run,
+      startTour,
+      startPageTour,
+      maybeAutoStartTour,
+      hasPageTour,
+      stopTour,
+      mobileMenuForceOpen,
+    ]
   )
 
   return (
@@ -251,6 +263,22 @@ export function useTourPageSteps(steps: TourPageSteps) {
     setPageSteps(steps)
     return () => setPageSteps(null)
   }, [steps, setPageSteps])
+}
+
+/**
+ * Runs the navigation tour once, the first time this device reaches the page that calls this.
+ *
+ * Deliberately not done in the provider: `TourProvider` wraps the whole app, above the router, so
+ * auto-starting there fired on the landing page and for signed-out visitors too. Calling it from
+ * the authenticated home page instead gives both constraints for free - that route is behind
+ * `ProtectedRoute`, so it renders only when signed in, and only for the main page.
+ */
+export function useAutoStartTourOnce() {
+  const { maybeAutoStartTour } = useTour()
+
+  React.useEffect(() => {
+    maybeAutoStartTour()
+  }, [maybeAutoStartTour])
 }
 
 /** Backs a Popover that the mobile tutorial needs to force open/closed (see general.tutorial.tsx).
