@@ -11,8 +11,8 @@ import { Separator } from "@workspace/ui/components/separator"
 import {
   useDailyRaids,
   ResourceIconWithTooltip,
+  type DailyRaidBattleResource,
   type DailyRaidLocationViewModel,
-  type DailyRaidResourceVisual,
   type TodaysAttempt,
 } from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
@@ -55,18 +55,20 @@ export function TodayPage() {
     )
   }
   const todayProgress = raids.resourceProgressByDay.get(1) ?? new Map()
-  // Today's Attempts is account-wide, so most locations there have no associated resource at all
-  // (they're outside this project's plan) — this only resolves one for locations this project's
-  // schedule/Bonus Raids happen to also reference, picking the first resource encountered per node.
-  const resourceByBattle = new Map<
-    BattleId,
-    { label: string; visual: DailyRaidResourceVisual | undefined }
-  >()
+  // Today's Attempts is account-wide, so most locations there sit outside this project's plan. Where
+  // this project's schedule/Bonus Raids do name a node, that entry wins — the resource the player is
+  // actually farming beats the node's generic drop — and the first plan entry per node wins, as
+  // before. Every other node falls back to the catalog's own node → drop index so it still gets an
+  // icon (tacticus-planner-apps#121); the fallback is read per row rather than merged in here, so
+  // the catalog-wide index is never copied on a render.
+  const planResourceByBattle = new Map<BattleId, DailyRaidBattleResource>()
   for (const entry of [...raids.today.entries, ...raids.bonus.entries]) {
-    if (resourceByBattle.has(entry.battleId)) continue
-    resourceByBattle.set(entry.battleId, {
+    if (planResourceByBattle.has(entry.battleId)) continue
+    const visual = raids.resourceVisuals.get(entry.resourceId)
+    if (!visual) continue
+    planResourceByBattle.set(entry.battleId, {
       label: raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId,
-      visual: raids.resourceVisuals.get(entry.resourceId),
+      visual,
     })
   }
   const energyUsagePercent =
@@ -157,7 +159,8 @@ export function TodayPage() {
           <TodaysAttemptsList
             attempts={raids.todaysAttempts}
             locationsByBattleId={raids.locationsByBattleId}
-            resourceByBattle={resourceByBattle}
+            planResourceByBattle={planResourceByBattle}
+            catalogResourceByBattle={raids.resourceByBattleId}
           />
         ) : (
           <p className="text-sm text-muted-foreground">
@@ -172,14 +175,13 @@ export function TodayPage() {
 export function TodaysAttemptsList({
   attempts,
   locationsByBattleId,
-  resourceByBattle,
+  planResourceByBattle,
+  catalogResourceByBattle,
 }: {
   attempts: TodaysAttempt[]
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
-  resourceByBattle: ReadonlyMap<
-    BattleId,
-    { label: string; visual: DailyRaidResourceVisual | undefined }
-  >
+  planResourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
+  catalogResourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
 }) {
   const { t } = useTranslation("dailies")
 
@@ -187,7 +189,9 @@ export function TodaysAttemptsList({
     <div className="grid gap-2 md:gap-3" data-testid="todays-attempts-list">
       {attempts.map(({ battleId, attemptsUsed }) => {
         const location = locationsByBattleId.get(battleId)
-        const resource = resourceByBattle.get(battleId)
+        const resource =
+          planResourceByBattle.get(battleId) ??
+          catalogResourceByBattle.get(battleId)
         return (
           <div
             key={battleId}
@@ -200,7 +204,11 @@ export function TodaysAttemptsList({
                 label={resource.label}
                 visual={resource.visual}
               />
-            ) : null}
+            ) : (
+              // A node the catalog has no drop for at all (e.g. a dataset gap) still keeps its
+              // leading slot, so the campaign icon and text stay aligned down the whole list.
+              <span aria-hidden className="size-10 shrink-0 md:size-12" />
+            )}
             {location?.icon ? (
               <EntityIcon
                 alt=""

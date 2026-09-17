@@ -4,6 +4,7 @@ export { isLocationVisible } from "./model/location-visibility"
 export { flattenTodayLocations } from "./model/flatten-today-locations"
 export { dailyRaidResourceKey } from "./model/daily-raids.domain"
 export type {
+  DailyRaidBattleResource,
   DailyRaidGoalViewModel,
   DailyRaidLocationViewModel,
   DailyRaidResourceProgress,

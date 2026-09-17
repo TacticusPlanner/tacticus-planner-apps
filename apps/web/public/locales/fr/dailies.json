@@ -187,6 +187,9 @@
     "title": "Tentatives du jour",
     "empty": "Aucune tentative réelle enregistrée aujourd'hui pour le moment."
   },
+  "resource": {
+    "shards": "Fragments de {{unit}}"
+  },
   "plan": {
     "summary": {
       "days": "Jours au total",

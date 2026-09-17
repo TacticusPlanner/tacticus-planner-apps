@@ -40,6 +40,7 @@ import {
 } from "@/features/rank-lookup/@x/daily-raids"
 import { useCampaignDisplay } from "@/shared/lib"
 
+import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import {
   activeProjectMembers,
   availableCampaignBattles,
@@ -51,12 +52,15 @@ import {
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
-import type { DailyRaidsViewModel } from "./daily-raids.domain"
+import type {
+  DailyRaidResourceLabels,
+  DailyRaidsViewModel,
+} from "./daily-raids.domain"
 
 export function useDailyRaids(
   projectId: string | undefined
 ): DailyRaidsViewModel {
-  const { t } = useTranslation(["dailies", "characters"])
+  const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const { fullLabel: campaignFullLabel, shortLabel: campaignShortLabel } =
     useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
@@ -185,6 +189,33 @@ export function useDailyRaids(
       ),
     [battlesById, campaignFullLabel, campaignShortLabel]
   )
+  // Game-data display names resolve through the id-keyed `upgrades`/`characters` namespaces — the
+  // same convention Character Lookup uses — so one material can't read as two different names in two
+  // places, with the catalog's own label as the fallback. Handed to both the plan path and the
+  // catalog index below; giving it to only one would split the very names they share.
+  const labelResource = useMemo<DailyRaidResourceLabels>(
+    () => ({
+      upgrade: (id, catalogLabel) =>
+        t(`upgrades:${id}`, { defaultValue: catalogLabel }),
+      shards: (unitId, characterName) =>
+        t("dailies:resource.shards", {
+          unit: t(`characters:${unitId}`, { defaultValue: characterName }),
+        }),
+    }),
+    [t]
+  )
+  // Account-wide node → drop index for Today's Attempts, which lists nodes this project's plan
+  // never mentions (tacticus-planner-apps#121). `charactersById` is keyed by unit id, so its values
+  // already carry the `id` the shard icon needs.
+  const resourceByBattleId = useMemo(
+    () =>
+      buildResourceByBattle(
+        upgradesById.values(),
+        charactersById?.values() ?? [],
+        labelResource
+      ),
+    [upgradesById, charactersById, labelResource]
+  )
   const standingBattleIndex = useMemo(
     () => buildStandingBattleIndex(battlesById, eventCampaignIds),
     [battlesById, eventCampaignIds]
@@ -263,6 +294,7 @@ export function useDailyRaids(
       const record = charactersById.get(id)
       return record ? mapCharacterStorageToDomain(record) : undefined
     },
+    labelResource,
     getUnitLabel: (detail) => {
       if (detail.entityType === "Character") {
         return t(`characters:${detail.entityId}`, {
@@ -312,6 +344,7 @@ export function useDailyRaids(
     ? {
         ...result,
         locationsByBattleId,
+        resourceByBattleId,
         realEnergyUsedToday,
         attemptsLeftByBattle,
         todaysAttempts,

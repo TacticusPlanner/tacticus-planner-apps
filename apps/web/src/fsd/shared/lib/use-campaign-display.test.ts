@@ -32,6 +32,44 @@ describe("useCampaignDisplay().fullLabel", () => {
     )
   })
 
+  it("keeps the Mirror qualifier on an elite mirror campaign (#119)", () => {
+    const { result } = renderHook(() => useCampaignDisplay())
+    expect(
+      result.current.fullLabel(
+        descriptor({
+          nameKey: "saim-hann",
+          isMirror: true,
+          difficultyToken: "elite",
+        })
+      )
+    ).toBe(
+      "saim-hann campaigns:difficulties.mirror campaigns:difficulties.elite"
+    )
+  })
+
+  it("distinguishes an elite mirror campaign from the non-mirror elite campaign", () => {
+    const { result } = renderHook(() => useCampaignDisplay())
+    const elite = result.current.fullLabel(
+      descriptor({ nameKey: "saim-hann", difficultyToken: "elite" })
+    )
+    const eliteMirror = result.current.fullLabel(
+      descriptor({
+        nameKey: "saim-hann",
+        isMirror: true,
+        difficultyToken: "elite",
+      })
+    )
+    expect(elite).toBe("saim-hann campaigns:difficulties.elite")
+    expect(eliteMirror).not.toBe(elite)
+  })
+
+  it("names the mirror base tier without a redundant Standard word", () => {
+    const { result } = renderHook(() => useCampaignDisplay())
+    const mirror = result.current.fullLabel(descriptor({ isMirror: true }))
+    expect(mirror).toBe("indomitus campaigns:difficulties.mirror")
+    expect(mirror).not.toBe(result.current.fullLabel(descriptor({})))
+  })
+
   it("appends the difficulty word for an event's Standard tier", () => {
     const { result } = renderHook(() => useCampaignDisplay())
     expect(

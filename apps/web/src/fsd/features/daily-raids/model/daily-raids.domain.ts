@@ -35,6 +35,12 @@ export type DailyRaidResourceVisual =
     }
   | { kind: "shard"; unitId: UnitId }
 
+/** What a single campaign node drops, as Today's Attempts renders it (icon + tooltip text). */
+export type DailyRaidBattleResource = {
+  label: string
+  visual: DailyRaidResourceVisual
+}
+
 export type DailyRaidResourceProgress = {
   owned: number
   target: number
@@ -60,6 +66,27 @@ export function dailyRaidResourceKey(goalId: string, resourceId: string) {
   return `${goalId}:${resourceId}`
 }
 
+/** Display label for a character's shard resource — shared so a node resolved from the plan and the
+ *  same node resolved from the catalog (see `buildResourceByBattle`) never read differently. */
+export function shardResourceLabel(characterName: string) {
+  return `${characterName} shards`
+}
+
+/**
+ * Optional display-text hooks for a farmable resource, so this model layer keeps taking catalog
+ * records rather than a `t` (tests and any non-React caller can omit them and get the catalog's own
+ * English). `use-daily-raids` supplies one implementation to both the plan path (`calculateDailyRaids`)
+ * and the catalog path (`buildResourceByBattle`) — passing it to only one would reintroduce exactly
+ * the split `shardResourceLabel` exists to prevent.
+ *
+ * `catalogLabel`/`characterName` are the catalog's own strings, passed through as the `defaultValue`
+ * for the id-keyed `upgrades`/`characters` namespaces.
+ */
+export type DailyRaidResourceLabels = {
+  upgrade?: (id: UpgradeId, catalogLabel: string) => string
+  shards?: (unitId: UnitId, characterName: string) => string
+}
+
 export type DailyRaidsReadyViewModel = {
   status: "ready"
   today: RaidDaySchedule
@@ -79,6 +106,9 @@ export type DailyRaidsReadyViewModel = {
     ReadonlyMap<string, DailyRaidResourceProgress>
   >
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
+  // What every raidable node drops, straight from the catalog and independent of this project's
+  // plan — Today's Attempts is account-wide, so it needs an icon for nodes the plan never mentions.
+  resourceByBattleId: ReadonlyMap<BattleId, DailyRaidBattleResource>
   attemptsUsedByBattle: ReadonlyMap<BattleId, number>
   // Real, account-wide energy spent today per synced attempts at standing (non-event) campaign
   // nodes — independent of this project's simulated plan, and NOT capped at `dailyEnergy`.
@@ -95,6 +125,7 @@ export type DailyRaidsReadyViewModel = {
 export type DailyRaidsCalculationViewModel = Omit<
   DailyRaidsReadyViewModel,
   | "locationsByBattleId"
+  | "resourceByBattleId"
   | "realEnergyUsedToday"
   | "attemptsLeftByBattle"
   | "todaysAttempts"

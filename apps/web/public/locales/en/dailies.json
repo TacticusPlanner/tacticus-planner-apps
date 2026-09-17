@@ -187,6 +187,9 @@
     "title": "Today's attempts",
     "empty": "No real attempts recorded yet today."
   },
+  "resource": {
+    "shards": "{{unit}} shards"
+  },
   "plan": {
     "summary": {
       "days": "Total days",

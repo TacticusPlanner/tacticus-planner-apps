@@ -187,6 +187,9 @@
     "title": "Intentos de hoy",
     "empty": "Todavía no se ha registrado ningún intento real hoy."
   },
+  "resource": {
+    "shards": "Fragmentos de {{unit}}"
+  },
   "plan": {
     "summary": {
       "days": "Días totales",
