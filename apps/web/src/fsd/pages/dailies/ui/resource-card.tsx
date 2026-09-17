@@ -3,24 +3,20 @@ import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent } from "@workspace/ui/components/card"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { goalTypeIcon } from "@/entities/goal"
 import type { RaidBreakdownEntry } from "@/features/goal-farming"
-import { EntityIcon, LocationChips, RankBadge, UpgradeIcon } from "@/shared/ui"
-
-import type {
-  DailyRaidGoalViewModel,
-  DailyRaidLocationViewModel,
-  DailyRaidResourceProgress,
-  DailyRaidResourceVisual,
-} from "../model/daily-raids.domain"
-import { isLocationVisible } from "../model/location-visibility"
+import {
+  isLocationVisible,
+  ResourceIcon,
+  ResourceIconWithTooltip,
+  type DailyRaidGoalViewModel,
+  type DailyRaidLocationViewModel,
+  type DailyRaidResourceProgress,
+  type DailyRaidResourceVisual,
+} from "@/features/daily-raids"
+import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
 
 /** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (an accessible
  * name is enough, no text — see `RankBadge`'s `showLabel={false}`); every other kind pairs its
@@ -275,62 +271,5 @@ export function UnitIcon({
           : characterIcon(goal.unitId)
       }
     />
-  )
-}
-
-function ResourceIcon({
-  className = "size-10 md:size-12",
-  label,
-  visual,
-}: {
-  className?: string
-  label: string
-  visual: DailyRaidResourceVisual | undefined
-}) {
-  if (!visual) return <span className={className} />
-
-  return (
-    <span
-      className={cn("flex shrink-0 items-center justify-center", className)}
-      data-testid="raid-resource-icon"
-    >
-      {visual.kind === "upgrade" ? (
-        <UpgradeIcon
-          className={className}
-          crafted={visual.crafted}
-          id={visual.id}
-          rarity={visual.rarity}
-        />
-      ) : (
-        <EntityIcon
-          alt={label}
-          className={className}
-          src={characterIcon(visual.unitId)}
-        />
-      )}
-    </span>
-  )
-}
-
-/** `ResourceIcon` with its name available as a tooltip on hover/focus, since the icon alone
- * replaces the visible resource name in the "location" emphasis card and in Today's Attempts. */
-export function ResourceIconWithTooltip({
-  className,
-  label,
-  visual,
-}: {
-  className?: string
-  label: string
-  visual: DailyRaidResourceVisual | undefined
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="shrink-0">
-          <ResourceIcon className={className} label={label} visual={visual} />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
   )
 }

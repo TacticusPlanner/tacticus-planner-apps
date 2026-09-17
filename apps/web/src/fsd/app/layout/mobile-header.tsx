@@ -1,4 +1,4 @@
-import { LogIn, Compass, Settings } from "lucide-react"
+import { LogIn, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -10,8 +10,8 @@ import { useMsal } from "@azure/msal-react"
 
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import {
+  PageTourButton,
   TourButton,
-  useTour,
   useTourControlledPopoverOpen,
 } from "@/shared/tour"
 
@@ -35,7 +35,6 @@ export function MobileHeader({
 }) {
   const { t } = useTranslation()
   const { instance } = useMsal()
-  const { isRunning, startTour } = useTour()
   const isCheckingSilentSignIn = useSilentSignInStatus() === "checking"
   const signInLabel = isCheckingSilentSignIn
     ? t("auth.checkingSignIn")
@@ -46,7 +45,10 @@ export function MobileHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-sidebar pt-[env(safe-area-inset-top)]">
+    <header
+      className="sticky top-0 z-40 border-b bg-sidebar pt-[env(safe-area-inset-top)]"
+      data-testid="mobile-header"
+    >
       <div className="flex h-20 items-center justify-between gap-3 px-4">
         <div className="flex min-w-0 items-center gap-3">
           <AppLogo className="size-10 shrink-0" />
@@ -62,6 +64,9 @@ export function MobileHeader({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
+          {/* Renders only on a page that registered its own tour - the app-wide navigation tour
+              lives on the "Show me around" button inside the account menu. */}
+          <PageTourButton iconOnly />
           {!isAuthenticated ? (
             <>
               <Button size="sm" onClick={handleSignIn}>
@@ -71,20 +76,7 @@ export function MobileHeader({
               <MobileGuestSettings />
             </>
           ) : (
-            <>
-              <Button
-                aria-label={t("tour.start")}
-                className="size-10 rounded-full"
-                data-testid="mobile-tour-button"
-                disabled={isRunning}
-                onClick={startTour}
-                size="icon"
-                variant="ghost"
-              >
-                <Compass />
-              </Button>
-              <AuthControl />
-            </>
+            <AuthControl />
           )}
         </div>
       </div>

@@ -36,6 +36,7 @@ vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
 const { startTour } = vi.hoisted(() => ({ startTour: vi.fn() }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => null,
+  PageTourButton: () => null,
   useTour: () => ({ isRunning: false, startTour }),
   useTourControlledPopoverOpen: () => [false, vi.fn()] as const,
 }))
@@ -244,14 +245,6 @@ describe("MobileBottomNav actions", () => {
     expect(drawer.getByText("nav.progress").closest("a")).not.toHaveAttribute(
       "aria-current"
     )
-  })
-
-  it("starts the guided tour directly from the authenticated top bar", () => {
-    renderShell(vi.fn(), true)
-
-    fireEvent.click(screen.getByTestId("mobile-tour-button"))
-
-    expect(startTour).toHaveBeenCalledTimes(1)
   })
 
   it("triggers the global Create Goal action", () => {

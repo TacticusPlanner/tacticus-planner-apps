@@ -31,9 +31,6 @@ vi.mock("@/shared/auth", () => ({
 // UI Kit entry.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-vi.mock("../providers/catalog-sync-status-badge", () => ({
-  CatalogSyncStatusBadge: () => null,
-}))
 vi.mock("../providers/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,
 }))
@@ -45,7 +42,10 @@ vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
 vi.mock("../providers/userjot-feedback-button", () => ({
   UserJotFeedbackButton: () => null,
 }))
-vi.mock("@/shared/tour", () => ({ TourButton: () => null }))
+vi.mock("@/shared/tour", () => ({
+  TourButton: () => null,
+  PageTourButton: () => null,
+}))
 
 import { DesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"

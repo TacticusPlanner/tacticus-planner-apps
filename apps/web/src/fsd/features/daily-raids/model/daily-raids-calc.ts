@@ -34,7 +34,7 @@ import {
   type FarmingUpgrade,
   type GoalNeed,
   type RaidPlanSchedule,
-} from "@/features/goal-farming"
+} from "@/features/goal-farming/@x/daily-raids"
 import type { Battle } from "@/shared/lib"
 
 import type {

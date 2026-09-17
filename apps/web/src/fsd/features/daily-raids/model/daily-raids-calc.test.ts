@@ -21,7 +21,7 @@ import type {
   FarmingCharacter,
   FarmingUpgrade,
   FlatSupplier,
-} from "@/features/goal-farming"
+} from "@/features/goal-farming/@x/daily-raids"
 
 import {
   activeProjectMembers,

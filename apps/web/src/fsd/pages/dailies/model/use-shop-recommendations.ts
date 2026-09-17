@@ -43,7 +43,7 @@ import {
   type ShopRewardKind,
 } from "@/features/shop-rewards"
 
-import { activeProjectMembers } from "./daily-raids-calc"
+import { activeProjectMembers } from "@/features/daily-raids"
 import { aggregateShopNeeds } from "./shop-needs"
 import {
   buildShopRecommendations,
