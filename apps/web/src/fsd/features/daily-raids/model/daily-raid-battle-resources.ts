@@ -33,11 +33,13 @@ type BattleResourceCharacter = {
  * materials/shards whose own records point back at it, so inverting those pointers covers every
  * node the player can raid.
  *
- * A node's upgrade material wins over its shards: standing nodes drop one material each, while
- * shard drops are concentrated on the Elite tiers that the plan itself normally resolves anyway.
- * Ties between two materials on one node resolve by upgrade id so the icon never depends on dataset
- * ordering. Mythic shard locations are skipped — those are Onslaught/shop sources, not campaign
- * nodes (see `farmLocationSchema`'s `isMythic`).
+ * Both tie-breaks below are defensive: in the current dataset no campaign node drops both a material
+ * and shards, and the nodes that list two materials list the same one twice (guaranteed + potential,
+ * which the API groups into one farm location). So the material-over-shards order and the
+ * lowest-upgrade-id tie-break only decide hypothetical future data — they exist so the icon can
+ * never depend on dataset ordering, not because either case fires today. Mythic shard locations are
+ * skipped — those are Onslaught/shop sources, not campaign nodes (see `farmLocationSchema`'s
+ * `isMythic`).
  */
 export function buildResourceByBattle(
   upgrades: Iterable<BattleResourceUpgrade>,

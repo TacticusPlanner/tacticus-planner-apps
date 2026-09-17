@@ -55,21 +55,18 @@ export function TodayPage() {
     )
   }
   const todayProgress = raids.resourceProgressByDay.get(1) ?? new Map()
-  // Today's Attempts is account-wide, so most locations there sit outside this project's plan. Start
-  // from the catalog's own node → drop index so every entry has an icon (tacticus-planner-apps#121),
-  // then let this project's schedule/Bonus Raids override the nodes they reference — there the
-  // resource the player is actually farming beats the node's generic drop. As before, the first
-  // plan entry encountered per node wins.
-  const resourceByBattle = new Map<BattleId, DailyRaidBattleResource>(
-    raids.resourceByBattleId
-  )
-  const planResolvedBattles = new Set<BattleId>()
+  // Today's Attempts is account-wide, so most locations there sit outside this project's plan. Where
+  // this project's schedule/Bonus Raids do name a node, that entry wins — the resource the player is
+  // actually farming beats the node's generic drop — and the first plan entry per node wins, as
+  // before. Every other node falls back to the catalog's own node → drop index so it still gets an
+  // icon (tacticus-planner-apps#121); the fallback is read per row rather than merged in here, so
+  // the catalog-wide index is never copied on a render.
+  const planResourceByBattle = new Map<BattleId, DailyRaidBattleResource>()
   for (const entry of [...raids.today.entries, ...raids.bonus.entries]) {
-    if (planResolvedBattles.has(entry.battleId)) continue
+    if (planResourceByBattle.has(entry.battleId)) continue
     const visual = raids.resourceVisuals.get(entry.resourceId)
     if (!visual) continue
-    planResolvedBattles.add(entry.battleId)
-    resourceByBattle.set(entry.battleId, {
+    planResourceByBattle.set(entry.battleId, {
       label: raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId,
       visual,
     })
@@ -162,7 +159,8 @@ export function TodayPage() {
           <TodaysAttemptsList
             attempts={raids.todaysAttempts}
             locationsByBattleId={raids.locationsByBattleId}
-            resourceByBattle={resourceByBattle}
+            planResourceByBattle={planResourceByBattle}
+            catalogResourceByBattle={raids.resourceByBattleId}
           />
         ) : (
           <p className="text-sm text-muted-foreground">
@@ -177,11 +175,13 @@ export function TodayPage() {
 export function TodaysAttemptsList({
   attempts,
   locationsByBattleId,
-  resourceByBattle,
+  planResourceByBattle,
+  catalogResourceByBattle,
 }: {
   attempts: TodaysAttempt[]
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
-  resourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
+  planResourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
+  catalogResourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
 }) {
   const { t } = useTranslation("dailies")
 
@@ -189,7 +189,9 @@ export function TodaysAttemptsList({
     <div className="grid gap-2 md:gap-3" data-testid="todays-attempts-list">
       {attempts.map(({ battleId, attemptsUsed }) => {
         const location = locationsByBattleId.get(battleId)
-        const resource = resourceByBattle.get(battleId)
+        const resource =
+          planResourceByBattle.get(battleId) ??
+          catalogResourceByBattle.get(battleId)
         return (
           <div
             key={battleId}
