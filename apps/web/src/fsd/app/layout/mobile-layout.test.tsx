@@ -246,14 +246,6 @@ describe("MobileBottomNav actions", () => {
     )
   })
 
-  it("starts the guided tour directly from the authenticated top bar", () => {
-    renderShell(vi.fn(), true)
-
-    fireEvent.click(screen.getByTestId("mobile-tour-button"))
-
-    expect(startTour).toHaveBeenCalledTimes(1)
-  })
-
   it("triggers the global Create Goal action", () => {
     const onCreateGoal = vi.fn()
     renderShell(onCreateGoal)

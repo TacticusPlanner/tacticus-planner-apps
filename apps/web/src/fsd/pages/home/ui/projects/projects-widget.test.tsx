@@ -1,10 +1,11 @@
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
 import { ProjectsWidget } from "./projects-widget"
 
-const { navigateMock, useHomeProjectsMock } = vi.hoisted(() => ({
+const { isMobileRef, navigateMock, useHomeProjectsMock } = vi.hoisted(() => ({
+  isMobileRef: { current: false },
   navigateMock: vi.fn(),
   useHomeProjectsMock: vi.fn(),
 }))
@@ -20,10 +21,16 @@ vi.mock("react-router", async (importOriginal) => ({
   ...(await importOriginal<typeof import("react-router")>()),
   useNavigate: () => navigateMock,
 }))
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => isMobileRef.current,
+}))
 vi.mock("@/features/project-management", async (importOriginal) => {
   const actual =
     await importOriginal<typeof import("@/features/project-management")>()
-  return { ...actual, useHomeProjects: () => useHomeProjectsMock() }
+  return {
+    ...actual,
+    useHomeProjects: (limit: number | null) => useHomeProjectsMock(limit),
+  }
 })
 
 function project(overrides: Record<string, unknown> = {}) {
@@ -43,6 +50,27 @@ function project(overrides: Record<string, unknown> = {}) {
 }
 
 describe("ProjectsWidget", () => {
+  beforeEach(() => {
+    isMobileRef.current = false
+  })
+
+  it("requests an uncapped project list on desktop", () => {
+    useHomeProjectsMock.mockReturnValue({ status: "loading" })
+
+    render(<ProjectsWidget />)
+
+    expect(useHomeProjectsMock).toHaveBeenCalledWith(null)
+  })
+
+  it("requests a capped (3) project list on mobile", () => {
+    isMobileRef.current = true
+    useHomeProjectsMock.mockReturnValue({ status: "loading" })
+
+    render(<ProjectsWidget />)
+
+    expect(useHomeProjectsMock).toHaveBeenCalledWith(3)
+  })
+
   it("shows a loading state", () => {
     useHomeProjectsMock.mockReturnValue({ status: "loading" })
 

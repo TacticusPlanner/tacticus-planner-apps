@@ -229,18 +229,11 @@
     }
   },
   "home": {
-    "pageTitle": "Home",
-    "subtitle": "This page is still under construction.",
-    "tourButton": "Show me around",
     "tokens": {
       "title": "Token Availability",
       "full": "Capped",
       "due": "Ready now",
       "nextLabel": "Next in {{time}}",
-      "syncBanner": {
-        "title": "Refresh required",
-        "description": "Last sync {{time}} — use the sync control in the sidebar to refresh."
-      },
       "loading": "Loading token status…",
       "empty": "No token data available yet.",
       "labels": {
@@ -265,6 +258,9 @@
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
       "error": "Couldn't load today's raids."
+    },
+    "calendar": {
+      "title": "Events Calendar"
     }
   },
   "guild": {

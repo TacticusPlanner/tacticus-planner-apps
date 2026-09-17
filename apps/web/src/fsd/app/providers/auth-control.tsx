@@ -45,10 +45,11 @@ import {
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
+import { AccountAvatar } from "./account-avatar"
+import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
 import { useUserJot } from "./userjot-provider"
-import { AccountAvatar } from "./account-avatar"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
 
@@ -202,6 +203,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
               </DrawerDescription>
             </DrawerHeader>
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-5">
+              <CatalogSyncStatusBadge />
               <div className="space-y-2">
                 <span className="text-sm font-medium">{t("theme.label")}</span>
                 <ThemeSwitcher className="w-full" />
@@ -347,6 +349,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
               </div>
             </div>
           </div>
+          <CatalogSyncStatusBadge />
           <Separator />
           <Button
             aria-label={t("goals.v1Import.menu")}

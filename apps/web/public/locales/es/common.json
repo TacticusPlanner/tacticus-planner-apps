@@ -229,18 +229,11 @@
     }
   },
   "home": {
-    "pageTitle": "Inicio",
-    "subtitle": "Esta página todavía está en construcción.",
-    "tourButton": "Enséñame todo",
     "tokens": {
       "title": "Disponibilidad de fichas",
       "full": "Completo",
       "due": "Disponible ahora",
       "nextLabel": "Próximo en {{time}}",
-      "syncBanner": {
-        "title": "Actualización necesaria",
-        "description": "Última sincronización {{time}} — usa el control de sincronización de la barra lateral para actualizar."
-      },
       "loading": "Cargando el estado de las fichas…",
       "empty": "Aún no hay datos de fichas disponibles.",
       "labels": {
@@ -265,6 +258,9 @@
       "title": "Incursiones diarias",
       "empty": "No hay nada que asaltar hoy.",
       "error": "No se pudieron cargar las incursiones de hoy."
+    },
+    "calendar": {
+      "title": "Calendario de eventos"
     }
   },
   "guild": {

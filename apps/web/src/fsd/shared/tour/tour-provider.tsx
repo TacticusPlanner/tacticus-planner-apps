@@ -41,6 +41,9 @@ type TourContextValue = {
 
 const TourContext = React.createContext<TourContextValue | undefined>(undefined)
 
+// Set the first time the navigation tour auto-starts on this device, so it never repeats.
+const AUTO_STARTED_STORAGE_KEY = "tp.tour.autoStarted"
+
 // Statuses that mean the tour is over and the trigger should re-enable.
 const completedStatuses: Status[] = [STATUS.FINISHED, STATUS.SKIPPED]
 
@@ -105,7 +108,14 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const isMobile = useIsMobile()
-  const [run, setRun] = React.useState(false)
+  // Lazy initializer (not an effect): the first time this device opens the app, auto-start the
+  // tour once (Home has no page-specific steps, so this shows the general navigation tour) - and
+  // never again after that.
+  const [run, setRun] = React.useState(() => {
+    if (window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)) return false
+    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    return true
+  })
   const [pageSteps, setPageSteps] = React.useState<TourPageSteps | null>(null)
   const [mobileMenuForceOpen, setMobileMenuForceOpen] = React.useState(false)
 

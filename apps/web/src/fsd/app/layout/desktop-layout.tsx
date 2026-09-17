@@ -30,7 +30,6 @@ import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import { TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
-import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
@@ -82,7 +81,6 @@ export function DesktopShell({
             <div className="flex shrink-0 items-center gap-2">
               <ThemeSwitcher />
               <LanguageSwitcher />
-              <TourButton iconOnly />
               <UserJotFeedbackButton />
             </div>
           </div>
@@ -220,7 +218,10 @@ function AppSidebar({
 
       <SidebarFooter>
         <div className="flex flex-col gap-2">
-          <CatalogSyncStatusBadge compact={compact} />
+          <TourButton
+            className={cn(!compact && "w-full justify-start")}
+            iconOnly={compact}
+          />
           <div
             className={cn(
               "flex items-center gap-1",

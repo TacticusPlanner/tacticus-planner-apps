@@ -25,10 +25,17 @@ export type HomeProjectsResult =
     }
 
 /** Selects and summarizes the projects the home dashboard's Your Projects widget shows: Current
- * plan first, then other non-archived projects in dashboard order, capped to
- * `HOME_PROJECT_LIMIT`, plus a units/goals summary per visible project. Only computes summaries
- * for the visible (capped) projects, not the whole list. */
-export function useHomeProjects(): HomeProjectsResult {
+ * plan first, then other non-archived projects in dashboard order, capped to `limit` (default
+ * `HOME_PROJECT_LIMIT`; pass `null` for no cap, e.g. desktop's roomier layout), plus a
+ * units/goals summary per visible project. Only computes summaries for the visible (capped)
+ * projects, not the whole list.
+ *
+ * `null`, not `undefined`, means "no cap" - a default *parameter* value is substituted even when
+ * a call site passes `undefined` explicitly, so `undefined` can't be repurposed as a distinct
+ * "no cap" signal here without every caller matching its exact default by coincidence. */
+export function useHomeProjects(
+  limit: number | null = HOME_PROJECT_LIMIT
+): HomeProjectsResult {
   const { fetchState, loading, projects, retry } = useProjects()
 
   const current = projects.find((project) => project.isActivePlan)
@@ -36,8 +43,9 @@ export function useHomeProjects(): HomeProjectsResult {
     (project) => !project.isActivePlan && project.status !== "Archived"
   )
   const ordered = current ? [current, ...others] : others
-  const visible = ordered.slice(0, HOME_PROJECT_LIMIT)
-  const remainingCount = Math.max(0, ordered.length - HOME_PROJECT_LIMIT)
+  const visible = limit === null ? ordered : ordered.slice(0, limit)
+  const remainingCount =
+    limit === null ? 0 : Math.max(0, ordered.length - limit)
 
   const summaryQueries = useQueries({
     queries: visible.map((project) => projectQueries.goals(project.projectId)),

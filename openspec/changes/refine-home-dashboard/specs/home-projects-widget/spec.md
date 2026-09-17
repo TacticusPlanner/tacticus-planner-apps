@@ -18,27 +18,35 @@ The authenticated home page SHALL render a Your Projects section after Token Ava
 - **WHEN** a signed-in user opens `/home` below the 768px breakpoint
 - **THEN** Token Availability, Your Projects, Daily Raids, and the events calendar render as separate full-width stacked sections in that order
 
-### Requirement: The widget lists projects, Current plan first, capped with a link to see more
+### Requirement: The widget lists projects, Current plan first; mobile caps the list, desktop does not
 
-The widget SHALL show the player's Current plan project first, if one exists, followed by up to 2 additional non-archived projects (3 project cards total), each ordered by the same ordering the Projects dashboard uses. When more than 3 non-archived projects exist, the widget SHALL show a "+N more" control that navigates to `/goals/projects`. Archived projects SHALL NOT appear in the widget.
+The widget SHALL show the player's Current plan project first, if one exists, followed by other non-archived projects, each ordered by the same ordering the Projects dashboard uses. Archived projects SHALL NOT appear in the widget.
 
-#### Scenario: Three or fewer projects need no truncation
+Below the 768px breakpoint, the widget SHALL cap the list to 3 project cards total and show a "+N more" control that navigates to `/goals/projects` when more than 3 non-archived projects exist. At or above 768px, the widget SHALL show every non-archived project uncapped, with no "+N more" control.
 
-- **GIVEN** the player has 3 or fewer non-archived projects
-- **WHEN** the widget renders
-- **THEN** all of them are shown and no "+N more" control is displayed
-
-#### Scenario: More than three projects are truncated
+#### Scenario: Desktop shows every project uncapped
 
 - **GIVEN** the player has 5 non-archived projects, one of which is Current plan
-- **WHEN** the widget renders
+- **WHEN** the widget renders at or above the 768px breakpoint
+- **THEN** all 5 are shown, Current plan first, with no "+N more" control
+
+#### Scenario: Mobile truncates to 3 with a link to see more
+
+- **GIVEN** the player has 5 non-archived projects, one of which is Current plan
+- **WHEN** the widget renders below the 768px breakpoint
 - **THEN** Current plan appears first, 2 more projects follow it, and a "+2 more" control links to `/goals/projects`
+
+#### Scenario: Mobile with three or fewer projects needs no truncation
+
+- **GIVEN** the player has 3 or fewer non-archived projects
+- **WHEN** the widget renders below the 768px breakpoint
+- **THEN** all of them are shown and no "+N more" control is displayed
 
 #### Scenario: Archived projects are excluded
 
 - **GIVEN** the player has archived projects
-- **WHEN** the widget renders
-- **THEN** none of the archived projects appear in the widget or count toward its cap
+- **WHEN** the widget renders, on either platform
+- **THEN** none of the archived projects appear in the widget or count toward mobile's cap
 
 ### Requirement: Project cards are condensed and identity-only
 

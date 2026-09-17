@@ -47,23 +47,23 @@ Assumptions:
 - **WHEN** Token Availability renders
 - **THEN** no card is rendered for that token type
 
-### Requirement: Stale capped data shows a banner
+### Requirement: Each token card shows its per-type icon, with a distinct capped treatment
 
-When a token's projected count is at max and the last sync happened more than 5 minutes ago, the widget SHALL show a banner explaining the data may be stale, naming when it was last synced.
+Each token card SHALL show that token type's icon alongside its label and count. A capped token (`current === max`) SHALL be visually distinguished from a counting-down one: its icon SHALL use a pulsing/glowing treatment and its status text SHALL use a distinct, attention-drawing style, rather than the same muted styling as a counting-down token.
 
-Implementation note: this banner is informational only, without its own sync-trigger control. The existing "sync now" action lives in the app shell's sidebar/mobile-nav (`app/providers/player-data-provider.tsx`'s `usePlayerDataStatus`), which this repo's FSD layering forbids a page from importing (pages may not import from the `app` layer). Triggering a sync from here would mean either duplicating that provider's auth/coalescing logic or relocating it to a lower layer — both out of scope for this change. The banner points the player at the existing sidebar control instead of adding a redundant one.
+Implementation note: no informational or sync-prompting banner is shown for stale/capped data. `pages/home` cannot import the app shell's sync-status/trigger context (it lives in the `app` layer, which this repo's FSD layering forbids a page from importing), and duplicating that provider's auth/coalescing logic at a lower layer was judged out of scope for this widget. The existing app-shell sync control (now inside the sidebar's user menu) remains the way to trigger a sync; this widget only reflects the last-synced snapshot's data.
 
-#### Scenario: Capped token with a stale sync
+#### Scenario: Capped token gets a distinct visual treatment
 
-- **GIVEN** a token's projected count is at its max and the account was last synced 6 minutes ago
-- **WHEN** Token Availability renders
-- **THEN** it shows a stale-data banner naming the last-sync time
+- **GIVEN** a token's projected count equals its max
+- **WHEN** Token Availability renders that token's card
+- **THEN** its icon uses the pulsing/glowing capped treatment and its status text uses the distinct capped styling
 
-#### Scenario: Recently synced capped token
+#### Scenario: Counting-down token uses the plain treatment
 
-- **GIVEN** a token's projected count is at its max and the account was synced 2 minutes ago
-- **WHEN** Token Availability renders
-- **THEN** no stale-data banner is shown for that token
+- **GIVEN** a token's projected count is below its max
+- **WHEN** Token Availability renders that token's card
+- **THEN** its icon and countdown text use the plain (non-capped) styling
 
 ### Requirement: Distinct loading and empty states
 

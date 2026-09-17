@@ -9,13 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { formatRelativeTime } from "@/shared/lib"
+import { EntityIcon } from "@/shared/ui"
 
+import arenaTokenIcon from "./assets/arena-token.png"
+import bombTokenIcon from "./assets/bomb-token.png"
+import guildRaidTokenIcon from "./assets/guild-raid-token.png"
+import onslaughtTokenIcon from "./assets/onslaught-token.png"
+import salvageRunTokenIcon from "./assets/salvage-run-token.png"
 import { tokenCountdown, type TokenBucketData } from "./token-countdown"
 
 const NOW_TICK_MS = 30 * 1000
-const STALE_THRESHOLD_MS = 5 * 60 * 1000
 
 type GameModeTokens = NonNullable<
   Awaited<ReturnType<typeof getLiveProgress>>
@@ -36,6 +42,15 @@ const tokenLabelI18nKeys = {
   bombTokens: "home.tokens.labels.bombTokens",
   onslaught: "home.tokens.labels.onslaught",
   salvageRun: "home.tokens.labels.salvageRun",
+} as const satisfies Record<TokenLabelKey, string>
+
+// Same icon set V1 used per token type (ui_icon_resource_token_*.png / ui_icon_bomb.png).
+const tokenIcons = {
+  arena: arenaTokenIcon,
+  guildRaid: guildRaidTokenIcon,
+  bombTokens: bombTokenIcon,
+  onslaught: onslaughtTokenIcon,
+  salvageRun: salvageRunTokenIcon,
 } as const satisfies Record<TokenLabelKey, string>
 
 function collectTokenEntries(tokens: GameModeTokens): TokenEntry[] {
@@ -98,26 +113,47 @@ function TokenRow({
     }
   })()
 
+  const isCapped = countdown.kind === "full"
+
   return (
     <div
-      className="flex flex-col gap-0.5"
+      className="flex items-center gap-2"
       data-testid={`token-row-${entry.key}`}
     >
-      <span className="text-xs text-muted-foreground">
-        {t(tokenLabelI18nKeys[entry.labelKey])}
-      </span>
-      <span className="text-base font-semibold tabular-nums">
-        {entry.bucket.current} / {entry.bucket.max}
-      </span>
-      {countdownText ? (
-        <span className="text-xs text-muted-foreground">{countdownText}</span>
-      ) : null}
+      <EntityIcon
+        alt=""
+        className={cn(
+          "size-9 shrink-0",
+          isCapped && "animate-pulse drop-shadow-[0_0_6px_var(--destructive)]"
+        )}
+        src={tokenIcons[entry.labelKey]}
+      />
+      <div className="flex flex-col gap-0.5">
+        <span className="text-xs text-muted-foreground">
+          {t(tokenLabelI18nKeys[entry.labelKey])}
+        </span>
+        <span className="text-base font-semibold tabular-nums">
+          {entry.bucket.current} / {entry.bucket.max}
+        </span>
+        {countdownText ? (
+          <span
+            className={cn(
+              "text-xs",
+              isCapped
+                ? "font-semibold tracking-wide text-destructive uppercase"
+                : "text-muted-foreground"
+            )}
+          >
+            {countdownText}
+          </span>
+        ) : null}
+      </div>
     </div>
   )
 }
 
 export function TokenAvailability() {
-  const { i18n, t } = useTranslation("common")
+  const { t } = useTranslation("common")
   // `useLiveQuery` reports "still loading" as `undefined`, indistinguishable from a resolved
   // `getLiveProgress()` returning `undefined` for "never synced, no chunk at all" — without this
   // mapping, an account that's never synced would show the loading state forever. Map the
@@ -165,39 +201,17 @@ export function TokenAvailability() {
 
     const observedAt = metadata.get("live-progress")?.updatedAt
     const observedAtMs = observedAt ? Date.parse(observedAt) : nowMs
-    const isStale = nowMs - observedAtMs > STALE_THRESHOLD_MS
-    const anyCapped = entries.some(
-      (entry) =>
-        tokenCountdown(entry.bucket, observedAtMs, nowMs).kind === "full"
-    )
 
     return (
-      <div className="flex flex-col gap-3">
-        {anyCapped && isStale ? (
-          <div
-            className="flex flex-col gap-0.5 rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-2"
-            data-testid="token-availability-stale-banner"
-          >
-            <p className="text-sm font-medium">
-              {t("home.tokens.syncBanner.title")}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t("home.tokens.syncBanner.description", {
-                time: formatRelativeTime(observedAtMs, i18n.language) ?? "",
-              })}
-            </p>
-          </div>
-        ) : null}
-        <div className="flex flex-wrap gap-4">
-          {entries.map((entry) => (
-            <TokenRow
-              entry={entry}
-              key={entry.key}
-              nowMs={nowMs}
-              observedAtMs={observedAtMs}
-            />
-          ))}
-        </div>
+      <div className="flex flex-wrap gap-4">
+        {entries.map((entry) => (
+          <TokenRow
+            entry={entry}
+            key={entry.key}
+            nowMs={nowMs}
+            observedAtMs={observedAtMs}
+          />
+        ))}
       </div>
     )
   })()

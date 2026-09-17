@@ -8,18 +8,21 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   useHomeProjects,
   ProjectSummaryRow,
 } from "@/features/project-management"
 
-/** Home dashboard's Your Projects widget: Current plan first, capped to 3 project rows, with a
- * "+N more" link to the Projects dashboard when there are more (home-projects-widget spec). */
+/** Home dashboard's Your Projects widget: Current plan first. Mobile caps the list to 3 project
+ * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
+ * room to show every non-archived project uncapped. */
 export function ProjectsWidget() {
   const { t } = useTranslation("common")
   const navigate = useNavigate()
-  const result = useHomeProjects()
+  const isMobile = useIsMobile()
+  const result = useHomeProjects(isMobile ? 3 : null)
 
   const body = (() => {
     if (result.status === "loading") {

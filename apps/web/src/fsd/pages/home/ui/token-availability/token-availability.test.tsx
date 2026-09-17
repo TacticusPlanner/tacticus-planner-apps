@@ -127,8 +127,7 @@ describe("TokenAvailability", () => {
     expect(screen.queryByTestId("token-row-onslaught")).not.toBeInTheDocument()
   })
 
-  it("shows the stale-sync banner when a token is capped and the last sync was over 5 minutes ago", () => {
-    const staleSync = new Date(NOW - 6 * 60_000)
+  it("styles a capped token distinctly from a counting-down one", () => {
     mockLiveQueries({
       liveProgress: {
         gameModeTokens: {
@@ -139,22 +138,18 @@ describe("TokenAvailability", () => {
         },
       },
       metadata: new Map([
-        ["live-progress", { updatedAt: staleSync.toISOString() }],
+        ["live-progress", { updatedAt: new Date(NOW).toISOString() }],
       ]),
     })
-    vi.useFakeTimers()
-    vi.setSystemTime(NOW)
 
     render(<TokenAvailability />)
 
-    expect(
-      screen.getByTestId("token-availability-stale-banner")
-    ).toBeInTheDocument()
-
-    vi.useRealTimers()
+    const row = screen.getByTestId("token-row-arena")
+    expect(row).toHaveTextContent("home.tokens.full")
+    expect(row.querySelector("img")).toHaveClass("animate-pulse")
   })
 
-  it("does not show the stale-sync banner when nothing is capped", () => {
+  it("does not apply capped styling to a token still counting down", () => {
     mockLiveQueries({
       liveProgress: {
         gameModeTokens: {
@@ -165,17 +160,13 @@ describe("TokenAvailability", () => {
         },
       },
       metadata: new Map([
-        [
-          "live-progress",
-          { updatedAt: new Date(NOW - 6 * 60_000).toISOString() },
-        ],
+        ["live-progress", { updatedAt: new Date(NOW).toISOString() }],
       ]),
     })
 
     render(<TokenAvailability />)
 
-    expect(
-      screen.queryByTestId("token-availability-stale-banner")
-    ).not.toBeInTheDocument()
+    const row = screen.getByTestId("token-row-arena")
+    expect(row.querySelector("img")).not.toHaveClass("animate-pulse")
   })
 })

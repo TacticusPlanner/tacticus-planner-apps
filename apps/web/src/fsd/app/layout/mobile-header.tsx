@@ -1,4 +1,4 @@
-import { LogIn, Compass, Settings } from "lucide-react"
+import { LogIn, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -9,11 +9,7 @@ import {
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
-import {
-  TourButton,
-  useTour,
-  useTourControlledPopoverOpen,
-} from "@/shared/tour"
+import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
@@ -35,7 +31,6 @@ export function MobileHeader({
 }) {
   const { t } = useTranslation()
   const { instance } = useMsal()
-  const { isRunning, startTour } = useTour()
   const isCheckingSilentSignIn = useSilentSignInStatus() === "checking"
   const signInLabel = isCheckingSilentSignIn
     ? t("auth.checkingSignIn")
@@ -71,20 +66,7 @@ export function MobileHeader({
               <MobileGuestSettings />
             </>
           ) : (
-            <>
-              <Button
-                aria-label={t("tour.start")}
-                className="size-10 rounded-full"
-                data-testid="mobile-tour-button"
-                disabled={isRunning}
-                onClick={startTour}
-                size="icon"
-                variant="ghost"
-              >
-                <Compass />
-              </Button>
-              <AuthControl />
-            </>
+            <AuthControl />
           )}
         </div>
       </div>

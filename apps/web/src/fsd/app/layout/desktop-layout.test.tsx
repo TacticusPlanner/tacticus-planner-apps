@@ -31,9 +31,6 @@ vi.mock("@/shared/auth", () => ({
 // UI Kit entry.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-vi.mock("../providers/catalog-sync-status-badge", () => ({
-  CatalogSyncStatusBadge: () => null,
-}))
 vi.mock("../providers/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,
 }))

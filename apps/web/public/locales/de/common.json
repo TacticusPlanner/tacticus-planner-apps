@@ -229,18 +229,11 @@
     }
   },
   "home": {
-    "pageTitle": "Start",
-    "subtitle": "Diese Seite befindet sich noch im Aufbau.",
-    "tourButton": "Zeig mir alles",
     "tokens": {
       "title": "Token-Verfügbarkeit",
       "full": "Voll",
       "due": "Jetzt verfügbar",
       "nextLabel": "Nächstes in {{time}}",
-      "syncBanner": {
-        "title": "Aktualisierung erforderlich",
-        "description": "Letzte Synchronisierung {{time}} — nutze die Sync-Schaltfläche in der Seitenleiste zum Aktualisieren."
-      },
       "loading": "Token-Status wird geladen …",
       "empty": "Noch keine Token-Daten verfügbar.",
       "labels": {
@@ -265,6 +258,9 @@
       "title": "Tägliche Raids",
       "empty": "Heute gibt es nichts zu erobern.",
       "error": "Die heutigen Raids konnten nicht geladen werden."
+    },
+    "calendar": {
+      "title": "Ereigniskalender"
     }
   },
   "guild": {

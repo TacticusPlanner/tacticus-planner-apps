@@ -112,6 +112,32 @@ describe("useHomeProjects", () => {
     expect(result.current.remainingCount).toBe(2)
   })
 
+  it("shows every non-archived project uncapped when limit is null (desktop)", async () => {
+    useProjectsMock.mockReturnValue({
+      projects: [
+        project({ projectId: "p2" }),
+        project({ projectId: "p1", isActivePlan: true }),
+        project({ projectId: "p3" }),
+        project({ projectId: "p4" }),
+        project({ projectId: "p5" }),
+      ],
+      fetchState: { status: "success" },
+      loading: false,
+      retry: vi.fn(),
+    })
+
+    const { result } = renderHook(() => useHomeProjects(null), {
+      wrapper: createWrapper(),
+    })
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    if (result.current.status !== "ready") throw new Error("expected ready")
+    expect(result.current.projects.map((project) => project.projectId)).toEqual(
+      ["p1", "p2", "p3", "p4", "p5"]
+    )
+    expect(result.current.remainingCount).toBe(0)
+  })
+
   it("has no Current plan set", async () => {
     useProjectsMock.mockReturnValue({
       projects: [project({ projectId: "p1" }), project({ projectId: "p2" })],
