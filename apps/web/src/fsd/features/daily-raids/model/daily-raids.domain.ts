@@ -72,6 +72,21 @@ export function shardResourceLabel(characterName: string) {
   return `${characterName} shards`
 }
 
+/**
+ * Optional display-text hooks for a farmable resource, so this model layer keeps taking catalog
+ * records rather than a `t` (tests and any non-React caller can omit them and get the catalog's own
+ * English). `use-daily-raids` supplies one implementation to both the plan path (`calculateDailyRaids`)
+ * and the catalog path (`buildResourceByBattle`) — passing it to only one would reintroduce exactly
+ * the split `shardResourceLabel` exists to prevent.
+ *
+ * `catalogLabel`/`characterName` are the catalog's own strings, passed through as the `defaultValue`
+ * for the id-keyed `upgrades`/`characters` namespaces.
+ */
+export type DailyRaidResourceLabels = {
+  upgrade?: (id: UpgradeId, catalogLabel: string) => string
+  shards?: (unitId: UnitId, characterName: string) => string
+}
+
 export type DailyRaidsReadyViewModel = {
   status: "ready"
   today: RaidDaySchedule

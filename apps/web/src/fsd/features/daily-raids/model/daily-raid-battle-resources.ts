@@ -5,7 +5,10 @@ import type {
   UpgradeId,
 } from "@workspace/game-domain"
 
-import type { DailyRaidBattleResource } from "./daily-raids.domain"
+import type {
+  DailyRaidBattleResource,
+  DailyRaidResourceLabels,
+} from "./daily-raids.domain"
 import { shardResourceLabel } from "./daily-raids.domain"
 
 // Structural slices of the catalog records this builder reads — only the fields it actually needs,
@@ -43,7 +46,8 @@ type BattleResourceCharacter = {
  */
 export function buildResourceByBattle(
   upgrades: Iterable<BattleResourceUpgrade>,
-  characters: Iterable<BattleResourceCharacter>
+  characters: Iterable<BattleResourceCharacter>,
+  labels?: DailyRaidResourceLabels
 ): ReadonlyMap<BattleId, DailyRaidBattleResource> {
   const byBattle = new Map<BattleId, DailyRaidBattleResource>()
   const upgradeIdByBattle = new Map<BattleId, UpgradeId>()
@@ -54,7 +58,7 @@ export function buildResourceByBattle(
       if (current !== undefined && current <= upgrade.id) continue
       upgradeIdByBattle.set(location.battleId, upgrade.id)
       byBattle.set(location.battleId, {
-        label: upgrade.label,
+        label: labels?.upgrade?.(upgrade.id, upgrade.label) ?? upgrade.label,
         visual: {
           kind: "upgrade",
           id: upgrade.id,
@@ -70,7 +74,9 @@ export function buildResourceByBattle(
       if (location.isMythic) continue
       if (byBattle.has(location.battleId)) continue
       byBattle.set(location.battleId, {
-        label: shardResourceLabel(character.name),
+        label:
+          labels?.shards?.(character.id, character.name) ??
+          shardResourceLabel(character.name),
         visual: { kind: "shard", unitId: character.id },
       })
     }

@@ -187,6 +187,9 @@
     "title": "Heutige Versuche",
     "empty": "Noch keine echten Versuche heute erfasst."
   },
+  "resource": {
+    "shards": "{{unit}}-Splitter"
+  },
   "plan": {
     "summary": {
       "days": "Tage gesamt",

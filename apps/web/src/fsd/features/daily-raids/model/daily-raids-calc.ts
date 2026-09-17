@@ -45,6 +45,7 @@ import type {
   DailyRaidResourceVisual,
 } from "./daily-raids.domain"
 import { dailyRaidResourceKey, shardResourceLabel } from "./daily-raids.domain"
+import type { DailyRaidResourceLabels } from "./daily-raids.domain"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -66,6 +67,7 @@ export type DailyRaidsCalculationInput = {
   getCharacter: (unitId: UnitId) => FarmingCharacter | undefined
   getUnitLabel?: (detail: GoalDetail) => string
   getTargetLabel?: (detail: GoalDetail) => string
+  labelResource?: DailyRaidResourceLabels
   dailyEnergy: number
   referenceDate?: Date
   onslaughtProgress?: OnslaughtProgress
@@ -185,7 +187,11 @@ export function calculateDailyRaids(
           detail.goalType === "Unlock"
             ? (params.inventoryShardById.get(detail.entityId)?.amount ?? 0)
             : (params.playerCharacterById.get(detail.entityId)?.shards ?? 0)
-        resourceLabels.set(need.shardId, shardResourceLabel(character.name))
+        resourceLabels.set(
+          need.shardId,
+          params.labelResource?.shards?.(entityId, character.name) ??
+            shardResourceLabel(character.name)
+        )
         resourceVisuals.set(need.shardId, {
           kind: "shard",
           unitId: entityId,
@@ -202,8 +208,13 @@ export function calculateDailyRaids(
     }
     if (needs.length === 0 && stages === null) continue
     for (const needEntry of need.upgrades) {
-      const upgrade = params.upgradesById.get(needEntry.id as UpgradeId)
-      resourceLabels.set(needEntry.id, upgrade?.label ?? needEntry.id)
+      const upgradeId = needEntry.id as UpgradeId
+      const upgrade = params.upgradesById.get(upgradeId)
+      const catalogLabel = upgrade?.label ?? needEntry.id
+      resourceLabels.set(
+        needEntry.id,
+        params.labelResource?.upgrade?.(upgradeId, catalogLabel) ?? catalogLabel
+      )
       if (upgrade) {
         resourceVisuals.set(needEntry.id, {
           kind: "upgrade",

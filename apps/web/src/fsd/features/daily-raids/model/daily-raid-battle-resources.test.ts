@@ -97,6 +97,20 @@ describe("buildResourceByBattle", () => {
     ).toBe("Adamantium")
   })
 
+  it("routes both label kinds through the injected labeller, catalog strings as the fallback", () => {
+    const byBattle = buildResourceByBattle(
+      [upgrade("ceramite", ["B1"], { label: "Ceramite" })],
+      [character("bellator", ["B2"])],
+      {
+        upgrade: (id, catalogLabel) => `t(${id})=${catalogLabel}`,
+        shards: (unitId, name) => `t(${unitId})=${name}`,
+      }
+    )
+
+    expect(byBattle.get(battle("B1"))?.label).toBe("t(ceramite)=Ceramite")
+    expect(byBattle.get(battle("B2"))?.label).toBe("t(bellator)=bellator name")
+  })
+
   it("leaves a node no material or shard points at unresolved", () => {
     const byBattle = buildResourceByBattle([upgrade("ceramite", ["B1"])], [])
 
