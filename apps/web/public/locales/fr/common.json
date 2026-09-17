@@ -794,39 +794,11 @@
         "title": "Bienvenue sur Tacticus Planner",
         "content": "Faites une visite rapide pour découvrir les éléments clés de l'interface."
       },
-      "language": {
-        "title": "Choisissez votre langue",
-        "content": "Changez la langue de l'interface à tout moment depuis ce menu."
-      },
-      "theme": {
-        "title": "Clair ou sombre",
-        "content": "Basculez entre les thèmes clair et sombre. Astuce : appuyez sur « D » pour changer rapidement."
-      },
-      "replay": {
-        "title": "Revoir la visite",
-        "content": "Cliquez ici dès que vous souhaitez relancer cette visite."
-      },
-      "feedback": {
-        "title": "Commentaires, feuille de route et nouveautés",
-        "content": "Ouvrez ceci pour envoyer des commentaires, consulter ce qui est prévu et voir les dernières nouveautés."
-      },
-      "userMenu": {
-        "title": "Votre menu de compte",
-        "content": "Appuyez ici à tout moment pour changer le thème ou la langue, ou relancer cette visite."
-      },
       "accountDrawer": {
         "title": "Compte et préférences",
         "content": "Gérez ici le thème, la langue, la visite, les imports, le compte et les options de connexion."
       },
       "bottomNavigation": {
-        "home": {
-          "title": "Accueil",
-          "content": "Revenez à la page d'accueil du Planner."
-        },
-        "goals": {
-          "title": "Objectifs",
-          "content": "Consultez et organisez tous vos objectifs de planification."
-        },
         "addGoal": {
           "title": "Ajouter un objectif",
           "content": "Créez des objectifs de personnage ou de machine de guerre, puis choisissez un ou plusieurs projets. Le projet par défaut est sélectionné automatiquement."
@@ -834,19 +806,23 @@
         "sync": {
           "title": "Synchroniser",
           "content": "Actualisez le Planner avec les dernières données de Tacticus."
-        },
-        "dailies": {
-          "title": "Quotidiennes",
-          "content": "Ouvrez l'espace dédié aux activités quotidiennes."
-        },
-        "menu": {
-          "title": "Menu",
-          "content": "Ouvrez la navigation complète et consultable de l'application."
         }
       },
       "navigation": {
         "title": "Naviguez facilement",
         "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."
+      },
+      "headerControls": {
+        "title": "Thème, langue et retours",
+        "content": "Changez de thème, de langue ou envoyez vos retours depuis ces icônes."
+      },
+      "sidebarFooter": {
+        "title": "Votre compte",
+        "content": "Gérez votre compte, vérifiez l'état de synchronisation et relancez cette visite à tout moment depuis ici."
+      },
+      "bottomNavigationGroup": {
+        "title": "Vos actions principales",
+        "content": "Accédez à Accueil, Objectifs ou Quotidiennes, ajoutez un objectif, synchronisez vos données ou ouvrez le menu complet — tout depuis cette barre."
       }
     },
     "lookup": {

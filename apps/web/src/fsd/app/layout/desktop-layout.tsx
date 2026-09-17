@@ -78,7 +78,10 @@ export function DesktopShell({
         <header className="border-b bg-sidebar">
           <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
             <DesktopSectionHeader item={activeSection} title={sectionTitle} />
-            <div className="flex shrink-0 items-center gap-2">
+            <div
+              className="flex shrink-0 items-center gap-2"
+              data-testid="desktop-header-controls"
+            >
               <ThemeSwitcher />
               <LanguageSwitcher />
               <UserJotFeedbackButton />
@@ -216,7 +219,7 @@ function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter data-testid="desktop-sidebar-footer">
         <div className="flex flex-col gap-2">
           <TourButton
             className={cn(!compact && "w-full justify-start")}
