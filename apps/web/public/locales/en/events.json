@@ -76,5 +76,31 @@
     "shop": "Anniversary Event",
     "crusade": "Crusade Season",
     "default": "Other"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "tokenAvailability": {
+          "title": "Token Availability",
+          "content": "Check your Arena, Guild Raid, Onslaught, and Salvage Run token status at a glance."
+        },
+        "projects": {
+          "title": "Your Projects",
+          "content": "Jump into any project's plan — Current plan always shows first."
+        },
+        "raids": {
+          "title": "Daily Raids",
+          "content": "See what's left to raid today for your Active project, one location per row."
+        },
+        "navigation": {
+          "title": "Browse other weeks",
+          "content": "Step forward or back a week, or jump back to today."
+        },
+        "calendar": {
+          "title": "Event details",
+          "content": "Cards distinguish active and tentative events, and mark the first and last days of multi-day events."
+        }
+      }
+    }
   }
 }

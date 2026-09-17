@@ -76,5 +76,31 @@
     "shop": "Evento de Aniversario",
     "crusade": "Temporada de Cruzada",
     "default": "Otro"
+  },
+  "tour": {
+    "home": {
+      "steps": {
+        "tokenAvailability": {
+          "title": "Disponibilidad de fichas",
+          "content": "Consulta de un vistazo el estado de tus fichas de Arena, Incursión de Gremio, Asalto y Carrera de Saqueo."
+        },
+        "projects": {
+          "title": "Tus proyectos",
+          "content": "Entra directamente en el plan de cualquier proyecto — el plan actual siempre aparece primero."
+        },
+        "raids": {
+          "title": "Incursiones diarias",
+          "content": "Consulta lo que falta por asaltar hoy para tu proyecto activo, una ubicación por fila."
+        },
+        "navigation": {
+          "title": "Explorar otras semanas",
+          "content": "Avanza o retrocede una semana, o vuelve directamente a hoy."
+        },
+        "calendar": {
+          "title": "Detalles del evento",
+          "content": "Las tarjetas distinguen eventos activos y provisionales, y marcan el primer y el último día de los eventos de varios días."
+        }
+      }
+    }
   }
 }
