@@ -16,7 +16,7 @@ import {
   type FarmingUpgrade,
 } from "@/features/goal-farming"
 
-import { activeProjectMembers } from "./daily-raids-calc"
+import { activeProjectMembers } from "@/features/daily-raids"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

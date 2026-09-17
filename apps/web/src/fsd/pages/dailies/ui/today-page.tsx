@@ -8,17 +8,17 @@ import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Separator } from "@workspace/ui/components/separator"
 
-import type { TodaysAttempt } from "../model/daily-raids-energy"
-import { useDailyRaids } from "../model/use-daily-raids"
-import type {
-  DailyRaidBattleResource,
-  DailyRaidLocationViewModel,
-} from "../model/daily-raids.domain"
+import {
+  useDailyRaids,
+  ResourceIconWithTooltip,
+  type DailyRaidBattleResource,
+  type DailyRaidLocationViewModel,
+  type TodaysAttempt,
+} from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidSchedule } from "./raid-schedule"
 import { RaidState } from "./raid-state"
-import { ResourceIconWithTooltip } from "./resource-card"
 import { useTodayTutorial } from "./today.tutorial"
 
 const BONUS_LIMIT = 3

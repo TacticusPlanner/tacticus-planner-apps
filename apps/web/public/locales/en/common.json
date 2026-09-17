@@ -229,8 +229,39 @@
     }
   },
   "home": {
-    "subtitle": "This page is still under construction.",
-    "tourButton": "Show me around"
+    "tokens": {
+      "title": "Token Availability",
+      "full": "Capped",
+      "due": "Ready now",
+      "nextLabel": "Next in {{time}}",
+      "loading": "Loading token status…",
+      "empty": "No token data available yet.",
+      "labels": {
+        "arena": "Arena",
+        "guildRaid": "Guild Raid",
+        "bombTokens": "Bomb Tokens",
+        "onslaught": "Onslaught",
+        "salvageRun": "Salvage Run"
+      }
+    },
+    "projects": {
+      "title": "Your Projects",
+      "moreCount": "+{{count}} more",
+      "summaryUnavailable": "Summary unavailable",
+      "emptyTitle": "No projects yet",
+      "emptyDescription": "Projects group unit goals into prioritized plans.",
+      "emptyAction": "Create project",
+      "error": "Couldn't load your projects.",
+      "retry": "Retry"
+    },
+    "raids": {
+      "title": "Daily Raids",
+      "empty": "Nothing to raid today.",
+      "error": "Couldn't load today's raids."
+    },
+    "calendar": {
+      "title": "Events Calendar"
+    }
   },
   "guild": {
     "loadError": "Couldn't load your guild.",
@@ -763,39 +794,11 @@
         "title": "Welcome to Tacticus Planner",
         "content": "Take a quick tour to discover the key parts of the interface."
       },
-      "language": {
-        "title": "Choose your language",
-        "content": "Switch the interface language at any time from this menu."
-      },
-      "theme": {
-        "title": "Light or dark",
-        "content": "Toggle between light and dark themes. Tip: press “D” to switch quickly."
-      },
-      "replay": {
-        "title": "Replay the tour",
-        "content": "Click here whenever you want to run this tour again."
-      },
-      "feedback": {
-        "title": "Feedback, roadmap, and updates",
-        "content": "Open this to send feedback, check what's planned, and see the latest updates."
-      },
-      "userMenu": {
-        "title": "Your account menu",
-        "content": "Tap here any time to switch the theme or language, or replay this tour."
-      },
       "accountDrawer": {
         "title": "Account and preferences",
         "content": "Manage your theme, language, guided tour, imports, account, and sign-in options here."
       },
       "bottomNavigation": {
-        "home": {
-          "title": "Home",
-          "content": "Return to your Planner home page."
-        },
-        "goals": {
-          "title": "Goals",
-          "content": "Review and organize all of your planning goals."
-        },
         "addGoal": {
           "title": "Add Goal",
           "content": "Create Character or Machine of War goals, then choose one or more projects. The default project is selected automatically."
@@ -803,19 +806,27 @@
         "sync": {
           "title": "Sync",
           "content": "Refresh your Planner with the latest data from Tacticus."
-        },
-        "dailies": {
-          "title": "Dailies",
-          "content": "Open the dedicated area for daily activities."
-        },
-        "menu": {
-          "title": "Menu",
-          "content": "Open the complete, searchable application navigation."
         }
       },
       "navigation": {
         "title": "Find your way around",
         "content": "This menu groups the app's sections — use it to navigate between them at any time."
+      },
+      "headerControls": {
+        "title": "Theme, language & feedback",
+        "content": "Switch themes, change the language, or send feedback from these icons."
+      },
+      "sidebarFooter": {
+        "title": "Your account",
+        "content": "Manage your account, check sync status, and replay this tour any time from here."
+      },
+      "bottomNavigationGroup": {
+        "title": "Your main bar",
+        "content": "Switch sections, add a goal, or sync — all from here."
+      },
+      "mobileHeader": {
+        "title": "Page header",
+        "content": "Shows where you are. Your account menu — theme, language, and this tour — lives on the right."
       }
     },
     "lookup": {
@@ -897,7 +908,8 @@
           "content": "This project's goals appear here in the flattened unit order used by planning calculations."
         }
       }
-    }
+    },
+    "startPage": "Tour this page"
   },
   "uiKit": {
     "navLabel": "UI kit sections",

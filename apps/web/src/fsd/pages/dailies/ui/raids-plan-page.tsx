@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/card"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { useDailyRaids } from "../model/use-daily-raids"
+import { useDailyRaids } from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidSchedule } from "./raid-schedule"

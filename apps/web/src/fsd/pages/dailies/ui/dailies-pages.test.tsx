@@ -7,7 +7,7 @@ import { battleIdSchema } from "@workspace/game-domain"
 
 import { render, screen } from "@/test/render"
 
-import type { DailyRaidsReadyViewModel } from "../model/daily-raids.domain"
+import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidsPlanPage } from "./raids-plan-page"
 import { TodayPage } from "./today-page"
@@ -25,9 +25,13 @@ vi.mock("react-i18next", () => ({
       values ? `${key}:${JSON.stringify(values)}` : key,
   }),
 }))
-vi.mock("../model/use-daily-raids", () => ({
-  useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
-}))
+vi.mock("@/features/daily-raids", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/features/daily-raids")>()
+  return {
+    ...actual,
+    useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
+  }
+})
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => registeredTours.push(steps),
 }))

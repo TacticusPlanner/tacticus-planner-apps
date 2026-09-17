@@ -74,6 +74,11 @@ vi.mock("@/shared/auth", () => ({
 vi.mock("./theme-switcher", () => ({
   ThemeSwitcher: () => <div data-testid="theme-switcher" />,
 }))
+// Real badge needs a GameCatalogProvider this test doesn't set up — only its presence inside the
+// menu matters here, not its internals.
+vi.mock("./catalog-sync-status-badge", () => ({
+  CatalogSyncStatusBadge: () => <div data-testid="catalog-sync-status-badge" />,
+}))
 vi.mock("./language-switcher", () => ({
   LanguageSwitcher: () => <div data-testid="language-switcher" />,
 }))
@@ -146,6 +151,24 @@ describe("AuthControl", () => {
     ).toBeInTheDocument()
     expect(within(identity).getByText("Test User")).toBeInTheDocument()
     expect(within(identity).getByText("test@example.com")).toBeInTheDocument()
+  })
+
+  it("shows the game catalog status badge inside the desktop user menu", () => {
+    isMobile.mockReturnValue(false)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    expect(screen.getByTestId("catalog-sync-status-badge")).toBeInTheDocument()
+  })
+
+  it("shows the game catalog status badge inside the mobile user menu", () => {
+    isMobile.mockReturnValue(true)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    expect(screen.getByTestId("catalog-sync-status-badge")).toBeInTheDocument()
   })
 
   it("also surfaces theme and language switchers in the user menu on mobile", () => {

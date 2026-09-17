@@ -27,10 +27,9 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
-import { TourButton } from "@/shared/tour"
+import { PageTourButton, TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
-import { CatalogSyncStatusBadge } from "../providers/catalog-sync-status-badge"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
@@ -78,11 +77,18 @@ export function DesktopShell({
       <SidebarInset>
         <header className="border-b bg-sidebar">
           <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
-            <DesktopSectionHeader item={activeSection} title={sectionTitle} />
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <DesktopSectionHeader item={activeSection} title={sectionTitle} />
+              {/* Renders only on a page that registered its own tour - the app-wide navigation
+                  tour lives on the sidebar footer's persistent "Show me around" button. */}
+              <PageTourButton className="shrink-0" />
+            </div>
+            <div
+              className="flex shrink-0 items-center gap-2"
+              data-testid="desktop-header-controls"
+            >
               <ThemeSwitcher />
               <LanguageSwitcher />
-              <TourButton iconOnly />
               <UserJotFeedbackButton />
             </div>
           </div>
@@ -218,9 +224,12 @@ function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter data-testid="desktop-sidebar-footer">
         <div className="flex flex-col gap-2">
-          <CatalogSyncStatusBadge compact={compact} />
+          <TourButton
+            className={cn(!compact && "w-full justify-start")}
+            iconOnly={compact}
+          />
           <div
             className={cn(
               "flex items-center gap-1",

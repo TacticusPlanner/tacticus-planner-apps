@@ -13,7 +13,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useHomePageTutorial", () => {
-  it("registers identical, localized desktop and mobile steps targeting the title, navigation, and calendar", () => {
+  it("registers identical, localized desktop and mobile steps targeting the dashboard widgets, navigation, and calendar", () => {
     renderHook(() => useHomePageTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
@@ -27,7 +27,9 @@ describe("useHomePageTutorial", () => {
       expect(step.content).toContain("localized:tour.home.steps")
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
-      '[data-testid="home-page-title"]',
+      '[data-testid="token-availability"]',
+      '[data-testid="home-projects-widget"]',
+      '[data-testid="home-raids-widget"]',
       '[data-testid="events-calendar-navigation"]',
       '[data-testid="events-calendar"]',
     ])

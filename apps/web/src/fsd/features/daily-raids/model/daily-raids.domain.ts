@@ -7,7 +7,10 @@ import type {
 } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
-import type { RaidDaySchedule, RaidPlanSummary } from "@/features/goal-farming"
+import type {
+  RaidDaySchedule,
+  RaidPlanSummary,
+} from "@/features/goal-farming/@x/daily-raids"
 
 import type { TodaysAttempt } from "./daily-raids-energy"
 

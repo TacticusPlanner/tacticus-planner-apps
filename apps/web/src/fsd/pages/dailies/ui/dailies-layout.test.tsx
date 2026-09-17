@@ -46,9 +46,13 @@ vi.mock("@/entities/project", async (importOriginal) => {
     }),
   }
 })
-vi.mock("../model/use-daily-raids", () => ({
-  useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
-}))
+vi.mock("@/features/daily-raids", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/features/daily-raids")>()
+  return {
+    ...actual,
+    useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
+  }
+})
 vi.mock("../model/use-shop-recommendations", () => ({
   useShopRecommendations: () => ({ status: "ready", sections: [] }),
 }))

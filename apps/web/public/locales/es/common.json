@@ -229,8 +229,39 @@
     }
   },
   "home": {
-    "subtitle": "Esta página todavía está en construcción.",
-    "tourButton": "Enséñame todo"
+    "tokens": {
+      "title": "Disponibilidad de fichas",
+      "full": "Completo",
+      "due": "Disponible ahora",
+      "nextLabel": "Próximo en {{time}}",
+      "loading": "Cargando el estado de las fichas…",
+      "empty": "Aún no hay datos de fichas disponibles.",
+      "labels": {
+        "arena": "Arena",
+        "guildRaid": "Incursión de Gremio",
+        "bombTokens": "Fichas de bomba",
+        "onslaught": "Asalto",
+        "salvageRun": "Carrera de Saqueo"
+      }
+    },
+    "projects": {
+      "title": "Tus proyectos",
+      "moreCount": "+{{count}} más",
+      "summaryUnavailable": "Resumen no disponible",
+      "emptyTitle": "Aún no hay proyectos",
+      "emptyDescription": "Los proyectos agrupan objetivos de unidades en planes priorizados.",
+      "emptyAction": "Crear proyecto",
+      "error": "No se pudieron cargar tus proyectos.",
+      "retry": "Reintentar"
+    },
+    "raids": {
+      "title": "Incursiones diarias",
+      "empty": "No hay nada que asaltar hoy.",
+      "error": "No se pudieron cargar las incursiones de hoy."
+    },
+    "calendar": {
+      "title": "Calendario de eventos"
+    }
   },
   "guild": {
     "loadError": "No se pudo cargar tu gremio.",
@@ -763,39 +794,11 @@
         "title": "Bienvenido a Tacticus Planner",
         "content": "Haz un recorrido rápido para descubrir las partes clave de la interfaz."
       },
-      "language": {
-        "title": "Elige tu idioma",
-        "content": "Cambia el idioma de la interfaz en cualquier momento desde este menú."
-      },
-      "theme": {
-        "title": "Claro u oscuro",
-        "content": "Alterna entre los temas claro y oscuro. Consejo: pulsa «D» para cambiar rápidamente."
-      },
-      "replay": {
-        "title": "Repetir el recorrido",
-        "content": "Haz clic aquí cuando quieras volver a ver este recorrido."
-      },
-      "feedback": {
-        "title": "Comentarios, hoja de ruta y novedades",
-        "content": "Ábrelo para enviar comentarios, consultar lo planeado y ver las últimas novedades."
-      },
-      "userMenu": {
-        "title": "Tu menú de cuenta",
-        "content": "Toca aquí en cualquier momento para cambiar el tema o el idioma, o repetir este recorrido."
-      },
       "accountDrawer": {
         "title": "Cuenta y preferencias",
         "content": "Gestiona aquí el tema, idioma, recorrido, importaciones, cuenta y opciones de sesión."
       },
       "bottomNavigation": {
-        "home": {
-          "title": "Inicio",
-          "content": "Vuelve a la página de inicio del Planner."
-        },
-        "goals": {
-          "title": "Objetivos",
-          "content": "Revisa y organiza todos tus objetivos de planificación."
-        },
         "addGoal": {
           "title": "Añadir objetivo",
           "content": "Crea objetivos de Personaje o Máquina de Guerra y elige uno o varios proyectos. El proyecto predeterminado se selecciona automáticamente."
@@ -803,19 +806,27 @@
         "sync": {
           "title": "Sincronizar",
           "content": "Actualiza el Planner con los datos más recientes de Tacticus."
-        },
-        "dailies": {
-          "title": "Diarias",
-          "content": "Abre el área dedicada a las actividades diarias."
-        },
-        "menu": {
-          "title": "Menú",
-          "content": "Abre la navegación completa y con búsqueda de la aplicación."
         }
       },
       "navigation": {
         "title": "Desplázate con facilidad",
         "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."
+      },
+      "headerControls": {
+        "title": "Tema, idioma y comentarios",
+        "content": "Cambia el tema, el idioma o envía comentarios desde estos iconos."
+      },
+      "sidebarFooter": {
+        "title": "Tu cuenta",
+        "content": "Gestiona tu cuenta, comprueba el estado de sincronización y vuelve a ver este recorrido en cualquier momento desde aquí."
+      },
+      "bottomNavigationGroup": {
+        "title": "Tu barra principal",
+        "content": "Cambia de sección, añade un objetivo o sincroniza — todo desde aquí."
+      },
+      "mobileHeader": {
+        "title": "Encabezado de página",
+        "content": "Muestra dónde estás. Tu menú de cuenta — tema, idioma y este recorrido — está a la derecha."
       }
     },
     "lookup": {
@@ -897,7 +908,8 @@
           "content": "Los objetivos aparecen en el orden aplanado de unidades que usan los cálculos de planificación."
         }
       }
-    }
+    },
+    "startPage": "Recorrer esta página"
   },
   "uiKit": {
     "navLabel": "Secciones del kit UI",

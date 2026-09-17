@@ -37,7 +37,7 @@ import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup"
+} from "@/features/rank-lookup/@x/daily-raids"
 import { useCampaignDisplay } from "@/shared/lib"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
