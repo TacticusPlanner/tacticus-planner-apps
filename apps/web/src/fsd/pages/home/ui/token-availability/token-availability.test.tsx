@@ -62,6 +62,24 @@ describe("TokenAvailability", () => {
     expect(screen.getByTestId("token-availability-loading")).toBeInTheDocument()
   })
 
+  it("shows an empty state, not loading forever, when the account has never synced", () => {
+    // getLiveProgress() resolves to `undefined` (no "live-progress" chunk at all) for an
+    // account that's never synced. The component maps that to `null` so it's distinguishable
+    // from useLiveQuery's own "still loading" `undefined` — this asserts the resolved-null case
+    // renders the empty state instead of getting stuck on the loading state forever.
+    mockLiveQueries({
+      liveProgress: null,
+      metadata: new Map(),
+    })
+
+    render(<TokenAvailability />)
+
+    expect(screen.getByTestId("token-availability-empty")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("token-availability-loading")
+    ).not.toBeInTheDocument()
+  })
+
   it("shows an empty state when no token type has data", () => {
     mockLiveQueries({
       liveProgress: {

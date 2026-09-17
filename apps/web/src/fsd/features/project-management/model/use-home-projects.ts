@@ -61,19 +61,19 @@ export function useHomeProjects(): HomeProjectsResult {
       })
       return
     }
-    const members = query.data.goals
+    const inFlightMembers = query.data.goals.filter(
+      (entry) =>
+        entry.goal.status === "Active" || entry.goal.status === "Paused"
+    )
     const units = new Set(
-      members
-        .filter(
-          (entry) =>
-            entry.goal.status === "Active" || entry.goal.status === "Paused"
-        )
-        .map((entry) => `${entry.goal.entityType}:${entry.goal.entityId}`)
+      inFlightMembers.map(
+        (entry) => `${entry.goal.entityType}:${entry.goal.entityId}`
+      )
     ).size
     summaries.set(project.projectId, {
       status: "success",
       units,
-      goals: members.length,
+      goals: inFlightMembers.length,
     })
   })
 

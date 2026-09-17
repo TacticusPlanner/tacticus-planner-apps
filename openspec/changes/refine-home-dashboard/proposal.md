@@ -4,7 +4,7 @@ The V2 home page currently renders only the events calendar — everything else 
 
 ## What Changes
 
-- Add a **Token Availability** widget (new, ported from V1): shows Arena/Guild Raid (+ Bomb)/Onslaught/Salvage Run token counts, regen countdowns, capped/over-cap state, and a "stale data, sync now" banner reusing the existing app-shell sync action. Full-width, rendered first.
+- Add a **Token Availability** widget (new, ported from V1): shows Arena/Guild Raid (+ Bomb)/Onslaught/Salvage Run token counts, regen countdowns, capped/over-cap state, and an informational stale-data banner (naming when the account was last synced) pointing at the existing app-shell sync control — the banner itself has no sync-trigger action, since a page can't import that control per this repo's FSD layering. Full-width, rendered first.
 - Replace the (never-built) "Your Goals" concept with a **Your Projects** widget: condensed project cards (Current plan first, then a capped number of others, then a "+N more" link to `/goals/projects`), each card clicking through to its own `/goals/projects/{id}`.
 - Add a **Daily Raids** widget scoped to the player's Active project (same default the Today tab uses): one row per battle location, flattened across goals (no per-character/per-goal grouping), deduplicated when the same node is shared by multiple goals, real energy-budget schedule only (no Bonus Raids), already-raided locations excluded. Clicks through to `/dailies/raids/today`.
 - Reposition the existing **Events calendar** to render last, after the three widgets above. Its own behavior (loading/failure/empty states, confirmed vs. projected, Wiki actions, navigation) is unchanged.
@@ -15,7 +15,7 @@ The V2 home page currently renders only the events calendar — everything else 
 
 ### New Capabilities
 
-- `home-token-availability`: the home page's token-status widget — per-token-type regen/cap display and the stale-data sync banner.
+- `home-token-availability`: the home page's token-status widget — per-token-type regen/cap display and the informational stale-data banner.
 - `home-projects-widget`: the home page's condensed projects list — which projects show, ordering/capping, and per-card navigation.
 - `home-raids-widget`: the home page's compact daily-raids widget — Active-project scoping, per-location flattening/deduplication, raided-location exclusion, and navigation.
 

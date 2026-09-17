@@ -37,6 +37,7 @@ const readyProjects = {
   fetchState: { status: "success" },
   loading: false,
   projects: [{ projectId: "p1" }],
+  retry: vi.fn(),
 }
 
 function entry(overrides: Record<string, unknown> = {}) {
@@ -66,6 +67,29 @@ describe("RaidsWidget", () => {
     render(<RaidsWidget />)
 
     expect(screen.getByTestId("home-raids-no-projects")).toBeInTheDocument()
+  })
+
+  it("shows a distinct error with retry when the project list fails to load, not no-projects guidance", () => {
+    const retry = vi.fn()
+    useProjectsMock.mockReturnValue({
+      activeProjectId: undefined,
+      defaultProjectId: undefined,
+      fetchState: { status: "error" },
+      loading: false,
+      projects: [],
+      retry,
+    })
+    useDailyRaidsMock.mockReturnValue({ status: "no-project" })
+
+    render(<RaidsWidget />)
+
+    expect(screen.getByTestId("home-raids-error")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raids-no-projects")
+    ).not.toBeInTheDocument()
+
+    screen.getByRole("button", { name: "home.projects.retry" }).click()
+    expect(retry).toHaveBeenCalled()
   })
 
   it("shows a loading state", () => {

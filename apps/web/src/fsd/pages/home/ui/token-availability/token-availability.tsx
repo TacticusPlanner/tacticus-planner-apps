@@ -118,7 +118,14 @@ function TokenRow({
 
 export function TokenAvailability() {
   const { i18n, t } = useTranslation("common")
-  const liveProgress = useLiveQuery(() => getLiveProgress(), [])
+  // `useLiveQuery` reports "still loading" as `undefined`, indistinguishable from a resolved
+  // `getLiveProgress()` returning `undefined` for "never synced, no chunk at all" — without this
+  // mapping, an account that's never synced would show the loading state forever. Map the
+  // resolved-but-empty case to `null` so `undefined` means loading, unambiguously.
+  const liveProgress = useLiveQuery(
+    () => getLiveProgress().then((value) => value ?? null),
+    []
+  )
   // `getPlayerDataMetadata` (not the app-shell's sync-status context, which `pages/home` can't
   // import per this repo's FSD layering) gives the same "live-progress" chunk observation time
   // the Guild Raids page's token countdowns use — see guild-raid-status-view-model.ts.
@@ -142,7 +149,9 @@ export function TokenAvailability() {
       )
     }
 
-    const entries = collectTokenEntries(liveProgress.gameModeTokens)
+    const entries = liveProgress
+      ? collectTokenEntries(liveProgress.gameModeTokens)
+      : []
     if (entries.length === 0) {
       return (
         <p

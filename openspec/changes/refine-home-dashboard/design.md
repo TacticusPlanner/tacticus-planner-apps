@@ -58,7 +58,7 @@ V1 source: `tacticusplanner/src/fsd/1-pages/home/{desktop-home,daily-raids-secti
 
 **V1 secondary states — keep / drop / redesign:**
 
-- Stale-sync banner inside Token Availability (`SyncBanner`, "Refresh Required" + "Sync now"): **keep**, redesigned to call V2's existing `player-data-sync-button` action instead of V1's `useSyncWithTacticus`.
+- Stale-sync banner inside Token Availability (`SyncBanner`, "Refresh Required" + "Sync now"): **keep the informational half, drop the trigger**, redesigned as a banner that names the last-sync time and points at V2's existing app-shell sync control, rather than calling V1's `useSyncWithTacticus` (or V2's `player-data-sync-button`) itself — `pages/home` can't import either, since both live in the `app` layer this repo's FSD layering forbids a page from importing.
 - Token over-cap indicator ("OVER CAP +Xm") and full-in countdown: **keep**, same derivation logic (see `home-token-availability` spec's worked example).
 - "No API key" marketing announcement banner (`desktop-home.tsx`'s `announcements()`): **drop** — dated onboarding copy specific to V1's API-key rollout, not relevant to V2's onboarding flow.
 - Home questionnaire banner: **drop** — already disabled in V1 itself (`questionnaireBannerEnabled = false`), dead code there.

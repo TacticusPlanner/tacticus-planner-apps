@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -22,9 +23,16 @@ import {
 export function RaidsWidget() {
   const { t } = useTranslation("common")
   const navigate = useNavigate()
-  const { activeProjectId, defaultProjectId, fetchState, loading, projects } =
-    useProjects()
+  const {
+    activeProjectId,
+    defaultProjectId,
+    fetchState,
+    loading,
+    projects,
+    retry,
+  } = useProjects()
   const projectId = activeProjectId ?? defaultProjectId
+  const projectsFailed = !loading && fetchState.status === "error"
   const projectsUnavailable =
     !loading && fetchState.status === "success" && projects.length === 0
   const raids = useDailyRaids(projectId)
@@ -39,6 +47,19 @@ export function RaidsWidget() {
         <div className="flex flex-col gap-2" data-testid="home-raids-loading">
           <Skeleton className="h-12 w-full rounded-lg" />
           <Skeleton className="h-12 w-full rounded-lg" />
+        </div>
+      )
+    }
+    // Checked before the no-project branch: a failed project-list request also leaves
+    // `activeProjectId`/`defaultProjectId` undefined (so `raids.status === "no-project"` too),
+    // which would otherwise misrepresent a load failure as "you have no projects."
+    if (projectsFailed) {
+      return (
+        <div className="flex flex-col gap-2" data-testid="home-raids-error">
+          <p className="text-sm text-destructive">{t("home.projects.error")}</p>
+          <Button onClick={retry} size="sm" variant="outline">
+            {t("home.projects.retry")}
+          </Button>
         </div>
       )
     }
@@ -57,7 +78,10 @@ export function RaidsWidget() {
     }
     if (raids.status === "error") {
       return (
-        <p className="text-sm text-destructive" data-testid="home-raids-error">
+        <p
+          className="text-sm text-destructive"
+          data-testid="home-raids-schedule-error"
+        >
           {t("home.raids.error")}
         </p>
       )

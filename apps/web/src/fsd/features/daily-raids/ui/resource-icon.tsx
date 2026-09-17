@@ -60,9 +60,13 @@ export function ResourceIconWithTooltip({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="shrink-0">
+        <button
+          aria-label={label}
+          className="shrink-0 border-0 bg-transparent p-0"
+          type="button"
+        >
           <ResourceIcon className={className} label={label} visual={visual} />
-        </span>
+        </button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
