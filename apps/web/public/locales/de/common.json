@@ -821,8 +821,12 @@
         "content": "Verwalte hier jederzeit dein Konto, prüfe den Synchronisierungsstatus und wiederhole diese Tour."
       },
       "bottomNavigationGroup": {
-        "title": "Deine wichtigsten Aktionen",
-        "content": "Wechsle zu Start, Zielen oder Tagesaufgaben, füge ein Ziel hinzu, synchronisiere deine Daten oder öffne das vollständige Menü — alles über diese Leiste."
+        "title": "Deine Hauptleiste",
+        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere — alles von hier."
+      },
+      "mobileHeader": {
+        "title": "Seitenkopf",
+        "content": "Zeigt, wo du dich befindest. Dein Kontomenü — Design, Sprache und diese Tour — findest du rechts."
       }
     },
     "lookup": {
@@ -904,7 +908,8 @@
           "content": "Die Ziele dieses Projekts erscheinen in der abgeflachten Einheitenreihenfolge, die auch Berechnungen verwenden."
         }
       }
-    }
+    },
+    "startPage": "Diese Seite erkunden"
   },
   "uiKit": {
     "navLabel": "UI-Kit-Abschnitte",

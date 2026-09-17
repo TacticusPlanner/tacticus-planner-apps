@@ -65,8 +65,12 @@ export function useDesktopTutorialSteps(): Step[] {
   )
 }
 
-/** On mobile, present the account controls and the bottom nav bar as one spotlighted group each,
- *  rather than walking every individual icon - see useDesktopTutorialSteps' doc comment for why. */
+/** On mobile, group related controls into a few focused steps rather than walking every
+ *  individual icon - see useDesktopTutorialSteps' doc comment for why. The account menu is
+ *  introduced by its own header step before the tour forces the menu open, so the drawer doesn't
+ *  appear out of nowhere. The bottom bar stays a single step: its destinations and its actions
+ *  are deliberately interleaved (the Add Goal/Sync pair sits centered between them), so there is
+ *  no contiguous element to split them into without changing that layout. */
 export function useMobileTutorialSteps(
   setMobileMenuForceOpen: (open: boolean) => void
 ): Step[] {
@@ -90,6 +94,12 @@ export function useMobileTutorialSteps(
         placement: "center",
         title: t("tour.steps.welcome.title"),
         content: t("tour.steps.welcome.content"),
+      },
+      {
+        target: '[data-testid="mobile-header"]',
+        placement: "bottom",
+        title: t("tour.steps.mobileHeader.title"),
+        content: t("tour.steps.mobileHeader.content"),
       },
       {
         target:

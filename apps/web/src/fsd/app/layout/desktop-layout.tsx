@@ -27,7 +27,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
-import { TourButton } from "@/shared/tour"
+import { PageTourButton, TourButton } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
@@ -77,7 +77,12 @@ export function DesktopShell({
       <SidebarInset>
         <header className="border-b bg-sidebar">
           <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
-            <DesktopSectionHeader item={activeSection} title={sectionTitle} />
+            <div className="flex min-w-0 items-center gap-2">
+              <DesktopSectionHeader item={activeSection} title={sectionTitle} />
+              {/* Renders only on a page that registered its own tour - the app-wide navigation
+                  tour lives on the sidebar footer's persistent "Show me around" button. */}
+              <PageTourButton className="shrink-0" />
+            </div>
             <div
               className="flex shrink-0 items-center gap-2"
               data-testid="desktop-header-controls"

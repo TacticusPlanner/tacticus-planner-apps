@@ -36,6 +36,7 @@ vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
 const { startTour } = vi.hoisted(() => ({ startTour: vi.fn() }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => null,
+  PageTourButton: () => null,
   useTour: () => ({ isRunning: false, startTour }),
   useTourControlledPopoverOpen: () => [false, vi.fn()] as const,
 }))

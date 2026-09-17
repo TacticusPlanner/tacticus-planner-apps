@@ -27,9 +27,20 @@ export type TourPageSteps = {
   mobile?: Step[]
 }
 
+/** Which tour is running//requested: the app-wide navigation tutorial, or the current page's own. */
+type TourKind = "general" | "page"
+
 type TourContextValue = {
   isRunning: boolean
+  /** Starts the app-wide navigation tour. Always the general one, regardless of which page is
+   *  open - a page's own tour is started separately via `startPageTour`. */
   startTour: () => void
+  /** Starts the current page's own tour. No-op when the page hasn't registered one (check
+   *  `hasPageTour` before offering this to the user). */
+  startPageTour: () => void
+  /** Whether the current page registered its own tour steps, i.e. whether `startPageTour` does
+   *  anything - drives whether a page-level "Tour this page" control renders at all. */
+  hasPageTour: boolean
   stopTour: () => void
   setPageSteps: (steps: TourPageSteps | null) => void
   // Lets a mobile tutorial step force the theme/language/tour-replay Popover (AuthControl /
@@ -118,6 +129,10 @@ export function TourProvider({ children }: { children: ReactNode }) {
   })
   const [pageSteps, setPageSteps] = React.useState<TourPageSteps | null>(null)
   const [mobileMenuForceOpen, setMobileMenuForceOpen] = React.useState(false)
+  // Which tour the running/next run shows. Defaults to "general": the auto-start above and the
+  // persistent "Show me around" control both mean the navigation tour, even on a page that has
+  // its own - that one is reached explicitly via startPageTour.
+  const [tourKind, setTourKind] = React.useState<TourKind>("general")
 
   const isDark = theme === "dark" || (theme === "system" && prefersDark())
   const surface = isDark ? tourSurface.dark : tourSurface.light
@@ -150,9 +165,9 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const defaultSteps = isMobile ? mobileDefaultSteps : desktopDefaultSteps
 
   const steps = React.useMemo<Step[]>(() => {
-    if (!pageSteps) return defaultSteps
+    if (tourKind === "general" || !pageSteps) return defaultSteps
     return (isMobile ? pageSteps.mobile : undefined) ?? pageSteps.desktop
-  }, [pageSteps, defaultSteps, isMobile])
+  }, [tourKind, pageSteps, defaultSteps, isMobile])
 
   const locale = React.useMemo<Locale>(
     () => ({
@@ -183,19 +198,29 @@ export function TourProvider({ children }: { children: ReactNode }) {
     },
   })
 
-  const startTour = React.useCallback(() => setRun(true), [])
+  const startTour = React.useCallback(() => {
+    setTourKind("general")
+    setRun(true)
+  }, [])
+  const startPageTour = React.useCallback(() => {
+    setTourKind("page")
+    setRun(true)
+  }, [])
   const stopTour = React.useCallback(() => setRun(false), [])
+  const hasPageTour = pageSteps !== null
 
   const value = React.useMemo<TourContextValue>(
     () => ({
       isRunning: run,
       startTour,
+      startPageTour,
+      hasPageTour,
       stopTour,
       setPageSteps,
       mobileMenuForceOpen,
       setMobileMenuForceOpen,
     }),
-    [run, startTour, stopTour, mobileMenuForceOpen]
+    [run, startTour, startPageTour, hasPageTour, stopTour, mobileMenuForceOpen]
   )
 
   return (

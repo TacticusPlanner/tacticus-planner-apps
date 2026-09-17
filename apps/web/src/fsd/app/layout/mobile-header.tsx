@@ -9,7 +9,11 @@ import {
 import { useMsal } from "@azure/msal-react"
 
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
-import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
+import {
+  PageTourButton,
+  TourButton,
+  useTourControlledPopoverOpen,
+} from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
@@ -41,7 +45,10 @@ export function MobileHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-sidebar pt-[env(safe-area-inset-top)]">
+    <header
+      className="sticky top-0 z-40 border-b bg-sidebar pt-[env(safe-area-inset-top)]"
+      data-testid="mobile-header"
+    >
       <div className="flex h-20 items-center justify-between gap-3 px-4">
         <div className="flex min-w-0 items-center gap-3">
           <AppLogo className="size-10 shrink-0" />
@@ -57,6 +64,9 @@ export function MobileHeader({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
+          {/* Renders only on a page that registered its own tour - the app-wide navigation tour
+              lives on the "Show me around" button inside the account menu. */}
+          <PageTourButton iconOnly />
           {!isAuthenticated ? (
             <>
               <Button size="sm" onClick={handleSignIn}>

@@ -45,15 +45,28 @@ describe("useDesktopTutorialSteps", () => {
 })
 
 describe("useMobileTutorialSteps", () => {
-  it("is a short tour: welcome, the account surface, and the bottom nav bar", () => {
+  it("is a short tour: welcome, header, the account surface, and the bottom nav bar", () => {
     const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
     const targets = result.current.map((step) => step.target)
 
     expect(targets).toEqual([
       "body",
+      '[data-testid="mobile-header"]',
       '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]',
       '[data-testid="primary-nav"]',
     ])
+  })
+
+  it("introduces the header before forcing the account menu open", () => {
+    const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
+    const targets = result.current.map((step) => step.target)
+
+    const headerIndex = targets.indexOf('[data-testid="mobile-header"]')
+    const drawerIndex = targets.indexOf(
+      '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]'
+    )
+    expect(headerIndex).toBeGreaterThan(-1)
+    expect(headerIndex).toBeLessThan(drawerIndex)
   })
 
   it("spotlights the bottom nav bar as one step, not each icon individually", () => {
@@ -71,7 +84,7 @@ describe("useMobileTutorialSteps", () => {
     const { result } = renderHook(() =>
       useMobileTutorialSteps(setMobileMenuForceOpen)
     )
-    const accountDrawerStep = result.current[1]
+    const accountDrawerStep = result.current[2]
     const opening = accountDrawerStep.before?.({} as never)
 
     await vi.advanceTimersByTimeAsync(300)

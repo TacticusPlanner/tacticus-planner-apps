@@ -821,8 +821,12 @@
         "content": "Manage your account, check sync status, and replay this tour any time from here."
       },
       "bottomNavigationGroup": {
-        "title": "Your main actions",
-        "content": "Jump to Home, Goals, or Dailies, add a goal, sync your data, or open the full menu — all from this bar."
+        "title": "Your main bar",
+        "content": "Switch sections, add a goal, or sync — all from here."
+      },
+      "mobileHeader": {
+        "title": "Page header",
+        "content": "Shows where you are. Your account menu — theme, language, and this tour — lives on the right."
       }
     },
     "lookup": {
@@ -904,7 +908,8 @@
           "content": "This project's goals appear here in the flattened unit order used by planning calculations."
         }
       }
-    }
+    },
+    "startPage": "Tour this page"
   },
   "uiKit": {
     "navLabel": "UI kit sections",

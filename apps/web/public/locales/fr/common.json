@@ -821,8 +821,12 @@
         "content": "Gérez votre compte, vérifiez l'état de synchronisation et relancez cette visite à tout moment depuis ici."
       },
       "bottomNavigationGroup": {
-        "title": "Vos actions principales",
-        "content": "Accédez à Accueil, Objectifs ou Quotidiennes, ajoutez un objectif, synchronisez vos données ou ouvrez le menu complet — tout depuis cette barre."
+        "title": "Votre barre principale",
+        "content": "Changez de section, ajoutez un objectif ou synchronisez — tout depuis ici."
+      },
+      "mobileHeader": {
+        "title": "En-tête de page",
+        "content": "Indique où vous êtes. Votre menu de compte — thème, langue et cette visite — se trouve à droite."
       }
     },
     "lookup": {
@@ -904,7 +908,8 @@
           "content": "Les objectifs apparaissent dans l'ordre aplati des unités utilisé par les calculs de planification."
         }
       }
-    }
+    },
+    "startPage": "Visiter cette page"
   },
   "uiKit": {
     "navLabel": "Sections du kit UI",
