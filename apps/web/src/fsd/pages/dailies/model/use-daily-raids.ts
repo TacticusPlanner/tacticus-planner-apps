@@ -40,6 +40,7 @@ import {
 } from "@/features/rank-lookup"
 import { useCampaignDisplay } from "@/shared/lib"
 
+import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import {
   activeProjectMembers,
   availableCampaignBattles,
@@ -185,6 +186,17 @@ export function useDailyRaids(
       ),
     [battlesById, campaignFullLabel, campaignShortLabel]
   )
+  // Account-wide node → drop index for Today's Attempts, which lists nodes this project's plan
+  // never mentions (tacticus-planner-apps#121). `charactersById` is keyed by unit id, so its values
+  // already carry the `id` the shard icon needs.
+  const resourceByBattleId = useMemo(
+    () =>
+      buildResourceByBattle(
+        upgradesById.values(),
+        charactersById?.values() ?? []
+      ),
+    [upgradesById, charactersById]
+  )
   const standingBattleIndex = useMemo(
     () => buildStandingBattleIndex(battlesById, eventCampaignIds),
     [battlesById, eventCampaignIds]
@@ -312,6 +324,7 @@ export function useDailyRaids(
     ? {
         ...result,
         locationsByBattleId,
+        resourceByBattleId,
         realEnergyUsedToday,
         attemptsLeftByBattle,
         todaysAttempts,

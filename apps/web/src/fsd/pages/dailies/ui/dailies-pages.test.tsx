@@ -36,6 +36,9 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 }))
 
 const battle = battleIdSchema.parse("B1")
+// A node the player raided today that this project's plan never mentions — its resource can only
+// come from the catalog-wide index (tacticus-planner-apps#121).
+const offPlanBattle = battleIdSchema.parse("B2")
 const retryProjects = vi.fn()
 let contextOverrides: Partial<DailiesOutletContext> = {}
 
@@ -155,6 +158,31 @@ function ready(
           nodeNumber: 1,
           challenge: false,
           icon: "/campaign.png",
+        },
+      ],
+      [
+        offPlanBattle,
+        {
+          id: offPlanBattle,
+          fullName: "Saim-Hann Mirror Elite",
+          shortLabel: "Saim-Hann ME 15",
+          nodeNumber: 15,
+          challenge: false,
+          icon: "/campaign.png",
+        },
+      ],
+    ]),
+    resourceByBattleId: new Map([
+      [
+        offPlanBattle,
+        {
+          label: "Adamantium",
+          visual: {
+            kind: "upgrade" as const,
+            id: "adamantium" as never,
+            rarity: "Epic" as never,
+            crafted: false,
+          },
         },
       ],
     ]),
@@ -291,6 +319,38 @@ describe("Dailies raid pages", () => {
     expect(
       todaysAttempts.queryByText("schedule.maxRaids")
     ).not.toBeInTheDocument()
+  })
+
+  it("shows a resource icon for an attempt at a node outside this project's plan", () => {
+    useDailyRaids.mockReturnValue(
+      ready({
+        todaysAttempts: [
+          { battleId: offPlanBattle, attemptsUsed: 3, attemptsLeft: 3 },
+        ],
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const attempt = within(
+      screen.getByTestId(`todays-attempt-${offPlanBattle}`)
+    )
+    expect(attempt.getByTestId("raid-resource-icon")).toBeInTheDocument()
+    expect(attempt.getByText("Saim-Hann Mirror Elite")).toBeInTheDocument()
+  })
+
+  it("lets this project's plan name the resource for a node it does farm", () => {
+    useDailyRaids.mockReturnValue(
+      ready({
+        todaysAttempts: [
+          { battleId: battle, attemptsUsed: 10, attemptsLeft: 0 },
+        ],
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const attempt = within(screen.getByTestId(`todays-attempt-${battle}`))
+    expect(attempt.getByTestId("raid-resource-icon")).toBeInTheDocument()
+    expect(attempt.getByAltText("Ceramite")).toBeInTheDocument()
   })
 
   it("shows a raids-performed badge for an attempt that still has real attempts left", () => {

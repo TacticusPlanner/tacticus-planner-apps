@@ -44,7 +44,7 @@ import type {
   DailyRaidResourceUrgency,
   DailyRaidResourceVisual,
 } from "./daily-raids.domain"
-import { dailyRaidResourceKey } from "./daily-raids.domain"
+import { dailyRaidResourceKey, shardResourceLabel } from "./daily-raids.domain"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -185,7 +185,7 @@ export function calculateDailyRaids(
           detail.goalType === "Unlock"
             ? (params.inventoryShardById.get(detail.entityId)?.amount ?? 0)
             : (params.playerCharacterById.get(detail.entityId)?.shards ?? 0)
-        resourceLabels.set(need.shardId, `${character.name} shards`)
+        resourceLabels.set(need.shardId, shardResourceLabel(character.name))
         resourceVisuals.set(need.shardId, {
           kind: "shard",
           unitId: entityId,

@@ -11,8 +11,8 @@ import { Separator } from "@workspace/ui/components/separator"
 import type { TodaysAttempt } from "../model/daily-raids-energy"
 import { useDailyRaids } from "../model/use-daily-raids"
 import type {
+  DailyRaidBattleResource,
   DailyRaidLocationViewModel,
-  DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { DailiesOutletContext } from "./dailies-layout"
@@ -55,18 +55,23 @@ export function TodayPage() {
     )
   }
   const todayProgress = raids.resourceProgressByDay.get(1) ?? new Map()
-  // Today's Attempts is account-wide, so most locations there have no associated resource at all
-  // (they're outside this project's plan) — this only resolves one for locations this project's
-  // schedule/Bonus Raids happen to also reference, picking the first resource encountered per node.
-  const resourceByBattle = new Map<
-    BattleId,
-    { label: string; visual: DailyRaidResourceVisual | undefined }
-  >()
+  // Today's Attempts is account-wide, so most locations there sit outside this project's plan. Start
+  // from the catalog's own node → drop index so every entry has an icon (tacticus-planner-apps#121),
+  // then let this project's schedule/Bonus Raids override the nodes they reference — there the
+  // resource the player is actually farming beats the node's generic drop. As before, the first
+  // plan entry encountered per node wins.
+  const resourceByBattle = new Map<BattleId, DailyRaidBattleResource>(
+    raids.resourceByBattleId
+  )
+  const planResolvedBattles = new Set<BattleId>()
   for (const entry of [...raids.today.entries, ...raids.bonus.entries]) {
-    if (resourceByBattle.has(entry.battleId)) continue
+    if (planResolvedBattles.has(entry.battleId)) continue
+    const visual = raids.resourceVisuals.get(entry.resourceId)
+    if (!visual) continue
+    planResolvedBattles.add(entry.battleId)
     resourceByBattle.set(entry.battleId, {
       label: raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId,
-      visual: raids.resourceVisuals.get(entry.resourceId),
+      visual,
     })
   }
   const energyUsagePercent =
@@ -176,10 +181,7 @@ export function TodaysAttemptsList({
 }: {
   attempts: TodaysAttempt[]
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
-  resourceByBattle: ReadonlyMap<
-    BattleId,
-    { label: string; visual: DailyRaidResourceVisual | undefined }
-  >
+  resourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
 }) {
   const { t } = useTranslation("dailies")
 
@@ -200,7 +202,11 @@ export function TodaysAttemptsList({
                 label={resource.label}
                 visual={resource.visual}
               />
-            ) : null}
+            ) : (
+              // A node the catalog has no drop for at all (e.g. a dataset gap) still keeps its
+              // leading slot, so the campaign icon and text stay aligned down the whole list.
+              <span aria-hidden className="size-10 shrink-0 md:size-12" />
+            )}
             {location?.icon ? (
               <EntityIcon
                 alt=""

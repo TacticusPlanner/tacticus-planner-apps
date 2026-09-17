@@ -14,6 +14,7 @@
   "difficulties": {
     "standard": "Standard",
     "elite": "Elite",
+    "mirror": "Mirror",
     "eventStandard": "Standard",
     "eventExtremis": "Extremis"
   },

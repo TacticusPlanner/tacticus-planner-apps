@@ -30,10 +30,16 @@ export function useCampaignDisplay() {
 
   /**
    * Full campaign label for a single campaign/event chip, e.g. "Fall of Cadia Standard",
-   * "Indomitus Elite", "Indomitus Mirror" (the mirror base tier omits the redundant "Standard"
-   * word since the mirror name already distinguishes it from the non-mirror campaign), or
-   * "Death Guard Extremis" for an event tier — events carry two distinct difficulty tiers
-   * (Standard/Extremis) that farm at very different rates, so the tier must stay visible here too.
+   * "Indomitus Elite", "Indomitus Mirror", "Saim-Hann Mirror Elite", or "Death Guard Extremis"
+   * for an event tier — events carry two distinct difficulty tiers (Standard/Extremis) that farm
+   * at very different rates, so the tier must stay visible here too.
+   *
+   * Every qualifier a storyline tier carries has to show up here: the four tiers of one storyline
+   * are four distinct campaigns with their own nodes and drops, so dropping "Mirror" from an
+   * `eliteMirror{n}` group (tacticus-planner-apps#119) named a different campaign than the one the
+   * entry actually points at. The mirror base tier is the one case that omits its difficulty word:
+   * "Indomitus Mirror" already reads as a campaign name, and "Indomitus Mirror Standard" would only
+   * add a redundant word.
    */
   const fullLabel = useCallback(
     (descriptor: CampaignDescriptor) => {
@@ -41,12 +47,15 @@ export function useCampaignDisplay() {
       if (descriptor.isEvent) {
         return `${label} ${t(`campaigns:difficulties.${descriptor.difficultyToken}`)}`
       }
+      const base = descriptor.isMirror
+        ? `${label} ${t("campaigns:difficulties.mirror")}`
+        : label
       if (descriptor.difficultyToken === "elite") {
-        return `${label} ${t("campaigns:difficulties.elite")}`
+        return `${base} ${t("campaigns:difficulties.elite")}`
       }
       return descriptor.isMirror
-        ? label
-        : `${label} ${t("campaigns:difficulties.standard")}`
+        ? base
+        : `${base} ${t("campaigns:difficulties.standard")}`
     },
     [name, t]
   )
