@@ -38,4 +38,17 @@ describe("resolveNextPath", () => {
   it("does not mistake a colon inside a query for a scheme", () => {
     expect(resolveNextPath("/goals?filter=a:b")).toBe("/goals?filter=a:b")
   })
+
+  it.each(["/setup", "/setup/key", "/setup/import?next=%2Fguild%2Fmembers"])(
+    "allows the setup address %s when the caller opts in",
+    (next) => {
+      expect(resolveNextPath(next, { allowSetupDestination: true })).toBe(next)
+    }
+  )
+
+  it("still refuses an unsafe destination even when setup is allowed", () => {
+    expect(
+      resolveNextPath("https://evil.example", { allowSetupDestination: true })
+    ).toBe(DEFAULT_SIGNED_IN_PATH)
+  })
 })

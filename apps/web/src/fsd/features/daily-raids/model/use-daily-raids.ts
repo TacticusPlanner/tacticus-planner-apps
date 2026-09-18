@@ -291,6 +291,7 @@ export function useDailyRaids(
     battles &&
     campaignDefinitions &&
     liveProgressResult &&
+    campaignEventProgressResult &&
     ascensionCostsById &&
     unlockShardCostsById &&
     onslaughtRewards &&

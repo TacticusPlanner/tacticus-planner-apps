@@ -79,6 +79,11 @@
       "purgeGenericError": "Something went wrong while purging your account. Please try again."
     }
   },
+  "accountGate": {
+    "errorTitle": "Couldn't check your account",
+    "errorDescription": "Something went wrong while checking your account status.",
+    "retry": "Retry"
+  },
   "onboarding": {
     "title": "Connect your account",
     "description": "Pick how you want to bring your Tacticus data in. Either way takes about a minute.",

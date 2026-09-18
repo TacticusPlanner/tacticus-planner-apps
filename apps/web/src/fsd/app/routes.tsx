@@ -2,7 +2,12 @@
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode } from "react"
-import { Navigate, type RouteObject } from "react-router"
+import {
+  Navigate,
+  useLocation,
+  useSearchParams,
+  type RouteObject,
+} from "react-router"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { InteractionStatus } from "@azure/msal-browser"
@@ -21,6 +26,7 @@ import { accountSetupRoutes } from "./account-setup-routes"
 import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
 import { OnboardingGate } from "./onboarding-gate"
+import { resolveNextPath } from "./resolve-next-path"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
 // hits) is lazy-loaded вЂ” each becomes its own chunk, fetched only when its route is entered
@@ -71,16 +77,23 @@ function AuthResolving() {
 
 // Authentication only. Split out of ProtectedRoute so the setup routes can require a signed-in user
 // without also being wrapped in the onboarding gate — which would send them to setup from setup.
-function AuthenticatedRoute({ children }: { children: ReactNode }) {
+export function AuthenticatedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
   const { inProgress } = useMsal()
+  const location = useLocation()
 
   if (inProgress !== InteractionStatus.None) {
     return <AuthResolving />
   }
 
   if (!isAuthenticated) {
-    return <Navigate replace to="/" />
+    // Carried as a query param on "/" (not just discarded) because MSAL's navigateToLoginRequestUrl
+    // restores whatever URL is in the address bar at the moment loginRedirect() is actually called —
+    // which happens later, from LandingPage, after this redirect has already replaced the URL.
+    // Without this, the current destination (e.g. a deep-linked /setup/key?next=... or any other
+    // protected route visited while signed out) would be lost across the sign-in round trip.
+    const next = `${location.pathname}${location.search}`
+    return <Navigate replace to={`/?next=${encodeURIComponent(next)}`} />
   }
 
   return <>{children}</>
@@ -94,16 +107,23 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   )
 }
 
-function LandingRoute() {
+export function LandingRoute() {
   const isAuthenticated = useIsAuthenticated()
   const { inProgress } = useMsal()
+  const [searchParams] = useSearchParams()
 
   if (inProgress !== InteractionStatus.None) {
     return <AuthResolving />
   }
 
   if (isAuthenticated) {
-    return <Navigate replace to="/home" />
+    // `next` is the destination AuthenticatedRoute preserved before sending an unauthenticated
+    // visitor here to sign in; allowSetupDestination because landing back on a deep-linked
+    // /setup/* address is exactly the point here, unlike the onboarding gate's own use of `next`.
+    const destination = resolveNextPath(searchParams.get("next"), {
+      allowSetupDestination: true,
+    })
+    return <Navigate replace to={destination} />
   }
 
   return <LandingPage />

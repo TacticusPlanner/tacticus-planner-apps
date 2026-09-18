@@ -79,6 +79,11 @@
       "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer."
     }
   },
+  "accountGate": {
+    "errorTitle": "Impossible de vérifier votre compte",
+    "errorDescription": "Une erreur s'est produite lors de la vérification de l'état de votre compte.",
+    "retry": "Réessayer"
+  },
   "onboarding": {
     "title": "Connectez votre compte",
     "description": "Choisissez comment importer vos données Tacticus. Les deux méthodes prennent environ une minute.",

@@ -227,6 +227,30 @@ describe("AccountSetupScreen", () => {
 
       await waitFor(() => expect(refetch).toHaveBeenCalledTimes(1))
       expect(screen.getByTestId("account-setup-confirming")).toBeVisible()
+      expect(
+        screen.queryByTestId("account-setup-panels")
+      ).not.toBeInTheDocument()
+    })
+
+    it("keeps the forms hidden even if the confirmation refetch fails, so a retry cannot race a second submission", async () => {
+      updateTacticusIntegration.mockResolvedValue({})
+      const user = userEvent.setup()
+      const { onStepChange, rerender } = renderScreen()
+
+      await user.type(
+        screen.getByTestId("account-setup-api-key-input"),
+        "key-1"
+      )
+      await user.click(screen.getByTestId("account-setup-api-key-submit"))
+      await waitFor(() => expect(refetch).toHaveBeenCalled())
+
+      currentUserState = { status: "error", error: new Error("offline") }
+      rerender(<AccountSetupScreen onStepChange={onStepChange} step="choose" />)
+
+      expect(screen.getByTestId("account-setup-confirm-failed")).toBeVisible()
+      expect(
+        screen.queryByTestId("account-setup-panels")
+      ).not.toBeInTheDocument()
     })
 
     it("offers a retry when the account state cannot be refreshed afterwards", async () => {

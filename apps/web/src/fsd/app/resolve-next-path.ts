@@ -6,14 +6,22 @@ const SETUP_PATH = "/setup"
 const LEADING_SCHEME = /^[a-z][a-z0-9+.-]*:/i
 
 /**
- * Resolves the `next` parameter the onboarding gate attaches when it sends a user to setup.
+ * Resolves a `next` parameter to a safe same-origin destination.
  *
  * The value reaches us straight from the URL, so it is attacker-controllable through a crafted
- * link: without validation, completing setup would be an open redirect. Only a same-origin relative
- * path is accepted, and a path pointing back at setup is refused too — that would make the setup
- * route's own guard navigate from setup to setup.
+ * link: without validation, honoring it would be an open redirect. Only a same-origin relative path
+ * is accepted.
+ *
+ * By default a path pointing back at setup is also refused — this is the onboarding gate's use,
+ * where sending an already-configured user back to `/setup` would make that route's own guard
+ * navigate from setup to setup. Pass `allowSetupDestination: true` for the one other caller
+ * (`LandingRoute`, restoring an unauthenticated visitor's original `/setup/*` deep link after
+ * sign-in) where landing back on setup is the intended outcome, not a loop.
  */
-export function resolveNextPath(next: string | null | undefined): string {
+export function resolveNextPath(
+  next: string | null | undefined,
+  options?: { allowSetupDestination?: boolean }
+): string {
   if (!next) {
     return DEFAULT_SIGNED_IN_PATH
   }
@@ -32,9 +40,11 @@ export function resolveNextPath(next: string | null | undefined): string {
     return DEFAULT_SIGNED_IN_PATH
   }
 
-  const path = next.split(/[?#]/)[0]
-  if (path === SETUP_PATH || path.startsWith(`${SETUP_PATH}/`)) {
-    return DEFAULT_SIGNED_IN_PATH
+  if (!options?.allowSetupDestination) {
+    const path = next.split(/[?#]/)[0]
+    if (path === SETUP_PATH || path.startsWith(`${SETUP_PATH}/`)) {
+      return DEFAULT_SIGNED_IN_PATH
+    }
   }
 
   return next

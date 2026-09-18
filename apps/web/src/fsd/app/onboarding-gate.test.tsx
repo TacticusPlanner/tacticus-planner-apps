@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
@@ -13,6 +14,20 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/entities/account", () => ({
   useCurrentUser: () => useCurrentUser(),
+}))
+
+const signOut = vi.fn<(instance: unknown, accountId: string) => Promise<void>>(
+  () => Promise.resolve()
+)
+
+vi.mock("@/shared/auth", () => ({
+  signOut: (instance: unknown, accountId: string) =>
+    signOut(instance, accountId),
+  useActiveAccountId: () => "home-account-1",
+}))
+
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({ instance: { id: "msal-instance" } }),
 }))
 
 import { OnboardingGate } from "./onboarding-gate"
@@ -94,14 +109,30 @@ describe("OnboardingGate", () => {
     expect(screen.getByRole("status")).toBeVisible()
   })
 
-  it("fails open without navigating if the current-user fetch errored", () => {
+  it("blocks protected content without navigating if the current-user fetch errored", () => {
     setState({ status: "error", error: new Error("boom") })
 
     renderAt("/guild/members")
 
     // Navigating here would bounce against the setup route's own guard, which also refuses to act
-    // on an indeterminate account state.
-    expect(screen.getByTestId("protected-content")).toBeVisible()
+    // on an indeterminate account state — but an indeterminate state must not read as "onboarded"
+    // either, so protected content stays hidden behind a retry instead of failing open.
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
     expect(screen.queryByTestId("setup-probe")).not.toBeInTheDocument()
+    expect(screen.getByTestId("account-gate-retry")).toBeVisible()
+  })
+
+  it("retries the current-user fetch from the error state", async () => {
+    const user = userEvent.setup()
+    const refetch = vi.fn()
+    useCurrentUser.mockReturnValue({
+      refetch,
+      state: { status: "error", error: new Error("boom") },
+    })
+
+    renderAt("/guild/members")
+    await user.click(screen.getByTestId("account-gate-retry"))
+
+    expect(refetch).toHaveBeenCalledTimes(1)
   })
 })

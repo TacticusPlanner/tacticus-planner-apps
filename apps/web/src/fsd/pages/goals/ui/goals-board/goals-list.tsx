@@ -103,6 +103,7 @@ function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
       new Intl.DateTimeFormat(i18n.resolvedLanguage, {
         month: "short",
         day: "numeric",
+        timeZone: "UTC",
       }),
     [i18n.resolvedLanguage]
   )

@@ -88,7 +88,7 @@ export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
         </p>
       ) : null}
 
-      {isMobile ? (
+      {submitted ? null : isMobile ? (
         <MobileSteps
           onCompleted={handleCompleted}
           onStepChange={onStepChange}

@@ -79,6 +79,11 @@
       "purgeGenericError": "Beim Löschen deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut."
     }
   },
+  "accountGate": {
+    "errorTitle": "Konto konnte nicht überprüft werden",
+    "errorDescription": "Beim Überprüfen deines Kontostatus ist ein Fehler aufgetreten.",
+    "retry": "Erneut versuchen"
+  },
   "onboarding": {
     "title": "Verbinde dein Konto",
     "description": "Wähle, wie du deine Tacticus-Daten übernehmen möchtest. Beides dauert etwa eine Minute.",

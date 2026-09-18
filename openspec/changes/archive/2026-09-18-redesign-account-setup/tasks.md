@@ -52,9 +52,10 @@
       `inProgress` wait plus the redirect to `/`) and the existing authentication-plus-onboarding
       guard composed from it. Verify `pnpm test:run` passes with every existing protected route
       behaving as before.
-- [x] 3.3 Register `/setup`, `/setup/key`, and `/setup/import` under `AppShell` using the
-      authentication-only guard, rendering `AccountSetupScreen` with the step derived from the path.
-      Verify with a router test that each path renders its step at mobile width.
+- [x] 3.3 Register `/setup`, `/setup/key`, and `/setup/import` outside `AppShell`, as a sibling
+      route group under `AccountSetupLayout`, using the authentication-only guard, rendering
+      `AccountSetupScreen` with the step derived from the path. Verify with a router test that each
+      path renders its step at mobile width.
 - [x] 3.4 Change `OnboardingGate` to redirect to `/setup?next=<current pathname + search>`
       (`replace`) when the current-user request has succeeded and reports onboarding incomplete, and to
       navigate in neither the loading nor the error branch. Update `app/onboarding-gate.test.tsx`
@@ -207,7 +208,8 @@ Tracking issue: _not yet filed_ — see the handover note in the final session s
 
 - [ ] D.1 With state (a) at a viewport below 768px (390×640), confirm the choice step, the two form
       steps, Back, and the step indicator all behave as specified, that the page scrolls, and that the
-      submit control is fully visible and tappable above the fixed bottom nav. Verify by activating the
+      submit control is fully visible and tappable clear of the device's safe-area and any browser
+      toolbar (setup has no `AppShell`, so there is no bottom nav to clear). Verify by activating the
       submit control at the bottom of the scrolled page.
 - [ ] D.2 At 390×640, confirm the addressing behaves: each step has its own URL, the browser Back
       control moves from a form step to the choice step, and reloading on a form step returns to that

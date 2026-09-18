@@ -144,7 +144,7 @@ An event-campaign attempt's energy cost is included using the same per-node pric
 - **WHEN** Today loads
 - **THEN** the energy-usage indicator includes those attempts' energy cost in its total, not only attempts at nodes within this project's schedule
 
-#### Scenario: Event-campaign attempts are excluded from the total
+#### Scenario: Event-campaign attempts are included in the total, priced the same as standing attempts
 
 - **GIVEN** the player has real synced attempts recorded today at an event campaign's nodes
 - **WHEN** Today loads

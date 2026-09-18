@@ -79,6 +79,11 @@
       "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo."
     }
   },
+  "accountGate": {
+    "errorTitle": "No se pudo comprobar tu cuenta",
+    "errorDescription": "Se produjo un error al comprobar el estado de tu cuenta.",
+    "retry": "Reintentar"
+  },
   "onboarding": {
     "title": "Conecta tu cuenta",
     "description": "Elige cómo quieres traer tus datos de Tacticus. Cualquiera de las dos opciones lleva alrededor de un minuto.",
