@@ -8,6 +8,7 @@ import { useCurrentUser } from "@/entities/account"
 
 import { SETUP_STEP_PATHS } from "./account-setup-routes"
 import { resolveNextPath } from "./resolve-next-path"
+import { SetupV1Import } from "./setup-v1-import"
 
 /**
  * Hosts the account setup screen at one of its addresses, and owns the two things the screen itself
@@ -41,6 +42,12 @@ export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
       onStepChange={(nextStep) => {
         void navigate(`${SETUP_STEP_PATHS[nextStep]}${search}`)
       }}
+      renderImportStep={(onCompleted) => (
+        <SetupV1Import
+          onCompleted={onCompleted}
+          onUseApiKey={() => void navigate(`${SETUP_STEP_PATHS.key}${search}`)}
+        />
+      )}
       step={step}
     />
   )

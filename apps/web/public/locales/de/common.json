@@ -95,7 +95,7 @@
       "apiKeyBadge": "Am schnellsten",
       "apiKeyDescription": "Du hast bereits einen Schlüssel von api.tacticusgame.com – oder du holst dir jetzt einen.",
       "v1Name": "Aus V1 importieren",
-      "v1Description": "Melde dich mit deinem alten Planner-Login an; wir übernehmen Schlüssel und Benutzer-ID."
+      "v1Description": "Melde dich mit deinem alten Planner-Login an, um Schlüssel, Ziele und Fortschritt zu übernehmen."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus-API-Schlüssel",
@@ -106,17 +106,8 @@
       "submit": "Konto verbinden"
     },
     "import": {
-      "description": "Melde dich mit deinem V1-Planner-Login an. Wir übernehmen API-Schlüssel und Benutzer-ID, danach werden die V1-Daten verworfen – deine V1-Zugangsdaten werden niemals gespeichert.",
-      "usernameLabel": "V1-Benutzername",
-      "passwordLabel": "V1-Passwort",
-      "submit": "Importieren und verbinden"
-    },
-    "importOutcome": {
-      "missingKey": "In deinem V1-Konto ist kein Tacticus-API-Schlüssel gespeichert.",
-      "invalidKey": "Der Tacticus-API-Schlüssel in deinem V1-Konto ist nicht mehr gültig. Hole dir einen neuen und füge ihn stattdessen ein.",
-      "notSaved": "Der importierte API-Schlüssel konnte nicht gespeichert werden. Bitte versuche es erneut.",
-      "unknown": "Der Import hat keinen nutzbaren Tacticus-API-Schlüssel geliefert.",
-      "useApiKey": "Stattdessen API-Schlüssel einfügen"
+      "continue": "Weiter",
+      "useApiKey": "Stattdessen API-Schlüssel verwenden"
     },
     "confirming": "Einrichtung wird abgeschlossen …",
     "confirmFailed": "Dein Schlüssel wurde gespeichert, aber wir konnten dein Konto nicht bestätigen.",
@@ -376,6 +367,7 @@
     "v1Import": {
       "menu": "Aus V1 importieren",
       "title": "Aus V1 importieren",
+      "back": "Zurück",
       "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und importierte Ziele werden pausiert, sofern dein Standardprojekt nicht auch dein aktives Projekt ist.",
       "username": "V1-Benutzername",
       "password": "V1-Passwort",

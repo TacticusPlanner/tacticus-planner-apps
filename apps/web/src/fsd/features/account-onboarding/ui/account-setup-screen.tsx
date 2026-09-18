@@ -1,16 +1,14 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useMsal } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useCurrentUser } from "@/entities/account"
 import { signOut, useActiveAccountId } from "@/shared/auth"
 
 import { ApiKeyForm } from "./api-key-form"
-import { V1ImportForm } from "./v1-import-form"
 
 export type AccountSetupStep = "choose" | "key" | "import"
 
@@ -22,6 +20,13 @@ type ScreenProps = {
    */
   step: AccountSetupStep
   onStepChange: (step: AccountSetupStep) => void
+  /**
+   * Renders the "import" step's content. This feature does not import `features/v1-import` itself
+   * (that would be a feature-to-feature cross-import — see
+   * `.claude/skills/feature-sliced-design/references/cross-import-patterns.md`, Strategy C); the
+   * `app` layer, which already composes both features, supplies this instead.
+   */
+  renderImportStep: (onCompleted: () => void) => ReactNode
 }
 
 /**
@@ -37,9 +42,12 @@ type ScreenProps = {
  * emptied form. Instead the forms refresh the account state and the route's own guard performs the
  * navigation once that state actually confirms a configured key.
  */
-export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
+export function AccountSetupScreen({
+  step,
+  onStepChange,
+  renderImportStep,
+}: ScreenProps) {
   const { t } = useTranslation()
-  const isMobile = useIsMobile()
   const { state, refetch } = useCurrentUser()
   // Set once a submission has succeeded, so the screen can tell "still waiting for confirmation"
   // apart from "idle" — the difference between showing progress and showing a retry.
@@ -57,17 +65,15 @@ export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6">
       <header className="flex flex-col gap-1.5">
-        {isMobile ? (
-          <p
-            className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
-            data-testid="account-setup-step-position"
-          >
-            {t("onboarding.stepPosition", {
-              current: step === "choose" ? 1 : 2,
-              total: 2,
-            })}
-          </p>
-        ) : null}
+        <p
+          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          data-testid="account-setup-step-position"
+        >
+          {t("onboarding.stepPosition", {
+            current: step === "choose" ? 1 : 2,
+            total: 2,
+          })}
+        </p>
         <h1 className="font-heading text-xl font-medium">
           {t("onboarding.title")}
         </h1>
@@ -86,16 +92,13 @@ export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
           <Spinner className="size-4" />
           {t("onboarding.confirming")}
         </p>
-      ) : null}
-
-      {submitted ? null : isMobile ? (
-        <MobileSteps
+      ) : (
+        <Steps
           onCompleted={handleCompleted}
           onStepChange={onStepChange}
+          renderImportStep={renderImportStep}
           step={step}
         />
-      ) : (
-        <DesktopPanels onCompleted={handleCompleted} />
       )}
 
       <SignOutFooter />
@@ -125,42 +128,14 @@ function ConfirmationRetry({ onRetry }: { onRetry: () => void }) {
   )
 }
 
-// Desktop has no steps: both paths are on screen at once, so the user can see that completing
-// either panel alone is enough.
-function DesktopPanels({ onCompleted }: { onCompleted: () => void }) {
-  const { t } = useTranslation()
-
-  return (
-    <div
-      className="grid gap-4 md:grid-cols-2"
-      data-testid="account-setup-panels"
-    >
-      <section className="flex flex-col gap-4 rounded-xl border p-5">
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold">
-            {t("onboarding.paths.apiKeyName")}
-          </h2>
-          <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
-            {t("onboarding.paths.apiKeyBadge")}
-          </span>
-        </div>
-        <ApiKeyForm onCompleted={onCompleted} />
-      </section>
-
-      <section className="flex flex-col gap-4 rounded-xl border p-5">
-        <h2 className="text-sm font-semibold">
-          {t("onboarding.paths.v1Name")}
-        </h2>
-        <V1ImportForm onCompleted={onCompleted} />
-      </section>
-    </div>
-  )
-}
-
-function MobileSteps({
+// Both breakpoints go through the same choose-then-step flow: showing both paths on screen at once
+// (as desktop once did) does not fit the V1-import path anymore now that it is the same full,
+// multi-part panel used from the account menu, not a two-field shortcut.
+function Steps({
   step,
   onStepChange,
   onCompleted,
+  renderImportStep,
 }: ScreenProps & { onCompleted: () => void }) {
   const { t } = useTranslation()
 
@@ -200,10 +175,7 @@ function MobileSteps({
       {step === "key" ? (
         <ApiKeyForm onCompleted={onCompleted} />
       ) : (
-        <V1ImportForm
-          onCompleted={onCompleted}
-          onUseApiKey={() => onStepChange("key")}
-        />
+        renderImportStep(onCompleted)
       )}
     </div>
   )

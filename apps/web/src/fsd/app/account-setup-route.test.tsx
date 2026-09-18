@@ -5,14 +5,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen, waitFor } from "@/test/render"
 import type { CurrentUserState } from "@/entities/account"
 
-const { useIsMobileMock } = vi.hoisted(() => ({
-  useIsMobileMock: vi.fn(() => true),
-}))
-
-vi.mock("@workspace/ui/hooks/use-mobile", () => ({
-  useIsMobile: () => useIsMobileMock(),
-}))
-
 vi.mock("react-i18next", async (importOriginal) => ({
   ...(await importOriginal<typeof import("react-i18next")>()),
   useTranslation: () => ({ t: (key: string) => key }),
@@ -24,7 +16,6 @@ let currentUserState: CurrentUserState
 vi.mock("@/entities/account", () => ({
   useCurrentUser: () => ({ refetch, state: currentUserState }),
   updateTacticusIntegration: vi.fn(),
-  importV1Profile: vi.fn(),
 }))
 
 vi.mock("@/shared/auth", () => ({
@@ -34,6 +25,37 @@ vi.mock("@/shared/auth", () => ({
 
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ instance: {} }),
+}))
+
+// The import step's own content (`SetupV1Import`) composes the full `V1ImportPanel` — its mutation,
+// query-invalidation, and outcome-report behavior belong to `setup-v1-import.test.tsx` and
+// `v1-import-panel.test.tsx`. Stubbing it here keeps this file's scope to routing and the reverse
+// guard, matching how `account-setup-screen.test.tsx` stubs `renderImportStep`.
+vi.mock("./setup-v1-import", () => ({
+  SetupV1Import: ({
+    onCompleted,
+    onUseApiKey,
+  }: {
+    onCompleted: () => void
+    onUseApiKey: () => void
+  }) => (
+    <div data-testid="stub-setup-v1-import">
+      <button
+        data-testid="stub-setup-v1-complete"
+        onClick={onCompleted}
+        type="button"
+      >
+        complete
+      </button>
+      <button
+        data-testid="stub-setup-v1-use-api-key"
+        onClick={onUseApiKey}
+        type="button"
+      >
+        use api key
+      </button>
+    </div>
+  ),
 }))
 
 import { AccountSetupRoute } from "./account-setup-route"
@@ -97,7 +119,6 @@ describe("accountSetupRoutes", () => {
 
 describe("AccountSetupRoute", () => {
   beforeEach(() => {
-    useIsMobileMock.mockReturnValue(true)
     currentUserState = unconfigured
     refetch.mockReset()
   })
@@ -105,7 +126,7 @@ describe("AccountSetupRoute", () => {
   it.each([
     ["/setup", "account-setup-choice"],
     ["/setup/key", "account-setup-api-key-input"],
-    ["/setup/import", "account-setup-v1-username-input"],
+    ["/setup/import", "stub-setup-v1-import"],
   ])("renders the step for %s", (path, testId) => {
     renderAt(path)
     expect(screen.getByTestId(testId)).toBeVisible()
@@ -182,6 +203,17 @@ describe("AccountSetupRoute", () => {
         await screen.findByTestId("account-setup-api-key-input")
       ).toHaveValue("")
     })
+
+    it("sends the import step's 'use an API key instead' shortcut to the key step", async () => {
+      const user = userEvent.setup()
+      renderAt("/setup/import")
+
+      await user.click(screen.getByTestId("stub-setup-v1-use-api-key"))
+
+      expect(
+        await screen.findByTestId("account-setup-api-key-input")
+      ).toBeVisible()
+    })
   })
 
   describe("completion", () => {
@@ -206,22 +238,24 @@ describe("AccountSetupRoute", () => {
         expect(screen.getByTestId("probe")).toHaveTextContent("/guild/members")
       )
     })
-  })
 
-  describe("desktop", () => {
-    beforeEach(() => {
-      useIsMobileMock.mockReturnValue(false)
+    it("navigates once the import step signals its own completion", async () => {
+      const user = userEvent.setup()
+      const { build, rerender } = renderAt(
+        "/setup/import?next=%2Fguild%2Fmembers"
+      )
+
+      await user.click(screen.getByTestId("stub-setup-v1-complete"))
+      await waitFor(() => expect(refetch).toHaveBeenCalledTimes(1))
+
+      expect(screen.getByTestId("account-setup-confirming")).toBeVisible()
+
+      currentUserState = configured
+      rerender(build())
+
+      await waitFor(() =>
+        expect(screen.getByTestId("probe")).toHaveTextContent("/guild/members")
+      )
     })
-
-    it.each(["/setup", "/setup/key", "/setup/import"])(
-      "renders the whole screen at %s without redirecting",
-      (path) => {
-        renderAt(path)
-
-        expect(screen.getByTestId("account-setup-panels")).toBeVisible()
-        // A redirect here would emit a second page_view for one navigation.
-        expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
-      }
-    )
   })
 })

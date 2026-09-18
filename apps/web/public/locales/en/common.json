@@ -95,7 +95,7 @@
       "apiKeyBadge": "Fastest",
       "apiKeyDescription": "You already have a key from api.tacticusgame.com, or you can grab one now.",
       "v1Name": "Import from V1",
-      "v1Description": "Sign in with your old planner login and we'll copy the key and user ID across."
+      "v1Description": "Sign in with your old planner login to bring your key, goals, and progress across."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus API key",
@@ -106,17 +106,8 @@
       "submit": "Connect account"
     },
     "import": {
-      "description": "Sign in with your V1 planner login. We copy the API key and user ID over, then the V1 details are discarded — your V1 credentials are never stored.",
-      "usernameLabel": "V1 username",
-      "passwordLabel": "V1 password",
-      "submit": "Import and connect"
-    },
-    "importOutcome": {
-      "missingKey": "Your V1 account has no Tacticus API key saved.",
-      "invalidKey": "The Tacticus API key on your V1 account is no longer valid. Get a new one and paste it instead.",
-      "notSaved": "The imported API key could not be saved. Please try again.",
-      "unknown": "The import did not provide a usable Tacticus API key.",
-      "useApiKey": "Paste an API key instead"
+      "continue": "Continue",
+      "useApiKey": "Use an API key instead"
     },
     "confirming": "Finishing setup…",
     "confirmFailed": "Your key was saved, but we could not confirm your account.",
@@ -376,6 +367,7 @@
     "v1Import": {
       "menu": "Import from V1",
       "title": "Import from V1",
+      "back": "Back",
       "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and imported goals are paused unless your default project is also your active project.",
       "username": "V1 username",
       "password": "V1 password",

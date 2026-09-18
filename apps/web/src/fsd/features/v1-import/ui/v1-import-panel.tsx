@@ -4,14 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
-import {
   Field,
   FieldContent,
   FieldError,
@@ -45,28 +37,29 @@ const parts = [
   ["campaignEventProgress", "goals.v1Import.parts.campaignEventProgress"],
 ] as const
 
-type Selection = Record<(typeof parts)[number][0], boolean>
+export type V1ImportSelection = Record<(typeof parts)[number][0], boolean>
 
-export function ImportV1Dialog({
-  open,
-  onOpenChange,
+/**
+ * The whole V1-import experience — credentials, part selection, submit, and the bucketed outcome
+ * report — with no chrome of its own. Two hosts wrap this differently: `pages/v1-import` (opened
+ * from the account menu, everything unchecked by default) and `app/setup-v1-import.tsx` (part of
+ * initial account provisioning, everything checked by default). Only `defaultSelection` and
+ * `onSuccess` vary between them; the import mechanics themselves are identical.
+ */
+export function V1ImportPanel({
+  defaultSelection,
+  onSuccess,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  defaultSelection: V1ImportSelection
+  onSuccess?: (result: ImportV1ProfileResult) => void
 }) {
   const { t } = useTranslation()
   const { refetch } = useCurrentUser()
   const queryClient = useQueryClient()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [selection, setSelection] = useState<Selection>({
-    personalTacticusApiKey: true,
-    tacticusUserId: true,
-    guildApiToken: true,
-    goals: true,
-    onslaughtProgress: true,
-    campaignEventProgress: true,
-  })
+  const [selection, setSelection] =
+    useState<V1ImportSelection>(defaultSelection)
   // Matches the manual create-goal flow's own default (rewrite-v1-goal-import). Not a "part": it has
   // no result row of its own, only an effect on the goal outcomes.
   const [automaticPrerequisites, setAutomaticPrerequisites] = useState(true)
@@ -115,7 +108,7 @@ export function ImportV1Dialog({
         })
       }
       // Unconditional: the import creates goals itself now (rewrite-v1-goal-import removed the
-      // client-side creation path), so this no longer depends on the dialog's own knowledge of
+      // client-side creation path), so this no longer depends on this panel's own knowledge of
       // whether the goals part was selected or produced anything.
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
@@ -123,6 +116,7 @@ export function ImportV1Dialog({
       ])
       setPassword("")
       setStatus("success")
+      onSuccess?.(imported)
     } catch (caught) {
       setStatus("error")
       setError(
@@ -132,108 +126,91 @@ export function ImportV1Dialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent data-testid="v1-import-dialog" className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t("goals.v1Import.title")}</DialogTitle>
-          <DialogDescription>
-            {t("goals.v1Import.description")}
-          </DialogDescription>
-        </DialogHeader>
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={(event) => void handleSubmit(event)}
-        >
-          <Field>
-            <FieldLabel htmlFor="v1-import-username">
-              {t("goals.v1Import.username")}
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                id="v1-import-username"
-                data-testid="v1-import-username"
-                autoComplete="username"
-                required
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-              />
-            </FieldContent>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="v1-import-password">
-              {t("goals.v1Import.password")}
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                id="v1-import-password"
-                data-testid="v1-import-password"
-                autoComplete="current-password"
-                required
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-              />
-            </FieldContent>
-          </Field>
-          <fieldset className="grid gap-3 rounded-xl border p-4">
-            <legend className="px-1 text-sm font-medium">
-              {t("goals.v1Import.selectParts")}
-            </legend>
-            {parts.map(([key, label]) => (
-              <label className="flex items-center gap-3 text-sm" key={key}>
-                <Checkbox
-                  data-testid={`v1-import-${key}`}
-                  checked={selection[key]}
-                  onCheckedChange={(checked) =>
-                    setSelection((current) => ({
-                      ...current,
-                      [key]: checked === true,
-                    }))
-                  }
-                />
-                {t(label)}
-              </label>
-            ))}
-          </fieldset>
-          <label className="flex items-center gap-3 text-sm">
+    <form
+      className="flex flex-col gap-4"
+      data-testid="v1-import-panel"
+      onSubmit={(event) => void handleSubmit(event)}
+    >
+      <Field>
+        <FieldLabel htmlFor="v1-import-username">
+          {t("goals.v1Import.username")}
+        </FieldLabel>
+        <FieldContent>
+          <Input
+            id="v1-import-username"
+            data-testid="v1-import-username"
+            autoComplete="username"
+            required
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+          />
+        </FieldContent>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="v1-import-password">
+          {t("goals.v1Import.password")}
+        </FieldLabel>
+        <FieldContent>
+          <Input
+            id="v1-import-password"
+            data-testid="v1-import-password"
+            autoComplete="current-password"
+            required
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </FieldContent>
+      </Field>
+      <fieldset className="grid gap-3 rounded-xl border p-4">
+        <legend className="px-1 text-sm font-medium">
+          {t("goals.v1Import.selectParts")}
+        </legend>
+        {parts.map(([key, label]) => (
+          <label className="flex items-center gap-3 text-sm" key={key}>
             <Checkbox
-              data-testid="v1-import-automaticPrerequisites"
-              checked={automaticPrerequisites}
+              data-testid={`v1-import-${key}`}
+              checked={selection[key]}
               onCheckedChange={(checked) =>
-                setAutomaticPrerequisites(checked === true)
+                setSelection((current) => ({
+                  ...current,
+                  [key]: checked === true,
+                }))
               }
             />
-            {t("goals.v1Import.automaticPrerequisites")}
+            {t(label)}
           </label>
-          {error ? <FieldError role="alert">{error}</FieldError> : null}
-          {result ? <ImportResult result={result} /> : null}
-          {status === "success" ? (
-            <p
-              className="text-sm text-muted-foreground"
-              data-testid="v1-import-rerun-hint"
-            >
-              {t("goals.v1Import.rerunRequiresPassword")}
-            </p>
-          ) : null}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              {t("goals.v1Import.close")}
-            </Button>
-            <Button
-              data-testid="v1-import-submit"
-              disabled={!canSubmit}
-              type="submit"
-            >
-              {status === "submitting" ? <Spinner /> : null}
-              {t("goals.v1Import.submit")}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        ))}
+      </fieldset>
+      <label className="flex items-center gap-3 text-sm">
+        <Checkbox
+          data-testid="v1-import-automaticPrerequisites"
+          checked={automaticPrerequisites}
+          onCheckedChange={(checked) =>
+            setAutomaticPrerequisites(checked === true)
+          }
+        />
+        {t("goals.v1Import.automaticPrerequisites")}
+      </label>
+      {error ? <FieldError role="alert">{error}</FieldError> : null}
+      {result ? <ImportResult result={result} /> : null}
+      {status === "success" ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="v1-import-rerun-hint"
+        >
+          {t("goals.v1Import.rerunRequiresPassword")}
+        </p>
+      ) : null}
+      <Button
+        className="self-start"
+        data-testid="v1-import-submit"
+        disabled={!canSubmit}
+        type="submit"
+      >
+        {status === "submitting" ? <Spinner /> : null}
+        {t("goals.v1Import.submit")}
+      </Button>
+    </form>
   )
 }

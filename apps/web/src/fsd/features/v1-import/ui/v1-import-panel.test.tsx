@@ -4,9 +4,10 @@ import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { ImportPartResult, V1GoalOutcome } from "@/entities/account"
 
+import type { V1ImportSelection } from "./v1-import-panel"
+
 const importV1Profile = vi.fn()
 const refetch = vi.fn()
-const onOpenChange = vi.fn()
 const account = { homeAccountId: "account-1" }
 const instance = { getActiveAccount: () => account }
 
@@ -86,7 +87,16 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getMowsMap: () => new Map([["mow1", { id: "mow1", name: "Stormbird" }]]),
 }))
 
-import { ImportV1Dialog } from "./import-v1-dialog"
+import { V1ImportPanel } from "./v1-import-panel"
+
+const ALL_SELECTED: V1ImportSelection = {
+  personalTacticusApiKey: true,
+  tacticusUserId: true,
+  guildApiToken: true,
+  goals: true,
+  onslaughtProgress: true,
+  campaignEventProgress: true,
+}
 
 const imported: ImportPartResult = {
   status: "Imported",
@@ -135,15 +145,18 @@ async function fillCredentials() {
   })
 }
 
-describe("ImportV1Dialog", () => {
+function renderPanel(defaultSelection: V1ImportSelection = ALL_SELECTED) {
+  return render(<V1ImportPanel defaultSelection={defaultSelection} />)
+}
+
+describe("V1ImportPanel", () => {
   beforeEach(() => {
     importV1Profile.mockReset().mockResolvedValue(response())
     refetch.mockReset()
-    onOpenChange.mockReset()
   })
 
-  it("submits credentials with the user's selected import parts and the prerequisites flag", async () => {
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+  it("submits credentials with the given default parts and the prerequisites flag", async () => {
+    renderPanel()
 
     await fillCredentials()
     fireEvent.change(screen.getByTestId("v1-import-username"), {
@@ -172,20 +185,45 @@ describe("ImportV1Dialog", () => {
     })
   })
 
+  it("starts with only the given default parts selected", () => {
+    renderPanel({
+      personalTacticusApiKey: false,
+      tacticusUserId: false,
+      guildApiToken: false,
+      goals: false,
+      onslaughtProgress: false,
+      campaignEventProgress: false,
+    })
+
+    for (const key of [
+      "personalTacticusApiKey",
+      "tacticusUserId",
+      "guildApiToken",
+      "goals",
+      "onslaughtProgress",
+      "campaignEventProgress",
+    ] as const) {
+      expect(screen.getByTestId(`v1-import-${key}`)).toHaveAttribute(
+        "data-state",
+        "unchecked"
+      )
+    }
+  })
+
   it("issues no goal-creation request of its own (3.1)", async () => {
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    renderPanel()
     await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
     await screen.findByTestId("v1-import-result")
     // No mocked goal-creation mutation exists at all in this test file — a stray call would throw
     // "not a function" rather than silently pass, so the absence of any such mock is itself the
-    // assertion that the dialog no longer submits goals.
+    // assertion that the panel no longer submits goals.
     expect(importV1Profile).toHaveBeenCalledTimes(1)
   })
 
   it("sends automaticPrerequisites=false once the option is cleared (7.1)", async () => {
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    renderPanel()
     await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-automaticPrerequisites"))
     fireEvent.click(screen.getByTestId("v1-import-submit"))
@@ -201,7 +239,7 @@ describe("ImportV1Dialog", () => {
   })
 
   it("defaults the add-missing-prerequisites option on", () => {
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    renderPanel()
     expect(
       screen.getByTestId("v1-import-automaticPrerequisites")
     ).toHaveAttribute("data-state", "checked")
@@ -212,7 +250,7 @@ describe("ImportV1Dialog", () => {
       QueryClient.prototype,
       "invalidateQueries"
     )
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    renderPanel()
     await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-goals"))
     fireEvent.click(screen.getByTestId("v1-import-submit"))
@@ -221,6 +259,19 @@ describe("ImportV1Dialog", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["goals"] })
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["projects"] })
     invalidateQueries.mockRestore()
+  })
+
+  it("calls onSuccess with the result once a submission succeeds", async () => {
+    const onSuccess = vi.fn()
+    const result = response({ outcomes: [outcome({})] })
+    importV1Profile.mockResolvedValue(result)
+    render(
+      <V1ImportPanel defaultSelection={ALL_SELECTED} onSuccess={onSuccess} />
+    )
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith(result))
   })
 
   describe("bucketed report", () => {
@@ -236,7 +287,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -257,7 +308,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -289,7 +340,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -303,7 +354,7 @@ describe("ImportV1Dialog", () => {
 
     it("shows only the imported bucket when every goal was created (4.5)", async () => {
       importV1Profile.mockResolvedValue(response({ outcomes: [outcome({})] }))
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -332,7 +383,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -355,7 +406,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -379,7 +430,7 @@ describe("ImportV1Dialog", () => {
           },
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -398,7 +449,7 @@ describe("ImportV1Dialog", () => {
           },
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -408,13 +459,13 @@ describe("ImportV1Dialog", () => {
     })
 
     it("omits a row for a part the user did not select (7.1 selection / spec)", async () => {
-      // The dialog decides per the server's own "not_selected" code (ImportPartResult.NotSelected),
+      // The panel decides per the server's own "not_selected" code (ImportPartResult.NotSelected),
       // not by re-checking its own client-side selection state — so the fixture must echo that code,
       // the same way the real API does for a cleared part.
       importV1Profile.mockResolvedValue(
         response({ guildApiToken: notSelected })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-guildApiToken"))
       fireEvent.click(screen.getByTestId("v1-import-submit"))
@@ -435,7 +486,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -463,7 +514,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -494,7 +545,7 @@ describe("ImportV1Dialog", () => {
     importV1Profile.mockResolvedValue(
       response({ outcomes: codes.map((code) => outcome({ code })) })
     )
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    renderPanel()
     await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -524,7 +575,7 @@ describe("ImportV1Dialog", () => {
           ],
         })
       )
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -539,7 +590,7 @@ describe("ImportV1Dialog", () => {
 
     it("offers no copy action when nothing needs attention (6.3)", async () => {
       importV1Profile.mockResolvedValue(response({ outcomes: [outcome({})] }))
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -550,7 +601,7 @@ describe("ImportV1Dialog", () => {
 
   it("shows an import failure without refreshing account state", async () => {
     importV1Profile.mockRejectedValue(new Error("network"))
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    renderPanel()
     await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -563,20 +614,20 @@ describe("ImportV1Dialog", () => {
       screen.queryByTestId("v1-import-submit")?.querySelector("svg")
     ).not.toBeInTheDocument()
     expect(screen.getByTestId("v1-import-username")).toHaveValue("legacy-user")
-    expect(screen.getByTestId("v1-import-dialog")).toBeInTheDocument()
+    expect(screen.getByTestId("v1-import-panel")).toBeInTheDocument()
     expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
   })
 
   describe("resubmitting after a completed run", () => {
     async function completeOneRun() {
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
       await screen.findByTestId("v1-import-result")
     }
 
     it("disables the submit control while a submission is in flight", async () => {
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
@@ -623,7 +674,7 @@ describe("ImportV1Dialog", () => {
     })
 
     it("keeps the submit control unavailable for an empty or whitespace-only username", () => {
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       fireEvent.change(screen.getByTestId("v1-import-password"), {
         target: { value: "secret" },
       })
@@ -642,7 +693,7 @@ describe("ImportV1Dialog", () => {
     })
 
     it("keeps the submit control unavailable without a selected part or a password", async () => {
-      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      renderPanel()
       await fillCredentials()
       expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
 

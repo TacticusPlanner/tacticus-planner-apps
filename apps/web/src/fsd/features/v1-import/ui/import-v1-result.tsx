@@ -28,7 +28,7 @@ import {
 } from "../model/outcome-buckets"
 import { useEntityDisplayName } from "../model/use-entity-display-name"
 
-// Kept in step with `ImportV1Dialog`'s own `parts` tuple in import-v1-dialog.tsx (split into this
+// Kept in step with `V1ImportPanel`'s own `parts` tuple in v1-import-panel.tsx (split into this
 // file purely for the repository's max-lines rule, same as goal-spec-builder.ts's split out of
 // use-create-goal-form.ts).
 const parts = [
