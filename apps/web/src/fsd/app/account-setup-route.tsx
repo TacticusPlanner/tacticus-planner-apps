@@ -35,6 +35,16 @@ import { SetupV1Import } from "./setup-v1-import"
  * refetch source — is what actually closes that off.
  */
 export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
+  // Keyed by `step` so `importAwaitingContinue` below gets a fresh `useState` initializer on every
+  // step transition. Each step maps to its own <Route>, but react-router matching sibling routes to
+  // the *same* `AccountSetupRoute` element/component type at the *same* tree position does not force
+  // a remount on its own — without this key, navigating choose -> import client-side (the ordinary
+  // path into this step, not a fresh page load) would reuse the instance from the "choose" step,
+  // where the initializer already ran with `step !== "import"` and never gets to run again.
+  return <AccountSetupRouteForStep key={step} step={step} />
+}
+
+function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   const { state } = useCurrentUser()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()

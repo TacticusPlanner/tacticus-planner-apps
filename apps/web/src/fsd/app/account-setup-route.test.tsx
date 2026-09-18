@@ -199,9 +199,15 @@ describe("AccountSetupRoute", () => {
       await user.click(screen.getByTestId("account-setup-back"))
       expect(await screen.findByTestId("account-setup-choice")).toBeVisible()
 
-      // Still remembered after a round trip through both steps.
+      // Still remembered after a round trip through both steps. The import step itself still
+      // requires its own explicit completion signal before leaving — even here, where the account
+      // state already reports provisioned by the time it's entered — so this goes through that too.
       currentUserState = configured
       await user.click(screen.getByTestId("account-setup-choose-import"))
+      expect(await screen.findByTestId("stub-setup-v1-import")).toBeVisible()
+      expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+
+      await user.click(screen.getByTestId("stub-setup-v1-complete"))
       await waitFor(() =>
         expect(screen.getByTestId("probe")).toHaveTextContent("/guild/members")
       )
