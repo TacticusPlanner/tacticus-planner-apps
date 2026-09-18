@@ -391,7 +391,8 @@
       "submit": "Ausgewählte importieren",
       "close": "Schließen",
       "error": "Das V1-Profil konnte nicht importiert werden.",
-      "goalCounts": "Ziele: {{created}} erstellt, {{skipped}} übersprungen, {{failed}} fehlgeschlagen"
+      "goalCounts": "Ziele: {{created}} erstellt, {{skipped}} übersprungen, {{failed}} fehlgeschlagen",
+      "rerunRequiresPassword": "Dieser Import ist abgeschlossen. Gib dein V1-Passwort erneut ein, um einen weiteren Import zu starten."
     },
     "empty": {
       "title": "Noch keine Ziele",

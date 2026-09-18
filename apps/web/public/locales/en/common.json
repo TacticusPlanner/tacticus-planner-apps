@@ -391,7 +391,8 @@
       "submit": "Import selected",
       "close": "Close",
       "error": "The V1 profile could not be imported.",
-      "goalCounts": "Goals: {{created}} created, {{skipped}} skipped, {{failed}} failed"
+      "goalCounts": "Goals: {{created}} created, {{skipped}} skipped, {{failed}} failed",
+      "rerunRequiresPassword": "This import finished. Enter your V1 password again to run another one."
     },
     "empty": {
       "title": "No goals yet",

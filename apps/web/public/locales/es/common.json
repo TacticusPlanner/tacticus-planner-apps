@@ -391,7 +391,8 @@
       "submit": "Importar selección",
       "close": "Cerrar",
       "error": "No se pudo importar el perfil de V1.",
-      "goalCounts": "Objetivos: {{created}} creados, {{skipped}} omitidos, {{failed}} fallidos"
+      "goalCounts": "Objetivos: {{created}} creados, {{skipped}} omitidos, {{failed}} fallidos",
+      "rerunRequiresPassword": "Esta importación ha finalizado. Introduce de nuevo tu contraseña de V1 para ejecutar otra."
     },
     "empty": {
       "title": "Aún no hay objetivos",

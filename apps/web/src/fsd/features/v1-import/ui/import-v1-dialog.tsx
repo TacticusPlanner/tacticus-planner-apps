@@ -134,14 +134,21 @@ export function ImportV1Dialog({
   const importProfile = useMutation({ mutationFn: importV1Profile })
   const createGoals = useMutation({ mutationFn: createCombinedGoals })
 
+  // Single source of truth for "can this be submitted" — drives both the submit control's disabled
+  // state and the handler's guard, so the two can no longer drift the way they did before (the
+  // password condition used to live only in the handler, leaving the control enabled right after a
+  // successful run cleared the password — see design.md).
+  const canSubmit =
+    username.trim().length > 0 &&
+    password.length > 0 &&
+    Object.values(selection).some(Boolean) &&
+    status !== "submitting"
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    if (
-      !username.trim() ||
-      !password ||
-      !Object.values(selection).some(Boolean)
-    )
-      return
+    // Defensive only: the submit control is disabled whenever this doesn't hold, so a real click
+    // can't reach here with `canSubmit` false.
+    if (!canSubmit) return
     setStatus("submitting")
     setError(null)
     setResult(null)
@@ -266,6 +273,14 @@ export function ImportV1Dialog({
           {result ? (
             <ImportResult goalSummary={goalSummary} result={result} />
           ) : null}
+          {status === "success" ? (
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="v1-import-rerun-hint"
+            >
+              {t("goals.v1Import.rerunRequiresPassword")}
+            </p>
+          ) : null}
           <DialogFooter>
             <Button
               type="button"
@@ -276,10 +291,7 @@ export function ImportV1Dialog({
             </Button>
             <Button
               data-testid="v1-import-submit"
-              disabled={
-                status === "submitting" ||
-                !Object.values(selection).some(Boolean)
-              }
+              disabled={!canSubmit}
               type="submit"
             >
               {status === "submitting" ? <Spinner /> : null}

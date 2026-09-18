@@ -196,5 +196,184 @@ describe("ImportV1Dialog", () => {
     )
     expect(refetch).not.toHaveBeenCalled()
     expect(createCombinedGoals).not.toHaveBeenCalled()
+
+    // 4.1 — failure keeps the dialog usable: no lingering progress indication, username preserved,
+    // dialog stays open (rendered), and correcting the password re-enables submit.
+    expect(
+      screen.queryByTestId("v1-import-submit")?.querySelector("svg")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("v1-import-username")).toHaveValue("legacy-user")
+    expect(screen.getByTestId("v1-import-dialog")).toBeInTheDocument()
+    // The rejected password is still in the field (only a completed run clears it), so the control
+    // is already available — correcting the password keeps it that way for the retry.
+    expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
+
+    fireEvent.change(screen.getByTestId("v1-import-password"), {
+      target: { value: "a-different-password" },
+    })
+    expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
+
+    importV1Profile.mockReset().mockResolvedValue({
+      personalTacticusApiKey: { status: "Imported" },
+      tacticusUserId: { status: "Imported" },
+      guildApiToken: { status: "Imported" },
+      onslaughtProgress: { status: "Imported" },
+      campaignEventProgress: { status: "Imported" },
+      goals: { status: "Imported" },
+      goalSpecs: [],
+      goalsSkipped: 0,
+      goalIssues: [],
+    })
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+    await waitFor(() => {
+      expect(importV1Profile).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  // 1.1/1.2/2.1-2.4/3.1-3.3 — the unified `canSubmit` predicate and the post-run state.
+  describe("resubmitting after a completed run", () => {
+    beforeEach(() => {
+      importV1Profile.mockReset().mockResolvedValue({
+        personalTacticusApiKey: { status: "Imported" },
+        tacticusUserId: { status: "Imported" },
+        guildApiToken: { status: "Imported" },
+        onslaughtProgress: { status: "Imported" },
+        campaignEventProgress: { status: "Imported" },
+        goals: { status: "Skipped" },
+        goalSpecs: [],
+        goalsSkipped: 0,
+        goalIssues: [],
+      })
+    })
+
+    async function completeOneRun() {
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      fireEvent.change(screen.getByTestId("v1-import-username"), {
+        target: { value: "legacy-user" },
+      })
+      fireEvent.change(screen.getByTestId("v1-import-password"), {
+        target: { value: "secret" },
+      })
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+      await screen.findByTestId("v1-import-result")
+    }
+
+    it("disables the submit control while a submission is in flight", () => {
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      fireEvent.change(screen.getByTestId("v1-import-username"), {
+        target: { value: "legacy-user" },
+      })
+      fireEvent.change(screen.getByTestId("v1-import-password"), {
+        target: { value: "secret" },
+      })
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+    })
+
+    it("disables the submit control immediately after a completed run (1.2/2.2)", async () => {
+      await completeOneRun()
+
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+      expect(screen.getByTestId("v1-import-password")).toHaveValue("")
+    })
+
+    it("states that the run finished and the password must be re-entered (3.1)", async () => {
+      await completeOneRun()
+
+      expect(screen.getByTestId("v1-import-rerun-hint")).toHaveTextContent(
+        "goals.v1Import.rerunRequiresPassword"
+      )
+    })
+
+    it("presents an empty password field after a completed run (3.3)", async () => {
+      await completeOneRun()
+
+      expect(screen.getByTestId("v1-import-password")).toHaveValue("")
+    })
+
+    it("re-runs a second import once the password is re-entered, replacing the previous result (1.1/3.2)", async () => {
+      await completeOneRun()
+      expect(importV1Profile).toHaveBeenCalledTimes(1)
+
+      fireEvent.change(screen.getByTestId("v1-import-password"), {
+        target: { value: "secret-again" },
+      })
+      expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
+
+      importV1Profile.mockReset().mockResolvedValue({
+        personalTacticusApiKey: { status: "Skipped" },
+        tacticusUserId: { status: "Imported" },
+        guildApiToken: { status: "Imported" },
+        onslaughtProgress: { status: "Imported" },
+        campaignEventProgress: { status: "Imported" },
+        goals: { status: "Skipped" },
+        goalSpecs: [],
+        goalsSkipped: 0,
+        goalIssues: [],
+      })
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      await waitFor(() => {
+        expect(importV1Profile).toHaveBeenCalledTimes(1)
+      })
+      expect(importV1Profile).toHaveBeenCalledWith(
+        expect.objectContaining({ password: "secret-again" }),
+        expect.anything()
+      )
+      expect(await screen.findByTestId("v1-import-result")).toHaveTextContent(
+        "Skipped"
+      )
+    })
+
+    it("keeps the submit control unavailable for an empty or whitespace-only username (2.4)", () => {
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      fireEvent.change(screen.getByTestId("v1-import-password"), {
+        target: { value: "secret" },
+      })
+
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+
+      fireEvent.change(screen.getByTestId("v1-import-username"), {
+        target: { value: "   " },
+      })
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+
+      fireEvent.change(screen.getByTestId("v1-import-username"), {
+        target: { value: "legacy-user" },
+      })
+      expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
+    })
+
+    it("keeps the submit control unavailable without a selected part or a password", () => {
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      fireEvent.change(screen.getByTestId("v1-import-username"), {
+        target: { value: "legacy-user" },
+      })
+      fireEvent.change(screen.getByTestId("v1-import-password"), {
+        target: { value: "secret" },
+      })
+      expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
+
+      for (const [key] of [
+        ["personalTacticusApiKey"],
+        ["tacticusUserId"],
+        ["guildApiToken"],
+        ["goals"],
+        ["onslaughtProgress"],
+        ["campaignEventProgress"],
+      ] as const) {
+        fireEvent.click(screen.getByTestId(`v1-import-${key}`))
+      }
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+
+      fireEvent.click(screen.getByTestId("v1-import-goals"))
+      expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
+
+      fireEvent.change(screen.getByTestId("v1-import-password"), {
+        target: { value: "" },
+      })
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+    })
   })
 })
