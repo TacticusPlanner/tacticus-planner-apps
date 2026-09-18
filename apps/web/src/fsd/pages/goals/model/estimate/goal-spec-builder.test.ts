@@ -142,7 +142,24 @@ describe("buildCombinedGoalSpecs", () => {
     expect(specs[0].dependsOnIndex).toEqual([]) // Unlock
     expect(specs[1].dependsOnIndex).toEqual([0]) // Ascension -> Unlock
     expect(specs[2].dependsOnIndex).toEqual([0, 1]) // Rank -> Unlock, Ascension
-    expect(specs[3].dependsOnIndex).toEqual([0]) // Ability -> Unlock only, not Ascension
+    expect(specs[3].dependsOnIndex).toEqual([0, 1]) // Ability -> Unlock, Ascension
+  })
+
+  it("gates Ability on an auto-suggested Ascension it wasn't explicitly toggled for (8.1)", () => {
+    const specs = buildCombinedGoalSpecs({
+      ...baseSpecParams,
+      enabledTypes: new Set(["Ability"]),
+      includesUnlock: false,
+      includesAscension: true,
+      ascensionSuggestion: {
+        start: "Common:None",
+        end: "Legendary:RedThreeStars",
+      },
+    })
+
+    expect(specs.map((spec) => spec.goalType)).toEqual(["Ascension", "Ability"])
+    expect(specs[0].dependsOnIndex).toEqual([])
+    expect(specs[1].dependsOnIndex).toEqual([0]) // Ability -> Ascension
   })
 
   it("submits campaign+shop+Onslaught for Ascension but drops Onslaught and mythic for Unlock", () => {

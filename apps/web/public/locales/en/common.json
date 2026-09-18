@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Import from V1",
       "title": "Import from V1",
-      "description": "Your V1 credentials are used once and are never saved. Matching V2 goal kinds will be replaced and imported goals will be paused.",
+      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and no imported goal is paused.",
       "username": "V1 username",
       "password": "V1 password",
       "selectParts": "Choose what to import",
@@ -388,11 +388,28 @@
         "onslaughtProgress": "Onslaught progress",
         "campaignEventProgress": "Campaign event progress"
       },
+      "automaticPrerequisites": "Add missing prerequisite goals",
       "submit": "Import selected",
       "close": "Close",
       "error": "The V1 profile could not be imported.",
-      "goalCounts": "Goals: {{created}} created, {{skipped}} skipped, {{failed}} failed",
-      "rerunRequiresPassword": "This import finished. Enter your V1 password again to run another one."
+      "rerunRequiresPassword": "This import finished. Enter your V1 password again to run another one.",
+      "status": {
+        "imported": "Imported",
+        "skipped": "Skipped",
+        "failed": "Failed"
+      },
+      "report": {
+        "imported": "Imported",
+        "importedCounts": "{{goals}} goal(s) across {{units}} unit(s)",
+        "needsNoImport": "Needed no import",
+        "notImported": "Not imported",
+        "failed": "Failed",
+        "autoAdded": "Automatically added",
+        "noUnit": "Unspecified unit",
+        "copy": "Copy details",
+        "syncRequiredTitle": "Player data must be synced first",
+        "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
+      }
     },
     "empty": {
       "title": "No goals yet",

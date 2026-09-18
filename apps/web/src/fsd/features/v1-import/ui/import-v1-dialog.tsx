@@ -20,13 +20,6 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import type { UnitId } from "@workspace/game-domain"
-import {
-  getPlayerCharacter,
-  getPlayerMow,
-} from "@workspace/player-data/queries"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
-
 import {
   accountQueries,
   importV1Profile,
@@ -34,60 +27,14 @@ import {
   type ImportV1ProfileResult,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import {
-  buildCreateGoalSnapshot,
-  createCombinedGoals,
-  goalQueries,
-  type CreateCombinedGoalsRequest,
-} from "@/entities/goal"
+import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import {
   campaignEventProgressQueries,
   onslaughtProgressQueries,
 } from "@/entities/player-data-override"
 
-/**
- * Attaches an initial-state snapshot to every goal in an imported unit's spec — the backend
- * deliberately leaves `Snapshot` null (it has no client-side estimate engine), so this resolves it
- * the same way the regular create-goal flow does: `buildCreateGoalSnapshot` fed the unit's live
- * synced record. `missingUpgrades`/`estimatePreview` are left empty/null — those need the full
- * resource-requirement/estimate engine (`pages/goals`), out of reach from this lower-layer feature.
- */
-async function resolveImportedGoalSnapshot(
-  spec: CreateCombinedGoalsRequest
-): Promise<CreateCombinedGoalsRequest> {
-  const entityType = spec.entityType as "Character" | "Mow"
-  const entityId = spec.entityId as UnitId
-  const playerEntity =
-    entityType === "Mow"
-      ? await getPlayerMow(entityId)
-      : await getPlayerCharacter(entityId)
-  // `playerEntity`'s runtime shape always matches `entityType` (fetched via that same branch above) —
-  // TS can't correlate the two separately-computed values, so this cast documents an invariant the
-  // types alone can't express (mirrors use-create-goal-form.ts's identical cast).
-  const playerCharacter =
-    entityType === "Character"
-      ? (playerEntity as PlayerDataChunkDto<"characters">[number] | undefined)
-      : undefined
-  const currentActiveAbility = playerEntity?.abilities?.[0]?.level ?? 1
-  const currentPassiveAbility = playerEntity?.abilities?.[1]?.level ?? 1
-
-  return {
-    ...spec,
-    goals: spec.goals.map((goal) => ({
-      ...goal,
-      snapshot: buildCreateGoalSnapshot({
-        spec: goal,
-        entityType,
-        playerEntity,
-        playerCharacter,
-        currentActiveAbility,
-        currentPassiveAbility,
-        missingUpgrades: [],
-      }),
-    })),
-  }
-}
+import { ImportResult } from "./import-v1-result"
 
 const parts = [
   ["personalTacticusApiKey", "goals.v1Import.parts.personalKey"],
@@ -99,11 +46,6 @@ const parts = [
 ] as const
 
 type Selection = Record<(typeof parts)[number][0], boolean>
-
-/** Client-derived outcome of submitting the imported goal specs through the standard
- * `createCombinedGoals` mutation — one spec per unit, so a failure on one unit doesn't block the
- * others (see `handleSubmit`'s `Promise.allSettled`). */
-type GoalImportSummary = { created: number; skipped: number; failed: number }
 
 export function ImportV1Dialog({
   open,
@@ -125,14 +67,15 @@ export function ImportV1Dialog({
     onslaughtProgress: true,
     campaignEventProgress: true,
   })
+  // Matches the manual create-goal flow's own default (rewrite-v1-goal-import). Not a "part": it has
+  // no result row of its own, only an effect on the goal outcomes.
+  const [automaticPrerequisites, setAutomaticPrerequisites] = useState(true)
   const [status, setStatus] = useState<
     "idle" | "submitting" | "error" | "success"
   >("idle")
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ImportV1ProfileResult | null>(null)
-  const [goalSummary, setGoalSummary] = useState<GoalImportSummary | null>(null)
   const importProfile = useMutation({ mutationFn: importV1Profile })
-  const createGoals = useMutation({ mutationFn: createCombinedGoals })
 
   // Single source of truth for "can this be submitted" — drives both the submit control's disabled
   // state and the handler's guard, so the two can no longer drift the way they did before (the
@@ -152,12 +95,11 @@ export function ImportV1Dialog({
     setStatus("submitting")
     setError(null)
     setResult(null)
-    setGoalSummary(null)
     try {
       const imported = await importProfile.mutateAsync({
         username: username.trim(),
         password,
-        import: selection,
+        import: { ...selection, automaticPrerequisites },
       })
       setResult(imported)
       refetch()
@@ -172,29 +114,13 @@ export function ImportV1Dialog({
           queryKey: campaignEventProgressQueries.all(),
         })
       }
-      if (selection.goals) {
-        // The backend only parses V1 goals into create-request specs — it no longer creates them,
-        // nor resolves each goal's initial-state snapshot (no client-side estimate engine there).
-        // Submit each unit's spec through the same mutation the regular create-goal flow uses, one
-        // per unit, so one unit's failure doesn't block the rest.
-        const specs = imported.goalSpecs ?? []
-        const outcomes = await Promise.allSettled(
-          specs.map(async (spec) =>
-            createGoals.mutateAsync(await resolveImportedGoalSnapshot(spec))
-          )
-        )
-        setGoalSummary({
-          created: outcomes.filter((outcome) => outcome.status === "fulfilled")
-            .length,
-          skipped: imported.goalsSkipped,
-          failed: outcomes.filter((outcome) => outcome.status === "rejected")
-            .length,
-        })
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-          queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-        ])
-      }
+      // Unconditional: the import creates goals itself now (rewrite-v1-goal-import removed the
+      // client-side creation path), so this no longer depends on the dialog's own knowledge of
+      // whether the goals part was selected or produced anything.
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+      ])
       setPassword("")
       setStatus("success")
     } catch (caught) {
@@ -269,10 +195,18 @@ export function ImportV1Dialog({
               </label>
             ))}
           </fieldset>
+          <label className="flex items-center gap-3 text-sm">
+            <Checkbox
+              data-testid="v1-import-automaticPrerequisites"
+              checked={automaticPrerequisites}
+              onCheckedChange={(checked) =>
+                setAutomaticPrerequisites(checked === true)
+              }
+            />
+            {t("goals.v1Import.automaticPrerequisites")}
+          </label>
           {error ? <FieldError role="alert">{error}</FieldError> : null}
-          {result ? (
-            <ImportResult goalSummary={goalSummary} result={result} />
-          ) : null}
+          {result ? <ImportResult result={result} /> : null}
           {status === "success" ? (
             <p
               className="text-sm text-muted-foreground"
@@ -301,49 +235,5 @@ export function ImportV1Dialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function ImportResult({
-  result,
-  goalSummary,
-}: {
-  result: ImportV1ProfileResult
-  // Null when the "Goals" part wasn't selected — nothing was submitted, so there's no count to show.
-  goalSummary: GoalImportSummary | null
-}) {
-  const { t } = useTranslation()
-  const rows = [
-    [t("goals.v1Import.parts.personalKey"), result.personalTacticusApiKey],
-    [t("goals.v1Import.parts.userId"), result.tacticusUserId],
-    [t("goals.v1Import.parts.guildKey"), result.guildApiToken],
-    [t("goals.v1Import.parts.goals"), result.goals],
-    [t("goals.v1Import.parts.onslaughtProgress"), result.onslaughtProgress],
-    [
-      t("goals.v1Import.parts.campaignEventProgress"),
-      result.campaignEventProgress,
-    ],
-  ] as const
-  return (
-    <div
-      className="grid gap-2 rounded-xl bg-muted p-3 text-sm"
-      data-testid="v1-import-result"
-    >
-      {rows.map(([label, part]) => (
-        <div className="flex justify-between gap-3" key={label}>
-          <span>{label}</span>
-          <span className="font-medium">{part.status}</span>
-        </div>
-      ))}
-      {goalSummary ? (
-        <p className="text-xs text-muted-foreground">
-          {t("goals.v1Import.goalCounts", {
-            created: goalSummary.created,
-            skipped: goalSummary.skipped,
-            failed: goalSummary.failed,
-          })}
-        </p>
-      ) : null}
-    </div>
   )
 }

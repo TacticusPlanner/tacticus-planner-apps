@@ -367,7 +367,12 @@ export function buildCombinedGoalSpecs(params: {
           passiveEnd: params.abilityPassiveEnd,
         },
       },
-      dependsOnIndex: [unlockIndex, levelIndex].filter(
+      // Ascension included here (same as Rank above): an above-cap ability target is one of the
+      // two things that triggers the auto-suggested Ascension (use-goal-prerequisites.ts), so the
+      // Ability goal must declare that dependency, not merely follow it in submit order — the API
+      // only lifts an ability target's cap from an Ascension spec the goal depends on
+      // (fix-goal-ability-cap-effective-progression; rewrite-v1-goal-import).
+      dependsOnIndex: [unlockIndex, ascensionIndex, levelIndex].filter(
         (index): index is number => index !== null
       ),
     })

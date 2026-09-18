@@ -83,6 +83,7 @@ export function V1ImportForm({
           goals: false,
           onslaughtProgress: false,
           campaignEventProgress: false,
+          automaticPrerequisites: false,
         },
       })
 

@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Importar desde V1",
       "title": "Importar desde V1",
-      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Los tipos de objetivo de V2 coincidentes se reemplazarán y los objetivos importados quedarán en pausa.",
+      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y ningún objetivo importado queda en pausa.",
       "username": "Usuario de V1",
       "password": "Contraseña de V1",
       "selectParts": "Elige qué importar",
@@ -388,11 +388,28 @@
         "onslaughtProgress": "Progreso de Onslaught",
         "campaignEventProgress": "Progreso de eventos de campaña"
       },
+      "automaticPrerequisites": "Añadir objetivos previos faltantes",
       "submit": "Importar selección",
       "close": "Cerrar",
       "error": "No se pudo importar el perfil de V1.",
-      "goalCounts": "Objetivos: {{created}} creados, {{skipped}} omitidos, {{failed}} fallidos",
-      "rerunRequiresPassword": "Esta importación ha finalizado. Introduce de nuevo tu contraseña de V1 para ejecutar otra."
+      "rerunRequiresPassword": "Esta importación ha finalizado. Introduce de nuevo tu contraseña de V1 para ejecutar otra.",
+      "status": {
+        "imported": "Importado",
+        "skipped": "Omitido",
+        "failed": "Fallido"
+      },
+      "report": {
+        "imported": "Importado",
+        "importedCounts": "{{goals}} objetivo(s) en {{units}} unidad(es)",
+        "needsNoImport": "No necesitó importación",
+        "notImported": "No importado",
+        "failed": "Fallido",
+        "autoAdded": "Añadido automáticamente",
+        "noUnit": "Unidad no especificada",
+        "copy": "Copiar detalles",
+        "syncRequiredTitle": "Primero debes sincronizar tus datos de jugador",
+        "syncRequired": "Sincroniza tus datos de jugador y luego vuelve a importar los objetivos."
+      }
     },
     "empty": {
       "title": "Aún no hay objetivos",

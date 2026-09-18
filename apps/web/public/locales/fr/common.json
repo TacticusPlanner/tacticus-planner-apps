@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Importer depuis V1",
       "title": "Importer depuis V1",
-      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Les types d'objectifs V2 correspondants seront remplacés et les objectifs importés seront mis en pause.",
+      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Un objectif V1 correspondant à un objectif V2 existant est ignoré, pas remplacé, et aucun objectif importé n'est mis en pause.",
       "username": "Nom d'utilisateur V1",
       "password": "Mot de passe V1",
       "selectParts": "Choisissez ce qu'il faut importer",
@@ -388,11 +388,28 @@
         "onslaughtProgress": "Progression de l'Onslaught",
         "campaignEventProgress": "Progression des événements de campagne"
       },
+      "automaticPrerequisites": "Ajouter les objectifs préalables manquants",
       "submit": "Importer la sélection",
       "close": "Fermer",
       "error": "Le profil V1 n'a pas pu être importé.",
-      "goalCounts": "Objectifs : {{created}} créés, {{skipped}} ignorés, {{failed}} échoués",
-      "rerunRequiresPassword": "Cet import est terminé. Saisissez à nouveau votre mot de passe V1 pour en lancer un autre."
+      "rerunRequiresPassword": "Cet import est terminé. Saisissez à nouveau votre mot de passe V1 pour en lancer un autre.",
+      "status": {
+        "imported": "Importé",
+        "skipped": "Ignoré",
+        "failed": "Échoué"
+      },
+      "report": {
+        "imported": "Importé",
+        "importedCounts": "{{goals}} objectif(s) sur {{units}} unité(s)",
+        "needsNoImport": "Aucun import nécessaire",
+        "notImported": "Non importé",
+        "failed": "Échoué",
+        "autoAdded": "Ajouté automatiquement",
+        "noUnit": "Unité non précisée",
+        "copy": "Copier les détails",
+        "syncRequiredTitle": "Les données du joueur doivent d'abord être synchronisées",
+        "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
+      }
     },
     "empty": {
       "title": "Pas encore d'objectifs",

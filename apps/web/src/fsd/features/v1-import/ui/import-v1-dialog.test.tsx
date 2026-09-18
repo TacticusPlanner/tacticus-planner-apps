@@ -1,20 +1,24 @@
+import { useEffect, useState } from "react"
 import { fireEvent, render, screen, waitFor } from "@/test/render"
 import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import type { ImportPartResult, V1GoalOutcome } from "@/entities/account"
 
 const importV1Profile = vi.fn()
-const createCombinedGoals = vi.fn()
-const buildCreateGoalSnapshot = vi.fn()
-const getPlayerCharacter = vi.fn()
-const getPlayerMow = vi.fn()
 const refetch = vi.fn()
 const onOpenChange = vi.fn()
 const account = { homeAccountId: "account-1" }
 const instance = { getActiveAccount: () => account }
-const mockSnapshot = { initialRank: "Stone1", initialUnlocked: true }
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) =>
+      options
+        ? `${key} ${Object.entries(options)
+            .map(([k, v]) => `${k}=${v}`)
+            .join(" ")}`
+        : key,
+  }),
 }))
 
 vi.mock("@azure/msal-react", () => ({
@@ -28,9 +32,7 @@ vi.mock("@/entities/account", () => ({
 }))
 
 vi.mock("@/entities/goal", () => ({
-  createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
-  buildCreateGoalSnapshot: (...args: unknown[]) =>
-    buildCreateGoalSnapshot(...args),
+  GoalTypeBadge: ({ type }: { type: string }) => <span>{type}</span>,
   goalQueries: { all: () => ["goals"] },
 }))
 
@@ -52,65 +54,100 @@ vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},
 }))
 
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacter: (...args: unknown[]) => getPlayerCharacter(...args),
-  getPlayerMow: (...args: unknown[]) => getPlayerMow(...args),
+vi.mock("dexie-react-hooks", () => ({
+  useLiveQuery: (
+    querier: () => unknown,
+    deps: unknown[] = [],
+    defaultResult?: unknown
+  ) => {
+    const [value, setValue] = useState<unknown>(defaultResult)
+    useEffect(() => {
+      const result = querier()
+      if (result instanceof Promise) {
+        let active = true
+        void result.then((resolved) => {
+          if (active) setValue(resolved)
+        })
+        return () => {
+          active = false
+        }
+      }
+      setValue(result)
+      return undefined
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, deps)
+    return value
+  },
+}))
+
+vi.mock("@workspace/game-catalog/queries", () => ({
+  getCharactersMap: () =>
+    new Map([["hero1", { id: "hero1", name: "Hero One" }]]),
+  getMowsMap: () => new Map([["mow1", { id: "mow1", name: "Stormbird" }]]),
 }))
 
 import { ImportV1Dialog } from "./import-v1-dialog"
 
-const goalSpec = (entityId: string) => ({
-  entityType: "Character",
-  entityId,
-  goals: [{ goalType: "Rank", config: {}, dependsOnIndex: [] }],
-})
+const imported: ImportPartResult = {
+  status: "Imported",
+  code: null,
+  message: null,
+}
+const notSelected: ImportPartResult = {
+  status: "Skipped",
+  code: "not_selected",
+  message: null,
+}
 
-const submittedSpec = (entityId: string) => ({
-  entityType: "Character",
-  entityId,
-  goals: [
-    {
-      goalType: "Rank",
-      config: {},
-      dependsOnIndex: [],
-      snapshot: mockSnapshot,
-    },
-  ],
-})
+function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
+  return {
+    status: "Created",
+    code: "goal_created",
+    message: "Imported from V1.",
+    entityType: "Character",
+    entityId: "hero1",
+    goalType: "Rank",
+    goalId: "goal-1",
+    sourceGoalId: "v1-goal-1",
+    ...overrides,
+  }
+}
+
+function response(overrides: Record<string, unknown> = {}) {
+  return {
+    tacticusUserId: imported,
+    personalTacticusApiKey: imported,
+    guildApiToken: imported,
+    onslaughtProgress: notSelected,
+    campaignEventProgress: notSelected,
+    goals: imported,
+    outcomes: [],
+    ...overrides,
+  }
+}
+
+async function fillCredentials() {
+  fireEvent.change(screen.getByTestId("v1-import-username"), {
+    target: { value: "legacy-user" },
+  })
+  fireEvent.change(screen.getByTestId("v1-import-password"), {
+    target: { value: "secret" },
+  })
+}
 
 describe("ImportV1Dialog", () => {
   beforeEach(() => {
-    importV1Profile.mockReset().mockResolvedValue({
-      personalTacticusApiKey: { status: "Imported" },
-      tacticusUserId: { status: "Imported" },
-      guildApiToken: { status: "Skipped" },
-      onslaughtProgress: { status: "Imported" },
-      campaignEventProgress: { status: "Imported" },
-      goals: { status: "Imported" },
-      goalSpecs: [goalSpec("unit-1"), goalSpec("unit-2")],
-      goalsSkipped: 3,
-      goalIssues: [],
-    })
-    createCombinedGoals.mockReset().mockResolvedValue({ goals: [] })
-    buildCreateGoalSnapshot.mockReset().mockReturnValue(mockSnapshot)
-    getPlayerCharacter.mockReset().mockResolvedValue(undefined)
-    getPlayerMow.mockReset().mockResolvedValue(undefined)
+    importV1Profile.mockReset().mockResolvedValue(response())
     refetch.mockReset()
     onOpenChange.mockReset()
   })
 
-  it("submits credentials with the user's selected import parts, then creates each imported goal spec through the standard create mutation", async () => {
-    const invalidateQueries = vi.spyOn(
-      QueryClient.prototype,
-      "invalidateQueries"
-    )
+  it("submits credentials with the user's selected import parts and the prerequisites flag", async () => {
     render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
 
+    await fillCredentials()
     fireEvent.change(screen.getByTestId("v1-import-username"), {
       target: { value: "  legacy-user  " },
-    })
-    fireEvent.change(screen.getByTestId("v1-import-password"), {
-      target: { value: "secret" },
     })
     fireEvent.click(screen.getByTestId("v1-import-guildApiToken"))
     fireEvent.click(screen.getByTestId("v1-import-submit"))
@@ -127,158 +164,433 @@ describe("ImportV1Dialog", () => {
             goals: true,
             onslaughtProgress: true,
             campaignEventProgress: true,
+            automaticPrerequisites: true,
           },
         },
         expect.anything()
       )
     })
+  })
+
+  it("issues no goal-creation request of its own (3.1)", async () => {
+    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    await screen.findByTestId("v1-import-result")
+    // No mocked goal-creation mutation exists at all in this test file — a stray call would throw
+    // "not a function" rather than silently pass, so the absence of any such mock is itself the
+    // assertion that the dialog no longer submits goals.
+    expect(importV1Profile).toHaveBeenCalledTimes(1)
+  })
+
+  it("sends automaticPrerequisites=false once the option is cleared (7.1)", async () => {
+    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-automaticPrerequisites"))
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
 
     await waitFor(() => {
-      expect(createCombinedGoals).toHaveBeenCalledTimes(2)
+      expect(importV1Profile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          import: expect.objectContaining({ automaticPrerequisites: false }),
+        }),
+        expect.anything()
+      )
     })
-    expect(getPlayerCharacter).toHaveBeenCalledTimes(2)
-    expect(getPlayerMow).not.toHaveBeenCalled()
-    expect(createCombinedGoals.mock.calls[0][0]).toEqual(
-      submittedSpec("unit-1")
-    )
-    expect(createCombinedGoals.mock.calls[1][0]).toEqual(
-      submittedSpec("unit-2")
-    )
+  })
 
-    expect(await screen.findByTestId("v1-import-result")).toHaveTextContent(
-      "Imported"
+  it("defaults the add-missing-prerequisites option on", () => {
+    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    expect(
+      screen.getByTestId("v1-import-automaticPrerequisites")
+    ).toHaveAttribute("data-state", "checked")
+  })
+
+  it("refreshes goal and project queries unconditionally after an import (3.3)", async () => {
+    const invalidateQueries = vi.spyOn(
+      QueryClient.prototype,
+      "invalidateQueries"
     )
-    expect(refetch).toHaveBeenCalledTimes(1)
-    expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: ["player-data-overrides"],
-    })
-    expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: ["player-data-overrides", "campaign-events"],
-    })
+    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-goals"))
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    await screen.findByTestId("v1-import-result")
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["goals"] })
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["projects"] })
     invalidateQueries.mockRestore()
   })
 
-  it("counts a failed goal-spec submission without blocking the others", async () => {
-    createCombinedGoals
-      .mockResolvedValueOnce({ goals: [] })
-      .mockRejectedValueOnce(new Error("create failed"))
-    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+  describe("bucketed report", () => {
+    it("reports the imported bucket with distinct goal and unit counts (4.2)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({ entityId: "unit-1", goalType: "Unlock" }),
+            outcome({ entityId: "unit-1", goalType: "Rank" }),
+            outcome({ entityId: "unit-2", goalType: "Rank" }),
+            outcome({ entityId: "unit-3", goalType: "Rank" }),
+            outcome({ entityId: "unit-4", goalType: "Rank" }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
 
-    fireEvent.change(screen.getByTestId("v1-import-username"), {
-      target: { value: "legacy-user" },
+      const bucket = await screen.findByTestId("v1-import-bucket-imported")
+      expect(bucket).toHaveTextContent("goals=5")
+      expect(bucket).toHaveTextContent("units=4")
     })
-    fireEvent.change(screen.getByTestId("v1-import-password"), {
-      target: { value: "secret" },
+
+    it("collapses the needed-no-import bucket, listing its members only once expanded (4.3)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({
+              code: "target_already_reached",
+              status: "Skipped",
+              entityId: "hero1",
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      const trigger = await screen.findByTestId(
+        "v1-import-bucket-needsNoImport"
+      )
+      expect(screen.queryByText("Imported from V1.")).not.toBeInTheDocument()
+      fireEvent.click(trigger)
+      expect(await screen.findByText("Imported from V1.")).toBeInTheDocument()
     })
+
+    it("shows the not-imported and failed buckets expanded when non-empty (4.4)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({
+              code: "unknown_unit",
+              status: "Failed",
+              entityId: "V1RawId",
+              goalType: null,
+              message: "The goal's character is not in the V2 Game Catalog.",
+            }),
+            outcome({
+              code: "target_rejected",
+              status: "Failed",
+              entityId: "hero1",
+              message: "The target rank exceeds the unit's cap.",
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(
+        await screen.findByTestId("v1-import-bucket-notImported")
+      ).toHaveTextContent("V1RawId")
+      expect(screen.getByTestId("v1-import-bucket-failed")).toHaveTextContent(
+        "hero1"
+      )
+    })
+
+    it("shows only the imported bucket when every goal was created (4.5)", async () => {
+      importV1Profile.mockResolvedValue(response({ outcomes: [outcome({})] }))
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      await screen.findByTestId("v1-import-bucket-imported")
+      expect(
+        screen.queryByTestId("v1-import-bucket-needsNoImport")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId("v1-import-bucket-notImported")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId("v1-import-bucket-failed")
+      ).not.toBeInTheDocument()
+    })
+
+    it("shows the raw V1 unit identifier for an unknown-unit outcome (4.6)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({
+              code: "unknown_unit",
+              status: "Failed",
+              entityId: "totally-unknown-v1-id",
+              goalType: null,
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(
+        await screen.findByTestId("v1-import-bucket-notImported")
+      ).toHaveTextContent("totally-unknown-v1-id")
+    })
+
+    it("marks an automatically added prerequisite and names the goal it was added for (4.7)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({
+              code: "prerequisite_added",
+              entityId: "hero1",
+              goalType: "Unlock",
+              message:
+                "Automatically added because it is required by 1 imported goal(s) for this unit.",
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      const bucket = await screen.findByTestId("v1-import-bucket-imported")
+      expect(bucket).toHaveTextContent("goals.v1Import.report.autoAdded")
+      expect(bucket).toHaveTextContent(
+        "Automatically added because it is required by 1 imported goal(s) for this unit."
+      )
+    })
+  })
+
+  describe("part-level reporting", () => {
+    it("shows a qualified success alongside its success status (5.1)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          campaignEventProgress: {
+            status: "Imported",
+            code: "challenge_progress_not_imported",
+            message:
+              "Regular event progress was imported. V1 challenge counts were not imported because exact battles are unknown.",
+          },
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(await screen.findByTestId("v1-import-result")).toHaveTextContent(
+        "V1 challenge counts were not imported"
+      )
+    })
+
+    it("explains a skipped part's reason (5.1)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          guildApiToken: {
+            status: "Skipped",
+            code: "missing_guild_api_token",
+            message: "The V1 profile has no guild API token.",
+          },
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(await screen.findByTestId("v1-import-result")).toHaveTextContent(
+        "The V1 profile has no guild API token."
+      )
+    })
+
+    it("omits a row for a part the user did not select (7.1 selection / spec)", async () => {
+      // The dialog decides per the server's own "not_selected" code (ImportPartResult.NotSelected),
+      // not by re-checking its own client-side selection state — so the fixture must echo that code,
+      // the same way the real API does for a cleared part.
+      importV1Profile.mockResolvedValue(
+        response({ guildApiToken: notSelected })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-guildApiToken"))
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      const result = await screen.findByTestId("v1-import-result")
+      expect(result).not.toHaveTextContent("goals.v1Import.parts.guildKey")
+    })
+
+    it("does not report the goals part as success when nothing was created (5.3)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({
+              code: "unknown_unit",
+              status: "Failed",
+              goalType: null,
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      const result = await screen.findByTestId("v1-import-result")
+      expect(result).toHaveTextContent("goals.v1Import.status.failed")
+    })
+
+    it("presents the sync-required refusal as a blocking explanation naming the remedy (5.4)", async () => {
+      importV1Profile.mockResolvedValue(
+        response({
+          goals: {
+            status: "Failed",
+            code: "player_data_required",
+            message: "Player data must be synced before goals can be imported.",
+          },
+          outcomes: [
+            outcome({
+              code: "player_data_required",
+              status: "Failed",
+              entityType: null,
+              entityId: null,
+              goalType: null,
+              sourceGoalId: null,
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(
+        await screen.findByTestId("v1-import-sync-required")
+      ).toHaveTextContent("goals.v1Import.report.syncRequired")
+      expect(
+        screen.queryByTestId("v1-import-bucket-failed")
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it("renders no machine-readable outcome code across all four buckets (9.4)", async () => {
+    const codes = [
+      "goal_created",
+      "prerequisite_added",
+      "target_already_reached",
+      "goal_already_exists",
+      "duplicate_goal_merged",
+      "prerequisite_target_insufficient",
+      "unknown_unit",
+      "unsupported_goal_type",
+      "invalid_progression",
+      "missing_target",
+      "target_rejected",
+      "project_slot_conflict",
+    ]
+    importV1Profile.mockResolvedValue(
+      response({ outcomes: codes.map((code) => outcome({ code })) })
+    )
+    render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+    await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
     const result = await screen.findByTestId("v1-import-result")
-    await waitFor(() => {
-      expect(createCombinedGoals).toHaveBeenCalledTimes(2)
+    // The needed-no-import bucket is collapsed by default — expand it too before checking, since a
+    // collapsed accordion's content is unmounted, not merely hidden.
+    fireEvent.click(screen.getByTestId("v1-import-bucket-needsNoImport"))
+    for (const code of codes) {
+      expect(result).not.toHaveTextContent(code)
+    }
+  })
+
+  describe("copy details", () => {
+    it("copies the not-imported and failed outcomes to the clipboard (6.1)", async () => {
+      const writeText = vi.fn().mockResolvedValue(undefined)
+      vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } })
+      importV1Profile.mockResolvedValue(
+        response({
+          outcomes: [
+            outcome({
+              code: "unknown_unit",
+              status: "Failed",
+              entityId: "raw-v1-id",
+              goalType: null,
+              message: "not in the catalog",
+            }),
+          ],
+        })
+      )
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      fireEvent.click(await screen.findByTestId("v1-import-copy"))
+
+      expect(writeText).toHaveBeenCalledTimes(1)
+      const text = writeText.mock.calls[0][0] as string
+      expect(text).toContain("raw-v1-id")
+      expect(text).toContain("not in the catalog")
+      vi.unstubAllGlobals()
     })
-    expect(result).toHaveTextContent("goals.v1Import.goalCounts")
+
+    it("offers no copy action when nothing needs attention (6.3)", async () => {
+      importV1Profile.mockResolvedValue(response({ outcomes: [outcome({})] }))
+      render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      await screen.findByTestId("v1-import-result")
+      expect(screen.queryByTestId("v1-import-copy")).not.toBeInTheDocument()
+    })
   })
 
   it("shows an import failure without refreshing account state", async () => {
     importV1Profile.mockRejectedValue(new Error("network"))
     render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
-
-    fireEvent.change(screen.getByTestId("v1-import-username"), {
-      target: { value: "legacy-user" },
-    })
-    fireEvent.change(screen.getByTestId("v1-import-password"), {
-      target: { value: "secret" },
-    })
+    await fillCredentials()
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "goals.v1Import.error"
     )
     expect(refetch).not.toHaveBeenCalled()
-    expect(createCombinedGoals).not.toHaveBeenCalled()
 
-    // 4.1 — failure keeps the dialog usable: no lingering progress indication, username preserved,
-    // dialog stays open (rendered), and correcting the password re-enables submit.
     expect(
       screen.queryByTestId("v1-import-submit")?.querySelector("svg")
     ).not.toBeInTheDocument()
     expect(screen.getByTestId("v1-import-username")).toHaveValue("legacy-user")
     expect(screen.getByTestId("v1-import-dialog")).toBeInTheDocument()
-    // The rejected password is still in the field (only a completed run clears it), so the control
-    // is already available — correcting the password keeps it that way for the retry.
     expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
-
-    fireEvent.change(screen.getByTestId("v1-import-password"), {
-      target: { value: "a-different-password" },
-    })
-    expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
-
-    importV1Profile.mockReset().mockResolvedValue({
-      personalTacticusApiKey: { status: "Imported" },
-      tacticusUserId: { status: "Imported" },
-      guildApiToken: { status: "Imported" },
-      onslaughtProgress: { status: "Imported" },
-      campaignEventProgress: { status: "Imported" },
-      goals: { status: "Imported" },
-      goalSpecs: [],
-      goalsSkipped: 0,
-      goalIssues: [],
-    })
-    fireEvent.click(screen.getByTestId("v1-import-submit"))
-    await waitFor(() => {
-      expect(importV1Profile).toHaveBeenCalledTimes(1)
-    })
   })
 
-  // 1.1/1.2/2.1-2.4/3.1-3.3 — the unified `canSubmit` predicate and the post-run state.
   describe("resubmitting after a completed run", () => {
-    beforeEach(() => {
-      importV1Profile.mockReset().mockResolvedValue({
-        personalTacticusApiKey: { status: "Imported" },
-        tacticusUserId: { status: "Imported" },
-        guildApiToken: { status: "Imported" },
-        onslaughtProgress: { status: "Imported" },
-        campaignEventProgress: { status: "Imported" },
-        goals: { status: "Skipped" },
-        goalSpecs: [],
-        goalsSkipped: 0,
-        goalIssues: [],
-      })
-    })
-
     async function completeOneRun() {
       render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
-      fireEvent.change(screen.getByTestId("v1-import-username"), {
-        target: { value: "legacy-user" },
-      })
-      fireEvent.change(screen.getByTestId("v1-import-password"), {
-        target: { value: "secret" },
-      })
+      await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
       await screen.findByTestId("v1-import-result")
     }
 
-    it("disables the submit control while a submission is in flight", () => {
+    it("disables the submit control while a submission is in flight", async () => {
       render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
-      fireEvent.change(screen.getByTestId("v1-import-username"), {
-        target: { value: "legacy-user" },
-      })
-      fireEvent.change(screen.getByTestId("v1-import-password"), {
-        target: { value: "secret" },
-      })
+      await fillCredentials()
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
       expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
     })
 
-    it("disables the submit control immediately after a completed run (1.2/2.2)", async () => {
+    it("disables the submit control immediately after a completed run", async () => {
       await completeOneRun()
 
       expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
       expect(screen.getByTestId("v1-import-password")).toHaveValue("")
     })
 
-    it("states that the run finished and the password must be re-entered (3.1)", async () => {
+    it("states that the run finished and the password must be re-entered", async () => {
       await completeOneRun()
 
       expect(screen.getByTestId("v1-import-rerun-hint")).toHaveTextContent(
@@ -286,13 +598,7 @@ describe("ImportV1Dialog", () => {
       )
     })
 
-    it("presents an empty password field after a completed run (3.3)", async () => {
-      await completeOneRun()
-
-      expect(screen.getByTestId("v1-import-password")).toHaveValue("")
-    })
-
-    it("re-runs a second import once the password is re-entered, replacing the previous result (1.1/3.2)", async () => {
+    it("re-runs a second import once the password is re-entered, replacing the previous result", async () => {
       await completeOneRun()
       expect(importV1Profile).toHaveBeenCalledTimes(1)
 
@@ -301,17 +607,9 @@ describe("ImportV1Dialog", () => {
       })
       expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
 
-      importV1Profile.mockReset().mockResolvedValue({
-        personalTacticusApiKey: { status: "Skipped" },
-        tacticusUserId: { status: "Imported" },
-        guildApiToken: { status: "Imported" },
-        onslaughtProgress: { status: "Imported" },
-        campaignEventProgress: { status: "Imported" },
-        goals: { status: "Skipped" },
-        goalSpecs: [],
-        goalsSkipped: 0,
-        goalIssues: [],
-      })
+      importV1Profile
+        .mockReset()
+        .mockResolvedValue(response({ personalTacticusApiKey: notSelected }))
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
       await waitFor(() => {
@@ -321,12 +619,10 @@ describe("ImportV1Dialog", () => {
         expect.objectContaining({ password: "secret-again" }),
         expect.anything()
       )
-      expect(await screen.findByTestId("v1-import-result")).toHaveTextContent(
-        "Skipped"
-      )
+      await screen.findByTestId("v1-import-result")
     })
 
-    it("keeps the submit control unavailable for an empty or whitespace-only username (2.4)", () => {
+    it("keeps the submit control unavailable for an empty or whitespace-only username", () => {
       render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
       fireEvent.change(screen.getByTestId("v1-import-password"), {
         target: { value: "secret" },
@@ -345,23 +641,18 @@ describe("ImportV1Dialog", () => {
       expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
     })
 
-    it("keeps the submit control unavailable without a selected part or a password", () => {
+    it("keeps the submit control unavailable without a selected part or a password", async () => {
       render(<ImportV1Dialog open onOpenChange={onOpenChange} />)
-      fireEvent.change(screen.getByTestId("v1-import-username"), {
-        target: { value: "legacy-user" },
-      })
-      fireEvent.change(screen.getByTestId("v1-import-password"), {
-        target: { value: "secret" },
-      })
+      await fillCredentials()
       expect(screen.getByTestId("v1-import-submit")).toBeEnabled()
 
-      for (const [key] of [
-        ["personalTacticusApiKey"],
-        ["tacticusUserId"],
-        ["guildApiToken"],
-        ["goals"],
-        ["onslaughtProgress"],
-        ["campaignEventProgress"],
+      for (const key of [
+        "personalTacticusApiKey",
+        "tacticusUserId",
+        "guildApiToken",
+        "goals",
+        "onslaughtProgress",
+        "campaignEventProgress",
       ] as const) {
         fireEvent.click(screen.getByTestId(`v1-import-${key}`))
       }

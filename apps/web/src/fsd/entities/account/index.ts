@@ -8,6 +8,7 @@ export type {
   ImportPartResult,
   ImportV1ProfileRequest,
   ImportV1ProfileResult,
+  V1GoalOutcome,
 } from "./api/account.api"
 export { useCurrentUser, type CurrentUserState } from "./model/use-current-user"
 export type { CurrentUser } from "./model/current-user"

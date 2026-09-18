@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Aus V1 importieren",
       "title": "Aus V1 importieren",
-      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Übereinstimmende V2-Zielarten werden ersetzt, und importierte Ziele werden pausiert.",
+      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und kein importiertes Ziel wird pausiert.",
       "username": "V1-Benutzername",
       "password": "V1-Passwort",
       "selectParts": "Wähle aus, was importiert werden soll",
@@ -388,11 +388,28 @@
         "onslaughtProgress": "Onslaught-Fortschritt",
         "campaignEventProgress": "Kampagnen-Event-Fortschritt"
       },
+      "automaticPrerequisites": "Fehlende Voraussetzungsziele hinzufügen",
       "submit": "Ausgewählte importieren",
       "close": "Schließen",
       "error": "Das V1-Profil konnte nicht importiert werden.",
-      "goalCounts": "Ziele: {{created}} erstellt, {{skipped}} übersprungen, {{failed}} fehlgeschlagen",
-      "rerunRequiresPassword": "Dieser Import ist abgeschlossen. Gib dein V1-Passwort erneut ein, um einen weiteren Import zu starten."
+      "rerunRequiresPassword": "Dieser Import ist abgeschlossen. Gib dein V1-Passwort erneut ein, um einen weiteren Import zu starten.",
+      "status": {
+        "imported": "Importiert",
+        "skipped": "Übersprungen",
+        "failed": "Fehlgeschlagen"
+      },
+      "report": {
+        "imported": "Importiert",
+        "importedCounts": "{{goals}} Ziel(e) über {{units}} Einheit(en)",
+        "needsNoImport": "Kein Import nötig",
+        "notImported": "Nicht importiert",
+        "failed": "Fehlgeschlagen",
+        "autoAdded": "Automatisch hinzugefügt",
+        "noUnit": "Keine bestimmte Einheit",
+        "copy": "Details kopieren",
+        "syncRequiredTitle": "Spielerdaten müssen zuerst synchronisiert werden",
+        "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
+      }
     },
     "empty": {
       "title": "Noch keine Ziele",

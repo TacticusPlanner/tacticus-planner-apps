@@ -39,8 +39,7 @@ function response(personalTacticusApiKey: ImportPartResult, overrides = {}) {
     onslaughtProgress: notSelected,
     campaignEventProgress: notSelected,
     goals: notSelected,
-    goalsSkipped: 0,
-    goalIssues: [],
+    outcomes: [],
     ...overrides,
   }
 }
@@ -207,6 +206,7 @@ describe("V1ImportForm", () => {
       goals: false,
       onslaughtProgress: false,
       campaignEventProgress: false,
+      automaticPrerequisites: false,
     })
   })
 })
