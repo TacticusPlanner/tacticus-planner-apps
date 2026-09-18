@@ -99,12 +99,19 @@
 - [x] 8.1 Declare the Ability goal's dependency on the auto-suggested Ascension
       goal in the combined-spec builder, for Characters and Machines of War;
       verify with unit tests on the emitted dependency edges
-- [ ] 8.2 Verify against the running stack that a manual create-goal submission
+- [x] 8.2 Verify against the running stack that a manual create-goal submission
       with an above-cap ability target and an accepted Ascension suggestion is
       now accepted rather than refused — the end-to-end check deferred from
-      `fix-goal-ability-cap-effective-progression`. **Deferred**: requires the
-      Aspire stack running and a live-browser session; not exercised in this
-      session (same deferral pattern as the two prior changes on this branch)
+      `fix-goal-ability-cap-effective-progression`. Done — confirmed
+      `goal-spec-builder.ts`'s `buildCombinedGoalSpecs` emits the Ability
+      spec's `dependsOnIndex` including `ascensionIndex` (line 375) exactly
+      as design intends, then exercised that same wire shape directly against
+      the running API with the real account: `POST me/goals/combined` for
+      `ultraCalgar` with an Ascension spec (target crossing into Mythic
+      rarity) and an Ability spec (`dependsOnIndex: [0]`, target above the
+      live Legendary cap) returned 200 and created both goals. See the API
+      repo's `fix-goal-ability-cap-effective-progression` task 6.1 for the
+      full request/response evidence; both test goals deleted afterward
 
 ## 9. i18n
 
@@ -145,21 +152,56 @@
 - [x] 10.1 Rewrite the import dialog test suite: drop the goal-creation mocks,
       add coverage for rendering outcomes across all four buckets from stubbed
       responses; verify `pnpm test:run` passes
-- [ ] 10.2 Start the stack from the workspace root through Aspire, wait for
+- [x] 10.2 Start the stack from the workspace root through Aspire, wait for
       `web` and `api` to report healthy, and import a real V1 profile with goals
       against an account with synced player data; verify the report's goal count
-      matches the goals actually present in the goals list. **Deferred**:
-      requires the running Aspire stack and a live browser session
-- [ ] 10.3 Against the same stack, import goals for an account with **no**
+      matches the goals actually present in the goals list. Done — imported
+      the real account's own V1 profile through `/account/v1-import` against
+      the running stack: the report showed 29 outcomes (12 Rank, 12 Level, 2
+      Ascension, 2 Unlock, 1 Ability across 16 units), matching the goals list
+      exactly (`GET me/goals` returned 29, cross-checked against Postgres)
+- [x] 10.3 Against the same stack, import goals for an account with **no**
       synced player data and verify the sync-required explanation is shown and
-      no goals appear. **Deferred**: same reason as 10.2
-- [ ] 10.4 Against the same stack, import a profile containing a goal for a unit
+      no goals appear. Done — the real 29-goal import in 10.2 was preceded by
+      one import attempt before that account's player-data sync had
+      completed: 0 goals were created and the `Alert` at
+      `[data-testid="v1-import-sync-required"]` rendered
+      "Player data must be synced first / Sync your player data, then import
+      goals again to bring in your V1 goals." Re-verified the rendering path
+      itself (real component, mocked `goals` response with
+      `code: "player_data_required"`) against the live `/account/v1-import`
+      page this session to confirm the exact copy and that no outcome buckets
+      render alongside it
+- [x] 10.4 Against the same stack, import a profile containing a goal for a unit
       not in the catalog and verify the not-imported bucket names the V1
       identifier, then use the copy action and verify the clipboard text is
-      pasteable into a bug report. **Deferred**: same reason as 10.2
+      pasteable into a bug report. Done — the real account has no such V1
+      goal, so verified via a mocked `/v1-import` response (real component,
+      real page, live stack, only the fetch response body substituted) with
+      an `unknown_unit` outcome for `v1-unit-9f3a-ghost`: the "Not imported"
+      bucket rendered `v1-unit-9f3a-ghost — V1 identifier
+    "v1-unit-9f3a-ghost" does not match any known unit.`, and clicking
+      Copy details wrote plain, pasteable text naming the same identifier and
+      reason to the clipboard (`navigator.clipboard.writeText` intercepted
+      and inspected directly)
 - [ ] 10.5 Repeat 10.2 at one viewport below 768px and one at or above 768px and
       verify the report is legible and scrollable in both, with no horizontal
-      page scroll. **Deferred**: same reason as 10.2
+      page scroll.
+
+      Partially deferred: this session's browser automation tool
+          (`resize_window`) reported success but did not actually change
+          `window.innerWidth` in this sandboxed environment (confirmed stuck at
+          1536px after resizing to both 420x800 and 375x700), so a real
+          viewport-driven breakpoint switch could not be exercised live. Verified
+          instead by source review of `import-v1-result.tsx`/`v1-import-panel.tsx`:
+          every layout primitive is `grid`/`flex flex-wrap` with no fixed-pixel
+          widths, the outcome list scrolls only vertically (`ScrollArea
+          className="max-h-72"`), and outcome rows wrap their badges/text
+          (`flex flex-wrap`) rather than truncating or overflowing — the
+          component has no structural path to horizontal overflow at any width.
+          Not the same as an on-screen confirmation at each breakpoint; left
+          unchecked rather than claimed as fully live-verified.
+
 - [x] 10.6 No Joyride tutorial work applies: the change alters a dialog's result
       presentation, not a page or a page flow, and adds no route or step target.
       Verified by confirming no new route or tour target is introduced
@@ -179,4 +221,5 @@
 - [ ] 12.1 Verification against a large real V1 profile (near V1's hundred-goal
       limit) needs a volunteer account from a reporter, to confirm the report
       stays legible at that size. Track as an issue and record the link here;
-      do not check off 10.2 in its place
+      do not check off 10.2 in its place. Tracked:
+      https://github.com/TacticusPlanner/tacticus-planner-apps/issues/146

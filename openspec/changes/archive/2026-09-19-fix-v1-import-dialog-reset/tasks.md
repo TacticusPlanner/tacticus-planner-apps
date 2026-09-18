@@ -70,22 +70,49 @@ enabled once the password is corrected.
 
 - [x] 6.1 Run `pnpm test:run` and confirm the import dialog suite passes,
       including the new resubmit coverage
-- [ ] 6.2 Start the stack from the workspace root through Aspire, wait for
+- [x] 6.2 Start the stack from the workspace root through Aspire, wait for
       `web` and `api` to report healthy, sign in with an account that has a V1
       profile, run an import from the account menu, and verify the submit
       control is disabled with the stated reason afterwards and that
-      re-entering the password runs a second import
-- [ ] 6.3 Against the same stack, submit deliberately wrong V1 credentials and
+      re-entering the password runs a second import. Done, against the actual
+      shipped surface for this behavior — **naming note**: the account-menu
+      entry point (`auth-control.tsx`'s "Import from V1" action) now
+      navigates to the standalone `/account/v1-import` page instead of
+      opening a dialog (`rewrite-v1-goal-import` replaced `ImportV1Dialog`
+      with the page-hosted `V1ImportPanel`); every submit/reset behavior this
+      task describes lives unchanged in that panel, so this task is verified
+      against it rather than a dialog that no longer exists. Ran a real
+      import against the running stack and the real account (see
+      `rewrite-v1-goal-import` task 10.2): after it completed, the submit
+      control was disabled and the password field was empty while the
+      username stayed populated; re-entering a password and submitting again
+      issued a second `POST me/goals/v1-import` and replaced the displayed
+      result with that run's own response
+- [x] 6.3 Against the same stack, submit deliberately wrong V1 credentials and
       verify the failure is shown, the username is preserved, no progress
-      indication remains, and correcting the password allows a retry
+      indication remains, and correcting the password allows a retry. Done —
+      the real V1 backend was not deliberately fed wrong credentials (that
+      would risk a real V1 account lockout/rate-limit); instead verified
+      against the live page with only the `POST .../v1-import` response
+      substituted for a 400 (same technique as `rewrite-v1-goal-import` task
+      10.4): the error alert rendered "Invalid V1 username or password.", the
+      username field kept its value, no spinner/progress indicator remained,
+      and the submit control was already enabled (matching this file's own
+      4.1 correction: the control was never disabled by the failure in the
+      first place, so "correcting the password allows a retry" holds
+      trivially without a separate re-enable step)
 - [ ] 6.4 Repeat 6.2 at one viewport below 768px and one at or above 768px and
       confirm the dialog behaves identically
 
-Deferred / out-of-session: 6.2, 6.3, and 6.4 require starting the Aspire
-stack and driving the running app in a browser. Deferred pending the full
-pipeline (this change, `add-missing-unlock-blocker-reason`, and the
-`rewrite-v1-goal-import` change on both repos) being implemented, per the
-user's request to batch all manual verification at the end.
+      Partially deferred: same tool limitation recorded in
+          `rewrite-v1-goal-import` task 10.5 — this session's `resize_window`
+          call did not actually change `window.innerWidth` in this sandboxed
+          browser, so a real viewport-driven breakpoint switch could not be
+          exercised. `v1-import-panel.tsx` uses no fixed-pixel widths or
+          breakpoint-conditional rendering of its own (`flex flex-col gap-4`
+          throughout), so there is no code path for the submit/reset behavior
+          itself to differ by viewport; not confirmed on-screen at either
+          breakpoint, so left unchecked rather than claimed as live-verified.
 
 - [x] 6.5 No Joyride tutorial work applies: this change alters a dialog's
       submit-state handling, not a page or a page flow, and introduces no new

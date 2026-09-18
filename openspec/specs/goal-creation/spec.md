@@ -110,8 +110,12 @@ too-high Rank target:
   already included.
 
 Accepting a suggestion SHALL prepend the corresponding goal to the combined set with the
-correct dependency ordering. This applies to Character goals; Machine-of-War Ability goals
-SHALL auto-suggest Ascension only (a MoW has no Level goal).
+correct dependency ordering. The Ability goal SHALL additionally **declare a dependency
+on** the Ascension goal whose suggestion its target drove, not merely be ordered after it;
+the declared dependency is what establishes that the ability target becomes reachable, and
+without it the target is refused as exceeding the unit's cap. This applies to Character
+goals; Machine-of-War Ability goals SHALL auto-suggest Ascension only (a MoW has no Level
+goal), and SHALL declare the same dependency.
 
 #### Scenario: Target above the current rarity cap
 
@@ -119,6 +123,19 @@ SHALL auto-suggest Ascension only (a MoW has no Level goal).
 - **WHEN** the user sets an ability target of 42
 - **THEN** the sheet offers an Ascension suggestion into the Legendary tier and a Level
   suggestion to level 42
+
+#### Scenario: The ability goal depends on the suggested Ascension
+
+- **GIVEN** an ability target above the unit's current ability cap
+- **WHEN** the suggested Ascension prerequisite is accepted and the combined set is submitted
+- **THEN** the Ability goal declares a dependency on that Ascension goal
+- **AND** the submission is accepted rather than refused for exceeding the unit's cap
+
+#### Scenario: Machine-of-War ability goal declares the same dependency
+
+- **GIVEN** a Machine-of-War Ability goal whose target exceeds its current rarity ability cap
+- **WHEN** the suggested Ascension prerequisite is accepted and the combined set is submitted
+- **THEN** the Ability goal declares a dependency on that Ascension goal
 
 #### Scenario: Ascension already included
 

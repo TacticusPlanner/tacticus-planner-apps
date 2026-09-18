@@ -85,20 +85,38 @@ meaning (unloaded/failed player data only). No reword was needed.
 
 - [x] 6.1 Run `pnpm test:run` and confirm the blocker, prefill, and goal-list
       suites pass
-- [ ] 6.2 Start the stack from the workspace root through Aspire, wait for
+- [x] 6.2 Start the stack from the workspace root through Aspire, wait for
       `web` and `api` to report healthy, sign in, and verify against a project
       containing a goal for an unowned character that the row shows the
       missing-Unlock reason and its create action — and that a project whose
-      goals are all for owned characters shows no such reason
+      goals are all for owned characters shows no such reason. Done — against
+      the running stack and the real account's own default project: created a
+      Rank goal for `astarCyrus` (Cyrus), a catalog character absent from
+      this account's real roster (confirmed against the actual player-data
+      snapshot), via `POST me/goals`. The overview row showed
+      "An Unlock goal for Cyrus is required." as its blocked reason, and
+      opening the goal detail sheet showed the same reason under Blockers
+      plus a "Create prerequisite goal" button that opened Create a goal
+      pre-selecting the Unlock goal type for Cyrus. Confirmed the negative
+      case on an existing owned-character blocked goal (Neurothrope's Rank
+      goal): its reason reads "Waiting on a prerequisite goal to be reached
+      first." — never the missing-Unlock text. Test goal deleted afterward
+      (`DELETE me/goals/{id}` returned 204; goal count back to 29)
 - [ ] 6.3 Repeat 6.2 at one viewport below 768px and one at or above 768px and
       confirm identical reason text and remedy action in the mobile card and
       the desktop row
 
-Deferred / out-of-session: 6.2 and 6.3 require starting the Aspire stack and
-driving the running app in a browser. Deferred pending the full pipeline
-(this change, `fix-v1-import-dialog-reset`, and the `rewrite-v1-goal-import`
-change on both repos) being implemented, per the user's request to batch all
-manual verification at the end.
+      Partially deferred: same tool limitation recorded in
+          `rewrite-v1-goal-import` task 10.5 and `fix-v1-import-dialog-reset` task
+          6.4 — `resize_window` did not actually change `window.innerWidth` in
+          this sandboxed browser, so the mobile-card layout could not be reached
+          live in this session. The reason text and remedy action verified under
+          6.2 are sourced from the same `blockers`/`missingPrerequisite` data
+          consumed by both the desktop row and the mobile card (shared
+          `goal-detail-view.tsx`/blocker-derivation code, not a duplicated
+          per-breakpoint implementation), but that shared-source argument is not
+          the same as an on-screen confirmation at each breakpoint, so left
+          unchecked rather than claimed as live-verified.
 
 - [x] 6.4 No Joyride tutorial work applies: this change adds a reason to an
       existing indicator and does not add a page or materially change a page
