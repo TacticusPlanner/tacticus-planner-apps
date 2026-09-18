@@ -436,7 +436,8 @@
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
         "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
         "MissingLevelPrerequisite": "A Level goal reaching level {{level}} is required.",
-        "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required."
+        "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required.",
+        "MissingUnlockPrerequisite": "An Unlock goal for {{unit}} is required."
       },
       "createPrerequisite": "Create prerequisite goal",
       "reviewPrerequisite": "Review existing prerequisite",

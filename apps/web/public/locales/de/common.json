@@ -436,7 +436,8 @@
         "PlayerDataUnavailable": "Spielerdaten für dieses Ziel wurden noch nicht synchronisiert.",
         "CatalogDataUnavailable": "Spieldaten wurden noch nicht vollständig geladen.",
         "MissingLevelPrerequisite": "Ein Stufen-Ziel, das Stufe {{level}} erreicht, ist erforderlich.",
-        "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich."
+        "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich.",
+        "MissingUnlockPrerequisite": "Ein Freischaltungs-Ziel für {{unit}} ist erforderlich."
       },
       "createPrerequisite": "Voraussetzungsziel erstellen",
       "reviewPrerequisite": "Bestehende Voraussetzung ansehen",

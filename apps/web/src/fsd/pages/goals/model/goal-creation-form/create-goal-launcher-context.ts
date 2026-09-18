@@ -16,6 +16,12 @@ export type CreateGoalPrefill =
       requiredProgression: Progression
       projectIds: string[]
     }
+  | {
+      entityType: "Character" | "Mow"
+      entityId: UnitId
+      goalType: "Unlock"
+      projectIds: string[]
+    }
 
 export type LaunchCreateGoal = (prefill?: CreateGoalPrefill) => void
 

@@ -436,7 +436,8 @@
         "PlayerDataUnavailable": "Los datos del jugador para este objetivo aún no se han sincronizado.",
         "CatalogDataUnavailable": "Los datos del juego aún no han terminado de cargarse.",
         "MissingLevelPrerequisite": "Se requiere un objetivo de Nivel que alcance el nivel {{level}}.",
-        "MissingAscensionPrerequisite": "Se requiere un objetivo de Ascensión que alcance {{progression}}."
+        "MissingAscensionPrerequisite": "Se requiere un objetivo de Ascensión que alcance {{progression}}.",
+        "MissingUnlockPrerequisite": "Se requiere un objetivo de Desbloqueo para {{unit}}."
       },
       "createPrerequisite": "Crear objetivo previo",
       "reviewPrerequisite": "Revisar objetivo previo existente",

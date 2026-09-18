@@ -237,7 +237,12 @@ export function GoalDetailSheet({
   const createPrerequisite = (
     reason: Extract<
       BlockerReason,
-      { kind: "MissingLevelPrerequisite" | "MissingAscensionPrerequisite" }
+      {
+        kind:
+          | "MissingLevelPrerequisite"
+          | "MissingAscensionPrerequisite"
+          | "MissingUnlockPrerequisite"
+      }
     >
   ) => {
     if (!detail) return

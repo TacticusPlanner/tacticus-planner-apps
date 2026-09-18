@@ -32,6 +32,18 @@ export type BlockerReason =
       requiredProgression: Progression
       existingGoalId: string | undefined
     }
+  /** The target unit is absent from the player's roster and this goal's kind requires it to exist.
+   *  Distinct from `PlayerDataUnavailable`: the roster loaded fine, the unit just isn't owned yet —
+   *  see `implicit-prerequisite-blockers.ts`. Never reported for an Unlock goal on that same unit.
+   *  Unlike the Level/Ascension prerequisites, an existing Unlock goal always fully covers this one
+   *  (no partial-progress case), so a covering goal suppresses the reason entirely rather than
+   *  surfacing here as `existingGoalId` — the field stays `undefined` so the shared "create vs.
+   *  review" rendering in `goal-detail-view.tsx` can read it across all three reasons. */
+  | {
+      kind: "MissingUnlockPrerequisite"
+      unitName: string
+      existingGoalId: undefined
+    }
 
 export type GoalBlockers = {
   reasons: BlockerReason[]
@@ -85,6 +97,10 @@ export function blockerReasonText(t: TFunction, reason: BlockerReason): string {
     case "MissingAscensionPrerequisite":
       return t("goals.blocked.reasons.MissingAscensionPrerequisite", {
         progression: reason.requiredProgression,
+      })
+    case "MissingUnlockPrerequisite":
+      return t("goals.blocked.reasons.MissingUnlockPrerequisite", {
+        unit: reason.unitName,
       })
   }
 }

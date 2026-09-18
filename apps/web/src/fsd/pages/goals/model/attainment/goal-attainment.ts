@@ -37,6 +37,21 @@ function fromBoolean(value: boolean): GoalAttainment {
   return value ? REACHED : NOT_REACHED
 }
 
+/** Narrows `attainment.status === "unknown"` down to a genuine player-data-unavailable case (see
+ *  `goal-blocker-reasons` spec): a loaded roster that simply doesn't contain the target unit is not
+ *  a sync problem — that case is named by `implicit-prerequisite-blockers.ts`'s missing-Unlock
+ *  reason instead. `playerUnit` is the goal's own player character/mow record (`undefined` when the
+ *  unit isn't owned); `rosterLoaded` says whether the roster table it would live in has resolved. */
+export function isPlayerDataUnavailable(params: {
+  attainment: GoalAttainment
+  rosterLoaded: boolean
+  playerUnit: unknown
+}): boolean {
+  if (params.attainment.status !== "unknown") return false
+  const unitAbsentFromLoadedRoster = params.rosterLoaded && !params.playerUnit
+  return !unitAbsentFromLoadedRoster
+}
+
 /** Reads by array position, same convention as `mow-ability-calc.ts`'s `mowAbilityTrackLevel` —
  *  `abilities[0]` is the primary/active track, `abilities[1]` is secondary/passive. Applies equally
  *  to a Character or a MoW record since both share `playerUnitBaseSchema`. Defaults to `1`

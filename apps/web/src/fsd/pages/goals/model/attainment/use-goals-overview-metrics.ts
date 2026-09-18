@@ -23,7 +23,10 @@ import type { EstimateOutcome } from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { ResourceNeed } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-import { computeGoalAttainment } from "./goal-attainment"
+import {
+  computeGoalAttainment,
+  isPlayerDataUnavailable,
+} from "./goal-attainment"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress, type GoalProgress } from "./goal-progress"
 
@@ -69,6 +72,7 @@ export function useGoalsOverviewMetrics(
     ascensionCostsById,
     unlockShardCostsById,
     getCharacter,
+    getEntityName,
     loading: catalogLoading,
   } = useGoalCatalog()
   const detailQueries = useQueries({
@@ -85,7 +89,10 @@ export function useGoalsOverviewMetrics(
   const prerequisiteGoalIds =
     prerequisiteListQuery.data?.goals
       .filter(
-        (goal) => goal.goalType === "Level" || goal.goalType === "Ascension"
+        (goal) =>
+          goal.goalType === "Level" ||
+          goal.goalType === "Ascension" ||
+          goal.goalType === "Unlock"
       )
       .map((goal) => goal.goalId) ?? []
   const prerequisiteQueries = useQueries({
@@ -205,6 +212,14 @@ export function useGoalsOverviewMetrics(
     const playerCharacter = playerCharacterById.get(unitId)
     const playerMow = playerMowById.get(unitId)
     const inventoryShard = inventoryShardByEntity.get(detail.entityId)
+    const playerUnit = detail.entityType === "Mow" ? playerMow : playerCharacter
+    // Distinguishes "roster not loaded yet" from "loaded and this unit just isn't in it" — the split
+    // the missing-Unlock reason and the narrowed player-data-unavailable reason both need (see
+    // `implicit-prerequisite-blockers.ts` and `goal-attainment.ts#isPlayerDataUnavailable`).
+    const rosterLoaded =
+      detail.entityType === "Mow"
+        ? playerMows !== undefined
+        : playerCharacters !== undefined
 
     const attainment = computeGoalAttainment({
       detail,
@@ -250,13 +265,16 @@ export function useGoalsOverviewMetrics(
         (dependencyGoalId) =>
           dependencyReachedById.get(dependencyGoalId) === false
       ),
-      playerDataUnavailable: catalogReady && attainment.status === "unknown",
+      playerDataUnavailable:
+        catalogReady &&
+        isPlayerDataUnavailable({ attainment, rosterLoaded, playerUnit }),
       catalogDataUnavailable: !catalogReady,
       implicitReasons: implicitPrerequisiteBlockers({
         detail,
-        playerUnit: detail.entityType === "Mow" ? playerMow : playerCharacter,
+        playerUnit,
         prerequisiteGoals,
-        ready: prerequisiteGoalsReady && catalogReady,
+        ready: prerequisiteGoalsReady && catalogReady && rosterLoaded,
+        unitName: getEntityName(detail.entityType, detail.entityId),
       }),
     })
 
