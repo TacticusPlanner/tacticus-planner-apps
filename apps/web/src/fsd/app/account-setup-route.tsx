@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Navigate, useNavigate, useSearchParams } from "react-router"
 
 import {
@@ -22,14 +23,31 @@ import { SetupV1Import } from "./setup-v1-import"
  * It is also what completes setup. A form that navigated on its own submit would race the
  * fire-and-forget current-user refetch and land on a route whose gate still reads the stale
  * `hasCompletedOnboarding: false`; waiting for the refreshed state here removes that race.
+ *
+ * The import step suppresses this guard until its own Continue is clicked (`importAwaitingContinue`).
+ * `hasCompletedOnboarding` flips true server-side the moment the personal key alone is saved — the
+ * *first* submit, well before Continue ever appears — and this guard's `useCurrentUser()` is one of
+ * several concurrently-mounted subscribers to that same shared query (the screen itself, this route,
+ * `PostHogIdentity`'s analytics identity effect). `staleTime: 0` makes any of them eligible to
+ * trigger a background refetch on its own terms; if the one that fires happens to land after the key
+ * is already saved, this guard used to redirect away right then, regardless of whether the user had
+ * asked to move on. Gating on the explicit Continue click — not on chasing down every possible
+ * refetch source — is what actually closes that off.
  */
 export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
   const { state } = useCurrentUser()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const next = searchParams.get("next")
+  const [importAwaitingContinue, setImportAwaitingContinue] = useState(
+    step === "import"
+  )
 
-  if (state.status === "success" && state.user.hasCompletedOnboarding) {
+  if (
+    !(step === "import" && importAwaitingContinue) &&
+    state.status === "success" &&
+    state.user.hasCompletedOnboarding
+  ) {
     return <Navigate replace to={resolveNextPath(next)} />
   }
 
@@ -44,7 +62,10 @@ export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
       }}
       renderImportStep={(onCompleted, onKeyImported) => (
         <SetupV1Import
-          onCompleted={onCompleted}
+          onCompleted={() => {
+            setImportAwaitingContinue(false)
+            onCompleted()
+          }}
           onKeyImported={onKeyImported}
           onUseApiKey={() => void navigate(`${SETUP_STEP_PATHS.key}${search}`)}
         />

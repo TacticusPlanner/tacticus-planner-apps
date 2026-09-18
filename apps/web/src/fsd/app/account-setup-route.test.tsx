@@ -164,6 +164,26 @@ describe("AccountSetupRoute", () => {
       expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
       expect(screen.getByTestId("account-setup-choice")).toBeVisible()
     })
+
+    it("does not navigate away from the import step just because the account state reports provisioned, until Continue is clicked", () => {
+      // The personal key is saved on the *first* submit, well before Continue ever appears — the
+      // account state can genuinely report "provisioned" while the user is still reading the
+      // import step's own report. Regressing this back to an immediate redirect is exactly the bug
+      // this guards against: verified live that some other concurrently-mounted useCurrentUser()
+      // subscriber (this route's own, the screen's, PostHogIdentity's analytics identity effect)
+      // can refetch this same shared, staleTime:0 query on its own timing, independent of anything
+      // the import step itself does.
+      const { build, rerender } = renderAt(
+        "/setup/import?next=%2Fguild%2Fmembers"
+      )
+      expect(screen.getByTestId("stub-setup-v1-import")).toBeVisible()
+
+      currentUserState = configured
+      rerender(build())
+
+      expect(screen.getByTestId("stub-setup-v1-import")).toBeVisible()
+      expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+    })
   })
 
   describe("step navigation", () => {
