@@ -16,6 +16,9 @@ import { routes as progressRoutes } from "@/pages/progress"
 import { routes as dailiesRoutes } from "@/pages/dailies"
 import { isUiKitEnabled } from "@/shared/config"
 
+import { AccountSetupRoute } from "./account-setup-route"
+import { accountSetupRoutes } from "./account-setup-routes"
+import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
 import { OnboardingGate } from "./onboarding-gate"
 
@@ -66,7 +69,9 @@ function AuthResolving() {
   )
 }
 
-function ProtectedRoute({ children }: { children: ReactNode }) {
+// Authentication only. Split out of ProtectedRoute so the setup routes can require a signed-in user
+// without also being wrapped in the onboarding gate — which would send them to setup from setup.
+function AuthenticatedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
   const { inProgress } = useMsal()
 
@@ -78,7 +83,15 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate replace to="/" />
   }
 
-  return <OnboardingGate>{children}</OnboardingGate>
+  return <>{children}</>
+}
+
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  return (
+    <AuthenticatedRoute>
+      <OnboardingGate>{children}</OnboardingGate>
+    </AuthenticatedRoute>
+  )
 }
 
 function LandingRoute() {
@@ -114,6 +127,23 @@ function NotFoundRedirect() {
 // SPA even loads, so no in-app callback route is needed.
 export const routes: RouteObject[] = [
   { path: "/", element: <LandingRoute /> },
+  // Account setup sits outside AppShell on purpose. A user here has no configured API key, so every
+  // shell affordance is a trap or noise — nav links bounce straight back here, the catalog init gate
+  // covers the form, and the player-data provider parks a "sync failed" badge on the screen asking
+  // for the key it is missing. Each mobile step still gets its own address so Back works, a reload
+  // keeps the step, and each step is reported as its own page-view.
+  // Authentication only: wrapping these in the onboarding gate would redirect setup to setup.
+  {
+    element: <AccountSetupLayout />,
+    children: accountSetupRoutes.map(({ path, step }) => ({
+      path,
+      element: (
+        <AuthenticatedRoute>
+          <AccountSetupRoute step={step} />
+        </AuthenticatedRoute>
+      ),
+    })),
+  },
   {
     element: <AppShell />,
     children: [

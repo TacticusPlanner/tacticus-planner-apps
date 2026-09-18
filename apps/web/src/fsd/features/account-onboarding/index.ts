@@ -1,1 +1,4 @@
-export { OnboardingDialog } from "./ui/onboarding-dialog"
+export {
+  AccountSetupScreen,
+  type AccountSetupStep,
+} from "./ui/account-setup-screen"
