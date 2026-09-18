@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Aus V1 importieren",
       "title": "Aus V1 importieren",
-      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und kein importiertes Ziel wird pausiert.",
+      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und importierte Ziele werden pausiert, sofern dein Standardprojekt nicht auch dein aktives Projekt ist.",
       "username": "V1-Benutzername",
       "password": "V1-Passwort",
       "selectParts": "Wähle aus, was importiert werden soll",

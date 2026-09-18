@@ -49,7 +49,9 @@ sequence does not state the relationship the server now requires.
   selection, defaulting on, matching the manual create-goal flow's defaults.
 - **The dialog's description is corrected.** It currently promises that
   matching V2 goal kinds "will be replaced" and that imported goals "will be
-  paused". Neither is true: matching kinds are skipped, and nothing is paused.
+  paused" unconditionally. Neither is true: matching kinds are skipped, and a
+  goal is paused only when the import's default project isn't the profile's
+  active project.
 - **The combined-spec builder declares the missing dependency**: an Ability
   goal whose target drove an Ascension suggestion now depends on that
   Ascension goal.

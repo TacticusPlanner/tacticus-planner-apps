@@ -41,6 +41,7 @@ describe("bucketForCode", () => {
     expect(bucketForCode("player_data_required")).toBe("failed")
     expect(bucketForCode("target_rejected")).toBe("failed")
     expect(bucketForCode("project_slot_conflict")).toBe("failed")
+    expect(bucketForCode("prerequisite_rejected")).toBe("failed")
   })
 
   it("falls back an unrecognised code to notImported rather than hiding it as benign", () => {
@@ -64,13 +65,14 @@ describe("groupOutcomes", () => {
       "player_data_required",
       "target_rejected",
       "project_slot_conflict",
+      "prerequisite_rejected",
     ]
     const grouped = groupOutcomes(codes.map((code) => outcome({ code })))
 
     expect(grouped.imported).toHaveLength(2)
     expect(grouped.needsNoImport).toHaveLength(3)
     expect(grouped.notImported).toHaveLength(5)
-    expect(grouped.failed).toHaveLength(3)
+    expect(grouped.failed).toHaveLength(4)
   })
 
   it("is empty for an empty outcome list", () => {

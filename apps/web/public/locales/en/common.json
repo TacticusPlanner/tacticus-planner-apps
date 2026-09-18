@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Import from V1",
       "title": "Import from V1",
-      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and no imported goal is paused.",
+      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and imported goals are paused unless your default project is also your active project.",
       "username": "V1 username",
       "password": "V1 password",
       "selectParts": "Choose what to import",

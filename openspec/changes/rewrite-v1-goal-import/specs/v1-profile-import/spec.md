@@ -191,14 +191,15 @@ profile.
 ### Requirement: The dialog describes what the import actually does
 
 The dialog's description SHALL state the import's actual behavior. It SHALL NOT
-state that matching V2 goals are replaced, and SHALL NOT state that imported
-goals are paused.
+state that matching V2 goals are replaced, and SHALL NOT state, unconditionally,
+that imported goals are paused or that none are — a goal lands Paused only when
+the import's default project isn't the profile's active project.
 
 #### Scenario: The description matches the behavior
 
 - **WHEN** the dialog is opened
-- **THEN** its description does not claim that matching goals are replaced or that imported
-  goals are paused
+- **THEN** its description does not claim that matching goals are replaced, and
+  states that imported goals are paused unless they land in the active project
 
 ### Requirement: An unselected part occupies no row in the result
 

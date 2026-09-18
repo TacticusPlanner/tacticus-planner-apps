@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Importer depuis V1",
       "title": "Importer depuis V1",
-      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Un objectif V1 correspondant à un objectif V2 existant est ignoré, pas remplacé, et aucun objectif importé n'est mis en pause.",
+      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Un objectif V1 correspondant à un objectif V2 existant est ignoré, pas remplacé, et les objectifs importés sont mis en pause sauf si votre projet par défaut est aussi votre projet actif.",
       "username": "Nom d'utilisateur V1",
       "password": "Mot de passe V1",
       "selectParts": "Choisissez ce qu'il faut importer",

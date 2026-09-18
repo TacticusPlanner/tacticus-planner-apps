@@ -376,7 +376,7 @@
     "v1Import": {
       "menu": "Importar desde V1",
       "title": "Importar desde V1",
-      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y ningún objetivo importado queda en pausa.",
+      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y los objetivos importados quedan en pausa a menos que tu proyecto predeterminado sea también tu proyecto activo.",
       "username": "Usuario de V1",
       "password": "Contraseña de V1",
       "selectParts": "Elige qué importar",

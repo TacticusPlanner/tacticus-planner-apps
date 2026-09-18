@@ -25,6 +25,7 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   player_data_required: "failed",
   target_rejected: "failed",
   project_slot_conflict: "failed",
+  prerequisite_rejected: "failed",
 }
 
 export function bucketForCode(code: string): OutcomeBucketKey {
