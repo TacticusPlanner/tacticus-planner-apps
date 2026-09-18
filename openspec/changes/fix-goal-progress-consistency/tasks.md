@@ -1,0 +1,24 @@
+## 1. Unlock resource-need gating
+
+- [ ] 1.1 Thread ownership (playerCharacter/playerMow presence) into `calculateGoalResourceNeed`'s `"Unlock"` branch and `unlockResourceNeed`, returning the zero/`EMPTY_NEED` result once the character is owned; verify with a unit test covering owned vs. not-owned with the same catalog cost and inventory amount
+- [ ] 1.2 Verify downstream consumers (`use-goals-overview-metrics.ts`'s `remaining`, `daily-raids-calc.ts`, `plan-insights-calc.ts`, `shop-needs.ts`) pick up the zeroed need with no separate code change, via their existing test suites plus one new fixture per consumer where none already exercises an already-owned Unlock goal
+
+## 2. Progress-display current clamping
+
+- [ ] 2.1 In the `"Rank"` case of `computeGoalProgress`, cap the returned `current` at the goal's target rank when the player's live rank is ahead of it — `current: currentIndex > target.end ? rankAt(target.end) : params.playerCharacter.rank` — leaving the existing slot-based `ratio` calculation untouched (it already treats an overshoot as complete); verify with a unit test where the player's live rank exceeds the goal's target rank
+- [ ] 2.2 In the `"Ascension"` case, cap the returned `current` at the goal's target progression tier when the player's live tier is ahead of it, converting back through `progressionOrder` rather than reusing the existing two-sided `clampedCurrent` index local (which is numeric, not assignable to the string-typed `current: Progression`, and is needed unchanged for `ratio`) — `current: currentIndex > endIndex ? (target.end as Progression) : (ownedUnit.progressionIndex as Progression)`; verify with a unit test where the player's live progression exceeds the goal's target
+- [ ] 2.3 In the `"Level"` case, cap the returned `current` at the goal's target level when the player's live level is ahead of it — `current: Math.min(current, target.end)` — without reusing the existing two-sided `clampedCurrent` local, which also floors at `target.start` and must keep feeding only `ratio`, unchanged; verify with a unit test where the player's live level exceeds the goal's target level
+- [ ] 2.4 Verify with a unit test per kind (Rank, Ascension, Level) that a player's live progression _below_ the goal's configured start still displays as its true, unclamped value — confirming the cap added in 2.1-2.3 is one-sided and never floors `current` up to `start`
+- [ ] 2.5 Verify by review that the Ability and Upgrade cases are unaffected (their progress fields aren't raw ladder positions) and need no equivalent change
+
+## 3. Actual/Potential progress explanation copy
+
+- [ ] 3.1 Move the Actual Progress / Potential Progress explanation rendering into `GoalProgressDisplay` (`goal-visuals.tsx`), rendered unconditionally next to each bar's caption; verify with a test that both explanations render in the goals list with no hover interaction
+- [ ] 3.2 Delete `goal-detail-view.tsx`'s separate rendering of `potentialProgressDescription`, now redundant; verify with a test that the detail sheet renders each explanation exactly once (via `GoalProgressDisplay`) and update `goal-detail-view.test.tsx`'s assertion accordingly
+- [ ] 3.3 Add a new Actual Progress explanation i18n key and resolve the Potential Progress key's namespace per design.md's open question; verify with a test asserting both explanation strings render, and add real (non-placeholder) en/de/es/fr translations for every new or moved key
+- [ ] 3.4 Verify with a test that a goal with only an Actual Progress ratio (no Potential Progress ratio available) renders no Potential Progress caption or explanation, unchanged from today
+
+## 4. Verification
+
+- [ ] 4.1 Manually verify against the running local stack (start via the Aspire AppHost if not already running) on both a viewport below 768px and one at or above 768px, using: (a) an Unlock goal for an already-owned character — confirm zero remaining shard need; (b) an Ascension, Rank, and Level goal each whose live progression has overtaken its configured target — confirm a clamped, 100%-complete current/target pair rather than a backwards one; (c) a goal with both Actual and Potential Progress bars — confirm both explanations render inline with no hover required, in the goals list, a project detail card, and the goal-detail sheet; (d) a goal with only Actual Progress — confirm no Potential Progress caption renders
+- [ ] 4.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; fix any failures before considering this change done
