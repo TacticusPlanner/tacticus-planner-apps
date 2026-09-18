@@ -4,6 +4,7 @@ import type { BattleId, FactionId } from "@workspace/game-domain"
 import {
   characterViewSchema,
   datasetPayloadSchemas,
+  farmLocationSchema,
   manifestSchema,
 } from "./schemas"
 
@@ -301,6 +302,28 @@ describe("catalog schemas", () => {
     ])
 
     expect(result.success).toBe(true)
+  })
+
+  it("parses a farm location's expectedGold as a number, as explicit null, and when the key is absent entirely", () => {
+    const base = {
+      battleId: "AMS12",
+      type: "Standard",
+      challenge: false,
+      guaranteed: true,
+      chanceId: null,
+      numerator: null,
+      denominator: null,
+      effectiveRate: null,
+      isMythic: false,
+    }
+
+    expect(
+      farmLocationSchema.safeParse({ ...base, expectedGold: 137 }).success
+    ).toBe(true)
+    expect(
+      farmLocationSchema.safeParse({ ...base, expectedGold: null }).success
+    ).toBe(true)
+    expect(farmLocationSchema.safeParse(base).success).toBe(true)
   })
 
   it("rejects an upgrade with an unrecognized rarity", () => {

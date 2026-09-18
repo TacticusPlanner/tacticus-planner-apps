@@ -56,6 +56,37 @@ const resources = (...entries: [string, string][]) =>
     ])
   )
 
+describe("plan reflects selectFarmNodes' gold tie-break (fix-daily-raid-location-recommendations)", () => {
+  it("Raids Plan's Day 1 (== Today's schedule) picks the higher-expectedGold tied battle", () => {
+    const tiedLocations: FarmLocation[] = [
+      { ...location("FoCE13"), expectedGold: 137 },
+      { ...location("SHME19"), expectedGold: 151.5 },
+    ]
+    const day = estimateTodaySchedule({
+      goals: [
+        {
+          goalId: "goal",
+          priority: 1,
+          needs: [{ id: upgradeId("upgDmgC010"), count: 1 }],
+        },
+      ],
+      upgradesById: new Map([
+        [
+          upgradeId("upgDmgC010"),
+          { id: upgradeId("upgDmgC010"), farmLocations: tiedLocations },
+        ],
+      ]),
+      battlesById: new Map([battle("FoCE13"), battle("SHME19")]),
+      dailyEnergy: 100,
+      inventory: [],
+      referenceDate,
+    })
+
+    expect(day.entries).toHaveLength(1)
+    expect(day.entries[0]?.battleId).toEqual(battleId("SHME19"))
+  })
+})
+
 describe("raid schedule breakdown", () => {
   it("tags entries by goal and enforces one shared battle cap across goals", () => {
     const goals: GoalNeed[] = [

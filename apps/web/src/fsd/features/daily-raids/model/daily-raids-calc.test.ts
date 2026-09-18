@@ -13,6 +13,7 @@ import {
   rankOrder,
   unitIdSchema,
   upgradeIdSchema,
+  type BattleId,
 } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
@@ -24,12 +25,62 @@ import type {
 } from "@/features/goal-farming/@x/daily-raids"
 
 import {
-  activeProjectMembers,
+  selectFarmNodes,
+  type EstimateResourceId,
+  type EstimateUpgrade,
+} from "@/features/goal-farming/@x/daily-raids"
+import type { Battle } from "@/shared/lib"
+
+import {
   availableCampaignBattles,
+  campaignEventProgressKey,
+  type CampaignEventProgressEntry,
+} from "./campaign-event-eligibility"
+import {
+  activeProjectMembers,
   calculateResourceUrgency,
   calculateDailyRaids,
 } from "./daily-raids-calc"
 import { playerUnitIds } from "./use-daily-raids"
+
+function eventBattle(overrides: {
+  id: string
+  campaignGroupId: string
+  type?: string
+  challenge?: boolean
+  nodeNumber?: number
+}) {
+  return {
+    type: "Standard",
+    challenge: false,
+    nodeNumber: 1,
+    ...overrides,
+  }
+}
+
+function progressMap(
+  entries: [
+    campaignGroupId: string,
+    type: string,
+    entry: CampaignEventProgressEntry,
+  ][]
+): ReadonlyMap<string, CampaignEventProgressEntry> {
+  return new Map(
+    entries.map(([campaignGroupId, type, entry]) => [
+      campaignEventProgressKey(campaignGroupId, type),
+      entry,
+    ])
+  )
+}
+
+const EVENT_CAMPAIGN_IDS = [
+  "eventCampaign1",
+  "eventCampaign2",
+  "eventCampaign3",
+  "eventCampaign4",
+  "eventCampaign5",
+  "eventCampaign6",
+]
 
 function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
   return {
@@ -179,22 +230,209 @@ describe("daily raid derivation", () => {
 
   it("includes only the active campaign event alongside standing campaigns", () => {
     const battles = [
-      { id: "standing", campaignGroupId: "Octarius" },
-      { id: "active", campaignGroupId: "eventCampaign7" },
-      { id: "inactive", campaignGroupId: "eventCampaign6" },
+      eventBattle({ id: "standing", campaignGroupId: "Octarius" }),
+      eventBattle({ id: "active", campaignGroupId: "eventCampaign7" }),
+      eventBattle({ id: "inactive", campaignGroupId: "eventCampaign6" }),
     ]
     const eventIds = new Set(["eventCampaign6", "eventCampaign7"])
+    const progress = progressMap([
+      [
+        "eventCampaign7",
+        "Standard",
+        { completedBattleCount: 0, completedChallengeBattlesIds: [] },
+      ],
+    ])
 
     expect(
-      availableCampaignBattles(battles, eventIds, "eventCampaign7").map(
-        (battle) => battle.id
-      )
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        "eventCampaign7",
+        progress
+      ).map((battle) => battle.id)
     ).toEqual(["standing", "active"])
     expect(
-      availableCampaignBattles(battles, eventIds, null).map(
+      availableCampaignBattles(battles, eventIds, null, progress).map(
         (battle) => battle.id
       )
     ).toEqual(["standing"])
+  })
+
+  it.each(EVENT_CAMPAIGN_IDS)(
+    "excludes an unreached Extremis node for %s even though its event is active",
+    (campaignGroupId) => {
+      const battles = [
+        eventBattle({
+          id: "extremis-12",
+          campaignGroupId,
+          type: "Extremis",
+          nodeNumber: 12,
+        }),
+      ]
+      const eventIds = new Set([campaignGroupId])
+      const progress = progressMap([
+        [
+          campaignGroupId,
+          "Extremis",
+          { completedBattleCount: 0, completedChallengeBattlesIds: [] },
+        ],
+      ])
+
+      expect(
+        availableCampaignBattles(battles, eventIds, campaignGroupId, progress)
+      ).toEqual([])
+    }
+  )
+
+  it.each(EVENT_CAMPAIGN_IDS)(
+    "keeps a reached Standard node for %s in the same active event",
+    (campaignGroupId) => {
+      const battles = [
+        eventBattle({
+          id: "standard-12",
+          campaignGroupId,
+          type: "Standard",
+          nodeNumber: 12,
+        }),
+      ]
+      const eventIds = new Set([campaignGroupId])
+      const progress = progressMap([
+        [
+          campaignGroupId,
+          "Standard",
+          { completedBattleCount: 15, completedChallengeBattlesIds: [] },
+        ],
+      ])
+
+      expect(
+        availableCampaignBattles(
+          battles,
+          eventIds,
+          campaignGroupId,
+          progress
+        ).map((battle) => battle.id)
+      ).toEqual(["standard-12"])
+    }
+  )
+
+  it("excludes an event node with no progress entry at all", () => {
+    const battles = [
+      eventBattle({
+        id: "extremis-12",
+        campaignGroupId: "eventCampaign1",
+        type: "Extremis",
+        nodeNumber: 12,
+      }),
+    ]
+    const eventIds = new Set(["eventCampaign1"])
+
+    expect(
+      availableCampaignBattles(battles, eventIds, "eventCampaign1", new Map())
+    ).toEqual([])
+  })
+
+  it("gates a challenge node by exact battle-id membership, not node number", () => {
+    const battles = [
+      eventBattle({
+        id: "AMSC13B",
+        campaignGroupId: "eventCampaign1",
+        type: "Standard",
+        challenge: true,
+        nodeNumber: 13,
+      }),
+    ]
+    const eventIds = new Set(["eventCampaign1"])
+    const notCompleted = progressMap([
+      [
+        "eventCampaign1",
+        "Standard",
+        { completedBattleCount: 30, completedChallengeBattlesIds: [] },
+      ],
+    ])
+    const completed = progressMap([
+      [
+        "eventCampaign1",
+        "Standard",
+        { completedBattleCount: 30, completedChallengeBattlesIds: ["AMSC13B"] },
+      ],
+    ])
+
+    expect(
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        "eventCampaign1",
+        notCompleted
+      )
+    ).toEqual([])
+    expect(
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        "eventCampaign1",
+        completed
+      ).map((battle) => battle.id)
+    ).toEqual(["AMSC13B"])
+  })
+
+  it("a goal-pinned farm location that hasn't been reached yields zero farm candidates, not a substitute location", () => {
+    const pinnedBattleId = battleIdSchema.parse("AME12")
+    const battles = [
+      eventBattle({
+        id: pinnedBattleId,
+        campaignGroupId: "eventCampaign1",
+        type: "Extremis",
+        nodeNumber: 12,
+      }),
+    ]
+    const eventIds = new Set(["eventCampaign1"])
+    const unreached = progressMap([
+      [
+        "eventCampaign1",
+        "Extremis",
+        { completedBattleCount: 0, completedChallengeBattlesIds: [] },
+      ],
+    ])
+
+    // Mirrors use-daily-raids.ts: battlesById is built from availableCampaignBattles' output, so the
+    // unreached pinned node never makes it into the map at all.
+    const eligibleBattles = availableCampaignBattles(
+      battles,
+      eventIds,
+      "eventCampaign1",
+      unreached
+    )
+    expect(eligibleBattles).toEqual([])
+    const battlesById = new Map<BattleId, Battle>()
+
+    const upgradeId: EstimateResourceId = upgradeIdSchema.parse("upgArmU013")
+    const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
+      [
+        upgradeId,
+        {
+          id: upgradeId,
+          farmLocations: [
+            {
+              battleId: pinnedBattleId,
+              guaranteed: true,
+              effectiveRate: null,
+              numerator: null,
+              denominator: null,
+              isMythic: false,
+            },
+          ],
+        },
+      ],
+    ])
+
+    const candidates = selectFarmNodes(
+      { id: upgradeId, count: 1 },
+      upgradesById,
+      battlesById,
+      [pinnedBattleId]
+    )
+
+    expect(candidates).toEqual([])
   })
 
   it("keeps only Active members and preserves project priority order", () => {

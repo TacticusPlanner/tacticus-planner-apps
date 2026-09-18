@@ -81,20 +81,6 @@ export function activeProjectMembers(members: ProjectGoalSummary[]) {
     .sort((left, right) => left.priority - right.priority)
 }
 
-export function availableCampaignBattles<
-  TBattle extends { campaignGroupId: string },
->(
-  battles: TBattle[],
-  eventCampaignIds: ReadonlySet<string>,
-  activeCampaignEventId: string | null | undefined
-) {
-  return battles.filter(
-    (battle) =>
-      !eventCampaignIds.has(battle.campaignGroupId) ||
-      battle.campaignGroupId === activeCampaignEventId
-  )
-}
-
 export function calculateDailyRaids(
   params: DailyRaidsCalculationInput
 ): DailyRaidsCalculationViewModel | null {

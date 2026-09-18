@@ -14,6 +14,13 @@ export interface FarmLocation {
   // True only for a character's mythic-shard reward locations — always false for an upgrade
   // material's own farm locations (see the catalog's farmLocationSchema doc comment).
   isMythic: boolean
+  // A property of the battle, not of this resource: the average of the battle's own guaranteed
+  // gold reward, null when it guarantees none. Optional (matching the schema's `.optional()`) so
+  // every existing direct-passthrough call site (this catalog's storage models are handed straight
+  // through as `FarmLocation[]` in several places, not funneled through one mapper) keeps
+  // type-checking without new per-call-site normalization; a consumer that cares about the
+  // distinction (only `selectFarmNodes`'s tie-break) treats an absent key the same as `null`.
+  expectedGold?: number | null
 }
 
 export interface Battle {

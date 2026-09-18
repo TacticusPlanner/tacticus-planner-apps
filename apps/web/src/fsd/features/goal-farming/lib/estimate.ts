@@ -51,8 +51,11 @@ export function dropRate(location: FarmLocation): number {
 /**
  * The farm node(s) to raid for one material need: every location restricted to `farmingLocationIds`
  * when the goal pins specific nodes, otherwise the least-`energyPerItem` node(s) across all its drop
- * locations (a port of V1 `CampaignsService.selectBestLocations`). Locations with no energy cost or
- * no drop chance are never selectable. Empty when the material can't be farmed at all.
+ * locations, tied nodes broken toward the higher `expectedGold` (a port of V1
+ * `CampaignsService.selectBestLocations`, which sorts `['energyPerItem', 'expectedGold']` ascending
+ * then descending — a location with no `expectedGold` sorts lowest for this tie-break, never winning
+ * over one that reports a value). Locations with no energy cost or no drop chance are never
+ * selectable. Empty when the material can't be farmed at all.
  */
 export function selectFarmNodes(
   need: UpgradeNeed,
@@ -84,6 +87,7 @@ export function selectFarmNodes(
         energyCost: battle.energyCost,
         dropRate: rate,
         dailyAttempts: battle.dailyAttempts,
+        expectedGold: location.expectedGold,
       })
     }
   }
@@ -94,8 +98,18 @@ export function selectFarmNodes(
   const minEnergyPerItem = Math.min(
     ...candidates.map((c) => c.energyCost / c.dropRate)
   )
-  return candidates.filter(
+  const mostEfficient = candidates.filter(
     (c) => c.energyCost / c.dropRate === minEnergyPerItem
+  )
+  if (mostEfficient.length <= 1) return mostEfficient
+
+  const maxExpectedGold = Math.max(
+    ...mostEfficient.map((c) => c.expectedGold ?? Number.NEGATIVE_INFINITY)
+  )
+  if (!Number.isFinite(maxExpectedGold)) return mostEfficient
+
+  return mostEfficient.filter(
+    (c) => (c.expectedGold ?? Number.NEGATIVE_INFINITY) === maxExpectedGold
   )
 }
 

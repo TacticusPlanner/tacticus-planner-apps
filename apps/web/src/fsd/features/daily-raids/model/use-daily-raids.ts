@@ -22,6 +22,7 @@ import {
   getUpgrades,
 } from "@workspace/game-catalog/queries"
 import {
+  getCampaignEventProgress,
   getInventoryShard,
   getInventoryUpgrades,
   getLiveProgress,
@@ -42,10 +43,10 @@ import { useCampaignDisplay } from "@/shared/lib"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import {
-  activeProjectMembers,
   availableCampaignBattles,
-  calculateDailyRaids,
-} from "./daily-raids-calc"
+  campaignEventProgressKey,
+} from "./campaign-event-eligibility"
+import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,
   buildStandingBattleIndex,
@@ -88,6 +89,10 @@ export function useDailyRaids(
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
   const liveProgressResult = useLiveQuery(
     async () => ({ value: await getLiveProgress() }),
+    []
+  )
+  const campaignEventProgressResult = useLiveQuery(
+    async () => ({ value: await getCampaignEventProgress() }),
     []
   )
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
@@ -143,11 +148,25 @@ export function useDailyRaids(
       ),
     [campaignDefinitions]
   )
+  const campaignEventProgressByKey = useMemo(
+    () =>
+      new Map(
+        (campaignEventProgressResult?.value ?? []).map((progress) => [
+          campaignEventProgressKey(progress.tacticusCampaignId, progress.type),
+          {
+            completedBattleCount: progress.completedBattleCount,
+            completedChallengeBattlesIds: progress.completedChallengeBattlesIds,
+          },
+        ])
+      ),
+    [campaignEventProgressResult]
+  )
   const battlesById = useMemo(() => {
     const availableBattles = availableCampaignBattles(
       battles ?? [],
       eventCampaignIds,
-      liveProgressResult?.value?.activeCampaignEventId
+      liveProgressResult?.value?.activeCampaignEventId,
+      campaignEventProgressByKey
     )
     return new Map(
       availableBattles.map((battle) => [
@@ -155,7 +174,12 @@ export function useDailyRaids(
         mapCampaignBattleStorageToDomain(battle),
       ])
     )
-  }, [battles, eventCampaignIds, liveProgressResult])
+  }, [
+    battles,
+    eventCampaignIds,
+    liveProgressResult,
+    campaignEventProgressByKey,
+  ])
   const locationsByBattleId = useMemo(
     () =>
       new Map(

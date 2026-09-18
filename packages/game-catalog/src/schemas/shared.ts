@@ -22,6 +22,10 @@ export const farmLocationSchema = z.looseObject({
   // True only for a character's mythicShards_ reward locations (see the backend's ShardPrefixes) —
   // always false for an upgrade material's own farm locations, which have no mythic concept at all.
   isMythic: z.boolean(),
+  // A property of the battle, not of this specific resource: the average of the battle's own
+  // guaranteed gold reward. `.optional()` (not just `.nullable()`) so a payload from a server that
+  // hasn't deployed this field yet still parses — see fix-daily-raid-location-recommendations design.md.
+  expectedGold: z.number().nullable().optional(),
 })
 
 export const equipmentSlotSchema = z.looseObject({
