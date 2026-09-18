@@ -27,11 +27,11 @@ const goal = {
   goalKind: "Unlock" as const,
 }
 
-const location = (id: string, fullName: string, nodeNumber: number) => ({
+const location = (id: string, campaignName: string, nodeLabel: string) => ({
   id,
-  fullName,
-  shortLabel: `${fullName} ${nodeNumber}`,
-  nodeNumber,
+  campaignName,
+  nodeLabel,
+  shortLabel: `${campaignName} ${nodeLabel}`,
   challenge: false,
   icon: undefined,
 })
@@ -95,8 +95,8 @@ describe("RaidSchedule location emphasis", () => {
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={new Map()}
@@ -144,8 +144,8 @@ describe("RaidSchedule location emphasis", () => {
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={new Map()}
@@ -185,8 +185,8 @@ describe("RaidSchedule location emphasis", () => {
         }
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={new Map()}
@@ -207,7 +207,7 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
-  it("renders the full campaign name and battle number as the card's primary content", () => {
+  it("splits the campaign name and the tier-and-node label across the card's two primary lines", () => {
     render(
       <RaidSchedule
         attemptsUsedByBattle={new Map([[b1, 3]])}
@@ -215,7 +215,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus Elite", 4)]])
+          new Map([[b1, location("B1", "Indomitus", "Elite 4")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -224,8 +224,29 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    expect(screen.getByText("Indomitus Elite")).toBeInTheDocument()
-    expect(screen.getByText('schedule.battle:{"number":4}')).toBeInTheDocument()
+    expect(screen.getByText("Indomitus")).toBeInTheDocument()
+    expect(screen.getByText("Elite 4")).toBeInTheDocument()
+  })
+
+  it("omits the tier-and-node line for a battle the catalog has no descriptor for", () => {
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map([[b1, 3]])}
+        emphasis="location"
+        entries={[entry(b1, 3)]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={new Map([[b1, location("B1", "B1", "")]])}
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const lines = screen
+      .getByTestId(`raid-location-${b1}`)
+      .querySelectorAll(".truncate")
+    expect([...lines].map((line) => line.textContent)).toEqual(["B1"])
   })
 
   it("keeps the resource name accessible (sr-only) by default and shows it in a visible tooltip on hover, while keeping progress visible underneath", async () => {
@@ -237,7 +258,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus Elite", 4)]])
+          new Map([[b1, location("B1", "Indomitus", "Elite 4")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map([["g1:upgrade1", { owned: 5, target: 10 }]])}
@@ -275,8 +296,8 @@ describe("RaidSchedule location emphasis", () => {
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
@@ -299,7 +320,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 6, 6)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Octarius Elite", 1)]])
+          new Map([[b1, location("B1", "Octarius", "Elite 1")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -336,8 +357,8 @@ describe("RaidSchedule location emphasis", () => {
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
@@ -360,7 +381,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 10, 10)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus Elite", 4)]])
+          new Map([[b1, location("B1", "Indomitus", "Elite 4")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -397,8 +418,8 @@ describe("RaidSchedule location emphasis", () => {
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={
@@ -441,8 +462,8 @@ describe("RaidSchedule location emphasis", () => {
         }
         locationsByBattleId={
           new Map([
-            [b1, location("B1", "Indomitus Elite", 4)],
-            [b2, location("B2", "Fall of Cadia Standard", 7)],
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
           ])
         }
         resourceLabels={
@@ -476,7 +497,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus Elite", 4)]])
+          new Map([[b1, location("B1", "Indomitus", "Elite 4")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}

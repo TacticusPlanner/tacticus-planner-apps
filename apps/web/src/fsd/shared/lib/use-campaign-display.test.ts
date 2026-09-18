@@ -107,3 +107,96 @@ describe("useCampaignDisplay().fullLabel", () => {
     expect(extremis).not.toBe(standard)
   })
 })
+
+const allShapes: Array<[string, CampaignDescriptor]> = [
+  ["standard storyline", descriptor({})],
+  [
+    "elite storyline",
+    descriptor({ nameKey: "fall-of-cadia", difficultyToken: "elite" }),
+  ],
+  ["mirror base tier", descriptor({ isMirror: true })],
+  [
+    "elite mirror",
+    descriptor({
+      nameKey: "saim-hann",
+      isMirror: true,
+      difficultyToken: "elite",
+    }),
+  ],
+  [
+    "event standard",
+    descriptor({
+      nameKey: "adepta-sororitas-vs-death-guard",
+      isEvent: true,
+      difficultyToken: "eventStandard",
+    }),
+  ],
+  [
+    "event extremis",
+    descriptor({
+      nameKey: "adepta-sororitas-vs-death-guard",
+      isEvent: true,
+      difficultyToken: "eventExtremis",
+    }),
+  ],
+]
+
+describe("useCampaignDisplay().tierLabel", () => {
+  it.each([
+    ["standard storyline", descriptor({}), "campaigns:difficulties.standard"],
+    [
+      "elite storyline",
+      descriptor({ nameKey: "fall-of-cadia", difficultyToken: "elite" }),
+      "campaigns:difficulties.elite",
+    ],
+    [
+      "mirror base tier",
+      descriptor({ isMirror: true }),
+      "campaigns:difficulties.mirror",
+    ],
+    [
+      "elite mirror",
+      descriptor({
+        nameKey: "saim-hann",
+        isMirror: true,
+        difficultyToken: "elite",
+      }),
+      "campaigns:difficulties.mirror campaigns:difficulties.elite",
+    ],
+    [
+      "event standard",
+      descriptor({
+        nameKey: "adepta-sororitas-vs-death-guard",
+        isEvent: true,
+        difficultyToken: "eventStandard",
+      }),
+      "campaigns:difficulties.eventStandard",
+    ],
+    [
+      "event extremis",
+      descriptor({
+        nameKey: "adepta-sororitas-vs-death-guard",
+        isEvent: true,
+        difficultyToken: "eventExtremis",
+      }),
+      "campaigns:difficulties.eventExtremis",
+    ],
+  ])("returns only the tier words for a %s", (_label, d, expected) => {
+    const { result } = renderHook(() => useCampaignDisplay())
+    expect(result.current.tierLabel(d)).toBe(expected)
+  })
+
+  it("omits the campaign name, so every tier of one storyline differs only here", () => {
+    const { result } = renderHook(() => useCampaignDisplay())
+    expect(result.current.tierLabel(descriptor({}))).not.toContain("indomitus")
+  })
+
+  it.each(allShapes)(
+    "stays joinable with name() to reproduce fullLabel for a %s",
+    (_label, d) => {
+      const { result } = renderHook(() => useCampaignDisplay())
+      const { name, tierLabel, fullLabel } = result.current
+      expect(fullLabel(d)).toBe(`${name(d)} ${tierLabel(d)}`)
+    }
+  )
+})

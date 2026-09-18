@@ -53,6 +53,7 @@ import {
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
+import { campaignLocationLabels } from "./daily-raids.domain"
 import type {
   DailyRaidResourceLabels,
   DailyRaidsViewModel,
@@ -62,8 +63,11 @@ export function useDailyRaids(
   projectId: string | undefined
 ): DailyRaidsViewModel {
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
-  const { fullLabel: campaignFullLabel, shortLabel: campaignShortLabel } =
-    useCampaignDisplay()
+  const {
+    name: campaignDisplayName,
+    tierLabel: campaignTierLabel,
+    shortLabel: campaignShortLabel,
+  } = useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
   const membersQuery = useQuery({
     ...projectQueries.goals(projectId ?? "unselected"),
@@ -194,13 +198,13 @@ export function useDailyRaids(
             battleId,
             {
               id: battleId,
-              fullName: descriptor
-                ? campaignFullLabel(descriptor)
-                : battle.campaignGroupId,
+              ...campaignLocationLabels(battleId, battle, descriptor, {
+                name: campaignDisplayName,
+                tierLabel: campaignTierLabel,
+              }),
               shortLabel: short
                 ? `${short.name} ${short.code} ${battle.nodeNumber}${short.challenge ? "B" : ""}`
                 : battle.campaignGroupId,
-              nodeNumber: battle.nodeNumber,
               challenge: battle.challenge,
               icon: campaignIcon(
                 battle.campaignGroupId,
@@ -211,7 +215,7 @@ export function useDailyRaids(
           ] as const
         })
       ),
-    [battlesById, campaignFullLabel, campaignShortLabel]
+    [battlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
   )
   // Game-data display names resolve through the id-keyed `upgrades`/`characters` namespaces — the
   // same convention Character Lookup uses — so one material can't read as two different names in two
