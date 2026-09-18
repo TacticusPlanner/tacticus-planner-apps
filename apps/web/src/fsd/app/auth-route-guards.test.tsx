@@ -7,7 +7,9 @@ import { render, screen } from "@/test/render"
 
 const { useIsAuthenticatedMock, useMsalMock } = vi.hoisted(() => ({
   useIsAuthenticatedMock: vi.fn(() => false),
-  useMsalMock: vi.fn(() => ({ inProgress: InteractionStatus.None })),
+  useMsalMock: vi.fn<() => { inProgress: InteractionStatus }>(() => ({
+    inProgress: InteractionStatus.None,
+  })),
 }))
 
 vi.mock("@azure/msal-react", () => ({
@@ -15,7 +17,7 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => useMsalMock(),
 }))
 
-import { AuthenticatedRoute, LandingRoute } from "./routes"
+import { AuthenticatedRoute, LandingRoute } from "./auth-route-guards"
 
 // Reports where a <Navigate> landed, so a redirect is asserted by destination rather than by
 // mocking the router's navigation.
@@ -73,6 +75,32 @@ describe("AuthenticatedRoute", () => {
 
     expect(screen.getByTestId("protected-content")).toBeVisible()
   })
+
+  it("waits for MSAL interaction to resolve before deciding", () => {
+    useMsalMock.mockReturnValue({ inProgress: InteractionStatus.Startup })
+
+    render(
+      <MemoryRouter initialEntries={["/setup/key"]}>
+        <Routes>
+          <Route element={<Probe />} path="/" />
+          <Route
+            element={
+              <AuthenticatedRoute>
+                <div data-testid="protected-content" />
+              </AuthenticatedRoute>
+            }
+            path="/setup/key"
+          />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByRole("status")).toBeVisible()
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+
+    useMsalMock.mockReturnValue({ inProgress: InteractionStatus.None })
+  })
 })
 
 describe("LandingRoute", () => {
@@ -110,5 +138,23 @@ describe("LandingRoute", () => {
     )
 
     expect(screen.getByTestId("probe")).toHaveTextContent("/home")
+  })
+
+  it("waits for MSAL interaction to resolve before deciding", () => {
+    useMsalMock.mockReturnValue({ inProgress: InteractionStatus.Startup })
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route element={<LandingRoute />} path="/" />
+          <Route element={<Probe />} path="/home" />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByRole("status")).toBeVisible()
+    expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+
+    useMsalMock.mockReturnValue({ inProgress: InteractionStatus.None })
   })
 })
