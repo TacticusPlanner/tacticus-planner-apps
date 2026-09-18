@@ -649,6 +649,7 @@
         "abilityRange": "At least one ability must increase and neither range may decrease.",
         "abilityAlreadyReached": "The selected ability levels have already been reached.",
         "levelAlreadyReached": "The selected level has already been reached.",
+        "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",

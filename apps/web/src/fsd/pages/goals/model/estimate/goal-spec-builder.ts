@@ -117,53 +117,35 @@ export function computeMissingUpgrades(params: {
     .filter((entry) => params.includeCovered || entry.missing > 0)
 }
 
-/** The upgrade ids relevant to a Character's own progression — its whole rank ladder — used to
- * bound what an Upgrade goal on that character may target. Mirrors the backend's
- * `CharacterRelevantUpgradeIds` (`GameCatalogGoalLookups.cs`) so client-side filtering and
- * server-side rejection agree. */
-export function characterRelevantUpgradeIds(
-  character: Character
-): ReadonlySet<UpgradeId> {
-  return new Set(character.rankUpUpgrades.flatMap((step) => step.upgradeIds))
-}
-
-/** The upgrade ids relevant to a Mow's own progression — its whole primary+secondary ability
- * ladder. Mirrors the backend's `MowRelevantUpgradeIds`. */
-export function mowRelevantUpgradeIds(
-  mow: MowStorageModel
-): ReadonlySet<UpgradeId> {
-  return new Set([
-    ...mow.primaryAbility.recipes.flat(),
-    ...mow.secondaryAbility.recipes.flat(),
-  ])
-}
-
-function countOccurrences(
+/** An Upgrade goal only ever targets base upgrades — a crafted upgrade isn't something you farm
+ * directly. So the ids in scope are decomposed through their recipes (recursively, multiplying
+ * ingredient counts) down to base materials, deduplicated with their quantities summed: what the
+ * picker offers is what the player actually farms. Dropping crafted ids instead would leave the
+ * picker empty for most of the ladder — every rank step at Gold2 and above needs only crafted
+ * upgrades, so there'd be nothing left to select and the goal could never be submitted. */
+function decomposeToBaseQuantities(
   ids: UpgradeId[],
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
 ): Map<UpgradeId, number> {
-  const counts = new Map<UpgradeId, number>()
-  for (const id of ids) {
-    // An Upgrade goal only ever targets base upgrades — a crafted upgrade isn't something you farm
-    // directly, so it's never offered as a selectable target (its own base ingredients still are,
-    // wherever they themselves show up in the ladder/recipes).
-    if (upgradesById.get(id)?.crafted) continue
-    counts.set(id, (counts.get(id) ?? 0) + 1)
-  }
-  return counts
+  return new Map(
+    aggregateBaseUpgrades(ids, upgradesById).map((need) => [
+      need.id,
+      need.count,
+    ])
+  )
 }
 
 /** An Upgrade goal's selectable upgrades, scoped to `rankStart` -> `rankEnd` (plan: the rank-range
- * picker on the Upgrade card) — each key is a selectable (base, non-crafted) upgrade id, each value
- * the number of times it's actually required across that specific range (the raw applied-upgrade
- * count, i.e. what the picker prefills as the target quantity). Empty for an empty/invalid range. */
+ * picker on the Upgrade card) — each key is a selectable base upgrade id, each value the number
+ * actually required across that specific range (what the picker prefills as the target quantity).
+ * Empty for an empty/invalid range. */
 export function characterRelevantUpgradeQuantities(
   character: Character,
   rankStart: Rank,
   rankEnd: Rank,
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
 ): Map<UpgradeId, number> {
-  return countOccurrences(
+  return decomposeToBaseQuantities(
     rankUpUpgradeIds(character, rankStart, rankEnd, false),
     upgradesById
   )
@@ -176,7 +158,7 @@ export function mowRelevantUpgradeQuantities(
   mow: MowStorageModel,
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
 ): Map<UpgradeId, number> {
-  return countOccurrences(
+  return decomposeToBaseQuantities(
     [
       ...mow.primaryAbility.recipes.flat(),
       ...mow.secondaryAbility.recipes.flat(),

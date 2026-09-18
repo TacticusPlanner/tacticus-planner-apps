@@ -649,6 +649,7 @@
         "abilityRange": "Mindestens eine Fähigkeit muss steigen, und kein Bereich darf sinken.",
         "abilityAlreadyReached": "Die gewählten Fähigkeitsstufen wurden bereits erreicht.",
         "levelAlreadyReached": "Die gewählte Stufe wurde bereits erreicht.",
+        "upgradeTargetsRequired": "Wähle mindestens ein Upgrade aus, das für das Upgrade-Ziel gefarmt werden soll.",
         "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
         "progressionMaxed": "Diese Einheit hat bereits die maximale Aufstiegsstufe erreicht.",
         "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",

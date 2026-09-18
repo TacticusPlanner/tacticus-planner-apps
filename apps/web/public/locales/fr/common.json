@@ -649,6 +649,7 @@
         "abilityRange": "Au moins une capacité doit augmenter, et aucune plage ne peut diminuer.",
         "abilityAlreadyReached": "Les niveaux de capacité sélectionnés ont déjà été atteints.",
         "levelAlreadyReached": "Le niveau sélectionné a déjà été atteint.",
+        "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
         "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",

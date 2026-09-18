@@ -649,6 +649,7 @@
         "abilityRange": "Al menos una habilidad debe aumentar, y ningún intervalo puede disminuir.",
         "abilityAlreadyReached": "Los niveles de habilidad seleccionados ya se han alcanzado.",
         "levelAlreadyReached": "El nivel seleccionado ya se ha alcanzado.",
+        "upgradeTargetsRequired": "Selecciona al menos una mejora para farmear para el objetivo de mejora.",
         "rankMaxed": "Este personaje ya ha alcanzado el rango máximo.",
         "progressionMaxed": "Esta unidad ya ha alcanzado el nivel máximo de ascensión.",
         "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo para su rareza actual.",

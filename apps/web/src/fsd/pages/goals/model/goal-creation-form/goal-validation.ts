@@ -75,6 +75,7 @@ export type GoalValidationIssue =
   | "abilityRange"
   | "abilityAlreadyReached"
   | "levelAlreadyReached"
+  | "upgradeTargetsRequired"
 
 export function getGoalValidationIssue(params: {
   hasEntityId: boolean
@@ -92,6 +93,7 @@ export function getGoalValidationIssue(params: {
   currentPassiveAbility: number
   currentLevel: number | undefined
   levelEnd: number
+  upgradeFieldsValid: boolean
 }): GoalValidationIssue | null {
   if (!params.hasEntityId) return null
   if (params.enabledTypes.has("Unlock") && params.isOwned) {
@@ -132,6 +134,13 @@ export function getGoalValidationIssue(params: {
     params.levelEnd <= params.currentLevel
   ) {
     return "levelAlreadyReached"
+  }
+  // An Upgrade goal is nothing without a target. This is the only gate on `upgradeFieldsValid` the
+  // picker can actually leave unsatisfied (it prevents duplicate ids and quantities below 1), and
+  // routing it through here rather than straight into `canSubmit` is what keeps the disabled submit
+  // button from looking inert with no stated reason.
+  if (params.enabledTypes.has("Upgrade") && !params.upgradeFieldsValid) {
+    return "upgradeTargetsRequired"
   }
   return null
 }
