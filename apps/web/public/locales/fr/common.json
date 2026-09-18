@@ -415,7 +415,7 @@
       "progress": "Progression",
       "status": "Statut",
       "actions": "Actions",
-      "estimate": "Est."
+      "estimate": "Terminé le"
     },
     "status": {
       "Draft": "Brouillon",
@@ -675,7 +675,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}} j",
+      "days": "dans {{days}} jours",
       "blockedLabel": "Bloqué",
       "blocked": {
         "NoFarmLocation": "Aucun lieu de farming accessible ne fournit une ressource requise.",

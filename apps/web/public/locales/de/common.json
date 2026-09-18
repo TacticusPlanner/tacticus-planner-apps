@@ -415,7 +415,7 @@
       "progress": "Fortschritt",
       "status": "Status",
       "actions": "Aktionen",
-      "estimate": "Gesch."
+      "estimate": "Fertig am"
     },
     "status": {
       "Draft": "Entwurf",
@@ -675,7 +675,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}} T",
+      "days": "in {{days}} Tagen",
       "blockedLabel": "Blockiert",
       "blocked": {
         "NoFarmLocation": "Kein erreichbarer Farm-Ort liefert eine benötigte Ressource.",

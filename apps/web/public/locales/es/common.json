@@ -415,7 +415,7 @@
       "progress": "Progreso",
       "status": "Estado",
       "actions": "Acciones",
-      "estimate": "Est."
+      "estimate": "Fecha fin"
     },
     "status": {
       "Draft": "Borrador",
@@ -675,7 +675,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}} d",
+      "days": "en {{days}} días",
       "blockedLabel": "Bloqueado",
       "blocked": {
         "NoFarmLocation": "Ningún lugar de farmeo accesible proporciona un recurso necesario.",

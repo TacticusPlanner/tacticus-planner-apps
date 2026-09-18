@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+
+const { useIsMobileMock } = vi.hoisted(() => ({
+  useIsMobileMock: vi.fn(() => false),
+}))
+
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => useIsMobileMock(),
+}))
 
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
@@ -34,6 +42,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
       opts?.defaultValue ?? key,
+    i18n: { resolvedLanguage: "en" },
   }),
 }))
 
@@ -90,6 +99,8 @@ const rows: GoalRow[] = [
 ]
 
 describe("GoalsList", () => {
+  beforeEach(() => useIsMobileMock.mockReturnValue(false))
+
   it("hides move buttons when reorder is disabled", async () => {
     render(
       <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
@@ -123,6 +134,45 @@ describe("GoalsList", () => {
     const estimateCells = screen.getAllByTestId("goal-row-estimate")
     expect(estimateCells[0]).toHaveAttribute("title", "2026-01-06")
     expect(estimateCells[1]).not.toHaveAttribute("title")
+  })
+
+  it("renders the formatted completion date and day-count caption identically on desktop and mobile", async () => {
+    const estimates = new Map([
+      [
+        "goal-1",
+        { days: 12, date: "2026-09-28", energyTotal: 100, raidsTotal: 10 },
+      ],
+    ])
+
+    useIsMobileMock.mockReturnValue(false)
+    const desktop = render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates}
+        reorderEnabled={false}
+        rows={rows}
+      />
+    )
+    await screen.findByText("Hero One")
+    const desktopCell = screen.getAllByTestId("goal-row-estimate")[0]!
+    expect(desktopCell).toHaveTextContent("Sep 28")
+    expect(desktopCell).toHaveTextContent("goals.estimate.days")
+    desktop.unmount()
+
+    useIsMobileMock.mockReturnValue(true)
+    render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates}
+        reorderEnabled={false}
+        rows={rows}
+      />
+    )
+    await screen.findByText("Hero One")
+    const mobileCell = screen.getAllByTestId("goal-row-estimate")[0]!
+    expect(mobileCell).toHaveTextContent("Sep 28")
+    expect(mobileCell).toHaveTextContent("goals.estimate.days")
+    expect(mobileCell.innerHTML).toBe(desktopCell.innerHTML)
   })
 
   it("renders no estimate column when no estimates are given", async () => {

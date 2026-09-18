@@ -415,7 +415,7 @@
       "progress": "Progress",
       "status": "Status",
       "actions": "Actions",
-      "estimate": "Est."
+      "estimate": "Done By"
     },
     "status": {
       "Draft": "Draft",
@@ -675,7 +675,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}}d",
+      "days": "in {{days}} days",
       "blockedLabel": "Blocked",
       "blocked": {
         "NoFarmLocation": "No accessible farming location provides a required resource.",
