@@ -274,6 +274,47 @@ describe("V1ImportPanel", () => {
     await waitFor(() => expect(onSuccess).toHaveBeenCalledWith(result))
   })
 
+  describe("refreshCurrentUserOnSuccess", () => {
+    it("refetches current-user by default after a successful submission", async () => {
+      const invalidateQueries = vi.spyOn(
+        QueryClient.prototype,
+        "invalidateQueries"
+      )
+      renderPanel()
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      await screen.findByTestId("v1-import-result")
+      expect(refetch).toHaveBeenCalled()
+      expect(invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["current-user"],
+      })
+      invalidateQueries.mockRestore()
+    })
+
+    it("does not refetch current-user when set to false, so a setup-flow guard watching it cannot fire early", async () => {
+      const invalidateQueries = vi.spyOn(
+        QueryClient.prototype,
+        "invalidateQueries"
+      )
+      render(
+        <V1ImportPanel
+          defaultSelection={ALL_SELECTED}
+          refreshCurrentUserOnSuccess={false}
+        />
+      )
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      await screen.findByTestId("v1-import-result")
+      expect(refetch).not.toHaveBeenCalled()
+      expect(invalidateQueries).not.toHaveBeenCalledWith({
+        queryKey: ["current-user"],
+      })
+      invalidateQueries.mockRestore()
+    })
+  })
+
   describe("bucketed report", () => {
     it("reports the imported bucket with distinct goal and unit counts (4.2)", async () => {
       importV1Profile.mockResolvedValue(

@@ -43,15 +43,26 @@ export type V1ImportSelection = Record<(typeof parts)[number][0], boolean>
  * The whole V1-import experience — credentials, part selection, submit, and the bucketed outcome
  * report — with no chrome of its own. Two hosts wrap this differently: `pages/v1-import` (opened
  * from the account menu, everything unchecked by default) and `app/setup-v1-import.tsx` (part of
- * initial account provisioning, everything checked by default). Only `defaultSelection` and
- * `onSuccess` vary between them; the import mechanics themselves are identical.
+ * initial account provisioning, everything checked by default). Only `defaultSelection`,
+ * `onSuccess`, and `refreshCurrentUserOnSuccess` vary between them; the import mechanics themselves
+ * are identical.
  */
 export function V1ImportPanel({
   defaultSelection,
   onSuccess,
+  refreshCurrentUserOnSuccess = true,
 }: {
   defaultSelection: V1ImportSelection
   onSuccess?: (result: ImportV1ProfileResult) => void
+  /**
+   * Whether a successful import refetches the shared current-user query immediately. Defaults to
+   * true — the account-menu page wants its masked key/user id to update right away. The setup flow
+   * passes false: `AccountSetupRoute`'s reverse guard also reads that same query and navigates away
+   * the instant it reports the account provisioned, which would preempt `SetupV1Import`'s own
+   * "Continue" gating (meant to let the user read this report first) the moment the personal key
+   * import alone succeeds — before the user ever sees the report or clicks anything.
+   */
+  refreshCurrentUserOnSuccess?: boolean
 }) {
   const { t } = useTranslation()
   const { refetch } = useCurrentUser()
@@ -95,8 +106,10 @@ export function V1ImportPanel({
         import: { ...selection, automaticPrerequisites },
       })
       setResult(imported)
-      refetch()
-      await queryClient.invalidateQueries({ queryKey: accountQueries.all() })
+      if (refreshCurrentUserOnSuccess) {
+        refetch()
+        await queryClient.invalidateQueries({ queryKey: accountQueries.all() })
+      }
       if (selection.onslaughtProgress) {
         await queryClient.invalidateQueries({
           queryKey: onslaughtProgressQueries.all(),

@@ -21,12 +21,16 @@ const ALL_SELECTED: V1ImportSelection = {
  *
  * Deliberately does NOT call `onCompleted` as soon as the panel succeeds, unlike `ApiKeyForm`. That
  * convention works there because there is exactly one outcome to report. This import has six parts
- * and a goal-by-goal report, and — verified against `V1GoalImportService.cs` — the goals part will
- * almost always come back `player_data_required` on a brand-new account, since player-data sync is a
- * separate async process that has not run yet at the moment the key is first saved. Firing
- * `onCompleted` immediately would trigger the route guard's redirect before the user ever sees that
- * report. Instead, once the key part is confirmed imported, a "Continue" button appears alongside
- * the report already rendered by the panel, and only that click hands control back to the guard.
+ * and a goal-by-goal report, so once the key part is confirmed imported, a "Continue" button appears
+ * alongside the report already rendered by the panel, and only that click hands control back to the
+ * guard (`onCompleted`, which itself triggers the current-user refetch — see
+ * `account-setup-screen.tsx`'s `handleCompleted`).
+ *
+ * Passes `refreshCurrentUserOnSuccess={false}` to the panel for the same reason: the panel's own
+ * default behavior refetches the current-user query immediately on success, and
+ * `AccountSetupRoute`'s reverse guard reads that same shared query — an immediate refetch would
+ * trigger its redirect the instant the personal key succeeds, unmounting this screen (report and
+ * Continue button included) before the user ever saw either.
  */
 export function SetupV1Import({
   onCompleted,
@@ -47,6 +51,7 @@ export function SetupV1Import({
       <V1ImportPanel
         defaultSelection={ALL_SELECTED}
         onSuccess={handleSuccess}
+        refreshCurrentUserOnSuccess={false}
       />
       <div className="flex flex-wrap items-center gap-2">
         <Button

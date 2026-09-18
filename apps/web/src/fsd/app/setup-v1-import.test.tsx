@@ -18,22 +18,32 @@ vi.mock("react-i18next", async (importOriginal) => ({
 // on top: gating the "Continue" affordance on the personal-key outcome, and the "use an API key
 // instead" escape hatch — so the panel is stubbed at its public API, per the FSD skill's guidance on
 // testing across a slice boundary.
-const { onSuccessRef, lastDefaultSelection } = vi.hoisted(() => ({
-  onSuccessRef: {
-    current: undefined as ((result: ImportV1ProfileResult) => void) | undefined,
-  },
-  lastDefaultSelection: { current: undefined as V1ImportSelection | undefined },
-}))
+const { onSuccessRef, lastDefaultSelection, lastRefreshCurrentUserOnSuccess } =
+  vi.hoisted(() => ({
+    onSuccessRef: {
+      current: undefined as
+        ((result: ImportV1ProfileResult) => void) | undefined,
+    },
+    lastDefaultSelection: {
+      current: undefined as V1ImportSelection | undefined,
+    },
+    lastRefreshCurrentUserOnSuccess: {
+      current: undefined as boolean | undefined,
+    },
+  }))
 
 vi.mock("@/features/v1-import", () => ({
   V1ImportPanel: ({
     defaultSelection,
     onSuccess,
+    refreshCurrentUserOnSuccess,
   }: {
     defaultSelection: V1ImportSelection
     onSuccess?: (result: ImportV1ProfileResult) => void
+    refreshCurrentUserOnSuccess?: boolean
   }) => {
     lastDefaultSelection.current = defaultSelection
+    lastRefreshCurrentUserOnSuccess.current = refreshCurrentUserOnSuccess
     onSuccessRef.current = onSuccess
     return <div data-testid="stub-v1-import-panel" />
   },
@@ -78,6 +88,12 @@ describe("SetupV1Import", () => {
       onslaughtProgress: true,
       campaignEventProgress: true,
     })
+  })
+
+  it("does not let the panel refetch current-user itself, so the reverse guard cannot preempt the report", () => {
+    render(<SetupV1Import onCompleted={vi.fn()} onUseApiKey={vi.fn()} />)
+
+    expect(lastRefreshCurrentUserOnSuccess.current).toBe(false)
   })
 
   it("does not offer Continue before a submission succeeds", () => {
