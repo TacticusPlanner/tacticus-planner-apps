@@ -159,6 +159,16 @@ function Steps({
 
   return (
     <div className="flex flex-col gap-4">
+      <Card>
+        <CardContent>
+          {step === "key" ? (
+            <ApiKeyForm onCompleted={onCompleted} />
+          ) : (
+            renderImportStep(onCompleted)
+          )}
+        </CardContent>
+      </Card>
+
       <Button
         className="self-start"
         data-testid="account-setup-back"
@@ -169,16 +179,6 @@ function Steps({
         <ChevronLeft />
         {t("onboarding.back")}
       </Button>
-
-      <Card>
-        <CardContent>
-          {step === "key" ? (
-            <ApiKeyForm onCompleted={onCompleted} />
-          ) : (
-            renderImportStep(onCompleted)
-          )}
-        </CardContent>
-      </Card>
     </div>
   )
 }
