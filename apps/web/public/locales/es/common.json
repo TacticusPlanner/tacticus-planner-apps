@@ -92,9 +92,10 @@
     "back": "Atrás",
     "paths": {
       "apiKeyName": "Pegar una clave de API",
-      "apiKeyBadge": "Más rápido",
+      "apiKeyBadge": "Inicio nuevo",
       "apiKeyDescription": "Ya tienes una clave de api.tacticusgame.com, o puedes conseguir una ahora.",
       "v1Name": "Importar desde V1",
+      "v1Badge": "Más completo",
       "v1Description": "Inicia sesión con tu cuenta del planificador antiguo para traer tu clave, objetivos y progreso."
     },
     "signUp": {

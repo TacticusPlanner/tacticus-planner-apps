@@ -1,12 +1,11 @@
 import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useMsal } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
+import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { useCurrentUser } from "@/entities/account"
-import { signOut, useActiveAccountId } from "@/shared/auth"
 
 import { ApiKeyForm } from "./api-key-form"
 
@@ -100,8 +99,6 @@ export function AccountSetupScreen({
           step={step}
         />
       )}
-
-      <SignOutFooter />
     </div>
   )
 }
@@ -150,6 +147,7 @@ function Steps({
           testId="account-setup-choose-key"
         />
         <PathCard
+          badge={t("onboarding.paths.v1Badge")}
           description={t("onboarding.paths.v1Description")}
           name={t("onboarding.paths.v1Name")}
           onSelect={() => onStepChange("import")}
@@ -172,11 +170,15 @@ function Steps({
         {t("onboarding.back")}
       </Button>
 
-      {step === "key" ? (
-        <ApiKeyForm onCompleted={onCompleted} />
-      ) : (
-        renderImportStep(onCompleted)
-      )}
+      <Card>
+        <CardContent>
+          {step === "key" ? (
+            <ApiKeyForm onCompleted={onCompleted} />
+          ) : (
+            renderImportStep(onCompleted)
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
@@ -195,52 +197,26 @@ function PathCard({
   testId: string
 }) {
   return (
-    <button
-      className="flex items-start gap-3 rounded-xl border p-4 text-left hover:bg-accent/50"
-      data-testid={testId}
-      onClick={onSelect}
-      type="button"
-    >
-      <span className="flex flex-1 flex-col gap-1">
-        <span className="flex items-center gap-2">
-          <span className="text-sm font-semibold">{name}</span>
-          {badge ? (
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
-              {badge}
-            </span>
-          ) : null}
-        </span>
-        <span className="text-sm text-muted-foreground">{description}</span>
-      </span>
-      <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-    </button>
-  )
-}
-
-// Present on every step and on both layouts: a user who wants neither path must not be trapped on a
-// screen that replaces the whole app. Mirrors the pattern in `app/game-catalog-init-gate.tsx`.
-function SignOutFooter() {
-  const { t } = useTranslation()
-  const { instance } = useMsal()
-  const accountId = useActiveAccountId()
-
-  return (
-    <footer className="flex justify-center border-t pt-4">
-      <Button
-        data-testid="account-setup-sign-out"
-        disabled={!accountId}
-        onClick={() => {
-          if (accountId) {
-            void signOut(instance, accountId).catch((error: unknown) => {
-              console.error("[MSAL] sign-out failed", error)
-            })
-          }
-        }}
-        size="sm"
-        variant="ghost"
+    <Card className="p-0">
+      <button
+        className="flex w-full items-start gap-3 p-4 text-left hover:bg-accent/50"
+        data-testid={testId}
+        onClick={onSelect}
+        type="button"
       >
-        {t("auth.signOut")}
-      </Button>
-    </footer>
+        <span className="flex flex-1 flex-col gap-1">
+          <span className="flex items-center gap-2">
+            <span className="text-sm font-semibold">{name}</span>
+            {badge ? (
+              <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
+                {badge}
+              </span>
+            ) : null}
+          </span>
+          <span className="text-sm text-muted-foreground">{description}</span>
+        </span>
+        <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+      </button>
+    </Card>
   )
 }

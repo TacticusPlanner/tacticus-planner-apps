@@ -24,20 +24,6 @@ vi.mock("@/entities/account", () => ({
     updateTacticusIntegration(...args),
 }))
 
-const signOut = vi.fn<(instance: unknown, accountId: string) => Promise<void>>(
-  () => Promise.resolve()
-)
-
-vi.mock("@/shared/auth", () => ({
-  signOut: (instance: unknown, accountId: string) =>
-    signOut(instance, accountId),
-  useActiveAccountId: () => "home-account-1",
-}))
-
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({ instance: { id: "msal-instance" } }),
-}))
-
 import { AccountSetupScreen } from "./account-setup-screen"
 
 const unconfiguredState: CurrentUserState = {
@@ -73,7 +59,6 @@ describe("AccountSetupScreen", () => {
   beforeEach(() => {
     currentUserState = unconfiguredState
     refetch.mockReset()
-    signOut.mockClear()
     updateTacticusIntegration.mockReset()
   })
 
@@ -136,28 +121,6 @@ describe("AccountSetupScreen", () => {
       }
     }
   )
-
-  describe("sign out", () => {
-    it.each(["choose", "key", "import"] as const)(
-      "is offered on the %s step",
-      (step) => {
-        renderScreen(step)
-        expect(screen.getByTestId("account-setup-sign-out")).toBeVisible()
-      }
-    )
-
-    it("signs the user out with the active account", async () => {
-      const user = userEvent.setup()
-      renderScreen()
-
-      await user.click(screen.getByTestId("account-setup-sign-out"))
-
-      expect(signOut).toHaveBeenCalledWith(
-        { id: "msal-instance" },
-        "home-account-1"
-      )
-    })
-  })
 
   describe("completion handover", () => {
     it("refreshes the account state and shows progress instead of navigating", async () => {

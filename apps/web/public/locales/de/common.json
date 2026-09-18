@@ -92,9 +92,10 @@
     "back": "Zurück",
     "paths": {
       "apiKeyName": "API-Schlüssel einfügen",
-      "apiKeyBadge": "Am schnellsten",
+      "apiKeyBadge": "Neustart",
       "apiKeyDescription": "Du hast bereits einen Schlüssel von api.tacticusgame.com – oder du holst dir jetzt einen.",
       "v1Name": "Aus V1 importieren",
+      "v1Badge": "Am vollständigsten",
       "v1Description": "Melde dich mit deinem alten Planner-Login an, um Schlüssel, Ziele und Fortschritt zu übernehmen."
     },
     "signUp": {

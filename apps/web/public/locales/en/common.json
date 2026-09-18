@@ -92,9 +92,10 @@
     "back": "Back",
     "paths": {
       "apiKeyName": "Paste an API key",
-      "apiKeyBadge": "Fastest",
+      "apiKeyBadge": "Fresh Start",
       "apiKeyDescription": "You already have a key from api.tacticusgame.com, or you can grab one now.",
       "v1Name": "Import from V1",
+      "v1Badge": "Most Complete",
       "v1Description": "Sign in with your old planner login to bring your key, goals, and progress across."
     },
     "signUp": {
