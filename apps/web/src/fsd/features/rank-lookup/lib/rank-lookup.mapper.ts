@@ -40,6 +40,7 @@ export function mapCampaignBattleStorageToDomain(
     type: record.type,
     challenge: record.challenge,
     nodeNumber: record.nodeNumber,
+    battleIndex: record.battleIndex,
     energyCost: record.energyCost,
     dailyAttempts: record.dailyAttempts,
   }

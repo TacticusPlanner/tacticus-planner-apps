@@ -26,6 +26,7 @@ const base = {
   currentPassiveAbility: 18,
   currentLevel: 31,
   levelEnd: 42,
+  upgradeFieldsValid: true,
 }
 
 describe("getGoalValidationIssue", () => {
@@ -106,6 +107,29 @@ describe("getGoalValidationIssue", () => {
         enabledTypes: new Set(["Level"] as const),
         levelEnd: 42,
       })
+    ).toBeNull()
+  })
+
+  it("reports an Upgrade goal with no selected target, and clears once it has one", () => {
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        enabledTypes: new Set(["Upgrade"] as const),
+        upgradeFieldsValid: false,
+      })
+    ).toBe("upgradeTargetsRequired")
+    expect(
+      getGoalValidationIssue({
+        ...base,
+        enabledTypes: new Set(["Upgrade"] as const),
+        upgradeFieldsValid: true,
+      })
+    ).toBeNull()
+  })
+
+  it("ignores upgrade targets when the Upgrade type isn't enabled", () => {
+    expect(
+      getGoalValidationIssue({ ...base, upgradeFieldsValid: false })
     ).toBeNull()
   })
 })

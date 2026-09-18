@@ -77,6 +77,16 @@ describe("ManageAccountDialog", () => {
     expect(container).toBeEmptyDOMElement()
   })
 
+  it("links out to where a key is obtained, opening in a new tab safely", () => {
+    render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
+
+    const link = screen.getByTestId("manage-account-get-key-link")
+    expect(link).toHaveAttribute("href", "https://api.tacticusgame.com")
+    expect(link).toHaveAttribute("target", "_blank")
+    // noopener keeps the opened page from reaching back through window.opener.
+    expect(link).toHaveAttribute("rel", "noopener noreferrer")
+  })
+
   it("saves the Tacticus integration and calls onSaved on success", async () => {
     updateTacticusIntegration.mockResolvedValue(undefined)
     const user = userEvent.setup()

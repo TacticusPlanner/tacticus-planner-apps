@@ -168,6 +168,14 @@
     "energyUsage": {
       "label": "Daily energy used",
       "value": "{{percent}}% of daily energy used"
+    },
+    "campaignEvent": {
+      "title": "Campaign event",
+      "named": "{{name}}",
+      "namedWithTime": "{{name}} · ends {{time}}",
+      "unnamed": "Active · name unavailable",
+      "unnamedWithTime": "Active · name unavailable · ends {{time}}",
+      "inactive": "Not active"
     }
   },
   "schedule": {
@@ -175,7 +183,6 @@
     "raids_other": "{{count}} raids",
     "progress": "{{owned}} of {{target}} owned",
     "node": "{{node}} · {{raids}} raids",
-    "battle": "Battle {{number}}",
     "maxRaids": "Max raids",
     "fullyRaided": "Fully raided"
   },
@@ -250,6 +257,10 @@
         "schedule": {
           "title": "Today's schedule",
           "content": "Raid these campaign nodes with today's available energy — extra suggestions appear here too once your budgeted needs are covered."
+        },
+        "campaignEvent": {
+          "title": "Active campaign event",
+          "content": "Shows the campaign event detected from your synced progress, and when it ends — only that event's nodes can be raided today."
         },
         "energyUsage": {
           "title": "Daily energy usage",

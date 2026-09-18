@@ -43,6 +43,10 @@ export const campaignBattleViewSchema = z.looseObject({
   challenge: z.boolean(),
   energyCost: z.number(),
   nodeNumber: z.number(),
+  // Zero-based index used by Tacticus's own campaign-progress/battle-attempt payloads, assigned
+  // independently within each {campaignGroupId, type} track. Unlike nodeNumber, this distinguishes a
+  // challenge battle from the regular battle it shares a node number with.
+  battleIndex: z.number(),
   slots: z.number(),
   // Daily attempt cap for this battle, derived server-side from its type (Elite/EliteMirror = 6,
   // everything else = 10) — see the API's CampaignDenormalizer.DailyAttemptsForType.

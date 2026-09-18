@@ -10,6 +10,7 @@ export {
   estimateGoal,
   estimatePlanSchedule,
   estimateTodaySchedule,
+  selectFarmNodes,
   type EstimatePlanParams,
   type EstimateResourceId,
   type EstimateUpgrade,

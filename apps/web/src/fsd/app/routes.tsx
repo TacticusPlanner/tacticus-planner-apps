@@ -3,12 +3,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode } from "react"
 import { Navigate, type RouteObject } from "react-router"
-import { Spinner } from "@workspace/ui/components/spinner"
 
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
-import { LandingPage } from "@/pages/landing"
 import { routes as goalsRoutes } from "@/pages/goals"
 import { routes as guildRoutes } from "@/pages/guild"
 import { routes as libraryRoutes } from "@/pages/library"
@@ -16,6 +14,14 @@ import { routes as progressRoutes } from "@/pages/progress"
 import { routes as dailiesRoutes } from "@/pages/dailies"
 import { isUiKitEnabled } from "@/shared/config"
 
+import { AccountSetupRoute } from "./account-setup-route"
+import { accountSetupRoutes } from "./account-setup-routes"
+import {
+  AuthResolving,
+  AuthenticatedRoute,
+  LandingRoute,
+} from "./auth-route-guards"
+import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
 import { OnboardingGate } from "./onboarding-gate"
 
@@ -52,48 +58,12 @@ const OnslaughtPage = lazy(() =>
   import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
 )
 
-// msal-react's MsalProvider always mounts with `accounts: []`/`inProgress: Startup`, even when the
-// underlying instance already restored an active account before the app rendered (see
-// shared/auth's initializeAuthentication) вЂ” it only picks up the real state a tick later, inside its
-// own effect. Every route guard below must wait for `inProgress` to clear before trusting
-// `isAuthenticated`; deciding on the stale first-render value is what caused a hard refresh on a
-// protected deep link (e.g. /guild/members) to bounce to "/" before MSAL had a chance to catch up.
-function AuthResolving() {
-  return (
-    <div className="flex min-h-svh items-center justify-center">
-      <Spinner className="size-8 text-primary" />
-    </div>
-  )
-}
-
 function ProtectedRoute({ children }: { children: ReactNode }) {
-  const isAuthenticated = useIsAuthenticated()
-  const { inProgress } = useMsal()
-
-  if (inProgress !== InteractionStatus.None) {
-    return <AuthResolving />
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate replace to="/" />
-  }
-
-  return <OnboardingGate>{children}</OnboardingGate>
-}
-
-function LandingRoute() {
-  const isAuthenticated = useIsAuthenticated()
-  const { inProgress } = useMsal()
-
-  if (inProgress !== InteractionStatus.None) {
-    return <AuthResolving />
-  }
-
-  if (isAuthenticated) {
-    return <Navigate replace to="/home" />
-  }
-
-  return <LandingPage />
+  return (
+    <AuthenticatedRoute>
+      <OnboardingGate>{children}</OnboardingGate>
+    </AuthenticatedRoute>
+  )
 }
 
 function NotFoundRedirect() {
@@ -114,6 +84,23 @@ function NotFoundRedirect() {
 // SPA even loads, so no in-app callback route is needed.
 export const routes: RouteObject[] = [
   { path: "/", element: <LandingRoute /> },
+  // Account setup sits outside AppShell on purpose. A user here has no configured API key, so every
+  // shell affordance is a trap or noise — nav links bounce straight back here, the catalog init gate
+  // covers the form, and the player-data provider parks a "sync failed" badge on the screen asking
+  // for the key it is missing. Each mobile step still gets its own address so Back works, a reload
+  // keeps the step, and each step is reported as its own page-view.
+  // Authentication only: wrapping these in the onboarding gate would redirect setup to setup.
+  {
+    element: <AccountSetupLayout />,
+    children: accountSetupRoutes.map(({ path, step }) => ({
+      path,
+      element: (
+        <AuthenticatedRoute>
+          <AccountSetupRoute step={step} />
+        </AuthenticatedRoute>
+      ),
+    })),
+  },
   {
     element: <AppShell />,
     children: [

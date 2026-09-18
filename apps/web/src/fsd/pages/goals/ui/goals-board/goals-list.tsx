@@ -1,6 +1,6 @@
-import type { SyntheticEvent } from "react"
+import { useMemo, type SyntheticEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { LockKeyhole } from "lucide-react"
+import { Calendar, LockKeyhole } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Table,
@@ -92,10 +92,21 @@ export function GoalsList({
   )
 }
 
-/** "{{days}}d" for a computed estimate, "—" when there's no entry for this goal (no project
- * selected, non-Rank goal type, or the farm is blocked/unreachable — plan §16 phase 4 scope notes). */
+/** The formatted completion date + "in {{days}} days" caption for a computed estimate, "—" when
+ * there's no entry for this goal (no project selected, non-Rank goal type, or the farm is
+ * blocked/unreachable — plan §16 phase 4 scope notes). Identical rendering on the desktop table and
+ * the mobile card (goal-list-estimate-display spec: no compact mobile variant). */
 function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+      }),
+    [i18n.resolvedLanguage]
+  )
   if (estimate?.status === "Blocked") {
     return (
       <span
@@ -108,15 +119,34 @@ function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
       </span>
     )
   }
+  if (!estimate) {
+    return (
+      <span className="text-muted-foreground" data-testid="goal-row-estimate">
+        {t("goals.estimate.none")}
+      </span>
+    )
+  }
+  // `estimate.date` is a "YYYY-MM-DD" string produced in UTC (estimate.ts's formatDate); parsing its
+  // components explicitly via Date.UTC keeps the displayed day from rolling back for viewers west of
+  // UTC, rather than trusting `new Date(dateString)`'s default (also-UTC, but easy to get wrong) or
+  // the formatter's default local time zone.
+  const [year, month, day] = estimate.date.split("-").map(Number)
+  const formattedDate = dateFormatter.format(
+    new Date(Date.UTC(year, month - 1, day))
+  )
   return (
     <span
-      className="text-muted-foreground"
+      className="flex min-w-0 flex-col gap-0.5"
       data-testid="goal-row-estimate"
-      title={estimate?.date}
+      title={estimate.date}
     >
-      {estimate
-        ? t("goals.estimate.days", { days: estimate.days })
-        : t("goals.estimate.none")}
+      <span className="flex items-center gap-1 text-sm font-medium">
+        <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
+        {formattedDate}
+      </span>
+      <span className="text-xs text-muted-foreground">
+        {t("goals.estimate.days", { days: estimate.days })}
+      </span>
     </span>
   )
 }

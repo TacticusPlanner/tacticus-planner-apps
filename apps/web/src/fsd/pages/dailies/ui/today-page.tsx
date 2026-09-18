@@ -16,6 +16,7 @@ import {
   type TodaysAttempt,
 } from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import { CampaignEventStatusLine } from "./campaign-event-status"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidSchedule } from "./raid-schedule"
 import { RaidState } from "./raid-state"
@@ -79,45 +80,50 @@ export function TodayPage() {
   return (
     <div className="space-y-5 md:space-y-7" data-testid="today-page">
       <section className="space-y-3" data-testid="today-schedule">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold">{t("today.title")}</h2>
-            <p className="sr-only">
-              {t("today.summary", {
-                energy: raids.today.energyTotal,
-                raids: raids.today.raidsTotal,
-              })}
-            </p>
-            <div aria-hidden="true" className="flex flex-wrap gap-2">
-              <BadgeStat
-                icon={
-                  <EntityIcon alt="" className="size-4" src={energyIconUrl} />
-                }
-                value={raids.today.energyTotal}
+        {/* Two equal halves on desktop: the schedule's own header and energy budget on the left,
+            the detected campaign event on the right. They stack on mobile. */}
+        <div className="space-y-4 md:flex md:items-start md:gap-6 md:space-y-0">
+          <div className="space-y-2 md:w-1/2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-lg font-semibold">{t("today.title")}</h2>
+              <p className="sr-only">
+                {t("today.summary", {
+                  energy: raids.today.energyTotal,
+                  raids: raids.today.raidsTotal,
+                })}
+              </p>
+              <div aria-hidden="true" className="flex flex-wrap gap-2">
+                <BadgeStat
+                  icon={
+                    <EntityIcon alt="" className="size-4" src={energyIconUrl} />
+                  }
+                  value={raids.today.energyTotal}
+                />
+                <BadgeStat
+                  icon={<Swords className="size-4 text-muted-foreground" />}
+                  value={raids.today.raidsTotal}
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2" data-testid="energy-usage">
+              <Progress
+                aria-label={t("today.energyUsage.label")}
+                aria-valuetext={t("today.energyUsage.value", {
+                  percent: Math.round(energyUsagePercent),
+                })}
+                className="h-2 flex-1"
+                data-testid="energy-usage-bar"
+                value={Math.min(energyUsagePercent, 100)}
               />
-              <BadgeStat
-                icon={<Swords className="size-4 text-muted-foreground" />}
-                value={raids.today.raidsTotal}
-              />
+              <span
+                aria-hidden="true"
+                className="shrink-0 text-xs font-medium text-muted-foreground tabular-nums"
+              >
+                {Math.round(energyUsagePercent)}%
+              </span>
             </div>
           </div>
-          <div className="flex items-center gap-2" data-testid="energy-usage">
-            <Progress
-              aria-label={t("today.energyUsage.label")}
-              aria-valuetext={t("today.energyUsage.value", {
-                percent: Math.round(energyUsagePercent),
-              })}
-              className="h-2 flex-1"
-              data-testid="energy-usage-bar"
-              value={Math.min(energyUsagePercent, 100)}
-            />
-            <span
-              aria-hidden="true"
-              className="shrink-0 text-xs font-medium text-muted-foreground tabular-nums"
-            >
-              {Math.round(energyUsagePercent)}%
-            </span>
-          </div>
+          <CampaignEventStatusLine className="space-y-2 md:w-1/2" />
         </div>
         {raids.today.entries.length > 0 || bonusEntries.length > 0 ? (
           <RaidSchedule
@@ -218,13 +224,13 @@ export function TodaysAttemptsList({
             ) : null}
             <div className="min-w-0 flex-1 leading-tight">
               <div className="truncate text-sm font-medium">
-                {location?.fullName ?? battleId}
+                {location?.campaignName ?? battleId}
               </div>
-              <div className="truncate text-xs text-muted-foreground">
-                {t("schedule.battle", {
-                  number: location?.nodeNumber ?? battleId,
-                })}
-              </div>
+              {location?.nodeLabel ? (
+                <div className="truncate text-xs text-muted-foreground">
+                  {location.nodeLabel}
+                </div>
+              ) : null}
             </div>
             <Badge className="shrink-0" variant="outline">
               {t("schedule.raids", { count: attemptsUsed })}

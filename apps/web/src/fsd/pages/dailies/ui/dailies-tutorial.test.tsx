@@ -38,6 +38,23 @@ describe("Dailies tutorials", () => {
     }
   )
 
+  it.each(["desktop", "mobile"] as const)(
+    "walks the campaign-event status line before the energy usage bar on %s",
+    (viewport) => {
+      renderHook(() => useTodayTutorial())
+      const steps = register.mock.lastCall?.[0] as Record<
+        "desktop" | "mobile",
+        { target: string; title: string }[]
+      >
+      const targets = steps[viewport].map((step) => step.target)
+
+      expect(targets).toContain('[data-testid="campaign-event-status"]')
+      expect(
+        targets.indexOf('[data-testid="campaign-event-status"]')
+      ).toBeLessThan(targets.indexOf('[data-testid="energy-usage"]'))
+    }
+  )
+
   it("uses distinct copy for the Dailies and Raids tab steps", () => {
     renderHook(() => useTodayTutorial())
     const steps = register.mock.lastCall?.[0] as {

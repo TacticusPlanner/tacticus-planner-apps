@@ -47,7 +47,8 @@
       "notConfigured": "Non configuré",
       "apiKeyLabel": "Nouvelle clé API Tacticus",
       "apiKeyPlaceholder": "Laisser vide pour conserver la clé actuelle",
-      "apiKeyDescription": "Obtenez votre clé API sur https://api.tacticusgame.com. Ne la partagez qu’avec des personnes de confiance.",
+      "apiKeyDescription": "Ne partagez cette clé qu’avec des outils de confiance : elle peut lire votre roster et les données de votre guilde.",
+      "getKey": "Obtenir une clé sur api.tacticusgame.com",
       "userIdLabel": "ID utilisateur Tacticus",
       "userIdPlaceholder": "Laisser vide pour conserver la valeur actuelle",
       "removeUserId": "Supprimer l’ID utilisateur Tacticus",
@@ -78,28 +79,48 @@
       "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer."
     }
   },
+  "accountGate": {
+    "errorTitle": "Impossible de vérifier votre compte",
+    "errorDescription": "Une erreur s'est produite lors de la vérification de l'état de votre compte.",
+    "retry": "Réessayer"
+  },
   "onboarding": {
-    "title": "Terminez la configuration de votre compte",
-    "description": "Connectez votre compte Tacticus pour commencer à utiliser le planificateur.",
+    "title": "Connectez votre compte",
+    "description": "Choisissez comment importer vos données Tacticus. Les deux méthodes prennent environ une minute.",
     "genericError": "Une erreur s’est produite. Veuillez réessayer.",
-    "or": "Ou",
-    "tabs": {
-      "signUp": "Inscription",
-      "importProfile": "Importer le profil"
+    "stepPosition": "Étape {{current}} sur {{total}}",
+    "back": "Retour",
+    "paths": {
+      "apiKeyName": "Coller une clé API",
+      "apiKeyBadge": "Le plus rapide",
+      "apiKeyDescription": "Vous avez déjà une clé depuis api.tacticusgame.com, ou vous pouvez en obtenir une maintenant.",
+      "v1Name": "Importer depuis V1",
+      "v1Description": "Connectez-vous avec votre ancien compte du planificateur : nous copierons la clé et l’ID utilisateur."
     },
     "signUp": {
       "apiKeyLabel": "Clé API Tacticus",
-      "apiKeyDescription": "Obtenez votre clé API sur https://api.tacticusgame.com. Ne la partagez qu’avec des personnes de confiance.",
+      "apiKeyDescription": "Ne partagez cette clé qu’avec des outils de confiance : elle peut lire votre roster et les données de votre guilde.",
+      "getKey": "Obtenir une clé sur api.tacticusgame.com",
       "userIdLabel": "ID utilisateur Tacticus (facultatif)",
-      "userIdDescription": "Utilisé pour identifier votre compte dans les données de guilde.",
-      "submit": "S’inscrire"
+      "userIdDescription": "Permet au planificateur de vous repérer dans le roster de votre guilde. Vous pouvez l’ajouter plus tard.",
+      "submit": "Connecter le compte"
     },
     "import": {
-      "description": "Connectez-vous avec votre nom d’utilisateur et votre mot de passe V1 pour importer votre clé API Tacticus et votre ID utilisateur. Vos identifiants V1 ne sont jamais stockés.",
+      "description": "Connectez-vous avec votre compte du planificateur V1. Nous copions la clé API et l’ID utilisateur, puis les informations V1 sont supprimées : vos identifiants V1 ne sont jamais stockés.",
       "usernameLabel": "Nom d’utilisateur V1",
       "passwordLabel": "Mot de passe V1",
-      "submit": "Importer le profil"
-    }
+      "submit": "Importer et connecter"
+    },
+    "importOutcome": {
+      "missingKey": "Aucune clé API Tacticus n’est enregistrée sur votre compte V1.",
+      "invalidKey": "La clé API Tacticus de votre compte V1 n’est plus valide. Obtenez-en une nouvelle et collez-la ici.",
+      "notSaved": "Impossible d’enregistrer la clé API importée. Veuillez réessayer.",
+      "unknown": "L’import n’a fourni aucune clé API Tacticus utilisable.",
+      "useApiKey": "Coller une clé API à la place"
+    },
+    "confirming": "Finalisation de la configuration…",
+    "confirmFailed": "Votre clé a bien été enregistrée, mais nous n’avons pas pu confirmer votre compte.",
+    "confirmRetry": "Réessayer"
   },
   "unitLookup": {
     "subtitle": "Choisissez un personnage et une plage de rangs pour voir les améliorations requises et où les farmer.",
@@ -399,7 +420,7 @@
       "progress": "Progression",
       "status": "Statut",
       "actions": "Actions",
-      "estimate": "Est."
+      "estimate": "Terminé le"
     },
     "status": {
       "Draft": "Brouillon",
@@ -649,6 +670,7 @@
         "abilityRange": "Au moins une capacité doit augmenter, et aucune plage ne peut diminuer.",
         "abilityAlreadyReached": "Les niveaux de capacité sélectionnés ont déjà été atteints.",
         "levelAlreadyReached": "Le niveau sélectionné a déjà été atteint.",
+        "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
         "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
@@ -658,7 +680,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}} j",
+      "days": "dans {{days}} jours",
       "blockedLabel": "Bloqué",
       "blocked": {
         "NoFarmLocation": "Aucun lieu de farming accessible ne fournit une ressource requise.",
@@ -758,13 +780,7 @@
     }
   },
   "language": {
-    "label": "Langue",
-    "options": {
-      "de": "Deutsch",
-      "en": "English",
-      "es": "Español",
-      "fr": "Français"
-    }
+    "label": "Langue"
   },
   "scrollToTop": "Retour en haut",
   "settings": {

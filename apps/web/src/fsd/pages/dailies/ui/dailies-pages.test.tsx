@@ -157,9 +157,9 @@ function ready(
         battle,
         {
           id: battle,
-          fullName: "Indomitus Elite",
+          campaignName: "Indomitus",
+          nodeLabel: "Elite 1",
           shortLabel: "Indomitus I 1",
-          nodeNumber: 1,
           challenge: false,
           icon: "/campaign.png",
         },
@@ -168,9 +168,9 @@ function ready(
         offPlanBattle,
         {
           id: offPlanBattle,
-          fullName: "Saim-Hann Mirror Elite",
-          shortLabel: "Saim-Hann ME 15",
-          nodeNumber: 15,
+          campaignName: "Death Guard",
+          nodeLabel: "Extremis 3",
+          shortLabel: "Death Guard EX 3",
           challenge: false,
           icon: "/campaign.png",
         },
@@ -256,7 +256,7 @@ describe("Dailies raid pages", () => {
     // gets its own separate goal header there too, in addition to Today's merged card.
     expect(todaySchedule.getAllByText("Bellator")).toHaveLength(2)
     expect(todaySchedule.getAllByText("Aleph-Null")).toHaveLength(2)
-    expect(todaySchedule.getAllByText(/Indomitus Elite/)).not.toHaveLength(0)
+    expect(todaySchedule.getAllByText(/Indomitus/)).not.toHaveLength(0)
     expect(todaySchedule.getByText(/265 \/ 500/)).toBeInTheDocument()
     expect(
       todaySchedule.getByLabelText(
@@ -296,6 +296,32 @@ describe("Dailies raid pages", () => {
     expect(screen.getByText("150%")).toBeInTheDocument()
   })
 
+  it("splits the header into an energy half and a campaign-event half, energy first", () => {
+    useDailyRaids.mockReturnValue(
+      ready({ dailyEnergy: 100, realEnergyUsedToday: 42 })
+    )
+    renderPage(<TodayPage />)
+
+    const status = screen.getByTestId("campaign-event-status")
+    const energyRow = screen.getByTestId("energy-usage")
+    // One element in one DOM position: the energy half comes first, so the campaign event reads
+    // second stacked on mobile and sits right of it on desktop.
+    expect(
+      energyRow.compareDocumentPosition(status) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    // Both halves are equal-width siblings of the same desktop flex row.
+    const half = status.previousElementSibling
+    expect(half).toContainElement(energyRow)
+    expect(half).toHaveClass("md:w-1/2")
+    expect(status).toHaveClass("md:w-1/2")
+    // The bar still leads its own row and the percentage still trails it.
+    expect(energyRow.firstElementChild).toBe(
+      screen.getByTestId("energy-usage-bar")
+    )
+    expect(energyRow.lastElementChild?.textContent).toBe("42%")
+  })
+
   it("shows 0% energy usage when there are no real attempts today", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 288, realEnergyUsedToday: 0 })
@@ -316,13 +342,40 @@ describe("Dailies raid pages", () => {
     renderPage(<TodayPage />)
 
     const todaysAttempts = within(screen.getByTestId("todays-attempts"))
-    expect(todaysAttempts.getByText("Indomitus Elite")).toBeInTheDocument()
+    expect(todaysAttempts.getByText("Indomitus")).toBeInTheDocument()
+    expect(todaysAttempts.getByText("Elite 1")).toBeInTheDocument()
     expect(
       todaysAttempts.getByText('schedule.raids:{"count":10}')
     ).toBeInTheDocument()
     expect(
       todaysAttempts.queryByText("schedule.maxRaids")
     ).not.toBeInTheDocument()
+  })
+
+  it("splits a storyline elite node across two lines in Today's schedule", () => {
+    useDailyRaids.mockReturnValue(ready())
+    renderPage(<TodayPage />)
+
+    const row = within(screen.getAllByTestId(`raid-location-${battle}`)[0]!)
+    expect(row.getByText("Indomitus")).toBeInTheDocument()
+    expect(row.getByText("Elite 1")).toBeInTheDocument()
+  })
+
+  it("renders only the battle id, with no second line, for an attempt the catalog cannot name", () => {
+    useDailyRaids.mockReturnValue(
+      ready({
+        locationsByBattleId: new Map(),
+        todaysAttempts: [
+          { battleId: battle, attemptsUsed: 2, attemptsLeft: 4 },
+        ],
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const lines = screen
+      .getByTestId(`todays-attempt-${battle}`)
+      .querySelectorAll(".truncate")
+    expect([...lines].map((line) => line.textContent)).toEqual([battle])
   })
 
   it("shows a resource icon for an attempt at a node outside this project's plan", () => {
@@ -339,7 +392,8 @@ describe("Dailies raid pages", () => {
       screen.getByTestId(`todays-attempt-${offPlanBattle}`)
     )
     expect(attempt.getByTestId("raid-resource-icon")).toBeInTheDocument()
-    expect(attempt.getByText("Saim-Hann Mirror Elite")).toBeInTheDocument()
+    expect(attempt.getByText("Death Guard")).toBeInTheDocument()
+    expect(attempt.getByText("Extremis 3")).toBeInTheDocument()
   })
 
   it("lets this project's plan name the resource for a node it does farm", () => {
@@ -388,7 +442,7 @@ describe("Dailies raid pages", () => {
     renderPage(<TodayPage />)
 
     const todaySchedule = within(screen.getByTestId("today-schedule"))
-    expect(todaySchedule.queryByText("Indomitus Elite")).not.toBeInTheDocument()
+    expect(todaySchedule.queryByText("Indomitus")).not.toBeInTheDocument()
   })
 
   it.each(["no-project", "no-farmable", "error"] as const)(

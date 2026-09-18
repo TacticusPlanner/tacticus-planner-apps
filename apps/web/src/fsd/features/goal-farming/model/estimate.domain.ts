@@ -94,6 +94,9 @@ export interface FarmNode {
    *  one simulated day (see spendDay's per-battleId attempt tracking), since it's the same real-world
    *  battle regardless of which material happens to drop there. */
   dailyAttempts: number
+  /** The battle's expected gold payout, used only to break a tie in `selectFarmNodes` when two
+   *  candidates are otherwise equally energy-efficient. `null`/absent sorts lowest. */
+  expectedGold?: number | null
 }
 
 export interface RaidBreakdownEntry {

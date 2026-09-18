@@ -10,16 +10,35 @@ import type {
 import {
   buildCombinedGoalSpecs,
   buildReviewItems,
-  characterRelevantUpgradeIds,
   characterRelevantUpgradeQuantities,
   computeUpgradeGoalNeed,
-  mowRelevantUpgradeIds,
   mowRelevantUpgradeQuantities,
 } from ".//goal-spec-builder"
 import { emptyAcquisitionPlan } from "../goal-creation-form/acquisition-plan"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
+
+/** A catalog where each listed id is crafted from the given ingredients; everything else reads as a
+ * base upgrade (an id absent from the map is counted directly, same as in production). */
+const craftedUpgradesById = (
+  entries: readonly (readonly [
+    string,
+    readonly { material: string; count: number }[],
+  ])[]
+) =>
+  new Map(
+    entries.map(([id, recipe]) => [
+      upgradeId(id),
+      {
+        crafted: true,
+        recipe: recipe.map((ingredient) => ({
+          material: upgradeId(ingredient.material),
+          count: ingredient.count,
+        })),
+      } as UpgradeWithFarmLocations,
+    ])
+  )
 
 const baseSpecParams = {
   includesLevel: false,
@@ -336,36 +355,6 @@ const mow: MowStorageModel = {
   },
 } as MowStorageModel
 
-describe("characterRelevantUpgradeIds", () => {
-  it("flattens every rank's upgrade ids into a deduplicated set", () => {
-    expect(characterRelevantUpgradeIds(character)).toEqual(
-      new Set(
-        upgradeIds([
-          "h1",
-          "h2",
-          "d1",
-          "d2",
-          "a1",
-          "a2",
-          "h3",
-          "d3",
-          "d4",
-          "a3",
-          "a4",
-        ])
-      )
-    )
-  })
-})
-
-describe("mowRelevantUpgradeIds", () => {
-  it("flattens both ability tracks' recipes into a deduplicated set", () => {
-    expect(mowRelevantUpgradeIds(mow)).toEqual(
-      new Set(upgradeIds(["h1", "d1", "a1", "h2", "d2"]))
-    )
-  })
-})
-
 const noCraftedUpgrades = new Map<
   ReturnType<typeof upgradeId>,
   UpgradeWithFarmLocations
@@ -414,9 +403,9 @@ describe("characterRelevantUpgradeQuantities", () => {
     ).toEqual(new Map())
   })
 
-  it("excludes crafted upgrades — only base upgrades are selectable", () => {
-    const upgradesById = new Map([
-      [upgradeId("h1"), { crafted: true } as UpgradeWithFarmLocations],
+  it("decomposes a crafted upgrade into the base ingredients it needs", () => {
+    const upgradesById = craftedUpgradesById([
+      ["h1", [{ material: "b1", count: 2 }]],
     ])
     const quantities = characterRelevantUpgradeQuantities(
       character,
@@ -425,11 +414,56 @@ describe("characterRelevantUpgradeQuantities", () => {
       upgradesById
     )
     expect(quantities.has(upgradeId("h1"))).toBe(false)
+    expect(quantities.get(upgradeId("b1"))).toBe(2)
     expect(quantities.get(upgradeId("h2"))).toBe(1)
+  })
+
+  it("decomposes recursively and sums a shared ingredient across recipes", () => {
+    const upgradesById = craftedUpgradesById([
+      ["h1", [{ material: "c1", count: 2 }]],
+      ["c1", [{ material: "b1", count: 3 }]],
+      ["h2", [{ material: "b1", count: 1 }]],
+    ])
+    const quantities = characterRelevantUpgradeQuantities(
+      character,
+      "Stone1",
+      "Stone2",
+      upgradesById
+    )
+    // h1 -> 2 x c1 -> 6 x b1, plus h2's own single b1.
+    expect(quantities.get(upgradeId("b1"))).toBe(7)
+    expect(quantities.has(upgradeId("c1"))).toBe(false)
+  })
+
+  it("never offers an empty selection when every upgrade in range is crafted", () => {
+    const upgradesById = craftedUpgradesById(
+      (["h1", "h2", "d1", "d2", "a1", "a2"] as const).map((id) => [
+        id,
+        [{ material: `${id}-base`, count: 1 }],
+      ])
+    )
+    expect(
+      characterRelevantUpgradeQuantities(
+        character,
+        "Stone1",
+        "Stone2",
+        upgradesById
+      ).size
+    ).toBe(6)
   })
 })
 
 describe("mowRelevantUpgradeQuantities", () => {
+  it("decomposes a crafted ingredient in an ability recipe into base materials", () => {
+    const quantities = mowRelevantUpgradeQuantities(
+      mow,
+      craftedUpgradesById([["h1", [{ material: "b1", count: 3 }]]])
+    )
+    // h1 appears in two of the primary track's recipes, each needing 3 x b1.
+    expect(quantities.get(upgradeId("b1"))).toBe(6)
+    expect(quantities.has(upgradeId("h1"))).toBe(false)
+  })
+
   it("counts occurrences across both ability tracks' whole recipe lists", () => {
     expect(mowRelevantUpgradeQuantities(mow, noCraftedUpgrades)).toEqual(
       new Map([

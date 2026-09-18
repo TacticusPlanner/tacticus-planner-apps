@@ -105,16 +105,19 @@ export function useGoalValidationState({
     currentPassiveAbility,
     currentLevel: playerCharacter?.xpLevel,
     levelEnd,
+    upgradeFieldsValid,
   })
   const validationMessage = validationIssue
     ? t(`goals.create.validation.${validationIssue}`)
     : null
 
+  // Every gate below either has a `validationMessage` of its own or is unreachable through the UI's
+  // own option lists (a start/end select never offers an inverted range) — an Upgrade goal's missing
+  // target is the one that used to disable submit silently, and now reports itself as an issue.
   const canSubmit =
     !!entityId &&
     enabledTypes.size > 0 &&
     !validationMessage &&
-    upgradeFieldsValid &&
     (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
     (!enabledTypes.has("Ascension") ||
       progressionIndex(progressionStart) < progressionIndex(progressionEnd)) &&

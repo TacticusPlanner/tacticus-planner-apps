@@ -4,49 +4,62 @@ import type { Battle } from "@/shared/lib"
 
 export type RealBattleAttempt = {
   tacticusCampaignId: CampaignId
+  // Standard/Mirror/Elite/EliteMirror for a standing campaign, Standard/Extremis for a campaign
+  // event. Needed alongside battleIndex: a campaign event's two tiers share tacticusCampaignId and
+  // an independent, colliding battleIndex sequence, so type is what keeps them apart.
+  type: string
   battleIndex: number
-  attemptsUsed: number
   attemptsLeft: number
+  attemptsUsed: number
+}
+
+function battleAttemptKey(
+  campaignGroupId: string,
+  type: string,
+  battleIndex: number
+) {
+  return `${campaignGroupId}:${type}:${battleIndex}`
 }
 
 /**
- * Maps `{campaignGroupId, battleIndex}` to a `BattleId`, scoped to standing (non-event) campaigns
- * only — for these, `nodeNumber = battleIndex + 1` always holds (one type per campaign group, no
- * interleaved challenge nodes), so the mapping is a direct lookup. Event campaigns are excluded on
- * purpose: Tacticus reports their Standard/Extremis tiers as two independent `battleIndex`
- * sequences sharing one campaign id, and the synced attempt data doesn't retain which tier an
- * attempt belongs to, so the same `{campaignId, battleIndex}` key can genuinely collide with two
- * different real battles once both tiers are unlocked.
+ * Maps `{campaignGroupId, type, battleIndex}` to a `BattleId`, covering every campaign — standing and
+ * event alike — now that both the served battle catalog and synced battle-attempt records carry a
+ * real `battleIndex`/`type` pair instead of only `nodeNumber` (which can't disambiguate an event
+ * campaign's challenge node from the regular node it shares a node number with, or its Standard tier
+ * from its Extremis tier).
  */
-export function buildStandingBattleIndex(
-  battlesById: ReadonlyMap<BattleId, Battle>,
-  eventCampaignIds: ReadonlySet<string>
+export function buildBattleAttemptIndex(
+  battlesById: ReadonlyMap<BattleId, Battle>
 ): ReadonlyMap<string, BattleId> {
   const index = new Map<string, BattleId>()
   for (const [battleId, battle] of battlesById) {
-    if (eventCampaignIds.has(battle.campaignGroupId)) continue
-    index.set(`${battle.campaignGroupId}:${battle.nodeNumber - 1}`, battleId)
+    index.set(
+      battleAttemptKey(battle.campaignGroupId, battle.type, battle.battleIndex),
+      battleId
+    )
   }
   return index
 }
 
 /**
  * Real, account-wide energy spent today: sums `attemptsUsed * energyCost` across every synced
- * attempt at a standing campaign node, independent of the current project's simulated plan and
- * uncapped by `dailyEnergy`. Event-campaign attempts are skipped — see `buildStandingBattleIndex`.
+ * attempt — standing or event-campaign — independent of the current project's simulated plan and
+ * uncapped by `dailyEnergy`.
  */
 export function calculateRealEnergyUsedToday(
   battleAttempts: readonly RealBattleAttempt[],
-  eventCampaignIds: ReadonlySet<string>,
-  standingBattleIndex: ReadonlyMap<string, BattleId>,
+  battleAttemptIndex: ReadonlyMap<string, BattleId>,
   battlesById: ReadonlyMap<BattleId, Battle>
 ): number {
   let total = 0
   for (const attempt of battleAttempts) {
-    if (eventCampaignIds.has(attempt.tacticusCampaignId)) continue
     if (attempt.attemptsUsed <= 0) continue
-    const battleId = standingBattleIndex.get(
-      `${attempt.tacticusCampaignId}:${attempt.battleIndex}`
+    const battleId = battleAttemptIndex.get(
+      battleAttemptKey(
+        attempt.tacticusCampaignId,
+        attempt.type,
+        attempt.battleIndex
+      )
     )
     if (!battleId) continue
     const battle = battlesById.get(battleId)
@@ -57,20 +70,22 @@ export function calculateRealEnergyUsedToday(
 }
 
 /**
- * Real, per-node attempts remaining today for standing campaigns, keyed by `BattleId` — the ground
- * truth for whether a location is actually fully raided (`attemptsLeft === 0`), independent of any
- * simulated plan. Event-campaign nodes are skipped — see `buildStandingBattleIndex`.
+ * Real, per-node attempts remaining today, keyed by `BattleId` — the ground truth for whether a
+ * location is actually fully raided (`attemptsLeft === 0`), independent of any simulated plan. Covers
+ * every campaign, standing and event alike.
  */
 export function buildAttemptsLeftByBattle(
   battleAttempts: readonly RealBattleAttempt[],
-  eventCampaignIds: ReadonlySet<string>,
-  standingBattleIndex: ReadonlyMap<string, BattleId>
+  battleAttemptIndex: ReadonlyMap<string, BattleId>
 ): ReadonlyMap<BattleId, number> {
   const result = new Map<BattleId, number>()
   for (const attempt of battleAttempts) {
-    if (eventCampaignIds.has(attempt.tacticusCampaignId)) continue
-    const battleId = standingBattleIndex.get(
-      `${attempt.tacticusCampaignId}:${attempt.battleIndex}`
+    const battleId = battleAttemptIndex.get(
+      battleAttemptKey(
+        attempt.tacticusCampaignId,
+        attempt.type,
+        attempt.battleIndex
+      )
     )
     if (!battleId) continue
     result.set(battleId, attempt.attemptsLeft)
@@ -85,23 +100,24 @@ export type TodaysAttempt = {
 }
 
 /**
- * Every standing-campaign node the player has actually raided today, account-wide — not scoped to
- * the current project's schedule. Backs the "Today's Attempts" section, which lists everything
- * attempted today regardless of relevance, and is the same real signal `ResourceCard` uses to
- * de-dupe an exhausted location out of its normal schedule listing (`attemptsLeft === 0`).
- * Event-campaign attempts are skipped — see `buildStandingBattleIndex`.
+ * Every node the player has actually raided today, account-wide — standing or event-campaign alike —
+ * not scoped to the current project's schedule. Backs the "Today's Attempts" section, which lists
+ * everything attempted today regardless of relevance, and is the same real signal `ResourceCard` uses
+ * to de-dupe an exhausted location out of its normal schedule listing (`attemptsLeft === 0`).
  */
 export function buildTodaysAttempts(
   battleAttempts: readonly RealBattleAttempt[],
-  eventCampaignIds: ReadonlySet<string>,
-  standingBattleIndex: ReadonlyMap<string, BattleId>
+  battleAttemptIndex: ReadonlyMap<string, BattleId>
 ): TodaysAttempt[] {
   const result: TodaysAttempt[] = []
   for (const attempt of battleAttempts) {
-    if (eventCampaignIds.has(attempt.tacticusCampaignId)) continue
     if (attempt.attemptsUsed <= 0) continue
-    const battleId = standingBattleIndex.get(
-      `${attempt.tacticusCampaignId}:${attempt.battleIndex}`
+    const battleId = battleAttemptIndex.get(
+      battleAttemptKey(
+        attempt.tacticusCampaignId,
+        attempt.type,
+        attempt.battleIndex
+      )
     )
     if (!battleId) continue
     result.push({

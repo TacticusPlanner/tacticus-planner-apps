@@ -168,6 +168,14 @@
     "energyUsage": {
       "label": "Energía diaria usada",
       "value": "{{percent}}% de la energía diaria usada"
+    },
+    "campaignEvent": {
+      "title": "Evento de campaña",
+      "named": "{{name}}",
+      "namedWithTime": "{{name}} · termina {{time}}",
+      "unnamed": "Activo · nombre no disponible",
+      "unnamedWithTime": "Activo · nombre no disponible · termina {{time}}",
+      "inactive": "No activo"
     }
   },
   "schedule": {
@@ -175,7 +183,6 @@
     "raids_other": "{{count}} incursiones",
     "progress": "{{owned}} de {{target}} en posesión",
     "node": "{{node}} · {{raids}} incursiones",
-    "battle": "Batalla {{number}}",
     "maxRaids": "Máximo alcanzado",
     "fullyRaided": "Completado"
   },
@@ -250,6 +257,10 @@
         "schedule": {
           "title": "Plan de hoy",
           "content": "Ataca estos nodos con la energía de hoy — aquí también aparecen sugerencias adicionales una vez cubiertas tus necesidades presupuestadas."
+        },
+        "campaignEvent": {
+          "title": "Evento de campaña activo",
+          "content": "Muestra el evento de campaña detectado en tu progreso sincronizado y cuándo termina: hoy solo se pueden incursionar sus nodos."
         },
         "energyUsage": {
           "title": "Uso diario de energía",

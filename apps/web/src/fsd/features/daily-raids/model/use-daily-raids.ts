@@ -22,6 +22,7 @@ import {
   getUpgrades,
 } from "@workspace/game-catalog/queries"
 import {
+  getCampaignEventProgress,
   getInventoryShard,
   getInventoryUpgrades,
   getLiveProgress,
@@ -42,16 +43,17 @@ import { useCampaignDisplay } from "@/shared/lib"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import {
-  activeProjectMembers,
   availableCampaignBattles,
-  calculateDailyRaids,
-} from "./daily-raids-calc"
+  campaignEventProgressKey,
+} from "./campaign-event-eligibility"
+import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,
-  buildStandingBattleIndex,
+  buildBattleAttemptIndex,
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
+import { campaignLocationLabels } from "./daily-raids.domain"
 import type {
   DailyRaidResourceLabels,
   DailyRaidsViewModel,
@@ -61,8 +63,11 @@ export function useDailyRaids(
   projectId: string | undefined
 ): DailyRaidsViewModel {
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
-  const { fullLabel: campaignFullLabel, shortLabel: campaignShortLabel } =
-    useCampaignDisplay()
+  const {
+    name: campaignDisplayName,
+    tierLabel: campaignTierLabel,
+    shortLabel: campaignShortLabel,
+  } = useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
   const membersQuery = useQuery({
     ...projectQueries.goals(projectId ?? "unselected"),
@@ -88,6 +93,10 @@ export function useDailyRaids(
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
   const liveProgressResult = useLiveQuery(
     async () => ({ value: await getLiveProgress() }),
+    []
+  )
+  const campaignEventProgressResult = useLiveQuery(
+    async () => ({ value: await getCampaignEventProgress() }),
     []
   )
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
@@ -143,11 +152,25 @@ export function useDailyRaids(
       ),
     [campaignDefinitions]
   )
+  const campaignEventProgressByKey = useMemo(
+    () =>
+      new Map(
+        (campaignEventProgressResult?.value ?? []).map((progress) => [
+          campaignEventProgressKey(progress.tacticusCampaignId, progress.type),
+          {
+            completedBattleCount: progress.completedBattleCount,
+            completedChallengeBattlesIds: progress.completedChallengeBattlesIds,
+          },
+        ])
+      ),
+    [campaignEventProgressResult]
+  )
   const battlesById = useMemo(() => {
     const availableBattles = availableCampaignBattles(
       battles ?? [],
       eventCampaignIds,
-      liveProgressResult?.value?.activeCampaignEventId
+      liveProgressResult?.value?.activeCampaignEventId,
+      campaignEventProgressByKey
     )
     return new Map(
       availableBattles.map((battle) => [
@@ -155,7 +178,12 @@ export function useDailyRaids(
         mapCampaignBattleStorageToDomain(battle),
       ])
     )
-  }, [battles, eventCampaignIds, liveProgressResult])
+  }, [
+    battles,
+    eventCampaignIds,
+    liveProgressResult,
+    campaignEventProgressByKey,
+  ])
   const locationsByBattleId = useMemo(
     () =>
       new Map(
@@ -170,13 +198,13 @@ export function useDailyRaids(
             battleId,
             {
               id: battleId,
-              fullName: descriptor
-                ? campaignFullLabel(descriptor)
-                : battle.campaignGroupId,
+              ...campaignLocationLabels(battleId, battle, descriptor, {
+                name: campaignDisplayName,
+                tierLabel: campaignTierLabel,
+              }),
               shortLabel: short
                 ? `${short.name} ${short.code} ${battle.nodeNumber}${short.challenge ? "B" : ""}`
                 : battle.campaignGroupId,
-              nodeNumber: battle.nodeNumber,
               challenge: battle.challenge,
               icon: campaignIcon(
                 battle.campaignGroupId,
@@ -187,7 +215,7 @@ export function useDailyRaids(
           ] as const
         })
       ),
-    [battlesById, campaignFullLabel, campaignShortLabel]
+    [battlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
   )
   // Game-data display names resolve through the id-keyed `upgrades`/`characters` namespaces — the
   // same convention Character Lookup uses — so one material can't read as two different names in two
@@ -216,37 +244,34 @@ export function useDailyRaids(
       ),
     [upgradesById, charactersById, labelResource]
   )
-  const standingBattleIndex = useMemo(
-    () => buildStandingBattleIndex(battlesById, eventCampaignIds),
-    [battlesById, eventCampaignIds]
+  const battleAttemptIndex = useMemo(
+    () => buildBattleAttemptIndex(battlesById),
+    [battlesById]
   )
   const realEnergyUsedToday = useMemo(
     () =>
       calculateRealEnergyUsedToday(
         liveProgressResult?.value?.battleAttempts ?? [],
-        eventCampaignIds,
-        standingBattleIndex,
+        battleAttemptIndex,
         battlesById
       ),
-    [liveProgressResult, eventCampaignIds, standingBattleIndex, battlesById]
+    [liveProgressResult, battleAttemptIndex, battlesById]
   )
   const attemptsLeftByBattle = useMemo(
     () =>
       buildAttemptsLeftByBattle(
         liveProgressResult?.value?.battleAttempts ?? [],
-        eventCampaignIds,
-        standingBattleIndex
+        battleAttemptIndex
       ),
-    [liveProgressResult, eventCampaignIds, standingBattleIndex]
+    [liveProgressResult, battleAttemptIndex]
   )
   const todaysAttempts = useMemo(
     () =>
       buildTodaysAttempts(
         liveProgressResult?.value?.battleAttempts ?? [],
-        eventCampaignIds,
-        standingBattleIndex
+        battleAttemptIndex
       ),
-    [liveProgressResult, eventCampaignIds, standingBattleIndex]
+    [liveProgressResult, battleAttemptIndex]
   )
 
   if (!projectId) return { status: "no-project" }
@@ -266,6 +291,7 @@ export function useDailyRaids(
     battles &&
     campaignDefinitions &&
     liveProgressResult &&
+    campaignEventProgressResult &&
     ascensionCostsById &&
     unlockShardCostsById &&
     onslaughtRewards &&

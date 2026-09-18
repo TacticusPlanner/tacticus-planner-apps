@@ -51,6 +51,7 @@ const battle = (
     type: "Normal",
     challenge: false,
     nodeNumber: 1,
+    battleIndex: 0,
     energyCost,
     dailyAttempts,
   },
@@ -208,6 +209,124 @@ describe("selectFarmNodes", () => {
         battlesById
       )
     ).toEqual([])
+  })
+
+  describe("expectedGold tie-break", () => {
+    // FoCE13/SHME19 both cost 10 energy for one guaranteed copy (energyPerItem 10), differing only
+    // in expected gold — matches the fix-daily-raid-location-recommendations spec's worked example.
+    const tiedUpgrade = (
+      foceExpectedGold: number | null,
+      shmeExpectedGold: number | null
+    ) =>
+      new Map<ReturnType<typeof upgradeId>, EstimateUpgrade>([
+        [
+          upgradeId("upgDmgC010"),
+          {
+            id: upgradeId("upgDmgC010"),
+            farmLocations: [
+              location("FoCE13", {
+                guaranteed: true,
+                expectedGold: foceExpectedGold,
+              }),
+              location("SHME19", {
+                guaranteed: true,
+                expectedGold: shmeExpectedGold,
+              }),
+            ],
+          },
+        ],
+      ])
+    const tiedBattles = new Map([battle("FoCE13", 10), battle("SHME19", 10)])
+
+    it("breaks an efficiency tie toward the higher expectedGold", () => {
+      const nodes = selectFarmNodes(
+        { id: upgradeId("upgDmgC010"), count: 1 },
+        tiedUpgrade(137, 151.5),
+        tiedBattles
+      )
+
+      expect(nodes).toHaveLength(1)
+      expect(nodes[0]?.battleId).toEqual(battleId("SHME19"))
+    })
+
+    it("never lets expectedGold override a genuine efficiency difference", () => {
+      const upgradesByIdLocal = new Map<
+        ReturnType<typeof upgradeId>,
+        EstimateUpgrade
+      >([
+        [
+          upgradeId("U1"),
+          {
+            id: upgradeId("U1"),
+            farmLocations: [
+              // energyPerItem 10 — cheaper, should win despite the lower expectedGold
+              location("B2", { guaranteed: true, expectedGold: 10 }),
+              // energyPerItem 12 — less efficient, higher expectedGold doesn't matter
+              location("B1", { effectiveRate: 0.5, expectedGold: 999 }),
+            ],
+          },
+        ],
+      ])
+
+      const nodes = selectFarmNodes(
+        { id: upgradeId("U1"), count: 1 },
+        upgradesByIdLocal,
+        battlesById
+      )
+
+      expect(nodes).toHaveLength(1)
+      expect(nodes[0]?.battleId).toEqual(battleId("B2"))
+    })
+
+    it("a tied location reporting a value beats a tied location with expectedGold null", () => {
+      const nodes = selectFarmNodes(
+        { id: upgradeId("upgDmgC010"), count: 1 },
+        tiedUpgrade(null, 151.5),
+        tiedBattles
+      )
+
+      expect(nodes).toHaveLength(1)
+      expect(nodes[0]?.battleId).toEqual(battleId("SHME19"))
+    })
+
+    it("a tied location reporting a value beats a tied location with expectedGold entirely absent", () => {
+      const untypedLocations = new Map<
+        ReturnType<typeof upgradeId>,
+        EstimateUpgrade
+      >([
+        [
+          upgradeId("upgDmgC010"),
+          {
+            id: upgradeId("upgDmgC010"),
+            farmLocations: [
+              location("FoCE13", { guaranteed: true }),
+              location("SHME19", { guaranteed: true, expectedGold: 151.5 }),
+            ],
+          },
+        ],
+      ])
+
+      const nodes = selectFarmNodes(
+        { id: upgradeId("upgDmgC010"), count: 1 },
+        untypedLocations,
+        tiedBattles
+      )
+
+      expect(nodes).toHaveLength(1)
+      expect(nodes[0]?.battleId).toEqual(battleId("SHME19"))
+    })
+
+    it("keeps every tied candidate when none report expectedGold", () => {
+      const nodes = selectFarmNodes(
+        { id: upgradeId("upgDmgC010"), count: 1 },
+        tiedUpgrade(null, null),
+        tiedBattles
+      )
+
+      expect(nodes.map((node) => node.battleId).sort()).toEqual(
+        [battleId("FoCE13"), battleId("SHME19")].sort()
+      )
+    })
   })
 })
 

@@ -133,13 +133,13 @@ export function ResourceCard({
                     ) : null}
                     <div className="min-w-0 flex-1 leading-tight">
                       <div className="truncate text-sm font-medium">
-                        {location?.fullName ?? entry.battleId}
+                        {location?.campaignName ?? entry.battleId}
                       </div>
-                      <div className="truncate text-xs text-muted-foreground">
-                        {t("schedule.battle", {
-                          number: location?.nodeNumber ?? entry.battleId,
-                        })}
-                      </div>
+                      {location?.nodeLabel ? (
+                        <div className="truncate text-xs text-muted-foreground">
+                          {location.nodeLabel}
+                        </div>
+                      ) : null}
                     </div>
                     <Badge className="shrink-0 tabular-nums" variant="outline">
                       {entry.raidsPerformed === entry.dailyAttempts

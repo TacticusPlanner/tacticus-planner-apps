@@ -14,6 +14,7 @@ export function useTodayTutorial() {
         | "raids"
         | "project"
         | "schedule"
+        | "campaignEvent"
         | "energyUsage"
         | "todaysAttempts"
     ): Step => ({
@@ -25,6 +26,7 @@ export function useTodayTutorial() {
       createStep('[data-testid="dailies-primary-tabs"]', "navigation"),
       createStep('[data-testid="raids-tabs"]', "raids"),
       createStep('[data-testid="dailies-project-select"]', "project"),
+      createStep('[data-testid="campaign-event-status"]', "campaignEvent"),
       createStep('[data-testid="energy-usage"]', "energyUsage"),
       createStep('[data-testid="today-schedule"]', "schedule"),
       createStep('[data-testid="todays-attempts"]', "todaysAttempts"),

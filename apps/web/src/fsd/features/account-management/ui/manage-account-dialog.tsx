@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { ExternalLink } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -189,6 +190,17 @@ function TacticusIntegrationTab({
           <FieldDescription>
             {t("manageAccount.integration.apiKeyDescription")}
           </FieldDescription>
+          <Button asChild className="self-start" size="xs" variant="outline">
+            <a
+              data-testid="manage-account-get-key-link"
+              href="https://api.tacticusgame.com"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {t("manageAccount.integration.getKey")}
+              <ExternalLink data-icon="inline-end" />
+            </a>
+          </Button>
         </FieldContent>
       </Field>
 

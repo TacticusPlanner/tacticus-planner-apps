@@ -179,6 +179,9 @@ const liveProgressSchema = z.looseObject({
   battleAttempts: z.array(
     z.looseObject({
       tacticusCampaignId: campaignIdSchema,
+      // Distinguishes a campaign event's Standard/Extremis tiers, which otherwise share
+      // tacticusCampaignId and an independent, colliding battleIndex sequence.
+      type: z.string(),
       battleIndex: z.number(),
       attemptsLeft: z.number(),
       attemptsUsed: z.number(),

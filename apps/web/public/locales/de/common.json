@@ -47,7 +47,8 @@
       "notConfigured": "Nicht konfiguriert",
       "apiKeyLabel": "Neuer Tacticus-API-Schlüssel",
       "apiKeyPlaceholder": "Leer lassen, um den aktuellen Schlüssel zu behalten",
-      "apiKeyDescription": "Hole deinen API-Schlüssel unter https://api.tacticusgame.com. Teile ihn nur mit vertrauenswürdigen Personen.",
+      "apiKeyDescription": "Teile diesen Schlüssel nur mit Tools, denen du vertraust – er kann deinen Kader und Gildendaten lesen.",
+      "getKey": "Schlüssel holen auf api.tacticusgame.com",
       "userIdLabel": "Tacticus-Benutzer-ID",
       "userIdPlaceholder": "Leer lassen, um den aktuellen Wert zu behalten",
       "removeUserId": "Tacticus-Benutzer-ID entfernen",
@@ -78,28 +79,48 @@
       "purgeGenericError": "Beim Löschen deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut."
     }
   },
+  "accountGate": {
+    "errorTitle": "Konto konnte nicht überprüft werden",
+    "errorDescription": "Beim Überprüfen deines Kontostatus ist ein Fehler aufgetreten.",
+    "retry": "Erneut versuchen"
+  },
   "onboarding": {
-    "title": "Kontoeinrichtung abschließen",
-    "description": "Verbinde dein Tacticus-Konto, um den Planner zu nutzen.",
+    "title": "Verbinde dein Konto",
+    "description": "Wähle, wie du deine Tacticus-Daten übernehmen möchtest. Beides dauert etwa eine Minute.",
     "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-    "or": "Oder",
-    "tabs": {
-      "signUp": "Registrieren",
-      "importProfile": "Profil importieren"
+    "stepPosition": "Schritt {{current}} von {{total}}",
+    "back": "Zurück",
+    "paths": {
+      "apiKeyName": "API-Schlüssel einfügen",
+      "apiKeyBadge": "Am schnellsten",
+      "apiKeyDescription": "Du hast bereits einen Schlüssel von api.tacticusgame.com – oder du holst dir jetzt einen.",
+      "v1Name": "Aus V1 importieren",
+      "v1Description": "Melde dich mit deinem alten Planner-Login an; wir übernehmen Schlüssel und Benutzer-ID."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus-API-Schlüssel",
-      "apiKeyDescription": "Hole deinen API-Schlüssel unter https://api.tacticusgame.com. Teile ihn nur mit vertrauenswürdigen Personen.",
+      "apiKeyDescription": "Teile diesen Schlüssel nur mit Tools, denen du vertraust – er kann deinen Kader und Gildendaten lesen.",
+      "getKey": "Schlüssel holen auf api.tacticusgame.com",
       "userIdLabel": "Tacticus-Benutzer-ID (optional)",
-      "userIdDescription": "Wird verwendet, um dein Konto in Gilden-Daten zu identifizieren.",
-      "submit": "Registrieren"
+      "userIdDescription": "Damit findet der Planner dich im Gildenkader. Du kannst sie später ergänzen.",
+      "submit": "Konto verbinden"
     },
     "import": {
-      "description": "Melde dich mit deinem V1-Planner-Benutzernamen und -Passwort an, um deinen Tacticus-API-Schlüssel und deine Benutzer-ID zu importieren. Deine V1-Zugangsdaten werden niemals gespeichert.",
+      "description": "Melde dich mit deinem V1-Planner-Login an. Wir übernehmen API-Schlüssel und Benutzer-ID, danach werden die V1-Daten verworfen – deine V1-Zugangsdaten werden niemals gespeichert.",
       "usernameLabel": "V1-Benutzername",
       "passwordLabel": "V1-Passwort",
-      "submit": "Profil importieren"
-    }
+      "submit": "Importieren und verbinden"
+    },
+    "importOutcome": {
+      "missingKey": "In deinem V1-Konto ist kein Tacticus-API-Schlüssel gespeichert.",
+      "invalidKey": "Der Tacticus-API-Schlüssel in deinem V1-Konto ist nicht mehr gültig. Hole dir einen neuen und füge ihn stattdessen ein.",
+      "notSaved": "Der importierte API-Schlüssel konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "unknown": "Der Import hat keinen nutzbaren Tacticus-API-Schlüssel geliefert.",
+      "useApiKey": "Stattdessen API-Schlüssel einfügen"
+    },
+    "confirming": "Einrichtung wird abgeschlossen …",
+    "confirmFailed": "Dein Schlüssel wurde gespeichert, aber wir konnten dein Konto nicht bestätigen.",
+    "confirmRetry": "Erneut versuchen"
   },
   "unitLookup": {
     "subtitle": "Wähle einen Charakter und einen Rangbereich, um die nötigen Verbesserungen und Farm-Orte zu sehen.",
@@ -399,7 +420,7 @@
       "progress": "Fortschritt",
       "status": "Status",
       "actions": "Aktionen",
-      "estimate": "Gesch."
+      "estimate": "Fertig am"
     },
     "status": {
       "Draft": "Entwurf",
@@ -649,6 +670,7 @@
         "abilityRange": "Mindestens eine Fähigkeit muss steigen, und kein Bereich darf sinken.",
         "abilityAlreadyReached": "Die gewählten Fähigkeitsstufen wurden bereits erreicht.",
         "levelAlreadyReached": "Die gewählte Stufe wurde bereits erreicht.",
+        "upgradeTargetsRequired": "Wähle mindestens ein Upgrade aus, das für das Upgrade-Ziel gefarmt werden soll.",
         "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
         "progressionMaxed": "Diese Einheit hat bereits die maximale Aufstiegsstufe erreicht.",
         "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
@@ -658,7 +680,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}} T",
+      "days": "in {{days}} Tagen",
       "blockedLabel": "Blockiert",
       "blocked": {
         "NoFarmLocation": "Kein erreichbarer Farm-Ort liefert eine benötigte Ressource.",
@@ -758,13 +780,7 @@
     }
   },
   "language": {
-    "label": "Sprache",
-    "options": {
-      "de": "Deutsch",
-      "en": "English",
-      "es": "Español",
-      "fr": "Français"
-    }
+    "label": "Sprache"
   },
   "scrollToTop": "Nach oben scrollen",
   "settings": {

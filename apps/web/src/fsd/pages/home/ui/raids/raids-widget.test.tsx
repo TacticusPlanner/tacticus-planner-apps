@@ -184,6 +184,68 @@ describe("RaidsWidget", () => {
     expect(screen.getByTestId("home-raids-empty")).toBeInTheDocument()
   })
 
+  it("reads a location exactly as Today does — campaign name, then tier and node", () => {
+    useProjectsMock.mockReturnValue(readyProjects)
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map([
+        [
+          "node-1" as BattleId,
+          {
+            id: "node-1",
+            campaignName: "Indomitus",
+            nodeLabel: "Elite 3",
+            shortLabel: "Indomitus E 3",
+            challenge: false,
+            icon: undefined,
+          },
+        ],
+      ]),
+      resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />)
+
+    const row = screen.getByTestId("home-raid-location-node-1")
+    expect(row).toHaveTextContent("Indomitus")
+    expect(row).toHaveTextContent("Elite 3")
+    expect(row).not.toHaveTextContent("Indomitus E 3")
+  })
+
+  it("omits the second line entirely for a location the catalog has no descriptor for", () => {
+    useProjectsMock.mockReturnValue(readyProjects)
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map([
+        [
+          "node-1" as BattleId,
+          {
+            id: "node-1",
+            campaignName: "node-1",
+            nodeLabel: "",
+            shortLabel: "node-1",
+            challenge: false,
+            icon: undefined,
+          },
+        ],
+      ]),
+      resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />)
+
+    const lines = screen
+      .getByTestId("home-raid-location-node-1")
+      .querySelectorAll(".truncate")
+    expect([...lines].map((line) => line.textContent)).toEqual(["node-1"])
+  })
+
   it("navigates to Today when activated", () => {
     useProjectsMock.mockReturnValue(readyProjects)
     useDailyRaidsMock.mockReturnValue({ status: "no-farmable" })

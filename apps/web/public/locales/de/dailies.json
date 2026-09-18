@@ -168,6 +168,14 @@
     "energyUsage": {
       "label": "Genutzte Tagesenergie",
       "value": "{{percent}}% der Tagesenergie genutzt"
+    },
+    "campaignEvent": {
+      "title": "Kampagnen-Event",
+      "named": "{{name}}",
+      "namedWithTime": "{{name}} · endet {{time}}",
+      "unnamed": "Aktiv · Name nicht verfügbar",
+      "unnamedWithTime": "Aktiv · Name nicht verfügbar · endet {{time}}",
+      "inactive": "Nicht aktiv"
     }
   },
   "schedule": {
@@ -175,7 +183,6 @@
     "raids_other": "{{count}} Raids",
     "progress": "{{owned}} von {{target}} im Besitz",
     "node": "{{node}} · {{raids}} Raids",
-    "battle": "Kampf {{number}}",
     "maxRaids": "Maximal geraidet",
     "fullyRaided": "Vollständig geraidet"
   },
@@ -250,6 +257,10 @@
         "schedule": {
           "title": "Heutiger Plan",
           "content": "Raide diese Kampagnenknoten mit der heutigen Energie — zusätzliche Vorschläge erscheinen hier auch, sobald dein Budget gedeckt ist."
+        },
+        "campaignEvent": {
+          "title": "Aktives Kampagnen-Event",
+          "content": "Zeigt das aus deinem synchronisierten Fortschritt erkannte Kampagnen-Event und wann es endet – nur dessen Knoten können heute geraidet werden."
         },
         "energyUsage": {
           "title": "Tägliche Energienutzung",

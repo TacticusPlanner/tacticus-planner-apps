@@ -47,7 +47,8 @@
       "notConfigured": "Not configured",
       "apiKeyLabel": "New Tacticus API key",
       "apiKeyPlaceholder": "Leave blank to keep the current key",
-      "apiKeyDescription": "Acquire your API key at https://api.tacticusgame.com. Only share it with trusted parties.",
+      "apiKeyDescription": "Only share this key with tools you trust — it can read your roster and guild data.",
+      "getKey": "Get a key at api.tacticusgame.com",
       "userIdLabel": "Tacticus user ID",
       "userIdPlaceholder": "Leave blank to keep the current value",
       "removeUserId": "Remove the Tacticus user ID",
@@ -78,28 +79,48 @@
       "purgeGenericError": "Something went wrong while purging your account. Please try again."
     }
   },
+  "accountGate": {
+    "errorTitle": "Couldn't check your account",
+    "errorDescription": "Something went wrong while checking your account status.",
+    "retry": "Retry"
+  },
   "onboarding": {
-    "title": "Complete your account setup",
-    "description": "Connect your Tacticus account to start using the planner.",
+    "title": "Connect your account",
+    "description": "Pick how you want to bring your Tacticus data in. Either way takes about a minute.",
     "genericError": "Something went wrong. Please try again.",
-    "or": "Or",
-    "tabs": {
-      "signUp": "Sign Up",
-      "importProfile": "Import Profile"
+    "stepPosition": "Step {{current}} of {{total}}",
+    "back": "Back",
+    "paths": {
+      "apiKeyName": "Paste an API key",
+      "apiKeyBadge": "Fastest",
+      "apiKeyDescription": "You already have a key from api.tacticusgame.com, or you can grab one now.",
+      "v1Name": "Import from V1",
+      "v1Description": "Sign in with your old planner login and we'll copy the key and user ID across."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus API key",
-      "apiKeyDescription": "Acquire your API key at https://api.tacticusgame.com. Only share it with trusted parties.",
+      "apiKeyDescription": "Only share this key with tools you trust — it can read your roster and guild data.",
+      "getKey": "Get a key at api.tacticusgame.com",
       "userIdLabel": "Tacticus user ID (optional)",
-      "userIdDescription": "Used to identify your account in guild data.",
-      "submit": "Sign Up"
+      "userIdDescription": "Lets the planner pick you out of your guild's roster. You can add it later.",
+      "submit": "Connect account"
     },
     "import": {
-      "description": "Sign in with your V1 planner username and password to import your Tacticus API key and user ID. Your V1 credentials are never stored.",
+      "description": "Sign in with your V1 planner login. We copy the API key and user ID over, then the V1 details are discarded — your V1 credentials are never stored.",
       "usernameLabel": "V1 username",
       "passwordLabel": "V1 password",
-      "submit": "Import Profile"
-    }
+      "submit": "Import and connect"
+    },
+    "importOutcome": {
+      "missingKey": "Your V1 account has no Tacticus API key saved.",
+      "invalidKey": "The Tacticus API key on your V1 account is no longer valid. Get a new one and paste it instead.",
+      "notSaved": "The imported API key could not be saved. Please try again.",
+      "unknown": "The import did not provide a usable Tacticus API key.",
+      "useApiKey": "Paste an API key instead"
+    },
+    "confirming": "Finishing setup…",
+    "confirmFailed": "Your key was saved, but we could not confirm your account.",
+    "confirmRetry": "Retry"
   },
   "unitLookup": {
     "subtitle": "Pick a character and a rank range to see the required upgrades and where to farm them.",
@@ -399,7 +420,7 @@
       "progress": "Progress",
       "status": "Status",
       "actions": "Actions",
-      "estimate": "Est."
+      "estimate": "Done By"
     },
     "status": {
       "Draft": "Draft",
@@ -649,6 +670,7 @@
         "abilityRange": "At least one ability must increase and neither range may decrease.",
         "abilityAlreadyReached": "The selected ability levels have already been reached.",
         "levelAlreadyReached": "The selected level has already been reached.",
+        "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
@@ -658,7 +680,7 @@
     },
     "estimate": {
       "none": "—",
-      "days": "{{days}}d",
+      "days": "in {{days}} days",
       "blockedLabel": "Blocked",
       "blocked": {
         "NoFarmLocation": "No accessible farming location provides a required resource.",
@@ -758,13 +780,7 @@
     }
   },
   "language": {
-    "label": "Language",
-    "options": {
-      "de": "Deutsch",
-      "en": "English",
-      "es": "Español",
-      "fr": "Français"
-    }
+    "label": "Language"
   },
   "scrollToTop": "Scroll to top",
   "settings": {

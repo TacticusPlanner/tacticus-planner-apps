@@ -1,3 +1,4 @@
+import type { CampaignDescriptor } from "@workspace/game-catalog"
 import type {
   BattleId,
   Rank,
@@ -53,13 +54,41 @@ export type DailyRaidResourceUrgency = {
 
 export type DailyRaidLocationViewModel = {
   id: string
-  // Full campaign/tier name (e.g. "Indomitus Elite") for the location-primary Today/Bonus rendering.
-  fullName: string
+  // The campaign's own display name (e.g. "Indomitus"), with no tier/difficulty/mirror qualifier —
+  // the first line of the location-primary Today/Bonus/Home rendering. Falls back to the raw battle
+  // id when the catalog has no descriptor for the battle.
+  campaignName: string
+  // Tier words + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B") — the
+  // second line of that same rendering. Empty when the catalog has no descriptor, in which case
+  // renderers omit the line entirely rather than inventing one.
+  nodeLabel: string
   // Compact "{name} {code} {node}{B?}" form Raids Plan's chips still use verbatim.
   shortLabel: string
-  nodeNumber: number
   challenge: boolean
   icon?: string
+}
+
+/**
+ * The two lines a location renders as: the campaign's own name, then its tier words + node number
+ * (+ "B" for a challenge node). A battle the catalog has no descriptor for keeps its raw id on the
+ * first line and gets no second line — a node number with no tier word identifies nothing.
+ */
+export function campaignLocationLabels(
+  battleId: BattleId,
+  battle: { nodeNumber: number; challenge: boolean },
+  descriptor: CampaignDescriptor | undefined,
+  display: {
+    name: (descriptor: CampaignDescriptor) => string
+    tierLabel: (descriptor: CampaignDescriptor) => string
+  }
+): Pick<DailyRaidLocationViewModel, "campaignName" | "nodeLabel"> {
+  if (!descriptor) return { campaignName: battleId, nodeLabel: "" }
+  return {
+    campaignName: display.name(descriptor),
+    nodeLabel: `${display.tierLabel(descriptor)} ${battle.nodeNumber}${
+      battle.challenge ? "B" : ""
+    }`,
+  }
 }
 
 export function dailyRaidResourceKey(goalId: string, resourceId: string) {

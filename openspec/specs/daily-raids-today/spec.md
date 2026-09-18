@@ -93,11 +93,9 @@ Today SHALL compute its schedule from only the selected project's goals whose st
 
 Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid and the number of raids at each node, for today only (not a multi-day plan).
 
-A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0` for a standing — standard/mirror/elite/eliteMirror — campaign node) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable (for example an event-campaign node — see "Today shows real daily energy usage") SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
+A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`, matched by campaign group, type, and battle index — standing or event-campaign alike) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
 
 A node that remains listed (real attempts not exhausted) SHALL show its planned raid count, except that a node whose planned raid count itself equals its daily attempt cap SHALL show "Max raids" instead of a numeric count.
-
-If every location for a scheduled upgrade or shard becomes excluded this way, that upgrade/shard's card SHALL be omitted from the schedule (or Bonus Raids) for that day — its need at available locations is exhausted for today — and it remains visible only via Today's Attempts, if the player actually attempted it there.
 
 The schedule SHALL respect, in this order of application:
 
@@ -140,6 +138,12 @@ The schedule SHALL respect, in this order of application:
 - **GIVEN** a node's real synced attempts today have reached zero remaining
 - **WHEN** Today loads
 - **THEN** that node is excluded from its resource card's location listing, and appears only in Today's Attempts
+
+#### Scenario: An event-campaign node with zero real attempts left is excluded the same as a standing node
+
+- **GIVEN** an event-campaign node's real synced attempts today (matched by its campaign group, type, and battle index) have reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node is excluded from its resource card's location listing the same way a standing-campaign node at zero remaining attempts would be, and appears only in Today's Attempts
 
 #### Scenario: A node with real attempts remaining shows a plain count
 
@@ -283,13 +287,67 @@ Bonus Raids SHALL initially display only the top 3 qualifying entries in that or
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 
-Today and Bonus Raids SHALL render each scheduled battle as the primary element of its resource card: the campaign icon, the full campaign/tier name (e.g. "Indomitus Elite"), and the battle/node number, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
+Today, Bonus Raids, and Today's Attempts SHALL render each battle as the primary element of its row: the campaign icon, the campaign's own display name, and the node's tier-and-number label, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
+
+The campaign name and the tier-and-number label SHALL be split across two lines:
+
+1. The first line SHALL carry only the campaign's own display name, with no tier, difficulty, or mirror qualifier — so that every tier of one storyline shares an identical first line (for example, all four Indomitus tiers read "Indomitus").
+2. The second line SHALL carry every qualifier that distinguishes the node's tier, followed by the node number: "Standard 22", "Elite 40", "Mirror 12", "Mirror Elite 40", "Extremis 3". A challenge node SHALL additionally carry a "B" suffix on its node number ("Extremis 12B"), matching the suffix the Raids Plan chips already show.
+
+The second line SHALL NOT be a generic battle-number label that omits the tier: the tier must be recoverable from the line carrying the number, because a node number alone does not identify a battle.
+
+Assumptions this requirement depends on:
+
+- A storyline campaign group's tier is fully described by its difficulty (Standard/Elite) plus whether it is a mirror track; an event campaign group's tier is fully described by its Standard/Extremis difficulty plus its separate challenge flag.
+- Both lines are localized game-data display text, resolved from catalog ids through the `campaigns` namespace rather than stored as display strings.
 
 #### Scenario: A scheduled node has campaign presentation metadata
 
 - **GIVEN** a scheduled battle resolves to catalog campaign metadata
 - **WHEN** Today renders the battle
-- **THEN** its row shows the campaign icon, the full campaign/tier name, and the battle number, ordered ahead of the resource it farms, with the resource name and progress rendered as a secondary caption
+- **THEN** its row shows the campaign icon, the campaign name on the first line and the tier-and-node label on the second, ordered ahead of the resource it farms, with the resource name and progress rendered as a secondary caption
+
+#### Scenario: A storyline elite node splits its tier onto the node line
+
+- **GIVEN** a scheduled battle is node 40 of the Fall of Cadia Elite campaign
+- **WHEN** Today renders the battle
+- **THEN** its first line reads "Fall of Cadia" and its second line reads "Elite 40"
+
+#### Scenario: Every tier of one storyline shares a first line
+
+- **GIVEN** Today's schedule includes node 22 of Indomitus Standard and node 12 of the Indomitus mirror track
+- **WHEN** Today renders both
+- **THEN** both rows' first line reads "Indomitus", and their second lines read "Standard 22" and "Mirror 12" respectively
+
+#### Scenario: A mirror elite node keeps both qualifiers on the node line
+
+- **GIVEN** a scheduled battle is node 40 of the Saim-Hann elite mirror campaign
+- **WHEN** Today renders the battle
+- **THEN** its first line reads "Saim-Hann" and its second line reads "Mirror Elite 40", retaining both the mirror and the elite qualifier
+
+#### Scenario: An event-campaign node shows its event tier
+
+- **GIVEN** a scheduled battle is node 3 of the Death Guard event campaign's Extremis track
+- **WHEN** Today renders the battle
+- **THEN** its first line reads "Death Guard" and its second line reads "Extremis 3"
+
+#### Scenario: A challenge node is distinguished from the regular node of the same number
+
+- **GIVEN** a scheduled battle is the challenge node numbered 12 of an event campaign's Extremis track
+- **WHEN** Today renders the battle
+- **THEN** its second line reads "Extremis 12B", distinguishing it from the regular node 12 of that same track
+
+#### Scenario: Today's Attempts uses the same two-line presentation
+
+- **GIVEN** a location appears in Today's Attempts
+- **WHEN** Today renders it
+- **THEN** its campaign name and tier-and-node label are split across two lines by the same rules the schedule's rows use, rather than a differently-formatted label
+
+#### Scenario: A node with no catalog presentation metadata falls back to its battle id
+
+- **GIVEN** a scheduled battle does not resolve to catalog campaign metadata
+- **WHEN** Today renders the battle
+- **THEN** its row shows the raw battle id in place of the campaign name and omits the second line entirely, rather than rendering a partial campaign name, an empty line, or a node number with no tier word
 
 #### Scenario: A resource farmed at multiple locations shows one row per location
 
@@ -299,7 +357,17 @@ Today and Bonus Raids SHALL render each scheduled battle as the primary element 
 
 ### Requirement: Only the active campaign event is farmable
 
-Standing campaign battles SHALL remain eligible for raid calculations. A battle belonging to an event campaign SHALL be eligible only when its campaign group id equals `live-progress.activeCampaignEventId`. When no campaign event is active, all event-campaign battles SHALL be excluded.
+Standing campaign battles SHALL remain eligible for raid calculations. A battle belonging to an event campaign SHALL be eligible only when both:
+
+1. its campaign group id equals `live-progress.activeCampaignEventId`, and
+2. its node has been reached by the player, per `campaign-events-progress`: for a non-challenge node, its `nodeNumber` SHALL be at most one greater than that campaign-group-and-type's `completedBattleCount`; for a challenge node, its battle id SHALL appear in that campaign-group-and-type's `completedChallengeBattlesIds`.
+
+When no campaign event is active, all event-campaign battles SHALL be excluded. When `campaign-events-progress` has no entry for a battle's campaign group and type, that battle's node-reached condition SHALL be treated as not met (excluded), since an entry only exists once the player has started that tier.
+
+Assumptions this requirement depends on:
+
+- An event campaign's non-challenge nodes are numbered sequentially starting at 1 within each `{campaignGroupId, type}` track, and `completedBattleCount` counts consecutively from that start — reaching node N requires having completed nodes 1..N-1.
+- `campaign-events-progress` and `live-progress.battleAttempts` are independent signals: the former reliably distinguishes Standard from Extremis (unlike the latter, which is deliberately not used for this eligibility check — see "Today's raid schedule" and "Today shows real daily energy usage" for why).
 
 #### Scenario: One campaign event is active
 
@@ -315,15 +383,71 @@ Standing campaign battles SHALL remain eligible for raid calculations. A battle 
 - **WHEN** Today calculates the schedule
 - **THEN** it excludes every event campaign battle while retaining standing battles
 
+#### Scenario: An unreached Extremis node is excluded even though its event is active
+
+- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
+- **AND** `campaign-events-progress` for `{eventCampaign1, Extremis}` shows `completedBattleCount: 0` (or no entry at all)
+- **AND** the catalog's only farm location for a needed material is node 12 of the Extremis track (`AME12`)
+- **WHEN** Today calculates the schedule
+- **THEN** `AME12` is excluded from eligible battles, and that material has no farmable location today (it does not appear in the schedule or Bonus Raids as farmable at `AME12`)
+
+#### Scenario: A reached Standard node in the same active event remains eligible
+
+- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
+- **AND** `campaign-events-progress` for `{eventCampaign1, Standard}` shows `completedBattleCount: 15`
+- **AND** a needed material's farm location is node 12 of the Standard track (`AMS12`)
+- **WHEN** Today calculates the schedule
+- **THEN** `AMS12` remains eligible, since `12 <= 15 + 1`
+
+#### Scenario: A goal-pinned farm location that hasn't been reached is excluded the same way
+
+- **GIVEN** a goal's configuration pins a specific event-campaign node as its farm location (via `farmingLocationIds`)
+- **AND** that node has not been reached per `campaign-events-progress`, exactly as in the "unreached Extremis node" scenario above
+- **WHEN** Today calculates the schedule
+- **THEN** that node is excluded from eligible battles regardless of being explicitly pinned, and the goal shows no farmable candidates for that resource today — the same outcome as an auto-selected unreached location, not a special case or a different failure mode
+
+### Requirement: Farm node selection prefers energy efficiency, then value
+
+When a resource needed by an in-scope goal has more than one eligible farm location, the schedule SHALL select the location(s) with the lowest energy cost per expected item (`energyCost / dropRate`). When two or more eligible locations tie exactly on energy cost per expected item, the schedule SHALL prefer the tied location with the higher expected gold reward (`expectedGold`, served by the game catalog). A location with no `expectedGold` (its battle awards no guaranteed gold) SHALL be treated as having the lowest possible value for this tie-break, ordering behind any tied location that does report a value.
+
+Assumptions this requirement depends on:
+
+- `expectedGold` is a property of the battle, not of the specific resource being farmed there — two different resources dropped by the same battle report the same `expectedGold`.
+- This tie-break applies only among locations already tied on energy cost per expected item; it does not override the primary energy-efficiency selection.
+
+#### Scenario: Two locations tie on efficiency, one pays more gold
+
+- **GIVEN** a needed material's only two eligible farm locations are "Fall of Cadia Elite" node 13 (10 energy per raid, one guaranteed copy per raid, guaranteed gold 109-165, so `expectedGold` 137) and "Saim-Hann Mirror Elite" node 19 (10 energy per raid, one guaranteed copy per raid, guaranteed gold 123-180, so `expectedGold` 151.5)
+- **WHEN** Today calculates the schedule
+- **THEN** both locations compute the same energy cost per expected item (10 energy / 1 item = 10), so the tie-break applies, and the schedule selects "Saim-Hann Mirror Elite" node 19 (the higher `expectedGold`) rather than "Fall of Cadia Elite" node 13
+
+#### Scenario: One location is strictly more efficient than another
+
+- **GIVEN** a needed material's two eligible farm locations have different energy cost per expected item, and the less-efficient location has a higher `expectedGold`
+- **WHEN** Today calculates the schedule
+- **THEN** the schedule selects the strictly more energy-efficient location; the tie-break never overrides a genuine efficiency difference
+
+#### Scenario: A tied location has no guaranteed gold
+
+- **GIVEN** two locations tie on energy cost per expected item, and one of them has no guaranteed gold reward on its battle (`expectedGold` is null)
+- **WHEN** Today calculates the schedule
+- **THEN** the schedule selects the tied location that does report an `expectedGold` value over the one with none
+
 ### Requirement: Today's Attempts section
 
-Today SHALL show a "Today's Attempts" section after the Bonus Raids section, listing every standing (standard/mirror/elite/eliteMirror) campaign node the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. Event-campaign nodes SHALL be excluded from this section for the same reason they're excluded from the real energy-usage total (see "Today shows real daily energy usage"): their `battleIndex` is ambiguous between Standard/Extremis tiers in the currently-stored data.
+Today SHALL show a "Today's Attempts" section after the Bonus Raids section, listing every campaign node — standing (standard/mirror/elite/eliteMirror) or event-campaign — the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. An event-campaign attempt record is matched to its battle by campaign group, `type` (Standard/Extremis), and battle index, distinguishing the two tiers rather than excluding them.
 
 #### Scenario: An attempted location appears in Today's Attempts
 
 - **GIVEN** the player has real synced attempts today at a standing-campaign node
 - **WHEN** Today loads
 - **THEN** that location appears in the Today's Attempts section, listed after Bonus Raids, showing its real raid count today
+
+#### Scenario: An attempted event-campaign location appears in Today's Attempts
+
+- **GIVEN** the player has real synced attempts today at an event-campaign node (for example, 6 raids at a node in the "Adepta Sororitas" event campaign's Standard tier)
+- **WHEN** Today loads
+- **THEN** that location appears in the Today's Attempts section showing its real raid count today, the same as a standing-campaign location would
 
 #### Scenario: An exhausted location shows a numeric actual count
 
@@ -345,9 +469,9 @@ Today SHALL show a "Today's Attempts" section after the Bonus Raids section, lis
 
 ### Requirement: Today shows real daily energy usage
 
-Today SHALL show a progress indicator next to its title reflecting the percentage of the player's configured daily energy (`planningSettings.dailyEnergy`) actually spent today, computed from the player's real synced attempt counts (not the plan's simulated schedule) across every standing (standard/mirror/elite/eliteMirror) campaign node on the account — including nodes unrelated to the currently selected project — each priced at that node's energy cost. This percentage SHALL NOT be capped at 100%.
+Today SHALL show a progress indicator next to its title reflecting the percentage of the player's configured daily energy (`planningSettings.dailyEnergy`) actually spent today, computed from the player's real synced attempt counts (not the plan's simulated schedule) across every campaign node on the account — standing or event-campaign, including nodes unrelated to the currently selected project — each priced at that node's energy cost. This percentage SHALL NOT be capped at 100%.
 
-Event-campaign attempts SHALL be excluded from this total: the real synced attempt data does not retain which difficulty tier (Standard vs Extremis) an event attempt belongs to, so an event campaign's attempt counts cannot be reliably priced. This is a known, deliberate undercount for event-campaign activity, not an attempt to represent event energy usage as zero-cost.
+An event-campaign attempt's energy cost is included using the same per-node pricing as a standing-campaign attempt, resolved to the correct tier (Standard vs Extremis) via the attempt record's `type`.
 
 #### Scenario: Usage reflects real attempts across the whole account
 
@@ -355,11 +479,11 @@ Event-campaign attempts SHALL be excluded from this total: the real synced attem
 - **WHEN** Today loads
 - **THEN** the energy-usage indicator includes those attempts' energy cost in its total, not only attempts at nodes within this project's schedule
 
-#### Scenario: Event-campaign attempts are excluded from the total
+#### Scenario: Event-campaign attempts are included in the total, priced the same as standing attempts
 
 - **GIVEN** the player has real synced attempts recorded today at an event campaign's nodes
 - **WHEN** Today loads
-- **THEN** the energy-usage indicator's total does not include those event-campaign attempts' energy cost
+- **THEN** the energy-usage indicator's total includes those event-campaign attempts' energy cost, priced the same way a standing-campaign attempt's cost is
 
 #### Scenario: Usage can exceed the daily energy budget
 
@@ -378,3 +502,79 @@ Event-campaign attempts SHALL be excluded from this total: the real synced attem
 - **GIVEN** the player's real synced attempt data has not yet loaded
 - **WHEN** Today would otherwise render
 - **THEN** Today defers rendering (including the energy-usage indicator) until that data is available, consistent with how Today already gates rendering on its other required data sources
+
+### Requirement: Today states the detected campaign event and its remaining time
+
+Today SHALL show a campaign-event status block reporting the campaign event it has detected as active and how long remains until that event ends. The block SHALL carry its own heading at the same weight as the schedule's own "Today's raids" heading, with the detected event — its campaign icon, its name, and the remaining time — on the line beneath.
+
+The detected campaign event SHALL be the one named by `live-progress.activeCampaignEventId`, rendered by that campaign group's localized display name. This is the same signal that governs which event-campaign nodes are farmable (see "Only the active campaign event is farmable"), so the status line and Today's schedule can never disagree about whether an event is active.
+
+When `live-progress.activeCampaignEventId` is present but does not resolve to a known campaign group, the status line SHALL still report that a campaign event is active, using generic copy in place of the name, and SHALL NOT display the raw group id. It SHALL NOT report that no campaign event is active, because Today is gating event-node eligibility on that id regardless of whether a display name exists for it. Failure to resolve a name SHALL degrade the status line only — it SHALL NOT prevent Today from rendering.
+
+When `live-progress.activeCampaignEventId` is absent or null, the status line SHALL state that no campaign event is active, regardless of what the events calendar shows for the current instant. Today's schedule excludes every event-campaign node in exactly that situation, so the status line SHALL NOT claim an event is active that Today will not schedule.
+
+The remaining time SHALL be taken from the end of the events-calendar entry for the `campaign-event` definition whose window contains the current instant, rendered as localized relative time at the same coarseness the app's other remaining-time displays use. When no such calendar entry is active, the status line SHALL name the detected campaign event and omit the remaining time rather than showing an estimated, stale, or zero duration.
+
+Assumptions this requirement depends on:
+
+- `live-progress.activeCampaignEventId` is a campaign group id, and a campaign group's display name is the same for both of its tiers — the status line names the event, not a tier.
+- That id originates in synced player data, not the catalog, so the catalog may not yet carry a display name for a campaign event that has already gone live in game.
+- At most one `campaign-event` calendar entry is active at any instant.
+- `campaign-event` calendar entries may be projected placeholders rather than authored occurrences, so their boundaries are the calendar's best-known schedule rather than a guarantee from the game.
+
+#### Scenario: An event is detected and the calendar knows when it ends
+
+- **GIVEN** `live-progress.activeCampaignEventId` names the Adepta Sororitas event campaign group
+- **AND** a `campaign-event` calendar entry's window contains the current instant and ends in three days
+- **WHEN** Today loads
+- **THEN** the status line names "Adepta Sororitas" and states that it ends in three days
+
+#### Scenario: No campaign event is detected
+
+- **GIVEN** `live-progress.activeCampaignEventId` is absent or null
+- **WHEN** Today loads
+- **THEN** the status line states that a campaign event is not active, and no campaign name or remaining time is shown
+
+#### Scenario: The calendar shows an event but none is detected
+
+- **GIVEN** `live-progress.activeCampaignEventId` is absent or null
+- **AND** a `campaign-event` calendar entry's window contains the current instant
+- **WHEN** Today loads
+- **THEN** the status line still states that a campaign event is not active, matching Today's schedule, which excludes every event-campaign node in this situation
+
+#### Scenario: A detected event id has no known display name
+
+- **GIVEN** `live-progress.activeCampaignEventId` names a campaign group the catalog does not recognize
+- **WHEN** Today loads
+- **THEN** the status line reports that a campaign event is active without naming it, shows the remaining time if the calendar has an active window, does not display the raw group id, and Today renders normally rather than failing
+
+#### Scenario: An event is detected but the calendar has no active window
+
+- **GIVEN** `live-progress.activeCampaignEventId` names a campaign event group
+- **AND** no `campaign-event` calendar entry's window contains the current instant
+- **WHEN** Today loads
+- **THEN** the status line names that campaign event and omits the remaining time, rather than showing an expired, zero, or estimated duration
+
+#### Scenario: A detected event shows its campaign icon
+
+- **GIVEN** `live-progress.activeCampaignEventId` resolves to a known campaign group
+- **WHEN** Today renders the status block
+- **THEN** the detected event's campaign icon renders beside its name
+
+#### Scenario: On mobile the status block sits below the energy-usage row
+
+- **GIVEN** Today is viewed below the mobile breakpoint
+- **WHEN** Today renders its header
+- **THEN** the campaign-event status block occupies its own row directly below the daily energy-usage row, and is read after it
+
+#### Scenario: On desktop the status block takes half the header
+
+- **GIVEN** Today is viewed at or above the mobile breakpoint
+- **WHEN** Today renders its header
+- **THEN** the header splits into two equal halves — the schedule's own heading, its energy/raid totals and the daily energy-usage indicator on the leading half, and the campaign-event status block on the trailing half — with the energy bar's percentage staying at its own half's trailing edge
+
+#### Scenario: The status line is part of Today's guided tour
+
+- **GIVEN** a user starts Today's guided tour on either a mobile or a desktop viewport
+- **WHEN** the tour reaches the campaign-event status line
+- **THEN** it highlights that block with its own step explaining what the detected campaign event governs

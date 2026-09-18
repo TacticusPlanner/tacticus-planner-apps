@@ -1208,8 +1208,8 @@ describe("CreateGoalSheet", () => {
     expect(
       within(listbox).getByText("goals.create.upgrade.required")
     ).toBeInTheDocument()
-    // "Crafted Attack" (c1) is crafted — never offered as a direct Upgrade-goal target, only its
-    // own base upgrade(s) are (see characterRelevantUpgradeQuantities's own doc comment).
+    // "Crafted Attack" (c1) is crafted — never offered as a direct Upgrade-goal target. It is
+    // decomposed into its own base ingredients instead (see characterRelevantUpgradeQuantities).
     expect(
       within(listbox).queryByText("Crafted Attack")
     ).not.toBeInTheDocument()
@@ -1218,7 +1218,33 @@ describe("CreateGoalSheet", () => {
     const quantityInput = screen.getByRole("spinbutton", {
       name: "goals.create.upgrade.quantity",
     })
-    expect(quantityInput).toHaveValue(1)
+    // Stone1 needs h1 once directly plus c1, which is crafted from 2 more h1 — 3 in total.
+    expect(quantityInput).toHaveValue(3)
+  })
+
+  it("states why submission is blocked while the Upgrade goal has no target, and clears it once one is picked", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
+
+    expect(
+      screen.getByTestId("create-goal-validation-error")
+    ).toHaveTextContent("goals.create.validation.upgradeTargetsRequired")
+    expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "goals.create.upgrade.add" })
+    )
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Health Base"))
+
+    await vi.waitFor(() => {
+      expect(
+        screen.queryByTestId("create-goal-validation-error")
+      ).not.toBeInTheDocument()
+    })
+    expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
   })
 
   it("disables and unchecks Rank/Ascension/Ability/Level/Upgrade once the selected character is already maxed out", async () => {
