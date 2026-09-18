@@ -242,6 +242,7 @@ describe("catalog schemas", () => {
         challenge: false,
         energyCost: 0,
         nodeNumber: 1,
+        battleIndex: 0,
         slots: 1,
         dailyAttempts: 10,
         rewards: { guaranteed: [], potential: [] },

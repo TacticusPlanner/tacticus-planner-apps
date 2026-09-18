@@ -47,6 +47,7 @@ const chunkData: Record<string, unknown> = {
     battleAttempts: [
       {
         tacticusCampaignId: "campaign1",
+        type: "Standard",
         battleIndex: 0,
         attemptsLeft: 2,
         attemptsUsed: 1,

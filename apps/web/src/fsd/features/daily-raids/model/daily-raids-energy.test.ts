@@ -5,7 +5,7 @@ import type { Battle } from "@/shared/lib"
 
 import {
   buildAttemptsLeftByBattle,
-  buildStandingBattleIndex,
+  buildBattleAttemptIndex,
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
   type RealBattleAttempt,
@@ -20,6 +20,7 @@ function battle(
     type: "Standard",
     challenge: false,
     nodeNumber: 1,
+    battleIndex: 0,
     energyCost: 6,
     dailyAttempts: 10,
     ...overrides,
@@ -33,6 +34,7 @@ function attempt(
   }
 ): RealBattleAttempt {
   return {
+    type: "Standard",
     battleIndex: 0,
     attemptsUsed: 0,
     attemptsLeft: 10,
@@ -41,44 +43,108 @@ function attempt(
   }
 }
 
-describe("buildStandingBattleIndex", () => {
-  it("maps standing campaigns' nodeNumber-1 to their battleId, keyed by battleIndex", () => {
+describe("buildBattleAttemptIndex", () => {
+  it("maps a standing campaign's battleIndex to its battleId", () => {
     const b1 = battleIdSchema.parse("B1")
     const b2 = battleIdSchema.parse("B2")
     const battlesById = new Map([
-      [b1, battle({ campaignGroupId: "campaign1", nodeNumber: 1 })],
-      [b2, battle({ campaignGroupId: "campaign1", nodeNumber: 2 })],
+      [
+        b1,
+        battle({ campaignGroupId: "campaign1", nodeNumber: 1, battleIndex: 0 }),
+      ],
+      [
+        b2,
+        battle({ campaignGroupId: "campaign1", nodeNumber: 2, battleIndex: 1 }),
+      ],
     ])
 
-    const index = buildStandingBattleIndex(battlesById, new Set())
+    const index = buildBattleAttemptIndex(battlesById)
 
-    expect(index.get("campaign1:0")).toBe(b1)
-    expect(index.get("campaign1:1")).toBe(b2)
+    expect(index.get("campaign1:Standard:0")).toBe(b1)
+    expect(index.get("campaign1:Standard:1")).toBe(b2)
   })
 
-  it("excludes event campaigns from the index entirely", () => {
+  it("indexes event-campaign battles too, keyed by type as well as battleIndex", () => {
     const eventBattle = battleIdSchema.parse("EB1")
     const battlesById = new Map([
       [
         eventBattle,
-        battle({ campaignGroupId: "eventCampaign6", nodeNumber: 1 }),
+        battle({
+          campaignGroupId: "eventCampaign6",
+          type: "Standard",
+          nodeNumber: 1,
+          battleIndex: 0,
+        }),
       ],
     ])
 
-    const index = buildStandingBattleIndex(
-      battlesById,
-      new Set(["eventCampaign6"])
-    )
+    const index = buildBattleAttemptIndex(battlesById)
 
-    expect(index.size).toBe(0)
+    expect(index.get("eventCampaign6:Standard:0")).toBe(eventBattle)
+  })
+
+  it("distinguishes a challenge node from the regular node it shares a nodeNumber with", () => {
+    const regular = battleIdSchema.parse("AMS3")
+    const challengeBattle = battleIdSchema.parse("AMSC3B")
+    const battlesById = new Map([
+      [
+        regular,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          nodeNumber: 3,
+          battleIndex: 2,
+          challenge: false,
+        }),
+      ],
+      [
+        challengeBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          nodeNumber: 3,
+          battleIndex: 3,
+          challenge: true,
+        }),
+      ],
+    ])
+
+    const index = buildBattleAttemptIndex(battlesById)
+
+    expect(index.get("eventCampaign1:Standard:2")).toBe(regular)
+    expect(index.get("eventCampaign1:Standard:3")).toBe(challengeBattle)
+  })
+
+  it("indexes a campaign event's two tiers independently despite sharing a campaign group id", () => {
+    const standardBattle = battleIdSchema.parse("AMS1")
+    const extremisBattle = battleIdSchema.parse("AME1")
+    const battlesById = new Map([
+      [
+        standardBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          type: "Standard",
+          battleIndex: 0,
+        }),
+      ],
+      [
+        extremisBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          type: "Extremis",
+          battleIndex: 0,
+        }),
+      ],
+    ])
+
+    const index = buildBattleAttemptIndex(battlesById)
+
+    expect(index.get("eventCampaign1:Standard:0")).toBe(standardBattle)
+    expect(index.get("eventCampaign1:Extremis:0")).toBe(extremisBattle)
   })
 })
 
 describe("calculateRealEnergyUsedToday", () => {
   it("returns 0 when there are no attempts today", () => {
-    expect(
-      calculateRealEnergyUsedToday([], new Set(), new Map(), new Map())
-    ).toBe(0)
+    expect(calculateRealEnergyUsedToday([], new Map(), new Map())).toBe(0)
   })
 
   it("sums attemptsUsed * energyCost across standing-campaign attempts", () => {
@@ -86,10 +152,10 @@ describe("calculateRealEnergyUsedToday", () => {
     const battlesById = new Map([
       [
         b1,
-        battle({ campaignGroupId: "campaign1", nodeNumber: 1, energyCost: 6 }),
+        battle({ campaignGroupId: "campaign1", battleIndex: 0, energyCost: 6 }),
       ],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const total = calculateRealEnergyUsedToday(
       [
@@ -99,8 +165,7 @@ describe("calculateRealEnergyUsedToday", () => {
           attemptsUsed: 3,
         }),
       ],
-      new Set(),
-      standingBattleIndex,
+      battleAttemptIndex,
       battlesById
     )
 
@@ -112,10 +177,14 @@ describe("calculateRealEnergyUsedToday", () => {
     const battlesById = new Map([
       [
         b1,
-        battle({ campaignGroupId: "campaign1", nodeNumber: 1, energyCost: 10 }),
+        battle({
+          campaignGroupId: "campaign1",
+          battleIndex: 0,
+          energyCost: 10,
+        }),
       ],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const total = calculateRealEnergyUsedToday(
       [
@@ -125,8 +194,7 @@ describe("calculateRealEnergyUsedToday", () => {
           attemptsUsed: 50,
         }),
       ],
-      new Set(),
-      standingBattleIndex,
+      battleAttemptIndex,
       battlesById
     )
 
@@ -139,14 +207,14 @@ describe("calculateRealEnergyUsedToday", () => {
     const battlesById = new Map([
       [
         b1,
-        battle({ campaignGroupId: "campaign1", nodeNumber: 1, energyCost: 6 }),
+        battle({ campaignGroupId: "campaign1", battleIndex: 0, energyCost: 6 }),
       ],
       [
         b2,
-        battle({ campaignGroupId: "campaign2", nodeNumber: 5, energyCost: 8 }),
+        battle({ campaignGroupId: "campaign2", battleIndex: 4, energyCost: 8 }),
       ],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const total = calculateRealEnergyUsedToday(
       [
@@ -161,27 +229,26 @@ describe("calculateRealEnergyUsedToday", () => {
           attemptsUsed: 1,
         }),
       ],
-      new Set(),
-      standingBattleIndex,
+      battleAttemptIndex,
       battlesById
     )
 
     expect(total).toBe(14)
   })
 
-  it("excludes event-campaign attempts from the total", () => {
+  it("includes event-campaign attempts in the total, priced the same as standing attempts", () => {
     const eventBattle = battleIdSchema.parse("EB1")
     const battlesById = new Map([
       [
         eventBattle,
-        battle({ campaignGroupId: "eventCampaign6", nodeNumber: 1 }),
+        battle({
+          campaignGroupId: "eventCampaign6",
+          battleIndex: 0,
+          energyCost: 10,
+        }),
       ],
     ])
-    const eventCampaignIds = new Set(["eventCampaign6"])
-    const standingBattleIndex = buildStandingBattleIndex(
-      battlesById,
-      eventCampaignIds
-    )
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const total = calculateRealEnergyUsedToday(
       [
@@ -191,12 +258,52 @@ describe("calculateRealEnergyUsedToday", () => {
           attemptsUsed: 5,
         }),
       ],
-      eventCampaignIds,
-      standingBattleIndex,
+      battleAttemptIndex,
       battlesById
     )
 
-    expect(total).toBe(0)
+    expect(total).toBe(50)
+  })
+
+  it("does not conflate a Standard-tier attempt with an Extremis-tier attempt at the same battleIndex", () => {
+    const standardBattle = battleIdSchema.parse("AMS1")
+    const extremisBattle = battleIdSchema.parse("AME1")
+    const battlesById = new Map([
+      [
+        standardBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          type: "Standard",
+          battleIndex: 0,
+          energyCost: 6,
+        }),
+      ],
+      [
+        extremisBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          type: "Extremis",
+          battleIndex: 0,
+          energyCost: 10,
+        }),
+      ],
+    ])
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
+
+    const total = calculateRealEnergyUsedToday(
+      [
+        attempt({
+          tacticusCampaignId: "eventCampaign1",
+          type: "Extremis",
+          battleIndex: 0,
+          attemptsUsed: 2,
+        }),
+      ],
+      battleAttemptIndex,
+      battlesById
+    )
+
+    expect(total).toBe(20)
   })
 
   it("skips zero/negative attempt entries and unmapped battleIndex values", () => {
@@ -204,10 +311,10 @@ describe("calculateRealEnergyUsedToday", () => {
     const battlesById = new Map([
       [
         b1,
-        battle({ campaignGroupId: "campaign1", nodeNumber: 1, energyCost: 6 }),
+        battle({ campaignGroupId: "campaign1", battleIndex: 0, energyCost: 6 }),
       ],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const total = calculateRealEnergyUsedToday(
       [
@@ -222,8 +329,7 @@ describe("calculateRealEnergyUsedToday", () => {
           attemptsUsed: 4,
         }),
       ],
-      new Set(),
-      standingBattleIndex,
+      battleAttemptIndex,
       battlesById
     )
 
@@ -235,9 +341,9 @@ describe("buildAttemptsLeftByBattle", () => {
   it("maps a standing-campaign attempt's attemptsLeft to its resolved battleId", () => {
     const b1 = battleIdSchema.parse("B1")
     const battlesById = new Map([
-      [b1, battle({ campaignGroupId: "campaign1", nodeNumber: 1 })],
+      [b1, battle({ campaignGroupId: "campaign1", battleIndex: 0 })],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const result = buildAttemptsLeftByBattle(
       [
@@ -247,26 +353,21 @@ describe("buildAttemptsLeftByBattle", () => {
           attemptsLeft: 0,
         }),
       ],
-      new Set(),
-      standingBattleIndex
+      battleAttemptIndex
     )
 
     expect(result.get(b1)).toBe(0)
   })
 
-  it("excludes event-campaign attempts entirely", () => {
+  it("maps an event-campaign attempt's attemptsLeft the same way", () => {
     const eventBattle = battleIdSchema.parse("EB1")
     const battlesById = new Map([
       [
         eventBattle,
-        battle({ campaignGroupId: "eventCampaign6", nodeNumber: 1 }),
+        battle({ campaignGroupId: "eventCampaign6", battleIndex: 0 }),
       ],
     ])
-    const eventCampaignIds = new Set(["eventCampaign6"])
-    const standingBattleIndex = buildStandingBattleIndex(
-      battlesById,
-      eventCampaignIds
-    )
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const result = buildAttemptsLeftByBattle(
       [
@@ -276,14 +377,13 @@ describe("buildAttemptsLeftByBattle", () => {
           attemptsLeft: 0,
         }),
       ],
-      eventCampaignIds,
-      standingBattleIndex
+      battleAttemptIndex
     )
 
-    expect(result.size).toBe(0)
+    expect(result.get(eventBattle)).toBe(0)
   })
 
-  it("skips attempts whose battleIndex doesn't resolve to a known battle", () => {
+  it("skips attempts whose key doesn't resolve to a known battle", () => {
     const result = buildAttemptsLeftByBattle(
       [
         attempt({
@@ -292,7 +392,6 @@ describe("buildAttemptsLeftByBattle", () => {
           attemptsLeft: 0,
         }),
       ],
-      new Set(),
       new Map()
     )
 
@@ -301,14 +400,14 @@ describe("buildAttemptsLeftByBattle", () => {
 })
 
 describe("buildTodaysAttempts", () => {
-  it("includes every standing-campaign attempt actually raided today, account-wide", () => {
+  it("includes every attempt actually raided today, account-wide, standing or event-campaign", () => {
     const b1 = battleIdSchema.parse("B1")
     const b2 = battleIdSchema.parse("B2")
     const battlesById = new Map([
-      [b1, battle({ campaignGroupId: "campaign1", nodeNumber: 1 })],
-      [b2, battle({ campaignGroupId: "campaign2", nodeNumber: 5 })],
+      [b1, battle({ campaignGroupId: "campaign1", battleIndex: 0 })],
+      [b2, battle({ campaignGroupId: "eventCampaign6", battleIndex: 4 })],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const result = buildTodaysAttempts(
       [
@@ -319,28 +418,27 @@ describe("buildTodaysAttempts", () => {
           attemptsLeft: 7,
         }),
         attempt({
-          tacticusCampaignId: "campaign2",
+          tacticusCampaignId: "eventCampaign6",
           battleIndex: 4,
-          attemptsUsed: 10,
+          attemptsUsed: 6,
           attemptsLeft: 0,
         }),
       ],
-      new Set(),
-      standingBattleIndex
+      battleAttemptIndex
     )
 
     expect(result).toEqual([
       { battleId: b1, attemptsUsed: 3, attemptsLeft: 7 },
-      { battleId: b2, attemptsUsed: 10, attemptsLeft: 0 },
+      { battleId: b2, attemptsUsed: 6, attemptsLeft: 0 },
     ])
   })
 
   it("skips attempts that haven't actually been raided today", () => {
     const b1 = battleIdSchema.parse("B1")
     const battlesById = new Map([
-      [b1, battle({ campaignGroupId: "campaign1", nodeNumber: 1 })],
+      [b1, battle({ campaignGroupId: "campaign1", battleIndex: 0 })],
     ])
-    const standingBattleIndex = buildStandingBattleIndex(battlesById, new Set())
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const result = buildTodaysAttempts(
       [
@@ -350,39 +448,50 @@ describe("buildTodaysAttempts", () => {
           attemptsUsed: 0,
         }),
       ],
-      new Set(),
-      standingBattleIndex
+      battleAttemptIndex
     )
 
     expect(result).toEqual([])
   })
 
-  it("excludes event-campaign attempts entirely", () => {
-    const eventBattle = battleIdSchema.parse("EB1")
+  it("does not conflate a raided Standard-tier node with an unraided Extremis-tier node at the same battleIndex", () => {
+    const standardBattle = battleIdSchema.parse("AMS1")
+    const extremisBattle = battleIdSchema.parse("AME1")
     const battlesById = new Map([
       [
-        eventBattle,
-        battle({ campaignGroupId: "eventCampaign6", nodeNumber: 1 }),
+        standardBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          type: "Standard",
+          battleIndex: 0,
+        }),
+      ],
+      [
+        extremisBattle,
+        battle({
+          campaignGroupId: "eventCampaign1",
+          type: "Extremis",
+          battleIndex: 0,
+        }),
       ],
     ])
-    const eventCampaignIds = new Set(["eventCampaign6"])
-    const standingBattleIndex = buildStandingBattleIndex(
-      battlesById,
-      eventCampaignIds
-    )
+    const battleAttemptIndex = buildBattleAttemptIndex(battlesById)
 
     const result = buildTodaysAttempts(
       [
         attempt({
-          tacticusCampaignId: "eventCampaign6",
+          tacticusCampaignId: "eventCampaign1",
+          type: "Standard",
           battleIndex: 0,
-          attemptsUsed: 5,
+          attemptsUsed: 6,
+          attemptsLeft: 4,
         }),
       ],
-      eventCampaignIds,
-      standingBattleIndex
+      battleAttemptIndex
     )
 
-    expect(result).toEqual([])
+    expect(result).toEqual([
+      { battleId: standardBattle, attemptsUsed: 6, attemptsLeft: 4 },
+    ])
   })
 })

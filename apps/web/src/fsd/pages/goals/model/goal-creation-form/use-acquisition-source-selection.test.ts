@@ -21,6 +21,7 @@ const battle = (energyCost: number): Battle => ({
   type: "Standard",
   challenge: false,
   nodeNumber: 1,
+  battleIndex: 0,
   energyCost,
   dailyAttempts: 10,
 })

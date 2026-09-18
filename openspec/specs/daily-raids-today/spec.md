@@ -93,11 +93,9 @@ Today SHALL compute its schedule from only the selected project's goals whose st
 
 Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid and the number of raids at each node, for today only (not a multi-day plan).
 
-A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0` for a standing — standard/mirror/elite/eliteMirror — campaign node) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable (for example an event-campaign node — see "Today shows real daily energy usage") SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
+A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`, matched by campaign group, type, and battle index — standing or event-campaign alike) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
 
 A node that remains listed (real attempts not exhausted) SHALL show its planned raid count, except that a node whose planned raid count itself equals its daily attempt cap SHALL show "Max raids" instead of a numeric count.
-
-If every location for a scheduled upgrade or shard becomes excluded this way, that upgrade/shard's card SHALL be omitted from the schedule (or Bonus Raids) for that day — its need at available locations is exhausted for today — and it remains visible only via Today's Attempts, if the player actually attempted it there.
 
 The schedule SHALL respect, in this order of application:
 
@@ -140,6 +138,12 @@ The schedule SHALL respect, in this order of application:
 - **GIVEN** a node's real synced attempts today have reached zero remaining
 - **WHEN** Today loads
 - **THEN** that node is excluded from its resource card's location listing, and appears only in Today's Attempts
+
+#### Scenario: An event-campaign node with zero real attempts left is excluded the same as a standing node
+
+- **GIVEN** an event-campaign node's real synced attempts today (matched by its campaign group, type, and battle index) have reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node is excluded from its resource card's location listing the same way a standing-campaign node at zero remaining attempts would be, and appears only in Today's Attempts
 
 #### Scenario: A node with real attempts remaining shows a plain count
 
@@ -377,13 +381,19 @@ Assumptions this requirement depends on:
 
 ### Requirement: Today's Attempts section
 
-Today SHALL show a "Today's Attempts" section after the Bonus Raids section, listing every standing (standard/mirror/elite/eliteMirror) campaign node the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. Event-campaign nodes SHALL be excluded from this section for the same reason they're excluded from the real energy-usage total (see "Today shows real daily energy usage"): their `battleIndex` is ambiguous between Standard/Extremis tiers in the currently-stored data.
+Today SHALL show a "Today's Attempts" section after the Bonus Raids section, listing every campaign node — standing (standard/mirror/elite/eliteMirror) or event-campaign — the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. An event-campaign attempt record is matched to its battle by campaign group, `type` (Standard/Extremis), and battle index, distinguishing the two tiers rather than excluding them.
 
 #### Scenario: An attempted location appears in Today's Attempts
 
 - **GIVEN** the player has real synced attempts today at a standing-campaign node
 - **WHEN** Today loads
 - **THEN** that location appears in the Today's Attempts section, listed after Bonus Raids, showing its real raid count today
+
+#### Scenario: An attempted event-campaign location appears in Today's Attempts
+
+- **GIVEN** the player has real synced attempts today at an event-campaign node (for example, 6 raids at a node in the "Adepta Sororitas" event campaign's Standard tier)
+- **WHEN** Today loads
+- **THEN** that location appears in the Today's Attempts section showing its real raid count today, the same as a standing-campaign location would
 
 #### Scenario: An exhausted location shows a numeric actual count
 
@@ -405,9 +415,9 @@ Today SHALL show a "Today's Attempts" section after the Bonus Raids section, lis
 
 ### Requirement: Today shows real daily energy usage
 
-Today SHALL show a progress indicator next to its title reflecting the percentage of the player's configured daily energy (`planningSettings.dailyEnergy`) actually spent today, computed from the player's real synced attempt counts (not the plan's simulated schedule) across every standing (standard/mirror/elite/eliteMirror) campaign node on the account — including nodes unrelated to the currently selected project — each priced at that node's energy cost. This percentage SHALL NOT be capped at 100%.
+Today SHALL show a progress indicator next to its title reflecting the percentage of the player's configured daily energy (`planningSettings.dailyEnergy`) actually spent today, computed from the player's real synced attempt counts (not the plan's simulated schedule) across every campaign node on the account — standing or event-campaign, including nodes unrelated to the currently selected project — each priced at that node's energy cost. This percentage SHALL NOT be capped at 100%.
 
-Event-campaign attempts SHALL be excluded from this total: the real synced attempt data does not retain which difficulty tier (Standard vs Extremis) an event attempt belongs to, so an event campaign's attempt counts cannot be reliably priced. This is a known, deliberate undercount for event-campaign activity, not an attempt to represent event energy usage as zero-cost.
+An event-campaign attempt's energy cost is included using the same per-node pricing as a standing-campaign attempt, resolved to the correct tier (Standard vs Extremis) via the attempt record's `type`.
 
 #### Scenario: Usage reflects real attempts across the whole account
 
@@ -419,7 +429,7 @@ Event-campaign attempts SHALL be excluded from this total: the real synced attem
 
 - **GIVEN** the player has real synced attempts recorded today at an event campaign's nodes
 - **WHEN** Today loads
-- **THEN** the energy-usage indicator's total does not include those event-campaign attempts' energy cost
+- **THEN** the energy-usage indicator's total includes those event-campaign attempts' energy cost, priced the same way a standing-campaign attempt's cost is
 
 #### Scenario: Usage can exceed the daily energy budget
 

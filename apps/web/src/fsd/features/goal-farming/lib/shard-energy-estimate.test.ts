@@ -12,6 +12,7 @@ const battle: Battle = {
   type: "Normal",
   challenge: false,
   nodeNumber: 1,
+  battleIndex: 0,
   energyCost: 10,
   dailyAttempts: 999,
 }

@@ -49,7 +49,7 @@ import {
 import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,
-  buildStandingBattleIndex,
+  buildBattleAttemptIndex,
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
@@ -240,37 +240,34 @@ export function useDailyRaids(
       ),
     [upgradesById, charactersById, labelResource]
   )
-  const standingBattleIndex = useMemo(
-    () => buildStandingBattleIndex(battlesById, eventCampaignIds),
-    [battlesById, eventCampaignIds]
+  const battleAttemptIndex = useMemo(
+    () => buildBattleAttemptIndex(battlesById),
+    [battlesById]
   )
   const realEnergyUsedToday = useMemo(
     () =>
       calculateRealEnergyUsedToday(
         liveProgressResult?.value?.battleAttempts ?? [],
-        eventCampaignIds,
-        standingBattleIndex,
+        battleAttemptIndex,
         battlesById
       ),
-    [liveProgressResult, eventCampaignIds, standingBattleIndex, battlesById]
+    [liveProgressResult, battleAttemptIndex, battlesById]
   )
   const attemptsLeftByBattle = useMemo(
     () =>
       buildAttemptsLeftByBattle(
         liveProgressResult?.value?.battleAttempts ?? [],
-        eventCampaignIds,
-        standingBattleIndex
+        battleAttemptIndex
       ),
-    [liveProgressResult, eventCampaignIds, standingBattleIndex]
+    [liveProgressResult, battleAttemptIndex]
   )
   const todaysAttempts = useMemo(
     () =>
       buildTodaysAttempts(
         liveProgressResult?.value?.battleAttempts ?? [],
-        eventCampaignIds,
-        standingBattleIndex
+        battleAttemptIndex
       ),
-    [liveProgressResult, eventCampaignIds, standingBattleIndex]
+    [liveProgressResult, battleAttemptIndex]
   )
 
   if (!projectId) return { status: "no-project" }

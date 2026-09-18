@@ -28,6 +28,11 @@ export interface Battle {
   type: string
   challenge: boolean
   nodeNumber: number
+  // Zero-based index used by Tacticus's own campaign-progress/battle-attempt payloads, assigned
+  // independently within each {campaignGroupId, type} track. Unlike nodeNumber, this distinguishes a
+  // challenge battle from the regular battle it shares a node number with — see daily-raids-energy.ts's
+  // battle-attempt indexing.
+  battleIndex: number
   energyCost: number
   // Daily attempt cap for this battle (Elite/EliteMirror = 6, everything else = 10 — see the
   // catalog's CampaignDenormalizer.DailyAttemptsForType). Shared across every material/shard farmed
