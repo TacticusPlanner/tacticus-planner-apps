@@ -66,7 +66,6 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { goals: importedGoalCount, units: importedUnitCount } = importedCounts(
     buckets.imported
   )
-  const autoAdded = buckets.imported.filter(isAutomaticallyAdded)
   const hasDiagnostics =
     buckets.notImported.length > 0 || buckets.failed.length > 0
 
@@ -143,19 +142,17 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                     units: importedUnitCount,
                   })}
                 </p>
-                {autoAdded.length > 0 ? (
-                  <ul className="mt-1 grid gap-1">
-                    {autoAdded.map((outcome, index) => (
-                      <OutcomeRow
-                        auto
-                        getEntityName={getEntityName}
-                        key={index}
-                        outcome={outcome}
-                        t={t}
-                      />
-                    ))}
-                  </ul>
-                ) : null}
+                <ul className="mt-1 grid gap-1">
+                  {buckets.imported.map((outcome, index) => (
+                    <OutcomeRow
+                      auto={isAutomaticallyAdded(outcome)}
+                      getEntityName={getEntityName}
+                      key={index}
+                      outcome={outcome}
+                      t={t}
+                    />
+                  ))}
+                </ul>
               </div>
             ) : null}
 

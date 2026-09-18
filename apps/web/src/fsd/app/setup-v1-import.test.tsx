@@ -1,4 +1,5 @@
 import userEvent from "@testing-library/user-event"
+import type { ReactNode } from "react"
 import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
@@ -15,37 +16,48 @@ vi.mock("react-i18next", async (importOriginal) => ({
 
 // `V1ImportPanel`'s own mutation/report/query-invalidation behavior is covered by
 // `features/v1-import/ui/v1-import-panel.test.tsx`. This file only tests what `SetupV1Import` adds
-// on top: gating the "Continue" affordance on the personal-key outcome, and the "use an API key
-// instead" escape hatch — so the panel is stubbed at its public API, per the FSD skill's guidance on
-// testing across a slice boundary.
-const { onSuccessRef, lastDefaultSelection, lastRefreshCurrentUserOnSuccess } =
-  vi.hoisted(() => ({
-    onSuccessRef: {
-      current: undefined as
-        ((result: ImportV1ProfileResult) => void) | undefined,
-    },
-    lastDefaultSelection: {
-      current: undefined as V1ImportSelection | undefined,
-    },
-    lastRefreshCurrentUserOnSuccess: {
-      current: undefined as boolean | undefined,
-    },
-  }))
+// on top: locking the key part, gating the "Continue" affordance and the Back-hiding signal on the
+// personal-key outcome, and the "use an API key instead" escape hatch — so the panel is stubbed at
+// its public API, per the FSD skill's guidance on testing across a slice boundary. The stub renders
+// `actions` (unlike the real panel's submit row, position doesn't matter for these tests) so the
+// action buttons SetupV1Import passes through it are reachable.
+const {
+  onSuccessRef,
+  lastDefaultSelection,
+  lastLockedParts,
+  lastRefreshCurrentUserOnSuccess,
+} = vi.hoisted(() => ({
+  onSuccessRef: {
+    current: undefined as ((result: ImportV1ProfileResult) => void) | undefined,
+  },
+  lastDefaultSelection: { current: undefined as V1ImportSelection | undefined },
+  lastLockedParts: {
+    current: undefined as ReadonlyArray<keyof V1ImportSelection> | undefined,
+  },
+  lastRefreshCurrentUserOnSuccess: {
+    current: undefined as boolean | undefined,
+  },
+}))
 
 vi.mock("@/features/v1-import", () => ({
   V1ImportPanel: ({
     defaultSelection,
+    lockedParts,
     onSuccess,
     refreshCurrentUserOnSuccess,
+    actions,
   }: {
     defaultSelection: V1ImportSelection
+    lockedParts?: ReadonlyArray<keyof V1ImportSelection>
     onSuccess?: (result: ImportV1ProfileResult) => void
     refreshCurrentUserOnSuccess?: boolean
+    actions?: ReactNode
   }) => {
     lastDefaultSelection.current = defaultSelection
+    lastLockedParts.current = lockedParts
     lastRefreshCurrentUserOnSuccess.current = refreshCurrentUserOnSuccess
     onSuccessRef.current = onSuccess
-    return <div data-testid="stub-v1-import-panel" />
+    return <div data-testid="stub-v1-import-panel">{actions}</div>
   },
 }))
 
@@ -76,9 +88,23 @@ function fullResult(
   }
 }
 
+function renderSetup() {
+  const onCompleted = vi.fn()
+  const onUseApiKey = vi.fn()
+  const onKeyImported = vi.fn()
+  const result = render(
+    <SetupV1Import
+      onCompleted={onCompleted}
+      onKeyImported={onKeyImported}
+      onUseApiKey={onUseApiKey}
+    />
+  )
+  return { ...result, onCompleted, onKeyImported, onUseApiKey }
+}
+
 describe("SetupV1Import", () => {
   it("preselects every import part", () => {
-    render(<SetupV1Import onCompleted={vi.fn()} onUseApiKey={vi.fn()} />)
+    renderSetup()
 
     expect(lastDefaultSelection.current).toEqual({
       personalTacticusApiKey: true,
@@ -90,49 +116,69 @@ describe("SetupV1Import", () => {
     })
   })
 
+  it("locks the personal API key part so it cannot be unchecked", () => {
+    renderSetup()
+
+    expect(lastLockedParts.current).toEqual(["personalTacticusApiKey"])
+  })
+
   it("does not let the panel refetch current-user itself, so the reverse guard cannot preempt the report", () => {
-    render(<SetupV1Import onCompleted={vi.fn()} onUseApiKey={vi.fn()} />)
+    renderSetup()
 
     expect(lastRefreshCurrentUserOnSuccess.current).toBe(false)
   })
 
   it("does not offer Continue before a submission succeeds", () => {
-    render(<SetupV1Import onCompleted={vi.fn()} onUseApiKey={vi.fn()} />)
+    renderSetup()
 
     expect(
       screen.queryByTestId("account-setup-v1-continue")
     ).not.toBeInTheDocument()
   })
 
-  it("does not offer Continue when the key part did not import", () => {
-    render(<SetupV1Import onCompleted={vi.fn()} onUseApiKey={vi.fn()} />)
+  it("does not offer Continue, and does not call onKeyImported, when the key part did not import", () => {
+    const { onKeyImported } = renderSetup()
 
     onSuccessRef.current?.(fullResult(failedPart))
 
     expect(
       screen.queryByTestId("account-setup-v1-continue")
     ).not.toBeInTheDocument()
+    expect(onKeyImported).not.toHaveBeenCalled()
   })
 
-  it("offers Continue once the key part is confirmed imported, and calls onCompleted", async () => {
-    const user = userEvent.setup()
-    const onCompleted = vi.fn()
-    render(<SetupV1Import onCompleted={onCompleted} onUseApiKey={vi.fn()} />)
+  it("offers Continue and calls onKeyImported once the key part is confirmed imported", async () => {
+    const { onKeyImported } = renderSetup()
 
     onSuccessRef.current?.(fullResult(okPart))
 
-    const continueButton = await screen.findByTestId(
-      "account-setup-v1-continue"
-    )
-    await user.click(continueButton)
+    expect(await screen.findByTestId("account-setup-v1-continue")).toBeVisible()
+    expect(onKeyImported).toHaveBeenCalledTimes(1)
+  })
+
+  it("clicking Continue calls onCompleted", async () => {
+    const user = userEvent.setup()
+    const { onCompleted } = renderSetup()
+
+    onSuccessRef.current?.(fullResult(okPart))
+    await user.click(await screen.findByTestId("account-setup-v1-continue"))
 
     expect(onCompleted).toHaveBeenCalledTimes(1)
   })
 
+  it("stays offering Continue even if a later rerun's key import fails", async () => {
+    renderSetup()
+
+    onSuccessRef.current?.(fullResult(okPart))
+    await screen.findByTestId("account-setup-v1-continue")
+    onSuccessRef.current?.(fullResult(failedPart))
+
+    expect(screen.getByTestId("account-setup-v1-continue")).toBeVisible()
+  })
+
   it("calls onUseApiKey from its own button", async () => {
     const user = userEvent.setup()
-    const onUseApiKey = vi.fn()
-    render(<SetupV1Import onCompleted={vi.fn()} onUseApiKey={onUseApiKey} />)
+    const { onUseApiKey } = renderSetup()
 
     await user.click(screen.getByTestId("account-setup-v1-use-api-key"))
 

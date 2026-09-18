@@ -42,9 +42,10 @@ export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
       onStepChange={(nextStep) => {
         void navigate(`${SETUP_STEP_PATHS[nextStep]}${search}`)
       }}
-      renderImportStep={(onCompleted) => (
+      renderImportStep={(onCompleted, onKeyImported) => (
         <SetupV1Import
           onCompleted={onCompleted}
+          onKeyImported={onKeyImported}
           onUseApiKey={() => void navigate(`${SETUP_STEP_PATHS.key}${search}`)}
         />
       )}

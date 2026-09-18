@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type FormEvent, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
@@ -49,10 +49,15 @@ export type V1ImportSelection = Record<(typeof parts)[number][0], boolean>
  */
 export function V1ImportPanel({
   defaultSelection,
+  lockedParts,
   onSuccess,
   refreshCurrentUserOnSuccess = true,
+  actions,
 }: {
   defaultSelection: V1ImportSelection
+  /** Parts the user cannot uncheck — the setup flow locks `personalTacticusApiKey`, since the whole
+   * point of that flow is to obtain a key; nothing else locks any part. */
+  lockedParts?: ReadonlyArray<keyof V1ImportSelection>
   onSuccess?: (result: ImportV1ProfileResult) => void
   /**
    * Whether a successful import refetches the shared current-user query immediately. Defaults to
@@ -63,6 +68,10 @@ export function V1ImportPanel({
    * import alone succeeds — before the user ever sees the report or clicks anything.
    */
   refreshCurrentUserOnSuccess?: boolean
+  /** Extra buttons rendered in the same row as the submit control (e.g. `SetupV1Import`'s "Use an
+   * API key instead" / "Continue"), so a host's own actions don't end up on a visually disconnected
+   * row below this form. */
+  actions?: ReactNode
 }) {
   const { t } = useTranslation()
   const { refetch } = useCurrentUser()
@@ -71,9 +80,6 @@ export function V1ImportPanel({
   const [password, setPassword] = useState("")
   const [selection, setSelection] =
     useState<V1ImportSelection>(defaultSelection)
-  // Matches the manual create-goal flow's own default (rewrite-v1-goal-import). Not a "part": it has
-  // no result row of its own, only an effect on the goal outcomes.
-  const [automaticPrerequisites, setAutomaticPrerequisites] = useState(true)
   const [status, setStatus] = useState<
     "idle" | "submitting" | "error" | "success"
   >("idle")
@@ -103,7 +109,10 @@ export function V1ImportPanel({
       const imported = await importProfile.mutateAsync({
         username: username.trim(),
         password,
-        import: { ...selection, automaticPrerequisites },
+        // Always on — matches the manual create-goal flow's own default (rewrite-v1-goal-import),
+        // and offering it as an option users could quietly clear only left goals blocked on missing
+        // prerequisites they didn't realize they'd opted out of.
+        import: { ...selection, automaticPrerequisites: true },
       })
       setResult(imported)
       if (refreshCurrentUserOnSuccess) {
@@ -179,32 +188,26 @@ export function V1ImportPanel({
         <legend className="px-1 text-sm font-medium">
           {t("goals.v1Import.selectParts")}
         </legend>
-        {parts.map(([key, label]) => (
-          <label className="flex items-center gap-3 text-sm" key={key}>
-            <Checkbox
-              data-testid={`v1-import-${key}`}
-              checked={selection[key]}
-              onCheckedChange={(checked) =>
-                setSelection((current) => ({
-                  ...current,
-                  [key]: checked === true,
-                }))
-              }
-            />
-            {t(label)}
-          </label>
-        ))}
+        {parts.map(([key, label]) => {
+          const locked = lockedParts?.includes(key) ?? false
+          return (
+            <label className="flex items-center gap-3 text-sm" key={key}>
+              <Checkbox
+                data-testid={`v1-import-${key}`}
+                checked={selection[key]}
+                disabled={locked}
+                onCheckedChange={(checked) =>
+                  setSelection((current) => ({
+                    ...current,
+                    [key]: checked === true,
+                  }))
+                }
+              />
+              {t(label)}
+            </label>
+          )
+        })}
       </fieldset>
-      <label className="flex items-center gap-3 text-sm">
-        <Checkbox
-          data-testid="v1-import-automaticPrerequisites"
-          checked={automaticPrerequisites}
-          onCheckedChange={(checked) =>
-            setAutomaticPrerequisites(checked === true)
-          }
-        />
-        {t("goals.v1Import.automaticPrerequisites")}
-      </label>
       {error ? <FieldError role="alert">{error}</FieldError> : null}
       {result ? <ImportResult result={result} /> : null}
       {status === "success" ? (
@@ -215,15 +218,17 @@ export function V1ImportPanel({
           {t("goals.v1Import.rerunRequiresPassword")}
         </p>
       ) : null}
-      <Button
-        className="self-start"
-        data-testid="v1-import-submit"
-        disabled={!canSubmit}
-        type="submit"
-      >
-        {status === "submitting" ? <Spinner /> : null}
-        {t("goals.v1Import.submit")}
-      </Button>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          data-testid="v1-import-submit"
+          disabled={!canSubmit}
+          type="submit"
+        >
+          {status === "submitting" ? <Spinner /> : null}
+          {t("goals.v1Import.submit")}
+        </Button>
+        {actions}
+      </div>
     </form>
   )
 }

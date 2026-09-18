@@ -24,8 +24,15 @@ type ScreenProps = {
    * (that would be a feature-to-feature cross-import — see
    * `.claude/skills/feature-sliced-design/references/cross-import-patterns.md`, Strategy C); the
    * `app` layer, which already composes both features, supplies this instead.
+   *
+   * The second argument lets that content report "the account is provisioned now" before the whole
+   * screen finishes (`onCompleted`) — see `Steps`'s `keyImported` state for why Back needs to know
+   * this earlier.
    */
-  renderImportStep: (onCompleted: () => void) => ReactNode
+  renderImportStep: (
+    onCompleted: () => void,
+    onKeyImported: () => void
+  ) => ReactNode
 }
 
 /**
@@ -135,6 +142,10 @@ function Steps({
   renderImportStep,
 }: ScreenProps & { onCompleted: () => void }) {
   const { t } = useTranslation()
+  // Sticky, and only ever set by the import step (the key step's own success unmounts this whole
+  // component via `submitted` instead — see AccountSetupScreen). Once true, the account already has
+  // a key, so a Back control offering to abandon setup no longer makes sense.
+  const [keyImported, setKeyImported] = useState(false)
 
   if (step === "choose") {
     return (
@@ -164,21 +175,23 @@ function Steps({
           {step === "key" ? (
             <ApiKeyForm onCompleted={onCompleted} />
           ) : (
-            renderImportStep(onCompleted)
+            renderImportStep(onCompleted, () => setKeyImported(true))
           )}
         </CardContent>
       </Card>
 
-      <Button
-        className="self-start"
-        data-testid="account-setup-back"
-        onClick={() => onStepChange("choose")}
-        size="sm"
-        variant="ghost"
-      >
-        <ChevronLeft />
-        {t("onboarding.back")}
-      </Button>
+      {keyImported ? null : (
+        <Button
+          className="self-start"
+          data-testid="account-setup-back"
+          onClick={() => onStepChange("choose")}
+          size="sm"
+          variant="ghost"
+        >
+          <ChevronLeft />
+          {t("onboarding.back")}
+        </Button>
+      )}
     </div>
   )
 }

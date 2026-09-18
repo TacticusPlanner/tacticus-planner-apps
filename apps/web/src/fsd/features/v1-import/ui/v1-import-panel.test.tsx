@@ -210,6 +210,33 @@ describe("V1ImportPanel", () => {
     }
   })
 
+  it("disables a locked part's checkbox so it cannot be unchecked", () => {
+    render(
+      <V1ImportPanel
+        defaultSelection={ALL_SELECTED}
+        lockedParts={["personalTacticusApiKey"]}
+      />
+    )
+
+    expect(
+      screen.getByTestId("v1-import-personalTacticusApiKey")
+    ).toBeDisabled()
+    expect(screen.getByTestId("v1-import-tacticusUserId")).toBeEnabled()
+  })
+
+  it("renders host actions in the same row as the submit control", () => {
+    render(
+      <V1ImportPanel
+        actions={<button data-testid="host-action">Host action</button>}
+        defaultSelection={ALL_SELECTED}
+      />
+    )
+
+    const submit = screen.getByTestId("v1-import-submit")
+    const action = screen.getByTestId("host-action")
+    expect(submit.parentElement).toBe(action.parentElement)
+  })
+
   it("issues no goal-creation request of its own (3.1)", async () => {
     renderPanel()
     await fillCredentials()
@@ -222,27 +249,22 @@ describe("V1ImportPanel", () => {
     expect(importV1Profile).toHaveBeenCalledTimes(1)
   })
 
-  it("sends automaticPrerequisites=false once the option is cleared (7.1)", async () => {
+  it("always sends automaticPrerequisites=true — there is no option to clear it", async () => {
     renderPanel()
     await fillCredentials()
-    fireEvent.click(screen.getByTestId("v1-import-automaticPrerequisites"))
     fireEvent.click(screen.getByTestId("v1-import-submit"))
 
     await waitFor(() => {
       expect(importV1Profile).toHaveBeenCalledWith(
         expect.objectContaining({
-          import: expect.objectContaining({ automaticPrerequisites: false }),
+          import: expect.objectContaining({ automaticPrerequisites: true }),
         }),
         expect.anything()
       )
     })
-  })
-
-  it("defaults the add-missing-prerequisites option on", () => {
-    renderPanel()
     expect(
-      screen.getByTestId("v1-import-automaticPrerequisites")
-    ).toHaveAttribute("data-state", "checked")
+      screen.queryByTestId("v1-import-automaticPrerequisites")
+    ).not.toBeInTheDocument()
   })
 
   it("refreshes goal and project queries unconditionally after an import (3.3)", async () => {

@@ -14,6 +14,12 @@ const ALL_SELECTED: V1ImportSelection = {
   campaignEventProgress: true,
 }
 
+// The whole point of this step is to obtain a key — a cleared checkbox here would strand the user
+// on a step that never lets them finish setup.
+const LOCKED_PARTS: ReadonlyArray<keyof V1ImportSelection> = [
+  "personalTacticusApiKey",
+]
+
 /**
  * Composes `V1ImportPanel` (features/v1-import) into the account-setup "import" step
  * (features/account-onboarding, via its `renderImportStep` prop) — the `app` layer is where the two
@@ -31,49 +37,58 @@ const ALL_SELECTED: V1ImportSelection = {
  * `AccountSetupRoute`'s reverse guard reads that same shared query — an immediate refetch would
  * trigger its redirect the instant the personal key succeeds, unmounting this screen (report and
  * Continue button included) before the user ever saw either.
+ *
+ * Also calls `onKeyImported` (sticky — never un-fires on a later rerun's own failure) so the host can
+ * hide its own Back control once the key is in: backing out of setup after the account is already
+ * provisioned makes no sense, and going back mid-way is exactly the "not yet available" case this
+ * step still needs Back for.
  */
 export function SetupV1Import({
   onCompleted,
   onUseApiKey,
+  onKeyImported,
 }: {
   onCompleted: () => void
   onUseApiKey: () => void
+  onKeyImported: () => void
 }) {
   const { t } = useTranslation()
-  const [keyImported, setKeyImported] = useState(false)
+  const [keySucceeded, setKeySucceeded] = useState(false)
 
   const handleSuccess = (result: ImportV1ProfileResult) => {
-    setKeyImported(result.personalTacticusApiKey.status === "Imported")
+    if (result.personalTacticusApiKey.status === "Imported") {
+      setKeySucceeded(true)
+      onKeyImported()
+    }
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <V1ImportPanel
-        defaultSelection={ALL_SELECTED}
-        onSuccess={handleSuccess}
-        refreshCurrentUserOnSuccess={false}
-      />
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          data-testid="account-setup-v1-use-api-key"
-          onClick={onUseApiKey}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {t("onboarding.import.useApiKey")}
-        </Button>
-        {keyImported ? (
+    <V1ImportPanel
+      actions={
+        <>
           <Button
-            data-testid="account-setup-v1-continue"
-            onClick={onCompleted}
-            size="sm"
+            data-testid="account-setup-v1-use-api-key"
+            onClick={onUseApiKey}
             type="button"
+            variant="outline"
           >
-            {t("onboarding.import.continue")}
+            {t("onboarding.import.useApiKey")}
           </Button>
-        ) : null}
-      </div>
-    </div>
+          {keySucceeded ? (
+            <Button
+              data-testid="account-setup-v1-continue"
+              onClick={onCompleted}
+              type="button"
+            >
+              {t("onboarding.import.continue")}
+            </Button>
+          ) : null}
+        </>
+      }
+      defaultSelection={ALL_SELECTED}
+      lockedParts={LOCKED_PARTS}
+      onSuccess={handleSuccess}
+      refreshCurrentUserOnSuccess={false}
+    />
   )
 }

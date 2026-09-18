@@ -381,7 +381,6 @@
         "onslaughtProgress": "Progression de l'Onslaught",
         "campaignEventProgress": "Progression des événements de campagne"
       },
-      "automaticPrerequisites": "Ajouter les objectifs préalables manquants",
       "submit": "Importer la sélection",
       "close": "Fermer",
       "error": "Le profil V1 n'a pas pu être importé.",

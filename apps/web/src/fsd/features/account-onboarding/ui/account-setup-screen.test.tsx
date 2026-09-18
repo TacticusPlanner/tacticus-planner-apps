@@ -40,11 +40,26 @@ const unconfiguredState: CurrentUserState = {
 
 function renderScreen(step: AccountSetupStep = "choose") {
   const onStepChange = vi.fn()
-  const renderImportStep = vi.fn((onCompleted: () => void) => (
-    <button data-testid="stub-import-step" onClick={onCompleted} type="button">
-      stub import step
-    </button>
-  ))
+  const renderImportStep = vi.fn(
+    (onCompleted: () => void, onKeyImported: () => void) => (
+      <div>
+        <button
+          data-testid="stub-import-step"
+          onClick={onCompleted}
+          type="button"
+        >
+          stub import step
+        </button>
+        <button
+          data-testid="stub-import-key-imported"
+          onClick={onKeyImported}
+          type="button"
+        >
+          stub key imported
+        </button>
+      </div>
+    )
+  )
   const result = render(
     <AccountSetupScreen
       onStepChange={onStepChange}
@@ -96,6 +111,16 @@ describe("AccountSetupScreen", () => {
       screen.queryByTestId("account-setup-api-key-input")
     ).not.toBeInTheDocument()
     expect(screen.getByTestId("account-setup-back")).toBeVisible()
+  })
+
+  it("hides Back once the import step reports the key is in — going back no longer makes sense", async () => {
+    const user = userEvent.setup()
+    renderScreen("import")
+    expect(screen.getByTestId("account-setup-back")).toBeVisible()
+
+    await user.click(screen.getByTestId("stub-import-key-imported"))
+
+    expect(screen.queryByTestId("account-setup-back")).not.toBeInTheDocument()
   })
 
   it("reports the user's position in the two-step flow", () => {

@@ -381,7 +381,6 @@
         "onslaughtProgress": "Onslaught progress",
         "campaignEventProgress": "Campaign event progress"
       },
-      "automaticPrerequisites": "Add missing prerequisite goals",
       "submit": "Import selected",
       "close": "Close",
       "error": "The V1 profile could not be imported.",
