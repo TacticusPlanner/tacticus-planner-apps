@@ -212,7 +212,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
                 <span className="text-sm font-medium">
                   {t("language.label")}
                 </span>
-                <LanguageSwitcher className="w-full" />
+                <LanguageSwitcher className="w-full" showNativeName />
               </div>
               <TourButton
                 className="w-full justify-start"

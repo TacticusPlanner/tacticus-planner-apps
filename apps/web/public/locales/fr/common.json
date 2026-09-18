@@ -775,13 +775,7 @@
     }
   },
   "language": {
-    "label": "Langue",
-    "options": {
-      "de": "Deutsch",
-      "en": "English",
-      "es": "Español",
-      "fr": "Français"
-    }
+    "label": "Langue"
   },
   "scrollToTop": "Retour en haut",
   "settings": {
