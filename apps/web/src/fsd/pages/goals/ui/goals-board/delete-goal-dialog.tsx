@@ -14,6 +14,9 @@ type Props = {
   onOpenChange: (open: boolean) => void
   pending: boolean
   onConfirm: () => void
+  /** The project the goal is being viewed inside, when there is one — deletion is account-wide
+   *  either way, so in that context the confirmation says so and names project removal instead. */
+  projectName?: string
 }
 
 /**
@@ -26,6 +29,7 @@ export function DeleteGoalDialog({
   onOpenChange,
   pending,
   onConfirm,
+  projectName,
 }: Props) {
   const { t } = useTranslation()
 
@@ -45,6 +49,14 @@ export function DeleteGoalDialog({
         <p className="text-sm text-muted-foreground">
           {t("goals.delete.description")}
         </p>
+        {projectName ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="delete-goal-project-alternative"
+          >
+            {t("goals.delete.projectAlternative", { project: projectName })}
+          </p>
+        ) : null}
         <DialogFooter>
           <Button
             disabled={pending}

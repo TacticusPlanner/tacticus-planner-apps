@@ -93,13 +93,8 @@ export function GoalDetailEditForm({
         projects={projects}
         selectedProjectIds={draft.selectedProjectIds}
         projectsValid={projectsValid}
-        onToggle={(projectId, checked) =>
-          onDraftChange({
-            ...draft,
-            selectedProjectIds: checked
-              ? [...draft.selectedProjectIds, projectId]
-              : draft.selectedProjectIds.filter((id) => id !== projectId),
-          })
+        onSelectionChange={(selectedProjectIds) =>
+          onDraftChange({ ...draft, selectedProjectIds })
         }
         portalContainer={portalContainer}
       />

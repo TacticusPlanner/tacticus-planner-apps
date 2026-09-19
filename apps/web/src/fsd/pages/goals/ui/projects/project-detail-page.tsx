@@ -24,6 +24,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 
 import {
+  AddGoalsToProjectSheet,
   ManageProjectsSheet,
   useProjectActions,
 } from "@/features/project-management"
@@ -39,14 +40,19 @@ import {
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
+import { groupRows } from "../../model/shared/row-groups"
 import { goalRowFromProjectMember } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
+import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useProjectGoals } from "../../model/projects/use-project-goals"
-import { projectUnitPlans } from "../../model/projects/project-unit-plans"
+import {
+  dependencyFirst,
+  projectUnitPlans,
+} from "../../model/projects/project-unit-plans"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
-import { GoalsList } from "../goals-board/goals-list"
+import { ProjectDetailGoals } from "./project-detail-goals"
 import { useProjectDetailTutorial } from "./project-detail-page.tutorial"
 import { ReprioritizeUnitsSheet } from "./reprioritize-units-sheet"
 
@@ -70,10 +76,15 @@ export function ProjectDetailPage() {
   const [tab, setTab] = useState<Tab>("toReach")
   const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
   const [sort, setSort] = useState<GoalSortValue>("updated")
-  const [group, setGroup] = useState<GoalGroupValue>("none")
+  // Goal type on arrival (project-management: "Goal type is the initial grouping") - Overview keeps
+  // "none". The route is declared without a `key`, so this initial value applies when the detail
+  // route is first opened, not on every project switch: Group persists across switches like its
+  // three sibling controls.
+  const [group, setGroup] = useState<GoalGroupValue>("type")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [reprioritizeOpen, setReprioritizeOpen] = useState(false)
+  const [addGoalsOpen, setAddGoalsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
 
   const projectGoals = useProjectGoals(projectId)
@@ -81,7 +92,12 @@ export function ProjectDetailPage() {
   const projectActions = useProjectActions()
   const { result: insights } = usePlanInsights(projectId, projectGoals.goals)
 
-  const allRows = projectGoals.goals.map(goalRowFromProjectMember)
+  // Rows carry their goal's full membership, not just this project's: the row menu's project
+  // removal needs to know whether leaving this project is the goal's last membership.
+  const projectsByGoalId = useGoalProjects(projects.projects)
+  const allRows = projectGoals.goals.map((entry) =>
+    goalRowFromProjectMember(entry, projectsByGoalId.get(entry.goal.goalId))
+  )
   const nonArchivedRows = allRows.filter((row) => row.status !== "Archived")
   const filteredAllRows = allRows.filter(
     (row) => goalType === "all" || row.goalType === goalType
@@ -137,6 +153,14 @@ export function ProjectDetailPage() {
     if (sort === "updated") return right.updatedAt.localeCompare(left.updatedAt)
     return 0
   })
+  // Sort orders the blocks; inside a unit block the goals go back to their dependency-first order,
+  // so a prerequisite is never rendered below the goal that depends on it. Under the other
+  // dimensions there is no such relationship between a group's rows, and Sort applies normally.
+  const rowGroups = groupRows(rows, group).map((rowGroup) =>
+    rowGroup.dimension === "unit"
+      ? { ...rowGroup, rows: dependencyFirst(rowGroup.rows) }
+      : rowGroup
+  )
   const counts = {
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
       .length,
@@ -222,6 +246,13 @@ export function ProjectDetailPage() {
                   {t("goals.project.makeCurrent")}
                 </Button>
               ) : null}
+              <Button
+                data-testid="project-add-goals"
+                onClick={() => setAddGoalsOpen(true)}
+                variant="outline"
+              >
+                {t("goals.project.addGoalsTrigger")}
+              </Button>
               {units.length > 1 ? (
                 <Button
                   data-testid="project-reprioritize-units"
@@ -330,39 +361,28 @@ export function ProjectDetailPage() {
         sort={sort}
       />
 
-      <div data-testid="project-detail-goals">
-        {projectGoals.fetchState.status === "error" ? (
-          <div
-            className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
-            role="alert"
-          >
-            {projectGoals.fetchState.message}
-          </div>
-        ) : projectGoals.loading ? (
-          <div
-            className="flex flex-col gap-3"
-            data-testid="project-detail-page-loading"
-          >
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-24 w-full" />
-          </div>
-        ) : rows.length === 0 ? (
-          <p className="py-10 text-center text-muted-foreground">
-            {t("goals.empty.filtered")}
-          </p>
-        ) : (
-          <GoalsList
-            actions={goalActions}
-            estimates={insights.estimates}
-            metrics={overviewMetrics}
-            potentialProgress={insights.potentialProgressByGoalId}
-            onView={setDetailGoalId}
-            reorderEnabled={false}
-            rows={rows}
-          />
-        )}
-      </div>
+      <ProjectDetailGoals
+        actions={goalActions}
+        error={
+          projectGoals.fetchState.status === "error"
+            ? projectGoals.fetchState.message
+            : null
+        }
+        estimates={insights.estimates}
+        getEntityName={getEntityName}
+        loading={projectGoals.loading}
+        metrics={overviewMetrics}
+        onView={setDetailGoalId}
+        potentialProgress={insights.potentialProgressByGoalId}
+        project={project}
+        rowGroups={rowGroups}
+      />
 
+      <AddGoalsToProjectSheet
+        onOpenChange={setAddGoalsOpen}
+        open={addGoalsOpen}
+        project={project}
+      />
       <ManageProjectsSheet
         actions={projectActions}
         onOpenChange={setEditOpen}

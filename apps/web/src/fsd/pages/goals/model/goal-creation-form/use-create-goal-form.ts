@@ -83,7 +83,7 @@ export function useCreateGoalForm({
     useState<FarmingStrategy>("TotalUpgrades")
 
   const projectSelection = useProjectSelection({ open })
-  const { projects, selectedProjectIds, toggleProject } = projectSelection
+  const { projects, selectedProjectIds } = projectSelection
 
   const {
     playerEntity,
@@ -415,7 +415,7 @@ export function useCreateGoalForm({
     acquisitionPlan,
     projects,
     selectedProjectIds,
-    toggleProject,
+    selectProjects: projectSelection.selectProjects,
     ...submission,
     missingUpgrades,
     estimatePreview,

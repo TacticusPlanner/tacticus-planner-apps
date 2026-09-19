@@ -15,7 +15,12 @@ export function useGoalsOverviewTutorial() {
   const steps = useMemo(() => {
     const createStep = (
       target: string,
-      key: "statusFilter" | "filters" | "planningSettings" | "list"
+      key:
+        | "statusFilter"
+        | "filters"
+        | "projectFilter"
+        | "planningSettings"
+        | "list"
     ): Step => ({
       target,
       title: t(`tour.overview.steps.${key}.title`),
@@ -24,6 +29,7 @@ export function useGoalsOverviewTutorial() {
     const shared = [
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
+      createStep('[data-testid="goals-project-filter"]', "projectFilter"),
       createStep('[data-testid="goals-planning-settings"]', "planningSettings"),
       createStep('[data-testid="goals-page"]', "list"),
     ]

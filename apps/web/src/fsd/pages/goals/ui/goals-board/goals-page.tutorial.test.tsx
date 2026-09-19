@@ -30,8 +30,15 @@ describe("useGoalsOverviewTutorial", () => {
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
+      '[data-testid="goals-project-filter"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
     ])
+    expect(steps.mobile.map((step) => step.target)).toEqual(
+      steps.desktop.map((step) => step.target)
+    )
+    expect(
+      steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
+    ).toContain("tour.overview.steps.projectFilter")
   })
 })

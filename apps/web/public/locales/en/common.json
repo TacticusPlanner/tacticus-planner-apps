@@ -484,7 +484,8 @@
     },
     "delete": {
       "title": "Delete this goal?",
-      "description": "This permanently removes the goal. This can't be undone.",
+      "description": "This permanently deletes the goal from your account, including every project it belongs to — not only the one you're viewing. This can't be undone.",
+      "projectAlternative": "To take it out of {{project}} only, cancel and use “Remove from this project” instead.",
       "confirm": "Delete goal",
       "cancel": "Cancel"
     },
@@ -496,6 +497,18 @@
       "membership": "Projects containing this goal",
       "addMembership": "Add to project",
       "removeMembership": "Remove {{project}}",
+      "removeFromProject": "Remove from this project",
+      "removeLastMembership": "This is the goal's only project, and it has nowhere else to go. Add it to another project first.",
+      "removeDestinationUnknown": "Your projects aren't loaded yet, so this goal has no destination. Try again in a moment.",
+      "addGoalsTrigger": "Add goals",
+      "addGoalsTitle": "Add goals to this project",
+      "addGoalsDescription": "Search your goals and add them to {{project}}. Goals already in it stay where they are.",
+      "addGoalsSearch": "Search goals",
+      "addGoalsEmpty": "No goals match your search.",
+      "addGoalsMember": "Already here",
+      "addGoalsSave_one": "Add {{count}} goal",
+      "addGoalsSave_other": "Add {{count}} goals",
+      "assemblySlotTaken": "This project can hold only one active or paused {{type}} goal for this unit.",
       "searchProjects": "Search projects",
       "noAddableProjects": "No available projects found.",
       "membershipConflict": "{{project}} already contains an active or paused {{types}} goal for this unit.",
@@ -538,6 +551,10 @@
     "toasts": {
       "statusChanged": "Goal updated.",
       "deleted": "Goal deleted.",
+      "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
+      "goalRelocated": "{{goal}} moved to {{project}}.",
+      "goalsAddedToProject_one": "{{count}} goal added to {{project}}.",
+      "goalsAddedToProject_other": "{{count}} goals added to {{project}}.",
       "activated": "Current plan updated.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
@@ -928,6 +945,10 @@
           "title": "Type, sort, and group",
           "content": "Narrow by goal type, change the sort order, or group related goals together."
         },
+        "projectFilter": {
+          "title": "Narrow by project",
+          "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about Current plan or what Dailies calculates."
+        },
         "planningSettings": {
           "title": "Planning settings",
           "content": "Set your daily energy budget here — every estimate on this page uses it."
@@ -964,6 +985,10 @@
           "title": "Project at a glance",
           "content": "See this project's identity, Current plan state, progress metrics, project switcher, and actions here."
         },
+        "addGoals": {
+          "title": "Fill the project",
+          "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step."
+        },
         "reprioritize": {
           "title": "Prioritize by unit",
           "content": "Reorder Character and Machine of War blocks. Every goal for a unit moves together, while dependencies determine their inner order."
@@ -974,7 +999,11 @@
         },
         "goals": {
           "title": "Project goals",
-          "content": "This project's goals appear here in the flattened unit order used by planning calculations."
+          "content": "This project's goals appear here, grouped by goal type to start. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
+        },
+        "rowActions": {
+          "title": "Remove without deleting",
+          "content": "Each goal's menu can take it out of this project alone. Deleting, further down the same menu, removes it from your whole account."
         }
       }
     },

@@ -34,4 +34,21 @@ describe("goal row mappings", () => {
       priority: 4,
     })
   })
+
+  it("carries the goal's project memberships onto a project member row", () => {
+    const projects = [
+      {
+        projectId: "proj-a",
+        name: "Project A",
+        color: null,
+        isActivePlan: true,
+      },
+    ]
+
+    expect(goalRowFromProjectMember({ goal, priority: 4 }, projects)).toEqual({
+      ...goalRow,
+      priority: 4,
+      projects,
+    })
+  })
 })

@@ -23,6 +23,7 @@ import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup"
+import { useUnitName } from "@/shared/unit-name"
 
 /**
  * The static-catalog reads the goal-creation Sheet needs (character picker + upgrade requirements
@@ -127,21 +128,9 @@ export function useGoalCatalog() {
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
 
-  /** Display name for a goal row (list/grid). Character and Mow entities resolve via the catalog
-   * (upgrade entity types fall back to the raw id — see Phase 3 scope notes). */
-  const getEntityName = (entityType: string, entityId: string) => {
-    if (entityType === "Mow") {
-      return mowsById?.get(entityId)?.name ?? entityId
-    }
-    if (entityType !== "Character") {
-      return entityId
-    }
-
-    const record = charactersById?.get(entityId as UnitId)
-    return t(`characters:${entityId}`, {
-      defaultValue: record?.name ?? entityId,
-    })
-  }
+  /** Display name for a goal row (list/grid) — the shared resolver, so the Goals pages, the V1
+   * import report, and `features/project-management`'s assembly sheet all name units identically. */
+  const getEntityName = useUnitName()
 
   const loading = charactersById === undefined || upgrades === undefined
 

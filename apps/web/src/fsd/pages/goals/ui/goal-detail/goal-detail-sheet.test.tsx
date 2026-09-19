@@ -299,6 +299,7 @@ describe("GoalDetailSheet", () => {
       projects: [
         { projectId: "project-1", name: "My Goals", isActivePlan: true },
         { projectId: "project-2", name: "Event Prep", isActivePlan: false },
+        { projectId: "project-home", name: "Home", isDefault: true },
       ],
     })
   })
@@ -526,7 +527,7 @@ describe("GoalDetailSheet", () => {
     })
   })
 
-  it("protects the last project membership", async () => {
+  it("relocates the last project membership to the Default project on save", async () => {
     const user = userEvent.setup()
     renderSheet()
     await enterEditMode(user)
@@ -538,12 +539,15 @@ describe("GoalDetailSheet", () => {
     )
 
     expect(
-      screen.getByText("goals.detail.projectsRequired")
+      await screen.findByTestId("goal-detail-project-chip-project-home")
     ).toBeInTheDocument()
-    expect(
-      screen.getByTestId("goal-detail-project-chip-project-1")
-    ).toBeInTheDocument()
-    expect(updateGoalProjects).not.toHaveBeenCalled()
+    await user.click(screen.getByText("goals.detail.save"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalProjects).toHaveBeenCalledWith("goal-1", [
+        "project-home",
+      ])
+    })
   })
 
   it("lets a Rank goal's farming strategy be changed, with no farm-location picker", async () => {

@@ -484,7 +484,8 @@
     },
     "delete": {
       "title": "¿Eliminar este objetivo?",
-      "description": "Esto elimina el objetivo de forma permanente. Esta acción no se puede deshacer.",
+      "description": "Esto elimina el objetivo de forma permanente de tu cuenta, incluidos todos los proyectos a los que pertenece, no solo el que estás viendo. Esta acción no se puede deshacer.",
+      "projectAlternative": "Para sacarlo solo de {{project}}, cancela y usa «Quitar de este proyecto».",
       "confirm": "Eliminar objetivo",
       "cancel": "Cancelar"
     },
@@ -496,6 +497,18 @@
       "membership": "Proyectos que contienen este objetivo",
       "addMembership": "Añadir al proyecto",
       "removeMembership": "Quitar {{project}}",
+      "removeFromProject": "Quitar de este proyecto",
+      "removeLastMembership": "Este es el único proyecto del objetivo y no tiene otro destino. Añádelo antes a otro proyecto.",
+      "removeDestinationUnknown": "Tus proyectos aún no se han cargado, así que este objetivo no tiene destino. Vuelve a intentarlo en un momento.",
+      "addGoalsTrigger": "Añadir objetivos",
+      "addGoalsTitle": "Añadir objetivos a este proyecto",
+      "addGoalsDescription": "Busca tus objetivos y añádelos a {{project}}. Los que ya están en él se quedan como están.",
+      "addGoalsSearch": "Buscar objetivos",
+      "addGoalsEmpty": "Ningún objetivo coincide con tu búsqueda.",
+      "addGoalsMember": "Ya está aquí",
+      "addGoalsSave_one": "Añadir {{count}} objetivo",
+      "addGoalsSave_other": "Añadir {{count}} objetivos",
+      "assemblySlotTaken": "Este proyecto solo puede contener un objetivo {{type}} activo o pausado para esta unidad.",
       "searchProjects": "Buscar proyectos",
       "noAddableProjects": "No se encontraron proyectos disponibles.",
       "membershipConflict": "{{project}} ya contiene un objetivo {{types}} activo o pausado para esta unidad.",
@@ -538,6 +551,10 @@
     "toasts": {
       "statusChanged": "Objetivo actualizado.",
       "deleted": "Objetivo eliminado.",
+      "goalRemovedFromProject": "{{goal}} quitado de {{project}}.",
+      "goalRelocated": "{{goal}} movido a {{project}}.",
+      "goalsAddedToProject_one": "{{count}} objetivo añadido a {{project}}.",
+      "goalsAddedToProject_other": "{{count}} objetivos añadidos a {{project}}.",
       "activated": "Plan actual actualizado.",
       "actionError": "Algo salió mal. Inténtalo de nuevo.",
       "projectCreated": "Proyecto creado.",
@@ -928,6 +945,10 @@
           "title": "Tipo, orden y agrupación",
           "content": "Filtra por tipo de objetivo, cambia el orden o agrupa objetivos relacionados."
         },
+        "projectFilter": {
+          "title": "Acota por proyecto",
+          "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia el plan actual ni lo que calculan las tareas diarias."
+        },
         "planningSettings": {
           "title": "Ajustes de planificación",
           "content": "Define aquí tu presupuesto diario de energía — todas las estimaciones de esta página lo usan."
@@ -964,6 +985,10 @@
           "title": "Proyecto de un vistazo",
           "content": "Aquí puedes ver la identidad, el estado de plan actual, las métricas, el selector de proyecto y las acciones."
         },
+        "addGoals": {
+          "title": "Llena el proyecto",
+          "content": "Añade varios objetivos existentes a este proyecto de una vez: busca entre tus objetivos, elige los que quieras y guarda en un solo paso."
+        },
         "reprioritize": {
           "title": "Priorizar por unidad",
           "content": "Reordena bloques de Personajes y Máquinas de Guerra. Todos los objetivos de una unidad se mueven juntos; las dependencias fijan su orden interno."
@@ -974,7 +999,11 @@
         },
         "goals": {
           "title": "Objetivos del proyecto",
-          "content": "Los objetivos aparecen en el orden aplanado de unidades que usan los cálculos de planificación."
+          "content": "Los objetivos de este proyecto aparecen aquí, agrupados por tipo de objetivo al principio. Usa Agrupar para cambiar a un bloque por unidad o para desactivar la agrupación y ver una lista plana."
+        },
+        "rowActions": {
+          "title": "Quitar sin eliminar",
+          "content": "El menú de cada objetivo permite sacarlo solo de este proyecto. Eliminar, más abajo en ese mismo menú, lo borra de toda tu cuenta."
         }
       }
     },

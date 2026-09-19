@@ -13,7 +13,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useProjectDetailTutorial", () => {
-  it("registers localized steps targeting the header, unit ordering, selector, and goals", () => {
+  it("registers localized desktop and mobile steps covering assembly and the row menu", () => {
     renderHook(() => useProjectDetailTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
@@ -27,9 +27,17 @@ describe("useProjectDetailTutorial", () => {
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="project-detail-header"]',
+      '[data-testid="project-add-goals"]',
       '[data-testid="project-reprioritize-units"]',
       '[data-testid="projects-goal-project-select"]',
       '[data-testid="project-detail-goals"]',
+      '[data-testid="goal-row-actions"]',
     ])
+    expect(steps.mobile.map((step) => step.target)).toEqual(
+      steps.desktop.map((step) => step.target)
+    )
+    expect(
+      steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
+    ).toContain("tour.projectDetail.steps.rowActions")
   })
 })

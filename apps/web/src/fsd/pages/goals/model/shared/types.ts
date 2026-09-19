@@ -42,7 +42,10 @@ export function goalRowFromSummary(
   }
 }
 
-export function goalRowFromProjectMember(entry: ProjectGoalSummary): GoalRow {
+export function goalRowFromProjectMember(
+  entry: ProjectGoalSummary,
+  projects: GoalProject[] = []
+): GoalRow {
   return {
     goalId: entry.goal.goalId,
     entityType: entry.goal.entityType,
@@ -53,5 +56,6 @@ export function goalRowFromProjectMember(entry: ProjectGoalSummary): GoalRow {
     updatedAt: entry.goal.updatedAt,
     dependsOn: entry.goal.dependsOn,
     priority: entry.priority,
+    ...(projects.length > 0 ? { projects } : {}),
   }
 }

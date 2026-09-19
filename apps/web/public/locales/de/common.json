@@ -484,7 +484,8 @@
     },
     "delete": {
       "title": "Dieses Ziel löschen?",
-      "description": "Dies entfernt das Ziel dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+      "description": "Dies löscht das Ziel dauerhaft aus deinem Konto, einschließlich aller Projekte, zu denen es gehört – nicht nur aus dem gerade angezeigten. Dies kann nicht rückgängig gemacht werden.",
+      "projectAlternative": "Um es nur aus {{project}} zu nehmen, brich ab und verwende stattdessen „Aus diesem Projekt entfernen“.",
       "confirm": "Ziel löschen",
       "cancel": "Abbrechen"
     },
@@ -496,6 +497,18 @@
       "membership": "Projekte mit diesem Ziel",
       "addMembership": "Zu Projekt hinzufügen",
       "removeMembership": "{{project}} entfernen",
+      "removeFromProject": "Aus diesem Projekt entfernen",
+      "removeLastMembership": "Dies ist das einzige Projekt des Ziels, und es gibt kein anderes Ziel dafür. Füge es zuerst einem anderen Projekt hinzu.",
+      "removeDestinationUnknown": "Deine Projekte sind noch nicht geladen, deshalb gibt es kein Ziel für dieses Vorhaben. Versuche es gleich noch einmal.",
+      "addGoalsTrigger": "Ziele hinzufügen",
+      "addGoalsTitle": "Ziele zu diesem Projekt hinzufügen",
+      "addGoalsDescription": "Durchsuche deine Ziele und füge sie zu {{project}} hinzu. Bereits enthaltene Ziele bleiben unverändert.",
+      "addGoalsSearch": "Ziele suchen",
+      "addGoalsEmpty": "Keine Ziele passen zu deiner Suche.",
+      "addGoalsMember": "Bereits enthalten",
+      "addGoalsSave_one": "{{count}} Ziel hinzufügen",
+      "addGoalsSave_other": "{{count}} Ziele hinzufügen",
+      "assemblySlotTaken": "Dieses Projekt kann nur ein aktives oder pausiertes {{type}}-Ziel für diese Einheit enthalten.",
       "searchProjects": "Projekte suchen",
       "noAddableProjects": "Keine verfügbaren Projekte gefunden.",
       "membershipConflict": "{{project}} enthält bereits ein aktives oder pausiertes {{types}}-Ziel für diese Einheit.",
@@ -538,6 +551,10 @@
     "toasts": {
       "statusChanged": "Ziel aktualisiert.",
       "deleted": "Ziel gelöscht.",
+      "goalRemovedFromProject": "{{goal}} aus {{project}} entfernt.",
+      "goalRelocated": "{{goal}} nach {{project}} verschoben.",
+      "goalsAddedToProject_one": "{{count}} Ziel zu {{project}} hinzugefügt.",
+      "goalsAddedToProject_other": "{{count}} Ziele zu {{project}} hinzugefügt.",
       "activated": "Aktueller Plan aktualisiert.",
       "actionError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
       "projectCreated": "Projekt erstellt.",
@@ -928,6 +945,10 @@
           "title": "Typ, Sortierung und Gruppierung",
           "content": "Filtere nach Zieltyp, ändere die Sortierung oder gruppiere verwandte Ziele."
         },
+        "projectFilter": {
+          "title": "Nach Projekt eingrenzen",
+          "content": "Zeige nur die Ziele eines Projekts. Das grenzt die angezeigte Liste ein und ändert nichts am aktuellen Plan oder an den Berechnungen der Dailies."
+        },
         "planningSettings": {
           "title": "Planungseinstellungen",
           "content": "Lege hier dein tägliches Energiebudget fest — jede Schätzung auf dieser Seite nutzt es."
@@ -964,6 +985,10 @@
           "title": "Projekt auf einen Blick",
           "content": "Hier siehst du Identität, aktuellen Planstatus, Fortschrittswerte, Projektauswahl und Aktionen."
         },
+        "addGoals": {
+          "title": "Das Projekt füllen",
+          "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu — durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt."
+        },
         "reprioritize": {
           "title": "Nach Einheit priorisieren",
           "content": "Ordne Charakter- und Kriegsmaschinenblöcke neu. Alle Ziele einer Einheit bewegen sich gemeinsam; Abhängigkeiten bestimmen ihre interne Reihenfolge."
@@ -974,7 +999,11 @@
         },
         "goals": {
           "title": "Projektziele",
-          "content": "Die Ziele dieses Projekts erscheinen in der abgeflachten Einheitenreihenfolge, die auch Berechnungen verwenden."
+          "content": "Die Ziele dieses Projekts erscheinen hier, zunächst nach Zieltyp gruppiert. Über Gruppieren wechselst du zu einem Block pro Einheit oder schaltest die Gruppierung für eine flache Liste ab."
+        },
+        "rowActions": {
+          "title": "Entfernen statt löschen",
+          "content": "Über das Menü jedes Ziels kannst du es nur aus diesem Projekt nehmen. Löschen, weiter unten im selben Menü, entfernt es aus deinem gesamten Konto."
         }
       }
     },
