@@ -4,33 +4,20 @@ import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useTranslation } from "react-i18next"
 import {
-  Archive,
-  ArchiveRestore,
-  ArrowLeft,
-  MoreHorizontal,
-  Pencil,
-} from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   AddGoalsToProjectSheet,
   ManageProjectsSheet,
   useProjectActions,
 } from "@/features/project-management"
-import { ProjectSelect, useProjects } from "@/entities/project"
+import { useProjects } from "@/entities/project"
 import {
   GoalFilters,
   StatusFilterSelect,
@@ -44,20 +31,19 @@ import {
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
+import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
 import { goalRowFromProjectMember } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useProjectGoals } from "../../model/projects/use-project-goals"
-import {
-  dependencyFirst,
-  projectUnitPlans,
-} from "../../model/projects/project-unit-plans"
+import { useProjectGoalReorder } from "../../model/projects/use-project-goal-reorder"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
+import { isInFlightStatus } from "../goals-board/goal-row-utils"
 import { ProjectDetailGoals } from "./project-detail-goals"
+import { ProjectDetailHeader } from "./project-detail-header"
 import { useProjectDetailTutorial } from "./project-detail-page.tutorial"
-import { ReprioritizeUnitsSheet } from "./reprioritize-units-sheet"
 
 type Tab = GoalStatusFilterValue
 
@@ -74,6 +60,7 @@ export function ProjectDetailPage() {
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
   const isAuthenticated = useIsAuthenticated()
+  const isMobile = useIsMobile()
   const projects = useProjects()
   const project = projects.projects.find((p) => p.projectId === projectId)
 
@@ -87,7 +74,7 @@ export function ProjectDetailPage() {
   const [group, setGroup] = useState<GoalGroupValue>("type")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
-  const [reprioritizeOpen, setReprioritizeOpen] = useState(false)
+  const [mobileReorderActive, setMobileReorderActive] = useState(false)
   const [addGoalsOpen, setAddGoalsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
 
@@ -142,7 +129,12 @@ export function ProjectDetailPage() {
     candidateRows.map((row) => row.goalId),
     insights.estimates
   )
-  const units = projectUnitPlans(allRows, overviewMetrics, insights.estimates)
+  // Unit count for the summary text ("N units, M goals") - not a full per-unit plan anymore, since
+  // priority is flat per-goal, not unit-grouped (add-inline-goal-reprioritize).
+  const inFlightRows = allRows.filter((row) => isInFlightStatus(row.status))
+  const unitCount = new Set(
+    inFlightRows.map((row) => `${row.entityType}:${row.entityId}`)
+  ).size
   const reachedCount = nonArchivedRows.filter((row) =>
     isReached(row.goalId)
   ).length
@@ -165,14 +157,12 @@ export function ProjectDetailPage() {
     if (sort === "updated") return right.updatedAt.localeCompare(left.updatedAt)
     return 0
   })
-  // Sort orders the blocks; inside a unit block the goals go back to their dependency-first order,
-  // so a prerequisite is never rendered below the goal that depends on it. Under the other
-  // dimensions there is no such relationship between a group's rows, and Sort applies normally.
-  const rowGroups = groupRows(rows, group).map((rowGroup) =>
-    rowGroup.dimension === "unit"
-      ? { ...rowGroup, rows: dependencyFirst(rowGroup.rows) }
-      : rowGroup
-  )
+  const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
+  // Group=Unit is a display-only clustering over the flat, priority-ordered goal list now — a
+  // cluster's rows keep whatever order Sort already put them in, not a separately re-derived
+  // dependency-first order (add-inline-goal-reprioritize: "Sort orders individual goals; Group=Unit
+  // is a display-only clustering").
+  const rowGroups = groupRows(displayRows, group)
   const counts = {
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
       .length,
@@ -184,13 +174,9 @@ export function ProjectDetailPage() {
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
       .length,
   }
-
-  // Reordering (up/down) only makes sense while the visible order matches the project's actual
-  // priority order - `reorderedMemberIds` swaps positions within *this* row set and submits that
-  // as the new priority. Sorting or grouping away from the defaults changes what's visually
-  // adjacent without changing priority, so reorder is only offered on the unfiltered, default-sort
-  // Unfulfilled view, the same set of conditions that always determined priority order before this
-  // page had Sort/Group controls at all.
+  const { handleReorder } = useProjectGoalReorder(projectGoals.goals, (ids) => {
+    if (project) void projectActions.reorderGoals(project.projectId, ids)
+  })
   if (!projectId) return null
 
   if (projects.loading) {
@@ -221,149 +207,30 @@ export function ProjectDetailPage() {
       data-testid="project-detail-page"
       data-project-id={projectId}
     >
-      <Card data-testid="project-detail-header">
-        <CardHeader className="gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Button
-                aria-label={t("goals.project.backToProjects")}
-                onClick={() => void navigate("/goals/projects")}
-                size="icon-sm"
-                variant="ghost"
-              >
-                <ArrowLeft />
-              </Button>
-              <div>
-                <CardTitle>{project.name}</CardTitle>
-                {project.description ? (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {project.description}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {project.isActivePlan ? (
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                  {t("goals.project.currentPlan")}
-                </span>
-              ) : project.status !== "Archived" ? (
-                <Button
-                  disabled={projectActions.pending}
-                  onClick={() =>
-                    void projectActions.activate(project.projectId)
-                  }
-                  variant="outline"
-                >
-                  {t("goals.project.makeCurrent")}
-                </Button>
-              ) : null}
-              <Button
-                data-testid="project-add-goals"
-                onClick={() => setAddGoalsOpen(true)}
-                variant="outline"
-              >
-                {t("goals.project.addGoalsTrigger")}
-              </Button>
-              {units.length > 1 ? (
-                <Button
-                  data-testid="project-reprioritize-units"
-                  onClick={() => setReprioritizeOpen(true)}
-                >
-                  {t("goals.project.reprioritizeUnits")}
-                </Button>
-              ) : null}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    aria-label={t("goals.project.moreActions")}
-                    size="icon"
-                    variant="outline"
-                  >
-                    <MoreHorizontal />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => setEditOpen(true)}>
-                    <Pencil />
-                    {t("goals.project.edit")}
-                  </DropdownMenuItem>
-                  {project.status === "Archived" ? (
-                    <DropdownMenuItem
-                      onSelect={() =>
-                        void projectActions.save(project, {
-                          ...project,
-                          status: "Active",
-                        })
-                      }
-                    >
-                      <ArchiveRestore />
-                      {t("goals.project.restore")}
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem
-                      disabled={project.isDefault || project.isActivePlan}
-                      onSelect={() =>
-                        void projectActions.save(project, {
-                          ...project,
-                          status: "Archived",
-                        })
-                      }
-                      variant="destructive"
-                    >
-                      <Archive />
-                      {project.isDefault || project.isActivePlan
-                        ? t("goals.project.archiveUnavailable")
-                        : t("goals.project.archive")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-          {/* Expressed against the account total so the project reads as a selection rather than as
-              the whole goal list. While the total is pending or failed this falls back to the plain
-              wording — never a guessed or zero total. */}
-          <p
-            className="text-sm text-muted-foreground"
-            data-testid="project-detail-goal-summary"
-          >
-            {accountGoalTotal === undefined
-              ? t("goals.project.unitGoalSummary", {
-                  units: units.length,
-                  goals: nonArchivedRows.length,
-                })
-              : t("goals.project.unitGoalSummaryOfAccount", {
-                  units: units.length,
-                  goals: nonArchivedRows.length,
-                  accountGoals: accountGoalTotal,
-                })}
-          </p>
-          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-            <span>
-              {t("goals.project.reachedSummary", { count: reachedCount })}
-            </span>
-            <span>
-              {t("goals.project.blockedSummary", { count: blockedCount })}
-            </span>
-            {insights.completionDate ? (
-              <span>
-                {t("goals.project.completionSummary", {
-                  date: insights.completionDate,
-                })}
-              </span>
-            ) : null}
-          </div>
-          <ProjectSelect
-            onProjectIdChange={(nextId) => {
-              if (nextId) void navigate(`/goals/projects/${nextId}`)
-            }}
-            projectId={projectId}
-            projects={projects.projects}
-            testId="projects-goal-project-select"
-          />
-        </CardHeader>
-      </Card>
+      <ProjectDetailHeader
+        accountGoalTotal={accountGoalTotal}
+        blockedCount={blockedCount}
+        completionDate={insights.completionDate}
+        goalCount={nonArchivedRows.length}
+        isMobile={isMobile}
+        mobileReorderActive={mobileReorderActive}
+        onAddGoals={() => setAddGoalsOpen(true)}
+        onEdit={() => setEditOpen(true)}
+        onNavigateBack={() => void navigate("/goals/projects")}
+        onNavigateToProject={(nextId) =>
+          void navigate(`/goals/projects/${nextId}`)
+        }
+        onToggleMobileReorder={() =>
+          setMobileReorderActive((active) => !active)
+        }
+        project={project}
+        projectActions={projectActions}
+        projectId={projectId}
+        projects={projects.projects}
+        reachedCount={reachedCount}
+        showMobileReorderToggle={inFlightRows.length > 1}
+        unitCount={unitCount}
+      />
 
       {/* goals-navigation spec: the project selector is trailing, paired in the same row as the
           status filter - here it switches which project's detail route is shown. */}
@@ -396,10 +263,15 @@ export function ProjectDetailPage() {
         getEntityName={getEntityName}
         loading={projectGoals.loading}
         metrics={overviewMetrics}
+        mobileReorderActive={mobileReorderActive}
+        onReorder={handleReorder}
         onView={setDetailGoalId}
         potentialProgress={insights.potentialProgressByGoalId}
         project={project}
         projectIsEmpty={allRows.length === 0}
+        reorderEnabled={inFlightRows.length > 1}
+        levelGoalIdByParent={levelGoalIdByParent}
+        reorderPending={projectActions.pending}
         rowGroups={rowGroups}
       />
 
@@ -414,17 +286,6 @@ export function ProjectDetailPage() {
         open={editOpen}
         project={project}
       />
-      {reprioritizeOpen ? (
-        <ReprioritizeUnitsSheet
-          onOpenChange={setReprioritizeOpen}
-          onSave={(orderedUnits) =>
-            projectActions.reorderUnits(project.projectId, orderedUnits)
-          }
-          open
-          pending={projectActions.pending}
-          units={units}
-        />
-      ) : null}
       <GoalDetailSheet
         estimate={
           detailGoalId ? insights.estimates.get(detailGoalId) : undefined

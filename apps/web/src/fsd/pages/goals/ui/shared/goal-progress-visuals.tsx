@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
 import { ArrowRight, Info } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -24,6 +24,7 @@ import {
   formatGenericRemainingText,
   formatGoalRemainingText,
 } from "./goal-remaining-text"
+import { StackedProgressBar } from "./stacked-progress-bar"
 
 /** Locale-aware thousands separator for a number embedded directly in translated copy (the info
  *  popover's per-line remaining-count clauses) — mirrors `goal-remaining-text.ts`'s own formatting so
@@ -92,97 +93,6 @@ export function GoalProgressLegend({ show }: { show: boolean }) {
   )
 }
 
-/** One bar, two overlaid fills: a striped "potential" layer (only when it exceeds actual) under a
- *  solid "actual" layer, plus an optional marker at the highest point *currently* reachable (a Rank
- *  or Level goal's `reachableRatio` — rarity and, for Rank, level too, cap how far the goal's own
- *  target scale can advance before further Ascending/leveling; `null` when nothing currently
- *  restricts it). One accessible `role="progressbar"` element carries both ratios via
- *  `aria-valuetext`, replacing the two separate `Progress` bars/captions this superseded; the marker
- *  is presentational (`aria-hidden`) with its own hover/focus `Tooltip` naming the actual reachable
- *  rank/level — `GoalProgressDisplay`'s "Restricted" copy nearby carries the equivalent information
- *  for assistive tech that can't reach the tooltip. */
-function StackedProgressBar({
-  actualRatio,
-  potentialRatio,
-  ceilingRatio,
-  ceilingLabel,
-  mobile,
-  valueText,
-}: {
-  actualRatio: number
-  potentialRatio: number | undefined
-  ceilingRatio: number | null
-  ceilingLabel: ReactNode | null
-  mobile: boolean
-  valueText: string
-}) {
-  const { t } = useTranslation()
-  const actualPct = Math.min(100, Math.max(0, actualRatio * 100))
-  const potentialPct =
-    potentialRatio !== undefined
-      ? Math.min(100, Math.max(0, potentialRatio * 100))
-      : undefined
-  const showStripe = potentialPct !== undefined && potentialPct > actualPct
-  const ceilingPct =
-    ceilingRatio !== null
-      ? Math.min(100, Math.max(0, ceilingRatio * 100))
-      : null
-
-  return (
-    <div className="relative w-full">
-      <div
-        aria-label={t("goals.overview.progressLabel")}
-        aria-valuemax={100}
-        aria-valuemin={0}
-        aria-valuenow={Math.round(actualPct)}
-        aria-valuetext={valueText}
-        className={cn(
-          "relative w-full overflow-hidden rounded-full bg-muted",
-          mobile ? "h-[5px]" : "h-1.5"
-        )}
-        data-testid="goal-progress-bar"
-        role="progressbar"
-      >
-        {showStripe ? (
-          <div
-            className="absolute inset-y-0 left-0 rounded-full opacity-40"
-            data-testid="goal-progress-bar-potential-fill"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(45deg, var(--primary) 0 4px, transparent 4px 8px)",
-              width: `${potentialPct}%`,
-            }}
-          />
-        ) : null}
-        <div
-          className="absolute inset-y-0 left-0 rounded-full bg-primary"
-          style={{ width: `${actualPct}%` }}
-        />
-      </div>
-      {/* Rendered as a sibling of the track, not a child, so it isn't clipped by the track's own
-       *  `overflow-hidden` — it needs to extend past the thin bar to be visible and give mouse users
-       *  a hit target bigger than the 4px-wide indicator itself. */}
-      {ceilingPct !== null ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              aria-hidden="true"
-              className="absolute -top-1.5 -bottom-1.5 z-10 flex w-3 -translate-x-1/2 cursor-help items-center justify-center"
-              data-testid="goal-progress-bar-ceiling"
-              style={{ left: `${ceilingPct}%` }}
-            >
-              <div className="h-full w-1 rounded-full bg-amber-400 ring-1 ring-background" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent data-testid="goal-progress-bar-ceiling-tooltip">
-            {ceilingLabel}
-          </TooltipContent>
-        </Tooltip>
-      ) : null}
-    </div>
-  )
-}
-
 /** The goal's own from → target representation (Rank/Ascension badges, "Lv 44 → 50", "273 / 500
  *  shards", …) — split out from the progress bar/percent/explanation (`GoalProgressDisplay`) so a
  *  caller can lay the two out independently (the desktop table's separate Goal/Progress columns; the
@@ -242,10 +152,15 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
  * `open`/`onOpenChange` make the desktop popover a controlled component when the caller needs to
  * coordinate one-open-at-a-time across a list (see `goals-list.tsx`'s `openPopoverGoalId`); omit
  * both for an uncontrolled popover (Radix manages its own state) in a single-instance context like
- * the goal-detail sheet. */
+ * the goal-detail sheet.
+ *
+ * `potentialOnly` (see `LevelGoalSubProgress`) drops the actual reading: the bar renders fully in
+ * the striped "potential" style, the percent shows only the small potential-styled reading, and the
+ * breakdown popover is dropped. Requires `potentialRatio`, else falls back to normal. */
 export function GoalProgressDisplay({
   progress,
   potentialRatio,
+  potentialOnly = false,
   remaining = null,
   energy,
   open,
@@ -253,6 +168,7 @@ export function GoalProgressDisplay({
 }: {
   progress: GoalProgress
   potentialRatio?: number
+  potentialOnly?: boolean
   remaining?: ResourceNeed | null
   energy?: number
   open?: boolean
@@ -282,19 +198,28 @@ export function GoalProgressDisplay({
     energy
   )
   const hasPotential = potentialRatio !== undefined
+  const showPotentialOnly = potentialOnly && hasPotential
   const actualPct = displayPercent(progress.ratio)
   const potentialPct =
     potentialRatio !== undefined ? displayPercent(potentialRatio) : undefined
   const showIndicator = potentialPct !== undefined && potentialPct > actualPct
+  const hasExplanation = hasPotential && !showPotentialOnly
 
-  const valueText = hasPotential
-    ? t("goals.overview.progressCompleteWithPotential", {
-        percent: actualPct,
-        potential: potentialPct,
-      })
-    : t("goals.overview.progressComplete", { percent: actualPct })
+  const valueText =
+    hasPotential && !showPotentialOnly
+      ? t("goals.overview.progressCompleteWithPotential", {
+          percent: actualPct,
+          potential: potentialPct,
+        })
+      : t("goals.overview.progressComplete", {
+          percent: showPotentialOnly ? potentialPct : actualPct,
+        })
 
-  const percentLabel = (
+  const percentLabel = showPotentialOnly ? (
+    <span className="text-right text-xs font-normal text-primary tabular-nums">
+      {t("goals.overview.potentialIndicator", { percent: potentialPct })}
+    </span>
+  ) : (
     <span className="text-right text-sm font-medium tabular-nums">
       {actualPct}%
       {showIndicator ? (
@@ -324,7 +249,7 @@ export function GoalProgressDisplay({
     <span data-testid="goal-progress-percent">{percentLabel}</span>
   )
 
-  const explanation = hasPotential ? (
+  const explanation = hasExplanation ? (
     <div className="grid gap-3 text-sm" data-testid="goal-progress-explanation">
       <p className="flex items-start gap-2">
         <ProgressSwatch variant="actual" />
@@ -385,7 +310,7 @@ export function GoalProgressDisplay({
     </div>
   ) : null
 
-  const infoTrigger = hasPotential ? (
+  const infoTrigger = hasExplanation ? (
     <Popover onOpenChange={onOpenChange} open={open}>
       <PopoverTrigger asChild>
         <Button
@@ -408,7 +333,7 @@ export function GoalProgressDisplay({
 
   const ceilingLabel = reachableCeilingLabel(t, progress)
 
-  const mobileFooter = hasPotential ? (
+  const mobileFooter = hasExplanation ? (
     <div className="grid gap-1">
       <button
         aria-expanded={mobileExpanded}
@@ -438,7 +363,7 @@ export function GoalProgressDisplay({
       <div className="flex items-center gap-2">
         <div className="min-w-0 flex-1">
           <StackedProgressBar
-            actualRatio={progress.ratio}
+            actualRatio={showPotentialOnly ? 0 : progress.ratio}
             ceilingLabel={ceilingLabel}
             ceilingRatio={
               progress.kind === "Rank" || progress.kind === "Level"

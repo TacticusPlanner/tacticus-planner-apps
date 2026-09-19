@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { GripVertical } from "lucide-react"
 
 import {
   NO_BLOCKERS,
@@ -13,10 +14,17 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import { EstimateCell, GoalNameLink } from "./goal-row-shared"
+import {
+  EstimateCell,
+  GoalNameLink,
+  LevelGoalSubProgress,
+  LevelGoalSubTarget,
+} from "./goal-row-shared"
 import {
   estimateEnergy,
+  isInFlightStatus,
   stopRowNavigation,
   type GoalsListProps,
 } from "./goal-row-utils"
@@ -28,11 +36,75 @@ export function GoalsMobileCards({
   metrics,
   potentialProgress,
   onView = () => undefined,
+  onReorder,
+  reorderEnabled = false,
+  mobileReorderActive = false,
+  reorderPending = false,
+  levelGoalIdByParent,
   project,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
   const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
+
+  if (reorderEnabled && mobileReorderActive) {
+    // Only in-flight rows are worth showing in reorder mode — a historical row has nothing to
+    // reorder and would just be inert clutter in a screen whose only purpose is dragging.
+    const reorderableRows = rows.filter((row) => isInFlightStatus(row.status))
+    return (
+      <ul
+        className="flex flex-col gap-2"
+        data-testid="goals-list-reorder-cards"
+      >
+        <SortableList
+          disabled={reorderPending}
+          getId={(row) => row.goalId}
+          items={reorderableRows}
+          onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
+          renderItem={(row, sortable) => (
+            <li
+              className="flex items-center gap-3 rounded-2xl border bg-card p-3 data-[dragging]:opacity-60"
+              data-dragging={sortable.isDragging || undefined}
+              data-testid="goal-row-reorder-card"
+              key={row.goalId}
+              ref={sortable.setNodeRef}
+              style={sortable.style}
+            >
+              <button
+                {...sortable.dragHandle.attributes}
+                {...sortable.dragHandle.listeners}
+                aria-label={t("goals.columns.reorderHandle", {
+                  entity: getEntityName(row.entityType, row.entityId),
+                })}
+                className="cursor-grab touch-none rounded-md p-2 text-muted-foreground hover:bg-muted active:cursor-grabbing"
+                data-testid="goal-row-drag-handle"
+                ref={sortable.dragHandle.ref}
+                type="button"
+              >
+                <GripVertical />
+              </button>
+              <GoalUnitIcon
+                className="size-8"
+                entityId={row.entityId}
+                entityType={row.entityType}
+                name={getEntityName(row.entityType, row.entityId)}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium">
+                  {getEntityName(row.entityType, row.entityId)}
+                </p>
+                <GoalTargetDisplay
+                  progress={
+                    metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
+                  }
+                />
+              </div>
+            </li>
+          )}
+        />
+      </ul>
+    )
+  }
 
   return (
     <>
@@ -102,6 +174,13 @@ export function GoalsMobileCards({
               <div className="flex items-center justify-between gap-2">
                 <GoalTargetDisplay progress={progress} />
               </div>
+              {levelGoalIdByParent?.get(row.goalId) ? (
+                <LevelGoalSubTarget
+                  levelGoalId={levelGoalIdByParent.get(row.goalId)!}
+                  metrics={metrics}
+                  onView={onView}
+                />
+              ) : null}
               <div onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
                 <GoalProgressDisplay
                   energy={energy}
@@ -110,6 +189,15 @@ export function GoalsMobileCards({
                   remaining={remaining}
                 />
               </div>
+              {levelGoalIdByParent?.get(row.goalId) ? (
+                <LevelGoalSubProgress
+                  estimates={estimates}
+                  levelGoalId={levelGoalIdByParent.get(row.goalId)!}
+                  metrics={metrics}
+                  onView={onView}
+                  potentialProgress={potentialProgress}
+                />
+              ) : null}
               {row.notes ? (
                 <p className="truncate text-muted-foreground" title={row.notes}>
                   {row.notes}

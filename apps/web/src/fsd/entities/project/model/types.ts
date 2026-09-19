@@ -25,14 +25,12 @@ export type UpdateProjectRequest = {
   revision: number
 }
 
+/** `priority` is optional because it's meaningful only as a *response* value (goal-order is now the
+ *  only way to set it, see `updateProjectGoalOrder`) — a membership-replacement request
+ *  (`updateProjectGoals`) never sends it, since the API ignores any submitted value. */
 export type ProjectGoalEntry = {
   goalId: string
-  priority: number
-}
-
-export type ProjectUnitKey = {
-  entityType: "Character" | "Mow"
-  entityId: string
+  priority?: number
 }
 
 // Mirrors the backend's GoalSummaryResponse shape (also duplicated in entities/goal/model/types.ts as

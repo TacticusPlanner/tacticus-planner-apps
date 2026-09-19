@@ -448,7 +448,9 @@
       "progress": "Fortschritt",
       "remaining": "Verbleibend",
       "status": "Status · Fertig am",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "reorder": "Neu anordnen",
+      "reorderHandle": "{{entity}} ziehen, um neu zu priorisieren"
     },
     "status": {
       "Draft": "Entwurf",
@@ -521,11 +523,6 @@
       "noOtherProjects": "Noch keine weiteren verfügbaren Projekte.",
       "archivedProjects": "Archivierte Projekte ({{count}})",
       "backToProjects": "Zurück zu Projekten",
-      "reprioritizeUnits": "Einheiten neu priorisieren",
-      "reprioritizeUnitsDescription": "Ziehe Einheiten in die gewünschte Reihenfolge. Beim Verschieben einer Einheit werden alle ihre Ziele verschoben; Ziele innerhalb der Einheit werden automatisch sortiert.",
-      "dragUnit": "{{unit}} ziehen, um neu zu priorisieren",
-      "reprioritizeStaleError": "Dieses Projekt wurde während der Neugewichtung geändert. Prüfe die aktuellen Einheiten und versuche es erneut.",
-      "reprioritizeSaveError": "Die Einheitenreihenfolge konnte nicht gespeichert werden. Dein Entwurf bleibt erhalten; prüfe ihn und versuche es erneut.",
       "unitGoalSummary": "{{units}} Einheiten · {{goals}} Ziele",
       "reachedSummary": "{{count}} erreicht",
       "blockedSummary": "{{count}} blockiert",
@@ -551,7 +548,9 @@
       "currentPlanNote": "Der aktuelle Plan ist das Projekt, das Tagesaufgaben und Erkenntnisse standardmäßig verwenden. Er macht Ziele weder aktiv noch pausiert – Ziele pausierst und setzt du einzeln fort.",
       "unitGoalSummaryOfAccount": "{{units}} Einheiten · {{goals}} von deinen {{accountGoals}} Zielen",
       "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
-      "emptyProjectDescription": "Nutze „Ziele hinzufügen“, um vorhandene Ziele aufzunehmen, oder „Ziel erstellen“ für ein neues."
+      "emptyProjectDescription": "Nutze „Ziele hinzufügen“, um vorhandene Ziele aufzunehmen, oder „Ziel erstellen“ für ein neues.",
+      "reorderGoals": "Neu anordnen",
+      "reorderDone": "Fertig"
     },
     "toasts": {
       "statusChanged": "Ziel aktualisiert.",
@@ -998,8 +997,8 @@
           "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu — durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt."
         },
         "reprioritize": {
-          "title": "Nach Einheit priorisieren",
-          "content": "Ordne Charakter- und Kriegsmaschinenblöcke neu. Alle Ziele einer Einheit bewegen sich gemeinsam; Abhängigkeiten bestimmen ihre interne Reihenfolge."
+          "title": "Ziele priorisieren",
+          "content": "Ziehe ein Ziel, um seine Priorität zu ändern. Tippe auf Mobilgeräten zuerst auf „Neu anordnen“, um den Anordnungsmodus zu öffnen."
         },
         "selector": {
           "title": "Ein Projekt auswählen",

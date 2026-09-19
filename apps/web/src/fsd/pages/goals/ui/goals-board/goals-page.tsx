@@ -30,6 +30,7 @@ import {
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
+import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalEstimate } from "../../model/estimate/use-goal-estimate"
@@ -159,7 +160,8 @@ export function GoalsPage() {
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
       .length,
   }
-  const rowGroups = groupRows(rows, group)
+  const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
+  const rowGroups = groupRows(displayRows, group)
 
   const isLoading = selectedGoals.isLoading
   const fetchError =
@@ -320,6 +322,7 @@ export function GoalsPage() {
             ) : null}
             <GoalsList
               actions={goalActions}
+              levelGoalIdByParent={levelGoalIdByParent}
               metrics={overviewMetrics}
               onView={setDetailGoalId}
               reorderEnabled={false}

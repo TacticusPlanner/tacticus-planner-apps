@@ -448,7 +448,9 @@
       "progress": "Progression",
       "remaining": "Restant",
       "status": "Statut · Terminé le",
-      "actions": "Actions"
+      "actions": "Actions",
+      "reorder": "Réorganiser",
+      "reorderHandle": "Faire glisser {{entity}} pour réorganiser"
     },
     "status": {
       "Draft": "Brouillon",
@@ -521,11 +523,6 @@
       "noOtherProjects": "Aucun autre projet disponible pour le moment.",
       "archivedProjects": "Projets archivés ({{count}})",
       "backToProjects": "Retour aux projets",
-      "reprioritizeUnits": "Reprioriser les unités",
-      "reprioritizeUnitsDescription": "Faites glisser les unités dans l'ordre de priorité. Déplacer une unité déplace tous ses objectifs ; les objectifs qu'elle contient sont triés automatiquement.",
-      "dragUnit": "Faire glisser {{unit}} pour reprioriser",
-      "reprioritizeStaleError": "Ce projet a changé pendant la repriorisation. Vérifiez les unités actuelles et réessayez.",
-      "reprioritizeSaveError": "L'ordre des unités n'a pas pu être enregistré. Votre brouillon est conservé ; vérifiez-le et réessayez.",
       "unitGoalSummary": "{{units}} unités · {{goals}} objectifs",
       "reachedSummary": "{{count}} atteints",
       "blockedSummary": "{{count}} bloqués",
@@ -551,7 +548,9 @@
       "currentPlanNote": "Le plan actuel est le projet utilisé par défaut par les Quotidiennes et les Analyses. Il ne rend aucun objectif actif ni en pause : les objectifs se mettent en pause et se reprennent un par un.",
       "unitGoalSummaryOfAccount": "{{units}} unités · {{goals}} de vos {{accountGoals}} objectifs",
       "emptyProjectTitle": "Ce projet n'a pas encore d'objectifs",
-      "emptyProjectDescription": "Utilisez « Ajouter des objectifs » pour y placer des objectifs existants, ou « Créer un objectif » pour en ajouter un."
+      "emptyProjectDescription": "Utilisez « Ajouter des objectifs » pour y placer des objectifs existants, ou « Créer un objectif » pour en ajouter un.",
+      "reorderGoals": "Réorganiser",
+      "reorderDone": "Terminé"
     },
     "toasts": {
       "statusChanged": "Objectif mis à jour.",
@@ -998,8 +997,8 @@
           "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape."
         },
         "reprioritize": {
-          "title": "Prioriser par unité",
-          "content": "Réordonnez les blocs de personnages et machines de guerre. Tous les objectifs d'une unité se déplacent ensemble ; les dépendances fixent leur ordre interne."
+          "title": "Priorisez vos objectifs",
+          "content": "Faites glisser un objectif pour modifier sa priorité. Sur mobile, appuyez d'abord sur « Réorganiser » pour activer le mode de réorganisation."
         },
         "selector": {
           "title": "Choisir un projet",

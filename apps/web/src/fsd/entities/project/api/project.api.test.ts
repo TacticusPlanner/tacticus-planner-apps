@@ -18,9 +18,9 @@ import {
   listProjectGoals,
   listProjects,
   updateProject,
+  updateProjectGoalOrder,
   updateProjectGoals,
   updateProjectGoalsStatus,
-  updateProjectUnitOrder,
 } from "./project.api"
 
 describe("project API", () => {
@@ -45,18 +45,15 @@ describe("project API", () => {
   it("maps project writes to their endpoints", () => {
     const create = { name: "Plan" }
     const update = { name: "Updated" } as never
-    const goals = [{ goalId: "goal-1", priority: 1 }]
+    const goals = [{ goalId: "goal-1" }]
 
     createProject(create)
     updateProject("project-1", update)
     activateProject("project-1")
     updateProjectGoals("project-1", goals)
     updateProjectGoalsStatus("project-1", "Paused")
-    const units = [
-      { entityType: "Character" as const, entityId: "ragnar" },
-      { entityType: "Mow" as const, entityId: "forgefiend" },
-    ]
-    updateProjectUnitOrder("project-1", units)
+    const goalIds = ["goal-1", "goal-2"]
+    updateProjectGoalOrder("project-1", goalIds)
 
     expect(api.post).toHaveBeenNthCalledWith(1, "/api/v1/me/projects", {
       body: create,
@@ -83,8 +80,8 @@ describe("project API", () => {
     )
     expect(api.put).toHaveBeenNthCalledWith(
       3,
-      "/api/v1/me/projects/project-1/unit-order",
-      { body: { units } }
+      "/api/v1/me/projects/project-1/goal-order",
+      { body: { goalIds } }
     )
   })
 })

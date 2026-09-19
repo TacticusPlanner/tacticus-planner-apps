@@ -8,27 +8,21 @@ import {
   activateProject,
   createProject,
   updateProject,
-  updateProjectUnitOrder,
+  updateProjectGoalOrder,
   projectQueries,
+  type ProjectGoalSummary,
   type ProjectSummary,
-  type ProjectUnitKey,
 } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
+import { applyOptimisticGoalOrder } from "./optimistic-goal-order"
 
 /**
- * Swaps `goalId` with its adjacent *visible* neighbor (the reorder buttons only ever act within the
- * currently-displayed, e.g. Active-tab, subset) inside the full, priority-ordered member list, then
- * returns the full list's goal ids in their new order. Operating on the full list — not just the visible
- * subset — matters because `updateProjectGoals` replaces a project's *entire* membership: submitting only
- * the visible subset would silently drop every non-visible (completed/archived) member from the project.
- * Swapping index positions (rather than reassigning priority values in place) keeps every other member's
- * relative order untouched.
- */
-/**
- * Project-level mutations: active-plan toggle, bulk pause/resume, and per-project reorder. Reorder takes
- * the *full* desired member ordering (see `reorderedMemberIds`) and recomputes spaced priorities before
- * submitting, so a single move never requires renumbering races with concurrent edits elsewhere.
+ * Project-level mutations: active-plan toggle, bulk pause/resume, and per-project goal reorder.
+ * Reorder takes the project's complete in-flight goal-id order (flat per-goal, not unit-grouped —
+ * `add-inline-goal-reprioritize`) and submits it verbatim; the caller is responsible for computing
+ * that full order (see `reorderGoals` on `project-detail-page.tsx`, which splices a dragged goal's
+ * id into the full priority-ordered list regardless of what sort/filter/group is currently applied).
  */
 export function useProjectActions(_onChanged?: () => void) {
   void _onChanged
@@ -87,10 +81,29 @@ export function useProjectActions(_onChanged?: () => void) {
     }
   }
 
-  const reorderUnits = async (projectId: string, units: ProjectUnitKey[]) => {
+  const reorderGoals = async (projectId: string, goalIds: string[]) => {
     if (!isAuthenticated) return false
-    const ok = await run(() => updateProjectUnitOrder(projectId, units))
-    if (ok) toast.success(t("goals.toasts.projectUpdated"))
+
+    // Optimistic: dragging feels laggy if the row order only updates once the round trip
+    // completes, so the cache is rewritten immediately (matching the server's own two-zone
+    // renumbering, see `applyOptimisticGoalOrder`) and rolled back only if the request fails —
+    // `onSuccess`'s invalidation above reconciles it with the authoritative response either way.
+    const queryKey = projectQueries.goals(projectId).queryKey
+    await queryClient.cancelQueries({ queryKey })
+    const previous = queryClient.getQueryData<{ goals: ProjectGoalSummary[] }>(
+      queryKey
+    )
+    if (previous) {
+      queryClient.setQueryData(queryKey, {
+        ...previous,
+        goals: applyOptimisticGoalOrder(previous.goals, goalIds),
+      })
+    }
+
+    const ok = await run(() => updateProjectGoalOrder(projectId, goalIds))
+    if (!ok && previous) {
+      queryClient.setQueryData(queryKey, previous)
+    }
     return ok
   }
 
@@ -120,5 +133,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { activate, reorderUnits, create, save, pending }
+  return { activate, reorderGoals, create, save, pending }
 }

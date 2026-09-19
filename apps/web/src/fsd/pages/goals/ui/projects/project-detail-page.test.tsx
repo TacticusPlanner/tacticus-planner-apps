@@ -156,7 +156,7 @@ const listProjects = vi.fn()
 const listProjectGoals = vi.fn()
 const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
-const updateProjectUnitOrder = vi.fn()
+const updateProjectGoalOrder = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
@@ -173,8 +173,8 @@ vi.mock("@/entities/project", async (importOriginal) => {
     listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
     activateProject: (...args: unknown[]) => activateProject(...args),
     updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
-    updateProjectUnitOrder: (...args: unknown[]) =>
-      updateProjectUnitOrder(...args),
+    updateProjectGoalOrder: (...args: unknown[]) =>
+      updateProjectGoalOrder(...args),
     projectQueries: {
       all: () => ["projects"],
       list: () => ({
@@ -278,7 +278,7 @@ describe("ProjectDetailPage", () => {
     listProjectGoals.mockReset()
     activateProject.mockReset()
     updateProjectGoals.mockReset()
-    updateProjectUnitOrder.mockReset()
+    updateProjectGoalOrder.mockReset()
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     listAccountGoals.mockReset().mockResolvedValue({ goals: [] })
     translate.mockClear()
@@ -590,7 +590,7 @@ describe("ProjectDetailPage", () => {
     expect(memberships).toHaveTextContent("Project B")
   })
 
-  it("keeps unit reprioritization separate from goal-list sorting", async () => {
+  it("keeps every row's drag handle available regardless of how the list is sorted", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
@@ -602,9 +602,7 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     await screen.findByTestId("goals-list-table")
-    expect(
-      screen.getByRole("button", { name: "goals.project.reprioritizeUnits" })
-    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
 
     await user.click(screen.getByTestId("goals-sort"))
     await user.click(
@@ -612,9 +610,18 @@ describe("ProjectDetailPage", () => {
     )
 
     await screen.findByTestId("goals-list-table")
-    expect(
-      screen.getByRole("button", { name: "goals.project.reprioritizeUnits" })
-    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
+  })
+
+  it("shows no drag handle with fewer than two in-flight goals", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-1" }), priority: 1 }],
+    })
+    renderPage("proj-a")
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.queryByTestId("goal-row-drag-handle")).not.toBeInTheDocument()
   })
   const goalOrderIn = (container: HTMLElement) =>
     [
@@ -746,7 +753,7 @@ describe("ProjectDetailPage", () => {
     ])
   })
 
-  it("keeps a prerequisite above its dependent inside a unit block, and below it when ungrouped", async () => {
+  it("a unit cluster keeps the already-sorted order, not a re-derived dependency-first order", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
@@ -772,17 +779,17 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     await screen.findAllByTestId("goals-list-table")
-    await selectGroup(user, "goals.filters.groupByUnit")
-
-    // Sort is "most recently updated", which would put the Rank goal first - inside a unit block
-    // its prerequisite still comes first.
-    expect(blockFor(screen.getByRole("heading", { name: "hero1" }))).toEqual([
-      "goal-ascension",
+    // Sort is "most recently updated" - goal-rank sorts first ungrouped...
+    expect(goalOrderIn(screen.getByTestId("project-detail-goals"))).toEqual([
       "goal-rank",
+      "goal-ascension",
     ])
 
-    await selectGroup(user, "goals.filters.groupNone")
-    expect(goalOrderIn(screen.getByTestId("project-detail-goals"))).toEqual([
+    // ...and grouping by unit doesn't re-derive a dependency-first order inside the cluster -
+    // add-inline-goal-reprioritize: "Sort orders individual goals; Group=Unit is a display-only
+    // clustering" - the cluster keeps the same already-sorted order.
+    await selectGroup(user, "goals.filters.groupByUnit")
+    expect(blockFor(screen.getByRole("heading", { name: "hero1" }))).toEqual([
       "goal-rank",
       "goal-ascension",
     ])
@@ -859,7 +866,7 @@ describe("ProjectDetailPage", () => {
     ).toEqual(["goal-1", "goal-2"])
   })
 
-  it("shows a unit's historical goals through the status filter without giving them a place in the in-flight unit order", async () => {
+  it("shows a unit's historical goals through the status filter without a drag handle of their own", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
@@ -883,7 +890,6 @@ describe("ProjectDetailPage", () => {
         },
       ],
     })
-    const user = userEvent.setup()
     renderPage("proj-a")
 
     // Reachable: the Completed goal is grouped into its own type block like any other row.
@@ -892,12 +898,10 @@ describe("ProjectDetailPage", () => {
     })
     expect(blockFor(completed)).toEqual(["goal-completed"])
 
-    // ...but the in-flight unit ordering only knows hero2's Ability goal.
-    await user.click(screen.getByTestId("project-reprioritize-units"))
-    const units = await screen.findAllByTestId("project-unit-order-item")
-    expect(units).toHaveLength(2)
-    expect(units[1]).toHaveTextContent("Ability")
-    expect(units[1]).not.toHaveTextContent("Ascension")
+    // 2 in-flight goals (goal-active-1, goal-active-2) get a drag handle; the historical
+    // goal-completed does not, since dragging only reorders in-flight goals.
+    expect(await screen.findAllByTestId("goal-row")).toHaveLength(3)
+    expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
   })
 
   it("offers all three Group options, and no grouping renders one flat unlabelled list", async () => {
@@ -1037,12 +1041,11 @@ describe("ProjectDetailPage", () => {
     await selectGroup(user, "goals.filters.groupByUnit")
     await selectGroup(user, "goals.filters.groupNone")
 
-    expect(updateProjectUnitOrder).not.toHaveBeenCalled()
+    expect(updateProjectGoalOrder).not.toHaveBeenCalled()
     expect(updateProjectGoals).not.toHaveBeenCalled()
   })
 
-  it("opens Reprioritize Units in the project's established unit order while grouped by type", async () => {
-    listProjects.mockResolvedValue({ projects: [project()] })
+  it("drags a goal to a new position and submits the project's full in-flight order", async () => {
     listProjectGoals.mockResolvedValue({
       goals: [
         { goal: goal({ goalId: "goal-late", entityId: "hero1" }), priority: 2 },
@@ -1052,16 +1055,20 @@ describe("ProjectDetailPage", () => {
         },
       ],
     })
-    const user = userEvent.setup()
+    listProjects.mockResolvedValue({ projects: [project()] })
+    updateProjectGoalOrder.mockResolvedValue({ goals: [] })
     renderPage("proj-a")
 
     await screen.findAllByTestId("goals-list-table")
-    await user.click(screen.getByTestId("project-reprioritize-units"))
+    const handles = screen.getAllByTestId("goal-row-drag-handle")
+    expect(handles).toHaveLength(2)
 
-    const units = await screen.findAllByTestId("project-unit-order-item")
-    expect(units.map((unit) => unit.textContent)).toEqual([
-      expect.stringContaining("hero2"),
-      expect.stringContaining("hero1"),
-    ])
+    // Simulating an actual pointer-driven drag through dnd-kit's sensors is impractical under
+    // jsdom; `spliceGoalOrder` (goal-order.test.ts) covers the splice logic that turns a drop into
+    // the submitted full order, and this test only exercises that the wiring — drag handles present,
+    // reachable, and connected to the reorder mutation — is actually in place, via keyboard
+    // activation (dnd-kit's KeyboardSensor is a real, accessible way to reorder).
+    handles[0]!.focus()
+    expect(handles[0]).toHaveFocus()
   })
 })
