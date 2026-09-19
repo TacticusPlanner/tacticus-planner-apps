@@ -79,7 +79,8 @@ Goals-local fix would leave the shared component still wrong for it.
 `TabsTrigger` covers only the case Radix will never report — activating a tab that
 is already selected while the route sits below it.
 
-**Both guard clauses are load-bearing**, and neither is redundant. On a mouse click
+**Both guard clauses are load-bearing**, and neither is redundant.
+(For why `onValueChange` needs a guard of its own, see the next decision.) On a mouse click
 of a _different_ tab, Radix activates on `onMouseDown`/focus, so `onValueChange`
 and its `navigate` run before `onClick` does. react-router wraps the location
 update in `startTransition`, so by the time `onClick` fires the re-render may or may
@@ -100,6 +101,36 @@ react-router `Link`. Rejected for this change as a larger rewrite of a component
 with no other defect: it changes the rendered element from a button to an anchor,
 affecting the existing `data-state` assertions and the row's keyboard semantics.
 Worth revisiting if this component is reworked for another reason.
+
+### Radix reports one click twice, so `onValueChange` needs its own guard
+
+_Added during apply, with approval._ This design originally treated a double navigation as
+something the new click handler might introduce. Browser verification (task 6.6) showed the row
+**already** pushed two history entries per tab switch, before this change: one click on a tab called
+`pushState` twice with the same URL, both from react-router's `completeNavigation`, and Back needed
+two presses. Confirmed pre-existing by re-measuring with `section-tabs.tsx` stashed; a plain nav
+`Link` pushes one, so it is specific to this row.
+
+The cause is Radix `Tabs`: `TabsTrigger` activates on `mousedown`, and again on the `focus` that
+immediately follows, because while react-router's transition is still in flight the trigger still
+sees itself as unselected. Both firings call `onValueChange`, which navigated unconditionally.
+
+`onValueChange` now skips a value it is already at or already navigating to, the target held in a
+ref cleared when `pathname` changes. A ref rather than state because it must be readable by the
+second firing, whose closure is a render behind — a ref is the same object across renders.
+
+_Alternative considered:_ `activationMode="manual"`, which stops Radix activating on focus at all.
+Rejected for the same reason this design keeps `onValueChange`: it would also stop arrow-key
+activation, leaving keyboard users moving the focus ring without navigating.
+
+_Alternative considered:_ comparing `value` against `pathname` alone. Rejected — at the second
+firing the handler's closure may still carry the pre-navigation `pathname`, so the comparison can
+pass and navigate again. The ref is what makes the guard independent of render timing.
+
+**This is not covered by the jsdom tests, in the way it appears to be.** `userEvent.click` produces a
+single `onValueChange` there, because the state update lands between mousedown and focus — which is
+why the row's existing tests never caught it. The regression test dispatches `mouseDown` and `focus`
+inside one `act` to reproduce the browser's timing; it fails without the guard.
 
 ### The stale doc comment is corrected, not left
 

@@ -23,8 +23,16 @@ destination a user can land on, and navigating there would be useless or worse.
   that landing page.
 - Two children declare it: `/goals/projects` (the all-projects screen) and
   `/library/raid-bosses` (which renders its own picker when no entity is selected).
-- Every other tab keeps today's behavior exactly, including when the current route
-  is nested below it. That is deliberate, not an oversight:
+- Activating a tab adds exactly one history entry, so one Back press returns the
+  user to where they came from. _Added during apply, with approval:_ browser
+  verification found the row already pushed two entries per tab switch (Radix
+  activates a trigger on both mousedown and the focus that follows it, and each
+  firing navigated). It predates this change — confirmed by re-measuring with the
+  component stashed — but it lives in the code this change touches, and a Back
+  button that needs two presses is the same complaint as the dead tab. See
+  `design.md` — "Radix reports one click twice".
+- Every other tab keeps today's _navigation destination_ exactly, including when the
+  current route is nested below it. That is deliberate, not an oversight:
   - `/library/characters`, `/library/machines-of-war`, and `/library/npcs` have no
     list state to return to. `useLibraryRouteSelection` canonicalizes the URL, so
     navigating to the collection path immediately `replace`s it with
@@ -47,8 +55,8 @@ destination a user can land on, and navigating there would be useless or worse.
 
 - `app-navigation`: "The shared page header hosts a section's child-page picker"
   gains the behavior that a child page declared as having its own landing page is
-  returned to when its tab is activated from a route nested below it, and that
-  other tabs are unaffected. The requirement's existing mobile-only scope, its
+  returned to when its tab is activated from a route nested below it, that other
+  tabs are unaffected, and that activating a tab adds exactly one history entry. The requirement's existing mobile-only scope, its
   desktop no-picker rule, and its third-level-tabs exclusion are unchanged.
 
 ## Impact

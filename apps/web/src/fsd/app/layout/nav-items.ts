@@ -68,6 +68,13 @@ export interface NavSubItem {
   path: string
   labelKey: NavLabelKey
   descriptionKey: NavDescriptionKey
+  // This child's own path renders a screen a user can land on, so its header tab returns there from
+  // a route nested below it (see `section-tabs.tsx`). Opt-in, because for most children the path is
+  // not a destination: `use-library-route-selection` canonicalizes a Library collection path,
+  // `replace`-ing it with `<collection>/<firstId>`, and `/dailies/raids` is an index redirect to
+  // `/dailies/raids/today`. Navigating to either throws the user somewhere they did not ask for, so
+  // a child added later must declare this deliberately rather than inherit it.
+  isLandingPage?: boolean
 }
 
 export interface NavItem {
@@ -119,6 +126,9 @@ export const navItems: NavItem[] = [
         path: "/library/raid-bosses",
         labelKey: "library:collections.raidBosses.label",
         descriptionKey: "library:collections.raidBosses.description",
+        // Unlike its sibling collections, this one renders its own picker with no entity selected -
+        // it redirects only when an `entityId` names a boss the catalog does not have.
+        isLandingPage: true,
       },
       {
         path: "/library/shops",
@@ -144,6 +154,8 @@ export const navItems: NavItem[] = [
         path: "/goals/projects",
         labelKey: "goals.tabs.projects",
         descriptionKey: "goals.tabs.projectsDescription",
+        // The all-projects screen; `/goals/projects/:projectId` is a detail route above it.
+        isLandingPage: true,
       },
       {
         path: "/goals/insights",
