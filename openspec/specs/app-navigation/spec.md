@@ -181,6 +181,26 @@ On desktop, the header no longer hosts a child-page picker at all — a section'
 - **WHEN** a user is on `/dailies/raids/today` or `/dailies/raids/plan`, on either platform
 - **THEN** Raids' own Today/Raids Plan sub-tabs continue to render within the page's own content, below the header, exactly as before this change, unaffected by how the header or sidebar shows Dailies' own child pages
 
+#### Scenario: Activating a tab returns from a route nested below a child page that has its own landing page
+
+- **WHEN** a user is on a route nested below a child page whose own path is a landing page — a project's detail route, or a Library raid boss's detail route — and activates that child page's tab, on mobile
+- **THEN** that child page's tab is shown as the active one, and the user is taken to the child page's landing screen: the all-projects screen, or the raid-boss picker
+
+#### Scenario: Activating a tab does nothing for a child page with no landing page of its own
+
+- **WHEN** a user is on a route nested below a child page whose own path is a redirect or canonicalizes to a specific entity — a Library character, Machine of War, or NPC detail route, or a Raids sub-page — and activates that child page's tab, on mobile
+- **THEN** no navigation occurs and the user stays on the page they were on
+
+#### Scenario: Activating a tab adds one history entry
+
+- **WHEN** a user activates a tab that takes them somewhere — a different child page, or the landing page of the child page they are nested below — on mobile
+- **THEN** exactly one history entry is added, and a single Back press returns them to the page they activated the tab from
+
+#### Scenario: Activating the tab of the exact current page does nothing
+
+- **WHEN** a user is on a child page's own path and activates that page's tab, on mobile
+- **THEN** no navigation occurs and the user stays on that page
+
 ### Requirement: Desktop sidebar exposes each section's child pages via a hover/click flyout
 
 For any top-level section that has child pages, the desktop sidebar SHALL render a small chevron indicator on that section's own row, in both the expanded and icon-collapsed sidebar states, as a static hint that it has child pages. Hovering that row (after a short delay, to avoid opening for a pointer only passing through) or clicking it while it is not already the active navigation target SHALL open a flyout positioned beside that row, in both sidebar states. Every section that has at least one child page SHALL get this flyout, including a section with only one child.
