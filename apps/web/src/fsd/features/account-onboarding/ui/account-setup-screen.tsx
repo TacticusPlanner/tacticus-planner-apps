@@ -1,16 +1,13 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useMsal } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
+import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useCurrentUser } from "@/entities/account"
-import { signOut, useActiveAccountId } from "@/shared/auth"
 
 import { ApiKeyForm } from "./api-key-form"
-import { V1ImportForm } from "./v1-import-form"
 
 export type AccountSetupStep = "choose" | "key" | "import"
 
@@ -22,6 +19,20 @@ type ScreenProps = {
    */
   step: AccountSetupStep
   onStepChange: (step: AccountSetupStep) => void
+  /**
+   * Renders the "import" step's content. This feature does not import `features/v1-import` itself
+   * (that would be a feature-to-feature cross-import — see
+   * `.claude/skills/feature-sliced-design/references/cross-import-patterns.md`, Strategy C); the
+   * `app` layer, which already composes both features, supplies this instead.
+   *
+   * The second argument lets that content report "the account is provisioned now" before the whole
+   * screen finishes (`onCompleted`) — see `Steps`'s `keyImported` state for why Back needs to know
+   * this earlier.
+   */
+  renderImportStep: (
+    onCompleted: () => void,
+    onKeyImported: () => void
+  ) => ReactNode
 }
 
 /**
@@ -37,9 +48,12 @@ type ScreenProps = {
  * emptied form. Instead the forms refresh the account state and the route's own guard performs the
  * navigation once that state actually confirms a configured key.
  */
-export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
+export function AccountSetupScreen({
+  step,
+  onStepChange,
+  renderImportStep,
+}: ScreenProps) {
   const { t } = useTranslation()
-  const isMobile = useIsMobile()
   const { state, refetch } = useCurrentUser()
   // Set once a submission has succeeded, so the screen can tell "still waiting for confirmation"
   // apart from "idle" — the difference between showing progress and showing a retry.
@@ -57,17 +71,15 @@ export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6">
       <header className="flex flex-col gap-1.5">
-        {isMobile ? (
-          <p
-            className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
-            data-testid="account-setup-step-position"
-          >
-            {t("onboarding.stepPosition", {
-              current: step === "choose" ? 1 : 2,
-              total: 2,
-            })}
-          </p>
-        ) : null}
+        <p
+          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          data-testid="account-setup-step-position"
+        >
+          {t("onboarding.stepPosition", {
+            current: step === "choose" ? 1 : 2,
+            total: 2,
+          })}
+        </p>
         <h1 className="font-heading text-xl font-medium">
           {t("onboarding.title")}
         </h1>
@@ -86,19 +98,14 @@ export function AccountSetupScreen({ step, onStepChange }: ScreenProps) {
           <Spinner className="size-4" />
           {t("onboarding.confirming")}
         </p>
-      ) : null}
-
-      {submitted ? null : isMobile ? (
-        <MobileSteps
+      ) : (
+        <Steps
           onCompleted={handleCompleted}
           onStepChange={onStepChange}
+          renderImportStep={renderImportStep}
           step={step}
         />
-      ) : (
-        <DesktopPanels onCompleted={handleCompleted} />
       )}
-
-      <SignOutFooter />
     </div>
   )
 }
@@ -125,44 +132,20 @@ function ConfirmationRetry({ onRetry }: { onRetry: () => void }) {
   )
 }
 
-// Desktop has no steps: both paths are on screen at once, so the user can see that completing
-// either panel alone is enough.
-function DesktopPanels({ onCompleted }: { onCompleted: () => void }) {
-  const { t } = useTranslation()
-
-  return (
-    <div
-      className="grid gap-4 md:grid-cols-2"
-      data-testid="account-setup-panels"
-    >
-      <section className="flex flex-col gap-4 rounded-xl border p-5">
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold">
-            {t("onboarding.paths.apiKeyName")}
-          </h2>
-          <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
-            {t("onboarding.paths.apiKeyBadge")}
-          </span>
-        </div>
-        <ApiKeyForm onCompleted={onCompleted} />
-      </section>
-
-      <section className="flex flex-col gap-4 rounded-xl border p-5">
-        <h2 className="text-sm font-semibold">
-          {t("onboarding.paths.v1Name")}
-        </h2>
-        <V1ImportForm onCompleted={onCompleted} />
-      </section>
-    </div>
-  )
-}
-
-function MobileSteps({
+// Both breakpoints go through the same choose-then-step flow: showing both paths on screen at once
+// (as desktop once did) does not fit the V1-import path anymore now that it is the same full,
+// multi-part panel used from the account menu, not a two-field shortcut.
+function Steps({
   step,
   onStepChange,
   onCompleted,
+  renderImportStep,
 }: ScreenProps & { onCompleted: () => void }) {
   const { t } = useTranslation()
+  // Sticky, and only ever set by the import step (the key step's own success unmounts this whole
+  // component via `submitted` instead — see AccountSetupScreen). Once true, the account already has
+  // a key, so a Back control offering to abandon setup no longer makes sense.
+  const [keyImported, setKeyImported] = useState(false)
 
   if (step === "choose") {
     return (
@@ -175,6 +158,7 @@ function MobileSteps({
           testId="account-setup-choose-key"
         />
         <PathCard
+          badge={t("onboarding.paths.v1Badge")}
           description={t("onboarding.paths.v1Description")}
           name={t("onboarding.paths.v1Name")}
           onSelect={() => onStepChange("import")}
@@ -186,24 +170,27 @@ function MobileSteps({
 
   return (
     <div className="flex flex-col gap-4">
-      <Button
-        className="self-start"
-        data-testid="account-setup-back"
-        onClick={() => onStepChange("choose")}
-        size="sm"
-        variant="ghost"
-      >
-        <ChevronLeft />
-        {t("onboarding.back")}
-      </Button>
+      <Card>
+        <CardContent>
+          {step === "key" ? (
+            <ApiKeyForm onCompleted={onCompleted} />
+          ) : (
+            renderImportStep(onCompleted, () => setKeyImported(true))
+          )}
+        </CardContent>
+      </Card>
 
-      {step === "key" ? (
-        <ApiKeyForm onCompleted={onCompleted} />
-      ) : (
-        <V1ImportForm
-          onCompleted={onCompleted}
-          onUseApiKey={() => onStepChange("key")}
-        />
+      {keyImported ? null : (
+        <Button
+          className="self-start"
+          data-testid="account-setup-back"
+          onClick={() => onStepChange("choose")}
+          size="sm"
+          variant="ghost"
+        >
+          <ChevronLeft />
+          {t("onboarding.back")}
+        </Button>
       )}
     </div>
   )
@@ -223,52 +210,26 @@ function PathCard({
   testId: string
 }) {
   return (
-    <button
-      className="flex items-start gap-3 rounded-xl border p-4 text-left hover:bg-accent/50"
-      data-testid={testId}
-      onClick={onSelect}
-      type="button"
-    >
-      <span className="flex flex-1 flex-col gap-1">
-        <span className="flex items-center gap-2">
-          <span className="text-sm font-semibold">{name}</span>
-          {badge ? (
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
-              {badge}
-            </span>
-          ) : null}
-        </span>
-        <span className="text-sm text-muted-foreground">{description}</span>
-      </span>
-      <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-    </button>
-  )
-}
-
-// Present on every step and on both layouts: a user who wants neither path must not be trapped on a
-// screen that replaces the whole app. Mirrors the pattern in `app/game-catalog-init-gate.tsx`.
-function SignOutFooter() {
-  const { t } = useTranslation()
-  const { instance } = useMsal()
-  const accountId = useActiveAccountId()
-
-  return (
-    <footer className="flex justify-center border-t pt-4">
-      <Button
-        data-testid="account-setup-sign-out"
-        disabled={!accountId}
-        onClick={() => {
-          if (accountId) {
-            void signOut(instance, accountId).catch((error: unknown) => {
-              console.error("[MSAL] sign-out failed", error)
-            })
-          }
-        }}
-        size="sm"
-        variant="ghost"
+    <Card className="p-0">
+      <button
+        className="flex w-full items-start gap-3 p-4 text-left hover:bg-accent/50"
+        data-testid={testId}
+        onClick={onSelect}
+        type="button"
       >
-        {t("auth.signOut")}
-      </Button>
-    </footer>
+        <span className="flex flex-1 flex-col gap-1">
+          <span className="flex items-center gap-2">
+            <span className="text-sm font-semibold">{name}</span>
+            {badge ? (
+              <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
+                {badge}
+              </span>
+            ) : null}
+          </span>
+          <span className="text-sm text-muted-foreground">{description}</span>
+        </span>
+        <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+      </button>
+    </Card>
   )
 }

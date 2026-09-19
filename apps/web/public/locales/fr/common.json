@@ -92,10 +92,11 @@
     "back": "Retour",
     "paths": {
       "apiKeyName": "Coller une clé API",
-      "apiKeyBadge": "Le plus rapide",
+      "apiKeyBadge": "Nouveau départ",
       "apiKeyDescription": "Vous avez déjà une clé depuis api.tacticusgame.com, ou vous pouvez en obtenir une maintenant.",
       "v1Name": "Importer depuis V1",
-      "v1Description": "Connectez-vous avec votre ancien compte du planificateur : nous copierons la clé et l’ID utilisateur."
+      "v1Badge": "Le plus complet",
+      "v1Description": "Connectez-vous avec votre ancien compte du planificateur pour importer votre clé, vos objectifs et votre progression."
     },
     "signUp": {
       "apiKeyLabel": "Clé API Tacticus",
@@ -106,17 +107,8 @@
       "submit": "Connecter le compte"
     },
     "import": {
-      "description": "Connectez-vous avec votre compte du planificateur V1. Nous copions la clé API et l’ID utilisateur, puis les informations V1 sont supprimées : vos identifiants V1 ne sont jamais stockés.",
-      "usernameLabel": "Nom d’utilisateur V1",
-      "passwordLabel": "Mot de passe V1",
-      "submit": "Importer et connecter"
-    },
-    "importOutcome": {
-      "missingKey": "Aucune clé API Tacticus n’est enregistrée sur votre compte V1.",
-      "invalidKey": "La clé API Tacticus de votre compte V1 n’est plus valide. Obtenez-en une nouvelle et collez-la ici.",
-      "notSaved": "Impossible d’enregistrer la clé API importée. Veuillez réessayer.",
-      "unknown": "L’import n’a fourni aucune clé API Tacticus utilisable.",
-      "useApiKey": "Coller une clé API à la place"
+      "continue": "Continuer",
+      "useApiKey": "Utiliser une clé API à la place"
     },
     "confirming": "Finalisation de la configuration…",
     "confirmFailed": "Votre clé a bien été enregistrée, mais nous n’avons pas pu confirmer votre compte.",
@@ -376,7 +368,8 @@
     "v1Import": {
       "menu": "Importer depuis V1",
       "title": "Importer depuis V1",
-      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Les types d'objectifs V2 correspondants seront remplacés et les objectifs importés seront mis en pause.",
+      "back": "Retour",
+      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Un objectif V1 correspondant à un objectif V2 existant est ignoré, pas remplacé, et les objectifs importés sont mis en pause sauf si votre projet par défaut est aussi votre projet actif.",
       "username": "Nom d'utilisateur V1",
       "password": "Mot de passe V1",
       "selectParts": "Choisissez ce qu'il faut importer",
@@ -389,9 +382,44 @@
         "campaignEventProgress": "Progression des événements de campagne"
       },
       "submit": "Importer la sélection",
+      "submitting": "Importation en cours…",
       "close": "Fermer",
       "error": "Le profil V1 n'a pas pu être importé.",
-      "goalCounts": "Objectifs : {{created}} créés, {{skipped}} ignorés, {{failed}} échoués"
+      "rerunRequiresPassword": "Cet import est terminé. Saisissez à nouveau votre mot de passe V1 pour en lancer un autre.",
+      "status": {
+        "imported": "Importé",
+        "skipped": "Ignoré",
+        "failed": "Échoué"
+      },
+      "report": {
+        "imported": "Importé",
+        "importedCounts": "{{goals}} objectif(s) sur {{units}} unité(s)",
+        "needsNoImport": "Aucun import nécessaire",
+        "notImported": "Non importé",
+        "failed": "Échoué",
+        "autoAdded": "Ajouté automatiquement",
+        "noUnit": "Unité non précisée",
+        "copy": "Copier les détails",
+        "syncRequiredTitle": "Les données du joueur doivent d'abord être synchronisées",
+        "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
+      },
+      "reasons": {
+        "goalCreated": "Importé depuis V1.",
+        "prerequisiteAdded": "Ajouté automatiquement car un autre objectif importé en a besoin.",
+        "targetAlreadyReached": "L'objectif est déjà atteint.",
+        "goalAlreadyExists": "Le compte possède déjà un objectif de ce type pour cette unité.",
+        "duplicateGoalMerged": "Un autre objectif V1 de ce type pour cette unité a été importé à sa place.",
+        "prerequisiteTargetInsufficient": "Un objectif d'Ascension pour cette unité n'atteint pas ce dont un autre objectif importé a besoin.",
+        "unknownUnit": "Ce personnage ou cette machine de guerre ne figure pas dans le catalogue V2.",
+        "unsupportedGoalType": "Ce type d'objectif V1 n'est pas pris en charge.",
+        "invalidProgression": "L'objectif d'Ascension ne figure pas sur l'échelle de progression V2.",
+        "missingTarget": "Il manque une valeur requise à cet objectif.",
+        "playerDataRequired": "Les données du joueur doivent être synchronisées avant d'importer des objectifs.",
+        "targetRejected": "La cible de cet objectif n'est pas valide.",
+        "projectSlotConflict": "Un autre objectif pour cette unité et ce type a été créé simultanément.",
+        "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
+        "generic": "Cet objectif n'a pas pu être importé."
+      }
     },
     "empty": {
       "title": "Pas encore d'objectifs",
@@ -436,7 +464,8 @@
         "PlayerDataUnavailable": "Les données du joueur pour cet objectif ne sont pas encore synchronisées.",
         "CatalogDataUnavailable": "Les données de jeu n'ont pas encore fini de se charger.",
         "MissingLevelPrerequisite": "Un objectif de Niveau atteignant le niveau {{level}} est requis.",
-        "MissingAscensionPrerequisite": "Un objectif d'Ascension atteignant {{progression}} est requis."
+        "MissingAscensionPrerequisite": "Un objectif d'Ascension atteignant {{progression}} est requis.",
+        "MissingUnlockPrerequisite": "Un objectif de Déblocage pour {{unit}} est requis."
       },
       "createPrerequisite": "Créer un objectif préalable",
       "reviewPrerequisite": "Voir l'objectif préalable existant",

@@ -92,10 +92,11 @@
     "back": "Back",
     "paths": {
       "apiKeyName": "Paste an API key",
-      "apiKeyBadge": "Fastest",
+      "apiKeyBadge": "Fresh Start",
       "apiKeyDescription": "You already have a key from api.tacticusgame.com, or you can grab one now.",
       "v1Name": "Import from V1",
-      "v1Description": "Sign in with your old planner login and we'll copy the key and user ID across."
+      "v1Badge": "Most Complete",
+      "v1Description": "Sign in with your old planner login to bring your key, goals, and progress across."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus API key",
@@ -106,17 +107,8 @@
       "submit": "Connect account"
     },
     "import": {
-      "description": "Sign in with your V1 planner login. We copy the API key and user ID over, then the V1 details are discarded — your V1 credentials are never stored.",
-      "usernameLabel": "V1 username",
-      "passwordLabel": "V1 password",
-      "submit": "Import and connect"
-    },
-    "importOutcome": {
-      "missingKey": "Your V1 account has no Tacticus API key saved.",
-      "invalidKey": "The Tacticus API key on your V1 account is no longer valid. Get a new one and paste it instead.",
-      "notSaved": "The imported API key could not be saved. Please try again.",
-      "unknown": "The import did not provide a usable Tacticus API key.",
-      "useApiKey": "Paste an API key instead"
+      "continue": "Continue",
+      "useApiKey": "Use an API key instead"
     },
     "confirming": "Finishing setup…",
     "confirmFailed": "Your key was saved, but we could not confirm your account.",
@@ -376,7 +368,8 @@
     "v1Import": {
       "menu": "Import from V1",
       "title": "Import from V1",
-      "description": "Your V1 credentials are used once and are never saved. Matching V2 goal kinds will be replaced and imported goals will be paused.",
+      "back": "Back",
+      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and imported goals are paused unless your default project is also your active project.",
       "username": "V1 username",
       "password": "V1 password",
       "selectParts": "Choose what to import",
@@ -389,9 +382,44 @@
         "campaignEventProgress": "Campaign event progress"
       },
       "submit": "Import selected",
+      "submitting": "Importing…",
       "close": "Close",
       "error": "The V1 profile could not be imported.",
-      "goalCounts": "Goals: {{created}} created, {{skipped}} skipped, {{failed}} failed"
+      "rerunRequiresPassword": "This import finished. Enter your V1 password again to run another one.",
+      "status": {
+        "imported": "Imported",
+        "skipped": "Skipped",
+        "failed": "Failed"
+      },
+      "report": {
+        "imported": "Imported",
+        "importedCounts": "{{goals}} goal(s) across {{units}} unit(s)",
+        "needsNoImport": "Needed no import",
+        "notImported": "Not imported",
+        "failed": "Failed",
+        "autoAdded": "Automatically added",
+        "noUnit": "Unspecified unit",
+        "copy": "Copy details",
+        "syncRequiredTitle": "Player data must be synced first",
+        "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
+      },
+      "reasons": {
+        "goalCreated": "Imported from V1.",
+        "prerequisiteAdded": "Automatically added because another imported goal needs it.",
+        "targetAlreadyReached": "The target is already reached.",
+        "goalAlreadyExists": "The account already has a goal of this type for this unit.",
+        "duplicateGoalMerged": "Another V1 goal of this type for this unit was imported in its place.",
+        "prerequisiteTargetInsufficient": "An Ascension goal for this unit doesn't reach the target another imported goal needs.",
+        "unknownUnit": "This character or Machine of War is not in the V2 Game Catalog.",
+        "unsupportedGoalType": "This V1 goal type isn't supported.",
+        "invalidProgression": "The Ascension target is not on the V2 progression ladder.",
+        "missingTarget": "The goal is missing a required target.",
+        "playerDataRequired": "Player data must be synced before goals can be imported.",
+        "targetRejected": "The target for this goal isn't valid.",
+        "projectSlotConflict": "Another goal for this unit and type was created concurrently.",
+        "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
+        "generic": "This goal could not be imported."
+      }
     },
     "empty": {
       "title": "No goals yet",
@@ -436,7 +464,8 @@
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
         "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
         "MissingLevelPrerequisite": "A Level goal reaching level {{level}} is required.",
-        "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required."
+        "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required.",
+        "MissingUnlockPrerequisite": "An Unlock goal for {{unit}} is required."
       },
       "createPrerequisite": "Create prerequisite goal",
       "reviewPrerequisite": "Review existing prerequisite",

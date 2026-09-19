@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router"
 import {
   LoaderCircle,
   Download,
@@ -34,7 +35,6 @@ import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { ManageAccountDialog } from "@/features/account-management"
-import { ImportV1Dialog } from "@/features/v1-import"
 import { useCurrentUser } from "@/entities/account"
 import {
   isInteractionRequired,
@@ -89,8 +89,8 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state: accountState } = useCurrentUser()
   const { open: openUserJot } = useUserJot()
+  const navigate = useNavigate()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
-  const [isV1ImportOpen, setIsV1ImportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
   const hasRequestedApiAccess = useRef(false)
   const silentSignInStatus = useSilentSignInStatus()
@@ -165,14 +165,16 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const applicationAccountId = currentUser?.applicationUserId ?? null
 
   const dialogs = (
-    <>
-      <ManageAccountDialog
-        onOpenChange={setIsManageAccountOpen}
-        open={isManageAccountOpen}
-      />
-      <ImportV1Dialog open={isV1ImportOpen} onOpenChange={setIsV1ImportOpen} />
-    </>
+    <ManageAccountDialog
+      onOpenChange={setIsManageAccountOpen}
+      open={isManageAccountOpen}
+    />
   )
+
+  const goToV1Import = () => {
+    setMenuOpen(false)
+    void navigate("/account/v1-import")
+  }
 
   if (isMobile) {
     return (
@@ -234,10 +236,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
               <Button
                 className="w-full justify-start"
                 data-testid="auth-v1-import"
-                onClick={() => {
-                  setIsV1ImportOpen(true)
-                  setMenuOpen(false)
-                }}
+                onClick={goToV1Import}
                 variant="outline"
               >
                 <Download data-icon="inline-start" />
@@ -355,10 +354,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             aria-label={t("goals.v1Import.menu")}
             className="w-full justify-start"
             data-testid="auth-v1-import"
-            onClick={() => {
-              setIsV1ImportOpen(true)
-              setMenuOpen(false)
-            }}
+            onClick={goToV1Import}
             size="sm"
             variant="ghost"
           >

@@ -60,7 +60,9 @@ export function useCreateGoalPrefill({
     }
     targetKeyRef.current = prefillKey
     if (prefill.goalType === "Level") setLevelEnd(prefill.requiredLevel)
-    else setProgressionEnd(prefill.requiredProgression)
+    else if (prefill.goalType === "Ascension")
+      setProgressionEnd(prefill.requiredProgression)
+    // Unlock has no target field to prefill — selecting the entity/goal type (above) is enough.
     // Field setters are stable and the target applies once per prefill.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, prefillKey, playerEntity, entityId])

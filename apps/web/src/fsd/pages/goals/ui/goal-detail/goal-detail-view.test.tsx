@@ -1,4 +1,4 @@
-import { render, screen } from "@/test/render"
+import { fireEvent, render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
@@ -54,5 +54,49 @@ describe("GoalDetailView", () => {
     expect(
       screen.getByText("goals.detail.potentialProgressDescription")
     ).toBeInTheDocument()
+  })
+
+  it("renders the missing-Unlock reason's create action (4.2)", () => {
+    const onCreatePrerequisite = vi.fn()
+
+    render(
+      <GoalDetailView
+        assignedProjects={[]}
+        blockers={{
+          isBlocked: true,
+          reasons: [
+            {
+              kind: "MissingUnlockPrerequisite",
+              unitName: "Bellator",
+              existingGoalId: undefined,
+            },
+          ],
+        }}
+        dependencies={[]}
+        detail={{ events: [], goalType: "Rank", notes: null } as never}
+        estimate={undefined}
+        farmingSummary={null}
+        getEntityName={() => "Hero"}
+        isolated={false}
+        onCreatePrerequisite={onCreatePrerequisite}
+        onViewGoal={vi.fn()}
+        progress={{ kind: "Unknown" }}
+        remaining={null}
+      />
+    )
+
+    const button = screen.getByRole("button", {
+      name: "goals.blocked.createPrerequisite",
+    })
+    fireEvent.click(button)
+
+    expect(onCreatePrerequisite).toHaveBeenCalledWith({
+      kind: "MissingUnlockPrerequisite",
+      unitName: "Bellator",
+      existingGoalId: undefined,
+    })
+    expect(
+      screen.queryByText("goals.blocked.existingPrerequisiteGuidance")
+    ).not.toBeInTheDocument()
   })
 })

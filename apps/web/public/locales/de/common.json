@@ -92,10 +92,11 @@
     "back": "Zurück",
     "paths": {
       "apiKeyName": "API-Schlüssel einfügen",
-      "apiKeyBadge": "Am schnellsten",
+      "apiKeyBadge": "Neustart",
       "apiKeyDescription": "Du hast bereits einen Schlüssel von api.tacticusgame.com – oder du holst dir jetzt einen.",
       "v1Name": "Aus V1 importieren",
-      "v1Description": "Melde dich mit deinem alten Planner-Login an; wir übernehmen Schlüssel und Benutzer-ID."
+      "v1Badge": "Am vollständigsten",
+      "v1Description": "Melde dich mit deinem alten Planner-Login an, um Schlüssel, Ziele und Fortschritt zu übernehmen."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus-API-Schlüssel",
@@ -106,17 +107,8 @@
       "submit": "Konto verbinden"
     },
     "import": {
-      "description": "Melde dich mit deinem V1-Planner-Login an. Wir übernehmen API-Schlüssel und Benutzer-ID, danach werden die V1-Daten verworfen – deine V1-Zugangsdaten werden niemals gespeichert.",
-      "usernameLabel": "V1-Benutzername",
-      "passwordLabel": "V1-Passwort",
-      "submit": "Importieren und verbinden"
-    },
-    "importOutcome": {
-      "missingKey": "In deinem V1-Konto ist kein Tacticus-API-Schlüssel gespeichert.",
-      "invalidKey": "Der Tacticus-API-Schlüssel in deinem V1-Konto ist nicht mehr gültig. Hole dir einen neuen und füge ihn stattdessen ein.",
-      "notSaved": "Der importierte API-Schlüssel konnte nicht gespeichert werden. Bitte versuche es erneut.",
-      "unknown": "Der Import hat keinen nutzbaren Tacticus-API-Schlüssel geliefert.",
-      "useApiKey": "Stattdessen API-Schlüssel einfügen"
+      "continue": "Weiter",
+      "useApiKey": "Stattdessen API-Schlüssel verwenden"
     },
     "confirming": "Einrichtung wird abgeschlossen …",
     "confirmFailed": "Dein Schlüssel wurde gespeichert, aber wir konnten dein Konto nicht bestätigen.",
@@ -376,7 +368,8 @@
     "v1Import": {
       "menu": "Aus V1 importieren",
       "title": "Aus V1 importieren",
-      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Übereinstimmende V2-Zielarten werden ersetzt, und importierte Ziele werden pausiert.",
+      "back": "Zurück",
+      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und importierte Ziele werden pausiert, sofern dein Standardprojekt nicht auch dein aktives Projekt ist.",
       "username": "V1-Benutzername",
       "password": "V1-Passwort",
       "selectParts": "Wähle aus, was importiert werden soll",
@@ -389,9 +382,44 @@
         "campaignEventProgress": "Kampagnen-Event-Fortschritt"
       },
       "submit": "Ausgewählte importieren",
+      "submitting": "Wird importiert …",
       "close": "Schließen",
       "error": "Das V1-Profil konnte nicht importiert werden.",
-      "goalCounts": "Ziele: {{created}} erstellt, {{skipped}} übersprungen, {{failed}} fehlgeschlagen"
+      "rerunRequiresPassword": "Dieser Import ist abgeschlossen. Gib dein V1-Passwort erneut ein, um einen weiteren Import zu starten.",
+      "status": {
+        "imported": "Importiert",
+        "skipped": "Übersprungen",
+        "failed": "Fehlgeschlagen"
+      },
+      "report": {
+        "imported": "Importiert",
+        "importedCounts": "{{goals}} Ziel(e) über {{units}} Einheit(en)",
+        "needsNoImport": "Kein Import nötig",
+        "notImported": "Nicht importiert",
+        "failed": "Fehlgeschlagen",
+        "autoAdded": "Automatisch hinzugefügt",
+        "noUnit": "Keine bestimmte Einheit",
+        "copy": "Details kopieren",
+        "syncRequiredTitle": "Spielerdaten müssen zuerst synchronisiert werden",
+        "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
+      },
+      "reasons": {
+        "goalCreated": "Aus V1 importiert.",
+        "prerequisiteAdded": "Automatisch hinzugefügt, da ein anderes importiertes Ziel dies benötigt.",
+        "targetAlreadyReached": "Das Ziel ist bereits erreicht.",
+        "goalAlreadyExists": "Das Konto hat bereits ein Ziel dieser Art für diese Einheit.",
+        "duplicateGoalMerged": "Ein weiteres V1-Ziel dieser Art für diese Einheit wurde stattdessen importiert.",
+        "prerequisiteTargetInsufficient": "Ein Aufstiegsziel für diese Einheit erreicht nicht das Ziel, das ein anderes importiertes Ziel benötigt.",
+        "unknownUnit": "Dieser Charakter oder diese Kampfmaschine ist nicht im V2-Spielkatalog enthalten.",
+        "unsupportedGoalType": "Dieser V1-Zieltyp wird nicht unterstützt.",
+        "invalidProgression": "Das Aufstiegsziel liegt nicht auf der V2-Fortschrittsleiter.",
+        "missingTarget": "Dem Ziel fehlt ein erforderliches Ziel.",
+        "playerDataRequired": "Spielerdaten müssen synchronisiert werden, bevor Ziele importiert werden können.",
+        "targetRejected": "Das Ziel für dieses Vorhaben ist ungültig.",
+        "projectSlotConflict": "Ein weiteres Ziel für diese Einheit und diesen Typ wurde gleichzeitig erstellt.",
+        "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
+        "generic": "Dieses Ziel konnte nicht importiert werden."
+      }
     },
     "empty": {
       "title": "Noch keine Ziele",
@@ -436,7 +464,8 @@
         "PlayerDataUnavailable": "Spielerdaten für dieses Ziel wurden noch nicht synchronisiert.",
         "CatalogDataUnavailable": "Spieldaten wurden noch nicht vollständig geladen.",
         "MissingLevelPrerequisite": "Ein Stufen-Ziel, das Stufe {{level}} erreicht, ist erforderlich.",
-        "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich."
+        "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich.",
+        "MissingUnlockPrerequisite": "Ein Freischaltungs-Ziel für {{unit}} ist erforderlich."
       },
       "createPrerequisite": "Voraussetzungsziel erstellen",
       "reviewPrerequisite": "Bestehende Voraussetzung ansehen",

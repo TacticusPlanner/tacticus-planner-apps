@@ -52,6 +52,9 @@ const GoalsLayout = lazy(() =>
 const ProgressLayout = lazy(() =>
   import("@/pages/progress").then((m) => ({ default: m.ProgressLayout }))
 )
+const V1ImportPage = lazy(() =>
+  import("@/pages/v1-import").then((m) => ({ default: m.V1ImportPage }))
+)
 // A different page slice (pages/onslaught) nested under "/progress" вЂ” kept here rather than in
 // pages/progress/route.tsx since FSD forbids one page slice importing another's internals.
 const OnslaughtPage = lazy(() =>
@@ -109,6 +112,14 @@ export const routes: RouteObject[] = [
         element: (
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/account/v1-import",
+        element: (
+          <ProtectedRoute>
+            <V1ImportPage />
           </ProtectedRoute>
         ),
       },

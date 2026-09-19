@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { fireEvent, render, screen, within } from "@testing-library/react"
+import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
@@ -56,11 +57,6 @@ vi.mock("@/features/account-management", () => ({
     open ? <div data-testid="manage-account-dialog-stub" /> : null,
 }))
 
-vi.mock("@/features/v1-import", () => ({
-  ImportV1Dialog: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="v1-import-dialog-stub" /> : null,
-}))
-
 vi.mock("@/shared/auth", () => ({
   isInteractionRequired: (error: unknown) => isInteractionRequired(error),
   loginRequest: { scopes: ["api"] },
@@ -96,11 +92,21 @@ vi.mock("@/shared/tour", () => ({
 
 import { AuthControl } from "./auth-control"
 
+function Probe() {
+  const location = useLocation()
+  return <div data-testid="probe">{location.pathname}</div>
+}
+
 function renderAuthControl(props?: { compact?: boolean }) {
   return render(
-    <TooltipProvider>
-      <AuthControl {...props} />
-    </TooltipProvider>
+    <MemoryRouter initialEntries={["/home"]}>
+      <TooltipProvider>
+        <Routes>
+          <Route element={<AuthControl {...props} />} path="/home" />
+          <Route element={<Probe />} path="/account/v1-import" />
+        </Routes>
+      </TooltipProvider>
+    </MemoryRouter>
   )
 }
 
@@ -227,13 +233,15 @@ describe("AuthControl", () => {
     expect(screen.getByTestId("manage-account-dialog-stub")).toBeVisible()
   })
 
-  it("opens the full V1 import dialog from the user menu", () => {
+  it("navigates to the dedicated V1 import page from the user menu", async () => {
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
     fireEvent.click(screen.getByTestId("auth-v1-import"))
 
-    expect(screen.getByTestId("v1-import-dialog-stub")).toBeVisible()
+    expect(await screen.findByTestId("probe")).toHaveTextContent(
+      "/account/v1-import"
+    )
   })
 
   it("shows a compact, aria-labeled sign-in button when unauthenticated", () => {
@@ -341,9 +349,14 @@ describe("AuthControl", () => {
     })
 
     rerender(
-      <TooltipProvider>
-        <AuthControl />
-      </TooltipProvider>
+      <MemoryRouter initialEntries={["/home"]}>
+        <TooltipProvider>
+          <Routes>
+            <Route element={<AuthControl />} path="/home" />
+            <Route element={<Probe />} path="/account/v1-import" />
+          </Routes>
+        </TooltipProvider>
+      </MemoryRouter>
     )
 
     expect(requestApiAccess).toHaveBeenCalledTimes(1)

@@ -21,7 +21,12 @@ import { GoalEstimateSection } from "./goal-estimate-section"
 
 type MissingPrerequisiteReason = Extract<
   BlockerReason,
-  { kind: "MissingLevelPrerequisite" | "MissingAscensionPrerequisite" }
+  {
+    kind:
+      | "MissingLevelPrerequisite"
+      | "MissingAscensionPrerequisite"
+      | "MissingUnlockPrerequisite"
+  }
 >
 
 /**
@@ -100,7 +105,8 @@ export function GoalDetailView({
             {blockers.reasons.map((reason, index) => {
               const missingPrerequisite =
                 reason.kind === "MissingLevelPrerequisite" ||
-                reason.kind === "MissingAscensionPrerequisite"
+                reason.kind === "MissingAscensionPrerequisite" ||
+                reason.kind === "MissingUnlockPrerequisite"
                   ? reason
                   : null
               return (

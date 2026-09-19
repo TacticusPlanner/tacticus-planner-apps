@@ -58,6 +58,7 @@ describe("implicitPrerequisiteBlockers", () => {
       playerUnit: { xpLevel: 10, progressionIndex: "Common:None" },
       prerequisiteGoals: [],
       ready: true,
+      unitName: "Test Unit",
     })
 
     expect(reasons).toEqual([
@@ -80,6 +81,7 @@ describe("implicitPrerequisiteBlockers", () => {
       playerUnit: { xpLevel: 1, progressionIndex: "Common:None" },
       prerequisiteGoals: [],
       ready: true,
+      unitName: "Test Unit",
     })
 
     expect(reasons.map((reason) => reason.kind)).toEqual([
@@ -92,6 +94,7 @@ describe("implicitPrerequisiteBlockers", () => {
       detail: abilityGoal(),
       playerUnit: { xpLevel: 10, progressionIndex: "Common:None" },
       ready: true,
+      unitName: "Test Unit",
     }
     expect(
       implicitPrerequisiteBlockers({
@@ -120,6 +123,7 @@ describe("implicitPrerequisiteBlockers", () => {
         playerUnit: { xpLevel: 10, progressionIndex: "Common:None" },
         prerequisiteGoals: [inadequate],
         ready: true,
+        unitName: "Test Unit",
       })[0]
     ).toMatchObject({
       kind: "MissingLevelPrerequisite",
@@ -131,7 +135,85 @@ describe("implicitPrerequisiteBlockers", () => {
         playerUnit: { xpLevel: 10, progressionIndex: "Common:None" },
         prerequisiteGoals: [],
         ready: false,
+        unitName: "Test Unit",
       })
     ).toEqual([])
+  })
+
+  it("reports a missing-Unlock reason for a loaded roster without the unit (1.1/1.2)", () => {
+    const reasons = implicitPrerequisiteBlockers({
+      detail: abilityGoal(),
+      playerUnit: undefined,
+      prerequisiteGoals: [],
+      ready: true,
+      unitName: "Bellator",
+    })
+
+    expect(reasons).toEqual([
+      { kind: "MissingUnlockPrerequisite", unitName: "Bellator" },
+    ])
+  })
+
+  it("does not report a missing-Unlock reason while data is still loading", () => {
+    expect(
+      implicitPrerequisiteBlockers({
+        detail: abilityGoal(),
+        playerUnit: undefined,
+        prerequisiteGoals: [],
+        ready: false,
+        unitName: "Bellator",
+      })
+    ).toEqual([])
+  })
+
+  it("never reports a missing-Unlock reason for an Unlock goal on its own unit", () => {
+    const unlockGoal: GoalDetail = {
+      ...abilityGoal(),
+      goalType: "Unlock",
+      config: {} as never,
+    }
+
+    expect(
+      implicitPrerequisiteBlockers({
+        detail: unlockGoal,
+        playerUnit: undefined,
+        prerequisiteGoals: [],
+        ready: true,
+        unitName: "Bellator",
+      })
+    ).toEqual([])
+  })
+
+  it("suppresses the missing-Unlock reason when the plan has a non-archived Unlock goal for the unit", () => {
+    const coveringUnlock = prerequisiteGoal("Level")
+    coveringUnlock.goalId = "unlock-goal"
+    coveringUnlock.goalType = "Unlock"
+    coveringUnlock.status = "Active"
+
+    expect(
+      implicitPrerequisiteBlockers({
+        detail: abilityGoal(),
+        playerUnit: undefined,
+        prerequisiteGoals: [coveringUnlock],
+        ready: true,
+        unitName: "Bellator",
+      })
+    ).toEqual([])
+  })
+
+  it("does not suppress the missing-Unlock reason when the only Unlock goal is archived", () => {
+    const archivedUnlock = prerequisiteGoal("Level", "Archived")
+    archivedUnlock.goalId = "unlock-goal"
+    archivedUnlock.goalType = "Unlock"
+
+    expect(
+      implicitPrerequisiteBlockers({
+        detail: abilityGoal(),
+        playerUnit: undefined,
+        prerequisiteGoals: [archivedUnlock],
+        ready: true,
+        unitName: "Bellator",
+      })
+    ).toEqual([{ kind: "MissingUnlockPrerequisite", unitName: "Bellator" }])
   })
 })

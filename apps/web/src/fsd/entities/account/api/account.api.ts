@@ -1,5 +1,4 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
-import type { CreateCombinedGoalsRequest } from "@/entities/goal/@x/account"
 
 import type { CurrentUser } from "../model/current-user"
 
@@ -45,6 +44,10 @@ export type ImportV1ProfileRequest = {
     goals: boolean
     onslaughtProgress: boolean
     campaignEventProgress: boolean
+    // Auto-synthesize missing Unlock/Ascension/Level prerequisites for an imported goal, same rules
+    // and defaults as the manual create-goal flow (rewrite-v1-goal-import). Defaults true server-side
+    // too, but sent explicitly so clearing the option in the dialog is honoured.
+    automaticPrerequisites: boolean
   }
 }
 
@@ -54,6 +57,21 @@ export type ImportPartResult = {
   message: string | null
 }
 
+// One outcome per source V1 goal, plus one per automatically added prerequisite — the import
+// creates goals itself now (rewrite-v1-goal-import); nothing is returned for the client to submit.
+// `code` is a stable machine-readable discriminator (e.g. "goal_created", "unknown_unit") the client
+// buckets on; `message` is a server-composed, already-readable sentence rendered as-is.
+export type V1GoalOutcome = {
+  status: "Created" | "Skipped" | "Failed"
+  code: string
+  message: string
+  entityType: string | null
+  entityId: string | null
+  goalType: string | null
+  goalId: string | null
+  sourceGoalId: string | null
+}
+
 export type ImportV1ProfileResult = {
   tacticusUserId: ImportPartResult
   personalTacticusApiKey: ImportPartResult
@@ -61,12 +79,7 @@ export type ImportV1ProfileResult = {
   onslaughtProgress: ImportPartResult
   campaignEventProgress: ImportPartResult
   goals: ImportPartResult
-  // Parsed V1 goals, already shaped as create requests — one per unit. The client submits each of
-  // these through the standard `createCombinedGoals` mutation (see `import-v1-dialog.tsx`); the
-  // backend no longer creates goals itself.
-  goalSpecs?: CreateCombinedGoalsRequest[]
-  goalsSkipped: number
-  goalIssues: { code: string; sourceGoalId: string | null; message: string }[]
+  outcomes: V1GoalOutcome[]
 }
 
 export function importV1Profile(request: ImportV1ProfileRequest) {
