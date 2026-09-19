@@ -40,4 +40,16 @@ describe("useProjectDetailTutorial", () => {
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
     ).toContain("tour.projectDetail.steps.rowActions")
   })
+
+  it("keeps the reworded header step keys, which now say the project holds a selection of goals", () => {
+    renderHook(() => useProjectDetailTutorial())
+    const steps = register.mock.lastCall?.[0] as {
+      desktop: { title: string; content: string }[]
+    }
+
+    expect(steps.desktop[0]).toMatchObject({
+      title: "localized:tour.projectDetail.steps.header.title",
+      content: "localized:tour.projectDetail.steps.header.content",
+    })
+  })
 })

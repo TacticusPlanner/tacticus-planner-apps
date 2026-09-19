@@ -36,6 +36,7 @@ export function useGoalFormReset(params: {
   setIncludeSuggestedUnlock: (value: boolean) => void
   setIncludeSuggestedAscension: (value: boolean) => void
   setIncludeSuggestedLevel: (value: boolean) => void
+  setStartPaused: (value: boolean) => void
   resetPrefillGuard: () => void
   setEntityType: (value: EntityType) => void
   setEntityId: (value: UnitId | undefined) => void
@@ -75,11 +76,14 @@ export function useGoalFormReset(params: {
     params.resetPrefillGuard()
   }
 
+  // Form-level decisions (entity, projects, start-paused) clear here rather than in resetSelections,
+  // which only reverts the goal-type/target fields when the user switches unit.
   const resetForm = () => {
     params.setEntityType("Character")
     params.setEntityId(undefined)
     resetSelections()
     params.projectSelection.reset()
+    params.setStartPaused(false)
   }
 
   // The Unit picker (plan: merged Character/Mow tabs into one) offers both kinds together — the

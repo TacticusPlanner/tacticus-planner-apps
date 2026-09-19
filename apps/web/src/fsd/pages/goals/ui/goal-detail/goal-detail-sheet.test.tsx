@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const getGoal = vi.fn()
 const updateGoal = vi.fn()
 const updateGoalProjects = vi.fn()
+const updateGoalStatus = vi.fn()
 const listProjects = vi.fn()
 
 vi.mock("react-i18next", () => ({
@@ -74,6 +75,7 @@ vi.mock("@/entities/goal", () => ({
   },
   updateGoal: (...args: unknown[]) => updateGoal(...args),
   updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
+  updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
 }))
 
 vi.mock("@/entities/project", async (importOriginal) => ({
@@ -295,6 +297,7 @@ describe("GoalDetailSheet", () => {
       .mockImplementation((_goalId, projectIds) =>
         Promise.resolve({ ...detail, projectIds })
       )
+    updateGoalStatus.mockReset()
     listProjects.mockReset().mockResolvedValue({
       projects: [
         { projectId: "project-1", name: "My Goals", isActivePlan: true },
@@ -525,6 +528,40 @@ describe("GoalDetailSheet", () => {
         "project-2",
       ])
     })
+  })
+
+  it("issues no status mutation when memberships are edited", async () => {
+    // goal-project-membership: "Editing membership leaves status alone" — a project organizes goals,
+    // it does not activate or deactivate them.
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.click(await screen.findByText("Event Prep"))
+    await vi.waitFor(() => {
+      expect(screen.getByText("goals.detail.save")).not.toBeDisabled()
+    })
+    await user.click(screen.getByText("goals.detail.save"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalProjects).toHaveBeenCalledTimes(1)
+    })
+    expect(updateGoalStatus).not.toHaveBeenCalled()
+  })
+
+  it("states that membership does not pause or resume the goal, wherever memberships are edited", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    const note = await screen.findByTestId(
+      "goal-detail-projects-activation-note"
+    )
+    expect(note).toBeVisible()
+    expect(note).toHaveTextContent("goals.detail.projectsActivationNote")
   })
 
   it("relocates the last project membership to the Default project on save", async () => {

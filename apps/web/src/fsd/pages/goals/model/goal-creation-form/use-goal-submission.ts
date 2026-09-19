@@ -29,6 +29,7 @@ export function useGoalSubmission({
   inventoryUpgrades,
   open,
   specParams,
+  startPaused,
   snapshotContext,
   onOpenChange,
   onCreated,
@@ -45,6 +46,7 @@ export function useGoalSubmission({
     readonly { upgradeId: string; amount: number }[] | undefined
   open: boolean
   specParams: SpecParams
+  startPaused: boolean
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
   onCreated: () => void
@@ -81,6 +83,7 @@ export function useGoalSubmission({
     canSubmit: submissionAllowed,
     selectedProjects,
     specParams,
+    startPaused,
     snapshotContext,
     onOpenChange,
     onCreated,

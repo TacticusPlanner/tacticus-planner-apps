@@ -491,7 +491,7 @@
     },
     "project": {
       "noProjectTitle": "Aún no hay proyectos",
-      "noProjectDescription": "Crea un proyecto para organizar y priorizar objetivos relacionados.",
+      "noProjectDescription": "Un proyecto es una selección de tus objetivos, con nombre y con su propio orden de prioridad. Crea uno para planificar una ampliación de plantilla, un evento o una mejora a largo plazo aparte del resto.",
       "notFoundTitle": "Proyecto no encontrado",
       "notFoundDescription": "Este proyecto no existe, o no tienes acceso a él.",
       "membership": "Proyectos que contienen este objetivo",
@@ -546,7 +546,12 @@
       "archive": "Archivar proyecto",
       "restore": "Restaurar proyecto",
       "save": "Guardar proyecto",
-      "create": "Crear proyecto"
+      "create": "Crear proyecto",
+      "dashboardIntro": "Un proyecto es una selección de tus objetivos, con nombre y con su propio orden de prioridad. Ten varios para planificar cosas distintas por separado (ampliar la plantilla, un evento, una mejora a largo plazo) y cambia entre ellos sin perder el orden de cada uno.",
+      "currentPlanNote": "El plan actual es el proyecto que Diarias y Análisis usan por defecto. No activa ni pausa objetivos: los objetivos se pausan y se reanudan de uno en uno.",
+      "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
+      "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
+      "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo."
     },
     "toasts": {
       "statusChanged": "Objetivo actualizado.",
@@ -723,7 +728,9 @@
         "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo para su rareza actual.",
         "levelMaxed": "Este personaje ya ha alcanzado el nivel máximo.",
         "activeOrPausedGoalExists": "Ya existe un objetivo de {{goalType}} activo o pausado para esta unidad."
-      }
+      },
+      "startPaused": "Crear en pausa",
+      "startPausedDescription": "El objetivo se crea con normalidad, pero queda fuera de la planificación diaria hasta que lo reanudes. Los proyectos que elijas no influyen en esto."
     },
     "estimate": {
       "none": "—",
@@ -787,7 +794,8 @@
       "shardsTitle": "Lugar de fragmentos",
       "shardsDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
       "farmingInvalid": "Cada recurso necesario debe estar disponible en al menos un nodo seleccionado.",
-      "none": "Ninguno"
+      "none": "Ninguno",
+      "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo."
     },
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
@@ -970,8 +978,8 @@
     "projectsList": {
       "steps": {
         "list": {
-          "title": "Tus proyectos",
-          "content": "Compara tu plan actual con otros proyectos y sus resúmenes cargados progresivamente. Los proyectos archivados permanecen contraídos."
+          "title": "Qué es un proyecto",
+          "content": "Un proyecto es una selección de tus objetivos, con nombre y con su propio orden de prioridad: ten varios para planificar cosas distintas por separado. El plan actual es el que usan Diarias y Análisis por defecto; no pausa ni reanuda nada."
         },
         "newProject": {
           "title": "Crea un proyecto",
@@ -982,8 +990,8 @@
     "projectDetail": {
       "steps": {
         "header": {
-          "title": "Proyecto de un vistazo",
-          "content": "Aquí puedes ver la identidad, el estado de plan actual, las métricas, el selector de proyecto y las acciones."
+          "title": "Una selección de tus objetivos",
+          "content": "Este proyecto contiene una selección de los objetivos de tu cuenta; el resumen indica cuántos de ellos están aquí. Su estado de plan actual, las métricas de progreso, el selector de proyecto y las acciones están en esta cabecera."
         },
         "addGoals": {
           "title": "Llena el proyecto",

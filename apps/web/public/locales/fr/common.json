@@ -491,7 +491,7 @@
     },
     "project": {
       "noProjectTitle": "Aucun projet pour le moment",
-      "noProjectDescription": "Créez un projet pour organiser et prioriser des objectifs associés.",
+      "noProjectDescription": "Un projet est une sélection nommée de vos objectifs, avec son propre ordre de priorité. Créez-en un pour planifier un renfort d'effectif, un événement ou une progression de longue haleine à part du reste.",
       "notFoundTitle": "Projet introuvable",
       "notFoundDescription": "Ce projet n'existe pas, ou vous n'y avez pas accès.",
       "membership": "Projets contenant cet objectif",
@@ -546,7 +546,12 @@
       "archive": "Archiver le projet",
       "restore": "Restaurer le projet",
       "save": "Enregistrer le projet",
-      "create": "Créer le projet"
+      "create": "Créer le projet",
+      "dashboardIntro": "Un projet est une sélection nommée de vos objectifs, avec son propre ordre de priorité. Gardez-en plusieurs pour planifier séparément un renfort d'effectif, un événement ou une progression de longue haleine, et passez de l'un à l'autre sans perdre l'ordre de chacun.",
+      "currentPlanNote": "Le plan actuel est le projet utilisé par défaut par les Quotidiennes et les Analyses. Il ne rend aucun objectif actif ni en pause : les objectifs se mettent en pause et se reprennent un par un.",
+      "unitGoalSummaryOfAccount": "{{units}} unités · {{goals}} de vos {{accountGoals}} objectifs",
+      "emptyProjectTitle": "Ce projet n'a pas encore d'objectifs",
+      "emptyProjectDescription": "Utilisez « Ajouter des objectifs » pour y placer des objectifs existants, ou « Créer un objectif » pour en ajouter un."
     },
     "toasts": {
       "statusChanged": "Objectif mis à jour.",
@@ -723,7 +728,9 @@
         "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
         "levelMaxed": "Ce personnage a déjà atteint le niveau maximum.",
         "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité."
-      }
+      },
+      "startPaused": "Créer en pause",
+      "startPausedDescription": "L'objectif est créé normalement mais reste hors de la planification quotidienne jusqu'à ce que vous le repreniez. Les projets choisis n'y changent rien."
     },
     "estimate": {
       "none": "—",
@@ -787,7 +794,8 @@
       "shardsTitle": "Lieu des éclats",
       "shardsDescription": "Laissez chaque nœud non coché pour une sélection automatique au moindre coût en énergie.",
       "farmingInvalid": "Chaque ressource requise doit être disponible sur au moins un nœud sélectionné.",
-      "none": "Aucun"
+      "none": "Aucun",
+      "projectsActivationNote": "L'appartenance change seulement les projets qui contiennent cet objectif. Le mettre en pause ou le reprendre est une action distincte sur l'objectif lui-même."
     },
     "overview": {
       "levelProgress": "Niv {{current}} → {{target}}",
@@ -970,8 +978,8 @@
     "projectsList": {
       "steps": {
         "list": {
-          "title": "Vos projets",
-          "content": "Comparez votre plan actuel aux autres projets et à leurs résumés chargés progressivement. Les projets archivés restent repliés."
+          "title": "Ce qu'est un projet",
+          "content": "Un projet est une sélection nommée de vos objectifs, avec son propre ordre de priorité : gardez-en plusieurs pour planifier séparément. Le plan actuel est celui qu'utilisent par défaut les Quotidiennes et les Analyses ; il ne met rien en pause et ne reprend rien."
         },
         "newProject": {
           "title": "Créer un projet",
@@ -982,8 +990,8 @@
     "projectDetail": {
       "steps": {
         "header": {
-          "title": "Le projet en un coup d'œil",
-          "content": "Retrouvez ici l'identité, l'état Plan actuel, les indicateurs, le sélecteur de projet et les actions."
+          "title": "Une sélection de vos objectifs",
+          "content": "Ce projet contient une sélection des objectifs de votre compte ; le résumé indique combien s'y trouvent. Son état de plan actuel, ses indicateurs de progression, le sélecteur de projet et les actions sont dans cet en-tête."
         },
         "addGoals": {
           "title": "Remplir le projet",

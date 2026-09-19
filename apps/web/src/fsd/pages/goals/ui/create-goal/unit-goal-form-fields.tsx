@@ -201,15 +201,41 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.entityId ? (
-        <GoalProjectsField
-          conflicts={form.projectConflicts}
-          onSelectionChange={form.selectProjects}
-          portalContainer={portalContainer}
-          projects={form.projects}
-          projectsValid={form.selectedProjectIds.length > 0}
-          selectedProjectIds={form.selectedProjectIds}
-          testIdPrefix="create-goal"
-        />
+        <>
+          <GoalProjectsField
+            conflicts={form.projectConflicts}
+            onSelectionChange={form.selectProjects}
+            portalContainer={portalContainer}
+            projects={form.projects}
+            projectsValid={form.selectedProjectIds.length > 0}
+            selectedProjectIds={form.selectedProjectIds}
+            testIdPrefix="create-goal"
+          />
+          {/* Sits with membership rather than in the SheetFooter beside "Create another": this
+              configures the goal being created, not the form's post-submit behavior, and it belongs
+              where the reader is most likely to still assume the project choice decided it. */}
+          <div className="grid gap-2" data-testid="create-goal-start-paused">
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={form.startPaused}
+                data-testid="create-goal-start-paused-checkbox"
+                id="create-goal-start-paused-checkbox"
+                onCheckedChange={(checked) =>
+                  form.setStartPaused(checked === true)
+                }
+              />
+              <FieldLabel
+                className="font-normal"
+                htmlFor="create-goal-start-paused-checkbox"
+              >
+                {t("goals.create.startPaused")}
+              </FieldLabel>
+            </Field>
+            <p className="text-sm text-muted-foreground">
+              {t("goals.create.startPausedDescription")}
+            </p>
+          </div>
+        </>
       ) : null}
 
       {form.entityId && form.reviewItems.length > 0 ? (

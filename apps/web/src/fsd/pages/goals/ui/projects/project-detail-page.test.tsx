@@ -36,13 +36,26 @@ vi.mock("dexie-react-hooks", () => ({
   },
 }))
 
+// Spied rather than plain, so a test can read the interpolation values a key was given — the
+// rendered text is only the key, so counts passed to t() are otherwise invisible.
+const { translate } = vi.hoisted(() => ({
+  translate: vi.fn(
+    (key: string, opts?: { defaultValue?: string }) => opts?.defaultValue ?? key
+  ),
+}))
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
+    t: translate,
     i18n: { resolvedLanguage: "en" },
   }),
 }))
+
+/** The interpolation values the most recent call for `key` was given. */
+function interpolationFor(key: string) {
+  const calls = translate.mock.calls.filter(([called]) => called === key)
+  return calls.at(-1)?.[1] as Record<string, unknown> | undefined
+}
 
 vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
@@ -119,6 +132,10 @@ vi.mock("@workspace/player-data/queries", () => ({
 const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
   Promise.resolve(undefined)
 )
+// The account-wide goal list the header's "N of your M goals" summary is expressed against.
+const listAccountGoals = vi.fn<() => Promise<unknown>>(() =>
+  Promise.resolve({ goals: [] })
+)
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
@@ -126,7 +143,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
     all: () => ["goals"],
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
-      queryFn: () => Promise.resolve({ goals: [] }),
+      queryFn: () => listAccountGoals(),
     }),
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
@@ -263,6 +280,8 @@ describe("ProjectDetailPage", () => {
     updateProjectGoals.mockReset()
     updateProjectUnitOrder.mockReset()
     getGoalDetail.mockReset().mockResolvedValue(undefined)
+    listAccountGoals.mockReset().mockResolvedValue({ goals: [] })
+    translate.mockClear()
   })
 
   it("shows a not-found state for a project id that doesn't match any of the user's projects", async () => {
@@ -284,6 +303,88 @@ describe("ProjectDetailPage", () => {
     expect(
       screen.getByRole("button", { name: "goals.project.moreActions" })
     ).toBeInTheDocument()
+  })
+
+  it("counts only non-archived goals on both sides of the account-relative summary", async () => {
+    // Both numbers must count the same set. goalQueries.list(false) excludes archived goals, so the
+    // project side counts nonArchivedRows — otherwise a mostly-archived project could report more
+    // goals than the account has.
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "m-1", status: "Active" }), priority: 1 },
+        { goal: goal({ goalId: "m-2", status: "Paused" }), priority: 2 },
+        { goal: goal({ goalId: "m-3", status: "Archived" }), priority: 3 },
+      ],
+    })
+    listAccountGoals.mockResolvedValue({
+      goals: [goal({ goalId: "a-1" }), goal({ goalId: "a-2" })],
+    })
+    renderPage("proj-a")
+
+    const summary = await screen.findByTestId("project-detail-goal-summary")
+    await vi.waitFor(() => {
+      expect(summary).toHaveTextContent(
+        "goals.project.unitGoalSummaryOfAccount"
+      )
+    })
+    // 2 non-archived members of 2 account goals — the archived member is not counted on either side,
+    // so the project number never exceeds the account number.
+    expect(
+      interpolationFor("goals.project.unitGoalSummaryOfAccount")
+    ).toMatchObject({ goals: 2, accountGoals: 2 })
+  })
+
+  it("falls back to the plain summary while the account total is still loading", async () => {
+    // The spec forbids presenting the project count against a guessed or zero total.
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "m-1" }), priority: 1 }],
+    })
+    listAccountGoals.mockImplementation(() => new Promise(() => {})) // never resolves
+    renderPage("proj-a")
+
+    const summary = await screen.findByTestId("project-detail-goal-summary")
+    expect(summary).toHaveTextContent("goals.project.unitGoalSummary")
+    expect(summary).not.toHaveTextContent(
+      "goals.project.unitGoalSummaryOfAccount"
+    )
+    expect(
+      interpolationFor("goals.project.unitGoalSummaryOfAccount")
+    ).toBeUndefined()
+    expect(interpolationFor("goals.project.unitGoalSummary")).toMatchObject({
+      goals: 1,
+    })
+  })
+
+  it("tells an empty project it is empty and names the ways to fill it", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    listAccountGoals.mockResolvedValue({
+      goals: [goal({ goalId: "a-1" })], // the account has goals; this project just holds none
+    })
+    renderPage("proj-a")
+
+    const empty = await screen.findByTestId("project-detail-empty")
+    expect(empty).toHaveTextContent("goals.project.emptyProjectTitle")
+    expect(empty).toHaveTextContent("goals.project.emptyProjectDescription")
+    // Not the filtered-empty message, which would claim no goals match rather than that the project
+    // is empty.
+    expect(screen.queryByText("goals.empty.filtered")).not.toBeInTheDocument()
+  })
+
+  it("states nothing in the header or empty state that makes membership sound like activation", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-a")
+
+    const header = await screen.findByTestId("project-detail-header")
+    const empty = await screen.findByTestId("project-detail-empty")
+    for (const region of [header, empty]) {
+      expect(region.textContent ?? "").not.toMatch(
+        /activat|deactivat|makes? .*(active|paused)/i
+      )
+    }
   })
 
   it("shows an archived project's own name in the ProjectSelect instead of falling back to the placeholder", async () => {
