@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import { ArrowRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -12,27 +11,12 @@ import {
 } from "@workspace/ui/components/card"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
-import { Progress } from "@workspace/ui/components/progress"
 
 import { goalTypeIcon, type GoalKind } from "@/entities/goal"
-import { EntityIcon, ProgressionBadge, RankBadge } from "@/shared/ui"
+import { EntityIcon } from "@/shared/ui"
 
-import type { ResourceNeed } from "@/features/goal-farming"
-import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
 import { ProjectColorDot } from "@/entities/project"
-
-/** The track with the larger remaining gap — the one that's actually gating the goal, so that's the
- *  one `GoalProgressDisplay` shows a current/target pair for. */
-function widestAbilityTrack(
-  progress: Extract<GoalProgress, { kind: "Ability" }>
-): { current: number; target: number } {
-  const activeGap = progress.targetActive - progress.currentActive
-  const passiveGap = progress.targetPassive - progress.currentPassive
-  return activeGap > passiveGap
-    ? { current: progress.currentActive, target: progress.targetActive }
-    : { current: progress.currentPassive, target: progress.targetPassive }
-}
 
 export function GoalUnitIcon({
   entityType,
@@ -153,182 +137,5 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
         </Badge>
       ))}
     </div>
-  )
-}
-
-/** Current → target state plus a progress bar, formatted per `GoalProgress`'s kind (plan §2) — reuses
- * `RankBadge`/`ProgressionBadge` for Rank/Ascension so a goal's target reads identically here and in
- * the create-goal form; other kinds are plain numbers, since no icon/name exists for a raw level or
- * shard count. Renders nothing for `Unknown` (player data for this goal hasn't synced yet). */
-export function GoalProgressDisplay({
-  progress,
-  potentialRatio,
-  actualSummary,
-  potentialSummary,
-}: {
-  progress: GoalProgress
-  potentialRatio?: number
-  actualSummary?: ReactNode
-  potentialSummary?: ReactNode
-}) {
-  const { t } = useTranslation()
-
-  if (progress.kind === "Unknown") return actualSummary
-
-  const currentTarget =
-    progress.kind === "Rank" ? (
-      <span className="flex items-center gap-1.5">
-        <RankBadge rank={progress.current} showLabel={false} />
-        <ArrowRight className="size-3.5 text-muted-foreground" />
-        <RankBadge rank={progress.target} showLabel={false} />
-      </span>
-    ) : progress.kind === "Ascension" ? (
-      <span className="flex items-center gap-1.5">
-        <ProgressionBadge value={progress.current} />
-        <ArrowRight className="size-3.5 text-muted-foreground" />
-        <ProgressionBadge value={progress.target} />
-      </span>
-    ) : progress.kind === "Ability" ? (
-      <span>
-        {t("goals.overview.levelProgress", widestAbilityTrack(progress))}
-      </span>
-    ) : progress.kind === "Unlock" ? (
-      <span>
-        {t("goals.create.unlock.ownedOfTotal", {
-          owned: progress.owned,
-          total: progress.required,
-        })}
-      </span>
-    ) : progress.kind === "Level" ? (
-      <span>
-        {t("goals.overview.levelProgress", {
-          current: progress.current,
-          target: progress.target,
-        })}
-      </span>
-    ) : progress.ratio !== null ? (
-      // "Upgrade" — no natural current/target pair to show (it's an average across several
-      // materials), so the percentage itself is the only visible readout.
-      <span>{Math.round(progress.ratio * 100)}%</span>
-    ) : null
-
-  return (
-    <div className="grid gap-1" data-testid="goal-progress">
-      {currentTarget}
-      {progress.ratio !== null ? (
-        <div className="grid gap-1">
-          {potentialRatio !== undefined ? (
-            <span className="text-xs text-muted-foreground">
-              {t("goals.overview.actualProgress")}
-            </span>
-          ) : null}
-          <Progress
-            aria-label={
-              potentialRatio !== undefined
-                ? t("goals.overview.actualProgress")
-                : t("goals.overview.progressLabel")
-            }
-            aria-valuetext={`${Math.round(progress.ratio * 100)}%`}
-            className="h-1.5"
-            data-testid="goal-progress-bar"
-            value={progress.ratio * 100}
-          />
-          {actualSummary}
-          {potentialRatio !== undefined ? (
-            <>
-              <span className="text-xs text-muted-foreground">
-                {t("goals.overview.potentialProgress")}
-              </span>
-              <Progress
-                aria-label={t("goals.overview.potentialProgress")}
-                aria-valuetext={`${Math.round(potentialRatio * 100)}%`}
-                className="h-1.5"
-                data-testid="goal-potential-progress-bar"
-                value={potentialRatio * 100}
-              />
-              {potentialSummary}
-            </>
-          ) : null}
-        </div>
-      ) : (
-        actualSummary
-      )}
-    </div>
-  )
-}
-
-/** "N upgrades/shards/orbs remaining" (plan §2) — a coarse count, not the full per-material
- * breakdown (that lives in the detail view's Estimate section). `null` (uncosted kind, or nothing
- * left) renders nothing. */
-export function GoalRemainingSummary({
-  remaining,
-}: {
-  remaining: ResourceNeed | null
-}) {
-  const { t } = useTranslation()
-  if (!remaining) return null
-
-  const upgradeCount = remaining.upgrades.reduce(
-    (sum, need) => sum + need.count,
-    0
-  )
-  const orbCount = Object.values(remaining.orbsByType).reduce(
-    (sum, count) => sum + (count ?? 0),
-    0
-  )
-  const parts = [
-    // Rank goals report unfilled *slots* (a small, fixed-size count — 6 per rank) instead of the raw
-    // crafting-material total, which can look enormous once recipes are factored in and doesn't map
-    // onto "how many rank-ups are left" the way a slot count does. Every other goal kind has no slot
-    // concept (`upgradeSlotsRemaining` is `null`), so it keeps the material total.
-    remaining.upgradeSlotsRemaining !== null
-      ? remaining.upgradeSlotsRemaining > 0
-        ? t("goals.overview.remaining.upgradeSlots", {
-            count: remaining.upgradeSlotsRemaining,
-          })
-        : null
-      : upgradeCount > 0
-        ? t("goals.overview.remaining.upgrades", { count: upgradeCount })
-        : null,
-    remaining.shards > 0
-      ? t("goals.overview.remaining.shards", { count: remaining.shards })
-      : null,
-    remaining.mythicShards > 0
-      ? t("goals.overview.remaining.mythicShards", {
-          count: remaining.mythicShards,
-        })
-      : null,
-    orbCount > 0
-      ? t("goals.overview.remaining.orbs", { count: orbCount })
-      : null,
-  ].filter((part): part is string => part !== null)
-
-  if (parts.length === 0) return null
-
-  return (
-    <p
-      className="text-xs text-muted-foreground"
-      data-testid="goal-remaining-summary"
-    >
-      {parts.join(" · ")}
-    </p>
-  )
-}
-
-export function GoalEnergyRemainingSummary({
-  energy,
-}: {
-  energy: number | undefined
-}) {
-  const { t } = useTranslation()
-  if (energy === undefined) return null
-
-  return (
-    <p
-      className="text-xs text-muted-foreground"
-      data-testid="goal-energy-remaining-summary"
-    >
-      {t("goals.overview.remaining.energy", { energy })}
-    </p>
   )
 }

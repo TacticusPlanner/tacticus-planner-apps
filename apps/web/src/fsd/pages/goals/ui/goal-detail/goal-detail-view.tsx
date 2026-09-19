@@ -12,11 +12,10 @@ import type { EstimateOutcome, ResourceNeed } from "@/features/goal-farming"
 import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
 import {
-  GoalEnergyRemainingSummary,
   GoalProgressDisplay,
-  GoalProjectBadges,
-  GoalRemainingSummary,
-} from "../shared/goal-visuals"
+  GoalTargetDisplay,
+} from "../shared/goal-progress-visuals"
+import { GoalProjectBadges } from "../shared/goal-visuals"
 import { GoalEstimateSection } from "./goal-estimate-section"
 
 type MissingPrerequisiteReason = Extract<
@@ -64,6 +63,16 @@ export function GoalDetailView({
   onViewGoal: (goalId: string) => void
 }) {
   const { t } = useTranslation()
+  // Two different unreached-prerequisite goals (or any other pair of reasons that happen to render
+  // identical text, e.g. `PrerequisiteNotReached` carries a `goalId` the text never names) would
+  // otherwise show the same line twice with nothing to tell them apart.
+  const seenBlockerReasonTexts = new Set<string>()
+  const uniqueBlockerReasons = blockers.reasons.filter((reason) => {
+    const text = blockerReasonText(t, reason)
+    if (seenBlockerReasonTexts.has(text)) return false
+    seenBlockerReasonTexts.add(text)
+    return true
+  })
 
   return (
     <div className="grid gap-6 px-4 text-sm" data-testid="goal-detail-view">
@@ -73,25 +82,17 @@ export function GoalDetailView({
           <p className="text-muted-foreground">{t("goals.detail.none")}</p>
         ) : (
           <>
+            <GoalTargetDisplay progress={progress} />
             <GoalProgressDisplay
-              actualSummary={<GoalRemainingSummary remaining={remaining} />}
-              potentialRatio={potentialRatio}
-              potentialSummary={
-                <GoalEnergyRemainingSummary
-                  energy={
-                    estimate && estimate.status !== "Blocked"
-                      ? estimate.energyTotal
-                      : undefined
-                  }
-                />
+              energy={
+                estimate && estimate.status !== "Blocked"
+                  ? estimate.energyTotal
+                  : undefined
               }
+              potentialRatio={potentialRatio}
               progress={progress}
+              remaining={remaining}
             />
-            {potentialRatio !== undefined ? (
-              <p className="text-xs text-muted-foreground">
-                {t("goals.detail.potentialProgressDescription")}
-              </p>
-            ) : null}
           </>
         )}
       </section>
@@ -102,7 +103,7 @@ export function GoalDetailView({
         <h3 className="font-semibold">{t("goals.detail.blockersTitle")}</h3>
         {blockers.isBlocked ? (
           <ul className="grid gap-1 text-amber-700">
-            {blockers.reasons.map((reason, index) => {
+            {uniqueBlockerReasons.map((reason, index) => {
               const missingPrerequisite =
                 reason.kind === "MissingLevelPrerequisite" ||
                 reason.kind === "MissingAscensionPrerequisite" ||

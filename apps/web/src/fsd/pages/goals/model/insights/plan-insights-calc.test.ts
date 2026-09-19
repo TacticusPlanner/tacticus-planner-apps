@@ -264,7 +264,15 @@ describe("computePlanInsights", () => {
       ...baseParams,
       details,
       playerCharacterById: new Map([
-        ["hero1", { rank: rankOrder[1], appliedUpgradeSlots: [] } as never],
+        [
+          "hero1",
+          {
+            rank: rankOrder[1],
+            appliedUpgradeSlots: [],
+            progressionIndex: "Mythic:MythicWings",
+            xpLevel: 60,
+          } as never,
+        ],
       ]),
       priorityByGoalId: new Map([["goal-1", 1]]),
     })
@@ -320,6 +328,8 @@ describe("computePlanInsights", () => {
           {
             rank: rankOrder[1],
             appliedUpgradeSlots: [0, 1, 2],
+            progressionIndex: "Mythic:MythicWings",
+            xpLevel: 60,
           } as never,
         ],
       ]),
@@ -582,6 +592,57 @@ describe("computePlanInsights", () => {
     expect(result.potentialProgressByGoalId.get("goal-1")).toBe(0.5)
   })
 
+  it("derives Level potential from owned xp books", () => {
+    const result = computePlanInsights({
+      ...baseParams,
+      details: [
+        goalDetail({
+          goalType: "Level",
+          config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
+        }),
+      ],
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      playerCharacterById: new Map([
+        ["hero1", { xpLevel: 31, xp: 0 } as never],
+      ]),
+      // Level 32's own total-xp threshold is 94200; 8 Legendary books (100000) fully cover it.
+      inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
+    })
+
+    expect(result.potentialProgressByGoalId.get("goal-1")).toBe(1)
+  })
+
+  it("gives a higher-priority Level goal first claim on the shared xp-book pool", () => {
+    const details = [
+      goalDetail({
+        goalId: "goal-low",
+        config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
+      }),
+      goalDetail({
+        goalId: "goal-high",
+        config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
+      }),
+    ].map((detail) => ({ ...detail, goalType: "Level" as const }))
+    const result = computePlanInsights({
+      ...baseParams,
+      details,
+      priorityByGoalId: new Map([
+        ["goal-low", 2],
+        ["goal-high", 1],
+      ]),
+      playerCharacterById: new Map([
+        ["hero1", { xpLevel: 31, xp: 0 } as never],
+      ]),
+      // Only enough (8 Legendary books = 100000 xp) to fully resolve one goal's 94200 xp need.
+      inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
+    })
+
+    expect(result.potentialProgressByGoalId.get("goal-high")).toBe(1)
+    // No books left for "goal-low" once "goal-high" claimed them — its potential stays at its own
+    // actual (unadvanced) ratio, same as if nothing were owned at all.
+    expect(result.potentialProgressByGoalId.get("goal-low")).toBe(0)
+  })
+
   it("restricts an Unlock goal's shard farming to config.farmingLocationIds, changing the resulting energy total", () => {
     const twoLocationCharacterView = {
       ...characterView,
@@ -638,5 +699,26 @@ describe("computePlanInsights", () => {
     expect(
       restrictedToExpensiveNode.potentialProgressByGoalId.has("goal-1")
     ).toBe(false)
+  })
+
+  it("derives no shard need or energy for an already-owned Unlock goal (fix-goal-progress-consistency)", () => {
+    const params = {
+      ...baseParams,
+      playerCharacterById: new Map([["hero1", { unitId: "hero1" } as never]]),
+      inventoryShardById: new Map([["hero1", { amount: 5 } as never]]),
+      unlockShardCostsById: new Map<string, UnlockShardCostStorageModel>([
+        ["Common", { id: "Common", rarity: "Common", shards: 40 }],
+      ]),
+      priorityByGoalId: new Map([["goal-1", 1]]),
+    }
+
+    const result = computePlanInsights({
+      ...params,
+      details: [goalDetail({ goalType: "Unlock" })],
+    })
+
+    expect(result.totals.shards).toBe(0)
+    expect(result.energyTotal).toBe(0)
+    expect(result.estimates.has("goal-1")).toBe(false)
   })
 })

@@ -132,6 +132,7 @@ describe("unlockResourceNeed", () => {
       initialRarity: "Legendary",
       entityId: "hero1",
       isMow: false,
+      owned: false,
       ownedShards: 100,
       unlockShardCostsById,
     })
@@ -145,6 +146,7 @@ describe("unlockResourceNeed", () => {
       initialRarity: "Rare",
       entityId: "mow1",
       isMow: true,
+      owned: false,
       ownedShards: 0,
       unlockShardCostsById,
     })
@@ -158,11 +160,35 @@ describe("unlockResourceNeed", () => {
       initialRarity: undefined,
       entityId: "hero1",
       isMow: false,
+      owned: false,
       ownedShards: 0,
       unlockShardCostsById,
     })
 
     expect(need.shards).toBe(0)
+  })
+
+  it("is zero once the character is owned, even with the same catalog cost and shard inventory that would otherwise net to a nonzero need", () => {
+    const notOwned = unlockResourceNeed({
+      initialRarity: "Common",
+      entityId: "hero1",
+      isMow: false,
+      owned: false,
+      ownedShards: 5,
+      unlockShardCostsById,
+    })
+    expect(notOwned.shards).toBe(35)
+
+    const owned = unlockResourceNeed({
+      initialRarity: "Common",
+      entityId: "hero1",
+      isMow: false,
+      owned: true,
+      ownedShards: 5,
+      unlockShardCostsById,
+    })
+    expect(owned.shards).toBe(0)
+    expect(owned.shardId).toBeNull()
   })
 })
 

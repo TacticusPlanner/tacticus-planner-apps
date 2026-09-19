@@ -126,6 +126,28 @@ describe("aggregateShopNeeds", () => {
     })
   })
 
+  it("derives no shard need for an already-owned Unlock goal (fix-goal-progress-consistency)", () => {
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [member("g1", heroId, "Unlock", "Active")],
+        details: [detail("g1", heroId, "Unlock")],
+        charactersById: new Map([
+          [
+            heroId,
+            { id: heroId, name: "Farseer", initialRarity: "Rare" } as never,
+          ],
+        ]),
+        unlockShardCostsById: new Map([
+          ["Rare", { rarity: "Rare", shards: 130 } as never],
+        ]),
+        inventoryShardById: new Map([[heroId, { amount: 30 } as never]]),
+        playerCharacterById: new Map([[heroId, { unitId: heroId } as never]]),
+      })
+    )
+
+    expect(needs.has("shards_eldarFarseer")).toBe(false)
+  })
+
   it("aggregates a Rank goal's mythic uncraftable upgrade-material need", () => {
     const needs = aggregateShopNeeds(
       baseParams({

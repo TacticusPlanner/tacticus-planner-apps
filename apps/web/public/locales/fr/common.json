@@ -444,11 +444,11 @@
     },
     "columns": {
       "entity": "Personnage",
-      "type": "Type",
+      "goal": "Objectif",
       "progress": "Progression",
-      "status": "Statut",
-      "actions": "Actions",
-      "estimate": "Terminé le"
+      "remaining": "Restant",
+      "status": "Statut · Terminé le",
+      "actions": "Actions"
     },
     "status": {
       "Draft": "Brouillon",
@@ -459,6 +459,7 @@
     },
     "blocked": {
       "label": "Bloqué",
+      "restrictedLabel": "Restreint",
       "reasons": {
         "PrerequisiteNotReached": "En attente qu'un objectif préalable soit atteint en premier.",
         "PlayerDataUnavailable": "Les données du joueur pour cet objectif ne sont pas encore synchronisées.",
@@ -754,7 +755,6 @@
       "unsavedChangesCancel": "Continuer la modification",
       "estimateTitle": "Estimation",
       "isolatedEstimate": "Estimation isolée",
-      "potentialProgressDescription": "La progression potentielle applique les ressources que vous possédez déjà après que les objectifs prioritaires de ce projet aient réservé leur part. Elle ne change pas le statut réel de l'objectif.",
       "unavailable": "Indisponible",
       "dependenciesTitle": "Dépendances",
       "historyTitle": "Historique",
@@ -776,7 +776,9 @@
       "levelProgress": "Niv {{current}} → {{target}}",
       "progressLabel": "Progression de l'objectif",
       "actualProgress": "Progression réelle",
+      "actualProgressDescription": "La progression réelle reflète l'état actuellement synchronisé et possédé de votre compte.",
       "potentialProgress": "Progression potentielle",
+      "potentialProgressDescription": "La progression potentielle applique les ressources que vous possédez déjà après que les objectifs prioritaires de ce projet aient réservé leur part. Elle ne change pas le statut réel de l'objectif.",
       "remaining": {
         "upgrades": "{{count}} améliorations restantes",
         "upgradeSlots": "{{count}} emplacements d'amélioration restants",
@@ -784,7 +786,27 @@
         "shards": "{{count}} éclats restants",
         "mythicShards": "{{count}} éclats mythiques restants",
         "orbs": "{{count}} orbes restants"
-      }
+      },
+      "remainingText": {
+        "levels": "{{count}} niveaux",
+        "levelsWithXp": "{{count}} niveaux · {{xp}} XP",
+        "rank": "{{slots}} emplacements",
+        "rankWithEnergy": "{{slots}} emplacements · {{energy}} énergie",
+        "shards": "{{count}} éclats"
+      },
+      "potentialIndicator": "↗ {{percent}}%",
+      "progressDetails": "Détails de la progression",
+      "progressComplete": "{{percent}}% terminé",
+      "progressCompleteWithPotential": "{{percent}}% terminé, {{potential}}% potentiel",
+      "actualSlotsRemaining": "{{count}} emplacements d'amélioration restants.",
+      "actualLevelsRemaining": "{{count}} niveaux restants.",
+      "potentialEnergyRemaining": "{{energy}} énergie restante.",
+      "potentialXpRemaining": "{{xp}} XP restant.",
+      "reachableCeilingLabel": "Actuellement atteignable :",
+      "reachableCeilingLevelLabel": "Actuellement atteignable : niveau {{level}}",
+      "reachableCeilingReasonRarity": "limité par la rareté",
+      "reachableCeilingReasonLevel": "limité par le niveau",
+      "reachableCeilingReasonBoth": "limité par la rareté et le niveau"
     },
     "insights": {
       "selectProject": "Sélectionnez un projet",

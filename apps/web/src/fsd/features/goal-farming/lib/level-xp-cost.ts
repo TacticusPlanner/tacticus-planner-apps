@@ -28,50 +28,56 @@ const xpBookValueByRarity: Record<Rarity, number> = {
 /** Gold cost to apply a single book, independent of rarity (V1's `legendaryTomeApplyCost`). */
 const XP_BOOK_APPLY_GOLD = 500
 
-/** Best-guess `xpBookId` -> rarity mapping (no real Tacticus API ids are documented anywhere in
- * this repo — V1 never tracked xp books by id, only by rarity — so this follows the naming pattern
- * already used by the `player-data-sync.test.ts` fixture, e.g. "bookCommon"). Correct this once the
- * real synced ids are known; until then, an unrecognized id simply contributes nothing to netting
- * (see `netXpAgainstOwnedBooks`), so a wrong guess degrades to "don't net that book" rather than
- * miscounting. */
+/** `xpBookId` -> rarity mapping, confirmed against a real synced account's own `inventory:summary`
+ * record (`xpCommon`/`xpUncommon`/`xpRare`/`xpEpic`/`xpLegendary`/`xpMythic`) — an earlier best-guess
+ * mapping here used a `"book"` prefix instead of `"xp"` (a plausible but wrong guess made before any
+ * real synced ids were known), which silently zeroed out every owned book in `ownedBooksByRarity`
+ * (no id ever matched) without erroring, so it went unnoticed until this was checked against real
+ * data. An unrecognized id still simply contributes nothing to netting (see
+ * `netXpAgainstOwnedBooks`), so an id that turns out wrong again degrades to "don't net that book"
+ * rather than miscounting — but this exact set is now verified, not guessed. */
 const xpBookIdRarity: Record<string, Rarity> = {
-  bookCommon: "Common",
-  bookUncommon: "Uncommon",
-  bookRare: "Rare",
-  bookEpic: "Epic",
-  bookLegendary: "Legendary",
-  bookMythic: "Mythic",
+  xpCommon: "Common",
+  xpUncommon: "Uncommon",
+  xpRare: "Rare",
+  xpEpic: "Epic",
+  xpLegendary: "Legendary",
+  xpMythic: "Mythic",
 }
 
 function totalXpAtLevel(level: number): number | undefined {
   return xpTotalAtLevel[level]
 }
 
-/** The XP still needed to go from `currentLevel` (with `currentXp` already earned toward the next
- * level) to `targetLevel` — mirrors V1's `CharactersXpService.getLegendaryTomesCount`'s own xpLeft
- * calc. 0 for an invalid/already-reached range. */
+/** The XP still needed to reach `targetLevel`, given `currentXp` — the character's *total* XP
+ * gained since level 1 (the real Tacticus API's own `xp` field is documented as "total XP gained
+ * for character", not a per-level-reset partial amount — see `tacticus-planner-api`'s OpenAPI spec,
+ * `Unit.xp`). `currentLevel` is only used as a fast-path validity guard (an already-reached or
+ * inverted range needs no XP-table lookup at all); the XP math itself never re-derives it from
+ * `currentLevel`, since `currentXp` alone already encodes how far past any given level's own
+ * threshold the character is. 0 for an invalid/already-reached range. */
 export function xpNeededForLevelRange(
   currentLevel: number,
   currentXp: number,
   targetLevel: number
 ): number {
   if (currentLevel >= targetLevel) return 0
-  const currentLevelTotalXp = totalXpAtLevel(currentLevel - 1)
   const targetLevelTotalXp = totalXpAtLevel(targetLevel - 1)
-  if (currentLevelTotalXp === undefined || targetLevelTotalXp === undefined) {
-    return 0
-  }
-  const xpLeft = targetLevelTotalXp - currentLevelTotalXp - currentXp
+  if (targetLevelTotalXp === undefined) return 0
+  const xpLeft = targetLevelTotalXp - currentXp
   return xpLeft > 0 ? xpLeft : 0
 }
 
-/** Nets `xpNeeded` against owned books, highest-value rarity first (most XP-efficient use of what's
- * owned), then spends any single remaining book of the lowest rarity that still has stock — mirrors
- * V1's `GoalsService.adjustNeededXp`. `ownedByRarity` isn't mutated. */
-export function netXpAgainstOwnedBooks(
+/** Spends owned books against `xpNeeded`, highest-value rarity first (most XP-efficient use of
+ * what's owned), then spends any single remaining book of the lowest rarity that still has stock —
+ * mirrors V1's `GoalsService.adjustNeededXp`. Returns both the still-unmet remainder and the
+ * updated pool (books actually spent removed) — `ownedByRarity` itself isn't mutated, so a caller
+ * allocating the same pool across several goals in priority order can feed one goal's
+ * `remainingOwned` into the next. */
+export function consumeOwnedBooks(
   xpNeeded: number,
   ownedByRarity: Partial<Record<Rarity, number>>
-): number {
+): { remainingXp: number; remainingOwned: Partial<Record<Rarity, number>> } {
   const remainingOwned = { ...ownedByRarity }
   const highestValueFirst = [...rarityOrder].reverse()
 
@@ -95,11 +101,41 @@ export function netXpAgainstOwnedBooks(
     }
   }
 
-  return remaining
+  return { remainingXp: remaining, remainingOwned }
 }
 
-/** Collapses a `{xpBookId, amount}[]` inventory into owned-by-rarity, via the best-guess
- * `xpBookIdRarity` map (see its own doc comment) — an unrecognized id is simply skipped. */
+/** Nets `xpNeeded` against owned books — the still-unmet remainder alone, for a caller that only
+ * needs a single goal's own cost preview (not a multi-goal shared-pool allocation; see
+ * `consumeOwnedBooks` for that). `ownedByRarity` isn't mutated. */
+export function netXpAgainstOwnedBooks(
+  xpNeeded: number,
+  ownedByRarity: Partial<Record<Rarity, number>>
+): number {
+  return consumeOwnedBooks(xpNeeded, ownedByRarity).remainingXp
+}
+
+/** How far (level, not levels-since-current) `availableXp` gets a character from
+ * (`currentLevel`, `currentXp`), capped at `targetLevel` — the inverse of `xpNeededForLevelRange`,
+ * scanning candidate levels one at a time since the level curve has no closed-form inverse. Used to
+ * turn an amount of *allocated* XP (owned books, possibly shared with other goals — see
+ * `consumeOwnedBooks`) into the "potential" level a Level goal's progress bar marks. */
+export function maxLevelReachableWithXp(
+  currentLevel: number,
+  currentXp: number,
+  targetLevel: number,
+  availableXp: number
+): number {
+  let reachable = currentLevel
+  for (let level = currentLevel + 1; level <= targetLevel; level++) {
+    if (xpNeededForLevelRange(currentLevel, currentXp, level) > availableXp)
+      break
+    reachable = level
+  }
+  return reachable
+}
+
+/** Collapses a `{xpBookId, amount}[]` inventory into owned-by-rarity, via the `xpBookIdRarity` map
+ * (see its own doc comment) — an unrecognized id is simply skipped. */
 export function ownedBooksByRarity(
   inventory: readonly { xpBookId: string; amount: number }[] | undefined
 ): Partial<Record<Rarity, number>> {

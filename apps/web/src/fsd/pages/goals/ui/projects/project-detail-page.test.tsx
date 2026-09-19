@@ -110,6 +110,7 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerMows: () => Promise.resolve([]),
   getInventoryUpgrades: () => Promise.resolve(undefined),
   getInventoryOrbs: () => Promise.resolve(undefined),
+  getInventoryXpBooks: () => Promise.resolve(undefined),
   getPlayerInventoryItems: () => Promise.resolve([]),
   getInventoryShard: () => Promise.resolve(undefined),
   getLiveProgress: () => undefined,

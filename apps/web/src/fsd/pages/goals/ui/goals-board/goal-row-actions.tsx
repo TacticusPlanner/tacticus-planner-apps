@@ -19,12 +19,21 @@ type Props = {
   goalId: string
   status: GoalStatus
   actions: ReturnType<typeof useGoalActions>
+  /** Notified when this menu opens/closes — lets a list close an unrelated open info popover
+   *  (`goal-progress-display`'s "closes on ... opening the row menu" requirement) rather than
+   *  letting both float over the row at once. */
+  onOpenChange?: (open: boolean) => void
 }
 
 /** Per-row "⋯" lifecycle menu — resume/pause, archive/unarchive, and a destructive delete gated
  * behind `DeleteGoalDialog`. Reaching a goal's target is computed automatically (see
  * `model/attainment/`), never a manual action here. */
-export function GoalRowActions({ goalId, status, actions }: Props) {
+export function GoalRowActions({
+  goalId,
+  status,
+  actions,
+  onOpenChange,
+}: Props) {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const pending = actions.pendingId === goalId
@@ -33,7 +42,7 @@ export function GoalRowActions({ goalId, status, actions }: Props) {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu onOpenChange={onOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
             aria-label={t("goals.actions.openMenu")}

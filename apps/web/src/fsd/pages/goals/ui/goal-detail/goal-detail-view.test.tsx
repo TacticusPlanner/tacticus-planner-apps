@@ -3,7 +3,11 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, unknown>) =>
+      opts ? `${key}:${JSON.stringify(opts)}` : key,
+    i18n: { resolvedLanguage: "en" },
+  }),
 }))
 
 import { GoalDetailView } from "./goal-detail-view"
@@ -33,6 +37,10 @@ describe("GoalDetailView", () => {
           current: "Stone1",
           target: "Iron1",
           ratio: 0.25,
+          reachableRatio: null,
+          reachableRank: null,
+          reachableAppliedSlots: null,
+          reachableRankLimitedBy: null,
         }}
         remaining={{
           upgrades: [],
@@ -45,15 +53,25 @@ describe("GoalDetailView", () => {
       />
     )
 
-    expect(screen.getByTestId("goal-remaining-summary")).toHaveTextContent(
-      "goals.overview.remaining.upgradeSlots"
+    fireEvent.click(screen.getByTestId("goal-progress-info-trigger"))
+
+    const explanation = screen.getByTestId("goal-progress-explanation")
+    expect(explanation).toHaveTextContent("goals.overview.actualProgress 25%")
+    expect(explanation).toHaveTextContent(
+      "goals.overview.actualProgressDescription"
     )
-    expect(
-      screen.getByTestId("goal-energy-remaining-summary")
-    ).toHaveTextContent("goals.overview.remaining.energy")
-    expect(
-      screen.getByText("goals.detail.potentialProgressDescription")
-    ).toBeInTheDocument()
+    expect(explanation).toHaveTextContent(
+      'goals.overview.actualSlotsRemaining:{"count":"3"}'
+    )
+    expect(explanation).toHaveTextContent(
+      "goals.overview.potentialProgress 75%"
+    )
+    expect(explanation).toHaveTextContent(
+      "goals.overview.potentialProgressDescription"
+    )
+    expect(explanation).toHaveTextContent(
+      'goals.overview.potentialEnergyRemaining:{"energy":"50"}'
+    )
   })
 
   it("renders the missing-Unlock reason's create action (4.2)", () => {

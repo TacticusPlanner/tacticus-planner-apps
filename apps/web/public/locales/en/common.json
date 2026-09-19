@@ -444,11 +444,11 @@
     },
     "columns": {
       "entity": "Character",
-      "type": "Type",
+      "goal": "Goal",
       "progress": "Progress",
-      "status": "Status",
-      "actions": "Actions",
-      "estimate": "Done By"
+      "remaining": "Remaining",
+      "status": "Status · Done by",
+      "actions": "Actions"
     },
     "status": {
       "Draft": "Draft",
@@ -459,6 +459,7 @@
     },
     "blocked": {
       "label": "Blocked",
+      "restrictedLabel": "Restricted",
       "reasons": {
         "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
@@ -754,7 +755,6 @@
       "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
-      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in this project reserve their share. It does not change the goal's actual status.",
       "unavailable": "Unavailable",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
@@ -776,7 +776,9 @@
       "levelProgress": "Lv {{current}} → {{target}}",
       "progressLabel": "Goal progress",
       "actualProgress": "Actual progress",
+      "actualProgressDescription": "Actual progress reflects your account's currently synced, owned state.",
       "potentialProgress": "Potential progress",
+      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in this project reserve their share. It does not change the goal's actual status.",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "upgradeSlots": "{{count}} upgrade slots remaining",
@@ -784,7 +786,27 @@
         "shards": "{{count}} shards remaining",
         "mythicShards": "{{count}} mythic shards remaining",
         "orbs": "{{count}} orbs remaining"
-      }
+      },
+      "remainingText": {
+        "levels": "{{count}} levels",
+        "levelsWithXp": "{{count}} levels · {{xp}} XP",
+        "rank": "{{slots}} slots",
+        "rankWithEnergy": "{{slots}} slots · {{energy}} energy",
+        "shards": "{{count}} shards"
+      },
+      "potentialIndicator": "↗ {{percent}}%",
+      "progressDetails": "Progress details",
+      "progressComplete": "{{percent}}% complete",
+      "progressCompleteWithPotential": "{{percent}}% complete, {{potential}}% potential",
+      "actualSlotsRemaining": "{{count}} upgrade slots remaining.",
+      "actualLevelsRemaining": "{{count}} levels remaining.",
+      "potentialEnergyRemaining": "{{energy}} energy remaining.",
+      "potentialXpRemaining": "{{xp}} XP remaining.",
+      "reachableCeilingLabel": "Currently reachable:",
+      "reachableCeilingLevelLabel": "Currently reachable: Level {{level}}",
+      "reachableCeilingReasonRarity": "capped by rarity",
+      "reachableCeilingReasonLevel": "capped by level",
+      "reachableCeilingReasonBoth": "capped by rarity and level"
     },
     "insights": {
       "selectProject": "Select a project",

@@ -27,7 +27,11 @@ import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goa
 import type { BlockerReason } from "../../model/blockers/goal-blockers"
 import { prerequisitePrefill } from "../../model/blockers/prerequisite-prefill"
 import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
-import { GoalProgressDisplay, GoalProjectBadges } from "../shared/goal-visuals"
+import {
+  GoalProgressDisplay,
+  GoalTargetDisplay,
+} from "../shared/goal-progress-visuals"
+import { GoalProjectBadges } from "../shared/goal-visuals"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   GoalDetailEditForm,
@@ -307,10 +311,16 @@ export function GoalDetailSheet({
             <div className="grid gap-2 px-4 text-sm">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge status={detail.status} />
-                <BlockedIndicator blockers={metrics?.blockers ?? NO_BLOCKERS} />
+                <BlockedIndicator
+                  blockers={metrics?.blockers ?? NO_BLOCKERS}
+                  progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                />
               </div>
               {mode === "edit" ? (
                 <>
+                  <GoalTargetDisplay
+                    progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                  />
                   <GoalProgressDisplay
                     potentialRatio={potentialRatio}
                     progress={metrics?.progress ?? UNKNOWN_PROGRESS}

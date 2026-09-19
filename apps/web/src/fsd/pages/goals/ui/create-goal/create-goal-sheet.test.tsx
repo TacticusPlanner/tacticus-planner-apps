@@ -607,7 +607,7 @@ describe("CreateGoalSheet", () => {
     })
     // 31 -> 32 needs 94200 - 72200 = 22000 xp; 2 owned Legendary books (25000 xp) fully covers it.
     getInventoryXpBooks.mockReturnValue([
-      { xpBookId: "bookLegendary", amount: 2 },
+      { xpBookId: "xpLegendary", amount: 2 },
     ])
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 

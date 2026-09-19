@@ -444,11 +444,11 @@
     },
     "columns": {
       "entity": "Personaje",
-      "type": "Tipo",
+      "goal": "Objetivo",
       "progress": "Progreso",
-      "status": "Estado",
-      "actions": "Acciones",
-      "estimate": "Fecha fin"
+      "remaining": "Restante",
+      "status": "Estado · Fecha fin",
+      "actions": "Acciones"
     },
     "status": {
       "Draft": "Borrador",
@@ -459,6 +459,7 @@
     },
     "blocked": {
       "label": "Bloqueado",
+      "restrictedLabel": "Restringido",
       "reasons": {
         "PrerequisiteNotReached": "Esperando a que se alcance primero un objetivo previo.",
         "PlayerDataUnavailable": "Los datos del jugador para este objetivo aún no se han sincronizado.",
@@ -754,7 +755,6 @@
       "unsavedChangesCancel": "Seguir editando",
       "estimateTitle": "Estimación",
       "isolatedEstimate": "Estimación aislada",
-      "potentialProgressDescription": "El progreso potencial aplica los recursos que ya posees después de que los objetivos de mayor prioridad de este proyecto reserven su parte. No cambia el estado real del objetivo.",
       "unavailable": "No disponible",
       "dependenciesTitle": "Dependencias",
       "historyTitle": "Historial",
@@ -776,7 +776,9 @@
       "levelProgress": "Nv {{current}} → {{target}}",
       "progressLabel": "Progreso del objetivo",
       "actualProgress": "Progreso real",
+      "actualProgressDescription": "El progreso real refleja el estado actualmente sincronizado y en propiedad de tu cuenta.",
       "potentialProgress": "Progreso potencial",
+      "potentialProgressDescription": "El progreso potencial aplica los recursos que ya posees después de que los objetivos de mayor prioridad de este proyecto reserven su parte. No cambia el estado real del objetivo.",
       "remaining": {
         "upgrades": "{{count}} mejoras restantes",
         "upgradeSlots": "{{count}} ranuras de mejora restantes",
@@ -784,7 +786,27 @@
         "shards": "{{count}} fragmentos restantes",
         "mythicShards": "{{count}} fragmentos míticos restantes",
         "orbs": "{{count}} orbes restantes"
-      }
+      },
+      "remainingText": {
+        "levels": "{{count}} niveles",
+        "levelsWithXp": "{{count}} niveles · {{xp}} XP",
+        "rank": "{{slots}} ranuras",
+        "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
+        "shards": "{{count}} fragmentos"
+      },
+      "potentialIndicator": "↗ {{percent}}%",
+      "progressDetails": "Detalles del progreso",
+      "progressComplete": "{{percent}}% completado",
+      "progressCompleteWithPotential": "{{percent}}% completado, {{potential}}% potencial",
+      "actualSlotsRemaining": "{{count}} ranuras de mejora restantes.",
+      "actualLevelsRemaining": "{{count}} niveles restantes.",
+      "potentialEnergyRemaining": "{{energy}} energía restante.",
+      "potentialXpRemaining": "{{xp}} XP restante.",
+      "reachableCeilingLabel": "Alcanzable actualmente:",
+      "reachableCeilingLevelLabel": "Alcanzable actualmente: Nivel {{level}}",
+      "reachableCeilingReasonRarity": "limitado por rareza",
+      "reachableCeilingReasonLevel": "limitado por nivel",
+      "reachableCeilingReasonBoth": "limitado por rareza y nivel"
     },
     "insights": {
       "selectProject": "Selecciona un proyecto",

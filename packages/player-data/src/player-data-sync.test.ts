@@ -28,7 +28,7 @@ const chunkData: Record<string, unknown> = {
   "inventory-items": [{ itemId: "i1", level: 1, amount: 2 }],
   "inventory-shards": [{ unitId: "necroWarden", amount: 5, mythicAmount: 0 }],
   inventory: {
-    xpBooks: [{ xpBookId: "bookCommon", amount: 2 }],
+    xpBooks: [{ xpBookId: "xpCommon", amount: 2 }],
     abilityBadges: { imperial: [], xenos: [], chaos: [] },
     components: {
       imperial: { amount: 0 },
