@@ -27,7 +27,7 @@ A live review round against the shipped feature surfaced four further changes, f
 
 ### New Capabilities
 
-- `goal-list-layout`: the Goals list's structural presentation — desktop table columns (widths, row height, the 1200px Remaining-column hide, the 768px table→card switch) and the mobile card structure (header/goal-line/bar/footer, legend placement) — independent of how an individual goal's progress bar/percent/explanation renders, which is `goal-progress-display`'s concern. Mirrors the existing `goal-list-estimate-display` capability's scope (that capability's "Done By" column content is reused unchanged inside this change's "Status · Done by" column).
+- `goal-list-layout`: the Goals list's structural presentation — desktop table columns (widths, row height, a static column set visible at every desktop width, the 768px table→card switch) and the mobile card structure (header/goal-line/bar/footer, legend placement) — independent of how an individual goal's progress bar/percent/explanation renders, which is `goal-progress-display`'s concern. Mirrors the existing `goal-list-estimate-display` capability's scope (that capability's "Done By" column content is reused unchanged inside this change's "Status · Done by" column). (Post-implementation review fix 9.1 reverted an earlier 1200px Remaining-column hide back to always-visible — see "Post-implementation review fixes" above.)
 
 ### Modified Capabilities
 

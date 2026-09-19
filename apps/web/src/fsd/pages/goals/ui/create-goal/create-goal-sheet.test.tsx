@@ -605,9 +605,10 @@ describe("CreateGoalSheet", () => {
       xpLevel: 31,
       xp: 0,
     })
-    // 31 -> 32 needs 94200 - 72200 = 22000 xp; 2 owned Legendary books (25000 xp) fully covers it.
+    // 31 -> 32 needs 94200 xp (xpNeededForLevelRange nets the target level's own cumulative
+    // threshold against currentXp, here 0); 8 owned Legendary books (100000 xp) fully covers it.
     getInventoryXpBooks.mockReturnValue([
-      { xpBookId: "xpLegendary", amount: 2 },
+      { xpBookId: "xpLegendary", amount: 8 },
     ])
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 

@@ -6,7 +6,7 @@ Wherever the goal progress display renders an Actual Progress ratio together wit
 
 Assumptions:
 
-- Today only Rank goals compute both an Actual and a Potential ratio at once (`computePotentialProgressRatio` only returns a value for Rank/Ability progress-slot allocation or Ascension orb allocation; Ability's own two-track display and Ascension's Potential path are out of scope for this change and keep today's rendering) — this requirement applies wherever both ratios are present, not only to Rank, so it extends automatically if a future goal kind also computes both.
+- This requirement is driven by whether a goal's `potentialRatio` is present, not by its goal kind — it applies to every goal kind that computes both an Actual and a Potential ratio at once, currently Rank (via `computePotentialProgressRatio`'s progress-slot allocation) and Level (via the separate priority-ordered XP-book allocation `add-level-goal-xp-potential` added), and extends automatically to any future goal kind that computes both.
 
 #### Scenario: Both bars render in the compact goals list
 

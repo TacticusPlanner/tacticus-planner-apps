@@ -52,7 +52,14 @@ export function LevelGoalFields({
               )
             }
           }}
-          onValueChange={(value) => onLevelEndChange(Number(value))}
+          onValueChange={(value) => {
+            // Radix's Select can fire a spurious onValueChange("") when levelEndOptions
+            // regenerates mid-render (e.g. the character prefill jumps levelStart, so the
+            // previously-selected option briefly isn't in the new list) — Number("") is 0, a
+            // plausible-looking but bogus target level. Ignore anything that isn't a real option.
+            if (value === "") return
+            onLevelEndChange(Number(value))
+          }}
           value={String(levelEnd)}
         >
           <SelectTrigger

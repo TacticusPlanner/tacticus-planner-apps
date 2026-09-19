@@ -82,6 +82,6 @@ When at least one visible goal has both an Actual and a Potential ratio to show,
 
 #### Scenario: No goal in the list has a Potential ratio
 
-- **GIVEN** the Goals list renders only Level and Unlock goals, none of which compute a Potential ratio
+- **GIVEN** the Goals list renders only Unlock goals, which never compute a Potential ratio (see `goal-progress-display`'s note that this now also includes Level goals via `add-level-goal-xp-potential`'s XP-book allocation, so Unlock is the only kind guaranteed to have none)
 - **WHEN** the list renders, on either desktop or mobile
 - **THEN** no legend renders

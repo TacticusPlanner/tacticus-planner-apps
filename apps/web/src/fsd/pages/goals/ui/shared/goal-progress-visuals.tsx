@@ -227,7 +227,7 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
   ) : progress.ratio !== null ? (
     // "Upgrade" — no natural current/target pair to show (it's an average across several
     // materials), so the percentage itself is the only visible readout.
-    <span>{Math.round(progress.ratio * 100)}%</span>
+    <span>{displayPercent(progress.ratio)}%</span>
   ) : null
 }
 
@@ -408,33 +408,30 @@ export function GoalProgressDisplay({
 
   const ceilingLabel = reachableCeilingLabel(t, progress)
 
-  const mobileFooter =
-    remainingText === null ? null : hasPotential ? (
-      <div className="grid gap-1">
-        <button
-          aria-expanded={mobileExpanded}
-          className="flex items-center gap-1 text-left text-xs text-muted-foreground"
-          data-testid="goal-progress-mobile-footer"
-          onClick={() => setMobileExpanded((value) => !value)}
-          type="button"
-        >
-          {remainingText}
-          <Info className="size-3.5 shrink-0" />
-        </button>
-        {mobileExpanded ? (
-          <div data-testid="goal-progress-mobile-explanation">
-            {explanation}
-          </div>
-        ) : null}
-      </div>
-    ) : (
-      <p
-        className="text-xs text-muted-foreground"
+  const mobileFooter = hasPotential ? (
+    <div className="grid gap-1">
+      <button
+        aria-expanded={mobileExpanded}
+        className="flex items-center gap-1 text-left text-xs text-muted-foreground"
         data-testid="goal-progress-mobile-footer"
+        onClick={() => setMobileExpanded((value) => !value)}
+        type="button"
       >
-        {remainingText}
-      </p>
-    )
+        {remainingText ?? t("goals.overview.progressDetails")}
+        <Info className="size-3.5 shrink-0" />
+      </button>
+      {mobileExpanded ? (
+        <div data-testid="goal-progress-mobile-explanation">{explanation}</div>
+      ) : null}
+    </div>
+  ) : remainingText === null ? null : (
+    <p
+      className="text-xs text-muted-foreground"
+      data-testid="goal-progress-mobile-footer"
+    >
+      {remainingText}
+    </p>
+  )
 
   return (
     <div className="grid gap-1" data-testid="goal-progress">

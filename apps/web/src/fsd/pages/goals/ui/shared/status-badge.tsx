@@ -83,12 +83,18 @@ export function BlockedIndicator({
       <Tooltip>
         <TooltipTrigger asChild>
           <Badge
+            asChild
             className="gap-1 border-transparent bg-amber-400 text-amber-950"
             data-testid="goal-restricted-indicator"
             variant="outline"
           >
-            <Link2 className="size-3.5" />
-            {t("goals.blocked.restrictedLabel")}
+            <button
+              className="focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+              type="button"
+            >
+              <Link2 className="size-3.5" />
+              {t("goals.blocked.restrictedLabel")}
+            </button>
           </Badge>
         </TooltipTrigger>
         <TooltipContent data-testid="goal-restricted-tooltip">
@@ -102,12 +108,18 @@ export function BlockedIndicator({
     <Tooltip>
       <TooltipTrigger asChild>
         <Badge
+          asChild
           className="gap-1 text-amber-700"
           data-testid="goal-blocked-indicator"
           variant="outline"
         >
-          <LockKeyhole className="size-3.5" />
-          {t("goals.blocked.label")}
+          <button
+            className="focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+            type="button"
+          >
+            <LockKeyhole className="size-3.5" />
+            {t("goals.blocked.label")}
+          </button>
         </Badge>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-blocked-tooltip">

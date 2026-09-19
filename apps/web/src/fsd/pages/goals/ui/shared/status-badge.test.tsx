@@ -146,6 +146,42 @@ describe("BlockedIndicator", () => {
     expect(tooltip).toHaveTextContent("reachableCeilingReasonLevel")
   })
 
+  it("renders both indicators as keyboard-focusable buttons, and Tab reaches and opens their tooltip", async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <BlockedIndicator
+          blockers={{
+            reasons: [{ kind: "PrerequisiteNotReached", goalId: "goal-2" }],
+            isBlocked: true,
+          }}
+        />
+        <BlockedIndicator
+          blockers={{
+            reasons: [{ kind: "PlayerDataUnavailable" }],
+            isBlocked: true,
+          }}
+        />
+      </>
+    )
+    const restricted = screen.getByTestId("goal-restricted-indicator")
+    const blocked = screen.getByTestId("goal-blocked-indicator")
+    expect(restricted.tagName).toBe("BUTTON")
+    expect(blocked.tagName).toBe("BUTTON")
+
+    await user.tab()
+    expect(restricted).toHaveFocus()
+    expect(
+      await screen.findByTestId("goal-restricted-tooltip")
+    ).toBeInTheDocument()
+
+    await user.tab()
+    expect(blocked).toHaveFocus()
+    expect(
+      await screen.findByTestId("goal-blocked-tooltip")
+    ).toBeInTheDocument()
+  })
+
   it("omits the reachable-ceiling line when the goal isn't currently restricted by rarity/level", async () => {
     render(
       <BlockedIndicator
