@@ -136,11 +136,27 @@ export function ProjectsListPage() {
     <div className="flex flex-col gap-6" data-testid="projects-page">
       {hasProjects ? (
         <div className="grid gap-8">
+          {/* Static page copy, not a tooltip or a dismissible callout: the question it answers is
+              asked on arrival, and a dismissed callout stops answering it for exactly the people who
+              dismissed it too early. The empty dashboard carries its own wording instead, so this
+              renders only when there is at least one project. */}
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="projects-page-intro"
+          >
+            {t("goals.project.dashboardIntro")}
+          </p>
           {current ? (
             <section className="grid gap-3">
               <h2 className="text-lg font-semibold">
                 {t("goals.project.currentPlan")}
               </h2>
+              <p
+                className="text-sm text-muted-foreground"
+                data-testid="projects-page-current-plan-note"
+              >
+                {t("goals.project.currentPlanNote")}
+              </p>
               <ProjectList
                 actions={projectActions}
                 onEdit={openEditProject}

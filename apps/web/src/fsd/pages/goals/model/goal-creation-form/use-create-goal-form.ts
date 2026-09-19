@@ -82,6 +82,11 @@ export function useCreateGoalForm({
   const [farmingStrategy, setFarmingStrategy] =
     useState<FarmingStrategy>("TotalUpgrades")
 
+  // Declared here rather than beside `createAnother` in useGoalSubmit: this configures the goal being
+  // created, so it must be cleared by useGoalFormReset below. `createAnother` configures the form and
+  // deliberately survives a reset — see design.md, "Start-paused is a checkbox in the form body".
+  const [startPaused, setStartPaused] = useState(false)
+
   const projectSelection = useProjectSelection({ open })
   const { projects, selectedProjectIds } = projectSelection
 
@@ -204,6 +209,7 @@ export function useCreateGoalForm({
     setIncludeSuggestedUnlock,
     setIncludeSuggestedAscension,
     setIncludeSuggestedLevel,
+    setStartPaused,
     resetPrefillGuard,
     setEntityType,
     setEntityId,
@@ -340,6 +346,7 @@ export function useCreateGoalForm({
     inventoryUpgrades,
     open,
     specParams: combinedSpecParams,
+    startPaused,
     snapshotContext: {
       entityType,
       playerEntity,
@@ -416,6 +423,8 @@ export function useCreateGoalForm({
     projects,
     selectedProjectIds,
     selectProjects: projectSelection.selectProjects,
+    startPaused,
+    setStartPaused,
     ...submission,
     missingUpgrades,
     estimatePreview,

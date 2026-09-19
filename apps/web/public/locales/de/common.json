@@ -491,7 +491,7 @@
     },
     "project": {
       "noProjectTitle": "Noch keine Projekte",
-      "noProjectDescription": "Erstelle ein Projekt, um zusammengehörige Ziele zu organisieren und zu priorisieren.",
+      "noProjectDescription": "Ein Projekt ist eine benannte Auswahl deiner Ziele mit eigener Prioritätsreihenfolge. Lege eines an, um einen Kaderausbau, ein Event oder einen langfristigen Aufbau getrennt vom Rest zu planen.",
       "notFoundTitle": "Projekt nicht gefunden",
       "notFoundDescription": "Dieses Projekt existiert nicht, oder du hast keinen Zugriff darauf.",
       "membership": "Projekte mit diesem Ziel",
@@ -546,7 +546,12 @@
       "archive": "Projekt archivieren",
       "restore": "Projekt wiederherstellen",
       "save": "Projekt speichern",
-      "create": "Projekt erstellen"
+      "create": "Projekt erstellen",
+      "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele mit eigener Prioritätsreihenfolge. Lege mehrere an, um Verschiedenes getrennt zu planen – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und wechsle zwischen ihnen, ohne die jeweilige Reihenfolge zu verlieren.",
+      "currentPlanNote": "Der aktuelle Plan ist das Projekt, das Tagesaufgaben und Erkenntnisse standardmäßig verwenden. Er macht Ziele weder aktiv noch pausiert – Ziele pausierst und setzt du einzeln fort.",
+      "unitGoalSummaryOfAccount": "{{units}} Einheiten · {{goals}} von deinen {{accountGoals}} Zielen",
+      "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
+      "emptyProjectDescription": "Nutze „Ziele hinzufügen“, um vorhandene Ziele aufzunehmen, oder „Ziel erstellen“ für ein neues."
     },
     "toasts": {
       "statusChanged": "Ziel aktualisiert.",
@@ -723,7 +728,9 @@
         "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
         "levelMaxed": "Dieser Charakter hat bereits die maximale Stufe erreicht.",
         "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel."
-      }
+      },
+      "startPaused": "Pausiert erstellen",
+      "startPausedDescription": "Das Ziel wird ganz normal erstellt, bleibt aber aus der Tagesplanung heraus, bis du es fortsetzt. Die Wahl der Projekte ändert daran nichts."
     },
     "estimate": {
       "none": "—",
@@ -787,7 +794,8 @@
       "shardsTitle": "Scherben-Ort",
       "shardsDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
       "farmingInvalid": "Jede benötigte Ressource muss von mindestens einem gewählten Knoten verfügbar sein.",
-      "none": "Keine"
+      "none": "Keine",
+      "projectsActivationNote": "Die Zuordnung ändert nur, welche Projekte dieses Ziel enthalten. Pausieren oder Fortsetzen ist eine eigene Aktion am Ziel selbst."
     },
     "overview": {
       "levelProgress": "Stufe {{current}} → {{target}}",
@@ -970,8 +978,8 @@
     "projectsList": {
       "steps": {
         "list": {
-          "title": "Deine Projekte",
-          "content": "Vergleiche deinen aktuellen Plan mit anderen Projekten und ihren nachgeladenen Zusammenfassungen. Archivierte Projekte bleiben zunächst eingeklappt."
+          "title": "Was ein Projekt ist",
+          "content": "Ein Projekt ist eine benannte Auswahl deiner Ziele mit eigener Prioritätsreihenfolge – lege mehrere an, um Verschiedenes getrennt zu planen. Der aktuelle Plan ist der, den Tagesaufgaben und Erkenntnisse standardmäßig verwenden; er pausiert oder startet nichts."
         },
         "newProject": {
           "title": "Ein Projekt erstellen",
@@ -982,8 +990,8 @@
     "projectDetail": {
       "steps": {
         "header": {
-          "title": "Projekt auf einen Blick",
-          "content": "Hier siehst du Identität, aktuellen Planstatus, Fortschrittswerte, Projektauswahl und Aktionen."
+          "title": "Eine Auswahl deiner Ziele",
+          "content": "Dieses Projekt enthält eine Auswahl der Ziele deines Kontos – die Übersicht zeigt, wie viele davon hier liegen. Status als aktueller Plan, Fortschrittswerte, Projektwechsler und Aktionen findest du in dieser Kopfzeile."
         },
         "addGoals": {
           "title": "Das Projekt füllen",

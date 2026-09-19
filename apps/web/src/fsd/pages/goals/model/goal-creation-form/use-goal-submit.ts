@@ -33,6 +33,7 @@ export function useGoalSubmit({
   canSubmit,
   selectedProjects,
   specParams,
+  startPaused,
   snapshotContext,
   onOpenChange,
   onCreated,
@@ -43,6 +44,7 @@ export function useGoalSubmit({
   canSubmit: boolean
   selectedProjects: ProjectMembership[]
   specParams: SpecParams
+  startPaused: boolean
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
   onCreated: () => void
@@ -73,6 +75,9 @@ export function useGoalSubmit({
           ...spec,
           snapshot: buildCreateGoalSnapshot({ ...snapshotContext, spec }),
         })),
+        // Omitted rather than sent as false when off, so the default path's body stays byte-identical
+        // to today's — the API's own default is what produces the Active goal.
+        ...(startPaused ? { startPaused: true } : {}),
       })
 
       if (createAnother) {

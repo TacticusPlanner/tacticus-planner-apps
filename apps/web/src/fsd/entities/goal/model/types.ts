@@ -145,6 +145,9 @@ export type CreateGoalRequest = {
   // listed project (a goal may belong to several projects at once).
   projects?: ProjectMembership[] | null
   snapshot?: CreateGoalSnapshotRequest | null
+  // Creates the goal Paused instead of Active. Omitted means Active — membership decides nothing about
+  // status, so the goal is Active whichever projects it is filed into.
+  startPaused?: boolean
 }
 
 export type UpdateGoalRequest = {
@@ -170,4 +173,6 @@ export type CreateCombinedGoalsRequest = {
   // Same fallback and multi-project semantics as CreateGoalRequest.projects.
   projects?: ProjectMembership[] | null
   goals: CombinedGoalSpec[]
+  // Applies to every goal the request creates, prerequisites included — it is not settable per spec.
+  startPaused?: boolean
 }

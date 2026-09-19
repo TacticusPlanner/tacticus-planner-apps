@@ -31,4 +31,18 @@ describe("useProjectsListTutorial", () => {
       '[data-testid="projects-new-project"]',
     ])
   })
+
+  it("keeps the reworded 'what a project is' step keys on the list step", () => {
+    // The step copy was rewritten (locale files) to say what a project is rather than only how the
+    // dashboard is arranged; the keys it renders through must stay the ones that were rewritten.
+    renderHook(() => useProjectsListTutorial())
+    const steps = register.mock.lastCall?.[0] as {
+      desktop: { title: string; content: string }[]
+    }
+
+    expect(steps.desktop[0]).toMatchObject({
+      title: "localized:tour.projectsList.steps.list.title",
+      content: "localized:tour.projectsList.steps.list.content",
+    })
+  })
 })

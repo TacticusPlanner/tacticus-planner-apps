@@ -1134,6 +1134,118 @@ describe("CreateGoalSheet", () => {
     ).toBeInTheDocument()
   })
 
+  it("omits startPaused from the request body when the control is untouched", async () => {
+    // The default path's body must stay identical to what it was before the flag existed — the API's
+    // own default is what produces the Active goal.
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(request).not.toHaveProperty("startPaused")
+  })
+
+  it("sends startPaused: true when the control is turned on", async () => {
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    fireEvent.click(screen.getByTestId("create-goal-start-paused-checkbox"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(request).toMatchObject({ startPaused: true })
+  })
+
+  it("carries startPaused once for a whole combined submission, prerequisites included", async () => {
+    // A locked character auto-suggests an Unlock prerequisite alongside the requested Rank goal. The
+    // flag is request-wide, so one field covers the whole chain rather than appearing per spec.
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is auto-suggested
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Rank")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    fireEvent.click(screen.getByTestId("create-goal-start-paused-checkbox"))
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-review").querySelectorAll("li").length
+      ).toBeGreaterThan(1)
+    })
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    expect(request.goals.length).toBeGreaterThan(1)
+    expect(request.startPaused).toBe(true)
+    // Request-wide, never per spec.
+    for (const goal of request.goals) {
+      expect(goal).not.toHaveProperty("startPaused")
+    }
+  })
+
+  it("shows the start-paused control and its explanation without any hover or opened control", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const control = await screen.findByTestId("create-goal-start-paused")
+    expect(control).toBeVisible()
+    expect(
+      within(control).getByText("goals.create.startPausedDescription")
+    ).toBeVisible()
+    expect(
+      screen.getByTestId("create-goal-start-paused-checkbox")
+    ).not.toBeChecked()
+  })
+
+  it("clears start-paused on the reset that follows a create-another submission", async () => {
+    // startPaused configures the goal, so a reset must clear it — unlike createAnother, which
+    // configures the form and deliberately survives the same reset.
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    fireEvent.click(screen.getByTestId("create-goal-start-paused-checkbox"))
+    fireEvent.click(screen.getByLabelText("goals.create.createAnother"))
+    expect(
+      screen.getByTestId("create-goal-start-paused-checkbox")
+    ).toBeChecked()
+
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    // The unit picker clears on reset, so the control unmounts with it; reselecting a unit brings it
+    // back in its reset state rather than carrying the previous choice forward.
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-start-paused-checkbox")
+      ).not.toBeChecked()
+    })
+    expect(screen.getByLabelText("goals.create.createAnother")).toBeChecked()
+  })
+
   it("submits only the explicitly toggled types, with no rank/progression/ability target for Unlock", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
