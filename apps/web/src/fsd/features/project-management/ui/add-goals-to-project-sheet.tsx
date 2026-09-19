@@ -62,6 +62,19 @@ export function AddGoalsToProjectSheet({
   const [search, setSearch] = useState("")
   const [selectedGoalIds, setSelectedGoalIds] = useState<string[]>([])
 
+  // The sheet stays mounted while closed, and `ProjectDetailPage` swaps `project` underneath it when
+  // the header switcher changes route — that route has no `key`, so the page never remounts. A draft
+  // must outlive neither event, or selections made for one project get submitted against another.
+  // Reset during render rather than in an effect (react-hooks/set-state-in-effect), and key it on the
+  // open flag as well as the project so a reopened sheet never briefly shows the previous draft.
+  const draftKey = `${project.projectId}:${open}`
+  const [lastDraftKey, setLastDraftKey] = useState(draftKey)
+  if (lastDraftKey !== draftKey) {
+    setLastDraftKey(draftKey)
+    setSearch("")
+    setSelectedGoalIds([])
+  }
+
   const goalsQuery = useQuery({
     ...goalQueries.list(false),
     enabled: isAuthenticated && open,

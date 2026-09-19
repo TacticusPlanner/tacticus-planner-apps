@@ -349,11 +349,11 @@ A project holds at most one Active/Paused goal per `(entityType, entityId, goalT
 - **WHEN** the add-goals surface lists another Active goal for the same unit and goal type
 - **THEN** that goal cannot be selected and the reason is stated
 
-#### Scenario: One conflict does not discard the rest of the batch
+#### Scenario: A conflict arising after the check rejects the whole save
 
-- **GIVEN** the user has selected several goals and one of them conflicts
+- **GIVEN** the user has selected several goals and one of them becomes conflicting after the surface checked it
 - **WHEN** they save
-- **THEN** the non-conflicting selections are added and no selection is silently lost
+- **THEN** nothing is added, the conflict is explained, and the selection remains available to correct rather than being discarded
 
 #### Scenario: Historical goal in the project does not block selection
 

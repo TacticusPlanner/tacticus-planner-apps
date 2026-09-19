@@ -286,4 +286,53 @@ describe("AddGoalsToProjectSheet", () => {
       { goalId: "goal-c", priority: 2 },
     ])
   })
+
+  it("drops an unsaved draft when the viewed project changes or the sheet closes", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        goal({ goalId: "goal-a" }),
+        goal({ goalId: "goal-c", entityId: "hero3" }),
+      ],
+    })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <AddGoalsToProjectSheet onOpenChange={vi.fn()} open project={project} />
+    )
+
+    await user.click(await screen.findByTestId("add-goals-check-goal-a"))
+    expect(screen.getByTestId("add-goals-check-goal-a")).toBeChecked()
+
+    // The detail route has no `key`, so its header switcher swaps `project` underneath a sheet that
+    // never remounts — a draft that survived would be submitted against the newly viewed project.
+    rerender(
+      <AddGoalsToProjectSheet
+        onOpenChange={vi.fn()}
+        open
+        project={{ ...project, projectId: "proj-b", name: "Project B" }}
+      />
+    )
+    expect(
+      await screen.findByTestId("add-goals-check-goal-a")
+    ).not.toBeChecked()
+
+    await user.click(screen.getByTestId("add-goals-check-goal-a"))
+    rerender(
+      <AddGoalsToProjectSheet
+        onOpenChange={vi.fn()}
+        open={false}
+        project={{ ...project, projectId: "proj-b", name: "Project B" }}
+      />
+    )
+    rerender(
+      <AddGoalsToProjectSheet
+        onOpenChange={vi.fn()}
+        open
+        project={{ ...project, projectId: "proj-b", name: "Project B" }}
+      />
+    )
+    expect(
+      await screen.findByTestId("add-goals-check-goal-a")
+    ).not.toBeChecked()
+  })
 })

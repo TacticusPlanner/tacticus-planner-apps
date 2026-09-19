@@ -484,8 +484,8 @@
     },
     "delete": {
       "title": "Supprimer cet objectif ?",
-      "description": "Cette action supprime définitivement l'objectif de ton compte, dans tous les projets auxquels il appartient — pas seulement celui que tu consultes. Elle est irréversible.",
-      "projectAlternative": "Pour le retirer uniquement de {{project}}, annule et utilise « Retirer de ce projet ».",
+      "description": "Cette action supprime définitivement l'objectif de votre compte, dans tous les projets auxquels il appartient — pas seulement celui que vous consultez. Elle est irréversible.",
+      "projectAlternative": "Pour le retirer uniquement de {{project}}, annulez et utilisez « Retirer de ce projet ».",
       "confirm": "Supprimer l'objectif",
       "cancel": "Annuler"
     },
@@ -498,13 +498,13 @@
       "addMembership": "Ajouter au projet",
       "removeMembership": "Retirer {{project}}",
       "removeFromProject": "Retirer de ce projet",
-      "removeLastMembership": "C'est le seul projet de cet objectif, et il n'a nulle part où aller. Ajoute-le d'abord à un autre projet.",
-      "removeDestinationUnknown": "Tes projets ne sont pas encore chargés, cet objectif n'a donc aucune destination. Réessaie dans un instant.",
+      "removeLastMembership": "C'est le seul projet de cet objectif, et il n'a nulle part où aller. Ajoutez-le d'abord à un autre projet.",
+      "removeDestinationUnknown": "Vos projets ne sont pas encore chargés, cet objectif n'a donc aucune destination. Réessayez dans un instant.",
       "addGoalsTrigger": "Ajouter des objectifs",
       "addGoalsTitle": "Ajouter des objectifs à ce projet",
-      "addGoalsDescription": "Recherche tes objectifs et ajoute-les à {{project}}. Ceux qui s'y trouvent déjà restent en place.",
+      "addGoalsDescription": "Recherchez vos objectifs et ajoutez-les à {{project}}. Ceux qui s'y trouvent déjà restent en place.",
       "addGoalsSearch": "Rechercher des objectifs",
-      "addGoalsEmpty": "Aucun objectif ne correspond à ta recherche.",
+      "addGoalsEmpty": "Aucun objectif ne correspond à votre recherche.",
       "addGoalsMember": "Déjà présent",
       "addGoalsSave_one": "Ajouter {{count}} objectif",
       "addGoalsSave_other": "Ajouter {{count}} objectifs",
@@ -947,7 +947,7 @@
         },
         "projectFilter": {
           "title": "Filtrer par projet",
-          "content": "N'affiche que les objectifs d'un projet. Cela restreint la liste que tu consultes et ne change ni le plan actuel ni ce que calculent les quotidiennes."
+          "content": "N'affiche que les objectifs d'un projet. Cela restreint la liste que vous consultez et ne change ni le plan actuel ni ce que calculent les quotidiennes."
         },
         "planningSettings": {
           "title": "Paramètres de planification",
@@ -987,7 +987,7 @@
         },
         "addGoals": {
           "title": "Remplir le projet",
-          "content": "Ajoute plusieurs objectifs existants à ce projet en une fois : recherche tes objectifs, choisis ceux que tu veux et enregistre en une seule étape."
+          "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape."
         },
         "reprioritize": {
           "title": "Prioriser par unité",
@@ -999,11 +999,11 @@
         },
         "goals": {
           "title": "Objectifs du projet",
-          "content": "Les objectifs de ce projet apparaissent ici, groupés par type d'objectif au départ. Utilise Grouper pour passer à un bloc par unité, ou pour désactiver le regroupement et obtenir une liste simple."
+          "content": "Les objectifs de ce projet apparaissent ici, groupés par type d'objectif au départ. Utilisez Grouper pour passer à un bloc par unité, ou pour désactiver le regroupement et obtenir une liste simple."
         },
         "rowActions": {
           "title": "Retirer sans supprimer",
-          "content": "Le menu de chaque objectif permet de le sortir de ce seul projet. Supprimer, plus bas dans ce même menu, l'efface de tout ton compte."
+          "content": "Le menu de chaque objectif permet de le sortir de ce seul projet. Supprimer, plus bas dans ce même menu, l'efface de tout votre compte."
         }
       }
     },
