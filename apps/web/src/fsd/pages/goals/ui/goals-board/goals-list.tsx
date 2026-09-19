@@ -44,6 +44,7 @@ export function GoalsList({
   estimates,
   metrics,
   potentialProgress,
+  project,
 }: GoalsListProps) {
   const isMobile = useIsMobile()
 
@@ -58,6 +59,7 @@ export function GoalsList({
       metrics={metrics}
       potentialProgress={potentialProgress}
       onView={onView}
+      project={project}
       rows={rows}
     />
   ) : (
@@ -67,6 +69,7 @@ export function GoalsList({
       metrics={metrics}
       potentialProgress={potentialProgress}
       onView={onView}
+      project={project}
       rows={rows}
     />
   )
@@ -79,6 +82,7 @@ function GoalsTable({
   metrics,
   potentialProgress,
   onView = () => undefined,
+  project,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -205,14 +209,17 @@ function GoalsTable({
                 onClick={stopRowNavigation}
                 onKeyDown={stopRowNavigation}
               >
-                <div className="flex items-center justify-end gap-1">
+                <div
+                  className="flex items-center justify-end gap-1"
+                  data-testid="goal-row-actions"
+                >
                   <GoalRowActions
                     actions={actions}
-                    goalId={row.goalId}
                     onOpenChange={(open) => {
                       if (open) setOpenPopoverGoalId(null)
                     }}
-                    status={row.status}
+                    project={project}
+                    row={row}
                   />
                 </div>
               </TableCell>

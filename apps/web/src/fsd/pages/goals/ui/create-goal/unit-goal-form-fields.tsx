@@ -203,7 +203,7 @@ export function UnitGoalFormFields({
       {form.entityId ? (
         <GoalProjectsField
           conflicts={form.projectConflicts}
-          onToggle={form.toggleProject}
+          onSelectionChange={form.selectProjects}
           portalContainer={portalContainer}
           projects={form.projects}
           projectsValid={form.selectedProjectIds.length > 0}

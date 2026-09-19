@@ -28,6 +28,7 @@ export function GoalsMobileCards({
   metrics,
   potentialProgress,
   onView = () => undefined,
+  project,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -86,13 +87,14 @@ export function GoalsMobileCards({
                     progress={progress}
                   />
                   <div
+                    data-testid="goal-row-actions"
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >
                     <GoalRowActions
                       actions={actions}
-                      goalId={row.goalId}
-                      status={row.status}
+                      project={project}
+                      row={row}
                     />
                   </div>
                 </div>

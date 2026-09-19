@@ -18,6 +18,7 @@ import { ScrollArea } from "@workspace/ui/components/scroll-area"
 
 import type { ImportV1ProfileResult, V1GoalOutcome } from "@/entities/account"
 import { GoalTypeBadge, type GoalKind } from "@/entities/goal"
+import { useUnitName } from "@/shared/unit-name"
 
 import {
   buildDiagnosticText,
@@ -27,7 +28,6 @@ import {
   isAutomaticallyAdded,
   reasonKeyForCode,
 } from "../model/outcome-buckets"
-import { useEntityDisplayName } from "../model/use-entity-display-name"
 
 // Kept in step with `V1ImportPanel`'s own `parts` tuple in v1-import-panel.tsx (split into this
 // file purely for the repository's max-lines rule, same as goal-spec-builder.ts's split out of
@@ -54,7 +54,7 @@ const STATUS_KEYS = {
 
 export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { t } = useTranslation()
-  const getEntityName = useEntityDisplayName()
+  const getEntityName = useUnitName()
 
   const buckets = useMemo(
     () => groupOutcomes(result.outcomes),

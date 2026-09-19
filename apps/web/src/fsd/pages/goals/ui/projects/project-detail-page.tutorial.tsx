@@ -5,8 +5,8 @@ import type { Step } from "react-joyride"
 import { useTourPageSteps } from "@/shared/tour"
 
 /**
- * A project's detail-route guided tour (semantic header, unit reprioritization when available,
- * project switcher, and goal list). Split from the single combined
+ * A project's detail-route guided tour (semantic header, bulk goal assembly, unit reprioritization
+ * when available, project switcher, goal list, and the per-row menu where project removal lives). Split from the single combined
  * `useProjectsTutorial` this page previously shared with the list route's own tour.
  */
 export function useProjectDetailTutorial() {
@@ -14,7 +14,13 @@ export function useProjectDetailTutorial() {
   const steps = useMemo(() => {
     const createStep = (
       target: string,
-      key: "header" | "reprioritize" | "selector" | "goals"
+      key:
+        | "header"
+        | "addGoals"
+        | "reprioritize"
+        | "selector"
+        | "goals"
+        | "rowActions"
     ): Step => ({
       target,
       title: t(`tour.projectDetail.steps.${key}.title`),
@@ -22,9 +28,11 @@ export function useProjectDetailTutorial() {
     })
     const shared = [
       createStep('[data-testid="project-detail-header"]', "header"),
+      createStep('[data-testid="project-add-goals"]', "addGoals"),
       createStep('[data-testid="project-reprioritize-units"]', "reprioritize"),
       createStep('[data-testid="projects-goal-project-select"]', "selector"),
       createStep('[data-testid="project-detail-goals"]', "goals"),
+      createStep('[data-testid="goal-row-actions"]', "rowActions"),
     ]
     return { desktop: shared, mobile: shared }
   }, [t])

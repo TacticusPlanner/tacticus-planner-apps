@@ -19,14 +19,17 @@ import {
 import type { ProjectSummary } from "@/entities/project"
 import { ProjectColorDot } from "@/entities/project"
 import type { ProjectMembershipConflict } from "../../model/projects/project-membership"
+import type { ProjectRemovalUnavailableReason } from "../../model/projects/project-removal"
 
-/** Selected project chips plus a searchable, non-archived add picker shared by goal creation/editing. */
+/** Selected project chips plus a searchable, non-archived add picker shared by goal creation/editing.
+ * Membership is a whole list, so the caller is handed the next selection rather than a single toggle —
+ * removing the last chip replaces it with the Default project in one change, not two. */
 export function GoalProjectsField({
   projects,
   selectedProjectIds,
   projectsValid,
   conflicts = [],
-  onToggle,
+  onSelectionChange,
   portalContainer,
   testIdPrefix = "goal-detail",
 }: {
@@ -34,13 +37,15 @@ export function GoalProjectsField({
   selectedProjectIds: string[]
   projectsValid: boolean
   conflicts?: ProjectMembershipConflict[]
-  onToggle: (projectId: string, checked: boolean) => void
+  onSelectionChange: (projectIds: string[]) => void
   portalContainer?: HTMLElement | null
   testIdPrefix?: string
 }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
-  const [lastRemovalBlocked, setLastRemovalBlocked] = useState(false)
+  const [removalBlocked, setRemovalBlocked] =
+    useState<ProjectRemovalUnavailableReason | null>(null)
+  const defaultProject = projects.find((project) => project.isDefault)
   const selected = selectedProjectIds.flatMap((id) => {
     const project = projects.find((candidate) => candidate.projectId === id)
     return project ? [project] : []
@@ -51,13 +56,25 @@ export function GoalProjectsField({
       !selectedProjectIds.includes(project.projectId)
   )
 
+  // Removing the last chip relocates the goal to the Default project rather than being refused — the
+  // same rule the row menu's removal action follows, so the two surfaces behave identically.
   const remove = (projectId: string) => {
-    if (selectedProjectIds.length <= 1) {
-      setLastRemovalBlocked(true)
+    const remaining = selectedProjectIds.filter((id) => id !== projectId)
+    if (remaining.length > 0) {
+      setRemovalBlocked(null)
+      onSelectionChange(remaining)
       return
     }
-    setLastRemovalBlocked(false)
-    onToggle(projectId, false)
+    if (!defaultProject) {
+      setRemovalBlocked("destinationUnknown")
+      return
+    }
+    if (defaultProject.projectId === projectId) {
+      setRemovalBlocked("lastMembershipIsDefault")
+      return
+    }
+    setRemovalBlocked(null)
+    onSelectionChange([defaultProject.projectId])
   }
 
   return (
@@ -146,8 +163,11 @@ export function GoalProjectsField({
                 <CommandItem
                   key={project.projectId}
                   onSelect={() => {
-                    onToggle(project.projectId, true)
-                    setLastRemovalBlocked(false)
+                    onSelectionChange([
+                      ...selectedProjectIds,
+                      project.projectId,
+                    ])
+                    setRemovalBlocked(null)
                     setOpen(false)
                   }}
                   value={project.name}
@@ -167,9 +187,13 @@ export function GoalProjectsField({
         </PopoverContent>
       </Popover>
 
-      {!projectsValid || lastRemovalBlocked ? (
+      {!projectsValid || removalBlocked ? (
         <p className="text-destructive" role="alert">
-          {t("goals.detail.projectsRequired")}
+          {removalBlocked === "lastMembershipIsDefault"
+            ? t("goals.project.removeLastMembership")
+            : removalBlocked === "destinationUnknown"
+              ? t("goals.project.removeDestinationUnknown")
+              : t("goals.detail.projectsRequired")}
         </p>
       ) : null}
     </section>

@@ -26,22 +26,6 @@ export function useProjectSelection({ open }: { open: boolean }) {
         ? [defaultProjectId]
         : []
 
-  const toggleProject = (projectId: string, enabled: boolean) => {
-    setSelectedProjectIds((current) => {
-      const selection =
-        current.length > 0
-          ? current
-          : defaultProjectId
-            ? [defaultProjectId]
-            : []
-      return enabled
-        ? selection.includes(projectId)
-          ? selection
-          : [...selection, projectId]
-        : selection.filter((id) => id !== projectId)
-    })
-  }
-
   const selectProjects = (projectIds: readonly string[]) => {
     setSelectedProjectIds([...projectIds])
   }
@@ -53,7 +37,6 @@ export function useProjectSelection({ open }: { open: boolean }) {
   return {
     projects,
     selectedProjectIds: effectiveProjectIds,
-    toggleProject,
     selectProjects,
     reset,
   }

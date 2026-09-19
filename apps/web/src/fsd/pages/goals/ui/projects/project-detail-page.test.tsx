@@ -139,6 +139,7 @@ const listProjects = vi.fn()
 const listProjectGoals = vi.fn()
 const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
+const updateProjectUnitOrder = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
@@ -155,6 +156,8 @@ vi.mock("@/entities/project", async (importOriginal) => {
     listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
     activateProject: (...args: unknown[]) => activateProject(...args),
     updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
+    updateProjectUnitOrder: (...args: unknown[]) =>
+      updateProjectUnitOrder(...args),
     projectQueries: {
       all: () => ["projects"],
       list: () => ({
@@ -258,6 +261,7 @@ describe("ProjectDetailPage", () => {
     listProjectGoals.mockReset()
     activateProject.mockReset()
     updateProjectGoals.mockReset()
+    updateProjectUnitOrder.mockReset()
     getGoalDetail.mockReset().mockResolvedValue(undefined)
   })
 
@@ -432,6 +436,59 @@ describe("ProjectDetailPage", () => {
     expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
   })
 
+  it("opens the bulk assembly sheet from the detail route's own trigger", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    await user.click(screen.getByTestId("project-add-goals"))
+
+    expect(
+      await screen.findByTestId("add-goals-to-project-sheet")
+    ).toBeInTheDocument()
+  })
+
+  it("offers project removal on each goal row, because the route carries project scope", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal(), priority: 1 }],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goal-row-actions-trigger-goal-1"))
+
+    expect(
+      await screen.findByTestId("goal-row-remove-from-project-goal-1")
+    ).toBeInTheDocument()
+  })
+
+  it("carries each row's full project membership, not only the viewed project", async () => {
+    listProjects.mockResolvedValue({
+      projects: [
+        project(),
+        project({
+          projectId: "proj-b",
+          name: "Project B",
+          isActivePlan: false,
+          isDefault: false,
+        }),
+      ],
+    })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal(), priority: 1 }],
+    })
+    renderPage("proj-a")
+
+    const row = await screen.findByTestId("goal-row")
+    const memberships = within(row).getByTestId("goal-project-memberships")
+    expect(memberships).toHaveTextContent("Project A")
+    expect(memberships).toHaveTextContent("Project B")
+  })
+
   it("keeps unit reprioritization separate from goal-list sorting", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
@@ -457,5 +514,453 @@ describe("ProjectDetailPage", () => {
     expect(
       screen.getByRole("button", { name: "goals.project.reprioritizeUnits" })
     ).toBeInTheDocument()
+  })
+  const goalOrderIn = (container: HTMLElement) =>
+    [
+      ...container.querySelectorAll(
+        '[data-testid^="goal-row-actions-trigger-"]'
+      ),
+    ].map((node) =>
+      node
+        .getAttribute("data-testid")!
+        .slice("goal-row-actions-trigger-".length)
+    )
+
+  const groupHeadings = () =>
+    [...screen.getByTestId("project-detail-goals").querySelectorAll("h2")].map(
+      (node) => node.textContent
+    )
+
+  const blockFor = (heading: HTMLElement) =>
+    goalOrderIn(heading.closest("section")!)
+
+  async function selectGroup(
+    user: ReturnType<typeof userEvent.setup>,
+    option: string
+  ) {
+    await user.click(screen.getByTestId("goals-group-by"))
+    await user.click(await screen.findByRole("option", { name: option }))
+  }
+
+  it("opens grouped by goal type, with one labelled block per type", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-rank" }), priority: 1 },
+        {
+          goal: goal({ goalId: "goal-ability", goalType: "Ability" }),
+          priority: 2,
+        },
+      ],
+    })
+    renderPage("proj-a")
+
+    const rank = await screen.findByRole("heading", {
+      name: "goals.create.goalTypes.Rank",
+    })
+    const ability = screen.getByRole("heading", {
+      name: "goals.create.goalTypes.Ability",
+    })
+    expect(blockFor(rank)).toEqual(["goal-rank"])
+    expect(blockFor(ability)).toEqual(["goal-ability"])
+  })
+
+  it("renders the group blocks inside the wrapper the product tour anchors to", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal(), priority: 1 }],
+    })
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    expect(
+      within(screen.getByTestId("project-detail-goals")).getByRole("heading", {
+        name: "goals.create.goalTypes.Rank",
+      })
+    ).toBeInTheDocument()
+  })
+
+  it("groups by unit, keeping a unit's several goal types in one labelled block", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-rank" }), priority: 1 },
+        {
+          goal: goal({ goalId: "goal-ability", goalType: "Ability" }),
+          priority: 2,
+        },
+        {
+          goal: goal({ goalId: "goal-other", entityId: "hero2" }),
+          priority: 3,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    await selectGroup(user, "goals.filters.groupByUnit")
+
+    expect(groupHeadings()).toEqual(["hero1", "hero2"])
+    expect(blockFor(screen.getByRole("heading", { name: "hero1" }))).toEqual([
+      "goal-rank",
+      "goal-ability",
+    ])
+    expect(blockFor(screen.getByRole("heading", { name: "hero2" }))).toEqual([
+      "goal-other",
+    ])
+  })
+
+  it("groups archived goals too rather than rendering them flat", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        {
+          goal: goal({ goalId: "goal-archived-rank", status: "Archived" }),
+          priority: 1,
+        },
+        {
+          goal: goal({
+            goalId: "goal-archived-ability",
+            goalType: "Ability",
+            status: "Archived",
+          }),
+          priority: 2,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    await user.click(screen.getByTestId("projects-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
+    )
+
+    await screen.findAllByTestId("goals-list-table")
+    expect(groupHeadings()).toEqual([
+      "goals.create.goalTypes.Rank",
+      "goals.create.goalTypes.Ability",
+    ])
+  })
+
+  it("keeps a prerequisite above its dependent inside a unit block, and below it when ungrouped", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        {
+          goal: goal({
+            goalId: "goal-ascension",
+            goalType: "Ascension",
+            updatedAt: "2026-01-01T00:00:00Z",
+          }),
+          priority: 2,
+        },
+        {
+          goal: goal({
+            goalId: "goal-rank",
+            dependsOn: ["goal-ascension"],
+            updatedAt: "2026-05-01T00:00:00Z",
+          }),
+          priority: 1,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    await selectGroup(user, "goals.filters.groupByUnit")
+
+    // Sort is "most recently updated", which would put the Rank goal first - inside a unit block
+    // its prerequisite still comes first.
+    expect(blockFor(screen.getByRole("heading", { name: "hero1" }))).toEqual([
+      "goal-ascension",
+      "goal-rank",
+    ])
+
+    await selectGroup(user, "goals.filters.groupNone")
+    expect(goalOrderIn(screen.getByTestId("project-detail-goals"))).toEqual([
+      "goal-rank",
+      "goal-ascension",
+    ])
+  })
+
+  it("reorders the unit blocks themselves when Sort changes", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        {
+          goal: goal({ goalId: "goal-1", updatedAt: "2026-01-01T00:00:00Z" }),
+          priority: 1,
+        },
+        {
+          goal: goal({
+            goalId: "goal-2",
+            entityId: "hero2",
+            updatedAt: "2026-05-01T00:00:00Z",
+          }),
+          priority: 2,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    await selectGroup(user, "goals.filters.groupByUnit")
+    expect(groupHeadings()).toEqual(["hero2", "hero1"])
+
+    await user.click(screen.getByTestId("goals-sort"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
+    )
+
+    expect(groupHeadings()).toEqual(["hero1", "hero2"])
+  })
+
+  it("orders goals by the Sort selection when grouped by type", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        {
+          goal: goal({ goalId: "goal-1", updatedAt: "2026-01-01T00:00:00Z" }),
+          priority: 1,
+        },
+        {
+          goal: goal({
+            goalId: "goal-2",
+            entityId: "hero2",
+            updatedAt: "2026-05-01T00:00:00Z",
+          }),
+          priority: 2,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    const heading = await screen.findByRole("heading", {
+      name: "goals.create.goalTypes.Rank",
+    })
+    expect(blockFor(heading)).toEqual(["goal-2", "goal-1"])
+
+    await user.click(screen.getByTestId("goals-sort"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
+    )
+
+    expect(
+      blockFor(
+        screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
+      )
+    ).toEqual(["goal-1", "goal-2"])
+  })
+
+  it("shows a unit's historical goals through the status filter without giving them a place in the in-flight unit order", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-active-1" }), priority: 1 },
+        {
+          goal: goal({
+            goalId: "goal-active-2",
+            entityId: "hero2",
+            goalType: "Ability",
+          }),
+          priority: 2,
+        },
+        {
+          goal: goal({
+            goalId: "goal-completed",
+            entityId: "hero2",
+            goalType: "Ascension",
+            status: "Completed",
+          }),
+          priority: 3,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    // Reachable: the Completed goal is grouped into its own type block like any other row.
+    const completed = await screen.findByRole("heading", {
+      name: "goals.create.goalTypes.Ascension",
+    })
+    expect(blockFor(completed)).toEqual(["goal-completed"])
+
+    // ...but the in-flight unit ordering only knows hero2's Ability goal.
+    await user.click(screen.getByTestId("project-reprioritize-units"))
+    const units = await screen.findAllByTestId("project-unit-order-item")
+    expect(units).toHaveLength(2)
+    expect(units[1]).toHaveTextContent("Ability")
+    expect(units[1]).not.toHaveTextContent("Ascension")
+  })
+
+  it("offers all three Group options, and no grouping renders one flat unlabelled list", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-rank" }), priority: 1 },
+        {
+          goal: goal({ goalId: "goal-ability", goalType: "Ability" }),
+          priority: 2,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goals-group-by"))
+    for (const option of [
+      "goals.filters.groupNone",
+      "goals.filters.groupByUnit",
+      "goals.filters.groupByType",
+    ]) {
+      expect(screen.getByRole("option", { name: option })).toBeInTheDocument()
+    }
+
+    await user.click(
+      screen.getByRole("option", { name: "goals.filters.groupNone" })
+    )
+
+    expect(groupHeadings()).toEqual([])
+    expect(screen.getAllByTestId("goals-list-table")).toHaveLength(1)
+    expect(goalOrderIn(screen.getByTestId("project-detail-goals"))).toEqual([
+      "goal-rank",
+      "goal-ability",
+    ])
+  })
+
+  it("carries the status, Type, Sort and Group selections to the next project opened through the switcher", async () => {
+    listProjects.mockResolvedValue({
+      projects: [
+        project(),
+        project({
+          projectId: "proj-b",
+          name: "Project B",
+          isActivePlan: false,
+          isDefault: false,
+        }),
+      ],
+    })
+    listProjectGoals.mockImplementation((projectId: string) =>
+      Promise.resolve({
+        goals:
+          projectId === "proj-a"
+            ? [
+                {
+                  goal: goal({
+                    goalId: "goal-a",
+                    goalType: "Ability",
+                    status: "Paused",
+                  }),
+                  priority: 1,
+                },
+              ]
+            : [
+                {
+                  goal: goal({
+                    goalId: "goal-b-active",
+                    entityId: "hero5",
+                    status: "Active",
+                  }),
+                  priority: 1,
+                },
+                {
+                  goal: goal({
+                    goalId: "goal-b-late",
+                    entityId: "hero9",
+                    goalType: "Ability",
+                    status: "Paused",
+                  }),
+                  priority: 2,
+                },
+                {
+                  goal: goal({
+                    goalId: "goal-b-early",
+                    entityId: "hero3",
+                    goalType: "Ability",
+                    status: "Paused",
+                  }),
+                  priority: 3,
+                },
+              ],
+      })
+    )
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    await user.click(screen.getByTestId("projects-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
+    )
+    await user.click(screen.getByTestId("goals-type-filter"))
+    await user.click(
+      await screen.findByRole("option", {
+        name: "goals.create.goalTypes.Ability",
+      })
+    )
+    await user.click(screen.getByTestId("goals-sort"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
+    )
+    await selectGroup(user, "goals.filters.groupByUnit")
+
+    await user.click(screen.getByTestId("projects-goal-project-select"))
+    await user.click(await screen.findByRole("option", { name: /Project B/ }))
+
+    await vi.waitFor(() =>
+      expect(listProjectGoals).toHaveBeenCalledWith("proj-b")
+    )
+    // Paused + Ability leaves only hero3 and hero9, unit-grouped, ordered by unit name.
+    await vi.waitFor(() => expect(groupHeadings()).toEqual(["hero3", "hero9"]))
+  })
+
+  it("changing the Group selection sends no unit-order request", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-1" }), priority: 1 },
+        { goal: goal({ goalId: "goal-2", entityId: "hero2" }), priority: 2 },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    await selectGroup(user, "goals.filters.groupByUnit")
+    await selectGroup(user, "goals.filters.groupNone")
+
+    expect(updateProjectUnitOrder).not.toHaveBeenCalled()
+    expect(updateProjectGoals).not.toHaveBeenCalled()
+  })
+
+  it("opens Reprioritize Units in the project's established unit order while grouped by type", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-late", entityId: "hero1" }), priority: 2 },
+        {
+          goal: goal({ goalId: "goal-early", entityId: "hero2" }),
+          priority: 1,
+        },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findAllByTestId("goals-list-table")
+    await user.click(screen.getByTestId("project-reprioritize-units"))
+
+    const units = await screen.findAllByTestId("project-unit-order-item")
+    expect(units.map((unit) => unit.textContent)).toEqual([
+      expect.stringContaining("hero2"),
+      expect.stringContaining("hero1"),
+    ])
   })
 })

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Settings } from "lucide-react"
+import { FolderKanban, Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -10,6 +10,13 @@ import {
 } from "@workspace/ui/components/card"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 import {
   GoalFilters,
@@ -22,7 +29,8 @@ import {
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import { goalRowFromSummary } from "../../model/shared/types"
+import { groupRows } from "../../model/shared/row-groups"
+import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalEstimate } from "../../model/estimate/use-goal-estimate"
 import { useGoals } from "../../model/goals-data/use-goals"
@@ -33,6 +41,9 @@ import { GoalsList } from ".//goals-list"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
+
+/** The filter's unfiltered option. Not "no project": every goal always belongs to at least one. */
+const ALL_PROJECTS = "__all__"
 
 /**
  * Complete cross-project goals view (plan §1: list on desktop, cards on mobile — no view switcher).
@@ -48,6 +59,10 @@ export function GoalsPage() {
   const [sort, setSort] = useState<GoalSortValue>("updated")
   const [group, setGroup] = useState<GoalGroupValue>("none")
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // Membership as a filter dimension, not a project selection: local state only, deliberately
+  // unconnected to the Current-plan preference Dailies and Insights calculate against, so browsing
+  // Overview never changes what those views operate on.
+  const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS)
   const { getEntityName } = useGoalCatalog()
   useGoalsOverviewTutorial()
 
@@ -82,14 +97,18 @@ export function GoalsPage() {
     archivedGoals.fetchState.status === "success"
       ? archivedGoals.fetchState.goals
           .filter((goal) => goal.status === "Archived")
-          .map((goal) => goalRowFromSummary(goal))
+          .map((goal) =>
+            goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
+          )
       : []
-  const filteredNonArchivedRows = nonArchivedRows.filter(
-    (row) => goalType === "all" || row.goalType === goalType
-  )
-  const filteredArchivedRows = archivedRows.filter(
-    (row) => goalType === "all" || row.goalType === goalType
-  )
+  const matchesFilters = (row: GoalRow) =>
+    (goalType === "all" || row.goalType === goalType) &&
+    (projectFilter === ALL_PROJECTS ||
+      (row.projects ?? []).some(
+        (membership) => membership.projectId === projectFilter
+      ))
+  const filteredNonArchivedRows = nonArchivedRows.filter(matchesFilters)
+  const filteredArchivedRows = archivedRows.filter(matchesFilters)
 
   // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
   // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
@@ -140,16 +159,7 @@ export function GoalsPage() {
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
       .length,
   }
-  const groupKey = (row: (typeof rows)[number]) =>
-    group === "unit"
-      ? `${row.entityType}:${row.entityId}`
-      : group === "type"
-        ? row.goalType
-        : "all"
-  const rowGroups = [...new Set(rows.map(groupKey))].map((key) => ({
-    key,
-    rows: rows.filter((row) => groupKey(row) === key),
-  }))
+  const rowGroups = groupRows(rows, group)
 
   const isLoading = selectedGoals.isLoading
   const fetchError =
@@ -179,8 +189,41 @@ export function GoalsPage() {
       {isMobile ? null : t("goals.planningSettings.button")}
     </Button>
   )
+  // goals-navigation spec: this joins the Type/Sort/Group group rather than the status row, and is
+  // explicitly not a `ProjectSelect` — it selects no project for any view to operate on.
+  const projectFilterLabel =
+    projectFilter === ALL_PROJECTS
+      ? t("goals.project.filterAll")
+      : (projects.projects.find(
+          (candidate) => candidate.projectId === projectFilter
+        )?.name ?? t("goals.project.filterAll"))
+  const projectFilterControl = (
+    <Select onValueChange={setProjectFilter} value={projectFilter}>
+      <SelectTrigger
+        aria-describedby="goals-project-filter-value"
+        aria-label={t("goals.project.filterLabel")}
+        data-testid="goals-project-filter"
+      >
+        <FolderKanban />
+        {isMobile ? null : <SelectValue />}
+        <span className="sr-only" id="goals-project-filter-value">
+          {projectFilterLabel}
+        </span>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={ALL_PROJECTS}>
+          {t("goals.project.filterAll")}
+        </SelectItem>
+        {projects.projects.map((candidate) => (
+          <SelectItem key={candidate.projectId} value={candidate.projectId}>
+            {candidate.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
   const goalFiltersAndSettings = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" data-testid="goals-filter-group">
       <GoalFilters
         goalType={goalType}
         group={group}
@@ -189,6 +232,7 @@ export function GoalsPage() {
         onSortChange={setSort}
         sort={sort}
       />
+      {projectFilterControl}
       {planningSettingsButton}
     </div>
   )
@@ -264,9 +308,9 @@ export function GoalsPage() {
       {rowGroups.map((rowGroup) =>
         rowGroup.rows.length > 0 ? (
           <section className="grid gap-2" key={rowGroup.key}>
-            {rowGroup.key !== "all" ? (
+            {rowGroup.dimension !== "none" ? (
               <h2 className="text-lg font-semibold">
-                {group === "type"
+                {rowGroup.dimension === "type"
                   ? t(`goals.create.goalTypes.${rowGroup.rows[0]!.goalType}`)
                   : getEntityName(
                       rowGroup.rows[0]!.entityType,

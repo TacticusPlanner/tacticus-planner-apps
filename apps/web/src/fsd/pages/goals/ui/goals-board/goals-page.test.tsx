@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 vi.mock("@/shared/tour", () => ({
@@ -181,6 +181,12 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
+const mobile = vi.hoisted(() => ({ value: false }))
+
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => mobile.value,
+}))
+
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 
@@ -216,6 +222,32 @@ const pausedGoal = {
   status: "Paused",
 }
 
+const otherProject = {
+  projectId: "proj-2",
+  name: "Event Prep",
+  description: null,
+  color: null,
+  status: "Active",
+  isActivePlan: false,
+  isDefault: false,
+  revision: 0,
+  createdAt: "2026-01-01T00:00:00Z",
+  updatedAt: "2026-01-01T00:00:00Z",
+}
+
+const overviewProject = {
+  projectId: "proj-1",
+  name: "My Goals",
+  description: null,
+  color: null,
+  status: "Active",
+  isActivePlan: true,
+  isDefault: true,
+  revision: 0,
+  createdAt: "2026-01-01T00:00:00Z",
+  updatedAt: "2026-01-01T00:00:00Z",
+}
+
 describe("GoalsPage", () => {
   beforeEach(() => {
     listGoals.mockReset()
@@ -225,6 +257,10 @@ describe("GoalsPage", () => {
     listProjects.mockResolvedValue({ projects: [] })
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     getPlayerCharacters.mockReset().mockReturnValue([])
+    activateProject.mockReset()
+    updateProjectGoals.mockReset()
+    updateProjectGoalsStatus.mockReset()
+    mobile.value = false
   })
 
   it("does not render page-level creation actions", async () => {
@@ -461,6 +497,24 @@ describe("GoalsPage", () => {
     expect(screen.queryByTestId("goal-detail-sheet")).not.toBeInTheDocument()
   })
 
+  it("opens ungrouped, unlike project detail", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
+      ],
+    })
+    renderPage()
+
+    await screen.findByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    expect(
+      screen.queryByRole("heading", { name: "goals.create.goalTypes.Rank" })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("heading", { name: "goals.create.goalTypes.Ability" })
+    ).not.toBeInTheDocument()
+  })
+
   it("groups goals by goal type", async () => {
     listGoals.mockResolvedValue({
       goals: [
@@ -485,22 +539,7 @@ describe("GoalsPage", () => {
 
   it("shows project membership without a project switcher", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
-    listProjects.mockResolvedValue({
-      projects: [
-        {
-          projectId: "proj-1",
-          name: "My Goals",
-          description: null,
-          color: null,
-          status: "Active",
-          isActivePlan: true,
-          isDefault: true,
-          revision: 0,
-          createdAt: "2026-01-01T00:00:00Z",
-          updatedAt: "2026-01-01T00:00:00Z",
-        },
-      ],
-    })
+    listProjects.mockResolvedValue({ projects: [overviewProject] })
     listProjectGoals.mockResolvedValue({
       goals: [{ goal: activeGoal, priority: 0 }],
     })
@@ -509,7 +548,217 @@ describe("GoalsPage", () => {
     expect(
       await screen.findByText("My Goals · goals.project.currentPlan")
     ).toBeInTheDocument()
-    expect(screen.queryByTestId("goals-project-filter")).not.toBeInTheDocument()
     expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
+  })
+
+  it("carries project membership onto archived rows too", async () => {
+    listGoals.mockImplementation((options?: { archived?: boolean }) =>
+      Promise.resolve({
+        goals: options?.archived ? [archivedGoal] : [activeGoal],
+      })
+    )
+    listProjects.mockResolvedValue({ projects: [overviewProject] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: activeGoal, priority: 0 },
+        { goal: archivedGoal, priority: 1 },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.tabs.archived (1)" })
+    )
+
+    const row = await screen.findByTestId("goal-row")
+    expect(
+      within(row).getByTestId("goal-project-memberships")
+    ).toHaveTextContent("My Goals")
+  })
+
+  it("offers no project-removal action, because Overview has no project scope", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    listProjects.mockResolvedValue({ projects: [overviewProject] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: activeGoal, priority: 0 }],
+    })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goal-row")
+    await user.click(
+      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    )
+
+    await screen.findByTestId(`goal-row-delete-${activeGoal.goalId}`)
+    expect(
+      screen.queryByTestId(`goal-row-remove-from-project-${activeGoal.goalId}`)
+    ).not.toBeInTheDocument()
+  })
+  it("applies no project filter initially, listing goals from every project", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
+      ],
+    })
+    listProjects.mockResolvedValue({
+      projects: [overviewProject, otherProject],
+    })
+    listProjectGoals.mockImplementation((projectId: string) =>
+      Promise.resolve({
+        goals:
+          projectId === "proj-1"
+            ? [{ goal: activeGoal, priority: 0 }]
+            : [
+                {
+                  goal: { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
+                  priority: 0,
+                },
+              ],
+      })
+    )
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+    )
+    expect(
+      document.getElementById("goals-project-filter-value")
+    ).toHaveTextContent("goals.project.filterAll")
+  })
+
+  it("narrows the list to one project's goals without mutating anything", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
+      ],
+    })
+    listProjects.mockResolvedValue({
+      projects: [overviewProject, otherProject],
+    })
+    listProjectGoals.mockImplementation((projectId: string) =>
+      Promise.resolve({
+        goals:
+          projectId === "proj-1"
+            ? [{ goal: activeGoal, priority: 0 }]
+            : [
+                {
+                  goal: { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
+                  priority: 0,
+                },
+              ],
+      })
+    )
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+    )
+
+    await user.click(screen.getByTestId("goals-project-filter"))
+    await user.click(await screen.findByRole("option", { name: "Event Prep" }))
+
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    )
+    expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
+    // Narrowing a list is not selecting a project: nothing is written, and Current plan is untouched.
+    expect(activateProject).not.toHaveBeenCalled()
+    expect(updateProjectGoals).not.toHaveBeenCalled()
+    expect(updateProjectGoalsStatus).not.toHaveBeenCalled()
+    expect(updateGoalStatus).not.toHaveBeenCalled()
+
+    // Clearing the filter brings the other project's goal back with its Current-plan marker intact,
+    // so filtering changed nothing about which project is Current plan.
+    await user.click(screen.getByTestId("goals-project-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.project.filterAll" })
+    )
+    expect(
+      await screen.findByText("My Goals · goals.project.currentPlan")
+    ).toBeInTheDocument()
+  })
+
+  it("narrows the Archived tab by project too, rather than emptying it", async () => {
+    listGoals.mockImplementation((options?: { archived?: boolean }) =>
+      Promise.resolve({
+        goals: options?.archived
+          ? [archivedGoal, { ...archivedGoal, goalId: "goal-archived-b" }]
+          : [activeGoal],
+      })
+    )
+    listProjects.mockResolvedValue({
+      projects: [overviewProject, otherProject],
+    })
+    listProjectGoals.mockImplementation((projectId: string) =>
+      Promise.resolve({
+        goals:
+          projectId === "proj-1"
+            ? [{ goal: archivedGoal, priority: 0 }]
+            : [
+                {
+                  goal: { ...archivedGoal, goalId: "goal-archived-b" },
+                  priority: 0,
+                },
+              ],
+      })
+    )
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
+    )
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+    )
+
+    await user.click(screen.getByTestId("goals-project-filter"))
+    await user.click(await screen.findByRole("option", { name: "Event Prep" }))
+
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    )
+  })
+
+  it("renders the project filter with the other filters, not in the status row", async () => {
+    listGoals.mockResolvedValue({ goals: [] })
+    renderPage()
+
+    await screen.findByTestId("goals-page-empty")
+    const group = screen.getByTestId("goals-filter-group")
+    expect(group).toContainElement(screen.getByTestId("goals-project-filter"))
+    expect(group).toContainElement(screen.getByTestId("goals-type-filter"))
+    expect(group).not.toContainElement(
+      screen.getByTestId("goals-status-filter")
+    )
+    expect(screen.getByTestId("goals-project-filter")).toHaveAccessibleName(
+      "goals.project.filterLabel"
+    )
+  })
+
+  it("compresses the project filter to an icon with an accessible name below 768px", async () => {
+    mobile.value = true
+    listGoals.mockResolvedValue({ goals: [] })
+    listProjects.mockResolvedValue({ projects: [overviewProject] })
+    renderPage()
+
+    await screen.findByTestId("goals-page-empty")
+    const trigger = screen.getByTestId("goals-project-filter")
+    expect(trigger).toHaveAccessibleName("goals.project.filterLabel")
+    expect(screen.getByTestId("goals-filter-group")).toContainElement(trigger)
+    expect(within(trigger).getByText("goals.project.filterAll")).toHaveClass(
+      "sr-only"
+    )
   })
 })

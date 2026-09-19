@@ -8,7 +8,7 @@ Makes Projects a list/detail pair of routes: `/goals/projects` for browsing, cre
 
 ### Requirement: Projects has a list route and a single-project detail route
 
-The system SHALL present the project dashboard at `/goals/projects` and an owned project's unit-grouped detail at `/goals/projects/{id}`. Opening or switching the viewed detail SHALL NOT change Current plan unless the user explicitly invokes “Make current.”
+The system SHALL present the project dashboard at `/goals/projects` and an owned project's grouped goal detail at `/goals/projects/{id}`. Opening or switching the viewed detail SHALL NOT change Current plan unless the user explicitly invokes “Make current.”
 
 #### Scenario: Dashboard and detail remain addressable
 
@@ -23,7 +23,7 @@ The system SHALL present the project dashboard at `/goals/projects` and an owned
 #### Scenario: The detail route shows one project
 
 - **WHEN** the user navigates to `/goals/projects/{id}` for a project they own
-- **THEN** that project's semantic header renders above its unit-grouped goal content
+- **THEN** that project's semantic header renders above its grouped goal content
 
 #### Scenario: Browsing does not change Current plan
 
@@ -131,7 +131,7 @@ Project actions SHALL no longer render as an always-visible inline icon cluster.
 
 ### Requirement: The detail route's current-project row matches the list route's row
 
-The detail route SHALL replace the reused list row with a semantic project header containing back navigation, identity, description, Current plan state/action, summary metrics, a project switcher, and overflow management actions. Goal controls and unit-grouped content SHALL render below it.
+The detail route SHALL replace the reused list row with a semantic project header containing back navigation, identity, description, Current plan state/action, summary metrics, a project switcher, and overflow management actions. Goal controls and grouped goal content SHALL render below it.
 
 #### Scenario: Current detail has no redundant action
 
@@ -239,22 +239,6 @@ Every project card SHALL show color, name, description when present, and availab
 - **WHEN** one project's summary fails
 - **THEN** only that card shows unavailable/retry state
 
-### Requirement: Project goals are grouped by unit
-
-Project detail SHALL group every Active/Paused Character or MoW goal by `(entityType, entityId)`. Each unit SHALL appear once and show its contained goals in automatic execution order.
-
-#### Scenario: Several goals share one unit block
-
-- **GIVEN** Ragnar has Rank, Ability, and Ascension goals in the project
-- **WHEN** project detail renders
-- **THEN** one Ragnar block contains all three goals
-
-#### Scenario: Same unit has historical goals
-
-- **GIVEN** the unit also has Completed or Archived goals
-- **WHEN** the user selects the corresponding status filter
-- **THEN** those goals remain discoverable without occupying the in-flight priority block
-
 ### Requirement: Users prioritize units rather than goals
 
 Project detail SHALL provide a dedicated Reprioritize units action for projects with at least two in-flight unit blocks. The mode SHALL let the user drag whole unit blocks, save once, or cancel. Save SHALL submit a complete permutation containing every current Active/Paused Character or MoW unit exactly once and SHALL reject duplicate or missing unit keys locally. If the API rejects a stale draft, the mode SHALL preserve that draft and show a recoverable error. Normal goal rows SHALL not render move-up/down priority controls or numeric priority inputs.
@@ -316,3 +300,165 @@ At or above 768px, project cards SHALL use a comparison-friendly grid and reprio
 
 - **WHEN** reprioritization opens below 768px
 - **THEN** each unit has a clearly labeled, touch-sized drag handle and the full list remains scrollable
+
+### Requirement: The detail route assembles membership in bulk
+
+The detail route SHALL provide an action that adds existing goals to the viewed project without visiting each goal individually. The surface it opens SHALL list the profile's goals, SHALL let the user search them, SHALL show for every listed goal whether it already belongs to the viewed project, and SHALL apply every selection in a single save. Goals already belonging to the project SHALL remain members when the selection is saved.
+
+#### Scenario: Several goals join a project in one save
+
+- **GIVEN** the user is on a project's detail route
+- **WHEN** they open the add-goals surface, select three goals, and save
+- **THEN** all three belong to the project and no other membership of that project is lost
+
+#### Scenario: Existing membership is visible while assembling
+
+- **GIVEN** the project already contains some of the listed goals
+- **WHEN** the add-goals surface renders
+- **THEN** each listed goal shows whether it is already a member of the viewed project
+
+#### Scenario: Search narrows the assembly list
+
+- **WHEN** the user enters text in the add-goals surface
+- **THEN** the listed goals narrow to those matching it
+
+#### Scenario: Concurrent membership changes are not discarded
+
+- **GIVEN** the project's membership changed elsewhere after the surface was opened
+- **WHEN** the user saves a selection
+- **THEN** the goals added elsewhere remain members of the project
+
+#### Scenario: Assembly does not remove members
+
+- **WHEN** the user saves a selection from the add-goals surface
+- **THEN** no goal is removed from the project as a result of that save
+
+#### Scenario: Added goals do not reorder existing units
+
+- **GIVEN** a project whose units are in an established priority order
+- **WHEN** goals for a new unit are added and saved
+- **THEN** the existing units keep their relative order and the added unit is placed last
+
+### Requirement: Assembly blocks a selection whose goal-type slot is occupied
+
+A project holds at most one Active/Paused goal per `(entityType, entityId, goalType)`, and a save that would place two such goals in one project is rejected in full rather than in part. The assembly surface SHALL therefore identify a listed goal whose slot is already held by an Active/Paused member of the viewed project, SHALL prevent it from being selected, and SHALL state the reason. A save SHALL NOT be submitted in a state that would be rejected for this reason.
+
+#### Scenario: Conflicting goal cannot be selected
+
+- **GIVEN** the viewed project contains an Active goal for a unit and goal type
+- **WHEN** the add-goals surface lists another Active goal for the same unit and goal type
+- **THEN** that goal cannot be selected and the reason is stated
+
+#### Scenario: A conflict arising after the check rejects the whole save
+
+- **GIVEN** the user has selected several goals and one of them becomes conflicting after the surface checked it
+- **WHEN** they save
+- **THEN** nothing is added, the conflict is explained, and the selection remains available to correct rather than being discarded
+
+#### Scenario: Historical goal in the project does not block selection
+
+- **GIVEN** the viewed project contains only a Completed or Archived goal for that unit and goal type
+- **WHEN** the add-goals surface lists another goal for the same unit and goal type
+- **THEN** it can be selected and saved
+
+### Requirement: Project goal rows offer removal alongside deletion
+
+On the detail route, each goal row's action menu SHALL offer removing that goal from the viewed project in addition to deleting it. Removal SHALL take effect on the viewed project only. After a removal the row SHALL leave the viewed list, and the outcome SHALL be reported naming the goal and, when the goal was relocated, its destination project.
+
+#### Scenario: A goal row offers both actions
+
+- **WHEN** a goal row's action menu is opened on a project's detail route
+- **THEN** both a project-removal action and an account-wide delete action are offered
+
+#### Scenario: Removed goal leaves the viewed list
+
+- **GIVEN** a goal is listed on project A's detail route
+- **WHEN** it is removed from project A
+- **THEN** it no longer appears in project A's list and the outcome is reported
+
+#### Scenario: Relocation destination is reported
+
+- **GIVEN** the removed goal's only membership was project A
+- **WHEN** the removal completes
+- **THEN** the reported outcome names the project the goal was relocated to
+
+### Requirement: Project detail groups by the selected dimension
+
+Project detail SHALL render its goals grouped by the dimension selected in its Group control. The control SHALL offer no grouping, grouping by unit, and grouping by goal type. When grouping by unit or by goal type, each group SHALL carry a heading identifying it; when grouping is off, the goals SHALL render as one list with no heading. Grouping SHALL apply to whichever goals the current status filter shows, and SHALL NOT alter stored unit priority.
+
+#### Scenario: A project opens grouped by goal type
+
+- **GIVEN** a project containing goals of several types
+- **WHEN** its detail route is first opened
+- **THEN** the goals are grouped by goal type, each group labelled with its type
+
+#### Scenario: Several goals share one unit block
+
+- **GIVEN** Ragnar has Rank, Ability, and Ascension goals in the project
+- **WHEN** the user selects Group by unit
+- **THEN** one Ragnar block contains all three goals, labelled with the unit's name
+
+#### Scenario: Grouping can be turned off
+
+- **WHEN** the user selects no grouping
+- **THEN** the project's goals render as a single ungrouped list with no group heading
+
+#### Scenario: Grouping applies to archived goals too
+
+- **GIVEN** the Archived status filter is selected
+- **WHEN** a grouping dimension is selected
+- **THEN** the archived goals are grouped by that dimension rather than rendered flat
+
+#### Scenario: Grouping leaves priority untouched
+
+- **GIVEN** a project whose units are in an established priority order
+- **WHEN** the user changes the Group selection
+- **THEN** the visible presentation changes and the stored unit order does not
+
+### Requirement: Sort orders unit blocks rather than their contents
+
+When project detail is grouped by unit, the Sort selection SHALL determine the order of the unit blocks, and the goals inside each block SHALL retain their automatic dependency-first order regardless of the Sort selection. Under every other grouping dimension, Sort SHALL order the goals as it does elsewhere.
+
+#### Scenario: A prerequisite stays above its dependent goal
+
+- **GIVEN** a unit whose Rank goal depends on its Ascension goal, and the Ascension goal was updated less recently
+- **WHEN** the user groups by unit and sorts by most recently updated
+- **THEN** the Ascension goal still renders above the Rank goal inside that unit's block
+
+#### Scenario: Sort reorders the blocks themselves
+
+- **GIVEN** a project grouped by unit
+- **WHEN** the user changes the Sort selection
+- **THEN** the order of the unit blocks changes accordingly
+
+#### Scenario: Sort applies normally without unit grouping
+
+- **GIVEN** a project grouped by goal type or not grouped
+- **WHEN** the user changes the Sort selection
+- **THEN** the goals are ordered by that selection
+
+### Requirement: Historical goals stay outside the in-flight ordering
+
+Completed and Archived goals SHALL remain discoverable through the status filter, and SHALL NOT take part in the ordering that expresses the project's in-flight unit priority.
+
+#### Scenario: Same unit has historical goals
+
+- **GIVEN** a unit has Completed or Archived goals as well as in-flight ones
+- **WHEN** the user selects the corresponding status filter
+- **THEN** those goals are shown without taking a position in the project's in-flight unit priority ordering
+
+### Requirement: The detail route's browsing controls persist across projects
+
+The status, Type, Sort, and Group selections SHALL persist when the user switches to another project through the detail route's project switcher, so that a chosen way of reading a project carries across projects. Goal type SHALL be the Group selection when the detail route is first opened.
+
+#### Scenario: Group selection carries to the next project
+
+- **GIVEN** the user is viewing project A grouped by unit
+- **WHEN** they switch to project B through the project switcher
+- **THEN** project B is also shown grouped by unit
+
+#### Scenario: Goal type is the initial grouping
+
+- **GIVEN** the user has not changed the Group selection in this session
+- **WHEN** they open a project's detail route
+- **THEN** its goals are grouped by goal type

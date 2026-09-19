@@ -73,7 +73,12 @@ export function projectUnitPlans(
     .sort((left, right) => left.position - right.position)
 }
 
-function dependencyFirst(rows: GoalRow[]): GoalRow[] {
+/**
+ * Stored-priority order with each goal's prerequisites emitted ahead of it. Exported because
+ * project detail's unit grouping needs the same order inside a unit block: Sort orders the blocks,
+ * not their contents, so a Rank goal never renders above the Ascension it depends on.
+ */
+export function dependencyFirst(rows: GoalRow[]): GoalRow[] {
   const remaining = rows
     .map((goal, index) => ({ goal, index }))
     .sort(

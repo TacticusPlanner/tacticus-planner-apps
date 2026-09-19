@@ -1,5 +1,6 @@
 import type { SyntheticEvent } from "react"
 
+import type { ProjectSummary } from "@/entities/project"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "../../model/shared/types"
@@ -8,6 +9,9 @@ import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 export type GoalsListProps = {
   rows: GoalRow[]
   actions: ReturnType<typeof useGoalActions>
+  /** The project these rows are being viewed inside, when there is one. Project scope is what makes
+   *  the row menu's "Remove from this project" action meaningful; Overview has none and omits it. */
+  project?: ProjectSummary
   reorderEnabled?: boolean
   onMove?: (goalId: string, direction: "up" | "down") => void
   onView?: (goalId: string) => void
