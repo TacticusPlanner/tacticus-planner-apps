@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
+import { useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { useTranslation } from "react-i18next"
 import {
   Archive,
@@ -32,6 +34,7 @@ import { ProjectSelect, useProjects } from "@/entities/project"
 import {
   GoalFilters,
   StatusFilterSelect,
+  goalQueries,
   type GoalGroupValue,
   type GoalSortValue,
   type GoalStatusFilterValue,
@@ -70,6 +73,7 @@ export function ProjectDetailPage() {
   useProjectDetailTutorial()
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
+  const isAuthenticated = useIsAuthenticated()
   const projects = useProjects()
   const project = projects.projects.find((p) => p.projectId === projectId)
 
@@ -99,6 +103,14 @@ export function ProjectDetailPage() {
     goalRowFromProjectMember(entry, projectsByGoalId.get(entry.goal.goalId))
   )
   const nonArchivedRows = allRows.filter((row) => row.status !== "Archived")
+  // The account-wide total the project's count is expressed against. `list(false)` excludes archived
+  // goals, so the project side must count nonArchivedRows (not allRows) or the two sides would count
+  // different sets — a mostly-archived project could otherwise report more goals than the account has.
+  const accountGoalsQuery = useQuery({
+    ...goalQueries.list(false),
+    enabled: isAuthenticated,
+  })
+  const accountGoalTotal = accountGoalsQuery.data?.goals.length
   const filteredAllRows = allRows.filter(
     (row) => goalType === "all" || row.goalType === goalType
   )
@@ -309,11 +321,23 @@ export function ProjectDetailPage() {
               </DropdownMenu>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {t("goals.project.unitGoalSummary", {
-              units: units.length,
-              goals: allRows.length,
-            })}
+          {/* Expressed against the account total so the project reads as a selection rather than as
+              the whole goal list. While the total is pending or failed this falls back to the plain
+              wording — never a guessed or zero total. */}
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="project-detail-goal-summary"
+          >
+            {accountGoalTotal === undefined
+              ? t("goals.project.unitGoalSummary", {
+                  units: units.length,
+                  goals: nonArchivedRows.length,
+                })
+              : t("goals.project.unitGoalSummaryOfAccount", {
+                  units: units.length,
+                  goals: nonArchivedRows.length,
+                  accountGoals: accountGoalTotal,
+                })}
           </p>
           <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
             <span>
@@ -375,6 +399,7 @@ export function ProjectDetailPage() {
         onView={setDetailGoalId}
         potentialProgress={insights.potentialProgressByGoalId}
         project={project}
+        projectIsEmpty={allRows.length === 0}
         rowGroups={rowGroups}
       />
 

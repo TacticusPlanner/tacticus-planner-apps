@@ -150,6 +150,43 @@ describe("ProjectsListPage", () => {
     expect(screen.queryByTestId("project-list")).not.toBeInTheDocument()
   })
 
+  it("explains what a project is and what Current plan changes, on arrival and not behind an interaction", async () => {
+    // project-management: the explanation must be readable without hovering, focusing, or opening
+    // anything — so it is plain page copy, not a tooltip, popover, or collapsed section.
+    listProjects.mockResolvedValue({ projects: [project()] })
+    renderPage()
+
+    const intro = await screen.findByTestId("projects-page-intro")
+    expect(intro).toBeVisible()
+    expect(intro).toHaveTextContent("goals.project.dashboardIntro")
+
+    const currentPlanNote = screen.getByTestId(
+      "projects-page-current-plan-note"
+    )
+    expect(currentPlanNote).toBeVisible()
+    expect(currentPlanNote).toHaveTextContent("goals.project.currentPlanNote")
+
+    // Neither sits inside a tooltip/popover wrapper or a collapsed <details>.
+    for (const node of [intro, currentPlanNote]) {
+      expect(node.closest("[role='tooltip']")).toBeNull()
+      expect(node.closest("[data-slot='popover-content']")).toBeNull()
+      expect(node.closest("details")).toBeNull()
+      expect(node.closest("[hidden]")).toBeNull()
+    }
+  })
+
+  it("keeps the dashboard explanation out of the empty state, which carries its own wording", async () => {
+    // An unconditional lead paragraph would state the explanation twice on an empty dashboard, whose
+    // own copy already answers the same question (task 3.1/3.3).
+    listProjects.mockResolvedValue({ projects: [] })
+    renderPage()
+
+    expect(await screen.findByTestId("projects-page-empty")).toHaveTextContent(
+      "goals.project.noProjectDescription"
+    )
+    expect(screen.queryByTestId("projects-page-intro")).not.toBeInTheDocument()
+  })
+
   it("lists every project, including archived ones, with no page heading", async () => {
     const projectA = project()
     const archived = project({

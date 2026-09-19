@@ -19,6 +19,8 @@ type Props = {
   onView: (goalId: string) => void
   potentialProgress: ReadonlyMap<string, number>
   project: ProjectSummary
+  /** The project holds no goals at all, as opposed to a filter hiding the ones it holds. */
+  projectIsEmpty: boolean
   rowGroups: RowGroup[]
 }
 
@@ -38,6 +40,7 @@ export function ProjectDetailGoals({
   onView,
   potentialProgress,
   project,
+  projectIsEmpty,
   rowGroups,
 }: Props) {
   const { t } = useTranslation()
@@ -58,6 +61,18 @@ export function ProjectDetailGoals({
         >
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-24 w-full" />
+        </div>
+      ) : projectIsEmpty ? (
+        // An empty project says it is empty and names the ways to fill it — distinct from the
+        // filtered-empty message, which would otherwise claim the account has no matching goals.
+        <div
+          className="grid gap-1 py-10 text-center"
+          data-testid="project-detail-empty"
+        >
+          <p className="font-medium">{t("goals.project.emptyProjectTitle")}</p>
+          <p className="text-sm text-muted-foreground">
+            {t("goals.project.emptyProjectDescription")}
+          </p>
         </div>
       ) : rowGroups.length === 0 ? (
         <p className="py-10 text-center text-muted-foreground">

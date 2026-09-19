@@ -491,7 +491,7 @@
     },
     "project": {
       "noProjectTitle": "No projects yet",
-      "noProjectDescription": "Create a project to organize and prioritize related goals.",
+      "noProjectDescription": "A project is a named selection of your goals with its own priority order. Create one to plan a roster push, an event, or a long-term build separately from the rest.",
       "notFoundTitle": "Project not found",
       "notFoundDescription": "This project doesn't exist, or you don't have access to it.",
       "membership": "Projects containing this goal",
@@ -546,7 +546,12 @@
       "archive": "Archive project",
       "restore": "Restore project",
       "save": "Save project",
-      "create": "Create project"
+      "create": "Create project",
+      "dashboardIntro": "A project is a named selection of your goals with its own priority order. Keep several to plan different things separately — a roster push, an event, a long-term build — and switch between them without losing each one's order.",
+      "currentPlanNote": "Current plan is the project Dailies and Insights use by default. It does not make goals active or paused — you pause and resume goals one at a time.",
+      "unitGoalSummaryOfAccount": "{{units}} units · {{goals}} of your {{accountGoals}} goals",
+      "emptyProjectTitle": "This project has no goals yet",
+      "emptyProjectDescription": "Use Add goals to put existing goals into it, or Create goal to make a new one."
     },
     "toasts": {
       "statusChanged": "Goal updated.",
@@ -723,7 +728,9 @@
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
         "levelMaxed": "This character has already reached the maximum level.",
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit."
-      }
+      },
+      "startPaused": "Create paused",
+      "startPausedDescription": "The goal is created normally but stays out of daily planning until you resume it. Which projects you pick does not affect this."
     },
     "estimate": {
       "none": "—",
@@ -787,7 +794,8 @@
       "shardsTitle": "Shards location",
       "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
-      "none": "None"
+      "none": "None",
+      "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself."
     },
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",
@@ -970,8 +978,8 @@
     "projectsList": {
       "steps": {
         "list": {
-          "title": "Your projects",
-          "content": "Compare your Current plan with other projects and their progressively loaded summaries. Archived projects stay collapsed until you need them."
+          "title": "What a project is",
+          "content": "A project is a named selection of your goals with its own priority order — keep several to plan different things separately. Current plan is the one Dailies and Insights use by default; it does not pause or resume anything."
         },
         "newProject": {
           "title": "Create a project",
@@ -982,8 +990,8 @@
     "projectDetail": {
       "steps": {
         "header": {
-          "title": "Project at a glance",
-          "content": "See this project's identity, Current plan state, progress metrics, project switcher, and actions here."
+          "title": "A selection of your goals",
+          "content": "This project holds a selection of your account's goals — the summary shows how many of them are here. Its Current plan state, progress metrics, project switcher, and actions all live in this header."
         },
         "addGoals": {
           "title": "Fill the project",

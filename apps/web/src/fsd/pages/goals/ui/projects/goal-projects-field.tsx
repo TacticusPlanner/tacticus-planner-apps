@@ -83,6 +83,14 @@ export function GoalProjectsField({
       <p className="text-muted-foreground">
         {t("goals.detail.projectsDescription")}
       </p>
+      {/* States the negative on purpose: the users who asked what membership does had already formed
+          the opposite belief, and behavior that silently stops happening does not correct it. */}
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid={`${testIdPrefix}-projects-activation-note`}
+      >
+        {t("goals.detail.projectsActivationNote")}
+      </p>
       <div className="flex flex-wrap gap-2">
         {selected.map((project) => {
           const conflict = conflicts.find(
