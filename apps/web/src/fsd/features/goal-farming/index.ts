@@ -17,11 +17,19 @@ export {
   calculateGoalResourceNeed,
 } from "./lib/goal-requirements"
 export { resourceLabel } from "./lib/goal-need"
-export { computeLevelGoalCost, type LevelGoalCost } from "./lib/level-xp-cost"
+export {
+  computeLevelGoalCost,
+  consumeOwnedBooks,
+  maxLevelReachableWithXp,
+  ownedBooksByRarity,
+  xpNeededForLevelRange,
+  type LevelGoalCost,
+} from "./lib/level-xp-cost"
 export {
   additionalTargetFromWire,
   additionalTargetSelection,
   additionalTargetOptions,
+  reachableRankProgress,
   requiredLevelForRankTarget,
   rowCount,
   type RankAdditionalTarget,

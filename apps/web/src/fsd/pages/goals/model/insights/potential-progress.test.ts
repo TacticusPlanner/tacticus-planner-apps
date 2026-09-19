@@ -50,7 +50,16 @@ describe("computePotentialProgressRatio", () => {
     expect(
       computePotentialProgressRatio(
         detail,
-        { kind: "Rank", current: "Stone1", target: "Iron2", ratio: 0 },
+        {
+          kind: "Rank",
+          current: "Stone1",
+          target: "Iron2",
+          ratio: 0,
+          reachableRatio: null,
+          reachableRank: null,
+          reachableAppliedSlots: null,
+          reachableRankLimitedBy: null,
+        },
         allocation
       )
     ).toBe(0.75)
@@ -62,6 +71,10 @@ describe("computePotentialProgressRatio", () => {
       current: "Iron1" as const,
       target: "Iron2" as const,
       ratio: 0.9,
+      reachableRatio: null,
+      reachableRank: null,
+      reachableAppliedSlots: null,
+      reachableRankLimitedBy: null,
     }
     expect(
       computePotentialProgressRatio(detail, progress, allocation)
@@ -90,7 +103,16 @@ describe("computePotentialProgressRatio", () => {
     expect(
       computePotentialProgressRatio(
         partialDetail,
-        { kind: "Rank", current: "Stone2", target: "Stone2", ratio: 0.5 },
+        {
+          kind: "Rank",
+          current: "Stone2",
+          target: "Stone2",
+          ratio: 0.5,
+          reachableRatio: null,
+          reachableRank: null,
+          reachableAppliedSlots: null,
+          reachableRankLimitedBy: null,
+        },
         {
           goalId: "goal-1",
           stages: [

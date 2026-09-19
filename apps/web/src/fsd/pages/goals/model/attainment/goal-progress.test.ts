@@ -21,6 +21,10 @@ function rankDetail(start: number, end: number, endAppliedUpgrades = 0) {
   } as GoalDetail
 }
 
+// Unrestricted rarity/level so tests unrelated to the reachable-ceiling feature see
+// `reachableRatio: null` and their existing rank/level assertions are unaffected.
+const UNRESTRICTED = { progressionIndex: "Mythic:MythicWings", xpLevel: 60 }
+
 describe("computeGoalProgress Rank", () => {
   it("measures a same-rank partial target by applied slots", () => {
     expect(
@@ -29,6 +33,7 @@ describe("computeGoalProgress Rank", () => {
         playerCharacter: {
           rank: "Stone2",
           appliedUpgradeSlots: [0],
+          ...UNRESTRICTED,
         },
       } as never)
     ).toMatchObject({ kind: "Rank", ratio: 0.5 })
@@ -41,6 +46,7 @@ describe("computeGoalProgress Rank", () => {
         playerCharacter: {
           rank: "Stone1",
           appliedUpgradeSlots: [0, 2, 4],
+          ...UNRESTRICTED,
         },
       } as never)
     ).toMatchObject({ kind: "Rank", ratio: 0.25 })
@@ -50,8 +56,331 @@ describe("computeGoalProgress Rank", () => {
     expect(
       computeGoalProgress({
         detail: rankDetail(2, 2),
-        playerCharacter: { rank: "Stone1", appliedUpgradeSlots: [] },
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          ...UNRESTRICTED,
+        },
       } as never)
     ).toMatchObject({ kind: "Rank", ratio: 0 })
+  })
+
+  it("clamps the displayed current to the target once the player's live rank has overtaken it (fix-goal-progress-consistency)", () => {
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(0, 15),
+        playerCharacter: {
+          rank: "Diamond3",
+          appliedUpgradeSlots: [],
+          ...UNRESTRICTED,
+        },
+      } as never)
+    ).toMatchObject({ kind: "Rank", current: "Diamond1", ratio: 1 })
+  })
+
+  it("never raises the displayed current above the player's true rank when it's below the target's configured start (fix-goal-progress-consistency)", () => {
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(5, 15),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          ...UNRESTRICTED,
+        },
+      } as never)
+    ).toMatchObject({ kind: "Rank", current: "Stone1" })
+  })
+
+  it("returns null reachableRatio and reachableRank when rarity and level both already cover the target", () => {
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(0, 5),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          ...UNRESTRICTED,
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Rank",
+      reachableRatio: null,
+      reachableRank: null,
+      reachableRankLimitedBy: null,
+    })
+  })
+
+  it("caps reachableRatio and reachableRank by rarity when rarity is the tighter bound", () => {
+    // Rare caps at Silver1 (index 9); Diamond1 target end is index 15. Level 60 is high enough
+    // that Silver1's own slots are maxed out (6/6) — rarity blocks ranking any further, not level.
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(0, 15),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          progressionIndex: "Rare:FourStars",
+          xpLevel: 60,
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Rank",
+      reachableRatio: (9 * 6 + 6) / 90,
+      reachableRank: "Silver1",
+      reachableAppliedSlots: 6,
+      reachableRankLimitedBy: "rarity",
+    })
+  })
+
+  it("caps reachableRatio and reachableRank by level when level is the tighter bound", () => {
+    // Level 20 reaches Bronze2 (index 7) with its own 3 free slots (rankToLevel.Bronze2 === 20,
+    // the level just reached); rarity (Mythic) is unrestricted.
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(0, 15),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          progressionIndex: "Mythic:MythicWings",
+          xpLevel: 20,
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Rank",
+      reachableRatio: (7 * 6 + 3) / 90,
+      reachableRank: "Bronze2",
+      reachableAppliedSlots: 3,
+      reachableRankLimitedBy: "level",
+    })
+  })
+
+  it("caps reachableRatio and reachableRank by the lower of rarity and level when both restrict equally", () => {
+    // Rare caps at Silver1 (index 9); level 26 also just reaches Silver1 (its own 3 free slots).
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(0, 15),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          progressionIndex: "Rare:FourStars",
+          xpLevel: 26,
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Rank",
+      reachableRatio: (9 * 6 + 3) / 90,
+      reachableRank: "Silver1",
+      reachableAppliedSlots: 3,
+      reachableRankLimitedBy: "both",
+    })
+  })
+
+  it("reproduces a real fixture (Shiron: Rare rarity, level 17) where level caps below what rarity alone would allow", () => {
+    // Rare's rarity cap is Silver1 (index 9); level 17 only reaches Bronze1 (index 6) per
+    // rankToLevel. Level is the tighter bound here even though the character's rarity would allow
+    // much further — confirmed live against the running app, since this looked like a bug at first
+    // glance ("Rare rarity should mean Silver1") until the character's actual low level was
+    // accounted for.
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(0, 15),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          progressionIndex: "Rare:FiveStars",
+          xpLevel: 17,
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Rank",
+      reachableRank: "Bronze1",
+      reachableAppliedSlots: 3,
+      reachableRankLimitedBy: "level",
+    })
+  })
+
+  it("never places the reachable ceiling behind the character's real, level-gated applied-slot progress (real fixture: Neurothrope, Diamond1 partial)", () => {
+    // A whole-rank-only ceiling was the bug: at level 46 (mid-way through Diamond1's own
+    // level-gated bottom row), the old model reported the ceiling as "just reached Diamond1" (0 of
+    // its slots credited) while the character's real applied-slot count was already 3 — visibly
+    // placing the ceiling marker *behind* the actual-progress fill. `reachableAppliedSlots` must
+    // credit the same partial-rank progress the actual ratio itself already does.
+    const result = computeGoalProgress({
+      detail: rankDetail(15, 17), // Diamond1 -> Diamond3
+      playerCharacter: {
+        rank: "Diamond1",
+        appliedUpgradeSlots: [0, 1, 2],
+        progressionIndex: "Legendary:RedThreeStars", // unrestricted rarity (caps at Diamond3)
+        xpLevel: 46,
+      },
+    } as never)
+    expect(result).toMatchObject({
+      kind: "Rank",
+      ratio: 3 / 12,
+      reachableRatio: 5 / 12,
+      reachableRank: "Diamond1",
+      reachableAppliedSlots: 5,
+    })
+    expect(
+      (result as { reachableRatio: number }).reachableRatio
+    ).toBeGreaterThanOrEqual((result as { ratio: number }).ratio)
+  })
+
+  it("returns null reachableRatio and reachableRank for a zero-span target regardless of rarity/level", () => {
+    expect(
+      computeGoalProgress({
+        detail: rankDetail(2, 2),
+        playerCharacter: {
+          rank: "Stone1",
+          appliedUpgradeSlots: [],
+          progressionIndex: "Common:None",
+          xpLevel: 1,
+        },
+      } as never)
+    ).toMatchObject({ kind: "Rank", reachableRatio: null, reachableRank: null })
+  })
+})
+
+function ascensionDetail(start: string, end: string) {
+  return {
+    entityType: "Character",
+    goalType: "Ascension",
+    config: { progression: { start, end } },
+  } as GoalDetail
+}
+
+describe("computeGoalProgress Ascension", () => {
+  it("clamps the displayed current to the target once the player's live progression has overtaken it (fix-goal-progress-consistency)", () => {
+    expect(
+      computeGoalProgress({
+        detail: ascensionDetail("Common:None", "Rare:FiveStars"),
+        playerCharacter: { progressionIndex: "Epic:RedOneStar" },
+      } as never)
+    ).toMatchObject({
+      kind: "Ascension",
+      current: "Rare:FiveStars",
+      ratio: 1,
+    })
+  })
+
+  it("never raises the displayed current above the player's true progression when it's below the target's configured start (fix-goal-progress-consistency)", () => {
+    expect(
+      computeGoalProgress({
+        detail: ascensionDetail("Uncommon:FourStars", "Rare:FiveStars"),
+        playerCharacter: { progressionIndex: "Common:TwoStars" },
+      } as never)
+    ).toMatchObject({ kind: "Ascension", current: "Common:TwoStars" })
+  })
+})
+
+function levelDetail(start: number, end: number) {
+  return {
+    entityType: "Character",
+    goalType: "Level",
+    config: { level: { start, end } },
+  } as GoalDetail
+}
+
+describe("computeGoalProgress Level", () => {
+  it("clamps the displayed current to the target once the player's live level has overtaken it (fix-goal-progress-consistency)", () => {
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(10, 50),
+        playerCharacter: {
+          xpLevel: 62,
+          xp: 0,
+          progressionIndex: "Mythic:MythicWings",
+        },
+      } as never)
+    ).toMatchObject({ kind: "Level", current: 50, ratio: 1 })
+  })
+
+  it("never raises the displayed current above the player's true level when it's below the target's configured start (fix-goal-progress-consistency)", () => {
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(20, 50),
+        playerCharacter: {
+          xpLevel: 5,
+          xp: 0,
+          progressionIndex: "Mythic:MythicWings",
+        },
+      } as never)
+    ).toMatchObject({ kind: "Level", current: 5 })
+  })
+
+  it("computes remainingXp as the gap to the target level's own total-xp threshold, crediting total xp already gained", () => {
+    // level32's own total-xp threshold is 94200 (ported xp.json thresholds); `xp` is the character's
+    // *total* xp gained (matches the real Tacticus API's own field), so a character already at
+    // 80,000 total only needs 14,200 more, not a from-scratch 94,200.
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(31, 32),
+        playerCharacter: {
+          xpLevel: 31,
+          xp: 80_000,
+          progressionIndex: "Mythic:MythicWings",
+        },
+      } as never)
+    ).toMatchObject({ kind: "Level", remainingXp: 14_200 })
+  })
+
+  it("returns null remainingXp once the target is already reached", () => {
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(10, 50),
+        playerCharacter: {
+          xpLevel: 62,
+          xp: 0,
+          progressionIndex: "Mythic:MythicWings",
+        },
+      } as never)
+    ).toMatchObject({ kind: "Level", remainingXp: null })
+  })
+
+  it("returns null reachableRatio and reachableLevel once the rarity level cap already covers the target", () => {
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(10, 50),
+        playerCharacter: {
+          xpLevel: 5,
+          xp: 0,
+          progressionIndex: "Mythic:MythicWings",
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Level",
+      reachableRatio: null,
+      reachableLevel: null,
+    })
+  })
+
+  it("caps reachableRatio and reachableLevel at the rarity's level cap when it falls inside the target range", () => {
+    // Rare's level cap is 26 (levelCapByRarity.Rare); target range is 10-50.
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(10, 50),
+        playerCharacter: {
+          xpLevel: 5,
+          xp: 0,
+          progressionIndex: "Rare:FourStars",
+        },
+      } as never)
+    ).toMatchObject({
+      kind: "Level",
+      reachableRatio: (26 - 10) / (50 - 10),
+      reachableLevel: 26,
+    })
+  })
+
+  it("returns null reachableRatio and reachableLevel for a zero-span target regardless of rarity", () => {
+    expect(
+      computeGoalProgress({
+        detail: levelDetail(20, 20),
+        playerCharacter: { xpLevel: 5, xp: 0, progressionIndex: "Common:None" },
+      } as never)
+    ).toMatchObject({
+      kind: "Level",
+      reachableRatio: null,
+      reachableLevel: null,
+    })
   })
 })

@@ -2,6 +2,7 @@ import {
   lastRank,
   Rank,
   rankIndex,
+  rankOrder,
   type Rank as RankType,
 } from "@workspace/game-domain"
 
@@ -143,6 +144,48 @@ export function requiredLevelForRankTarget(
     default:
       return rowLevel(rank, rowCount(additionalTarget) ?? 1)
   }
+}
+
+/** How many of `rank`'s 6 upgrade slots are appliable at `level`. `rankToLevel`'s own gap to the
+ *  next rank already encodes the split the game makes between slots granted immediately on rank-up
+ *  and slots individually gated by one further level each — e.g. Diamond1 (level 44) to Diamond2
+ *  (level 47) is a 3-level gap, meaning 3 of Diamond1's 6 slots (its "top row") come free at level
+ *  44, and the other 3 (its "bottom row") need levels 45/46/47 one at a time, with the 47th actually
+ *  ranking up rather than completing a same-rank 6th slot. The Stone tier's shorter 2-level gaps
+ *  fall out of the same formula (4 free, 2 gated) without special-casing. The ladder's last rank has
+ *  no next-rank gap to derive from, so every slot there is treated as individually gated (mirrors
+ *  the already-numbered-per-slot Adamantine model `rowLevel`/`RowN` targets use). */
+function appliableSlotsAtLevel(rank: RankType, level: number): number {
+  const base = rankToLevel[rank]
+  if (level < base) return 0
+  const nextRank = rankOrder[rankIndex(rank) + 1] as RankType | undefined
+  const gatedSlots = nextRank ? rankToLevel[nextRank] - base : 6
+  const freeSlots = Math.max(0, 6 - gatedSlots)
+  return Math.min(6, freeSlots + (level - base))
+}
+
+/** The highest (rank, applied-slots-within-that-rank) a character can reach *right now*, given
+ *  `level` and the rarity ceiling `rarityMaxRank` (`maxRankForProgression`) — both independently cap
+ *  a Rank goal's progress, whichever is lower currently binds. Slot-level granularity (not just
+ *  whole ranks) matters here: a character's real applied-slot count can sit at, say, Diamond1 4/6,
+ *  and a reachable-ceiling marker computed only at whole-rank precision could land *behind* that
+ *  real progress (rarity alone permitting only Diamond1, with no notion of "how many of its slots"),
+ *  which is never a valid state — level+materials-gated real progress can't outpace what level alone
+ *  permits. Used to mark a Rank goal's progress bar with what's actually reachable right now. */
+export function reachableRankProgress(
+  level: number,
+  rarityMaxRank: RankType
+): { rank: RankType; appliedSlots: number } {
+  const rarityMaxIndex = rankIndex(rarityMaxRank)
+  let rank: RankType = rankOrder[0]
+  let appliedSlots = 0
+  for (let index = 0; index <= rarityMaxIndex; index++) {
+    const candidate = rankOrder[index]
+    if (level < rankToLevel[candidate]) break
+    rank = candidate
+    appliedSlots = appliableSlotsAtLevel(candidate, level)
+  }
+  return { rank, appliedSlots }
 }
 
 /** The inverse of `additionalTargetSelection` — reconstructs the Additional target a persisted goal

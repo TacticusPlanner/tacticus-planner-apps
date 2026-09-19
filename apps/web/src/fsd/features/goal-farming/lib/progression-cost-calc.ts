@@ -133,17 +133,25 @@ export function ascensionResourceNeed(params: {
 /** The shards to unlock a character of `initialRarity`, net of owned shards. Keyed by the
  *  *character's* starting rarity — the MoW catalog carries no rarity field at all, so a MoW's unlock
  *  economy has no data to key this table by and is left uncosted (`isMow` short-circuits to empty,
- *  same "no data, don't fake it" boundary as Character Ability). */
+ *  same "no data, don't fake it" boundary as Character Ability). Zero once `owned` — mirrors
+ *  `goal-attainment.ts`'s `fromBoolean(!!owned)` for the Unlock goal kind. */
 export function unlockResourceNeed(params: {
   initialRarity: string | undefined
   entityId: string
   isMow: boolean
+  owned: boolean
   ownedShards: number
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
 }): ResourceNeed {
-  const { initialRarity, entityId, isMow, ownedShards, unlockShardCostsById } =
-    params
-  if (isMow || !initialRarity) return EMPTY_NEED
+  const {
+    initialRarity,
+    entityId,
+    isMow,
+    owned,
+    ownedShards,
+    unlockShardCostsById,
+  } = params
+  if (isMow || !initialRarity || owned) return EMPTY_NEED
 
   const totalShards = unlockShardCostsById.get(initialRarity)?.shards ?? 0
   const netShards = Math.max(0, totalShards - ownedShards)

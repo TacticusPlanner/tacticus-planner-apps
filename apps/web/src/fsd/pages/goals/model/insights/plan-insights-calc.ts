@@ -50,6 +50,10 @@ import {
   type InventoryOrbs,
   type OrbGoalNeed,
 } from "./orb-potential-allocation"
+import {
+  allocateXpBooksAcrossGoals,
+  buildLevelGoalNeeds,
+} from "./level-potential-allocation"
 import type {
   PlanInsightsBottleneck,
   PlanInsightsResult,
@@ -71,6 +75,10 @@ export function computePlanInsights(params: {
   inventoryShardById: ReadonlyMap<string, InventoryShard | undefined>
   inventoryUpgrades: readonly { upgradeId: string; amount: number }[]
   inventoryOrbs?: InventoryOrbs
+  /** The account's XP-book inventory — netted against every Level goal's own xp need, in priority
+   *  order, for that goal's Potential-progress ratio (see `level-potential-allocation.ts`). Omitting
+   *  it treats every Level goal as if no books were owned (no Potential ratio computed). */
+  inventoryXpBooks?: readonly { xpBookId: string; amount: number }[]
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   battlesById: Parameters<typeof estimatePlan>[0]["battlesById"]
   charactersById: ReadonlyMap<string, CharacterStorageModel>
@@ -283,8 +291,39 @@ export function computePlanInsights(params: {
     orbGoalNeeds,
     params.inventoryOrbs
   )
+  const levelGoalNeeds = buildLevelGoalNeeds({
+    orderedDetails,
+    priorityByGoalId: params.priorityByGoalId,
+    playerCharacterById: params.playerCharacterById,
+    playerMowById: params.playerMowById,
+  })
+  const levelPotentialByGoalId = allocateXpBooksAcrossGoals(
+    levelGoalNeeds,
+    params.inventoryXpBooks
+  )
+
   const potentialProgressByGoalId = new Map<string, number>()
   for (const detail of orderedDetails) {
+    if (detail.goalType === "Level") {
+      const target = detail.config.level
+      const potentialLevel = levelPotentialByGoalId.get(detail.goalId)
+      if (
+        !target ||
+        potentialLevel === undefined ||
+        target.end <= target.start
+      ) {
+        continue
+      }
+      const ratio = Math.min(
+        1,
+        Math.max(
+          0,
+          (potentialLevel - target.start) / (target.end - target.start)
+        )
+      )
+      potentialProgressByGoalId.set(detail.goalId, ratio)
+      continue
+    }
     const allocation =
       detail.goalType === "Ascension"
         ? orbAllocations.get(detail.goalId)

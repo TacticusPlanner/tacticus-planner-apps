@@ -8,6 +8,7 @@ import {
   getInventoryShard,
   getInventoryOrbs,
   getInventoryUpgrades,
+  getInventoryXpBooks,
   getLiveProgress,
   getPlayerCharacter,
   getPlayerMow,
@@ -65,6 +66,7 @@ export function usePlanInsights(
     useCampaignDisplay()
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const inventoryOrbs = useLiveQuery(() => getInventoryOrbs(), [])
+  const inventoryXpBooks = useLiveQuery(() => getInventoryXpBooks(), [])
   const liveProgress = useLiveQuery(() => getLiveProgress(), [])
   const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
   const shops = useLiveQuery(() => getShops(), [])
@@ -81,6 +83,7 @@ export function usePlanInsights(
   const calculationKey = `${memberKey}:${JSON.stringify({
     inventoryUpgrades,
     inventoryOrbs,
+    inventoryXpBooks,
   })}`
   const hasQuery = Boolean(
     projectId && isAuthenticated && activeMembers.length > 0
@@ -182,6 +185,7 @@ export function usePlanInsights(
             inventoryShardById,
             inventoryUpgrades: inventoryUpgrades ?? [],
             inventoryOrbs,
+            inventoryXpBooks,
             upgradesById,
             battlesById,
             charactersById: charactersById!,

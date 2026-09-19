@@ -444,11 +444,11 @@
     },
     "columns": {
       "entity": "Charakter",
-      "type": "Typ",
+      "goal": "Ziel",
       "progress": "Fortschritt",
-      "status": "Status",
-      "actions": "Aktionen",
-      "estimate": "Fertig am"
+      "remaining": "Verbleibend",
+      "status": "Status · Fertig am",
+      "actions": "Aktionen"
     },
     "status": {
       "Draft": "Entwurf",
@@ -459,6 +459,7 @@
     },
     "blocked": {
       "label": "Blockiert",
+      "restrictedLabel": "Eingeschränkt",
       "reasons": {
         "PrerequisiteNotReached": "Wartet darauf, dass zuerst ein Voraussetzungsziel erreicht wird.",
         "PlayerDataUnavailable": "Spielerdaten für dieses Ziel wurden noch nicht synchronisiert.",
@@ -754,7 +755,6 @@
       "unsavedChangesCancel": "Weiter bearbeiten",
       "estimateTitle": "Schätzung",
       "isolatedEstimate": "Isolierte Schätzung",
-      "potentialProgressDescription": "Der potenzielle Fortschritt wendet die Ressourcen an, die du bereits besitzt, nachdem Ziele mit höherer Priorität in diesem Projekt ihren Anteil reserviert haben. Er ändert nicht den tatsächlichen Status des Ziels.",
       "unavailable": "Nicht verfügbar",
       "dependenciesTitle": "Abhängigkeiten",
       "historyTitle": "Verlauf",
@@ -776,7 +776,9 @@
       "levelProgress": "Stufe {{current}} → {{target}}",
       "progressLabel": "Zielfortschritt",
       "actualProgress": "Tatsächlicher Fortschritt",
+      "actualProgressDescription": "Der tatsächliche Fortschritt spiegelt den aktuell synchronisierten, im Besitz befindlichen Stand deines Accounts wider.",
       "potentialProgress": "Potenzieller Fortschritt",
+      "potentialProgressDescription": "Der potenzielle Fortschritt wendet die Ressourcen an, die du bereits besitzt, nachdem Ziele mit höherer Priorität in diesem Projekt ihren Anteil reserviert haben. Er ändert nicht den tatsächlichen Status des Ziels.",
       "remaining": {
         "upgrades": "{{count}} Upgrades verbleibend",
         "upgradeSlots": "{{count}} Upgrade-Slots verbleibend",
@@ -784,7 +786,29 @@
         "shards": "{{count}} Scherben verbleibend",
         "mythicShards": "{{count}} mythische Scherben verbleibend",
         "orbs": "{{count}} Orbs verbleibend"
-      }
+      },
+      "remainingText": {
+        "levels": "{{count}} Stufen",
+        "levelsWithXp": "{{count}} Stufen · {{xp}} EP",
+        "rank": "{{slots}} Slots",
+        "rankWithEnergy": "{{slots}} Slots · {{energy}} Energie",
+        "shards": "{{count}} Scherben"
+      },
+      "potentialIndicator": "↗ {{percent}}%",
+      "progressDetails": "Fortschrittsdetails",
+      "progressComplete": "{{percent}}% abgeschlossen",
+      "progressCompleteWithPotential": "{{percent}}% abgeschlossen, {{potential}}% potenziell",
+      "actualSlotsRemaining_one": "{{count}} Upgrade-Slot verbleibend.",
+      "actualSlotsRemaining_other": "{{count}} Upgrade-Slots verbleibend.",
+      "actualLevelsRemaining_one": "{{count}} Stufe verbleibend.",
+      "actualLevelsRemaining_other": "{{count}} Stufen verbleibend.",
+      "potentialEnergyRemaining": "{{energy}} Energie verbleibend.",
+      "potentialXpRemaining": "{{xp}} EP verbleibend.",
+      "reachableCeilingLabel": "Aktuell erreichbar:",
+      "reachableCeilingLevelLabel": "Aktuell erreichbar: Stufe {{level}}",
+      "reachableCeilingReasonRarity": "begrenzt durch Seltenheit",
+      "reachableCeilingReasonLevel": "begrenzt durch Stufe",
+      "reachableCeilingReasonBoth": "begrenzt durch Seltenheit und Stufe"
     },
     "insights": {
       "selectProject": "Wähle ein Projekt",

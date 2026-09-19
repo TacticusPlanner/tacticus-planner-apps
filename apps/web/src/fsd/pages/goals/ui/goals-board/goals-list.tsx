@@ -1,7 +1,5 @@
-import { useMemo, type SyntheticEvent } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Calendar, LockKeyhole } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 import {
   Table,
   TableBody,
@@ -16,41 +14,23 @@ import {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
 } from "../../model/attainment/goal-overview-metrics-defaults"
-import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import type { EstimateOutcome } from "@/features/goal-farming"
-import type { GoalRow } from "../../model/shared/types"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
-import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import { GoalTypeBadge } from "@/entities/goal"
 import { GoalRowActions } from ".//goal-row-actions"
+import { formatGoalRemainingText } from "../shared/goal-remaining-text"
 import {
-  GoalEnergyRemainingSummary,
   GoalProgressDisplay,
-  GoalProjectBadges,
-  GoalRemainingSummary,
-  GoalUnitIcon,
-} from "../shared/goal-visuals"
+  GoalProgressLegend,
+  GoalTargetDisplay,
+} from "../shared/goal-progress-visuals"
+import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-
-type Props = {
-  rows: GoalRow[]
-  actions: ReturnType<typeof useGoalActions>
-  reorderEnabled?: boolean
-  onMove?: (goalId: string, direction: "up" | "down") => void
-  onView?: (goalId: string) => void
-  /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
-   *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
-  estimates?: ReadonlyMap<string, EstimateOutcome>
-  /** Progress + remaining-resource info per goal id (plan §2) — absent renders neither. */
-  metrics?: ReadonlyMap<string, GoalOverviewMetrics>
-  potentialProgress?: ReadonlyMap<string, number>
-}
-
-/** Stops activation on an inner control from
- * also bubbling up to the row/card's own "open detail" handler. */
-function stopRowNavigation(event: SyntheticEvent<HTMLElement>): void {
-  event.stopPropagation()
-}
+import { EstimateCell, GoalNameLink } from "./goal-row-shared"
+import {
+  estimateEnergy,
+  stopRowNavigation,
+  type GoalsListProps,
+} from "./goal-row-utils"
+import { GoalsMobileCards } from "./goals-mobile-cards"
 
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
  * responsive split. The whole row/card is clickable (opens the goal's detail view); the actions menu
@@ -64,7 +44,7 @@ export function GoalsList({
   estimates,
   metrics,
   potentialProgress,
-}: Props) {
+}: GoalsListProps) {
   const isMobile = useIsMobile()
 
   if (rows.length === 0) {
@@ -92,71 +72,6 @@ export function GoalsList({
   )
 }
 
-/** The formatted completion date + "in {{days}} days" caption for a computed estimate, "—" when
- * there's no entry for this goal (no project selected, non-Rank goal type, or the farm is
- * blocked/unreachable — plan §16 phase 4 scope notes). Identical rendering on the desktop table and
- * the mobile card (goal-list-estimate-display spec: no compact mobile variant). */
-function EstimateCell({ estimate }: { estimate: EstimateOutcome | undefined }) {
-  const { t, i18n } = useTranslation()
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
-        month: "short",
-        day: "numeric",
-        timeZone: "UTC",
-      }),
-    [i18n.resolvedLanguage]
-  )
-  if (estimate?.status === "Blocked") {
-    return (
-      <span
-        className="inline-flex items-center gap-1 text-amber-700"
-        data-testid="goal-row-estimate-blocked"
-        title={t(`goals.estimate.blocked.${estimate.reason}`)}
-      >
-        <LockKeyhole className="size-3.5" />
-        {t("goals.estimate.blockedLabel")}
-      </span>
-    )
-  }
-  if (!estimate) {
-    return (
-      <span className="text-muted-foreground" data-testid="goal-row-estimate">
-        {t("goals.estimate.none")}
-      </span>
-    )
-  }
-  // `estimate.date` is a "YYYY-MM-DD" string produced in UTC (estimate.ts's formatDate); parsing its
-  // components explicitly via Date.UTC keeps the displayed day from rolling back for viewers west of
-  // UTC, rather than trusting `new Date(dateString)`'s default (also-UTC, but easy to get wrong) or
-  // the formatter's default local time zone.
-  const [year, month, day] = estimate.date.split("-").map(Number)
-  const formattedDate = dateFormatter.format(
-    new Date(Date.UTC(year, month - 1, day))
-  )
-  return (
-    <span
-      className="flex min-w-0 flex-col gap-0.5"
-      data-testid="goal-row-estimate"
-      title={estimate.date}
-    >
-      <span className="flex items-center gap-1 text-sm font-medium">
-        <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
-        {formattedDate}
-      </span>
-      <span className="text-xs text-muted-foreground">
-        {t("goals.estimate.days", { days: estimate.days })}
-      </span>
-    </span>
-  )
-}
-
-function estimateEnergy(estimate: EstimateOutcome | undefined) {
-  return estimate && estimate.status !== "Blocked"
-    ? estimate.energyTotal
-    : undefined
-}
-
 function GoalsTable({
   rows,
   actions,
@@ -164,217 +79,147 @@ function GoalsTable({
   metrics,
   potentialProgress,
   onView = () => undefined,
-}: Props) {
-  const { t } = useTranslation()
+}: GoalsListProps) {
+  const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
+  const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
+    null
+  )
+  const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
 
   return (
     <Table data-testid="goals-list-table">
       <TableHeader>
         <TableRow>
           <TableHead>{t("goals.columns.entity")}</TableHead>
-          <TableHead>{t("goals.columns.type")}</TableHead>
-          <TableHead>{t("goals.columns.progress")}</TableHead>
+          <TableHead>{t("goals.columns.goal")}</TableHead>
+          <TableHead>
+            <span className="flex items-center gap-2">
+              {t("goals.columns.progress")}
+              <GoalProgressLegend show={hasLegend} />
+            </span>
+          </TableHead>
+          <TableHead>{t("goals.columns.remaining")}</TableHead>
           <TableHead>{t("goals.columns.status")}</TableHead>
-          {estimates ? (
-            <TableHead>{t("goals.columns.estimate")}</TableHead>
-          ) : null}
           <TableHead className="text-right">
-            {t("goals.columns.actions")}
+            <span className="sr-only">{t("goals.columns.actions")}</span>
           </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row) => (
-          <TableRow
-            className="cursor-pointer"
-            data-testid="goal-row"
-            key={row.goalId}
-            onClick={() => onView(row.goalId)}
-          >
-            <TableCell className="font-medium">
-              <div className="flex items-center gap-3">
-                <GoalUnitIcon
-                  entityId={row.entityId}
-                  entityType={row.entityType}
-                  name={getEntityName(row.entityType, row.entityId)}
-                />
-                <div className="min-w-0">
-                  <Button
-                    className="h-auto p-0 font-medium"
-                    onClick={(event) => {
-                      stopRowNavigation(event)
-                      onView(row.goalId)
-                    }}
-                    variant="link"
-                  >
-                    {getEntityName(row.entityType, row.entityId)}
-                  </Button>
-                  <GoalProjectBadges projects={row.projects ?? []} />
-                </div>
-              </div>
-              {row.notes ? (
-                <p
-                  className="max-w-64 truncate text-xs font-normal text-muted-foreground"
-                  title={row.notes}
-                >
-                  {row.notes}
-                </p>
-              ) : row.goalType === "Unlock" ? (
-                <p className="text-xs font-normal text-muted-foreground">
-                  {t("goals.unlockFlavor")}
-                </p>
-              ) : null}
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-1">
-                <GoalTypeBadge
-                  entityType={row.entityType}
-                  type={row.goalType}
-                />
-              </div>
-            </TableCell>
-            <TableCell className="min-w-40">
-              <GoalProgressDisplay
-                actualSummary={
-                  <GoalRemainingSummary
-                    remaining={metrics?.get(row.goalId)?.remaining ?? null}
-                  />
-                }
-                potentialRatio={potentialProgress?.get(row.goalId)}
-                potentialSummary={
-                  <GoalEnergyRemainingSummary
-                    energy={estimateEnergy(estimates?.get(row.goalId))}
-                  />
-                }
-                progress={
-                  metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
-                }
-              />
-            </TableCell>
-            <TableCell>
-              <div className="flex flex-wrap items-center gap-1">
-                <StatusBadge status={row.status} />
-                <BlockedIndicator
-                  blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
-                />
-              </div>
-            </TableCell>
-            {estimates ? (
-              <TableCell>
-                <EstimateCell estimate={estimates.get(row.goalId)} />
-              </TableCell>
-            ) : null}
-            <TableCell
-              onClick={stopRowNavigation}
-              onKeyDown={stopRowNavigation}
+        {rows.map((row) => {
+          const progress =
+            metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
+          const remaining = metrics?.get(row.goalId)?.remaining ?? null
+          const energy = estimateEnergy(estimates?.get(row.goalId))
+          const remainingText = formatGoalRemainingText(
+            t,
+            i18n?.resolvedLanguage,
+            progress,
+            remaining,
+            energy
+          )
+
+          return (
+            <TableRow
+              className="h-14 cursor-pointer"
+              data-testid="goal-row"
+              key={row.goalId}
+              onClick={() => onView(row.goalId)}
             >
-              <div className="flex items-center justify-end gap-1">
-                <GoalRowActions
-                  actions={actions}
-                  goalId={row.goalId}
-                  status={row.status}
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-3">
+                  <GoalUnitIcon
+                    entityId={row.entityId}
+                    entityType={row.entityType}
+                    name={getEntityName(row.entityType, row.entityId)}
+                  />
+                  <div className="min-w-0">
+                    <GoalNameLink
+                      onView={onView}
+                      remainingText={remainingText}
+                      row={row}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t(`goals.create.goalTypes.${row.goalType}`)}
+                    </p>
+                    <GoalProjectBadges projects={row.projects ?? []} />
+                  </div>
+                </div>
+                {row.notes ? (
+                  <p
+                    className="max-w-64 truncate text-xs font-normal text-muted-foreground"
+                    title={row.notes}
+                  >
+                    {row.notes}
+                  </p>
+                ) : null}
+              </TableCell>
+              <TableCell>
+                <GoalTargetDisplay progress={progress} />
+              </TableCell>
+              <TableCell
+                className="min-w-[220px]"
+                onClick={stopRowNavigation}
+                onKeyDown={stopRowNavigation}
+              >
+                <GoalProgressDisplay
+                  energy={energy}
+                  onOpenChange={(open) =>
+                    setOpenPopoverGoalId(open ? row.goalId : null)
+                  }
+                  open={openPopoverGoalId === row.goalId}
+                  potentialRatio={potentialProgress?.get(row.goalId)}
+                  progress={progress}
+                  remaining={remaining}
                 />
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
+              </TableCell>
+              <TableCell>
+                {remainingText ? (
+                  <span
+                    className="block max-w-[190px] truncate text-xs text-muted-foreground"
+                    data-testid="goal-remaining-column"
+                    title={remainingText}
+                  >
+                    {remainingText}
+                  </span>
+                ) : null}
+              </TableCell>
+              <TableCell>
+                <div className="grid gap-1">
+                  <div className="flex flex-wrap items-center gap-1">
+                    <StatusBadge status={row.status} />
+                    <BlockedIndicator
+                      blockers={
+                        metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS
+                      }
+                      progress={progress}
+                    />
+                  </div>
+                  {estimates ? (
+                    <EstimateCell estimate={estimates.get(row.goalId)} />
+                  ) : null}
+                </div>
+              </TableCell>
+              <TableCell
+                onClick={stopRowNavigation}
+                onKeyDown={stopRowNavigation}
+              >
+                <div className="flex items-center justify-end gap-1">
+                  <GoalRowActions
+                    actions={actions}
+                    goalId={row.goalId}
+                    onOpenChange={(open) => {
+                      if (open) setOpenPopoverGoalId(null)
+                    }}
+                    status={row.status}
+                  />
+                </div>
+              </TableCell>
+            </TableRow>
+          )
+        })}
       </TableBody>
     </Table>
-  )
-}
-
-function GoalsMobileCards({
-  rows,
-  actions,
-  estimates,
-  metrics,
-  potentialProgress,
-  onView = () => undefined,
-}: Props) {
-  const { t } = useTranslation()
-  const { getEntityName } = useGoalCatalog()
-
-  return (
-    <ul className="flex flex-col gap-3" data-testid="goals-list-cards">
-      {rows.map((row) => (
-        <li
-          className="flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm"
-          data-testid="goal-row"
-          key={row.goalId}
-          onClick={() => onView(row.goalId)}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <GoalUnitIcon
-                className="size-9"
-                entityId={row.entityId}
-                entityType={row.entityType}
-                name={getEntityName(row.entityType, row.entityId)}
-              />
-              <div className="min-w-0">
-                <Button
-                  className="h-auto p-0 font-medium"
-                  onClick={(event) => {
-                    stopRowNavigation(event)
-                    onView(row.goalId)
-                  }}
-                  variant="link"
-                >
-                  {getEntityName(row.entityType, row.entityId)}
-                </Button>
-                <GoalProjectBadges projects={row.projects ?? []} />
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-end gap-1">
-              <StatusBadge status={row.status} />
-              <BlockedIndicator
-                blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
-              <GoalTypeBadge entityType={row.entityType} type={row.goalType} />
-            </div>
-            {estimates ? (
-              <EstimateCell estimate={estimates.get(row.goalId)} />
-            ) : null}
-          </div>
-          <GoalProgressDisplay
-            actualSummary={
-              <GoalRemainingSummary
-                remaining={metrics?.get(row.goalId)?.remaining ?? null}
-              />
-            }
-            potentialRatio={potentialProgress?.get(row.goalId)}
-            potentialSummary={
-              <GoalEnergyRemainingSummary
-                energy={estimateEnergy(estimates?.get(row.goalId))}
-              />
-            }
-            progress={metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS}
-          />
-          {row.notes ? (
-            <p className="truncate text-muted-foreground" title={row.notes}>
-              {row.notes}
-            </p>
-          ) : row.goalType === "Unlock" ? (
-            <p className="text-muted-foreground">{t("goals.unlockFlavor")}</p>
-          ) : null}
-          <div
-            className="flex items-center justify-end gap-1"
-            onClick={stopRowNavigation}
-            onKeyDown={stopRowNavigation}
-          >
-            <GoalRowActions
-              actions={actions}
-              goalId={row.goalId}
-              status={row.status}
-            />
-          </div>
-        </li>
-      ))}
-    </ul>
   )
 }

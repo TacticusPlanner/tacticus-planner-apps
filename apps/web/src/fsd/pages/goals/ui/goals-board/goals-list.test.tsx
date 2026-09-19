@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -113,7 +113,7 @@ describe("GoalsList", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("shows the plan estimate's completion date for a goal with an entry, and the placeholder otherwise", async () => {
+  it("shows the plan estimate's completion date for a goal with an entry, and no line at all otherwise", async () => {
     const estimates = new Map([
       [
         "goal-1",
@@ -132,8 +132,8 @@ describe("GoalsList", () => {
     await screen.findByText("Hero One")
 
     const estimateCells = screen.getAllByTestId("goal-row-estimate")
+    expect(estimateCells).toHaveLength(1)
     expect(estimateCells[0]).toHaveAttribute("title", "2026-01-06")
-    expect(estimateCells[1]).not.toHaveAttribute("title")
   })
 
   it("renders the formatted completion date and day-count caption identically on desktop and mobile", async () => {
@@ -226,34 +226,24 @@ describe("GoalsList", () => {
       />
     )
 
-    expect(await screen.findByTestId("goal-progress-bar")).toHaveAttribute(
-      "aria-valuetext",
-      "25%"
-    )
-    expect(screen.getByTestId("goal-potential-progress-bar")).toHaveAttribute(
-      "aria-valuetext",
-      "75%"
-    )
-    const actualSummary = screen.getByTestId("goal-remaining-summary")
-    const potentialSummary = screen.getByTestId("goal-energy-remaining-summary")
-    expect(actualSummary).toHaveTextContent(
-      "goals.overview.remaining.upgradeSlots"
-    )
-    expect(potentialSummary).toHaveTextContent(
-      "goals.overview.remaining.energy"
-    )
+    const bar = await screen.findByTestId("goal-progress-bar")
+    expect(bar).toBeInTheDocument()
     expect(
-      screen
-        .getByTestId("goal-progress-bar")
-        .compareDocumentPosition(actualSummary) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(
-      screen
-        .getByTestId("goal-potential-progress-bar")
-        .compareDocumentPosition(potentialSummary) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+      screen.getByTestId("goal-progress-bar-potential-fill")
+    ).toBeInTheDocument()
+    // The desktop Remaining column shows the same formatted text as the info popover.
+    expect(screen.getByTestId("goal-remaining-column")).toHaveTextContent(
+      "goals.overview.remainingText.rankWithEnergy"
+    )
+
+    fireEvent.click(screen.getByTestId("goal-progress-info-trigger"))
+    const explanation = screen.getByTestId("goal-progress-explanation")
+    expect(explanation).toHaveTextContent(
+      "goals.overview.actualProgressDescription"
+    )
+    expect(explanation).toHaveTextContent(
+      "goals.overview.potentialProgressDescription"
+    )
   })
 
   it("opens the goal detail via keyboard from the goal-name button", async () => {

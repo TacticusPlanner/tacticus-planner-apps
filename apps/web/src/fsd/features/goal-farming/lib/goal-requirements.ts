@@ -104,10 +104,12 @@ export function calculateGoalResourceNeed(
     })
   }
   if (detail.goalType === "Unlock") {
+    const owned = isMow ? params.playerMow : params.playerCharacter
     return unlockResourceNeed({
       initialRarity: params.characterView?.initialRarity,
       entityId: detail.entityId,
       isMow,
+      owned: !!owned,
       ownedShards: params.inventoryShard?.amount ?? 0,
       unlockShardCostsById: params.unlockShardCostsById,
     })

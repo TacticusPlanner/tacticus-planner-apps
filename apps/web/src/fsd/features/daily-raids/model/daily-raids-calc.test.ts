@@ -539,6 +539,65 @@ describe("daily raid derivation", () => {
     ).toEqual({ owned: 5, target: 40 })
   })
 
+  it("drops an already-owned Unlock goal from the plan instead of farming it (fix-goal-progress-consistency)", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const nodeId = battleIdSchema.parse("B1")
+    const detail = goalDetail({ entityId: heroId })
+    const character = {
+      id: heroId,
+      name: "Hero One",
+      initialRarity: "Common",
+      shardLocations: [
+        {
+          battleId: nodeId,
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+          isMythic: false,
+        },
+      ],
+    } as unknown as CharacterStorageModel
+    const unlockCosts = new Map<string, UnlockShardCostStorageModel>([
+      ["Common", { id: "Common", rarity: "Common", shards: 40 }],
+    ])
+
+    const result = calculateDailyRaids({
+      members: [{ priority: 1, goal: detail }],
+      details: [detail],
+      playerCharacterById: new Map([[heroId, { unitId: heroId } as never]]),
+      playerMowById: new Map(),
+      inventoryShardById: new Map([
+        [heroId, { unitId: heroId, amount: 5 } as never],
+      ]),
+      inventoryUpgrades: [],
+      upgradesById: new Map(),
+      battlesById: new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 6,
+            dailyAttempts: 10,
+          },
+        ],
+      ]),
+      charactersById: new Map([[heroId, character]]),
+      mowsById: new Map(),
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: unlockCosts,
+      getCharacter: () => undefined,
+      dailyEnergy: 60,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    })
+
+    expect(result).toBeNull()
+  })
+
   it("shortens the Raids Plan schedule when a Shop source supplements the campaign farm (tacticus-planner-apps#103)", () => {
     const heroId = unitIdSchema.parse("hero1")
     const nodeId = battleIdSchema.parse("B1")

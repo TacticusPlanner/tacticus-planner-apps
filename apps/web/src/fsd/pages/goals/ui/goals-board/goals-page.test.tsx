@@ -386,7 +386,13 @@ describe("GoalsPage", () => {
       },
     })
     getPlayerCharacters.mockReturnValue([
-      { unitId: "hero1", rank: "Stone1", appliedUpgradeSlots: [] },
+      {
+        unitId: "hero1",
+        rank: "Stone1",
+        appliedUpgradeSlots: [],
+        progressionIndex: "Mythic:MythicWings",
+        xpLevel: 60,
+      },
     ])
     const user = userEvent.setup()
     renderPage()

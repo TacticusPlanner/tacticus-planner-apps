@@ -91,6 +91,7 @@ export function useProgressionPreview(params: {
           initialRarity: params.character?.initialRarity,
           entityId: params.entityId,
           isMow: params.entityType === "Mow",
+          owned: !!params.playerEntity,
           ownedShards: inventoryShard?.amount ?? 0,
           unlockShardCostsById: params.unlockShardCostsById,
         })
