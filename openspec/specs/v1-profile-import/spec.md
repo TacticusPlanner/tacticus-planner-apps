@@ -177,22 +177,21 @@ or a generic skip.
 - **THEN** the result explains that player data must be synced first and that goals can then be
   imported again
 
-### Requirement: The part selection offers automatic prerequisite creation
+### Requirement: Automatic prerequisite creation is always enabled
 
-The part selection SHALL include an option to add missing prerequisite goals,
-selected by default. Clearing it SHALL import only the goals present in the V1
-profile.
+The import SHALL always request automatic prerequisite creation, matching the
+manual create-goal flow's own default. There SHALL NOT be a part-selection
+control to disable it — offering one that quietly leaves imported goals
+blocked on a prerequisite the user didn't realize they'd opted out of was
+worse than not offering the choice at all.
 
-#### Scenario: The option is on by default
+#### Scenario: A missing prerequisite is added without being asked for
 
-- **WHEN** the dialog is opened
-- **THEN** the add-missing-prerequisites option is selected
-
-#### Scenario: Clearing the option is honoured
-
-- **GIVEN** the user clears the add-missing-prerequisites option
+- **GIVEN** an imported goal needs an Unlock, Ascension, or Level goal that
+  does not yet exist
 - **WHEN** the import runs
-- **THEN** no automatically added prerequisite outcome is reported
+- **THEN** the prerequisite goal is created and reported as an automatically
+  added outcome, with no user selection involved
 
 ### Requirement: The dialog describes what the import actually does
 

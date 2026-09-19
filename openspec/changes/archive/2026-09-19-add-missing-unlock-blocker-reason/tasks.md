@@ -49,9 +49,11 @@ reason are two independent, non-overlapping code paths by construction (see
 - [x] 4.1 Extend the prerequisite-prefill mapping so the missing-Unlock reason
       yields a create-goal prefill for an Unlock goal on that unit; verify with
       a unit test on the mapping
-- [x] 4.2 Verify in the goal detail sheet that the reason renders its action,
-      and that an existing Unlock goal in the plan routes to review rather than
-      create — covered by a component test
+- [x] 4.2 Verify in the goal detail sheet that a missing-Unlock-prerequisite
+      reason renders its create action with the correct prefill — covered by a
+      component test. (An existing Unlock goal never reaches this point to be
+      routed anywhere: 3.3 suppresses the reason entirely before it renders,
+      per the note below.)
 
 Note: unlike Level/Ascension, an Unlock prerequisite has no partial-progress
 state — any non-archived Unlock goal for the unit fully satisfies it, so 3.3's
@@ -107,16 +109,16 @@ meaning (unloaded/failed player data only). No reword was needed.
       the desktop row
 
       Partially deferred: same tool limitation recorded in
-          `rewrite-v1-goal-import` task 10.5 and `fix-v1-import-dialog-reset` task
-          6.4 — `resize_window` did not actually change `window.innerWidth` in
-          this sandboxed browser, so the mobile-card layout could not be reached
-          live in this session. The reason text and remedy action verified under
-          6.2 are sourced from the same `blockers`/`missingPrerequisite` data
-          consumed by both the desktop row and the mobile card (shared
-          `goal-detail-view.tsx`/blocker-derivation code, not a duplicated
-          per-breakpoint implementation), but that shared-source argument is not
-          the same as an on-screen confirmation at each breakpoint, so left
-          unchecked rather than claimed as live-verified.
+              `rewrite-v1-goal-import` task 10.5 and `fix-v1-import-dialog-reset` task
+              6.4 — `resize_window` did not actually change `window.innerWidth` in
+              this sandboxed browser, so the mobile-card layout could not be reached
+              live in this session. The reason text and remedy action verified under
+              6.2 are sourced from the same `blockers`/`missingPrerequisite` data
+              consumed by both the desktop row and the mobile card (shared
+              `goal-detail-view.tsx`/blocker-derivation code, not a duplicated
+              per-breakpoint implementation), but that shared-source argument is not
+              the same as an on-screen confirmation at each breakpoint, so left
+              unchecked rather than claimed as live-verified.
 
 - [x] 6.4 No Joyride tutorial work applies: this change adds a reason to an
       existing indicator and does not add a page or materially change a page

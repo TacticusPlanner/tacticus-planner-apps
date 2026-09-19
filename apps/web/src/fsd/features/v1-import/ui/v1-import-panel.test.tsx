@@ -378,9 +378,13 @@ describe("V1ImportPanel", () => {
       const trigger = await screen.findByTestId(
         "v1-import-bucket-needsNoImport"
       )
-      expect(screen.queryByText("Imported from V1.")).not.toBeInTheDocument()
+      expect(
+        screen.queryByText("goals.v1Import.reasons.targetAlreadyReached")
+      ).not.toBeInTheDocument()
       fireEvent.click(trigger)
-      expect(await screen.findByText("Imported from V1.")).toBeInTheDocument()
+      expect(
+        await screen.findByText("goals.v1Import.reasons.targetAlreadyReached")
+      ).toBeInTheDocument()
     })
 
     it("shows the not-imported and failed buckets expanded when non-empty (4.4)", async () => {
@@ -463,8 +467,6 @@ describe("V1ImportPanel", () => {
               code: "prerequisite_added",
               entityId: "hero1",
               goalType: "Unlock",
-              message:
-                "Automatically added because it is required by 1 imported goal(s) for this unit.",
             }),
           ],
         })
@@ -476,7 +478,7 @@ describe("V1ImportPanel", () => {
       const bucket = await screen.findByTestId("v1-import-bucket-imported")
       expect(bucket).toHaveTextContent("goals.v1Import.report.autoAdded")
       expect(bucket).toHaveTextContent(
-        "Automatically added because it is required by 1 imported goal(s) for this unit."
+        "goals.v1Import.reasons.prerequisiteAdded"
       )
     })
   })
@@ -633,7 +635,6 @@ describe("V1ImportPanel", () => {
               status: "Failed",
               entityId: "raw-v1-id",
               goalType: null,
-              message: "not in the catalog",
             }),
           ],
         })
@@ -647,7 +648,7 @@ describe("V1ImportPanel", () => {
       expect(writeText).toHaveBeenCalledTimes(1)
       const text = writeText.mock.calls[0][0] as string
       expect(text).toContain("raw-v1-id")
-      expect(text).toContain("not in the catalog")
+      expect(text).toContain("goals.v1Import.reasons.unknownUnit")
       vi.unstubAllGlobals()
     })
 

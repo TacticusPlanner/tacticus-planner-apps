@@ -224,7 +224,9 @@ export function V1ImportPanel({
           disabled={!canSubmit}
           type="submit"
         >
-          {status === "submitting" ? <Spinner /> : null}
+          {status === "submitting" ? (
+            <Spinner aria-label={t("goals.v1Import.submitting")} />
+          ) : null}
           {t("goals.v1Import.submit")}
         </Button>
         {actions}

@@ -382,6 +382,7 @@
         "campaignEventProgress": "Kampagnen-Event-Fortschritt"
       },
       "submit": "Ausgewählte importieren",
+      "submitting": "Wird importiert …",
       "close": "Schließen",
       "error": "Das V1-Profil konnte nicht importiert werden.",
       "rerunRequiresPassword": "Dieser Import ist abgeschlossen. Gib dein V1-Passwort erneut ein, um einen weiteren Import zu starten.",
@@ -401,6 +402,23 @@
         "copy": "Details kopieren",
         "syncRequiredTitle": "Spielerdaten müssen zuerst synchronisiert werden",
         "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
+      },
+      "reasons": {
+        "goalCreated": "Aus V1 importiert.",
+        "prerequisiteAdded": "Automatisch hinzugefügt, da ein anderes importiertes Ziel dies benötigt.",
+        "targetAlreadyReached": "Das Ziel ist bereits erreicht.",
+        "goalAlreadyExists": "Das Konto hat bereits ein Ziel dieser Art für diese Einheit.",
+        "duplicateGoalMerged": "Ein weiteres V1-Ziel dieser Art für diese Einheit wurde stattdessen importiert.",
+        "prerequisiteTargetInsufficient": "Ein Aufstiegsziel für diese Einheit erreicht nicht das Ziel, das ein anderes importiertes Ziel benötigt.",
+        "unknownUnit": "Dieser Charakter oder diese Kampfmaschine ist nicht im V2-Spielkatalog enthalten.",
+        "unsupportedGoalType": "Dieser V1-Zieltyp wird nicht unterstützt.",
+        "invalidProgression": "Das Aufstiegsziel liegt nicht auf der V2-Fortschrittsleiter.",
+        "missingTarget": "Dem Ziel fehlt ein erforderliches Ziel.",
+        "playerDataRequired": "Spielerdaten müssen synchronisiert werden, bevor Ziele importiert werden können.",
+        "targetRejected": "Das Ziel für dieses Vorhaben ist ungültig.",
+        "projectSlotConflict": "Ein weiteres Ziel für diese Einheit und diesen Typ wurde gleichzeitig erstellt.",
+        "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
+        "generic": "Dieses Ziel konnte nicht importiert werden."
       }
     },
     "empty": {

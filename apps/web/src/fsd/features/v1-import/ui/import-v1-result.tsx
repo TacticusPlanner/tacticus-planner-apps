@@ -25,6 +25,7 @@ import {
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  reasonKeyForCode,
 } from "../model/outcome-buckets"
 import { useEntityDisplayName } from "../model/use-entity-display-name"
 
@@ -94,6 +95,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
       unitName: getEntityName,
       goalTypeLabel,
       noUnitLabel: t("goals.v1Import.report.noUnit"),
+      reasonFor: (code) => t(reasonKeyForCode(code)),
     })
     void navigator.clipboard.writeText(text)
   }
@@ -253,7 +255,9 @@ function OutcomeRow({
           />
         ) : null}
       </div>
-      <p className="mt-0.5 text-muted-foreground">{outcome.message}</p>
+      <p className="mt-0.5 text-muted-foreground">
+        {t(reasonKeyForCode(outcome.code))}
+      </p>
     </li>
   )
 }

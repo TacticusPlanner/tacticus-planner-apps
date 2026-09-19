@@ -23,8 +23,10 @@ What the dialog does today, and what goes:
     +- invalidate goal + project queries              KEEP (unconditional)
 ```
 
-The API change returns one outcome per source V1 goal, so the three
-incommensurable numbers are replaced by a list the client groups. The
+The API change returns one outcome per source V1 goal, plus one further
+outcome for each automatically synthesized prerequisite goal (no source V1
+goal id of its own) — so the three incommensurable numbers are replaced by a
+list the client groups, not a strict one-to-one count. The
 `ApiError` type already carries the parsed error body in a `details` field
 that nothing reads — that is where a trace identifier lives when one exists.
 

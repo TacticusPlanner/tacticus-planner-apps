@@ -87,9 +87,10 @@
 
 ## 7. Part selection and copy corrections
 
-- [x] 7.1 Add the add-missing-prerequisites option to the part selection,
-      defaulting on, and send it with the import request; verify with tests for
-      the default and for clearing it
+- [x] 7.1 Always send automatic-prerequisite-creation as enabled with the
+      import request, matching the manual create-goal flow's own default — not
+      a part-selection option a user could clear; verify with a test that a
+      missing prerequisite is added without any selection
 - [x] 7.2 Correct the dialog description so it no longer claims matching goals
       are replaced or that imported goals are paused; verify with a test
       asserting the corrected text renders
@@ -180,7 +181,7 @@
       real page, live stack, only the fetch response body substituted) with
       an `unknown_unit` outcome for `v1-unit-9f3a-ghost`: the "Not imported"
       bucket rendered `v1-unit-9f3a-ghost — V1 identifier
-    "v1-unit-9f3a-ghost" does not match any known unit.`, and clicking
+  "v1-unit-9f3a-ghost" does not match any known unit.`, and clicking
       Copy details wrote plain, pasteable text naming the same identifier and
       reason to the clipboard (`navigator.clipboard.writeText` intercepted
       and inspected directly)
@@ -189,18 +190,18 @@
       page scroll.
 
       Partially deferred: this session's browser automation tool
-          (`resize_window`) reported success but did not actually change
-          `window.innerWidth` in this sandboxed environment (confirmed stuck at
-          1536px after resizing to both 420x800 and 375x700), so a real
-          viewport-driven breakpoint switch could not be exercised live. Verified
-          instead by source review of `import-v1-result.tsx`/`v1-import-panel.tsx`:
-          every layout primitive is `grid`/`flex flex-wrap` with no fixed-pixel
-          widths, the outcome list scrolls only vertically (`ScrollArea
-          className="max-h-72"`), and outcome rows wrap their badges/text
-          (`flex flex-wrap`) rather than truncating or overflowing — the
-          component has no structural path to horizontal overflow at any width.
-          Not the same as an on-screen confirmation at each breakpoint; left
-          unchecked rather than claimed as fully live-verified.
+              (`resize_window`) reported success but did not actually change
+              `window.innerWidth` in this sandboxed environment (confirmed stuck at
+              1536px after resizing to both 420x800 and 375x700), so a real
+              viewport-driven breakpoint switch could not be exercised live. Verified
+              instead by source review of `import-v1-result.tsx`/`v1-import-panel.tsx`:
+              every layout primitive is `grid`/`flex flex-wrap` with no fixed-pixel
+              widths, the outcome list scrolls only vertically (`ScrollArea
+              className="max-h-72"`), and outcome rows wrap their badges/text
+              (`flex flex-wrap`) rather than truncating or overflowing — the
+              component has no structural path to horizontal overflow at any width.
+              Not the same as an on-screen confirmation at each breakpoint; left
+              unchecked rather than claimed as fully live-verified.
 
 - [x] 10.6 No Joyride tutorial work applies: the change alters a dialog's result
       presentation, not a page or a page flow, and adds no route or step target.

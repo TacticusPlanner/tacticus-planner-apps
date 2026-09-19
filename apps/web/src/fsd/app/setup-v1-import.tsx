@@ -66,14 +66,16 @@ export function SetupV1Import({
     <V1ImportPanel
       actions={
         <>
-          <Button
-            data-testid="account-setup-v1-use-api-key"
-            onClick={onUseApiKey}
-            type="button"
-            variant="outline"
-          >
-            {t("onboarding.import.useApiKey")}
-          </Button>
+          {!keySucceeded ? (
+            <Button
+              data-testid="account-setup-v1-use-api-key"
+              onClick={onUseApiKey}
+              type="button"
+              variant="outline"
+            >
+              {t("onboarding.import.useApiKey")}
+            </Button>
+          ) : null}
           {keySucceeded ? (
             <Button
               data-testid="account-setup-v1-continue"

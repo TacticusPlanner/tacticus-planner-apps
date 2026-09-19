@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -31,6 +32,7 @@ export function AccountSetupLayout() {
   const { t } = useTranslation()
   const { instance } = useMsal()
   const accountId = useActiveAccountId()
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   return (
     <PostHogProvider routeGroup="/setup">
@@ -44,11 +46,15 @@ export function AccountSetupLayout() {
           </div>
           <Button
             data-testid="account-setup-sign-out"
-            disabled={!accountId}
+            disabled={!accountId || isSigningOut}
             onClick={() => {
               if (accountId) {
+                setIsSigningOut(true)
                 void signOut(instance, accountId).catch((error: unknown) => {
                   console.error("[MSAL] sign-out failed", error)
+                  // Only reset on failure — a successful sign-out navigates away, so there is no
+                  // "back to idle" state to restore this button to.
+                  setIsSigningOut(false)
                 })
               }
             }}

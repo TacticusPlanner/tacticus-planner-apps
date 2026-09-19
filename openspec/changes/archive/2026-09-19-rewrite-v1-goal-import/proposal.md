@@ -9,7 +9,8 @@ network pane as the only diagnostic. The per-goal issue list the API already
 returns has never been rendered at all.
 
 The companion `tacticus-planner-api` change moves goal creation server-side and
-replaces those numbers with one outcome per source V1 goal. This change
+replaces those numbers with one outcome per source V1 goal, plus one further
+outcome per automatically synthesized prerequisite goal. This change
 consumes that, deletes the client-side fan-out, and turns the result into a
 report a user can act on and paste into a bug report.
 
@@ -45,8 +46,9 @@ sequence does not state the relationship the server now requires.
   before submission.
 - **A "sync required" outcome is presented as a blocking explanation** with the
   remedy, since the API now refuses the goals part without player data.
-- **An "add missing prerequisite goals" option** is added to the part
-  selection, defaulting on, matching the manual create-goal flow's defaults.
+- **Missing prerequisite goals are always added automatically**, matching the
+  manual create-goal flow's own default — not a part-selection option a user
+  could clear.
 - **The dialog's description is corrected.** It currently promises that
   matching V2 goal kinds "will be replaced" and that imported goals "will be
   paused" unconditionally. Neither is true: matching kinds are skipped, and a

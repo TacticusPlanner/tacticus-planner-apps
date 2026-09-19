@@ -21,10 +21,13 @@ least one reason applies, and SHALL show every applicable reason.
 
 #### Scenario: Multiple reasons are all reported
 
-- **GIVEN** a goal whose unit is not owned and whose target also exceeds what the unit's
-  progression allows
+- **GIVEN** a goal whose unit is not owned, and that also `dependsOn` a
+  different goal that has not yet reached its own target (the unit-ownership
+  and dependency-goal checks are independent of each other, unlike the
+  progression-based reasons below, which only apply once the unit is owned)
 - **WHEN** its blockers are computed
-- **THEN** every applicable reason is reported, not only the first
+- **THEN** both the missing-Unlock-prerequisite reason and the
+  prerequisite-not-reached reason are reported, not only the first
 
 ### Requirement: A goal for a unit that is not owned reports a missing Unlock prerequisite
 

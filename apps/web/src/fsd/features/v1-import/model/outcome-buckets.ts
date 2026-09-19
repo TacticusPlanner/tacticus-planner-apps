@@ -32,6 +32,59 @@ export function bucketForCode(code: string): OutcomeBucketKey {
   return CODE_BUCKETS[code] ?? "notImported"
 }
 
+// The server composes `V1GoalOutcome.message` in English only (it has no notion of the caller's
+// locale) — a `code` -> translation-key lookup, same shape and same explicit-fallback rule as
+// CODE_BUCKETS above, is what actually satisfies "every outcome code has translated copy in every
+// supported locale" (v1-profile-import spec) instead of rendering that raw server text. A handful of
+// codes cover several distinct server messages (e.g. `target_already_reached` reads differently for
+// a Rank vs. an Ascension vs. an already-unlocked Unlock goal, and `target_rejected`/
+// `prerequisite_rejected` wrap whatever open-ended validation message the goal-target validator
+// produced) — those get one translated sentence that stays true for every case the code can mean,
+// rather than trying to keep an exhaustive per-message translation catalog in sync with the API.
+// An explicit literal union, not `string` — `t()`'s typed overload only accepts a key it can
+// statically verify exists in the locale resources, same reasoning as goal-type-badge.tsx's
+// `t(\`goals.create.goalTypes.${type}\`)` (there a closed union narrows the template literal; here
+// there's no such union to narrow from, since `code` is the API's plain `string`, so the lookup's
+// value type has to carry the narrowing instead).
+type ReasonKey =
+  | "goals.v1Import.reasons.goalCreated"
+  | "goals.v1Import.reasons.prerequisiteAdded"
+  | "goals.v1Import.reasons.targetAlreadyReached"
+  | "goals.v1Import.reasons.goalAlreadyExists"
+  | "goals.v1Import.reasons.duplicateGoalMerged"
+  | "goals.v1Import.reasons.prerequisiteTargetInsufficient"
+  | "goals.v1Import.reasons.unknownUnit"
+  | "goals.v1Import.reasons.unsupportedGoalType"
+  | "goals.v1Import.reasons.invalidProgression"
+  | "goals.v1Import.reasons.missingTarget"
+  | "goals.v1Import.reasons.playerDataRequired"
+  | "goals.v1Import.reasons.targetRejected"
+  | "goals.v1Import.reasons.projectSlotConflict"
+  | "goals.v1Import.reasons.prerequisiteRejected"
+  | "goals.v1Import.reasons.generic"
+
+const REASON_KEYS: Record<string, ReasonKey> = {
+  goal_created: "goals.v1Import.reasons.goalCreated",
+  prerequisite_added: "goals.v1Import.reasons.prerequisiteAdded",
+  target_already_reached: "goals.v1Import.reasons.targetAlreadyReached",
+  goal_already_exists: "goals.v1Import.reasons.goalAlreadyExists",
+  duplicate_goal_merged: "goals.v1Import.reasons.duplicateGoalMerged",
+  prerequisite_target_insufficient:
+    "goals.v1Import.reasons.prerequisiteTargetInsufficient",
+  unknown_unit: "goals.v1Import.reasons.unknownUnit",
+  unsupported_goal_type: "goals.v1Import.reasons.unsupportedGoalType",
+  invalid_progression: "goals.v1Import.reasons.invalidProgression",
+  missing_target: "goals.v1Import.reasons.missingTarget",
+  player_data_required: "goals.v1Import.reasons.playerDataRequired",
+  target_rejected: "goals.v1Import.reasons.targetRejected",
+  project_slot_conflict: "goals.v1Import.reasons.projectSlotConflict",
+  prerequisite_rejected: "goals.v1Import.reasons.prerequisiteRejected",
+}
+
+export function reasonKeyForCode(code: string): ReasonKey {
+  return REASON_KEYS[code] ?? "goals.v1Import.reasons.generic"
+}
+
 export type BucketedOutcomes = Record<OutcomeBucketKey, V1GoalOutcome[]>
 
 export function groupOutcomes(
@@ -82,6 +135,9 @@ export function buildDiagnosticText(params: {
   unitName: (entityType: string | null, entityId: string | null) => string
   goalTypeLabel: (goalType: string | null) => string | null
   noUnitLabel: string
+  // Translated reason text for one outcome's code — not `outcome.message` (the server's untranslated
+  // English), same reasoning as OutcomeRow's own rendering in import-v1-result.tsx.
+  reasonFor: (code: string) => string
 }): string {
   const section = (
     bucket: "notImported" | "failed",
@@ -94,7 +150,7 @@ export function buildDiagnosticText(params: {
         : params.noUnitLabel
       const type = params.goalTypeLabel(outcome.goalType)
       const label = type ? `${unit} (${type})` : unit
-      return `- ${label}: ${outcome.message}`
+      return `- ${label}: ${params.reasonFor(outcome.code)}`
     })
     return [`${params.heading(bucket)}:`, ...rows].join("\n")
   }

@@ -382,6 +382,7 @@
         "campaignEventProgress": "Campaign event progress"
       },
       "submit": "Import selected",
+      "submitting": "Importing…",
       "close": "Close",
       "error": "The V1 profile could not be imported.",
       "rerunRequiresPassword": "This import finished. Enter your V1 password again to run another one.",
@@ -401,6 +402,23 @@
         "copy": "Copy details",
         "syncRequiredTitle": "Player data must be synced first",
         "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
+      },
+      "reasons": {
+        "goalCreated": "Imported from V1.",
+        "prerequisiteAdded": "Automatically added because another imported goal needs it.",
+        "targetAlreadyReached": "The target is already reached.",
+        "goalAlreadyExists": "The account already has a goal of this type for this unit.",
+        "duplicateGoalMerged": "Another V1 goal of this type for this unit was imported in its place.",
+        "prerequisiteTargetInsufficient": "An Ascension goal for this unit doesn't reach the target another imported goal needs.",
+        "unknownUnit": "This character or Machine of War is not in the V2 Game Catalog.",
+        "unsupportedGoalType": "This V1 goal type isn't supported.",
+        "invalidProgression": "The Ascension target is not on the V2 progression ladder.",
+        "missingTarget": "The goal is missing a required target.",
+        "playerDataRequired": "Player data must be synced before goals can be imported.",
+        "targetRejected": "The target for this goal isn't valid.",
+        "projectSlotConflict": "Another goal for this unit and type was created concurrently.",
+        "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
+        "generic": "This goal could not be imported."
       }
     },
     "empty": {

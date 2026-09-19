@@ -382,6 +382,7 @@
         "campaignEventProgress": "Progression des événements de campagne"
       },
       "submit": "Importer la sélection",
+      "submitting": "Importation en cours…",
       "close": "Fermer",
       "error": "Le profil V1 n'a pas pu être importé.",
       "rerunRequiresPassword": "Cet import est terminé. Saisissez à nouveau votre mot de passe V1 pour en lancer un autre.",
@@ -401,6 +402,23 @@
         "copy": "Copier les détails",
         "syncRequiredTitle": "Les données du joueur doivent d'abord être synchronisées",
         "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
+      },
+      "reasons": {
+        "goalCreated": "Importé depuis V1.",
+        "prerequisiteAdded": "Ajouté automatiquement car un autre objectif importé en a besoin.",
+        "targetAlreadyReached": "L'objectif est déjà atteint.",
+        "goalAlreadyExists": "Le compte possède déjà un objectif de ce type pour cette unité.",
+        "duplicateGoalMerged": "Un autre objectif V1 de ce type pour cette unité a été importé à sa place.",
+        "prerequisiteTargetInsufficient": "Un objectif d'Ascension pour cette unité n'atteint pas ce dont un autre objectif importé a besoin.",
+        "unknownUnit": "Ce personnage ou cette machine de guerre ne figure pas dans le catalogue V2.",
+        "unsupportedGoalType": "Ce type d'objectif V1 n'est pas pris en charge.",
+        "invalidProgression": "L'objectif d'Ascension ne figure pas sur l'échelle de progression V2.",
+        "missingTarget": "Il manque une valeur requise à cet objectif.",
+        "playerDataRequired": "Les données du joueur doivent être synchronisées avant d'importer des objectifs.",
+        "targetRejected": "La cible de cet objectif n'est pas valide.",
+        "projectSlotConflict": "Un autre objectif pour cette unité et ce type a été créé simultanément.",
+        "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
+        "generic": "Cet objectif n'a pas pu être importé."
       }
     },
     "empty": {

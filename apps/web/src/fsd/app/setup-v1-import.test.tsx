@@ -156,6 +156,20 @@ describe("SetupV1Import", () => {
     expect(onKeyImported).toHaveBeenCalledTimes(1)
   })
 
+  it("hides the Use API key fallback once the key part is confirmed imported", async () => {
+    renderSetup()
+
+    onSuccessRef.current?.(fullResult(okPart))
+    await screen.findByTestId("account-setup-v1-continue")
+
+    // The reverse guard is only suppressed while Continue is pending (account-setup-route.tsx); once
+    // an account is configured, this fallback would race that guard's redirect instead of taking the
+    // user anywhere useful.
+    expect(
+      screen.queryByTestId("account-setup-v1-use-api-key")
+    ).not.toBeInTheDocument()
+  })
+
   it("clicking Continue calls onCompleted", async () => {
     const user = userEvent.setup()
     const { onCompleted } = renderSetup()

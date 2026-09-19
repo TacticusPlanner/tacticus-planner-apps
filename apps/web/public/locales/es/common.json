@@ -382,6 +382,7 @@
         "campaignEventProgress": "Progreso de eventos de campaña"
       },
       "submit": "Importar selección",
+      "submitting": "Importando…",
       "close": "Cerrar",
       "error": "No se pudo importar el perfil de V1.",
       "rerunRequiresPassword": "Esta importación ha finalizado. Introduce de nuevo tu contraseña de V1 para ejecutar otra.",
@@ -401,6 +402,23 @@
         "copy": "Copiar detalles",
         "syncRequiredTitle": "Primero debes sincronizar tus datos de jugador",
         "syncRequired": "Sincroniza tus datos de jugador y luego vuelve a importar los objetivos."
+      },
+      "reasons": {
+        "goalCreated": "Importado desde V1.",
+        "prerequisiteAdded": "Añadido automáticamente porque otro objetivo importado lo necesita.",
+        "targetAlreadyReached": "El objetivo ya se ha alcanzado.",
+        "goalAlreadyExists": "La cuenta ya tiene un objetivo de este tipo para esta unidad.",
+        "duplicateGoalMerged": "Se importó en su lugar otro objetivo de V1 de este tipo para esta unidad.",
+        "prerequisiteTargetInsufficient": "Un objetivo de Ascensión de esta unidad no alcanza lo que necesita otro objetivo importado.",
+        "unknownUnit": "Este personaje o Máquina de Guerra no está en el catálogo del juego V2.",
+        "unsupportedGoalType": "Este tipo de objetivo de V1 no es compatible.",
+        "invalidProgression": "El objetivo de Ascensión no está en la escala de progresión de V2.",
+        "missingTarget": "Al objetivo le falta un valor requerido.",
+        "playerDataRequired": "Los datos de jugador deben sincronizarse antes de poder importar objetivos.",
+        "targetRejected": "El objetivo de este objetivo no es válido.",
+        "projectSlotConflict": "Se creó simultáneamente otro objetivo para esta unidad y tipo.",
+        "prerequisiteRejected": "Este requisito añadido automáticamente no es válido para este objetivo.",
+        "generic": "No se pudo importar este objetivo."
       }
     },
     "empty": {

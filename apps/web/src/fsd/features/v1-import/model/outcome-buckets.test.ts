@@ -8,6 +8,7 @@ import {
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  reasonKeyForCode,
 } from "./outcome-buckets"
 
 function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
@@ -46,6 +47,59 @@ describe("bucketForCode", () => {
 
   it("falls back an unrecognised code to notImported rather than hiding it as benign", () => {
     expect(bucketForCode("some_future_code")).toBe("notImported")
+  })
+})
+
+describe("reasonKeyForCode", () => {
+  it("maps every documented code to a translation key", () => {
+    expect(reasonKeyForCode("goal_created")).toBe(
+      "goals.v1Import.reasons.goalCreated"
+    )
+    expect(reasonKeyForCode("prerequisite_added")).toBe(
+      "goals.v1Import.reasons.prerequisiteAdded"
+    )
+    expect(reasonKeyForCode("target_already_reached")).toBe(
+      "goals.v1Import.reasons.targetAlreadyReached"
+    )
+    expect(reasonKeyForCode("goal_already_exists")).toBe(
+      "goals.v1Import.reasons.goalAlreadyExists"
+    )
+    expect(reasonKeyForCode("duplicate_goal_merged")).toBe(
+      "goals.v1Import.reasons.duplicateGoalMerged"
+    )
+    expect(reasonKeyForCode("prerequisite_target_insufficient")).toBe(
+      "goals.v1Import.reasons.prerequisiteTargetInsufficient"
+    )
+    expect(reasonKeyForCode("unknown_unit")).toBe(
+      "goals.v1Import.reasons.unknownUnit"
+    )
+    expect(reasonKeyForCode("unsupported_goal_type")).toBe(
+      "goals.v1Import.reasons.unsupportedGoalType"
+    )
+    expect(reasonKeyForCode("invalid_progression")).toBe(
+      "goals.v1Import.reasons.invalidProgression"
+    )
+    expect(reasonKeyForCode("missing_target")).toBe(
+      "goals.v1Import.reasons.missingTarget"
+    )
+    expect(reasonKeyForCode("player_data_required")).toBe(
+      "goals.v1Import.reasons.playerDataRequired"
+    )
+    expect(reasonKeyForCode("target_rejected")).toBe(
+      "goals.v1Import.reasons.targetRejected"
+    )
+    expect(reasonKeyForCode("project_slot_conflict")).toBe(
+      "goals.v1Import.reasons.projectSlotConflict"
+    )
+    expect(reasonKeyForCode("prerequisite_rejected")).toBe(
+      "goals.v1Import.reasons.prerequisiteRejected"
+    )
+  })
+
+  it("falls back an unrecognised code to a generic translated reason", () => {
+    expect(reasonKeyForCode("some_future_code")).toBe(
+      "goals.v1Import.reasons.generic"
+    )
   })
 })
 
@@ -143,40 +197,31 @@ describe("buildDiagnosticText", () => {
   const unitName = (_entityType: string | null, entityId: string | null) =>
     entityId ?? ""
   const goalTypeLabel = (goalType: string | null) => goalType
+  const reasonFor = (code: string) => `reason:${code}`
 
   it("lists each not-imported/failed outcome's unit, goal type and reason (6.1)", () => {
     const text = buildDiagnosticText({
       notImported: [
-        outcome({
-          code: "unknown_unit",
-          entityId: "SomeV1Id",
-          goalType: null,
-          message:
-            "The goal's character or Machine of War is not in the V2 Game Catalog.",
-        }),
+        outcome({ code: "unknown_unit", entityId: "SomeV1Id", goalType: null }),
       ],
       failed: [
         outcome({
           code: "target_rejected",
           entityId: "hero1",
           goalType: "Rank",
-          message: "The target rank exceeds the unit's rarity cap.",
         }),
       ],
       heading,
       unitName,
       goalTypeLabel,
       noUnitLabel: "Unspecified unit",
+      reasonFor,
     })
 
     expect(text).toContain("Not imported:")
-    expect(text).toContain(
-      "- SomeV1Id: The goal's character or Machine of War is not in the V2 Game Catalog."
-    )
+    expect(text).toContain("- SomeV1Id: reason:unknown_unit")
     expect(text).toContain("Failed:")
-    expect(text).toContain(
-      "- hero1 (Rank): The target rank exceeds the unit's rarity cap."
-    )
+    expect(text).toContain("- hero1 (Rank): reason:target_rejected")
   })
 
   it("omits an empty bucket's section entirely", () => {
@@ -187,6 +232,7 @@ describe("buildDiagnosticText", () => {
       unitName,
       goalTypeLabel,
       noUnitLabel: "Unspecified unit",
+      reasonFor,
     })
     expect(text).not.toContain("Not imported:")
     expect(text).toContain("Failed:")
@@ -201,6 +247,7 @@ describe("buildDiagnosticText", () => {
         unitName,
         goalTypeLabel,
         noUnitLabel: "Unspecified unit",
+        reasonFor,
       })
     ).toBe("")
   })
@@ -213,7 +260,6 @@ describe("buildDiagnosticText", () => {
           entityType: null,
           entityId: null,
           goalType: null,
-          message: "V1 goal type 6 is not supported.",
         }),
       ],
       failed: [],
@@ -221,9 +267,8 @@ describe("buildDiagnosticText", () => {
       unitName,
       goalTypeLabel,
       noUnitLabel: "Unspecified unit",
+      reasonFor,
     })
-    expect(text).toContain(
-      "- Unspecified unit: V1 goal type 6 is not supported."
-    )
+    expect(text).toContain("- Unspecified unit: reason:unsupported_goal_type")
   })
 })
