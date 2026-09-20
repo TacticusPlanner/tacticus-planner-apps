@@ -23,6 +23,7 @@ import {
 } from "@workspace/game-catalog/queries"
 import {
   getCampaignEventProgress,
+  getCampaignProgress,
   getInventoryShard,
   getInventoryUpgrades,
   getLiveProgress,
@@ -44,7 +45,8 @@ import { useCampaignDisplay } from "@/shared/lib"
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import {
   availableCampaignBattles,
-  campaignEventProgressKey,
+  buildCampaignEventProgressByKey,
+  buildCampaignProgressByKey,
 } from "./campaign-event-eligibility"
 import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
@@ -97,6 +99,10 @@ export function useDailyRaids(
   )
   const campaignEventProgressResult = useLiveQuery(
     async () => ({ value: await getCampaignEventProgress() }),
+    []
+  )
+  const campaignProgressResult = useLiveQuery(
+    async () => ({ value: await getCampaignProgress() }),
     []
   )
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
@@ -154,23 +160,35 @@ export function useDailyRaids(
   )
   const campaignEventProgressByKey = useMemo(
     () =>
-      new Map(
-        (campaignEventProgressResult?.value ?? []).map((progress) => [
-          campaignEventProgressKey(progress.tacticusCampaignId, progress.type),
-          {
-            completedBattleCount: progress.completedBattleCount,
-            completedChallengeBattlesIds: progress.completedChallengeBattlesIds,
-          },
-        ])
-      ),
+      buildCampaignEventProgressByKey(campaignEventProgressResult?.value ?? []),
     [campaignEventProgressResult]
   )
+  const campaignProgressByKey = useMemo(
+    () => buildCampaignProgressByKey(campaignProgressResult?.value ?? []),
+    [campaignProgressResult]
+  )
+  // Full catalog, unfiltered by eligibility — the source for real-attempt/energy/location-label
+  // lookups (buildBattleAttemptIndex and friends below), which must reflect a real synced attempt
+  // even at a battle the eligibility filter currently excludes (campaign-progress/campaign-events-
+  // progress are independent signals from live-progress.battleAttempts and can momentarily disagree).
+  const allBattlesById = useMemo(
+    () =>
+      new Map(
+        (battles ?? []).map((battle) => [
+          battle.id as BattleId,
+          mapCampaignBattleStorageToDomain(battle),
+        ])
+      ),
+    [battles]
+  )
+  // Eligibility-restricted — only this map feeds the scheduling/estimate engine (calculateDailyRaids).
   const battlesById = useMemo(() => {
     const availableBattles = availableCampaignBattles(
       battles ?? [],
       eventCampaignIds,
       liveProgressResult?.value?.activeCampaignEventId,
-      campaignEventProgressByKey
+      campaignEventProgressByKey,
+      campaignProgressByKey
     )
     return new Map(
       availableBattles.map((battle) => [
@@ -183,11 +201,12 @@ export function useDailyRaids(
     eventCampaignIds,
     liveProgressResult,
     campaignEventProgressByKey,
+    campaignProgressByKey,
   ])
   const locationsByBattleId = useMemo(
     () =>
       new Map(
-        [...battlesById].map(([battleId, battle]) => {
+        [...allBattlesById].map(([battleId, battle]) => {
           const descriptor = campaignDescriptor(
             battle.campaignGroupId,
             battle.type,
@@ -215,7 +234,7 @@ export function useDailyRaids(
           ] as const
         })
       ),
-    [battlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
+    [allBattlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
   )
   // Game-data display names resolve through the id-keyed `upgrades`/`characters` namespaces — the
   // same convention Character Lookup uses — so one material can't read as two different names in two
@@ -245,17 +264,17 @@ export function useDailyRaids(
     [upgradesById, charactersById, labelResource]
   )
   const battleAttemptIndex = useMemo(
-    () => buildBattleAttemptIndex(battlesById),
-    [battlesById]
+    () => buildBattleAttemptIndex(allBattlesById),
+    [allBattlesById]
   )
   const realEnergyUsedToday = useMemo(
     () =>
       calculateRealEnergyUsedToday(
         liveProgressResult?.value?.battleAttempts ?? [],
         battleAttemptIndex,
-        battlesById
+        allBattlesById
       ),
-    [liveProgressResult, battleAttemptIndex, battlesById]
+    [liveProgressResult, battleAttemptIndex, allBattlesById]
   )
   const attemptsLeftByBattle = useMemo(
     () =>
@@ -292,6 +311,7 @@ export function useDailyRaids(
     campaignDefinitions &&
     liveProgressResult &&
     campaignEventProgressResult &&
+    campaignProgressResult &&
     ascensionCostsById &&
     unlockShardCostsById &&
     onslaughtRewards &&

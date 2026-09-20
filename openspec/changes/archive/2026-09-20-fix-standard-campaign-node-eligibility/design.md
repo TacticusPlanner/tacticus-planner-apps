@@ -1,0 +1,46 @@
+## Context
+
+`availableCampaignBattles` (`campaign-event-eligibility.ts`) is the single gate every farming consumer (Today's schedule, Bonus Raids, the multi-day plan, `calculateResourceUrgency`) goes through: it returns a filtered `battlesById` map, and anything filtered out simply doesn't exist to the rest of the pipeline. Today it only filters event-campaign battles; standing battles pass through unconditionally (`campaign-event-eligibility.ts:59`).
+
+That same filtered `battlesById` is _also_ the source `use-daily-raids.ts` builds `buildBattleAttemptIndex` from (`daily-raids-energy.ts`), which in turn backs `calculateRealEnergyUsedToday`, `buildAttemptsLeftByBattle`, and `buildTodaysAttempts` — the account-wide "what did the player actually raid today" signals, driven by `live-progress.battleAttempts`, a sync chunk independent of both `campaign-events-progress` and `campaign-progress`. If a battle is filtered out of `battlesById` for eligibility reasons, any real attempt record at that battle silently fails `buildBattleAttemptIndex`'s lookup (`if (!battleId) continue`) and disappears from those account-wide totals — even though the player genuinely raided there today. This is latent today for event campaigns (a narrow, time-boxed population); this change's much larger standing-campaign population makes it worth closing rather than inheriting.
+
+Separately: `estimateTodaySchedule`/`estimateBonusRaids`/`estimatePlanSchedule` (`estimate-plan.ts`'s `runPlanSchedule`) treat a need with no farm location as `blocked("NoFarmLocation", ...)`, which aborts the _rest of that goal's farming stage_ (`break` in the needs loop), not just the one unavailable need — a goal with two materials in the same stage, only one of them currently locked, shows neither until the locked one becomes reachable. This is the existing, already-shipped behavior for an unreached event-campaign material; extending standing-campaign eligibility through the same `battlesById` path means standing campaigns get the identical treatment. Confirmed with the user as the intended, accepted behavior for this change (not a regression to work around).
+
+See proposal.md - Why.
+
+## Goals / Non-Goals
+
+**Goals:**
+
+- Stop standing-campaign locked nodes from being scheduled real raids (PLAN-01), using the same mechanism and cascading behavior the merged event-campaign fix already established.
+- Stop a locked node from ever reaching the mislabeled "Max raids" read (PLAN-02) — resolved as a side effect of exclusion, matching how an unreached event node already shows no farmable location rather than a wrong one.
+- Keep the account-wide "what did I actually raid today" signals (Today's Attempts, real energy usage) accurate regardless of this new eligibility filter, for both standing and event campaigns.
+
+**Non-Goals:**
+
+- A `locked` UI status, badge, or conditional-fallback location display (DAILY-06's original ask, and the richer V1-inspired presentation explored earlier in scoping). Dropped after review: there is no path to render it without either (a) threading a phantom, zero-effect entry through the shared day-by-day scheduling engine (`estimate-plan.ts`), which is a much larger, riskier surface than this fix warrants, or (b) duplicating that engine's farm-location matching logic outside it. Given the engine-level exclusion is the agreed behavior, "excluded, not specially labeled" is also the simplest offering consistent with it. A locked-status/fallback display remains a possible follow-up if DAILY-06 resurfaces as its own ask.
+- Any change to event-campaign eligibility itself — it keeps its existing gate and cascading behavior unchanged; only its filtered map's _consumers_ are adjusted (see Decision 2), which is a strict improvement, not a behavior change, for the event case.
+- Any API change — `campaign-progress` already syncs everything this needs.
+
+## Decisions
+
+**Standing-campaign reach is folded into the same `availableCampaignBattles` filter events already use, with the same cascading consequences.** A new reached-check (`battleIndex <= highestCompletedBattleIndex + 1` per `{campaignGroupId, type}`, from `campaign-progress`) is added alongside the existing event-campaign check inside `campaign-event-eligibility.ts`, and its result is excluded from the same `battlesById` output already fed to `calculateDailyRaids` → the shared estimate engine. This means a standing-locked material triggers the engine's existing `NoFarmLocation`-blocks-the-stage handling exactly like an event-locked material already does — approved as the intended behavior, not a side effect to design around.
+Alternative considered: keep the "locked" concept separate from `availableCampaignBattles` and only filter the scheduling engine's input distinctly from the account-wide-attempt map (originally proposed here). Rejected as unnecessary complexity once the cascading-exclusion approach was approved — symmetry with the already-shipped event-campaign gate is simpler to reason about and test than maintaining two different eligibility computations for the same filter.
+
+**`battleIndex`, not `nodeNumber`, is the standing-campaign reached signal.** `campaign-progress`'s `highestCompletedBattleIndex` is explicitly documented (`campaign.ts:46-49`) as keyed to `battleIndex`, the same zero-based id Tacticus's own battle-attempt payloads use — `nodeNumber` is a separate, display-only sequence. Reusing `nodeNumber` (as the event-campaign gate does, against `completedBattleCount`) would be comparing against the wrong id for this data shape.
+Alternative considered: mirror the event-campaign gate's field choice (`nodeNumber` vs a count) exactly for consistency. Rejected — the two Tacticus payload shapes are genuinely different (event campaigns report a _count_, standing campaigns report an _index_), and using the field the standing payload is actually keyed to is the only correct comparison.
+
+**Standing challenge battles use the plain `battleIndex` gate, not the event pattern's any-order challenge-id set.** `campaign-progress` carries no `completedChallengeBattlesIds`-equivalent for standing campaigns — there is no signal to treat them as separately unlockable, so a standing challenge battle is gated the same way as any other battle in its track's linear `battleIndex` sequence. If this proves wrong against real player data (e.g., a challenge battle's `battleIndex` doesn't actually advance with normal progress), the failure mode is a node showing as excluded when it's actually reachable, not a crash or a miscalculated schedule — flagged as a spec assumption to verify against real data (tasks.md), not an open question blocking this design.
+
+**`use-daily-raids.ts` splits its battle map: a full, unfiltered-by-eligibility map feeds the account-wide real-attempt/energy/location-label consumers; only the eligibility-filtered map feeds the scheduling engine.** `locationsByBattleId`, `buildBattleAttemptIndex`, `calculateRealEnergyUsedToday`, `buildAttemptsLeftByBattle`, and `buildTodaysAttempts` are rebuilt from the full catalog map (`battles ?? []` mapped to domain, with no `availableCampaignBattles` filtering at all) instead of the eligibility-filtered `battlesById`; only `calculateDailyRaids`'s own `battlesById` parameter receives the filtered map. This closes the real-attempt-loss risk in Context above for both standing and event campaigns — a small, low-risk, purely-additive split (a second map alongside the existing one), not a change to any business logic.
+Alternative considered: leave the single shared map as-is, matching current (event-only) behavior. Rejected — extending the same coupling to the much larger standing-campaign population meaningfully raises the odds of a real synced attempt silently vanishing from Today's Attempts or the energy-usage total whenever `campaign-progress` and `live-progress.battleAttempts` are momentarily out of sync (both independent signals, per the spec's own stated assumptions).
+
+## Risks / Trade-offs
+
+- [A goal with a mixed reachable/locked need in the same farming stage shows neither material in Today until the locked one becomes reachable] → Accepted, matching existing event-campaign behavior; not mitigated further in this change. If this proves confusing in practice once shipped, it's a candidate for a future change to `estimate-plan.ts`'s stage-blocking semantics (affecting both standing and event campaigns equally), not something to special-case here.
+- [The `battleIndex` reached-assumption turns out wrong for some challenge or edge-case track] → Degrades to a node being excluded when it's actually reachable (matching the existing event-campaign failure mode for the same class of assumption), not a crash or miscalculated schedule — verify against real profile data with completed challenge battles during manual testing (tasks.md).
+- [Splitting the battle map adds a second full-catalog pass in `use-daily-raids.ts`] → Bounded by the campaign battle catalog's size (loaded once, not per-render-cycle data); no separate mitigation needed.
+
+## Migration Plan
+
+No data migration. `campaign-progress` is already synced for every account. Ship as a normal apps-only release; no rollback concerns beyond reverting the PR.

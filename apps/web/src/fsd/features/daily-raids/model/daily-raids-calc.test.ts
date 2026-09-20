@@ -34,7 +34,9 @@ import type { Battle } from "@/shared/lib"
 import {
   availableCampaignBattles,
   campaignEventProgressKey,
+  campaignProgressKey,
   type CampaignEventProgressEntry,
+  type CampaignProgressEntry,
 } from "./campaign-event-eligibility"
 import {
   activeProjectMembers,
@@ -49,13 +51,30 @@ function eventBattle(overrides: {
   type?: string
   challenge?: boolean
   nodeNumber?: number
+  battleIndex?: number
 }) {
   return {
     type: "Standard",
     challenge: false,
     nodeNumber: 1,
+    battleIndex: 0,
     ...overrides,
   }
+}
+
+function standingProgressMap(
+  entries: [
+    campaignGroupId: string,
+    type: string,
+    entry: CampaignProgressEntry,
+  ][]
+): ReadonlyMap<string, CampaignProgressEntry> {
+  return new Map(
+    entries.map(([campaignGroupId, type, entry]) => [
+      campaignProgressKey(campaignGroupId, type),
+      entry,
+    ])
+  )
 }
 
 function progressMap(
@@ -257,6 +276,107 @@ describe("daily raid derivation", () => {
         (battle) => battle.id
       )
     ).toEqual(["standing"])
+  })
+
+  it("excludes an unreached standing campaign battle", () => {
+    const battles = [
+      eventBattle({
+        id: "unreached",
+        campaignGroupId: "campaign1",
+        battleIndex: 13,
+      }),
+    ]
+    const eventIds = new Set<string>()
+    const progress = standingProgressMap([
+      ["campaign1", "Standard", { highestCompletedBattleIndex: 10 }],
+    ])
+
+    expect(
+      availableCampaignBattles(battles, eventIds, null, new Map(), progress)
+    ).toEqual([])
+  })
+
+  it("keeps a reached standing campaign battle", () => {
+    const battles = [
+      eventBattle({
+        id: "reached",
+        campaignGroupId: "campaign1",
+        battleIndex: 11,
+      }),
+    ]
+    const eventIds = new Set<string>()
+    const progress = standingProgressMap([
+      ["campaign1", "Standard", { highestCompletedBattleIndex: 10 }],
+    ])
+
+    expect(
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        null,
+        new Map(),
+        progress
+      ).map((battle) => battle.id)
+    ).toEqual(["reached"])
+  })
+
+  it("only admits battleIndex 0 for a standing track with no progress entry", () => {
+    const battles = [
+      eventBattle({
+        id: "first",
+        campaignGroupId: "campaign2",
+        type: "Elite",
+        battleIndex: 0,
+      }),
+      eventBattle({
+        id: "second",
+        campaignGroupId: "campaign2",
+        type: "Elite",
+        battleIndex: 1,
+      }),
+    ]
+    const eventIds = new Set<string>()
+
+    expect(
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        null,
+        new Map(),
+        new Map()
+      ).map((battle) => battle.id)
+    ).toEqual(["first"])
+  })
+
+  it("gates a standing challenge battle by the same battleIndex comparison as a non-challenge one", () => {
+    const battles = [
+      eventBattle({
+        id: "challenge-unreached",
+        campaignGroupId: "campaign1",
+        challenge: true,
+        battleIndex: 13,
+      }),
+      eventBattle({
+        id: "challenge-reached",
+        campaignGroupId: "campaign1",
+        challenge: true,
+        battleIndex: 11,
+      }),
+    ]
+    const eventIds = new Set<string>()
+    const progress = standingProgressMap([
+      ["campaign1", "Standard", { highestCompletedBattleIndex: 10 }],
+    ])
+
+    expect(
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        null,
+        new Map(),
+        progress
+      ).map((battle) => battle.id)
+    ).toEqual(["challenge-reached"])
   })
 
   it.each(EVENT_CAMPAIGN_IDS)(
