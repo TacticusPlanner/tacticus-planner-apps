@@ -51,17 +51,21 @@ export function useGoalActions(_onChanged?: () => void) {
 
   /** `silent` skips the per-call error toast — used for a cascade target beyond the acting goal
    *  itself, so a partial cascade failure surfaces as one aggregate toast (see `setStatus`) rather
-   *  than one toast per failed prerequisite. */
+   *  than one toast per failed prerequisite. `trackPending: false` skips this call's own add/remove
+   *  because the caller is already holding `goalId` pending for a longer span (see `setStatus`) —
+   *  without it, a cascade's acting goal would re-enable its row between its own call finishing and
+   *  the last prerequisite call finishing, letting a second click start an overlapping cascade. */
   const run = async (
     goalId: string,
     action: () => Promise<unknown>,
-    options: { silent?: boolean } = {}
+    options: { silent?: boolean; trackPending?: boolean } = {}
   ) => {
     if (!isAuthenticated) {
       return false
     }
 
-    addPending(goalId)
+    const trackPending = options.trackPending ?? true
+    if (trackPending) addPending(goalId)
     try {
       await mutation.mutateAsync(action)
       return true
@@ -75,7 +79,7 @@ export function useGoalActions(_onChanged?: () => void) {
       }
       return false
     } finally {
-      removePending(goalId)
+      if (trackPending) removePending(goalId)
     }
   }
 
@@ -84,7 +88,10 @@ export function useGoalActions(_onChanged?: () => void) {
    * alongside `goalId`, sequentially, after the acting goal's own call succeeds (see design.md: not
    * `Promise.all`, since each call also renormalizes its project's priority order server-side).
    * Callers are responsible for excluding a `Completed`/`Archived` prerequisite from `cascadeIds`
-   * before calling this — this function does not re-check a target's current status.
+   * before calling this — this function does not re-check a target's current status. Every goal
+   * involved (the acting goal and every cascade target) stays pending for the whole operation, not
+   * just its own individual call, so none of their rows can be clicked again — starting a second,
+   * overlapping cascade — before the first one finishes.
    */
   const setStatus = async (
     goalId: string,
@@ -95,32 +102,41 @@ export function useGoalActions(_onChanged?: () => void) {
       return
     }
 
-    const ok = await run(goalId, () => updateGoalStatus(goalId, status))
-    if (!ok) {
-      return
-    }
-    if (cascadeIds.length === 0) {
-      toast.success(t("goals.toasts.statusChanged"))
-      return
-    }
-
-    let cascadeSucceeded = 0
-    for (const id of cascadeIds) {
-      const cascadeOk = await run(id, () => updateGoalStatus(id, status), {
-        silent: true,
+    const allIds = [goalId, ...cascadeIds]
+    allIds.forEach(addPending)
+    try {
+      const ok = await run(goalId, () => updateGoalStatus(goalId, status), {
+        trackPending: false,
       })
-      if (cascadeOk) cascadeSucceeded++
-    }
-    const total = cascadeIds.length + 1
-    if (cascadeSucceeded === cascadeIds.length) {
-      toast.success(t("goals.toasts.statusChanged"))
-    } else {
-      toast.error(
-        t("goals.toasts.statusChangedPartial", {
-          succeeded: cascadeSucceeded + 1,
-          total,
+      if (!ok) {
+        return
+      }
+      if (cascadeIds.length === 0) {
+        toast.success(t("goals.toasts.statusChanged"))
+        return
+      }
+
+      let cascadeSucceeded = 0
+      for (const id of cascadeIds) {
+        const cascadeOk = await run(id, () => updateGoalStatus(id, status), {
+          silent: true,
+          trackPending: false,
         })
-      )
+        if (cascadeOk) cascadeSucceeded++
+      }
+      const total = cascadeIds.length + 1
+      if (cascadeSucceeded === cascadeIds.length) {
+        toast.success(t("goals.toasts.statusChanged"))
+      } else {
+        toast.error(
+          t("goals.toasts.statusChangedPartial", {
+            succeeded: cascadeSucceeded + 1,
+            total,
+          })
+        )
+      }
+    } finally {
+      allIds.forEach(removePending)
     }
   }
 

@@ -132,13 +132,19 @@ vi.mock("@workspace/player-data/queries", () => ({
 const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
   Promise.resolve(undefined)
 )
-// The account-wide goal list the header's "N of your M goals" summary is expressed against.
+// The account-wide goal list the header's "N of your M goals" summary is expressed against, and
+// (post PR #151 review) the source of `cascadeContext` — a dependsOn edge isn't constrained by
+// project membership, so the cascade needs to see goals outside this project too.
 const listAccountGoals = vi.fn<() => Promise<unknown>>(() =>
   Promise.resolve({ goals: [] })
 )
+const updateGoalStatus = vi.fn<
+  (goalId: string, status: string) => Promise<unknown>
+>(() => Promise.resolve({}))
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
+  updateGoalStatus: (...args: [string, string]) => updateGoalStatus(...args),
   goalQueries: {
     all: () => ["goals"],
     list: (archived: boolean) => ({
@@ -285,6 +291,7 @@ describe("ProjectDetailPage", () => {
     updateProjectGoalsStatus.mockReset()
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     listAccountGoals.mockReset().mockResolvedValue({ goals: [] })
+    updateGoalStatus.mockReset().mockResolvedValue({})
     translate.mockClear()
   })
 
@@ -478,6 +485,38 @@ describe("ProjectDetailPage", () => {
       "data-project-id",
       "proj-a"
     )
+  })
+
+  it("does not cascade-pause a prerequisite that's still shared by a goal in a different project (PR #151 review)", async () => {
+    // goal-b (this project's only member) depends on goal-a. goal-c also depends on goal-a but
+    // belongs to a different project, so it's absent from listProjectGoals — only the account-wide
+    // fetch reveals it. Before the fix, cascadeContext was built from this project's own rows only,
+    // undercounting goal-a's dependents to 1 (just goal-b) and cascade-pausing it anyway.
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        {
+          goal: goal({ goalId: "goal-b", dependsOn: ["goal-a"] }),
+          priority: 1,
+        },
+      ],
+    })
+    listAccountGoals.mockResolvedValue({
+      goals: [
+        goal({ goalId: "goal-a" }),
+        goal({ goalId: "goal-b", dependsOn: ["goal-a"] }),
+        goal({ goalId: "goal-c", dependsOn: ["goal-a"] }),
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await user.click(await screen.findByTestId("goal-row-pause-goal-b"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-b", "Paused")
+    })
+    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-a", "Paused")
   })
 
   it("pauses every applicable goal in the project via the header's bulk action", async () => {

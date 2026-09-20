@@ -31,7 +31,10 @@ import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
 import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
-import { goalRowFromProjectMember } from "../../model/shared/types"
+import {
+  goalRowFromProjectMember,
+  goalRowFromSummary,
+} from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
@@ -122,9 +125,22 @@ export function ProjectDetailPage() {
       ),
     [nonArchivedRows, attainmentByGoalId]
   )
-  // Scoped to this project's own rows (see design.md's known limitation: a prerequisite also
-  // depended on by a goal in a different project isn't detected as shared here).
-  const cascadeContext = useMemo(() => buildCascadeContext(allRows), [allRows])
+  // Account-wide, not scoped to this project's own rows: a dependsOn edge isn't constrained by
+  // project membership, so a prerequisite or dependent can live in a different project (PR #151
+  // review) — reuses the account-wide, non-archived fetch already made above for accountGoalTotal.
+  // An Archived goal is absent from this list, but that's harmless for cascade purposes: an id with
+  // no entry here already fails cascadeTargets' Active/Paused check the same as an explicit Archived
+  // status would, and an archived goal's own dependsOn edges are irrelevant to a still-active
+  // sibling's cascade decision. Falls back to this project's own rows only until the account-wide
+  // query resolves, rather than disabling the cascade entirely during that window.
+  const cascadeContext = useMemo(
+    () =>
+      buildCascadeContext(
+        accountGoalsQuery.data?.goals.map((goal) => goalRowFromSummary(goal)) ??
+          allRows
+      ),
+    [accountGoalsQuery.data, allRows]
+  )
   // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
   // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
   // full non-archived candidate set instead, then filters afterward (see the comment on

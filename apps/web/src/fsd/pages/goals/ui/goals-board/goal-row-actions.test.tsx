@@ -273,6 +273,48 @@ describe("GoalRowActions", () => {
     })
   })
 
+  it("keeps the acting goal's control disabled until the whole cascade finishes, not just its own call", async () => {
+    let resolveActing!: (value: unknown) => void
+    let resolveCascade!: (value: unknown) => void
+    updateGoalStatus.mockImplementation((goalId: string) =>
+      goalId === "goal-1"
+        ? new Promise((resolve) => {
+            resolveActing = resolve
+          })
+        : new Promise((resolve) => {
+            resolveCascade = resolve
+          })
+    )
+    const user = userEvent.setup()
+    render(
+      <Harness
+        cascadeContext={{
+          statusById: new Map([["goal-a", "Active"]]),
+          dependentCountById: new Map([["goal-a", 1]]),
+        }}
+        goalRow={row({ dependsOn: ["goal-a"] })}
+      />
+    )
+
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goal-row-pause-goal-1")).toBeDisabled()
+    )
+
+    // The acting goal's own call resolves, but the cascade call to goal-a is still pending — the
+    // control must stay disabled through this window (the exact race the fix closes).
+    resolveActing({})
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-a", "Paused")
+    })
+    expect(screen.getByTestId("goal-row-pause-goal-1")).toBeDisabled()
+
+    resolveCascade({})
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goal-row-pause-goal-1")).not.toBeDisabled()
+    )
+  })
+
   it("does not cascade pause to a prerequisite shared by another active goal", async () => {
     updateGoalStatus.mockResolvedValue({})
     const user = userEvent.setup()
