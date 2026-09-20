@@ -198,12 +198,12 @@ The project switcher SHALL be integrated into the detail header/navigation area.
 
 ### Requirement: The detail route shares Overview's goal filters
 
-The detail route SHALL continue to offer status, Type, Sort, and Group controls for normal browsing. Those controls SHALL NOT affect stored unit priority. Unit reprioritization SHALL occur only in its dedicated mode.
+The detail route SHALL continue to offer status, Type, Sort, and Group controls for normal browsing. Those controls SHALL NOT affect stored goal priority. Reordering SHALL occur only via drag — the inline per-row handle at or above 768px, or the dedicated mobile reorder mode below it — never as a side effect of Sort, Group, or Type.
 
 #### Scenario: Browsing sort does not alter priority
 
 - **WHEN** the user changes Sort or Group on project detail
-- **THEN** the visible presentation changes but the stored unit order does not
+- **THEN** the visible presentation changes but the stored goal order does not
 
 #### Scenario: Type filter narrows the current project's goals
 
@@ -214,7 +214,7 @@ The detail route SHALL continue to offer status, Type, Sort, and Group controls 
 #### Scenario: Group by unit groups the current project's goals
 
 - **WHEN** the user selects Group by unit on a project's detail route
-- **THEN** that project's goals are grouped by unit without altering stored unit priority
+- **THEN** that project's goals are grouped by unit without altering stored goal priority
 
 ### Requirement: No project exists yet
 
@@ -405,7 +405,7 @@ On the detail route, each goal row's action menu SHALL offer removing that goal 
 
 ### Requirement: Project detail groups by the selected dimension
 
-Project detail SHALL render its goals grouped by the dimension selected in its Group control. The control SHALL offer no grouping, grouping by unit, and grouping by goal type. When grouping by unit or by goal type, each group SHALL carry a heading identifying it; when grouping is off, the goals SHALL render as one list with no heading. Grouping SHALL apply to whichever goals the current status filter shows, and SHALL NOT alter stored unit priority.
+Project detail SHALL render its goals grouped by the dimension selected in its Group control. The control SHALL offer no grouping, grouping by unit, and grouping by goal type. When grouping by unit or by goal type, each group SHALL carry a heading identifying it; when grouping is off, the goals SHALL render as one list with no heading. Grouping SHALL apply to whichever goals the current status filter shows, and SHALL NOT alter stored goal priority.
 
 #### Scenario: A project opens grouped by goal type
 
@@ -432,9 +432,9 @@ Project detail SHALL render its goals grouped by the dimension selected in its G
 
 #### Scenario: Grouping leaves priority untouched
 
-- **GIVEN** a project whose units are in an established priority order
+- **GIVEN** a project whose goals are in an established priority order
 - **WHEN** the user changes the Group selection
-- **THEN** the visible presentation changes and the stored unit order does not
+- **THEN** the visible presentation changes and the stored goal order does not
 
 ### Requirement: Sort orders individual goals; Group=Unit is a display-only clustering
 
@@ -466,13 +466,13 @@ When project detail is grouped by unit, the goals within each unit's visual clus
 
 ### Requirement: Historical goals stay outside the in-flight ordering
 
-Completed and Archived goals SHALL remain discoverable through the status filter, and SHALL NOT take part in the ordering that expresses the project's in-flight unit priority.
+Completed and Archived goals SHALL remain discoverable through the status filter, and SHALL NOT take part in the ordering that expresses the project's in-flight goal priority.
 
 #### Scenario: Same unit has historical goals
 
 - **GIVEN** a unit has Completed or Archived goals as well as in-flight ones
 - **WHEN** the user selects the corresponding status filter
-- **THEN** those goals are shown without taking a position in the project's in-flight unit priority ordering
+- **THEN** those goals are shown without taking a position in the project's in-flight goal priority ordering
 
 ### Requirement: The detail route's browsing controls persist across projects
 
