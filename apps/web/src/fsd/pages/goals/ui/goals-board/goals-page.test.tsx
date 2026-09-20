@@ -313,6 +313,18 @@ describe("GoalsPage", () => {
     )
   })
 
+  it("does not offer Priority in the Sort control (fix-project-priority-display)", async () => {
+    listGoals.mockResolvedValue({ goals: [] })
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-page-empty")
+
+    await user.click(screen.getByTestId("goals-sort"))
+    expect(
+      screen.queryByRole("option", { name: "goals.filters.sort.priority" })
+    ).not.toBeInTheDocument()
+  })
+
   it("shows a row for an active goal with lifecycle actions", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     renderPage()

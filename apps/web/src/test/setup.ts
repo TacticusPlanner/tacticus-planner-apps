@@ -30,4 +30,5 @@ window.HTMLElement.prototype.setPointerCapture ??= vi.fn()
 
 afterEach(() => {
   cleanup()
+  window.localStorage.clear()
 })

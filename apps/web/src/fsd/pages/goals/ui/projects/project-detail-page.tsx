@@ -22,11 +22,10 @@ import {
   GoalFilters,
   StatusFilterSelect,
   goalQueries,
-  type GoalGroupValue,
-  type GoalSortValue,
+  isGoalGroupValue,
   type GoalStatusFilterValue,
-  type GoalTypeFilterValue,
 } from "@/entities/goal"
+import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
@@ -50,9 +49,11 @@ type Tab = GoalStatusFilterValue
 /**
  * A single project's own view (project-management spec: the detail route) - its own row at the
  * top (same presentation/actions as the list route's rows), then its goal table with the shared
- * status filter, Type/Sort/Group filters, and a project-switcher `ProjectSelect` that navigates to
- * a different project's own detail route rather than changing state on this page. The route
- * param, not local state, is what project this page shows.
+ * status filter, the Group control, and a project-switcher `ProjectSelect` that navigates to a
+ * different project's own detail route rather than changing state on this page. Unlike Overview,
+ * there is no Type filter or Sort control here — every goal type is always shown, always ordered
+ * by stored priority (fix-project-priority-display). The route param, not local state, is what
+ * project this page shows.
  */
 export function ProjectDetailPage() {
   const { t } = useTranslation()
@@ -65,13 +66,14 @@ export function ProjectDetailPage() {
   const project = projects.projects.find((p) => p.projectId === projectId)
 
   const [tab, setTab] = useState<Tab>("toReach")
-  const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
-  const [sort, setSort] = useState<GoalSortValue>("updated")
-  // Goal type on arrival (project-management: "Goal type is the initial grouping") - Overview keeps
-  // "none". The route is declared without a `key`, so this initial value applies when the detail
-  // route is first opened, not on every project switch: Group persists across switches like its
-  // three sibling controls.
-  const [group, setGroup] = useState<GoalGroupValue>("type")
+  // Goal type on first-ever visit (project-management: "Goal type is the initial grouping") -
+  // Overview keeps "none". Persisted per browser so it survives navigating away and a reload, not
+  // just switching between projects while the route stays mounted.
+  const [group, setGroup] = usePersistedSelection(
+    "goals.projectDetail.group",
+    isGoalGroupValue,
+    "type"
+  )
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [mobileReorderActive, setMobileReorderActive] = useState(false)
@@ -98,12 +100,10 @@ export function ProjectDetailPage() {
     enabled: isAuthenticated,
   })
   const accountGoalTotal = accountGoalsQuery.data?.goals.length
-  const filteredAllRows = allRows.filter(
-    (row) => goalType === "all" || row.goalType === goalType
-  )
-  const filteredNonArchivedRows = nonArchivedRows.filter(
-    (row) => goalType === "all" || row.goalType === goalType
-  )
+  // Project detail always shows every goal type (fix-project-priority-display) - there is no Type
+  // filter to narrow this by, unlike Goals Overview.
+  const filteredAllRows = allRows
+  const filteredNonArchivedRows = nonArchivedRows
   const attainmentByGoalId = useGoalAttainment(
     nonArchivedRows.map((row) => row.goalId)
   )
@@ -147,21 +147,18 @@ export function ProjectDetailPage() {
           (row) => overviewMetrics.get(row.goalId)?.blockers.isBlocked
         )
       : candidateRows
-  const rows = [...baseRows].sort((left, right) => {
-    if (sort === "entity")
-      return getEntityName(left.entityType, left.entityId).localeCompare(
-        getEntityName(right.entityType, right.entityId)
-      )
-    if (sort === "type") return left.goalType.localeCompare(right.goalType)
-    if (sort === "status") return left.status.localeCompare(right.status)
-    if (sort === "updated") return right.updatedAt.localeCompare(left.updatedAt)
-    return 0
-  })
+  // Project detail's goal list is always ordered by stored priority (fix-project-priority-display)
+  // - there is no Sort control to pick a different order, unlike Goals Overview.
+  const rows = [...baseRows].sort(
+    (left, right) =>
+      (left.priority ?? Number.MAX_SAFE_INTEGER) -
+      (right.priority ?? Number.MAX_SAFE_INTEGER)
+  )
   const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
-  // Group=Unit is a display-only clustering over the flat, priority-ordered goal list now — a
-  // cluster's rows keep whatever order Sort already put them in, not a separately re-derived
-  // dependency-first order (add-inline-goal-reprioritize: "Sort orders individual goals; Group=Unit
-  // is a display-only clustering").
+  // Group=Unit is a display-only clustering over the flat, priority-ordered goal list — a cluster's
+  // rows keep their priority order, not a separately re-derived dependency-first order
+  // (fix-project-priority-display: "Group=Unit clusters the fixed priority order, it doesn't
+  // reorder it").
   const rowGroups = groupRows(displayRows, group)
   const counts = {
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
@@ -244,12 +241,10 @@ export function ProjectDetailPage() {
       </div>
 
       <GoalFilters
-        goalType={goalType}
         group={group}
-        onGoalTypeChange={setGoalType}
         onGroupChange={setGroup}
-        onSortChange={setSort}
-        sort={sort}
+        showSort={false}
+        showTypeFilter={false}
       />
 
       <ProjectDetailGoals

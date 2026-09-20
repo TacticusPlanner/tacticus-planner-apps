@@ -21,11 +21,12 @@ import {
 import {
   GoalFilters,
   StatusFilterSelect,
-  type GoalGroupValue,
+  isGoalGroupValue,
   type GoalSortValue,
   type GoalStatusFilterValue,
   type GoalTypeFilterValue,
 } from "@/entities/goal"
+import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
@@ -58,7 +59,13 @@ export function GoalsPage() {
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
   const [sort, setSort] = useState<GoalSortValue>("updated")
-  const [group, setGroup] = useState<GoalGroupValue>("none")
+  // Persisted per browser (see project detail's own group state for the same reasoning) so it
+  // survives navigating away and a reload instead of resetting to "none" every time.
+  const [group, setGroup] = usePersistedSelection(
+    "goals.overview.group",
+    isGoalGroupValue,
+    "none"
+  )
   const [settingsOpen, setSettingsOpen] = useState(false)
   // Membership as a filter dimension, not a project selection: local state only, deliberately
   // unconnected to the Current-plan preference Dailies and Insights calculate against, so browsing

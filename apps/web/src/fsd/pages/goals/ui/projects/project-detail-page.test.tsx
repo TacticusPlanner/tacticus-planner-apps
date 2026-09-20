@@ -526,14 +526,14 @@ describe("ProjectDetailPage", () => {
     expect(await screen.findByText("goals.empty.filtered")).toBeInTheDocument()
   })
 
-  it("offers the same Type/Sort/Group filters as Overview", async () => {
+  it("offers only Group from the shared filter row, unlike Overview's Type/Sort/Group (fix-project-priority-display)", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({ goals: [] })
     renderPage("proj-a")
 
     await screen.findByTestId("project-detail-page")
-    expect(screen.getByTestId("goals-type-filter")).toBeInTheDocument()
-    expect(screen.getByTestId("goals-sort")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-type-filter")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
     expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
   })
 
@@ -590,7 +590,7 @@ describe("ProjectDetailPage", () => {
     expect(memberships).toHaveTextContent("Project B")
   })
 
-  it("keeps every row's drag handle available regardless of how the list is sorted", async () => {
+  it("keeps every row's drag handle available regardless of how the list is grouped", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
@@ -604,12 +604,9 @@ describe("ProjectDetailPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
 
-    await user.click(screen.getByTestId("goals-sort"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
-    )
+    await selectGroup(user, "goals.filters.groupByUnit")
 
-    await screen.findByTestId("goals-list-table")
+    await screen.findAllByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
   })
 
@@ -779,7 +776,8 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     await screen.findAllByTestId("goals-list-table")
-    // Sort is "most recently updated" - goal-rank sorts first ungrouped...
+    // Sort defaults to Priority (fix-project-priority-display) - goal-rank (priority 1) sorts
+    // first ungrouped...
     expect(goalOrderIn(screen.getByTestId("project-detail-goals"))).toEqual([
       "goal-rank",
       "goal-ascension",
@@ -795,22 +793,12 @@ describe("ProjectDetailPage", () => {
     ])
   })
 
-  it("reorders the unit blocks themselves when Sort changes", async () => {
+  it("orders unit clusters by their lowest-priority member (fix-project-priority-display)", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
       goals: [
-        {
-          goal: goal({ goalId: "goal-1", updatedAt: "2026-01-01T00:00:00Z" }),
-          priority: 1,
-        },
-        {
-          goal: goal({
-            goalId: "goal-2",
-            entityId: "hero2",
-            updatedAt: "2026-05-01T00:00:00Z",
-          }),
-          priority: 2,
-        },
+        { goal: goal({ goalId: "goal-1" }), priority: 2 },
+        { goal: goal({ goalId: "goal-2", entityId: "hero2" }), priority: 1 },
       ],
     })
     const user = userEvent.setup()
@@ -818,52 +806,30 @@ describe("ProjectDetailPage", () => {
 
     await screen.findAllByTestId("goals-list-table")
     await selectGroup(user, "goals.filters.groupByUnit")
+
+    // hero2's goal (priority 1) outranks hero1's (priority 2), so hero2's cluster leads.
     expect(groupHeadings()).toEqual(["hero2", "hero1"])
-
-    await user.click(screen.getByTestId("goals-sort"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
-    )
-
-    expect(groupHeadings()).toEqual(["hero1", "hero2"])
   })
 
-  it("orders goals by the Sort selection when grouped by type", async () => {
+  it("sorts by Priority by default, with a historical goal's higher priority number following in-flight ones", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({
+      // Two-zone shape (add-inline-goal-reprioritize): a historical goal's priority always lands
+      // after every in-flight goal's, exactly as the API renumbers it.
       goals: [
         {
-          goal: goal({ goalId: "goal-1", updatedAt: "2026-01-01T00:00:00Z" }),
-          priority: 1,
+          goal: goal({ goalId: "goal-completed", status: "Completed" }),
+          priority: 4,
         },
-        {
-          goal: goal({
-            goalId: "goal-2",
-            entityId: "hero2",
-            updatedAt: "2026-05-01T00:00:00Z",
-          }),
-          priority: 2,
-        },
+        { goal: goal({ goalId: "goal-2", entityId: "hero2" }), priority: 2 },
+        { goal: goal({ goalId: "goal-1" }), priority: 1 },
       ],
     })
-    const user = userEvent.setup()
     renderPage("proj-a")
 
-    const heading = await screen.findByRole("heading", {
-      name: "goals.create.goalTypes.Rank",
-    })
-    expect(blockFor(heading)).toEqual(["goal-2", "goal-1"])
-
-    await user.click(screen.getByTestId("goals-sort"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
-    )
-
     expect(
-      blockFor(
-        screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
-      )
-    ).toEqual(["goal-1", "goal-2"])
+      goalOrderIn(await screen.findByTestId("project-detail-goals"))
+    ).toEqual(["goal-1", "goal-2", "goal-completed"])
   })
 
   it("shows a unit's historical goals through the status filter without a drag handle of their own", async () => {
@@ -940,7 +906,7 @@ describe("ProjectDetailPage", () => {
     ])
   })
 
-  it("carries the status, Type, Sort and Group selections to the next project opened through the switcher", async () => {
+  it("carries the status and Group selections to the next project opened through the switcher", async () => {
     listProjects.mockResolvedValue({
       projects: [
         project(),
@@ -1004,16 +970,6 @@ describe("ProjectDetailPage", () => {
     await user.click(
       await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
     )
-    await user.click(screen.getByTestId("goals-type-filter"))
-    await user.click(
-      await screen.findByRole("option", {
-        name: "goals.create.goalTypes.Ability",
-      })
-    )
-    await user.click(screen.getByTestId("goals-sort"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.filters.sort.entity" })
-    )
     await selectGroup(user, "goals.filters.groupByUnit")
 
     await user.click(screen.getByTestId("projects-goal-project-select"))
@@ -1022,8 +978,8 @@ describe("ProjectDetailPage", () => {
     await vi.waitFor(() =>
       expect(listProjectGoals).toHaveBeenCalledWith("proj-b")
     )
-    // Paused + Ability leaves only hero3 and hero9, unit-grouped, ordered by unit name.
-    await vi.waitFor(() => expect(groupHeadings()).toEqual(["hero3", "hero9"]))
+    // Paused leaves only hero9 (priority 2) and hero3 (priority 3), unit-grouped, in priority order.
+    await vi.waitFor(() => expect(groupHeadings()).toEqual(["hero9", "hero3"]))
   })
 
   it("changing the Group selection sends no unit-order request", async () => {
