@@ -448,7 +448,9 @@
       "progress": "Progreso",
       "remaining": "Restante",
       "status": "Estado · Fecha fin",
-      "actions": "Acciones"
+      "actions": "Acciones",
+      "reorder": "Reordenar",
+      "reorderHandle": "Arrastrar {{entity}} para reordenar"
     },
     "status": {
       "Draft": "Borrador",
@@ -521,11 +523,6 @@
       "noOtherProjects": "Aún no hay otros proyectos disponibles.",
       "archivedProjects": "Proyectos archivados ({{count}})",
       "backToProjects": "Volver a proyectos",
-      "reprioritizeUnits": "Repriorizar unidades",
-      "reprioritizeUnitsDescription": "Arrastra las unidades al orden de prioridad. Al mover una unidad se mueven todos sus objetivos; los objetivos internos se ordenan automáticamente.",
-      "dragUnit": "Arrastrar {{unit}} para repriorizar",
-      "reprioritizeStaleError": "Este proyecto cambió mientras la repriorización estaba abierta. Revisa las unidades actuales e inténtalo de nuevo.",
-      "reprioritizeSaveError": "No se pudo guardar el orden de unidades. Tu borrador sigue aquí; revísalo e inténtalo de nuevo.",
       "unitGoalSummary": "{{units}} unidades · {{goals}} objetivos",
       "reachedSummary": "{{count}} alcanzados",
       "blockedSummary": "{{count}} bloqueados",
@@ -551,7 +548,9 @@
       "currentPlanNote": "El plan actual es el proyecto que Diarias y Análisis usan por defecto. No activa ni pausa objetivos: los objetivos se pausan y se reanudan de uno en uno.",
       "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
-      "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo."
+      "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
+      "reorderGoals": "Reordenar",
+      "reorderDone": "Listo"
     },
     "toasts": {
       "statusChanged": "Objetivo actualizado.",
@@ -998,8 +997,8 @@
           "content": "Añade varios objetivos existentes a este proyecto de una vez: busca entre tus objetivos, elige los que quieras y guarda en un solo paso."
         },
         "reprioritize": {
-          "title": "Priorizar por unidad",
-          "content": "Reordena bloques de Personajes y Máquinas de Guerra. Todos los objetivos de una unidad se mueven juntos; las dependencias fijan su orden interno."
+          "title": "Prioriza tus objetivos",
+          "content": "Arrastra cualquier objetivo para cambiar su prioridad. En el móvil, toca primero «Reordenar» para entrar en el modo de reordenación."
         },
         "selector": {
           "title": "Elige un proyecto",

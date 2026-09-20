@@ -67,4 +67,27 @@ describe("GoalFilters", () => {
     )
     expect(onGroupChange).toHaveBeenCalledWith("unit")
   })
+
+  it("renders Type and Sort by default", () => {
+    renderFilters()
+
+    expect(screen.getByTestId("goals-type-filter")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-sort")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
+  })
+
+  it("hides Type and Sort when showTypeFilter/showSort are false (fix-project-priority-display)", () => {
+    render(
+      <GoalFilters
+        group="none"
+        onGroupChange={vi.fn()}
+        showSort={false}
+        showTypeFilter={false}
+      />
+    )
+
+    expect(screen.queryByTestId("goals-type-filter")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
+    expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
+  })
 })

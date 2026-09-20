@@ -1,3 +1,11 @@
+import type { GoalGroupValue } from "../ui/goal-filters"
+
+/** Type guard for a value read back from persisted storage (`usePersistedSelection`) — callers
+ *  that remember the user's Group selection across visits use this to validate what they read. */
+export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
+  return value === "none" || value === "unit" || value === "type"
+}
+
 // Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).

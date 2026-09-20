@@ -5,7 +5,6 @@ import type {
   ProjectGoalEntry,
   ProjectGoalSummary,
   ProjectSummary,
-  ProjectUnitKey,
   UpdateProjectRequest,
 } from "../model/types"
 
@@ -45,13 +44,10 @@ export function updateProjectGoals(
   )
 }
 
-export function updateProjectUnitOrder(
-  projectId: string,
-  units: ProjectUnitKey[]
-) {
+export function updateProjectGoalOrder(projectId: string, goalIds: string[]) {
   return apiPut<{ goals: ProjectGoalEntry[] }>(
-    `/api/v1/me/projects/${projectId}/unit-order`,
-    { body: { units } }
+    `/api/v1/me/projects/${projectId}/goal-order`,
+    { body: { goalIds } }
   )
 }
 

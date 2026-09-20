@@ -22,6 +22,13 @@ type Props = {
   /** The project holds no goals at all, as opposed to a filter hiding the ones it holds. */
   projectIsEmpty: boolean
   rowGroups: RowGroup[]
+  /** Whether the goal rows in this project's detail view are reorderable at all
+   *  (add-inline-goal-reprioritize) — false on every other surface (Goals Overview never reorders). */
+  reorderEnabled?: boolean
+  mobileReorderActive?: boolean
+  onReorder?: (orderedGoalIds: string[], movedGoalId: string) => void
+  reorderPending?: boolean
+  levelGoalIdByParent?: ReadonlyMap<string, string>
 }
 
 /**
@@ -42,6 +49,11 @@ export function ProjectDetailGoals({
   project,
   projectIsEmpty,
   rowGroups,
+  reorderEnabled = false,
+  mobileReorderActive = false,
+  onReorder,
+  reorderPending = false,
+  levelGoalIdByParent,
 }: Props) {
   const { t } = useTranslation()
 
@@ -95,11 +107,15 @@ export function ProjectDetailGoals({
               <GoalsList
                 actions={actions}
                 estimates={estimates}
+                levelGoalIdByParent={levelGoalIdByParent}
                 metrics={metrics}
+                mobileReorderActive={mobileReorderActive}
+                onReorder={onReorder}
                 onView={onView}
                 potentialProgress={potentialProgress}
                 project={project}
-                reorderEnabled={false}
+                reorderEnabled={reorderEnabled}
+                reorderPending={reorderPending}
                 rows={rowGroup.rows}
               />
             </section>

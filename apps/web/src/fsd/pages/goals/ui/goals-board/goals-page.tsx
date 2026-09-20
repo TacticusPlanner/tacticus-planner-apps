@@ -21,15 +21,17 @@ import {
 import {
   GoalFilters,
   StatusFilterSelect,
-  type GoalGroupValue,
+  isGoalGroupValue,
   type GoalSortValue,
   type GoalStatusFilterValue,
   type GoalTypeFilterValue,
 } from "@/entities/goal"
+import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
+import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalEstimate } from "../../model/estimate/use-goal-estimate"
@@ -57,7 +59,13 @@ export function GoalsPage() {
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
   const [sort, setSort] = useState<GoalSortValue>("updated")
-  const [group, setGroup] = useState<GoalGroupValue>("none")
+  // Persisted per browser (see project detail's own group state for the same reasoning) so it
+  // survives navigating away and a reload instead of resetting to "none" every time.
+  const [group, setGroup] = usePersistedSelection(
+    "goals.overview.group",
+    isGoalGroupValue,
+    "none"
+  )
   const [settingsOpen, setSettingsOpen] = useState(false)
   // Membership as a filter dimension, not a project selection: local state only, deliberately
   // unconnected to the Current-plan preference Dailies and Insights calculate against, so browsing
@@ -159,7 +167,8 @@ export function GoalsPage() {
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
       .length,
   }
-  const rowGroups = groupRows(rows, group)
+  const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
+  const rowGroups = groupRows(displayRows, group)
 
   const isLoading = selectedGoals.isLoading
   const fetchError =
@@ -320,6 +329,7 @@ export function GoalsPage() {
             ) : null}
             <GoalsList
               actions={goalActions}
+              levelGoalIdByParent={levelGoalIdByParent}
               metrics={overviewMetrics}
               onView={setDetailGoalId}
               reorderEnabled={false}

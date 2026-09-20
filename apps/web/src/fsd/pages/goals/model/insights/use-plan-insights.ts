@@ -35,7 +35,17 @@ const ACTIVE_STATUSES = new Set(["Active", "Paused"])
 
 type FetchState =
   | { status: "idle" }
-  | { status: "success"; key: string; result: PlanInsightsResult }
+  | {
+      status: "success"
+      key: string
+      /** The goal-id set (plus project) this result was computed for, captured separately from
+       *  `key` (which also folds in priority/inventory) — see `idSetKey` below: a priority-only
+       *  change (e.g. a drag reorder, which touches every in-flight member's priority at once)
+       *  shouldn't blank the display while it recomputes, only a change to which goals are even
+       *  being planned for should. */
+      idSetKey: string
+      result: PlanInsightsResult
+    }
 
 /**
  * The Insights view's aggregation across a project's still-active goals (plan §16 phase 7): total
@@ -80,6 +90,12 @@ export function usePlanInsights(
   const memberKey = activeMembers
     .map((member) => `${member.goal.goalId}:${member.priority}`)
     .join(",")
+  // Goal-id set only, no priority — a reorder changes every in-flight member's priority at once,
+  // which would otherwise blank the whole display on every drag while `calculationKey` recomputes.
+  const idSetKey = `${projectId}:${activeMembers
+    .map((member) => member.goal.goalId)
+    .sort()
+    .join(",")}`
   const calculationKey = `${memberKey}:${JSON.stringify({
     inventoryUpgrades,
     inventoryOrbs,
@@ -204,7 +220,12 @@ export function usePlanInsights(
             shops,
           })
 
-          setFetchState({ status: "success", key: calculationKey, result })
+          setFetchState({
+            status: "success",
+            key: calculationKey,
+            idSetKey,
+            result,
+          })
         }
       )
       .catch(() => {
@@ -229,10 +250,17 @@ export function usePlanInsights(
 
   const isCurrent =
     fetchState.status === "success" && fetchState.key === calculationKey
+  // Same goal-id set as the last successful result, just recomputing (priority/inventory changed)
+  // — keep showing it instead of blanking to empty, so a reorder doesn't flash the Progress/Done-by
+  // display to nothing while `calculationKey` catches up.
+  const showsSameGoalSet =
+    fetchState.status === "success" && fetchState.idSetKey === idSetKey
 
   return {
     result:
-      hasQuery && isCurrent ? fetchState.result : EMPTY_PLAN_INSIGHTS_RESULT,
+      hasQuery && (isCurrent || showsSameGoalSet)
+        ? fetchState.result
+        : EMPTY_PLAN_INSIGHTS_RESULT,
     loading: hasQuery && (!serverDataReady || !isCurrent),
   }
 }

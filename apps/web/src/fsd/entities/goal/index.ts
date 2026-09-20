@@ -24,6 +24,7 @@ export type {
   GoalSortValue,
   GoalTypeFilterValue,
 } from "./ui/goal-filters"
+export { isGoalGroupValue } from "./model/types"
 export type {
   AbilityTarget,
   CombinedGoalSpec,

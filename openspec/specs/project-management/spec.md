@@ -196,25 +196,24 @@ The project switcher SHALL be integrated into the detail header/navigation area.
 - **WHEN** the detail header renders
 - **THEN** no other project row is available to act on without first switching routes
 
-### Requirement: The detail route shares Overview's goal filters
+### Requirement: Project detail always shows every type in a fixed priority order
 
-The detail route SHALL continue to offer status, Type, Sort, and Group controls for normal browsing. Those controls SHALL NOT affect stored unit priority. Unit reprioritization SHALL occur only in its dedicated mode.
+The detail route SHALL offer the status filter and the Group control for normal browsing; it SHALL NOT offer a Type filter or a Sort control. Every in-flight and historical goal in the project is shown regardless of type, subject only to the status filter, and the project's goals are always ordered by their real stored per-goal priority — the one order the drag handles and mobile reorder mode actually manipulate, with no other ordering ever available to obscure it. The Group control SHALL NOT affect stored goal priority. Reordering SHALL occur only via drag — the inline per-row handle at or above 768px, or the dedicated mobile reorder mode below it — never as a side effect of Group.
 
-#### Scenario: Browsing sort does not alter priority
+#### Scenario: No Type filter is offered
 
-- **WHEN** the user changes Sort or Group on project detail
-- **THEN** the visible presentation changes but the stored unit order does not
+- **WHEN** the user opens a project's detail route
+- **THEN** no Type filter control is rendered, and goals of every type are shown (subject only to the status filter and Group)
 
-#### Scenario: Type filter narrows the current project's goals
+#### Scenario: No Sort control is offered
 
-- **GIVEN** a project with goals of multiple types, shown on its detail route
-- **WHEN** the user selects a specific Type filter
-- **THEN** only that project's goals of the selected type are shown
+- **WHEN** the user opens a project's detail route
+- **THEN** no Sort control is rendered — the goal list is always ordered by stored priority, with no way to change that ordering from this route
 
 #### Scenario: Group by unit groups the current project's goals
 
 - **WHEN** the user selects Group by unit on a project's detail route
-- **THEN** that project's goals are grouped by unit without altering stored unit priority
+- **THEN** that project's goals are grouped by unit without altering stored goal priority
 
 ### Requirement: No project exists yet
 
@@ -255,67 +254,72 @@ Every project card SHALL show color, name, description when present, and availab
 - **WHEN** one project's summary fails
 - **THEN** only that card shows unavailable/retry state
 
-### Requirement: Users prioritize units rather than goals
-
-Project detail SHALL provide a dedicated Reprioritize units action for projects with at least two in-flight unit blocks. The mode SHALL let the user drag whole unit blocks, save once, or cancel. Save SHALL submit a complete permutation containing every current Active/Paused Character or MoW unit exactly once and SHALL reject duplicate or missing unit keys locally. If the API rejects a stale draft, the mode SHALL preserve that draft and show a recoverable error. Normal goal rows SHALL not render move-up/down priority controls or numeric priority inputs.
-
-#### Scenario: Moving a unit moves all its goals
-
-- **GIVEN** Ragnar has multiple in-flight goals
-- **WHEN** the user drags Ragnar below Aun'shi and saves
-- **THEN** every Ragnar goal follows every Aun'shi goal in the canonical project order
-
-#### Scenario: Cancel discards local order
-
-- **WHEN** the user reorders units and cancels
-- **THEN** stored priority remains unchanged
-
-#### Scenario: Stale draft remains recoverable
-
-- **GIVEN** project membership changed after reprioritization opened
-- **WHEN** the user attempts to save an incomplete or stale unit permutation
-- **THEN** the draft remains visible and a recoverable error explains that the project changed
-
-#### Scenario: Reordering is unavailable with fewer than two units
-
-- **GIVEN** zero or one in-flight unit block exists
-- **WHEN** project detail renders
-- **THEN** Reprioritize units is unavailable or omitted
-
-### Requirement: Goal order inside a unit is automatic
-
-Within a unit block, prerequisite dependencies SHALL precede dependent goals. Unrelated existing goals SHALL preserve relative order; a new goal SHALL follow its prerequisites and otherwise append to the block. The user SHALL not manually reorder goals inside a unit.
-
-#### Scenario: Dependency precedes target
-
-- **GIVEN** a Rank goal depends on an Ascension goal for the same unit
-- **WHEN** canonical order is produced
-- **THEN** Ascension precedes Rank regardless of their prior numeric values
-
-#### Scenario: New unrelated goal joins its unit
-
-- **GIVEN** a unit already has goals in a project
-- **WHEN** a new unrelated goal type is added
-- **THEN** it appends inside that unit block without changing the unit's position
-
-### Requirement: Unit order drives priority-sensitive calculations
-
-The ordered project-goal list consumed by Dailies, Raids Plan, Insights, and farming estimates SHALL be the same flattened unit order shown by project detail. No consumer SHALL independently sort it into a different execution order.
-
-#### Scenario: Shared inventory follows unit order
-
-- **GIVEN** two units need the same resource and available inventory covers only the first unit
-- **WHEN** the plan is calculated
-- **THEN** inventory is applied to the higher-priority unit's goals first
-
 ### Requirement: Project management is deliberately responsive
 
-At or above 768px, project cards SHALL use a comparison-friendly grid and reprioritization SHALL use a focused dialog/Sheet. Below 768px, cards and headers SHALL stack, primary actions SHALL remain labeled and touch-sized, and reprioritization SHALL use a full-height touch-friendly Sheet.
+At or above 768px, project cards SHALL use a comparison-friendly grid and each goal row SHALL show an inline drag handle for direct reordering. Below 768px, cards and headers SHALL stack, primary actions SHALL remain labeled and touch-sized, and reordering SHALL use a dedicated reorder mode (see "Mobile reordering uses a dedicated reorder mode" below) rather than a dialog or Sheet.
+
+#### Scenario: Desktop drag handle
+
+- **WHEN** project detail renders at or above 768px
+- **THEN** each goal row shows a drag handle usable to reposition that goal directly, with no separate reorder mode or trigger required
 
 #### Scenario: Mobile unit drag surface
 
 - **WHEN** reprioritization opens below 768px
-- **THEN** each unit has a clearly labeled, touch-sized drag handle and the full list remains scrollable
+- **THEN** there is no dedicated unit-drag Sheet — the reorder mode described below collapses cards in place and each collapsed card, not a unit block, has its own clearly labeled, touch-sized drag handle, and the full list remains scrollable
+
+#### Scenario: Mobile reorder mode replaces the unit-drag Sheet
+
+- **WHEN** the user activates reordering below 768px
+- **THEN** the reorder mode described below opens in place, not a full-height Sheet containing unit drag handles
+
+### Requirement: Goals are reordered individually via inline drag
+
+On a viewport at or above 768px, every in-flight goal row on the project detail route SHALL show a drag handle. Dragging a row directly changes its position in the project's flat priority order. Each completed drag SHALL commit immediately — there SHALL be no separate save step and no confirmation dialog. A goal MAY be dragged to any position, including ahead of a goal it `DependsOn` that has not yet been reached; that goal's blocked/restricted state is unaffected by its position.
+
+#### Scenario: Dragging a goal commits immediately
+
+- **GIVEN** a project detail route with at least two in-flight goals
+- **WHEN** the user drags one goal row to a new position and releases it
+- **THEN** the new priority order is saved without any further confirmation step
+
+#### Scenario: A goal can be moved ahead of its own unreached prerequisite
+
+- **GIVEN** a Rank goal that `DependsOn` an unreached Ascension goal for the same unit
+- **WHEN** the user drags the Rank goal above the Ascension goal
+- **THEN** the drag succeeds, and the Rank goal's Restricted indicator (from `goal-blocker-reasons`) remains present, unaffected by the new position
+
+### Requirement: Mobile reordering uses a dedicated reorder mode
+
+Below 768px, the project detail route SHALL offer a button that toggles a reorder mode. Activating it SHALL collapse every goal card to its minimal identifying information (at least the unit's name/avatar and the goal's from → to representation) and make each card directly draggable in place. There SHALL be no separate dialog, Sheet, or Save action — each completed drag SHALL commit immediately, the same as the desktop drag handle. Deactivating the reorder mode (via the same button, or navigating away) SHALL restore cards to their full, non-reorderable presentation.
+
+#### Scenario: Entering reorder mode collapses cards
+
+- **GIVEN** a project detail route below 768px with at least two in-flight goals
+- **WHEN** the user activates the reorder button
+- **THEN** every visible goal card collapses to its minimal information and becomes draggable
+
+#### Scenario: A drag in reorder mode commits without a Save step
+
+- **GIVEN** reorder mode is active
+- **WHEN** the user drags one collapsed card to a new position
+- **THEN** the new order is saved immediately, with no Save button and no confirmation step
+
+#### Scenario: Exiting reorder mode restores full cards
+
+- **GIVEN** reorder mode is active
+- **WHEN** the user deactivates it
+- **THEN** every card returns to its full, non-reorderable presentation
+
+### Requirement: Goal order drives priority-sensitive calculations
+
+The ordered project-goal list consumed by Dailies, Raids Plan, Insights, and farming estimates SHALL be the same flat, per-goal priority order shown by project detail. No consumer SHALL independently sort it into a different execution order.
+
+#### Scenario: Shared inventory follows goal order across units
+
+- **GIVEN** two goals for different units need the same resource and available inventory covers only the first goal in priority order
+- **WHEN** the plan is calculated
+- **THEN** inventory is applied to the higher-priority goal first, regardless of which unit it belongs to
 
 ### Requirement: The detail route assembles membership in bulk
 
@@ -400,7 +404,7 @@ On the detail route, each goal row's action menu SHALL offer removing that goal 
 
 ### Requirement: Project detail groups by the selected dimension
 
-Project detail SHALL render its goals grouped by the dimension selected in its Group control. The control SHALL offer no grouping, grouping by unit, and grouping by goal type. When grouping by unit or by goal type, each group SHALL carry a heading identifying it; when grouping is off, the goals SHALL render as one list with no heading. Grouping SHALL apply to whichever goals the current status filter shows, and SHALL NOT alter stored unit priority.
+Project detail SHALL render its goals grouped by the dimension selected in its Group control. The control SHALL offer no grouping, grouping by unit, and grouping by goal type. When grouping by unit or by goal type, each group SHALL carry a heading identifying it; when grouping is off, the goals SHALL render as one list with no heading. Grouping SHALL apply to whichever goals the current status filter shows, and SHALL NOT alter stored goal priority.
 
 #### Scenario: A project opens grouped by goal type
 
@@ -427,45 +431,51 @@ Project detail SHALL render its goals grouped by the dimension selected in its G
 
 #### Scenario: Grouping leaves priority untouched
 
-- **GIVEN** a project whose units are in an established priority order
+- **GIVEN** a project whose goals are in an established priority order
 - **WHEN** the user changes the Group selection
-- **THEN** the visible presentation changes and the stored unit order does not
+- **THEN** the visible presentation changes and the stored goal order does not
 
-### Requirement: Sort orders unit blocks rather than their contents
+### Requirement: Group=Unit clusters the fixed priority order, it doesn't reorder it
 
-When project detail is grouped by unit, the Sort selection SHALL determine the order of the unit blocks, and the goals inside each block SHALL retain their automatic dependency-first order regardless of the Sort selection. Under every other grouping dimension, Sort SHALL order the goals as it does elsewhere.
+Project detail's goals are always ordered by stored priority; grouping (None, by unit, or by goal type) is purely a rendering choice layered over that fixed order, never a separately computed order and never a way to change it. When grouped by unit, the goals within each unit's visual cluster SHALL render in their existing priority order, and the clusters themselves SHALL appear in the order their first (lowest-priority) member would appear in the ungrouped list. Grouping SHALL NOT alter the stored per-goal priority order.
 
-#### Scenario: A prerequisite stays above its dependent goal
+#### Scenario: A unit's goals keep their priority order inside its cluster
 
-- **GIVEN** a unit whose Rank goal depends on its Ascension goal, and the Ascension goal was updated less recently
-- **WHEN** the user groups by unit and sorts by most recently updated
-- **THEN** the Ascension goal still renders above the Rank goal inside that unit's block
+- **GIVEN** a project grouped by unit, where one unit has two goals whose priority order is A then B
+- **WHEN** that unit's cluster renders
+- **THEN** goal A renders above goal B inside the cluster
 
-#### Scenario: Sort reorders the blocks themselves
+#### Scenario: Drag is confined to a goal's own cluster while grouped by unit
 
-- **GIVEN** a project grouped by unit
-- **WHEN** the user changes the Sort selection
-- **THEN** the order of the unit blocks changes accordingly
+- **GIVEN** a project grouped by unit, with clusters for units X and Y
+- **WHEN** the user drags a goal belonging to unit X
+- **THEN** the drag only reorders that goal among the other goals already in unit X's cluster — there is no drop target outside unit X's cluster, so the drag cannot move the goal into unit Y's cluster or to a position between unit Y's goals; a true cross-unit reorder requires switching to no grouping or Group by type first
 
-#### Scenario: Sort applies normally without unit grouping
+#### Scenario: Cluster order follows priority order
+
+- **GIVEN** a project grouped by unit, where unit X's highest-priority goal outranks (has a lower priority number than) any of unit Y's goals
+- **WHEN** the clusters render
+- **THEN** unit X's cluster appears before unit Y's cluster
+
+#### Scenario: Priority order applies directly without unit grouping
 
 - **GIVEN** a project grouped by goal type or not grouped
-- **WHEN** the user changes the Sort selection
-- **THEN** the goals are ordered by that selection
+- **WHEN** its goals render
+- **THEN** they appear in stored priority order
 
 ### Requirement: Historical goals stay outside the in-flight ordering
 
-Completed and Archived goals SHALL remain discoverable through the status filter, and SHALL NOT take part in the ordering that expresses the project's in-flight unit priority.
+Completed and Archived goals SHALL remain discoverable through the status filter, and SHALL NOT take part in the ordering that expresses the project's in-flight goal priority.
 
 #### Scenario: Same unit has historical goals
 
 - **GIVEN** a unit has Completed or Archived goals as well as in-flight ones
 - **WHEN** the user selects the corresponding status filter
-- **THEN** those goals are shown without taking a position in the project's in-flight unit priority ordering
+- **THEN** those goals are shown without taking a position in the project's in-flight goal priority ordering
 
 ### Requirement: The detail route's browsing controls persist across projects
 
-The status, Type, Sort, and Group selections SHALL persist when the user switches to another project through the detail route's project switcher, so that a chosen way of reading a project carries across projects. Goal type SHALL be the Group selection when the detail route is first opened.
+The status and Group selections SHALL persist when the user switches to another project through the detail route's project switcher, so that a chosen way of reading a project carries across projects. Goal type SHALL be the Group selection the first time the detail route is opened in a browser, and persists across page reloads after that (not only within the current session).
 
 #### Scenario: Group selection carries to the next project
 
@@ -475,7 +485,7 @@ The status, Type, Sort, and Group selections SHALL persist when the user switche
 
 #### Scenario: Goal type is the initial grouping
 
-- **GIVEN** the user has not changed the Group selection in this session
+- **GIVEN** the user has never changed the Group selection in this browser
 - **WHEN** they open a project's detail route
 - **THEN** its goals are grouped by goal type
 
