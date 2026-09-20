@@ -69,6 +69,8 @@ function GoalsTable({
   reorderPending = false,
   levelGoalIdByParent,
   project,
+  reachedByGoalId,
+  cascadeContext,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -261,10 +263,12 @@ function GoalsTable({
                   >
                     <GoalRowActions
                       actions={actions}
+                      cascadeContext={cascadeContext}
                       onOpenChange={(open) => {
                         if (open) setOpenPopoverGoalId(null)
                       }}
                       project={project}
+                      reached={reachedByGoalId?.get(row.goalId) ?? false}
                       row={row}
                     />
                   </div>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { FolderKanban, Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -40,6 +40,7 @@ import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalsList } from ".//goals-list"
+import { buildCascadeContext } from "./goal-row-utils"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
@@ -81,34 +82,53 @@ export function GoalsPage() {
   const selectedGoals = tab === "archived" ? archivedGoals : nonArchivedGoals
   const refreshCurrentView = selectedGoals.retry
 
-  const nonArchivedGoalIds =
-    nonArchivedGoals.fetchState.status === "success"
-      ? nonArchivedGoals.fetchState.goals.map((goal) => goal.goalId)
-      : []
+  const nonArchivedGoalIds = useMemo(
+    () =>
+      nonArchivedGoals.fetchState.status === "success"
+        ? nonArchivedGoals.fetchState.goals.map((goal) => goal.goalId)
+        : [],
+    [nonArchivedGoals.fetchState]
+  )
   // Drives the "Unfulfilled" / "Reached" split (plan §3) — computed from synced player
   // progression, not the goal's lifecycle `status`. Archived goals are excluded: attainment isn't
   // meaningful once a goal has been taken out of active planning.
   const attainmentByGoalId = useGoalAttainment(nonArchivedGoalIds)
   const isReached = (goalId: string) =>
     attainmentByGoalId.get(goalId)?.reached ?? false
+  const reachedByGoalId = useMemo(
+    () =>
+      new Map(
+        nonArchivedGoalIds.map((id) => [
+          id,
+          attainmentByGoalId.get(id)?.reached ?? false,
+        ])
+      ),
+    [nonArchivedGoalIds, attainmentByGoalId]
+  )
 
   const goalActions = useGoalActions()
   const { estimate: detailEstimate } = useGoalEstimate(detailGoalId)
 
-  const nonArchivedRows =
-    nonArchivedGoals.fetchState.status === "success"
-      ? nonArchivedGoals.fetchState.goals.map((goal) =>
-          goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
-        )
-      : []
-  const archivedRows =
-    archivedGoals.fetchState.status === "success"
-      ? archivedGoals.fetchState.goals
-          .filter((goal) => goal.status === "Archived")
-          .map((goal) =>
+  const nonArchivedRows = useMemo(
+    () =>
+      nonArchivedGoals.fetchState.status === "success"
+        ? nonArchivedGoals.fetchState.goals.map((goal) =>
             goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
           )
-      : []
+        : [],
+    [nonArchivedGoals.fetchState, projectsByGoalId]
+  )
+  const archivedRows = useMemo(
+    () =>
+      archivedGoals.fetchState.status === "success"
+        ? archivedGoals.fetchState.goals
+            .filter((goal) => goal.status === "Archived")
+            .map((goal) =>
+              goalRowFromSummary(goal, projectsByGoalId.get(goal.goalId))
+            )
+        : [],
+    [archivedGoals.fetchState, projectsByGoalId]
+  )
   const matchesFilters = (row: GoalRow) =>
     (goalType === "all" || row.goalType === goalType) &&
     (projectFilter === ALL_PROJECTS ||
@@ -169,6 +189,12 @@ export function GoalsPage() {
   }
   const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
   const rowGroups = groupRows(displayRows, group)
+  // Built from every account-wide row (both fetched queries, not the filtered/sorted `rows`), so a
+  // prerequisite's status and dependent count are known regardless of the current tab/filter/sort.
+  const cascadeContext = useMemo(
+    () => buildCascadeContext([...nonArchivedRows, ...archivedRows]),
+    [nonArchivedRows, archivedRows]
+  )
 
   const isLoading = selectedGoals.isLoading
   const fetchError =
@@ -329,9 +355,11 @@ export function GoalsPage() {
             ) : null}
             <GoalsList
               actions={goalActions}
+              cascadeContext={cascadeContext}
               levelGoalIdByParent={levelGoalIdByParent}
               metrics={overviewMetrics}
               onView={setDetailGoalId}
+              reachedByGoalId={reachedByGoalId}
               reorderEnabled={false}
               rows={rowGroup.rows}
             />

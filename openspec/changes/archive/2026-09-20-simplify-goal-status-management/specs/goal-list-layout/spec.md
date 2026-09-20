@@ -1,10 +1,4 @@
-# goal-list-layout Specification
-
-## Purpose
-
-Defines the Goals list's structural presentation — the desktop table's static columns, widths, and row density, and the mobile card structure it switches to — independent of how an individual goal's progress bar, percent, and explanation render (that is `goal-progress-display`'s concern).
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Desktop table uses fixed-width, static columns at a fixed row height
 
@@ -42,22 +36,6 @@ Assumptions:
 - **WHEN** each list renders as a desktop table
 - **THEN** the project detail row shows a leading drag handle and the Goals Overview row does not, with both rows otherwise showing the same six columns
 
-### Requirement: The list switches from table to cards at the app's mobile breakpoint
-
-The switch from the desktop table to the mobile card layout SHALL occur at the same breakpoint (768px, `useIsMobile()`) this app already uses to distinguish its desktop and mobile UI forms elsewhere, keeping the Goals list consistent with every other page's platform switch rather than introducing a second, page-specific threshold.
-
-#### Scenario: Below the mobile breakpoint
-
-- **GIVEN** the viewport is narrower than 768px
-- **WHEN** the Goals list renders
-- **THEN** it renders as the mobile card layout, not the desktop table in any column configuration
-
-#### Scenario: At or above the mobile breakpoint
-
-- **GIVEN** the viewport is 768px or wider
-- **WHEN** the Goals list renders
-- **THEN** it renders as the desktop table with its full, static column set
-
 ### Requirement: Mobile renders one card per goal
 
 Below the mobile breakpoint, each goal SHALL render as a card with, in order: a header (the unit's avatar, name, and a caption line combining the goal type with the "Done By" date-and-day-count content when available, in the form "{{goalType}} · 📅 {{date}} · {{days}} days"; when no completion estimate is available, the caption SHALL show only the goal type), the status label(s), the primary pause/resume control (see `goal-status-actions`'s "Pause and resume are primary row actions"), and the "⋯" row-actions menu at the top-right of the header, a goal line (the same from → to representation as the desktop Goal column), the shared stacked progress bar with its percent readout beneath it (rendered together by `goal-progress-display`, not on the goal line), and a footer line combining the remaining-text formatter with the info affordance described in `goal-progress-display`.
@@ -87,55 +65,3 @@ This one-card-per-goal rule has one exception: a Level goal that renders as its 
 - **GIVEN** an Active goal renders once as a desktop table row and once as a mobile card
 - **WHEN** each renders
 - **THEN** both show the same primary pause control, reachable without opening the "⋯" menu — the mobile card places it in the header alongside the status label(s) and the "⋯" menu, matching the desktop Actions column's placement
-
-### Requirement: A Level goal with exactly one dependent renders as that goal's sub-line, not its own row
-
-Wherever the Goals list renders (desktop table or mobile cards, on either the Goals Overview or a project detail route), a Level goal SHALL NOT render as its own row or card when it is the sole goal that exactly one other in-flight Rank or Ability goal `DependsOn`s. Instead, its existing progress presentation (stacked bar, percent readout, and remaining-text formatter — unchanged, per `goal-progress-display`) SHALL render as a sub-line nested within that dependent goal's row or card. `GoalType.Level` is unaffected as a domain concept: the Level goal remains a real, independently addressable goal with its own status and actions; only its list-row rendering is folded into its dependent's.
-
-A Level goal SHALL render as its own ordinary row or card, unchanged from today, whenever this condition does not hold — it has no dependent Rank/Ability goal, or it is `DependsOn`e by more than one.
-
-#### Scenario: A Level goal merges into its Rank goal's row
-
-- **GIVEN** an in-flight Rank goal `DependsOn`s an in-flight Level goal, and no other in-flight goal `DependsOn`s that Level goal
-- **WHEN** the Goals list renders
-- **THEN** only one row (or card) appears for the pair, showing the Rank goal's own content with the Level goal's progress bar, percent, and remaining text as a sub-line beneath it, and no separate row or card exists for the Level goal
-
-#### Scenario: A Level goal with no dependent renders standalone
-
-- **GIVEN** an in-flight Level goal that no other in-flight goal `DependsOn`s
-- **WHEN** the Goals list renders
-- **THEN** the Level goal renders as its own ordinary row or card
-
-#### Scenario: A Level goal depended on by more than one goal renders standalone
-
-- **GIVEN** an in-flight Level goal that two different in-flight goals both `DependsOn`
-- **WHEN** the Goals list renders
-- **THEN** the Level goal renders as its own ordinary row or card, not merged into either dependent
-
-#### Scenario: A merged Level goal's own row-actions remain reachable
-
-- **GIVEN** a Level goal merged into its Rank goal's row as a sub-line
-- **WHEN** the user wants to act on the Level goal independently (for example, pause it)
-- **THEN** that action remains reachable from the Level goal's own detail view, opened from the sub-line
-
-### Requirement: The Actual/Potential legend renders once per list, only when relevant, not per row
-
-When at least one visible goal has both an Actual and a Potential ratio to show, the "Actual" / "Potential" swatch legend SHALL render exactly once per list: in the Progress column's header on the desktop table, and at the top of the list above the first card on mobile. It SHALL NOT repeat per row or per card, replacing today's per-row "Actual progress" / "Potential progress" caption labels (moved into `goal-progress-display`'s on-demand explanation). When no visible goal has a Potential ratio, the legend SHALL NOT render at all, since it would have nothing to distinguish.
-
-#### Scenario: Desktop table with multiple goals showing both ratios
-
-- **GIVEN** the Goals list renders three Rank goal rows, each with both an Actual and a Potential ratio
-- **WHEN** the table renders
-- **THEN** the legend appears once, in the Progress column header, and no row repeats it
-
-#### Scenario: Mobile list with multiple goals showing both ratios
-
-- **GIVEN** the same three goals render as cards
-- **WHEN** the list renders
-- **THEN** the legend appears once, above the first card, and no card repeats it
-
-#### Scenario: No goal in the list has a Potential ratio
-
-- **GIVEN** the Goals list renders only Unlock goals, which never compute a Potential ratio (Level goals now also can, via `add-level-goal-xp-potential`'s XP-book allocation — see `goal-progress-display`)
-- **WHEN** the list renders, on either desktop or mobile
-- **THEN** no legend renders

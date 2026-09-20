@@ -550,10 +550,13 @@
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
       "reorderGoals": "Reordenar",
-      "reorderDone": "Listo"
+      "reorderDone": "Listo",
+      "pauseAllGoals": "Pausar todos los objetivos",
+      "resumeAllGoals": "Reanudar todos los objetivos"
     },
     "toasts": {
       "statusChanged": "Objetivo actualizado.",
+      "statusChangedPartial": "Se actualizaron {{succeeded}} de {{total}} objetivos.",
       "deleted": "Objetivo eliminado.",
       "goalRemovedFromProject": "{{goal}} quitado de {{project}}.",
       "goalRelocated": "{{goal}} movido a {{project}}.",
@@ -562,6 +565,10 @@
       "activated": "Plan actual actualizado.",
       "actionError": "Algo salió mal. Inténtalo de nuevo.",
       "projectCreated": "Proyecto creado.",
+      "projectGoalsPaused_one": "{{count}} objetivo pausado.",
+      "projectGoalsPaused_other": "{{count}} objetivos pausados.",
+      "projectGoalsResumed_one": "{{count}} objetivo reanudado.",
+      "projectGoalsResumed_other": "{{count}} objetivos reanudados.",
       "projectUpdated": "Proyecto actualizado."
     },
     "create": {

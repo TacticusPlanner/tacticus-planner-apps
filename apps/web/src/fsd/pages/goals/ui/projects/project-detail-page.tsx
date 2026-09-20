@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -39,7 +39,10 @@ import { useProjectGoals } from "../../model/projects/use-project-goals"
 import { useProjectGoalReorder } from "../../model/projects/use-project-goal-reorder"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
-import { isInFlightStatus } from "../goals-board/goal-row-utils"
+import {
+  buildCascadeContext,
+  isInFlightStatus,
+} from "../goals-board/goal-row-utils"
 import { ProjectDetailGoals } from "./project-detail-goals"
 import { ProjectDetailHeader } from "./project-detail-header"
 import { useProjectDetailTutorial } from "./project-detail-page.tutorial"
@@ -109,6 +112,19 @@ export function ProjectDetailPage() {
   )
   const isReached = (goalId: string) =>
     attainmentByGoalId.get(goalId)?.reached ?? false
+  const reachedByGoalId = useMemo(
+    () =>
+      new Map(
+        nonArchivedRows.map((row) => [
+          row.goalId,
+          attainmentByGoalId.get(row.goalId)?.reached ?? false,
+        ])
+      ),
+    [nonArchivedRows, attainmentByGoalId]
+  )
+  // Scoped to this project's own rows (see design.md's known limitation: a prerequisite also
+  // depended on by a goal in a different project isn't detected as shared here).
+  const cascadeContext = useMemo(() => buildCascadeContext(allRows), [allRows])
   // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
   // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
   // full non-archived candidate set instead, then filters afterward (see the comment on
@@ -249,6 +265,8 @@ export function ProjectDetailPage() {
 
       <ProjectDetailGoals
         actions={goalActions}
+        cascadeContext={cascadeContext}
+        reachedByGoalId={reachedByGoalId}
         error={
           projectGoals.fetchState.status === "error"
             ? projectGoals.fetchState.message

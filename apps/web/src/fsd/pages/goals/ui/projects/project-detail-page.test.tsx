@@ -157,6 +157,7 @@ const listProjectGoals = vi.fn()
 const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
 const updateProjectGoalOrder = vi.fn()
+const updateProjectGoalsStatus = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
@@ -175,6 +176,8 @@ vi.mock("@/entities/project", async (importOriginal) => {
     updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
     updateProjectGoalOrder: (...args: unknown[]) =>
       updateProjectGoalOrder(...args),
+    updateProjectGoalsStatus: (...args: unknown[]) =>
+      updateProjectGoalsStatus(...args),
     projectQueries: {
       all: () => ["projects"],
       list: () => ({
@@ -279,6 +282,7 @@ describe("ProjectDetailPage", () => {
     activateProject.mockReset()
     updateProjectGoals.mockReset()
     updateProjectGoalOrder.mockReset()
+    updateProjectGoalsStatus.mockReset()
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     listAccountGoals.mockReset().mockResolvedValue({ goals: [] })
     translate.mockClear()
@@ -474,6 +478,42 @@ describe("ProjectDetailPage", () => {
       "data-project-id",
       "proj-a"
     )
+  })
+
+  it("pauses every applicable goal in the project via the header's bulk action", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    updateProjectGoalsStatus.mockResolvedValue({ goalsTransitioned: 2 })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    await user.click(
+      screen.getByRole("button", { name: "goals.project.moreActions" })
+    )
+    await user.click(screen.getByTestId("project-pause-all-goals"))
+
+    await vi.waitFor(() => {
+      expect(updateProjectGoalsStatus).toHaveBeenCalledWith("proj-a", "Paused")
+    })
+  })
+
+  it("resumes every applicable goal in the project via the header's bulk action", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    updateProjectGoalsStatus.mockResolvedValue({ goalsTransitioned: 1 })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("project-detail-page")
+    await user.click(
+      screen.getByRole("button", { name: "goals.project.moreActions" })
+    )
+    await user.click(screen.getByTestId("project-resume-all-goals"))
+
+    await vi.waitFor(() => {
+      expect(updateProjectGoalsStatus).toHaveBeenCalledWith("proj-a", "Active")
+    })
   })
 
   it("filters the goal list to only the Paused goal when switching to the Paused status", async () => {

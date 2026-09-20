@@ -550,10 +550,13 @@
       "emptyProjectTitle": "This project has no goals yet",
       "emptyProjectDescription": "Use Add goals to put existing goals into it, or Create goal to make a new one.",
       "reorderGoals": "Reorder",
-      "reorderDone": "Done"
+      "reorderDone": "Done",
+      "pauseAllGoals": "Pause all goals",
+      "resumeAllGoals": "Resume all goals"
     },
     "toasts": {
       "statusChanged": "Goal updated.",
+      "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
       "deleted": "Goal deleted.",
       "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
       "goalRelocated": "{{goal}} moved to {{project}}.",
@@ -562,6 +565,10 @@
       "activated": "Current plan updated.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
+      "projectGoalsPaused_one": "{{count}} goal paused.",
+      "projectGoalsPaused_other": "{{count}} goals paused.",
+      "projectGoalsResumed_one": "{{count}} goal resumed.",
+      "projectGoalsResumed_other": "{{count}} goals resumed.",
       "projectUpdated": "Project updated."
     },
     "create": {

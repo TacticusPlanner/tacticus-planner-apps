@@ -5,7 +5,9 @@ import {
   ArrowLeft,
   ArrowUpDown,
   MoreHorizontal,
+  Pause,
   Pencil,
+  Play,
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardHeader, CardTitle } from "@workspace/ui/components/card"
@@ -13,6 +15,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 
@@ -136,6 +139,34 @@ export function ProjectDetailHeader({
                   <Pencil />
                   {t("goals.project.edit")}
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  data-testid="project-pause-all-goals"
+                  disabled={projectActions.pending}
+                  onSelect={() =>
+                    void projectActions.setGoalsStatus(
+                      project.projectId,
+                      "Paused"
+                    )
+                  }
+                >
+                  <Pause />
+                  {t("goals.project.pauseAllGoals")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  data-testid="project-resume-all-goals"
+                  disabled={projectActions.pending}
+                  onSelect={() =>
+                    void projectActions.setGoalsStatus(
+                      project.projectId,
+                      "Active"
+                    )
+                  }
+                >
+                  <Play />
+                  {t("goals.project.resumeAllGoals")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 {project.status === "Archived" ? (
                   <DropdownMenuItem
                     onSelect={() =>

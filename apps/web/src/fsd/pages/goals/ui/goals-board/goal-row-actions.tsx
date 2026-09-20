@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal, Pause, Play } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useRemoveGoalFromProject } from "../../model/projects/use-remove-goal-from-project"
 import type { GoalRow } from "../../model/shared/types"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
+import { cascadeTargets, type CascadeContext } from "./goal-row-utils"
 
 type Props = {
   row: GoalRow
@@ -28,28 +29,73 @@ type Props = {
    *  (`goal-progress-display`'s "closes on ... opening the row menu" requirement) rather than
    *  letting both float over the row at once. */
   onOpenChange?: (open: boolean) => void
+  /** Whether this goal's target has been reached — gates the "⋯" menu's Archive item. Absent (e.g. a
+   *  caller that hasn't computed attainment) renders as not-reached, so Archive stays hidden. */
+  reached?: boolean
+  /** Enables the primary pause/resume control's prerequisite cascade. Absent disables it entirely
+   *  (the primary control still pauses/resumes this goal alone). */
+  cascadeContext?: CascadeContext
 }
 
-/** Per-row "⋯" lifecycle menu — resume/pause, archive/unarchive, project removal when the row is
- * viewed inside a project, and a destructive delete gated behind `DeleteGoalDialog`. Removal and
- * deletion are deliberately unalike: removal is an ordinary item that acts immediately on one
- * project, delete is destructive, account-wide, and confirmed. Reaching a goal's target is computed
- * automatically (see `model/attainment/`), never a manual action here. */
-export function GoalRowActions({ row, actions, project, onOpenChange }: Props) {
+/** A goal row's status controls: a primary pause/resume icon button (`goal-status-actions`: "Pause
+ * and resume are primary row actions" — reachable in one click, not behind the "⋯" menu), and the
+ * "⋯" menu for everything else — archive/unarchive (Archive only once `reached`), project removal
+ * when the row is viewed inside a project, and a destructive delete gated behind `DeleteGoalDialog`.
+ * Removal and deletion are deliberately unalike: removal is an ordinary item that acts immediately on
+ * one project, delete is destructive, account-wide, and confirmed. Reaching a goal's target is
+ * computed automatically (see `model/attainment/`), never a manual action here. */
+export function GoalRowActions({
+  row,
+  actions,
+  project,
+  onOpenChange,
+  reached = false,
+  cascadeContext,
+}: Props) {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const removal = useRemoveGoalFromProject()
   const goalId = row.goalId
   const pending =
-    actions.pendingId === goalId || removal.pendingGoalId === goalId
+    actions.pendingIds.has(goalId) || removal.pendingGoalId === goalId
 
-  const setStatus = (next: GoalStatus) => void actions.setStatus(goalId, next)
+  const setStatus = (next: GoalStatus) => {
+    const cascadeIds =
+      next === "Active" || next === "Paused"
+        ? cascadeTargets(row.dependsOn, next, cascadeContext)
+        : []
+    void actions.setStatus(goalId, next, cascadeIds)
+  }
   const removalPlan = project ? removal.planFor(row, project.projectId) : null
   const removalUnavailable =
     removalPlan?.kind === "unavailable" ? removalPlan.reason : null
 
   return (
     <>
+      {row.status === "Active" ? (
+        <Button
+          aria-label={t("goals.actions.pause")}
+          data-testid={`goal-row-pause-${goalId}`}
+          disabled={pending}
+          onClick={() => setStatus("Paused")}
+          size="icon-sm"
+          variant="ghost"
+        >
+          <Pause />
+        </Button>
+      ) : null}
+      {row.status === "Paused" ? (
+        <Button
+          aria-label={t("goals.actions.resume")}
+          data-testid={`goal-row-resume-${goalId}`}
+          disabled={pending}
+          onClick={() => setStatus("Active")}
+          size="icon-sm"
+          variant="ghost"
+        >
+          <Play />
+        </Button>
+      ) : null}
       <DropdownMenu onOpenChange={onOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
@@ -63,25 +109,15 @@ export function GoalRowActions({ row, actions, project, onOpenChange }: Props) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {row.status === "Active" ? (
-            <DropdownMenuItem onSelect={() => setStatus("Paused")}>
-              {t("goals.actions.pause")}
-            </DropdownMenuItem>
-          ) : null}
-          {row.status === "Paused" ? (
-            <DropdownMenuItem onSelect={() => setStatus("Active")}>
-              {t("goals.actions.resume")}
-            </DropdownMenuItem>
-          ) : null}
-          {row.status !== "Archived" ? (
-            <DropdownMenuItem onSelect={() => setStatus("Archived")}>
-              {t("goals.actions.archive")}
-            </DropdownMenuItem>
-          ) : (
+          {row.status === "Archived" ? (
             <DropdownMenuItem onSelect={() => setStatus("Active")}>
               {t("goals.actions.unarchive")}
             </DropdownMenuItem>
-          )}
+          ) : reached ? (
+            <DropdownMenuItem onSelect={() => setStatus("Archived")}>
+              {t("goals.actions.archive")}
+            </DropdownMenuItem>
+          ) : null}
           {project ? (
             <>
               <DropdownMenuSeparator />

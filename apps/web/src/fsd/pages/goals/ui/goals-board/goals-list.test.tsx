@@ -72,7 +72,7 @@ import { GoalsList } from ".//goals-list"
 const stubActions = {
   setStatus: vi.fn(),
   remove: vi.fn(),
-  pendingId: null,
+  pendingIds: new Set<string>(),
 } as unknown as ReturnType<typeof useGoalActions>
 
 const rows: GoalRow[] = [

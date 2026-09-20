@@ -79,6 +79,7 @@ vi.mock("@/shared/api", () => ({
 import { ApiError } from "@/shared/api"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import type { GoalRow } from "../../model/shared/types"
+import type { CascadeContext } from "./goal-row-utils"
 import { GoalRowActions } from ".//goal-row-actions"
 
 const projectA = {
@@ -139,12 +140,24 @@ function occupyingMember() {
 function Harness({
   goalRow = row(),
   project,
+  reached,
+  cascadeContext,
 }: {
   goalRow?: GoalRow
   project?: typeof projectA
+  reached?: boolean
+  cascadeContext?: CascadeContext
 }) {
   const actions = useGoalActions()
-  return <GoalRowActions actions={actions} project={project} row={goalRow} />
+  return (
+    <GoalRowActions
+      actions={actions}
+      cascadeContext={cascadeContext}
+      project={project}
+      reached={reached}
+      row={goalRow}
+    />
+  )
 }
 
 async function openMenu(user: ReturnType<typeof userEvent.setup>) {
@@ -163,17 +176,182 @@ describe("GoalRowActions", () => {
     defaultProjectId = "proj-default"
   })
 
-  it("pauses an active goal and refreshes", async () => {
+  it("pauses an active goal via the primary control and refreshes", async () => {
     updateGoalStatus.mockResolvedValue({})
     const user = userEvent.setup()
     render(<Harness />)
 
-    await openMenu(user)
-    await user.click(await screen.findByText("goals.actions.pause"))
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
 
     await vi.waitFor(() => {
       expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
     })
+  })
+
+  it("shows a resume control, not a pause control, for a paused goal", async () => {
+    render(<Harness goalRow={row({ status: "Paused" })} />)
+
+    expect(screen.getByTestId("goal-row-resume-goal-1")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goal-row-pause-goal-1")
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows neither a pause nor a resume control for a Completed or Archived goal", () => {
+    const { unmount } = render(
+      <Harness goalRow={row({ status: "Completed" })} />
+    )
+    expect(
+      screen.queryByTestId("goal-row-pause-goal-1")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goal-row-resume-goal-1")
+    ).not.toBeInTheDocument()
+    unmount()
+
+    render(<Harness goalRow={row({ status: "Archived" })} />)
+    expect(
+      screen.queryByTestId("goal-row-pause-goal-1")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goal-row-resume-goal-1")
+    ).not.toBeInTheDocument()
+  })
+
+  it("hides Archive for a goal that hasn't reached its target, and offers it once reached", async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(<Harness reached={false} />)
+
+    await openMenu(user)
+    expect(screen.queryByText("goals.actions.archive")).not.toBeInTheDocument()
+    unmount()
+
+    render(<Harness reached />)
+    await openMenu(user)
+    expect(await screen.findByText("goals.actions.archive")).toBeInTheDocument()
+  })
+
+  it("always offers Unarchive for an archived goal, regardless of reached state", async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(
+      <Harness goalRow={row({ status: "Archived" })} reached={false} />
+    )
+
+    await openMenu(user)
+    expect(
+      await screen.findByText("goals.actions.unarchive")
+    ).toBeInTheDocument()
+    unmount()
+
+    render(<Harness goalRow={row({ status: "Archived" })} reached />)
+    await openMenu(user)
+    expect(
+      await screen.findByText("goals.actions.unarchive")
+    ).toBeInTheDocument()
+  })
+
+  it("cascades pause to a sole-dependent prerequisite", async () => {
+    updateGoalStatus.mockResolvedValue({})
+    const user = userEvent.setup()
+    render(
+      <Harness
+        cascadeContext={{
+          statusById: new Map([["goal-a", "Active"]]),
+          dependentCountById: new Map([["goal-a", 1]]),
+        }}
+        goalRow={row({ dependsOn: ["goal-a"] })}
+      />
+    )
+
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+    })
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-a", "Paused")
+    })
+  })
+
+  it("does not cascade pause to a prerequisite shared by another active goal", async () => {
+    updateGoalStatus.mockResolvedValue({})
+    const user = userEvent.setup()
+    render(
+      <Harness
+        cascadeContext={{
+          statusById: new Map([["goal-a", "Active"]]),
+          dependentCountById: new Map([["goal-a", 2]]),
+        }}
+        goalRow={row({ dependsOn: ["goal-a"] })}
+      />
+    )
+
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+    })
+    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-a", "Paused")
+  })
+
+  it("never cascades to a Completed or Archived prerequisite", async () => {
+    updateGoalStatus.mockResolvedValue({})
+    const user = userEvent.setup()
+    render(
+      <Harness
+        cascadeContext={{
+          statusById: new Map([
+            ["goal-a", "Completed"],
+            ["goal-b", "Archived"],
+          ]),
+          dependentCountById: new Map([
+            ["goal-a", 1],
+            ["goal-b", 1],
+          ]),
+        }}
+        goalRow={row({ dependsOn: ["goal-a", "goal-b"] })}
+      />
+    )
+
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+    })
+    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-a", "Paused")
+    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-b", "Paused")
+  })
+
+  it("reports partial success with one aggregate toast when a cascade target fails", async () => {
+    updateGoalStatus.mockImplementation((goalId: string) =>
+      goalId === "goal-a"
+        ? Promise.reject(new Error("boom"))
+        : Promise.resolve({})
+    )
+    const user = userEvent.setup()
+    render(
+      <Harness
+        cascadeContext={{
+          statusById: new Map([["goal-a", "Active"]]),
+          dependentCountById: new Map([["goal-a", 1]]),
+        }}
+        goalRow={row({ dependsOn: ["goal-a"] })}
+      />
+    )
+
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-a", "Paused")
+    })
+    await vi.waitFor(() => {
+      expect(toast.error).toHaveBeenCalled()
+    })
+    const message = String(vi.mocked(toast.error).mock.calls[0]?.[0])
+    expect(message).toContain("statusChangedPartial")
+    expect(message).toContain('"succeeded":1')
+    expect(message).toContain('"total":2')
+    expect(toast.success).not.toHaveBeenCalled()
   })
 
   it("opens the confirm dialog and deletes on confirm", async () => {
@@ -198,8 +376,7 @@ describe("GoalRowActions", () => {
     const user = userEvent.setup()
     render(<Harness />)
 
-    await openMenu(user)
-    await user.click(await screen.findByText("goals.actions.pause"))
+    await user.click(screen.getByTestId("goal-row-pause-goal-1"))
 
     await vi.waitFor(() => {
       expect(updateGoalStatus).toHaveBeenCalled()
