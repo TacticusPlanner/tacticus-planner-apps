@@ -1,0 +1,25 @@
+## 1. Project-only prefill
+
+- [ ] 1.1 In `create-goal-launcher-context.ts`, add a fourth `CreateGoalPrefill` union member `{ projectIds: string[] }` (no `entityType`/`entityId`/`goalType`) per design.md's "Decisions" section. Verify with `pnpm typecheck` — the existing three variants and their call sites must compile unchanged.
+- [ ] 1.2 In `use-create-goal-prefill.ts`, extend the existing selection effect's guard so it also runs for the new project-only variant (calling `selectProjects(prefill.projectIds)` and skipping `handleEntityChange`/`setEntityType`/`setEnabledTypes`, which don't apply to this variant). Leave the second (target-value) effect untouched — it stays gated on `prefill.entityId`, which the project-only variant never sets.
+- [ ] 1.3 Add `use-create-goal-prefill.test.tsx` (new file, alongside its sibling hook tests in `model/goal-creation-form/`) covering: a project-only prefill calls `selectProjects` with its `projectIds` and leaves entity/goal-type state untouched; the existing three variants still call `selectProjects` and set the entity/goal-type/target fields as before (regression). Verify with `pnpm --filter web test:run use-create-goal-prefill`.
+
+## 2. Goals Overview toolbar entry point
+
+- [ ] 2.1 In `goals-page.tsx`, add a `useCreateGoalLauncher()`-backed Create Goal button to the `goalFiltersAndSettings` row, following `planningSettingsButton`'s existing icon-with-hidden-label-on-mobile pattern (`{isMobile ? null : t(...)}`), with `data-testid="goals-create-goal"`. Call the launcher with no prefill (matches the global entry points' existing no-prefill call). Verify by reading the rendered row at both a sub-768px and an at/above-768px viewport in the updated component.
+- [ ] 2.2 Add the new key (e.g. `goals.filters.createGoal` or reuse `nav.createGoal` if identical wording fits — check both before adding a duplicate) to `apps/web/public/locales/en/common.json`, with matching real translations in `de/common.json`, `es/common.json`, `fr/common.json`. Verify by re-reading each edited file.
+- [ ] 2.3 In `goals-page.test.tsx`, add tests asserting: the Create Goal button is present in the control row at both breakpoints; activating it calls the launcher with no prefill (mock `useCreateGoalLauncher`). Verify with `pnpm --filter web test:run goals-page`.
+- [ ] 2.4 In `goals-page.tutorial.tsx`, add a tour step for the new button (`createStep('[data-testid="goals-create-goal"]', "createGoal")` or equivalent, matching sibling steps' naming), and add its `tour.goalsOverview.steps.createGoal.title`/`.content` keys to all four locales. Verify with `pnpm --filter web test:run goals-page.tutorial` (or the shell's existing tour test, whichever currently covers this file).
+
+## 3. Project Detail entry point
+
+- [ ] 3.1 In `project-detail-header.tsx`, add a `onCreateGoal: () => void` prop and render a Create Goal button next to the existing `data-testid="project-add-goals"` button, with `data-testid="project-create-goal"`. Verify by reading the updated header component.
+- [ ] 3.2 In `project-detail-page.tsx`, wire `onCreateGoal` to `useCreateGoalLauncher()`, calling it with `{ projectIds: [projectId] }` (the new project-only prefill variant from Task 1.1). Verify by reading the updated page component.
+- [ ] 3.3 Add `goals.project.createGoalTrigger` (label: "Create goal", matching the wording already used in `goals.project.emptyProjectDescription` per design.md's Context) to `apps/web/public/locales/en/common.json`, with matching real translations in `de/common.json`, `es/common.json`, `fr/common.json`. Verify by re-reading each edited file.
+- [ ] 3.4 In `project-detail-page.test.tsx`, add tests asserting: the Create Goal button renders next to Add Goals; activating it calls the launcher with `{ projectIds: [projectId] }` for the viewed project (mock `useCreateGoalLauncher`), including for a project that is not the default project. Verify with `pnpm --filter web test:run project-detail-page`.
+- [ ] 3.5 In `project-detail-page.tutorial.tsx`, add a tour step for the new button immediately after the existing `addGoals` step (`createStep('[data-testid="project-create-goal"]', "createGoal")`), and add its `tour.projectDetail.steps.createGoal.title`/`.content` keys to all four locales. Verify with the project detail tutorial's existing test coverage.
+
+## 4. Verification and gates
+
+- [ ] 4.1 Manually verify in the browser (Aspire AppHost stack, signed-in session): from Goals Overview, the Create Goal button opens a blank creation sheet at both a sub-768px and an at/above-768px viewport. From a non-default project's detail route, Create Goal opens the sheet with that project preselected (visible in the sheet's project selection), and the selection can still be changed before saving. Confirm the global sidebar/bottom-nav entry points and the `Ctrl/Cmd+G` shortcut are unaffected. Use one project that is the default and one that is not, per design.md's Risks/Trade-offs.
+- [ ] 4.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; all must pass before this change is considered done.
