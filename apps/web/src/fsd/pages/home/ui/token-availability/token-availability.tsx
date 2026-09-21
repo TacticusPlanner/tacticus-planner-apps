@@ -11,7 +11,6 @@ import {
 } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { formatRelativeTime } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import arenaTokenIcon from "./assets/arena-token.png"
@@ -19,9 +18,10 @@ import bombTokenIcon from "./assets/bomb-token.png"
 import guildRaidTokenIcon from "./assets/guild-raid-token.png"
 import onslaughtTokenIcon from "./assets/onslaught-token.png"
 import salvageRunTokenIcon from "./assets/salvage-run-token.png"
+import { formatExactCountdown } from "./format-exact-countdown"
 import { tokenCountdown, type TokenBucketData } from "./token-countdown"
 
-const NOW_TICK_MS = 30 * 1000
+const NOW_TICK_MS = 1000
 
 type GameModeTokens = NonNullable<
   Awaited<ReturnType<typeof getLiveProgress>>
@@ -95,7 +95,7 @@ function TokenRow({
   nowMs: number
   observedAtMs: number
 }) {
-  const { t, i18n } = useTranslation("common")
+  const { t } = useTranslation("common")
   const countdown = tokenCountdown(entry.bucket, observedAtMs, nowMs)
 
   const countdownText = (() => {
@@ -104,10 +104,8 @@ function TokenRow({
         return t("home.tokens.full")
       case "due":
         return t("home.tokens.due")
-      case "pending": {
-        const relative = formatRelativeTime(countdown.targetMs, i18n.language)
-        return relative ? t("home.tokens.nextLabel", { time: relative }) : null
-      }
+      case "pending":
+        return formatExactCountdown(countdown.targetMs, nowMs)
       case "unavailable":
         return null
     }

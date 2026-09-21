@@ -19,7 +19,13 @@
     <div id="root"></div>
     <script>
       window.uj ||= new Proxy({}, { get: (_, p) => p == 'then' ? 0 : (...a) => { (window.$ujq ||= []).push([p, ...a]) } });
-      uj.init('%VITE_USERJOT_PROJECT_ID%', { widget: { launcher: false } });
+      uj.init('%VITE_USERJOT_PROJECT_ID%', {
+        widget: {
+          launcher: false,
+          whispers: false,
+          notifications: { updates: 'none' },
+        },
+      });
     </script>
     <script type="module" async src="https://cdn.userjot.com/sdk/v3/uj.js"></script>
     <script type="module" src="/src/main.tsx"></script>

@@ -49,6 +49,7 @@ import { AccountAvatar } from "./account-avatar"
 import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
+import { UserJotBoardLink } from "./userjot-board-link"
 import { useUserJot } from "./userjot-provider"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
@@ -232,6 +233,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
                 <MessageSquareText data-icon="inline-start" />
                 {t("feedback.button")}
               </Button>
+              <UserJotBoardLink
+                className="w-full"
+                onClick={() => setMenuOpen(false)}
+                showLabel
+              />
               <Separator />
               <Button
                 className="w-full justify-start"

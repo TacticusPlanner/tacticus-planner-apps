@@ -179,10 +179,10 @@
     }
   },
   "schedule": {
-    "raids_one": "{{count}} Raid",
-    "raids_other": "{{count}} Raids",
+    "raids_one": "{{count}} Versuch verbraucht",
+    "raids_other": "{{count}} Versuche verbraucht",
     "progress": "{{owned}} von {{target}} im Besitz",
-    "node": "{{node}} · {{raids}} Raids",
+    "node": "{{node}} · {{raids}} Versuche verbraucht",
     "maxRaids": "Maximal geraidet",
     "fullyRaided": "Vollständig geraidet"
   },

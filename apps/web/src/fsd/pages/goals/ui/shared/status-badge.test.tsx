@@ -29,6 +29,64 @@ describe("BlockedIndicator", () => {
     expect(screen.queryByTestId("goal-blocked-indicator")).toBeNull()
   })
 
+  it.each([
+    [
+      "missing Level prerequisite",
+      {
+        kind: "MissingLevelPrerequisite",
+        requiredLevel: 20,
+        existingGoalId: undefined,
+      },
+    ],
+    [
+      "missing Ascension prerequisite",
+      {
+        kind: "MissingAscensionPrerequisite",
+        requiredProgression: "Rare:FourStars",
+        existingGoalId: undefined,
+      },
+    ],
+    [
+      "missing Unlock prerequisite",
+      {
+        kind: "MissingUnlockPrerequisite",
+        unitName: "Bellator",
+        existingGoalId: undefined,
+      },
+    ],
+  ] as const)(
+    "renders a softer 'Restricted' indicator for a %s",
+    (_description, reason) => {
+      render(
+        <BlockedIndicator blockers={{ reasons: [reason], isBlocked: true }} />
+      )
+      expect(
+        screen.getByTestId("goal-restricted-indicator")
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("goal-blocked-indicator")).toBeNull()
+    }
+  )
+
+  it("renders a softer 'Restricted' indicator for mixed prerequisite-style reasons", () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [
+            {
+              kind: "MissingUnlockPrerequisite",
+              unitName: "Bellator",
+              existingGoalId: undefined,
+            },
+            { kind: "PrerequisiteNotReached", goalId: "goal-2" },
+          ],
+          isBlocked: true,
+        }}
+      />
+    )
+    expect(screen.getByTestId("goal-restricted-indicator")).toBeInTheDocument()
+    expect(screen.queryByTestId("goal-blocked-indicator")).toBeNull()
+  })
+
   it("renders the stronger 'Blocked' indicator for a non-prerequisite reason", () => {
     render(
       <BlockedIndicator

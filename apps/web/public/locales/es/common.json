@@ -882,7 +882,8 @@
     "label": "Configuración"
   },
   "feedback": {
-    "button": "Comentarios"
+    "button": "Comentarios",
+    "viewBoard": "Ver el tablero completo"
   },
   "theme": {
     "dark": "Oscuro",
@@ -1036,7 +1037,7 @@
   },
   "uiKit": {
     "navLabel": "Secciones del kit UI",
-    "subtitle": "Catalogo enfocado de componentes shadcn para la app planner v2.",
+    "subtitle": "Vista previa de los componentes de interfaz reutilizables de la aplicación.",
     "title": "Kit UI",
     "sections": {
       "buttons": {
@@ -1044,11 +1045,11 @@
         "label": "Botones"
       },
       "colors": {
-        "description": "Colores semanticos del preset shadcn activo.",
+        "description": "La paleta de colores semánticos de la aplicación.",
         "label": "Colores"
       },
       "dataDisplay": {
-        "description": "Uso basico de tablas y una composicion de tabla con TanStack.",
+        "description": "Uso básico de tablas y una tabla de datos ordenable y filtrable.",
         "label": "Visualizacion de datos"
       },
       "feedback": {

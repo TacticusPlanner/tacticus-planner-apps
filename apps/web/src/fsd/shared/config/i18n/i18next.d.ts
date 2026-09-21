@@ -32,6 +32,7 @@ declare module "i18next" {
       onslaught: typeof enOnslaught
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
+      mows: Record<string, string>
       upgrades: Record<string, string>
       factions: Record<string, string>
       traits: Record<string, string>

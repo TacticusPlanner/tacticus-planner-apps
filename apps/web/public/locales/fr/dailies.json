@@ -179,10 +179,10 @@
     }
   },
   "schedule": {
-    "raids_one": "{{count}} raid",
-    "raids_other": "{{count}} raids",
+    "raids_one": "{{count}} tentative utilisée",
+    "raids_other": "{{count}} tentatives utilisées",
     "progress": "{{owned}} sur {{target}} possédés",
-    "node": "{{node}} · {{raids}} raids",
+    "node": "{{node}} · {{raids}} tentatives utilisées",
     "maxRaids": "Maximum atteint",
     "fullyRaided": "Entièrement attaqué"
   },

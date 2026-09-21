@@ -22,18 +22,13 @@
     },
     "noRecords": "Aucune entité sélectionnable n’est disponible.",
     "raidBossesNoRecords": "Les boss de raid de guilde ne sont pas encore disponibles dans le catalogue.",
+    "detailUnavailable": "Les pages détaillées de {{name}} ne sont pas encore disponibles. Revenez bientôt.",
     "shops": {
       "label": "Boutiques quotidiennes",
       "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
     }
   },
   "loading": "Chargement des données de la bibliothèque…",
-  "selector": {
-    "label": "Sélectionner une entité",
-    "placeholder": "Sélectionner une entité",
-    "selected": "Sélectionné : {{name}}",
-    "clear": "Effacer la sélection"
-  },
   "shops": {
     "title": "Boutiques quotidiennes",
     "subtitle": "Chaque emplacement que chaque boutique quotidienne peut proposer le jour sélectionné",

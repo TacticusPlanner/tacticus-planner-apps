@@ -251,24 +251,48 @@ export function useLookupSelection(characterId?: string) {
       const clampedStart = clampToCurrentMax(start)
       const clampedEnd = clampToCurrentMax(end)
 
-      // When only the "from" rank actually changed — the "to" value passed in still matches what it
-      // was before (the mobile "From" select always passes the current "to" unchanged; dragging just
-      // the slider's start thumb likewise leaves "to" as-is) — auto-advance "to" to "from" + 1 instead
-      // of leaving it wherever it was. Clamp at the practical ceiling: if "from" is already there,
-      // there's no valid "one rank up" left, so "to" just stays put (collapsing to a single rank).
+      // Exactly one side changes per call in every caller today (the mobile "From"/"To" selects
+      // each pass the other side unchanged; the desktop slider's two thumbs can't cross, per
+      // `minStepsBetweenThumbs`, so a single-thumb drag only moves one side). `start < end` is a
+      // hard invariant elsewhere (`hasCompleteValidRange`'s URL round-trip), so both directions
+      // auto-adjust the *other* side to preserve it — never leaving it wherever it was, and never
+      // colliding into equality at either end of the ladder.
       const onlyStartChanged =
         clampedStart !== prev.rankStart && clampedEnd === prev.rankEnd
-      const nextEnd = onlyStartChanged
-        ? rankAt(Math.min(rankIndex(clampedStart) + 1, rankIndex(lastRank)))
-        : clampedEnd
+      const onlyEndChanged =
+        clampedEnd !== prev.rankEnd && clampedStart === prev.rankStart
+
+      let nextStart = clampedStart
+      let nextEnd = clampedEnd
+
+      if (onlyStartChanged) {
+        // Auto-advance "to" to "from" + 1. At the ceiling there's no rank above "from" left to
+        // advance "to" into, so pull "from" back one step instead — "to" stays at the ceiling,
+        // keeping the range valid rather than collapsing to a single rank.
+        if (rankIndex(clampedStart) >= rankIndex(lastRank)) {
+          nextStart = rankAt(rankIndex(lastRank) - 1)
+          nextEnd = lastRank
+        } else {
+          nextEnd = rankAt(rankIndex(clampedStart) + 1)
+        }
+      } else if (onlyEndChanged) {
+        // Mirror of the above: auto-retreat "from" to "to" − 1, or at the floor, push "to"
+        // forward one step instead of collapsing "from"/"to" together at rank 0.
+        if (rankIndex(clampedEnd) <= rankIndex(firstRank)) {
+          nextStart = firstRank
+          nextEnd = rankAt(rankIndex(firstRank) + 1)
+        } else {
+          nextStart = rankAt(rankIndex(clampedEnd) - 1)
+        }
+      }
 
       return {
         ...prev,
-        rankStart: clampedStart,
+        rankStart: nextStart,
         rankEnd: nextEnd,
         progressionStart: bumpProgressionForRank(
           prev.progressionStart,
-          clampedStart
+          nextStart
         ),
         progressionEnd: bumpProgressionForRank(prev.progressionEnd, nextEnd),
         // Adamantine ranks have no point-five step.

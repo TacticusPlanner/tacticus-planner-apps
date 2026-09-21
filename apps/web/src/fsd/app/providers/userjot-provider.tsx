@@ -20,6 +20,8 @@ type UserJotOpenTarget = {
   to?: "home" | "feedback" | "roadmap" | "updates"
 }
 
+export const USERJOT_BOARD_URL = "https://tacticusplanner.userjot.com"
+
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
   identify: (

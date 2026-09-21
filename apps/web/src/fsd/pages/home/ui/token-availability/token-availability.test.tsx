@@ -127,6 +127,30 @@ describe("TokenAvailability", () => {
     expect(screen.queryByTestId("token-row-onslaught")).not.toBeInTheDocument()
   })
 
+  it("shows a pending token's exact countdown without a relative-time label", () => {
+    const dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(NOW)
+    mockLiveQueries({
+      liveProgress: {
+        gameModeTokens: {
+          arena: bucket({ nextTokenInSeconds: 1200 }),
+          guildRaid: null,
+          onslaught: null,
+          salvageRun: null,
+        },
+      },
+      metadata: new Map([
+        ["live-progress", { updatedAt: new Date(NOW - 300_000).toISOString() }],
+      ]),
+    })
+
+    render(<TokenAvailability />)
+    dateNowSpy.mockRestore()
+
+    const row = screen.getByTestId("token-row-arena")
+    expect(row).toHaveTextContent("0:15:00")
+    expect(row).not.toHaveTextContent("home.tokens.nextLabel")
+  })
+
   it("styles a capped token distinctly from a counting-down one", () => {
     mockLiveQueries({
       liveProgress: {

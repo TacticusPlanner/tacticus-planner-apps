@@ -89,20 +89,12 @@ export function CharacterLookupControls({
     })
   }
 
-  // The other select's options are pre-filtered to keep start < end, so a plain set suffices. Both
-  // are also capped at maxIndex — endOptions explicitly (currently a no-op, since maxIndex is just
-  // the ladder's own last index while Adamantine3 is absent from it — see lastRank's comment),
-  // startOptions implicitly (it's always below the now-capped rankEnd) so "from" can never itself
-  // land on the ceiling, which keeps a "from + 1" always achievable (see setDraftRange's
-  // auto-advance).
+  // Both rank selects offer the full reachable ladder. The range setter clamps the selected values
+  // and auto-advances "to" when needed to keep the resulting range valid.
   const selectStart = (next: Rank) => onRangeChange(next, rankEnd)
   const selectEnd = (next: Rank) => onRangeChange(rankStart, next)
-  const startOptions = rankOrder.filter(
-    (_, index) => index < rankIndex(rankEnd)
-  )
-  const endOptions = rankOrder.filter(
-    (_, index) => index > rankIndex(rankStart) && index <= maxIndex
-  )
+  const startOptions = rankOrder.filter((_, index) => index <= maxIndex)
+  const endOptions = rankOrder.filter((_, index) => index <= maxIndex)
 
   // Unlike the rank range, "from" and "to" progression are allowed to be equal (e.g. checking
   // stats across a rank change alone, without also changing rarity/stars), so both selects offer

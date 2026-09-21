@@ -882,7 +882,8 @@
     "label": "Settings"
   },
   "feedback": {
-    "button": "Feedback"
+    "button": "Feedback",
+    "viewBoard": "View full board"
   },
   "theme": {
     "dark": "Dark",
@@ -1036,7 +1037,7 @@
   },
   "uiKit": {
     "navLabel": "UI kit sections",
-    "subtitle": "Focused shadcn component catalog for the v2 planner app.",
+    "subtitle": "Preview of the app's reusable UI components.",
     "title": "UI Kit",
     "sections": {
       "buttons": {
@@ -1044,11 +1045,11 @@
         "label": "Buttons"
       },
       "colors": {
-        "description": "Semantic colors from the active shadcn preset.",
+        "description": "The app's semantic color palette.",
         "label": "Colors"
       },
       "dataDisplay": {
-        "description": "Basic table usage and a TanStack data table composition.",
+        "description": "Basic table usage and a sortable, filterable data table.",
         "label": "Data Display"
       },
       "feedback": {

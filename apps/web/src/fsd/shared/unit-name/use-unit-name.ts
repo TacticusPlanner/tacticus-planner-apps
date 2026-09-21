@@ -12,13 +12,16 @@ import { getCharactersMap, getMowsMap } from "@workspace/game-catalog/queries"
  * unknown-unit case, where the raw V1 identifier is the whole point of that fallback.
  */
 export function useUnitName() {
-  const { t } = useTranslation("characters")
+  const { t } = useTranslation(["characters", "mows"])
   const charactersById = useLiveQuery(() => getCharactersMap(), [])
   const mowsById = useLiveQuery(() => getMowsMap(), [])
 
   return (entityType: string | null, entityId: string | null): string => {
     if (!entityId) return ""
-    if (entityType === "Mow") return mowsById?.get(entityId)?.name ?? entityId
+    if (entityType === "Mow") {
+      const record = mowsById?.get(entityId)
+      return t(`mows:${entityId}`, { defaultValue: record?.name ?? entityId })
+    }
     if (entityType !== "Character") return entityId
 
     const record = charactersById?.get(entityId)

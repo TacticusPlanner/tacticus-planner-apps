@@ -126,6 +126,49 @@ describe("useLookupSelection's rank range", () => {
     expect(result.current.draft.rankEnd).toBe("Gold1")
   })
 
+  it("auto-retreats 'from' to 'to' - 1 when only 'to' changes", () => {
+    const { result } = renderSelection()
+
+    act(() => {
+      result.current.setDraftRange(result.current.draft.rankStart, "Gold2")
+    })
+
+    expect(result.current.draft.rankEnd).toBe("Gold2")
+    expect(result.current.draft.rankStart).toBe("Gold1")
+  })
+
+  it("pulls 'from' back one step instead of colliding with 'to' at the ladder's maximum rank", () => {
+    const { result } = renderSelection()
+
+    act(() => {
+      result.current.setDraftRange("Adamantine2", result.current.draft.rankEnd)
+    })
+
+    expect(result.current.draft.rankEnd).toBe("Adamantine2")
+    expect(result.current.draft.rankStart).toBe("Adamantine1")
+  })
+
+  it("pushes 'to' forward one step instead of colliding with 'from' at the ladder's minimum rank", () => {
+    const { result } = renderSelection()
+
+    // Move away from the floor first so the assertion below can't be satisfied by coincidence
+    // with the default range.
+    act(() => {
+      result.current.setDraftRange("Iron1", result.current.draft.rankEnd)
+    })
+    expect(result.current.draft).toMatchObject({
+      rankStart: "Iron1",
+      rankEnd: "Iron2",
+    })
+
+    act(() => {
+      result.current.setDraftRange(result.current.draft.rankStart, "Stone1")
+    })
+
+    expect(result.current.draft.rankStart).toBe("Stone1")
+    expect(result.current.draft.rankEnd).toBe("Stone2")
+  })
+
   // No "clamps Adamantine3 down to Adamantine2" cases here for now: Adamantine3 is currently removed
   // from the Rank ladder entirely (see rank.ts's lastRank comment), so there's no longer a rank value
   // beyond the ceiling to clamp — `clampToCurrentMax`/lastRank-capping in useLookupSelection is a

@@ -22,18 +22,13 @@
     },
     "noRecords": "Keine auswählbaren Einheiten verfügbar.",
     "raidBossesNoRecords": "Gildenraid-Bosse sind noch nicht im Katalog verfügbar.",
+    "detailUnavailable": "Detaillierte Seiten zu {{name}} sind noch nicht verfügbar – schau bald wieder vorbei.",
     "shops": {
       "label": "Tages-Shops",
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
     }
   },
   "loading": "Bibliotheksdaten werden geladen…",
-  "selector": {
-    "label": "Einheit auswählen",
-    "placeholder": "Einheit auswählen",
-    "selected": "Ausgewählt: {{name}}",
-    "clear": "Auswahl aufheben"
-  },
   "shops": {
     "title": "Tages-Shops",
     "subtitle": "Jeder Platz, den jeder Tages-Shop am gewählten Tag anbieten kann",
