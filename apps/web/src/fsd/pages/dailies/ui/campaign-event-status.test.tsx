@@ -159,6 +159,7 @@ describe("CampaignEventStatusLine", () => {
         type: "Standard",
         challenge: false,
         nodeNumber: 1,
+        battleIndex: 0,
       },
       {
         id: "event",
@@ -166,6 +167,7 @@ describe("CampaignEventStatusLine", () => {
         type: "Standard",
         challenge: false,
         nodeNumber: 1,
+        battleIndex: 0,
       },
     ]
     expect(
