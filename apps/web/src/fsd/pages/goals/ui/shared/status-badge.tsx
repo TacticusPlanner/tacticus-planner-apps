@@ -42,10 +42,10 @@ export function StatusBadge({ status }: { status: GoalStatus }) {
  * deduplicated by rendered text, since e.g. two different unreached prerequisite goals both read as
  * the same generic "Waiting on a prerequisite..." sentence and showing it twice added nothing).
  *
- * A goal blocked *only* by an unmet dependency (every reason is `PrerequisiteNotReached`) reads as
+ * A goal blocked *only* by prerequisite-style reasons reads as
  * "Restricted" with a link icon rather than "Blocked" with a lock — a dependency isn't a dead end the
  * way "no farming node exists" or "catalog data missing" is; it resolves itself once the prerequisite
- * goal is reached. A goal blocked for that *and* another reason still gets the stronger "Blocked"
+ * is met. A goal blocked for a prerequisite *and* another reason still gets the stronger "Blocked"
  * treatment, since at least one reason genuinely is a dead end right now.
  *
  * `progress`, when passed, folds in the rarity/level reachable-ceiling line (`reachableCeilingLabel`)
@@ -75,7 +75,11 @@ export function BlockedIndicator({
     </div>
   )
   const isOnlyRestrictedByPrerequisite = blockers.reasons.every(
-    (reason) => reason.kind === "PrerequisiteNotReached"
+    (reason) =>
+      reason.kind === "PrerequisiteNotReached" ||
+      reason.kind === "MissingLevelPrerequisite" ||
+      reason.kind === "MissingAscensionPrerequisite" ||
+      reason.kind === "MissingUnlockPrerequisite"
   )
 
   if (isOnlyRestrictedByPrerequisite) {
