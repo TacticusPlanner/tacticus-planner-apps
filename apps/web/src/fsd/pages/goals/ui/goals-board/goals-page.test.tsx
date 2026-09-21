@@ -332,7 +332,7 @@ describe("GoalsPage", () => {
     expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
     expect(screen.getByText("Hero One")).toBeInTheDocument()
     expect(
-      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+      screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`)
     ).toBeInTheDocument()
   })
 
@@ -368,7 +368,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     expect(
-      screen.getByTestId(`goal-row-actions-trigger-${pausedGoal.goalId}`)
+      screen.getByTestId(`goal-row-delete-${pausedGoal.goalId}`)
     ).toBeInTheDocument()
   })
 
@@ -387,7 +387,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     expect(
-      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+      screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`)
     ).toBeInTheDocument()
   })
 
@@ -496,15 +496,13 @@ describe("GoalsPage", () => {
     expect(await screen.findByTestId("goal-detail-sheet")).toBeInTheDocument()
   })
 
-  it("does not open the goal detail sheet when using the row actions menu", async () => {
+  it("does not open the goal detail sheet when using a row action", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const user = userEvent.setup()
     renderPage()
 
     await screen.findByTestId("goal-row")
-    await user.click(
-      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
-    )
+    await user.click(screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`))
 
     expect(screen.queryByTestId("goal-detail-sheet")).not.toBeInTheDocument()
   })
@@ -518,7 +516,7 @@ describe("GoalsPage", () => {
     })
     renderPage()
 
-    await screen.findByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    await screen.findByTestId(`goal-row-delete-${activeGoal.goalId}`)
     expect(
       screen.queryByRole("heading", { name: "goals.create.goalTypes.Rank" })
     ).not.toBeInTheDocument()
@@ -597,17 +595,14 @@ describe("GoalsPage", () => {
     listProjectGoals.mockResolvedValue({
       goals: [{ goal: activeGoal, priority: 0 }],
     })
-    const user = userEvent.setup()
     renderPage()
-
-    await screen.findByTestId("goal-row")
-    await user.click(
-      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
-    )
 
     await screen.findByTestId(`goal-row-delete-${activeGoal.goalId}`)
     expect(
       screen.queryByTestId(`goal-row-remove-from-project-${activeGoal.goalId}`)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`goal-row-move-to-project-${activeGoal.goalId}`)
     ).not.toBeInTheDocument()
   })
   it("applies no project filter initially, listing goals from every project", async () => {

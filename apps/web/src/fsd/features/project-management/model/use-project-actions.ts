@@ -137,10 +137,14 @@ export function useProjectActions(_onChanged?: () => void) {
     description: string | null,
     color: string | null
   ) => {
-    if (!isAuthenticated) return false
-    const ok = await run(() => createProject({ name, description, color }))
+    if (!isAuthenticated) return null
+    let created: ProjectSummary | null = null
+    const ok = await run(async () => {
+      created = await createProject({ name, description, color })
+      return created
+    })
     if (ok) toast.success(t("goals.toasts.projectCreated"))
-    return ok
+    return ok ? created : null
   }
 
   const save = async (

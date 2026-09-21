@@ -634,7 +634,7 @@ describe("ProjectDetailPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     expect(
-      screen.getByTestId("goal-row-actions-trigger-goal-paused")
+      screen.getByTestId("goal-row-delete-goal-paused")
     ).toBeInTheDocument()
   })
 
@@ -687,15 +687,19 @@ describe("ProjectDetailPage", () => {
     listProjectGoals.mockResolvedValue({
       goals: [{ goal: goal(), priority: 1 }],
     })
-    const user = userEvent.setup()
     renderPage("proj-a")
 
     await screen.findByTestId("goals-list-table")
-    await user.click(screen.getByTestId("goal-row-actions-trigger-goal-1"))
 
-    expect(
-      await screen.findByTestId("goal-row-remove-from-project-goal-1")
-    ).toBeInTheDocument()
+    // The row's project-scoped action is either a plain Remove (goal has another membership) or
+    // Move to project (this is its only membership) — either is proof the route offers a
+    // project-scoped row action, unlike Overview (rework-goal-project-move-action).
+    await vi.waitFor(() => {
+      expect(
+        screen.queryByTestId("goal-row-remove-from-project-goal-1") ??
+          screen.queryByTestId("goal-row-move-to-project-goal-1")
+      ).toBeInTheDocument()
+    })
   })
 
   it("carries each row's full project membership, not only the viewed project", async () => {
@@ -751,15 +755,12 @@ describe("ProjectDetailPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.queryByTestId("goal-row-drag-handle")).not.toBeInTheDocument()
   })
+  // Reads goal identity from the row's own `data-goal-id`, not the "⋯" trigger — that trigger is now
+  // conditional on Archive/Unarchive applying (rework-goal-project-move-action), so it's absent for
+  // most rows in these fixtures and can't be used as a stand-in for "this goal has a row".
   const goalOrderIn = (container: HTMLElement) =>
-    [
-      ...container.querySelectorAll(
-        '[data-testid^="goal-row-actions-trigger-"]'
-      ),
-    ].map((node) =>
-      node
-        .getAttribute("data-testid")!
-        .slice("goal-row-actions-trigger-".length)
+    [...container.querySelectorAll('[data-testid="goal-row"]')].map((node) =>
+      node.getAttribute("data-goal-id")
     )
 
   const groupHeadings = () =>
