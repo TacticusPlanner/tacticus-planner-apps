@@ -9,6 +9,7 @@ import {
   createProject,
   updateProject,
   updateProjectGoalOrder,
+  updateProjectGoalsStatus,
   projectQueries,
   type ProjectGoalSummary,
   type ProjectSummary,
@@ -107,15 +108,43 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
+  /** GP-22: bulk-pause or bulk-resume every applicable goal in a project (`UpdateProjectGoalsStatusEndpoint`
+   *  already excludes `Completed`/`Archived` goals server-side — this is not a per-goal prerequisite
+   *  cascade, unlike `useGoalActions`'s row-level pause/resume). */
+  const setGoalsStatus = async (
+    projectId: string,
+    status: "Active" | "Paused"
+  ) => {
+    if (!isAuthenticated) return
+
+    let transitioned = 0
+    const ok = await run(async () => {
+      const response = await updateProjectGoalsStatus(projectId, status)
+      transitioned = response.goalsTransitioned
+      return response
+    })
+    if (ok) {
+      toast.success(
+        status === "Paused"
+          ? t("goals.toasts.projectGoalsPaused", { count: transitioned })
+          : t("goals.toasts.projectGoalsResumed", { count: transitioned })
+      )
+    }
+  }
+
   const create = async (
     name: string,
     description: string | null,
     color: string | null
   ) => {
-    if (!isAuthenticated) return false
-    const ok = await run(() => createProject({ name, description, color }))
+    if (!isAuthenticated) return null
+    let created: ProjectSummary | null = null
+    const ok = await run(async () => {
+      created = await createProject({ name, description, color })
+      return created
+    })
     if (ok) toast.success(t("goals.toasts.projectCreated"))
-    return ok
+    return ok ? created : null
   }
 
   const save = async (
@@ -133,5 +162,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { activate, reorderGoals, create, save, pending }
+  return { activate, reorderGoals, setGoalsStatus, create, save, pending }
 }

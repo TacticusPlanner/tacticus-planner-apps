@@ -73,7 +73,14 @@ export function ProjectSelect({
           <SelectValue placeholder={resolvedPlaceholder} />
         )}
       </SelectTrigger>
-      <SelectContent>
+      {/* `SelectValue` is hidden below 768px (icon-only trigger). Radix's default "item-aligned"
+       *  content positioning depends on measuring that node to align the selected item over the
+       *  trigger — without it, the content renders far off-screen (at the document's full scroll
+       *  height) while the page underneath stays inert (Radix's open-select scroll lock), making
+       *  the trigger look unresponsive. `position="popper"` positions the content relative to the
+       *  trigger itself instead, which doesn't need `SelectValue` to work (same fix as
+       *  `goal-filters.tsx`'s Type/Sort/Group triggers). */}
+      <SelectContent position="popper">
         <SelectGroup>
           {allowAll ? (
             <SelectItem value={ALL_PROJECTS_VALUE}>

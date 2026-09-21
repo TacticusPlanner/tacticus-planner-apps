@@ -3,17 +3,29 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { toast } from "sonner"
+
 import { projectQueries, type ProjectGoalSummary } from "@/entities/project"
 import { useProjectActions } from "./use-project-actions"
 
-const { activateProjectMock, updateProjectGoalOrderMock } = vi.hoisted(() => ({
+const {
+  activateProjectMock,
+  updateProjectGoalOrderMock,
+  updateProjectGoalsStatusMock,
+  createProjectMock,
+} = vi.hoisted(() => ({
   activateProjectMock: vi.fn(),
   updateProjectGoalOrderMock: vi.fn(),
+  updateProjectGoalsStatusMock: vi.fn(),
+  createProjectMock: vi.fn(),
 }))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, unknown>) =>
+      opts ? `${key}:${JSON.stringify(opts)}` : key,
+  }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 vi.mock("sonner", () => ({
@@ -25,6 +37,8 @@ vi.mock("@/entities/project", async (importOriginal) => {
     ...actual,
     activateProject: activateProjectMock,
     updateProjectGoalOrder: updateProjectGoalOrderMock,
+    updateProjectGoalsStatus: updateProjectGoalsStatusMock,
+    createProject: createProjectMock,
   }
 })
 
@@ -62,6 +76,10 @@ describe("useProjectActions", () => {
   beforeEach(() => {
     activateProjectMock.mockReset()
     updateProjectGoalOrderMock.mockReset()
+    updateProjectGoalsStatusMock.mockReset()
+    createProjectMock.mockReset()
+    vi.mocked(toast.success).mockReset()
+    vi.mocked(toast.error).mockReset()
   })
 
   it("stays pending until every overlapping action has settled", async () => {
@@ -151,5 +169,93 @@ describe("useProjectActions", () => {
     expect(
       queryClient.getQueryData<{ goals: ProjectGoalSummary[] }>(queryKey)?.goals
     ).toEqual(original)
+  })
+
+  it("bulk-pauses a project's goals and reports how many were transitioned", async () => {
+    updateProjectGoalsStatusMock.mockResolvedValue({ goalsTransitioned: 3 })
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    await act(async () => {
+      await result.current.setGoalsStatus("p1", "Paused")
+    })
+
+    expect(updateProjectGoalsStatusMock).toHaveBeenCalledWith("p1", "Paused")
+    const message = String(vi.mocked(toast.success).mock.calls[0]?.[0])
+    expect(message).toContain("projectGoalsPaused")
+    expect(message).toContain('"count":3')
+  })
+
+  it("bulk-resumes a project's goals", async () => {
+    updateProjectGoalsStatusMock.mockResolvedValue({ goalsTransitioned: 1 })
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    await act(async () => {
+      await result.current.setGoalsStatus("p1", "Active")
+    })
+
+    expect(updateProjectGoalsStatusMock).toHaveBeenCalledWith("p1", "Active")
+    const message = String(vi.mocked(toast.success).mock.calls[0]?.[0])
+    expect(message).toContain("projectGoalsResumed")
+    expect(message).toContain('"count":1')
+  })
+
+  it("shows an error toast and no success toast when the bulk request fails", async () => {
+    updateProjectGoalsStatusMock.mockRejectedValue(new Error("network error"))
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    await act(async () => {
+      await result.current.setGoalsStatus("p1", "Paused")
+    })
+
+    expect(toast.error).toHaveBeenCalled()
+    expect(toast.success).not.toHaveBeenCalled()
+  })
+
+  it("returns the created project on success", async () => {
+    const created = {
+      projectId: "p-new",
+      name: "New Project",
+      description: null,
+      color: null,
+      status: "Active",
+      isActivePlan: false,
+      isDefault: false,
+      revision: 0,
+      createdAt: "2026-01-01",
+      updatedAt: "2026-01-01",
+    }
+    createProjectMock.mockResolvedValue(created)
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    let returned!: unknown
+    await act(async () => {
+      returned = await result.current.create("New Project", null, null)
+    })
+
+    expect(returned).toEqual(created)
+    expect(toast.success).toHaveBeenCalled()
+  })
+
+  it("returns null when project creation fails", async () => {
+    createProjectMock.mockRejectedValue(new Error("network error"))
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    let returned!: unknown
+    await act(async () => {
+      returned = await result.current.create("New Project", null, null)
+    })
+
+    expect(returned).toBeNull()
+    expect(toast.error).toHaveBeenCalled()
   })
 })

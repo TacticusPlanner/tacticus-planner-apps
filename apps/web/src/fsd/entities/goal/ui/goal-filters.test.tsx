@@ -90,4 +90,36 @@ describe("GoalFilters", () => {
     expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
     expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
   })
+
+  it("renders every Group option by default", async () => {
+    const user = userEvent.setup()
+    renderFilters()
+
+    await user.click(screen.getByTestId("goals-group-by"))
+    expect(
+      screen.getByRole("option", { name: "goals.filters.groupNone" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "goals.filters.groupByUnit" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "goals.filters.groupByType" })
+    ).toBeInTheDocument()
+  })
+
+  it("restricts Group options to groupOptions when supplied (relayout-project-detail-controls)", async () => {
+    const user = userEvent.setup()
+    renderFilters({ groupOptions: ["none", "type"] })
+
+    await user.click(screen.getByTestId("goals-group-by"))
+    expect(
+      screen.getByRole("option", { name: "goals.filters.groupNone" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "goals.filters.groupByType" })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole("option", { name: "goals.filters.groupByUnit" })
+    ).not.toBeInTheDocument()
+  })
 })

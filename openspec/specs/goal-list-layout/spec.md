@@ -8,7 +8,7 @@ Defines the Goals list's structural presentation — the desktop table's static 
 
 ### Requirement: Desktop table uses fixed-width, static columns at a fixed row height
 
-At or above the mobile breakpoint (see the platform-switch requirement below), the Goals list SHALL render as a table with these columns, in order: Character, Goal, Progress, Remaining, "Status · Done by", and Actions. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and the only responsive change at all is the 768px table→card switch (see the platform-switch requirement below). A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. The Character column SHALL show the unit's avatar, its name as a link, and the goal type as a small muted-foreground caption beneath the name; the previously separate Type column is removed. (No coloured dot: this repo has no existing per-goal-type colour token to reuse, and it was dropped as a cosmetic mockup detail with no testable scenario.) The Goal column SHALL show the goal's from → to representation (rank icons, "Lv 44 → 50", or "273 / 500 shards", matching each goal kind's existing target representation). The "Status · Done by" column SHALL show the goal's Active/Blocked/etc. status label(s) on one line, with the existing `goal-list-estimate-display` "Done By" date-and-day-count content on a second line directly beneath when a completion estimate is available; when no estimate is available, the second line SHALL be omitted rather than showing a placeholder. The Actions column SHALL keep the existing "⋯" row-actions menu unchanged; its column header text SHALL remain present for assistive technology but SHALL NOT render visibly.
+At or above the mobile breakpoint (see the platform-switch requirement below), the Goals list SHALL render as a table with these columns, in order: Character, Goal, Progress, Remaining, "Status · Done by", and Actions. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and the only responsive change at all is the 768px table→card switch (see the platform-switch requirement below). A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. The Character column SHALL show the unit's avatar, its name as a link, and the goal type as a small muted-foreground caption beneath the name; the previously separate Type column is removed. (No coloured dot: this repo has no existing per-goal-type colour token to reuse, and it was dropped as a cosmetic mockup detail with no testable scenario.) The Goal column SHALL show the goal's from → to representation (rank icons, "Lv 44 → 50", or "273 / 500 shards", matching each goal kind's existing target representation). The "Status · Done by" column SHALL show the goal's Active/Blocked/etc. status label(s) on one line, with the existing `goal-list-estimate-display` "Done By" date-and-day-count content on a second line directly beneath when a completion estimate is available; when no estimate is available, the second line SHALL be omitted rather than showing a placeholder. The Actions column SHALL render the row's project-removal-or-move and Delete actions as inline icon buttons, alongside the existing primary pause/resume icon (see `goal-status-actions`'s "Pause and resume are primary row actions"), rather than only inside the "⋯" menu; the "⋯" menu SHALL render only when it still has at least one applicable item (Archive or Unarchive). Its column header text SHALL remain present for assistive technology but SHALL NOT render visibly.
 
 Each row SHALL render at a fixed height sized to one line of content per column (with the Character and "Status · Done by" columns' two stacked lines accommodated within that same fixed height), a substantial reduction from today's variable, content-driven row height. The existing alternating row (zebra) striping SHALL be preserved.
 
@@ -42,6 +42,18 @@ Assumptions:
 - **WHEN** each list renders as a desktop table
 - **THEN** the project detail row shows a leading drag handle and the Goals Overview row does not, with both rows otherwise showing the same six columns
 
+#### Scenario: Project-removal-or-move and Delete render as icons on desktop
+
+- **GIVEN** the Goals list renders as a desktop table
+- **WHEN** a row's Actions column renders
+- **THEN** its project-removal-or-move action and Delete each render as their own icon button in the row, not only as items inside a "⋯" menu
+
+#### Scenario: The "⋯" menu is absent when it would otherwise be empty
+
+- **GIVEN** a goal is Active or Paused and has not reached its target (Archive is unavailable) and is not Archived (Unarchive is unavailable)
+- **WHEN** its row renders as a desktop table
+- **THEN** no "⋯" menu trigger is rendered, since it would offer nothing
+
 ### Requirement: The list switches from table to cards at the app's mobile breakpoint
 
 The switch from the desktop table to the mobile card layout SHALL occur at the same breakpoint (768px, `useIsMobile()`) this app already uses to distinguish its desktop and mobile UI forms elsewhere, keeping the Goals list consistent with every other page's platform switch rather than introducing a second, page-specific threshold.
@@ -60,7 +72,7 @@ The switch from the desktop table to the mobile card layout SHALL occur at the s
 
 ### Requirement: Mobile renders one card per goal
 
-Below the mobile breakpoint, each goal SHALL render as a card with, in order: a header (the unit's avatar, name, and a caption line combining the goal type with the "Done By" date-and-day-count content when available, in the form "{{goalType}} · 📅 {{date}} · {{days}} days"; when no completion estimate is available, the caption SHALL show only the goal type), the status label(s) and the row-actions menu at the top-right of the header, a goal line (the same from → to representation as the desktop Goal column), the shared stacked progress bar with its percent readout beneath it (rendered together by `goal-progress-display`, not on the goal line), and a footer line combining the remaining-text formatter with the info affordance described in `goal-progress-display`.
+Below the mobile breakpoint, each goal SHALL render as a card with, in order: a header (the unit's avatar, name, and a caption line combining the goal type with the "Done By" date-and-day-count content when available, in the form "{{goalType}} · 📅 {{date}} · {{days}} days"; when no completion estimate is available, the caption SHALL show only the goal type), the status label(s), the primary pause/resume control (see `goal-status-actions`'s "Pause and resume are primary row actions"), and the "⋯" row-actions menu at the top-right of the header, a goal line (the same from → to representation as the desktop Goal column), the shared stacked progress bar with its percent readout beneath it (rendered together by `goal-progress-display`, not on the goal line), and a footer line combining the remaining-text formatter with the info affordance described in `goal-progress-display`.
 
 This one-card-per-goal rule has one exception: a Level goal that renders as its dependent Rank/Ability goal's sub-line (see "A Level goal with exactly one dependent renders as that goal's sub-line, not its own row" below) does not additionally render its own card — its content appears only within its dependent's card.
 
@@ -81,6 +93,12 @@ This one-card-per-goal rule has one exception: a Level goal that renders as its 
 - **GIVEN** a Level goal that renders as its dependent Rank goal's sub-line
 - **WHEN** the mobile card list renders
 - **THEN** no separate card exists for the Level goal — its content appears only within the Rank goal's card
+
+#### Scenario: The primary pause/resume control appears in the card header, same as desktop
+
+- **GIVEN** an Active goal renders once as a desktop table row and once as a mobile card
+- **WHEN** each renders
+- **THEN** both show the same primary pause control, reachable without opening the "⋯" menu — the mobile card places it in the header alongside the status label(s) and the "⋯" menu, matching the desktop Actions column's placement
 
 ### Requirement: A Level goal with exactly one dependent renders as that goal's sub-line, not its own row
 
