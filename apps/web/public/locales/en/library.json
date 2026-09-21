@@ -22,18 +22,13 @@
     },
     "noRecords": "No selectable entities are available.",
     "raidBossesNoRecords": "Guild Raid Bosses are not available in the catalog yet.",
+    "detailUnavailable": "Detailed {{name}} pages aren't available yet — check back soon.",
     "shops": {
       "label": "Daily Shops",
       "description": "Browse what each daily shop can offer on any day of the week"
     }
   },
   "loading": "Loading Library records…",
-  "selector": {
-    "label": "Select an entity",
-    "placeholder": "Select an entity",
-    "selected": "Selected: {{name}}",
-    "clear": "Clear selection"
-  },
   "shops": {
     "title": "Daily Shops",
     "subtitle": "Every slot each daily shop can offer on the selected day",

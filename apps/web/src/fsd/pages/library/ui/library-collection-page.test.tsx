@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
@@ -51,7 +51,7 @@ function renderCollection(
 }
 
 describe("LibraryCollectionPage", () => {
-  it("canonicalizes Machines of War and retains secondary query state", async () => {
+  it("shows the Machines of War placeholder and canonicalizes the URL", async () => {
     records = [
       { id: "malleus", name: "Malleus" },
       { id: "biovore", name: "Biovore" },
@@ -63,24 +63,50 @@ describe("LibraryCollectionPage", () => {
         "/library/machines-of-war/malleus?tab=stats"
       )
     )
-    expect(screen.getByTestId("machines-of-war-library-page")).toBeVisible()
+    expect(
+      screen.getByTestId("machines-of-war-library-page")
+    ).toHaveTextContent(
+      "collections.detailUnavailable:collections.machinesOfWar.label"
+    )
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
+    expect(screen.queryByRole("option")).not.toBeInTheDocument()
   })
 
-  it("selects an NPC through the path-backed collection selector", async () => {
+  it("shows the NPC placeholder without entity-selection controls", async () => {
     records = [
       { id: "grots", name: "Grots" },
       { id: "guardsman", name: "Guardsman" },
     ]
-    renderCollection("/library/npcs/grots?tab=stats", "npcs")
-
-    fireEvent.keyDown(screen.getByRole("combobox"), { key: "ArrowDown" })
-    fireEvent.click(await screen.findByText("Guardsman"))
+    renderCollection("/library/npcs?tab=stats", "npcs")
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/npcs/guardsman?tab=stats"
+        "/library/npcs/grots?tab=stats"
       )
     )
+    expect(screen.getByTestId("npcs-library-page")).toHaveTextContent(
+      "collections.detailUnavailable:collections.npcs.label"
+    )
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
+    expect(screen.queryByRole("option")).not.toBeInTheDocument()
+  })
+
+  it("keeps the loading state for a collection whose records are pending", () => {
+    records = undefined
+    renderCollection("/library/machines-of-war", "machines-of-war")
+
+    expect(screen.getByText("loading")).toBeVisible()
+    expect(
+      screen.queryByTestId("machines-of-war-library-page")
+    ).not.toBeInTheDocument()
+  })
+
+  it("keeps the no-records state for an empty collection", () => {
+    records = []
+    renderCollection("/library/npcs", "npcs")
+
+    expect(screen.getByText("collections.noRecords")).toBeVisible()
+    expect(screen.queryByTestId("npcs-library-page")).not.toBeInTheDocument()
   })
 
   it("keeps the empty Raid Boss collection URL and no-records state", async () => {

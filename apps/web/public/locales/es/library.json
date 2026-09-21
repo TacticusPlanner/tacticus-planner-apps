@@ -22,18 +22,13 @@
     },
     "noRecords": "No hay entidades seleccionables disponibles.",
     "raidBossesNoRecords": "Los jefes de incursión de gremio aún no están disponibles en el catálogo.",
+    "detailUnavailable": "Las páginas detalladas de {{name}} aún no están disponibles. Vuelve pronto.",
     "shops": {
       "label": "Tiendas diarias",
       "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana"
     }
   },
   "loading": "Cargando registros de la biblioteca…",
-  "selector": {
-    "label": "Selecciona una entidad",
-    "placeholder": "Selecciona una entidad",
-    "selected": "Seleccionado: {{name}}",
-    "clear": "Borrar selección"
-  },
   "shops": {
     "title": "Tiendas diarias",
     "subtitle": "Cada ranura que cada tienda diaria puede ofrecer el día seleccionado",

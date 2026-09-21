@@ -27,8 +27,7 @@ describe("Library translations", () => {
       expect(locale.collections.shops.description).toBeTruthy()
       expect(locale.collections.noRecords).toBeTruthy()
       expect(locale.collections.raidBossesNoRecords).toBeTruthy()
-      expect(locale.selector.label).toBeTruthy()
-      expect(locale.selector.clear).toBeTruthy()
+      expect(locale.collections.detailUnavailable).toContain("{{name}}")
     }
   })
 
