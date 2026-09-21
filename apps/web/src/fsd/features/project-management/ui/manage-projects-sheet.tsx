@@ -30,11 +30,17 @@ export function ManageProjectsSheet({
   onOpenChange,
   project,
   actions,
+  onCreated,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   project: ProjectSummary | undefined
   actions: ReturnType<typeof useProjectActions>
+  /** Called with the newly created project instead of the default close-only behavior, when this
+   *  Sheet is opened in create mode (`project` undefined) by a caller that needs the result — e.g.
+   *  the goal row's "Move to project" flow, moving the goal into the project once it exists
+   *  (`rework-goal-project-move-action`). Ignored while editing an existing project. */
+  onCreated?: (project: ProjectSummary) => void
 }) {
   const { t } = useTranslation()
 
@@ -62,7 +68,13 @@ export function ManageProjectsSheet({
           <ProjectForm
             actions={actions}
             key={project?.projectId ?? "new"}
-            onSaved={() => onOpenChange(false)}
+            onSaved={(created) => {
+              if (created && !project && onCreated) {
+                onCreated(created)
+              } else {
+                onOpenChange(false)
+              }
+            }}
             project={project}
           />
         ) : null}
@@ -78,7 +90,7 @@ function ProjectForm({
 }: {
   project: ProjectSummary | undefined
   actions: ReturnType<typeof useProjectActions>
-  onSaved: () => void
+  onSaved: (created: ProjectSummary | null) => void
 }) {
   const { t } = useTranslation()
   const [name, setName] = useState(project?.name ?? "")
@@ -92,16 +104,20 @@ function ProjectForm({
     const trimmedDescription = description.trim() || null
     const trimmedColor = color.trim() || null
 
-    const result = project
-      ? actions.save(project, {
+    if (project) {
+      void actions
+        .save(project, {
           ...project,
           name: trimmedName,
           description: trimmedDescription,
           color: trimmedColor,
         })
-      : actions.create(trimmedName, trimmedDescription, trimmedColor)
-
-    void result.then((ok) => ok && onSaved())
+        .then((ok) => ok && onSaved(null))
+      return
+    }
+    void actions
+      .create(trimmedName, trimmedDescription, trimmedColor)
+      .then((created) => created && onSaved(created))
   }
 
   return (

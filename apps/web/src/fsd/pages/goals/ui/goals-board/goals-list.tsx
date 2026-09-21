@@ -69,6 +69,8 @@ function GoalsTable({
   reorderPending = false,
   levelGoalIdByParent,
   project,
+  reachedByGoalId,
+  cascadeContext,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -124,6 +126,7 @@ function GoalsTable({
               <TableRow
                 className="h-14 cursor-pointer data-[dragging]:opacity-60"
                 data-dragging={sortable.isDragging || undefined}
+                data-goal-id={row.goalId}
                 data-testid="goal-row"
                 key={row.goalId}
                 onClick={() => onView(row.goalId)}
@@ -261,10 +264,12 @@ function GoalsTable({
                   >
                     <GoalRowActions
                       actions={actions}
+                      cascadeContext={cascadeContext}
                       onOpenChange={(open) => {
                         if (open) setOpenPopoverGoalId(null)
                       }}
                       project={project}
+                      reached={reachedByGoalId?.get(row.goalId) ?? false}
                       row={row}
                     />
                   </div>

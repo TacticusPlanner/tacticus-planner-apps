@@ -5,7 +5,9 @@ import {
   ArrowLeft,
   ArrowUpDown,
   MoreHorizontal,
+  Pause,
   Pencil,
+  Play,
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardHeader, CardTitle } from "@workspace/ui/components/card"
@@ -13,16 +15,28 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 
+import {
+  GoalFilters,
+  StatusFilterSelect,
+  type GoalGroupValue,
+  type GoalStatusFilterCounts,
+  type GoalStatusFilterValue,
+} from "@/entities/goal"
 import { ProjectSelect, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "@/features/project-management"
 
+const PROJECT_DETAIL_GROUP_OPTIONS: readonly GoalGroupValue[] = ["none", "type"]
+
 /**
  * The detail route's own semantic header card: identity, lifecycle actions, the goal-count summary,
- * and the project switcher. Split out of `project-detail-page.tsx` only to keep that file under the
- * lint line cap (mirrors why `ProjectDetailGoals` was split out).
+ * and its labeled browsing controls (project switcher, status filter, Group) — grouped together here
+ * per `relayout-project-detail-controls` rather than in a separate row below the header. Split out of
+ * `project-detail-page.tsx` only to keep that file under the lint line cap (mirrors why
+ * `ProjectDetailGoals` was split out).
  */
 export function ProjectDetailHeader({
   project,
@@ -43,6 +57,11 @@ export function ProjectDetailHeader({
   reachedCount,
   blockedCount,
   completionDate,
+  statusFilter,
+  onStatusFilterChange,
+  statusFilterCounts,
+  group,
+  onGroupChange,
 }: {
   project: ProjectSummary
   projectId: string
@@ -62,6 +81,11 @@ export function ProjectDetailHeader({
   reachedCount: number
   blockedCount: number
   completionDate: string | null | undefined
+  statusFilter: GoalStatusFilterValue
+  onStatusFilterChange: (value: GoalStatusFilterValue) => void
+  statusFilterCounts: GoalStatusFilterCounts
+  group: GoalGroupValue
+  onGroupChange: (value: GoalGroupValue) => void
 }) {
   const { t } = useTranslation()
 
@@ -136,6 +160,34 @@ export function ProjectDetailHeader({
                   <Pencil />
                   {t("goals.project.edit")}
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  data-testid="project-pause-all-goals"
+                  disabled={projectActions.pending}
+                  onSelect={() =>
+                    void projectActions.setGoalsStatus(
+                      project.projectId,
+                      "Paused"
+                    )
+                  }
+                >
+                  <Pause />
+                  {t("goals.project.pauseAllGoals")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  data-testid="project-resume-all-goals"
+                  disabled={projectActions.pending}
+                  onSelect={() =>
+                    void projectActions.setGoalsStatus(
+                      project.projectId,
+                      "Active"
+                    )
+                  }
+                >
+                  <Play />
+                  {t("goals.project.resumeAllGoals")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 {project.status === "Archived" ? (
                   <DropdownMenuItem
                     onSelect={() =>
@@ -200,14 +252,47 @@ export function ProjectDetailHeader({
             </span>
           ) : null}
         </div>
-        <ProjectSelect
-          onProjectIdChange={(nextId) => {
-            if (nextId) onNavigateToProject(nextId)
-          }}
-          projectId={projectId}
-          projects={projects}
-          testId="projects-goal-project-select"
-        />
+        {/* relayout-project-detail-controls: the project switcher, status filter, and Group
+            control live together here, each labeled, rather than the switcher alone in the header
+            with Filter/Group in a separate unlabeled row below it. */}
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex min-w-40 flex-col gap-1">
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("goals.project.projectSwitcherLabel")}
+            </span>
+            <ProjectSelect
+              onProjectIdChange={(nextId) => {
+                if (nextId) onNavigateToProject(nextId)
+              }}
+              projectId={projectId}
+              projects={projects}
+              testId="projects-goal-project-select"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("goals.project.statusFilterFieldLabel")}
+            </span>
+            <StatusFilterSelect
+              counts={statusFilterCounts}
+              onValueChange={onStatusFilterChange}
+              testId="projects-status-filter"
+              value={statusFilter}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("goals.project.groupByFieldLabel")}
+            </span>
+            <GoalFilters
+              group={group}
+              groupOptions={PROJECT_DETAIL_GROUP_OPTIONS}
+              onGroupChange={onGroupChange}
+              showSort={false}
+              showTypeFilter={false}
+            />
+          </div>
+        </div>
       </CardHeader>
     </Card>
   )

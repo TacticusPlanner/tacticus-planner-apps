@@ -5,9 +5,13 @@ import type { ProjectMembershipConflict } from "./project-membership"
 import { findProjectGoalConflicts } from "./use-project-goal-conflicts"
 
 export type ProjectRemovalUnavailableReason =
-  /** The goal's only membership *is* the Default project, so relocation has no destination. */
+  /** The chosen destination *is* the project being removed from, so relocation has no destination.
+   *  Named for its original, only caller (the membership editor, which always targets Default) —
+   *  the goal row's own "Move to project" action reuses this same reason when a chosen destination
+   *  somehow equals the viewed project, which its own picker (excludes the viewed project) never
+   *  actually offers in practice. */
   | "lastMembershipIsDefault"
-  /** The Default project isn't known yet — the projects query is pending, errored, or the user is
+  /** The destination isn't known yet — the projects query is pending, errored, or the user is
    *  unauthenticated. Submitting would serialize `[null]` and fail the ownership check with a 400. */
   | "destinationUnknown"
 
@@ -26,11 +30,13 @@ export type ProjectRemovalPlan =
   | { kind: "unavailable"; reason: ProjectRemovalUnavailableReason }
 
 /**
- * Removing a goal's last remaining membership relocates it to the Default project rather than being
+ * Removing a goal's last remaining membership relocates it to a destination project rather than being
  * refused: the server invariant ("a goal belongs to at least one project") is untouched, the client
- * simply never asks for the empty list it rejects.
+ * simply never asks for the empty list it rejects. The destination is caller-supplied — the membership
+ * editor always passes the Default project; the goal row's own "Move to project" action passes
+ * whichever project the user picked (existing or newly created) — see `rework-goal-project-move-action`.
  *
- * `destinationGoals` is the Default project's current members, needed only to pre-flight the
+ * `destinationGoals` is the destination project's current members, needed only to pre-flight the
  * project-scoped `(entityType, entityId, goalType)` slot before a relocation. Pass `[]` at render
  * time (when the menu only needs to know whether the action is available at all) and the freshly
  * fetched members at submit time.
@@ -38,13 +44,13 @@ export type ProjectRemovalPlan =
 export function planProjectRemoval({
   memberships,
   projectId,
-  defaultProject,
+  destination,
   goal,
   destinationGoals = [],
 }: {
   memberships: string[]
   projectId: string
-  defaultProject: ProjectSummary | undefined
+  destination: ProjectSummary | undefined
   goal: {
     goalId: string
     entityType: string
@@ -55,8 +61,8 @@ export function planProjectRemoval({
   destinationGoals?: ProjectGoalSummary[]
 }): ProjectRemovalPlan {
   // An empty list means membership hasn't loaded, not that this is the goal's only one — computing a
-  // relocation from it would move a multi-project goal into Default. Treated as "destination not
-  // determinable" for the same reason as an unknown Default project: nothing can be submitted yet.
+  // relocation from it would move a multi-project goal into the destination. Treated as "destination not
+  // determinable" for the same reason as an unknown destination: nothing can be submitted yet.
   if (memberships.length === 0) {
     return { kind: "unavailable", reason: "destinationUnknown" }
   }
@@ -66,10 +72,10 @@ export function planProjectRemoval({
     return { kind: "remove", projectIds: remaining }
   }
 
-  if (!defaultProject) {
+  if (!destination) {
     return { kind: "unavailable", reason: "destinationUnknown" }
   }
-  if (defaultProject.projectId === projectId) {
+  if (destination.projectId === projectId) {
     return { kind: "unavailable", reason: "lastMembershipIsDefault" }
   }
 
@@ -77,7 +83,7 @@ export function planProjectRemoval({
   // with what the destination already holds — a Completed or Archived goal relocates regardless.
   if (goal.status === "Active" || goal.status === "Paused") {
     const [conflict] = findProjectGoalConflicts({
-      selected: [defaultProject],
+      selected: [destination],
       projectGoals: [destinationGoals],
       entityType: goal.entityType as "Character" | "Mow",
       entityId: goal.entityId,
@@ -85,13 +91,13 @@ export function planProjectRemoval({
       excludeGoalId: goal.goalId,
     })
     if (conflict) {
-      return { kind: "conflict", conflict, destination: defaultProject }
+      return { kind: "conflict", conflict, destination }
     }
   }
 
   return {
     kind: "relocate",
-    projectIds: [defaultProject.projectId],
-    destination: defaultProject,
+    projectIds: [destination.projectId],
+    destination,
   }
 }

@@ -42,6 +42,8 @@ export function GoalsMobileCards({
   reorderPending = false,
   levelGoalIdByParent,
   project,
+  reachedByGoalId,
+  cascadeContext,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -165,7 +167,9 @@ export function GoalsMobileCards({
                   >
                     <GoalRowActions
                       actions={actions}
+                      cascadeContext={cascadeContext}
                       project={project}
+                      reached={reachedByGoalId?.get(row.goalId) ?? false}
                       row={row}
                     />
                   </div>

@@ -72,7 +72,7 @@ import { GoalsList } from ".//goals-list"
 const stubActions = {
   setStatus: vi.fn(),
   remove: vi.fn(),
-  pendingId: null,
+  pendingIds: new Set<string>(),
 } as unknown as ReturnType<typeof useGoalActions>
 
 const rows: GoalRow[] = [
@@ -269,7 +269,7 @@ describe("GoalsList", () => {
     expect(onView).toHaveBeenCalledWith("goal-1")
   })
 
-  it("does not open the goal detail when Enter is pressed on the row actions trigger", async () => {
+  it("does not open the goal detail when Enter is pressed on a row action", async () => {
     const onView = vi.fn()
     render(
       <GoalsList
@@ -280,7 +280,7 @@ describe("GoalsList", () => {
       />
     )
 
-    const trigger = await screen.findByTestId("goal-row-actions-trigger-goal-1")
+    const trigger = await screen.findByTestId("goal-row-delete-goal-1")
     fireEvent.keyDown(trigger, { key: "Enter" })
 
     expect(onView).not.toHaveBeenCalled()

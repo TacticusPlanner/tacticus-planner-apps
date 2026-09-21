@@ -1,10 +1,55 @@
 import type { SyntheticEvent } from "react"
 
+import type { GoalStatus } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "../../model/shared/types"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
+
+/** The data a prerequisite pause/resume cascade needs about every goal currently in view, not just
+ *  the row being acted on — built once per page render from its full row set (`buildCascadeContext`),
+ *  not recomputed per row (see `simplify-goal-status-management`'s design.md). */
+export type CascadeContext = {
+  statusById: ReadonlyMap<string, GoalStatus>
+  dependentCountById: ReadonlyMap<string, number>
+}
+
+export function buildCascadeContext(rows: readonly GoalRow[]): CascadeContext {
+  const statusById = new Map<string, GoalStatus>()
+  const dependentCountById = new Map<string, number>()
+  for (const row of rows) {
+    statusById.set(row.goalId, row.status)
+    for (const dependencyId of row.dependsOn ?? []) {
+      dependentCountById.set(
+        dependencyId,
+        (dependentCountById.get(dependencyId) ?? 0) + 1
+      )
+    }
+  }
+  return { statusById, dependentCountById }
+}
+
+/** Which of a goal's `dependsOn` prerequisites a pause/resume cascade should also transition to
+ *  `targetStatus`: a `Completed`/`Archived` (or unknown) prerequisite is always excluded — a cascade
+ *  never reopens a finished goal; pausing further excludes a prerequisite shared by more than one
+ *  dependent, resuming does not (see `goal-status-actions`'s "Pausing or resuming a goal cascades to
+ *  its prerequisites"). */
+export function cascadeTargets(
+  dependsOn: readonly string[] | undefined,
+  targetStatus: GoalStatus,
+  context: CascadeContext | undefined
+): string[] {
+  if (!dependsOn || dependsOn.length === 0 || !context) return []
+  return dependsOn.filter((id) => {
+    const status = context.statusById.get(id)
+    if (status !== "Active" && status !== "Paused") return false
+    if (targetStatus === "Paused") {
+      return (context.dependentCountById.get(id) ?? 0) <= 1
+    }
+    return true
+  })
+}
 
 export type GoalsListProps = {
   rows: GoalRow[]
@@ -37,6 +82,13 @@ export type GoalsListProps = {
    *  Level-goal decision, folded into add-inline-goal-reprioritize). `rows` already excludes a merged
    *  Level goal's own row — this only says which *other* row it attaches to. */
   levelGoalIdByParent?: ReadonlyMap<string, string>
+  /** Whether each row's target has been reached (attainment-computed) — gates the "⋯" menu's Archive
+   *  item (`goal-status-actions`: "Archive is available only once a goal has reached its target").
+   *  Absent renders every row as not-reached, so Archive stays hidden by default. */
+  reachedByGoalId?: ReadonlyMap<string, boolean>
+  /** Built once per page render (`buildCascadeContext`) from this list's full, unfiltered row set —
+   *  not `rows`, which may be a filtered/grouped subset. Absent disables the cascade entirely. */
+  cascadeContext?: CascadeContext
 }
 
 /** Stops activation on an inner control from

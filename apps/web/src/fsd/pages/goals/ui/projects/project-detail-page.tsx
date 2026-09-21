@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -19,8 +19,6 @@ import {
 } from "@/features/project-management"
 import { useProjects } from "@/entities/project"
 import {
-  GoalFilters,
-  StatusFilterSelect,
   goalQueries,
   isGoalGroupValue,
   type GoalStatusFilterValue,
@@ -31,7 +29,10 @@ import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
 import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
-import { goalRowFromProjectMember } from "../../model/shared/types"
+import {
+  goalRowFromProjectMember,
+  goalRowFromSummary,
+} from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
@@ -39,7 +40,10 @@ import { useProjectGoals } from "../../model/projects/use-project-goals"
 import { useProjectGoalReorder } from "../../model/projects/use-project-goal-reorder"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
-import { isInFlightStatus } from "../goals-board/goal-row-utils"
+import {
+  buildCascadeContext,
+  isInFlightStatus,
+} from "../goals-board/goal-row-utils"
 import { ProjectDetailGoals } from "./project-detail-goals"
 import { ProjectDetailHeader } from "./project-detail-header"
 import { useProjectDetailTutorial } from "./project-detail-page.tutorial"
@@ -69,11 +73,16 @@ export function ProjectDetailPage() {
   // Goal type on first-ever visit (project-management: "Goal type is the initial grouping") -
   // Overview keeps "none". Persisted per browser so it survives navigating away and a reload, not
   // just switching between projects while the route stays mounted.
-  const [group, setGroup] = usePersistedSelection(
+  const [persistedGroup, setGroup] = usePersistedSelection(
     "goals.projectDetail.group",
     isGoalGroupValue,
     "type"
   )
+  // relayout-project-detail-controls: this route no longer offers "by unit" - a value persisted
+  // from before that removal is clamped to "type" here, at the read site, rather than rewriting the
+  // shared `goals.projectDetail.group` storage key (Overview doesn't use "unit" here at all, and a
+  // future revert of this change should still see the raw stored value).
+  const group = persistedGroup === "unit" ? "type" : persistedGroup
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [mobileReorderActive, setMobileReorderActive] = useState(false)
@@ -109,6 +118,32 @@ export function ProjectDetailPage() {
   )
   const isReached = (goalId: string) =>
     attainmentByGoalId.get(goalId)?.reached ?? false
+  const reachedByGoalId = useMemo(
+    () =>
+      new Map(
+        nonArchivedRows.map((row) => [
+          row.goalId,
+          attainmentByGoalId.get(row.goalId)?.reached ?? false,
+        ])
+      ),
+    [nonArchivedRows, attainmentByGoalId]
+  )
+  // Account-wide, not scoped to this project's own rows: a dependsOn edge isn't constrained by
+  // project membership, so a prerequisite or dependent can live in a different project (PR #151
+  // review) — reuses the account-wide, non-archived fetch already made above for accountGoalTotal.
+  // An Archived goal is absent from this list, but that's harmless for cascade purposes: an id with
+  // no entry here already fails cascadeTargets' Active/Paused check the same as an explicit Archived
+  // status would, and an archived goal's own dependsOn edges are irrelevant to a still-active
+  // sibling's cascade decision. Falls back to this project's own rows only until the account-wide
+  // query resolves, rather than disabling the cascade entirely during that window.
+  const cascadeContext = useMemo(
+    () =>
+      buildCascadeContext(
+        accountGoalsQuery.data?.goals.map((goal) => goalRowFromSummary(goal)) ??
+          allRows
+      ),
+    [accountGoalsQuery.data, allRows]
+  )
   // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
   // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
   // full non-archived candidate set instead, then filters afterward (see the comment on
@@ -227,28 +262,17 @@ export function ProjectDetailPage() {
         reachedCount={reachedCount}
         showMobileReorderToggle={inFlightRows.length > 1}
         unitCount={unitCount}
-      />
-
-      {/* goals-navigation spec: the project selector is trailing, paired in the same row as the
-          status filter - here it switches which project's detail route is shown. */}
-      <div className="flex items-center gap-2">
-        <StatusFilterSelect
-          counts={counts}
-          onValueChange={setTab}
-          testId="projects-status-filter"
-          value={tab}
-        />
-      </div>
-
-      <GoalFilters
         group={group}
         onGroupChange={setGroup}
-        showSort={false}
-        showTypeFilter={false}
+        onStatusFilterChange={setTab}
+        statusFilter={tab}
+        statusFilterCounts={counts}
       />
 
       <ProjectDetailGoals
         actions={goalActions}
+        cascadeContext={cascadeContext}
+        reachedByGoalId={reachedByGoalId}
         error={
           projectGoals.fetchState.status === "error"
             ? projectGoals.fetchState.message

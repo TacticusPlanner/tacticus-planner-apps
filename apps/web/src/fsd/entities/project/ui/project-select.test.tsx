@@ -127,6 +127,29 @@ describe("ProjectSelect", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("positions its content with popper mode, not item-aligned, so the icon-only trigger doesn't need to match a SelectValue", async () => {
+    // item-aligned mode (Radix's default) measures SelectValue to align the selected item over the
+    // trigger; the icon-only mobile trigger has no SelectValue, which makes item-aligned mode render
+    // the content far off-screen while leaving the page inert (see project-select.tsx's comment).
+    // jsdom doesn't compute real layout, so this can only assert the mode, not the broken position.
+    useIsMobileMock.mockReturnValue(true)
+    const user = userEvent.setup()
+    render(
+      <ProjectSelect
+        onProjectIdChange={vi.fn()}
+        projectId="proj-1"
+        projects={projects}
+        testId="project-select"
+      />
+    )
+
+    await user.click(screen.getByTestId("project-select"))
+
+    expect(
+      document.querySelector('[data-position="popper"]')
+    ).toBeInTheDocument()
+  })
+
   it("calls onProjectIdChange when a different project is selected", async () => {
     const user = userEvent.setup()
     const onProjectIdChange = vi.fn()

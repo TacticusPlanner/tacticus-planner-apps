@@ -28,6 +28,11 @@ const SORT_VALUES: readonly GoalSortValue[] = [
   "status",
   "updated",
 ]
+const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
+  "none",
+  "unit",
+  "type",
+]
 
 type Props = {
   /** Required only while `showTypeFilter` is (its default) `true` — Project Detail, which hides
@@ -46,6 +51,9 @@ type Props = {
    *  Overview's (the only other caller's) unchanged behavior. */
   showTypeFilter?: boolean
   showSort?: boolean
+  /** Restricts which Group options render (default: all three, i.e. Overview's behavior). Project
+   *  Detail passes `["none", "type"]` — it drops "by unit" (relayout-project-detail-controls). */
+  groupOptions?: readonly GoalGroupValue[]
 }
 
 /**
@@ -64,6 +72,7 @@ export function GoalFilters({
   onGroupChange,
   showTypeFilter = true,
   showSort = true,
+  groupOptions = DEFAULT_GROUP_OPTIONS,
 }: Props) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
@@ -163,9 +172,19 @@ export function GoalFilters({
           </span>
         </SelectTrigger>
         <SelectContent position="popper">
-          <SelectItem value="none">{t("goals.filters.groupNone")}</SelectItem>
-          <SelectItem value="unit">{t("goals.filters.groupByUnit")}</SelectItem>
-          <SelectItem value="type">{t("goals.filters.groupByType")}</SelectItem>
+          {groupOptions.includes("none") ? (
+            <SelectItem value="none">{t("goals.filters.groupNone")}</SelectItem>
+          ) : null}
+          {groupOptions.includes("unit") ? (
+            <SelectItem value="unit">
+              {t("goals.filters.groupByUnit")}
+            </SelectItem>
+          ) : null}
+          {groupOptions.includes("type") ? (
+            <SelectItem value="type">
+              {t("goals.filters.groupByType")}
+            </SelectItem>
+          ) : null}
         </SelectContent>
       </Select>
     </div>

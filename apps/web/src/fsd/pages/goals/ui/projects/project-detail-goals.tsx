@@ -7,6 +7,7 @@ import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import type { RowGroup } from "../../model/shared/row-groups"
+import type { CascadeContext } from "../goals-board/goal-row-utils"
 import { GoalsList } from "../goals-board/goals-list"
 
 type Props = {
@@ -29,6 +30,8 @@ type Props = {
   onReorder?: (orderedGoalIds: string[], movedGoalId: string) => void
   reorderPending?: boolean
   levelGoalIdByParent?: ReadonlyMap<string, string>
+  reachedByGoalId?: ReadonlyMap<string, boolean>
+  cascadeContext?: CascadeContext
 }
 
 /**
@@ -54,6 +57,8 @@ export function ProjectDetailGoals({
   onReorder,
   reorderPending = false,
   levelGoalIdByParent,
+  reachedByGoalId,
+  cascadeContext,
 }: Props) {
   const { t } = useTranslation()
 
@@ -106,6 +111,7 @@ export function ProjectDetailGoals({
               ) : null}
               <GoalsList
                 actions={actions}
+                cascadeContext={cascadeContext}
                 estimates={estimates}
                 levelGoalIdByParent={levelGoalIdByParent}
                 metrics={metrics}
@@ -114,6 +120,7 @@ export function ProjectDetailGoals({
                 onView={onView}
                 potentialProgress={potentialProgress}
                 project={project}
+                reachedByGoalId={reachedByGoalId}
                 reorderEnabled={reorderEnabled}
                 reorderPending={reorderPending}
                 rows={rowGroup.rows}
