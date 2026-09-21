@@ -66,6 +66,45 @@ describe("ManageProjectsSheet", () => {
     await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 
+  it("calls onCreated instead of closing when supplied, in create mode", async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    const onCreated = vi.fn()
+    const created = {
+      projectId: "p-new",
+      name: "New plan",
+      description: null,
+      color: null,
+      status: "Active",
+      isActivePlan: false,
+      isDefault: false,
+      revision: 0,
+    }
+    const actions = {
+      activate: vi.fn(),
+      create: vi.fn().mockResolvedValue(created),
+      pending: false,
+      reorder: vi.fn(),
+      save: vi.fn(),
+    }
+
+    render(
+      <ManageProjectsSheet
+        actions={actions as never}
+        onCreated={onCreated}
+        onOpenChange={onOpenChange}
+        open
+        project={undefined}
+      />
+    )
+
+    await user.type(screen.getByLabelText("goals.project.name"), "New plan")
+    await user.click(screen.getByText("goals.project.create"))
+
+    await vi.waitFor(() => expect(onCreated).toHaveBeenCalledWith(created))
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
   it("edits a pre-filled project and closes on success", async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()

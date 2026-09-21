@@ -22,12 +22,16 @@ import {
 } from "./project-removal"
 
 /**
- * "Remove this goal from this project" — the non-destructive peer of Delete. Removing the goal's last
- * membership relocates it to the Default project (see `planProjectRemoval`), and the destination's
- * goal-type slot is pre-flighted before the mutation so a collision is explained rather than
- * surfacing as a raw 409. The 409 handler stays as the backstop for the race between the two.
+ * The goal row's own project-removal action (`rework-goal-project-move-action`). When the goal has
+ * another membership besides the viewed project, `remove()` just leaves it — no destination needed.
+ * When the viewed project is the goal's only membership, the row instead offers "Move to project":
+ * `otherProjects()` lists the account's other non-archived projects for a picker, and `moveToExisting()`
+ * relocates there once the user picks one (or a project they just created). Both `remove()` and
+ * `moveToExisting()` share `submit()`, which pre-flights the destination's goal-type slot before the
+ * mutation so a collision is explained rather than surfacing as a raw 409 (the 409 handler stays as
+ * the backstop for the race between the two).
  */
-export function useRemoveGoalFromProject() {
+export function useMoveGoalFromProject() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const isAuthenticated = useIsAuthenticated()
@@ -54,16 +58,31 @@ export function useRemoveGoalFromProject() {
         .join(", "),
     })
 
-  /** What the row menu renders with: membership as the row carries it, no destination pre-flight. */
+  /** What the row renders with: membership as the row carries it, checked against the Default
+   *  project — used only to decide the row's affordance (plain Remove vs. Move to project vs.
+   *  disabled-while-loading), never to submit a mutation. */
   const planFor = (goal: GoalRow, projectId: string): ProjectRemovalPlan =>
     planProjectRemoval({
       memberships: (goal.projects ?? []).map((project) => project.projectId),
       projectId,
-      defaultProject,
+      destination: defaultProject,
       goal,
     })
 
-  const remove = async (goal: GoalRow, project: ProjectSummary) => {
+  /** The account's other non-archived projects besides `projectId`, for the "Move to project" picker.
+   *  Current plan is included — nothing about being Current plan makes a project an invalid
+   *  destination. */
+  const otherProjects = (projectId: string) =>
+    projects.filter(
+      (project) =>
+        project.status !== "Archived" && project.projectId !== projectId
+    )
+
+  const submit = async (
+    goal: GoalRow,
+    project: ProjectSummary,
+    destination: ProjectSummary | undefined
+  ) => {
     if (!isAuthenticated) return false
     setPendingGoalId(goal.goalId)
     try {
@@ -76,19 +95,17 @@ export function useRemoveGoalFromProject() {
       const memberships = detail.projectIds
       const relocating = memberships.every((id) => id === project.projectId)
       const destinationGoals =
-        relocating &&
-        defaultProject &&
-        defaultProject.projectId !== project.projectId
+        relocating && destination && destination.projectId !== project.projectId
           ? (
               await queryClient.fetchQuery(
-                projectQueries.goals(defaultProject.projectId)
+                projectQueries.goals(destination.projectId)
               )
             ).goals
           : []
       const plan = planProjectRemoval({
         memberships,
         projectId: project.projectId,
-        defaultProject,
+        destination,
         goal,
         destinationGoals,
       })
@@ -141,5 +158,25 @@ export function useRemoveGoalFromProject() {
     }
   }
 
-  return { planFor, remove, pendingGoalId }
+  /** Plain removal from the viewed project — no destination needed. If a race turns out to have made
+   *  this the goal's last membership after all (its other memberships were removed elsewhere since
+   *  this view loaded), falls back to the Default project, same as the membership editor does. */
+  const remove = (goal: GoalRow, project: ProjectSummary) =>
+    submit(goal, project, defaultProject)
+
+  /** Relocates the goal (whose viewed project is its only membership) to a user-chosen destination —
+   *  an existing project, or one just created via the "Create new project…" flow. */
+  const moveToExisting = (
+    goal: GoalRow,
+    project: ProjectSummary,
+    destination: ProjectSummary
+  ) => submit(goal, project, destination)
+
+  return {
+    planFor,
+    otherProjects,
+    remove,
+    moveToExisting,
+    pendingGoalId,
+  }
 }

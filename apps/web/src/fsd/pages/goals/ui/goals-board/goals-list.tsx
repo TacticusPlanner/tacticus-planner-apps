@@ -126,6 +126,7 @@ function GoalsTable({
               <TableRow
                 className="h-14 cursor-pointer data-[dragging]:opacity-60"
                 data-dragging={sortable.isDragging || undefined}
+                data-goal-id={row.goalId}
                 data-testid="goal-row"
                 key={row.goalId}
                 onClick={() => onView(row.goalId)}

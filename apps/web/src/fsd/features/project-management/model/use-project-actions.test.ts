@@ -12,10 +12,12 @@ const {
   activateProjectMock,
   updateProjectGoalOrderMock,
   updateProjectGoalsStatusMock,
+  createProjectMock,
 } = vi.hoisted(() => ({
   activateProjectMock: vi.fn(),
   updateProjectGoalOrderMock: vi.fn(),
   updateProjectGoalsStatusMock: vi.fn(),
+  createProjectMock: vi.fn(),
 }))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
@@ -36,6 +38,7 @@ vi.mock("@/entities/project", async (importOriginal) => {
     activateProject: activateProjectMock,
     updateProjectGoalOrder: updateProjectGoalOrderMock,
     updateProjectGoalsStatus: updateProjectGoalsStatusMock,
+    createProject: createProjectMock,
   }
 })
 
@@ -74,6 +77,7 @@ describe("useProjectActions", () => {
     activateProjectMock.mockReset()
     updateProjectGoalOrderMock.mockReset()
     updateProjectGoalsStatusMock.mockReset()
+    createProjectMock.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -211,5 +215,47 @@ describe("useProjectActions", () => {
 
     expect(toast.error).toHaveBeenCalled()
     expect(toast.success).not.toHaveBeenCalled()
+  })
+
+  it("returns the created project on success", async () => {
+    const created = {
+      projectId: "p-new",
+      name: "New Project",
+      description: null,
+      color: null,
+      status: "Active",
+      isActivePlan: false,
+      isDefault: false,
+      revision: 0,
+      createdAt: "2026-01-01",
+      updatedAt: "2026-01-01",
+    }
+    createProjectMock.mockResolvedValue(created)
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    let returned!: unknown
+    await act(async () => {
+      returned = await result.current.create("New Project", null, null)
+    })
+
+    expect(returned).toEqual(created)
+    expect(toast.success).toHaveBeenCalled()
+  })
+
+  it("returns null when project creation fails", async () => {
+    createProjectMock.mockRejectedValue(new Error("network error"))
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    let returned!: unknown
+    await act(async () => {
+      returned = await result.current.create("New Project", null, null)
+    })
+
+    expect(returned).toBeNull()
+    expect(toast.error).toHaveBeenCalled()
   })
 })

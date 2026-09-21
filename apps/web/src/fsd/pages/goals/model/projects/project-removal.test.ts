@@ -54,7 +54,7 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: ["proj-a", "proj-b", "proj-default"],
         projectId: "proj-a",
-        defaultProject: project(),
+        destination: project(),
         goal,
       })
     ).toEqual({ kind: "remove", projectIds: ["proj-b", "proj-default"] })
@@ -65,7 +65,7 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: ["proj-a"],
         projectId: "proj-a",
-        defaultProject: project(),
+        destination: project(),
         goal,
       })
     ).toEqual({
@@ -80,7 +80,7 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: ["proj-default"],
         projectId: "proj-default",
-        defaultProject: project(),
+        destination: project(),
         goal,
       })
     ).toEqual({ kind: "unavailable", reason: "lastMembershipIsDefault" })
@@ -90,7 +90,7 @@ describe("planProjectRemoval", () => {
     const plan = planProjectRemoval({
       memberships: ["proj-a"],
       projectId: "proj-a",
-      defaultProject: undefined,
+      destination: undefined,
       goal,
     })
 
@@ -103,7 +103,7 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: [],
         projectId: "proj-a",
-        defaultProject: project(),
+        destination: project(),
         goal,
       })
     ).toEqual({ kind: "unavailable", reason: "destinationUnknown" })
@@ -114,7 +114,7 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: ["proj-a"],
         projectId: "proj-a",
-        defaultProject: project(),
+        destination: project(),
         goal,
         destinationGoals: [member()],
       })
@@ -135,7 +135,7 @@ describe("planProjectRemoval", () => {
         planProjectRemoval({
           memberships: ["proj-a"],
           projectId: "proj-a",
-          defaultProject: project(),
+          destination: project(),
           goal: { ...goal, status },
           destinationGoals: [member()],
         })
@@ -148,7 +148,7 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: ["proj-a"],
         projectId: "proj-a",
-        defaultProject: project(),
+        destination: project(),
         goal,
         destinationGoals: [member({ status: "Completed" })],
       })
@@ -160,10 +160,55 @@ describe("planProjectRemoval", () => {
       planProjectRemoval({
         memberships: ["proj-a"],
         projectId: "proj-a",
-        defaultProject: project(),
+        destination: project(),
         goal,
         destinationGoals: [member({ entityId: "hero2" })],
       })
     ).toMatchObject({ kind: "relocate" })
+  })
+
+  it("relocates to a user-chosen destination that is not the Default project", () => {
+    const chosen = project({
+      projectId: "proj-chosen",
+      name: "Chosen Project",
+      isDefault: false,
+    })
+    expect(
+      planProjectRemoval({
+        memberships: ["proj-a"],
+        projectId: "proj-a",
+        destination: chosen,
+        goal,
+      })
+    ).toEqual({
+      kind: "relocate",
+      projectIds: ["proj-chosen"],
+      destination: chosen,
+    })
+  })
+
+  it("reports an occupied slot against a non-Default chosen destination", () => {
+    const chosen = project({
+      projectId: "proj-chosen",
+      name: "Chosen Project",
+      isDefault: false,
+    })
+    expect(
+      planProjectRemoval({
+        memberships: ["proj-a"],
+        projectId: "proj-a",
+        destination: chosen,
+        goal,
+        destinationGoals: [member()],
+      })
+    ).toEqual({
+      kind: "conflict",
+      conflict: {
+        projectId: "proj-chosen",
+        existingGoalId: "goal-other",
+        goalTypes: ["Rank"],
+      },
+      destination: chosen,
+    })
   })
 })
