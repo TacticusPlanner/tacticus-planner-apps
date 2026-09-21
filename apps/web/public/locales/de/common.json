@@ -1036,7 +1036,7 @@
   },
   "uiKit": {
     "navLabel": "UI-Kit-Abschnitte",
-    "subtitle": "Fokussierter shadcn-Komponentenkatalog fur die Planner-App v2.",
+    "subtitle": "Vorschau der wiederverwendbaren UI-Komponenten der App.",
     "title": "UI Kit",
     "sections": {
       "buttons": {
@@ -1044,11 +1044,11 @@
         "label": "Buttons"
       },
       "colors": {
-        "description": "Semantische Farben aus dem aktiven shadcn-Preset.",
+        "description": "Die semantische Farbpalette der App.",
         "label": "Farben"
       },
       "dataDisplay": {
-        "description": "Einfache Tabellennutzung und eine TanStack-Tabellenkomposition.",
+        "description": "Grundlegende Tabellennutzung und eine sortierbare, filterbare Datentabelle.",
         "label": "Datenanzeige"
       },
       "feedback": {
