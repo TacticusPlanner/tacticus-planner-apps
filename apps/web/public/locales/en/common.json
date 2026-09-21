@@ -555,7 +555,6 @@
       "resumeAllGoals": "Resume all goals"
     },
     "toasts": {
-      "statusChanged": "Goal updated.",
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
       "deleted": "Goal deleted.",
       "goalRemovedFromProject": "{{goal}} removed from {{project}}.",

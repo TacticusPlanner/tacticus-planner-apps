@@ -519,6 +519,58 @@ describe("ProjectDetailPage", () => {
     expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-a", "Paused")
   })
 
+  it("shows the new status immediately, before the pause request resolves", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-b" }), priority: 1 }],
+    })
+    let resolveRequest!: (value: unknown) => void
+    updateGoalStatus.mockReturnValue(
+      new Promise((resolve) => {
+        resolveRequest = resolve
+      })
+    )
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    const badge = await screen.findByTestId("goal-status-badge")
+    expect(badge).toHaveTextContent("goals.status.Active")
+
+    await user.click(screen.getByTestId("goal-row-pause-goal-b"))
+
+    // The request is still pending (resolveRequest not called yet) — the badge must already read
+    // Paused, not wait for the round trip.
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
+        "goals.status.Paused"
+      )
+    )
+
+    resolveRequest({})
+  })
+
+  it("reverts the optimistic status update when the pause request fails", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-b" }), priority: 1 }],
+    })
+    updateGoalStatus.mockRejectedValue(new Error("boom"))
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await screen.findByTestId("goal-status-badge")
+    await user.click(screen.getByTestId("goal-row-pause-goal-b"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalStatus).toHaveBeenCalledWith("goal-b", "Paused")
+    })
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
+        "goals.status.Active"
+      )
+    )
+  })
+
   it("pauses every applicable goal in the project via the header's bulk action", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({ goals: [] })

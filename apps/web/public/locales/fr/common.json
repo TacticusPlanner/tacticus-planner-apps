@@ -555,7 +555,6 @@
       "resumeAllGoals": "Reprendre tous les objectifs"
     },
     "toasts": {
-      "statusChanged": "Objectif mis à jour.",
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
       "deleted": "Objectif supprimé.",
       "goalRemovedFromProject": "{{goal}} retiré de {{project}}.",

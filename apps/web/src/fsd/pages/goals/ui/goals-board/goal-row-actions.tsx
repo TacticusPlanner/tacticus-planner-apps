@@ -60,11 +60,16 @@ export function GoalRowActions({
     actions.pendingIds.has(goalId) || removal.pendingGoalId === goalId
 
   const setStatus = (next: GoalStatus) => {
-    const cascadeIds =
+    const cascade =
       next === "Active" || next === "Paused"
-        ? cascadeTargets(row.dependsOn, next, cascadeContext)
+        ? cascadeTargets(row.dependsOn, next, cascadeContext).map((id) => ({
+            goalId: id,
+            // cascadeTargets only ever returns an id whose status cascadeContext already knows (it
+            // filters out anything else) — the fallback here is unreachable, not a real guess.
+            previousStatus: cascadeContext?.statusById.get(id) ?? next,
+          }))
         : []
-    void actions.setStatus(goalId, next, cascadeIds)
+    void actions.setStatus(goalId, next, row.status, cascade)
   }
   const removalPlan = project ? removal.planFor(row, project.projectId) : null
   const removalUnavailable =
