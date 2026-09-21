@@ -172,7 +172,7 @@
     "home": "Startseite",
     "homeDescription": "Kontoübersicht und Schnellzugriffe",
     "createGoal": "Ziel erstellen",
-    "goals": "Ziele",
+    "goals": "Plan",
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
     "progress": "Fortschritt",
     "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
@@ -429,7 +429,7 @@
     },
     "tabs": {
       "goals": "Ziele",
-      "overview": "Übersicht",
+      "overview": "Alle Ziele",
       "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
       "projects": "Projekte",
       "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
