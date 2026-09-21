@@ -172,7 +172,7 @@
     "home": "Accueil",
     "homeDescription": "Aperçu de votre compte et raccourcis",
     "createGoal": "Créer un objectif",
-    "goals": "Objectifs",
+    "goals": "Plan",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
     "progress": "Progression",
     "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
@@ -429,7 +429,7 @@
     },
     "tabs": {
       "goals": "Objectifs",
-      "overview": "Aperçu",
+      "overview": "Tous les objectifs",
       "overviewDescription": "Filtrez, triez et regroupez tous vos objectifs actifs.",
       "projects": "Projets",
       "projectsDescription": "Organisez vos objectifs en plans ciblés et maîtrisez leur priorité.",

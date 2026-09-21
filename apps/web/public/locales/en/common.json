@@ -172,7 +172,7 @@
     "home": "Home",
     "homeDescription": "Your account overview and quick links",
     "createGoal": "Create Goal",
-    "goals": "Goals",
+    "goals": "Plan",
     "goalsDescription": "Track progress toward your targets",
     "progress": "Progress",
     "progressDescription": "Your synced campaign and Onslaught progress",
@@ -429,7 +429,7 @@
     },
     "tabs": {
       "goals": "Goals",
-      "overview": "Overview",
+      "overview": "All Goals",
       "overviewDescription": "Filter, sort, and group all your active goals.",
       "projects": "Projects",
       "projectsDescription": "Organize goals into focused plans and control their priority.",
