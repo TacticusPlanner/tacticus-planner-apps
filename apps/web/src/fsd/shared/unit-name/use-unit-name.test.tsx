@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 
 const translations: Record<string, string> = {
   "characters:hero-translated": "Translated Hero",
+  "mows:mow-translated": "Translated Mow",
 }
 
 vi.mock("react-i18next", () => ({
@@ -22,7 +23,11 @@ vi.mock("@workspace/game-catalog/queries", () => ({
       ["hero-translated", { id: "hero-translated", name: "Catalog Hero" }],
       ["hero-plain", { id: "hero-plain", name: "Catalog Only Hero" }],
     ]),
-  getMowsMap: () => new Map([["mow-1", { id: "mow-1", name: "Stormbird" }]]),
+  getMowsMap: () =>
+    new Map([
+      ["mow-1", { id: "mow-1", name: "Stormbird" }],
+      ["mow-translated", { id: "mow-translated", name: "Catalog Mow" }],
+    ]),
 }))
 
 import { useUnitName } from "./use-unit-name"
@@ -42,7 +47,11 @@ describe("useUnitName", () => {
     expect(getResolver()("Character", "hero-plain")).toBe("Catalog Only Hero")
   })
 
-  it("resolves a Mow through the catalog", () => {
+  it("resolves a Mow through the mows namespace", () => {
+    expect(getResolver()("Mow", "mow-translated")).toBe("Translated Mow")
+  })
+
+  it("falls back to the catalog record's name for an untranslated Mow", () => {
     expect(getResolver()("Mow", "mow-1")).toBe("Stormbird")
   })
 
