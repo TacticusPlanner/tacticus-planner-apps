@@ -93,6 +93,69 @@ describe("CharacterLookupControls", () => {
     expect(screen.getAllByRole("combobox")).toHaveLength(5)
   })
 
+  // Render order (mobile): character combobox [0], rank start [1], rank end [2], progression
+  // start [3], progression end [4] — matches the JSX order and the combobox-count assertion
+  // above. RankSelect itself is generically tested (rank-select.test.tsx); these confirm
+  // CharacterLookupControls computes the right options to hand it.
+  it("offers the start select every rank up to and including the current end (LIB-02)", () => {
+    renderControls({
+      ...baseProps(),
+      isMobile: true,
+      rankStart: "Stone1",
+      rankEnd: "Iron1",
+    })
+
+    const [, startCombobox] = screen.getAllByRole("combobox")
+    fireEvent.click(startCombobox!)
+
+    const values = screen
+      .getAllByRole("option")
+      .map((option) => option.textContent)
+    expect(values).toContain("ranks.Iron1")
+    expect(values).toContain("ranks.Bronze1")
+  })
+
+  it("offers the end select every rank down to and including the current start (LIB-02/LIB-03)", () => {
+    renderControls({
+      ...baseProps(),
+      isMobile: true,
+      rankStart: "Stone1",
+      rankEnd: "Iron1",
+    })
+
+    const [, , endCombobox] = screen.getAllByRole("combobox")
+    fireEvent.click(endCombobox!)
+
+    const values = screen
+      .getAllByRole("option")
+      .map((option) => option.textContent)
+    expect(values).toContain("ranks.Stone1")
+  })
+
+  it("never offers either rank select a value beyond the ladder's maximum rank", () => {
+    renderControls({
+      ...baseProps(),
+      isMobile: true,
+      rankStart: "Stone1",
+      rankEnd: "Iron1",
+    })
+
+    const [, startCombobox, endCombobox] = screen.getAllByRole("combobox")
+
+    fireEvent.click(startCombobox!)
+    const startValues = screen
+      .getAllByRole("option")
+      .map((option) => option.textContent)
+    expect(startValues.at(-1)).toBe("ranks.Adamantine2")
+
+    fireEvent.click(startCombobox!) // close
+    fireEvent.click(endCombobox!)
+    const endValues = screen
+      .getAllByRole("option")
+      .map((option) => option.textContent)
+    expect(endValues.at(-1)).toBe("ranks.Adamantine2")
+  })
+
   it("toggles the point-five and include-owned switches", () => {
     const props = baseProps()
     renderControls(props)
