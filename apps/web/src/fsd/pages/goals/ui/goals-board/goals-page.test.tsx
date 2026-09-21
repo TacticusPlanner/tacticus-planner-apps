@@ -187,6 +187,11 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
 }))
 
+vi.mock("react-router", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router")>()),
+  useNavigate: () => vi.fn(),
+}))
+
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 

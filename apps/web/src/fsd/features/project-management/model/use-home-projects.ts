@@ -7,6 +7,7 @@ import {
 } from "@/entities/project"
 
 import type { ProjectCardSummary } from "../ui/project-row"
+import { orderCurrentPlanFirst } from "./order-current-plan-first"
 
 /** Current plan + up to 2 more non-archived projects (home-projects-widget spec: "Current plan
  * project first ... followed by up to 2 additional non-archived projects (3 project cards
@@ -38,11 +39,7 @@ export function useHomeProjects(
 ): HomeProjectsResult {
   const { fetchState, loading, projects, retry } = useProjects()
 
-  const current = projects.find((project) => project.isActivePlan)
-  const others = projects.filter(
-    (project) => !project.isActivePlan && project.status !== "Archived"
-  )
-  const ordered = current ? [current, ...others] : others
+  const ordered = orderCurrentPlanFirst(projects)
   const visible = limit === null ? ordered : ordered.slice(0, limit)
   const remainingCount =
     limit === null ? 0 : Math.max(0, ordered.length - limit)

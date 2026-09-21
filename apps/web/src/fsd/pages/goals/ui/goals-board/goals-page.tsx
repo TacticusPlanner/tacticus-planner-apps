@@ -40,6 +40,7 @@ import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalsList } from ".//goals-list"
+import { OverviewProjectQuicknav } from "./overview-project-quicknav"
 import { buildCascadeContext } from "./goal-row-utils"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
@@ -282,6 +283,14 @@ export function GoalsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
+      {/* overview-project-quicknav spec: a project jump-to row/widget above the control row below -
+          not part of goals-navigation's control row itself. */}
+      <OverviewProjectQuicknav
+        projects={projects.projects}
+        projectsFailed={projects.fetchState.status === "error"}
+        projectsLoading={projects.loading}
+      />
+
       {/* goals-navigation spec: desktop merges the status filter, Type/Sort/Group filters, and
           Planning Settings into a single row; mobile keeps the status filter in its own row and
           compresses the filters + Planning Settings to icon-only triggers in a second row. */}

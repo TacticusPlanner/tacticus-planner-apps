@@ -502,6 +502,8 @@
       "removeFromProject": "Aus diesem Projekt entfernen",
       "removeLastMembership": "Dies ist das einzige Projekt des Ziels, und es gibt kein anderes Ziel dafür. Füge es zuerst einem anderen Projekt hinzu.",
       "removeDestinationUnknown": "Deine Projekte sind noch nicht geladen, deshalb gibt es kein Ziel für dieses Vorhaben. Versuche es gleich noch einmal.",
+      "quicknavLabel": "Zu einem Projekt springen",
+      "quicknavAllProjects": "Alle Projekte",
       "addGoalsTrigger": "Ziele hinzufügen",
       "addGoalsTitle": "Ziele zu diesem Projekt hinzufügen",
       "addGoalsDescription": "Durchsuche deine Ziele und füge sie zu {{project}} hinzu. Bereits enthaltene Ziele bleiben unverändert.",
