@@ -126,9 +126,9 @@ The page header SHALL display a short description beneath its title, on both des
 
 ### Requirement: Entering a section navigates to its last-visited child on desktop, defaulting to that section's default child on first entry
 
-For a top-level section with more than one child page, activating that section's entry point in the desktop sidebar SHALL navigate to the child route the user most recently visited within that section during the current session. Before the user has visited any child of that section in the session, it SHALL navigate to that section's existing default child route.
+For a top-level section with more than one child page, activating that section's entry point in the desktop sidebar SHALL navigate to the child route the user most recently visited within that section during the current session. Before the user has visited any child of that section in the session, it SHALL navigate to that section's existing default child route. For the Plan section specifically (formerly labelled Goals), that default child route is not a fixed route: it resolves to the account's Current plan project's detail route, falling back to the account's Default project when there is no Current plan, and to All Goals (formerly labelled Overview) when the account has no projects at all yet. Every other section's default child route remains the fixed route it is today, unaffected.
 
-This applies to the desktop sidebar only. On mobile, sections reachable via the drawer already expose every child page as its own direct link, so there is no hidden default to resolve there, and the Goals section's primary bottom-bar entry continues to navigate to its own existing default (Board) view, unaffected by this requirement. It also applies only to sections with more than one child route on desktop — a section with a single child route continues to navigate to its existing default/index route unchanged.
+This applies to the desktop sidebar only. On mobile, sections reachable via the drawer already expose every child page as its own direct link, so there is no hidden default to resolve there, and the Plan section's primary bottom-bar entry resolves the same default described above every time it is activated — mobile has no last-visited-child memory, so every activation is a "first entry." It also applies only to sections with more than one child route on desktop — a section with a single child route continues to navigate to its existing default/index route unchanged.
 
 #### Scenario: First entry into a multi-child section uses its default child
 
@@ -159,6 +159,30 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 - **WHEN** a user visits `/dailies/shops` (via the sidebar flyout, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
 - **THEN** they land on `/dailies/shops`, not Dailies' default child (`/dailies/raids`) — Dailies is not special-cased once it has more than one child route
+
+#### Scenario: Plan's default resolves to Current plan's project
+
+- **GIVEN** the account has a Current plan project and has not visited any Plan child page this session
+- **WHEN** the user activates the Plan entry (desktop sidebar first entry, or the mobile bottom-bar entry)
+- **THEN** they land on that project's detail route (`/goals/projects/{id}`), not All Goals
+
+#### Scenario: Plan falls back to the Default project when there is no Current plan
+
+- **GIVEN** the account has projects but none is marked Current plan, and has not visited any Plan child page this session
+- **WHEN** the user activates the Plan entry
+- **THEN** they land on the account's Default project's detail route
+
+#### Scenario: Plan falls back to All Goals when the account has no projects
+
+- **GIVEN** the account has no projects at all, and has not visited any Plan child page this session
+- **WHEN** the user activates the Plan entry
+- **THEN** they land on All Goals (`/goals/overview`)
+
+#### Scenario: Plan's last-visited-child memory still overrides the dynamic default on desktop
+
+- **GIVEN** the account has a Current plan project, and the user has visited Projects (`/goals/projects`) earlier this session
+- **WHEN** the user clicks the Plan entry in the desktop sidebar
+- **THEN** they land on Projects, not the Current plan project's detail route — last-visited-child memory takes precedence over the dynamic default, the same as it would for any other section's fixed default
 
 ### Requirement: The shared page header hosts a section's child-page picker
 
