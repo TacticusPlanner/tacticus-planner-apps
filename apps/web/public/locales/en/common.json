@@ -505,6 +505,8 @@
       "removeFromProject": "Remove from this project",
       "removeLastMembership": "This is the goal's only project, and it has nowhere else to go. Add it to another project first.",
       "removeDestinationUnknown": "Your projects aren't loaded yet, so this goal has no destination. Try again in a moment.",
+      "quicknavLabel": "Jump to a project",
+      "quicknavAllProjects": "All projects",
       "addGoalsTrigger": "Add goals",
       "addGoalsTitle": "Add goals to this project",
       "addGoalsDescription": "Search your goals and add them to {{project}}. Goals already in it stay where they are.",
