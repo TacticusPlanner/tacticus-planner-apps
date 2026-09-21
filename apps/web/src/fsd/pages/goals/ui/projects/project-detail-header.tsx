@@ -26,6 +26,7 @@ import {
   type GoalStatusFilterCounts,
   type GoalStatusFilterValue,
 } from "@/entities/goal"
+import { formatEstimateDate } from "@/shared/lib"
 import { ProjectSelect, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "@/features/project-management"
 
@@ -57,6 +58,7 @@ export function ProjectDetailHeader({
   reachedCount,
   blockedCount,
   completionDate,
+  unestimatedGoalCount,
   statusFilter,
   onStatusFilterChange,
   statusFilterCounts,
@@ -81,13 +83,14 @@ export function ProjectDetailHeader({
   reachedCount: number
   blockedCount: number
   completionDate: string | null | undefined
+  unestimatedGoalCount: number
   statusFilter: GoalStatusFilterValue
   onStatusFilterChange: (value: GoalStatusFilterValue) => void
   statusFilterCounts: GoalStatusFilterCounts
   group: GoalGroupValue
   onGroupChange: (value: GoalGroupValue) => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   return (
     <Card data-testid="project-detail-header">
@@ -246,9 +249,25 @@ export function ProjectDetailHeader({
           <span>
             {t("goals.project.blockedSummary", { count: blockedCount })}
           </span>
+          {/* No placeholder when there is no date: this line is a run of inline spans, and a
+              dangling dash beside the reached/blocked counts reads as a broken value rather than an
+              absent one (plan-completion-outlook, design Decision 5). The exclusion count below
+              carries the "why" in either case. */}
           {completionDate ? (
             <span>
-              {t("goals.project.completionSummary", { date: completionDate })}
+              {t("goals.project.completionSummary", {
+                date: formatEstimateDate(
+                  completionDate,
+                  i18n.resolvedLanguage ?? "en"
+                ),
+              })}
+            </span>
+          ) : null}
+          {unestimatedGoalCount > 0 ? (
+            <span data-testid="project-completion-excluded">
+              {t("goals.insights.completionExcluded", {
+                count: unestimatedGoalCount,
+              })}
             </span>
           ) : null}
         </div>

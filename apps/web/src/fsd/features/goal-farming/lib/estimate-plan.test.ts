@@ -230,3 +230,101 @@ describe("bonus raids", () => {
     ])
   })
 })
+
+describe("shared daily energy budget (goal-farming-estimates)", () => {
+  // The spec's worked example: one 100-energy day, a 10-energy node per raid with no binding
+  // attempt cap, so each day funds 10 raids that the goals must share in priority order.
+  const workedExample = (trajannPriority: number, aesothPriority: number) =>
+    estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "trajann",
+          priority: trajannPriority,
+          needs: [{ id: upgradeId("U1"), count: 25 }],
+        },
+        {
+          goalId: "aesoth",
+          priority: aesothPriority,
+          needs: [{ id: upgradeId("U2"), count: 10 }],
+        },
+      ],
+      upgradesById: resources(["U1", "B1"], ["U2", "B2"]),
+      battlesById: new Map([battle("B1"), battle("B2")]),
+      dailyEnergy: 100,
+      inventory: [],
+      referenceDate,
+    })
+
+  it("makes a lower-priority goal wait for the energy a higher-priority goal leaves", () => {
+    const plan = workedExample(1, 2)
+
+    // Days 1-2 go entirely to Trajann (10 raids each); day 3 finishes its last 5 raids and hands
+    // the surviving 50 energy to Aesoth; day 4 finishes Aesoth's last 5.
+    expect(plan.outcomes.get("trajann")?.days).toBe(3)
+    expect(plan.outcomes.get("aesoth")?.days).toBe(4)
+    expect(plan.days.map((day) => day.raidsTotal)).toEqual([10, 10, 10, 5])
+  })
+
+  it("estimates the same lower-priority goal alone in a single day", () => {
+    const plan = estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "aesoth",
+          priority: 2,
+          needs: [{ id: upgradeId("U2"), count: 10 }],
+        },
+      ],
+      upgradesById: resources(["U2", "B2"]),
+      battlesById: new Map([battle("B2")]),
+      dailyEnergy: 100,
+      inventory: [],
+      referenceDate,
+    })
+
+    // The divergence V1 reports: per-material budgeting would date Aesoth here, not on day 4.
+    expect(plan.outcomes.get("aesoth")?.days).toBe(1)
+  })
+
+  it("reorders the dates when the priorities are reordered", () => {
+    const plan = workedExample(2, 1)
+
+    // Not a mirror of the 3/4 base case: Aesoth alone finishes in one day, and Trajann then farms
+    // on the remainder for four.
+    expect(plan.outcomes.get("aesoth")?.days).toBe(1)
+    expect(plan.outcomes.get("trajann")?.days).toBe(4)
+  })
+
+  it("lets an energy-free supplier complete a goal on a day the pool is exhausted", () => {
+    const plan = estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "trajann",
+          priority: 1,
+          needs: [{ id: upgradeId("U1"), count: 25 }],
+        },
+        {
+          goalId: "aesoth",
+          priority: 2,
+          needs: [{ id: upgradeId("U2"), count: 10 }],
+          flatSuppliers: [
+            {
+              key: "shop:daily",
+              resourceId: upgradeId("U2"),
+              supplyOnDay: () => 10,
+            },
+          ],
+        },
+      ],
+      upgradesById: resources(["U1", "B1"], ["U2", "B2"]),
+      battlesById: new Map([battle("B1"), battle("B2")]),
+      dailyEnergy: 100,
+      inventory: [],
+      referenceDate,
+    })
+
+    expect(plan.outcomes.get("aesoth")?.days).toBe(1)
+    expect(plan.outcomes.get("trajann")?.days).toBe(3)
+    // Day 1's energy all went to Trajann; Aesoth finished without spending any.
+    expect(plan.days[0]?.energyTotal).toBe(100)
+  })
+})

@@ -243,6 +243,7 @@ export function ProjectDetailPage() {
         accountGoalTotal={accountGoalTotal}
         blockedCount={blockedCount}
         completionDate={insights.completionDate}
+        unestimatedGoalCount={insights.unestimatedGoalCount}
         goalCount={nonArchivedRows.length}
         isMobile={isMobile}
         mobileReorderActive={mobileReorderActive}

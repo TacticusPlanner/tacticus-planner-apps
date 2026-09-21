@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Calendar } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -7,6 +6,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+
+import { formatEstimateDate } from "@/shared/lib"
 
 import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
@@ -32,25 +33,15 @@ export function EstimateCell({
   estimate: EstimateOutcome | undefined
 }) {
   const { t, i18n } = useTranslation()
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
-        month: "short",
-        day: "numeric",
-        timeZone: "UTC",
-      }),
-    [i18n.resolvedLanguage]
-  )
   if (!estimate || estimate.status === "Blocked") {
     return null
   }
-  // `estimate.date` is a "YYYY-MM-DD" string produced in UTC (estimate.ts's formatDate); parsing its
-  // components explicitly via Date.UTC keeps the displayed day from rolling back for viewers west of
-  // UTC, rather than trusting `new Date(dateString)`'s default (also-UTC, but easy to get wrong) or
-  // the formatter's default local time zone.
-  const [year, month, day] = estimate.date.split("-").map(Number)
-  const formattedDate = dateFormatter.format(
-    new Date(Date.UTC(year, month - 1, day))
+  // Shared with the project surfaces, which render the same date from the features layer and so
+  // cannot import it from here — see `shared/lib/format-estimate-date`, which also documents the
+  // UTC parsing this value needs.
+  const formattedDate = formatEstimateDate(
+    estimate.date,
+    i18n.resolvedLanguage ?? "en"
   )
   return (
     <span

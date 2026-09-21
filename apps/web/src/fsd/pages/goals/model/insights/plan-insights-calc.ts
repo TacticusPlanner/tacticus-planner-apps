@@ -348,21 +348,30 @@ export function computePlanInsights(params: {
     if (ratio !== null) potentialProgressByGoalId.set(detail.goalId, ratio)
   }
 
+  // The projected completion date is the latest date among the goals that *can* be estimated, and
+  // `unestimatedGoalCount` reports the rest — a single blocked goal no longer erases the whole
+  // plan's date (plan-completion-outlook). `energyTotal` has always been reported over this same
+  // estimable subset; the date was the odd one out.
   let energyTotal = 0
   let completionDate: string | null = null
-  let anyUnreachable = false
+  let estimatedGoalCount = 0
   for (const goal of goalNeeds) {
     const result = estimateResults.get(goal.goalId)
-    if (!result || result.status === "Blocked") {
-      anyUnreachable = true
-      continue
-    }
+    if (!result || result.status === "Blocked") continue
+    estimatedGoalCount++
     energyTotal += result.energyTotal
     if (!completionDate || result.date > completionDate) {
       completionDate = result.date
     }
   }
-  if (anyUnreachable) completionDate = null
+  // Counted against the project's own goals, not `goalNeeds`: that array is already filtered above
+  // (needs-or-stages plus a resolved priority), and an orb-only Ascension goal goes to
+  // `orbGoalNeeds` instead — counting skips inside the loop would silently undercount and make a
+  // project of such goals indistinguishable from an empty one.
+  const unestimatedGoalCount = Math.max(
+    0,
+    params.details.length - estimatedGoalCount
+  )
 
   // Bottlenecks: the aggregated (not per-goal) remaining count for each distinct farmable resource,
   // ranked by energy-to-clear at its cheapest node — the resources most likely to gate the plan.
@@ -430,7 +439,10 @@ export function computePlanInsights(params: {
       onslaughtDate.getUTCDate() + Math.ceil(onslaughtDays)
     )
     const value = onslaughtDate.toISOString().slice(0, 10)
-    if (!completionDate || value > completionDate) completionDate = value
+    // Extends an existing date, never creates one: with nothing estimable there is no plan date to
+    // push out, and a bare token-accumulation day is a completion date anchored to no goal at all
+    // (plan-completion-outlook).
+    if (completionDate && value > completionDate) completionDate = value
   }
 
   return {
@@ -441,6 +453,7 @@ export function computePlanInsights(params: {
     estimates: estimateResults,
     potentialProgressByGoalId,
     completionDate,
+    unestimatedGoalCount,
     bottlenecks,
     campaignInsights,
     eventInsights,

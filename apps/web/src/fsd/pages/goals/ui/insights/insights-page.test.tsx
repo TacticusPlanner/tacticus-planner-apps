@@ -33,6 +33,8 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
       opts?.defaultValue ?? key,
+    // Read by `formatEstimateDate` for the plan's completion date.
+    i18n: { resolvedLanguage: "en" },
   }),
 }))
 

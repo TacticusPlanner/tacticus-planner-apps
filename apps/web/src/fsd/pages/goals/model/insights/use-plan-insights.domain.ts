@@ -30,9 +30,15 @@ export interface PlanInsightsResult {
   onslaughtDays: number
   estimates: ReadonlyMap<string, EstimateOutcome>
   potentialProgressByGoalId: Map<string, number>
-  /** The latest per-goal completion date across the plan (ISO `yyyy-mm-dd`); `null` when nothing is
-   *  farmable yet, or any farmable goal can never complete within the simulator's day budget. */
+  /** The latest completion date (ISO `yyyy-mm-dd`) among the plan's goals that could be estimated,
+   *  extended by Onslaught token accumulation when the plan needs more tokens than the account
+   *  holds. `null` only when *no* goal in the plan could be estimated — a goal that is blocked or
+   *  uncostable is excluded from the maximum rather than suppressing it (`unestimatedGoalCount`). */
   completionDate: string | null
+  /** How many of the plan's goals are *not* behind `completionDate` — blocked, unestimated, or
+   *  filtered out before estimation. Surfaces showing the date must show this alongside it, so a
+   *  partial date never reads as covering the whole plan (see the `plan-completion-outlook` spec). */
+  unestimatedGoalCount: number
   bottlenecks: PlanInsightsBottleneck[]
   campaignInsights: CampaignInsight<EstimateResourceId>[]
   eventInsights: CampaignInsight<EstimateResourceId>[]
@@ -50,6 +56,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   estimates: new Map(),
   potentialProgressByGoalId: new Map(),
   completionDate: null,
+  unestimatedGoalCount: 0,
   bottlenecks: [],
   campaignInsights: [],
   eventInsights: [],

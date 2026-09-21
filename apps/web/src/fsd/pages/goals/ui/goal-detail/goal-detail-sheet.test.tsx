@@ -15,6 +15,9 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
+    // The Estimate section renders `EstimateCell`, which formats the completion date with
+    // `Intl.DateTimeFormat(i18n.resolvedLanguage, ...)` — same shape goal-detail-view.test.tsx uses.
+    i18n: { resolvedLanguage: "en" },
   }),
 }))
 
@@ -318,17 +321,11 @@ describe("GoalDetailSheet", () => {
     expect(
       screen.getByText("goals.detail.isolatedEstimate")
     ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        (_, element) =>
-          element?.tagName === "P" &&
-          Boolean(
-            element.textContent?.includes(
-              'goals.create.previewEstimate:{"days":3}'
-            )
-          )
-      )
-    ).toBeInTheDocument()
+    // The Estimate section now renders the Goals list's own date-and-days cell rather than a
+    // days-only line (goal-detail-estimate-display: "shows a completion date and day count").
+    const estimate = screen.getByTestId("goal-row-estimate")
+    expect(estimate).toHaveTextContent("Jan 8")
+    expect(estimate).toHaveTextContent('goals.estimate.days:{"days":3}')
     // View mode has no editable fields yet.
     expect(
       screen.queryByLabelText("goals.detail.notes")

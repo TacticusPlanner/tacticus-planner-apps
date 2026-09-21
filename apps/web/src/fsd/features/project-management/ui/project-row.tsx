@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { formatEstimateDate } from "@/shared/lib"
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
 
@@ -37,6 +38,9 @@ export type ProjectCardSummary =
       reached?: number
       blocked?: number
       completionDate?: string | null
+      /** How many of the project's goals are not behind `completionDate` (plan-completion-outlook).
+       *  Shown whether or not a date is, so an omitted date never reads as "no information". */
+      unestimatedGoalCount?: number
     }
 
 /** A project's row: color dot, name, progress summary, and lifecycle actions. */
@@ -47,7 +51,7 @@ export function ProjectRow({
   onSelect,
   summary,
 }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const archived = project.status === "Archived"
   const archiveDisabled =
     actions.pending || project.isDefault || project.isActivePlan
@@ -90,7 +94,17 @@ export function ProjectRow({
             {summary.completionDate ? (
               <span>
                 {t("goals.project.completionSummary", {
-                  date: summary.completionDate,
+                  date: formatEstimateDate(
+                    summary.completionDate,
+                    i18n.resolvedLanguage ?? "en"
+                  ),
+                })}
+              </span>
+            ) : null}
+            {summary.unestimatedGoalCount ? (
+              <span data-testid="project-row-completion-excluded">
+                {t("goals.insights.completionExcluded", {
+                  count: summary.unestimatedGoalCount,
                 })}
               </span>
             ) : null}
