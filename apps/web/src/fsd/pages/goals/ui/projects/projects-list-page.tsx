@@ -115,6 +115,7 @@ export function ProjectsListPage() {
                 currentMetrics.get(entry.goal.goalId)?.blockers.isBlocked
             ).length,
             completionDate: currentInsights.completionDate,
+            unestimatedGoalCount: currentInsights.unestimatedGoalCount,
           }
         : {}),
     })

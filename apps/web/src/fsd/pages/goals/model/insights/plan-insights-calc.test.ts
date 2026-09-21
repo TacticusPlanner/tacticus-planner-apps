@@ -5,6 +5,7 @@ import type {
   CharacterStorageModel,
   GameCatalogShop,
   MowStorageModel,
+  OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -720,5 +721,248 @@ describe("computePlanInsights", () => {
     expect(result.totals.shards).toBe(0)
     expect(result.energyTotal).toBe(0)
     expect(result.estimates.has("goal-1")).toBe(false)
+  })
+
+  // plan-completion-outlook: the projected date covers the goals that can be estimated, and the
+  // rest are counted rather than erasing it.
+  const onslaughtParams = {
+    onslaughtProgress: {
+      imperial: { sector: "Stone" as const, tier: 1 as const },
+      xenos: { sector: "Diamond" as const, tier: 1 as const },
+      chaos: { sector: "Stone" as const, tier: 1 as const },
+      revision: 2,
+    },
+    onslaughtRewards: [
+      {
+        id: "Diamond-1",
+        sector: "Diamond",
+        tier: 1,
+        regular: [
+          { min: 3, max: 4 },
+          { min: 4, max: 5 },
+          { min: 6, max: 7 },
+          { min: 10, max: 11 },
+          { min: 16, max: 20 },
+        ],
+        mythic: { min: 1, max: 2 },
+      },
+    ] as unknown as OnslaughtRewardStorageModel[],
+  }
+
+  const ascensionWithOnslaught = (shards: number) => ({
+    details: [
+      goalDetail({
+        goalType: "Ascension",
+        config: {
+          rank: null,
+          progression: { start: "Common:None", end: "Common:OneStar" },
+          ability: null,
+          farmingStrategy: "TotalUpgrades" as const,
+          farmingLocationIds: null,
+          upgrade: null,
+          level: null,
+          acquisitionSources: [{ kind: "Onslaught", ids: [] }],
+        },
+      }),
+    ],
+    priorityByGoalId: new Map([["goal-1", 1]]),
+    ascensionCostsById: new Map([
+      [
+        "Common:OneStar",
+        {
+          id: "Common:OneStar",
+          progression: "Common:OneStar",
+          shards,
+          mythicShards: 0,
+          orbs: 0,
+          orbRarity: null,
+        } as AscensionCostStorageModel,
+      ],
+    ]),
+    ...onslaughtParams,
+  })
+
+  const rankRange = {
+    start: rankIndex(rankOrder[0]),
+    startPointFive: false,
+    startAppliedUpgrades: 0,
+    end: rankIndex(rankOrder[1]),
+    endPointFive: false,
+    endAppliedUpgrades: 0,
+  }
+  const rankConfig = {
+    rank: rankRange,
+    progression: null,
+    ability: null,
+    farmingStrategy: "TotalUpgrades" as const,
+    acquisitionSources: null,
+    farmingLocationIds: null,
+    upgrade: null,
+    level: null,
+  }
+  const strandedUpgrade: UpgradeWithFarmLocations = {
+    ...upgrade,
+    id: upgradeId("stranded"),
+    label: "Stranded Material",
+    farmLocations: [],
+  }
+  const strandedCharacter: Character = {
+    id: unitId("hero2"),
+    name: "Hero Two",
+    rankUpUpgrades: [
+      { rank: rankOrder[0], upgradeIds: [upgradeId("stranded")] },
+    ],
+  }
+  const mixedParams = {
+    ...baseParams,
+    upgradesById: new Map([
+      [upgrade.id, upgrade],
+      [secondUpgrade.id, secondUpgrade],
+      [strandedUpgrade.id, strandedUpgrade],
+    ]),
+    charactersById: new Map([
+      ["hero1", characterView],
+      ["hero2", { ...characterView, id: "hero2" } as CharacterStorageModel],
+    ]),
+    getCharacter: (id: UnitId) =>
+      id === character.id
+        ? character
+        : id === strandedCharacter.id
+          ? strandedCharacter
+          : undefined,
+  }
+
+  it("reports a date over the estimable goals and counts the blocked one", () => {
+    const result = computePlanInsights({
+      ...mixedParams,
+      details: [
+        goalDetail({ goalId: "goal-1", goalType: "Rank", config: rankConfig }),
+        goalDetail({
+          goalId: "goal-2",
+          entityId: "hero2",
+          goalType: "Rank",
+          config: rankConfig,
+        }),
+      ],
+      priorityByGoalId: new Map([
+        ["goal-1", 1],
+        ["goal-2", 2],
+      ]),
+    })
+
+    expect(result.estimates.get("goal-2")).toMatchObject({ status: "Blocked" })
+    // Previously this collapsed to null the moment any goal was blocked.
+    expect(result.completionDate).toBe(
+      result.estimates.get("goal-1")?.date ?? null
+    )
+    expect(result.unestimatedGoalCount).toBe(1)
+  })
+
+  it("reports no date, and counts every goal, when nothing can be estimated", () => {
+    const result = computePlanInsights({
+      ...mixedParams,
+      details: [
+        goalDetail({
+          goalId: "goal-2",
+          entityId: "hero2",
+          goalType: "Rank",
+          config: rankConfig,
+        }),
+      ],
+      priorityByGoalId: new Map([["goal-2", 1]]),
+    })
+
+    expect(result.completionDate).toBeNull()
+    expect(result.unestimatedGoalCount).toBe(1)
+  })
+
+  it("counts goals filtered out before estimation, unlike an empty project", () => {
+    // An Ability goal is uncostable here, so it never reaches `goalNeeds` at all - it must still
+    // read as excluded rather than as "this project has nothing in it".
+    const filteredOut = computePlanInsights({
+      ...baseParams,
+      details: [goalDetail({ goalType: "Ability" })],
+      priorityByGoalId: new Map([["goal-1", 1]]),
+    })
+    const empty = computePlanInsights({
+      ...baseParams,
+      details: [],
+      priorityByGoalId: new Map(),
+    })
+
+    expect(filteredOut.completionDate).toBeNull()
+    expect(filteredOut.unestimatedGoalCount).toBe(1)
+    expect(empty.completionDate).toBeNull()
+    expect(empty.unestimatedGoalCount).toBe(0)
+  })
+
+  it("does not turn an Onslaught shortfall into a date when nothing is estimable", () => {
+    const result = computePlanInsights({
+      ...baseParams,
+      ...ascensionWithOnslaught(100_000),
+      currentOnslaughtTokens: 0,
+    })
+
+    expect(result.estimates.get("goal-1")).toMatchObject({ status: "Blocked" })
+    expect(result.onslaughtDays).toBeGreaterThan(0)
+    // The token-accumulation day extends a real completion date; it never stands in for one.
+    expect(result.completionDate).toBeNull()
+    expect(result.unestimatedGoalCount).toBe(1)
+  })
+
+  it("still extends an existing date past every goal's own date on a shortfall", () => {
+    // A generous shop offer clears the 100-shard need in days, while the same need implies ~29
+    // Onslaught tokens the account does not hold - so the plan genuinely cannot finish until those
+    // tokens accumulate, well after the goal's own farming date.
+    const shops: GameCatalogShop[] = [
+      {
+        id: "guild",
+        displayLocation: "guildMerchant",
+        refreshWithAdWatch: true,
+        allowedRefreshesPerDay: 1,
+        slots: [
+          {
+            variants: [
+              {
+                reward: { type: "shards_hero1", qty: 50 },
+                days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                cost: { currency: "guildCredits", amount: 100 },
+                maxPurchasesPerDay: 1,
+                weight: 1,
+                unitId: "hero1",
+              },
+            ],
+          },
+        ],
+      } as GameCatalogShop,
+    ]
+    const base = ascensionWithOnslaught(100)
+    const result = computePlanInsights({
+      ...baseParams,
+      ...base,
+      details: [
+        goalDetail({
+          goalType: "Ascension",
+          config: {
+            ...base.details[0]!.config,
+            acquisitionSources: [
+              { kind: "Onslaught", ids: [] },
+              { kind: "Shop", ids: ["guild:shards_hero1"] },
+            ],
+          },
+        }),
+      ],
+      shops,
+      currentOnslaughtTokens: 0,
+    })
+
+    const goalDate = result.estimates.get("goal-1")?.date
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      status: "Estimated",
+    })
+    expect(result.onslaughtDays).toBeGreaterThan(5)
+    expect(result.unestimatedGoalCount).toBe(0)
+    // Strictly later: this is the extension firing, not the goal's own date passing through.
+    expect(result.completionDate! > goalDate!).toBe(true)
   })
 })

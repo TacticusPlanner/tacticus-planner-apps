@@ -76,6 +76,7 @@ export function InsightsPage() {
           <InsightsSummary
             bottlenecks={result.bottlenecks}
             completionDate={result.completionDate}
+            unestimatedGoalCount={result.unestimatedGoalCount}
             energyTotal={result.energyTotal}
             onslaughtTokens={result.onslaughtTokens}
             onslaughtDays={result.onslaughtDays}

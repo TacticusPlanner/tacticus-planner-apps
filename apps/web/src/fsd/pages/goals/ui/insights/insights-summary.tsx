@@ -9,6 +9,7 @@ import {
 import type { Rarity } from "@workspace/game-domain"
 import { ASSET_BASE_PATH } from "@workspace/game-catalog"
 
+import { formatEstimateDate } from "@/shared/lib"
 import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
 
 import type {
@@ -26,6 +27,7 @@ export function InsightsSummary({
   onslaughtTokens,
   onslaughtDays,
   completionDate,
+  unestimatedGoalCount,
   bottlenecks,
 }: {
   totals: PlanInsightsTotals
@@ -33,9 +35,10 @@ export function InsightsSummary({
   onslaughtTokens: number
   onslaughtDays: number
   completionDate: string | null
+  unestimatedGoalCount: number
   bottlenecks: PlanInsightsBottleneck[]
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const upgradeEntries = Object.entries(totals.upgradesByRarity) as [
     Rarity,
@@ -166,9 +169,25 @@ export function InsightsSummary({
               className="font-medium"
               data-testid="insights-completion-date"
             >
-              {completionDate ?? t("goals.insights.completionUnknown")}
+              {formatEstimateDate(
+                completionDate,
+                i18n.resolvedLanguage ?? "en"
+              ) ?? t("goals.insights.completionUnknown")}
             </span>
           </div>
+          {/* The date covers only the goals that could be estimated, so the count of the rest
+              travels with it — a partial date alone would read as covering the whole plan
+              (plan-completion-outlook). Rendered whether or not a date is. */}
+          {unestimatedGoalCount > 0 ? (
+            <p
+              className="text-xs text-muted-foreground"
+              data-testid="insights-completion-excluded"
+            >
+              {t("goals.insights.completionExcluded", {
+                count: unestimatedGoalCount,
+              })}
+            </p>
+          ) : null}
         </CardContent>
       </Card>
 

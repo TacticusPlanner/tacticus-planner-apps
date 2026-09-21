@@ -4,7 +4,11 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { init: () => undefined, type: "3rdParty" },
-  useTranslation: () => ({ t: (key: string) => key }),
+  // `i18n.resolvedLanguage` is read by `formatEstimateDate` for the completion date.
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { resolvedLanguage: "en" },
+  }),
 }))
 
 import { ProjectRow } from "./project-row"
@@ -85,6 +89,7 @@ describe("ProjectRow", () => {
             reached: 2,
             blocked: 1,
             completionDate: "2026-09-01",
+            unestimatedGoalCount: 0,
           }}
         />
       </ul>
@@ -97,6 +102,67 @@ describe("ProjectRow", () => {
     expect(screen.getByText("goals.project.blockedSummary")).toBeInTheDocument()
     expect(
       screen.getByText("goals.project.completionSummary")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("project-row-completion-excluded")
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows the excluded-goal caveat alongside a partial completion date", () => {
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onEdit={vi.fn()}
+          project={defaultProject}
+          summary={{
+            status: "success",
+            units: 3,
+            goals: 7,
+            reached: 2,
+            blocked: 1,
+            completionDate: "2026-09-01",
+            unestimatedGoalCount: 1,
+          }}
+        />
+      </ul>
+    )
+
+    expect(
+      screen.getByText("goals.project.completionSummary")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId("project-row-completion-excluded")
+    ).toBeInTheDocument()
+  })
+
+  it("shows the caveat with no date line when nothing could be estimated", () => {
+    // plan-completion-outlook design Decision 5: this surface has no unknown placeholder, so the
+    // caveat alone is what keeps an omitted date from reading as "no information".
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onEdit={vi.fn()}
+          project={defaultProject}
+          summary={{
+            status: "success",
+            units: 3,
+            goals: 7,
+            reached: 0,
+            blocked: 7,
+            completionDate: null,
+            unestimatedGoalCount: 7,
+          }}
+        />
+      </ul>
+    )
+
+    expect(
+      screen.queryByText("goals.project.completionSummary")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId("project-row-completion-excluded")
     ).toBeInTheDocument()
   })
 
