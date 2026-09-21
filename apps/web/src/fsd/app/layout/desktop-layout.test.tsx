@@ -39,6 +39,9 @@ vi.mock("../providers/language-switcher", () => ({
   LanguageSwitcher: () => null,
 }))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
+vi.mock("../providers/userjot-board-link", () => ({
+  UserJotBoardLink: () => <a data-testid="userjot-board-link" />,
+}))
 vi.mock("../providers/userjot-feedback-button", () => ({
   UserJotFeedbackButton: () => null,
 }))
@@ -173,6 +176,30 @@ describe("DesktopShell", () => {
 
     expect(screen.getByRole("heading", { name: "Home" })).toBeInTheDocument()
     expect(screen.getByText("Your account overview")).toBeInTheDocument()
+  })
+
+  it("renders the public UserJot board link in the header controls", () => {
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated
+            visibleItems={navItems as NavItem[]}
+            activeSection={homeItem}
+            pageDescription="Home description"
+            sectionTitle="Home"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(
+      within(screen.getByTestId("desktop-header-controls")).getByTestId(
+        "userjot-board-link"
+      )
+    ).toBeInTheDocument()
   })
 
   it("shows a plain '{Section} Р В Р вЂ Р В РІР‚С™Р РЋРІР‚Сњ {Active child}' breadcrumb in the header for a section with children", () => {

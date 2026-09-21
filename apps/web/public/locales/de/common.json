@@ -882,7 +882,8 @@
     "label": "Einstellungen"
   },
   "feedback": {
-    "button": "Feedback"
+    "button": "Feedback",
+    "viewBoard": "Vollständiges Board anzeigen"
   },
   "theme": {
     "dark": "Dunkel",

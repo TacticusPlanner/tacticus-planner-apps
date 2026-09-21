@@ -882,7 +882,8 @@
     "label": "Paramètres"
   },
   "feedback": {
-    "button": "Commentaires"
+    "button": "Commentaires",
+    "viewBoard": "Voir le tableau complet"
   },
   "theme": {
     "dark": "Sombre",

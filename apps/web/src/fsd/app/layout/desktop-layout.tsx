@@ -33,6 +33,7 @@ import { AuthControl } from "../providers/auth-control"
 import { LanguageSwitcher } from "../providers/language-switcher"
 import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { ThemeSwitcher } from "../providers/theme-switcher"
+import { UserJotBoardLink } from "../providers/userjot-board-link"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
 import { AppLogo } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
@@ -90,6 +91,7 @@ export function DesktopShell({
               <ThemeSwitcher />
               <LanguageSwitcher />
               <UserJotFeedbackButton />
+              <UserJotBoardLink />
             </div>
           </div>
           {pageDescription ? (

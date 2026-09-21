@@ -80,6 +80,7 @@ vi.mock("./language-switcher", () => ({
 }))
 const openUserJot = vi.fn()
 vi.mock("./userjot-provider", () => ({
+  USERJOT_BOARD_URL: "https://tacticusplanner.userjot.com",
   useUserJot: () => ({ open: openUserJot, unreadCount: 0 }),
 }))
 vi.mock("@/shared/tour", () => ({
@@ -198,6 +199,18 @@ describe("AuthControl", () => {
     fireEvent.click(screen.getByTestId("auth-feedback"))
 
     expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
+  })
+
+  it("renders the public UserJot board link and closes the mobile drawer when activated", () => {
+    isMobile.mockReturnValue(true)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    expect(screen.getByTestId("userjot-board-link")).toBeVisible()
+
+    fireEvent.click(screen.getByTestId("userjot-board-link"))
+
     expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
   })
 
