@@ -19,8 +19,6 @@ import {
 } from "@/features/project-management"
 import { useProjects } from "@/entities/project"
 import {
-  GoalFilters,
-  StatusFilterSelect,
   goalQueries,
   isGoalGroupValue,
   type GoalStatusFilterValue,
@@ -75,11 +73,16 @@ export function ProjectDetailPage() {
   // Goal type on first-ever visit (project-management: "Goal type is the initial grouping") -
   // Overview keeps "none". Persisted per browser so it survives navigating away and a reload, not
   // just switching between projects while the route stays mounted.
-  const [group, setGroup] = usePersistedSelection(
+  const [persistedGroup, setGroup] = usePersistedSelection(
     "goals.projectDetail.group",
     isGoalGroupValue,
     "type"
   )
+  // relayout-project-detail-controls: this route no longer offers "by unit" - a value persisted
+  // from before that removal is clamped to "type" here, at the read site, rather than rewriting the
+  // shared `goals.projectDetail.group` storage key (Overview doesn't use "unit" here at all, and a
+  // future revert of this change should still see the raw stored value).
+  const group = persistedGroup === "unit" ? "type" : persistedGroup
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [mobileReorderActive, setMobileReorderActive] = useState(false)
@@ -259,24 +262,11 @@ export function ProjectDetailPage() {
         reachedCount={reachedCount}
         showMobileReorderToggle={inFlightRows.length > 1}
         unitCount={unitCount}
-      />
-
-      {/* goals-navigation spec: the project selector is trailing, paired in the same row as the
-          status filter - here it switches which project's detail route is shown. */}
-      <div className="flex items-center gap-2">
-        <StatusFilterSelect
-          counts={counts}
-          onValueChange={setTab}
-          testId="projects-status-filter"
-          value={tab}
-        />
-      </div>
-
-      <GoalFilters
         group={group}
         onGroupChange={setGroup}
-        showSort={false}
-        showTypeFilter={false}
+        onStatusFilterChange={setTab}
+        statusFilter={tab}
+        statusFilterCounts={counts}
       />
 
       <ProjectDetailGoals
