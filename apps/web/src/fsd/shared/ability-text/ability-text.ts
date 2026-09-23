@@ -275,16 +275,21 @@ export type AstNode = TextNode | VariableNode | StyledNode
 
 // ── Parser ────────────────────────────────────────────────────────────────────
 
+// `<link="tooltip:Keywords/X">…</link>` is a keyword cross-reference in the game client. There is
+// nothing to link to here, so the tags are dropped and their already-styled inner text kept.
 const TOKEN_RE =
-  /(<style="[^"]*">|<style=\{[^}]+\}>|<style=[^"{}<>]+>|<\/style>|<i>|<\/i>|\{[^}]+\})/g
+  /(<style="[^"]*">|<style=\{[^}]+\}>|<style=[^"{}<>]+>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\})/g
 
 function parseToken(
   raw: string
 ):
   | { open?: string; isDynamic?: boolean }
   | { close: true }
+  | { skip: true }
   | { variable: string } {
   if (raw === "</style>" || raw === "</i>") return { close: true }
+  // Link tags carry no styling of their own: skip the tag, keep the contents inline.
+  if (raw === "</link>" || /^<link=/.test(raw)) return { skip: true }
   if (raw === "<i>") return { open: "__italic__" }
   const openQuoted = /^<style="([^"]*)">\s*$/.exec(raw)
   if (openQuoted) return { open: openQuoted[1] }
@@ -324,6 +329,10 @@ export function parseAbilityText(text: string): AstNode[] {
     lastIndex = match.index! + match[0].length
 
     const token = parseToken(match[0])
+
+    if ("skip" in token) {
+      continue
+    }
 
     if ("close" in token) {
       const children = stack.pop()!
