@@ -265,6 +265,7 @@
     "noTraits": "Diese Einheit hat keine Eigenschaften.",
     "healthAtLevel": "{{health}} LP",
     "noMatchingNpcs": "Keine NPCs entsprechen den aktuellen Filtern.",
+    "noMatchingOptions": "Keine passenden Optionen.",
     "noMatchingVariation": "Keine Variante dieses NPCs entspricht den aktuellen Filtern.",
     "loadFailed": "NPC-Daten konnten nicht geladen werden.",
     "selectNpc": "NPC auswählen",

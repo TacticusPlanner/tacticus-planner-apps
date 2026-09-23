@@ -265,6 +265,7 @@
     "noTraits": "Esta unidad no tiene rasgos.",
     "healthAtLevel": "{{health}} PS",
     "noMatchingNpcs": "Ningún PNJ coincide con los filtros actuales.",
+    "noMatchingOptions": "No hay opciones coincidentes.",
     "noMatchingVariation": "Ninguna variante de este PNJ coincide con los filtros actuales.",
     "loadFailed": "No se pudieron cargar los datos de PNJ.",
     "selectNpc": "Selecciona un PNJ",

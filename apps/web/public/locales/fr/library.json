@@ -265,6 +265,7 @@
     "noTraits": "Cette unité n’a aucun trait.",
     "healthAtLevel": "{{health}} PV",
     "noMatchingNpcs": "Aucun PNJ ne correspond aux filtres actuels.",
+    "noMatchingOptions": "Aucune option correspondante.",
     "noMatchingVariation": "Aucune variante de ce PNJ ne correspond aux filtres actuels.",
     "loadFailed": "Impossible de charger les données des PNJ.",
     "selectNpc": "Sélectionner un PNJ",

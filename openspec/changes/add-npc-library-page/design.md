@@ -52,13 +52,13 @@ The Library route contract reserves the query for per-entity secondary state (`v
 
 **D8 — Desktop/mobile split (per config rule).**
 
-|                                                                                                                                                   | Desktop (≥768)                                                                             | Mobile (<768)                                                                                                 |
-| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| NPC picker                                                                                                                                        | Tile grid (`NpcList`, portrait + name + faction icon, `aria-pressed`) in the left column   | `NpcCombobox` (Popover + Command; trigger = portrait + name; rows = portrait, name, faction) above the detail |
-| Filters                                                                                                                                           | Stacked at the top of the sticky left column, above the tile list                          | Same controls stacked full-width, collapsed under a "Filters (n)" toggle                                      |
-| Variation / Level                                                                                                                                 | Two `Select`s in the detail header row                                                     | Two full-width `Select`s at the top of the detail card                                                        |
-| Stats                                                                                                                                             | 4-up stat card row                                                                         | 2×2 stat card grid                                                                                            |
-| Tour targets                                                                                                                                      | `npcs-filter-bar`, `npcs-list`, `npcs-variation-select`, `npcs-level-select`, `npcs-stats` | `npcs-combobox`, `npcs-variation-select`, `npcs-level-select`, `npcs-stats`                                   |
+|                                                                                                                                                   | Desktop (≥768)                                                                               | Mobile (<768)                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| NPC picker                                                                                                                                        | Tile grid (`NpcList`, portrait + name + faction icon, `aria-pressed`) in the left column     | `NpcCombobox` (Popover + Command; trigger = portrait + name; rows = portrait, name, faction) above the detail |
+| Filters                                                                                                                                           | Stacked at the top of the sticky left column, above the tile list                            | Same controls stacked full-width, collapsed under a "Filters (n)" toggle                                      |
+| Variation / Level                                                                                                                                 | Two `Select`s in the detail header row                                                       | Two full-width `Select`s at the top of the detail card                                                        |
+| Stats                                                                                                                                             | 4-up stat card row                                                                           | 2×2 stat card grid                                                                                            |
+| Tour targets                                                                                                                                      | `npcs-filter-panel`, `npcs-list`, `npcs-variation-select`, `npcs-level-select`, `npcs-stats` | `npcs-combobox`, `npcs-variation-select`, `npcs-level-select`, `npcs-stats`                                   |
 | The orchestrator computes `NpcsPageViewProps` once and renders `isMobile ? <NpcsMobilePage/> : <NpcsDesktopPage/>`; sub-pages take no `isMobile`. |
 
 **D9 — Portraits: ported id → file map in `@workspace/game-catalog`.**
@@ -158,11 +158,15 @@ filters are fixed and only the tiles scroll — the roster is 178 entries and a 
 one far down it, so a single scroll container would carry the filters off-screen exactly when a user
 wants them.
 
-**D17 — Six filters, collapsed; search is not one of them.**
+**D17 — Five filters, collapsed; search is not one of them.**
 Faction and alliance (Imperial 170 / Xenos 204 / Chaos 91), attack type (ranged 257 / melee-only
-208), game mode (Standard 251, LHE 90, Survival 69, Legendary 29, …), damage type and trait — each
-a one-line predicate over data already served, and each answering a question the roster actually
-poses (“which NPCs turn up in Survival?”). Options are derived from the listed catalog so a control
+208), damage type and trait — each a one-line predicate over data already served, and each
+answering a question the roster actually poses. A sixth, game mode (Standard 251, LHE 90, Survival
+69, Legendary 29, …), was built and then dropped before this change shipped: the modes are inferred
+from id suffixes and nothing in the served data names them, so the buckets are a guess and a player
+could filter confidently into a wrong answer. It is tracked separately in
+[apps#156](https://github.com/TacticusPlanner/tacticus-planner-apps/issues/156), pending
+confirmation of the taxonomy. Options are derived from the listed catalog so a control
 never offers a value that matches nothing, and a blank id is dropped: two non-combat units
 (`Watcher`, `Spore Mine`) are served with an empty damage profile, which otherwise rendered as an
 unlabelled row at the top of the damage-type list. The same two exposed a second bug — the attacks

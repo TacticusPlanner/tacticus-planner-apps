@@ -265,6 +265,7 @@
     "noTraits": "This unit has no traits.",
     "healthAtLevel": "{{health}} HP",
     "noMatchingNpcs": "No NPCs match the current filters.",
+    "noMatchingOptions": "No matching options.",
     "noMatchingVariation": "None of this NPC’s variations match the current filters.",
     "loadFailed": "NPC data could not be loaded.",
     "selectNpc": "Select an NPC",

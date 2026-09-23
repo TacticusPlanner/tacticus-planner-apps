@@ -103,7 +103,9 @@ function MultiSelect({
         <Command>
           <CommandInput placeholder={label} />
           <CommandList>
-            <CommandEmpty>{t("npcs.noMatchingNpcs")}</CommandEmpty>
+            {/* This list holds filter options, not NPCs — an empty search here means no option
+                matched, which is a different statement from "no NPCs match". */}
+            <CommandEmpty>{t("npcs.noMatchingOptions")}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

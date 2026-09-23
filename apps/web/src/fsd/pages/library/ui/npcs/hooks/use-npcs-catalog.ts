@@ -59,7 +59,14 @@ export function useNpcsCatalog(): NpcsCatalog {
     if (result === undefined || synced === undefined || !synced) {
       return { status: "loading", groups: [], byId: new Map(), retry }
     }
-    const groups = buildNpcGroups(result)
+    // `buildNpcGroups` throws on a slug collision, which a future catalog could introduce without any
+    // code change here. Surfacing that as the page's failure state beats taking the route down with it.
+    let groups: NpcGroup[]
+    try {
+      groups = buildNpcGroups(result)
+    } catch {
+      return { status: "failed", groups: [], byId: new Map(), retry }
+    }
     return {
       status: "ready",
       groups,
