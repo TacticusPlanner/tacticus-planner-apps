@@ -149,7 +149,7 @@ function EventTrack({
     update(groupId, type, { completedChallengeBattlesIds: [...current] })
   }
   return (
-    <section className="space-y-4 rounded-xl border p-4">
+    <section className="min-w-0 space-y-4 rounded-xl border p-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">{type}</h3>
         <EntityIcon
@@ -180,7 +180,7 @@ function EventTrack({
           disabled={battles.regular.length === 0}
           onValueChange={([value]) => setCompleted(value ?? 0)}
         />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             size="icon-sm"
             variant="outline"
