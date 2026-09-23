@@ -21,5 +21,5 @@
 
 ## 4. Verification and gates
 
-- [ ] 4.1 Manually verify in the browser (Aspire AppHost stack, signed-in session): from Goals Overview, the Create Goal button opens a blank creation sheet at both a sub-768px and an at/above-768px viewport. From a non-default project's detail route, Create Goal opens the sheet with that project preselected (visible in the sheet's project selection), and the selection can still be changed before saving. Confirm the global sidebar/bottom-nav entry points and the `Ctrl/Cmd+G` shortcut are unaffected. Use one project that is the default and one that is not, per design.md's Risks/Trade-offs.
+- [ ] 4.1 Manually verify in the browser (Aspire AppHost stack, signed-in session): from Goals Overview, the Create Goal button opens the sheet without an explicit prefill at both a sub-768px and an at/above-768px viewport (Default project when there is no remembered context). From a non-default project's detail route, Create Goal opens with that project preselected even if another project was remembered, and the selection can still be changed before saving. Confirm the global sidebar/bottom-nav entry points and `Ctrl/Cmd+G` are unaffected. Use default and non-default projects.
 - [ ] 4.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; all must pass before this change is considered done.

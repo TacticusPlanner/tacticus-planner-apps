@@ -17,8 +17,8 @@
 
 ## 4. Apply density to mobile cards
 
-- [ ] 4.1 In `goals-mobile-cards.tsx`, when `density === "compact"`, omit the card's remaining-text/info footer line (the `GoalProgressDisplay`... footer content per design.md); leave the header, goal line, and progress bar unchanged. Verify by reading the updated component.
-- [ ] 4.2 Add tests asserting: Compact omits the footer line; Comfortable (default, and explicit) shows it; header/goal-line/progress-bar content is unchanged between densities. Verify with `pnpm --filter web test:run goals-mobile-cards` (or the covering test file, whichever currently exists).
+- [ ] 4.1 In `goals-mobile-cards.tsx`, when `density === "compact"`, tighten card padding and vertical gaps while retaining the remaining-text/info footer and its expandable explanation; verify the resulting layout at a narrow viewport.
+- [ ] 4.2 Add tests asserting both densities retain the footer and explanation interaction while Compact uses tighter spacing; verify with `pnpm --filter web test:run goals-mobile-cards` (or the covering test file, whichever currently exists).
 
 ## 5. Project Detail is unaffected
 
@@ -30,5 +30,5 @@
 
 ## 7. Verification and gates
 
-- [ ] 7.1 Manually verify in the browser (Aspire AppHost stack): on Goals Overview with several goals loaded, toggle between Comfortable and Compact at both a sub-768px and an at/above-768px viewport, confirming more rows/cards are visible on screen at Compact and the preference survives a reload. Confirm a project's detail route still renders at Comfortable regardless of the toggled Overview preference.
+- [ ] 7.1 Manually verify in the browser (Aspire AppHost stack): on Goals Overview with several goals including a project-context Actual/Potential bar, toggle between Comfortable and Compact at both a sub-768px and an at/above-768px viewport, confirming more rows/cards are visible, the mobile explanation remains operable, and the preference survives a reload. Test a representative large plan at screenshot dimensions for `GUI-04`; record whether a separate presentation is needed. Confirm Project Detail remains Comfortable.
 - [ ] 7.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; all must pass before this change is considered done.

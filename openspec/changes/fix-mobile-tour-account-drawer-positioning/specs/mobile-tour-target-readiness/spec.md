@@ -61,3 +61,12 @@ renders.
 - **WHEN** the account-menu step force-opens the guest settings popover
 - **THEN** the tour waits for the popover specifically to settle before
   measuring it
+
+### Requirement: Account-menu guidance remains visible
+
+On a mobile viewport, the account-menu step SHALL keep its callout content and navigation controls within the visible viewport after the target settles, including on short screens and with browser chrome reducing the viewport height.
+
+#### Scenario: Short mobile viewport
+
+- **WHEN** the signed-in drawer or guest popover has opened on a short mobile viewport
+- **THEN** the tour callout and its navigation controls remain readable and operable without being clipped by the viewport edge

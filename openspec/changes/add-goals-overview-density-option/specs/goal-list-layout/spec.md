@@ -98,7 +98,7 @@ Assumptions:
 
 ### Requirement: Mobile renders one card per goal
 
-Below the mobile breakpoint, each goal SHALL render as a card with, in order: a header (the unit's avatar, name, and a caption line combining the goal type with the "Done By" date-and-day-count content when available, in the form "{{goalType}} · 📅 {{date}} · {{days}} days"; when no completion estimate is available, the caption SHALL show only the goal type), the status label(s), the primary pause/resume control (see `goal-status-actions`'s "Pause and resume are primary row actions"), and the "⋯" row-actions menu at the top-right of the header, a goal line (the same from → to representation as the desktop Goal column), the shared stacked progress bar with its percent readout beneath it (rendered together by `goal-progress-display`, not on the goal line), and — at the Comfortable density (see "Goals Overview offers a row-density preference" above; Project Detail always renders at Comfortable) — a footer line combining the remaining-text formatter with the info affordance described in `goal-progress-display`. At the Compact density, that footer line SHALL be omitted, reducing each card's height; the header, goal line, and progress bar remain unchanged from the Comfortable density.
+Below the mobile breakpoint, each goal SHALL render as a card with, in order: a header (the unit's avatar, name, and a caption line combining the goal type with the "Done By" date-and-day-count content when available, in the form "{{goalType}} · 📅 {{date}} · {{days}} days"; when no completion estimate is available, the caption SHALL show only the goal type), the status label(s), the primary pause/resume control (see `goal-status-actions`'s "Pause and resume are primary row actions"), and the "⋯" row-actions menu at the top-right of the header, a goal line (the same from → to representation as the desktop Goal column), the shared stacked progress bar with its percent readout beneath it (rendered together by `goal-progress-display`, not on the goal line), and a footer line combining the remaining-text formatter with the info affordance described in `goal-progress-display`. At the Compact density, card padding and vertical gaps SHALL be smaller than at Comfortable while this content and its interaction remain available; Project Detail always renders at Comfortable.
 
 This one-card-per-goal rule has one exception: a Level goal that renders as its dependent Rank/Ability goal's sub-line (see "A Level goal with exactly one dependent renders as that goal's sub-line, not its own row" below) does not additionally render its own card — its content appears only within its dependent's card.
 
@@ -126,8 +126,8 @@ This one-card-per-goal rule has one exception: a Level goal that renders as its 
 - **WHEN** each renders
 - **THEN** both show the same primary pause control, reachable without opening the "⋯" menu — the mobile card places it in the header alongside the status label(s) and the "⋯" menu, matching the desktop Actions column's placement
 
-#### Scenario: Compact density omits the footer line
+#### Scenario: Compact density preserves the progress explanation
 
 - **GIVEN** Goals Overview is set to the Compact density
 - **WHEN** a card renders
-- **THEN** its header, goal line, and progress bar render the same as at the Comfortable density, and the remaining-text/info footer line is omitted
+- **THEN** its header, goal line, progress bar, remaining-text/info footer, and expandable Actual/Potential explanation remain available, while padding and vertical gaps are tighter than at Comfortable

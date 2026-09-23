@@ -81,7 +81,9 @@ goal type. The user MAY still change or clear that selection before saving,
 the same as any other project selection in the creation sheet. Launching
 creation with no project context (the global or Overview entry points)
 SHALL be unaffected by this requirement and SHALL keep falling back to the
-user's default project as it does today.
+user's default project when no consecutive-creation context is remembered.
+The separate `remember-consecutive-goal-context` change may offer remembered
+membership on such a launch; an explicit project-scoped launch always wins.
 
 #### Scenario: Creating from a non-default project preselects it
 
@@ -99,9 +101,9 @@ user's default project as it does today.
 - **THEN** the created goal is assigned to the user's chosen selection, not
   the originally preselected project
 
-#### Scenario: Launching with no project context is unaffected
+#### Scenario: Launching with no project context and no remembered choice
 
 - **WHEN** the user launches goal creation from a global or Overview entry
-  point, with no project context
+  point, with no project context or remembered membership
 - **THEN** the creation sheet preselects the user's default project, the
   same as it does today

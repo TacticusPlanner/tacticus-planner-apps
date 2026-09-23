@@ -17,8 +17,10 @@ the step's content (`TOUR-05`), on the exact same step for both reports.
   the signed-in account drawer (`auth-account-drawer`) and the guest
   settings popover (`mobile-guest-settings-content`) — since both are driven
   through the same `before: openMenu` hook today.
-- No change to which element is targeted, the step's content, or any other
-  tour step.
+- Verify the spotlight, callout, and tour controls fit within the visible
+  viewport on short mobile screens; correct placement if target readiness
+  alone does not resolve the reported clipping (`TOUR-05`).
+- No change to which element is targeted or any other tour step.
 
 ## Capabilities
 

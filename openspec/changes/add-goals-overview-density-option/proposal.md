@@ -19,8 +19,8 @@ without touching that existing default.
 - In the denser option: the desktop table drops each row's secondary
   caption line (the goal-type subtext under the unit name, and the "Done
   By" line under the status label) to a strict single line per row,
-  reducing the fixed row height further; the mobile card drops its
-  remaining-text/info footer line, reducing each card's height. Every other
+  reducing the fixed row height further; the mobile card tightens its
+  padding and spacing while retaining its remaining-text/info footer. Every other
   structural element (six-column table contract, one-card-per-goal
   structure, the Level-goal merge-into-dependent rule, the shared legend)
   is unchanged in both densities.

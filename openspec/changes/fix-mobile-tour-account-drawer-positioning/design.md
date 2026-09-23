@@ -93,3 +93,11 @@ keeping a stalled tour step short.
   animations don't produce spuriously at 60fps; existing behavior (fixed
   300ms) had no such protection at all, so this is strictly more reliable,
   not less.
+
+## Open Questions
+
+- After the readiness fix, does the account-menu callout still clip against
+  the visible viewport on short screens or with browser chrome? The
+  implementation task must reproduce both auth states and adjust callout
+  placement/scroll containment if needed; readiness alone is not proof of
+  `TOUR-05` resolution.

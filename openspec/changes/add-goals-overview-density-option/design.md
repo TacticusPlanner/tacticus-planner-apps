@@ -40,10 +40,9 @@ code:
 - No third density level. Two values (Comfortable/Compact) match what
   `GUI-01`'s acceptance criteria and the confirmed gap actually ask for;
   add a third only if a future request specifically needs it.
-- No change to `goal-list-estimate-display` or `goal-progress-display` — the
-  Compact density hides _whole lines_ those capabilities already render
-  (the Done-By line, the footer), it doesn't change their own content or
-  formatting.
+- No change to `goal-list-estimate-display` or `goal-progress-display` —
+  Compact retains the mobile progress explanation and remaining text those
+  capabilities require; desktop omits only the secondary Done-By line.
 
 ## Decisions
 
@@ -71,13 +70,11 @@ contract, no column removed:**
   existing spec. Dropping only second lines keeps every column's primary
   content (name link, status label) identical across both densities, and
   lets the row shrink to its shortest realistic single-line height.
-- Mobile: the card's remaining-text/info footer line — the one line with
-  no unique action or identity information (the goal line + progress bar
-  above it already convey progress; remaining-text restates it in words).
-  Alternative considered: also drop the project badges line. Rejected —
-  project membership is the one piece of information with no other visual
-  representation on the card, unlike remaining-text which duplicates the
-  progress bar.
+- Mobile: tighten card padding and vertical gaps while retaining the
+  remaining-text/info footer. Removing that footer was considered, but
+  rejected because `goal-progress-display` requires its Actual/Potential
+  explanation to remain reachable on mobile. Keep project badges too:
+  membership has no other representation on the card.
 
 **Density toggle placed in the same Overview toolbar row as Group/Sort/Type
 and the project filter**, following the existing icon-with-hidden-label
@@ -91,7 +88,14 @@ reasoning as every existing control in that row.
   — every existing scenario for the Comfortable density is preserved
   verbatim; Compact is described as a second, explicit option, not a
   replacement.
-- [A user who values the Done-By/remaining-text info might not expect
-  Compact to hide it] → Mitigation: this is the intended trade-off density
-  toggles make everywhere (a user is opting in for scan speed); the toggle
-  is easily reversible and Comfortable stays the default.
+- [Compact may provide less height reduction than hiding the footer] →
+  Mitigation: measure actual row/card density against representative plans;
+  retain accessible explanation and let a separate screenshot presentation
+  address `GUI-04` if needed.
+
+## Open Questions
+
+- Does Compact provide enough screenshot-friendly density for `GUI-04` on
+  representative large plans? Validate at desktop and mobile capture sizes.
+  If not, scope a separate presentation change rather than hiding required
+  progress explanations or expanding this one implicitly.

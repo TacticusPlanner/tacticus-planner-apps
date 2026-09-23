@@ -12,5 +12,5 @@
 
 ## 3. Gates
 
-- [ ] 3.1 Manually verify in the browser (Aspire AppHost stack, signed-in session) at a viewport below 768px: start the mobile tour, let it reach the account-menu step, and confirm the drawer/popover is fully positioned and unclipped when the step's spotlight and content appear — both signed in (account drawer) and signed out (guest settings popover), per design.md's "Decisions" (uniform wait across both target shapes).
+- [ ] 3.1 Manually verify in the browser (Aspire AppHost stack) at a normal and short viewport below 768px, signed in and signed out: start the mobile tour and confirm the account-menu spotlight, callout, and navigation controls are positioned within the visible viewport after the drawer/popover settles; if clipping remains, correct callout placement or scroll containment and repeat the check.
 - [ ] 3.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; all must pass before this change is considered done.
