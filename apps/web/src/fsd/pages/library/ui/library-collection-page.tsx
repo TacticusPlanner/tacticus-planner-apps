@@ -10,7 +10,7 @@ export function LibraryCollectionPage({
   collection,
   getRecords,
 }: {
-  collection: "machines-of-war" | "npcs"
+  collection: "machines-of-war"
   getRecords: () => Promise<LibraryRecord[]>
 }) {
   const { t } = useTranslation("library")
@@ -35,18 +35,13 @@ export function LibraryCollectionPage({
     )
   }
 
-  const collectionLabelKey =
-    collection === "machines-of-war"
-      ? "collections.machinesOfWar.label"
-      : "collections.npcs.label"
-
   return (
     <p
       className="py-10 text-center text-muted-foreground"
       data-testid={`${collection}-library-page`}
     >
       {t("collections.detailUnavailable", {
-        name: t(collectionLabelKey),
+        name: t("collections.machinesOfWar.label"),
       })}
     </p>
   )

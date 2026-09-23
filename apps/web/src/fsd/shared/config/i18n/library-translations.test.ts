@@ -49,6 +49,39 @@ describe("Library translations", () => {
     }
   })
 
+  it("provides the NPC Library page copy and tour in every locale", () => {
+    const enLeaves = leafKeys(en.npcs).sort()
+    expect(enLeaves.length).toBeGreaterThan(40)
+
+    for (const [code, locale] of Object.entries(locales)) {
+      expect(leafKeys(locale.npcs).sort(), code).toEqual(enLeaves)
+      for (const key of enLeaves) {
+        const value = key
+          .split(".")
+          .reduce<unknown>(
+            (node, part) => (node as Record<string, unknown>)[part],
+            locale.npcs
+          )
+        expect(
+          typeof value === "string" && value.trim() !== "",
+          `${code}:npcs.${key}`
+        ).toBe(true)
+      }
+      expect(locale.npcs.filtersCount).toContain("{{count}}")
+      expect(locale.npcs.attacks.hits_other).toContain("{{count}}")
+      expect(locale.npcs.attacks.range).toContain("{{range}}")
+      expect(locale.npcs.healthAtLevel).toContain("{{health}}")
+      expect(Object.keys(locale.npcs.tour.steps)).toEqual([
+        "filters",
+        "list",
+        "picker",
+        "variation",
+        "level",
+        "stats",
+      ])
+    }
+  })
+
   it("keeps every locale structurally aligned with English", () => {
     expect(Object.keys(de.collections)).toEqual(Object.keys(en.collections))
     expect(Object.keys(es.collections)).toEqual(Object.keys(en.collections))

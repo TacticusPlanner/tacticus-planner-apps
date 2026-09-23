@@ -85,10 +85,10 @@
     }
   },
   "raidBosses": {
-    "season": "Saison",
+    "season": "Saisonkonfiguration",
     "seasonLabel": "Saison {{season}}",
     "tier": "Stufe {{tier}}",
-    "set": "Set {{set}}",
+    "set": "Satz {{set}}",
     "viewSeasonReference": "Saisonübersicht anzeigen",
     "noSeasonReference": "Keine Raid-Boss-Saisondaten verfügbar.",
     "bosses": "Bosse",
@@ -196,9 +196,6 @@
       "meta": "Meta",
       "details": "Boss-/Prime-Details"
     },
-    "season": "Saisonkonfiguration",
-    "tier": "Stufe {{tier}}",
-    "set": "Satz {{set}}",
     "tierSet": "Stufe {{tier}} · Satz {{set}}",
     "chest": "Truhe: {{chest}}",
     "guildXp": "{{xp}} Gilden-XP",
@@ -220,5 +217,102 @@
       "suitableMows": "Geeignete Kriegsmaschinen"
     },
     "retry": "Erneut versuchen"
+  },
+  "npcs": {
+    "title": "NPCs",
+    "search": "NPCs suchen",
+    "searchPlaceholder": "Nach Name suchen…",
+    "faction": "Fraktion",
+    "allFactions": "Alle Fraktionen",
+    "damageType": "Schadensart",
+    "trait": "Eigenschaft",
+    "clearFilters": "Filter zurücksetzen",
+    "filtersCount": "Filter ({{count}})",
+    "filters": "Filter",
+    "npc": "NPC",
+    "variation": "Variante",
+    "level": "NPC-Stufe",
+    "variationMode": {
+      "standard": "Standard",
+      "lhe": "Legendäres Heldenevent",
+      "legendary": "Legendär",
+      "survival": "Überleben",
+      "campaign": "Kampagne",
+      "championEvent": "Champion-Event",
+      "tutorial": "Tutorial",
+      "leviathan": "Schwarmflotte Leviathan",
+      "kronos": "Schwarmflotte Kronos",
+      "gorgon": "Schwarmflotte Gorgon",
+      "syncPvp": "Sync-PvP",
+      "unknown": "Sonstige"
+    },
+    "stats": {
+      "health": "Leben",
+      "armour": "Rüstung",
+      "damage": "Schaden",
+      "movement": "Bewegung"
+    },
+    "attacks": {
+      "title": "Angriffe",
+      "melee": "Nahkampf",
+      "ranged": "Fernkampf",
+      "hits_one": "{{count}} Treffer",
+      "hits_other": "{{count}} Treffer",
+      "range": "Reichweite {{range}}",
+      "none": "Diese Einheit hat keine Angriffe."
+    },
+    "traits": "Eigenschaften",
+    "noTraits": "Diese Einheit hat keine Eigenschaften.",
+    "healthAtLevel": "{{health}} LP",
+    "noMatchingNpcs": "Keine NPCs entsprechen den aktuellen Filtern.",
+    "noMatchingVariation": "Keine Variante dieses NPCs entspricht den aktuellen Filtern.",
+    "loadFailed": "NPC-Daten konnten nicht geladen werden.",
+    "selectNpc": "NPC auswählen",
+    "tour": {
+      "steps": {
+        "filters": {
+          "title": "Die Liste filtern",
+          "content": "Suche nach Namen oder grenze die Liste nach Fraktion, Schadensart und Eigenschaft ein. Ein NPC bleibt sichtbar, solange eine seiner Varianten passt."
+        },
+        "list": {
+          "title": "NPC auswählen",
+          "content": "Jede nicht spielbare Einheit des Spiels, ein Eintrag pro Einheit. Varianten derselben Einheit sind darunter gruppiert."
+        },
+        "picker": {
+          "title": "NPC auswählen",
+          "content": "Öffne die Auswahl und suche nach einer Einheit. Varianten derselben Einheit sind unter einem Eintrag gruppiert."
+        },
+        "variation": {
+          "title": "Variante",
+          "content": "Das Spiel setzt dieselbe Einheit je nach Modus mit unterschiedlichen Stufenleitern ein – Überleben, Legendäre Heldenevents, Kampagnen. Hier wechselst du zwischen ihnen."
+        },
+        "level": {
+          "title": "NPC-Stufe",
+          "content": "Gehe die Stufen durch, auf denen die Einheit erscheint, um ihre Werte je Rang und Sternanzahl zu sehen."
+        },
+        "stats": {
+          "title": "Werte, Angriffe und Eigenschaften",
+          "content": "Leben, Rüstung, Schaden und Bewegung auf der gewählten Stufe sowie die Angriffe und Eigenschaften der Einheit."
+        }
+      }
+    },
+    "retry": "Erneut versuchen",
+    "abilities": {
+      "title": "Fähigkeiten",
+      "active": "Aktiv",
+      "passive": "Passiv"
+    },
+    "alliance": "Allianz",
+    "allAlliances": "Alle Allianzen",
+    "alliances": {
+      "Imperial": "Imperium",
+      "Xenos": "Xenos",
+      "Chaos": "Chaos"
+    },
+    "attack": "Angriff",
+    "anyAttack": "Beliebiger Angriff",
+    "meleeOnly": "Nur Nahkampf",
+    "hasRanged": "Mit Fernkampf",
+    "clearOne": "{{name}} zurücksetzen"
   }
 }

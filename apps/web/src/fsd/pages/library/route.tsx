@@ -3,7 +3,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
-import { getMows, getNpcs } from "@workspace/game-catalog/queries"
+import { getMows } from "@workspace/game-catalog/queries"
 
 const CharacterLookupPage = lazy(() =>
   import("./ui/character/character-lookup-page").then((m) => ({
@@ -14,6 +14,9 @@ const LibraryCollectionPage = lazy(() =>
   import("./ui/library-collection-page").then((m) => ({
     default: m.LibraryCollectionPage,
   }))
+)
+const NpcsPage = lazy(() =>
+  import("./ui/npcs/npcs-page").then((m) => ({ default: m.NpcsPage }))
 )
 const RaidBossesPage = lazy(() =>
   import("./ui/raid-bosses/raid-bosses-page").then((m) => ({
@@ -50,14 +53,8 @@ export const routes: RouteObject[] = [
       />
     ),
   },
-  {
-    path: "npcs",
-    element: <LibraryCollectionPage collection="npcs" getRecords={getNpcs} />,
-  },
-  {
-    path: "npcs/:entityId",
-    element: <LibraryCollectionPage collection="npcs" getRecords={getNpcs} />,
-  },
+  { path: "npcs", element: <NpcsPage /> },
+  { path: "npcs/:entityId", element: <NpcsPage /> },
   { path: "raid-bosses", element: <RaidBossesPage /> },
   { path: "raid-bosses/:entityId", element: <RaidBossesPage /> },
   // Shops is a standalone reference route, not an entity collection — no `/:entityId` variant, so it

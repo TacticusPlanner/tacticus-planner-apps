@@ -37,6 +37,13 @@ declare module "i18next" {
       factions: Record<string, string>
       traits: Record<string, string>
       damageTypes: Record<string, string>
+      // NPC variation ids -> localized unit name (ported from V1 npc_names; see the npc-library change).
+      npcs: Record<string, string>
+      abilities: Record<string, string>
+      // Structured rules text (description + per-ability-level variable tables), read via
+      // `i18n.getResource` — see `entities/npc` use-npc-ability-text.
+      npcAbilityText: Record<string, unknown>
+      npcTraitText: Record<string, unknown>
       // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys). English-only; other
       // locales fall back to English (see the raid-bosses-library change).
       raidBosses: Record<string, string>

@@ -85,7 +85,7 @@
     }
   },
   "raidBosses": {
-    "season": "Saison",
+    "season": "Configuration de saison",
     "seasonLabel": "Saison {{season}}",
     "tier": "Palier {{tier}}",
     "set": "Ensemble {{set}}",
@@ -196,9 +196,6 @@
       "meta": "Meta",
       "details": "Détails boss / prime"
     },
-    "season": "Configuration de saison",
-    "tier": "Palier {{tier}}",
-    "set": "Ensemble {{set}}",
     "tierSet": "Palier {{tier}} · Ensemble {{set}}",
     "chest": "Coffre : {{chest}}",
     "guildXp": "{{xp}} EXP de guilde",
@@ -220,5 +217,102 @@
       "suitableMows": "Machines de guerre adaptées"
     },
     "retry": "Réessayer"
+  },
+  "npcs": {
+    "title": "PNJ",
+    "search": "Rechercher des PNJ",
+    "searchPlaceholder": "Rechercher par nom…",
+    "faction": "Faction",
+    "allFactions": "Toutes les factions",
+    "damageType": "Type de dégâts",
+    "trait": "Trait",
+    "clearFilters": "Effacer les filtres",
+    "filtersCount": "Filtres ({{count}})",
+    "filters": "Filtres",
+    "npc": "PNJ",
+    "variation": "Variante",
+    "level": "Niveau du PNJ",
+    "variationMode": {
+      "standard": "Standard",
+      "lhe": "Événement de héros légendaire",
+      "legendary": "Légendaire",
+      "survival": "Survie",
+      "campaign": "Campagne",
+      "championEvent": "Événement de champion",
+      "tutorial": "Tutoriel",
+      "leviathan": "Flotte-ruche Léviathan",
+      "kronos": "Flotte-ruche Kronos",
+      "gorgon": "Flotte-ruche Gorgone",
+      "syncPvp": "JcJ synchronisé",
+      "unknown": "Autre"
+    },
+    "stats": {
+      "health": "Points de vie",
+      "armour": "Armure",
+      "damage": "Dégâts",
+      "movement": "Mouvement"
+    },
+    "attacks": {
+      "title": "Attaques",
+      "melee": "Corps à corps",
+      "ranged": "À distance",
+      "hits_one": "{{count}} coup",
+      "hits_other": "{{count}} coups",
+      "range": "Portée {{range}}",
+      "none": "Cette unité n’a aucune attaque."
+    },
+    "traits": "Traits",
+    "noTraits": "Cette unité n’a aucun trait.",
+    "healthAtLevel": "{{health}} PV",
+    "noMatchingNpcs": "Aucun PNJ ne correspond aux filtres actuels.",
+    "noMatchingVariation": "Aucune variante de ce PNJ ne correspond aux filtres actuels.",
+    "loadFailed": "Impossible de charger les données des PNJ.",
+    "selectNpc": "Sélectionner un PNJ",
+    "tour": {
+      "steps": {
+        "filters": {
+          "title": "Filtrer la liste",
+          "content": "Recherchez par nom ou affinez la liste par faction, type de dégâts et trait. Un PNJ reste affiché tant que l’une de ses variantes correspond."
+        },
+        "list": {
+          "title": "Choisir un PNJ",
+          "content": "Toutes les unités non jouables du jeu, une entrée par unité. Les variantes d’une même unité sont regroupées sous celle-ci."
+        },
+        "picker": {
+          "title": "Choisir un PNJ",
+          "content": "Ouvrez le sélecteur et recherchez une unité. Les variantes d’une même unité sont regroupées sous une seule entrée."
+        },
+        "variation": {
+          "title": "Variante",
+          "content": "Le jeu fait apparaître la même unité avec des échelles de niveaux différentes selon le mode : Survie, Événements de héros légendaire, campagnes. Passez de l’une à l’autre ici."
+        },
+        "level": {
+          "title": "Niveau du PNJ",
+          "content": "Parcourez les niveaux auxquels l’unité apparaît pour voir ses statistiques à chaque rang et nombre d’étoiles."
+        },
+        "stats": {
+          "title": "Statistiques, attaques et traits",
+          "content": "Points de vie, armure, dégâts et mouvement au niveau sélectionné, ainsi que les attaques et traits de l’unité."
+        }
+      }
+    },
+    "retry": "Réessayer",
+    "abilities": {
+      "title": "Capacités",
+      "active": "Actives",
+      "passive": "Passives"
+    },
+    "alliance": "Alliance",
+    "allAlliances": "Toutes les alliances",
+    "alliances": {
+      "Imperial": "Imperium",
+      "Xenos": "Xenos",
+      "Chaos": "Chaos"
+    },
+    "attack": "Attaque",
+    "anyAttack": "Toute attaque",
+    "meleeOnly": "Corps à corps uniquement",
+    "hasRanged": "Avec attaque à distance",
+    "clearOne": "Effacer {{name}}"
   }
 }
