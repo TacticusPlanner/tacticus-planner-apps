@@ -12,6 +12,7 @@ import {
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
 import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
 
 /** A prerequisite cascade target: the id to also transition, and its status immediately before the
@@ -55,6 +56,15 @@ export function useGoalActions(_onChanged?: () => void) {
     )
     queryClient.setQueriesData({ queryKey: projectQueries.all() }, (old) =>
       applyOptimisticGoalStatus(old, goalId, status)
+    )
+  }
+
+  const patchRemovalCache = (goalId: string) => {
+    queryClient.setQueriesData({ queryKey: goalQueries.all() }, (old) =>
+      applyOptimisticGoalRemoval(old, goalId)
+    )
+    queryClient.setQueriesData({ queryKey: projectQueries.all() }, (old) =>
+      applyOptimisticGoalRemoval(old, goalId)
     )
   }
 
@@ -180,9 +190,13 @@ export function useGoalActions(_onChanged?: () => void) {
       return false
     }
 
+    patchRemovalCache(goalId)
     const ok = await run(goalId, () => deleteGoal(goalId))
-    if (ok) {
-      toast.success(t("goals.toasts.deleted"))
+    if (!ok) {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+      ])
     }
     return Boolean(ok)
   }

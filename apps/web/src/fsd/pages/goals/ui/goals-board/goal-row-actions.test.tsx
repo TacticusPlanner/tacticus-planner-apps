@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen } from "@/test/render"
+import { act, render, screen, within } from "@/test/render"
+import { useQuery } from "@tanstack/react-query"
 import userEvent from "@testing-library/user-event"
 import { toast } from "sonner"
 
@@ -175,6 +176,45 @@ function Harness({
 
 async function openMenu(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByTestId("goal-row-actions-trigger-goal-1"))
+}
+
+/** Subscribe to both cache shapes so the tests exercise rendered removal and refetch recovery. */
+function CachedListsHarness({
+  loadGoals,
+  loadProjectGoals,
+}: {
+  loadGoals: () => Promise<{ goals: GoalRow[] }>
+  loadProjectGoals: () => Promise<{ goals: { goal: GoalRow }[] }>
+}) {
+  const actions = useGoalActions()
+  const goals = useQuery({
+    queryKey: ["goals", "list", { archived: false }],
+    queryFn: loadGoals,
+  })
+  const projectGoals = useQuery({
+    queryKey: ["projects", "proj-a", "goals"],
+    queryFn: loadProjectGoals,
+  })
+  return (
+    <>
+      <section aria-label="Overview">
+        {goals.data?.goals.map((goal) => (
+          <div key={goal.goalId}>
+            <span>{goal.goalId}</span>
+            <GoalRowActions row={goal} actions={actions} />
+          </div>
+        ))}
+      </section>
+      <section aria-label="Project">
+        {projectGoals.data?.goals.map(({ goal }) => (
+          <div key={goal.goalId}>
+            <span>{goal.goalId}</span>
+            <GoalRowActions row={goal} actions={actions} project={projectA} />
+          </div>
+        ))}
+      </section>
+    </>
+  )
 }
 
 describe("GoalRowActions", () => {
@@ -414,21 +454,128 @@ describe("GoalRowActions", () => {
     expect(toast.success).not.toHaveBeenCalled()
   })
 
-  it("opens the confirm dialog and deletes on confirm, via the desktop delete icon", async () => {
-    deleteGoal.mockResolvedValue(undefined)
-    const user = userEvent.setup()
-    render(<Harness />)
-
-    await user.click(screen.getByTestId("goal-row-delete-goal-1"))
-
-    expect(await screen.findByTestId("delete-goal-dialog")).toBeInTheDocument()
-
-    await user.click(screen.getByTestId("delete-goal-confirm"))
-
-    await vi.waitFor(() => {
+  it.each([false, true])(
+    "removes both rendered lists and the dialog before delete resolves (mobile: %s)",
+    async (mobile) => {
+      isMobileRef.current = mobile
+      let resolveDelete!: () => void
+      const request = new Promise<void>((resolve) => {
+        resolveDelete = resolve
+      })
+      deleteGoal.mockReturnValue(request)
+      const first = row()
+      const sibling = row({ goalId: "goal-2" })
+      const loadGoals = vi.fn().mockResolvedValue({ goals: [first, sibling] })
+      const loadProjectGoals = vi
+        .fn()
+        .mockResolvedValue({ goals: [{ goal: first }, { goal: sibling }] })
+      const user = userEvent.setup()
+      render(
+        <CachedListsHarness
+          loadGoals={loadGoals}
+          loadProjectGoals={loadProjectGoals}
+        />
+      )
+      const overview = within(screen.getByRole("region", { name: "Overview" }))
+      await overview.findByText("goal-1")
+      await within(screen.getByRole("region", { name: "Project" })).findByText(
+        "goal-1"
+      )
+      if (mobile) {
+        await user.click(
+          overview.getByTestId("goal-row-actions-trigger-goal-1")
+        )
+        await user.click(await screen.findByTestId("goal-row-delete-goal-1"))
+      } else {
+        await user.click(overview.getByTestId("goal-row-delete-goal-1"))
+      }
+      expect(
+        await screen.findByTestId("delete-goal-dialog")
+      ).toBeInTheDocument()
+      expect(deleteGoal).not.toHaveBeenCalled()
+      await user.click(screen.getByTestId("delete-goal-confirm"))
       expect(deleteGoal).toHaveBeenCalledWith("goal-1")
-    })
-  })
+      expect(screen.queryAllByText("goal-1")).toHaveLength(0)
+      expect(screen.getAllByText("goal-2")).toHaveLength(2)
+      expect(screen.queryByTestId("delete-goal-dialog")).not.toBeInTheDocument()
+
+      loadGoals.mockResolvedValue({ goals: [sibling] })
+      loadProjectGoals.mockResolvedValue({ goals: [{ goal: sibling }] })
+      await act(async () => {
+        resolveDelete()
+        await request
+      })
+      await vi.waitFor(() => {
+        expect(loadGoals).toHaveBeenCalledTimes(2)
+        expect(loadProjectGoals).toHaveBeenCalledTimes(2)
+      })
+      expect(screen.queryAllByText("goal-1")).toHaveLength(0)
+      expect(toast.success).not.toHaveBeenCalled()
+      expect(toast.error).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each([false, true])(
+    "restores both lists on delete failure and allows retry (mobile: %s)",
+    async (mobile) => {
+      isMobileRef.current = mobile
+      let rejectDelete!: (error: Error) => void
+      deleteGoal.mockReturnValueOnce(
+        new Promise<void>((_, reject) => {
+          rejectDelete = reject
+        })
+      )
+      const first = row()
+      const loadGoals = vi.fn().mockResolvedValue({ goals: [first] })
+      const loadProjectGoals = vi
+        .fn()
+        .mockResolvedValue({ goals: [{ goal: first }] })
+      const user = userEvent.setup()
+      render(
+        <CachedListsHarness
+          loadGoals={loadGoals}
+          loadProjectGoals={loadProjectGoals}
+        />
+      )
+      const project = within(screen.getByRole("region", { name: "Project" }))
+      await project.findByText("goal-1")
+      await within(screen.getByRole("region", { name: "Overview" })).findByText(
+        "goal-1"
+      )
+      const confirmFromProject = async () => {
+        if (mobile) {
+          await user.click(
+            project.getByTestId("goal-row-actions-trigger-goal-1")
+          )
+          await user.click(await screen.findByTestId("goal-row-delete-goal-1"))
+        } else {
+          await user.click(project.getByTestId("goal-row-delete-goal-1"))
+        }
+        await user.click(await screen.findByTestId("delete-goal-confirm"))
+      }
+      await confirmFromProject()
+      expect(screen.queryAllByText("goal-1")).toHaveLength(0)
+      await act(async () => {
+        rejectDelete(new Error("boom"))
+      })
+      await vi.waitFor(() =>
+        expect(screen.getAllByText("goal-1")).toHaveLength(2)
+      )
+      expect(loadGoals).toHaveBeenCalledTimes(2)
+      expect(loadProjectGoals).toHaveBeenCalledTimes(2)
+      expect(toast.error).toHaveBeenCalledWith("goals.toasts.actionError")
+      expect(toast.success).not.toHaveBeenCalled()
+
+      deleteGoal.mockResolvedValueOnce(undefined)
+      loadGoals.mockResolvedValue({ goals: [] })
+      loadProjectGoals.mockResolvedValue({ goals: [] })
+      await confirmFromProject()
+      await vi.waitFor(() => expect(loadProjectGoals).toHaveBeenCalledTimes(3))
+      expect(deleteGoal).toHaveBeenCalledTimes(2)
+      expect(screen.queryAllByText("goal-1")).toHaveLength(0)
+      expect(toast.success).not.toHaveBeenCalled()
+    }
+  )
 
   it("surfaces an error toast when the mutation fails", async () => {
     updateGoalStatus.mockRejectedValue(new Error("boom"))
