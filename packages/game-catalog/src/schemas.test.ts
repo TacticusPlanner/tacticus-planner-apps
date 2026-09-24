@@ -6,6 +6,7 @@ import {
   datasetPayloadSchemas,
   farmLocationSchema,
   manifestSchema,
+  npcSchema,
 } from "./schemas"
 
 const validCharacter = {
@@ -85,7 +86,68 @@ const lreBattle = {
   waves: [{ round: 1, power: 500, enemies: [] }],
 }
 
+const validNpc = {
+  id: "necroBossWarden",
+  name: "Makhotep",
+  factionId: "Necrons",
+  alliance: "Xenos",
+  kind: "unit",
+  meleeDamage: "Physical",
+  meleeHits: 1,
+  rangedDamage: "Gauss",
+  rangedHits: 2,
+  distance: 3,
+  movement: 3,
+  traits: ["LivingMetal", "Mechanical"],
+  activeAbilityDamage: [],
+  activeAbilities: ["AdaptiveStrategy"],
+  passiveAbilityDamage: [],
+  passiveAbilities: ["RelentlessMarch"],
+  stats: [
+    {
+      abilityLevel: 5,
+      damage: 34,
+      armour: 38,
+      health: 160,
+      progressionIndex: 3,
+      rank: 2,
+      stars: 2,
+    },
+  ],
+}
+
 describe("catalog schemas", () => {
+  it("parses a valid npc with its server-derived faction and kind", () => {
+    const parsed = npcSchema.parse(validNpc)
+
+    expect(parsed.factionId).toBe("Necrons")
+    expect(parsed.kind).toBe("unit")
+    expect(npcSchema.parse({ ...validNpc, kind: "machineOfWar" }).kind).toBe(
+      "machineOfWar"
+    )
+    expect(npcSchema.parse({ ...validNpc, kind: "object" }).kind).toBe("object")
+  })
+
+  it("rejects an npc missing kind or with an unknown kind", () => {
+    const withoutKind: Record<string, unknown> = { ...validNpc }
+    delete withoutKind.kind
+
+    expect(npcSchema.safeParse(withoutKind).success).toBe(false)
+    expect(npcSchema.safeParse({ ...validNpc, kind: "boss" }).success).toBe(
+      false
+    )
+  })
+
+  it("rejects an npc missing factionId or alliance", () => {
+    const withoutFaction: Record<string, unknown> = { ...validNpc }
+    delete withoutFaction.factionId
+    const withoutAlliance: Record<string, unknown> = { ...validNpc }
+    delete withoutAlliance.alliance
+
+    expect(npcSchema.safeParse(withoutFaction).success).toBe(false)
+    expect(npcSchema.safeParse(withoutAlliance).success).toBe(false)
+  })
+
   it("parses a valid character", () => {
     expect(characterViewSchema.parse(validCharacter).id).toBe("ultraApothecary")
   })

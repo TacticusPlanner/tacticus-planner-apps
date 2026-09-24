@@ -210,3 +210,22 @@ describe("getStyleSpec", () => {
     expect(getStyleSpec("NotARealStyle")).toBeUndefined()
   })
 })
+
+describe("keyword link tags", () => {
+  it("drops <link> wrappers and keeps their inner text", () => {
+    const ast = parseAbilityText(
+      'Triggers <link="tooltip:Keywords/RelentlessMarch"><style="KEY">Relentless March</style></link> again.'
+    )
+    const flat = JSON.stringify(ast)
+
+    expect(flat).not.toContain("link")
+    expect(flat).toContain("Relentless March")
+    expect(flat).toContain("KEY")
+  })
+
+  it("leaves text without link tags unchanged", () => {
+    expect(parseAbilityText("Deals damage.")).toEqual([
+      { type: "text", value: "Deals damage." },
+    ])
+  })
+})

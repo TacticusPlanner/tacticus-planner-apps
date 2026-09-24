@@ -11,6 +11,9 @@ export {
 } from "./onslaught"
 export { shardIcon } from "./shard"
 export { characterIcon, mowIcon } from "./character"
+export { npcPortrait } from "./npc"
+export { factionIcon } from "./faction"
+export { abilityIcon } from "./ability"
 export {
   raidBossPortrait,
   fieldNpcIcon,
@@ -26,4 +29,8 @@ export { traitIcon } from "./trait"
 export { damageTypeIcon } from "./damage-type"
 export { equipmentSlotIcon, EquipmentIcons } from "./equipment"
 export { statIcon, type StatIconKind } from "./stat"
-export { progressionVisual, type ProgressionVisual } from "./progression"
+export {
+  progressionVisual,
+  starsVisual,
+  type ProgressionVisual,
+} from "./progression"

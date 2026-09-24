@@ -9,6 +9,9 @@ export {
   shardIcon,
   characterIcon,
   mowIcon,
+  npcPortrait,
+  factionIcon,
+  abilityIcon,
   raidBossPortrait,
   fieldNpcIcon,
   raidBossSplashPortrait,
@@ -20,6 +23,7 @@ export {
   EquipmentIcons,
   statIcon,
   progressionVisual,
+  starsVisual,
 } from "./icons"
 export type {
   CampaignDescriptor,

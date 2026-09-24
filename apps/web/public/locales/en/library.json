@@ -85,7 +85,7 @@
     }
   },
   "raidBosses": {
-    "season": "Season",
+    "season": "Season configuration",
     "seasonLabel": "Season {{season}}",
     "tier": "Tier {{tier}}",
     "set": "Set {{set}}",
@@ -196,9 +196,6 @@
       "meta": "Meta",
       "details": "Boss / Prime Details"
     },
-    "season": "Season configuration",
-    "tier": "Tier {{tier}}",
-    "set": "Set {{set}}",
     "tierSet": "Tier {{tier}} · Set {{set}}",
     "chest": "Chest: {{chest}}",
     "guildXp": "{{xp}} Guild XP",
@@ -220,5 +217,103 @@
       "suitableMows": "Suitable Machines of War"
     },
     "retry": "Retry"
+  },
+  "npcs": {
+    "title": "NPCs",
+    "search": "Search NPCs",
+    "searchPlaceholder": "Search by name…",
+    "faction": "Faction",
+    "allFactions": "All factions",
+    "damageType": "Damage type",
+    "trait": "Trait",
+    "clearFilters": "Clear filters",
+    "filtersCount": "Filters ({{count}})",
+    "filters": "Filters",
+    "npc": "NPC",
+    "variation": "Variation",
+    "level": "NPC level",
+    "variationMode": {
+      "standard": "Standard",
+      "lhe": "Legendary Hero Event",
+      "legendary": "Legendary",
+      "survival": "Survival",
+      "campaign": "Campaign",
+      "championEvent": "Champion Event",
+      "tutorial": "Tutorial",
+      "leviathan": "Hive Fleet Leviathan",
+      "kronos": "Hive Fleet Kronos",
+      "gorgon": "Hive Fleet Gorgon",
+      "syncPvp": "Sync PvP",
+      "unknown": "Other"
+    },
+    "stats": {
+      "health": "Health",
+      "armour": "Armour",
+      "damage": "Damage",
+      "movement": "Movement"
+    },
+    "attacks": {
+      "title": "Attacks",
+      "melee": "Melee",
+      "ranged": "Ranged",
+      "hits_one": "{{count}} hit",
+      "hits_other": "{{count}} hits",
+      "range": "Range {{range}}",
+      "none": "This unit has no attacks."
+    },
+    "traits": "Traits",
+    "noTraits": "This unit has no traits.",
+    "healthAtLevel": "{{health}} HP",
+    "noMatchingNpcs": "No NPCs match the current filters.",
+    "noMatchingOptions": "No matching options.",
+    "noMatchingVariation": "None of this NPC’s variations match the current filters.",
+    "loadFailed": "NPC data could not be loaded.",
+    "selectNpc": "Select an NPC",
+    "tour": {
+      "steps": {
+        "filters": {
+          "title": "Filter the roster",
+          "content": "Search by name, or narrow the list by faction, damage type, and trait. An NPC stays listed while any of its variations matches."
+        },
+        "list": {
+          "title": "Pick an NPC",
+          "content": "Every non-playable unit in the game, one entry per unit. Variations of the same unit are grouped under it."
+        },
+        "picker": {
+          "title": "Pick an NPC",
+          "content": "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."
+        },
+        "variation": {
+          "title": "Variation",
+          "content": "The game spawns the same unit with different level ladders per mode — Survival, Legendary Hero Events, campaigns. Switch between them here."
+        },
+        "level": {
+          "title": "NPC level",
+          "content": "Step through the levels the unit appears at to see its stats at each rank and star count."
+        },
+        "stats": {
+          "title": "Stats, attacks, and traits",
+          "content": "Health, armour, damage, and movement at the selected level, plus the unit’s attacks and traits."
+        }
+      }
+    },
+    "retry": "Retry",
+    "abilities": {
+      "title": "Abilities",
+      "active": "Active",
+      "passive": "Passive"
+    },
+    "alliance": "Alliance",
+    "allAlliances": "All alliances",
+    "alliances": {
+      "Imperial": "Imperial",
+      "Xenos": "Xenos",
+      "Chaos": "Chaos"
+    },
+    "attack": "Attack",
+    "anyAttack": "Any attack",
+    "meleeOnly": "Melee only",
+    "hasRanged": "Has ranged",
+    "clearOne": "Clear {{name}}"
   }
 }

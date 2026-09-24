@@ -26,10 +26,7 @@ function Location() {
   )
 }
 
-function renderCollection(
-  entry: string,
-  collection: "machines-of-war" | "npcs"
-) {
+function renderCollection(entry: string, collection: "machines-of-war") {
   return render(
     <MemoryRouter initialEntries={[entry]}>
       <Routes>
@@ -72,25 +69,6 @@ describe("LibraryCollectionPage", () => {
     expect(screen.queryByRole("option")).not.toBeInTheDocument()
   })
 
-  it("shows the NPC placeholder without entity-selection controls", async () => {
-    records = [
-      { id: "grots", name: "Grots" },
-      { id: "guardsman", name: "Guardsman" },
-    ]
-    renderCollection("/library/npcs?tab=stats", "npcs")
-
-    await waitFor(() =>
-      expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/npcs/grots?tab=stats"
-      )
-    )
-    expect(screen.getByTestId("npcs-library-page")).toHaveTextContent(
-      "collections.detailUnavailable:collections.npcs.label"
-    )
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
-    expect(screen.queryByRole("option")).not.toBeInTheDocument()
-  })
-
   it("keeps the loading state for a collection whose records are pending", () => {
     records = undefined
     renderCollection("/library/machines-of-war", "machines-of-war")
@@ -103,10 +81,12 @@ describe("LibraryCollectionPage", () => {
 
   it("keeps the no-records state for an empty collection", () => {
     records = []
-    renderCollection("/library/npcs", "npcs")
+    renderCollection("/library/machines-of-war", "machines-of-war")
 
     expect(screen.getByText("collections.noRecords")).toBeVisible()
-    expect(screen.queryByTestId("npcs-library-page")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("machines-of-war-library-page")
+    ).not.toBeInTheDocument()
   })
 
   it("keeps the empty Raid Boss collection URL and no-records state", async () => {

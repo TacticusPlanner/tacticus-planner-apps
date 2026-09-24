@@ -23,7 +23,13 @@ describe("traitIcon", () => {
       "/game_catalog/traits/ui_icon_trait_livingmetall_01.png"
     )
     expect(traitIcon("Unstoppable")).toBe(
-      "/game_catalog/traits/ui_icon_trait_unknown_01.png"
+      "/game_catalog/traits/ui_icon_trait_mounted_01.png"
+    )
+    expect(traitIcon("GetStuckIn")).toBe(
+      "/game_catalog/traits/ui_icon_trait_beast_snagga_01.png"
+    )
+    expect(traitIcon("Boss")).toBe(
+      "/game_catalog/traits/ui_icon_trait_boss_adjutant_01.png"
     )
   })
 })

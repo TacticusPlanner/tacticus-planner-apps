@@ -21,8 +21,10 @@ const traitIconOverrides: Record<string, string> = {
   TerminatorArmour: "terminator_amour",
   TwoManTeam: "2_man_team",
   WeaverOfFate: "weavers_of_fate",
-  Unstoppable: "unknown",
-  GetStuckIn: "unknown",
+  // NPC-only traits mapped the way V1's npc-service did (there is no dedicated asset for these three).
+  Unstoppable: "mounted",
+  GetStuckIn: "beast_snagga",
+  Boss: "boss_adjutant",
 }
 
 function pascalToSnake(id: string): string {
