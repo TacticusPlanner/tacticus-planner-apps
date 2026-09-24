@@ -8,7 +8,7 @@
 ## 2. Global Goals interaction
 
 - [ ] 2.1 Add `/goals/plan` with each in-flight goal once and distinct loading, failure/retry, no-goals, and no-actionable-demand states; verify route and component tests at both breakpoints.
-- [ ] 2.2 Implement desktop drag and mobile collapsed-card reorder mode with complete-set/revision submission and no filtered reorder; verify interaction tests for cross-project moves, dependency inversion, Paused goals, and keyboard/touch accessibility.
+- [ ] 2.2 Implement desktop drag and mobile collapsed-card reorder mode with complete-set/revision submission and no filtered reorder. On mobile, scroll/focus the list on entry, keep Done/exit and pending/error feedback reachable near lower rows, and commit each completed drop without Done. Verify short/long viewport, reduced-motion, cross-project move, dependency inversion, Paused goal, keyboard/touch, and no-obscured-last-row tests.
 - [ ] 2.3 Preserve attempted moves on stale order conflicts, refresh canonical state, and require reviewed retry; verify concurrent goal creation/status-change tests and absence of false success feedback.
 - [ ] 2.4 Make project detail a filtered global-order projection, replace its drag UI with a Global Plan link, and update project dashboard/Current plan explanations; verify project route, empty-state, membership, and responsive regression tests.
 
@@ -24,5 +24,5 @@
 ## 4. Dependency and end-to-end verification
 
 - [ ] 4.1 Reconcile the planning artifacts for `make-global-plan-the-goals-landing`, `improve-bulk-project-membership`, and `surface-goal-farming-guidance` with `/goals/plan`, Default membership, and global-run estimates using `openspec-update-change` where needed; verify their strict validation before applying any dependent change.
-- [ ] 4.2 Manually verify with the authenticated Aspire stack below 768px and at/above 768px: empty and populated Global Plan, shared goal, Paused goal, mixed Character/Machine-of-War contention, non-current and empty project, stale reorder, Today/Raids Plan/Insights parity, and both Goals/Dailies tours; verify persistence after reload.
+- [ ] 4.2 Manually verify with the authenticated Aspire stack below 768px and at/above 768px: empty and populated Global Plan, shared goal, Paused goal, mixed Character/Machine-of-War contention, non-current and empty project, stale reorder, Today/Raids Plan/Insights parity, and both Goals/Dailies tours; verify persistence after reload. On a short mobile viewport, enter Reorder from above the list, move a low row, confirm per-drop persistence without returning to the header, observe a recoverable failure, and exit using the in-view Done control.
 - [ ] 4.3 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; verify all gates pass.

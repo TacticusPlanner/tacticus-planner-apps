@@ -4,7 +4,7 @@ Goals currently inherit priority from whichever project a page selected, so a pl
 
 ## What Changes
 
-- Add an ordered global Goals plan at `/goals/plan`, with desktop drag and mobile reorder mode, displaying Active and Paused goals from every project once.
+- Add an ordered global Goals plan at `/goals/plan`, with desktop drag and mobile reorder mode, displaying Active and Paused goals from every project once. On mobile, entering reorder brings the list into view and exiting stays reachable while dragging lower rows; completed drops save without a separate confirmation.
 - **BREAKING**: Project pages become filtered, read-only projections of global order; remove project-local priority controls and stop treating Current plan as an execution selector.
 - Make Today, Raids Plan, Insights, and priority-sensitive estimates consume one canonical active-goal order and one shared resource/energy allocation, including mixed Character/Machine-of-War goals. Project filters remain browsing/summary filters only.
 - Preserve per-goal pause/resume and non-priority Overview filters/groupings; distinguish empty, loading, and failed global plans.

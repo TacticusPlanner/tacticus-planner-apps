@@ -13,3 +13,13 @@ The detail route SHALL provide a Create Goal action alongside its existing Add G
 
 - **WHEN** the user activates Create Goal on a project's detail route
 - **THEN** the goal-creation sheet opens with that project preselected, distinct from the existing-goal assembly surface Add Goals opens
+
+#### Scenario: Project menu offers the same scoped creation
+
+- **WHEN** the user opens Project Detail's three-dot menu
+- **THEN** Create new goal is available there and opens goal creation with the viewed project preselected
+
+#### Scenario: Add Goals offers creation without changing assignment semantics
+
+- **WHEN** the user opens Add Goals on a project
+- **THEN** Create new goal is a distinct action from selecting existing goals and saving their membership

@@ -42,8 +42,8 @@ code:
 
 **Goals:**
 
-- Two new UI entry points (Overview toolbar, Project Detail) wired to the
-  existing launcher, on both breakpoints.
+- Contextual UI entry points (Overview toolbar, Project Detail header/menu,
+  Add Goals sheet) wired to the existing launcher, on both breakpoints.
 - Widen `CreateGoalPrefill` so a project can be preselected independently of
   an entity/goal-type prefill, without changing the meaning or shape of the
   three existing entity-based variants.
@@ -53,8 +53,8 @@ code:
 - No change to the creation sheet's internal form behavior (`goal-creation`
   capability) — this change only affects how the sheet is _launched_ and
   what it's pre-populated with on open.
-- No change to `AddGoalsToProjectSheet` or the existing-goal assembly flow —
-  it keeps its current meaning and is unaffected.
+- No change to the existing-goal assignment semantics or its save endpoint.
+  The Add Goals sheet gains only a distinct path to create a brand-new goal.
 - No backend/API change. Project selection, the launcher, and the prefill
   mechanism are all client-side/IndexedDB-backed already.
 
@@ -121,6 +121,25 @@ action row** (`project-detail-header.tsx`, next to the existing
 `data-testid="project-add-goals"` button), not inside the browsing-controls
 row (project switcher/status filter/Group). It's a mutating action, not a
 browsing control — same category as Add Goals, which it's placed next to.
+
+**Reuse one project-scoped launch handler for all three project paths.** The
+Project Detail header button, its three-dot menu, and the Add Goals sheet's
+Create new goal choice call the same handler with `{ projectIds: [projectId] }`.
+This avoids a menu-specific default-project fallback and keeps Add Goals
+itself an existing-goal assignment operation. The sheet choice is visibly
+separate from the existing-goal list and remains available when search has
+no matches. Its label says Create new goal; it does not imply that selecting
+it adds a currently listed goal.
+
+**Suspend, rather than discard, an unfinished Add Goals draft when creating.**
+The sheet currently clears selections on every close/open transition. A
+Create new goal launch must close it to avoid two focus-trapped sheets, but
+must preserve search and selected existing-goal IDs if the user later
+reopens Add Goals on the same project. A normal dismiss or project change
+still resets the draft. After creation, refetch membership so a newly
+created, already-assigned goal appears as a member and cannot be added twice.
+If creation is cancelled, the suspended draft remains available on reopen;
+creating a goal does not implicitly save the pending existing-goal additions.
 
 ## Risks / Trade-offs
 

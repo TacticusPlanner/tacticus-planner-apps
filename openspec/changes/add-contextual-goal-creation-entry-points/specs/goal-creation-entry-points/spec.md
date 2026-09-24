@@ -1,9 +1,9 @@
 ## Purpose
 
 Defines the non-global places a user can start goal creation — the Goals
-Overview toolbar and a project's own detail route — alongside the existing
-global entry points, and how launching creation from a project context
-preselects that project.
+Overview toolbar and a project's detail header, menu, and Add Goals sheet —
+alongside the existing global entry points, and how launching creation from
+a project context preselects that project.
 
 ## ADDED Requirements
 
@@ -74,8 +74,8 @@ or opening another control, at both desktop and mobile breakpoints.
 
 ### Requirement: A project-scoped goal-creation launch preselects that project
 
-When goal creation is launched from a project context — currently, Project
-Detail's Create Goal action — the creation sheet SHALL preselect that
+When goal creation is launched from a project context — Project Detail's
+header or three-dot menu, or its Add Goals sheet — the creation sheet SHALL preselect that
 project as the goal's membership before the user has chosen an entity or
 goal type. The user MAY still change or clear that selection before saving,
 the same as any other project selection in the creation sheet. Launching
@@ -107,3 +107,30 @@ membership on such a launch; an explicit project-scoped launch always wins.
   point, with no project context or remembered membership
 - **THEN** the creation sheet preselects the user's default project, the
   same as it does today
+
+### Requirement: Existing project controls can start a new goal
+
+Project Detail's three-dot menu and Add Goals sheet SHALL each offer a
+distinct Create new goal action. Activating either SHALL launch the normal
+goal-creation sheet with the viewed project preselected. Add Goals SHALL
+remain an existing-goal assignment flow; choosing Create new goal SHALL not
+submit pending existing-goal selections or silently discard them.
+
+#### Scenario: Create from project menu
+
+- **WHEN** the user chooses Create new goal from a project's three-dot menu
+- **THEN** goal creation opens with that project preselected
+
+#### Scenario: Create from Add Goals with pending selections
+
+- **GIVEN** the user has selected existing goals in Add Goals
+- **WHEN** they choose Create new goal
+- **THEN** goal creation opens with the viewed project preselected and no
+  pending existing-goal assignment is submitted
+- **AND** reopening Add Goals on that project restores the pending selections
+  and search after either cancelling or completing goal creation
+
+#### Scenario: No existing goal matches the Add Goals search
+
+- **WHEN** the Add Goals search has no matches
+- **THEN** its Create new goal action is still visible and usable

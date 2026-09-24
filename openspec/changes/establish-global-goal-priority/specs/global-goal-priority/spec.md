@@ -40,7 +40,7 @@ The view SHALL distinguish initial loading, failed goal/order loading with retry
 
 ### Requirement: Owner can reorder from the primary plan
 
-At or above 768px, every in-flight goal row SHALL have an accessible drag handle that commits a completed move to the account-wide order. Below 768px, a dedicated reorder mode SHALL collapse cards to identity and target and provide touch-sized drag handles; each completed move SHALL commit without a separate Save. Grouping or filtering SHALL not silently change priority. A move SHALL preserve a goal's status, membership, target, and dependency, even if a dependent precedes its prerequisite.
+At or above 768px, every in-flight goal row SHALL have an accessible drag handle that commits a completed move to the account-wide order. Below 768px, a dedicated reorder mode SHALL collapse cards to identity and target and provide touch-sized drag handles; entering it SHALL bring the reorder list into the visible viewport, and a Done/exit affordance SHALL remain reachable while interacting with lower rows. Each completed move SHALL commit without a separate Save; Done SHALL only exit the mode and SHALL not be necessary to persist a drop. Grouping or filtering SHALL not silently change priority. A move SHALL preserve a goal's status, membership, target, and dependency, even if a dependent precedes its prerequisite.
 
 #### Scenario: Desktop cross-project move
 
@@ -51,6 +51,17 @@ At or above 768px, every in-flight goal row SHALL have an accessible drag handle
 
 - **WHEN** a mobile user enters reorder mode and moves a collapsed card
 - **THEN** the move saves immediately and exiting mode restores full cards
+
+#### Scenario: Entering mobile reorder brings work into view
+
+- **WHEN** a mobile user activates Reorder while the goal list is below the viewport
+- **THEN** the reorder list is scrolled into view and a useful list or mode target receives focus
+- **AND** reduced-motion settings are respected
+
+#### Scenario: Finishing after moving a lower card
+
+- **WHEN** a mobile user completes a drag near the bottom of a long reorder list
+- **THEN** the move is committed without pressing Done, its pending/error state is perceivable near the list, and Done remains reachable without scrolling back to the original header
 
 #### Scenario: Filtered plan
 

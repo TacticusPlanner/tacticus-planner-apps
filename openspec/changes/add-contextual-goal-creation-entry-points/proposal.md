@@ -23,6 +23,10 @@ from a project context silently falls back to the default project instead.
   — alongside the existing "Add goals" action, that launches goal creation
   scoped to the viewed project. "Add goals" keeps its existing meaning
   (assign an existing, unassigned goal); the new action starts a new one.
+- Offer the same project-scoped Create goal action in the project's three-dot
+  menu and as a clearly separated choice in Add Goals, so the paths people
+  already use to manage a project can start a new goal too. Keep pending
+  Add Goals selections recoverable when switching to creation.
 - Widen `CreateGoalPrefill` (`create-goal-launcher-context.ts`) with a
   project-only variant carrying just `projectIds`, so a launch from a project
   context can preselect that project before the user has picked an entity or
@@ -37,8 +41,9 @@ from a project context silently falls back to the default project instead.
 ### New Capabilities
 
 - `goal-creation-entry-points`: defines the contextual (non-global) places a
-  user can start goal creation — the Goals Overview toolbar and Project
-  Detail — and how a project-scoped launch preselects that project.
+  user can start goal creation — the Goals Overview toolbar, Project Detail
+  header/menu, and Add Goals sheet — and how a project-scoped launch
+  preselects that project.
 
 ### Modified Capabilities
 
@@ -47,20 +52,22 @@ from a project context silently falls back to the default project instead.
   new Create Goal entry point alongside the filters it already lists.
 - `project-management`: the detail route gains a second, distinct
   goal-adding action ("Create goal") next to the existing "Add goals" one,
-  scoped to the viewed project.
+  scoped to the viewed project, with matching menu and Add Goals-sheet paths.
 
 ## Impact
 
 - `apps/web/src/fsd/pages/goals/ui/goals-board/goals-page.tsx` — new toolbar
   button calling `useCreateGoalLauncher()`.
 - `apps/web/src/fsd/pages/goals/ui/projects/project-detail-header.tsx` and
-  `project-detail-page.tsx` — new "Create goal" action calling
+  `project-detail-page.tsx` — header and menu "Create goal" actions calling
   `useCreateGoalLauncher()` with the viewed project's id.
+- `apps/web/src/fsd/features/project-management/ui/add-goals-to-project-sheet.tsx`
+  — distinct Create goal choice and recoverable pending Add Goals draft.
 - `apps/web/src/fsd/pages/goals/model/goal-creation-form/create-goal-launcher-context.ts`
   — widened `CreateGoalPrefill` union (new project-only variant).
 - `apps/web/src/fsd/pages/goals/model/goal-creation-form/use-create-goal-prefill.ts`
   — apply project-only prefill independently of the entity/goal-type prefill
   effect.
-- Translation additions (all four locales) for the two new button labels.
+- Translation additions (all four locales) for contextual action labels.
 - No backend/API changes — apps-only, no companion `tacticus-planner-api`
   change.
