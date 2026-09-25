@@ -616,6 +616,75 @@ describe("GoalDetailSheet", () => {
     })
   })
 
+  it.each(["EveryStep", "Milestones"] as const)(
+    "reopens a Rank goal saved with %s on that strategy, not the default",
+    async (farmingStrategy) => {
+      getGoal.mockReset().mockResolvedValue({
+        ...rankDetail,
+        config: { ...rankDetail.config, farmingStrategy },
+      })
+      const user = userEvent.setup()
+      renderSheet()
+      expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+      await enterEditMode(user)
+
+      expect(
+        screen.getByTestId("create-goal-farming-strategy")
+      ).toHaveTextContent(`goals.create.farmingStrategy.${farmingStrategy}`)
+    }
+  )
+
+  it("keeps a saved Rank strategy through save, view, and reopening the editor", async () => {
+    let stored = rankDetail
+    getGoal.mockReset().mockImplementation(() => Promise.resolve(stored))
+    updateGoal.mockReset().mockImplementation((_goalId, request) => {
+      stored = {
+        ...stored,
+        config: { ...stored.config, farmingStrategy: request.farmingStrategy },
+      }
+      return Promise.resolve(stored)
+    })
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    fireEvent.click(screen.getByTestId("create-goal-farming-strategy"))
+    fireEvent.click(
+      within(await screen.findByRole("listbox")).getByText(
+        "goals.create.farmingStrategy.EveryStep"
+      )
+    )
+    fireEvent.click(screen.getByText("goals.detail.save"))
+    await vi.waitFor(() =>
+      expect(screen.queryByTestId("goal-detail-edit-form")).toBeNull()
+    )
+
+    await enterEditMode(user)
+    expect(
+      screen.getByTestId("create-goal-farming-strategy")
+    ).toHaveTextContent("goals.create.farmingStrategy.EveryStep")
+  })
+
+  it("falls back to Total upgrades when the saved strategy no longer fits the goal's range", async () => {
+    getGoal.mockReset().mockResolvedValue({
+      ...rankDetail,
+      config: {
+        ...rankDetail.config,
+        farmingStrategy: "EveryStep",
+        rank: { ...rankDetail.config.rank, end: 1 },
+      },
+    })
+    const user = userEvent.setup()
+    renderSheet()
+    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
+    await enterEditMode(user)
+
+    expect(
+      screen.getByTestId("create-goal-farming-strategy")
+    ).toHaveTextContent("goals.create.farmingStrategy.TotalUpgrades")
+  })
+
   it("shows the acquisition-source picker's Campaigns group (not the upgrade-node checklist) for an Unlock goal", async () => {
     getGoal.mockReset().mockResolvedValue(unlockDetail)
     const user = userEvent.setup()

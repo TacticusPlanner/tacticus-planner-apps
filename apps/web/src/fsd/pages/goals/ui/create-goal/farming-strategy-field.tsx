@@ -91,7 +91,7 @@ export function FarmingStrategyField({
   // plain props, no memoization needed) — if that leaves the current selection disabled, fall back
   // to the one option that's always available rather than leave an unselectable value selected.
   useEffect(() => {
-    if (availability[farmingStrategy] !== null) return
+    if (availability[farmingStrategy] === null) return
     onFarmingStrategyChange("TotalUpgrades")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availability[farmingStrategy]])
