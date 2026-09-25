@@ -43,6 +43,7 @@ function successState(analyticsId: string | undefined): CurrentUserState {
     user: {
       applicationUserId: "app-user-1",
       displayName: "Test User",
+      suggestedDisplayName: null,
       hasCompletedOnboarding: true,
       tacticusApiKeyMasked: null,
       tacticusUserIdMasked: null,

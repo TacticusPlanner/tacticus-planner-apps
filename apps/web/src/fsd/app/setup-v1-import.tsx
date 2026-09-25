@@ -47,15 +47,19 @@ export function SetupV1Import({
   onCompleted,
   onUseApiKey,
   onKeyImported,
+  onSuggestedDisplayName,
 }: {
   onCompleted: () => void
   onUseApiKey: () => void
   onKeyImported: () => void
+  onSuggestedDisplayName: (name: string | null) => void
 }) {
   const { t } = useTranslation()
   const [keySucceeded, setKeySucceeded] = useState(false)
 
   const handleSuccess = (result: ImportV1ProfileResult) => {
+    // Handed to the host for the name step's prefill; an unconfirmed suggestion, never confirmed here.
+    onSuggestedDisplayName(result.suggestedDisplayName ?? null)
     if (result.personalTacticusApiKey.status === "Imported") {
       setKeySucceeded(true)
       onKeyImported()

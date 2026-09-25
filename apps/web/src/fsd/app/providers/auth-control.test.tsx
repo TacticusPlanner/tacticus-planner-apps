@@ -53,8 +53,16 @@ vi.mock("@/entities/account", () => ({
 }))
 
 vi.mock("@/features/account-management", () => ({
-  ManageAccountDialog: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="manage-account-dialog-stub" /> : null,
+  ManageAccountDialog: ({
+    open,
+    initialTab,
+  }: {
+    open: boolean
+    initialTab?: string
+  }) =>
+    open ? (
+      <div data-tab={initialTab} data-testid="manage-account-dialog-stub" />
+    ) : null,
 }))
 
 vi.mock("@/shared/auth", () => ({
@@ -97,6 +105,19 @@ function Probe() {
   const location = useLocation()
   return <div data-testid="probe">{location.pathname}</div>
 }
+
+const confirmedState = {
+  status: "success",
+  user: {
+    applicationUserId: "user-1",
+    displayName: "Test User",
+    suggestedDisplayName: null,
+    hasCompletedOnboarding: true,
+    tacticusApiKeyMasked: null,
+    tacticusUserIdMasked: null,
+    analyticsId: "analytics-id-1",
+  },
+} as const
 
 function renderAuthControl(props?: { compact?: boolean }) {
   return render(
@@ -148,6 +169,7 @@ describe("AuthControl", () => {
 
   it("shows the signed-in user's identity above the menu actions on desktop", () => {
     isMobile.mockReturnValue(false)
+    useCurrentUser.mockReturnValue({ state: confirmedState })
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
@@ -158,6 +180,28 @@ describe("AuthControl", () => {
     ).toBeInTheDocument()
     expect(within(identity).getByText("Test User")).toBeInTheDocument()
     expect(within(identity).getByText("test@example.com")).toBeInTheDocument()
+  })
+
+  it("never shows a provider name or unconfirmed suggestion as the account's name", () => {
+    isMobile.mockReturnValue(false)
+    useCurrentUser.mockReturnValue({
+      state: {
+        status: "success",
+        user: {
+          ...confirmedState.user,
+          displayName: null,
+          suggestedDisplayName: "ada@example.com",
+        },
+      },
+    })
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    const identity = screen.getByTestId("auth-account-identity")
+    expect(within(identity).getByText("auth.account")).toBeInTheDocument()
+    expect(screen.queryByText("ada@example.com")).not.toBeInTheDocument()
+    expect(screen.queryByText("Test User")).not.toBeInTheDocument()
   })
 
   it("shows the game catalog status badge inside the desktop user menu", () => {
@@ -231,6 +275,7 @@ describe("AuthControl", () => {
         user: {
           applicationUserId: "user-1",
           displayName: "Test User",
+          suggestedDisplayName: null,
           hasCompletedOnboarding: true,
           tacticusApiKeyMasked: "••••••••abcd",
           tacticusUserIdMasked: "••••••••1234",
@@ -244,6 +289,38 @@ describe("AuthControl", () => {
     fireEvent.click(screen.getByTestId("auth-manage-account"))
 
     expect(screen.getByTestId("manage-account-dialog-stub")).toBeVisible()
+  })
+
+  it.each([false, true])(
+    "opens Manage Account on the profile tab from the name edit icon (mobile: %s)",
+    (mobile) => {
+      isMobile.mockReturnValue(mobile)
+      useCurrentUser.mockReturnValue({ state: confirmedState })
+      renderAuthControl()
+
+      fireEvent.click(screen.getByTestId("auth-account-trigger"))
+      fireEvent.click(screen.getByTestId("auth-edit-display-name"))
+
+      expect(screen.getByTestId("manage-account-dialog-stub")).toHaveAttribute(
+        "data-tab",
+        "profile"
+      )
+      // The menu closes so the dialog is not opened over it.
+      expect(screen.queryByTestId("auth-edit-display-name")).toBeNull()
+    }
+  )
+
+  it("opens Manage Account on its default tab from the menu item", () => {
+    useCurrentUser.mockReturnValue({ state: confirmedState })
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    fireEvent.click(screen.getByTestId("auth-manage-account"))
+
+    expect(screen.getByTestId("manage-account-dialog-stub")).toHaveAttribute(
+      "data-tab",
+      "integration"
+    )
   })
 
   it("navigates to the dedicated V1 import page from the user menu", async () => {

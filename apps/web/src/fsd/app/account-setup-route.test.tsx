@@ -13,7 +13,8 @@ vi.mock("react-i18next", async (importOriginal) => ({
 const refetch = vi.fn()
 let currentUserState: CurrentUserState
 
-vi.mock("@/entities/account", () => ({
+vi.mock("@/entities/account", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/account")>()),
   useCurrentUser: () => ({ refetch, state: currentUserState }),
   updateTacticusIntegration: vi.fn(),
 }))
@@ -34,12 +35,21 @@ vi.mock("@azure/msal-react", () => ({
 vi.mock("./setup-v1-import", () => ({
   SetupV1Import: ({
     onCompleted,
+    onSuggestedDisplayName,
     onUseApiKey,
   }: {
     onCompleted: () => void
+    onSuggestedDisplayName: (name: string | null) => void
     onUseApiKey: () => void
   }) => (
     <div data-testid="stub-setup-v1-import">
+      <button
+        data-testid="stub-setup-v1-suggest"
+        onClick={() => onSuggestedDisplayName("Ragnar42")}
+        type="button"
+      >
+        suggest
+      </button>
       <button
         data-testid="stub-setup-v1-complete"
         onClick={onCompleted}
@@ -64,6 +74,7 @@ import { accountSetupRoutes } from "./account-setup-routes"
 const baseUser = {
   applicationUserId: "user-1",
   displayName: "Test User",
+  suggestedDisplayName: null,
   tacticusApiKeyMasked: null,
   tacticusUserIdMasked: null,
   analyticsId: "analytics-1",
@@ -72,6 +83,17 @@ const baseUser = {
 const unconfigured: CurrentUserState = {
   status: "success",
   user: { ...baseUser, hasCompletedOnboarding: false },
+}
+
+// A key is saved but no name is confirmed: only the name step is still owed.
+const keyOnly: CurrentUserState = {
+  status: "success",
+  user: {
+    ...baseUser,
+    hasCompletedOnboarding: true,
+    displayName: null,
+    suggestedDisplayName: "Provider Name",
+  },
 }
 
 const configured: CurrentUserState = {
@@ -113,6 +135,7 @@ describe("accountSetupRoutes", () => {
       { path: "/setup", step: "choose" },
       { path: "/setup/key", step: "key" },
       { path: "/setup/import", step: "import" },
+      { path: "/setup/name", step: "name" },
     ])
   })
 })
@@ -130,6 +153,60 @@ describe("AccountSetupRoute", () => {
   ])("renders the step for %s", (path, testId) => {
     renderAt(path)
     expect(screen.getByTestId(testId)).toBeVisible()
+  })
+
+  describe("name step", () => {
+    it("prefills the private suggestion without confirming it", () => {
+      currentUserState = keyOnly
+
+      renderAt("/setup/name")
+
+      expect(screen.getByTestId("account-setup-name-input")).toHaveValue(
+        "Provider Name"
+      )
+      expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+    })
+
+    it("sends a user who has a key but no confirmed name straight to it, keeping the destination", () => {
+      currentUserState = keyOnly
+
+      renderAt("/setup?next=%2Fguild%2Fmembers")
+
+      expect(screen.getByTestId("account-setup-name-form")).toBeVisible()
+      expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+    })
+
+    it("is not reachable before a key exists", () => {
+      renderAt("/setup/name")
+
+      expect(screen.getByTestId("account-setup-choice")).toBeVisible()
+    })
+
+    it("carries the V1 import's suggestion to the name step", async () => {
+      const user = userEvent.setup()
+      const { build, rerender } = renderAt("/setup/import")
+
+      await user.click(screen.getByTestId("stub-setup-v1-suggest"))
+      await user.click(screen.getByTestId("stub-setup-v1-complete"))
+      currentUserState = keyOnly
+      rerender(build())
+
+      expect(await screen.findByTestId("account-setup-name-input")).toHaveValue(
+        "Ragnar42"
+      )
+    })
+
+    it("navigates to the remembered destination once the name is confirmed", async () => {
+      currentUserState = keyOnly
+      const { build, rerender } = renderAt("/setup?next=%2Fguild%2Fmembers")
+
+      currentUserState = configured
+      rerender(build())
+
+      await waitFor(() =>
+        expect(screen.getByTestId("probe")).toHaveTextContent("/guild/members")
+      )
+    })
   })
 
   describe("reverse guard", () => {

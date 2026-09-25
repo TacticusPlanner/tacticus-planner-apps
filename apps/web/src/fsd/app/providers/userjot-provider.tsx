@@ -68,6 +68,9 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
 
   const applicationUserId =
     state.status === "success" ? state.user.applicationUserId : null
+  // Not read by identify(): a confirmed-name change only needs to trigger a fresh signed token.
+  const confirmedDisplayName =
+    state.status === "success" ? state.user.displayName : null
 
   // Signed identity only — never falls back to an unsigned `identify()`, per the "verified
   // identity" requirement. A failed fetch just leaves the widget anonymous rather than blocking it.
@@ -99,7 +102,8 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void identify()
-  }, [identify])
+    // confirmedDisplayName: re-identify with a newly signed token after a name edit.
+  }, [identify, confirmedDisplayName])
 
   // Tokens are capped at one hour; re-identifying on every open is simpler and more robust than a
   // background refresh timer for a widget that is only open briefly at a time.

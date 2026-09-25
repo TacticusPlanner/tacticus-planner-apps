@@ -9,6 +9,7 @@
     "account": "Signed-in account",
     "accountLoading": "Loading account",
     "checkingSignIn": "Account detected — signing you in…",
+    "editDisplayName": "Edit planner name",
     "error": "Authentication could not be completed. Please try again.",
     "manageAccount": "Manage Account",
     "signIn": "Sign in",
@@ -39,6 +40,7 @@
     "title": "Manage Account",
     "tabs": {
       "integration": "Tacticus Integration",
+      "profile": "Profile",
       "account": "Account"
     },
     "integration": {
@@ -70,6 +72,18 @@
       "reauthRequired": "Sign-in expired — tap to sign in",
       "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
+    },
+    "profile": {
+      "displayNameLabel": "Planner name",
+      "displayNameDescription": "Shown for you in the planner and in feedback. Your sign-in and email do not change. Up to {{max}} characters.",
+      "save": "Save name",
+      "saved": "Name updated.",
+      "saveFailed": "Your name could not be saved. Please try again.",
+      "problems": {
+        "empty": "Enter a name.",
+        "tooLong": "Use at most {{max}} characters.",
+        "controlCharacters": "The name cannot contain control characters."
+      }
     },
     "account": {
       "purgeWarningTitle": "Purge account",
@@ -109,6 +123,17 @@
     "import": {
       "continue": "Continue",
       "useApiKey": "Use an API key instead"
+    },
+    "name": {
+      "label": "Planner name",
+      "description": "This is the name shown for you in the planner and in feedback. Up to {{max}} characters.",
+      "submit": "Save name",
+      "saveFailed": "Your name could not be saved. Please try again.",
+      "problems": {
+        "empty": "Enter a name.",
+        "tooLong": "Use at most {{max}} characters.",
+        "controlCharacters": "The name cannot contain control characters."
+      }
     },
     "confirming": "Finishing setup…",
     "confirmFailed": "Your key was saved, but we could not confirm your account.",
@@ -910,7 +935,7 @@
       },
       "accountDrawer": {
         "title": "Account and preferences",
-        "content": "Manage your theme, language, guided tour, imports, account, and sign-in options here."
+        "content": "Manage your theme, language, guided tour, imports, planner name, account, and sign-in options here."
       },
       "bottomNavigation": {
         "addGoal": {
@@ -932,7 +957,7 @@
       },
       "sidebarFooter": {
         "title": "Your account",
-        "content": "Manage your account, check sync status, and replay this tour any time from here."
+        "content": "Manage your account and planner name, check sync status, and replay this tour any time from here."
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",

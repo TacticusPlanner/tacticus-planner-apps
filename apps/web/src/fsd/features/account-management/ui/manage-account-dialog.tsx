@@ -38,11 +38,17 @@ import {
 import { ApiError } from "@/shared/api"
 import { signOut } from "@/shared/auth"
 
+import { ProfileTab } from "./profile-tab"
+
 const PURGE_CONFIRMATION_WORD = "Confirm"
+
+export type ManageAccountTab = "integration" | "profile" | "account"
 
 type ManageAccountDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** The tab shown each time the dialog opens; lets a shortcut (e.g. the name edit icon) land on it. */
+  initialTab?: ManageAccountTab
 }
 
 /**
@@ -52,6 +58,7 @@ type ManageAccountDialogProps = {
 export function ManageAccountDialog({
   open,
   onOpenChange,
+  initialTab = "integration",
 }: ManageAccountDialogProps) {
   const { t } = useTranslation()
   const { instance, accounts } = useMsal()
@@ -71,13 +78,19 @@ export function ManageAccountDialog({
         <DialogHeader>
           <DialogTitle>{t("manageAccount.title")}</DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue="integration">
+        <Tabs defaultValue={initialTab}>
           <TabsList className="w-full">
             <TabsTrigger
               data-testid="manage-account-tab-integration"
               value="integration"
             >
               {t("manageAccount.tabs.integration")}
+            </TabsTrigger>
+            <TabsTrigger
+              data-testid="manage-account-tab-profile"
+              value="profile"
+            >
+              {t("manageAccount.tabs.profile")}
             </TabsTrigger>
             <TabsTrigger
               data-testid="manage-account-tab-account"
@@ -88,6 +101,9 @@ export function ManageAccountDialog({
           </TabsList>
           <TabsContent value="integration">
             <TacticusIntegrationTab onSaved={refetch} user={state.user} />
+          </TabsContent>
+          <TabsContent value="profile">
+            <ProfileTab user={state.user} />
           </TabsContent>
           <TabsContent value="account">
             <AccountTab

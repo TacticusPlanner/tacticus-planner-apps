@@ -8,8 +8,9 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useCurrentUser } from "@/entities/account"
 
 import { ApiKeyForm } from "./api-key-form"
+import { DisplayNameForm } from "./display-name-form"
 
-export type AccountSetupStep = "choose" | "key" | "import"
+export type AccountSetupStep = "choose" | "key" | "import" | "name"
 
 type ScreenProps = {
   /**
@@ -19,6 +20,11 @@ type ScreenProps = {
    */
   step: AccountSetupStep
   onStepChange: (step: AccountSetupStep) => void
+  /**
+   * Prefill for the name step from the V1 import (which the API does not store). Falls back to the
+   * account's own `/me` suggestion; a draft the user already typed always wins over both.
+   */
+  suggestedDisplayName?: string
   /**
    * Renders the "import" step's content. This feature does not import `features/v1-import` itself
    * (that would be a feature-to-feature cross-import — see
@@ -52,6 +58,7 @@ export function AccountSetupScreen({
   step,
   onStepChange,
   renderImportStep,
+  suggestedDisplayName,
 }: ScreenProps) {
   const { t } = useTranslation()
   const { state, refetch } = useCurrentUser()
@@ -76,8 +83,8 @@ export function AccountSetupScreen({
           data-testid="account-setup-step-position"
         >
           {t("onboarding.stepPosition", {
-            current: step === "choose" ? 1 : 2,
-            total: 2,
+            current: step === "choose" ? 1 : step === "name" ? 3 : 2,
+            total: 3,
           })}
         </p>
         <h1 className="font-heading text-xl font-medium">
@@ -104,6 +111,12 @@ export function AccountSetupScreen({
           onStepChange={onStepChange}
           renderImportStep={renderImportStep}
           step={step}
+          suggestedDisplayName={
+            suggestedDisplayName ??
+            (state.status === "success"
+              ? (state.user.suggestedDisplayName ?? undefined)
+              : undefined)
+          }
         />
       )}
     </div>
@@ -140,6 +153,7 @@ function Steps({
   onStepChange,
   onCompleted,
   renderImportStep,
+  suggestedDisplayName,
 }: ScreenProps & { onCompleted: () => void }) {
   const { t } = useTranslation()
   // Sticky, and only ever set by the import step (the key step's own success unmounts this whole
@@ -165,6 +179,19 @@ function Steps({
           testId="account-setup-choose-import"
         />
       </div>
+    )
+  }
+
+  if (step === "name") {
+    return (
+      <Card>
+        <CardContent>
+          <DisplayNameForm
+            onCompleted={onCompleted}
+            suggestion={suggestedDisplayName}
+          />
+        </CardContent>
+      </Card>
     )
   }
 

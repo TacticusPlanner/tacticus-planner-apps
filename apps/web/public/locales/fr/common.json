@@ -9,6 +9,7 @@
     "account": "Compte connecté",
     "accountLoading": "Chargement du compte",
     "checkingSignIn": "Compte détecté – connexion en cours…",
+    "editDisplayName": "Modifier le nom dans le planificateur",
     "error": "L’authentification n’a pas pu aboutir. Veuillez réessayer.",
     "manageAccount": "Gérer le compte",
     "signIn": "Se connecter",
@@ -39,6 +40,7 @@
     "title": "Gérer le compte",
     "tabs": {
       "integration": "Intégration Tacticus",
+      "profile": "Profil",
       "account": "Compte"
     },
     "integration": {
@@ -70,6 +72,18 @@
       "reauthRequired": "Connexion expirée — appuyez pour vous connecter",
       "refreshRequired": "Actualisation requise · {{lastSync}}",
       "syncNow": "Synchroniser maintenant"
+    },
+    "profile": {
+      "displayNameLabel": "Nom dans le planificateur",
+      "displayNameDescription": "Affiché pour vous dans le planificateur et dans les retours. Votre connexion et votre e-mail ne changent pas. {{max}} caractères maximum.",
+      "save": "Enregistrer le nom",
+      "saved": "Nom mis à jour.",
+      "saveFailed": "Votre nom n’a pas pu être enregistré. Veuillez réessayer.",
+      "problems": {
+        "empty": "Saisissez un nom.",
+        "tooLong": "Utilisez {{max}} caractères au maximum.",
+        "controlCharacters": "Le nom ne peut pas contenir de caractères de contrôle."
+      }
     },
     "account": {
       "purgeWarningTitle": "Purger le compte",
@@ -109,6 +123,17 @@
     "import": {
       "continue": "Continuer",
       "useApiKey": "Utiliser une clé API à la place"
+    },
+    "name": {
+      "label": "Nom dans le planificateur",
+      "description": "C’est le nom affiché pour vous dans le planificateur et dans les retours. {{max}} caractères maximum.",
+      "submit": "Enregistrer le nom",
+      "saveFailed": "Votre nom n’a pas pu être enregistré. Veuillez réessayer.",
+      "problems": {
+        "empty": "Saisissez un nom.",
+        "tooLong": "Utilisez {{max}} caractères au maximum.",
+        "controlCharacters": "Le nom ne peut pas contenir de caractères de contrôle."
+      }
     },
     "confirming": "Finalisation de la configuration…",
     "confirmFailed": "Votre clé a bien été enregistrée, mais nous n’avons pas pu confirmer votre compte.",
@@ -910,7 +935,7 @@
       },
       "accountDrawer": {
         "title": "Compte et préférences",
-        "content": "Gérez ici le thème, la langue, la visite, les imports, le compte et les options de connexion."
+        "content": "Gérez ici le thème, la langue, la visite, les imports, le nom dans le planificateur, le compte et les options de connexion."
       },
       "bottomNavigation": {
         "addGoal": {
@@ -932,7 +957,7 @@
       },
       "sidebarFooter": {
         "title": "Votre compte",
-        "content": "Gérez votre compte, vérifiez l'état de synchronisation et relancez cette visite à tout moment depuis ici."
+        "content": "Gérez votre compte et votre nom dans le planificateur, vérifiez l'état de synchronisation et relancez cette visite à tout moment depuis ici."
       },
       "bottomNavigationGroup": {
         "title": "Votre barre principale",
