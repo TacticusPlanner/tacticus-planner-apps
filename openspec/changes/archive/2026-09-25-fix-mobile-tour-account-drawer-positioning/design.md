@@ -70,8 +70,11 @@ Shape: a small `waitForElementSettled(selector, { timeoutMs })` helper in
 `general.tutorial.tsx` (or a shared `shared/tour` util if a second step
 ever needs the same pattern — YAGNI for now, this is the only caller),
 polling via `requestAnimationFrame`: on each frame, query the selector,
-read its rect, and compare to the previous frame's; resolve once two
-consecutive frames match (or once the safety timeout elapses, whichever
+read its rect, and compare to the previous frame's. Also inspect the target's
+`getAnimations()` result: pending or running animations reset the previous
+rect, so two equal samples during an active transition cannot imply readiness.
+Resolve once two consecutive frames match without an active target animation
+(or once the safety timeout elapses, whichever
 comes first). `before`'s existing return type (`Promise<void>`) is
 unchanged, so no caller besides `openMenu` itself needs to change.
 
@@ -87,12 +90,17 @@ keeping a stalled tour step short.
   while waiting] → Mitigation: only runs during this one step's brief
   open-and-settle window (typically well under 300ms in practice), not
   continuously during the tour.
-- [A rect-based check can't distinguish "genuinely settled" from "paused
-  mid-animation for exactly one frame by coincidence"] → Mitigation:
-  require two consecutive matching frames (not one), which real CSS
-  animations don't produce spuriously at 60fps; existing behavior (fixed
-  300ms) had no such protection at all, so this is strictly more reliable,
-  not less.
+- [Matching rects can occur while an opening animation is active] → Mitigation:
+  require no pending/running target animations as well as two matching frames.
+  Signed-in mobile verification reproduced this failure with the rect-only
+  algorithm; this adjustment was approved on 2026-09-25. The safety deadline
+  still bounds continuously running animations.
+
+**Keep the account callout inside the viewport:** skip page scrolling for the
+fixed account surface, enable cross-axis shifting with 16px viewport padding,
+and cap the tooltip height at `calc(100dvh - 32px)` with internal scrolling.
+This permits overlap with a large drawer when there is insufficient room above
+or below it. The target and spotlight remain the account surface.
 
 ## Open Questions
 

@@ -1,3 +1,5 @@
+# mobile-tour-target-readiness Specification
+
 ## Purpose
 
 Defines how a mobile onboarding-tour step that force-opens an animated UI
@@ -5,7 +7,7 @@ element (a drawer or popover) before targeting it waits for that element to
 finish opening, so the tour measures and spotlights its final position and
 size rather than a mid-animation one.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: A tour step waits for its force-opened target to settle before measuring it
 
@@ -32,6 +34,13 @@ finishes settling, rather than hanging indefinitely.
 - **WHEN** the step becomes active
 - **THEN** the tour does not wait any longer than necessary before
   measuring the target
+
+#### Scenario: Matching rectangles while an opening animation is active
+
+- **GIVEN** the target reports matching rectangles across consecutive frames while a target animation is pending or running
+- **WHEN** the account-menu step waits for readiness
+- **THEN** matching rectangles alone do not end the wait
+- **AND** after target animations finish, two consecutive matching rectangles allow the tour to proceed, subject to the same safety timeout
 
 #### Scenario: A safety timeout prevents an indefinite wait
 

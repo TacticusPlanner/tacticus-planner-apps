@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -45,6 +45,23 @@ describe("useDesktopTutorialSteps", () => {
 })
 
 describe("useMobileTutorialSteps", () => {
+  afterEach(() => {
+    document
+      .querySelectorAll(
+        '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]'
+      )
+      .forEach((element) => element.remove())
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
+
+  function insertTarget(testId = "auth-account-drawer") {
+    const element = document.createElement("div")
+    element.dataset.testid = testId
+    document.body.append(element)
+    return vi.spyOn(element, "getBoundingClientRect")
+  }
+
   it("is a short tour: welcome, header, the account surface, and the bottom nav bar", () => {
     const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
     const targets = result.current.map((step) => step.target)
@@ -78,21 +95,110 @@ describe("useMobileTutorialSteps", () => {
     expect(targets).not.toContain('[data-testid="mobile-menu-trigger"]')
   })
 
-  it("opens the account surface before its step and closes it afterwards", async () => {
+  it.each(["auth-account-drawer", "mobile-guest-settings-content"])(
+    "opens the account surface before its step and closes it afterwards (%s)",
+    async (testId) => {
+      vi.useFakeTimers()
+      insertTarget(testId).mockReturnValue(new DOMRect(0, 100, 375, 400))
+      const setMobileMenuForceOpen = vi.fn()
+      const { result } = renderHook(() =>
+        useMobileTutorialSteps(setMobileMenuForceOpen)
+      )
+      const accountDrawerStep = result.current[2]
+      const opening = accountDrawerStep.before?.({} as never)
+
+      const resolved = vi.fn()
+      void opening?.then(resolved)
+      vi.advanceTimersToNextFrame()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(resolved).not.toHaveBeenCalled()
+      vi.advanceTimersToNextFrame()
+      await opening
+      expect(resolved).toHaveBeenCalledOnce()
+      expect(vi.getTimerCount()).toBe(0)
+      expect(setMobileMenuForceOpen).toHaveBeenCalledWith(true)
+
+      accountDrawerStep.after?.({} as never)
+      expect(setMobileMenuForceOpen).toHaveBeenLastCalledWith(false)
+    }
+  )
+
+  it("waits for two consecutive matching rects after movement", async () => {
     vi.useFakeTimers()
-    const setMobileMenuForceOpen = vi.fn()
-    const { result } = renderHook(() =>
-      useMobileTutorialSteps(setMobileMenuForceOpen)
-    )
-    const accountDrawerStep = result.current[2]
-    const opening = accountDrawerStep.before?.({} as never)
+    insertTarget()
+      .mockReturnValueOnce(new DOMRect(0, 500, 375, 400))
+      .mockReturnValue(new DOMRect(0, 100, 375, 400))
+    const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
+    const resolved = vi.fn()
+    const opening = result.current[2].before?.({} as never)
+    void opening?.then(resolved)
 
-    await vi.advanceTimersByTimeAsync(300)
+    vi.advanceTimersToNextFrame()
+    vi.advanceTimersToNextFrame()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(resolved).not.toHaveBeenCalled()
+    vi.advanceTimersToNextFrame()
     await opening
-    expect(setMobileMenuForceOpen).toHaveBeenCalledWith(true)
-
-    accountDrawerStep.after?.({} as never)
-    expect(setMobileMenuForceOpen).toHaveBeenLastCalledWith(false)
-    vi.useRealTimers()
+    expect(resolved).toHaveBeenCalledOnce()
+    expect(vi.getTimerCount()).toBe(0)
   })
+
+  it("waits for an active animation even when its rect temporarily matches", async () => {
+    vi.useFakeTimers()
+    insertTarget().mockReturnValue(new DOMRect(0, 100, 375, 400))
+    const element = document.querySelector(
+      '[data-testid="auth-account-drawer"]'
+    )!
+    const animation = { pending: true, playState: "running" }
+    Object.defineProperty(element, "getAnimations", {
+      value: () => [animation],
+    })
+    const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
+    const resolved = vi.fn()
+    const opening = result.current[2].before?.({} as never)
+    void opening?.then(resolved)
+
+    await vi.advanceTimersByTimeAsync(320)
+    expect(resolved).not.toHaveBeenCalled()
+    animation.pending = false
+    animation.playState = "finished"
+    vi.advanceTimersToNextFrame()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(resolved).not.toHaveBeenCalled()
+    vi.advanceTimersToNextFrame()
+    await opening
+    expect(resolved).toHaveBeenCalledOnce()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it.each(["missing", "moving", "animating"])(
+    "stops waiting after the safety timeout when the target is %s",
+    async (state) => {
+      vi.useFakeTimers()
+      if (state === "moving") {
+        let y = 0
+        insertTarget().mockImplementation(() => new DOMRect(0, y++, 375, 400))
+      }
+      if (state === "animating") {
+        insertTarget().mockReturnValue(new DOMRect(0, 100, 375, 400))
+        const element = document.querySelector(
+          '[data-testid="auth-account-drawer"]'
+        )!
+        Object.defineProperty(element, "getAnimations", {
+          value: () => [{ pending: false, playState: "running" }],
+        })
+      }
+      const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
+      const resolved = vi.fn()
+      const opening = result.current[2].before?.({} as never)
+      void opening?.then(resolved)
+
+      await vi.advanceTimersByTimeAsync(999)
+      expect(resolved).not.toHaveBeenCalled()
+      await vi.advanceTimersByTimeAsync(1)
+      await opening
+      expect(resolved).toHaveBeenCalledOnce()
+      expect(vi.getTimerCount()).toBe(0)
+    }
+  )
 })

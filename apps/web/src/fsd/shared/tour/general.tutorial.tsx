@@ -2,9 +2,57 @@ import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-// Long enough for the Popover's open animation to settle before the tour measures/spotlights the
-// now-visible theme/language/tour-button targets inside it.
-const MOBILE_MENU_OPEN_DELAY_MS = 300
+const ACCOUNT_MENU_TARGET_SELECTOR =
+  '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]'
+
+function waitForElementSettled(
+  selector: string,
+  { timeoutMs }: { timeoutMs: number }
+): Promise<void> {
+  return new Promise((resolve) => {
+    let previousElement: Element | null = null
+    let previousRect: DOMRect | undefined
+    let frameId: number
+
+    const finish = () => {
+      cancelAnimationFrame(frameId)
+      clearTimeout(timeoutId)
+      resolve()
+    }
+    // Keep the deadline independent of rAF, which can pause in background tabs.
+    const timeoutId = setTimeout(finish, timeoutMs)
+    const check = () => {
+      const element = document.querySelector(selector)
+      const rect = element?.getBoundingClientRect()
+      const isAnimating = element
+        ?.getAnimations?.()
+        .some(
+          (animation) => animation.pending || animation.playState === "running"
+        )
+
+      if (
+        !isAnimating &&
+        element === previousElement &&
+        rect &&
+        previousRect &&
+        rect.x === previousRect.x &&
+        rect.y === previousRect.y &&
+        rect.width === previousRect.width &&
+        rect.height === previousRect.height
+      ) {
+        finish()
+        return
+      }
+
+      previousElement = element
+      // A transition can report an unchanged rect briefly before it finishes.
+      previousRect = isAnimating ? undefined : rect
+      frameId = requestAnimationFrame(check)
+    }
+
+    frameId = requestAnimationFrame(check)
+  })
+}
 
 /** The general layout/navigation tutorial - used for Home and as the fallback for any page (e.g.
  *  UI Kit) that doesn't register its own steps via useTourPageSteps.
@@ -76,11 +124,11 @@ export function useMobileTutorialSteps(
 ): Step[] {
   const { t } = useTranslation()
 
-  const openMenu = useCallback((): Promise<void> => {
+  const openMenu = useCallback(async (): Promise<void> => {
     setMobileMenuForceOpen(true)
-    return new Promise((resolve) =>
-      setTimeout(resolve, MOBILE_MENU_OPEN_DELAY_MS)
-    )
+    await waitForElementSettled(ACCOUNT_MENU_TARGET_SELECTOR, {
+      timeoutMs: 1000,
+    })
   }, [setMobileMenuForceOpen])
 
   const closeMenu = useCallback(() => {
@@ -102,9 +150,21 @@ export function useMobileTutorialSteps(
         content: t("tour.steps.mobileHeader.content"),
       },
       {
-        target:
-          '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]',
+        target: ACCOUNT_MENU_TARGET_SELECTOR,
         placement: "bottom",
+        // The fixed account surface can fill most of a short viewport. Allow
+        // the callout to overlap it instead of overflowing above/below it.
+        skipScroll: true,
+        floatingOptions: { shiftOptions: { crossAxis: true, padding: 16 } },
+        styles: {
+          tooltip: {
+            maxHeight: "calc(100dvh - 32px)",
+            overflowY: "auto",
+            // The modal drawer disables body pointer events. Its portaled tour
+            // callout must remain interactive on the first click/tap.
+            pointerEvents: "auto",
+          },
+        },
         title: t("tour.steps.accountDrawer.title"),
         content: t("tour.steps.accountDrawer.content"),
         before: openMenu,
