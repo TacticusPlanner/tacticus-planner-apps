@@ -17,8 +17,6 @@ import {
   type RankAdditionalTarget,
 } from "@/features/goal-farming"
 
-import { MAX_CHARACTER_LEVEL } from "../goal-creation-form/goal-validation"
-
 /** The editable *end* target of one goal, as the target editor holds it while the owner adjusts it.
  * Only the goal's own kind's fields exist — the start/baseline is never part of a draft (it is stored
  * on the goal and never changes). Rank keeps the creation form's "Additional target" vocabulary so the
@@ -26,7 +24,6 @@ import { MAX_CHARACTER_LEVEL } from "../goal-creation-form/goal-validation"
 export type GoalTargetDraft =
   | { kind: "Rank"; end: Rank; additional: RankAdditionalTarget }
   | { kind: "Ascension"; end: Progression }
-  | { kind: "Level"; end: number }
   | { kind: "Ability"; activeEnd: number; passiveEnd: number }
   | {
       kind: "Upgrade"
@@ -36,8 +33,6 @@ export type GoalTargetDraft =
 export type GoalTargetIssue =
   | "rankNotAboveStart"
   | "progressionNotAboveStart"
-  | "levelNotAboveStart"
-  | "levelAboveMax"
   | "abilityBelowStart"
   | "abilityNoAdvance"
   | "abilityAboveMax"
@@ -51,7 +46,6 @@ export const MAX_UPGRADE_QUANTITY = 10000
 const editableKinds: ReadonlySet<GoalKind> = new Set([
   "Rank",
   "Ascension",
-  "Level",
   "Ability",
   "Upgrade",
 ])
@@ -87,8 +81,6 @@ export function goalTargetDraftFromDetail(
       const end = config.progression?.end
       return end && isProgression(end) ? { kind: "Ascension", end } : null
     }
-    case "Level":
-      return config.level ? { kind: "Level", end: config.level.end } : null
     case "Ability":
       return config.ability
         ? {
@@ -128,8 +120,6 @@ export function goalTargetEditFromDraft(
     }
     case "Ascension":
       return { progression: { end: draft.end } }
-    case "Level":
-      return { level: { end: draft.end } }
     case "Ability":
       return {
         ability: { activeEnd: draft.activeEnd, passiveEnd: draft.passiveEnd },
@@ -174,11 +164,6 @@ export function getGoalTargetIssue(
           progressionIndex(config.progression.start)
         ? "progressionNotAboveStart"
         : null
-    case "Level":
-      if (config.level && draft.end <= config.level.start) {
-        return "levelNotAboveStart"
-      }
-      return draft.end > MAX_CHARACTER_LEVEL ? "levelAboveMax" : null
     case "Ability": {
       if (!config.ability) return null
       const { activeStart, passiveStart } = config.ability

@@ -126,8 +126,8 @@ export function additionalTargetSelection(value: RankAdditionalTarget): {
 
 /** The character level required to reach `rank` with `additionalTarget` applied — ranking up (and
  * applying each upgrade slot beyond a clean rank boundary) requires having already reached a
- * specific level, per V1's `rankToLevel` table. Used to auto-suggest a Level goal alongside a Rank
- * goal (see use-goal-prerequisites.ts) whenever the target exceeds the character's current level. */
+ * specific level, per V1's `rankToLevel` table. Shown as the level requirement of a Rank
+ * goal (see `requiredLevelForGoal`) whenever the target exceeds the character's current level. */
 export function requiredLevelForRankTarget(
   rank: RankType,
   additionalTarget: RankAdditionalTarget

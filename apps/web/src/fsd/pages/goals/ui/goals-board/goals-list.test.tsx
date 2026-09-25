@@ -246,6 +246,67 @@ describe("GoalsList", () => {
     )
   })
 
+  it.each([
+    ["desktop", false],
+    ["mobile", true],
+  ])(
+    "shows a Rank goal's own level requirement under its progress on %s, with no separate Level row",
+    async (_layout, mobile) => {
+      useIsMobileMock.mockReturnValue(mobile)
+      const metrics = new Map([
+        [
+          "goal-1",
+          {
+            progress: {
+              kind: "Rank",
+              current: "Stone1",
+              target: "Iron1",
+              ratio: 0.25,
+              reachableRatio: null,
+            },
+            remaining: null,
+            blockers: { isBlocked: false, reasons: [] },
+            levelRequirement: {
+              kind: "LevelRequirement",
+              current: 31,
+              target: 32,
+              ratio: 30 / 31,
+              reachableRatio: null,
+              reachableLevel: null,
+              remainingXp: 12_200,
+            },
+          },
+        ],
+      ])
+      render(
+        <GoalsList
+          actions={stubActions}
+          levelPotentialProgress={new Map([["goal-1", 1]])}
+          metrics={metrics as never}
+          reorderEnabled={false}
+          rows={rows}
+        />
+      )
+
+      // Only goal-1 (the one below its level) shows the requirement; goal-2 has none.
+      expect(
+        await screen.findAllByTestId("level-requirement-target")
+      ).toHaveLength(1)
+      expect(screen.getAllByTestId("level-requirement-progress")).toHaveLength(
+        1
+      )
+      expect(screen.getAllByTestId("level-requirement-remaining")).toHaveLength(
+        1
+      )
+      expect(screen.queryAllByTestId("level-goal-sub-target")).toHaveLength(0)
+      // Ordinary progress, never a restriction.
+      expect(screen.queryAllByTestId("goal-restricted-indicator")).toHaveLength(
+        0
+      )
+      expect(screen.queryAllByTestId("goal-blocked-indicator")).toHaveLength(0)
+    }
+  )
+
   it("opens the goal detail via keyboard from the goal-name button", async () => {
     const onView = vi.fn()
     const user = userEvent.setup()

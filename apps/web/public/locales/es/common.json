@@ -491,7 +491,6 @@
         "PrerequisiteNotReached": "Esperando a que se alcance primero un objetivo previo.",
         "PlayerDataUnavailable": "Los datos del jugador para este objetivo aún no se han sincronizado.",
         "CatalogDataUnavailable": "Los datos del juego aún no han terminado de cargarse.",
-        "MissingLevelPrerequisite": "Se requiere un objetivo de Nivel que alcance el nivel {{level}}.",
         "MissingAscensionPrerequisite": "Se requiere un objetivo de Ascensión que alcance {{progression}}.",
         "MissingUnlockPrerequisite": "Se requiere un objetivo de Desbloqueo para {{unit}}."
       },
@@ -627,8 +626,7 @@
         "Ascension": "Ascensión",
         "Ability": "Habilidad",
         "Unlock": "Desbloqueo",
-        "Upgrade": "Mejora",
-        "Level": "Nivel"
+        "Upgrade": "Mejora"
       },
       "rank": {
         "start": "Desde el rango",
@@ -680,10 +678,8 @@
       },
       "level": {
         "current": "Nivel actual",
-        "target": "Nivel objetivo",
         "booksNeeded": "≈ {{count}} libros de XP legendarios",
-        "goldToApply": "≈ {{gold}} de oro para aplicar",
-        "costDisclaimer": "Se descuenta de tus libros de XP en posesión. Sin estimación de días — los libros de XP no se farmean con energía de campaña."
+        "goldToApply": "≈ {{gold}} de oro para aplicar"
       },
       "farmingStrategy": {
         "label": "Estrategia de farmeo",
@@ -753,10 +749,8 @@
       "suggestions": {
         "includeUnlock": "Incluir el objetivo de Desbloqueo sugerido",
         "includeAscension": "Incluir el objetivo de Ascensión sugerido",
-        "includeLevel": "Incluir el objetivo de Nivel sugerido (alcanzar el nivel {{level}})",
         "unlockRequired": "necesario, este personaje aún no se posee",
-        "ascensionRequired": "necesario para alcanzar el rango objetivo",
-        "levelRequired": "necesario para alcanzar el rango/nivel de habilidad objetivo"
+        "ascensionRequired": "necesario para alcanzar el rango objetivo"
       },
       "validation": {
         "alreadyUnlocked": "Este personaje ya está desbloqueado.",
@@ -764,16 +758,19 @@
         "progressionAlreadyReached": "La ascensión seleccionada ya se ha alcanzado.",
         "abilityRange": "Al menos una habilidad debe aumentar, y ningún intervalo puede disminuir.",
         "abilityAlreadyReached": "Los niveles de habilidad seleccionados ya se han alcanzado.",
-        "levelAlreadyReached": "El nivel seleccionado ya se ha alcanzado.",
         "upgradeTargetsRequired": "Selecciona al menos una mejora para farmear para el objetivo de mejora.",
         "rankMaxed": "Este personaje ya ha alcanzado el rango máximo.",
         "progressionMaxed": "Esta unidad ya ha alcanzado el nivel máximo de ascensión.",
         "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo para su rareza actual.",
-        "levelMaxed": "Este personaje ya ha alcanzado el nivel máximo.",
         "activeOrPausedGoalExists": "Ya existe un objetivo de {{goalType}} activo o pausado para esta unidad."
       },
       "startPaused": "Crear en pausa",
-      "startPausedDescription": "El objetivo se crea con normalidad, pero queda fuera de la planificación diaria hasta que lo reanudes. Los proyectos que elijas no influyen en esto."
+      "startPausedDescription": "El objetivo se crea con normalidad, pero queda fuera de la planificación diaria hasta que lo reanudes. Los proyectos que elijas no influyen en esto.",
+      "levelRequirement": {
+        "title": "Requiere nivel {{required}} (actualmente {{current}})",
+        "xpRemaining": "Faltan {{xp}} XP",
+        "note": "Solo informativo: forma parte del objetivo, no es un objetivo aparte y nunca lo bloquea."
+      }
     },
     "estimate": {
       "none": "—",
@@ -912,7 +909,6 @@
       "cancel": "Cancelar",
       "rankEnd": "Rango objetivo",
       "progressionEnd": "Progresión objetivo",
-      "levelEnd": "Nivel objetivo",
       "activeEnd": "Habilidad activa, nivel objetivo",
       "passiveEnd": "Habilidad pasiva, nivel objetivo",
       "primaryEnd": "Habilidad primaria, nivel objetivo",
@@ -921,8 +917,6 @@
       "issues": {
         "rankNotAboveStart": "Elige un rango superior al de partida de esta meta.",
         "progressionNotAboveStart": "Elige un paso superior al de partida de esta meta.",
-        "levelNotAboveStart": "Elige un nivel superior al de partida de esta meta.",
-        "levelAboveMax": "Ese nivel supera el nivel máximo del personaje.",
         "abilityBelowStart": "El objetivo de una habilidad no puede ser inferior al nivel de partida de esta meta.",
         "abilityNoAdvance": "Sube al menos una habilidad por encima de su punto de partida.",
         "abilityAboveMax": "Ese nivel supera el nivel máximo de habilidad.",

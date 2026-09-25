@@ -5,7 +5,6 @@ import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 import type { GoalKind } from "@/entities/goal"
 
 import { buildReviewItems } from "../estimate/goal-spec-builder"
-import type { RankAdditionalTarget } from "@/features/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
 import { useGoalPrerequisites } from ".//use-goal-prerequisites"
 import { useProgressionPreview } from ".//use-progression-preview"
@@ -29,12 +28,10 @@ export function useGoalPrerequisitesAndReview({
   character,
   enabledTypes,
   rankEnd,
-  rankAdditionalTarget,
   abilityActiveEnd,
   abilityPassiveEnd,
   includeSuggestedUnlock,
   includeSuggestedAscension,
-  includeSuggestedLevel,
   progressionStart,
   progressionEnd,
   plan,
@@ -50,12 +47,10 @@ export function useGoalPrerequisitesAndReview({
   character: ProgressionPreviewParams["character"]
   enabledTypes: ReadonlySet<GoalKind>
   rankEnd: Rank
-  rankAdditionalTarget: RankAdditionalTarget
   abilityActiveEnd: number
   abilityPassiveEnd: number
   includeSuggestedUnlock: boolean
   includeSuggestedAscension: boolean
-  includeSuggestedLevel: boolean
   progressionStart: Progression
   progressionEnd: Progression
   plan: GoalAcquisitionPlan
@@ -65,13 +60,10 @@ export function useGoalPrerequisitesAndReview({
   dailyEnergy: number
 }) {
   const prerequisites = useGoalPrerequisites({
-    entityType,
     isLocked: !!entityId && !isOwned,
     currentProgression: playerEntity?.progressionIndex,
-    currentLevel: playerEntity?.xpLevel,
     enabledTypes,
     rankEnd,
-    rankAdditionalTarget,
     abilityActiveEnd,
     abilityPassiveEnd,
   })
@@ -85,10 +77,6 @@ export function useGoalPrerequisitesAndReview({
   const includesAscension =
     enabledTypes.has("Ascension") ||
     (!!prerequisites.needsAscension && includeSuggestedAscension)
-  // Whether Level will actually be submitted — either explicit, or the auto-suggested one.
-  const includesLevel =
-    enabledTypes.has("Level") ||
-    (!!prerequisites.needsLevel && includeSuggestedLevel)
 
   const progressionPreview = useProgressionPreview({
     entityId,
@@ -109,21 +97,14 @@ export function useGoalPrerequisitesAndReview({
   // "What will be created" review list (plan §7) — in submit order, flagging entries the user
   // didn't explicitly toggle themselves. Pure builder in ./goal-spec-builder.ts.
   const reviewItems = useMemo(
-    () =>
-      buildReviewItems(
-        enabledTypes,
-        includesUnlock,
-        includesAscension,
-        includesLevel
-      ),
-    [enabledTypes, includesUnlock, includesAscension, includesLevel]
+    () => buildReviewItems(enabledTypes, includesUnlock, includesAscension),
+    [enabledTypes, includesUnlock, includesAscension]
   )
 
   return {
     prerequisites,
     includesUnlock,
     includesAscension,
-    includesLevel,
     progressionPreview,
     reviewItems,
   }

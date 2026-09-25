@@ -78,10 +78,9 @@ export type GoalsListProps = {
   /** Progress + remaining-resource info per goal id (plan §2) — absent renders neither. */
   metrics?: ReadonlyMap<string, GoalOverviewMetrics>
   potentialProgress?: ReadonlyMap<string, number>
-  /** A row's own goal id -> the id of the single Level goal merged into it as a sub-line (Cluster 7's
-   *  Level-goal decision, folded into add-inline-goal-reprioritize). `rows` already excludes a merged
-   *  Level goal's own row — this only says which *other* row it attaches to. */
-  levelGoalIdByParent?: ReadonlyMap<string, string>
+  /** Potential progress of each Rank/Ability goal's *level requirement* (owned XP books), keyed by that
+   *  goal's id — beside `potentialProgress`, which carries the same goal's material Potential. */
+  levelPotentialProgress?: ReadonlyMap<string, number>
   /** Whether each row's target has been reached (attainment-computed) — gates the "⋯" menu's Archive
    *  item (`goal-status-actions`: "Archive is available only once a goal has reached its target").
    *  Absent renders every row as not-reached, so Archive stays hidden by default. */

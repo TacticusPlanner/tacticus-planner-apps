@@ -14,14 +14,14 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import {
+  LevelRequirementProgressBar,
+  LevelRequirementRemaining,
+  LevelRequirementTarget,
+} from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import {
-  EstimateCell,
-  GoalNameLink,
-  LevelGoalSubProgress,
-  LevelGoalSubTarget,
-} from "./goal-row-shared"
+import { EstimateCell, GoalNameLink } from "./goal-row-shared"
 import {
   estimateEnergy,
   isInFlightStatus,
@@ -40,7 +40,7 @@ export function GoalsMobileCards({
   reorderEnabled = false,
   mobileReorderActive = false,
   reorderPending = false,
-  levelGoalIdByParent,
+  levelPotentialProgress,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -116,6 +116,7 @@ export function GoalsMobileCards({
           const progress =
             metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
           const remaining = metrics?.get(row.goalId)?.remaining ?? null
+          const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
           const energy = estimateEnergy(estimates?.get(row.goalId))
           const remainingText = formatGoalRemainingText(
             t,
@@ -178,13 +179,7 @@ export function GoalsMobileCards({
               <div className="flex items-center justify-between gap-2">
                 <GoalTargetDisplay progress={progress} />
               </div>
-              {levelGoalIdByParent?.get(row.goalId) ? (
-                <LevelGoalSubTarget
-                  levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                  metrics={metrics}
-                  onView={onView}
-                />
-              ) : null}
+              <LevelRequirementTarget levelRequirement={levelRequirement} />
               <div onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
                 <GoalProgressDisplay
                   energy={energy}
@@ -193,15 +188,11 @@ export function GoalsMobileCards({
                   remaining={remaining}
                 />
               </div>
-              {levelGoalIdByParent?.get(row.goalId) ? (
-                <LevelGoalSubProgress
-                  estimates={estimates}
-                  levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                  metrics={metrics}
-                  onView={onView}
-                  potentialProgress={potentialProgress}
-                />
-              ) : null}
+              <LevelRequirementProgressBar
+                levelRequirement={levelRequirement}
+                potentialRatio={levelPotentialProgress?.get(row.goalId)}
+              />
+              <LevelRequirementRemaining levelRequirement={levelRequirement} />
               {row.notes ? (
                 <p className="truncate text-muted-foreground" title={row.notes}>
                   {row.notes}

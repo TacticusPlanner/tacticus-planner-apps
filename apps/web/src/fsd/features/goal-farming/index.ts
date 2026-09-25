@@ -21,12 +21,11 @@ export {
 export { resourceLabel } from "./lib/goal-need"
 export {
   computeLevelGoalCost,
-  consumeOwnedBooks,
-  maxLevelReachableWithXp,
-  ownedBooksByRarity,
   xpNeededForLevelRange,
   type LevelGoalCost,
 } from "./lib/level-xp-cost"
+export { allocateLevelXp, type LevelXpNeed } from "./lib/level-xp-allocation"
+export { requiredLevelForGoal } from "./lib/level-requirement"
 export {
   additionalTargetFromWire,
   additionalTargetSelection,

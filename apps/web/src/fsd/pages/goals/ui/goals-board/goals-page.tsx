@@ -31,7 +31,6 @@ import { usePersistedSelection } from "@/shared/lib"
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
-import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalEstimate } from "../../model/estimate/use-goal-estimate"
@@ -190,8 +189,7 @@ export function GoalsPage() {
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
       .length,
   }
-  const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
-  const rowGroups = groupRows(displayRows, group)
+  const rowGroups = groupRows(rows, group)
   // Built from every account-wide row (both fetched queries, not the filtered/sorted `rows`), so a
   // prerequisite's status and dependent count are known regardless of the current tab/filter/sort.
   const cascadeContext = useMemo(
@@ -380,7 +378,6 @@ export function GoalsPage() {
             <GoalsList
               actions={goalActions}
               cascadeContext={cascadeContext}
-              levelGoalIdByParent={levelGoalIdByParent}
               metrics={overviewMetrics}
               onView={setDetailGoalId}
               reachedByGoalId={reachedByGoalId}

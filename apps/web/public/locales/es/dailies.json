@@ -5,7 +5,6 @@
     "ability": "Habilidad {{value}}",
     "ascension": "Ascensión {{value}}",
     "unlock": "Desbloqueo",
-    "level": "Nivel {{value}}",
     "upgrade": "{{value}} mejoras",
     "other": "Objetivo: {{value}}"
   },

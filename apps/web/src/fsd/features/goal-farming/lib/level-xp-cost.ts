@@ -1,8 +1,8 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
 // Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) — the cumulative XP required to reach
-// each character level, 0 through 65 (V1's own table max; V2's Level goal only ever targets up to
-// MAX_CHARACTER_LEVEL, see goal-validation.ts, but the full curve is kept for completeness/library
+// each character level, 0 through 65 (V1's own table max; V2's level requirements only ever reach
+// `maxCharacterLevel` (game-domain), but the full curve is kept for completeness/library
 // symmetry with V1). `totalXp` is cumulative from level 0, `xpToNextLevel` unused here.
 const xpTotalAtLevel: readonly number[] = [
   0, 25, 60, 120, 200, 300, 420, 560, 720, 900, 1100, 1350, 1650, 2000, 2400,
@@ -118,7 +118,7 @@ export function netXpAgainstOwnedBooks(
  * (`currentLevel`, `currentXp`), capped at `targetLevel` — the inverse of `xpNeededForLevelRange`,
  * scanning candidate levels one at a time since the level curve has no closed-form inverse. Used to
  * turn an amount of *allocated* XP (owned books, possibly shared with other goals — see
- * `consumeOwnedBooks`) into the "potential" level a Level goal's progress bar marks. */
+ * `consumeOwnedBooks`) into the "potential" level a level requirement's progress bar marks. */
 export function maxLevelReachableWithXp(
   currentLevel: number,
   currentXp: number,
@@ -153,7 +153,7 @@ export type LevelGoalCost = {
   gold: number
 }
 
-/** The Level goal's resource-cost preview (plan scope decision: books required + gold to apply,
+/** A level requirement's resource-cost preview (plan scope decision: books required + gold to apply,
  * netted against owned books — no "days left" estimate, since XP books aren't farmed from campaign
  * energy the way upgrade materials are; V1 only computes that from a manually-configured per-day
  * income rate this app doesn't have). Remaining XP after netting is expressed as a Legendary-book

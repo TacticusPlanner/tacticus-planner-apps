@@ -123,11 +123,6 @@ export function computeGoalAttainment(
       // Reached once the unit itself is owned/unlocked — its rank/progression from there on is
       // tracked by separate Rank/Ascension goals, not this one.
       return fromBoolean(!!owned)
-    case "Level": {
-      const target = detail.config.level
-      if (!target || !owned) return UNKNOWN
-      return fromBoolean(owned.xpLevel >= target.end)
-    }
     case "Upgrade": {
       const target = detail.config.upgrade
       if (!target || target.targets.length === 0) return UNKNOWN

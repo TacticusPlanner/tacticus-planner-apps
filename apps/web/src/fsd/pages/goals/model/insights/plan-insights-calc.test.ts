@@ -50,7 +50,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     },
     snapshot: null,
     events: [],
@@ -152,7 +151,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -205,7 +203,6 @@ describe("computePlanInsights", () => {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     }
     const details = [
       // Different characters: the same character can't hold two identical Rank targets, and its
@@ -261,7 +258,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       })
     const plan = (
@@ -332,7 +328,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -391,7 +386,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -458,7 +452,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -487,7 +480,6 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades",
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
           acquisitionSources: [{ kind: "Onslaught", ids: [] }],
         },
       }),
@@ -570,7 +562,6 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades",
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
           acquisitionSources: [{ kind: "Shop", ids: ["guild:shards_hero1"] }],
         },
       }),
@@ -669,55 +660,88 @@ describe("computePlanInsights", () => {
     expect(result.potentialProgressByGoalId.get("goal-1")).toBe(0.5)
   })
 
-  it("derives Level potential from owned xp books", () => {
+  // Silver3 (rank index 11) needs level 32 in the rank-level ladder, whose total-XP threshold is 94,200.
+  const silver3 = {
+    start: 5,
+    startPointFive: false,
+    startAppliedUpgrades: 0,
+    end: 11,
+    endPointFive: false,
+    endAppliedUpgrades: 0,
+  }
+  const levelledCharacter = {
+    xpLevel: 31,
+    xp: 0,
+    progressionIndex: "Mythic:MythicWings",
+    rank: "Iron1",
+    appliedUpgradeSlots: [],
+  } as never
+  const rankNeedingLevel = (goalId: string, end = silver3.end) =>
+    goalDetail({
+      goalId,
+      goalType: "Rank",
+      config: { ...goalDetail({}).config, rank: { ...silver3, end } },
+    })
+
+  it("derives a Rank goal's level Potential from owned xp books", () => {
     const result = computePlanInsights({
       ...baseParams,
-      details: [
-        goalDetail({
-          goalType: "Level",
-          config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
-        }),
-      ],
+      details: [rankNeedingLevel("goal-1")],
       priorityByGoalId: new Map([["goal-1", 1]]),
-      playerCharacterById: new Map([
-        ["hero1", { xpLevel: 31, xp: 0 } as never],
-      ]),
-      // Level 32's own total-xp threshold is 94200; 8 Legendary books (100000) fully cover it.
+      playerCharacterById: new Map([["hero1", levelledCharacter]]),
+      // 8 Legendary books (100,000 XP) fully cover level 32's 94,200 threshold.
       inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
     })
 
-    expect(result.potentialProgressByGoalId.get("goal-1")).toBe(1)
+    expect(result.levelPotentialProgressByGoalId.get("goal-1")).toBe(1)
   })
 
-  it("gives a higher-priority Level goal first claim on the shared xp-book pool", () => {
-    const details = [
-      goalDetail({
-        goalId: "goal-low",
-        config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
-      }),
-      goalDetail({
-        goalId: "goal-high",
-        config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
-      }),
-    ].map((detail) => ({ ...detail, goalType: "Level" as const }))
+  it("gives a higher-priority goal first claim on the shared xp-book pool", () => {
     const result = computePlanInsights({
       ...baseParams,
-      details,
+      details: [
+        { ...rankNeedingLevel("goal-low"), entityId: "hero2" },
+        rankNeedingLevel("goal-high"),
+      ],
       priorityByGoalId: new Map([
         ["goal-low", 2],
         ["goal-high", 1],
       ]),
       playerCharacterById: new Map([
-        ["hero1", { xpLevel: 31, xp: 0 } as never],
+        ["hero1", levelledCharacter],
+        ["hero2", levelledCharacter],
       ]),
-      // Only enough (8 Legendary books = 100000 xp) to fully resolve one goal's 94200 xp need.
+      // Only enough (8 Legendary books = 100,000 XP) to fully resolve one goal's 94,200 XP need.
       inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
     })
 
-    expect(result.potentialProgressByGoalId.get("goal-high")).toBe(1)
-    // No books left for "goal-low" once "goal-high" claimed them — its potential stays at its own
-    // actual (unadvanced) ratio, same as if nothing were owned at all.
-    expect(result.potentialProgressByGoalId.get("goal-low")).toBe(0)
+    expect(result.levelPotentialProgressByGoalId.get("goal-high")).toBe(1)
+    // No books left for "goal-low" once "goal-high" claimed them: it stays at its actual level ratio.
+    expect(result.levelPotentialProgressByGoalId.get("goal-low")).toBe(
+      (31 - 1) / (32 - 1)
+    )
+  })
+
+  it("charges overlapping Rank milestones of one unit the shared levels once", () => {
+    // Milestones needing levels 32 (Silver3) and 33 (index 12, Gold1 is 35 — use the next rank); the
+    // second is charged only the XP beyond the first, so 8 books (100,000 XP) cover the first while the
+    // second's extra 28,000 XP is only partly reachable.
+    const result = computePlanInsights({
+      ...baseParams,
+      details: [
+        rankNeedingLevel("goal-a"),
+        { ...rankNeedingLevel("goal-b", 12), goalId: "goal-b" },
+      ],
+      priorityByGoalId: new Map([
+        ["goal-a", 1],
+        ["goal-b", 2],
+      ]),
+      playerCharacterById: new Map([["hero1", levelledCharacter]]),
+      inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
+    })
+
+    expect(result.levelPotentialProgressByGoalId.get("goal-a")).toBe(1)
+    expect(result.levelPotentialProgressByGoalId.get("goal-b")).toBeLessThan(1)
   })
 
   it("restricts an Unlock goal's shard farming to config.farmingLocationIds, changing the resulting energy total", () => {
@@ -836,7 +860,6 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades" as const,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
           acquisitionSources: [{ kind: "Onslaught", ids: [] }],
         },
       }),
@@ -874,7 +897,6 @@ describe("computePlanInsights", () => {
     acquisitionSources: null,
     farmingLocationIds: null,
     upgrade: null,
-    level: null,
   }
   const strandedUpgrade: UpgradeWithFarmLocations = {
     ...upgrade,

@@ -29,24 +29,32 @@ import {
 } from "./goal-attainment"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress, type GoalProgress } from "./goal-progress"
+import {
+  computeLevelRequirementProgress,
+  type LevelRequirementProgress,
+} from "./level-requirement-progress"
 
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
 export type GoalOverviewMetrics = {
   progress: GoalProgress
   /** Still-missing materials/shards/orbs (plan §2's "remaining resources") — `null` for an uncosted
-   *  goal kind (Level, Item, Upgrade) or once nothing more is needed. No energy/day figure here: that
+   *  goal kind (Item, Upgrade) or once nothing more is needed. No energy/day figure here: that
    *  depends on a shared farming plan's priority ordering, which only exists once a goal is scoped to
    *  a project (see `usePlanInsights`/the project-scoped Insights view) — not meaningful on this
    *  flat, cross-project list. */
   remaining: ResourceNeed | null
   blockers: GoalBlockers
+  /** The level this Rank/Ability goal's target needs while the character is below it — ordinary
+   *  progress shown beside the goal, never a blocker. `null` when sufficient or not applicable. */
+  levelRequirement: LevelRequirementProgress | null
 }
 
 const UNKNOWN_METRICS: GoalOverviewMetrics = {
   progress: UNKNOWN_PROGRESS,
   remaining: null,
   blockers: NO_BLOCKERS,
+  levelRequirement: null,
 }
 
 /**
@@ -89,10 +97,7 @@ export function useGoalsOverviewMetrics(
   const prerequisiteGoalIds =
     prerequisiteListQuery.data?.goals
       .filter(
-        (goal) =>
-          goal.goalType === "Level" ||
-          goal.goalType === "Ascension" ||
-          goal.goalType === "Unlock"
+        (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
       )
       .map((goal) => goal.goalId) ?? []
   const prerequisiteQueries = useQueries({
@@ -278,7 +283,12 @@ export function useGoalsOverviewMetrics(
       }),
     })
 
-    result.set(goalId, { progress, remaining, blockers })
+    result.set(goalId, {
+      progress,
+      remaining,
+      blockers,
+      levelRequirement: computeLevelRequirementProgress({ detail, playerUnit }),
+    })
   })
   return result
 }

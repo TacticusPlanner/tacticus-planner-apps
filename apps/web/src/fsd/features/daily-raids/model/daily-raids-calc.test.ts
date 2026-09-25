@@ -119,7 +119,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     },
     snapshot: null,
     events: [],
@@ -812,7 +811,6 @@ describe("daily raid derivation", () => {
         farmingStrategy: "TotalUpgrades",
         farmingLocationIds: null,
         upgrade: null,
-        level: null,
         acquisitionSources: [{ kind: "Campaign", ids: [nodeId] }],
       },
     })
@@ -832,7 +830,6 @@ describe("daily raid derivation", () => {
         farmingStrategy: "TotalUpgrades",
         farmingLocationIds: null,
         upgrade: null,
-        level: null,
         acquisitionSources: [
           { kind: "Campaign", ids: [nodeId] },
           { kind: "Shop", ids: ["guild:shards_hero1"] },
@@ -962,7 +959,6 @@ describe("daily raid derivation", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       })
     )
@@ -1068,7 +1064,6 @@ describe("daily raid derivation", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       })
     // near: rank0 -> rank1 needs baseA. far: rank0 -> rank2 needs baseA + baseB, baseA being shared.

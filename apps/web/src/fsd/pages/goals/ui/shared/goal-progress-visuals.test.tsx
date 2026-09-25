@@ -173,13 +173,13 @@ describe("GoalProgressDisplay", () => {
     expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
   })
 
-  it("shows levels/xp remaining in the explanation popover for a Level goal with a potential ratio", () => {
+  it("shows levels/xp remaining in the explanation popover for a level requirement with a potential ratio", () => {
     render(
       <GoalProgressDisplay
         potentialRatio={0.8}
         progress={
           {
-            kind: "Level",
+            kind: "LevelRequirement",
             current: 44,
             target: 50,
             ratio: 0.5,
@@ -230,12 +230,12 @@ describe("GoalProgressDisplay", () => {
     expect(tooltip).toHaveTextContent("reachableCeilingReasonRarity")
   })
 
-  it("renders a ceiling marker naming the reachable level, for a Level goal with a currently-reachable ratio", async () => {
+  it("renders a ceiling marker naming the reachable level, for a level requirement with a currently-reachable ratio", async () => {
     render(
       <GoalProgressDisplay
         progress={
           {
-            kind: "Level",
+            kind: "LevelRequirement",
             current: 15,
             target: 50,
             ratio: 0.1,

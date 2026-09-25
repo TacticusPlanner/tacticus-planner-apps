@@ -15,7 +15,6 @@ import { mowAbilityTrackLevel } from "@/features/goal-farming"
 import {
   getGoalValidationIssue,
   isAtMaxAbility,
-  isAtMaxLevel,
   isAtMaxProgression,
   isAtMaxRank,
 } from ".//goal-validation"
@@ -42,8 +41,6 @@ export function useGoalValidationState({
   abilityActiveEnd,
   abilityPassiveStart,
   abilityPassiveEnd,
-  levelStart,
-  levelEnd,
   upgradeFieldsValid,
 }: {
   entityType: "Character" | "Mow"
@@ -61,8 +58,6 @@ export function useGoalValidationState({
   abilityActiveEnd: number
   abilityPassiveStart: number
   abilityPassiveEnd: number
-  levelStart: number
-  levelEnd: number
   upgradeFieldsValid: boolean
 }) {
   const { t } = useTranslation()
@@ -86,8 +81,6 @@ export function useGoalValidationState({
     currentActiveAbility,
     currentPassiveAbility
   )
-  // Level is Character-only (plan scope decision) — a MoW's own `xpLevel` is never read here.
-  const atMaxLevel = isAtMaxLevel(playerCharacter?.xpLevel)
 
   const validationIssue = getGoalValidationIssue({
     hasEntityId: !!entityId,
@@ -103,8 +96,6 @@ export function useGoalValidationState({
     abilityPassiveEnd,
     currentActiveAbility,
     currentPassiveAbility,
-    currentLevel: playerCharacter?.xpLevel,
-    levelEnd,
     upgradeFieldsValid,
   })
   const validationMessage = validationIssue
@@ -120,8 +111,7 @@ export function useGoalValidationState({
     !validationMessage &&
     (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
     (!enabledTypes.has("Ascension") ||
-      progressionIndex(progressionStart) < progressionIndex(progressionEnd)) &&
-    (!enabledTypes.has("Level") || levelStart < levelEnd)
+      progressionIndex(progressionStart) < progressionIndex(progressionEnd))
 
   return {
     currentActiveAbility,
@@ -129,7 +119,6 @@ export function useGoalValidationState({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
-    atMaxLevel,
     validationMessage,
     canSubmit,
   }

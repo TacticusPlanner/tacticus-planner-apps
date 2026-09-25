@@ -5,7 +5,6 @@
     "ability": "Compétence {{value}}",
     "ascension": "Ascension {{value}}",
     "unlock": "Déverrouillage",
-    "level": "Niveau {{value}}",
     "upgrade": "{{value}} améliorations",
     "other": "Objectif : {{value}}"
   },

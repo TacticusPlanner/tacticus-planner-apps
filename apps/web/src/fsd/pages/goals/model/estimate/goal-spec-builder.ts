@@ -222,8 +222,7 @@ export type ReviewItem = { goalType: GoalKind; autoSuggested: boolean }
 export function buildReviewItems(
   enabledTypes: ReadonlySet<GoalKind>,
   includesUnlock: boolean,
-  includesAscension: boolean,
-  includesLevel: boolean
+  includesAscension: boolean
 ): ReviewItem[] {
   const items: ReviewItem[] = []
   if (includesUnlock) {
@@ -238,12 +237,6 @@ export function buildReviewItems(
       autoSuggested: !enabledTypes.has("Ascension"),
     })
   }
-  if (includesLevel) {
-    items.push({
-      goalType: "Level",
-      autoSuggested: !enabledTypes.has("Level"),
-    })
-  }
   for (const kind of ["Rank", "Ability", "Upgrade"] as const) {
     if (enabledTypes.has(kind)) {
       items.push({ goalType: kind, autoSuggested: false })
@@ -253,20 +246,18 @@ export function buildReviewItems(
 }
 
 /**
- * The ordered spec list to submit: Unlock -> Ascension -> Level -> Rank -> Ability. Rank/Ability
- * depend on whichever of Unlock/Ascension/Level precede them (a Level goal is itself a prerequisite
- * for both, not a sibling — you can't reach a rank/ability level beyond your current character
- * level, see use-goal-prerequisites.ts); Ascension/Level each depend on Unlock alone.
- * `ascensionSuggestion`/`levelSuggestion` are `useGoalPrerequisites`'s auto-suggested targets, used
- * only when Ascension/Level themselves weren't explicitly toggled.
+ * The ordered spec list to submit: Unlock -> Ascension -> Rank -> Ability. Rank/Ability depend on
+ * whichever of Unlock/Ascension precede them; Ascension depends on Unlock alone. The character level a
+ * Rank/Ability target needs is never a spec or a dependency — the goal itself carries it
+ * (integrate-level-progression-into-rank-goals). `ascensionSuggestion` is
+ * `useGoalPrerequisites`'s auto-suggested target, used only when Ascension itself wasn't explicitly
+ * toggled.
  */
 export function buildCombinedGoalSpecs(params: {
   enabledTypes: ReadonlySet<GoalKind>
   includesUnlock: boolean
   includesAscension: boolean
-  includesLevel: boolean
   ascensionSuggestion: { start: Progression; end: Progression } | null
-  levelSuggestion: { start: number; end: number } | null
   rankStart: Rank
   rankEnd: Rank
   rankEndPointFive: boolean
@@ -277,8 +268,6 @@ export function buildCombinedGoalSpecs(params: {
   abilityActiveEnd: number
   abilityPassiveStart: number
   abilityPassiveEnd: number
-  levelStart: number
-  levelEnd: number
   farmingStrategy: FarmingStrategy
   upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
   /** The acquisition-source picker's selection (plan: Campaigns/Onslaught/Shops picker,
@@ -286,12 +275,10 @@ export function buildCombinedGoalSpecs(params: {
    * translated to the wire `acquisitionSources` set independently since they're separate goals. */
   plan: GoalAcquisitionPlan
 }): CombinedGoalSpec[] {
-  const { enabledTypes, includesUnlock, includesAscension, includesLevel } =
-    params
+  const { enabledTypes, includesUnlock, includesAscension } = params
   const specs: CombinedGoalSpec[] = []
   let unlockIndex: number | null = null
   let ascensionIndex: number | null = null
-  let levelIndex: number | null = null
 
   if (includesUnlock) {
     specs.push({
@@ -321,18 +308,6 @@ export function buildCombinedGoalSpecs(params: {
     ascensionIndex = specs.length - 1
   }
 
-  if (includesLevel) {
-    const level = enabledTypes.has("Level")
-      ? { start: params.levelStart, end: params.levelEnd }
-      : params.levelSuggestion!
-    specs.push({
-      goalType: "Level",
-      config: { level },
-      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
-    })
-    levelIndex = specs.length - 1
-  }
-
   if (enabledTypes.has("Rank")) {
     specs.push({
       goalType: "Rank",
@@ -349,7 +324,7 @@ export function buildCombinedGoalSpecs(params: {
           endAppliedUpgrades: params.rankEndAppliedUpgrades,
         },
       },
-      dependsOnIndex: [unlockIndex, ascensionIndex, levelIndex].filter(
+      dependsOnIndex: [unlockIndex, ascensionIndex].filter(
         (index): index is number => index !== null
       ),
     })
@@ -372,7 +347,7 @@ export function buildCombinedGoalSpecs(params: {
       // Ability goal must declare that dependency, not merely follow it in submit order — the API
       // only lifts an ability target's cap from an Ascension spec the goal depends on
       // (fix-goal-ability-cap-effective-progression; rewrite-v1-goal-import).
-      dependsOnIndex: [unlockIndex, ascensionIndex, levelIndex].filter(
+      dependsOnIndex: [unlockIndex, ascensionIndex].filter(
         (index): index is number => index !== null
       ),
     })

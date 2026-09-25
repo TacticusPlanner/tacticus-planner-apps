@@ -28,7 +28,6 @@ import { usePersistedSelection } from "@/shared/lib"
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { groupRows } from "../../model/shared/row-groups"
-import { useLevelGoalMerges } from "../../model/shared/use-level-goal-merges"
 import {
   goalRowFromProjectMember,
   goalRowFromSummary,
@@ -191,12 +190,11 @@ export function ProjectDetailPage() {
       (left.priority ?? Number.MAX_SAFE_INTEGER) -
       (right.priority ?? Number.MAX_SAFE_INTEGER)
   )
-  const { displayRows, levelGoalIdByParent } = useLevelGoalMerges(rows)
   // Group=Unit is a display-only clustering over the flat, priority-ordered goal list — a cluster's
   // rows keep their priority order, not a separately re-derived dependency-first order
   // (fix-project-priority-display: "Group=Unit clusters the fixed priority order, it doesn't
   // reorder it").
-  const rowGroups = groupRows(displayRows, group)
+  const rowGroups = groupRows(rows, group)
   const counts = {
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
       .length,
@@ -296,7 +294,7 @@ export function ProjectDetailPage() {
         project={project}
         projectIsEmpty={allRows.length === 0}
         reorderEnabled={inFlightRows.length > 1}
-        levelGoalIdByParent={levelGoalIdByParent}
+        levelPotentialProgress={insights.levelPotentialProgressByGoalId}
         reorderPending={projectActions.pending}
         rowGroups={rowGroups}
       />
@@ -322,6 +320,11 @@ export function ProjectDetailPage() {
         onGoalChange={setDetailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={projectGoals.retry}
+        levelPotentialRatio={
+          detailGoalId
+            ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
+            : undefined
+        }
         potentialRatio={
           detailGoalId
             ? insights.potentialProgressByGoalId.get(detailGoalId)

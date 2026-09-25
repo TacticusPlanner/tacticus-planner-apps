@@ -134,7 +134,7 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
         total: progress.required,
       })}
     </span>
-  ) : progress.kind === "Level" ? (
+  ) : progress.kind === "LevelRequirement" ? (
     <span>
       {t("goals.overview.levelProgress", {
         current: progress.current,
@@ -276,7 +276,8 @@ export function GoalProgressDisplay({
               })}
             </>
           ) : null}
-          {progress.kind === "Level" && progress.target > progress.current ? (
+          {progress.kind === "LevelRequirement" &&
+          progress.target > progress.current ? (
             <>
               {" "}
               {t("goals.overview.actualLevelsRemaining", {
@@ -304,7 +305,7 @@ export function GoalProgressDisplay({
               })}
             </>
           ) : null}
-          {progress.kind === "Level" && progress.remainingXp ? (
+          {progress.kind === "LevelRequirement" && progress.remainingXp ? (
             <>
               {" "}
               {t("goals.overview.potentialXpRemaining", {
@@ -373,7 +374,7 @@ export function GoalProgressDisplay({
             actualRatio={showPotentialOnly ? 0 : progress.ratio}
             ceilingLabel={ceilingLabel}
             ceilingRatio={
-              progress.kind === "Rank" || progress.kind === "Level"
+              progress.kind === "Rank" || progress.kind === "LevelRequirement"
                 ? progress.reachableRatio
                 : null
             }

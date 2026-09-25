@@ -24,15 +24,14 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import {
+  LevelRequirementProgressBar,
+  LevelRequirementRemaining,
+  LevelRequirementTarget,
+} from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import {
-  EstimateCell,
-  GoalNameLink,
-  LevelGoalSubProgress,
-  LevelGoalSubRemaining,
-  LevelGoalSubTarget,
-} from "./goal-row-shared"
+import { EstimateCell, GoalNameLink } from "./goal-row-shared"
 import {
   estimateEnergy,
   isInFlightStatus,
@@ -67,7 +66,7 @@ function GoalsTable({
   onReorder,
   reorderEnabled = false,
   reorderPending = false,
-  levelGoalIdByParent,
+  levelPotentialProgress,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -113,6 +112,7 @@ function GoalsTable({
             const progress =
               metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
             const remaining = metrics?.get(row.goalId)?.remaining ?? null
+            const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
             const energy = estimateEnergy(estimates?.get(row.goalId))
             const remainingText = formatGoalRemainingText(
               t,
@@ -188,13 +188,7 @@ function GoalsTable({
                 </TableCell>
                 <TableCell>
                   <GoalTargetDisplay progress={progress} />
-                  {levelGoalIdByParent?.get(row.goalId) ? (
-                    <LevelGoalSubTarget
-                      levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                      metrics={metrics}
-                      onView={onView}
-                    />
-                  ) : null}
+                  <LevelRequirementTarget levelRequirement={levelRequirement} />
                 </TableCell>
                 <TableCell
                   className="min-w-[220px]"
@@ -211,15 +205,10 @@ function GoalsTable({
                     progress={progress}
                     remaining={remaining}
                   />
-                  {levelGoalIdByParent?.get(row.goalId) ? (
-                    <LevelGoalSubProgress
-                      estimates={estimates}
-                      levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                      metrics={metrics}
-                      onView={onView}
-                      potentialProgress={potentialProgress}
-                    />
-                  ) : null}
+                  <LevelRequirementProgressBar
+                    levelRequirement={levelRequirement}
+                    potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                  />
                 </TableCell>
                 <TableCell>
                   {remainingText ? (
@@ -231,12 +220,9 @@ function GoalsTable({
                       {remainingText}
                     </span>
                   ) : null}
-                  {levelGoalIdByParent?.get(row.goalId) ? (
-                    <LevelGoalSubRemaining
-                      levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                      metrics={metrics}
-                    />
-                  ) : null}
+                  <LevelRequirementRemaining
+                    levelRequirement={levelRequirement}
+                  />
                 </TableCell>
                 <TableCell>
                   <div className="grid gap-1">

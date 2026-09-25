@@ -105,7 +105,6 @@ export function GoalDetailView({
           <ul className="grid gap-1 text-amber-700">
             {uniqueBlockerReasons.map((reason, index) => {
               const missingPrerequisite =
-                reason.kind === "MissingLevelPrerequisite" ||
                 reason.kind === "MissingAscensionPrerequisite" ||
                 reason.kind === "MissingUnlockPrerequisite"
                   ? reason

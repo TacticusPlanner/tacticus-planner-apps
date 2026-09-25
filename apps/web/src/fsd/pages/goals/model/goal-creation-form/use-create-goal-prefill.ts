@@ -14,7 +14,6 @@ export function useCreateGoalPrefill({
   setEntityType,
   setEnabledTypes,
   selectProjects,
-  setLevelEnd,
   setProgressionEnd,
 }: {
   open: boolean
@@ -25,7 +24,6 @@ export function useCreateGoalPrefill({
   setEntityType: (entityType: EntityType) => void
   setEnabledTypes: (types: ReadonlySet<GoalKind>) => void
   selectProjects: (projectIds: string[]) => void
-  setLevelEnd: (level: number) => void
   setProgressionEnd: (progression: Progression) => void
 }) {
   const selectionKeyRef = useRef("")
@@ -62,8 +60,7 @@ export function useCreateGoalPrefill({
       return
     }
     targetKeyRef.current = prefillKey
-    if (prefill.goalType === "Level") setLevelEnd(prefill.requiredLevel)
-    else if (prefill.goalType === "Ascension")
+    if (prefill.goalType === "Ascension")
       setProgressionEnd(prefill.requiredProgression)
     // Unlock has no target field to prefill — selecting the entity/goal type (above) is enough.
     // Field setters are stable and the target applies once per prefill.

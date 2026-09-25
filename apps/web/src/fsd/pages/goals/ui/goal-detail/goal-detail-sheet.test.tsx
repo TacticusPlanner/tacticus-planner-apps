@@ -247,19 +247,6 @@ const ascensionDetail = {
   snapshot: { ...detail.snapshot, initialRequirement: [] },
 }
 
-const levelDetail = {
-  ...detail,
-  goalType: "Level",
-  dependsOn: [],
-  config: {
-    farmingLocationIds: [],
-    farmingStrategy: "TotalUpgrades",
-    level: { start: 31, end: 42 },
-  },
-  // Level goals are uncosted — buildCreateGoalSnapshot never populates initialRequirement for them.
-  snapshot: { ...detail.snapshot, initialRequirement: [] },
-}
-
 function renderSheet(
   props: Partial<Parameters<typeof GoalDetailSheet>[0]> = {},
   queryClient?: QueryClient
@@ -843,33 +830,6 @@ describe("GoalDetailSheet", () => {
           acquisitionSources: [{ kind: "Campaign", ids: ["shard-battle-1"] }],
         })
       )
-    })
-  })
-
-  it("shows the current/target level for a Level goal, with no farming strategy or location picker", async () => {
-    getGoal.mockReset().mockResolvedValue(levelDetail)
-    const user = userEvent.setup()
-    renderSheet()
-    expect(await screen.findByText("Entity hero-1")).toBeInTheDocument()
-    await enterEditMode(user)
-
-    const levelSummary = screen.getByTestId("goal-detail-level")
-    expect(levelSummary).toHaveTextContent("goals.create.level.current: 31")
-    expect(levelSummary).toHaveTextContent("goals.create.level.target: 42")
-    expect(
-      screen.queryByTestId("create-goal-farming-strategy")
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId("goal-detail-locations")
-    ).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByText("goals.detail.save"))
-    await vi.waitFor(() => {
-      expect(updateGoal).toHaveBeenCalledWith("goal-1", {
-        farmingLocationIds: null,
-        notes: "Old note",
-        farmingStrategy: "TotalUpgrades",
-      })
     })
   })
 })

@@ -52,7 +52,6 @@ export type {
   GoalSummary,
   GoalTargetEdit,
   GoalTargetSnapshot,
-  LevelTarget,
   ProgressionTarget,
   ProjectMembership,
   RankTarget,

@@ -32,6 +32,7 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges } from "../shared/goal-visuals"
+import { LevelRequirementSummary } from "../shared/level-requirement-display"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   GoalDetailEditForm,
@@ -63,6 +64,7 @@ export function GoalDetailSheet({
   onOpenChange,
   onUpdated,
   potentialRatio,
+  levelPotentialRatio,
   onGoalChange,
 }: {
   goalId: string | null
@@ -71,6 +73,8 @@ export function GoalDetailSheet({
   onOpenChange: (open: boolean) => void
   onUpdated: () => void
   potentialRatio?: number
+  /** Potential progress of this goal's level requirement (owned XP books). */
+  levelPotentialRatio?: number
   onGoalChange?: (goalId: string) => void
 }) {
   const { t } = useTranslation()
@@ -142,8 +146,9 @@ export function GoalDetailSheet({
     goalId && estimate ? new Map([[goalId, estimate]]) : undefined
   )
   const metrics = goalId ? overviewMetrics.get(goalId) : undefined
+  const progress = metrics?.progress ?? UNKNOWN_PROGRESS
 
-  const { isRank, isUnlock, isLevel, allLocations, overrideValid } =
+  const { isRank, isUnlock, allLocations, overrideValid } =
     useGoalLocationGroups(
       detail,
       upgradesById,
@@ -218,7 +223,6 @@ export function GoalDetailSheet({
       detail,
       draft,
       isRank,
-      isLevel,
       usesAcquisitionSources,
       isUnlock,
       overrideValid,
@@ -284,7 +288,7 @@ export function GoalDetailSheet({
     onGoalChange?.(nextGoalId)
   }
 
-  const farmingSummary = goalFarmingSummary(t, detail, { isLevel, isRank })
+  const farmingSummary = goalFarmingSummary(t, detail, { isRank })
 
   return (
     <Sheet open={!!goalId} onOpenChange={requestClose}>
@@ -323,17 +327,19 @@ export function GoalDetailSheet({
                 <StatusBadge status={detail.status} />
                 <BlockedIndicator
                   blockers={metrics?.blockers ?? NO_BLOCKERS}
-                  progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                  progress={progress}
                 />
               </div>
+              <LevelRequirementSummary
+                levelRequirement={metrics?.levelRequirement}
+                potentialRatio={levelPotentialRatio}
+              />
               {mode === "edit" ? (
                 <>
-                  <GoalTargetDisplay
-                    progress={metrics?.progress ?? UNKNOWN_PROGRESS}
-                  />
+                  <GoalTargetDisplay progress={progress} />
                   <GoalProgressDisplay
                     potentialRatio={potentialRatio}
-                    progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                    progress={progress}
                   />
                   {assignedProjects.length > 0 ? (
                     <GoalProjectBadges projects={assignedProjects} />
@@ -364,7 +370,7 @@ export function GoalDetailSheet({
                 isolated={isolated}
                 onCreatePrerequisite={createPrerequisite}
                 onViewGoal={viewPrerequisiteGoal}
-                progress={metrics?.progress ?? UNKNOWN_PROGRESS}
+                progress={progress}
                 potentialRatio={potentialRatio}
                 remaining={metrics?.remaining ?? null}
               />
@@ -377,7 +383,6 @@ export function GoalDetailSheet({
                 conflicts={membershipConflicts.conflicts}
                 draft={draft}
                 isAscension={isAscension}
-                isLevel={isLevel}
                 isRank={isRank}
                 isUnlock={isUnlock}
                 onDraftChange={(next) =>

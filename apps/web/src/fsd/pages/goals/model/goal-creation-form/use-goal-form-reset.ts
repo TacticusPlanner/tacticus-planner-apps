@@ -5,7 +5,6 @@ import type { FarmingStrategy, GoalKind } from "@/entities/goal"
 
 import type { useAbilityFields } from ".//use-ability-fields"
 import type { useAscensionFields } from ".//use-ascension-fields"
-import type { useLevelFields } from ".//use-level-fields"
 import type { useProjectSelection } from "../projects/use-project-selection"
 import type { useRankFields } from ".//use-rank-fields"
 import type { useAcquisitionSourceSelection } from ".//use-acquisition-source-selection"
@@ -23,7 +22,6 @@ export function useGoalFormReset(params: {
   rankFields: ReturnType<typeof useRankFields>
   ascensionFields: ReturnType<typeof useAscensionFields>
   abilityFields: ReturnType<typeof useAbilityFields>
-  levelFields: ReturnType<typeof useLevelFields>
   upgradeFields: ReturnType<typeof useUpgradeFields>
   acquisitionSourceSelection: ReturnType<typeof useAcquisitionSourceSelection>
   projectSelection: ReturnType<typeof useProjectSelection>
@@ -35,7 +33,6 @@ export function useGoalFormReset(params: {
   ) => void
   setIncludeSuggestedUnlock: (value: boolean) => void
   setIncludeSuggestedAscension: (value: boolean) => void
-  setIncludeSuggestedLevel: (value: boolean) => void
   setStartPaused: (value: boolean) => void
   resetPrefillGuard: () => void
   setEntityType: (value: EntityType) => void
@@ -58,7 +55,6 @@ export function useGoalFormReset(params: {
     params.rankFields.reset()
     params.ascensionFields.reset()
     params.abilityFields.reset()
-    params.levelFields.reset()
     params.upgradeFields.reset()
     params.setFarmingStrategy("TotalUpgrades")
     params.acquisitionSourceSelection.reset()
@@ -71,7 +67,6 @@ export function useGoalFormReset(params: {
     params.setEnabledTypes(new Set())
     params.setIncludeSuggestedUnlock(true)
     params.setIncludeSuggestedAscension(true)
-    params.setIncludeSuggestedLevel(true)
     resetTargetFields()
     params.resetPrefillGuard()
   }
