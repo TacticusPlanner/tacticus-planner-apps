@@ -32,14 +32,28 @@ Project detail SHALL present a summary or direct link to outstanding goal farmin
 - **WHEN** the viewed project has no outstanding farmable need
 - **THEN** it shows an explicit no-work state or relevant navigation instead of an empty list
 
+### Requirement: Planning settings choose the XP-book equivalent rarity
+
+The Planning settings dialog SHALL include an XP-book rarity setting offering Common, Uncommon, Rare, Epic, Legendary, and Mythic, defaulting to Legendary. The choice SHALL persist with the user's planning settings. A missing or unsupported stored value SHALL behave as Legendary.
+
+#### Scenario: Default rarity
+
+- **WHEN** a user who has never chosen a rarity opens Planning settings
+- **THEN** Legendary is selected and Level guidance uses Legendary books
+
+#### Scenario: Changing rarity
+
+- **WHEN** the user saves Epic as the XP-book rarity
+- **THEN** Level guidance shows its additional equivalent in Epic books, and raw XP is unchanged
+
 ### Requirement: Level guidance preserves raw XP and adds an equivalent
 
-For a Level goal, the existing raw remaining-XP figure SHALL remain visible. Where the selected project and XP-book inventory allow allocation, guidance SHALL additionally show the _additional_ Legendary-book-equivalent count required after owned books have been allocated once in goal-priority order; it SHALL label the count as an equivalent, not as owned actual Legendary books or a guaranteed shop/farm source. It SHALL not double-count books reserved for higher-priority goals.
+For a Level goal, the existing raw remaining-XP figure SHALL remain visible. Where the selected project and XP-book inventory allow allocation, guidance SHALL additionally show the _additional_ book-equivalent count, in the user's selected XP-book rarity, required after owned books have been allocated once in goal-priority order; it SHALL label the count with that rarity as an equivalent, not as owned actual books or a guaranteed shop/farm source. It SHALL not double-count books reserved for higher-priority goals.
 
 Assumptions:
 
-- A Legendary XP book contributes 12,500 XP in the current game data; books are indivisible. The equivalent is `ceil(net XP gap / 12,500)` and is anchored to the unit's current total XP and the goal's target threshold.
-- Worked example: Bellator at level 31 has 82,000 total XP and targets level 32 (94,200 XP threshold). Raw remaining XP is 94,200 - 82,000 = 12,200 XP. If no unallocated books remain, net gap is 12,200 XP and the display shows 1 additional Legendary-book equivalent (`ceil(12,200 / 12,500) = 1`) alongside 12,200 raw XP. If one owned Legendary book is allocated to this goal, net gap is 0 and additional equivalent is 0, while raw XP remains 12,200 until actually applied.
+- XP per book by rarity in the current game data: Common 20, Uncommon 100, Rare 500, Epic 2,500, Legendary 12,500, Mythic 62,500; books are indivisible. The equivalent is `ceil(net XP gap / selected book XP)` and is anchored to the unit's current total XP and the goal's target threshold. Owned-book allocation is in raw XP across all rarities and does not depend on the selected rarity.
+- Worked example: Bellator at level 31 has 82,000 total XP and targets level 32 (94,200 XP threshold). Raw remaining XP is 94,200 - 82,000 = 12,200 XP. If no unallocated books remain, net gap is 12,200 XP and, with the default Legendary rarity, the display shows 1 additional Legendary-book equivalent (`ceil(12,200 / 12,500) = 1`) alongside 12,200 raw XP; with Epic it shows 5 (`ceil(12,200 / 2,500)`), and with Mythic 1. If owned books worth at least 12,200 XP are allocated to this goal, net gap is 0 and additional equivalent is 0, while raw XP remains 12,200 until actually applied.
 
 #### Scenario: Owned books already allocated elsewhere
 
