@@ -499,3 +499,27 @@ Project detail SHALL express how many goals the project contains relative to how
 
 - **WHEN** project detail renders its summary and empty state
 - **THEN** no copy states or implies that belonging to this project makes a goal active, or that leaving it makes a goal inactive
+
+### Requirement: The detail route offers a Create Goal action alongside Add Goals
+
+The detail route SHALL provide a Create Goal action alongside its existing Add Goals action. Where Add Goals assigns an existing, currently-unassigned goal to the viewed project, Create Goal SHALL start a brand-new goal already scoped to the viewed project. Both actions SHALL be visible without hovering, focusing, or opening another control.
+
+#### Scenario: Create Goal is offered next to Add Goals
+
+- **WHEN** a project's detail route renders its header
+- **THEN** a Create Goal action is visible next to the existing Add Goals action
+
+#### Scenario: Create Goal starts a new goal scoped to the project
+
+- **WHEN** the user activates Create Goal on a project's detail route
+- **THEN** the goal-creation sheet opens with that project preselected, distinct from the existing-goal assembly surface Add Goals opens
+
+#### Scenario: Project menu offers the same scoped creation
+
+- **WHEN** the user opens Project Detail's three-dot menu
+- **THEN** Create new goal is available there and opens goal creation with the viewed project preselected
+
+#### Scenario: Add Goals offers creation without changing assignment semantics
+
+- **WHEN** the user opens Add Goals on a project
+- **THEN** Create new goal is a distinct action from selecting existing goals and saving their membership

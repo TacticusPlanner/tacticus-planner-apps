@@ -8,6 +8,7 @@ import {
   Pause,
   Pencil,
   Play,
+  Plus,
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardHeader, CardTitle } from "@workspace/ui/components/card"
@@ -51,6 +52,7 @@ export function ProjectDetailHeader({
   mobileReorderActive,
   onToggleMobileReorder,
   onAddGoals,
+  onCreateGoal,
   onEdit,
   unitCount,
   goalCount,
@@ -76,6 +78,7 @@ export function ProjectDetailHeader({
   mobileReorderActive: boolean
   onToggleMobileReorder: () => void
   onAddGoals: () => void
+  onCreateGoal: () => void
   onEdit: () => void
   unitCount: number
   goalCount: number
@@ -135,6 +138,14 @@ export function ProjectDetailHeader({
             >
               {t("goals.project.addGoalsTrigger")}
             </Button>
+            <Button
+              data-testid="project-create-goal"
+              onClick={onCreateGoal}
+              variant="outline"
+            >
+              <Plus />
+              {t("goals.project.createGoalTrigger")}
+            </Button>
             {isMobile && showMobileReorderToggle ? (
               <Button
                 aria-pressed={mobileReorderActive}
@@ -159,6 +170,13 @@ export function ProjectDetailHeader({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  data-testid="project-menu-create-goal"
+                  onSelect={onCreateGoal}
+                >
+                  <Plus />
+                  {t("goals.project.createNewGoal")}
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={onEdit}>
                   <Pencil />
                   {t("goals.project.edit")}

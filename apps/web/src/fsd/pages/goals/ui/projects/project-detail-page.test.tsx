@@ -10,6 +10,13 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
+const mobile = vi.hoisted(() => ({ value: false }))
+const onLaunch = vi.hoisted(() => vi.fn())
+
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => mobile.value,
+}))
+
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
     querier: () => unknown,
@@ -241,7 +248,7 @@ function renderPage(projectId = "proj-a") {
         <Route
           path="/goals/projects/:projectId"
           element={
-            <CreateGoalLauncherProvider onLaunch={vi.fn()}>
+            <CreateGoalLauncherProvider onLaunch={onLaunch}>
               <ProjectDetailPage />
             </CreateGoalLauncherProvider>
           }
@@ -293,6 +300,8 @@ describe("ProjectDetailPage", () => {
     listAccountGoals.mockReset().mockResolvedValue({ goals: [] })
     updateGoalStatus.mockReset().mockResolvedValue({})
     translate.mockClear()
+    mobile.value = false
+    onLaunch.mockReset()
     // Selecting a Group value persists it to localStorage (usePersistedSelection) - reset between
     // tests so one test's selection can't leak into the next test's "first-ever visit" assumptions.
     window.localStorage.removeItem("goals.projectDetail.group")
@@ -709,6 +718,72 @@ describe("ProjectDetailPage", () => {
       await screen.findByTestId("add-goals-to-project-sheet")
     ).toBeInTheDocument()
   })
+
+  describe.each([false, true])(
+    "Create Goal entry points (mobile: %s)",
+    (isMobile) => {
+      const nonDefault = () =>
+        project({
+          projectId: "proj-b",
+          name: "Project B",
+          isActivePlan: false,
+          isDefault: false,
+        })
+      const setup = async () => {
+        mobile.value = isMobile
+        listProjects.mockResolvedValue({
+          projects: [project(), nonDefault()],
+        })
+        listProjectGoals.mockResolvedValue({ goals: [] })
+        const user = userEvent.setup()
+        renderPage("proj-b")
+        await screen.findByTestId("project-detail-page")
+        return user
+      }
+
+      it("shows Create Goal beside Add Goals and launches creation scoped to the viewed project", async () => {
+        const user = await setup()
+        const create = screen.getByTestId("project-create-goal")
+        const add = screen.getByTestId("project-add-goals")
+
+        expect(create).toHaveTextContent("goals.project.createGoalTrigger")
+        expect(create.parentElement).toBe(add.parentElement)
+
+        await user.click(create)
+        expect(onLaunch).toHaveBeenCalledTimes(1)
+        expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-b"] })
+        expect(
+          screen.queryByTestId("add-goals-to-project-sheet")
+        ).not.toBeInTheDocument()
+      })
+
+      it("launches the same scoped creation from the three-dot menu", async () => {
+        const user = await setup()
+        await user.click(
+          screen.getByRole("button", { name: "goals.project.moreActions" })
+        )
+        await user.click(screen.getByTestId("project-menu-create-goal"))
+
+        expect(onLaunch).toHaveBeenCalledTimes(1)
+        expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-b"] })
+      })
+
+      it("launches the same scoped creation from Add Goals and closes that sheet", async () => {
+        const user = await setup()
+        await user.click(screen.getByTestId("project-add-goals"))
+        await user.click(await screen.findByTestId("add-goals-create-new"))
+
+        expect(onLaunch).toHaveBeenCalledTimes(1)
+        expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-b"] })
+        await vi.waitFor(() =>
+          expect(
+            screen.queryByTestId("add-goals-to-project-sheet")
+          ).not.toBeInTheDocument()
+        )
+        expect(updateProjectGoals).not.toHaveBeenCalled()
+      })
+    }
+  )
 
   it("offers project removal on each goal row, because the route carries project scope", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })

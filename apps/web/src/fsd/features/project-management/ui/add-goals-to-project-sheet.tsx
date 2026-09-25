@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
+import { Plus } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -49,10 +50,13 @@ const occupiesSlot = (goal: { status: string }) =>
 export function AddGoalsToProjectSheet({
   open,
   onOpenChange,
+  onCreateGoal,
   project,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** Starts a brand-new goal scoped to `project`; the caller owns the creation sheet. */
+  onCreateGoal: () => void
   project: ProjectSummary
 }) {
   const { t } = useTranslation()
@@ -67,12 +71,21 @@ export function AddGoalsToProjectSheet({
   // must outlive neither event, or selections made for one project get submitted against another.
   // Reset during render rather than in an effect (react-hooks/set-state-in-effect), and key it on the
   // open flag as well as the project so a reopened sheet never briefly shows the previous draft.
+  // The one exception is "Create new goal": it closes this sheet (never two focus-trapped sheets)
+  // but suspends the draft, which survives until this project's sheet is reopened.
   const draftKey = `${project.projectId}:${open}`
   const [lastDraftKey, setLastDraftKey] = useState(draftKey)
+  const [draftProjectId, setDraftProjectId] = useState(project.projectId)
+  const [draftSuspended, setDraftSuspended] = useState(false)
   if (lastDraftKey !== draftKey) {
     setLastDraftKey(draftKey)
-    setSearch("")
-    setSelectedGoalIds([])
+    const keepDraft = draftSuspended && draftProjectId === project.projectId
+    if (!keepDraft) {
+      setSearch("")
+      setSelectedGoalIds([])
+    }
+    setDraftProjectId(project.projectId)
+    if (open || !keepDraft) setDraftSuspended(false)
   }
 
   const goalsQuery = useQuery({
@@ -187,6 +200,18 @@ export function AddGoalsToProjectSheet({
         </SheetHeader>
 
         <div className="grid gap-3 px-4">
+          <Button
+            data-testid="add-goals-create-new"
+            onClick={() => {
+              setDraftSuspended(true)
+              onOpenChange(false)
+              onCreateGoal()
+            }}
+            variant="outline"
+          >
+            <Plus />
+            {t("goals.project.createNewGoal")}
+          </Button>
           <Input
             aria-label={t("goals.project.addGoalsSearch")}
             data-testid="add-goals-search"
