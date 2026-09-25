@@ -87,6 +87,20 @@ describe("DisplayNameForm", () => {
     expect(screen.queryByTestId("account-setup-name-error")).toBeNull()
   })
 
+  it("clears the save error once the user edits the name", async () => {
+    mutateAsync.mockRejectedValue(new Error("offline"))
+    const user = userEvent.setup()
+
+    render(<DisplayNameForm onCompleted={vi.fn()} />)
+    await user.type(screen.getByTestId("account-setup-name-input"), "Ada")
+    await user.click(screen.getByTestId("account-setup-name-submit"))
+    expect(await screen.findByTestId("account-setup-name-error")).toBeVisible()
+
+    await user.type(screen.getByTestId("account-setup-name-input"), "!")
+
+    expect(screen.queryByTestId("account-setup-name-error")).toBeNull()
+  })
+
   it("blocks an empty name and explains an over-long or control-character one", async () => {
     const user = userEvent.setup()
 

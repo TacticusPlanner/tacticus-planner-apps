@@ -73,7 +73,10 @@ export function DisplayNameForm({
             autoComplete="nickname"
             data-testid="account-setup-name-input"
             id="account-setup-display-name"
-            onChange={(event) => setDraft(event.target.value)}
+            onChange={(event) => {
+              setDraft(event.target.value)
+              setSaveFailed(false)
+            }}
             value={value}
           />
           <FieldDescription>

@@ -63,6 +63,8 @@ export function ProfileTab({ user }: { user: CurrentUser }) {
           <Input
             autoComplete="nickname"
             data-testid="manage-account-display-name-input"
+            // Locked while saving so an edit typed mid-request is not discarded on success.
+            disabled={updateDisplayName.isPending}
             id="manage-account-display-name"
             onChange={(event) => {
               setDraft(event.target.value)
