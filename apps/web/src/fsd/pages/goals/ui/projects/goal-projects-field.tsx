@@ -18,6 +18,7 @@ import {
 
 import type { ProjectSummary } from "@/entities/project"
 import { ProjectColorDot } from "@/entities/project"
+import { projectConflictText } from "../../model/projects/project-conflict-copy"
 import type { ProjectMembershipConflict } from "../../model/projects/project-membership"
 import type { ProjectRemovalUnavailableReason } from "../../model/projects/project-removal"
 
@@ -129,14 +130,12 @@ export function GoalProjectsField({
               </Badge>
               {conflict ? (
                 <p className="max-w-64 text-xs text-destructive" role="alert">
-                  {t("goals.project.membershipConflict", {
-                    project: project.name,
-                    types: conflict.goalTypes
-                      .map((goalType) =>
-                        t(`goals.create.goalTypes.${goalType}`)
-                      )
-                      .join(", "),
-                  })}
+                  {projectConflictText(
+                    t,
+                    project.name,
+                    conflict.goalTypes,
+                    conflict.rankTargetKey
+                  )}
                 </p>
               ) : null}
             </div>

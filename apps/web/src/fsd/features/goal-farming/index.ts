@@ -15,6 +15,8 @@ export {
 export {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
+  createUnitCoverage,
+  type UnitCoverage,
 } from "./lib/goal-requirements"
 export { resourceLabel } from "./lib/goal-need"
 export {

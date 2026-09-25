@@ -588,7 +588,9 @@
       "reorderGoals": "Reorder",
       "reorderDone": "Done",
       "pauseAllGoals": "Pause all goals",
-      "resumeAllGoals": "Resume all goals"
+      "resumeAllGoals": "Resume all goals",
+      "assemblyRankTargetTaken": "This project already has this unit's {{target}} Rank goal.",
+      "membershipConflictRank": "{{project}} already contains an active or paused Rank goal for this unit with the target {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
@@ -1050,7 +1052,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place."
+          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
         }
       }
     },
@@ -1082,7 +1084,7 @@
         },
         "addGoals": {
           "title": "Fill the project",
-          "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step."
+          "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step. A unit can have several Rank targets here, but an exact duplicate target is blocked."
         },
         "createGoal": {
           "title": "Create a new goal",
@@ -1098,7 +1100,7 @@
         },
         "goals": {
           "title": "Project goals",
-          "content": "This project's goals appear here, grouped by goal type to start. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
+          "content": "This project's goals appear here, grouped by goal type to start. Each Rank target is its own goal, labelled with its target, and can be reordered, paused, or deleted on its own. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
         },
         "rowActions": {
           "title": "Remove without deleting",

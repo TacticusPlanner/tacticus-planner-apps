@@ -108,7 +108,14 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
     <span className="flex items-center gap-1.5">
       <RankBadge rank={progress.current} showLabel={false} />
       <ArrowRight className="size-3.5 text-muted-foreground" />
-      <RankBadge rank={progress.target} showLabel={false} />
+      {/* The target is labelled (icon + rank name, plus applied slots for a partial target) so two Rank
+          milestones for one character can be told apart at a glance. */}
+      <RankBadge rank={progress.target} />
+      {progress.targetSlots > 0 ? (
+        <span className="text-xs text-muted-foreground">
+          ({progress.targetSlots}/6)
+        </span>
+      ) : null}
     </span>
   ) : progress.kind === "Ascension" ? (
     <span className="flex items-center gap-1.5">

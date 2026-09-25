@@ -588,7 +588,9 @@
       "reorderGoals": "Réorganiser",
       "reorderDone": "Terminé",
       "pauseAllGoals": "Mettre tous les objectifs en pause",
-      "resumeAllGoals": "Reprendre tous les objectifs"
+      "resumeAllGoals": "Reprendre tous les objectifs",
+      "assemblyRankTargetTaken": "Ce projet contient déjà l'objectif de rang {{target}} de cette unité.",
+      "membershipConflictRank": "{{project}} contient déjà un objectif de rang actif ou en pause pour cette unité avec la cible {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
@@ -1050,7 +1052,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement."
+          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1082,7 +1084,7 @@
         },
         "addGoals": {
           "title": "Remplir le projet",
-          "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape."
+          "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape. Une unité peut avoir ici plusieurs cibles de rang, mais une cible exactement en double est bloquée."
         },
         "createGoal": {
           "title": "Créer un nouvel objectif",
@@ -1098,7 +1100,7 @@
         },
         "goals": {
           "title": "Objectifs du projet",
-          "content": "Les objectifs de ce projet apparaissent ici, groupés par type d'objectif au départ. Utilisez Grouper pour passer à un bloc par unité, ou pour désactiver le regroupement et obtenir une liste simple."
+          "content": "Les objectifs de ce projet apparaissent ici, d'abord regroupés par type d'objectif. Chaque cible de rang est un objectif à part entière, étiquetée avec sa cible, et peut être réordonnée, mise en pause ou supprimée séparément. Utilisez Grouper pour passer à un bloc par unité ou désactiver le regroupement pour une liste plate."
         },
         "rowActions": {
           "title": "Retirer sans supprimer",

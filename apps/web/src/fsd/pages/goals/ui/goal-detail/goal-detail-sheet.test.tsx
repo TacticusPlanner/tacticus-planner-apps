@@ -79,6 +79,8 @@ vi.mock("@/entities/goal", () => ({
     all: () => ["goals"],
   },
   goalRevisionConflictDetails: () => null,
+  goalRankTargetKey: (goal: { goalType: string }) =>
+    goal.goalType === "Rank" ? "15:0" : null,
   updateGoalTarget: (...args: unknown[]) => updateGoalTarget(...args),
   updateGoal: (...args: unknown[]) => updateGoal(...args),
   updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),

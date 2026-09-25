@@ -21,6 +21,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 import {
   GoalProgressDisplay,
   GoalProgressLegend,
+  GoalTargetDisplay,
 } from "./goal-progress-visuals"
 
 describe("GoalProgressDisplay", () => {
@@ -333,5 +334,40 @@ describe("GoalProgressLegend", () => {
   it("renders once when show is true", () => {
     render(<GoalProgressLegend show={true} />)
     expect(screen.getByTestId("goal-progress-legend")).toBeInTheDocument()
+  })
+})
+
+describe("GoalTargetDisplay for Rank milestones", () => {
+  const rank = (target: string, targetSlots: number) =>
+    ({
+      kind: "Rank",
+      current: "Silver2",
+      target,
+      targetSlots,
+      ratio: 0.4,
+      reachableRatio: null,
+    }) as never
+
+  it("labels each milestone's own target so two goals for one character read apart", () => {
+    const { unmount } = render(
+      <GoalTargetDisplay progress={rank("Silver3", 0)} />
+    )
+    expect(screen.getByText(/ranks\.Silver3/)).toBeInTheDocument()
+    unmount()
+
+    render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
+    expect(screen.getByText(/ranks\.Gold1/)).toBeInTheDocument()
+    expect(screen.queryByText(/ranks\.Silver3/)).not.toBeInTheDocument()
+  })
+
+  it("adds the applied slots for a partial target and nothing for a clean one", () => {
+    const { unmount } = render(
+      <GoalTargetDisplay progress={rank("Gold1", 3)} />
+    )
+    expect(screen.getByText("(3/6)")).toBeInTheDocument()
+    unmount()
+
+    render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
+    expect(screen.queryByText(/\/6\)/)).not.toBeInTheDocument()
   })
 })

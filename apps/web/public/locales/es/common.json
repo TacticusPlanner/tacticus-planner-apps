@@ -588,7 +588,9 @@
       "reorderGoals": "Reordenar",
       "reorderDone": "Listo",
       "pauseAllGoals": "Pausar todos los objetivos",
-      "resumeAllGoals": "Reanudar todos los objetivos"
+      "resumeAllGoals": "Reanudar todos los objetivos",
+      "assemblyRankTargetTaken": "Este proyecto ya tiene la meta de rango {{target}} de esta unidad.",
+      "membershipConflictRank": "{{project}} ya contiene una meta de rango activa o en pausa para esta unidad con el objetivo {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "Se actualizaron {{succeeded}} de {{total}} objetivos.",
@@ -1050,7 +1052,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una meta compatible para editar su objetivo directamente."
+          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
         }
       }
     },
@@ -1082,7 +1084,7 @@
         },
         "addGoals": {
           "title": "Llena el proyecto",
-          "content": "Añade varios objetivos existentes a este proyecto de una vez: busca entre tus objetivos, elige los que quieras y guarda en un solo paso."
+          "content": "Añade varias metas existentes a este proyecto a la vez: busca tus metas, elige las que quieras y guarda en un solo paso. Una unidad puede tener aquí varios objetivos de rango, pero un objetivo exactamente duplicado se bloquea."
         },
         "createGoal": {
           "title": "Crear un objetivo nuevo",
@@ -1098,7 +1100,7 @@
         },
         "goals": {
           "title": "Objetivos del proyecto",
-          "content": "Los objetivos de este proyecto aparecen aquí, agrupados por tipo de objetivo al principio. Usa Agrupar para cambiar a un bloque por unidad o para desactivar la agrupación y ver una lista plana."
+          "content": "Las metas de este proyecto aparecen aquí, agrupadas primero por tipo de meta. Cada objetivo de rango es una meta propia, etiquetada con su objetivo, y se puede reordenar, pausar o eliminar por separado. Usa Agrupar para ver un bloque por unidad o desactivar la agrupación y obtener una lista plana."
         },
         "rowActions": {
           "title": "Quitar sin eliminar",

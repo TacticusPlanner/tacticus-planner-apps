@@ -208,8 +208,10 @@ describe("computePlanInsights", () => {
       level: null,
     }
     const details = [
-      goalDetail({ goalId: "first", config: rankConfig }),
-      goalDetail({ goalId: "second", config: rankConfig }),
+      // Different characters: the same character can't hold two identical Rank targets, and its
+      // overlapping targets share slots instead (see the rank-milestone tests).
+      goalDetail({ goalId: "first", entityId: "hero-a", config: rankConfig }),
+      goalDetail({ goalId: "second", entityId: "hero-b", config: rankConfig }),
     ]
 
     const result = computePlanInsights({
@@ -236,6 +238,79 @@ describe("computePlanInsights", () => {
     expect(result.estimates.get("second")).toMatchObject({
       status: "Estimated",
       energyTotal: 20,
+    })
+  })
+
+  describe("overlapping Rank milestones for one character", () => {
+    const milestone = (goalId: string, end: number) =>
+      goalDetail({
+        goalId,
+        goalType: "Rank",
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[end]!),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          acquisitionSources: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          level: null,
+        },
+      })
+    const plan = (
+      details: GoalDetail[],
+      order: string[],
+      overrides: Partial<Parameters<typeof computePlanInsights>[0]> = {}
+    ) =>
+      computePlanInsights({
+        ...baseParams,
+        details,
+        priorityByGoalId: new Map(order.map((id, index) => [id, index + 1])),
+        ...overrides,
+      })
+
+    it("charges the shared progression once, to the milestone ordered first", () => {
+      // near: rank0 -> rank1 (mat1). far: rank0 -> rank2 (mat1 + mat2) — mat1 is shared.
+      const result = plan(
+        [milestone("near", 1), milestone("far", 2)],
+        ["near", "far"]
+      )
+
+      expect(result.totals.upgradesByRarity).toEqual({ Common: 2 }) // not 3
+      expect(result.estimates.get("near")).toMatchObject({ energyTotal: 10 })
+      expect(result.estimates.get("far")).toMatchObject({ energyTotal: 10 })
+    })
+
+    it("gives a later, covered milestone no farmable demand but still a distinct goal", () => {
+      const result = plan(
+        [milestone("far", 2), milestone("near", 1)],
+        ["far", "near"]
+      )
+
+      expect(result.totals.upgradesByRarity).toEqual({ Common: 2 })
+      expect(result.estimates.get("far")).toMatchObject({ energyTotal: 20 })
+      expect(result.estimates.get("near")).toMatchObject({
+        status: "Estimated",
+        energyTotal: 0,
+      })
+    })
+
+    it("counts one canonical goal once even when several projects list it", () => {
+      const once = plan([milestone("near", 1)], ["near"])
+      const listedTwice = plan(
+        [milestone("near", 1), milestone("near", 1)],
+        ["near"]
+      )
+
+      expect(listedTwice.totals).toEqual(once.totals)
+      expect(listedTwice.energyTotal).toBe(once.energyTotal)
     })
   })
 

@@ -588,7 +588,9 @@
       "reorderGoals": "Neu anordnen",
       "reorderDone": "Fertig",
       "pauseAllGoals": "Alle Ziele pausieren",
-      "resumeAllGoals": "Alle Ziele fortsetzen"
+      "resumeAllGoals": "Alle Ziele fortsetzen",
+      "assemblyRankTargetTaken": "Dieses Projekt enthält bereits das Rang-Ziel {{target}} dieser Einheit.",
+      "membershipConflictRank": "{{project}} enthält bereits ein aktives oder pausiertes Rang-Ziel für diese Einheit mit dem Ziel {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} von {{total}} Zielen aktualisiert.",
@@ -1050,7 +1052,7 @@
         },
         "list": {
           "title": "Deine Ziele",
-          "content": "Jedes aktive Ziel erscheint unten und entspricht deinen aktuellen Filtern. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten."
+          "content": "Jedes aktive Ziel erscheint unten und entspricht deinen aktuellen Filtern. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
         }
       }
     },
@@ -1082,7 +1084,7 @@
         },
         "addGoals": {
           "title": "Das Projekt füllen",
-          "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu — durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt."
+          "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu – durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt. Eine Einheit kann hier mehrere Rang-Ziele haben, ein exakt doppeltes Ziel wird jedoch blockiert."
         },
         "createGoal": {
           "title": "Neues Ziel erstellen",
@@ -1098,7 +1100,7 @@
         },
         "goals": {
           "title": "Projektziele",
-          "content": "Die Ziele dieses Projekts erscheinen hier, zunächst nach Zieltyp gruppiert. Über Gruppieren wechselst du zu einem Block pro Einheit oder schaltest die Gruppierung für eine flache Liste ab."
+          "content": "Die Ziele dieses Projekts erscheinen hier, zunächst nach Zieltyp gruppiert. Jedes Rang-Ziel ist ein eigenes Ziel, mit seinem Zielrang gekennzeichnet, und kann einzeln umsortiert, pausiert oder gelöscht werden. Mit Gruppieren wechselst du zu einem Block pro Einheit oder schaltest die Gruppierung für eine flache Liste aus."
         },
         "rowActions": {
           "title": "Entfernen statt löschen",

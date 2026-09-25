@@ -40,7 +40,9 @@ import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
   computeGoalAcquisition,
+  createUnitCoverage,
   isMowDetail,
+  type UnitCoverage,
 } from "@/features/goal-farming"
 import { computeGoalProgress } from "../attainment/goal-progress"
 import { computePotentialProgressRatio } from "./potential-progress"
@@ -114,10 +116,7 @@ export function computePlanInsights(params: {
     EstimateUpgrade & { rarity: Rarity }
   >()
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
-  const abilityCoverageByEntity = new Map<
-    string,
-    { primary: Set<number>; secondary: Set<number> }
-  >()
+  const abilityCoverageByEntity = new Map<string, UnitCoverage>()
   let onslaughtTokens = 0
   // One reference date for every goal's shop-supply projection in this pass, so two goals sharing a
   // shop offer see the same weekday-probability schedule.
@@ -133,17 +132,18 @@ export function computePlanInsights(params: {
     provenance.set(id, set)
   }
 
-  const orderedDetails = [...params.details].sort(
-    (left, right) =>
-      (params.priorityByGoalId.get(left.goalId) ?? Number.MAX_SAFE_INTEGER) -
-      (params.priorityByGoalId.get(right.goalId) ?? Number.MAX_SAFE_INTEGER)
-  )
+  // A canonical goal that belongs to several projects is one piece of work: listed once, then ordered.
+  const orderedDetails = params.details
+    .filter((d, i, all) => all.findIndex((o) => o.goalId === d.goalId) === i)
+    .sort(
+      (left, right) =>
+        (params.priorityByGoalId.get(left.goalId) ?? Number.MAX_SAFE_INTEGER) -
+        (params.priorityByGoalId.get(right.goalId) ?? Number.MAX_SAFE_INTEGER)
+    )
   for (const detail of orderedDetails) {
     const entityId = detail.entityId as UnitId
-    const coverage = abilityCoverageByEntity.get(detail.entityId) ?? {
-      primary: new Set<number>(),
-      secondary: new Set<number>(),
-    }
+    const coverage =
+      abilityCoverageByEntity.get(detail.entityId) ?? createUnitCoverage()
     abilityCoverageByEntity.set(detail.entityId, coverage)
     const needParams = {
       detail,
@@ -157,6 +157,7 @@ export function computePlanInsights(params: {
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
+      coveredRankSlots: coverage.rankSlots,
       craftedInventory,
     }
     const stages = calculateGoalFarmingStages(needParams)

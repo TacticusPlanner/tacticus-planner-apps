@@ -12,8 +12,10 @@ import type { ProjectGoalSummary } from "@/entities/project"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
+  createUnitCoverage,
   type FarmingCharacter,
   type FarmingUpgrade,
+  type UnitCoverage,
 } from "@/features/goal-farming"
 
 import { activeProjectMembers } from "@/features/daily-raids"
@@ -93,10 +95,7 @@ export function aggregateShopNeeds(
   )
   const aggregate = new Map<string, ShopResourceNeed>()
 
-  const abilityCoverageByEntity = new Map<
-    string,
-    { primary: Set<number>; secondary: Set<number> }
-  >()
+  const abilityCoverageByEntity = new Map<string, UnitCoverage>()
 
   const add = (
     key: string,
@@ -116,18 +115,18 @@ export function aggregateShopNeeds(
     aggregate.set(key, current)
   }
 
+  const countedGoalIds = new Set<string>()
   for (const member of activeProjectMembers(params.members)) {
     const detail = detailById.get(member.goal.goalId)
-    if (!detail) continue
+    if (!detail || countedGoalIds.has(detail.goalId)) continue
+    countedGoalIds.add(detail.goalId)
 
     const entityId = detail.entityId as UnitId
     const isMow = detail.entityType === "Mow"
     const unitName = params.getUnitLabel(detail)
 
-    const coverage = abilityCoverageByEntity.get(detail.entityId) ?? {
-      primary: new Set<number>(),
-      secondary: new Set<number>(),
-    }
+    const coverage =
+      abilityCoverageByEntity.get(detail.entityId) ?? createUnitCoverage()
     abilityCoverageByEntity.set(detail.entityId, coverage)
 
     const requirementParams = {
@@ -142,6 +141,7 @@ export function aggregateShopNeeds(
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
+      coveredRankSlots: coverage.rankSlots,
     }
 
     // Mythic uncraftable materials — from the per-stage material needs when the goal is staged,

@@ -23,11 +23,13 @@ import {
   calculateGoalResourceNeed,
   computeGoalAcquisition,
   createCraftedInventoryPool,
+  createUnitCoverage,
   estimateBonusRaids,
   estimateGoal,
   estimatePlanSchedule,
   estimateTodaySchedule,
   type EstimatePlanParams,
+  type UnitCoverage,
   type EstimateResourceId,
   type EstimateUpgrade,
   type FarmingCharacter,
@@ -94,10 +96,7 @@ export function calculateDailyRaids(
   const resourceVisuals = new Map<string, DailyRaidResourceVisual>()
   const shardProgress = new Map<string, DailyRaidResourceProgress>()
   const shardCatalog = new Map<EstimateResourceId, EstimateUpgrade>()
-  const abilityCoverageByEntity = new Map<
-    string,
-    { primary: Set<number>; secondary: Set<number> }
-  >()
+  const abilityCoverageByEntity = new Map<string, UnitCoverage>()
   const craftedInventory = createCraftedInventoryPool(
     params.inventoryUpgrades,
     params.upgradesById
@@ -106,14 +105,16 @@ export function calculateDailyRaids(
   // plan-insights-calc.ts, so two goals sharing a shop offer see the same weekday schedule.
   const referenceDate = params.referenceDate ?? new Date()
 
+  // A canonical goal in several projects is one piece of work: count its demand once, however many
+  // memberships list it (rank-milestone-planning: shared project membership is not duplicate work).
+  const countedGoalIds = new Set<string>()
   for (const member of activeMembers) {
     const detail = detailById.get(member.goal.goalId)
-    if (!detail) continue
+    if (!detail || countedGoalIds.has(detail.goalId)) continue
+    countedGoalIds.add(detail.goalId)
 
-    const coverage = abilityCoverageByEntity.get(detail.entityId) ?? {
-      primary: new Set<number>(),
-      secondary: new Set<number>(),
-    }
+    const coverage =
+      abilityCoverageByEntity.get(detail.entityId) ?? createUnitCoverage()
     abilityCoverageByEntity.set(detail.entityId, coverage)
     const entityId = detail.entityId as UnitId
     const requirementParams = {
@@ -128,6 +129,7 @@ export function calculateDailyRaids(
       ascensionCostsById: params.ascensionCostsById,
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
+      coveredRankSlots: coverage.rankSlots,
       craftedInventory,
     }
     const stages = calculateGoalFarmingStages(requirementParams)

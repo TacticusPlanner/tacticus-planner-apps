@@ -11,7 +11,7 @@ import {
 } from "@workspace/ui/components/sheet"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { goalQueries } from "@/entities/goal"
+import { goalQueries, goalRankTargetKey } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
@@ -132,6 +132,8 @@ export function GoalDetailSheet({
     entityId: detail?.entityId,
     goalTypes: detail ? [detail.goalType] : [],
     excludeGoalId: detail?.goalId,
+    // A Rank goal only conflicts with an exact same-target Rank goal in a selected project.
+    rankTargetKey: detail ? goalRankTargetKey(detail) : null,
     enabled: mode === "edit",
   })
 

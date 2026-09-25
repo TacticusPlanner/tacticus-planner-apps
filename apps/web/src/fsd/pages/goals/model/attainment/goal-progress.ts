@@ -12,6 +12,7 @@ import {
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
+import { describeRankTargetKey, rankTargetKey } from "@/entities/goal"
 import {
   reachableRankProgress,
   xpNeededForLevelRange,
@@ -34,6 +35,10 @@ export type GoalProgress =
       kind: "Rank"
       current: Rank
       target: Rank
+      /** How many of `target`'s own 6 upgrade slots the target includes (the normalized additional
+       *  target — 0 for a clean rank boundary). With `target` this labels a Rank milestone, so two goals
+       *  for one character (e.g. Silver3 and Gold1) read apart. */
+      targetSlots: number
       ratio: number
       /** How far the goal's own ratio scale can advance *right now*, given the character's current
        *  rarity and level — both independently cap how far a rank can go, whichever is lower binds.
@@ -167,6 +172,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
             ? rankAt(target.end)
             : params.playerCharacter.rank,
         target: rankAt(target.end),
+        targetSlots: describeRankTargetKey(rankTargetKey(target))?.slots ?? 0,
         ratio:
           totalSlots <= 0
             ? currentIndex >= target.end

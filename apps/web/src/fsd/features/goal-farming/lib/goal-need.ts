@@ -24,9 +24,9 @@ import {
 import {
   aggregateBaseUpgrades,
   aggregateBaseUpgradesWithCraftedInventory,
-  removeUpgradeOccurrences,
-  rankUpUpgradeIds,
+  rankUpSlotOccurrences,
   type CraftedInventoryPool,
+  type RankSlotOccurrence,
 } from "./upgrade-recipe"
 
 // Rank/Ability raw material need-derivation for the Insights plan-wide aggregation
@@ -50,6 +50,34 @@ export function resourceLabel(
 }
 
 /**
+ * The slots of a Rank range this goal still has to charge: not already applied by the player (only slots
+ * of the character's current rank can be applied — earlier ranks are complete, later ones not reached, and
+ * `effectiveStart` is the rank the range actually starts from), and not already claimed by an earlier goal
+ * (`coveredRankSlots`). Pure — the caller decides whether to claim the result.
+ */
+function uncoveredRankSlots(params: {
+  occurrences: readonly RankSlotOccurrence[]
+  effectiveStart: number
+  playerCharacter: PlayerCharacter | undefined
+  coveredRankSlots: ReadonlySet<string> | undefined
+}): RankSlotOccurrence[] {
+  const { playerCharacter } = params
+  const appliedKeys =
+    playerCharacter && params.effectiveStart === rankIndex(playerCharacter.rank)
+      ? new Set(
+          playerCharacter.appliedUpgradeSlots.map(
+            (slot) => `${playerCharacter.rank}:${slot}`
+          )
+        )
+      : new Set<string>()
+  return params.occurrences.filter(
+    (occurrence) =>
+      !appliedKeys.has(occurrence.key) &&
+      !params.coveredRankSlots?.has(occurrence.key)
+  )
+}
+
+/**
  * A Rank goal's raw material demand net of only what's permanently applied — a direct copy of
  * `usePlanEstimate`'s `toGoalNeed` netting logic (loose inventory stays un-netted here; it's a pool
  * shared across every goal in the plan, so only `estimatePlan`'s own priority-ordered allocation may
@@ -64,6 +92,13 @@ export function rankResourceNeed(params: {
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
   /** Mutated in place; share one pool and invoke needs in stage/priority order. */
   craftedInventory?: CraftedInventoryPool
+  /**
+   * The Rank upgrade slots already claimed for this character by higher-priority goals in the same plan
+   * (`rank-milestone-planning`): mutated in place — this goal's newly claimed slots are added — so two
+   * Rank targets for one character never charge an overlapping slot twice. Share one set per character
+   * across the plan and invoke goals in effective priority order; omit it for a standalone calculation.
+   */
+  coveredRankSlots?: Set<string>
 }): UpgradeNeed[] | null {
   const rankTarget = params.detail.config.rank
   if (!rankTarget || !params.character) return null
@@ -79,7 +114,7 @@ export function rankResourceNeed(params: {
   const additionalTarget = additionalTargetSelection(
     additionalTargetFromWire(rankEnd, rankTarget)
   )
-  const requiredIds = rankUpUpgradeIds(
+  const occurrences = rankUpSlotOccurrences(
     params.character,
     rankStart,
     rankEnd,
@@ -87,21 +122,18 @@ export function rankResourceNeed(params: {
     additionalTarget.appliedUpgrades,
     additionalTarget.topRowCount
   )
-  if (requiredIds.length === 0) return null
-  // `requiredIds` starts at the character's current rank (or a future configured start), so only
-  // slots applied at that exact starting rank can reduce it. Including completed earlier ranks here
-  // lets their materials incorrectly cancel a current/future need whenever recipes reuse the same
-  // base upgrades.
-  const appliedIds =
-    params.playerCharacter &&
-    effectiveStart === rankIndex(params.playerCharacter.rank)
-      ? (params.character.rankUpUpgrades
-          .find((entry) => entry.rank === params.playerCharacter!.rank)
-          ?.upgradeIds.filter((_, index) =>
-            params.playerCharacter!.appliedUpgradeSlots.includes(index)
-          ) ?? [])
-      : []
-  const unappliedIds = removeUpgradeOccurrences(requiredIds, appliedIds)
+  if (occurrences.length === 0) return null
+  // Each slot is charged once: not if the player already applied it, and not if a higher-priority Rank
+  // goal for this character already claimed it. Claim what is charged here so the next goal sees it.
+  const uncovered = uncoveredRankSlots({
+    occurrences,
+    effectiveStart,
+    playerCharacter: params.playerCharacter,
+    coveredRankSlots: params.coveredRankSlots,
+  })
+  for (const occurrence of uncovered)
+    params.coveredRankSlots?.add(occurrence.key)
+  const unappliedIds = uncovered.map((occurrence) => occurrence.id)
   const required = params.craftedInventory
     ? aggregateBaseUpgradesWithCraftedInventory(
         unappliedIds,
@@ -125,6 +157,9 @@ export function rankSlotsRemaining(params: {
   detail: GoalDetail
   character: FarmingCharacter | undefined
   playerCharacter: PlayerCharacter | undefined
+  /** Slots already claimed by higher-priority goals (read-only here — call this *before*
+   *  `rankResourceNeed` claims this goal's slots, or they'd all read as covered). */
+  coveredRankSlots?: ReadonlySet<string>
 }): number | null {
   const rankTarget = params.detail.config.rank
   if (!rankTarget || !params.character) return null
@@ -138,7 +173,7 @@ export function rankSlotsRemaining(params: {
   const additionalTarget = additionalTargetSelection(
     additionalTargetFromWire(rankEnd, rankTarget)
   )
-  const requiredIds = rankUpUpgradeIds(
+  const occurrences = rankUpSlotOccurrences(
     params.character,
     rankStart,
     rankEnd,
@@ -146,18 +181,16 @@ export function rankSlotsRemaining(params: {
     additionalTarget.appliedUpgrades,
     additionalTarget.topRowCount
   )
-  if (requiredIds.length === 0) return null
+  if (occurrences.length === 0) return null
 
-  // `requiredIds` unconditionally includes every slot of `rankStart` itself (see `rankUpUpgradeIds`)
-  // — only netted here when `rankStart` actually *is* the character's current rank (not a rank ahead
-  // of it, which happens when the goal's configured `start` is ahead of where the character actually
-  // is; that rank's slots haven't been reached yet, so nothing to net against them).
-  const appliedAtCurrentRank =
-    effectiveStart === currentRankIndex
-      ? new Set(params.playerCharacter?.appliedUpgradeSlots ?? []).size
-      : 0
-
-  return Math.max(0, requiredIds.length - appliedAtCurrentRank)
+  // Same netting as `rankResourceNeed`: applied slots (only of the character's current rank — see
+  // `uncoveredRankSlots`) and slots an earlier goal already claimed don't count.
+  return uncoveredRankSlots({
+    occurrences,
+    effectiveStart,
+    playerCharacter: params.playerCharacter,
+    coveredRankSlots: params.coveredRankSlots,
+  }).length
 }
 
 /** A MoW Ability goal's material demand, net of only what's applied toward each track's current

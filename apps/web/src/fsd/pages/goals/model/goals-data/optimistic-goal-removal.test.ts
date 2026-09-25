@@ -61,3 +61,21 @@ describe("applyOptimisticGoalRemoval", () => {
     expect(applyOptimisticGoalRemoval(data, "g1")).toBe(data)
   })
 })
+
+describe("Rank milestones for one character", () => {
+  const bellator = (goalId: string, status = "Active") => ({
+    goalId,
+    entityType: "Character",
+    entityId: "bellator",
+    goalType: "Rank",
+    status,
+  })
+
+  it("removes only the deleted milestone, leaving the other target listed", () => {
+    const list = { goals: [bellator("silver3"), bellator("gold1")] }
+
+    const result = applyOptimisticGoalRemoval(list, "silver3") as typeof list
+
+    expect(result.goals.map((goal) => goal.goalId)).toEqual(["gold1"])
+  })
+})

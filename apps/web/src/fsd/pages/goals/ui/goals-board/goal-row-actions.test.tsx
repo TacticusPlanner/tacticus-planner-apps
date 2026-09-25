@@ -46,6 +46,15 @@ vi.mock("@/entities/goal", () => ({
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
   updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
+  // The Rank end target a goal detail carries (its `config.rank.end`; 12 when unspecified).
+  goalRankTargetKey: (goal: {
+    goalType?: string
+    config?: { rank?: { end: number } }
+  }) => (goal.goalType === "Rank" ? `${goal.config?.rank?.end ?? 12}:0` : null),
+  describeRankTargetKey: (key: string) => {
+    const [end, slots] = key.split(":").map(Number)
+    return { rank: `Rank${end}`, slots }
+  },
   goalQueries: {
     all: () => ["goals"],
     detail: (goalId: string) => ({
@@ -824,10 +833,49 @@ describe("GoalRowActions", () => {
     expect(updateGoalProjects).not.toHaveBeenCalled()
   })
 
+  it("moves a Rank goal into a destination that holds a different Rank target for the unit", async () => {
+    getGoalDetail.mockImplementation((goalId: string) =>
+      Promise.resolve(
+        goalId === "goal-9"
+          ? { goalId, goalType: "Rank", config: { rank: { end: 15 } } }
+          : {
+              goalId,
+              projectIds: ["proj-a"],
+              goalType: "Rank",
+              config: { rank: { end: 12 } },
+            }
+      )
+    )
+    listProjectGoals.mockResolvedValue({ goals: [occupyingMember()] })
+    updateGoalProjects.mockResolvedValue({})
+    const user = userEvent.setup()
+    render(
+      <Harness
+        goalRow={row({ projects: [membership("proj-a")] })}
+        project={projectA}
+      />
+    )
+
+    await user.click(
+      await screen.findByTestId("goal-row-move-to-project-goal-1")
+    )
+    await user.click(
+      await screen.findByTestId("move-to-project-option-proj-default")
+    )
+
+    await vi.waitFor(() =>
+      expect(updateGoalProjects).toHaveBeenCalledWith("goal-1", [
+        "proj-default",
+      ])
+    )
+    expect(toast.error).not.toHaveBeenCalled()
+  })
+
   it("explains an occupied destination slot instead of submitting", async () => {
     getGoalDetail.mockResolvedValue({
       goalId: "goal-1",
       projectIds: ["proj-a"],
+      goalType: "Rank",
     })
     listProjectGoals.mockResolvedValue({ goals: [occupyingMember()] })
     const user = userEvent.setup()

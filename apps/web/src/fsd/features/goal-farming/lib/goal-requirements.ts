@@ -27,6 +27,21 @@ type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
+/** What earlier (higher-priority) goals of one unit already claimed, so overlapping goals charge shared
+ * progression once: the MoW ability transitions per track, and the Rank upgrade slots. One per unit
+ * across a plan, goals invoked in effective priority order. */
+export type UnitCoverage = {
+  primary: Set<number>
+  secondary: Set<number>
+  rankSlots: Set<string>
+}
+
+export const createUnitCoverage = (): UnitCoverage => ({
+  primary: new Set(),
+  secondary: new Set(),
+  rankSlots: new Set(),
+})
+
 export type GoalRequirementParams = {
   detail: GoalDetail
   character: FarmingCharacter | undefined
@@ -39,6 +54,9 @@ export type GoalRequirementParams = {
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
   coveredAbilityTransitions?: { primary: Set<number>; secondary: Set<number> }
+  /** The Rank slots earlier (higher-priority) goals of this character already claimed — one set per
+   *  character across the plan, goals invoked in priority order (see `rankResourceNeed`). */
+  coveredRankSlots?: Set<string>
   craftedInventory?: CraftedInventoryPool
 }
 
@@ -48,12 +66,21 @@ export function calculateGoalResourceNeed(
   const { detail, upgradesById } = params
   const isMow = detail.entityType === "Mow"
   if (detail.goalType === "Rank") {
+    // Slots first, then the need: the need claims this goal's slots in `coveredRankSlots`, which would
+    // otherwise make every one of them read as already covered by the time the slot count is taken.
+    const upgradeSlotsRemaining = rankSlotsRemaining({
+      detail,
+      character: params.character,
+      playerCharacter: params.playerCharacter,
+      coveredRankSlots: params.coveredRankSlots,
+    })
     const upgrades = rankResourceNeed({
       detail,
       character: params.character,
       playerCharacter: params.playerCharacter,
       upgradesById,
       craftedInventory: params.craftedInventory,
+      coveredRankSlots: params.coveredRankSlots,
     })
     return upgrades
       ? {
@@ -62,11 +89,7 @@ export function calculateGoalResourceNeed(
           shards: 0,
           mythicShards: 0,
           orbsByType: {},
-          upgradeSlotsRemaining: rankSlotsRemaining({
-            detail,
-            character: params.character,
-            playerCharacter: params.playerCharacter,
-          }),
+          upgradeSlotsRemaining,
         }
       : null
   }
@@ -155,6 +178,7 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
               playerCharacter: params.playerCharacter,
               upgradesById: params.upgradesById,
               craftedInventory: params.craftedInventory,
+              coveredRankSlots: params.coveredRankSlots,
             }) ?? [],
         }
       })

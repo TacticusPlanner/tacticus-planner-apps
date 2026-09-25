@@ -4,7 +4,12 @@ import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { goalQueries, updateGoalProjects, type GoalKind } from "@/entities/goal"
+import {
+  goalQueries,
+  goalRankTargetKey,
+  updateGoalProjects,
+  type GoalKind,
+} from "@/entities/goal"
 import {
   projectQueries,
   useProjects,
@@ -14,6 +19,7 @@ import { ApiError } from "@/shared/api"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { GoalRow } from "../shared/types"
+import { projectConflictText } from "./project-conflict-copy"
 import { projectGoalSlotConflictDetails } from "./project-membership"
 import {
   planProjectRemoval,
@@ -50,13 +56,11 @@ export function useMoveGoalFromProject() {
       ? t("goals.project.removeLastMembership")
       : t("goals.project.removeDestinationUnknown")
 
-  const conflictMessage = (projectName: string, goalTypes: GoalKind[]) =>
-    t("goals.project.membershipConflict", {
-      project: projectName,
-      types: goalTypes
-        .map((goalType) => t(`goals.create.goalTypes.${goalType}`))
-        .join(", "),
-    })
+  const conflictMessage = (
+    projectName: string,
+    goalTypes: GoalKind[],
+    rankTargetKey?: string | null
+  ) => projectConflictText(t, projectName, goalTypes, rankTargetKey)
 
   /** What the row renders with: membership as the row carries it, checked against the Default
    *  project — used only to decide the row's affordance (plain Remove vs. Move to project vs.
@@ -102,12 +106,35 @@ export function useMoveGoalFromProject() {
               )
             ).goals
           : []
+      // A Rank goal only collides with an exact same-target Rank goal at the destination, so read the
+      // destination's in-flight Rank goals' targets (cached details, fetched when missing).
+      const movingKey = goalRankTargetKey(detail)
+      const rankKeyByGoalId = new Map<string, string>()
+      if (movingKey) {
+        const destinationRanks = destinationGoals.filter(
+          (entry) =>
+            entry.goal.entityType === goal.entityType &&
+            entry.goal.entityId === goal.entityId &&
+            entry.goal.goalType === "Rank" &&
+            entry.goal.goalId !== goal.goalId &&
+            (entry.goal.status === "Active" || entry.goal.status === "Paused")
+        )
+        for (const entry of destinationRanks) {
+          const rankDetail = await queryClient.fetchQuery(
+            goalQueries.detail(entry.goal.goalId)
+          )
+          const key = goalRankTargetKey(rankDetail)
+          if (key) rankKeyByGoalId.set(entry.goal.goalId, key)
+        }
+      }
       const plan = planProjectRemoval({
         memberships,
         projectId: project.projectId,
         destination,
         goal,
         destinationGoals,
+        rankTargetKey: movingKey,
+        rankKeyByGoalId,
       })
 
       if (plan.kind === "unavailable") {
@@ -116,7 +143,11 @@ export function useMoveGoalFromProject() {
       }
       if (plan.kind === "conflict") {
         toast.error(
-          conflictMessage(plan.destination.name, plan.conflict.goalTypes)
+          conflictMessage(
+            plan.destination.name,
+            plan.conflict.goalTypes,
+            plan.conflict.rankTargetKey
+          )
         )
         return false
       }
@@ -145,9 +176,11 @@ export function useMoveGoalFromProject() {
           : null
       toast.error(
         conflict
-          ? conflictMessage(conflict.projectName, [
-              conflict.goalType as GoalKind,
-            ])
+          ? conflictMessage(
+              conflict.projectName,
+              [conflict.goalType as GoalKind],
+              conflict.normalizedTarget
+            )
           : error instanceof ApiError
             ? error.message
             : t("goals.toasts.actionError")
