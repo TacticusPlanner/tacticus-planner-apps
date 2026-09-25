@@ -22,6 +22,7 @@ import {
   listGoals,
   updateGoal,
   updateGoalStatus,
+  updateGoalTarget,
 } from "./goal.api"
 
 describe("goal API", () => {
@@ -73,5 +74,22 @@ describe("goal API", () => {
       { body: { status: "Paused" } }
     )
     expect(api.delete).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {})
+  })
+
+  it.each([
+    ["Rank", { rank: { end: 7, endPointFive: true, endAppliedUpgrades: 0 } }],
+    ["Ascension", { progression: { end: "Common:TwoStars" } }],
+    ["Level", { level: { end: 30 } }],
+    ["Ability", { ability: { activeEnd: 5, passiveEnd: 3 } }],
+    [
+      "Upgrade",
+      { upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 4 }] } },
+    ],
+  ])("sends a %s target edit with the loaded revision", (_kind, target) => {
+    updateGoalTarget("goal-1", { expectedRevision: 7, target })
+
+    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/target", {
+      body: { expectedRevision: 7, target },
+    })
   })
 })

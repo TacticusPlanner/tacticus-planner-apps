@@ -46,7 +46,10 @@ type TourContextValue = {
    *  anything - drives whether a page-level "Tour this page" control renders at all. */
   hasPageTour: boolean
   stopTour: () => void
-  setPageSteps: (steps: TourPageSteps | null) => void
+  /** Registers a page's (or an open sheet's) own tour steps and returns the function that removes them.
+   *  Registrations stack: the most recent one is the active page tour, and removing it restores the
+   *  previous one — so a sheet opened over a page overrides the page's steps only while it is open. */
+  registerPageSteps: (steps: TourPageSteps) => () => void
   // Lets a mobile tutorial step force the theme/language/tour-replay Popover (AuthControl /
   // MobileGuestSettings) open - see useTourControlledPopoverOpen - since a DOM-click simulation
   // races with react-joyride's overlay and Radix's own outside-click dismissal.
@@ -124,7 +127,17 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const { theme } = useTheme()
   const isMobile = useIsMobile()
   const [run, setRun] = React.useState(false)
-  const [pageSteps, setPageSteps] = React.useState<TourPageSteps | null>(null)
+  const [pageStepStack, setPageStepStack] = React.useState<TourPageSteps[]>([])
+  const pageSteps =
+    pageStepStack.length > 0 ? pageStepStack[pageStepStack.length - 1] : null
+  const registerPageSteps = React.useCallback((steps: TourPageSteps) => {
+    setPageStepStack((stack) => [...stack, steps])
+    return () =>
+      setPageStepStack((stack) => {
+        const index = stack.lastIndexOf(steps)
+        return index === -1 ? stack : stack.filter((_, i) => i !== index)
+      })
+  }, [])
   const [mobileMenuForceOpen, setMobileMenuForceOpen] = React.useState(false)
   // Which tour the running/next run shows. Defaults to "general": the auto-start above and the
   // persistent "Show me around" control both mean the navigation tour, even on a page that has
@@ -220,7 +233,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
       maybeAutoStartTour,
       hasPageTour,
       stopTour,
-      setPageSteps,
+      registerPageSteps,
       mobileMenuForceOpen,
       setMobileMenuForceOpen,
     }),
@@ -231,6 +244,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
       maybeAutoStartTour,
       hasPageTour,
       stopTour,
+      registerPageSteps,
       mobileMenuForceOpen,
     ]
   )
@@ -254,15 +268,14 @@ export const useTour = () => {
 }
 
 /** Lets a page register its own tour steps while mounted, overriding the general tutorial -
- *  reverts to the default steps automatically on unmount. Memoize `steps` (it's an effect
- *  dependency) so registration doesn't churn every render. */
+ *  reverts to the previously registered steps (the default tutorial when there are none) on
+ *  unmount. Registrations stack, so a sheet that registers its own steps while open hands the page's
+ *  back when it closes. Memoize `steps` (it's an effect dependency) so registration doesn't churn
+ *  every render. */
 export function useTourPageSteps(steps: TourPageSteps) {
-  const { setPageSteps } = useTour()
+  const { registerPageSteps } = useTour()
 
-  React.useEffect(() => {
-    setPageSteps(steps)
-    return () => setPageSteps(null)
-  }, [steps, setPageSteps])
+  React.useEffect(() => registerPageSteps(steps), [steps, registerPageSteps])
 }
 
 /**

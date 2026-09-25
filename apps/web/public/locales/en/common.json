@@ -899,6 +899,44 @@
       "eventsTitle": "Relevant events",
       "noBenefitingGoals": "No goals in this plan currently need this.",
       "empty": "Nothing to show yet."
+    },
+    "target": {
+      "title": "Target",
+      "edit": "Edit target",
+      "hint": "Change where this goal ends. Its notes, projects, and other settings are not affected.",
+      "startedFrom": "Started from",
+      "save": "Save target",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "rankEnd": "Target rank",
+      "progressionEnd": "Target progression",
+      "levelEnd": "Target level",
+      "activeEnd": "Active ability, target level",
+      "passiveEnd": "Passive ability, target level",
+      "primaryEnd": "Primary ability, target level",
+      "secondaryEnd": "Secondary ability, target level",
+      "quantity": "Target quantity",
+      "issues": {
+        "rankNotAboveStart": "Choose a rank above the one this goal started from.",
+        "progressionNotAboveStart": "Choose a step above the one this goal started from.",
+        "levelNotAboveStart": "Choose a level above the one this goal started from.",
+        "levelAboveMax": "That level is above the maximum character level.",
+        "abilityBelowStart": "An ability target can't be below the level this goal started from.",
+        "abilityNoAdvance": "Raise at least one ability above where this goal started.",
+        "abilityAboveMax": "That level is above the maximum ability level.",
+        "upgradeQuantity": "Every quantity must be a whole number from 1 to 10,000.",
+        "upgradeEmpty": "An upgrade goal needs at least one material."
+      },
+      "reachedNote": "A target you have already reached is fine — it simply needs nothing more. The goal keeps its current status until you complete it yourself.",
+      "saveError": "Couldn't save this target.",
+      "saved": "Target saved.",
+      "refreshing": "Updating your plan for the new target…",
+      "stale": "This goal was changed elsewhere. Load its current version, review your target, then save again.",
+      "loadCurrent": "Load current version",
+      "collision": "Another goal for this unit already has that target in: {{project}}.",
+      "planningStale": "The target was saved, but your plan couldn't refresh — the estimates shown may still reflect the old target.",
+      "retryRefresh": "Retry refresh",
+      "historyChanged": "Target changed"
     }
   },
   "language": {
@@ -1012,7 +1050,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every active goal appears below, matching your current filters."
+          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place."
         }
       }
     },
@@ -1068,7 +1106,15 @@
         }
       }
     },
-    "startPage": "Tour this page"
+    "startPage": "Tour this page",
+    "goalDetail": {
+      "steps": {
+        "editTarget": {
+          "title": "Edit target",
+          "content": "Change where this goal ends without recreating it. It keeps its projects, notes, and history, and your plan recalculates."
+        }
+      }
+    }
   },
   "uiKit": {
     "navLabel": "UI kit sections",

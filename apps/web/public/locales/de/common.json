@@ -899,6 +899,44 @@
       "eventsTitle": "Relevante Events",
       "noBenefitingGoals": "Derzeit benötigt kein Ziel in diesem Plan dies.",
       "empty": "Noch nichts anzuzeigen."
+    },
+    "target": {
+      "title": "Ziel",
+      "edit": "Ziel bearbeiten",
+      "hint": "Ändere, wo dieses Ziel endet. Notizen, Projekte und andere Einstellungen bleiben unverändert.",
+      "startedFrom": "Gestartet bei",
+      "save": "Ziel speichern",
+      "saving": "Wird gespeichert…",
+      "cancel": "Abbrechen",
+      "rankEnd": "Zielrang",
+      "progressionEnd": "Zielstufe (Aufstieg)",
+      "levelEnd": "Zielstufe",
+      "activeEnd": "Aktive Fähigkeit, Zielstufe",
+      "passiveEnd": "Passive Fähigkeit, Zielstufe",
+      "primaryEnd": "Primäre Fähigkeit, Zielstufe",
+      "secondaryEnd": "Sekundäre Fähigkeit, Zielstufe",
+      "quantity": "Zielmenge",
+      "issues": {
+        "rankNotAboveStart": "Wähle einen Rang über dem, bei dem dieses Ziel gestartet ist.",
+        "progressionNotAboveStart": "Wähle eine Stufe über der, bei der dieses Ziel gestartet ist.",
+        "levelNotAboveStart": "Wähle ein Level über dem, bei dem dieses Ziel gestartet ist.",
+        "levelAboveMax": "Dieses Level liegt über dem maximalen Charakterlevel.",
+        "abilityBelowStart": "Ein Fähigkeitsziel darf nicht unter dem Startlevel dieses Ziels liegen.",
+        "abilityNoAdvance": "Erhöhe mindestens eine Fähigkeit über den Startwert dieses Ziels.",
+        "abilityAboveMax": "Dieses Level liegt über dem maximalen Fähigkeitslevel.",
+        "upgradeQuantity": "Jede Menge muss eine ganze Zahl von 1 bis 10.000 sein.",
+        "upgradeEmpty": "Ein Upgrade-Ziel braucht mindestens ein Material."
+      },
+      "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung – es braucht dann nichts mehr. Das Ziel behält seinen Status, bis du es selbst abschließt.",
+      "saveError": "Dieses Ziel konnte nicht gespeichert werden.",
+      "saved": "Ziel gespeichert.",
+      "refreshing": "Dein Plan wird für das neue Ziel aktualisiert…",
+      "stale": "Dieses Ziel wurde anderswo geändert. Lade die aktuelle Version, prüfe dein Ziel und speichere erneut.",
+      "loadCurrent": "Aktuelle Version laden",
+      "collision": "Ein anderes Ziel für diese Einheit hat dieses Ziel bereits in: {{project}}.",
+      "planningStale": "Das Ziel wurde gespeichert, aber dein Plan konnte nicht aktualisiert werden – die angezeigten Schätzungen können noch das alte Ziel widerspiegeln.",
+      "retryRefresh": "Aktualisierung wiederholen",
+      "historyChanged": "Ziel geändert"
     }
   },
   "language": {
@@ -1012,7 +1050,7 @@
         },
         "list": {
           "title": "Deine Ziele",
-          "content": "Alle aktiven Ziele erscheinen unten, passend zu deinen aktuellen Filtern."
+          "content": "Jedes aktive Ziel erscheint unten und entspricht deinen aktuellen Filtern. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten."
         }
       }
     },
@@ -1068,7 +1106,15 @@
         }
       }
     },
-    "startPage": "Diese Seite erkunden"
+    "startPage": "Diese Seite erkunden",
+    "goalDetail": {
+      "steps": {
+        "editTarget": {
+          "title": "Ziel bearbeiten",
+          "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Projekte, Notizen und Verlauf bleiben erhalten, und dein Plan wird neu berechnet."
+        }
+      }
+    }
   },
   "uiKit": {
     "navLabel": "UI-Kit-Abschnitte",

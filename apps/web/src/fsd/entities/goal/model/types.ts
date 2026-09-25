@@ -22,6 +22,7 @@ export type GoalEventType =
   | "PriorityChanged"
   | "Completed"
   | "Archived"
+  | "TargetChanged"
 
 export type RankTarget = {
   start: number
@@ -101,9 +102,26 @@ export type GoalSnapshotResource = {
 
 export type CreateGoalSnapshotRequest = GoalSnapshot
 
+/** A goal's *end* target at one moment — only the fields of the goal's own kind are non-null. The
+ * server records one before and one after on a `TargetChanged` event. */
+export type GoalTargetSnapshot = {
+  rankEnd: number | null
+  rankEndPointFive: boolean | null
+  rankEndAppliedUpgrades: number | null
+  progressionEnd: string | null
+  levelEnd: number | null
+  activeAbilityEnd: number | null
+  passiveAbilityEnd: number | null
+  upgradeTargets: UpgradeMaterialTarget[] | null
+}
+
 export type GoalEvent = {
   at: string
   type: GoalEventType
+  // Set only on a `TargetChanged` event (absent on every other event and on events recorded before
+  // target editing existed).
+  previousTarget?: GoalTargetSnapshot | null
+  newTarget?: GoalTargetSnapshot | null
 }
 
 export type GoalSummary = {
@@ -126,6 +144,9 @@ export type GoalDetail = GoalSummary & {
   // The ids of every project this goal currently belongs to (a goal may belong to several projects at
   // once) — populated by the backend's GoalMapper.ToDetail.
   projectIds: string[]
+  // Monotonically increasing; a target edit echoes the revision it was loaded with so the server can
+  // refuse to overwrite a newer edit.
+  revision: number
 }
 
 export type CreateGoalConfigRequest = {
@@ -156,6 +177,28 @@ export type CreateGoalRequest = {
   // Creates the goal Paused instead of Active. Omitted means Active — membership decides nothing about
   // status, so the goal is Active whichever projects it is filed into.
   startPaused?: boolean
+}
+
+/** The end-target group of a target edit — exactly the one matching the goal's kind is set; the
+ * start/baseline is not editable and is never sent. */
+export type GoalTargetEdit = {
+  rank?: { end: number; endPointFive: boolean; endAppliedUpgrades: number }
+  progression?: { end: string }
+  level?: { end: number }
+  ability?: { activeEnd: number; passiveEnd: number }
+  upgrade?: UpgradeTarget
+}
+
+export type UpdateGoalTargetRequest = {
+  expectedRevision: number
+  target: GoalTargetEdit
+}
+
+/** 409 body of `PUT /me/goals/{id}/target` when `expectedRevision` is stale: the goal as it is now. */
+export type GoalRevisionConflictDto = {
+  issueCode: "goalRevisionStale"
+  message: string
+  goal: GoalDetail
 }
 
 export type UpdateGoalRequest = {

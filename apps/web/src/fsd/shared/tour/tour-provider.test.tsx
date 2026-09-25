@@ -61,11 +61,62 @@ function PageTourProbe() {
   )
 }
 
+const SHEET_STEPS = { desktop: [{ target: "sheet-step", content: "" }] }
+
+/** A sheet opened over the page: registers its own steps only while mounted. */
+function SheetTourProbe() {
+  useTourPageSteps(SHEET_STEPS)
+  return null
+}
+
+function PageWithSheet({ sheetOpen }: { sheetOpen: boolean }) {
+  const { startPageTour } = useTour()
+  return (
+    <>
+      <PageTourProbe />
+      {sheetOpen ? <SheetTourProbe /> : null}
+      <button
+        data-testid="start-page-2"
+        onClick={startPageTour}
+        type="button"
+      />
+    </>
+  )
+}
+
 const AUTO_STARTED_STORAGE_KEY = "tp.tour.autoStarted"
 
 function targets() {
   return joyrideStepsRef.current.map((step) => step.target)
 }
+
+describe("TourProvider page-step registrations", () => {
+  it("shows a sheet's steps while it is open and restores the page's when it closes", () => {
+    const { rerender } = render(
+      <TourProvider>
+        <PageWithSheet sheetOpen={false} />
+      </TourProvider>
+    )
+    fireEvent.click(screen.getByTestId("start-page-2"))
+    expect(targets()).toEqual(["page-step"])
+
+    rerender(
+      <TourProvider>
+        <PageWithSheet sheetOpen />
+      </TourProvider>
+    )
+    expect(targets()).toEqual(["sheet-step"])
+    expect(screen.getByTestId("has-page-tour")).toHaveTextContent("true")
+
+    rerender(
+      <TourProvider>
+        <PageWithSheet sheetOpen={false} />
+      </TourProvider>
+    )
+    expect(targets()).toEqual(["page-step"])
+    expect(screen.getByTestId("has-page-tour")).toHaveTextContent("true")
+  })
+})
 
 describe("TourProvider", () => {
   it("auto-starts the tour the first time a page opts in on this device", () => {

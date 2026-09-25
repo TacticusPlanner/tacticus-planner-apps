@@ -190,7 +190,10 @@ export function GoalDetailView({
         <ol className="grid gap-1">
           {detail.events.map((event, index) => (
             <li key={`${event.at}-${index}`}>
-              {event.type} · {new Date(event.at).toLocaleString()}
+              {event.type === "TargetChanged"
+                ? t("goals.target.historyChanged")
+                : event.type}{" "}
+              · {new Date(event.at).toLocaleString()}
             </li>
           ))}
         </ol>

@@ -69,7 +69,7 @@ export function ResourcesNeededList({
   )
 }
 
-function AdditionalTargetLabel({
+export function AdditionalTargetLabel({
   rank,
   value,
 }: {

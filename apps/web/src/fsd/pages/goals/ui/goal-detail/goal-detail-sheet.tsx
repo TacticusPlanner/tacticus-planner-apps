@@ -41,7 +41,11 @@ import { GoalDetailView } from "./goal-detail-view"
 import { GoalDetailFooter } from "./goal-detail-footer"
 import { GoalDetailError } from "./goal-detail-error"
 import { goalDetailProjects } from "./goal-detail-projects"
+import { goalFarmingSummary } from "./goal-farming-summary"
 import { GoalDetailUnsavedDialog } from "./goal-detail-unsaved-dialog"
+import { GoalDetailSheetTourRegistration } from "./goal-detail-sheet.tutorial"
+import { GoalTargetSection } from "./goal-target-section"
+import { isGoalTargetEditable } from "../../model/target-edit/goal-target-edit"
 import {
   hasGoalDetailDraftChanged,
   hasSelectionChanged,
@@ -49,7 +53,7 @@ import {
 import { useGoalDetailAcquisition } from "./use-goal-detail-acquisition"
 import { useGoalDetailSave } from "./use-goal-detail-save"
 
-type ConfirmAction = "cancel" | "close" | null
+type ConfirmAction = "cancel" | "close" | "navigate" | null
 type KeyedGoalDetailDraft = GoalDetailDraft & { key: string }
 
 export function GoalDetailSheet({
@@ -82,10 +86,14 @@ export function GoalDetailSheet({
   const { settings: planningSettings } = usePlanningSettings()
   const [mode, setMode] = useState<"view" | "edit">("view")
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
+  // The goal a pending "navigate" confirmation will open once the unsaved draft is discarded.
+  const [pendingGoalId, setPendingGoalId] = useState<string | null>(null)
   const [draftState, setDraftState] = useState<KeyedGoalDetailDraft | null>(
     null
   )
   const [sheetNode, setSheetNode] = useState<HTMLElement | null>(null)
+  // The target editor keeps its own draft; it only feeds the close-confirmation, never the general Save.
+  const [targetDirty, setTargetDirty] = useState(false)
   const detailQuery = useQuery({
     ...goalQueries.detail(goalId ?? "unselected"),
     enabled: Boolean(isAuthenticated && goalId),
@@ -196,6 +204,10 @@ export function GoalDetailSheet({
     acquisitionSelection.reseed(acquisitionSeed)
     setMode("view")
     if (confirmAction === "close") onOpenChange(false)
+    if (confirmAction === "navigate" && pendingGoalId) {
+      onGoalChange?.(pendingGoalId)
+    }
+    setPendingGoalId(null)
     setConfirmAction(null)
   }
 
@@ -227,7 +239,7 @@ export function GoalDetailSheet({
 
   const requestClose = (open: boolean) => {
     if (open) return
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges || targetDirty) {
       setConfirmAction("close")
       return
     }
@@ -259,22 +271,18 @@ export function GoalDetailSheet({
   }
 
   const viewPrerequisiteGoal = (nextGoalId: string) => {
+    // Switching goals discards both the general draft and the target draft — never silently.
+    if (hasUnsavedChanges || targetDirty) {
+      setPendingGoalId(nextGoalId)
+      setConfirmAction("navigate")
+      return
+    }
     resetDraft()
     setMode("view")
     onGoalChange?.(nextGoalId)
   }
 
-  const farmingSummary = !detail
-    ? null
-    : isLevel
-      ? null
-      : isRank
-        ? t(`goals.create.farmingStrategy.${detail.config.farmingStrategy}`)
-        : (detail.config.farmingLocationIds?.length ?? 0) > 0
-          ? t("goals.detail.farmingSelected", {
-              count: detail.config.farmingLocationIds!.length,
-            })
-          : t("goals.detail.farmingAuto")
+  const farmingSummary = goalFarmingSummary(t, detail, { isLevel, isRank })
 
   return (
     <Sheet open={!!goalId} onOpenChange={requestClose}>
@@ -332,6 +340,16 @@ export function GoalDetailSheet({
               ) : null}
             </div>
 
+            <GoalTargetSection
+              detail={detail}
+              key={detail.goalId}
+              onDirtyChange={setTargetDirty}
+              onSaved={onUpdated}
+              onViewGoal={viewPrerequisiteGoal}
+              portalContainer={sheetNode}
+              upgradesById={upgradesById}
+            />
+
             {mode === "view" ? (
               <GoalDetailView
                 assignedProjects={assignedProjects}
@@ -371,6 +389,9 @@ export function GoalDetailSheet({
               />
             )}
           </>
+        ) : null}
+        {detail && isGoalTargetEditable(detail) ? (
+          <GoalDetailSheetTourRegistration />
         ) : null}
         {detail ? (
           <GoalDetailFooter

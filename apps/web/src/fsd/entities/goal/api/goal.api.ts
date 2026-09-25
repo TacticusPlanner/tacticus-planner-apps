@@ -7,6 +7,7 @@ import type {
   GoalStatus,
   GoalSummary,
   UpdateGoalRequest,
+  UpdateGoalTargetRequest,
 } from "../model/types"
 
 export function listGoals(options?: {
@@ -35,6 +36,19 @@ export function createCombinedGoals(request: CreateCombinedGoalsRequest) {
 
 export function updateGoal(goalId: string, request: UpdateGoalRequest) {
   return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}`, { body: request })
+}
+
+/** Changes an Active/Paused goal's end target in place (Rank, Ascension, Level, Ability, Upgrade).
+ * Revision-checked: a stale `expectedRevision` is a 409 (`goalRevisionStale`, see
+ * `goalRevisionConflictDetails`); a Rank target already held in a shared project is a 409
+ * `projectGoalSlotOccupied`. Submitting the target the goal already has is a no-op. */
+export function updateGoalTarget(
+  goalId: string,
+  request: UpdateGoalTargetRequest
+) {
+  return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}/target`, {
+    body: request,
+  })
 }
 
 /** Replaces which projects a goal belongs to. A goal must always belong to at least one project — the
