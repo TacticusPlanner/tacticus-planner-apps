@@ -34,8 +34,8 @@ the global entry points open, with no prefill.
 #### Scenario: Activating the contextual entry point opens creation
 
 - **WHEN** the user activates Overview's Create Goal action
-- **THEN** the goal-creation sheet opens with no entity, goal type, or
-  project preselected
+- **THEN** the goal-creation sheet opens with no entity or goal type
+  preselected and no explicit project prefill
 
 #### Scenario: Global entry points remain available
 
