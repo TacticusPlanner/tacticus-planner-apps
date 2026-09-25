@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const getGoal = vi.fn()
 const updateGoal = vi.fn()
 const updateGoalProjects = vi.fn()
+const updateGoalTarget = vi.fn()
 const updateGoalStatus = vi.fn()
 const listProjects = vi.fn()
 
@@ -75,7 +76,10 @@ vi.mock("@/entities/goal", () => ({
       queryKey: ["goals", "list", { archived: false }],
     }),
     lists: () => ["goals", "list"],
+    all: () => ["goals"],
   },
+  goalRevisionConflictDetails: () => null,
+  updateGoalTarget: (...args: unknown[]) => updateGoalTarget(...args),
   updateGoal: (...args: unknown[]) => updateGoal(...args),
   updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
@@ -138,6 +142,11 @@ vi.mock("../../model/shared/use-goal-catalog", () => ({
     unlockShardCostsById: new Map(),
     getCharacter: () => undefined,
   }),
+}))
+
+// The tour provider isn't mounted in these tests; the step registration has its own test.
+vi.mock("./goal-detail-sheet.tutorial", () => ({
+  GoalDetailSheetTourRegistration: () => null,
 }))
 
 vi.mock("@/shared/api", () => ({
@@ -308,6 +317,40 @@ describe("GoalDetailSheet", () => {
         { projectId: "project-home", name: "Home", isDefault: true },
       ],
     })
+  })
+
+  it("saves a target without submitting or discarding an unsaved notes draft", async () => {
+    const user = userEvent.setup()
+    const rankWithRevision = { ...rankDetail, revision: 5 }
+    getGoal.mockReset().mockResolvedValue(rankWithRevision)
+    updateGoalTarget
+      .mockReset()
+      .mockResolvedValue({ ...rankWithRevision, revision: 6 })
+    renderSheet()
+    await enterEditMode(user)
+    fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      target: { value: "Unsaved thought" },
+    })
+
+    await user.click(screen.getByTestId("goal-detail-edit-target"))
+    fireEvent.click(screen.getByTestId("goal-target-rank-end"))
+    fireEvent.click(
+      within(await screen.findByRole("listbox")).getAllByRole("option")[0]!
+    )
+    await user.click(screen.getByTestId("goal-target-save"))
+
+    await vi.waitFor(() => expect(updateGoalTarget).toHaveBeenCalledTimes(1))
+    const [goalId, request] = updateGoalTarget.mock.calls[0] as [
+      string,
+      { expectedRevision: number; target: Record<string, unknown> },
+    ]
+    expect(goalId).toBe("goal-1")
+    expect(request.expectedRevision).toBe(5)
+    expect(Object.keys(request.target)).toEqual(["rank"])
+    expect(updateGoal).not.toHaveBeenCalled()
+    expect(screen.getByLabelText("goals.detail.notes")).toHaveValue(
+      "Unsaved thought"
+    )
   })
 
   it("defaults to view mode with read-only details, then saves edits", async () => {

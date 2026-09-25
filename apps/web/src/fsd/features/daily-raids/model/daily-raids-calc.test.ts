@@ -125,6 +125,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     events: [],
     dependsOn: [],
     projectIds: ["project-1"],
+    revision: 1,
     ...overrides,
   }
 }

@@ -56,6 +56,54 @@ function goalDetail(rank: {
   } as GoalDetail
 }
 
+describe("Rank need after the target is edited in place", () => {
+  // edit-goal-targets-in-place: the goal keeps its id and start, only `end` moves — every need is derived
+  // from the goal detail, so the refreshed detail alone must change the result.
+  const player = { rank: "Stone1", appliedUpgradeSlots: [] } as never
+  const need = (end: number) =>
+    rankResourceNeed({
+      detail: goalDetail({ start: 0, end }),
+      character,
+      playerCharacter: player,
+      upgradesById: new Map(),
+    })
+
+  it("grows the need when the target is raised", () => {
+    const before = need(1)
+    const after = need(2)
+
+    expect(before).not.toBeNull()
+    expect(after).not.toBeNull()
+    expect(after!.length).toBeGreaterThan(before!.length)
+    expect(
+      rankSlotsRemaining({
+        detail: goalDetail({ start: 0, end: 1 }),
+        character,
+        playerCharacter: player,
+      })
+    ).toBe(6)
+    expect(
+      rankSlotsRemaining({
+        detail: goalDetail({ start: 0, end: 2 }),
+        character,
+        playerCharacter: player,
+      })
+    ).toBe(12)
+  })
+
+  it("has no remaining need for a target the character has already reached", () => {
+    const reached = { rank: "Stone3", appliedUpgradeSlots: [] } as never
+
+    expect(
+      rankSlotsRemaining({
+        detail: goalDetail({ start: 0, end: 1 }),
+        character,
+        playerCharacter: reached,
+      })
+    ).toBeNull()
+  })
+})
+
 describe("rankSlotsRemaining", () => {
   it("counts every slot across the full range when nothing is applied yet", () => {
     // Stone1 (index 0) -> Stone3 (index 2): 2 full ranks crossed = 12 slots.

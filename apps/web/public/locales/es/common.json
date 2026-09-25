@@ -899,6 +899,44 @@
       "eventsTitle": "Eventos relevantes",
       "noBenefitingGoals": "Ningún objetivo de este plan necesita esto actualmente.",
       "empty": "Nada que mostrar todavía."
+    },
+    "target": {
+      "title": "Objetivo",
+      "edit": "Editar objetivo",
+      "hint": "Cambia dónde termina esta meta. Sus notas, proyectos y demás ajustes no se ven afectados.",
+      "startedFrom": "Empezó en",
+      "save": "Guardar objetivo",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "rankEnd": "Rango objetivo",
+      "progressionEnd": "Progresión objetivo",
+      "levelEnd": "Nivel objetivo",
+      "activeEnd": "Habilidad activa, nivel objetivo",
+      "passiveEnd": "Habilidad pasiva, nivel objetivo",
+      "primaryEnd": "Habilidad primaria, nivel objetivo",
+      "secondaryEnd": "Habilidad secundaria, nivel objetivo",
+      "quantity": "Cantidad objetivo",
+      "issues": {
+        "rankNotAboveStart": "Elige un rango superior al de partida de esta meta.",
+        "progressionNotAboveStart": "Elige un paso superior al de partida de esta meta.",
+        "levelNotAboveStart": "Elige un nivel superior al de partida de esta meta.",
+        "levelAboveMax": "Ese nivel supera el nivel máximo del personaje.",
+        "abilityBelowStart": "El objetivo de una habilidad no puede ser inferior al nivel de partida de esta meta.",
+        "abilityNoAdvance": "Sube al menos una habilidad por encima de su punto de partida.",
+        "abilityAboveMax": "Ese nivel supera el nivel máximo de habilidad.",
+        "upgradeQuantity": "Cada cantidad debe ser un número entero de al menos 1.",
+        "upgradeEmpty": "Una meta de mejoras necesita al menos un material."
+      },
+      "reachedNote": "Un objetivo que ya alcanzaste es válido: simplemente no necesita nada más. La meta conserva su estado hasta que tú la completes.",
+      "saveError": "No se pudo guardar este objetivo.",
+      "saved": "Objetivo guardado.",
+      "refreshing": "Actualizando tu plan con el nuevo objetivo…",
+      "stale": "Esta meta se modificó en otro lugar. Carga su versión actual, revisa tu objetivo y vuelve a guardar.",
+      "loadCurrent": "Cargar versión actual",
+      "collision": "{{project}} ya tiene una meta para esta unidad con ese objetivo.",
+      "planningStale": "El objetivo se guardó, pero tu plan no pudo actualizarse: las estimaciones mostradas pueden reflejar aún el objetivo anterior.",
+      "retryRefresh": "Reintentar actualización",
+      "historyChanged": "Objetivo modificado"
     }
   },
   "language": {
@@ -1012,7 +1050,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Todos los objetivos activos aparecen abajo, según tus filtros actuales."
+          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una para editar su objetivo directamente."
         }
       }
     },
@@ -1068,7 +1106,15 @@
         }
       }
     },
-    "startPage": "Recorrer esta página"
+    "startPage": "Recorrer esta página",
+    "goalDetail": {
+      "steps": {
+        "editTarget": {
+          "title": "Editar objetivo",
+          "content": "Cambia dónde termina esta meta sin volver a crearla. Conserva sus proyectos, notas e historial, y tu plan se recalcula."
+        }
+      }
+    }
   },
   "uiKit": {
     "navLabel": "Secciones del kit UI",

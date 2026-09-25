@@ -42,6 +42,9 @@ import { GoalDetailFooter } from "./goal-detail-footer"
 import { GoalDetailError } from "./goal-detail-error"
 import { goalDetailProjects } from "./goal-detail-projects"
 import { GoalDetailUnsavedDialog } from "./goal-detail-unsaved-dialog"
+import { GoalDetailSheetTourRegistration } from "./goal-detail-sheet.tutorial"
+import { GoalTargetSection } from "./goal-target-section"
+import { isGoalTargetEditable } from "../../model/target-edit/goal-target-edit"
 import {
   hasGoalDetailDraftChanged,
   hasSelectionChanged,
@@ -86,6 +89,8 @@ export function GoalDetailSheet({
     null
   )
   const [sheetNode, setSheetNode] = useState<HTMLElement | null>(null)
+  // The target editor keeps its own draft; it only feeds the close-confirmation, never the general Save.
+  const [targetDirty, setTargetDirty] = useState(false)
   const detailQuery = useQuery({
     ...goalQueries.detail(goalId ?? "unselected"),
     enabled: Boolean(isAuthenticated && goalId),
@@ -227,7 +232,7 @@ export function GoalDetailSheet({
 
   const requestClose = (open: boolean) => {
     if (open) return
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges || targetDirty) {
       setConfirmAction("close")
       return
     }
@@ -332,6 +337,16 @@ export function GoalDetailSheet({
               ) : null}
             </div>
 
+            <GoalTargetSection
+              detail={detail}
+              key={detail.goalId}
+              onDirtyChange={setTargetDirty}
+              onSaved={onUpdated}
+              onViewGoal={viewPrerequisiteGoal}
+              portalContainer={sheetNode}
+              upgradesById={upgradesById}
+            />
+
             {mode === "view" ? (
               <GoalDetailView
                 assignedProjects={assignedProjects}
@@ -371,6 +386,9 @@ export function GoalDetailSheet({
               />
             )}
           </>
+        ) : null}
+        {detail && isGoalTargetEditable(detail) ? (
+          <GoalDetailSheetTourRegistration />
         ) : null}
         {detail ? (
           <GoalDetailFooter

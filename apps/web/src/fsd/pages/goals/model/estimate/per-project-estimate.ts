@@ -54,6 +54,7 @@ export function buildPreviewGoalDetails(
     events: [],
     dependsOn: [],
     projectIds: [],
+    revision: 0,
   }))
 }
 

@@ -899,6 +899,44 @@
       "eventsTitle": "Événements pertinents",
       "noBenefitingGoals": "Aucun objectif de ce plan n'en a besoin actuellement.",
       "empty": "Rien à afficher pour l'instant."
+    },
+    "target": {
+      "title": "Objectif",
+      "edit": "Modifier l'objectif",
+      "hint": "Changez l'endroit où cet objectif se termine. Ses notes, projets et autres réglages ne sont pas modifiés.",
+      "startedFrom": "Point de départ",
+      "save": "Enregistrer l'objectif",
+      "saving": "Enregistrement…",
+      "cancel": "Annuler",
+      "rankEnd": "Rang cible",
+      "progressionEnd": "Progression cible",
+      "levelEnd": "Niveau cible",
+      "activeEnd": "Capacité active, niveau cible",
+      "passiveEnd": "Capacité passive, niveau cible",
+      "primaryEnd": "Capacité principale, niveau cible",
+      "secondaryEnd": "Capacité secondaire, niveau cible",
+      "quantity": "Quantité cible",
+      "issues": {
+        "rankNotAboveStart": "Choisissez un rang supérieur à celui de départ de cet objectif.",
+        "progressionNotAboveStart": "Choisissez une étape supérieure à celle de départ de cet objectif.",
+        "levelNotAboveStart": "Choisissez un niveau supérieur à celui de départ de cet objectif.",
+        "levelAboveMax": "Ce niveau dépasse le niveau maximal du personnage.",
+        "abilityBelowStart": "L'objectif d'une capacité ne peut pas être inférieur à son niveau de départ.",
+        "abilityNoAdvance": "Augmentez au moins une capacité au-dessus de son point de départ.",
+        "abilityAboveMax": "Ce niveau dépasse le niveau maximal de capacité.",
+        "upgradeQuantity": "Chaque quantité doit être un nombre entier d'au moins 1.",
+        "upgradeEmpty": "Un objectif d'améliorations nécessite au moins un matériau."
+      },
+      "reachedNote": "Un objectif déjà atteint est valide : il n'a simplement plus besoin de rien. L'objectif garde son statut jusqu'à ce que vous le terminiez vous-même.",
+      "saveError": "Impossible d'enregistrer cet objectif.",
+      "saved": "Objectif enregistré.",
+      "refreshing": "Mise à jour de votre plan avec le nouvel objectif…",
+      "stale": "Cet objectif a été modifié ailleurs. Chargez sa version actuelle, vérifiez votre cible, puis enregistrez à nouveau.",
+      "loadCurrent": "Charger la version actuelle",
+      "collision": "{{project}} contient déjà un objectif pour cette unité avec cette cible.",
+      "planningStale": "L'objectif a été enregistré, mais votre plan n'a pas pu s'actualiser : les estimations affichées peuvent encore refléter l'ancien objectif.",
+      "retryRefresh": "Réessayer l'actualisation",
+      "historyChanged": "Objectif modifié"
     }
   },
   "language": {
@@ -1012,7 +1050,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Tous les objectifs actifs apparaissent ci-dessous, selon vos filtres actuels."
+          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez-en un pour modifier sa cible directement."
         }
       }
     },
@@ -1068,7 +1106,15 @@
         }
       }
     },
-    "startPage": "Visiter cette page"
+    "startPage": "Visiter cette page",
+    "goalDetail": {
+      "steps": {
+        "editTarget": {
+          "title": "Modifier l'objectif",
+          "content": "Changez l'endroit où cet objectif se termine sans le recréer. Il conserve ses projets, ses notes et son historique, et votre plan est recalculé."
+        }
+      }
+    }
   },
   "uiKit": {
     "navLabel": "Sections du kit UI",
