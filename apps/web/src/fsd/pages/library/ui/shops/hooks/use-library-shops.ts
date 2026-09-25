@@ -8,6 +8,7 @@ import {
 } from "@workspace/game-catalog"
 import {
   getCharactersMap,
+  getEquipmentMap,
   getMowsMap,
   getShopsMap,
 } from "@workspace/game-catalog/queries"
@@ -42,7 +43,12 @@ export type LibraryShopsViewModel =
 export function useLibraryShops(): LibraryShopsViewModel {
   // Scoped to the reward-display helper's namespaces (first-ns `shops`); the page's own `library:`
   // copy is translated by the subview components, not here.
-  const { t } = useTranslation(["shops", "characters", "upgrades"])
+  const { t } = useTranslation([
+    "shops",
+    "characters",
+    "upgrades",
+    "equipmentItems",
+  ])
   const [day, setDay] = useState<ShopDayOfWeek>(() => todayDow())
   const [shopId, setShopId] = useState<LibraryShopId>("guild")
   const [retryNonce, setRetryNonce] = useState(0)
@@ -51,12 +57,13 @@ export function useLibraryShops(): LibraryShopsViewModel {
   // "still loading"; wrapping the read lets the page show a real retry-able failure state.
   const catalog = useLiveQuery(async () => {
     try {
-      const [shops, characters, mows] = await Promise.all([
+      const [shops, characters, mows, equipment] = await Promise.all([
         getShopsMap(),
         getCharactersMap(),
         getMowsMap(),
+        getEquipmentMap(),
       ])
-      return { ok: true as const, shops, characters, mows }
+      return { ok: true as const, shops, characters, mows, equipment }
     } catch {
       return { ok: false as const }
     }
@@ -71,6 +78,7 @@ export function useLibraryShops(): LibraryShopsViewModel {
       t,
       charactersById: catalog.characters,
       mowsById: catalog.mows,
+      equipmentById: catalog.equipment,
     }
 
     return buildLibraryShopSlots(resolveShopSlotsForDay(shop, day), (offer) => {

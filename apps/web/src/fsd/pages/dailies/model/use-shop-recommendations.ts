@@ -16,6 +16,7 @@ import {
 import {
   getAscensionCostsMap,
   getCharactersMap,
+  getEquipmentMap,
   getMowsMap,
   getShops,
   getUnlockShardCostsMap,
@@ -105,7 +106,12 @@ function playerUnitIds(
 export function useShopRecommendations(
   projectId: string | undefined
 ): ShopRecommendationsViewModel {
-  const { t } = useTranslation(["shops", "characters", "upgrades"])
+  const { t } = useTranslation([
+    "shops",
+    "characters",
+    "upgrades",
+    "equipmentItems",
+  ])
   const isAuthenticated = useIsAuthenticated()
   const [retryNonce, setRetryNonce] = useState(0)
 
@@ -128,6 +134,7 @@ export function useShopRecommendations(
 
   const charactersById = useLiveQuery(() => getCharactersMap(), [])
   const mowsById = useLiveQuery(() => getMowsMap(), [])
+  const equipmentById = useLiveQuery(() => getEquipmentMap(), [])
   const upgrades = useLiveQuery(() => getUpgrades(), [])
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
@@ -224,6 +231,7 @@ export function useShopRecommendations(
     detailQueries.every((query) => query.isSuccess) &&
     charactersById &&
     mowsById &&
+    equipmentById &&
     upgrades &&
     ascensionCostsById &&
     unlockShardCostsById &&
@@ -238,6 +246,7 @@ export function useShopRecommendations(
       !isReady ||
       !charactersById ||
       !mowsById ||
+      !equipmentById ||
       !shops ||
       !playerState ||
       !roster ||
@@ -247,7 +256,7 @@ export function useShopRecommendations(
       return null
     }
 
-    const rewardContext = { t, charactersById, mowsById }
+    const rewardContext = { t, charactersById, mowsById, equipmentById }
 
     const getUnitLabel = (detail: GoalDetail) => {
       if (detail.entityType === "Character") {
@@ -313,6 +322,7 @@ export function useShopRecommendations(
     isReady,
     charactersById,
     mowsById,
+    equipmentById,
     shops,
     playerState,
     roster,

@@ -34,6 +34,8 @@ declare module "i18next" {
       characters: Record<string, string>
       mows: Record<string, string>
       upgrades: Record<string, string>
+      // Specific equipment/relic piece names (I_*/R_* ids as keys); slot labels stay in `equipment`.
+      equipmentItems: Record<string, string>
       factions: Record<string, string>
       traits: Record<string, string>
       damageTypes: Record<string, string>

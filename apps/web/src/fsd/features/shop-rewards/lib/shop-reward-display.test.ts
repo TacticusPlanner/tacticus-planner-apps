@@ -6,10 +6,14 @@ import {
 } from "./shop-reward-display"
 
 const ctx: ShopRewardDisplayContext = {
-  t: ((key: string, options?: { defaultValue?: string }) =>
-    options?.defaultValue ?? key) as unknown as ShopRewardDisplayContext["t"],
+  t: ((key: string, options?: Record<string, string>) =>
+    key === "shops:reward.generic"
+      ? options?.name
+      : (options?.defaultValue ??
+        key)) as unknown as ShopRewardDisplayContext["t"],
   charactersById: new Map([["eldarFarseer", { name: "Farseer" }]]),
   mowsById: new Map([["tauKrootox", { name: "Krootox" }]]),
+  equipmentById: new Map([["I_Crit_C001", { name: "Combat Knife" }]]),
 }
 
 describe("shopRewardDisplay", () => {
@@ -112,6 +116,35 @@ describe("shopRewardDisplay", () => {
     expect(display.iconUrl).toBe(
       "/game_catalog/equipment/ui_icon_item_R_Crit_Vitarus.png"
     )
+  })
+
+  it("uses the locale name for a specific equipment item", () => {
+    const localized: ShopRewardDisplayContext = {
+      ...ctx,
+      t: ((key: string, options?: Record<string, string>) =>
+        key === "equipmentItems:I_Crit_C001"
+          ? "Kampfmesser"
+          : key === "shops:reward.generic"
+            ? options?.name
+            : key) as unknown as ShopRewardDisplayContext["t"],
+    }
+    expect(shopRewardDisplay("I_Crit_C001", undefined, localized).label).toBe(
+      "Kampfmesser"
+    )
+  })
+
+  it("falls back to the catalog English name, then a readable id", () => {
+    expect(shopRewardDisplay("I_Crit_C001", undefined, ctx).label).toBe(
+      "Combat Knife"
+    )
+    expect(shopRewardDisplay("I_Crit_Z999", undefined, ctx).label).toBe(
+      "I Crit Z999"
+    )
+  })
+
+  it("keeps the generic pool label for an equipment pool", () => {
+    const display = shopRewardDisplay("itemsLegendary_I_Block", undefined, ctx)
+    expect(display.label).toBe("shops:reward.equipmentPool")
   })
 
   it("maps a generic equipment pool to its slot-type icon", () => {

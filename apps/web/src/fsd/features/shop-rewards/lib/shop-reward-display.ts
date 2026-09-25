@@ -41,13 +41,17 @@ export interface ShopRewardDisplay {
  * browser, first-ns `library`) binds a second `useTranslation(["shops", "characters", "upgrades"])`
  * just for this call — the same pattern as `pages/goals/model/shared/use-goal-catalog.ts`.
  */
-type ShopRewardTranslate = TFunction<["shops", "characters", "upgrades"]>
+type ShopRewardTranslate = TFunction<
+  ["shops", "characters", "upgrades", "equipmentItems"]
+>
 
 export interface ShopRewardDisplayContext {
   t: ShopRewardTranslate
   /** Catalog unit name maps, for resolving a shard reward's unit label + portrait. */
   charactersById: ReadonlyMap<string, { name: string }>
   mowsById: ReadonlyMap<string, { name: string }>
+  /** Catalog equipment/relic map: its English `name` is the fallback for a missing translation. */
+  equipmentById: ReadonlyMap<string, { name: string }>
 }
 
 const ASSET_ROOT = "/game_catalog"
@@ -265,7 +269,11 @@ export function shopRewardDisplay(
       kind: "equipment",
       iconUrl: EquipmentIcons.icon(rewardType as never),
       label: t("shops:reward.generic", {
-        name: prettifyRewardType(rewardType),
+        name: t(`equipmentItems:${rewardType}`, {
+          defaultValue:
+            ctx.equipmentById.get(rewardType)?.name ??
+            prettifyRewardType(rewardType),
+        }),
       }),
     }
   }
