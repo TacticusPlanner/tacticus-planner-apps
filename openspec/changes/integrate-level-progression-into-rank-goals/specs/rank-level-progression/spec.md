@@ -1,57 +1,62 @@
 ## Purpose
 
-Makes routine character leveling visible and costed within Rank milestones without hiding independently authored Level or Ability-prerequisite goals.
+Makes the character level a Rank or Ability target needs visible and costed on that goal, without a separate Level goal, and keeps shared level XP from being counted twice.
 
 ## ADDED Requirements
 
-### Requirement: Creating a Rank goal includes routine level progression
+### Requirement: A Rank or Ability goal shows the level it needs
 
-For a Character Rank target, the creation flow SHALL derive the level required by its rank and partial upgrade slots and SHALL show that level/XP requirement within the Rank preview. It SHALL NOT suggest a separate Level goal solely for Rank. It SHALL continue to suggest genuine Unlock/Ascension prerequisites, and Level prerequisites for Ability when needed.
+For a Character Rank goal, the goal, its detail, and the creation preview SHALL derive the level required by its end rank and partial upgrade slots; for a Character Ability goal, the level implied by the higher of its two ability targets. When the character's current level is below that requirement, the goal SHALL show the required level, the current level, the remaining XP, and Potential progress from owned XP books, presented as ordinary progress on that goal. It SHALL NOT be presented as a separate goal, a dependency, or a restriction. Creation SHALL NOT suggest, create, or accept a Level goal for either kind; genuine Unlock and Ascension prerequisites are still suggested.
 
 #### Scenario: Rank target needs a higher level
 
 - **GIVEN** Bellator is below level 32 and the user targets Silver3, whose rank-level ladder requires level 32
 - **WHEN** the combined-goal preview is shown
-- **THEN** Bellator's Rank preview includes leveling to 32 and does not add a separate Level goal solely for it
+- **THEN** Bellator's Rank preview shows the required level 32, the current level, and the remaining XP, and no Level goal is added
 
-#### Scenario: Ability still needs an independent Level prerequisite
+#### Scenario: Ability target needs a higher level
 
-- **GIVEN** a Character Ability target needs a higher level than the current character level
-- **WHEN** that Ability target is created without a covering Level goal
-- **THEN** a Level prerequisite remains available under the existing Ability rules
+- **GIVEN** a Character Ability target implies a level above the character's current level
+- **WHEN** the Ability goal is previewed or listed
+- **THEN** the Ability goal shows its required level and remaining XP and no Level prerequisite is suggested
 
-### Requirement: Rank progress and XP demand are counted once
+#### Scenario: Level is sufficient
 
-The Rank milestone SHALL show actual synced rank/slot and level progress together, and potential XP progress from owned books without treating potential as attained. Where a Rank and an independent/shared Level goal cover the same level interval, plan demand and owned books SHALL be allocated once in effective goal-priority order; summaries SHALL derive from the same per-goal allocation. Estimates compared across goals SHALL use XP as the common unit and anchor their remaining XP to each character's current total XP and target level.
+- **GIVEN** the character is at or above the level the target needs
+- **WHEN** the goal renders
+- **THEN** no required-level or XP line is shown for it
+
+### Requirement: Level XP is counted once across a unit's targets
+
+For each unit in the effective plan, the level XP its Rank milestones and Ability goal need SHALL be derived once from the character's current total XP to the highest required level, and owned XP books SHALL be allocated in effective goal-priority order so no book or XP interval is credited to two goals. Actual level SHALL remain below the requirement until synced progression reaches it; Potential progress from owned books SHALL NOT be treated as attained. Summaries and consumers (Goals, Insights, Dailies) SHALL derive from the same per-goal allocation. XP is the common unit and each goal's remaining XP is anchored to the character's current total XP and its own required level.
 
 Assumptions:
 
 - Bellator Silver3 requires level 32 in the current rank-level ladder.
-- A Legendary XP book contributes 12,500 XP and is consumed whole; rarity/level caps continue to apply.
+- A Legendary XP book contributes 12,500 XP and is consumed whole; rarity and level caps continue to apply.
 
 #### Scenario: Worked Bellator XP gap
 
 - **GIVEN** Bellator has 82,000 total XP and the level-32 threshold is 94,200 XP, with one owned Legendary XP book unclaimed by a higher-priority goal
 - **WHEN** a Rank target requiring level 32 is previewed
-- **THEN** the raw gap is 94,200 − 82,000 = 12,200 XP; the whole 12,500-XP book can cover that gap for Potential progress, but Actual level remains below 32 until synced progression changes, and no second Level row claims the same book
+- **THEN** the raw gap is 94,200 - 82,000 = 12,200 XP; the whole 12,500-XP book can cover it for Potential progress, but Actual level remains below 32 until synced progression changes
 
-#### Scenario: Shared Ability Level goal is not erased
+#### Scenario: Overlapping Rank milestones share level XP
 
-- **GIVEN** a legacy Level goal is a prerequisite of both Bellator Rank and Ability goals
+- **GIVEN** two Bellator Rank milestones whose required levels overlap
 - **WHEN** the plan is shown
-- **THEN** the Level goal remains independently addressable for Ability and its XP/book allocation is not duplicated by Rank
+- **THEN** the shared XP interval and owned books are charged to the higher-priority milestone once, and the other charges only its additional XP
 
-### Requirement: Legacy Rank-only Level pairs show one milestone
+### Requirement: Level goals do not exist in the client
 
-A stored Level goal linked only as a Rank prerequisite SHALL be folded into the Rank presentation and excluded from a second effective planning contribution, while its id/detail remains recoverable. A standalone Level goal SHALL remain a separate row and editable goal.
+The client SHALL NOT offer a Level goal type in creation, SHALL NOT render a Level goal row or card, SHALL NOT fold a Level goal into another goal's row, and SHALL NOT treat a Level goal as a prerequisite or a blocker reason. The required-level display on Rank and Ability goals replaces all of these.
 
-#### Scenario: Imported Rank-only pair
+#### Scenario: No Level option in creation
 
-- **GIVEN** an imported Rank goal depends on a Level goal with no other dependent
-- **WHEN** Goals, Insights, and Dailies derive the effective plan
-- **THEN** one Rank milestone accounts for the level work, no duplicate Level row or XP demand appears, and the Level detail remains addressable by id
+- **WHEN** a user opens goal creation for a character
+- **THEN** no Level goal card or Level prerequisite suggestion appears, for Rank or Ability
 
-#### Scenario: Standalone Level goal
+#### Scenario: No Level rows
 
-- **WHEN** a user opens Goals with an intentional Level target unrelated to Rank
-- **THEN** it remains its own goal row and contributes its own distinct target demand
+- **WHEN** the Goals list renders for an account
+- **THEN** no goal row or card is a Level goal, and no goal shows a Level sub-line other than its own required-level display
