@@ -44,6 +44,10 @@ export type GoalTargetIssue =
   | "upgradeQuantity"
   | "upgradeEmpty"
 
+/** The largest Upgrade quantity the editor accepts — the same ceiling the creation form's quantity input
+ * uses (`max` on its `Input`). */
+export const MAX_UPGRADE_QUANTITY = 10000
+
 const editableKinds: ReadonlySet<GoalKind> = new Set([
   "Rank",
   "Ascension",
@@ -194,7 +198,10 @@ export function getGoalTargetIssue(
     case "Upgrade": {
       if (draft.targets.length === 0) return "upgradeEmpty"
       return draft.targets.every(
-        (target) => Number.isInteger(target.quantity) && target.quantity >= 1
+        (target) =>
+          Number.isInteger(target.quantity) &&
+          target.quantity >= 1 &&
+          target.quantity <= MAX_UPGRADE_QUANTITY
       )
         ? null
         : "upgradeQuantity"

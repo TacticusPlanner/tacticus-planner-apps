@@ -353,6 +353,49 @@ describe("GoalDetailSheet", () => {
     )
   })
 
+  it("asks before switching to the conflicting goal and drops the unsaved target draft only once confirmed", async () => {
+    const user = userEvent.setup()
+    const onGoalChange = vi.fn()
+    const rankWithRevision = { ...rankDetail, revision: 5 }
+    getGoal.mockReset().mockResolvedValue(rankWithRevision)
+    updateGoalTarget.mockReset().mockRejectedValue(
+      new ApiError(409, "occupied", {
+        issueCode: "projectGoalSlotOccupied",
+        message: "occupied",
+        projectId: "project-2",
+        projectName: "Second plan",
+        entityType: "Character",
+        entityId: "hero-1",
+        goalType: "Rank",
+        existingGoalId: "goal-2",
+      })
+    )
+    renderSheet({ onGoalChange })
+
+    await user.click(await screen.findByTestId("goal-detail-edit-target"))
+    fireEvent.click(screen.getByTestId("goal-target-rank-end"))
+    fireEvent.click(
+      within(await screen.findByRole("listbox")).getAllByRole("option")[0]!
+    )
+    await user.click(screen.getByTestId("goal-target-save"))
+    await user.click(
+      await screen.findByRole("button", {
+        name: "goals.project.reviewConflictingGoal",
+      })
+    )
+
+    // Nothing is discarded or navigated until the owner confirms.
+    expect(onGoalChange).not.toHaveBeenCalled()
+    expect(screen.getByTestId("goal-target-editor")).toBeInTheDocument()
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: "goals.detail.unsavedChangesConfirm",
+      })
+    )
+    expect(onGoalChange).toHaveBeenCalledWith("goal-2")
+  })
+
   it("defaults to view mode with read-only details, then saves edits", async () => {
     const user = userEvent.setup()
     const onUpdated = vi.fn()

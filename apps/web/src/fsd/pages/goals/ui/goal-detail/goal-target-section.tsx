@@ -89,9 +89,11 @@ export function GoalTargetSection({
     >
       <div className="flex items-center justify-between gap-2">
         <h3 className="font-semibold">{t("goals.target.title")}</h3>
-        {!editing && stored ? (
+        {stored ? (
+          // Stays rendered (disabled) while editing so the tour step anchored to it never loses its target.
           <Button
             data-testid="goal-detail-edit-target"
+            disabled={editing}
             onClick={() => {
               setJustSaved(false)
               target.clearError()
@@ -112,16 +114,23 @@ export function GoalTargetSection({
             <span>{t("goals.target.startedFrom")}</span>
             <GoalTargetStart detail={detail} />
           </div>
-          <GoalTargetFields
-            detail={detail}
-            draft={draft}
-            onChange={(next) => {
-              target.clearError()
-              setDraft(next)
-            }}
-            portalContainer={portalContainer}
-            upgradesById={upgradesById}
-          />
+          {/* Fields lock while a save is in flight, so an edit made mid-save can't be silently dropped when
+              the success handler closes the editor. */}
+          <fieldset
+            className="m-0 min-w-0 border-0 p-0"
+            disabled={target.isSaving}
+          >
+            <GoalTargetFields
+              detail={detail}
+              draft={draft}
+              onChange={(next) => {
+                target.clearError()
+                setDraft(next)
+              }}
+              portalContainer={portalContainer}
+              upgradesById={upgradesById}
+            />
+          </fieldset>
           {issue ? (
             <p className="text-destructive" data-testid="goal-target-issue">
               {t(`goals.target.issues.${issue}`)}
@@ -153,7 +162,7 @@ export function GoalTargetSection({
             <div className="grid justify-items-start gap-2" role="alert">
               <p className="text-destructive">
                 {t("goals.target.collision", {
-                  project: target.error.projectName,
+                  project: target.error.projectNames.join(", "),
                 })}
               </p>
               <Button

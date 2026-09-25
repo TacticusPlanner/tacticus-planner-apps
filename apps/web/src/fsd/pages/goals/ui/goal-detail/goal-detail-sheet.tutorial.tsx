@@ -29,9 +29,9 @@ export function useGoalDetailSheetTutorial(): TourPageSteps {
 }
 
 /**
- * Registers the step only while an eligible goal's detail is open — same scoping and the same accepted
- * gap as `CreateGoalSheetTourRegistration` (the tour provider keeps one last-writer-wins step list, so
- * mounting this only for the open, editable goal keeps it from clobbering the page's tour otherwise).
+ * Registers the step only while an eligible goal's detail is open. Page-tour registrations stack, so
+ * the sheet's step is the active tour while it is open and closing the sheet restores the Goals page's
+ * own steps (see `registerPageSteps` in `tour-provider.tsx`).
  */
 export function GoalDetailSheetTourRegistration() {
   useTourPageSteps(useGoalDetailSheetTutorial())

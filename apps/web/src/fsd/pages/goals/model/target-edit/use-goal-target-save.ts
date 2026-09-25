@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import {
@@ -22,7 +22,8 @@ export type GoalTargetSaveError =
   | { kind: "stale"; current: GoalDetail }
   | {
       kind: "collision"
-      projectName: string
+      // Every project already holding the target (the server names all of them), first one first.
+      projectNames: string[]
       existingGoalId: string
       message: string
     }
@@ -51,7 +52,11 @@ export function useGoalTargetSave({
   const [error, setError] = useState<GoalTargetSaveError | null>(null)
   const [refreshState, setRefreshState] = useState<PlanningRefreshState>("idle")
 
+  // Overlapping refreshes (a save's, then a "Load current"'s, or a retry) must not let an older one
+  // report "idle" while a newer one is still running — only the latest refresh settles the state.
+  const refreshSeq = useRef(0)
   const refreshPlanning = async () => {
+    const seq = ++refreshSeq.current
     setRefreshState("refreshing")
     try {
       await Promise.all([
@@ -64,9 +69,9 @@ export function useGoalTargetSave({
           { throwOnError: true }
         ),
       ])
-      setRefreshState("idle")
+      if (seq === refreshSeq.current) setRefreshState("idle")
     } catch {
-      setRefreshState("failed")
+      if (seq === refreshSeq.current) setRefreshState("failed")
     }
   }
 
@@ -98,14 +103,15 @@ export function useGoalTargetSave({
   }
 
   /** Replaces the cached goal with the server's current version (from a stale-revision conflict) so the
-   * next Save target uses its revision. The editor's draft is left alone for the owner to review. */
+   * next Save target uses its revision. The editor's draft is left alone for the owner to review. The
+   * planning queries refetch too: the target changed elsewhere, so every need derived from it did. */
   const loadCurrent = (current: GoalDetail) => {
     queryClient.setQueryData(
       goalQueries.detail(current.goalId).queryKey,
       current
     )
-    void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
     setError(null)
+    void refreshPlanning()
   }
 
   return {
@@ -127,10 +133,28 @@ function classify(reason: unknown): GoalTargetSaveError {
   if (collision) {
     return {
       kind: "collision",
-      projectName: collision.projectName,
+      projectNames: conflictingProjectNames(
+        reason.details,
+        collision.projectName
+      ),
       existingGoalId: collision.existingGoalId,
       message: collision.message,
     }
   }
   return { kind: "failed", message: reason.message }
+}
+
+/** The names of every project the 409 lists in `conflicts` (see the API's slot-conflict body), falling
+ * back to the top-level project when the list is absent. */
+function conflictingProjectNames(details: unknown, fallback: string): string[] {
+  const conflicts = (details as { conflicts?: unknown } | null)?.conflicts
+  const names = Array.isArray(conflicts)
+    ? conflicts.flatMap((entry) =>
+        typeof (entry as { projectName?: unknown } | null)?.projectName ===
+        "string"
+          ? [(entry as { projectName: string }).projectName]
+          : []
+      )
+    : []
+  return names.length > 0 ? names : [fallback]
 }

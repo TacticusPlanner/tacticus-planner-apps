@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useId, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Input } from "@workspace/ui/components/input"
 import {
@@ -27,6 +27,7 @@ import { ProgressionBadge, RankBadge, UpgradeIcon } from "@/shared/ui"
 
 import { MAX_CHARACTER_LEVEL } from "../../model/goal-creation-form/goal-validation"
 import {
+  MAX_UPGRADE_QUANTITY,
   rankEndOptionsFor,
   type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
@@ -54,9 +55,13 @@ function TargetSelect({
   portalContainer: HTMLElement | null
   children: ReactNode
 }) {
+  const id = useId()
+
   return (
     <div className="grid gap-1.5">
-      <label className="text-xs text-muted-foreground">{label}</label>
+      <label className="text-xs text-muted-foreground" htmlFor={id}>
+        {label}
+      </label>
       <Select
         onValueChange={(next) => {
           // Radix can fire onValueChange("") while the option list regenerates; ignore non-options.
@@ -64,7 +69,7 @@ function TargetSelect({
         }}
         value={value}
       >
-        <SelectTrigger className="w-full" data-testid={testId}>
+        <SelectTrigger className="w-full" data-testid={testId} id={id}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent container={portalContainer ?? undefined}>
@@ -86,7 +91,12 @@ function RankFields({
   portalContainer,
 }: FieldsProps<"Rank">) {
   const { t } = useTranslation()
-  const choices = additionalTargetOptions(draft.end)
+  // The stored partial-slot target (e.g. 1 or 2 applied slots from an import) may not be one the creation
+  // form offers for this rank — keep it selectable so the Select never opens blank.
+  const offered = additionalTargetOptions(draft.end)
+  const choices = offered.includes(draft.additional)
+    ? offered
+    : [...offered, draft.additional]
 
   return (
     <div className="grid gap-3">
@@ -262,6 +272,7 @@ function UpgradeFields({
             <Input
               aria-label={t("goals.target.quantity")}
               className="w-24"
+              max={MAX_UPGRADE_QUANTITY}
               min={1}
               onChange={(event) =>
                 onChange({
@@ -274,7 +285,9 @@ function UpgradeFields({
                 })
               }
               type="number"
-              value={target.quantity}
+              // 0 (a cleared field) renders empty so the owner can type a new number; it stays an
+              // invalid draft (quantity < 1) until they do.
+              value={target.quantity === 0 ? "" : target.quantity}
             />
           </div>
         )

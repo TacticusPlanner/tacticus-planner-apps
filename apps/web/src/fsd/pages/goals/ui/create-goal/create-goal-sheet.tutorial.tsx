@@ -31,17 +31,10 @@ export function useCreateGoalSheetTutorial(): TourPageSteps {
 
 /**
  * Registers the sheet's tour steps only while it's open. `CreateGoalSheet` is mounted
- * permanently at the app-shell level (`open` just toggles visibility — see app-shell.tsx), and
- * the shared tour provider keeps a single last-writer-wins `pageSteps` value with no stack (see
- * `tour-provider.tsx`); calling `useTourPageSteps` unconditionally from inside `CreateGoalSheet`
- * would clobber whatever page's tour is registered on every one of the sheet's re-renders, open
- * or not. Mounting this as a child gated by `open` scopes the registration to the hook's own
- * effect lifecycle instead: it registers on mount (open) and calls `setPageSteps(null)` on
- * unmount (close) — cleaner, but that still leaves the tour on the generic shell default rather
- * than restoring the underlying page's own steps until that page next remounts (e.g. a
- * navigation), since closing this sheet doesn't itself re-trigger the page's own registration
- * effect. Accepted as a narrow, self-healing gap rather than building stacked/nested page-steps
- * support into the tour provider for this one case.
+ * permanently at the app-shell level (`open` just toggles visibility — see app-shell.tsx), so the
+ * registration lives in a child gated by `open`: page-tour registrations stack (see
+ * `registerPageSteps` in `tour-provider.tsx`), so the sheet's steps are the active tour while it is
+ * open and closing it restores the underlying page's own steps.
  */
 export function CreateGoalSheetTourRegistration() {
   useTourPageSteps(useCreateGoalSheetTutorial())

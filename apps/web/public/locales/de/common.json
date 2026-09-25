@@ -924,7 +924,7 @@
         "abilityBelowStart": "Ein Fähigkeitsziel darf nicht unter dem Startlevel dieses Ziels liegen.",
         "abilityNoAdvance": "Erhöhe mindestens eine Fähigkeit über den Startwert dieses Ziels.",
         "abilityAboveMax": "Dieses Level liegt über dem maximalen Fähigkeitslevel.",
-        "upgradeQuantity": "Jede Menge muss eine ganze Zahl von mindestens 1 sein.",
+        "upgradeQuantity": "Jede Menge muss eine ganze Zahl von 1 bis 10.000 sein.",
         "upgradeEmpty": "Ein Upgrade-Ziel braucht mindestens ein Material."
       },
       "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung – es braucht dann nichts mehr. Das Ziel behält seinen Status, bis du es selbst abschließt.",
@@ -933,7 +933,7 @@
       "refreshing": "Dein Plan wird für das neue Ziel aktualisiert…",
       "stale": "Dieses Ziel wurde anderswo geändert. Lade die aktuelle Version, prüfe dein Ziel und speichere erneut.",
       "loadCurrent": "Aktuelle Version laden",
-      "collision": "{{project}} enthält bereits ein Ziel für diese Einheit mit diesem Ziel.",
+      "collision": "Ein anderes Ziel für diese Einheit hat dieses Ziel bereits in: {{project}}.",
       "planningStale": "Das Ziel wurde gespeichert, aber dein Plan konnte nicht aktualisiert werden – die angezeigten Schätzungen können noch das alte Ziel widerspiegeln.",
       "retryRefresh": "Aktualisierung wiederholen",
       "historyChanged": "Ziel geändert"

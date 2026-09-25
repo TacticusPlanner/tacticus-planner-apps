@@ -41,6 +41,7 @@ import { GoalDetailView } from "./goal-detail-view"
 import { GoalDetailFooter } from "./goal-detail-footer"
 import { GoalDetailError } from "./goal-detail-error"
 import { goalDetailProjects } from "./goal-detail-projects"
+import { goalFarmingSummary } from "./goal-farming-summary"
 import { GoalDetailUnsavedDialog } from "./goal-detail-unsaved-dialog"
 import { GoalDetailSheetTourRegistration } from "./goal-detail-sheet.tutorial"
 import { GoalTargetSection } from "./goal-target-section"
@@ -52,7 +53,7 @@ import {
 import { useGoalDetailAcquisition } from "./use-goal-detail-acquisition"
 import { useGoalDetailSave } from "./use-goal-detail-save"
 
-type ConfirmAction = "cancel" | "close" | null
+type ConfirmAction = "cancel" | "close" | "navigate" | null
 type KeyedGoalDetailDraft = GoalDetailDraft & { key: string }
 
 export function GoalDetailSheet({
@@ -85,6 +86,8 @@ export function GoalDetailSheet({
   const { settings: planningSettings } = usePlanningSettings()
   const [mode, setMode] = useState<"view" | "edit">("view")
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
+  // The goal a pending "navigate" confirmation will open once the unsaved draft is discarded.
+  const [pendingGoalId, setPendingGoalId] = useState<string | null>(null)
   const [draftState, setDraftState] = useState<KeyedGoalDetailDraft | null>(
     null
   )
@@ -201,6 +204,10 @@ export function GoalDetailSheet({
     acquisitionSelection.reseed(acquisitionSeed)
     setMode("view")
     if (confirmAction === "close") onOpenChange(false)
+    if (confirmAction === "navigate" && pendingGoalId) {
+      onGoalChange?.(pendingGoalId)
+    }
+    setPendingGoalId(null)
     setConfirmAction(null)
   }
 
@@ -264,22 +271,18 @@ export function GoalDetailSheet({
   }
 
   const viewPrerequisiteGoal = (nextGoalId: string) => {
+    // Switching goals discards both the general draft and the target draft — never silently.
+    if (hasUnsavedChanges || targetDirty) {
+      setPendingGoalId(nextGoalId)
+      setConfirmAction("navigate")
+      return
+    }
     resetDraft()
     setMode("view")
     onGoalChange?.(nextGoalId)
   }
 
-  const farmingSummary = !detail
-    ? null
-    : isLevel
-      ? null
-      : isRank
-        ? t(`goals.create.farmingStrategy.${detail.config.farmingStrategy}`)
-        : (detail.config.farmingLocationIds?.length ?? 0) > 0
-          ? t("goals.detail.farmingSelected", {
-              count: detail.config.farmingLocationIds!.length,
-            })
-          : t("goals.detail.farmingAuto")
+  const farmingSummary = goalFarmingSummary(t, detail, { isLevel, isRank })
 
   return (
     <Sheet open={!!goalId} onOpenChange={requestClose}>

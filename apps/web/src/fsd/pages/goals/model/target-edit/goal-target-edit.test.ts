@@ -279,6 +279,10 @@ describe("getGoalTargetIssue", () => {
     expect(getGoalTargetIssue(detail, withQuantity(1.5))).toBe(
       "upgradeQuantity"
     )
+    expect(getGoalTargetIssue(detail, withQuantity(10001))).toBe(
+      "upgradeQuantity"
+    )
+    expect(getGoalTargetIssue(detail, withQuantity(10000))).toBeNull()
     expect(getGoalTargetIssue(detail, withQuantity(4))).toBeNull()
     expect(getGoalTargetIssue(detail, { kind: "Upgrade", targets: [] })).toBe(
       "upgradeEmpty"

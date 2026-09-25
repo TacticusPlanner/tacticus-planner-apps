@@ -924,7 +924,7 @@
         "abilityBelowStart": "An ability target can't be below the level this goal started from.",
         "abilityNoAdvance": "Raise at least one ability above where this goal started.",
         "abilityAboveMax": "That level is above the maximum ability level.",
-        "upgradeQuantity": "Every quantity must be a whole number of at least 1.",
+        "upgradeQuantity": "Every quantity must be a whole number from 1 to 10,000.",
         "upgradeEmpty": "An upgrade goal needs at least one material."
       },
       "reachedNote": "A target you have already reached is fine — it simply needs nothing more. The goal keeps its current status until you complete it yourself.",
@@ -933,7 +933,7 @@
       "refreshing": "Updating your plan for the new target…",
       "stale": "This goal was changed elsewhere. Load its current version, review your target, then save again.",
       "loadCurrent": "Load current version",
-      "collision": "{{project}} already has a goal for this unit with that target.",
+      "collision": "Another goal for this unit already has that target in: {{project}}.",
       "planningStale": "The target was saved, but your plan couldn't refresh — the estimates shown may still reflect the old target.",
       "retryRefresh": "Retry refresh",
       "historyChanged": "Target changed"

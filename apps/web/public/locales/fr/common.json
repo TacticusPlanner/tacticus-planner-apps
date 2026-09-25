@@ -924,7 +924,7 @@
         "abilityBelowStart": "L'objectif d'une capacité ne peut pas être inférieur à son niveau de départ.",
         "abilityNoAdvance": "Augmentez au moins une capacité au-dessus de son point de départ.",
         "abilityAboveMax": "Ce niveau dépasse le niveau maximal de capacité.",
-        "upgradeQuantity": "Chaque quantité doit être un nombre entier d'au moins 1.",
+        "upgradeQuantity": "Chaque quantité doit être un nombre entier de 1 à 10 000.",
         "upgradeEmpty": "Un objectif d'améliorations nécessite au moins un matériau."
       },
       "reachedNote": "Un objectif déjà atteint est valide : il n'a simplement plus besoin de rien. L'objectif garde son statut jusqu'à ce que vous le terminiez vous-même.",
@@ -933,7 +933,7 @@
       "refreshing": "Mise à jour de votre plan avec le nouvel objectif…",
       "stale": "Cet objectif a été modifié ailleurs. Chargez sa version actuelle, vérifiez votre cible, puis enregistrez à nouveau.",
       "loadCurrent": "Charger la version actuelle",
-      "collision": "{{project}} contient déjà un objectif pour cette unité avec cette cible.",
+      "collision": "Un autre objectif pour cette unité a déjà cette cible dans : {{project}}.",
       "planningStale": "L'objectif a été enregistré, mais votre plan n'a pas pu s'actualiser : les estimations affichées peuvent encore refléter l'ancien objectif.",
       "retryRefresh": "Réessayer l'actualisation",
       "historyChanged": "Objectif modifié"

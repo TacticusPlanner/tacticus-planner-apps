@@ -924,7 +924,7 @@
         "abilityBelowStart": "El objetivo de una habilidad no puede ser inferior al nivel de partida de esta meta.",
         "abilityNoAdvance": "Sube al menos una habilidad por encima de su punto de partida.",
         "abilityAboveMax": "Ese nivel supera el nivel máximo de habilidad.",
-        "upgradeQuantity": "Cada cantidad debe ser un número entero de al menos 1.",
+        "upgradeQuantity": "Cada cantidad debe ser un número entero de 1 a 10.000.",
         "upgradeEmpty": "Una meta de mejoras necesita al menos un material."
       },
       "reachedNote": "Un objetivo que ya alcanzaste es válido: simplemente no necesita nada más. La meta conserva su estado hasta que tú la completes.",
@@ -933,7 +933,7 @@
       "refreshing": "Actualizando tu plan con el nuevo objetivo…",
       "stale": "Esta meta se modificó en otro lugar. Carga su versión actual, revisa tu objetivo y vuelve a guardar.",
       "loadCurrent": "Cargar versión actual",
-      "collision": "{{project}} ya tiene una meta para esta unidad con ese objetivo.",
+      "collision": "Otra meta para esta unidad ya tiene ese objetivo en: {{project}}.",
       "planningStale": "El objetivo se guardó, pero tu plan no pudo actualizarse: las estimaciones mostradas pueden reflejar aún el objetivo anterior.",
       "retryRefresh": "Reintentar actualización",
       "historyChanged": "Objetivo modificado"

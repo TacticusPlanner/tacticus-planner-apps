@@ -343,6 +343,159 @@ describe("GoalTargetSection", () => {
     expect(onViewGoal).toHaveBeenCalledWith("goal-2")
   })
 
+  it("lists every project that already holds a colliding Rank target", async () => {
+    updateGoalTarget.mockRejectedValue(
+      new ApiError(409, "occupied", {
+        issueCode: "projectGoalSlotOccupied",
+        message: "occupied",
+        projectId: "project-2",
+        projectName: "Second plan",
+        entityType: "Character",
+        entityId: "hero-1",
+        goalType: "Rank",
+        existingGoalId: "goal-2",
+        conflicts: [
+          {
+            projectId: "project-2",
+            projectName: "Second plan",
+            existingGoalId: "goal-2",
+          },
+          {
+            projectId: "project-3",
+            projectName: "Third plan",
+            existingGoalId: "goal-3",
+          },
+        ],
+      })
+    )
+    renderSection(rankGoal())
+
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+    await chooseRank("Gold2")
+    fireEvent.click(screen.getByTestId("goal-target-save"))
+
+    expect(
+      await screen.findByText(
+        'goals.target.collision:{"project":"Second plan, Third plan"}'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it("locks the fields while a save is in flight so no edit is silently dropped", async () => {
+    let resolveSave: (value: GoalDetail) => void = () => {}
+    updateGoalTarget.mockReturnValue(
+      new Promise<GoalDetail>((resolve) => {
+        resolveSave = resolve
+      })
+    )
+    renderSection(rankGoal())
+
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+    await chooseRank("Gold2")
+    fireEvent.click(screen.getByTestId("goal-target-save"))
+
+    await waitFor(() =>
+      expect(screen.getByTestId("goal-target-rank-end")).toBeDisabled()
+    )
+    expect(screen.getByTestId("goal-target-save")).toBeDisabled()
+
+    resolveSave(rankGoal({ revision: 4 }))
+    await waitFor(() =>
+      expect(screen.queryByTestId("goal-target-editor")).not.toBeInTheDocument()
+    )
+  })
+
+  it("keeps Edit target on screen (disabled) while editing so a tour step can anchor to it", () => {
+    renderSection(rankGoal())
+
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+
+    expect(screen.getByTestId("goal-detail-edit-target")).toBeDisabled()
+  })
+
+  it("refreshes planning data after loading the current version of a stale goal", async () => {
+    updateGoalTarget.mockRejectedValue(
+      new ApiError(409, "stale", {
+        issueCode: "goalRevisionStale",
+        message: "stale",
+        goal: rankGoal({ revision: 8 }),
+      })
+    )
+    renderSection(rankGoal())
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+    await chooseRank("Gold2")
+    fireEvent.click(screen.getByTestId("goal-target-save"))
+    await screen.findByText("goals.target.stale")
+    vi.mocked(queryClient.invalidateQueries).mockClear()
+
+    fireEvent.click(screen.getByTestId("goal-target-load-current"))
+
+    await waitFor(() =>
+      expect(queryClient.invalidateQueries).toHaveBeenCalledWith(
+        { queryKey: ["goals"] },
+        { throwOnError: true }
+      )
+    )
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith(
+      { queryKey: ["projects"] },
+      { throwOnError: true }
+    )
+  })
+
+  it("shows a stored partial-slot target the creation form would not offer, instead of a blank select", () => {
+    renderSection(
+      rankGoal({
+        config: {
+          ...emptyConfig,
+          rank: {
+            start: rankIndex(Rank.Silver1),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(Rank.Gold1),
+            endPointFive: false,
+            endAppliedUpgrades: 1,
+          },
+        },
+      })
+    )
+
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+
+    expect(screen.getByTestId("goal-target-rank-additional")).toHaveTextContent(
+      "(1/6)"
+    )
+  })
+
+  it("associates each label with its select", () => {
+    renderSection(rankGoal())
+
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+
+    expect(screen.getByLabelText("goals.target.rankEnd")).toBe(
+      screen.getByTestId("goal-target-rank-end")
+    )
+  })
+
+  it("lets an Upgrade quantity be cleared and retyped, and rejects one above the ceiling", () => {
+    renderSection(upgradeGoal())
+    fireEvent.click(screen.getByTestId("goal-detail-edit-target"))
+    const input = screen.getByRole("spinbutton")
+
+    fireEvent.change(input, { target: { value: "" } })
+    expect(input).toHaveValue(null)
+    expect(screen.getByTestId("goal-target-save")).toBeDisabled()
+
+    fireEvent.change(input, { target: { value: "20000" } })
+    expect(screen.getByTestId("goal-target-issue")).toHaveTextContent(
+      "goals.target.issues.upgradeQuantity"
+    )
+
+    fireEvent.change(input, { target: { value: "7" } })
+    expect(input).toHaveValue(7)
+    expect(screen.queryByTestId("goal-target-issue")).not.toBeInTheDocument()
+    expect(screen.getByTestId("goal-target-save")).toBeEnabled()
+  })
+
   it("reports a failed planning refresh instead of presenting old numbers as current", async () => {
     updateGoalTarget.mockResolvedValue(rankGoal({ revision: 4 }))
     vi.mocked(queryClient.invalidateQueries).mockRejectedValueOnce(
