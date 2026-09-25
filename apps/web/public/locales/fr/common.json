@@ -1050,7 +1050,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez-en un pour modifier sa cible directement."
+          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement."
         }
       }
     },

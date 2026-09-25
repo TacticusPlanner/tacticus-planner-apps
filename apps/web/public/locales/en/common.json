@@ -1050,7 +1050,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every active goal appears below, matching your current filters. Open one to edit its target in place."
+          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place."
         }
       }
     },

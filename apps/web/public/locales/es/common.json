@@ -1050,7 +1050,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una para editar su objetivo directamente."
+          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una meta compatible para editar su objetivo directamente."
         }
       }
     },
