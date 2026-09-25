@@ -40,9 +40,11 @@ export function useCreateGoalPrefill({
     }
     if (!prefill || selectionKeyRef.current === prefillKey) return
     selectionKeyRef.current = prefillKey
-    handleEntityChange(prefill.entityId)
-    setEntityType(prefill.entityType)
-    setEnabledTypes(new Set([prefill.goalType]))
+    if ("entityId" in prefill) {
+      handleEntityChange(prefill.entityId)
+      setEntityType(prefill.entityType)
+      setEnabledTypes(new Set([prefill.goalType]))
+    }
     selectProjects(prefill.projectIds)
     // Render-local coordinators intentionally run once per serialized prefill.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,6 +54,7 @@ export function useCreateGoalPrefill({
     if (
       !open ||
       !prefill ||
+      !("entityId" in prefill) ||
       !playerEntity ||
       entityId !== prefill.entityId ||
       targetKeyRef.current === prefillKey

@@ -19,9 +19,15 @@ export function useProjectSelection({ open }: { open: boolean }) {
   const defaultProjectId = projects.find(
     (project) => project.isDefault
   )?.projectId
+  // Drop prefilled IDs (e.g. from a stale project URL) that aren't the account's projects.
+  const validSelectedProjectIds = projectsQuery.isSuccess
+    ? selectedProjectIds.filter((id) =>
+        projects.some((project) => project.projectId === id)
+      )
+    : selectedProjectIds
   const effectiveProjectIds =
-    selectedProjectIds.length > 0
-      ? selectedProjectIds
+    validSelectedProjectIds.length > 0
+      ? validSelectedProjectIds
       : open && defaultProjectId
         ? [defaultProjectId]
         : []

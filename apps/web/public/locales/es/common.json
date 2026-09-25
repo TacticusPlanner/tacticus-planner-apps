@@ -512,6 +512,8 @@
       "quicknavLabel": "Ir a un proyecto",
       "quicknavAllProjects": "Todos los proyectos",
       "addGoalsTrigger": "Añadir objetivos",
+      "createGoalTrigger": "Crear objetivo",
+      "createNewGoal": "Crear nuevo objetivo",
       "addGoalsTitle": "Añadir objetivos a este proyecto",
       "addGoalsDescription": "Busca tus objetivos y añádelos a {{project}}. Los que ya están en él se quedan como están.",
       "addGoalsSearch": "Buscar objetivos",
@@ -975,6 +977,10 @@
           "title": "Acota por proyecto",
           "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia el plan actual ni lo que calculan las tareas diarias."
         },
+        "createGoal": {
+          "title": "Crear un objetivo",
+          "content": "Empieza un objetivo nuevo desde aquí: abre la misma hoja de creación que el botón de la barra lateral."
+        },
         "planningSettings": {
           "title": "Ajustes de planificación",
           "content": "Define aquí tu presupuesto diario de energía — todas las estimaciones de esta página lo usan."
@@ -1014,6 +1020,10 @@
         "addGoals": {
           "title": "Llena el proyecto",
           "content": "Añade varios objetivos existentes a este proyecto de una vez: busca entre tus objetivos, elige los que quieras y guarda en un solo paso."
+        },
+        "createGoal": {
+          "title": "Crear un objetivo nuevo",
+          "content": "Empieza un objetivo totalmente nuevo ya asignado a este proyecto. A diferencia de «Añadir objetivos», que incorpora los existentes, este crea uno nuevo; aún puedes cambiar su proyecto antes de guardar."
         },
         "reprioritize": {
           "title": "Prioriza tus objetivos",

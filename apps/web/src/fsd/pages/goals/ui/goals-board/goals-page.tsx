@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FolderKanban, Settings } from "lucide-react"
+import { FolderKanban, Plus, Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -39,6 +39,7 @@ import { useGoals } from "../../model/goals-data/use-goals"
 import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { GoalsList } from ".//goals-list"
 import { OverviewProjectQuicknav } from "./overview-project-quicknav"
 import { buildCascadeContext } from "./goal-row-utils"
@@ -74,6 +75,7 @@ export function GoalsPage() {
   // Overview never changes what those views operate on.
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS)
   const { getEntityName } = useGoalCatalog()
+  const launchCreateGoal = useCreateGoalLauncher()
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
@@ -213,6 +215,18 @@ export function GoalsPage() {
     nonArchivedGoals.fetchState.status === "success" &&
     nonArchivedRows.length === 0
 
+  const createGoalButton = (
+    <Button
+      aria-label={t("goals.createButton")}
+      data-testid="goals-create-goal"
+      onClick={() => launchCreateGoal()}
+      size="sm"
+      variant="outline"
+    >
+      <Plus data-icon="inline-start" />
+      {isMobile ? null : t("goals.createButton")}
+    </Button>
+  )
   const planningSettingsButton = (
     <Button
       aria-label={t("goals.planningSettings.button")}
@@ -269,6 +283,7 @@ export function GoalsPage() {
         sort={sort}
       />
       {projectFilterControl}
+      {createGoalButton}
       {planningSettingsButton}
     </div>
   )
@@ -292,8 +307,8 @@ export function GoalsPage() {
       />
 
       {/* goals-navigation spec: desktop merges the status filter, Type/Sort/Group filters, and
-          Planning Settings into a single row; mobile keeps the status filter in its own row and
-          compresses the filters + Planning Settings to icon-only triggers in a second row. */}
+          Create Goal, and Planning Settings into a single row; mobile keeps the status filter in its own row and
+          compresses the filters + Create Goal + Planning Settings to icon-only triggers in a second row. */}
       {isMobile ? (
         <>
           {statusFilter}

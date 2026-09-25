@@ -39,6 +39,7 @@ import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useProjectGoals } from "../../model/projects/use-project-goals"
 import { useProjectGoalReorder } from "../../model/projects/use-project-goal-reorder"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import {
   buildCascadeContext,
@@ -88,6 +89,7 @@ export function ProjectDetailPage() {
   const [mobileReorderActive, setMobileReorderActive] = useState(false)
   const [addGoalsOpen, setAddGoalsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
+  const launchCreateGoal = useCreateGoalLauncher()
 
   const projectGoals = useProjectGoals(projectId)
   const goalActions = useGoalActions()
@@ -210,6 +212,9 @@ export function ProjectDetailPage() {
     if (project) void projectActions.reorderGoals(project.projectId, ids)
   })
   if (!projectId) return null
+  // One handler for the header button, the three-dot menu and the Add Goals sheet: an explicit
+  // project-only prefill, so the sheet never falls back to the default project from here.
+  const handleCreateGoal = () => launchCreateGoal({ projectIds: [projectId] })
 
   if (projects.loading) {
     return (
@@ -248,6 +253,7 @@ export function ProjectDetailPage() {
         isMobile={isMobile}
         mobileReorderActive={mobileReorderActive}
         onAddGoals={() => setAddGoalsOpen(true)}
+        onCreateGoal={handleCreateGoal}
         onEdit={() => setEditOpen(true)}
         onNavigateBack={() => void navigate("/goals/projects")}
         onNavigateToProject={(nextId) =>
@@ -296,6 +302,7 @@ export function ProjectDetailPage() {
       />
 
       <AddGoalsToProjectSheet
+        onCreateGoal={handleCreateGoal}
         onOpenChange={setAddGoalsOpen}
         open={addGoalsOpen}
         project={project}

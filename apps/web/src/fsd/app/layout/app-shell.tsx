@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react"
-import { useLocation } from "react-router"
+import { matchPath, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -137,7 +137,12 @@ function ShellContent({
     pageDescription,
     pageTitle,
     sectionTitle,
-    onCreateGoal: () => launchCreateGoal(),
+    // Global entry points (sidebar, bottom nav, Ctrl/Cmd+G) preselect the project being viewed.
+    onCreateGoal: () => {
+      const projectId = matchPath("/goals/projects/:projectId", pathname)
+        ?.params.projectId
+      launchCreateGoal(projectId ? { projectIds: [projectId] } : undefined)
+    },
   }
 
   return (

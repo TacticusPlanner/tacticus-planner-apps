@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
@@ -90,7 +91,12 @@ function goal(overrides: Record<string, unknown> = {}) {
 
 function renderSheet() {
   return render(
-    <AddGoalsToProjectSheet onOpenChange={vi.fn()} open project={project} />
+    <AddGoalsToProjectSheet
+      onCreateGoal={vi.fn()}
+      onOpenChange={vi.fn()}
+      open
+      project={project}
+    />
   )
 }
 
@@ -297,7 +303,12 @@ describe("AddGoalsToProjectSheet", () => {
     listProjectGoals.mockResolvedValue({ goals: [] })
     const user = userEvent.setup()
     const { rerender } = render(
-      <AddGoalsToProjectSheet onOpenChange={vi.fn()} open project={project} />
+      <AddGoalsToProjectSheet
+        onCreateGoal={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        project={project}
+      />
     )
 
     await user.click(await screen.findByTestId("add-goals-check-goal-a"))
@@ -307,6 +318,7 @@ describe("AddGoalsToProjectSheet", () => {
     // never remounts — a draft that survived would be submitted against the newly viewed project.
     rerender(
       <AddGoalsToProjectSheet
+        onCreateGoal={vi.fn()}
         onOpenChange={vi.fn()}
         open
         project={{ ...project, projectId: "proj-b", name: "Project B" }}
@@ -319,6 +331,7 @@ describe("AddGoalsToProjectSheet", () => {
     await user.click(screen.getByTestId("add-goals-check-goal-a"))
     rerender(
       <AddGoalsToProjectSheet
+        onCreateGoal={vi.fn()}
         onOpenChange={vi.fn()}
         open={false}
         project={{ ...project, projectId: "proj-b", name: "Project B" }}
@@ -326,6 +339,7 @@ describe("AddGoalsToProjectSheet", () => {
     )
     rerender(
       <AddGoalsToProjectSheet
+        onCreateGoal={vi.fn()}
         onOpenChange={vi.fn()}
         open
         project={{ ...project, projectId: "proj-b", name: "Project B" }}
@@ -334,5 +348,121 @@ describe("AddGoalsToProjectSheet", () => {
     expect(
       await screen.findByTestId("add-goals-check-goal-a")
     ).not.toBeChecked()
+  })
+
+  describe("Create new goal", () => {
+    function Harness({
+      onCreateGoal,
+      projectId = "proj-a",
+    }: {
+      onCreateGoal: () => void
+      projectId?: string
+    }) {
+      const [open, setOpen] = useState(true)
+      return (
+        <>
+          <button data-testid="reopen" onClick={() => setOpen(true)} />
+          <AddGoalsToProjectSheet
+            onCreateGoal={onCreateGoal}
+            onOpenChange={setOpen}
+            open={open}
+            project={{ ...project, projectId }}
+          />
+        </>
+      )
+    }
+
+    it("stays available when the search has no matches", async () => {
+      listGoals.mockResolvedValue({ goals: [goal()] })
+      listProjectGoals.mockResolvedValue({ goals: [] })
+      const user = userEvent.setup()
+      render(<Harness onCreateGoal={vi.fn()} />)
+
+      await user.type(
+        await screen.findByTestId("add-goals-search"),
+        "no-such-goal"
+      )
+      expect(screen.queryByTestId("add-goals-row-goal-1")).toBeNull()
+      expect(screen.getByTestId("add-goals-create-new")).toBeEnabled()
+    })
+
+    it("launches creation and closes the sheet without saving pending selections", async () => {
+      listGoals.mockResolvedValue({ goals: [goal()] })
+      listProjectGoals.mockResolvedValue({ goals: [] })
+      const onCreateGoal = vi.fn()
+      const user = userEvent.setup()
+      render(<Harness onCreateGoal={onCreateGoal} />)
+
+      await user.click(await screen.findByTestId("add-goals-check-goal-1"))
+      await user.click(screen.getByTestId("add-goals-create-new"))
+
+      expect(onCreateGoal).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() =>
+        expect(
+          screen.queryByTestId("add-goals-to-project-sheet")
+        ).not.toBeInTheDocument()
+      )
+      expect(updateProjectGoals).not.toHaveBeenCalled()
+    })
+
+    it("restores pending selections and search after creation, without duplicating the new member", async () => {
+      listGoals.mockResolvedValue({
+        goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" })],
+      })
+      listProjectGoals.mockResolvedValue({ goals: [] })
+      const user = userEvent.setup()
+      render(<Harness onCreateGoal={vi.fn()} />)
+
+      await user.type(await screen.findByTestId("add-goals-search"), "hero1")
+      await user.click(await screen.findByTestId("add-goals-check-goal-1"))
+      await user.click(screen.getByTestId("add-goals-create-new"))
+      await vi.waitFor(() =>
+        expect(
+          screen.queryByTestId("add-goals-to-project-sheet")
+        ).not.toBeInTheDocument()
+      )
+
+      // The creation sheet saved a new goal already assigned to this project.
+      const created = goal({ goalId: "goal-new", entityId: "hero-new" })
+      listGoals.mockResolvedValue({
+        goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" }), created],
+      })
+      listProjectGoals.mockResolvedValue({
+        goals: [{ goal: created, priority: 1 }],
+      })
+      await user.click(screen.getByTestId("reopen"))
+
+      expect(await screen.findByTestId("add-goals-search")).toHaveValue("hero1")
+      expect(screen.getByTestId("add-goals-check-goal-1")).toBeChecked()
+      await user.clear(screen.getByTestId("add-goals-search"))
+      expect(
+        await screen.findByTestId("add-goals-member-goal-new")
+      ).toBeInTheDocument()
+
+      await user.click(screen.getByTestId("add-goals-save"))
+      await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalled())
+      expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
+        { goalId: "goal-new", priority: 1 },
+        { goalId: "goal-1", priority: 2 },
+      ])
+    })
+
+    it("restores the draft after creation is cancelled, but drops it after a normal dismiss", async () => {
+      listGoals.mockResolvedValue({ goals: [goal()] })
+      listProjectGoals.mockResolvedValue({ goals: [] })
+      const user = userEvent.setup()
+      render(<Harness onCreateGoal={vi.fn()} />)
+
+      await user.click(await screen.findByTestId("add-goals-check-goal-1"))
+      await user.click(screen.getByTestId("add-goals-create-new"))
+      await user.click(screen.getByTestId("reopen"))
+      expect(await screen.findByTestId("add-goals-check-goal-1")).toBeChecked()
+
+      await user.keyboard("{Escape}")
+      await user.click(screen.getByTestId("reopen"))
+      expect(
+        await screen.findByTestId("add-goals-check-goal-1")
+      ).not.toBeChecked()
+    })
   })
 })

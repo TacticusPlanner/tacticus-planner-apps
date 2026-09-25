@@ -33,8 +33,10 @@ from a project context silently falls back to the default project instead.
   goal type. Wire `useCreateGoalPrefill` to apply this project preselection
   independently of the existing entity/goal-type prefill effect.
 - Keep the existing global entry points (desktop sidebar button, mobile
-  bottom-nav button, `Ctrl/Cmd+G` shortcut) exactly as they are — the new
-  entry points are additions, not replacements.
+  bottom-nav button, `Ctrl/Cmd+G` shortcut) in place — the new entry points
+  are additions, not replacements. The one behavior change: while a project
+  detail route (`/goals/projects/:projectId`) is open, these global entry
+  points also preselect that project (`app-shell.tsx`).
 
 ## Capabilities
 

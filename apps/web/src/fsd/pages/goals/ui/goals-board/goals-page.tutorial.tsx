@@ -19,6 +19,7 @@ export function useGoalsOverviewTutorial() {
         | "statusFilter"
         | "filters"
         | "projectFilter"
+        | "createGoal"
         | "planningSettings"
         | "list"
     ): Step => ({
@@ -30,6 +31,7 @@ export function useGoalsOverviewTutorial() {
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
       createStep('[data-testid="goals-project-filter"]', "projectFilter"),
+      createStep('[data-testid="goals-create-goal"]', "createGoal"),
       createStep('[data-testid="goals-planning-settings"]', "planningSettings"),
       createStep('[data-testid="goals-page"]', "list"),
     ]

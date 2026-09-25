@@ -512,6 +512,8 @@
       "quicknavLabel": "Zu einem Projekt springen",
       "quicknavAllProjects": "Alle Projekte",
       "addGoalsTrigger": "Ziele hinzufügen",
+      "createGoalTrigger": "Ziel erstellen",
+      "createNewGoal": "Neues Ziel erstellen",
       "addGoalsTitle": "Ziele zu diesem Projekt hinzufügen",
       "addGoalsDescription": "Durchsuche deine Ziele und füge sie zu {{project}} hinzu. Bereits enthaltene Ziele bleiben unverändert.",
       "addGoalsSearch": "Ziele suchen",
@@ -975,6 +977,10 @@
           "title": "Nach Projekt eingrenzen",
           "content": "Zeige nur die Ziele eines Projekts. Das grenzt die angezeigte Liste ein und ändert nichts am aktuellen Plan oder an den Berechnungen der Dailies."
         },
+        "createGoal": {
+          "title": "Ziel erstellen",
+          "content": "Starte hier ein neues Ziel – es öffnet dasselbe Erstellungsfenster wie die Schaltfläche in der Seitenleiste."
+        },
         "planningSettings": {
           "title": "Planungseinstellungen",
           "content": "Lege hier dein tägliches Energiebudget fest — jede Schätzung auf dieser Seite nutzt es."
@@ -1014,6 +1020,10 @@
         "addGoals": {
           "title": "Das Projekt füllen",
           "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu — durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt."
+        },
+        "createGoal": {
+          "title": "Neues Ziel erstellen",
+          "content": "Starte ein ganz neues Ziel, das bereits diesem Projekt zugeordnet ist. Anders als „Ziele hinzufügen“, das vorhandene Ziele aufnimmt, entsteht hier ein neues – das Projekt kannst du vor dem Speichern noch ändern."
         },
         "reprioritize": {
           "title": "Ziele priorisieren",

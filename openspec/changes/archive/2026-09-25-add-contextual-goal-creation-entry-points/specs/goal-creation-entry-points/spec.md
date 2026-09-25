@@ -32,8 +32,8 @@ the global entry points open, with no prefill.
 #### Scenario: Activating the contextual entry point opens creation
 
 - **WHEN** the user activates Overview's Create Goal action
-- **THEN** the goal-creation sheet opens with no entity, goal type, or
-  project preselected
+- **THEN** the goal-creation sheet opens with no entity or goal type
+  preselected and no explicit project prefill
 
 #### Scenario: Global entry points remain available
 
@@ -75,11 +75,14 @@ or opening another control, at both desktop and mobile breakpoints.
 ### Requirement: A project-scoped goal-creation launch preselects that project
 
 When goal creation is launched from a project context — Project Detail's
-header or three-dot menu, or its Add Goals sheet — the creation sheet SHALL preselect that
+header or three-dot menu, its Add Goals sheet, or a global entry point (the
+sidebar button, bottom-nav button, or keyboard shortcut) used while a
+project's detail route is open — the creation sheet SHALL preselect that
 project as the goal's membership before the user has chosen an entity or
 goal type. The user MAY still change or clear that selection before saving,
 the same as any other project selection in the creation sheet. Launching
-creation with no project context (the global or Overview entry points)
+creation with no project context (Overview, or a global entry point used
+outside a project's detail route)
 SHALL be unaffected by this requirement and SHALL keep falling back to the
 user's default project when no consecutive-creation context is remembered.
 The separate `remember-consecutive-goal-context` change may offer remembered
@@ -101,10 +104,17 @@ membership on such a launch; an explicit project-scoped launch always wins.
 - **THEN** the created goal is assigned to the user's chosen selection, not
   the originally preselected project
 
+#### Scenario: Global entry points preselect the viewed project
+
+- **GIVEN** the user is viewing a project's detail route
+- **WHEN** they use a global entry point (sidebar button, bottom-nav button,
+  or keyboard shortcut)
+- **THEN** the creation sheet opens with that project preselected
+
 #### Scenario: Launching with no project context and no remembered choice
 
-- **WHEN** the user launches goal creation from a global or Overview entry
-  point, with no project context or remembered membership
+- **WHEN** the user launches goal creation from Overview, or from a global
+  entry point outside a project's detail route, with no remembered membership
 - **THEN** the creation sheet preselects the user's default project, the
   same as it does today
 

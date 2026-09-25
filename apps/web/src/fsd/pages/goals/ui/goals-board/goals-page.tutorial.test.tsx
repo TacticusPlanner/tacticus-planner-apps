@@ -31,6 +31,7 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
       '[data-testid="goals-project-filter"]',
+      '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
     ])
