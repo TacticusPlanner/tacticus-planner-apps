@@ -70,6 +70,7 @@ describe("UserJotProvider", () => {
         user: {
           applicationUserId: "user-1",
           displayName: "Ada",
+          suggestedDisplayName: null,
           hasCompletedOnboarding: true,
           tacticusApiKeyMasked: null,
           tacticusUserIdMasked: null,
@@ -110,6 +111,37 @@ describe("UserJotProvider", () => {
       expect(identify).toHaveBeenCalledWith({ token: "signed-jwt" })
     })
     expect(logout).not.toHaveBeenCalled()
+  })
+
+  it("re-identifies with a freshly fetched token after the confirmed name changes", async () => {
+    const { rerender } = renderProvider()
+    await waitFor(() => expect(identify).toHaveBeenCalledTimes(1))
+
+    useCurrentUserMock.mockReturnValue({
+      state: {
+        status: "success",
+        user: {
+          applicationUserId: "user-1",
+          displayName: "Commander Ada",
+          suggestedDisplayName: null,
+          hasCompletedOnboarding: true,
+          tacticusApiKeyMasked: null,
+          tacticusUserIdMasked: null,
+          analyticsId: "analytics-id-1",
+        },
+      },
+    })
+    fetchQueryMock.mockResolvedValue({ token: "fresh-jwt" })
+    rerender(
+      <UserJotProvider>
+        <Consumer />
+      </UserJotProvider>
+    )
+
+    await waitFor(() =>
+      expect(identify).toHaveBeenLastCalledWith({ token: "fresh-jwt" })
+    )
+    expect(identify).toHaveBeenCalledTimes(2)
   })
 
   it("clears the widget identity when signed out", async () => {

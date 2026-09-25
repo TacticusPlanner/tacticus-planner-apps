@@ -96,6 +96,7 @@ function renderSetup() {
     <SetupV1Import
       onCompleted={onCompleted}
       onKeyImported={onKeyImported}
+      onSuggestedDisplayName={vi.fn()}
       onUseApiKey={onUseApiKey}
     />
   )

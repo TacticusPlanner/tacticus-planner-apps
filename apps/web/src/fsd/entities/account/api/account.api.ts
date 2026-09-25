@@ -1,6 +1,10 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
 
 import type { CurrentUser } from "../model/current-user"
+import {
+  mapCurrentUserDtoToDomain,
+  type CurrentUserDto,
+} from "../model/current-user.mapper"
 
 type UpdateTacticusIntegrationRequest = {
   tacticusApiKey?: string
@@ -18,8 +22,18 @@ type TacticusIntegrationResult = {
   tacticusUserIdMasked: string | null
 }
 
-export function getCurrentUser(signal?: AbortSignal) {
-  return apiGet<CurrentUser>("/api/v1/me", { signal })
+export async function getCurrentUser(
+  signal?: AbortSignal
+): Promise<CurrentUser> {
+  return mapCurrentUserDtoToDomain(
+    await apiGet<CurrentUserDto>("/api/v1/me", { signal })
+  )
+}
+
+export function updateDisplayName(displayName: string) {
+  return apiPut<{ displayName: string }>("/api/v1/me/display-name", {
+    body: { displayName },
+  })
 }
 
 export function getUserJotToken(signal?: AbortSignal) {
@@ -80,6 +94,9 @@ export type ImportV1ProfileResult = {
   campaignEventProgress: ImportPartResult
   goals: ImportPartResult
   outcomes: V1GoalOutcome[]
+  // The V1 login username as a private prefill for the name step — only while the account has no
+  // confirmed name. Never public identity, and not stored by the API.
+  suggestedDisplayName?: string | null
 }
 
 export function importV1Profile(request: ImportV1ProfileRequest) {

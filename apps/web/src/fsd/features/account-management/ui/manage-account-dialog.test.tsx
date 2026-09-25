@@ -6,6 +6,7 @@ import type { CurrentUserState } from "@/entities/account"
 
 const purgeAccount = vi.fn()
 const updateTacticusIntegration = vi.fn()
+const updateDisplayName = vi.fn()
 const logoutRedirect = vi.fn().mockResolvedValue(undefined)
 const signOut = vi.fn().mockResolvedValue(undefined)
 const refetch = vi.fn()
@@ -16,6 +17,7 @@ const successState: CurrentUserState = {
   user: {
     applicationUserId: "user-1",
     displayName: "Test User",
+    suggestedDisplayName: null,
     hasCompletedOnboarding: true,
     tacticusApiKeyMasked: "••••••••abcd",
     tacticusUserIdMasked: "••••••••1234",
@@ -47,7 +49,12 @@ vi.mock("@/shared/auth", () => ({
   signOut: (...args: unknown[]) => signOut(...args),
 }))
 
-vi.mock("@/entities/account", () => ({
+vi.mock("@/entities/account", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/account")>()),
+  useUpdateDisplayName: () => ({
+    isPending: false,
+    mutateAsync: updateDisplayName,
+  }),
   purgeAccount: (...args: unknown[]) => purgeAccount(...args),
   updateTacticusIntegration: (...args: unknown[]) =>
     updateTacticusIntegration(...args),
@@ -63,6 +70,7 @@ describe("ManageAccountDialog", () => {
     currentUserState.mockReturnValue(successState)
     purgeAccount.mockReset()
     updateTacticusIntegration.mockReset()
+    updateDisplayName.mockReset()
     logoutRedirect.mockClear()
     signOut.mockClear()
     refetch.mockClear()
@@ -85,6 +93,67 @@ describe("ManageAccountDialog", () => {
     expect(link).toHaveAttribute("target", "_blank")
     // noopener keeps the opened page from reaching back through window.opener.
     expect(link).toHaveAttribute("rel", "noopener noreferrer")
+  })
+
+  describe("profile tab", () => {
+    async function openProfileTab() {
+      const user = userEvent.setup()
+      render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
+      await user.click(screen.getByTestId("manage-account-tab-profile"))
+      return user
+    }
+
+    it("shows the confirmed name and saves an edit without touching identity fields", async () => {
+      updateDisplayName.mockResolvedValue({})
+      const user = await openProfileTab()
+
+      const input = screen.getByTestId("manage-account-display-name-input")
+      expect(input).toHaveValue("Test User")
+      expect(
+        screen.getByTestId("manage-account-display-name-submit")
+      ).toBeDisabled()
+
+      await user.clear(input)
+      await user.type(input, "Commander Ada")
+      await user.click(screen.getByTestId("manage-account-display-name-submit"))
+
+      await vi.waitFor(() =>
+        expect(updateDisplayName).toHaveBeenCalledWith("Commander Ada")
+      )
+      expect(
+        await screen.findByTestId("manage-account-display-name-success")
+      ).toBeVisible()
+      expect(updateTacticusIntegration).not.toHaveBeenCalled()
+    })
+
+    it("keeps the draft and shows a retryable error when the save fails", async () => {
+      updateDisplayName.mockRejectedValue(new Error("offline"))
+      const user = await openProfileTab()
+
+      const input = screen.getByTestId("manage-account-display-name-input")
+      await user.clear(input)
+      await user.type(input, "Commander Ada")
+      await user.click(screen.getByTestId("manage-account-display-name-submit"))
+
+      expect(
+        await screen.findByTestId("manage-account-display-name-error")
+      ).toBeVisible()
+      expect(input).toHaveValue("Commander Ada")
+      expect(
+        screen.getByTestId("manage-account-display-name-submit")
+      ).toBeEnabled()
+    })
+
+    it("rejects an empty name before calling the API", async () => {
+      const user = await openProfileTab()
+
+      await user.clear(screen.getByTestId("manage-account-display-name-input"))
+
+      expect(
+        screen.getByTestId("manage-account-display-name-submit")
+      ).toBeDisabled()
+      expect(updateDisplayName).not.toHaveBeenCalled()
+    })
   })
 
   it("saves the Tacticus integration and calls onSaved on success", async () => {

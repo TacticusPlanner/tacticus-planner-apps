@@ -34,7 +34,10 @@ import { toast } from "sonner"
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
-import { ManageAccountDialog } from "@/features/account-management"
+import {
+  ManageAccountDialog,
+  type ManageAccountTab,
+} from "@/features/account-management"
 import { useCurrentUser } from "@/entities/account"
 import {
   isInteractionRequired,
@@ -49,6 +52,7 @@ import { AccountAvatar } from "./account-avatar"
 import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { LanguageSwitcher } from "./language-switcher"
 import { ThemeSwitcher } from "./theme-switcher"
+import { EditDisplayNameButton } from "./edit-display-name-button"
 import { UserJotBoardLink } from "./userjot-board-link"
 import { useUserJot } from "./userjot-provider"
 
@@ -92,6 +96,8 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
   const { open: openUserJot } = useUserJot()
   const navigate = useNavigate()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
+  const [manageAccountTab, setManageAccountTab] =
+    useState<ManageAccountTab>("integration")
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
   const hasRequestedApiAccess = useRef(false)
   const silentSignInStatus = useSilentSignInStatus()
@@ -157,20 +163,29 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
 
   const currentUser =
     accountState.status === "success" ? accountState.user : null
-  const accountName =
-    currentUser?.displayName ??
-    account.name ??
-    account.username ??
-    t("auth.account")
+  // Only the confirmed name is public identity: the provider's name/username can be email-like, so
+  // it is never a fallback here.
+  const accountName = currentUser?.displayName ?? t("auth.account")
   const accountEmail = account.username
   const applicationAccountId = currentUser?.applicationUserId ?? null
 
   const dialogs = (
     <ManageAccountDialog
+      initialTab={manageAccountTab}
       onOpenChange={setIsManageAccountOpen}
       open={isManageAccountOpen}
     />
   )
+
+  const openManageAccount = (tab: ManageAccountTab) => {
+    setManageAccountTab(tab)
+    setIsManageAccountOpen(true)
+    setMenuOpen(false)
+  }
+
+  const editNameButton = currentUser ? (
+    <EditDisplayNameButton onClick={() => openManageAccount("profile")} />
+  ) : null
 
   const goToV1Import = () => {
     setMenuOpen(false)
@@ -200,7 +215,10 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             data-testid="auth-account-drawer"
           >
             <DrawerHeader className="border-b px-6 py-5 text-left">
-              <DrawerTitle className="text-xl">{accountName}</DrawerTitle>
+              <DrawerTitle className="flex items-center gap-1 text-xl">
+                <span className="min-w-0 truncate">{accountName}</span>
+                {editNameButton}
+              </DrawerTitle>
               <DrawerDescription className="break-all">
                 {accountEmail}
               </DrawerDescription>
@@ -251,10 +269,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
               <Button
                 className="w-full justify-start"
                 data-testid="auth-manage-account"
-                onClick={() => {
-                  setIsManageAccountOpen(true)
-                  setMenuOpen(false)
-                }}
+                onClick={() => openManageAccount("integration")}
                 variant="outline"
               >
                 <Settings data-icon="inline-start" />
@@ -343,8 +358,11 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
               displayName={accountName}
             />
             <div className="min-w-0 text-left leading-tight">
-              <div className="truncate font-medium" title={accountName}>
-                {accountName}
+              <div className="flex items-center gap-1">
+                <div className="truncate font-medium" title={accountName}>
+                  {accountName}
+                </div>
+                {editNameButton}
               </div>
               <div
                 className="truncate text-xs text-muted-foreground"
@@ -371,7 +389,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             aria-label={t("auth.manageAccount")}
             className="w-full justify-start"
             data-testid="auth-manage-account"
-            onClick={() => setIsManageAccountOpen(true)}
+            onClick={() => openManageAccount("integration")}
             size="sm"
             variant="ghost"
           >

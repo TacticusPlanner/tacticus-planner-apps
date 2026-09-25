@@ -1,5 +1,10 @@
 import { useState } from "react"
-import { Navigate, useNavigate, useSearchParams } from "react-router"
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router"
 
 import {
   AccountSetupScreen,
@@ -44,26 +49,51 @@ export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
   return <AccountSetupRouteForStep key={step} step={step} />
 }
 
+type SetupLocationState = { suggestedDisplayName?: string } | null
+
 function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   const { state } = useCurrentUser()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const next = searchParams.get("next")
   const [importAwaitingContinue, setImportAwaitingContinue] = useState(
     step === "import"
   )
-
-  if (
-    !(step === "import" && importAwaitingContinue) &&
-    state.status === "success" &&
-    state.user.hasCompletedOnboarding
-  ) {
-    return <Navigate replace to={resolveNextPath(next)} />
-  }
+  // The V1 login username the import proposed as a name. The API does not store it, so it rides
+  // router state from here to the name step (surviving Back, not a reload).
+  const [v1Suggestion, setV1Suggestion] = useState<string | null>(null)
 
   // Carried across step navigation so the remembered destination survives Back, the mobile
   // "paste a key instead" shortcut, and a reload.
   const search = next ? `?next=${encodeURIComponent(next)}` : ""
+
+  if (
+    !(step === "import" && importAwaitingContinue) &&
+    state.status === "success"
+  ) {
+    const { hasCompletedOnboarding, displayName } = state.user
+
+    if (hasCompletedOnboarding && displayName !== null) {
+      return <Navigate replace to={resolveNextPath(next)} />
+    }
+    // A key without a confirmed name only owes the name step.
+    if (hasCompletedOnboarding && step !== "name") {
+      return (
+        <Navigate
+          replace
+          state={
+            v1Suggestion ? { suggestedDisplayName: v1Suggestion } : undefined
+          }
+          to={`${SETUP_STEP_PATHS.name}${search}`}
+        />
+      )
+    }
+    // The name step is only reachable once a key exists.
+    if (!hasCompletedOnboarding && step === "name") {
+      return <Navigate replace to={`${SETUP_STEP_PATHS.choose}${search}`} />
+    }
+  }
 
   return (
     <AccountSetupScreen
@@ -77,10 +107,14 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
             onCompleted()
           }}
           onKeyImported={onKeyImported}
+          onSuggestedDisplayName={setV1Suggestion}
           onUseApiKey={() => void navigate(`${SETUP_STEP_PATHS.key}${search}`)}
         />
       )}
       step={step}
+      suggestedDisplayName={
+        (location.state as SetupLocationState)?.suggestedDisplayName
+      }
     />
   )
 }

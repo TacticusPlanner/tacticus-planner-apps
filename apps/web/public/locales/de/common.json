@@ -9,6 +9,7 @@
     "account": "Angemeldetes Konto",
     "accountLoading": "Konto wird geladen",
     "checkingSignIn": "Konto erkannt – Anmeldung läuft…",
+    "editDisplayName": "Planer-Namen bearbeiten",
     "error": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
     "manageAccount": "Konto verwalten",
     "signIn": "Anmelden",
@@ -39,6 +40,7 @@
     "title": "Konto verwalten",
     "tabs": {
       "integration": "Tacticus-Integration",
+      "profile": "Profil",
       "account": "Konto"
     },
     "integration": {
@@ -70,6 +72,18 @@
       "reauthRequired": "Anmeldung abgelaufen — zum Anmelden tippen",
       "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}",
       "syncNow": "Jetzt synchronisieren"
+    },
+    "profile": {
+      "displayNameLabel": "Planer-Name",
+      "displayNameDescription": "Wird für dich im Planer und in Feedback angezeigt. Anmeldung und E-Mail bleiben unverändert. Höchstens {{max}} Zeichen.",
+      "save": "Namen speichern",
+      "saved": "Name aktualisiert.",
+      "saveFailed": "Dein Name konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "problems": {
+        "empty": "Gib einen Namen ein.",
+        "tooLong": "Verwende höchstens {{max}} Zeichen.",
+        "controlCharacters": "Der Name darf keine Steuerzeichen enthalten."
+      }
     },
     "account": {
       "purgeWarningTitle": "Konto löschen",
@@ -109,6 +123,17 @@
     "import": {
       "continue": "Weiter",
       "useApiKey": "Stattdessen API-Schlüssel verwenden"
+    },
+    "name": {
+      "label": "Planer-Name",
+      "description": "Dieser Name wird für dich im Planer und in Feedback angezeigt. Höchstens {{max}} Zeichen.",
+      "submit": "Namen speichern",
+      "saveFailed": "Dein Name konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "problems": {
+        "empty": "Gib einen Namen ein.",
+        "tooLong": "Verwende höchstens {{max}} Zeichen.",
+        "controlCharacters": "Der Name darf keine Steuerzeichen enthalten."
+      }
     },
     "confirming": "Einrichtung wird abgeschlossen …",
     "confirmFailed": "Dein Schlüssel wurde gespeichert, aber wir konnten dein Konto nicht bestätigen.",
@@ -910,7 +935,7 @@
       },
       "accountDrawer": {
         "title": "Konto und Einstellungen",
-        "content": "Verwalte hier Design, Sprache, Tour, Importe, Konto und Anmeldeoptionen."
+        "content": "Verwalte hier Design, Sprache, Tour, Importe, Planer-Name, Konto und Anmeldeoptionen."
       },
       "bottomNavigation": {
         "addGoal": {
@@ -932,7 +957,7 @@
       },
       "sidebarFooter": {
         "title": "Dein Konto",
-        "content": "Verwalte hier jederzeit dein Konto, prüfe den Synchronisierungsstatus und wiederhole diese Tour."
+        "content": "Verwalte hier jederzeit dein Konto und deinen Planer-Namen, prüfe den Synchronisierungsstatus und wiederhole diese Tour."
       },
       "bottomNavigationGroup": {
         "title": "Deine Hauptleiste",

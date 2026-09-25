@@ -9,6 +9,7 @@
     "account": "Cuenta conectada",
     "accountLoading": "Cargando cuenta",
     "checkingSignIn": "Cuenta detectada; iniciando sesión…",
+    "editDisplayName": "Editar nombre en el planificador",
     "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
     "manageAccount": "Gestionar cuenta",
     "signIn": "Iniciar sesión",
@@ -39,6 +40,7 @@
     "title": "Gestionar cuenta",
     "tabs": {
       "integration": "Integración con Tacticus",
+      "profile": "Perfil",
       "account": "Cuenta"
     },
     "integration": {
@@ -70,6 +72,18 @@
       "reauthRequired": "Sesión expirada — toca para iniciar sesión",
       "refreshRequired": "Actualización necesaria · {{lastSync}}",
       "syncNow": "Sincronizar ahora"
+    },
+    "profile": {
+      "displayNameLabel": "Nombre en el planificador",
+      "displayNameDescription": "Se muestra para ti en el planificador y en los comentarios. Tu inicio de sesión y tu correo no cambian. Máximo {{max}} caracteres.",
+      "save": "Guardar nombre",
+      "saved": "Nombre actualizado.",
+      "saveFailed": "No se pudo guardar tu nombre. Inténtalo de nuevo.",
+      "problems": {
+        "empty": "Introduce un nombre.",
+        "tooLong": "Usa como máximo {{max}} caracteres.",
+        "controlCharacters": "El nombre no puede contener caracteres de control."
+      }
     },
     "account": {
       "purgeWarningTitle": "Purgar cuenta",
@@ -109,6 +123,17 @@
     "import": {
       "continue": "Continuar",
       "useApiKey": "Usar una clave de API en su lugar"
+    },
+    "name": {
+      "label": "Nombre en el planificador",
+      "description": "Este es el nombre que se muestra para ti en el planificador y en los comentarios. Máximo {{max}} caracteres.",
+      "submit": "Guardar nombre",
+      "saveFailed": "No se pudo guardar tu nombre. Inténtalo de nuevo.",
+      "problems": {
+        "empty": "Introduce un nombre.",
+        "tooLong": "Usa como máximo {{max}} caracteres.",
+        "controlCharacters": "El nombre no puede contener caracteres de control."
+      }
     },
     "confirming": "Finalizando la configuración…",
     "confirmFailed": "Tu clave se guardó, pero no pudimos confirmar tu cuenta.",
@@ -910,7 +935,7 @@
       },
       "accountDrawer": {
         "title": "Cuenta y preferencias",
-        "content": "Gestiona aquí el tema, idioma, recorrido, importaciones, cuenta y opciones de sesión."
+        "content": "Gestiona aquí el tema, idioma, recorrido, importaciones, nombre en el planificador, cuenta y opciones de sesión."
       },
       "bottomNavigation": {
         "addGoal": {
@@ -932,7 +957,7 @@
       },
       "sidebarFooter": {
         "title": "Tu cuenta",
-        "content": "Gestiona tu cuenta, comprueba el estado de sincronización y vuelve a ver este recorrido en cualquier momento desde aquí."
+        "content": "Gestiona tu cuenta y tu nombre en el planificador, comprueba el estado de sincronización y vuelve a ver este recorrido en cualquier momento desde aquí."
       },
       "bottomNavigationGroup": {
         "title": "Tu barra principal",

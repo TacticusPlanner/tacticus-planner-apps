@@ -14,6 +14,10 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/entities/account", () => ({
   useCurrentUser: () => useCurrentUser(),
+  isAccountSetupComplete: (user: {
+    hasCompletedOnboarding: boolean
+    displayName: string | null
+  }) => user.hasCompletedOnboarding && user.displayName !== null,
 }))
 
 const signOut = vi.fn<(instance: unknown, accountId: string) => Promise<void>>(
@@ -39,6 +43,7 @@ function setState(state: CurrentUserState) {
 const configuredUser = {
   applicationUserId: "user-1",
   displayName: "Test User",
+  suggestedDisplayName: null,
   hasCompletedOnboarding: true,
   tacticusApiKeyMasked: "••••••••abcd",
   tacticusUserIdMasked: null,
@@ -65,6 +70,7 @@ function renderAt(initialPath: string) {
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route element={<SetupProbe />} path="/setup" />
+        <Route element={<SetupProbe />} path="/setup/name" />
         <Route
           element={
             <OnboardingGate>
@@ -86,6 +92,24 @@ describe("OnboardingGate", () => {
 
     expect(screen.getByTestId("setup-probe")).toHaveTextContent(
       "/setup?next=%2Fguild%2Fmembers%3Ftab%3Droster"
+    )
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
+  })
+
+  it("sends a user with a key but no confirmed name straight to the name step", () => {
+    setState({
+      status: "success",
+      user: {
+        ...configuredUser,
+        displayName: null,
+        suggestedDisplayName: "Provider Name",
+      },
+    })
+
+    renderAt("/guild/members")
+
+    expect(screen.getByTestId("setup-probe")).toHaveTextContent(
+      "/setup/name?next=%2Fguild%2Fmembers"
     )
     expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
   })

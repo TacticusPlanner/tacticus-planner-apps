@@ -4,6 +4,7 @@ export const SETUP_STEP_PATHS: Record<AccountSetupStep, string> = {
   choose: "/setup",
   key: "/setup/key",
   import: "/setup/import",
+  name: "/setup/name",
 }
 
 /**

@@ -5,12 +5,14 @@ import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useMsal } from "@azure/msal-react"
 
-import { useCurrentUser } from "@/entities/account"
+import { isAccountSetupComplete, useCurrentUser } from "@/entities/account"
 import { signOut, useActiveAccountId } from "@/shared/auth"
 
+import { SETUP_STEP_PATHS } from "./account-setup-routes"
+
 /**
- * Blocks protected routes until the signed-in user has a configured Tacticus API key, sending them to
- * `/setup` and remembering where they were headed. Protected content waits for the current-user request
+ * Blocks protected routes until the signed-in user has a configured Tacticus API key and a confirmed
+ * display name, sending them to `/setup` (or straight to its name step) and remembering where they were headed. Protected content waits for the current-user request
  * because GET /api/v1/me provisions a first-time caller's Account/Profile; mounting child routes before it
  * succeeds can race their profile-scoped requests and produce misleading 404 responses.
  *
@@ -35,9 +37,15 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     )
   }
 
-  if (state.status === "success" && !state.user.hasCompletedOnboarding) {
+  if (state.status === "success" && !isAccountSetupComplete(state.user)) {
     const next = `${location.pathname}${location.search}`
-    return <Navigate replace to={`/setup?next=${encodeURIComponent(next)}`} />
+    // A user who already has a key only owes the name step; anyone else starts from the beginning.
+    const setupPath = state.user.hasCompletedOnboarding
+      ? SETUP_STEP_PATHS.name
+      : SETUP_STEP_PATHS.choose
+    return (
+      <Navigate replace to={`${setupPath}?next=${encodeURIComponent(next)}`} />
+    )
   }
 
   if (state.status === "error") {

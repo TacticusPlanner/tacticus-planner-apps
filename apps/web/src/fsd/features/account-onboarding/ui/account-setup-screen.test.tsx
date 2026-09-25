@@ -18,8 +18,10 @@ const refetch = vi.fn()
 const updateTacticusIntegration = vi.fn()
 let currentUserState: CurrentUserState
 
-vi.mock("@/entities/account", () => ({
+vi.mock("@/entities/account", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/account")>()),
   useCurrentUser: () => ({ refetch, state: currentUserState }),
+  useUpdateDisplayName: () => ({ isPending: false, mutateAsync: vi.fn() }),
   updateTacticusIntegration: (...args: unknown[]) =>
     updateTacticusIntegration(...args),
 }))
@@ -30,7 +32,8 @@ const unconfiguredState: CurrentUserState = {
   status: "success",
   user: {
     applicationUserId: "user-1",
-    displayName: "Test User",
+    displayName: null,
+    suggestedDisplayName: "Suggested Name",
     hasCompletedOnboarding: false,
     tacticusApiKeyMasked: null,
     tacticusUserIdMasked: null,
@@ -38,7 +41,10 @@ const unconfiguredState: CurrentUserState = {
   },
 }
 
-function renderScreen(step: AccountSetupStep = "choose") {
+function renderScreen(
+  step: AccountSetupStep = "choose",
+  suggestedDisplayName?: string
+) {
   const onStepChange = vi.fn()
   const renderImportStep = vi.fn(
     (onCompleted: () => void, onKeyImported: () => void) => (
@@ -65,6 +71,7 @@ function renderScreen(step: AccountSetupStep = "choose") {
       onStepChange={onStepChange}
       renderImportStep={renderImportStep}
       step={step}
+      suggestedDisplayName={suggestedDisplayName}
     />
   )
   return { ...result, onStepChange, renderImportStep }
@@ -123,11 +130,34 @@ describe("AccountSetupScreen", () => {
     expect(screen.queryByTestId("account-setup-back")).not.toBeInTheDocument()
   })
 
-  it("reports the user's position in the two-step flow", () => {
+  it("reports the user's position in the three-step flow", () => {
     renderScreen("import")
 
     expect(screen.getByTestId("account-setup-step-position")).toHaveTextContent(
-      '{"current":2,"total":2}'
+      '{"current":2,"total":3}'
+    )
+
+    renderScreen("name")
+
+    expect(
+      screen.getAllByTestId("account-setup-step-position")[1]
+    ).toHaveTextContent('{"current":3,"total":3}')
+  })
+
+  it("shows the name step with the account's private suggestion and no Back control", () => {
+    renderScreen("name")
+
+    expect(screen.getByTestId("account-setup-name-input")).toHaveValue(
+      "Suggested Name"
+    )
+    expect(screen.queryByTestId("account-setup-back")).not.toBeInTheDocument()
+  })
+
+  it("prefers a V1 import suggestion over the account's own", () => {
+    renderScreen("name", "Ragnar42")
+
+    expect(screen.getByTestId("account-setup-name-input")).toHaveValue(
+      "Ragnar42"
     )
   })
 

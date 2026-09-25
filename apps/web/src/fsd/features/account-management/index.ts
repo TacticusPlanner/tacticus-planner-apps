@@ -1,1 +1,4 @@
-export { ManageAccountDialog } from "./ui/manage-account-dialog"
+export {
+  ManageAccountDialog,
+  type ManageAccountTab,
+} from "./ui/manage-account-dialog"
