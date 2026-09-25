@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/card"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { useDailyRaids } from "@/features/daily-raids"
+import { isLocationVisible, useDailyRaids } from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidSchedule } from "./raid-schedule"
@@ -139,57 +139,98 @@ export function RaidsPlanPage() {
         className="grid gap-3 md:[grid-template-columns:repeat(auto-fit,minmax(20rem,24rem))] md:gap-4"
         data-testid="plan-days"
       >
-        {visibleDays.map((day) => (
-          <Card
-            key={day.day}
-            className="gap-3 py-3 md:gap-4 md:py-4"
-            data-testid={`plan-day-${day.day}`}
-            size="sm"
-          >
-            <CardHeader className="gap-2 px-3 md:px-4">
-              <div className="flex items-center justify-between gap-2">
-                <CardTitle>
-                  {day.day === 1
-                    ? t("raids.tabs.today")
-                    : t("plan.day", { day: day.day })}
-                </CardTitle>
-                <div aria-hidden="true" className="flex gap-2">
-                  <span className="flex items-center gap-1 text-xs tabular-nums">
-                    <EntityIcon alt="" className="size-4" src={energyIconUrl} />
-                    {day.energyTotal}/{raids.dailyEnergy}
-                  </span>
-                  <span className="flex items-center gap-1 text-xs tabular-nums">
-                    <Swords className="size-3.5 text-muted-foreground" />
-                    {day.raidsTotal}
-                  </span>
+        {visibleDays.map((day) => {
+          // daily-raids-plan spec: only Day 1 has real synced attempts, so only it splits
+          // exhausted nodes into a trailing "Raided" section (V1 Today layout); later days always
+          // get their original entries even when a battle ID repeats from Day 1.
+          const isExhausted = (entry: (typeof day.entries)[number]) =>
+            day.day === 1 &&
+            !isLocationVisible(entry, raids.attemptsLeftByBattle)
+          const raided = day.entries.filter(isExhausted)
+          const actionable = day.entries.filter((entry) => !isExhausted(entry))
+          const renderSchedule = (
+            entries: typeof day.entries,
+            testId: string
+          ) => (
+            <RaidSchedule
+              entries={entries}
+              attemptsUsedByBattle={day.attemptsUsedByBattle}
+              goalsById={raids.goalsById}
+              locationsByBattleId={raids.locationsByBattleId}
+              resourceLabels={raids.resourceLabels}
+              resourceProgress={
+                raids.resourceProgressByDay.get(day.day) ?? new Map()
+              }
+              resourceVisuals={raids.resourceVisuals}
+              compact={compact}
+              layout="column"
+              testId={testId}
+            />
+          )
+          return (
+            <Card
+              key={day.day}
+              className="gap-3 py-3 md:gap-4 md:py-4"
+              data-testid={`plan-day-${day.day}`}
+              size="sm"
+            >
+              <CardHeader className="gap-2 px-3 md:px-4">
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle>
+                    {day.day === 1
+                      ? t("raids.tabs.today")
+                      : t("plan.day", { day: day.day })}
+                  </CardTitle>
+                  <div aria-hidden="true" className="flex gap-2">
+                    <span className="flex items-center gap-1 text-xs tabular-nums">
+                      <EntityIcon
+                        alt=""
+                        className="size-4"
+                        src={energyIconUrl}
+                      />
+                      {day.energyTotal}/{raids.dailyEnergy}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs tabular-nums">
+                      <Swords className="size-3.5 text-muted-foreground" />
+                      {day.raidsTotal}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <p className="sr-only">
-                {t("plan.dayStats", {
-                  energy: day.energyTotal,
-                  available: raids.dailyEnergy,
-                  raids: day.raidsTotal,
-                })}
-              </p>
-            </CardHeader>
-            <CardContent className="px-3 md:px-4">
-              <RaidSchedule
-                entries={day.entries}
-                attemptsUsedByBattle={day.attemptsUsedByBattle}
-                goalsById={raids.goalsById}
-                locationsByBattleId={raids.locationsByBattleId}
-                resourceLabels={raids.resourceLabels}
-                resourceProgress={
-                  raids.resourceProgressByDay.get(day.day) ?? new Map()
-                }
-                resourceVisuals={raids.resourceVisuals}
-                compact={compact}
-                layout="column"
-                testId={`plan-day-${day.day}-raids`}
-              />
-            </CardContent>
-          </Card>
-        ))}
+                <p className="sr-only">
+                  {t("plan.dayStats", {
+                    energy: day.energyTotal,
+                    available: raids.dailyEnergy,
+                    raids: day.raidsTotal,
+                  })}
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4 px-3 md:px-4">
+                {actionable.length > 0 || raided.length === 0
+                  ? renderSchedule(actionable, `plan-day-${day.day}-raids`)
+                  : null}
+                {raided.length > 0 ? (
+                  <>
+                    <div
+                      className="flex items-center gap-3 text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                      data-testid="plan-day-1-raided-divider"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="h-px flex-1 bg-border"
+                      />
+                      <h3>{t("plan.raided")}</h3>
+                      <span
+                        aria-hidden="true"
+                        className="h-px flex-1 bg-border"
+                      />
+                    </div>
+                    {renderSchedule(raided, "plan-day-1-raided")}
+                  </>
+                ) : null}
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
     </div>
   )

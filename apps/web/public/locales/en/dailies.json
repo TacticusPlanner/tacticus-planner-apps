@@ -209,7 +209,8 @@
     "dayStats": "{{energy}} / {{available}} energy · {{raids}} raids",
     "showAll": "Show all days",
     "collapse": "Collapse raid details",
-    "expand": "Expand raid details"
+    "expand": "Expand raid details",
+    "raided": "Raided"
   },
   "tour": {
     "guildRaids": {

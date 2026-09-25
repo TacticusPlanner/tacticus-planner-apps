@@ -209,7 +209,8 @@
     "dayStats": "{{energy}} / {{available}} energía · {{raids}} incursiones",
     "showAll": "Mostrar todos los días",
     "collapse": "Contraer detalles",
-    "expand": "Expandir detalles"
+    "expand": "Expandir detalles",
+    "raided": "Completados"
   },
   "tour": {
     "guildRaids": {

@@ -218,8 +218,8 @@ function ContextRoute() {
   return <Outlet context={context} />
 }
 
-function renderPage(element: React.ReactNode) {
-  return render(
+function pageTree(element: React.ReactNode) {
+  return (
     <MemoryRouter initialEntries={["/"]}>
       <Routes>
         <Route path="/" element={<ContextRoute />}>
@@ -228,6 +228,47 @@ function renderPage(element: React.ReactNode) {
       </Routes>
     </MemoryRouter>
   )
+}
+
+function renderPage(element: React.ReactNode) {
+  return render(pageTree(element))
+}
+
+// Day 1: g1/U1 on B1 and g2/U1 on B2. Day 2 repeats B1 (g1/U2) so the same battle ID appears on
+// today and a future day, which real attempts-left data (keyed by battle, not day) must not touch.
+function raidedPlan(attemptsLeft: [typeof battle, number][]) {
+  const planEntry = (
+    goalId: string,
+    resourceId: string,
+    battleId: typeof battle
+  ) => ({
+    goalId,
+    resourceId: resourceId as never,
+    battleId,
+    raidsPerformed: 2,
+    itemsFarmed: 2,
+    energySpent: 12,
+    dailyAttempts: 10,
+  })
+  const base = ready()
+  const planDay = (day: number, entries: ReturnType<typeof planEntry>[]) => ({
+    day,
+    entries,
+    attemptsUsedByBattle: new Map([[battle, 2]]),
+    energyTotal: 12,
+    raidsTotal: 2,
+  })
+  return ready({
+    planDays: [
+      planDay(1, [
+        planEntry("g1", "U1", battle),
+        planEntry("g2", "U1", offPlanBattle),
+      ]),
+      planDay(2, [planEntry("g1", "U2", battle)]),
+      base.planDays[2]!,
+    ],
+    attemptsLeftByBattle: new Map(attemptsLeft),
+  })
 }
 
 describe("Dailies raid pages", () => {
@@ -521,6 +562,121 @@ describe("Dailies raid pages", () => {
     await user.click(screen.getByRole("button", { name: "plan.showAll" }))
     expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
     expect(screen.queryByText(/schedule.node/)).not.toBeInTheDocument()
+  })
+
+  describe("Raids Plan Day 1 Raided section", () => {
+    it("moves exhausted Day-1 nodes under a Raided divider after actionable ones, leaving later days alone", () => {
+      useDailyRaids.mockReturnValue(
+        raidedPlan([
+          [battle, 0],
+          [offPlanBattle, 3],
+        ])
+      )
+      renderPage(<RaidsPlanPage />)
+
+      const day1 = within(screen.getByTestId("plan-day-1"))
+      const main = within(day1.getByTestId("plan-day-1-raids"))
+      const raided = within(day1.getByTestId("plan-day-1-raided"))
+      expect(main.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
+      expect(main.queryByTestId("raid-card-g1-U1")).not.toBeInTheDocument()
+      expect(raided.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
+      expect(day1.getByTestId("plan-day-1-raided-divider")).toHaveTextContent(
+        "plan.raided"
+      )
+      expect(
+        day1
+          .getByTestId("plan-day-1-raids")
+          .compareDocumentPosition(day1.getByTestId("plan-day-1-raided"))
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+
+      // Same battle (B1) on Day 2 is not separated, and Day 2 gets no Raided section.
+      const day2 = within(screen.getByTestId("plan-day-2"))
+      expect(day2.getByTestId("raid-card-g1-U2")).toBeInTheDocument()
+      expect(screen.queryByTestId("plan-day-2-raided")).not.toBeInTheDocument()
+    })
+
+    it("keeps positive and unknown attempts actionable and shows no divider when nothing is raided", () => {
+      // B1 has attempts left; B2 has no data at all (unknown, not exhausted).
+      useDailyRaids.mockReturnValue(raidedPlan([[battle, 5]]))
+      renderPage(<RaidsPlanPage />)
+
+      const main = within(screen.getByTestId("plan-day-1-raids"))
+      expect(main.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
+      expect(main.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("plan-day-1-raided-divider")
+      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId("plan-day-1-raided")).not.toBeInTheDocument()
+    })
+
+    it("moves nodes between sections when refreshed attempt data changes", () => {
+      useDailyRaids.mockReturnValue(raidedPlan([[battle, 3]]))
+      const { rerender } = renderPage(<RaidsPlanPage />)
+      expect(
+        within(screen.getByTestId("plan-day-1-raids")).getByTestId(
+          "raid-card-g1-U1"
+        )
+      ).toBeInTheDocument()
+
+      useDailyRaids.mockReturnValue(raidedPlan([[battle, 0]]))
+      rerender(pageTree(<RaidsPlanPage />))
+      expect(
+        within(screen.getByTestId("plan-day-1-raided")).getByTestId(
+          "raid-card-g1-U1"
+        )
+      ).toBeInTheDocument()
+
+      useDailyRaids.mockReturnValue(raidedPlan([[battle, 2]]))
+      rerender(pageTree(<RaidsPlanPage />))
+      expect(screen.queryByTestId("plan-day-1-raided")).not.toBeInTheDocument()
+      expect(
+        within(screen.getByTestId("plan-day-1-raids")).getByTestId(
+          "raid-card-g1-U1"
+        )
+      ).toBeInTheDocument()
+    })
+
+    it("preserves plan totals, day summary and density across both sections", async () => {
+      const user = userEvent.setup()
+      useDailyRaids.mockReturnValue(
+        raidedPlan([
+          [battle, 0],
+          [offPlanBattle, 3],
+        ])
+      )
+      renderPage(<RaidsPlanPage />)
+
+      const day1 = within(screen.getByTestId("plan-day-1"))
+      expect(day1.getByText("12/288")).toBeInTheDocument()
+      expect(screen.getByText("200")).toBeInTheDocument()
+      expect(day1.getByText(/Indomitus I 1/)).toBeInTheDocument()
+      expect(day1.getByText(/Death Guard EX 3/)).toBeInTheDocument()
+
+      await user.click(screen.getByRole("button", { name: "plan.collapse" }))
+      expect(day1.queryByText(/Indomitus I 1/)).not.toBeInTheDocument()
+      expect(day1.queryByText(/Death Guard EX 3/)).not.toBeInTheDocument()
+      expect(day1.getByTestId("plan-day-1-raided")).toBeInTheDocument()
+    })
+
+    it("shows only the Raided section, without empty-plan wording, when every Day-1 node is raided", () => {
+      useDailyRaids.mockReturnValue(
+        raidedPlan([
+          [battle, 0],
+          [offPlanBattle, 0],
+        ])
+      )
+      renderPage(<RaidsPlanPage />)
+
+      const day1 = within(screen.getByTestId("plan-day-1"))
+      expect(day1.queryByTestId("plan-day-1-raids")).not.toBeInTheDocument()
+      const raided = within(day1.getByTestId("plan-day-1-raided"))
+      expect(raided.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
+      expect(raided.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
+      expect(day1.getByText("12/288")).toBeInTheDocument()
+      expect(
+        within(screen.getByTestId("plan-day-2")).getByTestId("raid-card-g1-U2")
+      ).toBeInTheDocument()
+    })
   })
 
   it("still renders Today when the plan completes during Day 1", () => {

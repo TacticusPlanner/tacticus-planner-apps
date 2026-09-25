@@ -209,7 +209,8 @@
     "dayStats": "{{energy}} / {{available}} énergie · {{raids}} raids",
     "showAll": "Afficher tous les jours",
     "collapse": "Réduire les détails",
-    "expand": "Développer les détails"
+    "expand": "Développer les détails",
+    "raided": "Attaqués"
   },
   "tour": {
     "guildRaids": {
