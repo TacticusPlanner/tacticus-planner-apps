@@ -126,6 +126,13 @@ rules:
     - For materially changed responsive pages, include automated tutorial
       coverage and manual tour verification at one viewport below 768px and
       one viewport at or above 768px.
+    - Put manual verification for pages with a desktop/mobile split in two
+      separate task groups — one "Desktop verification" (viewport at or above
+      768px) and one "Mobile verification" (viewport below 768px) — each
+      with its own checkboxes covering that form's layout, interactions and
+      tour steps. Do not interleave the two forms in one group or cover both
+      with a single task. Platform-independent verification (data, business
+      rules, empty states) may stay in a shared group.
     - Manual verification tasks must identify their required data states,
       such as a populated project and an empty project, so verification is
       not blocked at the end of implementation.
