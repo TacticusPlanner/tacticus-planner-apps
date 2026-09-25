@@ -42,6 +42,7 @@ function renderHeader(outlook: {
       isMobile={false}
       mobileReorderActive={false}
       onAddGoals={vi.fn()}
+      onCreateGoal={vi.fn()}
       onEdit={vi.fn()}
       onGroupChange={vi.fn()}
       onNavigateBack={vi.fn()}

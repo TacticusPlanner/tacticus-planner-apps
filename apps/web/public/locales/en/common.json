@@ -512,6 +512,8 @@
       "quicknavLabel": "Jump to a project",
       "quicknavAllProjects": "All projects",
       "addGoalsTrigger": "Add goals",
+      "createGoalTrigger": "Create goal",
+      "createNewGoal": "Create new goal",
       "addGoalsTitle": "Add goals to this project",
       "addGoalsDescription": "Search your goals and add them to {{project}}. Goals already in it stay where they are.",
       "addGoalsSearch": "Search goals",
@@ -975,6 +977,10 @@
           "title": "Narrow by project",
           "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about Current plan or what Dailies calculates."
         },
+        "createGoal": {
+          "title": "Create a goal",
+          "content": "Start a new goal from here — it opens the same creation sheet as the sidebar button."
+        },
         "planningSettings": {
           "title": "Planning settings",
           "content": "Set your daily energy budget here — every estimate on this page uses it."
@@ -1014,6 +1020,10 @@
         "addGoals": {
           "title": "Fill the project",
           "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step."
+        },
+        "createGoal": {
+          "title": "Create a new goal",
+          "content": "Start a brand-new goal already set to this project. Unlike Add goals, which puts existing goals in, this makes a new one — you can still change its project before saving."
         },
         "reprioritize": {
           "title": "Prioritize your goals",

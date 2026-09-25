@@ -195,9 +195,11 @@ vi.mock("react-router", async (importOriginal) => ({
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 
+const onLaunch = vi.fn()
+
 function renderPage() {
   return render(
-    <CreateGoalLauncherProvider onLaunch={vi.fn()}>
+    <CreateGoalLauncherProvider onLaunch={onLaunch}>
       <GoalsPage />
     </CreateGoalLauncherProvider>
   )
@@ -266,6 +268,7 @@ describe("GoalsPage", () => {
     updateProjectGoals.mockReset()
     updateProjectGoalsStatus.mockReset()
     mobile.value = false
+    onLaunch.mockReset()
   })
 
   it("does not render page-level creation actions", async () => {
@@ -280,6 +283,28 @@ describe("GoalsPage", () => {
       screen.queryByTestId("goals-page-empty-create-button")
     ).not.toBeInTheDocument()
   })
+
+  it.each([false, true])(
+    "renders a Create Goal entry point in the control row that opens creation with no prefill (mobile: %s)",
+    async (isMobile) => {
+      mobile.value = isMobile
+      listGoals.mockResolvedValue({ goals: [] })
+      const user = userEvent.setup()
+      renderPage()
+
+      await screen.findByTestId("goals-page-empty")
+      const button = screen.getByTestId("goals-create-goal")
+      expect(button).toHaveAccessibleName("goals.createButton")
+      expect(screen.getByTestId("goals-filter-group")).toContainElement(button)
+      if (isMobile)
+        expect(within(button).queryByText("goals.createButton")).toBeNull()
+      else expect(button).toHaveTextContent("goals.createButton")
+
+      await user.click(button)
+      expect(onLaunch).toHaveBeenCalledTimes(1)
+      expect(onLaunch).toHaveBeenCalledWith()
+    }
+  )
 
   it("renders a Planning Settings entry point that opens the dialog", async () => {
     listGoals.mockResolvedValue({ goals: [] })

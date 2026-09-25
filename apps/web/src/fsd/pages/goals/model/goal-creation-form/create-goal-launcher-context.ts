@@ -22,6 +22,8 @@ export type CreateGoalPrefill =
       goalType: "Unlock"
       projectIds: string[]
     }
+  // Project-only: preselect a project before an entity/goal type is chosen.
+  | { projectIds: string[] }
 
 export type LaunchCreateGoal = (prefill?: CreateGoalPrefill) => void
 

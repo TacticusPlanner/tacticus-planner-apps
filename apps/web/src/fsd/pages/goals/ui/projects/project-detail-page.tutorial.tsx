@@ -18,6 +18,7 @@ export function useProjectDetailTutorial() {
       key:
         | "header"
         | "addGoals"
+        | "createGoal"
         | "reprioritize"
         | "selector"
         | "goals"
@@ -30,6 +31,7 @@ export function useProjectDetailTutorial() {
     const common = [
       createStep('[data-testid="project-detail-header"]', "header"),
       createStep('[data-testid="project-add-goals"]', "addGoals"),
+      createStep('[data-testid="project-create-goal"]', "createGoal"),
     ]
     const trailing = [
       createStep('[data-testid="projects-goal-project-select"]', "selector"),
