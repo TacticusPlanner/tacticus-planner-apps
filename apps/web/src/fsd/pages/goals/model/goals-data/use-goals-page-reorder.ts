@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
 import { holdsGlobalPosition } from "@/entities/goal"
 import {
@@ -22,7 +22,7 @@ export function useGoalsPageReorder(
 ) {
   const orderActions = useGoalOrderActions()
   const {
-    active: reorderActive,
+    active,
     toggle: toggleReorder,
     exit: exitReorder,
     listRef,
@@ -35,6 +35,12 @@ export function useGoalsPageReorder(
         .map((row) => row.goalId),
     [allRows]
   )
+  const reorderAvailable = available && fullInFlightIds.length > 1
+  // Leaving the list that can be reordered (Archived tab, fewer than two in-flight goals) ends the
+  // mode, so the mobile Done bar is never left pinned over a list that has no handles.
+  useEffect(() => {
+    if (!reorderAvailable) exitReorder()
+  }, [reorderAvailable, exitReorder])
   const handleReorder = (visibleOrderedIds: string[], movedId: string) => {
     const displaced = displacedByDrop(
       fullInFlightIds,
@@ -52,8 +58,8 @@ export function useGoalsPageReorder(
   return {
     orderActions,
     handleReorder,
-    reorderAvailable: available && fullInFlightIds.length > 1,
-    reorderActive,
+    reorderAvailable,
+    reorderActive: active && reorderAvailable,
     toggleReorder,
     exitReorder,
     listRef,

@@ -44,7 +44,7 @@ const build = (
     mode: "xp",
     roster: [],
     selectedProjectId: "p1",
-    activeProjectContributions: [],
+    scopedGoalContributions: [],
     activeGoalContributions: [],
     teamSize: 3,
     lockedRandomUnitIds: [],
@@ -91,7 +91,7 @@ describe("buildArenaRecommendations", () => {
       const plan = categoryOf(
         build({
           roster,
-          activeProjectContributions: [goal("b", "gb", "p1")],
+          scopedGoalContributions: [goal("b", "gb", "p1")],
           activeGoalContributions: [goal("b", "gb", "p1"), goal("d", "gd")],
         }),
         "plan"
@@ -124,7 +124,7 @@ describe("buildArenaRecommendations", () => {
       const plan = categoryOf(
         build({
           roster,
-          activeProjectContributions: contributions,
+          scopedGoalContributions: contributions,
           activeGoalContributions: contributions,
         }),
         "plan"
@@ -149,7 +149,7 @@ describe("buildArenaRecommendations", () => {
         build({
           roster,
           teamSize: 5,
-          activeProjectContributions: contributions,
+          scopedGoalContributions: contributions,
           activeGoalContributions: contributions,
         }),
         "plan"
@@ -175,7 +175,7 @@ describe("buildArenaRecommendations", () => {
         build({
           roster,
           teamSize: 5,
-          activeProjectContributions: contributions,
+          scopedGoalContributions: contributions,
           activeGoalContributions: contributions,
         }),
         "plan"
@@ -254,7 +254,7 @@ describe("buildArenaRecommendations", () => {
         build({
           mode: "power",
           roster: roster.slice(0, 3),
-          activeProjectContributions: [goal("u0", "g0", "p1")],
+          scopedGoalContributions: [goal("u0", "g0", "p1")],
           activeGoalContributions: [goal("u0", "g0", "p1")],
         }),
         "plan"
@@ -274,7 +274,7 @@ describe("buildArenaRecommendations", () => {
         build({
           roster,
           selectedProjectId: undefined,
-          activeProjectContributions: [],
+          scopedGoalContributions: [],
           activeGoalContributions: [],
         }),
         "plan"
@@ -292,7 +292,7 @@ describe("buildArenaRecommendations", () => {
         build({
           roster,
           teamSize: 5,
-          activeProjectContributions: [
+          scopedGoalContributions: [
             goal("a", "g1", "p1"),
             goal("b", "g2", "p1"),
           ],
@@ -327,7 +327,7 @@ describe("buildArenaRecommendations", () => {
       const plan = categoryOf(
         build({
           roster,
-          activeProjectContributions: projectContributions,
+          scopedGoalContributions: projectContributions,
           activeGoalContributions: [
             ...projectContributions,
             goal("c", "g3"),
@@ -525,7 +525,7 @@ describe("buildArenaRecommendations", () => {
         build({
           roster,
           teamSize: 3,
-          activeProjectContributions: [goal("a", "g-a", "p1")],
+          scopedGoalContributions: [goal("a", "g-a", "p1")],
           activeGoalContributions: [goal("b", "g-b")],
           leadingPools: [
             {
@@ -552,7 +552,7 @@ describe("buildArenaRecommendations", () => {
       const args = {
         roster,
         teamSize: 3,
-        activeProjectContributions: [goal("a", "g-a", "p1")],
+        scopedGoalContributions: [goal("a", "g-a", "p1")],
       }
       const withOmitted = categoryOf(build(args), "plan")
       const withEmpty = categoryOf(build({ ...args, leadingPools: [] }), "plan")

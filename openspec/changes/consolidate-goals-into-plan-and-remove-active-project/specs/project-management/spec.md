@@ -48,7 +48,7 @@ The project switcher SHALL be integrated into the detail header/navigation area.
 
 ### Requirement: Project cards communicate planning value
 
-Every project card SHALL show color, name, description when present, and available goal/unit summary information. Where summary data is available a card SHALL also show reached, blocked, and estimate/progress information. Identity and actions SHALL remain usable while each summary independently loads or fails.
+Every project card SHALL show color, name, description when present, and available goal/unit summary information. Where summary data is available a card SHALL also show reached, blocked, and estimate/progress information; the richer dashboard metrics (reached, blocked, completion date) belong to the Default project card only, as they belonged to the Current plan project before it was removed, and are computed from the one global run. Identity and actions SHALL remain usable while each summary independently loads or fails.
 
 #### Scenario: Summary loads progressively
 
@@ -111,7 +111,7 @@ Every account SHALL have exactly one Default project. It SHALL be renamable and 
 #### Scenario: A goal's last membership is removed
 
 - **WHEN** a goal's last non-Default membership is removed
-- **THEN** the goal remains a member of the Default project
+- **THEN** the client has already added the Default project membership (the API itself rejects removing a goal's only remaining membership), so the goal remains a member of the Default project
 
 ### Requirement: Project detail links to Goals
 

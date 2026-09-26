@@ -553,8 +553,6 @@
       "reviewConflictingGoal": "Revisar objetivo en conflicto",
       "filterAll": "Todos los proyectos",
       "filterLabel": "Proyecto",
-      "otherProjects": "Otros proyectos",
-      "noOtherProjects": "Aún no hay otros proyectos disponibles.",
       "archivedProjects": "Proyectos archivados ({{count}})",
       "backToProjects": "Volver a proyectos",
       "unitGoalSummary": "{{units}} unidades · {{goals}} objetivos",
@@ -869,6 +867,8 @@
       "selectProject": "Selecciona un proyecto",
       "noGoalsTitle": "Sin objetivos activos",
       "noGoalsDescription": "Crea o reanuda un objetivo para ver sus recursos que faltan, los cuellos de botella de farmeo y los eventos de campaña relevantes, según lo planificado en tu orden de prioridad. Elige un proyecto arriba para acotar la vista.",
+      "loadError": "No se pudieron cargar los objetivos",
+      "retry": "Reintentar",
       "upgradesTitle": "Mejoras por rareza",
       "shardsTitle": "Fragmentos y orbes",
       "shards": "Fragmentos",
@@ -933,6 +933,8 @@
       "saving": "Guardando el orden…",
       "dragHint": "Arrastra una tarjeta para cambiar su prioridad.",
       "noFarmableDemand": "Tus objetivos activos no necesitan nada que se pueda farmear ahora mismo, así que no hay farmeo que planificar.",
+      "estimatesError": "No se pudieron cargar algunas estimaciones del plan, por lo que pueden faltar detalles de farmeo.",
+      "estimatesRetry": "Reintentar estimaciones",
       "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información."
     }
   },

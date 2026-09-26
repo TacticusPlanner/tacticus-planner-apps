@@ -29,6 +29,7 @@ import { groupRows } from "../../model/shared/row-groups"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoals } from "../../model/goals-data/use-goals"
+import { GoalsEstimatesError } from "./goals-estimates-error"
 import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
 import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
@@ -72,7 +73,8 @@ export function GoalsPage() {
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS)
   const { getEntityName } = useGoalCatalog()
   const launchCreateGoal = useCreateGoalLauncher()
-  const { result: insights, loading: insightsLoading } = usePlanInsights(null)
+  const insightsRun = usePlanInsights(null)
+  const insights = insightsRun.result
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
@@ -196,7 +198,8 @@ export function GoalsPage() {
     listRef,
   } = useGoalsPageReorder(nonArchivedRows, tab !== "archived")
   const noFarmableDemand =
-    !insightsLoading &&
+    !insightsRun.loading &&
+    !insightsRun.isError &&
     insights.estimates.size === 0 &&
     nonArchivedRows.some((row) => row.status === "Active")
 
@@ -324,6 +327,10 @@ export function GoalsPage() {
         >
           {t("goals.order.listNote")}
         </p>
+      ) : null}
+
+      {insightsRun.isError ? (
+        <GoalsEstimatesError onRetry={insightsRun.retry} />
       ) : null}
 
       {noFarmableDemand ? (

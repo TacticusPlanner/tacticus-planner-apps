@@ -10,6 +10,8 @@ const state = vi.hoisted(() => ({
   goals: [] as Record<string, unknown>[],
   archivedGoals: [] as Record<string, unknown>[],
   estimates: new Map<string, unknown>(),
+  insightsError: false,
+  retryInsights: vi.fn(),
   order: {} as Record<string, unknown>,
   moveGoal: vi.fn(),
   retryMove: vi.fn(),
@@ -65,6 +67,8 @@ vi.mock("../../model/goal-creation-form/create-goal-launcher-context", () => ({
 vi.mock("../../model/insights/use-plan-insights", () => ({
   usePlanInsights: () => ({
     loading: false,
+    isError: state.insightsError,
+    retry: state.retryInsights,
     result: {
       estimates: state.estimates,
       potentialProgressByGoalId: new Map(),
@@ -164,6 +168,7 @@ describe("GoalsPage reordering", () => {
     localStorage.clear()
     state.isMobile = false
     state.archivedGoals = []
+    state.insightsError = false
     state.estimates = new Map([["a", { status: "Estimated" }]])
     state.goals = fiveGoals()
     state.order = {
@@ -301,6 +306,40 @@ describe("GoalsPage reordering", () => {
     )
     fireEvent.click(screen.getByTestId("mobile-reorder-done"))
     expect(screen.queryByTestId("mobile-reorder-bar")).not.toBeInTheDocument()
+  })
+
+  it("drops the mobile reorder bar when the shown status can no longer be reordered", async () => {
+    state.isMobile = true
+    state.goals = fiveGoals()
+    state.archivedGoals = [goal("old", null, { status: "Archived" })]
+    const user = userEvent.setup()
+    render(<GoalsPage />)
+    await user.click(screen.getByTestId("goals-mobile-reorder-toggle"))
+    expect(screen.getByTestId("mobile-reorder-bar")).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
+    )
+
+    expect(screen.queryByTestId("mobile-reorder-bar")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goals-mobile-reorder-toggle")
+    ).not.toBeInTheDocument()
+  })
+
+  it("says the estimates failed to load, with a retry, instead of hiding the farming details silently", () => {
+    state.insightsError = true
+    state.estimates = new Map()
+    state.goals = [goal("a", 1)]
+    render(<GoalsPage />)
+
+    expect(screen.getByTestId("goals-estimates-error")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-no-farmable")).not.toBeInTheDocument()
+    fireEvent.click(
+      screen.getByRole("button", { name: "goals.order.estimatesRetry" })
+    )
+    expect(state.retryInsights).toHaveBeenCalledOnce()
   })
 
   it("shows the save in flight next to the list while the mobile mode is on", () => {

@@ -37,7 +37,7 @@ export type BuildOnslaughtRecommendationsInput = {
   /** Owned characters only, across every alliance — the builder filters to the track. */
   roster: readonly ArenaRosterCharacter[]
   selectedProjectId: string | undefined
-  activeProjectContributions: readonly ArenaGoalContribution[]
+  scopedGoalContributions: readonly ArenaGoalContribution[]
   activeGoalContributions: readonly ArenaGoalContribution[]
   /** Owned Characters targeted by an active Onslaught-farming Ascension goal (any alliance — the
    * builder intersects with the track roster). Highest-priority Plan Team pool. */

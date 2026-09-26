@@ -62,7 +62,7 @@ const build = (
     track: "Imperial",
     roster: [],
     selectedProjectId: "p1",
-    activeProjectContributions: [],
+    scopedGoalContributions: [],
     activeGoalContributions: [],
     teamSize: 5,
     lockedRandomUnitIds: [],
@@ -95,7 +95,7 @@ describe("buildSalvageRecommendations", () => {
         imp3: { alliance: "Imperial" },
         cha1: { alliance: "Chaos" },
       }),
-      activeProjectContributions: [goal("cha1", "g-cha", "p1")],
+      scopedGoalContributions: [goal("cha1", "g-cha", "p1")],
       activeGoalContributions: [goal("cha1", "g-cha", "p1")],
     })
 
@@ -122,7 +122,7 @@ describe("buildSalvageRecommendations", () => {
           xen2: { alliance: "Xenos" },
         }),
         // Only two owned Imperial goal contributors — the pool must widen to imp3..imp5, not Xenos.
-        activeProjectContributions: [goal("imp1", "g1", "p1")],
+        scopedGoalContributions: [goal("imp1", "g1", "p1")],
         activeGoalContributions: [goal("imp1", "g1", "p1"), goal("imp2", "g2")],
       })
     )
@@ -218,7 +218,7 @@ describe("buildSalvageRecommendations", () => {
           d: { alliance: "Xenos" },
           e: { alliance: "Xenos" },
         }),
-        activeProjectContributions: [goal("b", "gb", "p1")],
+        scopedGoalContributions: [goal("b", "gb", "p1")],
         activeGoalContributions: [goal("b", "gb", "p1"), goal("d", "gd")],
       })
     )

@@ -120,6 +120,17 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     goalDetailQueries.length === activeMembers.length &&
     goalDetailQueries.every((query) => query.isSuccess) &&
     onslaughtProgressQuery.isSuccess
+  // A failed detail/progress fetch would otherwise leave `loading` true forever.
+  const isError =
+    hasQuery &&
+    (goalDetailQueries.some((query) => query.isError) ||
+      onslaughtProgressQuery.isError)
+  const retry = () => {
+    goalDetailQueries.forEach((query) => {
+      if (query.isError) void query.refetch()
+    })
+    if (onslaughtProgressQuery.isError) void onslaughtProgressQuery.refetch()
+  }
   const catalogReady =
     !!charactersById &&
     !!mowsById &&
@@ -265,6 +276,9 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
         ? fetchState.result
         : EMPTY_PLAN_INSIGHTS_RESULT,
     loading:
-      globalPlan.loading || (hasQuery && (!serverDataReady || !isCurrent)),
+      globalPlan.loading ||
+      (hasQuery && !isError && (!serverDataReady || !isCurrent)),
+    isError,
+    retry,
   }
 }

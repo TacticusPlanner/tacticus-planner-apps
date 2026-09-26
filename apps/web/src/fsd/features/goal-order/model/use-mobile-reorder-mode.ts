@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -15,6 +15,7 @@ const prefersReducedMotion = () =>
 export function useMobileReorderMode() {
   const [active, setActive] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
+  const exit = useCallback(() => setActive(false), [])
 
   useEffect(() => {
     if (!active) return
@@ -30,7 +31,7 @@ export function useMobileReorderMode() {
   return {
     active,
     toggle: () => setActive((current) => !current),
-    exit: () => setActive(false),
+    exit,
     listRef,
   }
 }

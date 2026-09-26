@@ -24,7 +24,7 @@
 - [x] 4.1 Delete `isActivePlan` and `activateProject` from `entities/project` and every copy (`pages/goals/model/shared/types.ts`, `goal-detail-projects.ts`, `use-goal-projects.ts`), the `activate` action and "activated" toast in `use-project-actions.ts`, and the current-plan suffix in `project-marker.ts`; verify typecheck and knip.
 - [x] 4.2 Remove Make current, the Current plan badge, section and note from `project-row.tsx`, `project-detail-header.tsx`, `projects-list-page.tsx`, `goal-visuals.tsx`, `move-to-project-dialog.tsx`, `project-summary-row.tsx`, and the project selectors; keep the Default marker and archive restriction; verify the updated `project-row`, `project-list`, `manage-projects-sheet`, `project-detail-page`, `projects-list-page`, and `goal-projects-field` tests.
 - [x] 4.3 Replace `order-current-plan-first.ts` with Default-first ordering used by the Projects dashboard, `use-home-projects.ts`, and the quick-nav; verify with a unit test (Default first, then the existing order, archived excluded) and the widget/quick-nav tests.
-- [x] 4.4 Verify the Default project is the only special project: renamable, not archivable, no delete control, listed first, and still the fallback home when a goal's last membership is removed (`use-move-goal-from-project`); verify with component tests.
+- [x] 4.4 Verify the Default project is the only special project: renamable, not archivable, no delete control, listed first, and still the fallback home when a goal's last membership is removed: the client adds the Default membership first (`use-move-goal-from-project`) because the API rejects removing a goal's only remaining membership; verify with component tests.
 
 ## 5. Default scope becomes all goals
 
@@ -43,7 +43,7 @@
 - [x] 7.1 Delete the superseded `make-global-plan-the-goals-landing` change directory; verify `openspec list` no longer shows it and `openspec validate --strict` still passes for the remaining changes.
 - [x] 7.2 Reword `add-goals-overview-density-option` (Overview to Goals, check the compact layout against the drag-handle column), `create-project-from-all-projects-context` (remove "without changing Current plan", update quick-nav paths/labels), and `surface-goal-farming-guidance` ("Dailies-selected project" and "outside the currently selected plan"); verify each with `openspec validate --strict`.
 - [ ] 7.3 At archive time sweep remaining "Overview", "All Goals", "Global Plan", and "Current plan" wording in the main specs (per the “Goals page” terms requirement); verify with a grep that none remain, and reconcile `dailies-navigation`'s Raids-tab project selector requirement.
-- [x] 7.4 Update PostHog dashboards/filters that use route group `/goals` to `/plan` when this ships (note in the PR).
+- [ ] 7.4 Update PostHog dashboards/filters that use route group `/goals` to `/plan` when this ships (note in the PR).
 
 ## 8. Verification
 

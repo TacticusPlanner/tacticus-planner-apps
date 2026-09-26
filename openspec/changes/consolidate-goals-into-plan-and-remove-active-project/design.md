@@ -30,7 +30,7 @@ The Active project is one server-persisted pointer (`Profile.ActiveProjectId`, s
 
 ## Risks / Trade-offs
 
-- [Goals gets heavier: plan-insights fan-out on every visit] → Use the same query key/cache as Today so one run is shared; compute only when at least one in-flight goal is visible; verify in tests that no extra fetch is issued when Today is already cached.
+- [Goals gets heavier: plan-insights fan-out on every visit] → Use the same query key/cache as Today so one run is shared; the run fans out one detail query per Active goal and is not gated on visible rows; a failed fetch surfaces an error note with retry on the Goals page instead of staying loading. Verify in tests that no extra fetch is issued when Today is already cached.
 - [Toolbar crowding on mobile: Create Goal, Planning Settings, filters, Group, and a reorder toggle] → The Sort control's removal frees a slot; reorder toggle renders as an icon-only control with an accessible name, following `goals-navigation`'s icon-only rule; check at 320px.
 - [Users lose a way to browse "recently updated"] → Accepted; the Reached/Archived status filters and Group still cover browsing, and Goals defaulting to priority order is the point of the change.
 - [Reorder within a filtered/grouped list surprises users] → Reuse of the project-detail behaviour plus the existing caption pattern ("moving a goal moves it in your global plan"); conflicts use the reviewed-retry banner.

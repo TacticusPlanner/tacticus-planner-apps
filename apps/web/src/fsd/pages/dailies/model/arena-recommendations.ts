@@ -89,7 +89,7 @@ export function buildArenaRecommendations(
   const rosterIdSet = new Set(input.roster.map((character) => character.unitId))
 
   const projectContributionById = contributionByUnitId(
-    input.activeProjectContributions.filter((c) => rosterIdSet.has(c.unitId))
+    input.scopedGoalContributions.filter((c) => rosterIdSet.has(c.unitId))
   )
   const goalContributionById = contributionByUnitId(
     input.activeGoalContributions.filter((c) => rosterIdSet.has(c.unitId))

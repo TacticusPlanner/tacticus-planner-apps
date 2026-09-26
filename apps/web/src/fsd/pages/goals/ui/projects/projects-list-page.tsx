@@ -70,8 +70,9 @@ export function ProjectsListPage() {
   const defaultGoalIds = defaultGoals.map((entry) => entry.goal.goalId)
   const defaultAttainment = useGoalAttainment(defaultGoalIds)
   // The Default project's numbers are its goals' outcomes from the one global run, not a project-only plan.
+  // An empty scope (no Default project, or its goals not loaded yet) skips the run's fan-out.
   const { result: defaultInsights } = usePlanInsights(
-    defaultProject ? defaultGoalIds : null
+    defaultProject ? defaultGoalIds : []
   )
   const defaultMetrics = useGoalsOverviewMetrics(
     defaultGoalIds,

@@ -553,8 +553,6 @@
       "reviewConflictingGoal": "Voir l’objectif en conflit",
       "filterAll": "Tous les projets",
       "filterLabel": "Projet",
-      "otherProjects": "Autres projets",
-      "noOtherProjects": "Aucun autre projet disponible pour le moment.",
       "archivedProjects": "Projets archivés ({{count}})",
       "backToProjects": "Retour aux projets",
       "unitGoalSummary": "{{units}} unités · {{goals}} objectifs",
@@ -869,6 +867,8 @@
       "selectProject": "Sélectionnez un projet",
       "noGoalsTitle": "Aucun objectif actif",
       "noGoalsDescription": "Créez ou reprenez un objectif pour voir ses ressources manquantes, les goulots d'étranglement de farming et les événements de campagne pertinents, tels que planifiés dans votre ordre de priorité. Choisissez un projet ci-dessus pour restreindre la vue.",
+      "loadError": "Impossible de charger les objectifs",
+      "retry": "Réessayer",
       "upgradesTitle": "Améliorations par rareté",
       "shardsTitle": "Éclats et orbes",
       "shards": "Éclats",
@@ -933,6 +933,8 @@
       "saving": "Enregistrement de l'ordre…",
       "dragHint": "Faites glisser une carte pour modifier sa priorité.",
       "noFarmableDemand": "Vos objectifs actifs n'ont actuellement besoin de rien qui puisse être farmé, il n'y a donc aucun farming à planifier.",
+      "estimatesError": "Certaines estimations du plan n'ont pas pu être chargées ; des détails de farming peuvent manquer.",
+      "estimatesRetry": "Réessayer les estimations",
       "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses."
     }
   },

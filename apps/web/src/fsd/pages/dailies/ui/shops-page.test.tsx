@@ -147,6 +147,19 @@ describe("ShopsPage", () => {
     expect(screen.getByTestId("shops-no-project")).toBeInTheDocument()
   })
 
+  it("does not block the all-goals scope on a failed projects list", () => {
+    useShopRecommendations.mockReturnValue({ status: "no-goals" })
+    contextOverrides = { projectId: undefined, projectsError: true }
+    renderPage()
+    expect(screen.getByTestId("shops-no-goals")).toBeInTheDocument()
+  })
+
+  it("still shows the projects error when a project is selected", () => {
+    contextOverrides = { projectsError: true }
+    renderPage()
+    expect(screen.getByTestId("shops-error")).toBeInTheDocument()
+  })
+
   it("shows the page-local error state with a retry action", async () => {
     const retry = vi.fn()
     useShopRecommendations.mockReturnValue({ status: "error", retry })

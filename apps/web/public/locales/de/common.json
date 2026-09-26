@@ -553,8 +553,6 @@
       "reviewConflictingGoal": "Konfliktziel ansehen",
       "filterAll": "Alle Projekte",
       "filterLabel": "Projekt",
-      "otherProjects": "Weitere Projekte",
-      "noOtherProjects": "Noch keine weiteren verfügbaren Projekte.",
       "archivedProjects": "Archivierte Projekte ({{count}})",
       "backToProjects": "Zurück zu Projekten",
       "unitGoalSummary": "{{units}} Einheiten · {{goals}} Ziele",
@@ -869,6 +867,8 @@
       "selectProject": "Wähle ein Projekt",
       "noGoalsTitle": "Keine aktiven Ziele",
       "noGoalsDescription": "Lege ein Ziel an oder setze eines fort, um fehlende Ressourcen, Farming-Engpässe und relevante Kampagnen-Events zu sehen, wie sie in deiner Prioritätsreihenfolge geplant sind. Wähle oben ein Projekt, um die Ansicht einzugrenzen.",
+      "loadError": "Ziele konnten nicht geladen werden",
+      "retry": "Erneut versuchen",
       "upgradesTitle": "Upgrades nach Seltenheit",
       "shardsTitle": "Scherben & Orbs",
       "shards": "Scherben",
@@ -933,6 +933,8 @@
       "saving": "Reihenfolge wird gespeichert…",
       "dragHint": "Ziehe eine Karte, um ihre Priorität zu ändern.",
       "noFarmableDemand": "Deine aktiven Ziele benötigen derzeit nichts, das sich farmen lässt – es gibt also kein Farming zu planen.",
+      "estimatesError": "Einige Planschätzungen konnten nicht geladen werden, daher fehlen möglicherweise Farming-Details.",
+      "estimatesRetry": "Schätzungen erneut laden",
       "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken."
     }
   },

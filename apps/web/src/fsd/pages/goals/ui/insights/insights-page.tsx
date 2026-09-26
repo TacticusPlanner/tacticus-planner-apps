@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { useProjectGoals } from "../../model/projects/use-project-goals"
@@ -32,7 +33,12 @@ export function InsightsPage() {
   const globalPlan = useGlobalGoalPlan()
   const scopedGoals = projectId ? projectGoals.goals : globalPlan.entries
   // The estimate itself is always the one global run.
-  const { result, loading } = usePlanInsights(
+  const {
+    result,
+    loading,
+    isError: insightsError,
+    retry: retryInsights,
+  } = usePlanInsights(
     projectId ? projectGoals.goals.map((entry) => entry.goal.goalId) : null
   )
 
@@ -57,7 +63,24 @@ export function InsightsPage() {
         />
       </div>
 
-      {!projectId && !globalPlan.loading && globalPlan.active.length === 0 ? (
+      {globalPlan.isError || insightsError ? (
+        <Card data-testid="insights-page-error">
+          <CardHeader>
+            <CardTitle>{t("goals.insights.loadError")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={globalPlan.isError ? globalPlan.retry : retryInsights}
+              size="sm"
+              variant="outline"
+            >
+              {t("goals.insights.retry")}
+            </Button>
+          </CardContent>
+        </Card>
+      ) : !projectId &&
+        !globalPlan.loading &&
+        globalPlan.active.length === 0 ? (
         <Card data-testid="insights-page-empty">
           <CardHeader>
             <CardTitle>{t("goals.insights.noGoalsTitle")}</CardTitle>

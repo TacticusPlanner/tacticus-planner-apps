@@ -23,9 +23,11 @@ export function ShopsPage() {
   )
 
   let body: React.ReactNode
-  if (context.projectsError) {
+  // The projects list only matters once a project narrows the offers; the all-goals scope reads the
+  // global plan and needs none of it.
+  if (context.projectId && context.projectsError) {
     body = <ShopsState state="error" onRetry={context.retryProjects} />
-  } else if (context.projectsUnavailable) {
+  } else if (context.projectId && context.projectsUnavailable) {
     body = <ShopsState state="no-project" />
   } else if (recommendations.status === "no-goals") {
     body = <ShopsState state="no-goals" />

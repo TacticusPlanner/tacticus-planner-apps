@@ -553,8 +553,6 @@
       "reviewConflictingGoal": "Review conflicting goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
-      "otherProjects": "Other projects",
-      "noOtherProjects": "No other available projects yet.",
       "archivedProjects": "Archived projects ({{count}})",
       "backToProjects": "Back to projects",
       "unitGoalSummary": "{{units}} units · {{goals}} goals",
@@ -869,6 +867,8 @@
       "selectProject": "Select a project",
       "noGoalsTitle": "No Active goals",
       "noGoalsDescription": "Create or resume a goal to see its missing resources, farming bottlenecks, and relevant campaign events, as planned in your priority order. Pick a project above to narrow the view.",
+      "loadError": "Goals couldn't be loaded",
+      "retry": "Retry",
       "upgradesTitle": "Upgrades by rarity",
       "shardsTitle": "Shards & orbs",
       "shards": "Shards",
@@ -933,6 +933,8 @@
       "saving": "Saving order…",
       "dragHint": "Drag a card to change its priority.",
       "noFarmableDemand": "Your active goals don't need anything that can be farmed right now, so there is no farming to plan.",
+      "estimatesError": "Some plan estimates couldn't be loaded, so farming details may be missing.",
+      "estimatesRetry": "Retry estimates",
       "listNote": "Goals are in your priority order. Drag an active or paused goal to move it — the change applies in every project, Today, Raids Plan, and Insights."
     }
   },

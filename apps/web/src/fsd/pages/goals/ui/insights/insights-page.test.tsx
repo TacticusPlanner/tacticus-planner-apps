@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import userEvent from "@testing-library/user-event"
 import { render, screen, waitFor } from "@/test/render"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
@@ -192,6 +193,8 @@ const getGoal = vi.fn()
 
 // The global plan (every Active goal in global order) the insights run over.
 let planGoals: Array<Record<string, unknown>> = []
+let planIsError = false
+const retryPlan = vi.fn()
 
 vi.mock("@/entities/goal", () => ({
   getGoal: (...args: unknown[]) => getGoal(...args),
@@ -202,8 +205,8 @@ vi.mock("@/entities/goal", () => ({
     goals: planGoals,
     orderRevision: 1,
     loading: false,
-    isError: false,
-    retry: vi.fn(),
+    isError: planIsError,
+    retry: retryPlan,
   }),
   goalQueries: {
     detail: (goalId: string) => ({
@@ -258,6 +261,8 @@ describe("InsightsPage", () => {
   beforeEach(() => {
     projectList = []
     planGoals = []
+    planIsError = false
+    retryPlan.mockReset()
     listProjects.mockReset()
     listProjectGoals.mockReset()
     getGoal.mockReset()
@@ -274,6 +279,25 @@ describe("InsightsPage", () => {
     )
 
     expect(await screen.findByTestId("insights-page-empty")).toBeInTheDocument()
+  })
+
+  it("shows a load error with retry, not the no-Active-goals state, when the goal list fails", async () => {
+    listProjects.mockResolvedValue({ projects: [] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    planIsError = true
+
+    render(
+      <TooltipProvider>
+        <InsightsPage />
+      </TooltipProvider>
+    )
+
+    expect(await screen.findByTestId("insights-page-error")).toBeInTheDocument()
+    expect(screen.queryByTestId("insights-page-empty")).not.toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole("button", { name: "goals.insights.retry" })
+    )
+    expect(retryPlan).toHaveBeenCalledOnce()
   })
 
   it("defaults to every Active goal in the plan, with no project selected, and aggregates its Rank goal", async () => {
