@@ -6,7 +6,7 @@ const conflict = {
   issueCode: "projectGoalSlotOccupied",
   message: "Occupied",
   projectId: "project-1",
-  projectName: "Current plan",
+  projectName: "Default project",
   entityType: "Character",
   entityId: "ragnar",
   goalType: "Rank",

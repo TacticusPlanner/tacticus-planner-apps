@@ -395,7 +395,7 @@
       "menu": "Importar desde V1",
       "title": "Importar desde V1",
       "back": "Atrás",
-      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y los objetivos importados quedan en pausa a menos que tu proyecto predeterminado sea también tu proyecto activo.",
+      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y cada objetivo importado queda activo o en pausa según si estaba en tu planificación diaria de V1.",
       "username": "Usuario de V1",
       "password": "Contraseña de V1",
       "selectParts": "Elige qué importar",
@@ -555,8 +555,6 @@
       "reviewConflictingGoal": "Revisar objetivo en conflicto",
       "filterAll": "Todos los proyectos",
       "filterLabel": "Proyecto",
-      "currentPlan": "Plan actual",
-      "makeCurrent": "Marcar como actual",
       "otherProjects": "Otros proyectos",
       "noOtherProjects": "Aún no hay otros proyectos disponibles.",
       "archivedProjects": "Proyectos archivados ({{count}})",
@@ -567,7 +565,8 @@
       "completionSummary": "Listo el {{date}}",
       "summaryUnavailable": "Resumen no disponible — reintentar",
       "moreActions": "Más acciones del proyecto",
-      "archiveUnavailable": "No se puede archivar el plan actual ni el predeterminado",
+      "archiveUnavailable": "No se puede archivar el proyecto predeterminado",
+      "defaultBadge": "Predeterminado",
       "cancel": "Cancelar",
       "edit": "Editar",
       "editTitle": "Editar proyecto",
@@ -583,7 +582,6 @@
       "save": "Guardar proyecto",
       "create": "Crear proyecto",
       "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en el Plan global.",
-      "currentPlanNote": "El plan actual es el proyecto que se muestra primero y el filtro inicial en Información. Nunca cambia tu plan: la prioridad es un único orden para todos los objetivos (consulta el Plan global) y los objetivos se pausan y se reanudan de uno en uno.",
       "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
@@ -601,7 +599,6 @@
       "goalRelocated": "{{goal}} movido a {{project}}.",
       "goalsAddedToProject_one": "{{count}} objetivo añadido a {{project}}.",
       "goalsAddedToProject_other": "{{count}} objetivos añadidos a {{project}}.",
-      "activated": "Plan actual actualizado.",
       "actionError": "Algo salió mal. Inténtalo de nuevo.",
       "projectCreated": "Proyecto creado.",
       "projectGoalsPaused_one": "{{count}} objetivo pausado.",
@@ -881,8 +878,8 @@
     },
     "insights": {
       "selectProject": "Selecciona un proyecto",
-      "noProjectTitle": "Ningún proyecto seleccionado",
-      "noProjectDescription": "Selecciona un proyecto arriba para ver los recursos que faltan, los cuellos de botella de farmeo y los eventos de campaña relevantes de sus objetivos, según lo planificado en tu Plan global.",
+      "noGoalsTitle": "Sin objetivos activos",
+      "noGoalsDescription": "Crea o reanuda un objetivo para ver sus recursos que faltan, los cuellos de botella de farmeo y los eventos de campaña relevantes, según lo planificado en tu Plan global. Elige un proyecto arriba para acotar la vista.",
       "upgradesTitle": "Mejoras por rareza",
       "shardsTitle": "Fragmentos y orbes",
       "shards": "Fragmentos",
@@ -1057,7 +1054,7 @@
         },
         "projectFilter": {
           "title": "Acota por proyecto",
-          "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia el plan actual ni lo que calculan las tareas diarias."
+          "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia tu plan ni lo que calculan las tareas diarias."
         },
         "createGoal": {
           "title": "Crear un objetivo",
@@ -1085,7 +1082,7 @@
       "steps": {
         "list": {
           "title": "Qué es un proyecto",
-          "content": "Un proyecto es una selección de tus objetivos con nombre: ten varios para agrupar cosas distintas. El plan actual es el proyecto que se muestra primero y el filtro inicial en Información; no pausa ni reanuda nada ni cambia tus prioridades."
+          "content": "Un proyecto es una selección de tus objetivos con nombre: ten varios para agrupar cosas distintas. El proyecto predeterminado aparece primero; un proyecto no pausa ni reanuda nada ni cambia tus prioridades."
         },
         "newProject": {
           "title": "Crea un proyecto",
@@ -1097,7 +1094,7 @@
       "steps": {
         "header": {
           "title": "Una selección de tus objetivos",
-          "content": "Este proyecto contiene una selección de los objetivos de tu cuenta; el resumen indica cuántos de ellos están aquí. Su estado de plan actual, las métricas de progreso, el selector de proyecto y las acciones están en esta cabecera."
+          "content": "Este proyecto contiene una selección de los objetivos de tu cuenta; el resumen indica cuántos de ellos están aquí. Las métricas de progreso, el selector de proyecto y las acciones están en esta cabecera."
         },
         "addGoals": {
           "title": "Llena el proyecto",

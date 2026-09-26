@@ -9,7 +9,6 @@ const project = (projectId: string): ProjectSummary => ({
   description: null,
   color: null,
   status: "Active",
-  isActivePlan: false,
   isDefault: false,
   revision: 1,
   createdAt: "2026-01-01T00:00:00Z",

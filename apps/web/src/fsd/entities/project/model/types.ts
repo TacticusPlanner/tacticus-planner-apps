@@ -4,7 +4,6 @@ export type ProjectSummary = {
   description: string | null
   color: string | null
   status: "Active" | "Paused" | "Archived"
-  isActivePlan: boolean
   isDefault: boolean
   revision: number
   createdAt: string

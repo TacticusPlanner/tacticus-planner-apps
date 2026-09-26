@@ -12,7 +12,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import {
-  orderCurrentPlanFirst,
+  orderDefaultFirst,
   useHomeProjects,
   ProjectSummaryRow,
 } from "@/features/project-management"
@@ -163,7 +163,7 @@ function DesktopQuicknav({
   }
   if (failed) return null
 
-  const ordered = orderCurrentPlanFirst(projects)
+  const ordered = orderDefaultFirst(projects)
   if (ordered.length === 0) return null
 
   return (

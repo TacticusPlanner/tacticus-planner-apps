@@ -37,7 +37,6 @@ describe("goal row mappings", () => {
         projectId: "proj-a",
         name: "Project A",
         color: null,
-        isActivePlan: true,
       },
     ]
 

@@ -1,4 +1,4 @@
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -19,7 +19,6 @@ const defaultProject = {
   description: null,
   color: null,
   status: "Active" as const,
-  isActivePlan: true,
   isDefault: true,
   revision: 1,
   createdAt: "2026-01-01T00:00:00Z",
@@ -30,7 +29,6 @@ const otherProject = {
   ...defaultProject,
   projectId: "other",
   name: "Other plan",
-  isActivePlan: false,
   isDefault: false,
 }
 
@@ -38,14 +36,12 @@ const archivedProject = {
   ...defaultProject,
   projectId: "archived",
   name: "Archived plan",
-  isActivePlan: false,
   isDefault: false,
   status: "Archived" as const,
 }
 
 function actionsHarness(overrides: Partial<Record<string, unknown>> = {}) {
   return {
-    activate: vi.fn(),
     create: vi.fn(),
     pending: false,
     reorder: vi.fn(),
@@ -62,7 +58,7 @@ describe("ProjectRow", () => {
     await user.click(screen.getByTestId(`project-row-actions-${projectId}`))
   }
 
-  it("renders the project's name and color dot, with no status badge for a non-active, non-archived project", () => {
+  it("renders the project's name and color dot, with no status badge for a custom, non-archived project", () => {
     render(
       <ul>
         <ProjectRow
@@ -75,7 +71,7 @@ describe("ProjectRow", () => {
     expect(screen.getByText("Other plan")).toBeInTheDocument()
   })
 
-  it("renders lightweight and Current-plan metrics when a summary is ready", () => {
+  it("renders lightweight and extended metrics when a summary is ready", () => {
     render(
       <ul>
         <ProjectRow
@@ -204,28 +200,14 @@ describe("ProjectRow", () => {
     expect(onEdit).toHaveBeenCalledWith(otherProject)
   })
 
-  it("sets a non-active project active via the inline Set active icon", async () => {
-    const user = userEvent.setup()
-    const activate = vi.fn()
+  it("offers no Make current control and marks only the Default project with a Default badge", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness({ activate }) as never}
+          actions={actionsHarness() as never}
           onEdit={vi.fn()}
           project={otherProject}
         />
-      </ul>
-    )
-
-    await user.click(
-      screen.getByTestId(`project-row-set-active-${otherProject.projectId}`)
-    )
-    expect(activate).toHaveBeenCalledWith(otherProject.projectId)
-  })
-
-  it("does not offer Set active for the already-active project", () => {
-    render(
-      <ul>
         <ProjectRow
           actions={actionsHarness() as never}
           onEdit={vi.fn()}
@@ -233,12 +215,17 @@ describe("ProjectRow", () => {
         />
       </ul>
     )
+
+    expect(screen.queryByText("goals.project.makeCurrent")).toBeNull()
+    expect(screen.getAllByText("goals.project.defaultBadge")).toHaveLength(1)
     expect(
-      screen.queryByTestId(`project-row-set-active-${defaultProject.projectId}`)
-    ).not.toBeInTheDocument()
+      within(
+        screen.getByTestId(`project-row-${defaultProject.projectId}`)
+      ).getByText("goals.project.defaultBadge")
+    ).toBeInTheDocument()
   })
 
-  it("archives a project that is neither default nor the active plan", async () => {
+  it("archives a custom project", async () => {
     const user = userEvent.setup()
     const save = vi.fn()
     render(

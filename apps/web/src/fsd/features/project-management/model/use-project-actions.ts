@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
-  activateProject,
   createProject,
   updateProject,
   updateProjectGoalsStatus,
@@ -65,17 +64,6 @@ export function useProjectActions(_onChanged?: () => void) {
     }
   }
 
-  const activate = async (projectId: string) => {
-    if (!isAuthenticated) {
-      return
-    }
-
-    const ok = await run(() => activateProject(projectId))
-    if (ok) {
-      toast.success(t("goals.toasts.activated"))
-    }
-  }
-
   /** GP-22: bulk-pause or bulk-resume every applicable goal in a project (`UpdateProjectGoalsStatusEndpoint`
    *  already excludes `Completed`/`Archived` goals server-side — this is not a per-goal prerequisite
    *  cascade, unlike `useGoalActions`'s row-level pause/resume). */
@@ -130,5 +118,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { activate, setGoalsStatus, create, save, pending }
+  return { setGoalsStatus, create, save, pending }
 }

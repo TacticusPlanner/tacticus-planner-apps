@@ -5,7 +5,6 @@ export type GoalProject = {
   projectId: string
   name: string
   color: string | null
-  isActivePlan: boolean
 }
 
 /**

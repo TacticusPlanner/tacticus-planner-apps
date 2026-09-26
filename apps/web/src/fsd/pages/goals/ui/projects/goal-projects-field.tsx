@@ -106,11 +106,6 @@ export function GoalProjectsField({
               <Badge className="gap-1.5 py-1" variant="outline">
                 <ProjectColorDot color={project.color} />
                 <span>{project.name}</span>
-                {project.isActivePlan ? (
-                  <span className="text-primary">
-                    {t("goals.project.currentPlan")}
-                  </span>
-                ) : null}
                 {project.isDefault ? (
                   <span>{t("goals.create.projectDefaultMarker")}</span>
                 ) : null}
@@ -181,11 +176,6 @@ export function GoalProjectsField({
                 >
                   <ProjectColorDot color={project.color} />
                   <span className="flex-1">{project.name}</span>
-                  {project.isActivePlan ? (
-                    <span className="text-xs text-primary">
-                      {t("goals.project.currentPlan")}
-                    </span>
-                  ) : null}
                   {project.isDefault ? <Check className="size-4" /> : null}
                 </CommandItem>
               ))}

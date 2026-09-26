@@ -13,7 +13,7 @@ import { useProjects } from "@/entities/project"
  * been visited) - every other, already-visited child route is unaffected by this component.
  */
 export function DefaultGoalsLanding() {
-  const { activeProjectId, defaultProjectId, loading } = useProjects()
+  const { defaultProjectId, loading } = useProjects()
 
   if (loading) {
     return (
@@ -26,7 +26,7 @@ export function DefaultGoalsLanding() {
     )
   }
 
-  const targetProjectId = activeProjectId ?? defaultProjectId
+  const targetProjectId = defaultProjectId
   return (
     <Navigate
       replace

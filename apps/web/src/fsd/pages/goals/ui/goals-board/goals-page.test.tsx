@@ -154,7 +154,6 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 }))
 
 const listProjectGoals = vi.fn()
-const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
 const updateProjectGoalsStatus = vi.fn()
 
@@ -162,7 +161,6 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
   listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
-  activateProject: (...args: unknown[]) => activateProject(...args),
   updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
   updateProjectGoalsStatus: (...args: unknown[]) =>
     updateProjectGoalsStatus(...args),
@@ -235,7 +233,6 @@ const otherProject = {
   description: null,
   color: null,
   status: "Active",
-  isActivePlan: false,
   isDefault: false,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
@@ -248,7 +245,6 @@ const overviewProject = {
   description: null,
   color: null,
   status: "Active",
-  isActivePlan: true,
   isDefault: true,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
@@ -264,7 +260,6 @@ describe("GoalsPage", () => {
     listProjects.mockResolvedValue({ projects: [] })
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     getPlayerCharacters.mockReset().mockReturnValue([])
-    activateProject.mockReset()
     updateProjectGoals.mockReset()
     updateProjectGoalsStatus.mockReset()
     mobile.value = false
@@ -586,7 +581,9 @@ describe("GoalsPage", () => {
     renderPage()
 
     expect(
-      await screen.findByText("My Goals · goals.project.currentPlan")
+      within(await screen.findByTestId("goal-project-memberships")).getByText(
+        "My Goals"
+      )
     ).toBeInTheDocument()
     expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
   })
@@ -707,21 +704,23 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
     expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
-    // Narrowing a list is not selecting a project: nothing is written, and Current plan is untouched.
-    expect(activateProject).not.toHaveBeenCalled()
+    // Narrowing a list is not selecting a project: nothing is written.
     expect(updateProjectGoals).not.toHaveBeenCalled()
     expect(updateProjectGoalsStatus).not.toHaveBeenCalled()
     expect(updateGoalStatus).not.toHaveBeenCalled()
 
-    // Clearing the filter brings the other project's goal back with its Current-plan marker intact,
-    // so filtering changed nothing about which project is Current plan.
+    // Clearing the filter brings the other project's goal back with its membership intact.
     await user.click(screen.getByTestId("goals-project-filter"))
     await user.click(
       await screen.findByRole("option", { name: "goals.project.filterAll" })
     )
-    expect(
-      await screen.findByText("My Goals · goals.project.currentPlan")
-    ).toBeInTheDocument()
+    await vi.waitFor(() =>
+      expect(
+        screen
+          .getAllByTestId("goal-project-memberships")
+          .some((node) => within(node).queryByText("My Goals"))
+      ).toBe(true)
+    )
   })
 
   it("narrows the Archived tab by project too, rather than emptying it", async () => {

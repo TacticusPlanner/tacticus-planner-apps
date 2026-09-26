@@ -86,11 +86,11 @@
         },
         "projects": {
           "title": "Vos projets",
-          "content": "Accédez directement au plan de n'importe quel projet — le plan actuel s'affiche toujours en premier."
+          "content": "Accédez directement au plan de n'importe quel projet — le projet par défaut s'affiche toujours en premier."
         },
         "raids": {
           "title": "Raids quotidiens",
-          "content": "Voyez ce qu'il reste à raider aujourd'hui pour votre projet actif, un emplacement par ligne."
+          "content": "Voyez ce qu'il reste à raider aujourd'hui pour vos objectifs actifs, un emplacement par ligne."
         },
         "navigation": {
           "title": "Parcourir d'autres semaines",

@@ -12,6 +12,10 @@ const useDailyRaids = vi.fn<() => { status: "no-farmable" }>(() => ({
   status: "no-farmable",
 }))
 
+const useShopRecommendations = vi.fn<
+  (projectId: string | undefined) => { status: "ready"; sections: never[] }
+>(() => ({ status: "ready", sections: [] }))
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
@@ -27,7 +31,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
           name: "Active project",
           color: null,
           status: "Active",
-          isActivePlan: true,
           isDefault: false,
         },
         {
@@ -35,11 +38,9 @@ vi.mock("@/entities/project", async (importOriginal) => {
           name: "Other project",
           color: null,
           status: "Active",
-          isActivePlan: false,
           isDefault: true,
         },
       ],
-      activeProjectId: "p1",
       defaultProjectId: "p2",
       fetchState: { status: "success" },
       loading: false,
@@ -54,7 +55,8 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   }
 })
 vi.mock("../model/use-shop-recommendations", () => ({
-  useShopRecommendations: () => ({ status: "ready", sections: [] }),
+  useShopRecommendations: (projectId: string | undefined) =>
+    useShopRecommendations(projectId),
 }))
 vi.mock("../model/use-arena-recommendations", () => ({
   useArenaRecommendations: () => ({ status: "no-characters" }),
@@ -132,6 +134,15 @@ describe("Dailies navigation", () => {
     renderDailies("/dailies/shops")
 
     expect(await findRouteContent("shops-page")).toBeInTheDocument()
+  })
+
+  it("starts with no project selected, so Shops covers every Active goal", async () => {
+    renderDailies("/dailies/shops")
+
+    expect(await findRouteContent("shops-page")).toBeInTheDocument()
+    expect(useShopRecommendations).toHaveBeenCalledWith(undefined)
+    expect(useShopRecommendations).not.toHaveBeenCalledWith("p1")
+    expect(useShopRecommendations).not.toHaveBeenCalledWith("p2")
   })
 
   it("routes /dailies/arena to the Arena recommendations page, not the placeholder", async () => {

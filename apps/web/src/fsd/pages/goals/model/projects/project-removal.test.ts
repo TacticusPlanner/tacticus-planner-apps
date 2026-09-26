@@ -11,7 +11,6 @@ function project(overrides: Partial<ProjectSummary> = {}): ProjectSummary {
     description: null,
     color: null,
     status: "Active",
-    isActivePlan: false,
     isDefault: true,
     revision: 0,
     createdAt: "2026-01-01T00:00:00Z",

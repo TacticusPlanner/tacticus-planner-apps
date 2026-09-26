@@ -30,7 +30,6 @@ const outletContext = {
       name: "Active project",
       color: null,
       status: "Active",
-      isActivePlan: true,
       isDefault: false,
     },
   ],

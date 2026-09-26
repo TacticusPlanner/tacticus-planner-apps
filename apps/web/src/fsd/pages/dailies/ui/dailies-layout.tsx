@@ -22,22 +22,16 @@ export type DailiesOutletContext = {
  * level unaffected by that move.
  */
 export function DailiesLayout() {
-  const {
-    projects,
-    activeProjectId,
-    defaultProjectId,
-    fetchState,
-    loading,
-    retry,
-  } = useProjects()
-  const [selectedProjectId, setSelectedProjectId] = useState<string>()
-  const projectId = selectedProjectId ?? activeProjectId ?? defaultProjectId
+  const { projects, fetchState, loading, retry } = useProjects()
+  // No selection means every Active goal in the global plan; a project is an optional narrowing filter,
+  // kept for the session only.
+  const [projectId, setProjectId] = useState<string>()
 
   const context = useMemo<DailiesOutletContext>(
     () => ({
       projects,
       projectId,
-      setProjectId: setSelectedProjectId,
+      setProjectId,
       projectsUnavailable:
         !loading && fetchState.status === "success" && projects.length === 0,
       projectsError: !loading && fetchState.status === "error",

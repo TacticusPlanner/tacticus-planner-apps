@@ -15,7 +15,6 @@ const defaultProject = {
   description: null,
   color: null,
   status: "Active" as const,
-  isActivePlan: true,
   isDefault: true,
   revision: 1,
   createdAt: "2026-01-01T00:00:00Z",
@@ -26,7 +25,6 @@ const otherProject = {
   ...defaultProject,
   projectId: "other",
   name: "Other plan",
-  isActivePlan: false,
   isDefault: false,
 }
 
@@ -34,14 +32,12 @@ const archivedProject = {
   ...defaultProject,
   projectId: "archived",
   name: "Archived plan",
-  isActivePlan: false,
   isDefault: false,
   status: "Archived" as const,
 }
 
 function actionsHarness(overrides: Partial<Record<string, unknown>> = {}) {
   return {
-    activate: vi.fn(),
     create: vi.fn(),
     pending: false,
     reorder: vi.fn(),

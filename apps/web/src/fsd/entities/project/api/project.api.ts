@@ -28,13 +28,6 @@ export function updateProject(
   })
 }
 
-export function activateProject(projectId: string) {
-  return apiPost<ProjectSummary>(
-    `/api/v1/me/projects/${projectId}/activate`,
-    {}
-  )
-}
-
 export function updateProjectGoals(
   projectId: string,
   goals: ProjectGoalEntry[]

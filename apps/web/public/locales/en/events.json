@@ -86,11 +86,11 @@
         },
         "projects": {
           "title": "Your Projects",
-          "content": "Jump into any project's plan — Current plan always shows first."
+          "content": "Jump into any project's plan — the Default project always shows first."
         },
         "raids": {
           "title": "Daily Raids",
-          "content": "See what's left to raid today for your Active project, one location per row."
+          "content": "See what's left to raid today for your Active goals, one location per row."
         },
         "navigation": {
           "title": "Browse other weeks",

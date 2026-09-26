@@ -27,8 +27,8 @@ export function ShopsPage() {
     body = <ShopsState state="error" onRetry={context.retryProjects} />
   } else if (context.projectsUnavailable) {
     body = <ShopsState state="no-project" />
-  } else if (recommendations.status === "no-project") {
-    body = <ShopsState state="no-project" />
+  } else if (recommendations.status === "no-goals") {
+    body = <ShopsState state="no-goals" />
   } else if (recommendations.status === "error") {
     body = <ShopsState state="error" onRetry={recommendations.retry} />
   } else if (recommendations.status === "loading") {
@@ -51,15 +51,16 @@ export function ShopsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="space-y-1">
           <h1 className="text-lg font-semibold">{t("title")}</h1>
-          {/* The project only picks whose goals these offers are recommended for; the account-wide raid
-              plan (Today, Raids Plan) is not affected by it. */}
-          {project ? (
-            <p className="text-sm text-muted-foreground">
-              {t("subtitle", { project: project.name })}
-            </p>
-          ) : null}
+          {/* Offers are recommended for every Active goal unless a project narrows them; the
+              account-wide raid plan (Today, Raids Plan) is not affected by it. */}
+          <p className="text-sm text-muted-foreground">
+            {project
+              ? t("subtitle", { project: project.name })
+              : t("subtitleAll")}
+          </p>
         </div>
         <ProjectSelect
+          allowAll
           compact={false}
           onProjectIdChange={context.setProjectId}
           placeholder={t("dailies:project.placeholder")}

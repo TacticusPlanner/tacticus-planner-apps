@@ -183,14 +183,12 @@ const withGlobalPriority = (response: {
     },
   })),
 })
-const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
 const moveProjectGoal = vi.fn()
 const updateProjectGoalsStatus = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
-  isActivePlan: boolean
   isDefault: boolean
   [key: string]: unknown
 }
@@ -201,7 +199,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
     ...actual,
     listProjects: (...args: unknown[]) => listProjects(...args),
     listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
-    activateProject: (...args: unknown[]) => activateProject(...args),
     updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
     moveProjectGoal: (...args: unknown[]) => moveProjectGoal(...args),
     updateProjectGoalsStatus: (...args: unknown[]) =>
@@ -231,7 +228,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
       const projects =
         (query.data as { projects: MockProjectSummary[] } | undefined)
           ?.projects ?? []
-      const activeProject = projects.find((project) => project.isActivePlan)
       const defaultProject = projects.find((project) => project.isDefault)
       return {
         fetchState: query.isError
@@ -240,7 +236,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
             ? { status: "success" as const, projects }
             : { status: "idle" as const },
         projects,
-        activeProjectId: activeProject?.projectId,
         defaultProjectId: defaultProject?.projectId,
         loading: isAuthenticated && query.isPending,
         retry: () => {
@@ -280,7 +275,6 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
     description: null,
     color: null,
     status: "Active",
-    isActivePlan: true,
     isDefault: true,
     revision: 0,
     createdAt: "2026-01-01T00:00:00Z",
@@ -307,7 +301,6 @@ describe("ProjectDetailPage", () => {
   beforeEach(() => {
     listProjects.mockReset()
     listProjectGoals.mockReset()
-    activateProject.mockReset()
     updateProjectGoals.mockReset()
     moveProjectGoal.mockReset()
     updateProjectGoalsStatus.mockReset()
@@ -337,7 +330,9 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     expect(await screen.findByText("Project A")).toBeInTheDocument()
-    expect(screen.getByText("goals.project.currentPlan")).toBeInTheDocument()
+    expect(screen.getByText("goals.project.defaultBadge")).toBeInTheDocument()
+    expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
+    expect(screen.queryByText("goals.project.makeCurrent")).toBeNull()
     expect(
       screen.getByRole("button", { name: "goals.project.moreActions" })
     ).toBeInTheDocument()
@@ -457,7 +452,6 @@ describe("ProjectDetailPage", () => {
           projectId: "proj-archived",
           name: "Old Plan",
           status: "Archived",
-          isActivePlan: false,
           isDefault: false,
         }),
       ],
@@ -492,7 +486,6 @@ describe("ProjectDetailPage", () => {
     const projectB = project({
       projectId: "proj-b",
       name: "Project B",
-      isActivePlan: false,
       isDefault: false,
     })
     listProjects.mockResolvedValue({ projects: [projectA, projectB] })
@@ -519,7 +512,6 @@ describe("ProjectDetailPage", () => {
   it("acting on the current project's own row does not change the route", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({ goals: [] })
-    activateProject.mockResolvedValue({})
     const user = userEvent.setup()
     renderPage("proj-a")
 
@@ -741,7 +733,6 @@ describe("ProjectDetailPage", () => {
         project({
           projectId: "proj-b",
           name: "Project B",
-          isActivePlan: false,
           isDefault: false,
         })
       const setup = async () => {
@@ -827,7 +818,6 @@ describe("ProjectDetailPage", () => {
         project({
           projectId: "proj-b",
           name: "Project B",
-          isActivePlan: false,
           isDefault: false,
         }),
       ],
@@ -1102,7 +1092,6 @@ describe("ProjectDetailPage", () => {
         project({
           projectId: "proj-b",
           name: "Project B",
-          isActivePlan: false,
           isDefault: false,
         }),
       ],

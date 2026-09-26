@@ -158,7 +158,6 @@ let projectList: Array<{
   description: null
   color: null
   status: "Active"
-  isActivePlan: boolean
   isDefault: boolean
   revision: number
   createdAt: string
@@ -169,8 +168,6 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   useProjects: () => ({
     projects: projectList,
-    activeProjectId: projectList.find((project) => project.isActivePlan)
-      ?.projectId,
     defaultProjectId: projectList.find((project) => project.isDefault)
       ?.projectId,
     fetchState: { status: "success", projects: projectList },
@@ -266,7 +263,7 @@ describe("InsightsPage", () => {
     getGoal.mockReset()
   })
 
-  it("shows the no-project empty state when the profile has no projects", async () => {
+  it("shows the no-Active-goals empty state when the plan has nothing to report", async () => {
     listProjects.mockResolvedValue({ projects: [] })
     listProjectGoals.mockResolvedValue({ goals: [] })
 
@@ -279,7 +276,7 @@ describe("InsightsPage", () => {
     expect(await screen.findByTestId("insights-page-empty")).toBeInTheDocument()
   })
 
-  it("aggregates the active plan's Rank goal into the upgrades-by-rarity total", async () => {
+  it("defaults to every Active goal in the plan, with no project selected, and aggregates its Rank goal", async () => {
     projectList = [
       {
         projectId: "proj-1",
@@ -287,7 +284,6 @@ describe("InsightsPage", () => {
         description: null,
         color: null,
         status: "Active",
-        isActivePlan: true,
         isDefault: true,
         revision: 0,
         createdAt: "2026-01-01T00:00:00Z",

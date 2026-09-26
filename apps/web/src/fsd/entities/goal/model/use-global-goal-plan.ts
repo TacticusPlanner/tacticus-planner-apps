@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -19,16 +20,24 @@ export function useGlobalGoalPlan() {
     enabled: isAuthenticated,
   })
 
-  const goals: GoalSummary[] = query.data?.goals ?? []
-  const inFlight = inFlightInGlobalOrder(goals)
-  const active = inFlight.filter((goal) => goal.status === "Active")
+  const { goals, inFlight, active, entries } = useMemo(() => {
+    const goals: GoalSummary[] = query.data?.goals ?? []
+    const inFlight = inFlightInGlobalOrder(goals)
+    const active = inFlight.filter((goal) => goal.status === "Active")
+    return {
+      goals,
+      inFlight,
+      active,
+      entries: active.map((goal) => ({ goal })),
+    }
+  }, [query.data])
 
   return {
     /** Active and Paused goals in global order (what Global Plan shows). */
     inFlight,
     /** Active goals only, in global order (what planning consumes). */
     active,
-    entries: active.map((goal) => ({ goal })),
+    entries,
     /** Every non-archived goal, including Completed ones. */
     goals,
     orderRevision: query.data?.orderRevision ?? 0,

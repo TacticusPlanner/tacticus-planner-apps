@@ -43,7 +43,6 @@ function renderPage() {
         description: null,
         color: null,
         status: "Active",
-        isActivePlan: true,
         isDefault: false,
         revision: 1,
         createdAt: "",
@@ -127,6 +126,19 @@ describe("ShopsPage", () => {
     useShopRecommendations.mockReturnValue({ status: "loading" })
     renderPage()
     expect(screen.getByTestId("shops-project-select")).toBeInTheDocument()
+  })
+
+  it("shows the no-Active-goals state when there is nothing to shop for", () => {
+    useShopRecommendations.mockReturnValue({ status: "no-goals" })
+    renderPage()
+    expect(screen.getByTestId("shops-no-goals")).toBeInTheDocument()
+  })
+
+  it("describes the offers as for every Active goal until a project is chosen", () => {
+    useShopRecommendations.mockReturnValue({ status: "loading" })
+    contextOverrides = { projectId: undefined }
+    renderPage()
+    expect(screen.getByText("subtitleAll")).toBeInTheDocument()
   })
 
   it("shows the no-project state when no project is available", () => {

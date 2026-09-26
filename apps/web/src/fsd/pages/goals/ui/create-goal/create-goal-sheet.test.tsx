@@ -652,7 +652,6 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
           status: "Active",
         },
@@ -675,7 +674,6 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
         },
       ],
@@ -1668,14 +1666,12 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
           status: "Active",
         },
         {
           projectId: "proj-2",
           name: "Event Prep",
-          isActivePlan: false,
           isDefault: false,
           status: "Active",
         },

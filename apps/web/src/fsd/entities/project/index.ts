@@ -1,5 +1,4 @@
 export {
-  activateProject,
   createProject,
   updateProject,
   listProjectGoals,

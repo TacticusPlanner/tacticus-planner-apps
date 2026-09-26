@@ -301,8 +301,8 @@ describe("GoalDetailSheet", () => {
     updateGoalStatus.mockReset()
     listProjects.mockReset().mockResolvedValue({
       projects: [
-        { projectId: "project-1", name: "My Goals", isActivePlan: true },
-        { projectId: "project-2", name: "Event Prep", isActivePlan: false },
+        { projectId: "project-1", name: "My Goals" },
+        { projectId: "project-2", name: "Event Prep" },
         { projectId: "project-home", name: "Home", isDefault: true },
       ],
     })

@@ -99,7 +99,6 @@ const project = {
   description: null,
   color: null,
   status: "Active" as const,
-  isActivePlan: false,
   isDefault: false,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",

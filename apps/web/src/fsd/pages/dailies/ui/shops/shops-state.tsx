@@ -3,7 +3,8 @@ import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-export type ShopsStateKind = "loading" | "error" | "no-project" | "nothing"
+export type ShopsStateKind =
+  "loading" | "error" | "no-project" | "no-goals" | "nothing"
 
 /**
  * The Shops page's own local states (loading / page-local read failure / no project / no matching
@@ -34,7 +35,9 @@ export function ShopsState({
       ? t("state.error")
       : state === "no-project"
         ? t("state.noProject")
-        : t("state.nothingToBuy")
+        : state === "no-goals"
+          ? t("state.noGoals")
+          : t("state.nothingToBuy")
 
   return (
     <Card data-testid={`shops-${state}`}>

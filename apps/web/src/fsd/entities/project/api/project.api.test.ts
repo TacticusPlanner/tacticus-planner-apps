@@ -13,7 +13,6 @@ vi.mock("@/shared/api", () => ({
 }))
 
 import {
-  activateProject,
   createProject,
   listProjectGoals,
   listProjects,
@@ -49,7 +48,6 @@ describe("project API", () => {
 
     createProject(create)
     updateProject("project-1", update)
-    activateProject("project-1")
     updateProjectGoals("project-1", goals)
     updateProjectGoalsStatus("project-1", "Paused")
     const move = {
@@ -67,18 +65,13 @@ describe("project API", () => {
       "/api/v1/me/projects/project-1",
       { body: update }
     )
-    expect(api.post).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/projects/project-1/activate",
-      {}
-    )
     expect(api.put).toHaveBeenNthCalledWith(
       2,
       "/api/v1/me/projects/project-1/goals",
       { body: { goals } }
     )
     expect(api.post).toHaveBeenNthCalledWith(
-      3,
+      2,
       "/api/v1/me/projects/project-1/goals/status",
       { body: { status: "Paused" } }
     )

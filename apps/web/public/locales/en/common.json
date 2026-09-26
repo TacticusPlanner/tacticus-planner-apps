@@ -395,7 +395,7 @@
       "menu": "Import from V1",
       "title": "Import from V1",
       "back": "Back",
-      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and imported goals are paused unless your default project is also your active project.",
+      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and each imported goal is Active or Paused according to whether it was in your V1 daily planning.",
       "username": "V1 username",
       "password": "V1 password",
       "selectParts": "Choose what to import",
@@ -555,8 +555,6 @@
       "reviewConflictingGoal": "Review conflicting goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
-      "currentPlan": "Current plan",
-      "makeCurrent": "Make current",
       "otherProjects": "Other projects",
       "noOtherProjects": "No other available projects yet.",
       "archivedProjects": "Archived projects ({{count}})",
@@ -567,7 +565,8 @@
       "completionSummary": "Done by {{date}}",
       "summaryUnavailable": "Summary unavailable — retry",
       "moreActions": "More project actions",
-      "archiveUnavailable": "Archive unavailable for Current plan or Default",
+      "archiveUnavailable": "The Default project can't be archived",
+      "defaultBadge": "Default",
       "cancel": "Cancel",
       "edit": "Edit",
       "editTitle": "Edit project",
@@ -583,7 +582,6 @@
       "save": "Save project",
       "create": "Create project",
       "dashboardIntro": "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, kept in the Global Plan.",
-      "currentPlanNote": "Current plan is the project shown first and the starting filter in Insights. It never changes your plan: priority is one order for all goals (see the Global Plan), and goals are paused and resumed one at a time.",
       "unitGoalSummaryOfAccount": "{{units}} units · {{goals}} of your {{accountGoals}} goals",
       "emptyProjectTitle": "This project has no goals yet",
       "emptyProjectDescription": "Use Add goals to put existing goals into it, or Create goal to make a new one.",
@@ -601,7 +599,6 @@
       "goalRelocated": "{{goal}} moved to {{project}}.",
       "goalsAddedToProject_one": "{{count}} goal added to {{project}}.",
       "goalsAddedToProject_other": "{{count}} goals added to {{project}}.",
-      "activated": "Current plan updated.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
       "projectGoalsPaused_one": "{{count}} goal paused.",
@@ -881,8 +878,8 @@
     },
     "insights": {
       "selectProject": "Select a project",
-      "noProjectTitle": "No project selected",
-      "noProjectDescription": "Select a project above to see the missing resources, farming bottlenecks, and relevant campaign events for its goals, as planned in your Global Plan.",
+      "noGoalsTitle": "No Active goals",
+      "noGoalsDescription": "Create or resume a goal to see its missing resources, farming bottlenecks, and relevant campaign events, as planned in your Global Plan. Pick a project above to narrow the view.",
       "upgradesTitle": "Upgrades by rarity",
       "shardsTitle": "Shards & orbs",
       "shards": "Shards",
@@ -1057,7 +1054,7 @@
         },
         "projectFilter": {
           "title": "Narrow by project",
-          "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about Current plan or what Dailies calculates."
+          "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about your plan or what Dailies calculates."
         },
         "createGoal": {
           "title": "Create a goal",
@@ -1085,7 +1082,7 @@
       "steps": {
         "list": {
           "title": "What a project is",
-          "content": "A project is a named selection of your goals — keep several to group different things. Current plan is the project shown first and the starting filter in Insights; it does not pause or resume anything or change your priorities."
+          "content": "A project is a named selection of your goals — keep several to group different things. The Default project is listed first; a project does not pause or resume anything or change your priorities."
         },
         "newProject": {
           "title": "Create a project",
@@ -1097,7 +1094,7 @@
       "steps": {
         "header": {
           "title": "A selection of your goals",
-          "content": "This project holds a selection of your account's goals — the summary shows how many of them are here. Its Current plan state, progress metrics, project switcher, and actions all live in this header."
+          "content": "This project holds a selection of your account's goals — the summary shows how many of them are here. Its progress metrics, project switcher, and actions all live in this header."
         },
         "addGoals": {
           "title": "Fill the project",

@@ -19,7 +19,6 @@ const project = (
   description: null,
   color: null,
   status: "Active",
-  isActivePlan: false,
   isDefault: false,
   revision: 1,
   createdAt: "2026-01-01T00:00:00Z",
@@ -196,7 +195,7 @@ describe("GoalProjectsField", () => {
     portalContainer.remove()
   })
 
-  it("shows Current plan and Default markers with a project-specific conflict", () => {
+  it("shows the Default marker (and no Current plan marker) with a project-specific conflict", () => {
     render(
       <GoalProjectsField
         conflicts={[
@@ -207,13 +206,13 @@ describe("GoalProjectsField", () => {
           },
         ]}
         onSelectionChange={vi.fn()}
-        projects={[project("current", { isActivePlan: true, isDefault: true })]}
+        projects={[project("current", { isDefault: true })]}
         projectsValid={false}
         selectedProjectIds={["current"]}
       />
     )
 
-    expect(screen.getByText("goals.project.currentPlan")).toBeInTheDocument()
+    expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
     expect(
       screen.getByText("goals.create.projectDefaultMarker")
     ).toBeInTheDocument()

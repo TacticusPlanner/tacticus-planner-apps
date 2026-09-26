@@ -395,7 +395,7 @@
       "menu": "Aus V1 importieren",
       "title": "Aus V1 importieren",
       "back": "Zurück",
-      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und importierte Ziele werden pausiert, sofern dein Standardprojekt nicht auch dein aktives Projekt ist.",
+      "description": "Deine V1-Zugangsdaten werden nur einmal verwendet und niemals gespeichert. Ein V1-Ziel, das einem bestehenden V2-Ziel entspricht, wird übersprungen, nicht ersetzt, und jedes importierte Ziel ist aktiv oder pausiert, je nachdem, ob es in deiner V1-Tagesplanung war.",
       "username": "V1-Benutzername",
       "password": "V1-Passwort",
       "selectParts": "Wähle aus, was importiert werden soll",
@@ -555,8 +555,6 @@
       "reviewConflictingGoal": "Konfliktziel ansehen",
       "filterAll": "Alle Projekte",
       "filterLabel": "Projekt",
-      "currentPlan": "Aktueller Plan",
-      "makeCurrent": "Als aktuell festlegen",
       "otherProjects": "Weitere Projekte",
       "noOtherProjects": "Noch keine weiteren verfügbaren Projekte.",
       "archivedProjects": "Archivierte Projekte ({{count}})",
@@ -567,7 +565,8 @@
       "completionSummary": "Fertig bis {{date}}",
       "summaryUnavailable": "Zusammenfassung nicht verfügbar — erneut versuchen",
       "moreActions": "Weitere Projektaktionen",
-      "archiveUnavailable": "Der aktuelle oder Standardplan kann nicht archiviert werden",
+      "archiveUnavailable": "Das Standardprojekt kann nicht archiviert werden",
+      "defaultBadge": "Standard",
       "cancel": "Abbrechen",
       "edit": "Bearbeiten",
       "editTitle": "Projekt bearbeiten",
@@ -583,7 +582,6 @@
       "save": "Projekt speichern",
       "create": "Projekt erstellen",
       "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege mehrere an, um Verschiedenes zu bündeln – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und durchsuche jedes für sich. Die Priorität ist eine einzige Reihenfolge für alle Ziele und liegt im Globalen Plan.",
-      "currentPlanNote": "Der aktuelle Plan ist das Projekt, das zuerst angezeigt wird, und der Startfilter in den Einblicken. Er ändert nie deinen Plan: Die Priorität ist eine einzige Reihenfolge für alle Ziele (siehe Globaler Plan), und Ziele pausierst und setzt du einzeln fort.",
       "unitGoalSummaryOfAccount": "{{units}} Einheiten · {{goals}} von deinen {{accountGoals}} Zielen",
       "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
       "emptyProjectDescription": "Nutze „Ziele hinzufügen“, um vorhandene Ziele aufzunehmen, oder „Ziel erstellen“ für ein neues.",
@@ -601,7 +599,6 @@
       "goalRelocated": "{{goal}} nach {{project}} verschoben.",
       "goalsAddedToProject_one": "{{count}} Ziel zu {{project}} hinzugefügt.",
       "goalsAddedToProject_other": "{{count}} Ziele zu {{project}} hinzugefügt.",
-      "activated": "Aktueller Plan aktualisiert.",
       "actionError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
       "projectCreated": "Projekt erstellt.",
       "projectGoalsPaused_one": "{{count}} Ziel pausiert.",
@@ -881,8 +878,8 @@
     },
     "insights": {
       "selectProject": "Wähle ein Projekt",
-      "noProjectTitle": "Kein Projekt ausgewählt",
-      "noProjectDescription": "Wähle oben ein Projekt aus, um die fehlenden Ressourcen, Farming-Engpässe und relevanten Kampagnen-Events für seine Ziele zu sehen, wie sie in deinem Globalen Plan geplant sind.",
+      "noGoalsTitle": "Keine aktiven Ziele",
+      "noGoalsDescription": "Lege ein Ziel an oder setze eines fort, um fehlende Ressourcen, Farming-Engpässe und relevante Kampagnen-Events zu sehen, wie sie in deinem Globalen Plan geplant sind. Wähle oben ein Projekt, um die Ansicht einzugrenzen.",
       "upgradesTitle": "Upgrades nach Seltenheit",
       "shardsTitle": "Scherben & Orbs",
       "shards": "Scherben",
@@ -1057,7 +1054,7 @@
         },
         "projectFilter": {
           "title": "Nach Projekt eingrenzen",
-          "content": "Zeige nur die Ziele eines Projekts. Das grenzt die angezeigte Liste ein und ändert nichts am aktuellen Plan oder an den Berechnungen der Dailies."
+          "content": "Zeige nur die Ziele eines Projekts. Das grenzt die angezeigte Liste ein und ändert nichts an deinem Plan oder an den Berechnungen der Dailies."
         },
         "createGoal": {
           "title": "Ziel erstellen",
@@ -1085,7 +1082,7 @@
       "steps": {
         "list": {
           "title": "Was ein Projekt ist",
-          "content": "Ein Projekt ist eine benannte Auswahl deiner Ziele – lege mehrere an, um Verschiedenes zu bündeln. Der aktuelle Plan ist das Projekt, das zuerst angezeigt wird, und der Startfilter in den Einblicken; er pausiert oder startet nichts und ändert deine Prioritäten nicht."
+          "content": "Ein Projekt ist eine benannte Auswahl deiner Ziele – lege mehrere an, um Verschiedenes zu bündeln. Das Standardprojekt steht zuerst; ein Projekt pausiert oder startet nichts und ändert deine Prioritäten nicht."
         },
         "newProject": {
           "title": "Ein Projekt erstellen",
@@ -1097,7 +1094,7 @@
       "steps": {
         "header": {
           "title": "Eine Auswahl deiner Ziele",
-          "content": "Dieses Projekt enthält eine Auswahl der Ziele deines Kontos – die Übersicht zeigt, wie viele davon hier liegen. Status als aktueller Plan, Fortschrittswerte, Projektwechsler und Aktionen findest du in dieser Kopfzeile."
+          "content": "Dieses Projekt enthält eine Auswahl der Ziele deines Kontos – die Übersicht zeigt, wie viele davon hier liegen. Fortschrittswerte, Projektwechsler und Aktionen findest du in dieser Kopfzeile."
         },
         "addGoals": {
           "title": "Das Projekt füllen",

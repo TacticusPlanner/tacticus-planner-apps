@@ -44,13 +44,27 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerMow: async () => undefined,
   getPlayerMows: async () => [],
 }))
-vi.mock("@/entities/goal", () => ({ goalQueries: { detail: () => ({}) } }))
+const state = vi.hoisted(() => ({
+  active: [{ goal: { goalId: "goal-1" } }] as unknown[],
+  globalPlan: {
+    loading: false,
+    isError: false,
+    entries: [{ goal: { goalId: "goal-1" } }],
+    retry: () => undefined,
+  },
+}))
+vi.mock("@/entities/goal", () => ({
+  goalQueries: { detail: () => ({}) },
+  useGlobalGoalPlan: () => state.globalPlan,
+}))
 vi.mock("@/entities/project", () => ({ projectQueries: { goals: () => ({}) } }))
 vi.mock("@/features/rank-lookup", () => ({
   mapCharacterStorageToDomain: (record: unknown) => record,
   mapUpgradeStorageToDomain: (record: unknown) => record,
 }))
-vi.mock("@/features/daily-raids", () => ({ activeProjectMembers: () => [] }))
+vi.mock("@/features/daily-raids", () => ({
+  activeProjectMembers: () => state.active,
+}))
 vi.mock("./shop-needs", () => ({ aggregateShopNeeds: () => ({}) }))
 vi.mock("./shop-recommendations", () => ({
   buildShopRecommendations: () => [
@@ -109,5 +123,30 @@ describe("useShopRecommendations equipment names", () => {
       "Balanced Combat Knife",
       "I Crit Z999",
     ])
+  })
+
+  it("covers every Active goal in the global plan when no project is selected", async () => {
+    const { result } = renderHook(() => useShopRecommendations(undefined), {
+      wrapper: ({ children }) => (
+        <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+      ),
+    })
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+  })
+
+  it("reports no Active goals instead of an empty shop list when the scope has none", async () => {
+    state.active = []
+    try {
+      const { result } = renderHook(() => useShopRecommendations(undefined), {
+        wrapper: ({ children }) => (
+          <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+        ),
+      })
+
+      await waitFor(() => expect(result.current.status).toBe("no-goals"))
+    } finally {
+      state.active = [{ goal: { goalId: "goal-1" } }]
+    }
   })
 })

@@ -15,8 +15,8 @@ import { ArenaMobile } from "./mobile/arena-mobile"
 import { useArenaTutorial } from "./arena-page.tutorial"
 
 /**
- * Dailies → Arena: recommends Arena team compositions from the player's selected project, active
- * goals, and roster so daily Arena battles also advance the current plan. Page-level controls for
+ * Dailies → Arena: recommends Arena team compositions from the player's Active goals (optionally
+ * narrowed to a project) and roster so daily Arena battles also advance the global plan. Page-level controls for
  * mode (XP / Power), the driving project, team size (3–5), and a preferred trait / damage type.
  */
 export function ArenaPage() {
@@ -39,6 +39,7 @@ export function ArenaPage() {
         <div className="flex flex-wrap items-end gap-4">
           <TeamModeToggle mode={view.mode} onModeChange={view.setMode} />
           <ProjectSelect
+            allowAll
             projects={context.projects}
             projectId={context.projectId}
             onProjectIdChange={context.setProjectId}

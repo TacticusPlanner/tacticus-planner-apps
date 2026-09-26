@@ -40,7 +40,6 @@ function project(overrides: Record<string, unknown> = {}) {
     color: null,
     description: null,
     status: "Active",
-    isActivePlan: false,
     isDefault: false,
     revision: 1,
     createdAt: "2026-01-01T00:00:00Z",
@@ -97,7 +96,7 @@ describe("OverviewProjectQuicknav", () => {
     it("renders project rows and navigates to a project's detail route on activation", () => {
       useHomeProjectsMock.mockReturnValue({
         status: "ready",
-        projects: [project({ projectId: "p1", isActivePlan: true })],
+        projects: [project({ projectId: "p1", isDefault: true })],
         summaries: new Map([["p1", { status: "success", units: 2, goals: 3 }]]),
         remainingCount: 0,
       })
@@ -146,13 +145,13 @@ describe("OverviewProjectQuicknav", () => {
       ).not.toBeInTheDocument()
     })
 
-    it("lists every non-archived project, Current plan first, excluding archived", () => {
+    it("lists every non-archived project, Default first, excluding archived", () => {
       render(
         <OverviewProjectQuicknav
           {...defaultProps}
           projects={[
             project({ projectId: "p2" }),
-            project({ projectId: "p1", isActivePlan: true }),
+            project({ projectId: "p1", isDefault: true }),
             project({ projectId: "p3", status: "Archived" }),
           ]}
         />

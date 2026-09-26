@@ -17,7 +17,6 @@ export function goalDetailProjects(
             projectId: project.projectId,
             name: project.name,
             color: project.color,
-            isActivePlan: project.isActivePlan,
           },
         ]
       : []

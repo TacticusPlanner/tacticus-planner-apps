@@ -42,21 +42,8 @@ function renderGoalsRoutes() {
 }
 
 describe("goals routes", () => {
-  it("redirects /goals to Current plan's project detail route", () => {
+  it("redirects /goals to the Default project's detail route", () => {
     useProjectsMock.mockReturnValue({
-      activeProjectId: "p1",
-      defaultProjectId: "p2",
-      loading: false,
-    })
-
-    renderGoalsRoutes()
-
-    expect(screen.getByTestId("projects/:projectId-child")).toBeInTheDocument()
-  })
-
-  it("falls back to the Default project when there is no Current plan", () => {
-    useProjectsMock.mockReturnValue({
-      activeProjectId: undefined,
       defaultProjectId: "p2",
       loading: false,
     })
@@ -68,7 +55,6 @@ describe("goals routes", () => {
 
   it("falls back to All Goals when the account has no projects", () => {
     useProjectsMock.mockReturnValue({
-      activeProjectId: undefined,
       defaultProjectId: undefined,
       loading: false,
     })
@@ -80,7 +66,6 @@ describe("goals routes", () => {
 
   it("shows a loading state instead of redirecting while the project list is still loading", () => {
     useProjectsMock.mockReturnValue({
-      activeProjectId: undefined,
       defaultProjectId: undefined,
       loading: true,
     })

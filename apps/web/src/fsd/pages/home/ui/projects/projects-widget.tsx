@@ -15,7 +15,7 @@ import {
   ProjectSummaryRow,
 } from "@/features/project-management"
 
-/** Home dashboard's Your Projects widget: Current plan first. Mobile caps the list to 3 project
+/** Home dashboard's Your Projects widget: Default project first. Mobile caps the list to 3 project
  * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
  * room to show every non-archived project uncapped. */
 export function ProjectsWidget() {

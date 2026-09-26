@@ -7,12 +7,10 @@ import { toast } from "sonner"
 
 import { useProjectActions } from "./use-project-actions"
 
-const { activateProjectMock, updateProjectGoalsStatusMock, createProjectMock } =
-  vi.hoisted(() => ({
-    activateProjectMock: vi.fn(),
-    updateProjectGoalsStatusMock: vi.fn(),
-    createProjectMock: vi.fn(),
-  }))
+const { updateProjectGoalsStatusMock, createProjectMock } = vi.hoisted(() => ({
+  updateProjectGoalsStatusMock: vi.fn(),
+  createProjectMock: vi.fn(),
+}))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("react-i18next", () => ({
@@ -29,7 +27,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/entities/project")>()
   return {
     ...actual,
-    activateProject: activateProjectMock,
     updateProjectGoalsStatus: updateProjectGoalsStatusMock,
     createProject: createProjectMock,
   }
@@ -50,7 +47,6 @@ function createWrapper() {
 
 describe("useProjectActions", () => {
   beforeEach(() => {
-    activateProjectMock.mockReset()
     updateProjectGoalsStatusMock.mockReset()
     createProjectMock.mockReset()
     vi.mocked(toast.success).mockReset()
@@ -60,7 +56,7 @@ describe("useProjectActions", () => {
   it("stays pending until every overlapping action has settled", async () => {
     let resolveFirst!: () => void
     let resolveSecond!: () => void
-    activateProjectMock
+    updateProjectGoalsStatusMock
       .mockReturnValueOnce(
         new Promise<void>((resolve) => {
           resolveFirst = resolve
@@ -78,8 +74,8 @@ describe("useProjectActions", () => {
     let second!: Promise<void>
 
     act(() => {
-      first = result.current.activate("p1")
-      second = result.current.activate("p2")
+      first = result.current.setGoalsStatus("p1", "Paused")
+      second = result.current.setGoalsStatus("p2", "Paused")
     })
     await waitFor(() => expect(result.current.pending).toBe(true))
 
@@ -149,7 +145,6 @@ describe("useProjectActions", () => {
       description: null,
       color: null,
       status: "Active",
-      isActivePlan: false,
       isDefault: false,
       revision: 0,
       createdAt: "2026-01-01",
