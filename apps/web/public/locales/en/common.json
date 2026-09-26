@@ -1050,6 +1050,10 @@
     },
     "overview": {
       "steps": {
+        "createProject": {
+          "title": "Create a project",
+          "content": "Start a new project from here without leaving Goals. Your filters and place on the page stay as they are."
+        },
         "statusFilter": {
           "title": "Filter by status",
           "content": "Switch between Unfulfilled, Reached, and Archived goals."

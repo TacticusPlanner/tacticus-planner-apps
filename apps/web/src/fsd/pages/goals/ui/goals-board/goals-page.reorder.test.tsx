@@ -79,6 +79,10 @@ vi.mock("../../model/insights/use-plan-insights", () => ({
 vi.mock("./goals-page.tutorial", () => ({
   useGoalsOverviewTutorial: () => undefined,
 }))
+vi.mock("@/features/project-management", () => ({
+  useProjectActions: () => ({}),
+  ManageProjectsSheet: () => null,
+}))
 vi.mock("./overview-project-quicknav", () => ({
   OverviewProjectQuicknav: () => null,
 }))

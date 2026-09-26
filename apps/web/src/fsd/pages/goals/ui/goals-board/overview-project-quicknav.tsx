@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
+import { Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -27,6 +28,8 @@ type Props = {
   projects: ProjectSummary[]
   projectsLoading: boolean
   projectsFailed: boolean
+  /** Opens the blank project-creation sheet hosted by `GoalsPage`. */
+  onCreateProject: () => void
 }
 
 /** Goals Overview's project quick-nav (`overview-project-quicknav` spec): a way to jump straight
@@ -40,20 +43,55 @@ export function OverviewProjectQuicknav({
   projects,
   projectsLoading,
   projectsFailed,
+  onCreateProject,
 }: Props) {
   const isMobile = useIsMobile()
   return isMobile ? (
-    <MobileQuicknav />
+    <MobileQuicknav onCreateProject={onCreateProject} />
   ) : (
     <DesktopQuicknav
       failed={projectsFailed}
       loading={projectsLoading}
+      onCreateProject={onCreateProject}
       projects={projects}
     />
   )
 }
 
-function MobileQuicknav() {
+/** The one Create project control, rendered outside every per-state branch so it stays available
+ *  while the list is loading, failed, empty or populated (`overview-project-quicknav` spec). */
+function CreateProjectButton({
+  onClick,
+  touch,
+}: {
+  onClick: () => void
+  touch?: boolean
+}) {
+  const { t } = useTranslation()
+  return (
+    <Button
+      className={touch ? "w-full" : "shrink-0"}
+      data-testid="overview-quicknav-create-project"
+      onClick={onClick}
+      size={touch ? "lg" : "sm"}
+      variant="outline"
+    >
+      <Plus data-icon="inline-start" />
+      {t("goals.project.newProject")}
+    </Button>
+  )
+}
+
+function MobileQuicknav({ onCreateProject }: { onCreateProject: () => void }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <MobileProjects />
+      <CreateProjectButton onClick={onCreateProject} touch />
+    </div>
+  )
+}
+
+function MobileProjects() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const result = useHomeProjects(3)
@@ -88,11 +126,9 @@ function MobileQuicknav() {
         <CardHeader>
           <CardTitle>{t("home.projects.emptyTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
+        {/* The card's own "go to Projects" action is hidden here: Create project is the single action. */}
+        <CardContent className="text-sm text-muted-foreground">
           {t("home.projects.emptyDescription")}
-          <Button onClick={() => void navigate("/plan/projects")} size="sm">
-            {t("home.projects.emptyAction")}
-          </Button>
         </CardContent>
       </Card>
     )
@@ -141,10 +177,12 @@ function DesktopQuicknav({
   projects,
   loading,
   failed,
+  onCreateProject,
 }: {
   projects: ProjectSummary[]
   loading: boolean
   failed: boolean
+  onCreateProject: () => void
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -158,13 +196,23 @@ function DesktopQuicknav({
         <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
         <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
         <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
+        <CreateProjectButton onClick={onCreateProject} />
       </div>
     )
   }
-  if (failed) return null
 
-  const ordered = orderDefaultFirst(projects)
-  if (ordered.length === 0) return null
+  const ordered = failed ? [] : orderDefaultFirst(projects)
+  // A failed or empty list has no chips to show, but the row still holds the Create project control.
+  if (ordered.length === 0) {
+    return (
+      <div
+        className="flex items-center gap-2"
+        data-testid="overview-quicknav-create-only"
+      >
+        <CreateProjectButton onClick={onCreateProject} />
+      </div>
+    )
+  }
 
   return (
     <nav
@@ -193,6 +241,7 @@ function DesktopQuicknav({
       >
         {t("goals.project.quicknavAllProjects")}
       </Button>
+      <CreateProjectButton onClick={onCreateProject} />
     </nav>
   )
 }

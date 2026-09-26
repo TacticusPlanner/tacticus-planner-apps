@@ -15,6 +15,7 @@ export function useGoalsOverviewTutorial() {
     const createStep = (
       target: string,
       key:
+        | "createProject"
         | "statusFilter"
         | "filters"
         | "projectFilter"
@@ -29,6 +30,10 @@ export function useGoalsOverviewTutorial() {
       content: t(`tour.overview.steps.${key}.content`),
     })
     const before = [
+      createStep(
+        '[data-testid="overview-quicknav-create-project"]',
+        "createProject"
+      ),
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
       createStep('[data-testid="goals-project-filter"]', "projectFilter"),

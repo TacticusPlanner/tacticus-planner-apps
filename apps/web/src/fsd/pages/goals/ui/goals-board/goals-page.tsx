@@ -37,6 +37,7 @@ import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
+import { GoalsCreateProjectSheet } from "./goals-create-project-sheet"
 import { GoalsList } from ".//goals-list"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { ALL_PROJECTS, ProjectFilterSelect } from "./goals-project-filter"
@@ -77,6 +78,9 @@ export function GoalsPage() {
     "comfortable"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // Blank project-creation sheet opened from the project quick-nav; local state so opening,
+  // saving or failing never touches the route or the membership filter below.
+  const [createProjectOpen, setCreateProjectOpen] = useState(false)
   // Membership as a filter dimension, not a project selection: local state only, deliberately
   // unconnected to the project filter Dailies and Insights use, so browsing Goals never changes
   // what those views operate on.
@@ -299,6 +303,7 @@ export function GoalsPage() {
         projects={projects.projects}
         projectsFailed={projects.fetchState.status === "error"}
         projectsLoading={projects.loading}
+        onCreateProject={() => setCreateProjectOpen(true)}
       />
 
       {/* goals-navigation spec: desktop merges the status filter, Type/Group filters, and
@@ -442,6 +447,10 @@ export function GoalsPage() {
             ? insights.potentialProgressByGoalId.get(detailGoalId)
             : undefined
         }
+      />
+      <GoalsCreateProjectSheet
+        onOpenChange={setCreateProjectOpen}
+        open={createProjectOpen}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

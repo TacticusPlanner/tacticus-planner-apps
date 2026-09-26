@@ -1050,6 +1050,10 @@
     },
     "overview": {
       "steps": {
+        "createProject": {
+          "title": "Ein Projekt erstellen",
+          "content": "Starte von hier aus ein neues Projekt, ohne die Ziele zu verlassen. Deine Filter und deine Position auf der Seite bleiben erhalten."
+        },
         "statusFilter": {
           "title": "Nach Status filtern",
           "content": "Wechsle zwischen unerfüllten, erreichten und archivierten Zielen."

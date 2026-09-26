@@ -1050,6 +1050,10 @@
     },
     "overview": {
       "steps": {
+        "createProject": {
+          "title": "Créer un projet",
+          "content": "Créez un nouveau projet d'ici sans quitter Objectifs. Vos filtres et votre position dans la page restent inchangés."
+        },
         "statusFilter": {
           "title": "Filtrer par statut",
           "content": "Basculez entre les objectifs non atteints, atteints et archivés."

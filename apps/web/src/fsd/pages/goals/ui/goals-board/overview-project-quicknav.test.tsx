@@ -52,6 +52,7 @@ const defaultProps = {
   projects: [],
   projectsFailed: false,
   projectsLoading: false,
+  onCreateProject: vi.fn(),
 }
 
 describe("OverviewProjectQuicknav", () => {
@@ -59,6 +60,7 @@ describe("OverviewProjectQuicknav", () => {
     isMobileRef.current = false
     navigateMock.mockReset()
     useHomeProjectsMock.mockReset()
+    defaultProps.onCreateProject.mockReset()
   })
 
   describe("mobile", () => {
@@ -86,11 +88,55 @@ describe("OverviewProjectQuicknav", () => {
       expect(screen.getByTestId("overview-quicknav-error")).toBeInTheDocument()
     })
 
-    it("shows the same empty-state teaching as the home widget", () => {
+    it("shows the same empty-state teaching as the home widget, with Create project as the only action", () => {
       useHomeProjectsMock.mockReturnValue({ status: "empty" })
       render(<OverviewProjectQuicknav {...defaultProps} />)
       expect(screen.getByTestId("overview-quicknav-empty")).toBeInTheDocument()
       expect(screen.getByText("home.projects.emptyTitle")).toBeInTheDocument()
+      expect(
+        screen.queryByText("home.projects.emptyAction")
+      ).not.toBeInTheDocument()
+      expect(screen.getAllByRole("button")).toEqual([
+        screen.getByTestId("overview-quicknav-create-project"),
+      ])
+    })
+
+    it.each([
+      ["loading", { status: "loading" }, "overview-quicknav-loading"],
+      ["error", { status: "error", retry: vi.fn() }, "overview-quicknav-error"],
+      ["empty", { status: "empty" }, "overview-quicknav-empty"],
+      [
+        "ready",
+        {
+          status: "ready",
+          projects: [project({ projectId: "p1" })],
+          summaries: new Map(),
+          remainingCount: 0,
+        },
+        "overview-quicknav-mobile",
+      ],
+    ])(
+      "keeps a labeled, touch-sized Create project control in the %s state",
+      (_name, result, stateTestId) => {
+        useHomeProjectsMock.mockReturnValue(result)
+        render(<OverviewProjectQuicknav {...defaultProps} />)
+        expect(screen.getByTestId(stateTestId)).toBeInTheDocument()
+        const create = screen.getByTestId("overview-quicknav-create-project")
+        expect(create).toHaveAccessibleName("goals.project.newProject")
+        expect(create).toHaveClass("w-full")
+        create.click()
+        expect(defaultProps.onCreateProject).toHaveBeenCalledTimes(1)
+        expect(navigateMock).not.toHaveBeenCalled()
+      }
+    )
+
+    it("retries a failed project list without touching creation", () => {
+      const retry = vi.fn()
+      useHomeProjectsMock.mockReturnValue({ status: "error", retry })
+      render(<OverviewProjectQuicknav {...defaultProps} />)
+      screen.getByText("home.projects.retry").click()
+      expect(retry).toHaveBeenCalledTimes(1)
+      expect(defaultProps.onCreateProject).not.toHaveBeenCalled()
     })
 
     it("renders project rows and navigates to a project's detail route on activation", () => {
@@ -131,18 +177,51 @@ describe("OverviewProjectQuicknav", () => {
       ).toBeInTheDocument()
     })
 
-    it("renders nothing on failure", () => {
-      const { container } = render(
-        <OverviewProjectQuicknav {...defaultProps} projectsFailed />
-      )
-      expect(container).toBeEmptyDOMElement()
+    it("keeps Create project available while loading", () => {
+      render(<OverviewProjectQuicknav {...defaultProps} projectsLoading />)
+      screen.getByTestId("overview-quicknav-create-project").click()
+      expect(defaultProps.onCreateProject).toHaveBeenCalledTimes(1)
     })
 
-    it("renders nothing when there are no projects", () => {
+    it("renders only the Create project control on failure, not chips or an error", () => {
+      render(<OverviewProjectQuicknav {...defaultProps} projectsFailed />)
+      expect(
+        screen.queryByTestId("overview-quicknav-desktop")
+      ).not.toBeInTheDocument()
+      expect(screen.getAllByRole("button")).toEqual([
+        screen.getByTestId("overview-quicknav-create-project"),
+      ])
+      screen.getByTestId("overview-quicknav-create-project").click()
+      expect(defaultProps.onCreateProject).toHaveBeenCalledTimes(1)
+    })
+
+    it("renders only the Create project control when there are no projects", () => {
       render(<OverviewProjectQuicknav {...defaultProps} />)
       expect(
         screen.queryByTestId("overview-quicknav-desktop")
       ).not.toBeInTheDocument()
+      expect(screen.getAllByRole("button")).toEqual([
+        screen.getByTestId("overview-quicknav-create-project"),
+      ])
+    })
+
+    it("places Create project after All projects, without navigating", () => {
+      render(
+        <OverviewProjectQuicknav
+          {...defaultProps}
+          projects={[project({ projectId: "p1" })]}
+        />
+      )
+      const create = screen.getByTestId("overview-quicknav-create-project")
+      const allProjects = screen.getByTestId("overview-quicknav-all-projects")
+      expect(create).toHaveAccessibleName("goals.project.newProject")
+      expect(
+        allProjects.compareDocumentPosition(create) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      create.click()
+      expect(defaultProps.onCreateProject).toHaveBeenCalledTimes(1)
+      expect(navigateMock).not.toHaveBeenCalled()
     })
 
     it("lists every non-archived project, Default first, excluding archived", () => {

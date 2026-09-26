@@ -27,6 +27,7 @@ describe("useGoalsOverviewTutorial", () => {
       expect(step.content).toContain("localized:tour.overview.steps")
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
+      '[data-testid="overview-quicknav-create-project"]',
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
       '[data-testid="goals-project-filter"]',
@@ -46,6 +47,12 @@ describe("useGoalsOverviewTutorial", () => {
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
     ).toContain("tour.overview.steps.projectFilter")
+    for (const list of [steps.desktop, steps.mobile]) {
+      expect(list[0]).toMatchObject({
+        title: "localized:tour.overview.steps.createProject.title",
+        content: "localized:tour.overview.steps.createProject.content",
+      })
+    }
     expect(
       steps.mobile.map((step) => `${step.title} ${step.content}`).join(" ")
     ).toContain("tour.overview.steps.reprioritize")
