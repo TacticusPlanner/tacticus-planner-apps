@@ -46,13 +46,24 @@ export function moveOntoDisplaced(
  * The same move applied to goals' *absolute* global positions, so it also works on a partial list (a
  * project's projection, whose members' positions are not contiguous): the moved goal takes the
  * displaced goal's position and every goal whose position lies between shifts one place toward the
- * vacated one. Returns the input untouched when either goal is missing or unpositioned.
+ * vacated one. `positions` are the two goals' positions when the caller knows them from a wider view: a
+ * project holding only one of the pair still needs the move applied to its members. Returns the input
+ * untouched when a position is unknown.
  */
 export function applyPositionMove<
   T extends { goalId: string; globalPriority: number | null },
->(goals: readonly T[], movedId: string, displacedId: string): T[] {
-  const from = goals.find((goal) => goal.goalId === movedId)?.globalPriority
-  const to = goals.find((goal) => goal.goalId === displacedId)?.globalPriority
+>(
+  goals: readonly T[],
+  movedId: string,
+  displacedId: string,
+  positions?: { from: number; to: number }
+): T[] {
+  const from =
+    positions?.from ??
+    goals.find((goal) => goal.goalId === movedId)?.globalPriority
+  const to =
+    positions?.to ??
+    goals.find((goal) => goal.goalId === displacedId)?.globalPriority
   if (from == null || to == null || from === to) return [...goals]
 
   return goals.map((goal) => {

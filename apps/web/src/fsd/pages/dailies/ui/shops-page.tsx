@@ -2,6 +2,8 @@ import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import { ProjectSelect } from "@/entities/project"
+
 import { useShopRecommendations } from "../model/use-shop-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopsDesktop } from "./shops/desktop/shops-desktop"
@@ -11,7 +13,7 @@ import { useShopsTutorial } from "./shops-page.tutorial"
 
 export function ShopsPage() {
   const context = useOutletContext<DailiesOutletContext>()
-  const { t } = useTranslation("shops")
+  const { t } = useTranslation(["shops", "dailies"])
   const isMobile = useIsMobile()
   const recommendations = useShopRecommendations(context.projectId)
   useShopsTutorial()
@@ -46,13 +48,25 @@ export function ShopsPage() {
 
   return (
     <div className="space-y-5 md:space-y-7" data-testid="shops-page">
-      <div className="space-y-1">
-        <h1 className="text-lg font-semibold">{t("title")}</h1>
-        {project ? (
-          <p className="text-sm text-muted-foreground">
-            {t("subtitle", { project: project.name })}
-          </p>
-        ) : null}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="text-lg font-semibold">{t("title")}</h1>
+          {/* The project only picks whose goals these offers are recommended for; the account-wide raid
+              plan (Today, Raids Plan) is not affected by it. */}
+          {project ? (
+            <p className="text-sm text-muted-foreground">
+              {t("subtitle", { project: project.name })}
+            </p>
+          ) : null}
+        </div>
+        <ProjectSelect
+          compact={false}
+          onProjectIdChange={context.setProjectId}
+          placeholder={t("dailies:project.placeholder")}
+          projectId={context.projectId}
+          projects={context.projects}
+          testId="shops-project-select"
+        />
       </div>
       {body}
     </div>

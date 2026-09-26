@@ -123,6 +123,12 @@ describe("ShopsPage", () => {
     expect(screen.getByTestId("shops-loading")).toBeInTheDocument()
   })
 
+  it("lets the user pick which project's goals the offers are recommended for", () => {
+    useShopRecommendations.mockReturnValue({ status: "loading" })
+    renderPage()
+    expect(screen.getByTestId("shops-project-select")).toBeInTheDocument()
+  })
+
   it("shows the no-project state when no project is available", () => {
     contextOverrides = { projectsUnavailable: true }
     renderPage()

@@ -120,6 +120,9 @@ export function computePlanInsights(params: {
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
   let onslaughtTokens = 0
+  // The whole plan's Onslaught token demand, scoped or not: the account's tokens are one budget shared by
+  // every goal in the global run, so the wait for tokens is the plan's, never a project-only one.
+  let planOnslaughtTokens = 0
   // One reference date for every goal's shop-supply projection in this pass, so two goals sharing a
   // shop offer see the same weekday-probability schedule.
   const referenceDate = new Date()
@@ -197,6 +200,7 @@ export function computePlanInsights(params: {
       referenceDate,
     })
     const scoped = inScope(detail.goalId)
+    planOnslaughtTokens += onslaughtTokensDelta
     if (scoped) {
       onslaughtTokens += onslaughtTokensDelta
 
@@ -419,15 +423,18 @@ export function computePlanInsights(params: {
     benefitingGoalIdsByInsightId.set(insight.id, [...goalIds])
   }
 
-  const onslaughtDays =
+  const planOnslaughtDays =
     Math.max(
       0,
-      onslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
+      planOnslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
     ) / 1.5
-  if (onslaughtDays > 0) {
+  // A scoped view reports the wait only when its own goals need tokens, but the date below always
+  // extends by the plan's wait: the project's goals queue behind everything ranked above them.
+  const onslaughtDays = onslaughtTokens > 0 ? planOnslaughtDays : 0
+  if (planOnslaughtDays > 0) {
     const onslaughtDate = new Date()
     onslaughtDate.setUTCDate(
-      onslaughtDate.getUTCDate() + Math.ceil(onslaughtDays)
+      onslaughtDate.getUTCDate() + Math.ceil(planOnslaughtDays)
     )
     const value = onslaughtDate.toISOString().slice(0, 10)
     // Extends an existing date, never creates one: with nothing estimable there is no plan date to

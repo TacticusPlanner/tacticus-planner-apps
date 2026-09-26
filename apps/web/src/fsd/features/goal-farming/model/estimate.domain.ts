@@ -134,8 +134,8 @@ export interface RaidPlanSchedule {
 /** One goal's material demand within a priority-shared plan estimate (`estimatePlan`). */
 export interface InventoryAllocationGoal<TId extends string> {
   goalId: string
-  /** Per-project priority — lower runs first and claims shared inventory/energy ahead of higher
-   *  numbers, mirroring `project_goals.priority` (plan §5). */
+  /** Position in the account-wide goal order (`Goal.GlobalPriority`) — lower runs first and claims shared
+   *  inventory/energy ahead of higher numbers. */
   priority: number
   needs: CountedResourceNeed<TId>[]
   /** Ordered farming segments for this goal. Missing/empty means one TotalUpgrades stage. */

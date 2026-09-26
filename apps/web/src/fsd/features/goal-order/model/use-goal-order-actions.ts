@@ -48,13 +48,42 @@ function applyOptimisticMove(
   move: GoalOrderMove
 ): Snapshot[] {
   const snapshots: Snapshot[] = []
+  // Where the two goals sit in the account-wide order, from whichever cached view knows them: a project
+  // that holds only one of the pair (or neither) still has its members shifted correctly.
+  const positionOf = (goalId: string) => {
+    for (const [, data] of queryClient.getQueriesData<GoalListResponse>({
+      queryKey: goalQueries.lists(),
+    })) {
+      const found = data?.goals.find((goal) => goal.goalId === goalId)
+      if (found?.globalPriority != null) return found.globalPriority
+    }
+    for (const [
+      queryKey,
+      data,
+    ] of queryClient.getQueriesData<ProjectGoalsResponse>({
+      queryKey: projectQueries.all(),
+    })) {
+      if (!isProjectGoalsKey(queryKey)) continue
+      const found = data?.goals.find((entry) => entry.goal.goalId === goalId)
+      if (found?.goal.globalPriority != null) return found.goal.globalPriority
+    }
+    return null
+  }
+  const from = positionOf(move.goalId)
+  const to = positionOf(move.displacedGoalId)
+  const positions = from !== null && to !== null ? { from, to } : undefined
   const revise = <
     T extends { goals: { goalId: string; globalPriority: number | null }[] },
   >(
     data: T
   ): T => ({
     ...data,
-    goals: applyPositionMove(data.goals, move.goalId, move.displacedGoalId),
+    goals: applyPositionMove(
+      data.goals,
+      move.goalId,
+      move.displacedGoalId,
+      positions
+    ),
   })
 
   for (const [queryKey, data] of queryClient.getQueriesData<GoalListResponse>({
@@ -84,7 +113,8 @@ function applyOptimisticMove(
     const moved = applyPositionMove(
       data.goals.map((entry) => entry.goal),
       move.goalId,
-      move.displacedGoalId
+      move.displacedGoalId,
+      positions
     )
     const byId = new Map(moved.map((goal) => [goal.goalId, goal]))
     const ordered = [
@@ -129,11 +159,20 @@ export function useGoalOrderActions() {
   const [pendingCount, setPendingCount] = useState(0)
   const [conflict, setConflict] = useState<GoalOrderConflict | null>(null)
   const queue = useRef<Promise<unknown>>(Promise.resolve())
+  // Gestures accepted but not yet settled. Caches are only refetched once the last one settles: an
+  // earlier response's refetch would otherwise overwrite a later gesture's optimistic state.
+  const outstanding = useRef(0)
 
+  // The order lives in the goal lists and project projections, so only those refetch; a goal's detail
+  // (config, events) is unaffected by a move and is only marked stale rather than refetched per drop.
   const refresh = () =>
     Promise.all([
-      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+      queryClient.invalidateQueries({ queryKey: goalQueries.lists() }),
       queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+      queryClient.invalidateQueries({
+        queryKey: goalQueries.details(),
+        refetchType: "none",
+      }),
     ])
 
   const send = async (
@@ -178,11 +217,12 @@ export function useGoalOrderActions() {
     setConflict(null)
     const snapshots = applyOptimisticMove(queryClient, move)
     setPendingCount((count) => count + 1)
+    outstanding.current += 1
 
     const outcome = queue.current.then(async () => {
       try {
         await send(move, revision, movedIds)
-        await refresh()
+        if (outstanding.current === 1) await refresh()
         return true
       } catch (error) {
         for (const snapshot of snapshots) {
@@ -204,6 +244,7 @@ export function useGoalOrderActions() {
         }
         return false
       } finally {
+        outstanding.current -= 1
         setPendingCount((count) => Math.max(0, count - 1))
       }
     })

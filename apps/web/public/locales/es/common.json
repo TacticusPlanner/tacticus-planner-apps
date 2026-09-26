@@ -467,7 +467,7 @@
       "blocked": "Bloqueado",
       "active": "Activo",
       "paused": "Pausado",
-      "plan": "Plan",
+      "plan": "Plan global",
       "planDescription": "Un único plan ordenado para todos tus objetivos."
     },
     "columns": {
@@ -583,7 +583,7 @@
       "save": "Guardar proyecto",
       "create": "Crear proyecto",
       "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en el Plan global.",
-      "currentPlanNote": "El plan actual es el proyecto que se muestra primero y el filtro inicial en Análisis. Nunca cambia tu plan: la prioridad es un único orden para todos los objetivos (consulta el Plan global) y los objetivos se pausan y se reanudan de uno en uno.",
+      "currentPlanNote": "El plan actual es el proyecto que se muestra primero y el filtro inicial en Información. Nunca cambia tu plan: la prioridad es un único orden para todos los objetivos (consulta el Plan global) y los objetivos se pausan y se reanudan de uno en uno.",
       "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
@@ -939,7 +939,7 @@
     },
     "plan": {
       "title": "Plan global",
-      "description": "Cada objetivo activo y pausado, una sola vez, en el único orden de prioridad que usan Hoy, el plan de incursiones, Análisis y todas las estimaciones. Los proyectos solo filtran esta lista.",
+      "description": "Cada objetivo activo y pausado, una sola vez, en el único orden de prioridad que usan Hoy, el plan de incursiones, Información y todas las estimaciones. Los proyectos solo filtran esta lista.",
       "loadError": "No se pudieron cargar tus objetivos.",
       "retry": "Reintentar",
       "emptyTitle": "Aún no hay objetivos en tu plan",
@@ -1085,7 +1085,7 @@
       "steps": {
         "list": {
           "title": "Qué es un proyecto",
-          "content": "Un proyecto es una selección de tus objetivos con nombre: ten varios para agrupar cosas distintas. El plan actual es el proyecto que se muestra primero y el filtro inicial en Análisis; no pausa ni reanuda nada ni cambia tus prioridades."
+          "content": "Un proyecto es una selección de tus objetivos con nombre: ten varios para agrupar cosas distintas. El plan actual es el proyecto que se muestra primero y el filtro inicial en Información; no pausa ni reanuda nada ni cambia tus prioridades."
         },
         "newProject": {
           "title": "Crea un proyecto",
@@ -1138,7 +1138,7 @@
       "steps": {
         "intro": {
           "title": "Un plan para todo",
-          "content": "Cada objetivo activo y pausado aparece aquí una sola vez, en el único orden de prioridad que usan Hoy, el plan de incursiones y Análisis. Los proyectos son solo filtros sobre él. Los objetivos pausados conservan su lugar, pero no planifican nada."
+          "content": "Cada objetivo activo y pausado aparece aquí una sola vez, en el único orden de prioridad que usan Hoy, el plan de incursiones y Información. Los proyectos son solo filtros sobre él. Los objetivos pausados conservan su lugar, pero no planifican nada."
         },
         "reprioritize": {
           "title": "Prioriza tus objetivos",

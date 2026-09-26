@@ -1009,6 +1009,33 @@ describe("computePlanInsights", () => {
     expect(result.unestimatedGoalCount).toBe(1)
   })
 
+  it("waits for the plan's Onslaught tokens, not just the project's own, when scoped to a project", () => {
+    const tokenGoal = ascensionWithOnslaught(100_000)
+    const scoped = computePlanInsights({
+      ...baseParams,
+      ...tokenGoal,
+      details: [
+        ...tokenGoal.details,
+        goalDetail({ goalId: "goal-3", goalType: "Rank", config: rankConfig }),
+      ],
+      priorityByGoalId: new Map([
+        ["goal-1", 1],
+        ["goal-3", 2],
+      ]),
+      scopeGoalIds: new Set(["goal-3"]),
+      currentOnslaughtTokens: 0,
+    })
+
+    // The project's own goal needs no tokens, so it reports none ...
+    expect(scoped.onslaughtTokens).toBe(0)
+    expect(scoped.onslaughtDays).toBe(0)
+    // ... but the goal ranked above it in another project drains the account's token budget, so the
+    // project's date cannot precede the wait a whole-plan run would show.
+    const own = scoped.estimates.get("goal-3")
+    expect(own).toMatchObject({ status: "Estimated" })
+    expect(scoped.completionDate! > (own as { date: string }).date).toBe(true)
+  })
+
   it("still extends an existing date past every goal's own date on a shortfall", () => {
     // A generous shop offer clears the 100-shard need in days, while the same need implies ~29
     // Onslaught tokens the account does not hold - so the plan genuinely cannot finish until those

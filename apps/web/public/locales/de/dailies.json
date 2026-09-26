@@ -164,7 +164,7 @@
     "noFarmable": "Keines deiner aktiven Ziele hat farmbaren Kampagnenbedarf.",
     "error": "Der Raid-Plan konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
-    "noGoals": "Du hast keine aktiven Ziele. Erstelle oder setze ein Ziel unter Ziele fort, um deine Raids zu planen."
+    "noGoals": "Du hast keine aktiven Ziele. Erstelle unter Ziele ein Ziel oder setze eines fort, um deine Raids zu planen."
   },
   "today": {
     "title": "Heutige Raids",

@@ -467,7 +467,7 @@
       "blocked": "Bloqué",
       "active": "Actif",
       "paused": "En pause",
-      "plan": "Plan",
+      "plan": "Plan global",
       "planDescription": "Un seul plan ordonné pour tous vos objectifs."
     },
     "columns": {

@@ -285,6 +285,57 @@ describe("useGoalOrderActions", () => {
     )
   })
 
+  it("shifts the members of a project that holds only one of the moved pair", async () => {
+    const { result, queryClient } = setup()
+    // Project p2 holds B, D and E of the global order A,B,C,D,E - not C, the goal E displaces.
+    queryClient.setQueryData(projectQueries.goals("p2").queryKey, {
+      goals: ["b", "d", "e"].map((id) => ({
+        goal: summary(id, IDS.indexOf(id) + 1),
+      })),
+      orderRevision: 4,
+    } satisfies ProjectGoalsResponse)
+    updateGoalOrderMock.mockReturnValue(new Promise(() => undefined))
+
+    act(() => {
+      void result.current.moveGoal({ goalId: "e", displacedGoalId: "c" })
+    })
+
+    const p2 = queryClient.getQueryData<ProjectGoalsResponse>(
+      projectQueries.goals("p2").queryKey
+    )!
+    // The global order becomes A,B,E,C,D: E takes C's position 3 and D moves to 5; B is above the move.
+    expect(p2.goals.map((entry) => entry.goal.goalId)).toEqual(["b", "e", "d"])
+    expect(p2.goals.map((entry) => entry.goal.globalPriority)).toEqual([
+      2, 3, 5,
+    ])
+  })
+
+  it("refetches the order once, after the last overlapping gesture, and never refetches goal details", async () => {
+    const { result, queryClient } = setup()
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    await act(async () => {
+      const first = result.current.moveGoal({
+        goalId: "e",
+        displacedGoalId: "c",
+      })
+      const second = result.current.moveGoal({
+        goalId: "a",
+        displacedGoalId: "b",
+      })
+      await Promise.all([first, second])
+    })
+
+    const keys = invalidate.mock.calls.map((call) => call[0])
+    // One refresh: the order lists, the project projections, and details only marked stale.
+    expect(keys).toHaveLength(3)
+    expect(keys).toContainEqual({ queryKey: goalQueries.lists() })
+    expect(keys).toContainEqual({
+      queryKey: goalQueries.details(),
+      refetchType: "none",
+    })
+  })
+
   it("does nothing for a goal moved onto itself or one that left the order", async () => {
     const { result } = setup()
 
