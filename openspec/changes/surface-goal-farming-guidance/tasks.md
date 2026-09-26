@@ -7,7 +7,7 @@
 ## 2. Surfaces and verification
 
 - [ ] 2.1 Add concise resource/source guidance and next action to goal detail, keeping raw XP and correctly labeled additional book equivalent; verify goal-detail tests and the worked Bellator fixture.
-- [ ] 2.2 Add project-level summary/link and explicit preview label for a project not selected in Dailies; verify tests for populated, empty, and blocked projects.
+- [ ] 2.2 Add project-level summary/link and explicit preview label for a project that is not Dailies' applied project filter; verify tests for populated, empty, and blocked projects.
 - [ ] 2.3 Localize new copy (including the rarity setting label and rarity names) in all supported locales and update materially changed goal/project Joyride steps with localized content; verify desktop/mobile tutorial tests.
 - [ ] 2.4 In the Aspire stack, inspect mixed eligible/locked nodes, owned books across two Level goals, selected/unselected projects, and no-actionable-source states at mobile and desktop widths; verify no preview claims to be today's schedule.
 - [ ] 2.5 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`, plus the API gates for the paired rarity-field change; verify all pass.

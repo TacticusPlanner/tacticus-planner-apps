@@ -2,7 +2,7 @@
 
 ### Requirement: Overview project area can create a project directly
 
-Goals Overview SHALL offer a labeled Create project action in its project quick-nav area, without requiring navigation to the Projects dashboard. It SHALL open the existing blank project-creation form and remain available when the account has no projects or when project loading fails. Submitting a valid project SHALL add it to the project list without changing the current route, Goals membership filter, or Current plan. The Projects dashboard's New project action SHALL remain available.
+Goals Overview SHALL offer a labeled Create project action in its project quick-nav area, without requiring navigation to the Projects dashboard. It SHALL open the existing blank project-creation form and remain available when the account has no projects or when project loading fails. Submitting a valid project SHALL add it to the project list without changing the current route or Goals membership filter. The Projects dashboard's New project action SHALL remain available.
 
 #### Scenario: Desktop creation beside All projects
 
@@ -28,9 +28,9 @@ Goals Overview SHALL offer a labeled Create project action in its project quick-
 
 #### Scenario: Creation preserves browsing state
 
-- **GIVEN** a Goals membership filter or Current plan is selected
+- **GIVEN** a Goals membership filter is selected
 - **WHEN** a user creates a project from Overview
-- **THEN** the new project becomes available in project navigation without changing the selected filter, Current plan, or route
+- **THEN** the new project becomes available in project navigation without changing the selected filter or route
 
 #### Scenario: Creation fails
 

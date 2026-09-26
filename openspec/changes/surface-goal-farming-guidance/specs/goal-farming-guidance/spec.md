@@ -20,11 +20,11 @@ For a goal with outstanding farmable needs, goal detail SHALL show a concise bre
 
 ### Requirement: Project detail provides scoped guidance
 
-Project detail SHALL present a summary or direct link to outstanding goal farming guidance for that project. A project not selected for today's Dailies SHALL label this as a preview and SHALL NOT imply its listed nodes are part of the currently selected daily schedule. Empty or fully satisfied projects SHALL show an appropriate next step rather than a misleading farming list.
+Project detail SHALL present a summary or direct link to outstanding goal farming guidance for that project. A project that is not the project filter currently applied in Dailies SHALL label this as a preview and SHALL NOT imply its listed nodes are today's schedule. Empty or fully satisfied projects SHALL show an appropriate next step rather than a misleading farming list.
 
 #### Scenario: Non-selected project preview
 
-- **WHEN** the user opens a project that is not the Dailies-selected project
+- **WHEN** the user opens a project that is not the project filter applied in Dailies
 - **THEN** its outstanding resource guidance is available as a preview, clearly distinct from today's scheduled raids
 
 #### Scenario: No outstanding farmable need

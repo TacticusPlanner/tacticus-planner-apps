@@ -5,14 +5,14 @@ code:
 
 - `GoalsList` (`goals-list.tsx`) switches between `GoalsTable` (desktop) and
   `GoalsMobileCards` (mobile) via `useIsMobile()`, and is shared verbatim
-  between Goals Overview and Project Detail (`project-detail-goals.tsx`
+  between the Goals page and Project Detail (`project-detail-goals.tsx`
   imports it directly).
 - `goal-list-layout`'s main spec already commits to one fixed row
   height/card structure per platform — it explicitly calls today's shape "a
   substantial reduction from ... variable, content-driven row height,"
   i.e. there is exactly one density today, not a toggle. This change adds a
   second, denser option alongside it rather than replacing the default.
-- Goals Overview already has one precedent for a persisted, per-browser view
+- The Goals page already has one precedent for a persisted, per-browser view
   preference: `group` (`goals.overview.group`, via `usePersistedSelection`
   from `@/shared/lib`), typed with a `GoalGroupValue` string union and an
   `isGoalGroupValue` guard exported from `@/entities/goal`.
@@ -76,10 +76,14 @@ contract, no column removed:**
   explanation to remain reachable on mobile. Keep project badges too:
   membership has no other representation on the card.
 
-**Density toggle placed in the same Overview toolbar row as Group/Sort/Type
+**Density toggle placed in the same Overview toolbar row as Group/Type
 and the project filter**, following the existing icon-with-hidden-label
 mobile pattern (see `planningSettingsButton` in `goals-page.tsx`), same
 reasoning as every existing control in that row.
+
+## Superseded context
+
+`consolidate-goals-into-plan-and-remove-active-project` renames Overview/All Goals to the Goals page, removes its Sort control, and adds a drag-handle column (Active/Paused rows) for reprioritizing. Compact density must keep that handle column usable; requirement headings below keep their existing main-spec names until archive.
 
 ## Risks / Trade-offs
 

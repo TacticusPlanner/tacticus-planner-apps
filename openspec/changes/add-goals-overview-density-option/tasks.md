@@ -22,7 +22,7 @@
 
 ## 5. Project Detail is unaffected
 
-- [ ] 5.1 Confirm `project-detail-goals.tsx`'s `GoalsList` call passes no `density` prop (so it defaults to Comfortable) and add a regression test asserting Project Detail always renders at Comfortable regardless of Goals Overview's last-persisted density value. Verify with `pnpm --filter web test:run project-detail`.
+- [ ] 5.1 Confirm `project-detail-goals.tsx`'s `GoalsList` call passes no `density` prop (so it defaults to Comfortable) and add a regression test asserting Project Detail always renders at Comfortable regardless of the Goals page's last-persisted density value. Verify with `pnpm --filter web test:run project-detail`.
 
 ## 6. Tutorial
 
@@ -30,5 +30,5 @@
 
 ## 7. Verification and gates
 
-- [ ] 7.1 Manually verify in the browser (Aspire AppHost stack): on Goals Overview with several goals including a project-context Actual/Potential bar, toggle between Comfortable and Compact at both a sub-768px and an at/above-768px viewport, confirming more rows/cards are visible, the mobile explanation remains operable, and the preference survives a reload. Test a representative large plan at screenshot dimensions for `GUI-04`; record whether a separate presentation is needed. Confirm Project Detail remains Comfortable.
+- [ ] 7.1 Manually verify in the browser (Aspire AppHost stack): on the Goals page with several goals including a project-context Actual/Potential bar, toggle between Comfortable and Compact at both a sub-768px and an at/above-768px viewport, confirming more rows/cards are visible, the mobile explanation remains operable, and the preference survives a reload. Test a representative large plan at screenshot dimensions for `GUI-04`; record whether a separate presentation is needed. Confirm Project Detail remains Comfortable.
 - [ ] 7.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; all must pass before this change is considered done.

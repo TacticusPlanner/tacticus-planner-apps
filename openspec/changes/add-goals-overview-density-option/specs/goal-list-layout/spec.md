@@ -2,9 +2,9 @@
 
 ### Requirement: Goals Overview offers a row-density preference
 
-The Goals Overview list SHALL offer a two-value row-density preference —
+The Goals page list SHALL offer a two-value row-density preference —
 "Comfortable" (the existing presentation, default) and "Compact" (a denser
-one) — persisted per browser, independent of the Group/Sort/Type filters
+one) — persisted per browser, independent of the Group/Type filters
 and status-filter tab. Changing it SHALL immediately re-render the visible
 list at the newly selected density. This preference applies only to Goals
 Overview: the same list rendered on a project's detail route SHALL always
@@ -13,7 +13,7 @@ render at the Comfortable density and SHALL NOT offer this control.
 #### Scenario: Comfortable is the default
 
 - **GIVEN** a user has never changed the density preference in this browser
-- **WHEN** Goals Overview renders
+- **WHEN** the Goals page renders
 - **THEN** the list renders at the Comfortable density
 
 #### Scenario: Choosing Compact re-renders immediately
@@ -26,13 +26,13 @@ render at the Comfortable density and SHALL NOT offer this control.
 
 - **GIVEN** the user selected Compact
 - **WHEN** they reload the page
-- **THEN** Goals Overview renders at the Compact density
+- **THEN** the Goals page renders at the Compact density
 
 #### Scenario: Project Detail is unaffected
 
 - **WHEN** a project's detail route renders its goal list
 - **THEN** it renders at the Comfortable density and offers no density
-  control, regardless of the density last selected on Goals Overview
+  control, regardless of the density last selected on the Goals page
 
 ## MODIFIED Requirements
 
@@ -42,7 +42,7 @@ At or above the mobile breakpoint (see the platform-switch requirement below), t
 
 Each row SHALL render at a fixed height determined by the density preference (see "Goals Overview offers a row-density preference" above; Project Detail always renders at Comfortable). At the Comfortable density, each row SHALL render at a fixed height sized to one line of content per column, with the Character and "Status · Done by" columns' two stacked lines accommodated within that same fixed height — a substantial reduction from the pre-density-toggle variable, content-driven row height. At the Compact density, each row SHALL render at a shorter fixed height: the Character column's goal-type caption line and the "Status · Done by" column's second ("Done By") line SHALL both be omitted, so each of those columns shows only its first line — the Character and Goal columns' link/from→to content, and the Status label(s), remain visible at both densities. The existing alternating row (zebra) striping SHALL be preserved at both densities.
 
-When the table renders on a route where inline reordering is available (project detail — see `project-management`'s "Goals are reordered individually via inline drag"), each row SHALL additionally show a leading drag handle before the Character column. This handle is a control affordance, not a seventh data column, and does not change the six static columns above; it is present only in a reorderable context and absent elsewhere (for example, the non-reorderable Goals Overview list), which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
+When the table renders on a route where inline reordering is available (project detail — see `project-management`'s "Goals are reordered individually via inline drag"), each row SHALL additionally show a leading drag handle before the Character column. This handle is a control affordance, not a seventh data column, and does not change the six static columns above; it is present only in a reorderable context and absent elsewhere (for example, a list with nothing to reorder), which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
 
 Assumptions:
 
@@ -68,9 +68,9 @@ Assumptions:
 
 #### Scenario: A drag handle appears only in a reorderable context
 
-- **GIVEN** the same goal renders once on project detail and once on the Goals Overview list
+- **GIVEN** the same in-flight goal renders once on project detail and once on the Goals page list
 - **WHEN** each list renders as a desktop table
-- **THEN** the project detail row shows a leading drag handle and the Goals Overview row does not, with both rows otherwise showing the same six columns
+- **THEN** both rows show a leading drag handle (the Goals page is the editable global priority order), with both rows otherwise showing the same six columns, and a Reached, Completed, or Archived goal on the Goals page shows no handle
 
 #### Scenario: Project-removal-or-move and Delete render as icons on desktop
 
@@ -86,13 +86,13 @@ Assumptions:
 
 #### Scenario: Compact density hides the secondary caption lines
 
-- **GIVEN** Goals Overview is set to the Compact density and a Rank goal has a computed completion estimate
+- **GIVEN** the Goals page is set to the Compact density and a Rank goal has a computed completion estimate
 - **WHEN** its row renders
 - **THEN** the Character column shows the unit's avatar and linked name with no goal-type caption beneath it, and the "Status · Done by" column shows only the status label(s) with no "Done By" second line — the row renders at the Compact fixed height, shorter than the Comfortable one
 
 #### Scenario: Compact density leaves the other five columns' content unchanged
 
-- **GIVEN** Goals Overview is set to the Compact density
+- **GIVEN** the Goals page is set to the Compact density
 - **WHEN** the table renders
 - **THEN** the Goal, Progress, Remaining, and Actions columns, and the Character column's avatar/linked-name and Status column's status label(s), render the same content they do at the Comfortable density
 
@@ -128,6 +128,6 @@ This one-card-per-goal rule has one exception: a Level goal that renders as its 
 
 #### Scenario: Compact density preserves the progress explanation
 
-- **GIVEN** Goals Overview is set to the Compact density
+- **GIVEN** the Goals page is set to the Compact density
 - **WHEN** a card renders
 - **THEN** its header, goal line, progress bar, remaining-text/info footer, and expandable Actual/Potential explanation remain available, while padding and vertical gaps are tighter than at Comfortable

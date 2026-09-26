@@ -5,7 +5,7 @@ Project creation is available on the Projects dashboard, but a player browsing G
 ## What Changes
 
 - Add a distinct Create project action to Goals Overview's project quick-nav, adjacent to its All projects destination on desktop and within the corresponding mobile project widget area.
-- Open the existing project-creation sheet in blank mode without changing the current Goals filter, route, or Current plan. Keep the Projects dashboard's New project affordance.
+- Open the existing project-creation sheet in blank mode without changing the current Goals filter or route. Keep the Projects dashboard's New project affordance.
 - Make creation reachable in the empty-project state and keep project load/error states distinct.
 
 ## Capabilities

@@ -1,6 +1,6 @@
 ## Why
 
-Goal and project views show progress and organization but often make users leave to discover what materials or nodes will advance a goal (`GUI-07`, `PLAN-007`). A project outside the currently selected plan also needs a useful preview without implying its raids are actionable today.
+Goal and project views show progress and organization but often make users leave to discover what materials or nodes will advance a goal (`GUI-07`, `PLAN-007`). A project view also needs a useful preview without implying its raids are actionable today: Dailies plans across all goals in the global order, and a project (including one chosen as Dailies' optional project filter) only narrows it.
 
 ## What Changes
 
