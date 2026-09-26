@@ -25,6 +25,26 @@ export const abilityLevelsByRarity: readonly {
   level: abilityCapByRarity[rarity],
 }))
 
+// Rank is omitted entirely for a Mow (plan §16 phase 6) — Mows have no rank ladder, so offering the
+// toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs` never
+// handle for that entity. Unlock, by contrast, applies to both — a Mow's resource cost just isn't
+// estimated yet (see `unlockResourceNeed`'s `isMow` short-circuit).
+const CHARACTER_GOAL_KINDS: GoalKind[] = [
+  "Unlock",
+  "Ascension",
+  "Ability",
+  "Upgrade",
+  "Rank",
+]
+const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
+
+/** The goal kinds the creation form offers for a unit of the given kind. */
+export function goalKindsForEntity(
+  entityType: "Character" | "Mow"
+): GoalKind[] {
+  return entityType === "Mow" ? MOW_GOAL_KINDS : CHARACTER_GOAL_KINDS
+}
+
 /** True once a unit has climbed its entire rank ladder — a Rank goal (and, for a Character, an
  * Upgrade goal's rank-range picker) has nowhere left to target. */
 export function isAtMaxRank(currentRank: Rank | undefined): boolean {

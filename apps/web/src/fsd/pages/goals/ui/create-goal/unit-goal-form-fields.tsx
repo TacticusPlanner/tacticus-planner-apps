@@ -5,26 +5,13 @@ import { Label } from "@workspace/ui/components/label"
 
 import type { UnitId } from "@workspace/game-domain"
 
-import type { GoalKind } from "@/entities/goal"
 import { UnitCombobox } from "@/shared/ui"
+import { goalKindsForEntity } from "../../model/goal-creation-form/goal-validation"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalTypeCards } from ".//goal-type-cards"
 import { GoalTypeToggleGroup } from "../shared/goal-visuals"
 import { UnitInfoCard } from ".//unit-info-card"
-
-// Rank is omitted entirely on the MoW tab (plan §16 phase 6) — MoWs have no rank ladder, so offering
-// the toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs`
-// never handle for that entity. Unlock, by contrast, applies to both — a MoW's resource cost just
-// isn't estimated yet (see `unlockResourceNeed`'s `isMow` short-circuit).
-const CHARACTER_GOAL_KINDS: GoalKind[] = [
-  "Unlock",
-  "Ascension",
-  "Ability",
-  "Upgrade",
-  "Rank",
-]
-const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
 
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
@@ -48,8 +35,7 @@ export function UnitGoalFormFields({
   unitIcon: (id: UnitId) => string | undefined
 }) {
   const { t } = useTranslation()
-  const goalKinds =
-    form.entityType === "Mow" ? MOW_GOAL_KINDS : CHARACTER_GOAL_KINDS
+  const goalKinds = goalKindsForEntity(form.entityType)
 
   return (
     <form

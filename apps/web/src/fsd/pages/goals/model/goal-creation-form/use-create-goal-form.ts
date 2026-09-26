@@ -201,6 +201,7 @@ export function useCreateGoalForm({
     acquisitionSourceSelection,
     projectSelection,
     setFarmingStrategy,
+    enabledTypes,
     setEnabledTypes,
     setIncludeSuggestedUnlock,
     setIncludeSuggestedAscension,
