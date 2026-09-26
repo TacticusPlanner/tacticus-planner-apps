@@ -49,7 +49,7 @@ export function StatusBadge({ status }: { status: GoalStatus }) {
  * treatment, since at least one reason genuinely is a dead end right now.
  *
  * `progress`, when passed, folds in the rarity/level reachable-ceiling line (`reachableCeilingLabel`)
- * for a Rank/Level goal that's currently capped — the same underlying "something currently limits
+ * for a Rank goal or level requirement that's currently capped — the same underlying "something currently limits
  * this goal" idea `StackedProgressBar`'s ceiling marker also surfaces, consolidated into this one
  * tooltip rather than requiring a second hover elsewhere. */
 export function BlockedIndicator({
@@ -77,7 +77,6 @@ export function BlockedIndicator({
   const isOnlyRestrictedByPrerequisite = blockers.reasons.every(
     (reason) =>
       reason.kind === "PrerequisiteNotReached" ||
-      reason.kind === "MissingLevelPrerequisite" ||
       reason.kind === "MissingAscensionPrerequisite" ||
       reason.kind === "MissingUnlockPrerequisite"
   )

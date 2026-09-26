@@ -8,8 +8,7 @@ import type { useGoalCatalog } from "../shared/use-goal-catalog"
  * Derives the farm/shard-location picker's state for `GoalDetailSheet`: Rank goals never expose a
  * farming-location override (product decision), Unlock goals farm a shard rather than an upgrade so
  * their location list comes from the character's own catalog `shardLocations` (the snapshot-derived
- * upgrade requirement every other costed goal type uses is always empty for Unlock), and Level goals
- * are uncosted so nothing farmable applies at all. Split out of goal-detail-sheet.tsx to keep that
+ * upgrade requirement every other costed goal type uses is always empty for Unlock). Split out of goal-detail-sheet.tsx to keep that
  * file under this repo's max-lines rule, mirroring how goal-projects-field.tsx/goal-locations-field.tsx
  * were split out for the same reason.
  */
@@ -21,7 +20,6 @@ export function useGoalLocationGroups(
 ) {
   const isRank = detail?.goalType === "Rank"
   const isUnlock = detail?.goalType === "Unlock"
-  const isLevel = detail?.goalType === "Level"
 
   const upgradeLocationGroups = useMemo(() => {
     if (!detail?.snapshot) return []
@@ -58,11 +56,10 @@ export function useGoalLocationGroups(
   ]
   const overrideValid =
     isRank ||
-    isLevel ||
     selectedLocations.length === 0 ||
     locationGroups.every((group) =>
       group.battleIds.some((id) => selectedLocations.includes(id))
     )
 
-  return { isRank, isUnlock, isLevel, allLocations, overrideValid }
+  return { isRank, isUnlock, allLocations, overrideValid }
 }

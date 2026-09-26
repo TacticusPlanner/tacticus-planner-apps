@@ -3,13 +3,6 @@ import type { Progression, UnitId } from "@workspace/game-domain"
 
 export type CreateGoalPrefill =
   | {
-      entityType: "Character"
-      entityId: UnitId
-      goalType: "Level"
-      requiredLevel: number
-      projectIds: string[]
-    }
-  | {
       entityType: "Character" | "Mow"
       entityId: UnitId
       goalType: "Ascension"

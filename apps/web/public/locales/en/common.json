@@ -491,7 +491,6 @@
         "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
         "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
-        "MissingLevelPrerequisite": "A Level goal reaching level {{level}} is required.",
         "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required.",
         "MissingUnlockPrerequisite": "An Unlock goal for {{unit}} is required."
       },
@@ -588,7 +587,9 @@
       "reorderGoals": "Reorder",
       "reorderDone": "Done",
       "pauseAllGoals": "Pause all goals",
-      "resumeAllGoals": "Resume all goals"
+      "resumeAllGoals": "Resume all goals",
+      "assemblyRankTargetTaken": "This project already has this unit's {{target}} Rank goal.",
+      "membershipConflictRank": "{{project}} already contains an active or paused Rank goal for this unit with the target {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
@@ -625,8 +626,7 @@
         "Ascension": "Ascension",
         "Ability": "Ability",
         "Unlock": "Unlock",
-        "Upgrade": "Upgrade",
-        "Level": "Level"
+        "Upgrade": "Upgrade"
       },
       "rank": {
         "start": "From rank",
@@ -678,10 +678,8 @@
       },
       "level": {
         "current": "Current level",
-        "target": "Target level",
         "booksNeeded": "≈ {{count}} Legendary XP Books",
-        "goldToApply": "≈ {{gold}} gold to apply",
-        "costDisclaimer": "Netted against your owned XP books. No days estimate — XP books aren't farmed from campaign energy."
+        "goldToApply": "≈ {{gold}} gold to apply"
       },
       "farmingStrategy": {
         "label": "Farming strategy",
@@ -751,10 +749,8 @@
       "suggestions": {
         "includeUnlock": "Include the suggested Unlock goal",
         "includeAscension": "Include the suggested Ascension goal",
-        "includeLevel": "Include the suggested Level goal (reach level {{level}})",
         "unlockRequired": "required, this character isn't owned yet",
-        "ascensionRequired": "required to reach the target rank",
-        "levelRequired": "required to reach the target rank/ability level"
+        "ascensionRequired": "required to reach the target rank"
       },
       "validation": {
         "alreadyUnlocked": "This character is already unlocked.",
@@ -762,16 +758,19 @@
         "progressionAlreadyReached": "The selected progression has already been reached.",
         "abilityRange": "At least one ability must increase and neither range may decrease.",
         "abilityAlreadyReached": "The selected ability levels have already been reached.",
-        "levelAlreadyReached": "The selected level has already been reached.",
         "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
-        "levelMaxed": "This character has already reached the maximum level.",
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit."
       },
       "startPaused": "Create paused",
-      "startPausedDescription": "The goal is created normally but stays out of daily planning until you resume it. Which projects you pick does not affect this."
+      "startPausedDescription": "The goal is created normally but stays out of daily planning until you resume it. Which projects you pick does not affect this.",
+      "levelRequirement": {
+        "title": "Requires level {{required}} (currently {{current}})",
+        "xpRemaining": "{{xp}} XP still to gain",
+        "note": "Shown for reference — this is part of the goal, not a separate goal, and never blocks it."
+      }
     },
     "estimate": {
       "none": "—",
@@ -910,7 +909,6 @@
       "cancel": "Cancel",
       "rankEnd": "Target rank",
       "progressionEnd": "Target progression",
-      "levelEnd": "Target level",
       "activeEnd": "Active ability, target level",
       "passiveEnd": "Passive ability, target level",
       "primaryEnd": "Primary ability, target level",
@@ -919,8 +917,6 @@
       "issues": {
         "rankNotAboveStart": "Choose a rank above the one this goal started from.",
         "progressionNotAboveStart": "Choose a step above the one this goal started from.",
-        "levelNotAboveStart": "Choose a level above the one this goal started from.",
-        "levelAboveMax": "That level is above the maximum character level.",
         "abilityBelowStart": "An ability target can't be below the level this goal started from.",
         "abilityNoAdvance": "Raise at least one ability above where this goal started.",
         "abilityAboveMax": "That level is above the maximum ability level.",
@@ -1050,7 +1046,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place."
+          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
         }
       }
     },
@@ -1082,7 +1078,7 @@
         },
         "addGoals": {
           "title": "Fill the project",
-          "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step."
+          "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step. A unit can have several Rank targets here, but an exact duplicate target is blocked."
         },
         "createGoal": {
           "title": "Create a new goal",
@@ -1098,7 +1094,7 @@
         },
         "goals": {
           "title": "Project goals",
-          "content": "This project's goals appear here, grouped by goal type to start. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
+          "content": "This project's goals appear here, grouped by goal type to start. Each Rank target is its own goal, labelled with its target, and can be reordered, paused, or deleted on its own. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
         },
         "rowActions": {
           "title": "Remove without deleting",

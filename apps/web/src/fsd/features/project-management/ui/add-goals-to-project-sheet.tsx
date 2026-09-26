@@ -1,7 +1,12 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Plus } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
@@ -18,7 +23,13 @@ import {
 } from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { goalQueries, type GoalKind, type GoalSummary } from "@/entities/goal"
+import {
+  describeRankTargetKey,
+  goalQueries,
+  goalRankTargetKey,
+  type GoalKind,
+  type GoalSummary,
+} from "@/entities/goal"
 import {
   projectQueries,
   updateProjectGoals,
@@ -28,12 +39,22 @@ import {
 import { ApiError } from "@/shared/api"
 import { useUnitName } from "@/shared/unit-name"
 
-/** A project holds at most one Active/Paused goal per unit-and-goal-type slot. */
-const slotKey = (goal: {
-  entityType: string
-  entityId: string
-  goalType: string
-}) => `${goal.entityType}:${goal.entityId}:${goal.goalType}`
+/** A project holds at most one Active/Paused goal per non-Rank unit-and-goal-type slot, and at most one
+ * per unit and exact Rank end target (`rankKey`, the normalized `<rank>:<slots>` key) — different Rank
+ * targets for one unit coexist. An unknown Rank target (its detail is still loading) gets a slot of its
+ * own so it never blocks anything; the server stays authoritative. */
+const slotKey = (
+  goal: {
+    goalId: string
+    entityType: string
+    entityId: string
+    goalType: string
+  },
+  rankKey?: string
+) =>
+  goal.goalType === "Rank"
+    ? `${goal.entityType}:${goal.entityId}:Rank:${rankKey ?? `pending:${goal.goalId}`}`
+    : `${goal.entityType}:${goal.entityId}:${goal.goalType}`
 
 const occupiesSlot = (goal: { status: string }) =>
   goal.status === "Active" || goal.status === "Paused"
@@ -101,29 +122,82 @@ export function AddGoalsToProjectSheet({
   const members: ProjectGoalSummary[] = membersQuery.data?.goals ?? []
   const memberIds = new Set(members.map((entry) => entry.goal.goalId))
 
+  // The list endpoints carry summaries only, so an in-flight Rank goal's end target is read from its
+  // detail (shared cache with the Goals page). Only Rank goals of a unit that already has a member or
+  // a pending selection can collide, so other units' goals are never fetched.
+  const entityKey = (goal: { entityType: string; entityId: string }) =>
+    `${goal.entityType}:${goal.entityId}`
+  const inFlightRank = (goal: { goalType: string; status: string }) =>
+    goal.goalType === "Rank" && occupiesSlot(goal)
+  const anchoredUnits = new Set(
+    [
+      ...members.map((entry) => entry.goal),
+      ...goals.filter((goal) => selectedGoalIds.includes(goal.goalId)),
+    ]
+      .filter(inFlightRank)
+      .map(entityKey)
+  )
+  const rankGoalIds = [
+    ...new Set(
+      [...goals, ...members.map((entry) => entry.goal)]
+        .filter(
+          (goal) => inFlightRank(goal) && anchoredUnits.has(entityKey(goal))
+        )
+        .map((goal) => goal.goalId)
+    ),
+  ]
+  const rankDetailQueries = useQueries({
+    queries: rankGoalIds.map((goalId) => ({
+      ...goalQueries.detail(goalId),
+      enabled: isAuthenticated && open,
+    })),
+  })
+  const rankKeys = new Map<string, string>()
+  rankDetailQueries.forEach((query, index) => {
+    const key = query.data ? goalRankTargetKey(query.data) : null
+    if (key) rankKeys.set(rankGoalIds[index]!, key)
+  })
+  const rankKeysPending = rankDetailQueries.some((query) => query.isPending)
+  // "Rank · Silver3 (3/6)" — the target a Rank row stands for, so two milestones for one unit read apart.
+  const rankTargetLabel = (goal: GoalSummary) => {
+    const target = describeRankTargetKey(rankKeys.get(goal.goalId) ?? "")
+    if (!target) return null
+    const rankName = t(`ranks.${target.rank}`, {
+      ns: "progression",
+      defaultValue: target.rank,
+    })
+    return target.slots > 0 ? `${rankName} (${target.slots}/6)` : rankName
+  }
+
   // The endpoint checks slot uniqueness across the *entire* submitted set and rejects the whole save
   // on any collision, so the check here spans both current members and the pending selections —
   // otherwise one conflicting pick would discard the user's whole batch.
   const slotOwners = new Map<string, string>()
   for (const entry of members) {
     if (occupiesSlot(entry.goal)) {
-      slotOwners.set(slotKey(entry.goal), entry.goal.goalId)
+      slotOwners.set(
+        slotKey(entry.goal, rankKeys.get(entry.goal.goalId)),
+        entry.goal.goalId
+      )
     }
   }
   for (const goalId of selectedGoalIds) {
     const goal = goals.find((candidate) => candidate.goalId === goalId)
-    if (goal && occupiesSlot(goal) && !slotOwners.has(slotKey(goal))) {
-      slotOwners.set(slotKey(goal), goal.goalId)
+    const key = goal && slotKey(goal, rankKeys.get(goal.goalId))
+    if (goal && key && occupiesSlot(goal) && !slotOwners.has(key)) {
+      slotOwners.set(key, goal.goalId)
     }
   }
   const blockedReason = (goal: GoalSummary) => {
     if (memberIds.has(goal.goalId) || !occupiesSlot(goal)) return null
-    const owner = slotOwners.get(slotKey(goal))
-    return owner && owner !== goal.goalId
-      ? t("goals.project.assemblySlotTaken", {
+    const owner = slotOwners.get(slotKey(goal, rankKeys.get(goal.goalId)))
+    if (!owner || owner === goal.goalId) return null
+    const target = goal.goalType === "Rank" ? rankTargetLabel(goal) : null
+    return target
+      ? t("goals.project.assemblyRankTargetTaken", { target })
+      : t("goals.project.assemblySlotTaken", {
           type: t(`goals.create.goalTypes.${goal.goalType as GoalKind}`),
         })
-      : null
   }
 
   const goalLabel = (goal: GoalSummary) =>
@@ -255,6 +329,9 @@ export function AddGoalsToProjectSheet({
                         {t(
                           `goals.create.goalTypes.${goal.goalType as GoalKind}`
                         )}
+                        {goal.goalType === "Rank" && rankTargetLabel(goal)
+                          ? ` · ${rankTargetLabel(goal)}`
+                          : ""}
                       </span>
                       {isMember ? (
                         <Badge
@@ -283,7 +360,9 @@ export function AddGoalsToProjectSheet({
         <SheetFooter>
           <Button
             data-testid="add-goals-save"
-            disabled={selectedGoalIds.length === 0 || save.isPending}
+            disabled={
+              selectedGoalIds.length === 0 || save.isPending || rankKeysPending
+            }
             onClick={() => save.mutate()}
           >
             {save.isPending ? <Spinner /> : null}

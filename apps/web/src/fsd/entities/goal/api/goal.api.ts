@@ -38,7 +38,7 @@ export function updateGoal(goalId: string, request: UpdateGoalRequest) {
   return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}`, { body: request })
 }
 
-/** Changes an Active/Paused goal's end target in place (Rank, Ascension, Level, Ability, Upgrade).
+/** Changes an Active/Paused goal's end target in place (Rank, Ascension, Ability, Upgrade).
  * Revision-checked: a stale `expectedRevision` is a 409 (`goalRevisionStale`, see
  * `goalRevisionConflictDetails`); a Rank target already held in a shared project is a 409
  * `projectGoalSlotOccupied`. Submitting the target the goal already has is a no-op. */

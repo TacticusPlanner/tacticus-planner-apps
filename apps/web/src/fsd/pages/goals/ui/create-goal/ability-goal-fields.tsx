@@ -39,7 +39,7 @@ const abilityTrackKeys = {
  * grouped by the rarity tier whose cap first permits each level so the dropdown keeps a tier
  * heading over each block. The current level itself is selectable and means "leave this track
  * where it is"; levels below it are never offered. Levels above the unit's current rarity cap
- * stay selectable (an above-cap target auto-suggests Ascension/Level prerequisites — see
+ * stay selectable (an above-cap target auto-suggests an Ascension prerequisite — see
  * use-goal-prerequisites.ts). */
 function abilityTargetGroups(
   currentLevel: number

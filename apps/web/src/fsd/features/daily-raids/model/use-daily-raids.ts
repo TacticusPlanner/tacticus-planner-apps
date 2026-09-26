@@ -371,9 +371,6 @@ export function useDailyRaids(
         })
       }
       if (detail.goalType === "Unlock") return t("dailies:target.unlock")
-      if (detail.goalType === "Level" && detail.config.level) {
-        return t("dailies:target.level", { value: detail.config.level.end })
-      }
       if (detail.goalType === "Upgrade" && detail.config.upgrade) {
         return t("dailies:target.upgrade", {
           value: detail.config.upgrade.targets.reduce(

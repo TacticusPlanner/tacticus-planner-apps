@@ -31,28 +31,20 @@ function abilityGoal(
 }
 
 function prerequisiteGoal(
-  goalType: "Level" | "Ascension",
-  status: "Active" | "Archived" = "Active"
+  status: "Active" | "Archived" = "Active",
+  end = "Rare:FourStars"
 ): GoalDetail {
   return {
     ...abilityGoal(),
-    goalId: `${goalType}-goal`,
-    goalType,
+    goalId: "Ascension-goal",
+    goalType: "Ascension",
     status,
-    config:
-      goalType === "Level"
-        ? { level: { start: 1, end: 20 } }
-        : {
-            progression: {
-              start: "Common:None",
-              end: "Rare:FourStars",
-            },
-          },
+    config: { progression: { start: "Common:None", end } },
   } as unknown as GoalDetail
 }
 
 describe("implicitPrerequisiteBlockers", () => {
-  it("derives both Level and Ascension gaps for Character abilities", () => {
+  it("derives only the Ascension gap for a Character ability — routine leveling is never a reason", () => {
     const reasons = implicitPrerequisiteBlockers({
       detail: abilityGoal(),
       playerUnit: { xpLevel: 10, progressionIndex: "Common:None" },
@@ -63,11 +55,6 @@ describe("implicitPrerequisiteBlockers", () => {
 
     expect(reasons).toEqual([
       {
-        kind: "MissingLevelPrerequisite",
-        requiredLevel: 20,
-        existingGoalId: undefined,
-      },
-      {
         kind: "MissingAscensionPrerequisite",
         requiredProgression: "Rare:FourStars",
         existingGoalId: undefined,
@@ -75,7 +62,20 @@ describe("implicitPrerequisiteBlockers", () => {
     ])
   })
 
-  it("does not apply a Level prerequisite to a Machine of War ability", () => {
+  it("reports nothing when only routine leveling remains", () => {
+    expect(
+      implicitPrerequisiteBlockers({
+        detail: abilityGoal(),
+        // Level 10 is far below the level-20 target, but the rarity already permits it.
+        playerUnit: { xpLevel: 10, progressionIndex: "Rare:FourStars" },
+        prerequisiteGoals: [],
+        ready: true,
+        unitName: "Test Unit",
+      })
+    ).toEqual([])
+  })
+
+  it("reports the same Ascension gap for a Machine of War ability", () => {
     const reasons = implicitPrerequisiteBlockers({
       detail: abilityGoal("Mow"),
       playerUnit: { xpLevel: 1, progressionIndex: "Common:None" },
@@ -99,24 +99,20 @@ describe("implicitPrerequisiteBlockers", () => {
     expect(
       implicitPrerequisiteBlockers({
         ...params,
-        prerequisiteGoals: [
-          prerequisiteGoal("Level"),
-          prerequisiteGoal("Ascension"),
-        ],
+        prerequisiteGoals: [prerequisiteGoal()],
       })
     ).toEqual([])
 
     expect(
       implicitPrerequisiteBlockers({
         ...params,
-        prerequisiteGoals: [prerequisiteGoal("Level", "Archived")],
+        prerequisiteGoals: [prerequisiteGoal("Archived")],
       }).map((reason) => reason.kind)
-    ).toEqual(["MissingLevelPrerequisite", "MissingAscensionPrerequisite"])
+    ).toEqual(["MissingAscensionPrerequisite"])
   })
 
   it("links an inadequate active prerequisite and waits for loaded inputs", () => {
-    const inadequate = prerequisiteGoal("Level")
-    inadequate.config.level = { start: 1, end: 15 }
+    const inadequate = prerequisiteGoal("Active", "Common:TwoStars")
     expect(
       implicitPrerequisiteBlockers({
         detail: abilityGoal(),
@@ -126,8 +122,8 @@ describe("implicitPrerequisiteBlockers", () => {
         unitName: "Test Unit",
       })[0]
     ).toMatchObject({
-      kind: "MissingLevelPrerequisite",
-      existingGoalId: "Level-goal",
+      kind: "MissingAscensionPrerequisite",
+      existingGoalId: "Ascension-goal",
     })
     expect(
       implicitPrerequisiteBlockers({
@@ -185,7 +181,7 @@ describe("implicitPrerequisiteBlockers", () => {
   })
 
   it("suppresses the missing-Unlock reason when the plan has a non-archived Unlock goal for the unit", () => {
-    const coveringUnlock = prerequisiteGoal("Level")
+    const coveringUnlock = prerequisiteGoal()
     coveringUnlock.goalId = "unlock-goal"
     coveringUnlock.goalType = "Unlock"
     coveringUnlock.status = "Active"
@@ -202,7 +198,7 @@ describe("implicitPrerequisiteBlockers", () => {
   })
 
   it("does not suppress the missing-Unlock reason when the only Unlock goal is archived", () => {
-    const archivedUnlock = prerequisiteGoal("Level", "Archived")
+    const archivedUnlock = prerequisiteGoal("Archived")
     archivedUnlock.goalId = "unlock-goal"
     archivedUnlock.goalType = "Unlock"
 

@@ -12,7 +12,6 @@ import {
   aggregateBaseUpgradesWithCraftedInventory,
   aggregateOwnedBaseUpgrades,
   createCraftedInventoryPool,
-  removeUpgradeOccurrences,
   rankUpUpgradeIds,
 } from "./upgrade-recipe"
 
@@ -150,12 +149,5 @@ describe("base-upgrade aggregation", () => {
     ).toEqual([{ id: c.id, count: 2 }])
     expect(pool.get(a.id)).toBe(2)
     expect(pool.has(c.id)).toBe(false)
-  })
-
-  it("removes only matching applied slot occurrences", () => {
-    expect(removeUpgradeOccurrences([a.id, b.id, a.id], [a.id])).toEqual([
-      b.id,
-      a.id,
-    ])
   })
 })

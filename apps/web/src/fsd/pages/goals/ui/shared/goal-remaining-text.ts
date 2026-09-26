@@ -70,7 +70,7 @@ export function formatGoalRemainingText(
 ): string | null {
   const fmt = (value: number) => new Intl.NumberFormat(language).format(value)
 
-  if (progress.kind === "Level") {
+  if (progress.kind === "LevelRequirement") {
     const count = progress.target - progress.current
     if (count <= 0) return null
     return progress.remainingXp

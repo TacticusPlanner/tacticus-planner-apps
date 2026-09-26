@@ -9,7 +9,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 /** One bar, two overlaid fills: a striped "potential" layer (only when it exceeds actual) under a
  *  solid "actual" layer, plus an optional marker at the highest point *currently* reachable (a Rank
- *  or Level goal's `reachableRatio` — rarity and, for Rank, level too, cap how far the goal's own
+ *  goal's or level requirement's `reachableRatio` — rarity and, for Rank, level too, cap how far the goal's own
  *  target scale can advance before further Ascending/leveling; `null` when nothing currently
  *  restricts it). One accessible `role="progressbar"` element carries both ratios via
  *  `aria-valuetext`, replacing the two separate `Progress` bars/captions this superseded; the marker

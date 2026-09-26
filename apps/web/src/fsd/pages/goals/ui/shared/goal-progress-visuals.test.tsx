@@ -21,6 +21,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 import {
   GoalProgressDisplay,
   GoalProgressLegend,
+  GoalTargetDisplay,
 } from "./goal-progress-visuals"
 
 describe("GoalProgressDisplay", () => {
@@ -172,13 +173,13 @@ describe("GoalProgressDisplay", () => {
     expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
   })
 
-  it("shows levels/xp remaining in the explanation popover for a Level goal with a potential ratio", () => {
+  it("shows levels/xp remaining in the explanation popover for a level requirement with a potential ratio", () => {
     render(
       <GoalProgressDisplay
         potentialRatio={0.8}
         progress={
           {
-            kind: "Level",
+            kind: "LevelRequirement",
             current: 44,
             target: 50,
             ratio: 0.5,
@@ -229,12 +230,12 @@ describe("GoalProgressDisplay", () => {
     expect(tooltip).toHaveTextContent("reachableCeilingReasonRarity")
   })
 
-  it("renders a ceiling marker naming the reachable level, for a Level goal with a currently-reachable ratio", async () => {
+  it("renders a ceiling marker naming the reachable level, for a level requirement with a currently-reachable ratio", async () => {
     render(
       <GoalProgressDisplay
         progress={
           {
-            kind: "Level",
+            kind: "LevelRequirement",
             current: 15,
             target: 50,
             ratio: 0.1,
@@ -333,5 +334,40 @@ describe("GoalProgressLegend", () => {
   it("renders once when show is true", () => {
     render(<GoalProgressLegend show={true} />)
     expect(screen.getByTestId("goal-progress-legend")).toBeInTheDocument()
+  })
+})
+
+describe("GoalTargetDisplay for Rank milestones", () => {
+  const rank = (target: string, targetSlots: number) =>
+    ({
+      kind: "Rank",
+      current: "Silver2",
+      target,
+      targetSlots,
+      ratio: 0.4,
+      reachableRatio: null,
+    }) as never
+
+  it("labels each milestone's own target so two goals for one character read apart", () => {
+    const { unmount } = render(
+      <GoalTargetDisplay progress={rank("Silver3", 0)} />
+    )
+    expect(screen.getByText(/ranks\.Silver3/)).toBeInTheDocument()
+    unmount()
+
+    render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
+    expect(screen.getByText(/ranks\.Gold1/)).toBeInTheDocument()
+    expect(screen.queryByText(/ranks\.Silver3/)).not.toBeInTheDocument()
+  })
+
+  it("adds the applied slots for a partial target and nothing for a clean one", () => {
+    const { unmount } = render(
+      <GoalTargetDisplay progress={rank("Gold1", 3)} />
+    )
+    expect(screen.getByText("(3/6)")).toBeInTheDocument()
+    unmount()
+
+    render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
+    expect(screen.queryByText(/\/6\)/)).not.toBeInTheDocument()
   })
 })

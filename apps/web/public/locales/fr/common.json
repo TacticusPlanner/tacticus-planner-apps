@@ -491,7 +491,6 @@
         "PrerequisiteNotReached": "En attente qu'un objectif préalable soit atteint en premier.",
         "PlayerDataUnavailable": "Les données du joueur pour cet objectif ne sont pas encore synchronisées.",
         "CatalogDataUnavailable": "Les données de jeu n'ont pas encore fini de se charger.",
-        "MissingLevelPrerequisite": "Un objectif de Niveau atteignant le niveau {{level}} est requis.",
         "MissingAscensionPrerequisite": "Un objectif d'Ascension atteignant {{progression}} est requis.",
         "MissingUnlockPrerequisite": "Un objectif de Déblocage pour {{unit}} est requis."
       },
@@ -588,7 +587,9 @@
       "reorderGoals": "Réorganiser",
       "reorderDone": "Terminé",
       "pauseAllGoals": "Mettre tous les objectifs en pause",
-      "resumeAllGoals": "Reprendre tous les objectifs"
+      "resumeAllGoals": "Reprendre tous les objectifs",
+      "assemblyRankTargetTaken": "Ce projet contient déjà l'objectif de rang {{target}} de cette unité.",
+      "membershipConflictRank": "{{project}} contient déjà un objectif de rang actif ou en pause pour cette unité avec la cible {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
@@ -625,8 +626,7 @@
         "Ascension": "Ascension",
         "Ability": "Capacité",
         "Unlock": "Déblocage",
-        "Upgrade": "Amélioration",
-        "Level": "Niveau"
+        "Upgrade": "Amélioration"
       },
       "rank": {
         "start": "Du rang",
@@ -678,10 +678,8 @@
       },
       "level": {
         "current": "Niveau actuel",
-        "target": "Niveau cible",
         "booksNeeded": "≈ {{count}} livres d'XP légendaires",
-        "goldToApply": "≈ {{gold}} or à appliquer",
-        "costDisclaimer": "Déduit de vos livres d'XP possédés. Pas d'estimation en jours — les livres d'XP ne se farment pas avec de l'énergie de campagne."
+        "goldToApply": "≈ {{gold}} or à appliquer"
       },
       "farmingStrategy": {
         "label": "Stratégie de farming",
@@ -751,10 +749,8 @@
       "suggestions": {
         "includeUnlock": "Inclure l'objectif de Déblocage suggéré",
         "includeAscension": "Inclure l'objectif d'Ascension suggéré",
-        "includeLevel": "Inclure l'objectif de Niveau suggéré (atteindre le niveau {{level}})",
         "unlockRequired": "requis, ce personnage n'est pas encore possédé",
-        "ascensionRequired": "requis pour atteindre le rang cible",
-        "levelRequired": "requis pour atteindre le rang/niveau de capacité cible"
+        "ascensionRequired": "requis pour atteindre le rang cible"
       },
       "validation": {
         "alreadyUnlocked": "Ce personnage est déjà débloqué.",
@@ -762,16 +758,19 @@
         "progressionAlreadyReached": "L'ascension sélectionnée a déjà été atteinte.",
         "abilityRange": "Au moins une capacité doit augmenter, et aucune plage ne peut diminuer.",
         "abilityAlreadyReached": "Les niveaux de capacité sélectionnés ont déjà été atteints.",
-        "levelAlreadyReached": "Le niveau sélectionné a déjà été atteint.",
         "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
         "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
-        "levelMaxed": "Ce personnage a déjà atteint le niveau maximum.",
         "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité."
       },
       "startPaused": "Créer en pause",
-      "startPausedDescription": "L'objectif est créé normalement mais reste hors de la planification quotidienne jusqu'à ce que vous le repreniez. Les projets choisis n'y changent rien."
+      "startPausedDescription": "L'objectif est créé normalement mais reste hors de la planification quotidienne jusqu'à ce que vous le repreniez. Les projets choisis n'y changent rien.",
+      "levelRequirement": {
+        "title": "Nécessite le niveau {{required}} (actuellement {{current}})",
+        "xpRemaining": "Il reste {{xp}} XP à gagner",
+        "note": "À titre indicatif : cela fait partie de l'objectif, ce n'est pas un objectif distinct et il ne le bloque jamais."
+      }
     },
     "estimate": {
       "none": "—",
@@ -910,7 +909,6 @@
       "cancel": "Annuler",
       "rankEnd": "Rang cible",
       "progressionEnd": "Progression cible",
-      "levelEnd": "Niveau cible",
       "activeEnd": "Capacité active, niveau cible",
       "passiveEnd": "Capacité passive, niveau cible",
       "primaryEnd": "Capacité principale, niveau cible",
@@ -919,8 +917,6 @@
       "issues": {
         "rankNotAboveStart": "Choisissez un rang supérieur à celui de départ de cet objectif.",
         "progressionNotAboveStart": "Choisissez une étape supérieure à celle de départ de cet objectif.",
-        "levelNotAboveStart": "Choisissez un niveau supérieur à celui de départ de cet objectif.",
-        "levelAboveMax": "Ce niveau dépasse le niveau maximal du personnage.",
         "abilityBelowStart": "L'objectif d'une capacité ne peut pas être inférieur à son niveau de départ.",
         "abilityNoAdvance": "Augmentez au moins une capacité au-dessus de son point de départ.",
         "abilityAboveMax": "Ce niveau dépasse le niveau maximal de capacité.",
@@ -1050,7 +1046,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement."
+          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1082,7 +1078,7 @@
         },
         "addGoals": {
           "title": "Remplir le projet",
-          "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape."
+          "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape. Une unité peut avoir ici plusieurs cibles de rang, mais une cible exactement en double est bloquée."
         },
         "createGoal": {
           "title": "Créer un nouvel objectif",
@@ -1098,7 +1094,7 @@
         },
         "goals": {
           "title": "Objectifs du projet",
-          "content": "Les objectifs de ce projet apparaissent ici, groupés par type d'objectif au départ. Utilisez Grouper pour passer à un bloc par unité, ou pour désactiver le regroupement et obtenir une liste simple."
+          "content": "Les objectifs de ce projet apparaissent ici, d'abord regroupés par type d'objectif. Chaque cible de rang est un objectif à part entière, étiquetée avec sa cible, et peut être réordonnée, mise en pause ou supprimée séparément. Utilisez Grouper pour passer à un bloc par unité ou désactiver le regroupement pour une liste plate."
         },
         "rowActions": {
           "title": "Retirer sans supprimer",

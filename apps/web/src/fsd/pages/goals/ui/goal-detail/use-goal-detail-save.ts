@@ -27,7 +27,6 @@ export function useGoalDetailSave({
   detail,
   draft,
   isRank,
-  isLevel,
   usesAcquisitionSources,
   isUnlock,
   overrideValid,
@@ -45,7 +44,6 @@ export function useGoalDetailSave({
     "notes" | "selectedLocations" | "farmingStrategy" | "selectedProjectIds"
   >
   isRank: boolean
-  isLevel: boolean
   usesAcquisitionSources: boolean
   isUnlock: boolean
   overrideValid: boolean
@@ -107,7 +105,7 @@ export function useGoalDetailSave({
         goalId: detail.goalId,
         notes: draft.notes.trim() || null,
         farmingLocationIds:
-          isRank || isLevel || usesAcquisitionSources
+          isRank || usesAcquisitionSources
             ? null
             : draft.selectedLocations.length > 0
               ? draft.selectedLocations

@@ -30,6 +30,10 @@ export interface PlanInsightsResult {
   onslaughtDays: number
   estimates: ReadonlyMap<string, EstimateOutcome>
   potentialProgressByGoalId: Map<string, number>
+  /** Potential progress of each Rank/Ability goal's *level requirement* from owned XP books, keyed by
+   *  that goal's id — separate from `potentialProgressByGoalId`, which is the same goal's material
+   *  Potential. */
+  levelPotentialProgressByGoalId: Map<string, number>
   /** The latest completion date (ISO `yyyy-mm-dd`) among the plan's goals that could be estimated,
    *  extended by Onslaught token accumulation when the plan needs more tokens than the account
    *  holds. `null` only when *no* goal in the plan could be estimated — a goal that is blocked or
@@ -55,6 +59,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   onslaughtDays: 0,
   estimates: new Map(),
   potentialProgressByGoalId: new Map(),
+  levelPotentialProgressByGoalId: new Map(),
   completionDate: null,
   unestimatedGoalCount: 0,
   bottlenecks: [],

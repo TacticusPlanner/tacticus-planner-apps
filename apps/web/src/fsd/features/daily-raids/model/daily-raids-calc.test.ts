@@ -119,7 +119,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     },
     snapshot: null,
     events: [],
@@ -812,7 +811,6 @@ describe("daily raid derivation", () => {
         farmingStrategy: "TotalUpgrades",
         farmingLocationIds: null,
         upgrade: null,
-        level: null,
         acquisitionSources: [{ kind: "Campaign", ids: [nodeId] }],
       },
     })
@@ -832,7 +830,6 @@ describe("daily raid derivation", () => {
         farmingStrategy: "TotalUpgrades",
         farmingLocationIds: null,
         upgrade: null,
-        level: null,
         acquisitionSources: [
           { kind: "Campaign", ids: [nodeId] },
           { kind: "Shop", ids: ["guild:shards_hero1"] },
@@ -939,10 +936,13 @@ describe("daily raid derivation", () => {
       recipe: [{ material: baseId, count: 2 }],
       farmLocations: [],
     } as FarmingUpgrade
+    // Three different characters sharing one crafted-inventory pool — the same character can't hold three
+    // identical Rank targets (an exact duplicate), and one character's overlapping targets share slots
+    // instead (see the rank-milestone tests below).
     const details = ["neurothrope", "ahriman", "abraxas"].map((goalId) =>
       goalDetail({
         goalId,
-        entityId: heroId,
+        entityId: unitIdSchema.parse(`hero-${goalId}`),
         goalType: "Rank",
         config: {
           rank: {
@@ -959,7 +959,6 @@ describe("daily raid derivation", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       })
     )
@@ -1011,5 +1010,110 @@ describe("daily raid derivation", () => {
     expect(
       result.today.entries.some((entry) => entry.goalId === "neurothrope")
     ).toBe(false)
+  })
+
+  it("charges overlapping Rank milestones for one character once, so Today does not farm the shared slot twice", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const baseA = upgradeIdSchema.parse("baseA")
+    const baseB = upgradeIdSchema.parse("baseB")
+    const nodeId = battleIdSchema.parse("B1")
+    const character: FarmingCharacter = {
+      id: heroId,
+      name: "Synthetic hero",
+      rankUpUpgrades: [
+        { rank: rankOrder[0], upgradeIds: [baseA] },
+        { rank: rankOrder[1], upgradeIds: [baseB] },
+      ],
+    }
+    const base = (id: typeof baseA, label: string) =>
+      ({
+        id,
+        label,
+        rarity: "Common",
+        stat: "health",
+        crafted: false,
+        recipe: [],
+        farmLocations: [
+          {
+            battleId: nodeId,
+            guaranteed: true,
+            effectiveRate: null,
+            numerator: null,
+            denominator: null,
+            isMythic: false,
+          },
+        ],
+      }) as FarmingUpgrade
+    const rankGoal = (goalId: string, end: number) =>
+      goalDetail({
+        goalId,
+        entityId: heroId,
+        goalType: "Rank",
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[end]!),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          acquisitionSources: null,
+          farmingLocationIds: null,
+          upgrade: null,
+        },
+      })
+    // near: rank0 -> rank1 needs baseA. far: rank0 -> rank2 needs baseA + baseB, baseA being shared.
+    const details = [rankGoal("near", 1), rankGoal("far", 2)]
+
+    const result = calculateDailyRaids({
+      members: details.map((detail, index) => ({
+        priority: index + 1,
+        goal: detail,
+      })),
+      details,
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      inventoryShardById: new Map(),
+      inventoryUpgrades: [],
+      upgradesById: new Map([
+        [baseA, base(baseA, "A")],
+        [baseB, base(baseB, "B")],
+      ]),
+      battlesById: new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 10,
+            dailyAttempts: 999,
+          },
+        ],
+      ]),
+      charactersById: new Map(),
+      mowsById: new Map(),
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: new Map(),
+      getCharacter: () => character,
+      dailyEnergy: 100,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    })
+
+    expect(result?.status).toBe("ready")
+    if (!result || result.status !== "ready") return
+    const farmed = (goalId: string) =>
+      result.today.entries
+        .filter((entry) => entry.goalId === goalId)
+        .reduce((total, entry) => total + entry.itemsFarmed, 0)
+    expect(farmed("near")).toBe(1) // baseA
+    expect(farmed("far")).toBe(1) // baseB only — baseA is already claimed by the earlier milestone
+    expect(result.today).toEqual(result.planDays[0])
   })
 })

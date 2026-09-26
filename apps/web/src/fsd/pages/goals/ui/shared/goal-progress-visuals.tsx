@@ -108,7 +108,14 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
     <span className="flex items-center gap-1.5">
       <RankBadge rank={progress.current} showLabel={false} />
       <ArrowRight className="size-3.5 text-muted-foreground" />
-      <RankBadge rank={progress.target} showLabel={false} />
+      {/* The target is labelled (icon + rank name, plus applied slots for a partial target) so two Rank
+          milestones for one character can be told apart at a glance. */}
+      <RankBadge rank={progress.target} />
+      {progress.targetSlots > 0 ? (
+        <span className="text-xs text-muted-foreground">
+          ({progress.targetSlots}/6)
+        </span>
+      ) : null}
     </span>
   ) : progress.kind === "Ascension" ? (
     <span className="flex items-center gap-1.5">
@@ -127,7 +134,7 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
         total: progress.required,
       })}
     </span>
-  ) : progress.kind === "Level" ? (
+  ) : progress.kind === "LevelRequirement" ? (
     <span>
       {t("goals.overview.levelProgress", {
         current: progress.current,
@@ -154,7 +161,7 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
  * both for an uncontrolled popover (Radix manages its own state) in a single-instance context like
  * the goal-detail sheet.
  *
- * `potentialOnly` (see `LevelGoalSubProgress`) drops the actual reading: the bar renders fully in
+ * `potentialOnly` drops the actual reading: the bar renders fully in
  * the striped "potential" style, the percent shows only the small potential-styled reading, and the
  * breakdown popover is dropped. Requires `potentialRatio`, else falls back to normal. */
 export function GoalProgressDisplay({
@@ -269,7 +276,8 @@ export function GoalProgressDisplay({
               })}
             </>
           ) : null}
-          {progress.kind === "Level" && progress.target > progress.current ? (
+          {progress.kind === "LevelRequirement" &&
+          progress.target > progress.current ? (
             <>
               {" "}
               {t("goals.overview.actualLevelsRemaining", {
@@ -297,7 +305,7 @@ export function GoalProgressDisplay({
               })}
             </>
           ) : null}
-          {progress.kind === "Level" && progress.remainingXp ? (
+          {progress.kind === "LevelRequirement" && progress.remainingXp ? (
             <>
               {" "}
               {t("goals.overview.potentialXpRemaining", {
@@ -366,7 +374,7 @@ export function GoalProgressDisplay({
             actualRatio={showPotentialOnly ? 0 : progress.ratio}
             ceilingLabel={ceilingLabel}
             ceilingRatio={
-              progress.kind === "Rank" || progress.kind === "Level"
+              progress.kind === "Rank" || progress.kind === "LevelRequirement"
                 ? progress.reachableRatio
                 : null
             }

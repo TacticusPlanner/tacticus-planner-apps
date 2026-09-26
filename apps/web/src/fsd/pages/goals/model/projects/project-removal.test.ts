@@ -117,6 +117,8 @@ describe("planProjectRemoval", () => {
         destination: project(),
         goal,
         destinationGoals: [member()],
+        rankTargetKey: "5:0",
+        rankKeyByGoalId: new Map([["goal-other", "5:0"]]),
       })
     ).toEqual({
       kind: "conflict",
@@ -124,9 +126,24 @@ describe("planProjectRemoval", () => {
         projectId: "proj-default",
         existingGoalId: "goal-other",
         goalTypes: ["Rank"],
+        rankTargetKey: "5:0",
       },
       destination: project(),
     })
+  })
+
+  it("relocates a Rank goal into a destination that holds a different Rank target for the unit", () => {
+    expect(
+      planProjectRemoval({
+        memberships: ["proj-a"],
+        projectId: "proj-a",
+        destination: project(),
+        goal,
+        destinationGoals: [member()],
+        rankTargetKey: "5:0",
+        rankKeyByGoalId: new Map([["goal-other", "6:0"]]),
+      })
+    ).toMatchObject({ kind: "relocate", projectIds: ["proj-default"] })
   })
 
   it("lets a Completed or Archived goal relocate into an occupied slot", () => {
@@ -200,6 +217,8 @@ describe("planProjectRemoval", () => {
         destination: chosen,
         goal,
         destinationGoals: [member()],
+        rankTargetKey: "5:0",
+        rankKeyByGoalId: new Map([["goal-other", "5:0"]]),
       })
     ).toEqual({
       kind: "conflict",
@@ -207,6 +226,7 @@ describe("planProjectRemoval", () => {
         projectId: "proj-chosen",
         existingGoalId: "goal-other",
         goalTypes: ["Rank"],
+        rankTargetKey: "5:0",
       },
       destination: chosen,
     })

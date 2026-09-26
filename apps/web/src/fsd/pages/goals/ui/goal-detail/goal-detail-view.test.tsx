@@ -36,6 +36,7 @@ describe("GoalDetailView", () => {
           kind: "Rank",
           current: "Stone1",
           target: "Iron1",
+          targetSlots: 0,
           ratio: 0.25,
           reachableRatio: null,
           reachableRank: null,

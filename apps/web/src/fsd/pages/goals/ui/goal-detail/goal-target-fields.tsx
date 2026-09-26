@@ -25,7 +25,6 @@ import {
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
 import { ProgressionBadge, RankBadge, UpgradeIcon } from "@/shared/ui"
 
-import { MAX_CHARACTER_LEVEL } from "../../model/goal-creation-form/goal-validation"
 import {
   MAX_UPGRADE_QUANTITY,
   rankEndOptionsFor,
@@ -167,32 +166,6 @@ function AscensionFields({
   )
 }
 
-function LevelFields({
-  detail,
-  draft,
-  onChange,
-  portalContainer,
-}: FieldsProps<"Level">) {
-  const { t } = useTranslation()
-  const start = detail.config.level?.start ?? 0
-
-  return (
-    <TargetSelect
-      label={t("goals.target.levelEnd")}
-      onValueChange={(value) => onChange({ kind: "Level", end: Number(value) })}
-      portalContainer={portalContainer}
-      testId="goal-target-level-end"
-      value={String(draft.end)}
-    >
-      {range(start + 1, MAX_CHARACTER_LEVEL).map((level) => (
-        <SelectItem key={level} value={String(level)}>
-          {level}
-        </SelectItem>
-      ))}
-    </TargetSelect>
-  )
-}
-
 /** Each track is edited on its own — leaving one at its stored value is a valid edit. */
 function AbilityFields({
   detail,
@@ -317,8 +290,6 @@ export function GoalTargetFields({
       return <RankFields {...common} draft={draft} />
     case "Ascension":
       return <AscensionFields {...common} draft={draft} />
-    case "Level":
-      return <LevelFields {...common} draft={draft} />
     case "Ability":
       return <AbilityFields {...common} draft={draft} />
     case "Upgrade":
@@ -343,8 +314,6 @@ export function GoalTargetStart({ detail }: { detail: GoalDetail }) {
       return config.progression ? (
         <ProgressionBadge value={config.progression.start as Progression} />
       ) : null
-    case "Level":
-      return config.level ? <span>{config.level.start}</span> : null
     case "Ability":
       return config.ability ? (
         <span>

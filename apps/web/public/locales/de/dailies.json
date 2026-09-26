@@ -5,7 +5,6 @@
     "ability": "Fähigkeit {{value}}",
     "ascension": "Aufstieg {{value}}",
     "unlock": "Freischalten",
-    "level": "Stufe {{value}}",
     "upgrade": "{{value}} Verbesserungen",
     "other": "Ziel: {{value}}"
   },

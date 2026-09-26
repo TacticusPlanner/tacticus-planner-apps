@@ -23,7 +23,6 @@ function toGoalConfig(config: CreateGoalConfigRequest): GoalConfig {
     acquisitionSources: config.acquisitionSources ?? null,
     farmingLocationIds: config.farmingLocationIds ?? null,
     upgrade: config.upgrade ?? null,
-    level: config.level ?? null,
   }
 }
 
@@ -69,7 +68,7 @@ export function buildPreviewGoalDetails(
  * aggregated `completionDate`/`energyTotal`, which cover every member goal, not just the new ones.
  *
  * `null` means "nothing costed to estimate" — every goal in `newDetails` is an uncosted type
- * (Level, Character Ability) with no farmable need, so there's nothing to show a duration for. A
+ * (Character Ability) with no farmable need, so there's nothing to show a duration for. A
  * `Blocked` outcome is returned as-is (surfacing whichever new goal hit it first) rather than folded
  * into the Estimated case.
  */

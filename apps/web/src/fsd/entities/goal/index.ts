@@ -27,6 +27,12 @@ export type {
 } from "./ui/goal-filters"
 export { isGoalGroupValue } from "./model/types"
 export { goalRevisionConflictDetails } from "./model/goal-target-conflict"
+export {
+  describeRankTargetKey,
+  goalRankTargetKey,
+  rankTargetKey,
+  rankTargetSlots,
+} from "./model/rank-target-key"
 export type {
   AbilityTarget,
   CombinedGoalSpec,
@@ -47,7 +53,6 @@ export type {
   GoalSummary,
   GoalTargetEdit,
   GoalTargetSnapshot,
-  LevelTarget,
   ProgressionTarget,
   ProjectMembership,
   RankTarget,

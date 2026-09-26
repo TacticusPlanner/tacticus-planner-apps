@@ -104,6 +104,129 @@ describe("Rank need after the target is edited in place", () => {
   })
 })
 
+describe("Overlapping Rank milestones for one character are allocated once", () => {
+  // The fixture character has 6 distinctly-identified slots per rank, so counts are per slot. Indices:
+  // 0 = Stone1, 1 = Stone2, 2 = Stone3.
+  const count = (needs: { count: number }[] | null) =>
+    (needs ?? []).reduce((total, need) => total + need.count, 0)
+  const rank = (
+    end: number,
+    extras: { endPointFive?: boolean; endAppliedUpgrades?: number } = {}
+  ) => goalDetail({ start: 0, end, ...extras })
+  const player = { rank: "Stone1", appliedUpgradeSlots: [] } as never
+
+  const allocate = (
+    goals: GoalDetail[],
+    playerCharacter: never = player,
+    covered = new Set<string>()
+  ) =>
+    goals.map((detail) => ({
+      slots: rankSlotsRemaining({
+        detail,
+        character,
+        playerCharacter,
+        coveredRankSlots: covered,
+      }),
+      needs: rankResourceNeed({
+        detail,
+        character,
+        playerCharacter,
+        upgradesById: new Map(),
+        coveredRankSlots: covered,
+      }),
+    }))
+
+  it("charges the shared progression to the first milestone and only the extra to the second", () => {
+    const [near, far] = allocate([rank(1), rank(2)])
+
+    // Stone1 -> Stone2 is 6 slots; Stone1 -> Stone3 adds Stone2's 6 more, not 12.
+    expect(count(near!.needs)).toBe(6)
+    expect(count(far!.needs)).toBe(6)
+    expect(count(near!.needs) + count(far!.needs)).toBe(12) // not 6 + 12
+    expect([near!.slots, far!.slots]).toEqual([6, 6])
+  })
+
+  it("gives a later, wholly covered target no additional demand but keeps it a distinct goal", () => {
+    const [far, near] = allocate([rank(2), rank(1)])
+
+    expect(count(far!.needs)).toBe(12)
+    expect(near!.needs).toEqual([]) // applicable, zero additional — not null
+    expect(near!.slots).toBe(0)
+  })
+
+  it("splits overlapping partial slots at the end rank", () => {
+    // First: Stone1 -> Stone2 clean (6 slots). Second: Stone1 -> Stone2 with the top-row half step, which
+    // adds only Stone2's three top-row slots.
+    const [clean, partial] = allocate([
+      rank(1),
+      rank(1, { endPointFive: true }),
+    ])
+
+    expect(count(clean!.needs)).toBe(6)
+    expect(count(partial!.needs)).toBe(3)
+  })
+
+  it("nets slots the player already applied before allocating, once", () => {
+    const applied = { rank: "Stone1", appliedUpgradeSlots: [0, 1] } as never
+    const [near, far] = allocate([rank(1), rank(2)], applied)
+
+    expect(count(near!.needs)).toBe(4) // Stone1's 6 minus 2 applied
+    expect(count(far!.needs)).toBe(6) // Stone2 only
+  })
+
+  it("does not consume an owned crafted upgrade twice for overlapping milestones", () => {
+    const crafted = upgradeId("crafted")
+    const base = upgradeId("base")
+    const oneSlot: FarmingCharacter = {
+      ...character,
+      rankUpUpgrades: [{ rank: "Stone1", upgradeIds: [crafted] }],
+    }
+    const upgradesById = new Map([
+      [
+        crafted,
+        { id: crafted, crafted: true, recipe: [{ material: base, count: 2 }] },
+      ],
+      [base, { id: base, crafted: false, recipe: [] }],
+    ]) as unknown as ReadonlyMap<never, FarmingUpgrade>
+    const pool = createCraftedInventoryPool(
+      [{ upgradeId: crafted, amount: 1 }],
+      upgradesById as never
+    )
+    const covered = new Set<string>()
+    const run = (detail: GoalDetail) =>
+      rankResourceNeed({
+        detail,
+        character: oneSlot,
+        playerCharacter: player,
+        upgradesById: upgradesById as never,
+        craftedInventory: pool,
+        coveredRankSlots: covered,
+      })
+
+    // The first milestone spends the owned crafted upgrade (no base needed); the second crosses the
+    // same slot, so it neither re-spends inventory nor asks for its base materials.
+    expect(run(rank(1))).toEqual([])
+    expect(run(rank(1, { endPointFive: true }))).toEqual([])
+    expect(pool.get(crafted)).toBe(0)
+  })
+
+  it("counts a goal's slots before its own claim makes them read as covered", () => {
+    const covered = new Set<string>()
+    const detail = rank(1)
+    const params = { detail, character, playerCharacter: player }
+
+    const slots = rankSlotsRemaining({ ...params, coveredRankSlots: covered })
+    rankResourceNeed({
+      ...params,
+      upgradesById: new Map(),
+      coveredRankSlots: covered,
+    })
+
+    expect(slots).toBe(6)
+    expect(rankSlotsRemaining({ ...params, coveredRankSlots: covered })).toBe(0)
+  })
+})
+
 describe("rankSlotsRemaining", () => {
   it("counts every slot across the full range when nothing is applied yet", () => {
     // Stone1 (index 0) -> Stone3 (index 2): 2 full ranks crossed = 12 slots.

@@ -37,7 +37,7 @@ export type ProjectRemovalPlan =
  * whichever project the user picked (existing or newly created) — see `rework-goal-project-move-action`.
  *
  * `destinationGoals` is the destination project's current members, needed only to pre-flight the
- * project-scoped `(entityType, entityId, goalType)` slot before a relocation. Pass `[]` at render
+ * project-scoped `(entityType, entityId, goalType)` slot before a relocation (for Rank, the exact end-target slot — see `rankTargetKey`/`rankKeyByGoalId`). Pass `[]` at render
  * time (when the menu only needs to know whether the action is available at all) and the freshly
  * fetched members at submit time.
  */
@@ -47,6 +47,8 @@ export function planProjectRemoval({
   destination,
   goal,
   destinationGoals = [],
+  rankTargetKey,
+  rankKeyByGoalId,
 }: {
   memberships: string[]
   projectId: string
@@ -59,6 +61,11 @@ export function planProjectRemoval({
     status: string
   }
   destinationGoals?: ProjectGoalSummary[]
+  /** The moving goal's normalized Rank end target (null for a non-Rank goal). */
+  rankTargetKey?: string | null
+  /** Normalized end targets of the destination's Rank goals, by goal id — a Rank goal only collides with an
+   *  exact same-target Rank goal there. */
+  rankKeyByGoalId?: ReadonlyMap<string, string>
 }): ProjectRemovalPlan {
   // An empty list means membership hasn't loaded, not that this is the goal's only one — computing a
   // relocation from it would move a multi-project goal into the destination. Treated as "destination not
@@ -89,6 +96,8 @@ export function planProjectRemoval({
       entityId: goal.entityId,
       goalTypes: [goal.goalType],
       excludeGoalId: goal.goalId,
+      rankTargetKey,
+      rankKeyByGoalId,
     })
     if (conflict) {
       return { kind: "conflict", conflict, destination }

@@ -26,8 +26,7 @@ import { useGoalPrefill } from ".//use-goal-prefill"
 import { useGoalPrerequisitesAndReview } from ".//use-goal-prerequisites-and-review"
 import { useGoalSubmission } from ".//use-goal-submission"
 import { useGoalValidationState } from ".//use-goal-validation-state"
-import { useLevelFields } from ".//use-level-fields"
-import { useLevelGoalCost } from ".//use-level-goal-cost"
+import { useLevelRequirementPreviews } from ".//use-level-requirement-preview"
 import { useLockedUnitIds } from ".//use-locked-unit-ids"
 import { useProjectSelection } from "../projects/use-project-selection"
 import { useRankFields } from ".//use-rank-fields"
@@ -77,7 +76,6 @@ export function useCreateGoalForm({
   const [includeSuggestedUnlock, setIncludeSuggestedUnlock] = useState(true)
   const [includeSuggestedAscension, setIncludeSuggestedAscension] =
     useState(true)
-  const [includeSuggestedLevel, setIncludeSuggestedLevel] = useState(true)
 
   const [farmingStrategy, setFarmingStrategy] =
     useState<FarmingStrategy>("TotalUpgrades")
@@ -123,14 +121,15 @@ export function useCreateGoalForm({
     abilityPassiveEnd,
   } = abilityFields.state
 
-  const levelFields = useLevelFields()
-  const { levelStart, levelEnd } = levelFields.state
-
-  const levelCost = useLevelGoalCost({
-    enabled: enabledTypes.has("Level"),
-    levelStart,
-    levelEnd,
-    currentXp: playerCharacter?.xp ?? 0,
+  const levelRequirements = useLevelRequirementPreviews({
+    entityType,
+    enabledTypes,
+    rankEnd,
+    rankAdditionalTarget,
+    abilityActiveEnd,
+    abilityPassiveEnd,
+    currentLevel: playerCharacter?.xpLevel,
+    currentXp: playerCharacter?.xp,
     inventoryXpBooks,
   })
 
@@ -148,12 +147,10 @@ export function useCreateGoalForm({
     entityId,
     playerEntity,
     rank: playerCharacter?.rank,
-    xpLevel: playerCharacter?.xpLevel,
     rankFields,
     upgradeFields,
     ascensionFields,
     abilityFields,
-    levelFields,
     setEnabledTypes,
   })
 
@@ -200,7 +197,6 @@ export function useCreateGoalForm({
     rankFields,
     ascensionFields,
     abilityFields,
-    levelFields,
     upgradeFields,
     acquisitionSourceSelection,
     projectSelection,
@@ -208,7 +204,6 @@ export function useCreateGoalForm({
     setEnabledTypes,
     setIncludeSuggestedUnlock,
     setIncludeSuggestedAscension,
-    setIncludeSuggestedLevel,
     setStartPaused,
     resetPrefillGuard,
     setEntityType,
@@ -225,7 +220,6 @@ export function useCreateGoalForm({
     setEntityType,
     setEnabledTypes,
     selectProjects: projectSelection.selectProjects,
-    setLevelEnd: levelFields.state.setLevelEnd,
     setProgressionEnd: ascensionFields.state.setProgressionEnd,
   })
 
@@ -258,7 +252,6 @@ export function useCreateGoalForm({
     prerequisites,
     includesUnlock,
     includesAscension,
-    includesLevel,
     progressionPreview,
     reviewItems,
   } = useGoalPrerequisitesAndReview({
@@ -272,12 +265,10 @@ export function useCreateGoalForm({
         : undefined,
     enabledTypes,
     rankEnd,
-    rankAdditionalTarget,
     abilityActiveEnd,
     abilityPassiveEnd,
     includeSuggestedUnlock,
     includeSuggestedAscension,
-    includeSuggestedLevel,
     progressionStart,
     progressionEnd,
     plan: acquisitionPlan,
@@ -293,7 +284,6 @@ export function useCreateGoalForm({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
-    atMaxLevel,
     validationMessage,
     canSubmit,
   } = useGoalValidationState({
@@ -312,8 +302,6 @@ export function useCreateGoalForm({
     abilityActiveEnd,
     abilityPassiveStart,
     abilityPassiveEnd,
-    levelStart,
-    levelEnd,
     upgradeFieldsValid: upgradeFields.isValid,
   })
 
@@ -321,15 +309,12 @@ export function useCreateGoalForm({
     enabledTypes,
     includesUnlock,
     includesAscension,
-    includesLevel,
     ascensionSuggestion: prerequisites.needsAscension,
-    levelSuggestion: prerequisites.needsLevel,
     ...rankFields.state,
     rankEndPointFive,
     rankEndAppliedUpgrades,
     ...ascensionFields.state,
     ...abilityFields.state,
-    ...levelFields.state,
     farmingStrategy,
     upgradeTargets,
     plan: acquisitionPlan,
@@ -376,7 +361,8 @@ export function useCreateGoalForm({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
-    atMaxLevel,
+    // Read-only current level for the unit card — a locked character reads as level 1.
+    currentLevel: playerCharacter?.xpLevel ?? 1,
     entityAlreadyOwned: isOwned,
     entityLoading,
     ownedShards: playerEntity?.shards,
@@ -391,16 +377,13 @@ export function useCreateGoalForm({
     setIncludeSuggestedUnlock,
     includeSuggestedAscension,
     setIncludeSuggestedAscension,
-    includeSuggestedLevel,
-    setIncludeSuggestedLevel,
     reviewItems,
     rankAppliedUpgrades,
     rankUpgradeSlotsTotal,
     ...rankFields.state,
     ...ascensionFields.state,
     ...abilityFields.state,
-    ...levelFields.state,
-    levelCost,
+    levelRequirements,
     farmingStrategy,
     setFarmingStrategy,
     ...upgradeFields.state,

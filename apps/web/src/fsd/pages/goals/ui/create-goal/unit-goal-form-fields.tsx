@@ -23,7 +23,6 @@ const CHARACTER_GOAL_KINDS: GoalKind[] = [
   "Ability",
   "Upgrade",
   "Rank",
-  "Level",
 ]
 const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
 
@@ -79,7 +78,9 @@ export function UnitGoalFormFields({
           progression={form.progressionStart}
           abilityActiveLevel={form.abilityActiveStart}
           abilityPassiveLevel={form.abilityPassiveStart}
-          level={form.entityType === "Character" ? form.levelStart : undefined}
+          level={
+            form.entityType === "Character" ? form.currentLevel : undefined
+          }
           shardCount={
             form.entityAlreadyOwned
               ? ((form.usesMythicShards
@@ -105,7 +106,6 @@ export function UnitGoalFormFields({
               (kind === "Rank" && form.atMaxRank) ||
               (kind === "Ascension" && form.atMaxProgression) ||
               (kind === "Ability" && form.atMaxAbility) ||
-              (kind === "Level" && form.atMaxLevel) ||
               (kind === "Upgrade" &&
                 form.entityType === "Character" &&
                 form.atMaxRank)
@@ -134,11 +134,6 @@ export function UnitGoalFormFields({
           {form.atMaxAbility ? (
             <p className="text-xs text-muted-foreground">
               {t("goals.create.validation.abilityMaxed")}
-            </p>
-          ) : null}
-          {form.atMaxLevel ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.validation.levelMaxed")}
             </p>
           ) : null}
           {/* One line per kind that already has an in-flight (Active/Paused) goal for this unit — a
@@ -179,23 +174,6 @@ export function UnitGoalFormFields({
           />
           <FieldLabel className="font-normal">
             {t("goals.create.suggestions.includeAscension")}
-          </FieldLabel>
-        </Field>
-      ) : null}
-
-      {form.prerequisites.needsLevel ? (
-        <Field orientation="horizontal">
-          <Checkbox
-            checked={form.includeSuggestedLevel}
-            data-testid="create-goal-include-level"
-            onCheckedChange={(checked) =>
-              form.setIncludeSuggestedLevel(checked === true)
-            }
-          />
-          <FieldLabel className="font-normal">
-            {t("goals.create.suggestions.includeLevel", {
-              level: form.prerequisites.needsLevel.end,
-            })}
           </FieldLabel>
         </Field>
       ) : null}
@@ -254,9 +232,7 @@ export function UnitGoalFormFields({
                     {t(
                       item.goalType === "Unlock"
                         ? "goals.create.suggestions.unlockRequired"
-                        : item.goalType === "Level"
-                          ? "goals.create.suggestions.levelRequired"
-                          : "goals.create.suggestions.ascensionRequired"
+                        : "goals.create.suggestions.ascensionRequired"
                     )}
                   </span>
                 ) : null}

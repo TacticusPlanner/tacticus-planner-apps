@@ -55,7 +55,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     },
     snapshot: null,
     events: [],
@@ -205,7 +204,6 @@ describe("estimateNewGoalsForProject", () => {
         acquisitionSources: null,
         farmingLocationIds: null,
         upgrade: null,
-        level: null,
       },
     })
 
@@ -242,7 +240,7 @@ describe("estimateNewGoalsForProject", () => {
       ...baseParams,
       existingDetails: [],
       existingPriorities: new Map(),
-      newDetails: [goalDetail({ goalId: "preview-0", goalType: "Level" })],
+      newDetails: [goalDetail({ goalId: "preview-0", goalType: "Unlock" })],
       newBasePriority: 1,
     })
 
@@ -326,7 +324,6 @@ describe("estimateNewGoalsForProject", () => {
           acquisitionSources,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       })
 

@@ -1,6 +1,6 @@
-import type { UnitId } from "@workspace/game-domain"
+import { rankIndex, type UnitId } from "@workspace/game-domain"
 
-import type { GoalKind } from "@/entities/goal"
+import { rankTargetKey, type GoalKind } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 
 import { useProjectGoalConflicts } from "../projects/use-project-goal-conflicts"
@@ -52,12 +52,21 @@ export function useGoalSubmission({
   onCreated: () => void
   resetForm: () => void
 }) {
+  // A Rank goal only conflicts with an in-flight Rank goal at the same normalized end target — distinct
+  // targets coexist (rank-milestones), so the check needs the target being created.
   const projectConflictState = useProjectGoalConflicts({
     projects,
     selectedProjectIds,
     entityType,
     entityId,
     goalTypes,
+    rankTargetKey: goalTypes.includes("Rank")
+      ? rankTargetKey({
+          end: rankIndex(specParams.rankEnd),
+          endPointFive: specParams.rankEndPointFive,
+          endAppliedUpgrades: specParams.rankEndAppliedUpgrades ?? 0,
+        })
+      : null,
   })
   const submissionAllowed =
     canSubmit &&

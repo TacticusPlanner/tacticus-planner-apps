@@ -491,7 +491,6 @@
         "PrerequisiteNotReached": "Wartet darauf, dass zuerst ein Voraussetzungsziel erreicht wird.",
         "PlayerDataUnavailable": "Spielerdaten für dieses Ziel wurden noch nicht synchronisiert.",
         "CatalogDataUnavailable": "Spieldaten wurden noch nicht vollständig geladen.",
-        "MissingLevelPrerequisite": "Ein Stufen-Ziel, das Stufe {{level}} erreicht, ist erforderlich.",
         "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich.",
         "MissingUnlockPrerequisite": "Ein Freischaltungs-Ziel für {{unit}} ist erforderlich."
       },
@@ -588,7 +587,9 @@
       "reorderGoals": "Neu anordnen",
       "reorderDone": "Fertig",
       "pauseAllGoals": "Alle Ziele pausieren",
-      "resumeAllGoals": "Alle Ziele fortsetzen"
+      "resumeAllGoals": "Alle Ziele fortsetzen",
+      "assemblyRankTargetTaken": "Dieses Projekt enthält bereits das Rang-Ziel {{target}} dieser Einheit.",
+      "membershipConflictRank": "{{project}} enthält bereits ein aktives oder pausiertes Rang-Ziel für diese Einheit mit dem Ziel {{target}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} von {{total}} Zielen aktualisiert.",
@@ -625,8 +626,7 @@
         "Ascension": "Aufstieg",
         "Ability": "Fähigkeit",
         "Unlock": "Freischalten",
-        "Upgrade": "Upgrade",
-        "Level": "Stufe"
+        "Upgrade": "Upgrade"
       },
       "rank": {
         "start": "Von Rang",
@@ -678,10 +678,8 @@
       },
       "level": {
         "current": "Aktuelle Stufe",
-        "target": "Zielstufe",
         "booksNeeded": "≈ {{count}} legendäre XP-Bücher",
-        "goldToApply": "≈ {{gold}} Gold zum Anwenden",
-        "costDisclaimer": "Verrechnet mit deinen vorhandenen XP-Büchern. Keine Tagesschätzung — XP-Bücher werden nicht mit Kampagnen-Energie gefarmt."
+        "goldToApply": "≈ {{gold}} Gold zum Anwenden"
       },
       "farmingStrategy": {
         "label": "Farming-Strategie",
@@ -751,10 +749,8 @@
       "suggestions": {
         "includeUnlock": "Das vorgeschlagene Freischaltungsziel einbeziehen",
         "includeAscension": "Das vorgeschlagene Aufstiegsziel einbeziehen",
-        "includeLevel": "Das vorgeschlagene Stufenziel einbeziehen (Stufe {{level}} erreichen)",
         "unlockRequired": "erforderlich, dieser Charakter wird noch nicht besessen",
-        "ascensionRequired": "erforderlich, um den Zielrang zu erreichen",
-        "levelRequired": "erforderlich, um den Zielrang/die Ziel-Fähigkeitsstufe zu erreichen"
+        "ascensionRequired": "erforderlich, um den Zielrang zu erreichen"
       },
       "validation": {
         "alreadyUnlocked": "Dieser Charakter ist bereits freigeschaltet.",
@@ -762,16 +758,19 @@
         "progressionAlreadyReached": "Der gewählte Aufstieg wurde bereits erreicht.",
         "abilityRange": "Mindestens eine Fähigkeit muss steigen, und kein Bereich darf sinken.",
         "abilityAlreadyReached": "Die gewählten Fähigkeitsstufen wurden bereits erreicht.",
-        "levelAlreadyReached": "Die gewählte Stufe wurde bereits erreicht.",
         "upgradeTargetsRequired": "Wähle mindestens ein Upgrade aus, das für das Upgrade-Ziel gefarmt werden soll.",
         "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
         "progressionMaxed": "Diese Einheit hat bereits die maximale Aufstiegsstufe erreicht.",
         "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
-        "levelMaxed": "Dieser Charakter hat bereits die maximale Stufe erreicht.",
         "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel."
       },
       "startPaused": "Pausiert erstellen",
-      "startPausedDescription": "Das Ziel wird ganz normal erstellt, bleibt aber aus der Tagesplanung heraus, bis du es fortsetzt. Die Wahl der Projekte ändert daran nichts."
+      "startPausedDescription": "Das Ziel wird ganz normal erstellt, bleibt aber aus der Tagesplanung heraus, bis du es fortsetzt. Die Wahl der Projekte ändert daran nichts.",
+      "levelRequirement": {
+        "title": "Benötigt Level {{required}} (aktuell {{current}})",
+        "xpRemaining": "Noch {{xp}} XP nötig",
+        "note": "Nur zur Information – das gehört zum Ziel, ist kein eigenes Ziel und blockiert es nie."
+      }
     },
     "estimate": {
       "none": "—",
@@ -910,7 +909,6 @@
       "cancel": "Abbrechen",
       "rankEnd": "Zielrang",
       "progressionEnd": "Zielstufe (Aufstieg)",
-      "levelEnd": "Zielstufe",
       "activeEnd": "Aktive Fähigkeit, Zielstufe",
       "passiveEnd": "Passive Fähigkeit, Zielstufe",
       "primaryEnd": "Primäre Fähigkeit, Zielstufe",
@@ -919,8 +917,6 @@
       "issues": {
         "rankNotAboveStart": "Wähle einen Rang über dem, bei dem dieses Ziel gestartet ist.",
         "progressionNotAboveStart": "Wähle eine Stufe über der, bei der dieses Ziel gestartet ist.",
-        "levelNotAboveStart": "Wähle ein Level über dem, bei dem dieses Ziel gestartet ist.",
-        "levelAboveMax": "Dieses Level liegt über dem maximalen Charakterlevel.",
         "abilityBelowStart": "Ein Fähigkeitsziel darf nicht unter dem Startlevel dieses Ziels liegen.",
         "abilityNoAdvance": "Erhöhe mindestens eine Fähigkeit über den Startwert dieses Ziels.",
         "abilityAboveMax": "Dieses Level liegt über dem maximalen Fähigkeitslevel.",
@@ -1050,7 +1046,7 @@
         },
         "list": {
           "title": "Deine Ziele",
-          "content": "Jedes aktive Ziel erscheint unten und entspricht deinen aktuellen Filtern. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten."
+          "content": "Jedes aktive Ziel erscheint unten und entspricht deinen aktuellen Filtern. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
         }
       }
     },
@@ -1082,7 +1078,7 @@
         },
         "addGoals": {
           "title": "Das Projekt füllen",
-          "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu — durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt."
+          "content": "Füge mehrere vorhandene Ziele auf einmal zu diesem Projekt hinzu – durchsuche deine Ziele, wähle die gewünschten aus und speichere in einem Schritt. Eine Einheit kann hier mehrere Rang-Ziele haben, ein exakt doppeltes Ziel wird jedoch blockiert."
         },
         "createGoal": {
           "title": "Neues Ziel erstellen",
@@ -1098,7 +1094,7 @@
         },
         "goals": {
           "title": "Projektziele",
-          "content": "Die Ziele dieses Projekts erscheinen hier, zunächst nach Zieltyp gruppiert. Über Gruppieren wechselst du zu einem Block pro Einheit oder schaltest die Gruppierung für eine flache Liste ab."
+          "content": "Die Ziele dieses Projekts erscheinen hier, zunächst nach Zieltyp gruppiert. Jedes Rang-Ziel ist ein eigenes Ziel, mit seinem Zielrang gekennzeichnet, und kann einzeln umsortiert, pausiert oder gelöscht werden. Mit Gruppieren wechselst du zu einem Block pro Einheit oder schaltest die Gruppierung für eine flache Liste aus."
         },
         "rowActions": {
           "title": "Entfernen statt löschen",

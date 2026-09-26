@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { toast } from "sonner"
+import { ApiError } from "@/shared/api"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -31,16 +32,47 @@ vi.mock("@/shared/unit-name", () => ({
 }))
 
 vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {},
+  ApiError: class ApiError extends Error {
+    readonly status: number
+
+    constructor(status: number, message: string) {
+      super(message)
+      this.status = status
+    }
+  },
 }))
 
 const listGoals = vi.fn<() => Promise<unknown>>()
 const listProjectGoals = vi.fn<() => Promise<unknown>>()
 const updateProjectGoals = vi.fn()
 
+// Each Rank goal's end target (its `config.rank.end`); 12 unless a test says otherwise.
+const rankEndByGoal = new Map<string, number>()
+// Every goal whose detail was requested, to check the sheet only reads the ones that can collide.
+const detailFetches: string[] = []
+
 vi.mock("@/entities/goal", () => ({
+  goalRankTargetKey: (goal: {
+    goalType: string
+    config?: { rank?: { end: number } }
+  }) => (goal.goalType === "Rank" ? `${goal.config?.rank?.end ?? 12}:0` : null),
+  describeRankTargetKey: (key: string) => {
+    const [end, slots] = key.split(":").map(Number)
+    return { rank: `Rank${end}`, slots }
+  },
   goalQueries: {
     all: () => ["goals"],
+    detail: (goalId: string) => ({
+      queryKey: ["goals", "detail", goalId],
+      queryFn: () => {
+        detailFetches.push(goalId)
+        return Promise.resolve({
+          goalId,
+          goalType: "Rank",
+          config: { rank: { end: rankEndByGoal.get(goalId) ?? 12 } },
+        })
+      },
+    }),
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
       queryFn: () => listGoals(),
@@ -104,6 +136,8 @@ describe("AddGoalsToProjectSheet", () => {
   beforeEach(() => {
     listGoals.mockReset()
     listProjectGoals.mockReset()
+    rankEndByGoal.clear()
+    detailFetches.length = 0
     updateProjectGoals.mockReset().mockResolvedValue({ goals: [] })
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -240,7 +274,66 @@ describe("AddGoalsToProjectSheet", () => {
     ).toBeDisabled()
     expect(
       screen.getByTestId("add-goals-blocked-goal-conflicting")
-    ).toHaveTextContent("goals.project.assemblySlotTaken")
+    ).toHaveTextContent("goals.project.assemblyRankTargetTaken")
+  })
+
+  it("only reads the Rank details of units that already have a member or a selection", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        goal({ goalId: "goal-same-unit" }),
+        goal({ goalId: "goal-other-unit", entityId: "hero2" }),
+      ],
+    })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+    })
+    renderSheet()
+
+    await screen.findByTestId("add-goals-blocked-goal-same-unit")
+    expect(detailFetches).toContain("goal-same-unit")
+    expect(detailFetches).not.toContain("goal-other-unit")
+  })
+
+  it("names the exact Rank target that blocks a duplicate", async () => {
+    rankEndByGoal.set("goal-member", 12)
+    rankEndByGoal.set("goal-conflicting", 12)
+    listGoals.mockResolvedValue({
+      goals: [goal({ goalId: "goal-conflicting" })],
+    })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+    })
+    renderSheet()
+
+    expect(
+      await screen.findByTestId("add-goals-blocked-goal-conflicting")
+    ).toHaveTextContent("Rank12")
+  })
+
+  it("lets a different Rank target for the same unit be selected and saved", async () => {
+    rankEndByGoal.set("goal-member", 12)
+    rankEndByGoal.set("goal-gold", 15)
+    listGoals.mockResolvedValue({ goals: [goal({ goalId: "goal-gold" })] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+    })
+    const user = userEvent.setup()
+    renderSheet()
+
+    const check = await screen.findByTestId("add-goals-check-goal-gold")
+    await vi.waitFor(() => expect(check).not.toBeDisabled())
+    expect(
+      screen.queryByTestId("add-goals-blocked-goal-gold")
+    ).not.toBeInTheDocument()
+    await user.click(check)
+    await user.click(screen.getByTestId("add-goals-save"))
+
+    await vi.waitFor(() =>
+      expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
+        { goalId: "goal-member", priority: 1 },
+        { goalId: "goal-gold", priority: 2 },
+      ])
+    )
   })
 
   it("does not block a selection whose slot is only held by a historical goal", async () => {
@@ -280,8 +373,8 @@ describe("AddGoalsToProjectSheet", () => {
     await user.click(await screen.findByTestId("add-goals-check-goal-a"))
     await user.click(screen.getByTestId("add-goals-check-goal-c"))
 
-    // goal-b shares goal-a's unit-and-type slot, so picking it would have the endpoint reject the
-    // whole save — it becomes unselectable instead.
+    // goal-b shares goal-a's unit-and-Rank-target slot (both default to the same end target), so picking it
+    // would have the endpoint reject the whole save — it becomes unselectable instead.
     expect(screen.getByTestId("add-goals-check-goal-b")).toBeDisabled()
 
     await user.click(screen.getByTestId("add-goals-save"))
@@ -291,6 +384,36 @@ describe("AddGoalsToProjectSheet", () => {
       { goalId: "goal-a", priority: 1 },
       { goalId: "goal-c", priority: 2 },
     ])
+  })
+
+  it("rejects the whole save when a slot was taken after the check, keeps the selection, and explains why", async () => {
+    // Two different Rank targets for the same unit are selected; between preview and save another session
+    // takes one of them, so the server rejects the entire batch — nothing is added and the picks stay.
+    rankEndByGoal.set("goal-silver", 11)
+    rankEndByGoal.set("goal-gold", 15)
+    listGoals.mockResolvedValue({
+      goals: [goal({ goalId: "goal-silver" }), goal({ goalId: "goal-gold" })],
+    })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    updateProjectGoals.mockRejectedValue(
+      new ApiError(409, "Project A already contains that Rank target.")
+    )
+    const user = userEvent.setup()
+    renderSheet()
+
+    await user.click(await screen.findByTestId("add-goals-check-goal-silver"))
+    await user.click(screen.getByTestId("add-goals-check-goal-gold"))
+    await user.click(screen.getByTestId("add-goals-save"))
+
+    await vi.waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        "Project A already contains that Rank target."
+      )
+    )
+    expect(screen.getByTestId("add-goals-check-goal-silver")).toBeChecked()
+    expect(screen.getByTestId("add-goals-check-goal-gold")).toBeChecked()
+    expect(screen.getByTestId("add-goals-save")).not.toBeDisabled()
+    expect(toast.success).not.toHaveBeenCalled()
   })
 
   it("drops an unsaved draft when the viewed project changes or the sheet closes", async () => {
