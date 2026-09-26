@@ -809,6 +809,9 @@
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
+      "densityLabel": "Row density",
+      "densityComfortable": "Comfortable",
+      "densityCompact": "Compact",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed"
     },
     "detail": {
@@ -1058,6 +1061,10 @@
         "projectFilter": {
           "title": "Narrow by project",
           "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about your plan or what Dailies calculates."
+        },
+        "density": {
+          "title": "Row density",
+          "content": "Switch between Comfortable and Compact rows. Compact hides the secondary lines so more goals fit on screen."
         },
         "createGoal": {
           "title": "Create a goal",

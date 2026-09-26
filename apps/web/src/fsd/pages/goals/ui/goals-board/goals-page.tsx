@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ArrowUpDown, Plus, Settings } from "lucide-react"
+import { Plus, Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -13,7 +13,9 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   GoalFilters,
+  GoalDensityToggle,
   StatusFilterSelect,
+  isGoalDensityValue,
   isGoalGroupValue,
   type GoalStatusFilterValue,
   type GoalTypeFilterValue,
@@ -29,13 +31,14 @@ import { groupRows } from "../../model/shared/row-groups"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoals } from "../../model/goals-data/use-goals"
-import { GoalsEstimatesError } from "./goals-estimates-error"
+import { GoalsEstimatesError, GoalsFetchError } from "./goals-estimates-error"
 import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
 import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { GoalsList } from ".//goals-list"
+import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { ALL_PROJECTS, ProjectFilterSelect } from "./goals-project-filter"
 import { OverviewProjectQuicknav } from "./overview-project-quicknav"
 import { buildCascadeContext } from "./goal-row-utils"
@@ -65,6 +68,13 @@ export function GoalsPage() {
     "goals.overview.group",
     isGoalGroupValue,
     "none"
+  )
+  // Persisted per browser like Group; only this page reads it — Project Detail's list never gets a
+  // density and stays Comfortable.
+  const [density, setDensity] = usePersistedSelection(
+    "goals.overview.density",
+    isGoalDensityValue,
+    "comfortable"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
   // Membership as a filter dimension, not a project selection: local state only, deliberately
@@ -233,20 +243,10 @@ export function GoalsPage() {
   )
   const reorderToggle =
     isMobile && reorderAvailable ? (
-      <Button
-        aria-label={
-          reorderActive
-            ? t("goals.project.reorderDone")
-            : t("goals.project.reorderGoals")
-        }
-        aria-pressed={reorderActive}
-        data-testid="goals-mobile-reorder-toggle"
-        onClick={toggleReorder}
-        size="sm"
-        variant={reorderActive ? "default" : "outline"}
-      >
-        <ArrowUpDown data-icon="inline-start" />
-      </Button>
+      <GoalsMobileReorderToggle
+        active={reorderActive}
+        onToggle={toggleReorder}
+      />
     ) : null
   const planningSettingsButton = (
     <Button
@@ -261,7 +261,10 @@ export function GoalsPage() {
     </Button>
   )
   const goalFiltersAndSettings = (
-    <div className="flex items-center gap-2" data-testid="goals-filter-group">
+    <div
+      className="flex flex-wrap items-center gap-2"
+      data-testid="goals-filter-group"
+    >
       <GoalFilters
         goalType={goalType}
         group={group}
@@ -273,6 +276,7 @@ export function GoalsPage() {
         projects={projects.projects}
         value={projectFilter}
       />
+      <GoalDensityToggle onChange={setDensity} value={density} />
       {reorderToggle}
       {createGoalButton}
       {planningSettingsButton}
@@ -350,16 +354,7 @@ export function GoalsPage() {
       ) : null}
 
       {fetchError ? (
-        <div
-          className="flex flex-col items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
-          data-testid="goals-page-error"
-          role="alert"
-        >
-          <p className="text-destructive">{fetchError}</p>
-          <Button onClick={refreshCurrentView} size="sm" variant="outline">
-            {t("goals.retry")}
-          </Button>
-        </div>
+        <GoalsFetchError message={fetchError} onRetry={refreshCurrentView} />
       ) : null}
 
       {showPristineEmptyState ? (
@@ -406,6 +401,7 @@ export function GoalsPage() {
               <GoalsList
                 actions={goalActions}
                 cascadeContext={cascadeContext}
+                density={density}
                 estimates={insights.estimates}
                 levelPotentialProgress={insights.levelPotentialProgressByGoalId}
                 metrics={overviewMetrics}

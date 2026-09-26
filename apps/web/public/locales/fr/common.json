@@ -809,6 +809,9 @@
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
       "groupByUnit": "Regrouper par unité",
+      "densityLabel": "Densité des lignes",
+      "densityComfortable": "Confortable",
+      "densityCompact": "Compacte",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
     "detail": {
@@ -1058,6 +1061,10 @@
         "projectFilter": {
           "title": "Filtrer par projet",
           "content": "N'affiche que les objectifs d'un projet. Cela restreint la liste que vous consultez et ne change ni votre plan ni ce que calculent les quotidiennes."
+        },
+        "density": {
+          "title": "Densité des lignes",
+          "content": "Basculez entre des lignes confortables et compactes. Le mode compact masque les lignes secondaires pour afficher plus d'objectifs à l'écran."
         },
         "createGoal": {
           "title": "Créer un objectif",

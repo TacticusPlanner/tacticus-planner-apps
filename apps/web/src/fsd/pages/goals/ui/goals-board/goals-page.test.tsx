@@ -286,6 +286,9 @@ describe("GoalsPage", () => {
     updateProjectGoalsStatus.mockReset()
     mobile.value = false
     onLaunch.mockReset()
+    // Density (and Group) persist to localStorage; keep one test's choice from leaking into the next.
+    window.localStorage.removeItem("goals.overview.density")
+    window.localStorage.removeItem("goals.overview.group")
   })
 
   it("does not render page-level creation actions", async () => {
@@ -358,6 +361,62 @@ describe("GoalsPage", () => {
     expect(document.getElementById("goals-group-value")).toHaveTextContent(
       "goals.filters.groupByType"
     )
+  })
+
+  it("offers a persisted row-density toggle that defaults to Comfortable and re-renders immediately", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    const user = userEvent.setup()
+    const first = renderPage()
+    await screen.findByTestId("goal-row")
+
+    const toggle = screen.getByTestId("goals-density-toggle")
+    expect(toggle).toHaveAccessibleName("goals.filters.densityLabel")
+    expect(screen.getByTestId("goals-filter-group")).toContainElement(toggle)
+    expect(document.getElementById("goals-density-value")).toHaveTextContent(
+      "goals.filters.densityComfortable"
+    )
+    expect(screen.getByTestId("goal-row")).toHaveClass("h-14")
+
+    await user.click(toggle)
+    await user.click(
+      screen.getByRole("option", { name: "goals.filters.densityCompact" })
+    )
+    expect(toggle).toHaveAccessibleName("goals.filters.densityLabel")
+    expect(document.getElementById("goals-density-value")).toHaveTextContent(
+      "goals.filters.densityCompact"
+    )
+    expect(screen.getByTestId("goal-row")).toHaveClass("h-10")
+    expect(window.localStorage.getItem("goals.overview.density")).toBe(
+      "compact"
+    )
+
+    // A reload (fresh mount) restores it.
+    first.unmount()
+    renderPage()
+    await screen.findByTestId("goal-row")
+    expect(screen.getByTestId("goal-row")).toHaveClass("h-10")
+  })
+
+  it("ignores an unrecognised persisted density and renders Comfortable", async () => {
+    window.localStorage.setItem("goals.overview.density", "tiny")
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goal-row")).toHaveClass("h-14")
+  })
+
+  it("compresses the density toggle to an icon on mobile and lets the control row wrap", async () => {
+    mobile.value = true
+    listGoals.mockResolvedValue({ goals: [] })
+    renderPage()
+
+    await screen.findByTestId("goals-page-empty")
+    const toggle = screen.getByTestId("goals-density-toggle")
+    expect(toggle).toHaveAccessibleName("goals.filters.densityLabel")
+    expect(
+      within(toggle).getByText("goals.filters.densityComfortable")
+    ).toHaveClass("sr-only")
+    expect(screen.getByTestId("goals-filter-group")).toHaveClass("flex-wrap")
   })
 
   it("has no Sort control and lists Active and Paused goals in global priority order", async () => {

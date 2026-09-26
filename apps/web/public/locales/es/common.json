@@ -809,6 +809,9 @@
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
       "groupByUnit": "Agrupar por unidad",
+      "densityLabel": "Densidad de filas",
+      "densityComfortable": "Cómoda",
+      "densityCompact": "Compacta",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
     "detail": {
@@ -1058,6 +1061,10 @@
         "projectFilter": {
           "title": "Acota por proyecto",
           "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia tu plan ni lo que calculan las tareas diarias."
+        },
+        "density": {
+          "title": "Densidad de filas",
+          "content": "Alterna entre filas cómodas y compactas. La vista compacta oculta las líneas secundarias para que quepan más objetivos en pantalla."
         },
         "createGoal": {
           "title": "Crear un objetivo",

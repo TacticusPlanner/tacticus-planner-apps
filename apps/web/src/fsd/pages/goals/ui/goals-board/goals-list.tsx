@@ -74,9 +74,11 @@ function GoalsTable({
   project,
   reachedByGoalId,
   cascadeContext,
+  density = "comfortable",
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
+  const compact = density === "compact"
   const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
     null
   )
@@ -132,9 +134,13 @@ function GoalsTable({
               energy
             )
 
+            // A row with level-requirement sub-lines is required content at either density, so it
+            // keeps the Comfortable height rather than clipping them.
+            const rowHeight = compact && !levelRequirement ? "h-10" : "h-14"
+
             return (
               <TableRow
-                className="h-14 cursor-pointer data-[dragging]:opacity-60"
+                className={`${rowHeight} cursor-pointer data-[dragging]:opacity-60`}
                 data-dragging={sortable.isDragging || undefined}
                 data-goal-id={row.goalId}
                 data-testid="goal-row"
@@ -184,9 +190,11 @@ function GoalsTable({
                         remainingText={remainingText}
                         row={row}
                       />
-                      <p className="text-xs text-muted-foreground">
-                        {t(`goals.create.goalTypes.${row.goalType}`)}
-                      </p>
+                      {compact ? null : (
+                        <p className="text-xs text-muted-foreground">
+                          {t(`goals.create.goalTypes.${row.goalType}`)}
+                        </p>
+                      )}
                       <GoalProjectBadges projects={row.projects ?? []} />
                     </div>
                   </div>
@@ -248,7 +256,7 @@ function GoalsTable({
                         progress={progress}
                       />
                     </div>
-                    {estimates ? (
+                    {estimates && !compact ? (
                       <EstimateCell estimate={estimates.get(row.goalId)} />
                     ) : null}
                   </div>

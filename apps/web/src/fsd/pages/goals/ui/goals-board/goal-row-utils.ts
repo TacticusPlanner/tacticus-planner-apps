@@ -1,6 +1,6 @@
 import type { SyntheticEvent } from "react"
 
-import type { GoalStatus } from "@/entities/goal"
+import type { GoalDensityValue, GoalStatus } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import type { EstimateOutcome } from "@/features/goal-farming"
@@ -57,11 +57,14 @@ export type GoalsListProps = {
   /** The project these rows are being viewed inside, when there is one. Project scope is what makes
    *  the row menu's "Remove from this project" action meaningful; Overview has none and omits it. */
   project?: ProjectSummary
-  /** Whether this list is a reorderable surface at all — true only on project detail (never Goals
-   *  Overview). Desktop shows a drag handle on every row whenever this is true; mobile additionally
+  /** Whether this list is a reorderable surface at all — true on the Goals page and project detail.
+   *  Desktop shows a drag handle on every in-flight row whenever this is true; mobile additionally
    *  needs `mobileReorderActive` (add-inline-goal-reprioritize: desktop has no separate reorder mode,
    *  mobile does). */
   reorderEnabled?: boolean
+  /** Row/card density (goal-list-layout). Only the Goals page passes it; omitted (project detail)
+   *  means "comfortable" — each reader defaults it, there is no shared state. */
+  density?: GoalDensityValue
   /** Mobile-only: whether the collapsed, drag-only card mode is currently active. Ignored on desktop. */
   mobileReorderActive?: boolean
   /** Fires once per completed drag with this list's full new row order (goal ids). The caller is
