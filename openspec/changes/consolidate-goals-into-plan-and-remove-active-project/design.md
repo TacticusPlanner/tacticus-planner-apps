@@ -1,0 +1,53 @@
+## Context
+
+`establish-global-goal-priority` (unarchived, implemented on this branch) added `pages/goals/ui/plan/global-plan-page.tsx` at `/goals/plan`. It renders the same `GoalsList` and `GoalDetailSheet` over the same `goalQueries.list(false)` data as `pages/goals/ui/goals-board/goals-page.tsx` (All Goals), adding only reorder (`features/goal-order`: `useGoalOrderActions`, `useMobileReorderMode`, `MobileReorderBar`, `OrderConflictBanner`), plan-aware estimates (`usePlanInsights(null)`), and a few data-state cards. Project detail already reorders a filtered/grouped list with `spliceGoalOrder` (anchor to the visible neighbour, then compute the displaced goal against the full in-flight order).
+
+The Active project is one server-persisted pointer (`Profile.ActiveProjectId`, shown as "Current plan", web field `isActivePlan`, `activateProject`). It only drives browsing defaults now: the Plan landing (`default-goals-landing.tsx`), Insights' initial project, Dailies' selected project (`dailies-layout.tsx`), and Current-plan-first ordering. The Default project (`type: Default`, "My Goals") already exists per account, cannot be archived, and has no delete endpoint. The paired API change of the same name removes the pointer and endpoint and ships first. See `proposal.md` for motivation.
+
+## Goals / Non-Goals
+
+**Goals:** One Goals page that is both the browsable list and the editable priority order; a fixed `/plan/*` route tree with a fixed landing; no Active/Current plan concept anywhere in the client; the same account-wide plan feeding every default view.
+
+**Non-Goals:** Removing custom projects; project delete; localizing the Default project's name; rewriting any recommendation policy (Arena/Onslaught/Salvage team selection, Shops scoring); changing goal status rules; removing the `pages/goals` FSD slice name; permanently keeping the `/goals/*` redirects.
+
+## Decisions
+
+1. **Fold the Global Plan into Goals; delete the page.** `GoalsPage` gains what `GlobalPlanPage` had (reorder handles, mobile reorder mode and bar, conflict banner, `usePlanInsights(null)` estimates with `isolated={false}` detail sheet, error/retry card). `global-plan-page.tsx`, its tutorial, tests, route, `goals.tabs.plan`, `goals.plan.*` and `tour.globalPlan.*` are removed; the surviving strings move under the Goals namespaces. Alternative (keep two pages, cross-link them) was rejected: it is the duplication the change exists to remove.
+
+2. **Goals is always in global priority order; Sort is removed.** Rows with a position (Active/Paused) sort by `globalPriority`; goals without one (reached, completed, archived) follow, most recently updated first. The Sort control, its `GoalSortValue` type, and the "updated/entity/type/status" modes are deleted. Alternative (a "Priority" sort as default among others) was rejected by the user: other sorts would make handles conditionally meaningless and keep a mode users had no reason to use.
+
+3. **Reorder under filters and Group reuses project detail's logic.** Status/Type/project filters hide goals; handles show on visible Active/Paused rows; a drop is converted with the existing `spliceGoalOrder` (anchor against the visible neighbour) and sent as the existing single move (`goalId`, `displacedGoalId`, `expectedRevision`) through `useGoalOrderActions`, so hidden goals keep their relative order (global A,B,C,D,E; visible A,C,E; E onto C gives A,B,E,C,D). **Group:** a group section shows the priority-ordered subset of its members. Handles work within a group only; a drop stays in its section, which is the same as the filtered case for that section. Cross-group drops are not offered (their meaning — "change the goal's type/unit" — is nonsense). This is the least-surprising extension of the existing behaviour but has not been validated with users; see Open Questions.
+
+4. **One fixed landing, one redirect map.** The section path becomes `/plan` in `app/layout/nav-items.ts` and `app/routes.tsx`; `pages/goals/route.tsx` keeps its slice but exposes `goals`, `projects`, `projects/:projectId`, `insights`, and an index that `Navigate`s (replace) to `goals`. `DefaultGoalsLanding` and its projects-loading skeleton are deleted. One pure function `mapLegacyGoalsPath` (`/goals` and `/goals/plan` → `/plan/goals`, `/goals/overview` → `/plan/goals`, other `/goals/*` → `/plan/*`, query and hash preserved) backs both a temporary `/goals/*` redirect route and the login `next` resolution in `app/resolve-next-path`, so there is a single point to delete later. Alternative (no redirects, since V2 is pre-production per `tp-destructive-changes-policy`) was rejected only because shared links and stored `next` values are cheap to preserve; the code is isolated and flagged for removal.
+
+5. **Analytics.** `app/layout/app-shell.tsx` passes `routeGroup=activeItem.path` to PostHog, so the group changes from `/goals` to `/plan` with no code beyond the nav item. Dashboards keyed on the old group need a one-time update (noted in tasks).
+
+6. **Remove Current plan by deletion, not by default.** Delete `isActivePlan` from the project types and every copy of it (`pages/goals/model/shared/types.ts`, `goal-detail-projects.ts`, `use-goal-projects.ts`), `activateProject` and its export, the `activate` action/toast in `use-project-actions.ts`, Make current and the badge/section in `project-row.tsx`, `project-detail-header.tsx` and `projects-list-page.tsx`, `project-marker.ts`'s current-plan suffix, and `order-current-plan-first.ts` (replaced by a Default-first ordering used by `use-home-projects.ts`, the quick-nav, and the dashboard). The Default project keeps its marker and its `isDefault`-based archive restriction (the API also enforces it). This lands after the API change: the generated contract types must no longer contain `isActivePlan` when the client code that reads it is deleted, so tasks begin by regenerating types.
+
+7. **Project-aware defaults become "All goals" with an optional filter.** `dailies-layout.tsx` initial `selectedProjectId` becomes `null` (session-scoped, as today); `ProjectSelect` gains an "All goals" cleared state; Shops, Arena, Onslaught, Salvage hooks accept `projectId: string | null` and, when null, use the account's Active goals in global order (from `useGlobalGoalPlan`, the source Today uses); when set they narrow to that project's members. Insights' initial project becomes null (it already projects from the global run). Alternative (default to the Default project) was rejected: the Default project is only the catch-all for goals filed nowhere else, so recommendations would be empty for users who use custom projects. Raids Today/Plan and the Home raids widget are unchanged (already global); only their stale spec wording is fixed.
+
+8. **Spec deltas depend on `establish-global-goal-priority` being archived first.** Requirements in `global-goal-priority`, and the establish versions of `goals-navigation`, `project-management` and `daily-raids-today`, only exist in main specs after that archive; the deltas here are written against those names and texts (`RENAMED` then `MODIFIED`). Where a main-spec requirement only says "Overview"/"All Goals"/"Global Plan" in passing, a single `goals-navigation` requirement (“The Goals page is the single goals list and plan”) defines the terms, and a task sweeps the wording at archive time rather than rewriting a dozen unrelated requirements.
+
+## Risks / Trade-offs
+
+- [Goals gets heavier: plan-insights fan-out on every visit] → Use the same query key/cache as Today so one run is shared; compute only when at least one in-flight goal is visible; verify in tests that no extra fetch is issued when Today is already cached.
+- [Toolbar crowding on mobile: Create Goal, Planning Settings, filters, Group, and a reorder toggle] → The Sort control's removal frees a slot; reorder toggle renders as an icon-only control with an accessible name, following `goals-navigation`'s icon-only rule; check at 320px.
+- [Users lose a way to browse "recently updated"] → Accepted; the Reached/Archived status filters and Group still cover browsing, and Goals defaulting to priority order is the point of the change.
+- [Reorder within a filtered/grouped list surprises users] → Reuse of the project-detail behaviour plus the existing caption pattern ("moving a goal moves it in your global plan"); conflicts use the reviewed-retry banner.
+- [Breaking cross-repo rollout] → API first; the client removes `isActivePlan` reads only after regenerating types; a stale cached client that still sends `activate` is out of scope (pre-production).
+- [Temporary redirects linger] → One mapping function, one test, one flagged removal task.
+- [Analytics continuity] → Route-group rename noted; update dashboards when this ships.
+- [Large blast radius on tests (~30 files) and four locales] → Delete tests with the code they cover, fix path/label tests in place, and rely on typed i18n keys (a missing key fails typecheck).
+
+## Migration Plan
+
+1. Apply the paired API change and regenerate contract types.
+2. Archive `establish-global-goal-priority` (API, then apps), then apply this change.
+3. Ship apps. There is no data migration: the pointer lived only on the server. Rollback is a revert of the apps change plus the API change's own rollback.
+4. Later: remove the `/goals/*` redirects and delete `mapLegacyGoalsPath`.
+
+## Open Questions
+
+- Is confining drags to a single Group section acceptable, or should Group be disabled while reordering? The spec assumes the former; either is a small change in `GoalsList`.
+- `v1-profile-import`'s description says imported goals are paused unless they land in the active project, while the API's V1 import files goals into the Default project and never consults the pointer. The delta only removes the Active-project wording; a task verifies the API's real status behaviour and corrects the sentence to match.
+- `dailies-navigation` still specifies a Raids-tab project selector that `establish-global-goal-priority` removed; it is not touched here and should be reconciled when that change is archived.
