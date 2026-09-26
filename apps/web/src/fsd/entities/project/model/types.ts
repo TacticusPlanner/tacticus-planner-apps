@@ -32,6 +32,29 @@ export type ProjectGoalEntry = {
   globalPriority?: number | null
 }
 
+/** `PUT /me/projects/{id}/goals`: `goals` is the complete desired membership and `expectedGoalIds` the
+ *  complete membership the user reviewed — the server rejects the whole save (409
+ *  `projectMembershipStale`) when the current membership no longer matches it. */
+export type UpdateProjectGoalsRequest = {
+  goals: { goalId: string }[]
+  expectedGoalIds: string[]
+}
+
+/** The 409 body of a stale `expectedGoalIds`: the project's membership as it now stands. */
+export type ProjectMembershipStaleDto = {
+  issueCode: "projectMembershipStale"
+  message: string
+  projectId: string
+  currentGoalIds: string[]
+}
+
+/** The 400 body of a removal that would leave goals in no project: the goals blocking the save. */
+export type ProjectLastMembershipDto = {
+  issueCode: "lastProjectMembership"
+  message: string
+  blockedGoalIds: string[]
+}
+
 // Mirrors the backend's GoalSummaryResponse shape (also duplicated in entities/goal/model/types.ts as
 // GoalSummary) — FSD forbids cross-entity imports, so each entity that references another by value keeps
 // its own copy of the shape it needs rather than importing the other entity's type.

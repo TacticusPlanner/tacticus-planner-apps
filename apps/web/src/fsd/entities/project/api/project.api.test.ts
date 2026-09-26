@@ -44,7 +44,10 @@ describe("project API", () => {
   it("maps project writes to their endpoints", () => {
     const create = { name: "Plan" }
     const update = { name: "Updated" } as never
-    const goals = [{ goalId: "goal-1" }]
+    const goals = {
+      goals: [{ goalId: "goal-1" }],
+      expectedGoalIds: ["goal-2"],
+    }
 
     createProject(create)
     updateProject("project-1", update)
@@ -68,7 +71,7 @@ describe("project API", () => {
     expect(api.put).toHaveBeenNthCalledWith(
       2,
       "/api/v1/me/projects/project-1/goals",
-      { body: { goals } }
+      { body: goals }
     )
     expect(api.post).toHaveBeenNthCalledWith(
       2,
