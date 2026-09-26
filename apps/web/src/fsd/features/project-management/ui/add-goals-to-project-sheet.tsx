@@ -217,23 +217,12 @@ export function AddGoalsToProjectSheet({
         await queryClient.fetchQuery(projectQueries.goals(project.projectId))
       ).goals
       const currentIds = new Set(current.map((entry) => entry.goal.goalId))
-      // Existing members resend the priority they already have and additions append above the
-      // maximum, so the server's renumbering preserves the project's established unit order and
-      // puts the added units last.
-      const maxPriority = current.reduce(
-        (highest, entry) => Math.max(highest, entry.priority),
-        0
-      )
+      // Membership never changes the account-wide order, so only ids are sent: added goals keep the
+      // position they already hold.
       const additions = selectedGoalIds.filter((id) => !currentIds.has(id))
       return updateProjectGoals(project.projectId, [
-        ...current.map((entry) => ({
-          goalId: entry.goal.goalId,
-          priority: entry.priority,
-        })),
-        ...additions.map((goalId, index) => ({
-          goalId,
-          priority: maxPriority + 1 + index,
-        })),
+        ...current.map((entry) => ({ goalId: entry.goal.goalId })),
+        ...additions.map((goalId) => ({ goalId })),
       ]).then(() => additions.length)
     },
     onSuccess: async (added) => {

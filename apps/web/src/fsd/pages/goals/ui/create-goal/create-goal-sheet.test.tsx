@@ -314,6 +314,18 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
+  // The account's Active goals in global order, which the new goal's duration estimate folds in
+  // behind — empty by default (the per-goal engine itself is covered by per-project-estimate.test.ts).
+  useGlobalGoalPlan: () => ({
+    inFlight: [],
+    active: [],
+    entries: [],
+    goals: [],
+    orderRevision: 0,
+    loading: false,
+    isError: false,
+    retry: vi.fn(),
+  }),
   // Backs useGoalTypeConflicts' active/paused-goal lookup — empty by default (no test here asserts
   // on the same-kind-goal-exists disable message, that's covered by use-goal-type-conflicts.test.ts).
   goalQueries: {
@@ -334,9 +346,7 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
   projectQueries: {
-    // Backs use-per-project-estimates.ts's per-project member lookup — empty by default (no test
-    // here asserts on the per-project duration preview itself, that's covered by
-    // per-project-estimate.test.ts), which also keeps it from ever needing goalQueries.detail.
+    // Backs the goal-projects lookup — empty by default.
     goals: (projectId: string) => ({
       queryKey: ["projects", "detail", projectId, "goals"],
       queryFn: () => Promise.resolve({ goals: [] }),

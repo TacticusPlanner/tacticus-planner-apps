@@ -5,20 +5,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { toast } from "sonner"
 
-import { projectQueries, type ProjectGoalSummary } from "@/entities/project"
 import { useProjectActions } from "./use-project-actions"
 
-const {
-  activateProjectMock,
-  updateProjectGoalOrderMock,
-  updateProjectGoalsStatusMock,
-  createProjectMock,
-} = vi.hoisted(() => ({
-  activateProjectMock: vi.fn(),
-  updateProjectGoalOrderMock: vi.fn(),
-  updateProjectGoalsStatusMock: vi.fn(),
-  createProjectMock: vi.fn(),
-}))
+const { activateProjectMock, updateProjectGoalsStatusMock, createProjectMock } =
+  vi.hoisted(() => ({
+    activateProjectMock: vi.fn(),
+    updateProjectGoalsStatusMock: vi.fn(),
+    createProjectMock: vi.fn(),
+  }))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("react-i18next", () => ({
@@ -36,28 +30,10 @@ vi.mock("@/entities/project", async (importOriginal) => {
   return {
     ...actual,
     activateProject: activateProjectMock,
-    updateProjectGoalOrder: updateProjectGoalOrderMock,
     updateProjectGoalsStatus: updateProjectGoalsStatusMock,
     createProject: createProjectMock,
   }
 })
-
-function goal(id: string, priority: number): ProjectGoalSummary {
-  return {
-    goal: {
-      goalId: id,
-      entityType: "character",
-      entityId: id,
-      goalType: "Rank",
-      status: "Active",
-      notes: null,
-      dependsOn: [],
-      createdAt: "2026-01-01",
-      updatedAt: "2026-01-01",
-    },
-    priority,
-  }
-}
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -75,7 +51,6 @@ function createWrapper() {
 describe("useProjectActions", () => {
   beforeEach(() => {
     activateProjectMock.mockReset()
-    updateProjectGoalOrderMock.mockReset()
     updateProjectGoalsStatusMock.mockReset()
     createProjectMock.mockReset()
     vi.mocked(toast.success).mockReset()
@@ -119,56 +94,6 @@ describe("useProjectActions", () => {
       await second
     })
     expect(result.current.pending).toBe(false)
-  })
-
-  it("reorders the cached goal list immediately, before the request resolves", async () => {
-    const { queryClient, wrapper } = createWrapper()
-    const queryKey = projectQueries.goals("p1").queryKey
-    queryClient.setQueryData(queryKey, {
-      goals: [goal("a", 1), goal("b", 2), goal("c", 3)],
-    })
-    let resolveRequest!: () => void
-    updateProjectGoalOrderMock.mockReturnValue(
-      new Promise<void>((resolve) => {
-        resolveRequest = resolve
-      })
-    )
-    const { result } = renderHook(() => useProjectActions(), { wrapper })
-
-    let reordered!: Promise<boolean>
-    act(() => {
-      reordered = result.current.reorderGoals("p1", ["c", "a", "b"])
-    })
-
-    await waitFor(() =>
-      expect(
-        queryClient
-          .getQueryData<{ goals: ProjectGoalSummary[] }>(queryKey)
-          ?.goals.map((entry) => entry.goal.goalId)
-      ).toEqual(["c", "a", "b"])
-    )
-
-    await act(async () => {
-      resolveRequest()
-      await reordered
-    })
-  })
-
-  it("rolls back the cached goal list when the request fails", async () => {
-    const { queryClient, wrapper } = createWrapper()
-    const queryKey = projectQueries.goals("p1").queryKey
-    const original = [goal("a", 1), goal("b", 2), goal("c", 3)]
-    queryClient.setQueryData(queryKey, { goals: original })
-    updateProjectGoalOrderMock.mockRejectedValue(new Error("network error"))
-    const { result } = renderHook(() => useProjectActions(), { wrapper })
-
-    await act(async () => {
-      await result.current.reorderGoals("p1", ["c", "a", "b"])
-    })
-
-    expect(
-      queryClient.getQueryData<{ goals: ProjectGoalSummary[] }>(queryKey)?.goals
-    ).toEqual(original)
   })
 
   it("bulk-pauses a project's goals and reports how many were transitioned", async () => {

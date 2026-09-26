@@ -10,7 +10,7 @@
   },
   "tabs": {
     "raids": "Raids",
-    "raidsDescription": "Dépensez l'énergie du jour selon la priorité du projet.",
+    "raidsDescription": "Dépensez l'énergie du jour pour vos objectifs actifs par ordre de priorité.",
     "shops": "Boutiques",
     "shopsDescription": "Suivez les rotations et achats en boutique",
     "onslaught": "Assaut",
@@ -151,15 +151,20 @@
       "unavailable": "Règles de variantes indisponibles — synchronisez Guild Raid Meta pour voir les remplacements."
     }
   },
-  "project": { "placeholder": "Choisir un projet" },
+  "project": {
+    "placeholder": "Choisir un projet"
+  },
   "raids": {
-    "tabs": { "today": "Aujourd'hui", "plan": "Plan" }
+    "tabs": {
+      "today": "Aujourd'hui",
+      "plan": "Plan"
+    }
   },
   "empty": {
-    "noProject": "Aucun projet disponible.",
-    "noFarmable": "Ce projet n'a aucun besoin de campagne actif.",
+    "noFarmable": "Aucun de vos objectifs actifs n'a de besoin de campagne farmable.",
     "error": "Impossible de charger le plan.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "noGoals": "Vous n'avez aucun objectif actif. Créez ou reprenez un objectif dans Objectifs pour planifier vos raids."
   },
   "today": {
     "title": "Raids du jour",
@@ -250,10 +255,6 @@
           "title": "Vues de raid",
           "content": "Passez du programme du jour au plan de raid complet."
         },
-        "project": {
-          "title": "Choisir un projet",
-          "content": "Le plan suit ses objectifs actifs."
-        },
         "schedule": {
           "title": "Plan du jour",
           "content": "Attaquez ces nœuds avec l'énergie du jour — des suggestions supplémentaires apparaissent ici aussi une fois vos besoins budgétés couverts."
@@ -277,10 +278,6 @@
         "navigation": {
           "title": "Vues de raid",
           "content": "Passez entre Aujourd'hui et Plan."
-        },
-        "project": {
-          "title": "Projet partagé",
-          "content": "Les deux vues utilisent le même projet."
         },
         "summary": {
           "title": "Résumé",

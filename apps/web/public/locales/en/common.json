@@ -287,7 +287,7 @@
       "moreCount": "+{{count}} more",
       "summaryUnavailable": "Summary unavailable",
       "emptyTitle": "No projects yet",
-      "emptyDescription": "Projects group unit goals into prioritized plans.",
+      "emptyDescription": "Projects group your goals so you can browse them separately.",
       "emptyAction": "Create project",
       "error": "Couldn't load your projects.",
       "retry": "Retry"
@@ -295,7 +295,8 @@
     "raids": {
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
-      "error": "Couldn't load today's raids."
+      "error": "Couldn't load today's raids.",
+      "noGoals": "No active goals yet. Add goals to plan your raids."
     },
     "calendar": {
       "title": "Events Calendar"
@@ -457,7 +458,7 @@
       "overview": "All Goals",
       "overviewDescription": "Filter, sort, and group all your active goals.",
       "projects": "Projects",
-      "projectsDescription": "Organize goals into focused plans and control their priority.",
+      "projectsDescription": "Organize goals into focused groups and browse them separately.",
       "insights": "Insights",
       "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
@@ -465,7 +466,9 @@
       "archived": "Archived",
       "blocked": "Blocked",
       "active": "Active",
-      "paused": "Paused"
+      "paused": "Paused",
+      "plan": "Plan",
+      "planDescription": "One ordered plan for all your goals."
     },
     "columns": {
       "entity": "Character",
@@ -517,7 +520,7 @@
     },
     "project": {
       "noProjectTitle": "No projects yet",
-      "noProjectDescription": "A project is a named selection of your goals with its own priority order. Create one to plan a roster push, an event, or a long-term build separately from the rest.",
+      "noProjectDescription": "A project is a named selection of your goals. Create one to group a roster push, an event, or a long-term build and browse it separately from the rest.",
       "notFoundTitle": "Project not found",
       "notFoundDescription": "This project doesn't exist, or you don't have access to it.",
       "projectSwitcherLabel": "Project",
@@ -579,8 +582,8 @@
       "restore": "Restore project",
       "save": "Save project",
       "create": "Create project",
-      "dashboardIntro": "A project is a named selection of your goals with its own priority order. Keep several to plan different things separately — a roster push, an event, a long-term build — and switch between them without losing each one's order.",
-      "currentPlanNote": "Current plan is the project Dailies and Insights use by default. It does not make goals active or paused — you pause and resume goals one at a time.",
+      "dashboardIntro": "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, kept in the Global Plan.",
+      "currentPlanNote": "Current plan is the project shown first and the starting filter in Insights. It never changes your plan: priority is one order for all goals (see the Global Plan), and goals are paused and resumed one at a time.",
       "unitGoalSummaryOfAccount": "{{units}} units · {{goals}} of your {{accountGoals}} goals",
       "emptyProjectTitle": "This project has no goals yet",
       "emptyProjectDescription": "Use Add goals to put existing goals into it, or Create goal to make a new one.",
@@ -731,7 +734,7 @@
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
       "showLess": "Show less",
-      "previewDisclaimer": "The actual estimate may change depending on this goal's priority within the selected project and the selected farming strategy.",
+      "previewDisclaimer": "The actual estimate may change depending on this goal's place in your Global Plan and the selected farming strategy.",
       "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
       "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
       "projectLabel": "Projects",
@@ -819,7 +822,7 @@
       "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
-      "planAwareEstimate": "Accounts for higher-priority goals in this project",
+      "planAwareEstimate": "Accounts for higher-priority goals in your Global Plan",
       "unavailable": "Unavailable",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
@@ -844,7 +847,7 @@
       "actualProgress": "Actual progress",
       "actualProgressDescription": "Actual progress reflects your account's currently synced, owned state.",
       "potentialProgress": "Potential progress",
-      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in this project reserve their share. It does not change the goal's actual status.",
+      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in your Global Plan reserve their share. It does not change the goal's actual status.",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "upgradeSlots": "{{count}} upgrade slots remaining",
@@ -879,7 +882,7 @@
     "insights": {
       "selectProject": "Select a project",
       "noProjectTitle": "No project selected",
-      "noProjectDescription": "Select a project above to see its total missing resources, farming bottlenecks, and relevant campaign events.",
+      "noProjectDescription": "Select a project above to see the missing resources, farming bottlenecks, and relevant campaign events for its goals, as planned in your Global Plan.",
       "upgradesTitle": "Upgrades by rarity",
       "shardsTitle": "Shards & orbs",
       "shards": "Shards",
@@ -933,6 +936,26 @@
       "planningStale": "The target was saved, but your plan couldn't refresh — the estimates shown may still reflect the old target.",
       "retryRefresh": "Retry refresh",
       "historyChanged": "Target changed"
+    },
+    "plan": {
+      "title": "Global Plan",
+      "description": "Every active and paused goal, once, in the single priority order used by Today, Raids Plan, Insights and every estimate. Projects only filter this list.",
+      "loadError": "Couldn't load your goals.",
+      "retry": "Retry",
+      "emptyTitle": "No goals in your plan yet",
+      "emptyDescription": "Create a goal and it appears here, in priority order.",
+      "createGoal": "Create goal",
+      "noFarmableDemand": "Your active goals don't need anything that can be farmed right now, so there is no farming to plan."
+    },
+    "order": {
+      "conflictTitle": "The plan changed",
+      "conflictDescription": "Your move wasn't saved because the goal order changed after you loaded it. Review the refreshed order, then retry the move.",
+      "retry": "Retry move",
+      "dismiss": "Dismiss",
+      "projectNote": "Moving a goal here also moves it in the Global Plan. Goals from other projects keep their relative order.",
+      "openPlan": "Open Global Plan",
+      "saving": "Saving order…",
+      "dragHint": "Drag a card to change its priority."
     }
   },
   "language": {
@@ -1062,7 +1085,7 @@
       "steps": {
         "list": {
           "title": "What a project is",
-          "content": "A project is a named selection of your goals with its own priority order — keep several to plan different things separately. Current plan is the one Dailies and Insights use by default; it does not pause or resume anything."
+          "content": "A project is a named selection of your goals — keep several to group different things. Current plan is the project shown first and the starting filter in Insights; it does not pause or resume anything or change your priorities."
         },
         "newProject": {
           "title": "Create a project",
@@ -1086,7 +1109,7 @@
         },
         "reprioritize": {
           "title": "Prioritize your goals",
-          "content": "Drag any goal to change its priority. On mobile, tap Reorder first to enter reorder mode."
+          "content": "Drag any goal to change its priority. Moving a goal here also moves it in the Global Plan; goals from other projects keep their relative order. On mobile, tap Reorder first to enter reorder mode."
         },
         "selector": {
           "title": "Choose a project",
@@ -1108,6 +1131,22 @@
         "editTarget": {
           "title": "Edit target",
           "content": "Change where this goal ends without recreating it. It keeps its projects, notes, and history, and your plan recalculates."
+        }
+      }
+    },
+    "globalPlan": {
+      "steps": {
+        "intro": {
+          "title": "One plan for everything",
+          "content": "Every active and paused goal appears here once, in the single priority order that Today, Raids Plan and Insights use. Projects are only filters over it. Paused goals keep their place but plan nothing."
+        },
+        "reprioritize": {
+          "title": "Prioritize your goals",
+          "content": "Drag a goal to change its priority (on mobile, tap Reorder first). Each drop saves right away and applies in every project that holds the goal."
+        },
+        "createGoal": {
+          "title": "Add goals",
+          "content": "New goals join the end of the plan; drag them to where they belong."
         }
       }
     }

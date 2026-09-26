@@ -63,6 +63,12 @@ At or above 768px, every in-flight goal row SHALL have an accessible drag handle
 - **WHEN** a mobile user completes a drag near the bottom of a long reorder list
 - **THEN** the move is committed without pressing Done, its pending/error state is perceivable near the list, and Done remains reachable without scrolling back to the original header
 
+#### Scenario: Project-level reorder appears in the plan
+
+- **GIVEN** global order A, B, C, D, E and a project showing A, C, E
+- **WHEN** the user drags E above C on that project's page
+- **THEN** Global Plan shows A, B, E, C, D and every execution consumer uses that order
+
 #### Scenario: Filtered plan
 
 - **WHEN** a non-priority filter hides some goals

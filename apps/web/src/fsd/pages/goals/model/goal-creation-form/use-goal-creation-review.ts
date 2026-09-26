@@ -58,7 +58,6 @@ export function useGoalCreationReview(params: {
 
   const perProjectEstimates = usePerProjectEstimates({
     selectedProjectIds: estimatedProjectIds,
-    projectPriorities: {},
     newDetails: previewGoalDetails,
     dailyEnergy: params.dailyEnergy,
     inventoryUpgrades: params.inventoryUpgrades ?? [],

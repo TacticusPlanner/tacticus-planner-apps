@@ -193,8 +193,21 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 
 const getGoal = vi.fn()
 
+// The global plan (every Active goal in global order) the insights run over.
+let planGoals: Array<Record<string, unknown>> = []
+
 vi.mock("@/entities/goal", () => ({
   getGoal: (...args: unknown[]) => getGoal(...args),
+  useGlobalGoalPlan: () => ({
+    inFlight: planGoals,
+    active: planGoals,
+    entries: planGoals.map((goal) => ({ goal })),
+    goals: planGoals,
+    orderRevision: 1,
+    loading: false,
+    isError: false,
+    retry: vi.fn(),
+  }),
   goalQueries: {
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
@@ -247,6 +260,7 @@ const rankGoalDetail = {
 describe("InsightsPage", () => {
   beforeEach(() => {
     projectList = []
+    planGoals = []
     listProjects.mockReset()
     listProjectGoals.mockReset()
     getGoal.mockReset()
@@ -281,8 +295,9 @@ describe("InsightsPage", () => {
       },
     ]
     listProjects.mockResolvedValue({ projects: projectList })
+    planGoals = [{ ...rankGoal, globalPriority: 1 }]
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: rankGoal, priority: 1 }],
+      goals: [{ goal: { ...rankGoal, globalPriority: 1 } }],
     })
     getGoal.mockResolvedValue(rankGoalDetail)
 

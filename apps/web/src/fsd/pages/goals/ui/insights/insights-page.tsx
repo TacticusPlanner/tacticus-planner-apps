@@ -32,7 +32,10 @@ export function InsightsPage() {
   const projectId = selectedProjectId ?? projects.activeProjectId
 
   const projectGoals = useProjectGoals(projectId)
-  const { result, loading } = usePlanInsights(projectId, projectGoals.goals)
+  // The chosen project narrows what is reported; the estimate itself is the one global run.
+  const { result, loading } = usePlanInsights(
+    projectId ? projectGoals.goals.map((entry) => entry.goal.goalId) : null
+  )
 
   const goalEntityById = new Map(
     projectGoals.goals.map((member) => [

@@ -25,12 +25,12 @@ export type UpdateProjectRequest = {
   revision: number
 }
 
-/** `priority` is optional because it's meaningful only as a *response* value (goal-order is now the
- *  only way to set it, see `updateProjectGoalOrder`) — a membership-replacement request
- *  (`updateProjectGoals`) never sends it, since the API ignores any submitted value. */
+/** A membership-replacement request (`updateProjectGoals`) sends only the goal id — membership never
+ *  changes the account-wide order. In a response `globalPriority` is the goal's position in that order
+ *  (null once completed/archived). */
 export type ProjectGoalEntry = {
   goalId: string
-  priority?: number
+  globalPriority?: number | null
 }
 
 // Mirrors the backend's GoalSummaryResponse shape (also duplicated in entities/goal/model/types.ts as
@@ -46,9 +46,25 @@ export type ProjectMemberGoal = {
   dependsOn: string[]
   createdAt: string
   updatedAt: string
+  /** Position in the account-wide in-flight order; null for Completed/Archived. */
+  globalPriority: number | null
 }
 
+/** A project's member goals as a filtered projection of the global order (in-flight goals first, in
+ * global order). A project has no order of its own. */
 export type ProjectGoalSummary = {
   goal: ProjectMemberGoal
-  priority: number
+}
+
+export type ProjectGoalsResponse = {
+  goals: ProjectGoalSummary[]
+  orderRevision: number
+}
+
+/** Moves `goalId` to the global position `displacedGoalId` holds (both in-flight members of the
+ * project); goals between them shift one place toward the vacated slot. */
+export type MoveProjectGoalRequest = {
+  goalId: string
+  displacedGoalId: string
+  expectedRevision: number
 }

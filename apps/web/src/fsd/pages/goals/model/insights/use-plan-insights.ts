@@ -14,9 +14,8 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import { goalQueries } from "@/entities/goal"
+import { goalQueries, useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
-import type { ProjectGoalSummary } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
 
@@ -26,12 +25,6 @@ import {
   type PlanInsightsResult,
 } from ".//use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-
-// Only these statuses represent resources the plan still needs to acquire — an archived goal's
-// demand is done. A goal that's already reached its target (see `model/attainment/`) drops out of
-// the cost totals on its own merit: `calculateGoalResourceNeed`/`calculateGoalFarmingStages`
-// naturally return no need once the target's synced state is met, for every costed goal kind.
-const ACTIVE_STATUSES = new Set(["Active", "Paused"])
 
 type FetchState =
   | { status: "idle" }
@@ -48,7 +41,11 @@ type FetchState =
     }
 
 /**
- * The Insights view's aggregation across a project's still-active goals (plan §16 phase 7): total
+ * The Insights view's aggregation across the account's Active goals in global order (plan §16 phase 7),
+ * optionally scoped to a project: `scopeGoalIds` narrows what the totals, dates and bottlenecks *report*
+ * to that project's goals, but the allocation and estimate always run over the one global sequence — a
+ * project view shows what the global run produces for its goals, never an alternate project-only plan.
+ * Paused goals keep their position but do not enter the run. Total
  * missing resources by rarity/type, a combined energy/completion estimate, farming bottlenecks, and
  * campaign/event relevance annotated with which goals (entities) benefit. Builds on the same
  * batch-fetch shape as `usePlanEstimate`, but covers every costable goal type (Rank, MoW Ability,
@@ -57,11 +54,9 @@ type FetchState =
  * members. The actual aggregation is pure and lives in `plan-insights-calc.ts` (this repo's max-lines
  * rule) — this hook is only the batch-fetch + caching shell around it, mirroring `usePlanEstimate`.
  */
-export function usePlanInsights(
-  projectId: string | undefined,
-  members: ProjectGoalSummary[]
-) {
+export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const isAuthenticated = useIsAuthenticated()
+  const globalPlan = useGlobalGoalPlan()
   const {
     upgradesById,
     battlesById,
@@ -84,25 +79,29 @@ export function usePlanInsights(
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
 
-  const activeMembers = members.filter((member) =>
-    ACTIVE_STATUSES.has(member.goal.status)
-  )
+  const activeMembers = globalPlan.entries
+  const scopeIds = scopeGoalIds ? new Set(scopeGoalIds) : undefined
+  const scopeKey = scopeGoalIds ? [...scopeGoalIds].sort().join(",") : "all"
   const memberKey = activeMembers
-    .map((member) => `${member.goal.goalId}:${member.priority}`)
+    .map((member) => `${member.goal.goalId}:${member.goal.globalPriority}`)
     .join(",")
   // Goal-id set only, no priority — a reorder changes every in-flight member's priority at once,
   // which would otherwise blank the whole display on every drag while `calculationKey` recomputes.
-  const idSetKey = `${projectId}:${activeMembers
+  const idSetKey = `${scopeKey}:${activeMembers
     .map((member) => member.goal.goalId)
     .sort()
     .join(",")}`
-  const calculationKey = `${memberKey}:${JSON.stringify({
+  const calculationKey = `${scopeKey}:${memberKey}:${JSON.stringify({
     inventoryUpgrades,
     inventoryOrbs,
     inventoryXpBooks,
   })}`
+  // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
-    projectId && isAuthenticated && activeMembers.length > 0
+    isAuthenticated &&
+    activeMembers.length > 0 &&
+    (!scopeIds ||
+      activeMembers.some((member) => scopeIds.has(member.goal.goalId)))
   )
   const goalDetailQueries = useQueries({
     queries: hasQuery
@@ -190,12 +189,16 @@ export function usePlanInsights(
           if (!active) return
 
           const priorityByGoalId = new Map(
-            activeMembers.map((member) => [member.goal.goalId, member.priority])
+            activeMembers.map((member) => [
+              member.goal.goalId,
+              member.goal.globalPriority ?? Number.MAX_SAFE_INTEGER,
+            ])
           )
 
           const result = computePlanInsights({
             details,
             priorityByGoalId,
+            scopeGoalIds: scopeIds,
             playerCharacterById,
             playerMowById,
             inventoryShardById,
@@ -261,6 +264,7 @@ export function usePlanInsights(
       hasQuery && (isCurrent || showsSameGoalSet)
         ? fetchState.result
         : EMPTY_PLAN_INSIGHTS_RESULT,
-    loading: hasQuery && (!serverDataReady || !isCurrent),
+    loading:
+      globalPlan.loading || (hasQuery && (!serverDataReady || !isCurrent)),
   }
 }

@@ -70,9 +70,9 @@ export function ProjectsListPage() {
     currentIndex >= 0 ? (summaryQueries[currentIndex]?.data?.goals ?? []) : []
   const currentGoalIds = currentGoals.map((entry) => entry.goal.goalId)
   const currentAttainment = useGoalAttainment(currentGoalIds)
+  // The Current plan's numbers are its goals' outcomes from the one global run, not a project-only plan.
   const { result: currentInsights } = usePlanInsights(
-    current?.projectId,
-    currentGoals
+    current ? currentGoalIds : null
   )
   const currentMetrics = useGoalsOverviewMetrics(
     currentGoalIds,

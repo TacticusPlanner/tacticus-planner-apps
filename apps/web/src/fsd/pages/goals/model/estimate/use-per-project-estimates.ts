@@ -10,18 +10,16 @@ import {
 } from "@workspace/player-data/queries"
 import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 
-import { goalQueries, type GoalDetail } from "@/entities/goal"
-import { projectQueries } from "@/entities/project"
+import {
+  goalQueries,
+  useGlobalGoalPlan,
+  type GoalDetail,
+} from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 
 import { estimateNewGoalsForProject } from ".//per-project-estimate"
 import type { EstimateOutcome } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-
-// Mirrors use-plan-insights.ts's own ACTIVE_STATUSES — only these statuses represent resources a
-// project's queue still needs to acquire, so only they compete for shared inventory/energy with the
-// goal(s) about to be created.
-const ACTIVE_STATUSES = new Set(["Draft", "Active", "Paused"])
 
 export type PerProjectEstimate =
   | { status: "loading" }
@@ -29,28 +27,23 @@ export type PerProjectEstimate =
   | { status: "outcome"; outcome: EstimateOutcome }
 
 /**
- * Per selected project, the estimated duration for the goal(s) about to be created (plan: per-project
- * duration in "What will be created", replacing the single combined estimate removed from
- * "Resources needed"). For each project, folds `newDetails` in alongside that project's real active
- * member goals — at the user's typed priority when given, else appended after that project's current
- * max priority (same fallback `GetNextPriorityAsync` uses server-side) — and reuses the exact
- * priority-shared engine the Insights view runs (`estimateNewGoalsForProject`/`computePlanInsights`).
- * Batch-fetches each selected project's members, their full goal details (shared react-query cache
- * with the Insights view's own per-project fetch), and per-entity player/inventory data — the same
- * three-stage shape `use-plan-insights.ts` uses, just fanned out over several projects instead of one.
+ * The estimated duration for the goal(s) about to be created, reported per selected project
+ * ("What will be created"). Priority is one account-wide order, so a new goal always appends after
+ * every existing Active goal and its estimate is the same whichever projects it is filed into: the
+ * hook folds `newDetails` in behind the account's Active goals (global order) and reuses the exact
+ * engine the Insights view runs (`estimateNewGoalsForProject`/`computePlanInsights`), then returns that
+ * one outcome under each selected project id. Batch-fetches the goals' full details (shared
+ * react-query cache with Insights) and per-entity player/inventory data — the same three-stage shape
+ * `use-plan-insights.ts` uses.
  */
 export function usePerProjectEstimates({
   selectedProjectIds,
-  projectPriorities,
   newDetails,
   dailyEnergy,
   inventoryUpgrades,
   enabled,
 }: {
   selectedProjectIds: string[]
-  /** Raw (possibly blank) priority input text per projectId — parsed here, with blank/invalid
-   * falling back to "append after this project's current goals". */
-  projectPriorities: Record<string, string>
   newDetails: GoalDetail[]
   dailyEnergy: number
   inventoryUpgrades: readonly { upgradeId: string; amount: number }[]
@@ -79,38 +72,14 @@ export function usePerProjectEstimates({
 
   const hasQuery = enabled && isAuthenticated && selectedProjectIds.length > 0
 
-  const projectGoalsQueries = useQueries({
-    queries: hasQuery
-      ? selectedProjectIds.map((projectId) => projectQueries.goals(projectId))
-      : [],
-  })
-
-  const activeMembersByProject = new Map<
-    string,
-    { goalId: string; priority: number }[]
-  >()
-  selectedProjectIds.forEach((projectId, index) => {
-    const members = projectGoalsQueries[index]?.data?.goals ?? []
-    activeMembersByProject.set(
-      projectId,
-      members
-        .filter((member) => ACTIVE_STATUSES.has(member.goal.status))
-        .map((member) => ({
-          goalId: member.goal.goalId,
-          priority: member.priority,
-        }))
-    )
-  })
-  const memberGoalIds = [
-    ...new Set(
-      [...activeMembersByProject.values()].flatMap((members) =>
-        members.map((member) => member.goalId)
-      )
-    ),
-  ]
-
+  const globalPlan = useGlobalGoalPlan()
+  const members = globalPlan.active.map((goal) => ({
+    goalId: goal.goalId,
+    priority: goal.globalPriority ?? Number.MAX_SAFE_INTEGER,
+  }))
+  const memberGoalIds = members.map((member) => member.goalId)
   const projectGoalsReady =
-    !hasQuery || projectGoalsQueries.every((query) => query.isSuccess)
+    !hasQuery || (!globalPlan.loading && !globalPlan.isError)
 
   const goalDetailQueries = useQueries({
     queries: projectGoalsReady
@@ -127,12 +96,7 @@ export function usePerProjectEstimates({
     !!ascensionCostsById &&
     !!unlockShardCostsById
 
-  const memberKey = [...activeMembersByProject.entries()]
-    .map(
-      ([projectId, members]) =>
-        `${projectId}:${members.map((m) => `${m.goalId}:${m.priority}`).join(",")}`
-    )
-    .join("|")
+  const memberKey = members.map((m) => `${m.goalId}:${m.priority}`).join(",")
   // Includes each preview goal's full `config` (not just its id/type) — a preview goal's id/type
   // stay fixed across renders for the same entity + enabled goal kinds (see buildPreviewGoalDetails),
   // so without the config's content here, changing e.g. the selected shard-farming locations or a
@@ -143,10 +107,7 @@ export function usePerProjectEstimates({
         `${detail.goalId}:${detail.goalType}:${JSON.stringify(detail.config)}`
     )
     .join(",")
-  const prioritiesKey = selectedProjectIds
-    .map((projectId) => `${projectId}:${projectPriorities[projectId] ?? ""}`)
-    .join(",")
-  const currentKey = `${memberKey}|${newDetailsKey}|${prioritiesKey}`
+  const currentKey = `${memberKey}|${newDetailsKey}|${selectedProjectIds.join(",")}`
 
   const [state, setState] = useState<{
     key: string
@@ -211,56 +172,48 @@ export function usePerProjectEstimates({
         const playerMowById = new Map(mowEntries)
         const inventoryShardById = new Map(shardEntries)
 
-        const results = new Map<string, PerProjectEstimate>()
-        for (const projectId of selectedProjectIds) {
-          const members = activeMembersByProject.get(projectId) ?? []
-          const projectDetails = existingDetails.filter((detail) =>
-            members.some((member) => member.goalId === detail.goalId)
-          )
-          const existingPriorities = new Map(
-            members.map((member) => [member.goalId, member.priority])
-          )
-          const maxExistingPriority = members.reduce(
-            (max, member) => Math.max(max, member.priority),
-            0
-          )
-          const rawPriority = Number.parseInt(
-            projectPriorities[projectId] ?? "",
-            10
-          )
-          const newBasePriority =
-            Number.isFinite(rawPriority) && rawPriority > 0
-              ? rawPriority
-              : maxExistingPriority + 1
+        const existingPriorities = new Map(
+          members.map((member) => [member.goalId, member.priority])
+        )
+        const maxExistingPriority = members.reduce(
+          (max, member) =>
+            member.priority === Number.MAX_SAFE_INTEGER
+              ? max
+              : Math.max(max, member.priority),
+          0
+        )
+        const outcome = estimateNewGoalsForProject({
+          existingDetails,
+          existingPriorities,
+          newDetails,
+          newBasePriority: maxExistingPriority + 1,
+          playerCharacterById,
+          playerMowById,
+          inventoryShardById,
+          inventoryUpgrades,
+          upgradesById,
+          battlesById,
+          charactersById: charactersById!,
+          mowsById: mowsById!,
+          ascensionCostsById: ascensionCostsById!,
+          unlockShardCostsById: unlockShardCostsById!,
+          releaseTypeByGroupId,
+          getCharacter,
+          dailyEnergy,
+          onslaughtProgress,
+          onslaughtRewards,
+          shops,
+        })
 
-          const outcome = estimateNewGoalsForProject({
-            existingDetails: projectDetails,
-            existingPriorities,
-            newDetails,
-            newBasePriority,
-            playerCharacterById,
-            playerMowById,
-            inventoryShardById,
-            inventoryUpgrades,
-            upgradesById,
-            battlesById,
-            charactersById: charactersById!,
-            mowsById: mowsById!,
-            ascensionCostsById: ascensionCostsById!,
-            unlockShardCostsById: unlockShardCostsById!,
-            releaseTypeByGroupId,
-            getCharacter,
-            dailyEnergy,
-            onslaughtProgress,
-            onslaughtRewards,
-            shops,
-          })
-
-          results.set(
+        // One global order, so one outcome: every selected project shows the same estimate.
+        const results = new Map<string, PerProjectEstimate>(
+          selectedProjectIds.map((projectId) => [
             projectId,
-            outcome ? { status: "outcome", outcome } : { status: "unavailable" }
-          )
-        }
+            outcome
+              ? { status: "outcome", outcome }
+              : { status: "unavailable" },
+          ])
+        )
 
         setState({ key: currentKey, results })
       })
@@ -280,7 +233,6 @@ export function usePerProjectEstimates({
     catalogReady,
     memberKey,
     newDetailsKey,
-    prioritiesKey,
     dailyEnergy,
   ])
 

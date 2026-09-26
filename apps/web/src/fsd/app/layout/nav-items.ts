@@ -24,6 +24,7 @@ type NavLabelKey =
   | "library:collections.npcs.label"
   | "library:collections.raidBosses.label"
   | "library:collections.shops.label"
+  | "goals.tabs.plan"
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
@@ -145,6 +146,11 @@ export const navItems: NavItem[] = [
     anonymousAllowed: false,
     mobilePlacement: "primary",
     children: [
+      {
+        path: "/goals/plan",
+        labelKey: "goals.tabs.plan",
+        descriptionKey: "goals.tabs.planDescription",
+      },
       {
         path: "/goals/overview",
         labelKey: "goals.tabs.overview",

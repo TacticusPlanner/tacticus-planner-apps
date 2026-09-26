@@ -8,9 +8,9 @@ import { render, screen } from "@/test/render"
 import { routes } from "../route"
 import { DailiesLayout } from "./dailies-layout"
 
-const useDailyRaids = vi.fn<(projectId?: string) => { status: "no-farmable" }>(
-  () => ({ status: "no-farmable" })
-)
+const useDailyRaids = vi.fn<() => { status: "no-farmable" }>(() => ({
+  status: "no-farmable",
+}))
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -50,7 +50,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
   return {
     ...actual,
-    useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
+    useDailyRaids: () => useDailyRaids(),
   }
 })
 vi.mock("../model/use-shop-recommendations", () => ({
@@ -143,17 +143,19 @@ describe("Dailies navigation", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("keeps the selected project when switching from Today to Plan", async () => {
+  it("plans the whole account on Today and Plan, with no project selector", async () => {
     const user = userEvent.setup()
     renderDailies("/dailies/raids/today")
-    expect(await findRouteContent("dailies-project-select")).toBeInTheDocument()
+    await findRouteContent("dailies-no-farmable")
+    expect(
+      screen.queryByTestId("dailies-project-select")
+    ).not.toBeInTheDocument()
 
-    await user.click(screen.getByTestId("dailies-project-select"))
-    await user.click(
-      await screen.findByRole("option", { name: /Other project/ })
-    )
     await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
     await findRouteContent("dailies-no-farmable")
-    expect(useDailyRaids).toHaveBeenLastCalledWith("p2")
+    expect(
+      screen.queryByTestId("dailies-project-select")
+    ).not.toBeInTheDocument()
+    expect(useDailyRaids).toHaveBeenLastCalledWith()
   })
 })

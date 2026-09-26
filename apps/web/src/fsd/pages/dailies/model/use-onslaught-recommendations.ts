@@ -249,7 +249,7 @@ export function useOnslaughtRecommendations(
       new Map(
         (projectGoalsQuery.data?.goals ?? []).map((entry) => [
           entry.goal.goalId,
-          entry.priority,
+          entry.goal.globalPriority ?? Number.MAX_SAFE_INTEGER,
         ])
       ),
     [projectGoalsQuery.data]

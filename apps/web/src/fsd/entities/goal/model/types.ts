@@ -124,6 +124,33 @@ export type GoalSummary = {
   dependsOn: string[]
   createdAt: string
   updatedAt: string
+  /** Position (1 = first) in the account-wide order of in-flight goals; null for Completed/Archived. */
+  globalPriority: number | null
+}
+
+/** `GET /me/goals`: in-flight goals first in global order, then the rest. `orderRevision` is the token
+ * the reorder operations echo back. */
+export type GoalListResponse = {
+  goals: GoalSummary[]
+  orderRevision: number
+}
+
+/** The outcome of a reorder/move: the new revision and the canonical in-flight order. */
+export type GoalOrderResponse = {
+  revision: number
+  goalIds: string[]
+}
+
+/** The 409 body of a rejected reorder/move; `revision`/`goalIds` are the order as it now stands. */
+export type GoalOrderConflictDto = {
+  issueCode:
+    | "goalOrderStale"
+    | "goalOrderSetMismatch"
+    | "goalOrderDuplicate"
+    | "goalOrderSameGoal"
+  message: string
+  revision: number
+  goalIds: string[]
 }
 
 export type GoalDetail = GoalSummary & {

@@ -287,7 +287,7 @@
       "moreCount": "+{{count}} weitere",
       "summaryUnavailable": "Übersicht nicht verfügbar",
       "emptyTitle": "Noch keine Projekte",
-      "emptyDescription": "Projekte fassen Einheitenziele zu priorisierten Plänen zusammen.",
+      "emptyDescription": "Projekte fassen deine Ziele zusammen, damit du sie getrennt durchsuchen kannst.",
       "emptyAction": "Projekt erstellen",
       "error": "Deine Projekte konnten nicht geladen werden.",
       "retry": "Erneut versuchen"
@@ -295,7 +295,8 @@
     "raids": {
       "title": "Tägliche Raids",
       "empty": "Heute gibt es nichts zu erobern.",
-      "error": "Die heutigen Raids konnten nicht geladen werden."
+      "error": "Die heutigen Raids konnten nicht geladen werden.",
+      "noGoals": "Noch keine aktiven Ziele. Füge Ziele hinzu, um deine Raids zu planen."
     },
     "calendar": {
       "title": "Ereigniskalender"
@@ -457,7 +458,7 @@
       "overview": "Alle Ziele",
       "overviewDescription": "Filtere, sortiere und gruppiere alle deine aktiven Ziele.",
       "projects": "Projekte",
-      "projectsDescription": "Organisiere Ziele in fokussierten Projekten und steuere ihre Priorität.",
+      "projectsDescription": "Organisiere Ziele in fokussierten Gruppen und durchsuche sie getrennt.",
       "insights": "Einblicke",
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
       "toReach": "Unerfüllt",
@@ -465,7 +466,9 @@
       "archived": "Archiviert",
       "blocked": "Blockiert",
       "active": "Aktiv",
-      "paused": "Pausiert"
+      "paused": "Pausiert",
+      "plan": "Plan",
+      "planDescription": "Ein geordneter Plan für alle deine Ziele."
     },
     "columns": {
       "entity": "Charakter",
@@ -517,7 +520,7 @@
     },
     "project": {
       "noProjectTitle": "Noch keine Projekte",
-      "noProjectDescription": "Ein Projekt ist eine benannte Auswahl deiner Ziele mit eigener Prioritätsreihenfolge. Lege eines an, um einen Kaderausbau, ein Event oder einen langfristigen Aufbau getrennt vom Rest zu planen.",
+      "noProjectDescription": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege eines an, um einen Kaderausbau, ein Event oder einen langfristigen Aufbau zu bündeln und getrennt vom Rest zu durchsuchen.",
       "notFoundTitle": "Projekt nicht gefunden",
       "notFoundDescription": "Dieses Projekt existiert nicht, oder du hast keinen Zugriff darauf.",
       "projectSwitcherLabel": "Projekt",
@@ -579,8 +582,8 @@
       "restore": "Projekt wiederherstellen",
       "save": "Projekt speichern",
       "create": "Projekt erstellen",
-      "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele mit eigener Prioritätsreihenfolge. Lege mehrere an, um Verschiedenes getrennt zu planen – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und wechsle zwischen ihnen, ohne die jeweilige Reihenfolge zu verlieren.",
-      "currentPlanNote": "Der aktuelle Plan ist das Projekt, das Tagesaufgaben und Erkenntnisse standardmäßig verwenden. Er macht Ziele weder aktiv noch pausiert – Ziele pausierst und setzt du einzeln fort.",
+      "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege mehrere an, um Verschiedenes zu bündeln – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und durchsuche jedes für sich. Die Priorität ist eine einzige Reihenfolge für alle Ziele und liegt im Globalen Plan.",
+      "currentPlanNote": "Der aktuelle Plan ist das Projekt, das zuerst angezeigt wird, und der Startfilter in den Erkenntnissen. Er ändert nie deinen Plan: Die Priorität ist eine einzige Reihenfolge für alle Ziele (siehe Globaler Plan), und Ziele pausierst und setzt du einzeln fort.",
       "unitGoalSummaryOfAccount": "{{units}} Einheiten · {{goals}} von deinen {{accountGoals}} Zielen",
       "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
       "emptyProjectDescription": "Nutze „Ziele hinzufügen“, um vorhandene Ziele aufzunehmen, oder „Ziel erstellen“ für ein neues.",
@@ -731,7 +734,7 @@
       "previewTitle": "Benötigte Ressourcen",
       "showAll": "Alle anzeigen ({{count}})",
       "showLess": "Weniger anzeigen",
-      "previewDisclaimer": "Die tatsächliche Schätzung kann sich je nach Priorität dieses Ziels innerhalb des gewählten Projekts und der gewählten Farming-Strategie ändern.",
+      "previewDisclaimer": "Die tatsächliche Schätzung kann sich je nach Platz dieses Ziels in deinem Globalen Plan und der gewählten Farming-Strategie ändern.",
       "previewUnavailable": "Für diesen Zieltyp ist noch keine detaillierte Schätzung verfügbar.",
       "characterAbilityCostUnsupported": "Charakter-Fähigkeitsziele werden validiert und verfolgt, ihre Ressourcenkosten werden aber noch nicht unterstützt.",
       "projectLabel": "Projekte",
@@ -819,7 +822,7 @@
       "unsavedChangesCancel": "Weiter bearbeiten",
       "estimateTitle": "Schätzung",
       "isolatedEstimate": "Isolierte Schätzung",
-      "planAwareEstimate": "Berücksichtigt höher priorisierte Ziele in diesem Projekt",
+      "planAwareEstimate": "Berücksichtigt höher priorisierte Ziele in deinem Globalen Plan",
       "unavailable": "Nicht verfügbar",
       "dependenciesTitle": "Abhängigkeiten",
       "historyTitle": "Verlauf",
@@ -844,7 +847,7 @@
       "actualProgress": "Tatsächlicher Fortschritt",
       "actualProgressDescription": "Der tatsächliche Fortschritt spiegelt den aktuell synchronisierten, im Besitz befindlichen Stand deines Accounts wider.",
       "potentialProgress": "Potenzieller Fortschritt",
-      "potentialProgressDescription": "Der potenzielle Fortschritt wendet die Ressourcen an, die du bereits besitzt, nachdem Ziele mit höherer Priorität in diesem Projekt ihren Anteil reserviert haben. Er ändert nicht den tatsächlichen Status des Ziels.",
+      "potentialProgressDescription": "Der potenzielle Fortschritt wendet die Ressourcen an, die du bereits besitzt, nachdem Ziele mit höherer Priorität in deinem Globalen Plan ihren Anteil reserviert haben. Er ändert nicht den tatsächlichen Status des Ziels.",
       "remaining": {
         "upgrades": "{{count}} Upgrades verbleibend",
         "upgradeSlots": "{{count}} Upgrade-Slots verbleibend",
@@ -879,7 +882,7 @@
     "insights": {
       "selectProject": "Wähle ein Projekt",
       "noProjectTitle": "Kein Projekt ausgewählt",
-      "noProjectDescription": "Wähle oben ein Projekt aus, um seine insgesamt fehlenden Ressourcen, Farming-Engpässe und relevanten Kampagnen-Events zu sehen.",
+      "noProjectDescription": "Wähle oben ein Projekt aus, um die fehlenden Ressourcen, Farming-Engpässe und relevanten Kampagnen-Events für seine Ziele zu sehen, wie sie in deinem Globalen Plan geplant sind.",
       "upgradesTitle": "Upgrades nach Seltenheit",
       "shardsTitle": "Scherben & Orbs",
       "shards": "Scherben",
@@ -933,6 +936,26 @@
       "planningStale": "Das Ziel wurde gespeichert, aber dein Plan konnte nicht aktualisiert werden – die angezeigten Schätzungen können noch das alte Ziel widerspiegeln.",
       "retryRefresh": "Aktualisierung wiederholen",
       "historyChanged": "Ziel geändert"
+    },
+    "plan": {
+      "title": "Globaler Plan",
+      "description": "Jedes aktive und pausierte Ziel genau einmal, in der einen Prioritätsreihenfolge, die von Heute, Raid-Plan, Erkenntnissen und jeder Schätzung verwendet wird. Projekte filtern diese Liste nur.",
+      "loadError": "Deine Ziele konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "emptyTitle": "Noch keine Ziele in deinem Plan",
+      "emptyDescription": "Erstelle ein Ziel, und es erscheint hier in der Prioritätsreihenfolge.",
+      "createGoal": "Ziel erstellen",
+      "noFarmableDemand": "Deine aktiven Ziele benötigen derzeit nichts, das sich farmen lässt – es gibt also kein Farming zu planen."
+    },
+    "order": {
+      "conflictTitle": "Der Plan hat sich geändert",
+      "conflictDescription": "Deine Verschiebung wurde nicht gespeichert, da sich die Zielreihenfolge nach dem Laden geändert hat. Prüfe die aktualisierte Reihenfolge und wiederhole dann die Verschiebung.",
+      "retry": "Verschieben wiederholen",
+      "dismiss": "Verwerfen",
+      "projectNote": "Wenn du ein Ziel hier verschiebst, wird es auch im Globalen Plan verschoben. Ziele aus anderen Projekten behalten ihre relative Reihenfolge.",
+      "openPlan": "Globalen Plan öffnen",
+      "saving": "Reihenfolge wird gespeichert…",
+      "dragHint": "Ziehe eine Karte, um ihre Priorität zu ändern."
     }
   },
   "language": {
@@ -1062,7 +1085,7 @@
       "steps": {
         "list": {
           "title": "Was ein Projekt ist",
-          "content": "Ein Projekt ist eine benannte Auswahl deiner Ziele mit eigener Prioritätsreihenfolge – lege mehrere an, um Verschiedenes getrennt zu planen. Der aktuelle Plan ist der, den Tagesaufgaben und Erkenntnisse standardmäßig verwenden; er pausiert oder startet nichts."
+          "content": "Ein Projekt ist eine benannte Auswahl deiner Ziele – lege mehrere an, um Verschiedenes zu bündeln. Der aktuelle Plan ist das Projekt, das zuerst angezeigt wird, und der Startfilter in den Erkenntnissen; er pausiert oder startet nichts und ändert deine Prioritäten nicht."
         },
         "newProject": {
           "title": "Ein Projekt erstellen",
@@ -1086,7 +1109,7 @@
         },
         "reprioritize": {
           "title": "Ziele priorisieren",
-          "content": "Ziehe ein Ziel, um seine Priorität zu ändern. Tippe auf Mobilgeräten zuerst auf „Neu anordnen“, um den Anordnungsmodus zu öffnen."
+          "content": "Ziehe ein beliebiges Ziel, um seine Priorität zu ändern. Wenn du ein Ziel hier verschiebst, wird es auch im Globalen Plan verschoben; Ziele aus anderen Projekten behalten ihre relative Reihenfolge. Tippe auf Mobilgeräten zuerst auf „Neu anordnen“, um den Anordnungsmodus zu öffnen."
         },
         "selector": {
           "title": "Ein Projekt auswählen",
@@ -1108,6 +1131,22 @@
         "editTarget": {
           "title": "Ziel bearbeiten",
           "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Projekte, Notizen und Verlauf bleiben erhalten, und dein Plan wird neu berechnet."
+        }
+      }
+    },
+    "globalPlan": {
+      "steps": {
+        "intro": {
+          "title": "Ein Plan für alles",
+          "content": "Jedes aktive und pausierte Ziel erscheint hier genau einmal, in der einen Prioritätsreihenfolge, die Heute, Raid-Plan und Erkenntnisse verwenden. Projekte sind nur Filter darüber. Pausierte Ziele behalten ihren Platz, planen aber nichts."
+        },
+        "reprioritize": {
+          "title": "Ziele priorisieren",
+          "content": "Ziehe ein Ziel, um seine Priorität zu ändern (tippe auf Mobilgeräten zuerst auf „Neu anordnen“). Jedes Ablegen wird sofort gespeichert und gilt in jedem Projekt, das das Ziel enthält."
+        },
+        "createGoal": {
+          "title": "Ziele hinzufügen",
+          "content": "Neue Ziele landen am Ende des Plans; ziehe sie an die passende Stelle."
         }
       }
     }

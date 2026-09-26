@@ -32,7 +32,6 @@ function member(
   overrides: Partial<ProjectGoalSummary["goal"]> = {}
 ): ProjectGoalSummary {
   return {
-    priority: 1,
     goal: {
       goalId: "goal-other",
       entityType: "Character",
@@ -43,6 +42,7 @@ function member(
       dependsOn: [],
       createdAt: "2026-01-01T00:00:00Z",
       updatedAt: "2026-01-01T00:00:00Z",
+      globalPriority: 1,
       ...overrides,
     },
   }

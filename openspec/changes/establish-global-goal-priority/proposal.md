@@ -5,7 +5,7 @@ Goals currently inherit priority from whichever project a page selected, so a pl
 ## What Changes
 
 - Add an ordered global Goals plan at `/goals/plan`, with desktop drag and mobile reorder mode, displaying Active and Paused goals from every project once. On mobile, entering reorder brings the list into view and exiting stays reachable while dragging lower rows; completed drops save without a separate confirmation.
-- **BREAKING**: Project pages become filtered, read-only projections of global order; remove project-local priority controls and stop treating Current plan as an execution selector.
+- **BREAKING**: Project pages become filtered projections of global order with no order of their own; stop treating Current plan as an execution selector. Reordering on a project page (desktop drag, mobile reorder mode) moves a goal within that project's subset and writes through to the global order: with global A,B,C,D,E and project A,C,E, dragging E above C gives A,B,E,C,D.
 - Make Today, Raids Plan, Insights, and priority-sensitive estimates consume one canonical active-goal order and one shared resource/energy allocation, including mixed Character/Machine-of-War goals. Project filters remain browsing/summary filters only.
 - Preserve per-goal pause/resume and non-priority Overview filters/groupings; distinguish empty, loading, and failed global plans.
 - Retain the existing `/goals` landing until the separate `make-global-plan-the-goals-landing` change switches it.
@@ -18,7 +18,7 @@ Goals currently inherit priority from whichever project a page selected, so a pl
 
 ### Modified Capabilities
 
-- `project-management`: Project copy and detail order become projections; project-local reorder controls retire.
+- `project-management`: Project copy and detail order become projections; project reorder controls remain but edit the global order.
 - `goals-navigation`: Current plan no longer selects execution scope; project selectors/filters are browsing-only.
 - `daily-raids-today`: Today uses all Active goals in global order instead of a selected project.
 - `daily-raids-plan`: Raids Plan shares the same global engine and no project selector.

@@ -9,7 +9,7 @@ export function useRaidsPlanTutorial() {
   const steps = useMemo(() => {
     const createStep = (
       target: string,
-      key: "navigation" | "project" | "summary" | "days"
+      key: "navigation" | "summary" | "days"
     ): Step => ({
       target,
       title: t(`tour.raidsPlan.steps.${key}.title`),
@@ -17,7 +17,6 @@ export function useRaidsPlanTutorial() {
     })
     const shared = [
       createStep('[data-testid="raids-tabs"]', "navigation"),
-      createStep('[data-testid="dailies-project-select"]', "project"),
       createStep('[data-testid="plan-summary"]', "summary"),
       createStep('[data-testid="plan-days"]', "days"),
     ]

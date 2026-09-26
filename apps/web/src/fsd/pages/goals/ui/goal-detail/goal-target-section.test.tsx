@@ -81,6 +81,7 @@ function goal(
     dependsOn: [],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
+    globalPriority: 1,
     config: { ...emptyConfig, ...config },
     snapshot: null,
     events: [],

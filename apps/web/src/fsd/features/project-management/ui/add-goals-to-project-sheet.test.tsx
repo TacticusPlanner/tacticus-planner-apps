@@ -148,7 +148,7 @@ describe("AddGoalsToProjectSheet", () => {
       goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" })],
     })
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal(), priority: 3 }],
+      goals: [{ goal: goal() }],
     })
     renderSheet()
 
@@ -177,7 +177,7 @@ describe("AddGoalsToProjectSheet", () => {
     expect(screen.getByTestId("add-goals-row-goal-2")).toBeInTheDocument()
   })
 
-  it("keeps existing members with their priorities and appends additions last", async () => {
+  it("keeps existing members and appends additions last", async () => {
     listGoals.mockResolvedValue({
       goals: [
         goal({ goalId: "goal-new", entityId: "hero9" }),
@@ -186,10 +186,9 @@ describe("AddGoalsToProjectSheet", () => {
     })
     listProjectGoals.mockResolvedValue({
       goals: [
-        { goal: goal({ goalId: "goal-member" }), priority: 1 },
+        { goal: goal({ goalId: "goal-member" }) },
         {
           goal: goal({ goalId: "goal-member-2", entityId: "hero2" }),
-          priority: 2,
         },
       ],
     })
@@ -201,9 +200,9 @@ describe("AddGoalsToProjectSheet", () => {
 
     await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalled())
     expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
-      { goalId: "goal-member", priority: 1 },
-      { goalId: "goal-member-2", priority: 2 },
-      { goalId: "goal-new", priority: 3 },
+      { goalId: "goal-member" },
+      { goalId: "goal-member-2" },
+      { goalId: "goal-new" },
     ])
   })
 
@@ -215,7 +214,7 @@ describe("AddGoalsToProjectSheet", () => {
       ],
     })
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 5 }],
+      goals: [{ goal: goal({ goalId: "goal-member" }) }],
     })
     const user = userEvent.setup()
     renderSheet()
@@ -243,7 +242,6 @@ describe("AddGoalsToProjectSheet", () => {
       goals: [
         {
           goal: goal({ goalId: "goal-elsewhere", entityId: "hero5" }),
-          priority: 1,
         },
       ],
     })
@@ -255,8 +253,8 @@ describe("AddGoalsToProjectSheet", () => {
 
     await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalled())
     expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
-      { goalId: "goal-elsewhere", priority: 1 },
-      { goalId: "goal-new", priority: 2 },
+      { goalId: "goal-elsewhere" },
+      { goalId: "goal-new" },
     ])
   })
 
@@ -265,7 +263,7 @@ describe("AddGoalsToProjectSheet", () => {
       goals: [goal({ goalId: "goal-conflicting" })],
     })
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+      goals: [{ goal: goal({ goalId: "goal-member" }) }],
     })
     renderSheet()
 
@@ -285,7 +283,7 @@ describe("AddGoalsToProjectSheet", () => {
       ],
     })
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+      goals: [{ goal: goal({ goalId: "goal-member" }) }],
     })
     renderSheet()
 
@@ -301,7 +299,7 @@ describe("AddGoalsToProjectSheet", () => {
       goals: [goal({ goalId: "goal-conflicting" })],
     })
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+      goals: [{ goal: goal({ goalId: "goal-member" }) }],
     })
     renderSheet()
 
@@ -315,7 +313,7 @@ describe("AddGoalsToProjectSheet", () => {
     rankEndByGoal.set("goal-gold", 15)
     listGoals.mockResolvedValue({ goals: [goal({ goalId: "goal-gold" })] })
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+      goals: [{ goal: goal({ goalId: "goal-member" }) }],
     })
     const user = userEvent.setup()
     renderSheet()
@@ -330,8 +328,8 @@ describe("AddGoalsToProjectSheet", () => {
 
     await vi.waitFor(() =>
       expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
-        { goalId: "goal-member", priority: 1 },
-        { goalId: "goal-gold", priority: 2 },
+        { goalId: "goal-member" },
+        { goalId: "goal-gold" },
       ])
     )
   })
@@ -344,7 +342,6 @@ describe("AddGoalsToProjectSheet", () => {
       goals: [
         {
           goal: goal({ goalId: "goal-member", status: "Completed" }),
-          priority: 1,
         },
       ],
     })
@@ -381,8 +378,8 @@ describe("AddGoalsToProjectSheet", () => {
 
     await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalled())
     expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
-      { goalId: "goal-a", priority: 1 },
-      { goalId: "goal-c", priority: 2 },
+      { goalId: "goal-a" },
+      { goalId: "goal-c" },
     ])
   })
 
@@ -551,7 +548,7 @@ describe("AddGoalsToProjectSheet", () => {
         goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" }), created],
       })
       listProjectGoals.mockResolvedValue({
-        goals: [{ goal: created, priority: 1 }],
+        goals: [{ goal: created }],
       })
       await user.click(screen.getByTestId("reopen"))
 
@@ -565,8 +562,8 @@ describe("AddGoalsToProjectSheet", () => {
       await user.click(screen.getByTestId("add-goals-save"))
       await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalled())
       expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", [
-        { goalId: "goal-new", priority: 1 },
-        { goalId: "goal-1", priority: 2 },
+        { goalId: "goal-new" },
+        { goalId: "goal-1" },
       ])
     })
 

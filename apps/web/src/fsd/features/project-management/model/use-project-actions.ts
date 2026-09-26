@@ -8,22 +8,16 @@ import {
   activateProject,
   createProject,
   updateProject,
-  updateProjectGoalOrder,
   updateProjectGoalsStatus,
   projectQueries,
-  type ProjectGoalSummary,
   type ProjectSummary,
 } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
-import { applyOptimisticGoalOrder } from "./optimistic-goal-order"
 
 /**
- * Project-level mutations: active-plan toggle, bulk pause/resume, and per-project goal reorder.
- * Reorder takes the project's complete in-flight goal-id order (flat per-goal, not unit-grouped —
- * `add-inline-goal-reprioritize`) and submits it verbatim; the caller is responsible for computing
- * that full order (see `reorderGoals` on `project-detail-page.tsx`, which splices a dragged goal's
- * id into the full priority-ordered list regardless of what sort/filter/group is currently applied).
+ * Project-level mutations: active-plan toggle and bulk pause/resume. Reordering goals is a move on the
+ * account-wide order and lives in `features/goal-order`.
  */
 export function useProjectActions(_onChanged?: () => void) {
   void _onChanged
@@ -82,32 +76,6 @@ export function useProjectActions(_onChanged?: () => void) {
     }
   }
 
-  const reorderGoals = async (projectId: string, goalIds: string[]) => {
-    if (!isAuthenticated) return false
-
-    // Optimistic: dragging feels laggy if the row order only updates once the round trip
-    // completes, so the cache is rewritten immediately (matching the server's own two-zone
-    // renumbering, see `applyOptimisticGoalOrder`) and rolled back only if the request fails —
-    // `onSuccess`'s invalidation above reconciles it with the authoritative response either way.
-    const queryKey = projectQueries.goals(projectId).queryKey
-    await queryClient.cancelQueries({ queryKey })
-    const previous = queryClient.getQueryData<{ goals: ProjectGoalSummary[] }>(
-      queryKey
-    )
-    if (previous) {
-      queryClient.setQueryData(queryKey, {
-        ...previous,
-        goals: applyOptimisticGoalOrder(previous.goals, goalIds),
-      })
-    }
-
-    const ok = await run(() => updateProjectGoalOrder(projectId, goalIds))
-    if (!ok && previous) {
-      queryClient.setQueryData(queryKey, previous)
-    }
-    return ok
-  }
-
   /** GP-22: bulk-pause or bulk-resume every applicable goal in a project (`UpdateProjectGoalsStatusEndpoint`
    *  already excludes `Completed`/`Archived` goals server-side — this is not a per-goal prerequisite
    *  cascade, unlike `useGoalActions`'s row-level pause/resume). */
@@ -162,5 +130,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { activate, reorderGoals, setGoalsStatus, create, save, pending }
+  return { activate, setGoalsStatus, create, save, pending }
 }

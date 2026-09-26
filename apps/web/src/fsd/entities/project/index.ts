@@ -4,8 +4,8 @@ export {
   updateProject,
   listProjectGoals,
   listProjects,
+  moveProjectGoal,
   updateProjectGoals,
-  updateProjectGoalOrder,
   updateProjectGoalsStatus,
 } from "./api/project.api"
 export { projectQueries } from "./api/project.queries"
@@ -16,7 +16,9 @@ export { ProjectSelect } from "./ui/project-select"
 export type {
   CreateProjectRequest,
   UpdateProjectRequest,
+  MoveProjectGoalRequest,
   ProjectGoalEntry,
+  ProjectGoalsResponse,
   ProjectGoalSummary,
   ProjectMemberGoal,
   ProjectSummary,

@@ -5,9 +5,6 @@ import {
   useOutletContext,
 } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-
-import { ProjectSelect } from "@/entities/project"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RouteTabs } from "./dailies-layout"
@@ -17,26 +14,12 @@ export function RaidsLayout() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { t } = useTranslation("dailies")
-  const isMobile = useIsMobile()
   const active = pathname.endsWith("/plan") ? "plan" : "today"
-
-  const projectSelect = (
-    <ProjectSelect
-      projects={context.projects}
-      projectId={context.projectId}
-      onProjectIdChange={context.setProjectId}
-      placeholder={t("project.placeholder")}
-      testId="dailies-project-select"
-      compact={false}
-      className={isMobile ? "w-full" : undefined}
-    />
-  )
 
   return (
     <section className="space-y-5" data-testid="dailies-raids-layout">
-      {/* dailies-navigation spec: the Today/Raids Plan sub-tabs and the project selector share one
-          row (tabs leading, selector trailing) on desktop; on mobile the selector drops to its own
-          full-width row below the tabs instead of compressing to icon-only. */}
+      {/* Today and Raids Plan show the account-wide plan (global goal order), so there is no project
+          selector here: a project is a filter, never an execution scope. */}
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
           <RouteTabs
@@ -57,9 +40,7 @@ export function RaidsLayout() {
             ]}
           />
         </div>
-        {isMobile ? null : projectSelect}
       </div>
-      {isMobile ? projectSelect : null}
       <Outlet context={context} />
     </section>
   )

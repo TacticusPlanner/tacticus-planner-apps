@@ -9,6 +9,11 @@ import { DefaultGoalsLanding } from "./ui/default-goals-landing"
 const GoalsPage = lazy(() =>
   import("./ui/goals-board/goals-page").then((m) => ({ default: m.GoalsPage }))
 )
+const GlobalPlanPage = lazy(() =>
+  import("./ui/plan/global-plan-page").then((m) => ({
+    default: m.GlobalPlanPage,
+  }))
+)
 const ProjectsListPage = lazy(() =>
   import("./ui/projects/projects-list-page").then((m) => ({
     default: m.ProjectsListPage,
@@ -29,9 +34,10 @@ const InsightsPage = lazy(() =>
 // and the ProtectedRoute wrapping, and just splices this array in as `children`. The index route
 // resolves Plan's own dynamic default child (plan-nav-default-landing: Current plan's project,
 // falling back to the Default project, then to All Goals) rather than a fixed redirect, so
-// Overview/Projects/Insights each keep their own path and matching NavSubItem/header tab.
+// Plan/Overview/Projects/Insights each keep their own path and matching NavSubItem/header tab.
 export const routes: RouteObject[] = [
   { index: true, element: <DefaultGoalsLanding /> },
+  { path: "plan", element: <GlobalPlanPage /> },
   { path: "overview", element: <GoalsPage /> },
   { path: "projects", element: <ProjectsListPage /> },
   { path: "projects/:projectId", element: <ProjectDetailPage /> },

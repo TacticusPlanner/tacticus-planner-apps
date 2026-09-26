@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useOutletContext } from "react-router"
 import {
   BatteryLow,
   CalendarClock,
@@ -20,7 +19,6 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { isLocationVisible, useDailyRaids } from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
-import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidSchedule } from "./raid-schedule"
 import { RaidState } from "./raid-state"
 import { useRaidsPlanTutorial } from "./raids-plan.tutorial"
@@ -28,18 +26,13 @@ import { useRaidsPlanTutorial } from "./raids-plan.tutorial"
 const DAY_LIMIT = 3
 
 export function RaidsPlanPage() {
-  const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("dailies")
   const isMobile = useIsMobile()
   const [showAllDays, setShowAllDays] = useState(false)
   const [compact, setCompact] = useState(false)
-  const raids = useDailyRaids(context.projectId)
+  const raids = useDailyRaids()
   useRaidsPlanTutorial()
 
-  if (context.projectsError) {
-    return <RaidState state="error" onRetry={context.retryProjects} />
-  }
-  if (context.projectsUnavailable) return <RaidState state="no-project" />
   if (raids.status !== "ready") return <RaidState state={raids.status} />
 
   const visibleDays = showAllDays
