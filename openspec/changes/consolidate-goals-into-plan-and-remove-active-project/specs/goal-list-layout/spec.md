@@ -47,3 +47,39 @@ Assumptions:
 - **GIVEN** a goal is Active or Paused and has not reached its target (Archive is unavailable) and is not Archived (Unarchive is unavailable)
 - **WHEN** its row renders as a desktop table
 - **THEN** no "⋯" menu trigger is rendered, since it would offer nothing
+
+## ADDED Requirements
+
+### Requirement: In-flight rows show their account-wide priority position
+
+Wherever the Goals list renders Active or Paused goals in priority order — the Goals page (`/plan/goals`) and a project's detail route — each such row SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text in the row's leading cell beside the drag handle on the desktop table, and in the card header on mobile. The position is not a seventh column and SHALL NOT change the six-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave the leading cell empty. The number SHALL appear in Comfortable and Compact density and on mobile cards, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
+
+#### Scenario: Active and Paused rows show a position
+
+- **GIVEN** the account has goals with global positions 1 to 5, one of them Paused
+- **WHEN** the Goals page renders unfiltered
+- **THEN** every row shows its number 1 to 5 in the leading cell, including the Paused one
+
+#### Scenario: Goals without a position show none
+
+- **GIVEN** a Reached, Completed, or Archived goal is visible
+- **WHEN** its row renders
+- **THEN** no priority number is shown and the row keeps the same layout as its neighbours
+
+#### Scenario: Filtered or project views show account-wide numbers
+
+- **GIVEN** global order A, B, C, D, E (positions 1 to 5) and a project holding A, C, and E
+- **WHEN** the project's detail route renders
+- **THEN** its rows show 1, 3, and 5, not 1, 2, and 3, and the same goals show the same numbers on the Goals page
+
+#### Scenario: Compact density and mobile cards keep the number
+
+- **WHEN** the list renders in Compact density on desktop, or as mobile cards below 768px
+- **THEN** each Active or Paused row or card still shows its number
+
+#### Scenario: A reorder updates the numbers optimistically
+
+- **GIVEN** global order A, B, C, D, E and a project holding A, C, and E
+- **WHEN** the user moves E onto C in the project's detail route
+- **THEN** the rows immediately read A 1, E 3, C 4, and the Goals page shows A 1, B 2, E 3, C 4, D 5
+- **AND** if the move is rejected the numbers return to A 1, C 3, E 5

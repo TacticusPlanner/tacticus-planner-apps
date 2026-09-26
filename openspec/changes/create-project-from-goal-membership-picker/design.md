@@ -1,6 +1,6 @@
 ## Context
 
-`GoalProjectsField` is shared by creation and editing, shows chips and a searchable `Command` picker, and currently only selects existing projects. The project row's Move-to-project flow already creates a project, but is a different action/context. The existing project API supports creation.
+`GoalProjectsField` is shared by creation and editing, shows chips and a searchable `Command` picker, and currently only selects existing projects. The project row's Move-to-project flow already creates a project, but is a different action/context. The existing project API supports creation. A project created here is an ordinary custom project (never the Default project, which is permanent and already listed and marked) and has no special standing such as a "Current plan" (that concept is removed). Which projects a goal is filed into never affects the goal's status or its place in the account-wide order: a new goal is appended at the end of the global order and an edited goal keeps its position.
 
 ## Goals / Non-Goals
 
@@ -13,6 +13,7 @@
 - Keep the Create action and pending/error state in `GoalProjectsField`, with project mutation/query refresh supplied through a legal goal/project slice API. Reuse existing project form validation; do not duplicate a looser name rule.
 - Trim and compare names according to existing project rules. Present an unmatched Create row only when the name is valid; avoid a misleading duplicate alongside an existing result.
 - On success use the returned project ID directly for selection, then refresh the project list so its chip has real color/name. Do not close the enclosing sheet or clear other draft fields.
+- The created project starts empty and is added only to this goal's draft membership; nothing else moves. Creating it changes no goal's global position or status.
 - On failure keep the search query and goal state; surface an actionable error and permit retry. If two requests race, prevent duplicate submission while pending and handle server duplicate-name rejection.
 
 ## Risks / Trade-offs

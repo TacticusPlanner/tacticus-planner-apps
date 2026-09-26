@@ -2,7 +2,7 @@
 
 ### Requirement: The detail route assembles membership in bulk
 
-The detail route SHALL provide a project-context action that edits memberships for multiple existing goals without visiting each goal individually. The surface SHALL list the profile's goals with search and useful grouping/sorting by unit, goal type, or current priority. It SHALL distinguish current membership from pending additions and removals and SHALL show a review summary before one explicit save. The save SHALL apply the complete reviewed set atomically. A stale-set, occupied-slot, or last-membership rejection SHALL identify the problem, preserve the draft, and allow the user to refresh/reconcile before retrying. Membership changes SHALL NOT change goal status, target, or canonical global priority.
+The detail route SHALL provide a project-context action that edits memberships for multiple existing goals without visiting each goal individually. The surface SHALL list the profile's goals in account-wide priority order (`Goal.GlobalPriority`), with search and grouping by unit or goal type; it SHALL NOT offer a separate sort. It SHALL distinguish current membership from pending additions and removals and SHALL show a review summary before one explicit save. The save SHALL apply the complete reviewed set atomically. A stale-set, occupied-slot, or last-membership rejection SHALL identify the problem, preserve the draft, and allow the user to refresh/reconcile before retrying. Membership changes SHALL NOT change goal status, target, or canonical global priority.
 
 #### Scenario: Several goals join a project in one save
 
@@ -18,7 +18,7 @@ The detail route SHALL provide a project-context action that edits memberships f
 
 #### Scenario: Search narrows the assembly list
 
-- **WHEN** the user searches by unit or goal type or changes a grouping/sort control
+- **WHEN** the user searches by unit or goal type or changes the grouping
 - **THEN** matching goals are shown without clearing pending selections hidden by the filter
 
 #### Scenario: Concurrent membership changes are not discarded
@@ -36,7 +36,7 @@ The detail route SHALL provide a project-context action that edits memberships f
 
 - **GIVEN** goals have an established canonical account-wide order
 - **WHEN** the user adds or removes project memberships and saves
-- **THEN** the canonical order and relative position of every goal remain unchanged
+- **THEN** the canonical order and relative position of every goal remain unchanged, and a newly added goal appears in the project at its existing global position
 
 #### Scenario: Several removals and additions in one save
 
@@ -46,7 +46,7 @@ The detail route SHALL provide a project-context action that edits memberships f
 #### Scenario: Removing the only membership is blocked
 
 - **WHEN** a pending removal would leave a goal in no project
-- **THEN** the save is rejected without applying other changes and the affected goal is identified with guidance to assign another project first
+- **THEN** the save is rejected without applying other changes and the affected goal is identified with guidance to add it to another project first (the Default project is always available)
 
 #### Scenario: Pending selection survives navigation within the list
 

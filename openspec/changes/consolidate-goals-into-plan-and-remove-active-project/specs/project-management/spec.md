@@ -213,3 +213,13 @@ The detail route SHALL replace the reused list row with a semantic project heade
 - **GIVEN** the user opens a project's detail route
 - **WHEN** the header renders
 - **THEN** the project switcher, status filter, and Group control render together inside the header card, each with a visible label reading "Project", "Filter", and "Group By" respectively, and only the grouped goal content renders below the header
+
+### Requirement: The project order note explains account-wide numbers
+
+The project detail route's order note SHALL state that each number is the goal's position in the account-wide order, so a project's goals can show gaps such as 1, 3, 5. It SHALL keep the link to Goals from "Project detail links to Goals". The numbers themselves are specified by `goal-list-layout`'s "In-flight rows show their account-wide priority position".
+
+#### Scenario: A project with gaps explains them
+
+- **GIVEN** a project whose goals hold global positions 1, 3, and 5
+- **WHEN** its detail route renders
+- **THEN** the note explains that the numbers are positions in the account-wide order and links to Goals

@@ -20,4 +20,4 @@ None.
 
 ## Impact
 
-Apps `GoalProjectsField`, project creation/refresh, Create Goal and goal-edit forms. Existing project API only; no new endpoint.
+Apps `GoalProjectsField`, project creation/refresh, Create Goal and goal-edit forms. Existing project API only; no new endpoint. Applies after `consolidate-goals-into-plan-and-remove-active-project`, which edits the same picker (the Current plan marker is gone; only the Default and archived markers remain).

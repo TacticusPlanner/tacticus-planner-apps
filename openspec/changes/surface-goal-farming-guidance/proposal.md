@@ -6,7 +6,7 @@ Goal and project views show progress and organization but often make users leave
 
 - Expose a concise, reachable resource-quantity breakdown, eligible farming locations, blockers, and next action from goal detail; surface a project-level summary or direct link to that guidance.
 - Distinguish a plan preview from farming actionable now, including locked/unavailable nodes.
-- For Level goals, show additional XP-book-equivalent need (in the user's chosen rarity, default Legendary) alongside raw XP, net of owned books allocated to higher-priority goals in the selected project.
+- For a Rank or Ability goal whose character is below the level it requires (standalone Level goals no longer exist), show additional XP-book-equivalent need (in the user's chosen rarity, default Legendary) alongside raw remaining XP, net of owned books allocated to higher-priority goals in the global goal order (the shared `allocateLevelXp` pass).
 - Add an XP-book rarity setting (Common–Mythic, default Legendary) to the Planning settings dialog, persisted with the existing user settings.
 
 ## Capabilities

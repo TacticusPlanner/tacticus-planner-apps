@@ -1,7 +1,7 @@
 ## 1. Shared picker
 
 - [ ] 1.1 Add validated unmatched-name Create action to `GoalProjectsField`, with pending and in-place error states; verify component tests for existing, invalid, and unmatched names.
-- [ ] 1.2 Call existing project creation, select returned ID, refresh project data, and preserve outer goal draft on success/failure; verify creation and edit-form tests including retry and cancellation.
+- [ ] 1.2 Call existing project creation, select returned ID, refresh project data, and preserve outer goal draft on success/failure; verify creation and edit-form tests including retry and cancellation, and that the created project is a custom (non-Default) project and the goal's status/global position are unaffected by the membership choice.
 - [ ] 1.3 Add all new action/error copy to every supported locale; verify translation keys and rendered accessibility names.
 
 ## 2. Integration

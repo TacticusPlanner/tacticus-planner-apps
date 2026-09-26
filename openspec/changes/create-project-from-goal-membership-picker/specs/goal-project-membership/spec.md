@@ -24,6 +24,11 @@ In both new-goal and goal-edit forms, when a user searches for a project name wi
 - **WHEN** the project creation request fails
 - **THEN** the picker shows an error, retains the typed name and unsaved goal draft, and does not add a phantom membership
 
+#### Scenario: Created project is an ordinary custom project
+
+- **WHEN** a user creates a project from the picker
+- **THEN** it is a custom project (not the Default project) with no special standing, and neither its creation nor its selection changes any goal's status or position in the account-wide order
+
 #### Scenario: Search text alone has no side effect
 
 - **WHEN** a user types an unmatched name then closes the picker without choosing Create

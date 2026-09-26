@@ -25,7 +25,7 @@ At or above the 768px desktop breakpoint, Goals SHALL render the status filter, 
 
 ### Requirement: Goals controls compress on mobile
 
-Below the 768px mobile breakpoint, Goals SHALL keep the status filter (with its reached-indicator) in its own row. The Type/Group filters, the project-membership filter, the contextual Create Goal action, and the Planning Settings control SHALL render as icon-only triggers, each retaining an accessible name for its full label.
+Below the 768px mobile breakpoint, Goals SHALL keep the status filter (with its reached-indicator) in its own row. The Type/Group filters, the project-membership filter, the reorder-mode toggle (shown only when reordering is available), the contextual Create Goal action, and the Planning Settings control SHALL render as icon-only triggers, each retaining an accessible name for its full label. When the controls do not fit one line (for example at 360px, and with the density control from `add-goals-overview-density-option`), the row SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
 
 #### Scenario: Mobile Overview keeps the status filter on its own row
 
@@ -36,6 +36,17 @@ Below the 768px mobile breakpoint, Goals SHALL keep the status filter (with its 
 
 - **WHEN** Goals is viewed below the 768px breakpoint
 - **THEN** the Type/Group filters, the project-membership filter, the contextual Create Goal action, and the Planning Settings control render their icon only, without visible text labels, while each remains identifiable via its accessible name
+
+#### Scenario: The mobile reorder toggle is a control-row icon
+
+- **GIVEN** at least two Active or Paused goals are visible and the status filter allows reordering
+- **WHEN** Goals is viewed below the 768px breakpoint
+- **THEN** an icon-only reorder-mode toggle with an accessible name appears in the same control row, and it is absent when reordering is unavailable
+
+#### Scenario: A crowded mobile control row wraps
+
+- **WHEN** Goals is viewed at 360px with every control present
+- **THEN** the controls wrap onto a further line and none is clipped, hidden, or reachable only by horizontal scrolling
 
 ### Requirement: Planning Settings is a Goals-only control
 
