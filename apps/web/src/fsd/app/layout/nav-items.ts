@@ -24,7 +24,6 @@ type NavLabelKey =
   | "library:collections.npcs.label"
   | "library:collections.raidBosses.label"
   | "library:collections.shops.label"
-  | "goals.tabs.plan"
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
@@ -139,7 +138,7 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    path: "/goals",
+    path: "/plan",
     labelKey: "nav.goals",
     descriptionKey: "nav.goalsDescription",
     icon: ListTodo,
@@ -147,24 +146,19 @@ export const navItems: NavItem[] = [
     mobilePlacement: "primary",
     children: [
       {
-        path: "/goals/plan",
-        labelKey: "goals.tabs.plan",
-        descriptionKey: "goals.tabs.planDescription",
-      },
-      {
-        path: "/goals/overview",
+        path: "/plan/goals",
         labelKey: "goals.tabs.overview",
         descriptionKey: "goals.tabs.overviewDescription",
       },
       {
-        path: "/goals/projects",
+        path: "/plan/projects",
         labelKey: "goals.tabs.projects",
         descriptionKey: "goals.tabs.projectsDescription",
-        // The all-projects screen; `/goals/projects/:projectId` is a detail route above it.
+        // The all-projects screen; `/plan/projects/:projectId` is a detail route above it.
         isLandingPage: true,
       },
       {
-        path: "/goals/insights",
+        path: "/plan/insights",
         labelKey: "goals.tabs.insights",
         descriptionKey: "goals.tabs.insightsDescription",
       },

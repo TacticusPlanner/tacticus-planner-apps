@@ -45,3 +45,22 @@ export function spliceGoalOrder(
   // one visible row) — append rather than drop the goal silently.
   return [...withoutMoved, movedId]
 }
+
+/**
+ * The goal a drop displaces: the goal that held, in the old complete in-flight order, the place the
+ * dragged goal landed on (see `spliceGoalOrder`). The moved goal takes that goal's global position.
+ * Undefined when the drop changed nothing.
+ */
+export function displacedByDrop(
+  fullOrderedIds: readonly string[],
+  visibleOrderedIds: readonly string[],
+  movedId: string
+): string | undefined {
+  const landed = spliceGoalOrder(
+    fullOrderedIds,
+    visibleOrderedIds,
+    movedId
+  ).indexOf(movedId)
+  const displaced = fullOrderedIds[landed]
+  return displaced !== movedId ? displaced : undefined
+}

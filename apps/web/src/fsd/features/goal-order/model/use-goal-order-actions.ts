@@ -22,7 +22,7 @@ import { ApiError } from "@/shared/api"
 
 /** One reorder gesture: `goalId` takes the global position `displacedGoalId` holds. With a
  * `projectId` it was made on that project's projection (any hidden goals in between keep their
- * relative order); without one it was made on the complete Global Plan. */
+ * relative order); without one it was made on the Goals page over the complete order. */
 export type GoalOrderMove = {
   goalId: string
   displacedGoalId: string
@@ -145,7 +145,7 @@ function cachedOrder(queryClient: QueryClient, move: GoalOrderMove) {
 }
 
 /**
- * Reorder gestures on the account-wide goal order, from either the Global Plan or a project's
+ * Reorder gestures on the account-wide goal order, from either the Goals page or a project's
  * projection (`goal-order` feature). A move is applied to every cached view immediately, then sent —
  * one request at a time, in gesture order, because each echoes the revision the previous one advanced.
  * A rejected move is rolled back; if the order changed under the user (409 `goalOrder*`) the attempted

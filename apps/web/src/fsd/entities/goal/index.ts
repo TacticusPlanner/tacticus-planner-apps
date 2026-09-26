@@ -22,11 +22,7 @@ export type {
   GoalStatusFilterValue,
 } from "./ui/status-filter-select"
 export { GoalFilters } from "./ui/goal-filters"
-export type {
-  GoalGroupValue,
-  GoalSortValue,
-  GoalTypeFilterValue,
-} from "./ui/goal-filters"
+export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
 export { isGoalGroupValue } from "./model/types"
 export { goalRevisionConflictDetails } from "./model/goal-target-conflict"
 export {

@@ -13,14 +13,13 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useGoalsOverviewTutorial", () => {
-  it("registers localized desktop and mobile steps targeting the consolidated row", () => {
+  it("registers localized desktop and mobile steps, differing only in the reprioritize target", () => {
     renderHook(() => useGoalsOverviewTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
       mobile: { target: string; title: string; content: string }[]
     }
 
-    expect(steps.desktop).toEqual(steps.mobile)
     expect(steps.desktop.length).toBeGreaterThanOrEqual(3)
     for (const step of steps.desktop) {
       expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
@@ -31,15 +30,23 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
       '[data-testid="goals-project-filter"]',
+      '[data-testid="goal-row-drag-handle"]',
       '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
     ])
     expect(steps.mobile.map((step) => step.target)).toEqual(
-      steps.desktop.map((step) => step.target)
+      steps.desktop.map((step) =>
+        step.target === '[data-testid="goal-row-drag-handle"]'
+          ? '[data-testid="goals-mobile-reorder-toggle"]'
+          : step.target
+      )
     )
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
     ).toContain("tour.overview.steps.projectFilter")
+    expect(
+      steps.mobile.map((step) => `${step.title} ${step.content}`).join(" ")
+    ).toContain("tour.overview.steps.reprioritize")
   })
 })

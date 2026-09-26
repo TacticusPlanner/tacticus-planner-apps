@@ -129,7 +129,7 @@ export function ProjectsListPage() {
     setSheetOpen(true)
   }
   const openProjectDetail = (project: ProjectSummary) => {
-    void navigate(`/goals/projects/${project.projectId}`)
+    void navigate(`/plan/projects/${project.projectId}`)
   }
 
   return (

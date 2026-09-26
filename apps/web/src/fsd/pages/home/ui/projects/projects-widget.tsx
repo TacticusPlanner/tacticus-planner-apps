@@ -55,7 +55,7 @@ export function ProjectsWidget() {
           </p>
           <Button
             className="self-start"
-            onClick={() => void navigate("/goals/projects")}
+            onClick={() => void navigate("/plan/projects")}
             size="sm"
           >
             {t("home.projects.emptyAction")}
@@ -71,7 +71,7 @@ export function ProjectsWidget() {
             <ProjectSummaryRow
               key={project.projectId}
               onSelect={() =>
-                void navigate(`/goals/projects/${project.projectId}`)
+                void navigate(`/plan/projects/${project.projectId}`)
               }
               project={project}
               summary={result.summaries.get(project.projectId)}
@@ -82,7 +82,7 @@ export function ProjectsWidget() {
           <Button
             className="self-start"
             data-testid="home-projects-more"
-            onClick={() => void navigate("/goals/projects")}
+            onClick={() => void navigate("/plan/projects")}
             size="sm"
             variant="ghost"
           >

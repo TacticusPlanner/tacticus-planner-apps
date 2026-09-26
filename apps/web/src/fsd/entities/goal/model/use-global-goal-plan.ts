@@ -33,7 +33,7 @@ export function useGlobalGoalPlan() {
   }, [query.data])
 
   return {
-    /** Active and Paused goals in global order (what Global Plan shows). */
+    /** Active and Paused goals in global order (what the Goals page reorders). */
     inFlight,
     /** Active goals only, in global order (what planning consumes). */
     active,

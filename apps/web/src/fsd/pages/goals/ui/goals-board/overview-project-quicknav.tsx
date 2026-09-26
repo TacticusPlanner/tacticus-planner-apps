@@ -90,7 +90,7 @@ function MobileQuicknav() {
         </CardHeader>
         <CardContent className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
           {t("home.projects.emptyDescription")}
-          <Button onClick={() => void navigate("/goals/projects")} size="sm">
+          <Button onClick={() => void navigate("/plan/projects")} size="sm">
             {t("home.projects.emptyAction")}
           </Button>
         </CardContent>
@@ -113,7 +113,7 @@ function MobileQuicknav() {
               <ProjectSummaryRow
                 key={project.projectId}
                 onSelect={() =>
-                  void navigate(`/goals/projects/${project.projectId}`)
+                  void navigate(`/plan/projects/${project.projectId}`)
                 }
                 project={project}
                 summary={result.summaries.get(project.projectId)}
@@ -124,7 +124,7 @@ function MobileQuicknav() {
             <Button
               className="self-start"
               data-testid="overview-quicknav-more"
-              onClick={() => void navigate("/goals/projects")}
+              onClick={() => void navigate("/plan/projects")}
               size="sm"
               variant="ghost"
             >
@@ -177,7 +177,7 @@ function DesktopQuicknav({
           className="flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-sm hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           data-testid={`overview-quicknav-chip-${project.projectId}`}
           key={project.projectId}
-          onClick={() => void navigate(`/goals/projects/${project.projectId}`)}
+          onClick={() => void navigate(`/plan/projects/${project.projectId}`)}
           type="button"
         >
           <ProjectColorDot color={project.color} />
@@ -187,7 +187,7 @@ function DesktopQuicknav({
       <Button
         className="shrink-0"
         data-testid="overview-quicknav-all-projects"
-        onClick={() => void navigate("/goals/projects")}
+        onClick={() => void navigate("/plan/projects")}
         size="sm"
         variant="ghost"
       >

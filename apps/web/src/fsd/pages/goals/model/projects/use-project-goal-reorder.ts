@@ -1,5 +1,5 @@
 import type { ProjectGoalSummary } from "@/entities/project"
-import { spliceGoalOrder } from "./goal-order"
+import { displacedByDrop } from "./goal-order"
 
 /**
  * Turns a drop on a project's projection into the move the API takes. Dragging works whatever
@@ -21,15 +21,12 @@ export function useProjectGoalReorder(
     .map((entry) => entry.goal.goalId)
 
   const handleReorder = (visibleOrderedIds: string[], movedId: string) => {
-    const landed = spliceGoalOrder(
+    const displaced = displacedByDrop(
       fullInFlightIds,
       visibleOrderedIds,
       movedId
-    ).indexOf(movedId)
-    const displaced = fullInFlightIds[landed]
-    if (displaced !== undefined && displaced !== movedId) {
-      moveGoal(movedId, displaced)
-    }
+    )
+    if (displaced !== undefined) moveGoal(movedId, displaced)
   }
 
   return { inFlightCount: fullInFlightIds.length, handleReorder }

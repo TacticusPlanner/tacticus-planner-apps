@@ -21,7 +21,7 @@ const goal = {
 
 describe("goal row mappings", () => {
   it("maps a goal summary to a flat row", () => {
-    expect(goalRowFromSummary(goal)).toEqual(goalRow)
+    expect(goalRowFromSummary(goal)).toEqual({ ...goalRow, priority: 4 })
   })
 
   it("maps a project member and preserves its priority", () => {

@@ -5,7 +5,7 @@ export const holdsGlobalPosition = (goal: { status: string }) =>
   goal.status === "Active" || goal.status === "Paused"
 
 /** In-flight (Active/Paused) goals in canonical global order — the one deduplicated sequence every
- * planning surface and the Global Plan view share. A goal without a position (never expected for an
+ * planning surface and the Goals page share. A goal without a position (never expected for an
  * in-flight one) sorts last, stably, rather than being dropped. */
 export function inFlightInGlobalOrder<
   T extends { status: string; globalPriority: number | null },

@@ -277,9 +277,9 @@ export function ProjectDetailPage() {
         onAddGoals={() => setAddGoalsOpen(true)}
         onCreateGoal={handleCreateGoal}
         onEdit={() => setEditOpen(true)}
-        onNavigateBack={() => void navigate("/goals/projects")}
+        onNavigateBack={() => void navigate("/plan/projects")}
         onNavigateToProject={(nextId) =>
-          void navigate(`/goals/projects/${nextId}`)
+          void navigate(`/plan/projects/${nextId}`)
         }
         onToggleMobileReorder={toggleReorder}
         project={project}
@@ -302,7 +302,7 @@ export function ProjectDetailPage() {
           data-testid="project-detail-order-note"
         >
           {t("goals.order.projectNote")}{" "}
-          <Link className="underline" to="/goals/plan">
+          <Link className="underline" to="/plan/goals">
             {t("goals.order.openPlan")}
           </Link>
         </p>

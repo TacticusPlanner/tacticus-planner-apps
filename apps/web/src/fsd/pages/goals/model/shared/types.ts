@@ -38,6 +38,7 @@ export function goalRowFromSummary(
     notes: goal.notes,
     updatedAt: goal.updatedAt,
     dependsOn: goal.dependsOn,
+    priority: goal.globalPriority ?? undefined,
     ...(projects.length > 0 ? { projects } : {}),
   }
 }

@@ -102,7 +102,7 @@ describe("OverviewProjectQuicknav", () => {
       })
       render(<OverviewProjectQuicknav {...defaultProps} />)
       screen.getByTestId("home-project-row-p1").click()
-      expect(navigateMock).toHaveBeenCalledWith("/goals/projects/p1")
+      expect(navigateMock).toHaveBeenCalledWith("/plan/projects/p1")
     })
 
     it("shows a +N more control that navigates to the projects dashboard", () => {
@@ -114,7 +114,7 @@ describe("OverviewProjectQuicknav", () => {
       })
       render(<OverviewProjectQuicknav {...defaultProps} />)
       screen.getByTestId("overview-quicknav-more").click()
-      expect(navigateMock).toHaveBeenCalledWith("/goals/projects")
+      expect(navigateMock).toHaveBeenCalledWith("/plan/projects")
     })
   })
 
@@ -177,7 +177,7 @@ describe("OverviewProjectQuicknav", () => {
         />
       )
       screen.getByTestId("overview-quicknav-chip-p1").click()
-      expect(navigateMock).toHaveBeenCalledWith("/goals/projects/p1")
+      expect(navigateMock).toHaveBeenCalledWith("/plan/projects/p1")
     })
 
     it("includes a trailing link to the full Projects dashboard", () => {
@@ -188,7 +188,7 @@ describe("OverviewProjectQuicknav", () => {
         />
       )
       screen.getByTestId("overview-quicknav-all-projects").click()
-      expect(navigateMock).toHaveBeenCalledWith("/goals/projects")
+      expect(navigateMock).toHaveBeenCalledWith("/plan/projects")
     })
   })
 })

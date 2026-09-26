@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ArrowUpDown, Filter, Group as GroupIcon } from "lucide-react"
+import { Filter, Group as GroupIcon } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   Select,
@@ -12,7 +12,6 @@ import {
 import type { GoalKind } from "../model/types"
 
 export type GoalTypeFilterValue = "all" | GoalKind
-export type GoalSortValue = "entity" | "type" | "status" | "updated"
 export type GoalGroupValue = "none" | "unit" | "type"
 
 const GOAL_TYPE_VALUES: readonly GoalKind[] = [
@@ -21,12 +20,6 @@ const GOAL_TYPE_VALUES: readonly GoalKind[] = [
   "Ability",
   "Unlock",
   "Upgrade",
-]
-const SORT_VALUES: readonly GoalSortValue[] = [
-  "entity",
-  "type",
-  "status",
-  "updated",
 ]
 const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
   "none",
@@ -39,39 +32,29 @@ type Props = {
    *  the control, has no goal-type-filter state at all and omits both. */
   goalType?: GoalTypeFilterValue
   onGoalTypeChange?: (value: GoalTypeFilterValue) => void
-  /** Required only while `showSort` is (its default) `true` — Project Detail, which hides the
-   *  control, has no sort state at all and omits both. */
-  sort?: GoalSortValue
-  onSortChange?: (value: GoalSortValue) => void
   group: GoalGroupValue
   onGroupChange: (value: GoalGroupValue) => void
-  /** Project Detail hides both (`fix-project-priority-display`): every goal type is always shown
-   *  there, and the goal list is always ordered by stored priority with no other order selectable
-   *  — so neither control has anything to do on that route. Both default to `true`, matching
-   *  Overview's (the only other caller's) unchanged behavior. */
+  /** Project Detail hides the Type filter: every goal type is always shown there. Defaults to
+   *  `true`, matching the Goals page. */
   showTypeFilter?: boolean
-  showSort?: boolean
   /** Restricts which Group options render (default: all three, i.e. Overview's behavior). Project
    *  Detail passes `["none", "type"]` — it drops "by unit" (relayout-project-detail-controls). */
   groupOptions?: readonly GoalGroupValue[]
 }
 
 /**
- * Overview's Type/Sort/Group filter row (goals-navigation spec, Decision 1) — extracted verbatim
+ * The Goals page's Type/Group filter row (goals-navigation spec, Decision 1) — extracted verbatim
  * from `goals-page.tsx` (external behavior/testids/mobile pattern unchanged), and relocated here
  * pre-emptively even though only Overview consumes it today. Filter/sort/group *application* to a
  * page's own row data stays with that page (`GoalRow` is page-local); this component only owns the
- * controlled UI for choosing the three values.
+ * controlled UI for choosing the values.
  */
 export function GoalFilters({
   goalType,
   onGoalTypeChange,
-  sort,
-  onSortChange,
   group,
   onGroupChange,
   showTypeFilter = true,
-  showSort = true,
   groupOptions = DEFAULT_GROUP_OPTIONS,
 }: Props) {
   const { t } = useTranslation()
@@ -81,7 +64,6 @@ export function GoalFilters({
     !goalType || goalType === "all"
       ? t("goals.filters.allTypes")
       : t(`goals.create.goalTypes.${goalType}`)
-  const sortLabel = sort ? t(`goals.filters.sort.${sort}`) : ""
   const groupLabel =
     group === "none"
       ? t("goals.filters.groupNone")
@@ -92,7 +74,6 @@ export function GoalFilters({
   // screen-reader user on mobile (where the visible `SelectValue` is hidden) would otherwise hear
   // just "Rank" with no indication of what that value is filtering/sorting/grouping by.
   const typeFilterAriaLabel = t("goals.filters.typeFilterLabel")
-  const sortAriaLabel = t("goals.filters.sortByLabel")
   const groupAriaLabel = t("goals.filters.groupByLabel")
 
   return (
@@ -126,31 +107,6 @@ export function GoalFilters({
             {GOAL_TYPE_VALUES.map((type) => (
               <SelectItem key={type} value={type}>
                 {t(`goals.create.goalTypes.${type}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : null}
-      {showSort && sort && onSortChange ? (
-        <Select
-          onValueChange={(value) => onSortChange(value as GoalSortValue)}
-          value={sort}
-        >
-          <SelectTrigger
-            aria-describedby="goals-sort-value"
-            aria-label={sortAriaLabel}
-            data-testid="goals-sort"
-          >
-            <ArrowUpDown />
-            {isMobile ? null : <SelectValue />}
-            <span className="sr-only" id="goals-sort-value">
-              {sortLabel}
-            </span>
-          </SelectTrigger>
-          <SelectContent position="popper">
-            {SORT_VALUES.map((value) => (
-              <SelectItem key={value} value={value}>
-                {t(`goals.filters.sort.${value}`)}
               </SelectItem>
             ))}
           </SelectContent>

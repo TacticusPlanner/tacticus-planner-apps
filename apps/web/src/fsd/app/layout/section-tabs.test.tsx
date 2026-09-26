@@ -75,7 +75,7 @@ function renderTabs(
 const section = (path: string) => navItems.find((item) => item.path === path)!
 
 /** Exact-match, deliberately: `toHaveTextContent` is a substring check, so asserting
- * "/goals/projects" would also pass while still sitting on "/goals/projects/p1". */
+ * "/plan/projects" would also pass while still sitting on "/plan/projects/p1". */
 function expectPath(pathname: string) {
   expect(screen.getByTestId("current-path")).toHaveTextContent(
     new RegExp(`^${pathname}$`)
@@ -91,7 +91,7 @@ describe("navItems landing pages", () => {
           .map((child) => child.path) ?? []
     )
 
-    expect(flagged).toEqual(["/library/raid-bosses", "/goals/projects"])
+    expect(flagged).toEqual(["/library/raid-bosses", "/plan/projects"])
   })
 })
 
@@ -159,11 +159,11 @@ describe("SectionTabs", () => {
 
   it("returns to the all-projects screen when the Projects tab is activated from a project", async () => {
     const user = userEvent.setup()
-    renderTabs(section("/goals"), "/goals/projects/p1")
+    renderTabs(section("/plan"), "/plan/projects/p1")
 
-    await user.click(screen.getByTestId("section-tab-goals-projects"))
+    await user.click(screen.getByTestId("section-tab-plan-projects"))
 
-    expectPath("/goals/projects")
+    expectPath("/plan/projects")
   })
 
   it("returns to the raid-boss picker when the Raid Bosses tab is activated from a boss", async () => {
@@ -176,9 +176,9 @@ describe("SectionTabs", () => {
   })
 
   it("keeps the parent tab active on a route nested below it", () => {
-    renderTabs(section("/goals"), "/goals/projects/p1")
+    renderTabs(section("/plan"), "/plan/projects/p1")
 
-    expect(screen.getByTestId("section-tab-goals-projects")).toHaveAttribute(
+    expect(screen.getByTestId("section-tab-plan-projects")).toHaveAttribute(
       "data-state",
       "active"
     )
@@ -186,26 +186,26 @@ describe("SectionTabs", () => {
 
   it("navigates exactly once when a different tab is activated", async () => {
     const user = userEvent.setup()
-    renderTabs(section("/goals"), "/goals/projects/p1")
+    renderTabs(section("/plan"), "/plan/projects/p1")
 
-    await user.click(screen.getByTestId("section-tab-goals-insights"))
-    expectPath("/goals/insights")
+    await user.click(screen.getByTestId("section-tab-plan-insights"))
+    expectPath("/plan/insights")
 
     await user.click(screen.getByTestId("go-back"))
-    expectPath("/goals/projects/p1")
+    expectPath("/plan/projects/p1")
   })
 
   it("navigates exactly once when a landing-page tab is activated from a sibling tab", async () => {
     // The double-navigation this change most risks: `onValueChange` fires on mousedown and the
-    // click handler runs after, so a missing guard would push /goals/projects twice.
+    // click handler runs after, so a missing guard would push /plan/projects twice.
     const user = userEvent.setup()
-    renderTabs(section("/goals"), "/goals/overview")
+    renderTabs(section("/plan"), "/plan/goals")
 
-    await user.click(screen.getByTestId("section-tab-goals-projects"))
-    expectPath("/goals/projects")
+    await user.click(screen.getByTestId("section-tab-plan-projects"))
+    expectPath("/plan/projects")
 
     await user.click(screen.getByTestId("go-back"))
-    expectPath("/goals/overview")
+    expectPath("/plan/goals")
   })
 
   it("pushes one history entry when Radix reports the same activation twice", async () => {
@@ -215,27 +215,27 @@ describe("SectionTabs", () => {
     // both events inside one `act` reproduces that timing - without the guard, two entries are
     // pushed and Back leaves the user on the page they just navigated to.
     const user = userEvent.setup()
-    renderTabs(section("/goals"), "/goals/overview")
-    const insights = screen.getByTestId("section-tab-goals-insights")
+    renderTabs(section("/plan"), "/plan/goals")
+    const insights = screen.getByTestId("section-tab-plan-insights")
 
     act(() => {
       fireEvent.mouseDown(insights, { button: 0 })
       fireEvent.focus(insights)
     })
-    expectPath("/goals/insights")
+    expectPath("/plan/insights")
 
     await user.click(screen.getByTestId("go-back"))
-    expectPath("/goals/overview")
+    expectPath("/plan/goals")
   })
 
   it("does nothing when the tab of the exact current page is activated", async () => {
     const user = userEvent.setup()
-    renderTabs(section("/goals"), "/goals/projects", {
+    renderTabs(section("/plan"), "/plan/projects", {
       previousEntry: "/home",
     })
 
-    await user.click(screen.getByTestId("section-tab-goals-projects"))
-    expectPath("/goals/projects")
+    await user.click(screen.getByTestId("section-tab-plan-projects"))
+    expectPath("/plan/projects")
 
     await user.click(screen.getByTestId("go-back"))
     expectPath("/home")

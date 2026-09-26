@@ -455,8 +455,8 @@
     },
     "tabs": {
       "goals": "Objetivos",
-      "overview": "Todos los objetivos",
-      "overviewDescription": "Filtra, ordena y agrupa todos tus objetivos activos.",
+      "overview": "Objetivos",
+      "overviewDescription": "Tus objetivos por orden de prioridad: filtra, agrupa y repriorízalos.",
       "projects": "Proyectos",
       "projectsDescription": "Organiza los objetivos en grupos concretos y consúltalos por separado.",
       "insights": "Información",
@@ -466,9 +466,7 @@
       "archived": "Archivados",
       "blocked": "Bloqueado",
       "active": "Activo",
-      "paused": "Pausado",
-      "plan": "Plan global",
-      "planDescription": "Un único plan ordenado para todos tus objetivos."
+      "paused": "Pausado"
     },
     "columns": {
       "entity": "Personaje",
@@ -581,7 +579,7 @@
       "restore": "Restaurar proyecto",
       "save": "Guardar proyecto",
       "create": "Crear proyecto",
-      "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en el Plan global.",
+      "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en la página Objetivos.",
       "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
@@ -731,7 +729,7 @@
       "previewTitle": "Recursos necesarios",
       "showAll": "Mostrar todo ({{count}})",
       "showLess": "Mostrar menos",
-      "previewDisclaimer": "La estimación real puede cambiar según el lugar de este objetivo en tu Plan global y la estrategia de farmeo elegida.",
+      "previewDisclaimer": "La estimación real puede cambiar según el lugar de este objetivo en tu orden de prioridad y la estrategia de farmeo elegida.",
       "previewUnavailable": "Aún no hay una estimación detallada disponible para este tipo de objetivo.",
       "characterAbilityCostUnsupported": "Los objetivos de habilidad de personaje se validan y siguen, pero su coste de recursos aún no es compatible.",
       "projectLabel": "Proyectos",
@@ -789,20 +787,11 @@
       "search": "Buscar objetivos",
       "allTypes": "Todos los tipos de objetivo",
       "typeFilterLabel": "Filtro de tipo de objetivo",
-      "sortByLabel": "Ordenar por",
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
       "groupByUnit": "Agrupar por unidad",
-      "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
-      "sort": {
-        "priority": "Prioridad",
-        "entity": "Personaje",
-        "type": "Tipo de objetivo",
-        "status": "Estado",
-        "estimate": "Estimación",
-        "updated": "Actualizado recientemente"
-      }
+      "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
     "detail": {
       "title": "Detalles del objetivo",
@@ -819,7 +808,7 @@
       "unsavedChangesCancel": "Seguir editando",
       "estimateTitle": "Estimación",
       "isolatedEstimate": "Estimación aislada",
-      "planAwareEstimate": "Tiene en cuenta los objetivos de mayor prioridad de tu Plan global",
+      "planAwareEstimate": "Tiene en cuenta los objetivos de mayor prioridad de tu orden de prioridad",
       "unavailable": "No disponible",
       "dependenciesTitle": "Dependencias",
       "historyTitle": "Historial",
@@ -844,7 +833,7 @@
       "actualProgress": "Progreso real",
       "actualProgressDescription": "El progreso real refleja el estado actualmente sincronizado y en propiedad de tu cuenta.",
       "potentialProgress": "Progreso potencial",
-      "potentialProgressDescription": "El progreso potencial aplica los recursos que ya posees después de que los objetivos de mayor prioridad de tu Plan global reserven su parte. No cambia el estado real del objetivo.",
+      "potentialProgressDescription": "El progreso potencial aplica los recursos que ya posees después de que los objetivos de mayor prioridad de tu orden de prioridad reserven su parte. No cambia el estado real del objetivo.",
       "remaining": {
         "upgrades": "{{count}} mejoras restantes",
         "upgradeSlots": "{{count}} ranuras de mejora restantes",
@@ -879,7 +868,7 @@
     "insights": {
       "selectProject": "Selecciona un proyecto",
       "noGoalsTitle": "Sin objetivos activos",
-      "noGoalsDescription": "Crea o reanuda un objetivo para ver sus recursos que faltan, los cuellos de botella de farmeo y los eventos de campaña relevantes, según lo planificado en tu Plan global. Elige un proyecto arriba para acotar la vista.",
+      "noGoalsDescription": "Crea o reanuda un objetivo para ver sus recursos que faltan, los cuellos de botella de farmeo y los eventos de campaña relevantes, según lo planificado en tu orden de prioridad. Elige un proyecto arriba para acotar la vista.",
       "upgradesTitle": "Mejoras por rareza",
       "shardsTitle": "Fragmentos y orbes",
       "shards": "Fragmentos",
@@ -934,25 +923,17 @@
       "retryRefresh": "Reintentar actualización",
       "historyChanged": "Objetivo modificado"
     },
-    "plan": {
-      "title": "Plan global",
-      "description": "Cada objetivo activo y pausado, una sola vez, en el único orden de prioridad que usan Hoy, el plan de incursiones, Información y todas las estimaciones. Los proyectos solo filtran esta lista.",
-      "loadError": "No se pudieron cargar tus objetivos.",
-      "retry": "Reintentar",
-      "emptyTitle": "Aún no hay objetivos en tu plan",
-      "emptyDescription": "Crea un objetivo y aparecerá aquí, por orden de prioridad.",
-      "createGoal": "Crear objetivo",
-      "noFarmableDemand": "Tus objetivos activos no necesitan nada que se pueda farmear ahora mismo, así que no hay farmeo que planificar."
-    },
     "order": {
       "conflictTitle": "El plan ha cambiado",
       "conflictDescription": "Tu movimiento no se guardó porque el orden de los objetivos cambió después de cargarlo. Revisa el orden actualizado y vuelve a intentar el movimiento.",
       "retry": "Reintentar movimiento",
       "dismiss": "Descartar",
-      "projectNote": "Mover un objetivo aquí también lo mueve en el Plan global. Los objetivos de otros proyectos mantienen su orden relativo.",
-      "openPlan": "Abrir el Plan global",
+      "projectNote": "Mover un objetivo aquí también lo mueve en tu orden de prioridad. Los objetivos de otros proyectos mantienen su orden relativo.",
+      "openPlan": "Ver los objetivos por prioridad",
       "saving": "Guardando el orden…",
-      "dragHint": "Arrastra una tarjeta para cambiar su prioridad."
+      "dragHint": "Arrastra una tarjeta para cambiar su prioridad.",
+      "noFarmableDemand": "Tus objetivos activos no necesitan nada que se pueda farmear ahora mismo, así que no hay farmeo que planificar.",
+      "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información."
     }
   },
   "language": {
@@ -1049,8 +1030,8 @@
           "content": "Cambia entre objetivos no cumplidos, alcanzados y archivados."
         },
         "filters": {
-          "title": "Tipo, orden y agrupación",
-          "content": "Filtra por tipo de objetivo, cambia el orden o agrupa objetivos relacionados."
+          "title": "Tipo y agrupación",
+          "content": "Filtra por tipo de objetivo o agrupa objetivos relacionados."
         },
         "projectFilter": {
           "title": "Acota por proyecto",
@@ -1064,9 +1045,13 @@
           "title": "Ajustes de planificación",
           "content": "Define aquí tu presupuesto diario de energía — todas las estimaciones de esta página lo usan."
         },
+        "reprioritize": {
+          "title": "Prioriza tus objetivos",
+          "content": "Arrastra un objetivo para cambiar su prioridad (en el móvil, toca primero «Reordenar»). Cada cambio se guarda al instante y se aplica en todos los proyectos que contienen el objetivo."
+        },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
+          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas y archivadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
         }
       }
     },
@@ -1106,7 +1091,7 @@
         },
         "reprioritize": {
           "title": "Prioriza tus objetivos",
-          "content": "Arrastra cualquier objetivo para cambiar su prioridad. Mover un objetivo aquí también lo mueve en el Plan global; los objetivos de otros proyectos mantienen su orden relativo. En el móvil, toca primero «Reordenar» para entrar en el modo de reordenación."
+          "content": "Arrastra cualquier objetivo para cambiar su prioridad. Mover un objetivo aquí también lo mueve en tu orden de prioridad; los objetivos de otros proyectos mantienen su orden relativo. En el móvil, toca primero «Reordenar» para entrar en el modo de reordenación."
         },
         "selector": {
           "title": "Elige un proyecto",
@@ -1128,22 +1113,6 @@
         "editTarget": {
           "title": "Editar objetivo",
           "content": "Cambia dónde termina esta meta sin volver a crearla. Conserva sus proyectos, notas e historial, y tu plan se recalcula."
-        }
-      }
-    },
-    "globalPlan": {
-      "steps": {
-        "intro": {
-          "title": "Un plan para todo",
-          "content": "Cada objetivo activo y pausado aparece aquí una sola vez, en el único orden de prioridad que usan Hoy, el plan de incursiones y Información. Los proyectos son solo filtros sobre él. Los objetivos pausados conservan su lugar, pero no planifican nada."
-        },
-        "reprioritize": {
-          "title": "Prioriza tus objetivos",
-          "content": "Arrastra un objetivo para cambiar su prioridad (en el móvil, toca primero «Reordenar»). Cada cambio se guarda al instante y se aplica en todos los proyectos que contienen el objetivo."
-        },
-        "createGoal": {
-          "title": "Añade objetivos",
-          "content": "Los objetivos nuevos se añaden al final del plan; arrástralos adonde correspondan."
         }
       }
     }

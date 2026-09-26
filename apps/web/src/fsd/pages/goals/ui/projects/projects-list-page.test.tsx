@@ -104,11 +104,11 @@ import { ProjectsListPage } from "./projects-list-page"
 
 function renderPage() {
   return render(
-    <MemoryRouter initialEntries={["/goals/projects"]}>
+    <MemoryRouter initialEntries={["/plan/projects"]}>
       <Routes>
-        <Route path="/goals/projects" element={<ProjectsListPage />} />
+        <Route path="/plan/projects" element={<ProjectsListPage />} />
         <Route
-          path="/goals/projects/:projectId"
+          path="/plan/projects/:projectId"
           element={<div data-testid="landed-on-detail" />}
         />
       </Routes>

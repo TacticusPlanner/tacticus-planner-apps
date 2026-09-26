@@ -455,8 +455,8 @@
     },
     "tabs": {
       "goals": "Goals",
-      "overview": "All Goals",
-      "overviewDescription": "Filter, sort, and group all your active goals.",
+      "overview": "Goals",
+      "overviewDescription": "Your goals in priority order — filter, group, and reprioritize.",
       "projects": "Projects",
       "projectsDescription": "Organize goals into focused groups and browse them separately.",
       "insights": "Insights",
@@ -466,9 +466,7 @@
       "archived": "Archived",
       "blocked": "Blocked",
       "active": "Active",
-      "paused": "Paused",
-      "plan": "Global Plan",
-      "planDescription": "One ordered plan for all your goals."
+      "paused": "Paused"
     },
     "columns": {
       "entity": "Character",
@@ -581,7 +579,7 @@
       "restore": "Restore project",
       "save": "Save project",
       "create": "Create project",
-      "dashboardIntro": "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, kept in the Global Plan.",
+      "dashboardIntro": "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, managed on the Goals page.",
       "unitGoalSummaryOfAccount": "{{units}} units · {{goals}} of your {{accountGoals}} goals",
       "emptyProjectTitle": "This project has no goals yet",
       "emptyProjectDescription": "Use Add goals to put existing goals into it, or Create goal to make a new one.",
@@ -731,7 +729,7 @@
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
       "showLess": "Show less",
-      "previewDisclaimer": "The actual estimate may change depending on this goal's place in your Global Plan and the selected farming strategy.",
+      "previewDisclaimer": "The actual estimate may change depending on this goal's place in your priority order and the selected farming strategy.",
       "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
       "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
       "projectLabel": "Projects",
@@ -789,20 +787,11 @@
       "search": "Search goals",
       "allTypes": "All goal types",
       "typeFilterLabel": "Goal type filter",
-      "sortByLabel": "Sort by",
       "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
-      "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
-      "sort": {
-        "priority": "Priority",
-        "entity": "Character",
-        "type": "Goal type",
-        "status": "Status",
-        "estimate": "Estimate",
-        "updated": "Recently updated"
-      }
+      "reachedIndicatorLabel": "Reached goals are waiting to be viewed"
     },
     "detail": {
       "title": "Goal details",
@@ -819,7 +808,7 @@
       "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
-      "planAwareEstimate": "Accounts for higher-priority goals in your Global Plan",
+      "planAwareEstimate": "Accounts for higher-priority goals in your priority order",
       "unavailable": "Unavailable",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
@@ -844,7 +833,7 @@
       "actualProgress": "Actual progress",
       "actualProgressDescription": "Actual progress reflects your account's currently synced, owned state.",
       "potentialProgress": "Potential progress",
-      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in your Global Plan reserve their share. It does not change the goal's actual status.",
+      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in your priority order reserve their share. It does not change the goal's actual status.",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "upgradeSlots": "{{count}} upgrade slots remaining",
@@ -879,7 +868,7 @@
     "insights": {
       "selectProject": "Select a project",
       "noGoalsTitle": "No Active goals",
-      "noGoalsDescription": "Create or resume a goal to see its missing resources, farming bottlenecks, and relevant campaign events, as planned in your Global Plan. Pick a project above to narrow the view.",
+      "noGoalsDescription": "Create or resume a goal to see its missing resources, farming bottlenecks, and relevant campaign events, as planned in your priority order. Pick a project above to narrow the view.",
       "upgradesTitle": "Upgrades by rarity",
       "shardsTitle": "Shards & orbs",
       "shards": "Shards",
@@ -934,25 +923,17 @@
       "retryRefresh": "Retry refresh",
       "historyChanged": "Target changed"
     },
-    "plan": {
-      "title": "Global Plan",
-      "description": "Every active and paused goal, once, in the single priority order used by Today, Raids Plan, Insights and every estimate. Projects only filter this list.",
-      "loadError": "Couldn't load your goals.",
-      "retry": "Retry",
-      "emptyTitle": "No goals in your plan yet",
-      "emptyDescription": "Create a goal and it appears here, in priority order.",
-      "createGoal": "Create goal",
-      "noFarmableDemand": "Your active goals don't need anything that can be farmed right now, so there is no farming to plan."
-    },
     "order": {
       "conflictTitle": "The plan changed",
       "conflictDescription": "Your move wasn't saved because the goal order changed after you loaded it. Review the refreshed order, then retry the move.",
       "retry": "Retry move",
       "dismiss": "Dismiss",
-      "projectNote": "Moving a goal here also moves it in the Global Plan. Goals from other projects keep their relative order.",
-      "openPlan": "Open Global Plan",
+      "projectNote": "Moving a goal here also moves it in your priority order. Goals from other projects keep their relative order.",
+      "openPlan": "See goals in priority order",
       "saving": "Saving order…",
-      "dragHint": "Drag a card to change its priority."
+      "dragHint": "Drag a card to change its priority.",
+      "noFarmableDemand": "Your active goals don't need anything that can be farmed right now, so there is no farming to plan.",
+      "listNote": "Goals are in your priority order. Drag an active or paused goal to move it — the change applies in every project, Today, Raids Plan, and Insights."
     }
   },
   "language": {
@@ -1049,8 +1030,8 @@
           "content": "Switch between Unfulfilled, Reached, and Archived goals."
         },
         "filters": {
-          "title": "Type, sort, and group",
-          "content": "Narrow by goal type, change the sort order, or group related goals together."
+          "title": "Type and group",
+          "content": "Narrow by goal type or group related goals together."
         },
         "projectFilter": {
           "title": "Narrow by project",
@@ -1064,9 +1045,13 @@
           "title": "Planning settings",
           "content": "Set your daily energy budget here — every estimate on this page uses it."
         },
+        "reprioritize": {
+          "title": "Prioritize your goals",
+          "content": "Drag a goal to change its priority (on mobile, tap Reorder first). Each drop saves right away and applies in every project that holds the goal."
+        },
         "list": {
           "title": "Your goals",
-          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
+          "content": "Every goal appears below in your priority order — active and paused goals first, then reached and archived ones. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
         }
       }
     },
@@ -1106,7 +1091,7 @@
         },
         "reprioritize": {
           "title": "Prioritize your goals",
-          "content": "Drag any goal to change its priority. Moving a goal here also moves it in the Global Plan; goals from other projects keep their relative order. On mobile, tap Reorder first to enter reorder mode."
+          "content": "Drag any goal to change its priority. Moving a goal here also moves it in your priority order; goals from other projects keep their relative order. On mobile, tap Reorder first to enter reorder mode."
         },
         "selector": {
           "title": "Choose a project",
@@ -1128,22 +1113,6 @@
         "editTarget": {
           "title": "Edit target",
           "content": "Change where this goal ends without recreating it. It keeps its projects, notes, and history, and your plan recalculates."
-        }
-      }
-    },
-    "globalPlan": {
-      "steps": {
-        "intro": {
-          "title": "One plan for everything",
-          "content": "Every active and paused goal appears here once, in the single priority order that Today, Raids Plan and Insights use. Projects are only filters over it. Paused goals keep their place but plan nothing."
-        },
-        "reprioritize": {
-          "title": "Prioritize your goals",
-          "content": "Drag a goal to change its priority (on mobile, tap Reorder first). Each drop saves right away and applies in every project that holds the goal."
-        },
-        "createGoal": {
-          "title": "Add goals",
-          "content": "New goals join the end of the plan; drag them to where they belong."
         }
       }
     }

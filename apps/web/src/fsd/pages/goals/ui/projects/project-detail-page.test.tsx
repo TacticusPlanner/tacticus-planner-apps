@@ -253,10 +253,10 @@ import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/creat
 
 function renderPage(projectId = "proj-a") {
   return render(
-    <MemoryRouter initialEntries={[`/goals/projects/${projectId}`]}>
+    <MemoryRouter initialEntries={[`/plan/projects/${projectId}`]}>
       <Routes>
         <Route
-          path="/goals/projects/:projectId"
+          path="/plan/projects/:projectId"
           element={
             <CreateGoalLauncherProvider onLaunch={onLaunch}>
               <ProjectDetailPage />

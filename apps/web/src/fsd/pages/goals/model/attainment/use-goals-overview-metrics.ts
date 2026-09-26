@@ -66,10 +66,8 @@ const UNKNOWN_METRICS: GoalOverviewMetrics = {
  */
 export function useGoalsOverviewMetrics(
   goalIds: readonly string[],
-  /** A per-goal isolated/plan estimate, when the caller already has one (the project-scoped view's
-   *  `usePlanInsights`, or a goal's own `useGoalEstimate`) — folded into `blockers` as an
-   *  `EstimateBlocked` reason. Omitted on the flat cross-project overview, which has no such estimate
-   *  (see `GoalOverviewMetrics.remaining`'s doc comment). */
+  /** The per-goal plan estimates (`usePlanInsights`), when the caller has them — folded into
+   *  `blockers` as an `EstimateBlocked` reason. Omitted where no plan run is available. */
   estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
   const isAuthenticated = useIsAuthenticated()

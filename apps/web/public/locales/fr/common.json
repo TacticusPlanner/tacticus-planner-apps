@@ -455,8 +455,8 @@
     },
     "tabs": {
       "goals": "Objectifs",
-      "overview": "Tous les objectifs",
-      "overviewDescription": "Filtrez, triez et regroupez tous vos objectifs actifs.",
+      "overview": "Objectifs",
+      "overviewDescription": "Vos objectifs par ordre de priorité : filtrez, regroupez et repriorisez.",
       "projects": "Projets",
       "projectsDescription": "Organisez vos objectifs en groupes ciblés et parcourez-les séparément.",
       "insights": "Analyses",
@@ -466,9 +466,7 @@
       "archived": "Archivés",
       "blocked": "Bloqué",
       "active": "Actif",
-      "paused": "En pause",
-      "plan": "Plan global",
-      "planDescription": "Un seul plan ordonné pour tous vos objectifs."
+      "paused": "En pause"
     },
     "columns": {
       "entity": "Personnage",
@@ -581,7 +579,7 @@
       "restore": "Restaurer le projet",
       "save": "Enregistrer le projet",
       "create": "Créer le projet",
-      "dashboardIntro": "Un projet est une sélection nommée de vos objectifs. Gardez-en plusieurs pour regrouper des choses différentes (un renfort d'effectif, un événement, une progression de longue haleine) et parcourez chacun séparément. La priorité est un ordre unique pour tous les objectifs, géré dans le Plan global.",
+      "dashboardIntro": "Un projet est une sélection nommée de vos objectifs. Gardez-en plusieurs pour regrouper des choses différentes (un renfort d'effectif, un événement, une progression de longue haleine) et parcourez chacun séparément. La priorité est un ordre unique pour tous les objectifs, géré sur la page Objectifs.",
       "unitGoalSummaryOfAccount": "{{units}} unités · {{goals}} de vos {{accountGoals}} objectifs",
       "emptyProjectTitle": "Ce projet n'a pas encore d'objectifs",
       "emptyProjectDescription": "Utilisez « Ajouter des objectifs » pour y placer des objectifs existants, ou « Créer un objectif » pour en ajouter un.",
@@ -731,7 +729,7 @@
       "previewTitle": "Ressources nécessaires",
       "showAll": "Tout afficher ({{count}})",
       "showLess": "Afficher moins",
-      "previewDisclaimer": "L'estimation réelle peut varier selon la place de cet objectif dans votre Plan global et la stratégie de farming choisie.",
+      "previewDisclaimer": "L'estimation réelle peut varier selon la place de cet objectif dans votre ordre de priorité et la stratégie de farming choisie.",
       "previewUnavailable": "Une estimation détaillée n'est pas encore disponible pour ce type d'objectif.",
       "characterAbilityCostUnsupported": "Les cibles de capacité de personnage sont validées et suivies, mais leur coût en ressources n'est pas encore pris en charge.",
       "projectLabel": "Projets",
@@ -789,20 +787,11 @@
       "search": "Rechercher des objectifs",
       "allTypes": "Tous les types d'objectif",
       "typeFilterLabel": "Filtre par type d'objectif",
-      "sortByLabel": "Trier par",
       "groupByLabel": "Regrouper par",
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
       "groupByUnit": "Regrouper par unité",
-      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
-      "sort": {
-        "priority": "Priorité",
-        "entity": "Personnage",
-        "type": "Type d'objectif",
-        "status": "Statut",
-        "estimate": "Estimation",
-        "updated": "Mis à jour récemment"
-      }
+      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
     "detail": {
       "title": "Détails de l'objectif",
@@ -879,7 +868,7 @@
     "insights": {
       "selectProject": "Sélectionnez un projet",
       "noGoalsTitle": "Aucun objectif actif",
-      "noGoalsDescription": "Créez ou reprenez un objectif pour voir ses ressources manquantes, les goulots d'étranglement de farming et les événements de campagne pertinents, tels que planifiés dans votre Plan global. Choisissez un projet ci-dessus pour restreindre la vue.",
+      "noGoalsDescription": "Créez ou reprenez un objectif pour voir ses ressources manquantes, les goulots d'étranglement de farming et les événements de campagne pertinents, tels que planifiés dans votre ordre de priorité. Choisissez un projet ci-dessus pour restreindre la vue.",
       "upgradesTitle": "Améliorations par rareté",
       "shardsTitle": "Éclats et orbes",
       "shards": "Éclats",
@@ -934,25 +923,17 @@
       "retryRefresh": "Réessayer l'actualisation",
       "historyChanged": "Objectif modifié"
     },
-    "plan": {
-      "title": "Plan global",
-      "description": "Chaque objectif actif ou en pause, une seule fois, dans l'unique ordre de priorité utilisé par Aujourd'hui, le plan de raid, les Analyses et toutes les estimations. Les projets ne font que filtrer cette liste.",
-      "loadError": "Impossible de charger vos objectifs.",
-      "retry": "Réessayer",
-      "emptyTitle": "Aucun objectif dans votre plan pour l'instant",
-      "emptyDescription": "Créez un objectif et il apparaîtra ici, par ordre de priorité.",
-      "createGoal": "Créer un objectif",
-      "noFarmableDemand": "Vos objectifs actifs n'ont actuellement besoin de rien qui puisse être farmé, il n'y a donc aucun farming à planifier."
-    },
     "order": {
       "conflictTitle": "Le plan a changé",
       "conflictDescription": "Votre déplacement n'a pas été enregistré, car l'ordre des objectifs a changé après son chargement. Vérifiez l'ordre actualisé, puis réessayez le déplacement.",
       "retry": "Réessayer le déplacement",
       "dismiss": "Ignorer",
-      "projectNote": "Déplacer un objectif ici le déplace aussi dans le Plan global. Les objectifs des autres projets conservent leur ordre relatif.",
-      "openPlan": "Ouvrir le Plan global",
+      "projectNote": "Déplacer un objectif ici le déplace aussi dans votre ordre de priorité. Les objectifs des autres projets conservent leur ordre relatif.",
+      "openPlan": "Voir les objectifs par priorité",
       "saving": "Enregistrement de l'ordre…",
-      "dragHint": "Faites glisser une carte pour modifier sa priorité."
+      "dragHint": "Faites glisser une carte pour modifier sa priorité.",
+      "noFarmableDemand": "Vos objectifs actifs n'ont actuellement besoin de rien qui puisse être farmé, il n'y a donc aucun farming à planifier.",
+      "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses."
     }
   },
   "language": {
@@ -1049,8 +1030,8 @@
           "content": "Basculez entre les objectifs non atteints, atteints et archivés."
         },
         "filters": {
-          "title": "Type, tri et regroupement",
-          "content": "Filtrez par type d'objectif, changez l'ordre de tri ou regroupez des objectifs liés."
+          "title": "Type et regroupement",
+          "content": "Filtrez par type d'objectif ou regroupez des objectifs liés."
         },
         "projectFilter": {
           "title": "Filtrer par projet",
@@ -1064,9 +1045,13 @@
           "title": "Paramètres de planification",
           "content": "Définissez ici votre budget d'énergie quotidien — chaque estimation de cette page l'utilise."
         },
+        "reprioritize": {
+          "title": "Priorisez vos objectifs",
+          "content": "Faites glisser un objectif pour modifier sa priorité (sur mobile, appuyez d'abord sur « Réorganiser »). Chaque dépôt est enregistré immédiatement et s'applique dans tous les projets qui contiennent l'objectif."
+        },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
+          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints et archivés. Ouvrez un objectif éligible pour modifier sa cible directement. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1106,7 +1091,7 @@
         },
         "reprioritize": {
           "title": "Priorisez vos objectifs",
-          "content": "Faites glisser un objectif pour modifier sa priorité. Déplacer un objectif ici le déplace aussi dans le Plan global ; les objectifs des autres projets conservent leur ordre relatif. Sur mobile, appuyez d'abord sur « Réorganiser » pour activer le mode de réorganisation."
+          "content": "Faites glisser un objectif pour modifier sa priorité. Déplacer un objectif ici le déplace aussi dans votre ordre de priorité ; les objectifs des autres projets conservent leur ordre relatif. Sur mobile, appuyez d'abord sur « Réorganiser » pour activer le mode de réorganisation."
         },
         "selector": {
           "title": "Choisir un projet",
@@ -1128,22 +1113,6 @@
         "editTarget": {
           "title": "Modifier l'objectif",
           "content": "Changez l'endroit où cet objectif se termine sans le recréer. Il conserve ses projets, ses notes et son historique, et votre plan est recalculé."
-        }
-      }
-    },
-    "globalPlan": {
-      "steps": {
-        "intro": {
-          "title": "Un seul plan pour tout",
-          "content": "Chaque objectif actif ou en pause apparaît ici une seule fois, dans l'unique ordre de priorité qu'utilisent Aujourd'hui, le plan de raid et les Analyses. Les projets ne sont que des filtres par-dessus. Les objectifs en pause gardent leur place mais ne planifient rien."
-        },
-        "reprioritize": {
-          "title": "Priorisez vos objectifs",
-          "content": "Faites glisser un objectif pour modifier sa priorité (sur mobile, appuyez d'abord sur « Réorganiser »). Chaque dépôt est enregistré immédiatement et s'applique dans tous les projets qui contiennent l'objectif."
-        },
-        "createGoal": {
-          "title": "Ajoutez des objectifs",
-          "content": "Les nouveaux objectifs sont ajoutés à la fin du plan ; faites-les glisser à leur place."
         }
       }
     }

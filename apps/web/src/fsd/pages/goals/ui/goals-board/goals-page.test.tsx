@@ -179,6 +179,28 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
+// The plan run behind estimates is exercised by its own tests; the page only consumes its result.
+vi.mock("../../model/insights/use-plan-insights", () => ({
+  usePlanInsights: () => ({
+    loading: false,
+    result: {
+      estimates: new Map(),
+      potentialProgressByGoalId: new Map(),
+      levelPotentialProgressByGoalId: new Map(),
+    },
+  }),
+}))
+vi.mock("@/features/goal-order", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/goal-order")>()),
+  useGoalOrderActions: () => ({
+    moveGoal: vi.fn(),
+    pending: false,
+    conflict: null,
+    retry: vi.fn(),
+    dismissConflict: vi.fn(),
+  }),
+}))
+
 const mobile = vi.hoisted(() => ({ value: false }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -322,32 +344,40 @@ describe("GoalsPage", () => {
     renderPage()
     await screen.findByTestId("goals-page-empty")
 
-    const sort = screen.getByTestId("goals-sort")
-    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
+    const group = screen.getByTestId("goals-group-by")
+    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
     expect(
-      document.getElementById("goals-sort-value")
+      document.getElementById("goals-group-value")
     ).not.toBeEmptyDOMElement()
 
-    await user.click(sort)
+    await user.click(group)
     await user.click(
-      screen.getByRole("option", { name: "goals.filters.sort.status" })
+      screen.getByRole("option", { name: "goals.filters.groupByType" })
     )
-    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
-    expect(document.getElementById("goals-sort-value")).toHaveTextContent(
-      "goals.filters.sort.status"
+    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
+    expect(document.getElementById("goals-group-value")).toHaveTextContent(
+      "goals.filters.groupByType"
     )
   })
 
-  it("does not offer Priority in the Sort control (fix-project-priority-display)", async () => {
-    listGoals.mockResolvedValue({ goals: [] })
-    const user = userEvent.setup()
+  it("has no Sort control and lists Active and Paused goals in global priority order", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        { ...activeGoal, goalId: "goal-b", globalPriority: 2 },
+        { ...pausedGoal, goalId: "goal-c", globalPriority: 3 },
+        { ...activeGoal, goalId: "goal-a", globalPriority: 1 },
+      ],
+    })
     renderPage()
-    await screen.findByTestId("goals-page-empty")
 
-    await user.click(screen.getByTestId("goals-sort"))
+    await screen.findAllByTestId("goal-row")
+
+    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
     expect(
-      screen.queryByRole("option", { name: "goals.filters.sort.priority" })
-    ).not.toBeInTheDocument()
+      screen
+        .getAllByTestId("goal-row")
+        .map((row) => row.getAttribute("data-goal-id"))
+    ).toEqual(["goal-a", "goal-b", "goal-c"])
   })
 
   it("shows a row for an active goal with lifecycle actions", async () => {

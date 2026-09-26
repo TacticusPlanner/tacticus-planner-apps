@@ -106,7 +106,7 @@ describe("ProjectsWidget", () => {
     render(<ProjectsWidget />)
 
     screen.getByTestId("home-project-row-p1").click()
-    expect(navigateMock).toHaveBeenCalledWith("/goals/projects/p1")
+    expect(navigateMock).toHaveBeenCalledWith("/plan/projects/p1")
     expect(screen.queryByTestId("home-projects-more")).not.toBeInTheDocument()
   })
 
@@ -121,6 +121,6 @@ describe("ProjectsWidget", () => {
     render(<ProjectsWidget />)
 
     screen.getByTestId("home-projects-more").click()
-    expect(navigateMock).toHaveBeenCalledWith("/goals/projects")
+    expect(navigateMock).toHaveBeenCalledWith("/plan/projects")
   })
 })

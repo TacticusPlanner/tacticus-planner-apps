@@ -95,7 +95,7 @@ describe("useGoalOrderActions", () => {
     vi.mocked(toast.error).mockReset()
   })
 
-  it("moves a goal on the Global Plan and submits the complete order at the loaded revision", async () => {
+  it("moves a goal from the Goals page and submits the complete order at the loaded revision", async () => {
     const { result } = setup()
 
     let ok!: boolean

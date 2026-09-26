@@ -317,7 +317,6 @@ export function ProjectDetailHeader({
               group={group}
               groupOptions={PROJECT_DETAIL_GROUP_OPTIONS}
               onGroupChange={onGroupChange}
-              showSort={false}
               showTypeFilter={false}
             />
           </div>
