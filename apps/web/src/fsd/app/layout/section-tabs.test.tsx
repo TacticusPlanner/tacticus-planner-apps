@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { act, fireEvent, render, screen } from "@testing-library/react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import {
   MemoryRouter,
@@ -248,7 +248,9 @@ describe("SectionTabs", () => {
     screen.getByTestId("section-tab-library-characters").focus()
     await user.keyboard("{ArrowRight}")
 
-    expectPath("/library/machines-of-war")
+    // Radix's roving focus moves focus (and so activates the tab) inside a `setTimeout(0)`, which
+    // `user.keyboard` does not await - asserting straight away races that timer under CPU load.
+    await waitFor(() => expectPath("/library/machines-of-war"))
   })
 
   it.each([
