@@ -1186,6 +1186,45 @@ describe("ProjectDetailPage", () => {
     expect(updateProjectGoals).not.toHaveBeenCalled()
   })
 
+  it("shows account-wide positions with gaps and explains them in the order note", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-a", globalPriority: 1 }) },
+        {
+          goal: goal({
+            goalId: "goal-c",
+            entityId: "hero2",
+            globalPriority: 3,
+          }),
+        },
+        {
+          goal: goal({
+            goalId: "goal-e",
+            entityId: "hero2",
+            globalPriority: 5,
+          }),
+        },
+      ],
+    })
+    renderPage("proj-a")
+
+    await screen.findByTestId("goals-list-table")
+    expect(
+      screen.getAllByTestId("goal-row-priority").map((n) => n.textContent)
+    ).toEqual([
+      "goals.columns.priority 1",
+      "goals.columns.priority 3",
+      "goals.columns.priority 5",
+    ])
+    const note = screen.getByTestId("project-detail-order-note")
+    expect(note).toHaveTextContent("goals.order.projectNote")
+    expect(within(note).getByRole("link")).toHaveAttribute(
+      "href",
+      "/plan/goals"
+    )
+  })
+
   it("drags a goal to a new position and moves it within the project's projection", async () => {
     listProjectGoals.mockResolvedValue({
       goals: [

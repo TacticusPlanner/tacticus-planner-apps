@@ -149,6 +149,51 @@ describe("useGoalOrderActions", () => {
     })
   })
 
+  it("moves the displayed priority numbers with the order, on both views, and restores them on rejection", async () => {
+    let rejectRequest!: (error: Error) => void
+    moveProjectGoalMock.mockReturnValue(
+      new Promise<void>((_, reject) => {
+        rejectRequest = reject
+      })
+    )
+    const { result, queryClient } = setup()
+    const numbers = () => ({
+      global: cachedGlobal(queryClient).goals.map(
+        (goal) => `${goal.goalId}${goal.globalPriority}`
+      ),
+      project: cachedProject(queryClient).goals.map(
+        (entry) => `${entry.goal.goalId}${entry.goal.globalPriority}`
+      ),
+    })
+
+    let moving!: Promise<boolean>
+    act(() => {
+      moving = result.current.moveGoal({
+        goalId: "e",
+        displacedGoalId: "c",
+        projectId: "p1",
+      })
+    })
+
+    // Project A,C,E; E onto C: A 1, E 3, C 4 there, and A 1, B 2, E 3, C 4, D 5 account-wide.
+    await waitFor(() =>
+      expect(numbers()).toEqual({
+        global: ["a1", "b2", "e3", "c4", "d5"],
+        project: ["a1", "e3", "c4"],
+      })
+    )
+
+    await act(async () => {
+      rejectRequest(new Error("boom"))
+      await moving
+    })
+
+    expect(numbers()).toEqual({
+      global: ["a1", "b2", "c3", "d4", "e5"],
+      project: ["a1", "c3", "e5"],
+    })
+  })
+
   it("moves a project goal down onto the goal it displaces", async () => {
     const { result, queryClient } = setup()
     moveProjectGoalMock.mockReturnValue(new Promise(() => undefined))

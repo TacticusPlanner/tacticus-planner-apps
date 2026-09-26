@@ -476,7 +476,8 @@
       "status": "Status · Fertig am",
       "actions": "Aktionen",
       "reorder": "Neu anordnen",
-      "reorderHandle": "{{entity}} ziehen, um neu zu priorisieren"
+      "reorderHandle": "{{entity}} ziehen, um neu zu priorisieren",
+      "priority": "Priorität"
     },
     "status": {
       "Draft": "Entwurf",
@@ -928,7 +929,7 @@
       "conflictDescription": "Deine Verschiebung wurde nicht gespeichert, da sich die Zielreihenfolge nach dem Laden geändert hat. Prüfe die aktualisierte Reihenfolge und wiederhole dann die Verschiebung.",
       "retry": "Verschieben wiederholen",
       "dismiss": "Verwerfen",
-      "projectNote": "Wenn du ein Ziel hier verschiebst, wird es auch in deiner Prioritätsreihenfolge verschoben. Ziele aus anderen Projekten behalten ihre relative Reihenfolge.",
+      "projectNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Wenn du ein Ziel hier verschiebst, wird es auch in deiner Prioritätsreihenfolge verschoben. Ziele aus anderen Projekten behalten ihre relative Reihenfolge.",
       "openPlan": "Ziele in Prioritätsreihenfolge ansehen",
       "saving": "Reihenfolge wird gespeichert…",
       "dragHint": "Ziehe eine Karte, um ihre Priorität zu ändern.",

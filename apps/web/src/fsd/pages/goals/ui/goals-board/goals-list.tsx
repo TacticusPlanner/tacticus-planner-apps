@@ -31,7 +31,11 @@ import {
 } from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import { EstimateCell, GoalNameLink } from "./goal-row-shared"
+import {
+  EstimateCell,
+  GoalNameLink,
+  GoalPriorityNumber,
+} from "./goal-row-shared"
 import {
   estimateEnergy,
   isInFlightStatus,
@@ -77,13 +81,19 @@ function GoalsTable({
     null
   )
   const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
+  // The leading cell holds the drag handle and/or the priority number; it is not a data column.
+  const hasLeadingCell =
+    reorderEnabled ||
+    rows.some(
+      (row) => row.priority !== undefined && isInFlightStatus(row.status)
+    )
 
   return (
     <Table data-testid="goals-list-table">
       <TableHeader>
         <TableRow>
-          {reorderEnabled ? (
-            <TableHead className="w-8">
+          {hasLeadingCell ? (
+            <TableHead className="w-16">
               <span className="sr-only">{t("goals.columns.reorder")}</span>
             </TableHead>
           ) : null}
@@ -133,29 +143,32 @@ function GoalsTable({
                 ref={sortable.setNodeRef}
                 style={sortable.style}
               >
-                {reorderEnabled ? (
+                {hasLeadingCell ? (
                   <TableCell
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >
-                    {/* Only an in-flight row can be dragged *from* — a historical row in the same
+                    <div className="flex items-center gap-1">
+                      <GoalPriorityNumber row={row} />
+                      {/* Only an in-flight row can be dragged *from* — a historical row in the same
                         sorted list has no handle, though it can still be a drop anchor (a neighbor
                         another drag lands next to); see spliceGoalOrder. */}
-                    {isInFlightStatus(row.status) ? (
-                      <button
-                        {...sortable.dragHandle.attributes}
-                        {...sortable.dragHandle.listeners}
-                        aria-label={t("goals.columns.reorderHandle", {
-                          entity: getEntityName(row.entityType, row.entityId),
-                        })}
-                        className="cursor-grab touch-none rounded-md p-1 text-muted-foreground hover:bg-muted active:cursor-grabbing"
-                        data-testid="goal-row-drag-handle"
-                        ref={sortable.dragHandle.ref}
-                        type="button"
-                      >
-                        <GripVertical className="size-4" />
-                      </button>
-                    ) : null}
+                      {reorderEnabled && isInFlightStatus(row.status) ? (
+                        <button
+                          {...sortable.dragHandle.attributes}
+                          {...sortable.dragHandle.listeners}
+                          aria-label={t("goals.columns.reorderHandle", {
+                            entity: getEntityName(row.entityType, row.entityId),
+                          })}
+                          className="cursor-grab touch-none rounded-md p-1 text-muted-foreground hover:bg-muted active:cursor-grabbing"
+                          data-testid="goal-row-drag-handle"
+                          ref={sortable.dragHandle.ref}
+                          type="button"
+                        >
+                          <GripVertical className="size-4" />
+                        </button>
+                      ) : null}
+                    </div>
                   </TableCell>
                 ) : null}
                 <TableCell className="font-medium">

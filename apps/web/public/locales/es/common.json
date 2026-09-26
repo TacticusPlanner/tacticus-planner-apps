@@ -476,7 +476,8 @@
       "status": "Estado · Fecha fin",
       "actions": "Acciones",
       "reorder": "Reordenar",
-      "reorderHandle": "Arrastrar {{entity}} para reordenar"
+      "reorderHandle": "Arrastrar {{entity}} para reordenar",
+      "priority": "Prioridad"
     },
     "status": {
       "Draft": "Borrador",
@@ -928,7 +929,7 @@
       "conflictDescription": "Tu movimiento no se guardó porque el orden de los objetivos cambió después de cargarlo. Revisa el orden actualizado y vuelve a intentar el movimiento.",
       "retry": "Reintentar movimiento",
       "dismiss": "Descartar",
-      "projectNote": "Mover un objetivo aquí también lo mueve en tu orden de prioridad. Los objetivos de otros proyectos mantienen su orden relativo.",
+      "projectNote": "Cada número es la posición del objetivo en tu orden de prioridad de toda la cuenta, por lo que los objetivos de un proyecto pueden mostrar huecos como 1, 3, 5. Mover un objetivo aquí también lo mueve en tu orden de prioridad. Los objetivos de otros proyectos mantienen su orden relativo.",
       "openPlan": "Ver los objetivos por prioridad",
       "saving": "Guardando el orden…",
       "dragHint": "Arrastra una tarjeta para cambiar su prioridad.",

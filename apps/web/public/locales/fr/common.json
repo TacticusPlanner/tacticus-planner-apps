@@ -476,7 +476,8 @@
       "status": "Statut · Terminé le",
       "actions": "Actions",
       "reorder": "Réorganiser",
-      "reorderHandle": "Faire glisser {{entity}} pour réorganiser"
+      "reorderHandle": "Faire glisser {{entity}} pour réorganiser",
+      "priority": "Priorité"
     },
     "status": {
       "Draft": "Brouillon",
@@ -928,7 +929,7 @@
       "conflictDescription": "Votre déplacement n'a pas été enregistré, car l'ordre des objectifs a changé après son chargement. Vérifiez l'ordre actualisé, puis réessayez le déplacement.",
       "retry": "Réessayer le déplacement",
       "dismiss": "Ignorer",
-      "projectNote": "Déplacer un objectif ici le déplace aussi dans votre ordre de priorité. Les objectifs des autres projets conservent leur ordre relatif.",
+      "projectNote": "Chaque numéro est la position de l'objectif dans votre ordre de priorité à l'échelle du compte ; les objectifs d'un projet peuvent donc présenter des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans votre ordre de priorité. Les objectifs des autres projets conservent leur ordre relatif.",
       "openPlan": "Voir les objectifs par priorité",
       "saving": "Enregistrement de l'ordre…",
       "dragHint": "Faites glisser une carte pour modifier sa priorité.",

@@ -366,4 +366,93 @@ describe("GoalsList", () => {
 
     expect(await screen.findByText("Stormbird")).toBeInTheDocument()
   })
+
+  describe("account-wide priority number", () => {
+    const numbers = () =>
+      screen.queryAllByTestId("goal-row-priority").map((n) => n.textContent)
+    const withStatus = (row: GoalRow, status: GoalRow["status"]): GoalRow => ({
+      ...row,
+      status,
+    })
+
+    it("shows each in-flight row's own position, not its index among the visible rows", async () => {
+      // A filtered/grouped/project view of the account order A,B,C,D,E holding A, C and E.
+      const view: GoalRow[] = [
+        { ...rows[0]!, priority: 1 },
+        { ...rows[1]!, goalId: "goal-3", priority: 3 },
+        { ...rows[1]!, goalId: "goal-5", priority: 5 },
+      ]
+      render(<GoalsList actions={stubActions} reorderEnabled rows={view} />)
+      await screen.findByText("Hero One")
+
+      expect(numbers()).toEqual([
+        "goals.columns.priority 1",
+        "goals.columns.priority 3",
+        "goals.columns.priority 5",
+      ])
+      // The number sits in the same leading cell as the drag handle, not in a seventh column.
+      const cell = screen.getAllByTestId("goal-row-priority")[0]!.closest("td")!
+      expect(cell).toContainElement(
+        screen.getAllByTestId("goal-row-drag-handle")[0]!
+      )
+      expect(screen.getAllByRole("columnheader")).toHaveLength(7)
+    })
+
+    it("shows the number for a Paused row and none for Reached, Completed, Archived or position-less rows", async () => {
+      const view: GoalRow[] = [
+        { ...rows[0]!, goalId: "paused", status: "Paused", priority: 2 },
+        { ...withStatus(rows[0]!, "Completed"), goalId: "done" },
+        { ...withStatus(rows[0]!, "Archived"), goalId: "old" },
+        { ...rows[0]!, goalId: "none", priority: undefined },
+      ]
+      render(<GoalsList actions={stubActions} reorderEnabled rows={view} />)
+      await screen.findAllByText("Hero One")
+
+      expect(numbers()).toEqual(["goals.columns.priority 2"])
+      expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
+    })
+
+    it("uses text-foreground, a theme token that meets text contrast in both themes", async () => {
+      render(<GoalsList actions={stubActions} reorderEnabled rows={rows} />)
+      await screen.findByText("Hero One")
+
+      expect(screen.getAllByTestId("goal-row-priority")[0]).toHaveClass(
+        "text-foreground"
+      )
+    })
+
+    it("still shows the number without a drag handle when the list is not reorderable", async () => {
+      render(<GoalsList actions={stubActions} rows={[rows[0]!]} />)
+      await screen.findByText("Hero One")
+
+      expect(numbers()).toEqual(["goals.columns.priority 10"])
+      expect(screen.queryByTestId("goal-row-drag-handle")).toBeNull()
+    })
+
+    it("shows the number in the mobile card header and in the mobile reorder cards", async () => {
+      useIsMobileMock.mockReturnValue(true)
+      const view: GoalRow[] = [
+        rows[0]!,
+        { ...withStatus(rows[1]!, "Completed"), priority: undefined },
+      ]
+      const { unmount } = render(
+        <GoalsList actions={stubActions} reorderEnabled rows={view} />
+      )
+      await screen.findByText("Hero One")
+      expect(numbers()).toEqual(["goals.columns.priority 10"])
+      unmount()
+
+      render(
+        <GoalsList
+          actions={stubActions}
+          mobileReorderActive
+          reorderEnabled
+          rows={view}
+        />
+      )
+      await screen.findByText("Hero One")
+      expect(numbers()).toEqual(["goals.columns.priority 10"])
+      expect(screen.getAllByTestId("goal-row-reorder-card")).toHaveLength(1)
+    })
+  })
 })

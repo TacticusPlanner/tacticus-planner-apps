@@ -476,7 +476,8 @@
       "status": "Status · Done by",
       "actions": "Actions",
       "reorder": "Reorder",
-      "reorderHandle": "Drag {{entity}} to reorder"
+      "reorderHandle": "Drag {{entity}} to reorder",
+      "priority": "Priority"
     },
     "status": {
       "Draft": "Draft",
@@ -928,7 +929,7 @@
       "conflictDescription": "Your move wasn't saved because the goal order changed after you loaded it. Review the refreshed order, then retry the move.",
       "retry": "Retry move",
       "dismiss": "Dismiss",
-      "projectNote": "Moving a goal here also moves it in your priority order. Goals from other projects keep their relative order.",
+      "projectNote": "Each number is the goal's position in your account-wide priority order, so a project's goals can show gaps such as 1, 3, 5. Moving a goal here also moves it in your priority order. Goals from other projects keep their relative order.",
       "openPlan": "See goals in priority order",
       "saving": "Saving order…",
       "dragHint": "Drag a card to change its priority.",

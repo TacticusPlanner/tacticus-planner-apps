@@ -21,7 +21,11 @@ import {
 } from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import { EstimateCell, GoalNameLink } from "./goal-row-shared"
+import {
+  EstimateCell,
+  GoalNameLink,
+  GoalPriorityNumber,
+} from "./goal-row-shared"
 import {
   estimateEnergy,
   isInFlightStatus,
@@ -85,6 +89,7 @@ export function GoalsMobileCards({
               >
                 <GripVertical />
               </button>
+              <GoalPriorityNumber row={row} />
               <GoalUnitIcon
                 className="size-8"
                 entityId={row.entityId}
@@ -135,6 +140,7 @@ export function GoalsMobileCards({
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
+                  <GoalPriorityNumber row={row} />
                   <GoalUnitIcon
                     className="size-8"
                     entityId={row.entityId}
