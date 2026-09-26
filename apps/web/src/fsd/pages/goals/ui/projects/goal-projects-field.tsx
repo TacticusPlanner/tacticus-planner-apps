@@ -17,7 +17,9 @@ import {
 } from "@workspace/ui/components/popover"
 
 import type { ProjectSummary } from "@/entities/project"
-import { ProjectColorDot } from "@/entities/project"
+import { isProjectNameValid, ProjectColorDot } from "@/entities/project"
+import { ApiError } from "@/shared/api"
+import { useInlineProjectCreate } from "../../model/projects/use-inline-project-create"
 import { projectConflictText } from "../../model/projects/project-conflict-copy"
 import type { ProjectMembershipConflict } from "../../model/projects/project-membership"
 import type { ProjectRemovalUnavailableReason } from "../../model/projects/project-removal"
@@ -46,6 +48,9 @@ export function GoalProjectsField({
   const [open, setOpen] = useState(false)
   const [removalBlocked, setRemovalBlocked] =
     useState<ProjectRemovalUnavailableReason | null>(null)
+  const [search, setSearch] = useState("")
+  const [createError, setCreateError] = useState<string | null>(null)
+  const { create, pending: creating } = useInlineProjectCreate()
   const defaultProject = projects.find((project) => project.isDefault)
   const selected = selectedProjectIds.flatMap((id) => {
     const project = projects.find((candidate) => candidate.projectId === id)
@@ -56,6 +61,41 @@ export function GoalProjectsField({
       project.status !== "Archived" &&
       !selectedProjectIds.includes(project.projectId)
   )
+
+  // Offered only for a valid name no project already carries (archived ones included, so it can never
+  // produce a duplicate) - typing alone creates nothing, the user has to choose the row.
+  const searched = search.trim()
+  const canCreate =
+    isProjectNameValid(searched) &&
+    !projects.some(
+      (project) => project.name.trim().toLowerCase() === searched.toLowerCase()
+    )
+
+  const changeOpen = (next: boolean) => {
+    setOpen(next)
+    if (!next) {
+      setSearch("")
+      setCreateError(null)
+    }
+  }
+
+  const createAndSelect = async () => {
+    if (creating || !canCreate) return
+    setCreateError(null)
+    try {
+      const created = await create(searched)
+      onSelectionChange([...selectedProjectIds, created.projectId])
+      setRemovalBlocked(null)
+      changeOpen(false)
+    } catch (error) {
+      // The typed name and the goal draft stay as they are so the user can retry or pick another name.
+      setCreateError(
+        error instanceof ApiError && error.message
+          ? error.message
+          : t("goals.project.createFailed")
+      )
+    }
+  }
 
   // Removing the last chip relocates the goal to the Default project rather than being refused — the
   // same rule the row menu's removal action follows, so the two surfaces behave identically.
@@ -138,7 +178,7 @@ export function GoalProjectsField({
         })}
       </div>
 
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={changeOpen}>
         <PopoverTrigger asChild>
           <Button
             className="w-fit"
@@ -156,11 +196,20 @@ export function GoalProjectsField({
           container={portalContainer ?? undefined}
         >
           <Command>
-            <CommandInput placeholder={t("goals.project.searchProjects")} />
+            <CommandInput
+              onValueChange={(value) => {
+                setSearch(value)
+                setCreateError(null)
+              }}
+              placeholder={t("goals.project.searchProjects")}
+              value={search}
+            />
             <CommandList>
-              <CommandEmpty>
-                {t("goals.project.noAddableProjects")}
-              </CommandEmpty>
+              {canCreate ? null : (
+                <CommandEmpty>
+                  {t("goals.project.noAddableProjects")}
+                </CommandEmpty>
+              )}
               {addable.map((project) => (
                 <CommandItem
                   key={project.projectId}
@@ -170,7 +219,7 @@ export function GoalProjectsField({
                       project.projectId,
                     ])
                     setRemovalBlocked(null)
-                    setOpen(false)
+                    changeOpen(false)
                   }}
                   value={project.name}
                 >
@@ -179,8 +228,38 @@ export function GoalProjectsField({
                   {project.isDefault ? <Check className="size-4" /> : null}
                 </CommandItem>
               ))}
+              {canCreate ? (
+                <CommandItem
+                  data-testid={`${testIdPrefix}-create-project`}
+                  disabled={creating}
+                  forceMount
+                  onSelect={() => void createAndSelect()}
+                  value={`create-project:${searched}`}
+                >
+                  <Plus className="size-4" />
+                  <span className="flex-1 break-all">
+                    {creating
+                      ? t("goals.project.creatingInline", { name: searched })
+                      : t("goals.project.createInline", { name: searched })}
+                  </span>
+                </CommandItem>
+              ) : null}
             </CommandList>
           </Command>
+          {canCreate ? (
+            <p className="border-t px-3 py-2 text-xs text-muted-foreground">
+              {t("goals.project.createInlineNote")}
+            </p>
+          ) : null}
+          {createError ? (
+            <p
+              className="border-t px-3 py-2 text-xs text-destructive"
+              data-testid={`${testIdPrefix}-create-project-error`}
+              role="alert"
+            >
+              {createError}
+            </p>
+          ) : null}
         </PopoverContent>
       </Popover>
 

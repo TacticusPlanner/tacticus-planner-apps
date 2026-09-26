@@ -14,6 +14,7 @@ export {
   projectSlotConflictGoalIds,
 } from "./model/project-membership-conflict"
 export { projectMarkerSuffix } from "./model/project-marker"
+export { isProjectNameValid } from "./model/project-name"
 export { useProjects } from "./model/use-projects"
 export { ProjectColorDot } from "./ui/project-color-dot"
 export { ProjectSelect } from "./ui/project-select"

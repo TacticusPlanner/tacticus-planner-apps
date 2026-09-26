@@ -548,6 +548,10 @@
       "assemblySlotTaken": "Dieses Projekt kann nur ein aktives oder pausiertes {{type}}-Ziel für diese Einheit enthalten.",
       "searchProjects": "Projekte suchen",
       "noAddableProjects": "Keine verfügbaren Projekte gefunden.",
+      "createInline": "„{{name}}“ erstellen",
+      "creatingInline": "„{{name}}“ wird erstellt…",
+      "createInlineNote": "Ein neues Projekt wird sofort gespeichert, auch wenn du dieses Ziel abbrichst. Status und Priorität dieses Ziels ändern sich dadurch nicht.",
+      "createFailed": "Das Projekt konnte nicht erstellt werden. Prüfe deine Verbindung und versuche es erneut.",
       "membershipConflict": "{{project}} enthält bereits ein aktives oder pausiertes {{types}}-Ziel für diese Einheit.",
       "reviewConflictingGoal": "Konfliktziel ansehen",
       "filterAll": "Alle Projekte",
@@ -1078,6 +1082,10 @@
         "acquisitionSources": {
           "title": "Bezugsquellen",
           "content": "Kombiniere Kampagnen-Farming, Onslaught und tägliche Shops — wähle eine beliebige Kombination, um die geschätzte Zeit für dieses Ziel zu verkürzen."
+        },
+        "projects": {
+          "title": "Projekte",
+          "content": "Suche nach einem Projektnamen, den es noch nicht gibt, und wähle Erstellen, um ihn hier hinzuzufügen, ohne dieses Formular zu verlassen. Welche Projekte das Ziel enthalten, ändert nie seinen Status oder seine Priorität."
         }
       }
     },
@@ -1131,6 +1139,10 @@
         "editTarget": {
           "title": "Ziel bearbeiten",
           "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Projekte, Notizen und Verlauf bleiben erhalten, und dein Plan wird neu berechnet."
+        },
+        "projects": {
+          "title": "Projekte",
+          "content": "Füge dieses Ziel einem Projekt hinzu oder erstelle in der Auswahl ein neues. Das neue Projekt wird sofort gespeichert; das Ziel selbst ändert sich erst, wenn du speicherst."
         }
       }
     }

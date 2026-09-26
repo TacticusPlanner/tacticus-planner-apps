@@ -548,6 +548,10 @@
       "assemblySlotTaken": "Este proyecto solo puede contener un objetivo {{type}} activo o pausado para esta unidad.",
       "searchProjects": "Buscar proyectos",
       "noAddableProjects": "No se encontraron proyectos disponibles.",
+      "createInline": "Crear \"{{name}}\"",
+      "creatingInline": "Creando \"{{name}}\"…",
+      "createInlineNote": "Un proyecto nuevo se guarda de inmediato, aunque canceles este objetivo. No cambia el estado ni la prioridad de este objetivo.",
+      "createFailed": "No se pudo crear el proyecto. Comprueba tu conexión e inténtalo de nuevo.",
       "membershipConflict": "{{project}} ya contiene un objetivo {{types}} activo o pausado para esta unidad.",
       "reviewConflictingGoal": "Revisar objetivo en conflicto",
       "filterAll": "Todos los proyectos",
@@ -1078,6 +1082,10 @@
         "acquisitionSources": {
           "title": "Fuentes de obtención",
           "content": "Combina el farmeo de campaña, Onslaught y las tiendas diarias: selecciona cualquier combinación para reducir el tiempo estimado de este objetivo."
+        },
+        "projects": {
+          "title": "Proyectos",
+          "content": "Busca un nombre de proyecto que aún no exista y elige Crear para añadirlo aquí sin salir de este formulario. Los proyectos que contienen el objetivo nunca cambian su estado ni su prioridad."
         }
       }
     },
@@ -1131,6 +1139,10 @@
         "editTarget": {
           "title": "Editar objetivo",
           "content": "Cambia dónde termina esta meta sin volver a crearla. Conserva sus proyectos, notas e historial, y tu plan se recalcula."
+        },
+        "projects": {
+          "title": "Proyectos",
+          "content": "Añade este objetivo a un proyecto o crea uno nuevo desde el selector. El proyecto nuevo se guarda de inmediato; el objetivo solo cambia cuando guardas."
         }
       }
     }

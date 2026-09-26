@@ -548,6 +548,10 @@
       "assemblySlotTaken": "Ce projet ne peut contenir qu'un seul objectif {{type}} actif ou en pause pour cette unité.",
       "searchProjects": "Rechercher des projets",
       "noAddableProjects": "Aucun projet disponible trouvé.",
+      "createInline": "Créer « {{name}} »",
+      "creatingInline": "Création de « {{name}} »…",
+      "createInlineNote": "Un nouveau projet est enregistré immédiatement, même si vous annulez cet objectif. Cela ne modifie ni le statut ni la priorité de cet objectif.",
+      "createFailed": "Impossible de créer le projet. Vérifiez votre connexion et réessayez.",
       "membershipConflict": "{{project}} contient déjà un objectif {{types}} actif ou en pause pour cette unité.",
       "reviewConflictingGoal": "Voir l’objectif en conflit",
       "filterAll": "Tous les projets",
@@ -1078,6 +1082,10 @@
         "acquisitionSources": {
           "title": "Sources d'acquisition",
           "content": "Combinez le farming de campagne, l'Onslaught et les boutiques quotidiennes : sélectionnez n'importe quelle combinaison pour réduire le temps estimé de cet objectif."
+        },
+        "projects": {
+          "title": "Projets",
+          "content": "Recherchez un nom de projet qui n'existe pas encore et choisissez Créer pour l'ajouter ici sans quitter ce formulaire. Les projets qui contiennent l'objectif ne changent jamais son statut ni sa priorité."
         }
       }
     },
@@ -1131,6 +1139,10 @@
         "editTarget": {
           "title": "Modifier l'objectif",
           "content": "Changez l'endroit où cet objectif se termine sans le recréer. Il conserve ses projets, ses notes et son historique, et votre plan est recalculé."
+        },
+        "projects": {
+          "title": "Projets",
+          "content": "Ajoutez cet objectif à un projet ou créez-en un nouveau depuis le sélecteur. Le nouveau projet est enregistré immédiatement ; l'objectif ne change que lorsque vous enregistrez."
         }
       }
     }

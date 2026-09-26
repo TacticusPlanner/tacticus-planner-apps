@@ -548,6 +548,10 @@
       "assemblySlotTaken": "This project can hold only one active or paused {{type}} goal for this unit.",
       "searchProjects": "Search projects",
       "noAddableProjects": "No available projects found.",
+      "createInline": "Create \"{{name}}\"",
+      "creatingInline": "Creating \"{{name}}\"…",
+      "createInlineNote": "Creating a project saves it right away, even if you cancel this goal. It doesn't change this goal's status or priority.",
+      "createFailed": "Couldn't create the project. Check your connection and try again.",
       "membershipConflict": "{{project}} already contains an active or paused {{types}} goal for this unit.",
       "reviewConflictingGoal": "Review conflicting goal",
       "filterAll": "All projects",
@@ -1078,6 +1082,10 @@
         "acquisitionSources": {
           "title": "Acquisition sources",
           "content": "Combine campaign farming, Onslaught, and daily shops — select any mix to lower this goal's estimated time."
+        },
+        "projects": {
+          "title": "Projects",
+          "content": "Search for a project name that doesn't exist yet and choose Create to add it here without leaving this form. Which projects hold the goal never changes its status or priority."
         }
       }
     },
@@ -1131,6 +1139,10 @@
         "editTarget": {
           "title": "Edit target",
           "content": "Change where this goal ends without recreating it. It keeps its projects, notes, and history, and your plan recalculates."
+        },
+        "projects": {
+          "title": "Projects",
+          "content": "Add this goal to a project, or create a new one from the picker. The new project is saved right away; the goal itself only changes when you save."
         }
       }
     }

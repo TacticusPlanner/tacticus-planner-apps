@@ -67,7 +67,8 @@ vi.mock("@/entities/goal", () => ({
 let defaultProjectId: string | undefined = "proj-default"
 let mockProjects: Array<{ projectId: string; status: string }> = []
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
     all: () => ["projects"],
     goals: (projectId: string) => ({

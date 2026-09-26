@@ -308,6 +308,7 @@ vi.mock("@workspace/player-data/queries", () => ({
 const createCombinedGoals = vi.fn()
 const createGoal = vi.fn()
 const listProjects = vi.fn()
+const createProject = vi.fn()
 const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
@@ -345,7 +346,9 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
+  createProject: (...args: unknown[]) => createProject(...args),
   projectQueries: {
+    all: () => ["projects"],
     // Backs the goal-projects lookup — empty by default.
     goals: (projectId: string) => ({
       queryKey: ["projects", "detail", projectId, "goals"],
@@ -385,6 +388,7 @@ describe("CreateGoalSheet", () => {
     createCombinedGoals.mockReset()
     listProjects.mockReset()
     listProjects.mockResolvedValue({ projects: [] })
+    createProject.mockReset()
     listGoals.mockReset()
     listGoals.mockResolvedValue({ goals: [] })
 
@@ -1697,5 +1701,107 @@ describe("CreateGoalSheet", () => {
       { projectId: "proj-1" },
       { projectId: "proj-2" },
     ])
+  })
+
+  describe("inline project creation", () => {
+    const projects = [
+      {
+        projectId: "proj-1",
+        name: "My Goals",
+        isDefault: true,
+        status: "Active",
+      },
+    ]
+
+    async function openPickerAndType(text: string) {
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.change(
+        await screen.findByPlaceholderText("goals.project.searchProjects"),
+        { target: { value: text } }
+      )
+    }
+
+    it("creates and selects a project without submitting the goal, then submits with it", async () => {
+      listProjects.mockResolvedValue({ projects })
+      // Like the server, a created project shows up in the refreshed list.
+      createProject.mockImplementation((request: { name: string }) => {
+        const created = {
+          projectId: "proj-new",
+          name: request.name,
+          isDefault: false,
+          status: "Active",
+        }
+        listProjects.mockResolvedValue({ projects: [...projects, created] })
+        return Promise.resolve(created)
+      })
+      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await openPickerAndType("Brand new")
+      // Typing alone creates nothing.
+      expect(createProject).not.toHaveBeenCalled()
+      fireEvent.click(await screen.findByTestId("create-goal-create-project"))
+
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-new")
+      ).toBeInTheDocument()
+      expect(createProject).toHaveBeenCalledExactlyOnceWith({
+        name: "Brand new",
+        description: null,
+        color: null,
+      })
+      // The goal draft is intact and nothing was submitted.
+      expect(createCombinedGoals).not.toHaveBeenCalled()
+      expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeVisible()
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      const [request] = createCombinedGoals.mock.calls[0]
+      expect(request.projects).toEqual([
+        { projectId: "proj-1" },
+        { projectId: "proj-new" },
+      ])
+    })
+
+    it("keeps the draft and typed name on failure and offers no Create for an existing name", async () => {
+      listProjects.mockResolvedValue({ projects })
+      createProject.mockRejectedValueOnce(new Error("offline"))
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await openPickerAndType("my goals")
+      expect(
+        screen.queryByTestId("create-goal-create-project")
+      ).not.toBeInTheDocument()
+
+      fireEvent.change(
+        screen.getByPlaceholderText("goals.project.searchProjects"),
+        { target: { value: "Brand new" } }
+      )
+      fireEvent.click(await screen.findByTestId("create-goal-create-project"))
+
+      expect(
+        await screen.findByTestId("create-goal-create-project-error")
+      ).toHaveTextContent("goals.project.createFailed")
+      expect(
+        screen.getByPlaceholderText("goals.project.searchProjects")
+      ).toHaveValue("Brand new")
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-new")
+      ).not.toBeInTheDocument()
+      expect(createCombinedGoals).not.toHaveBeenCalled()
+    })
   })
 })

@@ -22,9 +22,21 @@ export function useGoalDetailSheetTutorial(): TourPageSteps {
     [t]
   )
 
+  const projects = useMemo<Step>(
+    () => ({
+      target: '[data-testid="goal-detail-projects"]',
+      title: t("tour.goalDetail.steps.projects.title"),
+      content: t("tour.goalDetail.steps.projects.content"),
+    }),
+    [t]
+  )
+
   return useMemo<TourPageSteps>(
-    () => ({ desktop: [editTarget], mobile: [editTarget] }),
-    [editTarget]
+    () => ({
+      desktop: [editTarget, projects],
+      mobile: [editTarget, projects],
+    }),
+    [editTarget, projects]
   )
 }
 
