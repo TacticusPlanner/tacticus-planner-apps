@@ -48,6 +48,8 @@ const updateProjectGoals = vi.fn()
 
 // Each Rank goal's end target (its `config.rank.end`); 12 unless a test says otherwise.
 const rankEndByGoal = new Map<string, number>()
+// Every goal whose detail was requested, to check the sheet only reads the ones that can collide.
+const detailFetches: string[] = []
 
 vi.mock("@/entities/goal", () => ({
   goalRankTargetKey: (goal: {
@@ -62,12 +64,14 @@ vi.mock("@/entities/goal", () => ({
     all: () => ["goals"],
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
-      queryFn: () =>
-        Promise.resolve({
+      queryFn: () => {
+        detailFetches.push(goalId)
+        return Promise.resolve({
           goalId,
           goalType: "Rank",
           config: { rank: { end: rankEndByGoal.get(goalId) ?? 12 } },
-        }),
+        })
+      },
     }),
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
@@ -133,6 +137,7 @@ describe("AddGoalsToProjectSheet", () => {
     listGoals.mockReset()
     listProjectGoals.mockReset()
     rankEndByGoal.clear()
+    detailFetches.length = 0
     updateProjectGoals.mockReset().mockResolvedValue({ goals: [] })
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -270,6 +275,23 @@ describe("AddGoalsToProjectSheet", () => {
     expect(
       screen.getByTestId("add-goals-blocked-goal-conflicting")
     ).toHaveTextContent("goals.project.assemblyRankTargetTaken")
+  })
+
+  it("only reads the Rank details of units that already have a member or a selection", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        goal({ goalId: "goal-same-unit" }),
+        goal({ goalId: "goal-other-unit", entityId: "hero2" }),
+      ],
+    })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal({ goalId: "goal-member" }), priority: 1 }],
+    })
+    renderSheet()
+
+    await screen.findByTestId("add-goals-blocked-goal-same-unit")
+    expect(detailFetches).toContain("goal-same-unit")
+    expect(detailFetches).not.toContain("goal-other-unit")
   })
 
   it("names the exact Rank target that blocks a duplicate", async () => {

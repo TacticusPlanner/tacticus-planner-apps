@@ -161,7 +161,7 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
  * both for an uncontrolled popover (Radix manages its own state) in a single-instance context like
  * the goal-detail sheet.
  *
- * `potentialOnly` (see `LevelGoalSubProgress`) drops the actual reading: the bar renders fully in
+ * `potentialOnly` drops the actual reading: the bar renders fully in
  * the striped "potential" style, the percent shows only the small potential-styled reading, and the
  * breakdown popover is dropped. Requires `potentialRatio`, else falls back to normal. */
 export function GoalProgressDisplay({

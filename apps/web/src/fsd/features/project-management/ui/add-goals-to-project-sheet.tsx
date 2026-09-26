@@ -123,11 +123,26 @@ export function AddGoalsToProjectSheet({
   const memberIds = new Set(members.map((entry) => entry.goal.goalId))
 
   // The list endpoints carry summaries only, so an in-flight Rank goal's end target is read from its
-  // detail (shared cache with the Goals page).
+  // detail (shared cache with the Goals page). Only Rank goals of a unit that already has a member or
+  // a pending selection can collide, so other units' goals are never fetched.
+  const entityKey = (goal: { entityType: string; entityId: string }) =>
+    `${goal.entityType}:${goal.entityId}`
+  const inFlightRank = (goal: { goalType: string; status: string }) =>
+    goal.goalType === "Rank" && occupiesSlot(goal)
+  const anchoredUnits = new Set(
+    [
+      ...members.map((entry) => entry.goal),
+      ...goals.filter((goal) => selectedGoalIds.includes(goal.goalId)),
+    ]
+      .filter(inFlightRank)
+      .map(entityKey)
+  )
   const rankGoalIds = [
     ...new Set(
       [...goals, ...members.map((entry) => entry.goal)]
-        .filter((goal) => goal.goalType === "Rank" && occupiesSlot(goal))
+        .filter(
+          (goal) => inFlightRank(goal) && anchoredUnits.has(entityKey(goal))
+        )
         .map((goal) => goal.goalId)
     ),
   ]

@@ -260,10 +260,7 @@ export function GoalDetailSheet({
     reason: Extract<
       BlockerReason,
       {
-        kind:
-          | "MissingLevelPrerequisite"
-          | "MissingAscensionPrerequisite"
-          | "MissingUnlockPrerequisite"
+        kind: "MissingAscensionPrerequisite" | "MissingUnlockPrerequisite"
       }
     >
   ) => {

@@ -35,16 +35,23 @@ export function levelRequirementRatio(
 /** The level a Rank/Ability goal needs, shown next to that goal while the character is below it — the
  *  relocated "level requirement" display of what used to be a separate Level goal
  *  (integrate-level-progression-into-rank-goals). `null` when the goal has no level requirement, the
- *  character isn't owned, or the level is already sufficient. Never a blocker or a dependency: reaching
+ *  character isn't owned, the level is already sufficient, or the goal is no longer in flight (a Paused
+ *  goal still shows it; Completed and Archived ones don't). Never a blocker or a dependency: reaching
  *  the level alone completes nothing. */
 export function computeLevelRequirementProgress(params: {
-  detail: Pick<GoalDetail, "goalType" | "entityType" | "config">
+  detail: Pick<GoalDetail, "goalType" | "entityType" | "config" | "status">
   playerUnit:
     { xpLevel: number; xp: number; progressionIndex: string } | undefined
 }): LevelRequirementProgress | null {
   const { detail, playerUnit } = params
   const required = requiredLevelForGoal(detail)
-  if (required === null || !playerUnit || playerUnit.xpLevel >= required) {
+  const inFlight = detail.status === "Active" || detail.status === "Paused"
+  if (
+    !inFlight ||
+    required === null ||
+    !playerUnit ||
+    playerUnit.xpLevel >= required
+  ) {
     return null
   }
 

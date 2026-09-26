@@ -21,10 +21,7 @@ import { GoalEstimateSection } from "./goal-estimate-section"
 type MissingPrerequisiteReason = Extract<
   BlockerReason,
   {
-    kind:
-      | "MissingLevelPrerequisite"
-      | "MissingAscensionPrerequisite"
-      | "MissingUnlockPrerequisite"
+    kind: "MissingAscensionPrerequisite" | "MissingUnlockPrerequisite"
   }
 >
 

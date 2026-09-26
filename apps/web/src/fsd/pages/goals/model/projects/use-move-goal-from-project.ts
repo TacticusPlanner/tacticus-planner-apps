@@ -119,13 +119,16 @@ export function useMoveGoalFromProject() {
             entry.goal.goalId !== goal.goalId &&
             (entry.goal.status === "Active" || entry.goal.status === "Paused")
         )
-        for (const entry of destinationRanks) {
-          const rankDetail = await queryClient.fetchQuery(
-            goalQueries.detail(entry.goal.goalId)
+        const rankDetails = await Promise.all(
+          destinationRanks.map((entry) =>
+            queryClient.fetchQuery(goalQueries.detail(entry.goal.goalId))
           )
+        )
+        rankDetails.forEach((rankDetail, index) => {
           const key = goalRankTargetKey(rankDetail)
-          if (key) rankKeyByGoalId.set(entry.goal.goalId, key)
-        }
+          if (key)
+            rankKeyByGoalId.set(destinationRanks[index]!.goal.goalId, key)
+        })
       }
       const plan = planProjectRemoval({
         memberships,

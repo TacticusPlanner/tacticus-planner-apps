@@ -7,6 +7,7 @@ import { computeLevelRequirementProgress } from "./level-requirement-progress"
 // Bellator's Silver3 needs level 32 in the rank-level ladder; an Ability target's level is the higher of
 // its two tracks (they share one scale with character levels).
 const rankDetail = {
+  status: "Active",
   entityType: "Character",
   goalType: "Rank",
   config: {
@@ -23,6 +24,7 @@ const rankDetail = {
 
 function abilityDetail(activeEnd: number, passiveEnd: number) {
   return {
+    status: "Active",
     entityType: "Character",
     goalType: "Ability",
     config: {
@@ -49,6 +51,18 @@ describe("computeLevelRequirementProgress", () => {
       reachableRatio: null,
       reachableLevel: null,
     })
+  })
+
+  it("shows nothing for a goal that is no longer in flight", () => {
+    const playerUnit = { xpLevel: 31, xp: 82_000, progressionIndex: mythic }
+    for (const status of ["Completed", "Archived"]) {
+      expect(
+        computeLevelRequirementProgress({
+          detail: { ...rankDetail, status } as GoalDetail,
+          playerUnit,
+        })
+      ).toBeNull()
+    }
   })
 
   it("derives an Ability goal's requirement from its higher track", () => {
