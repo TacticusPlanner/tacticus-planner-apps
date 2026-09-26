@@ -61,7 +61,7 @@ export function StackedProgressBar({
       >
         {showStripe ? (
           <div
-            className="absolute inset-y-0 left-0 rounded-full opacity-40"
+            className="absolute inset-y-0 left-0 rounded-full opacity-85"
             data-testid="goal-progress-bar-potential-fill"
             style={{
               backgroundImage:
@@ -87,7 +87,7 @@ export function StackedProgressBar({
               data-testid="goal-progress-bar-ceiling"
               style={{ left: `${ceilingPct}%` }}
             >
-              <div className="h-full w-1 rounded-full bg-amber-400 ring-1 ring-background" />
+              <div className="h-full w-1 rounded-full bg-amber-700 ring-1 ring-background dark:bg-amber-400" />
             </div>
           </TooltipTrigger>
           <TooltipContent data-testid="goal-progress-bar-ceiling-tooltip">

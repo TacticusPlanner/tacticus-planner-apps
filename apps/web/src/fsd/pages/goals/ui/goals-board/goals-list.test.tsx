@@ -454,6 +454,50 @@ describe("GoalsList", () => {
       expect(numbers()).toEqual(["goals.columns.priority 10"])
       expect(screen.getAllByTestId("goal-row-reorder-card")).toHaveLength(1)
     })
+
+    it("names a row's state in text and its drag handle by name, in the table and in the mobile reorder cards", async () => {
+      const view: GoalRow[] = [
+        { ...rows[0]!, goalId: "paused", status: "Paused", priority: 2 },
+      ]
+      const { unmount } = render(
+        <GoalsList actions={stubActions} reorderEnabled rows={view} />
+      )
+      await screen.findByText("Hero One")
+      expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
+        "goals.status.Paused"
+      )
+      expect(screen.getByTestId("goal-row-drag-handle")).toHaveAccessibleName(
+        "goals.columns.reorderHandle"
+      )
+      unmount()
+
+      useIsMobileMock.mockReturnValue(true)
+      render(
+        <GoalsList
+          actions={stubActions}
+          mobileReorderActive
+          reorderEnabled
+          rows={view}
+        />
+      )
+      await screen.findByText("Hero One")
+      // The reorder card shows only in-flight rows, so without its own badge a Paused card would be
+      // indistinguishable from an Active one.
+      const card = screen.getByTestId("goal-row-reorder-card")
+      expect(card).toHaveTextContent("goals.status.Paused")
+      expect(screen.getByTestId("goal-row-drag-handle")).toHaveAccessibleName(
+        "goals.columns.reorderHandle"
+      )
+    })
+
+    it("marks a dragged row without lowering its opacity, so its text keeps its contrast", async () => {
+      render(<GoalsList actions={stubActions} reorderEnabled rows={rows} />)
+      await screen.findByText("Hero One")
+
+      const row = screen.getAllByTestId("goal-row")[0]!
+      expect(row.className).not.toMatch(/opacity/)
+      expect(row).toHaveClass("data-[dragging]:bg-card")
+    })
   })
 
   describe("density", () => {

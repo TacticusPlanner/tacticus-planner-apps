@@ -222,7 +222,7 @@ function DesktopQuicknav({
     >
       {ordered.map((project) => (
         <button
-          className="flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-sm hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           data-testid={`overview-quicknav-chip-${project.projectId}`}
           key={project.projectId}
           onClick={() => void navigate(`/plan/projects/${project.projectId}`)}

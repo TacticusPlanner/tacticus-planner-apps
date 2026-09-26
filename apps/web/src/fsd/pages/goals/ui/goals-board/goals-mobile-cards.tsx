@@ -71,7 +71,7 @@ export function GoalsMobileCards({
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => (
             <li
-              className="flex items-center gap-3 rounded-2xl border bg-card p-3 data-[dragging]:opacity-60"
+              className="flex items-center gap-3 rounded-2xl border bg-card p-3 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:border-ring data-[dragging]:shadow-lg"
               data-dragging={sortable.isDragging || undefined}
               data-testid="goal-row-reorder-card"
               key={row.goalId}
@@ -84,7 +84,7 @@ export function GoalsMobileCards({
                 aria-label={t("goals.columns.reorderHandle", {
                   entity: getEntityName(row.entityType, row.entityId),
                 })}
-                className="cursor-grab touch-none rounded-md p-2 text-muted-foreground hover:bg-muted active:cursor-grabbing"
+                className="cursor-grab touch-none rounded-md p-2 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing"
                 data-testid="goal-row-drag-handle"
                 ref={sortable.dragHandle.ref}
                 type="button"
@@ -108,6 +108,8 @@ export function GoalsMobileCards({
                   }
                 />
               </div>
+              {/* State stays readable as text in this mode too (a Paused row would otherwise look like an Active one). */}
+              <StatusBadge status={row.status} />
             </li>
           )}
         />

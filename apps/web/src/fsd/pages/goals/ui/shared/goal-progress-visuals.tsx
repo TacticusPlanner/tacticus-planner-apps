@@ -64,7 +64,7 @@ function ProgressSwatch({ variant }: { variant: "actual" | "potential" }) {
         "inline-block size-2 shrink-0 rounded-full",
         variant === "actual"
           ? "bg-primary"
-          : "bg-primary/25 ring-1 ring-primary/60"
+          : "bg-primary/25 ring-1 ring-primary"
       )}
     />
   )

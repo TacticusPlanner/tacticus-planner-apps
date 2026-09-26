@@ -140,7 +140,7 @@ function GoalsTable({
 
             return (
               <TableRow
-                className={`${rowHeight} cursor-pointer data-[dragging]:opacity-60`}
+                className={`${rowHeight} cursor-pointer data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring`}
                 data-dragging={sortable.isDragging || undefined}
                 data-goal-id={row.goalId}
                 data-testid="goal-row"
@@ -166,7 +166,7 @@ function GoalsTable({
                           aria-label={t("goals.columns.reorderHandle", {
                             entity: getEntityName(row.entityType, row.entityId),
                           })}
-                          className="cursor-grab touch-none rounded-md p-1 text-muted-foreground hover:bg-muted active:cursor-grabbing"
+                          className="cursor-grab touch-none rounded-md p-1 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing"
                           data-testid="goal-row-drag-handle"
                           ref={sortable.dragHandle.ref}
                           type="button"
