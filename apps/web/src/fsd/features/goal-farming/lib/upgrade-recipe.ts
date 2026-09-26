@@ -16,32 +16,6 @@ const rankUpgradeMap = (character: FarmingCharacter) =>
     character.rankUpUpgrades.map((entry) => [entry.rank, entry.upgradeIds])
   )
 
-const topRow = (upgrades: readonly UpgradeId[]) =>
-  upgrades.filter((_, index) => index % 2 === 0)
-
-export function rankUpUpgradeIds(
-  character: FarmingCharacter,
-  rankStart: Rank,
-  rankEnd: Rank,
-  pointFive: boolean,
-  appliedUpgrades = 0,
-  topRowCount = 0
-): UpgradeId[] {
-  if (rankIndex(rankStart) > rankIndex(rankEnd)) return []
-
-  const byRank = rankUpgradeMap(character)
-  const ids: UpgradeId[] = []
-  for (let index = rankIndex(rankStart); index < rankIndex(rankEnd); index++) {
-    ids.push(...(byRank.get(rankOrder[index]) ?? []))
-  }
-  const endUpgrades = byRank.get(rankEnd) ?? []
-  if (topRowCount > 0) ids.push(...topRow(endUpgrades).slice(0, topRowCount))
-  else if (appliedUpgrades > 0)
-    ids.push(...endUpgrades.slice(0, appliedUpgrades))
-  else if (pointFive) ids.push(...topRow(endUpgrades))
-  return ids
-}
-
 /** One upgrade slot a Rank range needs: `key` identifies the slot itself (`<rank>:<slot index within that
  * rank's six>`), independent of which upgrade sits in it — so two Rank goals for one character that
  * cross the same slot claim it once, even when the recipe reuses the same upgrade id in several slots. */
@@ -50,9 +24,9 @@ export type RankSlotOccurrence = { key: string; id: UpgradeId }
 const TOP_ROW_SLOT_INDICES = [0, 2, 4]
 
 /**
- * `rankUpUpgradeIds` with slot identity: the same slots in the same order (every slot of each rank from
- * `rankStart` up to but excluding `rankEnd`, then the end rank's partial target — the first `topRowCount`
- * top-row slots, the first `appliedUpgrades` slots, or the whole top row for point-five).
+ * The upgrade slots a Rank range needs, in order: every slot of each rank from `rankStart` up to but
+ * excluding `rankEnd`, then the end rank's partial target — the first `topRowCount` top-row slots, the
+ * first `appliedUpgrades` slots, or the whole top row for point-five.
  */
 export function rankUpSlotOccurrences(
   character: FarmingCharacter,
@@ -89,6 +63,11 @@ export function rankUpSlotOccurrences(
   else if (pointFive) push(rankEnd, TOP_ROW_SLOT_INDICES)
   return occurrences
 }
+
+/** `rankUpSlotOccurrences` without the slot identity: just the upgrade ids, in slot order. */
+export const rankUpUpgradeIds = (
+  ...args: Parameters<typeof rankUpSlotOccurrences>
+): UpgradeId[] => rankUpSlotOccurrences(...args).map((slot) => slot.id)
 
 /**
  * Expands crafted recipes into base upgrades. When `craftedInventory` is supplied, matching stock
@@ -161,22 +140,6 @@ export function aggregateBaseUpgradesWithCraftedInventory(
       craftedInventory
     ),
   ].map(([id, count]) => ({ id, count }))
-}
-
-export function removeUpgradeOccurrences(
-  requiredIds: UpgradeId[],
-  appliedIds: readonly UpgradeId[]
-): UpgradeId[] {
-  const remainingApplied = new Map<UpgradeId, number>()
-  for (const id of appliedIds) {
-    remainingApplied.set(id, (remainingApplied.get(id) ?? 0) + 1)
-  }
-  return requiredIds.filter((id) => {
-    const applied = remainingApplied.get(id) ?? 0
-    if (applied <= 0) return true
-    remainingApplied.set(id, applied - 1)
-    return false
-  })
 }
 
 export function aggregateBaseUpgrades(

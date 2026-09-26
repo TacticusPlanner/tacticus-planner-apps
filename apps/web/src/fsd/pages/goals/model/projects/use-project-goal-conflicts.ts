@@ -1,7 +1,12 @@
 import { useMemo } from "react"
-import { useQueries } from "@tanstack/react-query"
+import { useQueries, type UseQueryResult } from "@tanstack/react-query"
 
-import { goalQueries, goalRankTargetKey, type GoalKind } from "@/entities/goal"
+import {
+  goalQueries,
+  goalRankTargetKey,
+  type GoalDetail,
+  type GoalKind,
+} from "@/entities/goal"
 import { projectQueries, type ProjectSummary } from "@/entities/project"
 import type { ProjectMembershipConflict } from "./project-membership"
 
@@ -17,6 +22,20 @@ type ProjectGoalEntry = {
 
 const isInFlight = (status: string) =>
   status === "Active" || status === "Paused"
+
+// A module-level `combine` keeps the result referentially stable until a query's state changes,
+// so the memos below don't rebuild on every render.
+const combineRankKeys = (results: UseQueryResult<GoalDetail>[]) => {
+  const rankKeyByGoalId = new Map<string, string>()
+  for (const query of results) {
+    const key = query.data ? goalRankTargetKey(query.data) : null
+    if (query.data && key) rankKeyByGoalId.set(query.data.goalId, key)
+  }
+  return {
+    rankKeyByGoalId,
+    pending: results.some((query) => query.isPending),
+  }
+}
 
 /**
  * Project-scoped slot conflicts for a goal about to be created or edited. Non-Rank goal types conflict
@@ -93,20 +112,13 @@ export function useProjectGoalConflicts({
       projectGoalsVersion,
     ]
   )
-  const detailQueries = useQueries({
+  const { rankKeyByGoalId, pending: rankKeysPending } = useQueries({
     queries: rankGoalIds.map((goalId) => ({
       ...goalQueries.detail(goalId),
       enabled: active,
     })),
+    combine: combineRankKeys,
   })
-  const rankKeyByGoalId = useMemo(() => {
-    const keys = new Map<string, string>()
-    for (const query of detailQueries) {
-      const key = query.data ? goalRankTargetKey(query.data) : null
-      if (query.data && key) keys.set(query.data.goalId, key)
-    }
-    return keys
-  }, [detailQueries])
 
   const conflicts = useMemo<ProjectMembershipConflict[]>(() => {
     if (!entityId || goalTypes.length === 0) return []
@@ -134,9 +146,7 @@ export function useProjectGoalConflicts({
 
   return {
     conflicts,
-    loading:
-      queries.some((query) => query.isPending) ||
-      detailQueries.some((query) => query.isPending),
+    loading: queries.some((query) => query.isPending) || rankKeysPending,
   }
 }
 

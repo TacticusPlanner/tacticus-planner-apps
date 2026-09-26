@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { Rank, rankIndex } from "@workspace/game-domain"
 
-import { goalRankTargetKey, rankTargetKey } from "./rank-target-key"
+import {
+  goalRankTargetKey,
+  rankTargetKey,
+  rankTargetSlots,
+} from "./rank-target-key"
 
 const target = (end: Rank, endPointFive = false, endAppliedUpgrades = 0) => ({
   end: rankIndex(end),
@@ -47,6 +51,15 @@ describe("rankTargetKey", () => {
     expect(rankTargetKey(target(Rank.Silver3, true))).toBe(
       `${rankIndex(Rank.Silver3)}:3`
     )
+  })
+})
+
+describe("rankTargetSlots", () => {
+  it("normalizes the slot count the key carries", () => {
+    expect(rankTargetSlots(target(Rank.Silver3))).toBe(0)
+    expect(rankTargetSlots(target(Rank.Silver3, true))).toBe(3)
+    expect(rankTargetSlots(target(Rank.Silver3, false, 5))).toBe(3)
+    expect(rankTargetSlots(target(Rank.Adamantine1, true, 2))).toBe(2)
   })
 })
 

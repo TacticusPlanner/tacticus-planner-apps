@@ -13,11 +13,17 @@ import type { GoalDetail, RankTarget } from "./types"
 export function rankTargetKey(
   target: Pick<RankTarget, "end" | "endPointFive" | "endAppliedUpgrades">
 ): string {
-  let slots = Math.max(target.endAppliedUpgrades, 0)
-  if (target.end < rankIndex(Rank.Adamantine1)) {
-    slots = target.endPointFive ? 3 : Math.min(slots, 3)
-  }
-  return `${target.end}:${slots}`
+  return `${target.end}:${rankTargetSlots(target)}`
+}
+
+/** The normalized applied-slot count of a Rank target's end (the key's second half): 0 at a clean
+ * boundary, and below Adamantine1 capped at the three-slot row with point-five reading as 3. */
+export function rankTargetSlots(
+  target: Pick<RankTarget, "end" | "endPointFive" | "endAppliedUpgrades">
+): number {
+  const slots = Math.max(target.endAppliedUpgrades, 0)
+  if (target.end >= rankIndex(Rank.Adamantine1)) return slots
+  return target.endPointFive ? 3 : Math.min(slots, 3)
 }
 
 /** The rank and applied-slot count a normalized target key names (for labelling a conflict), or null when

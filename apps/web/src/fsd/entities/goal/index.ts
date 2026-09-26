@@ -31,6 +31,7 @@ export {
   describeRankTargetKey,
   goalRankTargetKey,
   rankTargetKey,
+  rankTargetSlots,
 } from "./model/rank-target-key"
 export type {
   AbilityTarget,

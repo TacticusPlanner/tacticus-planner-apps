@@ -11,7 +11,7 @@ import {
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { describeRankTargetKey, rankTargetKey } from "@/entities/goal"
+import { rankTargetSlots } from "@/entities/goal"
 import { reachableRankProgress } from "@/features/goal-farming"
 
 import { abilityTrackLevel, type GoalAttainmentParams } from "./goal-attainment"
@@ -169,7 +169,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
             ? rankAt(target.end)
             : params.playerCharacter.rank,
         target: rankAt(target.end),
-        targetSlots: describeRankTargetKey(rankTargetKey(target))?.slots ?? 0,
+        targetSlots: rankTargetSlots(target),
         ratio:
           totalSlots <= 0
             ? currentIndex >= target.end
