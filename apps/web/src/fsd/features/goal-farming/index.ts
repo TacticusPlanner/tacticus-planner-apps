@@ -18,7 +18,11 @@ export {
   createUnitCoverage,
   type UnitCoverage,
 } from "./lib/goal-requirements"
-export { resourceLabel } from "./lib/goal-need"
+export {
+  rankSlotAllocation,
+  resourceLabel,
+  type RankSlotAllocation,
+} from "./lib/goal-need"
 export {
   computeLevelGoalCost,
   xpNeededForLevelRange,

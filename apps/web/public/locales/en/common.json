@@ -865,6 +865,7 @@
         "levelsWithXp": "{{count}} levels · {{xp}} XP",
         "rank": "{{slots}} slots",
         "rankWithEnergy": "{{slots}} slots · {{energy}} energy",
+        "coveredByEarlierGoal": "Covered by an earlier goal",
         "shards": "{{count}} shards"
       },
       "potentialIndicator": "↗ {{percent}}%",

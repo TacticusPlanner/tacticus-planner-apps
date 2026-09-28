@@ -865,6 +865,7 @@
         "levelsWithXp": "{{count}} niveles · {{xp}} XP",
         "rank": "{{slots}} ranuras",
         "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
+        "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
         "shards": "{{count}} fragmentos"
       },
       "potentialIndicator": "↗ {{percent}}%",

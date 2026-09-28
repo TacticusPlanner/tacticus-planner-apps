@@ -42,6 +42,8 @@ import {
   computeGoalAcquisition,
   createUnitCoverage,
   isMowDetail,
+  rankSlotAllocation,
+  type RankSlotAllocation,
   type UnitCoverage,
 } from "@/features/goal-farming"
 import { computeGoalProgress } from "../attainment/goal-progress"
@@ -119,6 +121,7 @@ export function computePlanInsights(params: {
   >()
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
+  const rankSlotsByGoalId = new Map<string, RankSlotAllocation>()
   let onslaughtTokens = 0
   // The whole plan's Onslaught token demand, scoped or not: the account's tokens are one budget shared by
   // every goal in the global run, so the wait for tokens is the plan's, never a project-only one.
@@ -168,6 +171,8 @@ export function computePlanInsights(params: {
       coveredRankSlots: coverage.rankSlots,
       craftedInventory,
     }
+    if (detail.goalType === "Rank")
+      rankSlotsByGoalId.set(detail.goalId, rankSlotAllocation(needParams))
     const stages = calculateGoalFarmingStages(needParams)
     const need =
       stages !== null
@@ -450,6 +455,7 @@ export function computePlanInsights(params: {
     onslaughtDays,
     estimates: estimateResults,
     potentialProgressByGoalId,
+    rankSlotsByGoalId,
     levelPotentialProgressByGoalId,
     completionDate,
     unestimatedGoalCount,

@@ -176,7 +176,8 @@ export function ProjectDetailPage() {
               )
   const overviewMetrics = useGoalsOverviewMetrics(
     candidateRows.map((row) => row.goalId),
-    insights.estimates
+    insights.estimates,
+    insights.rankSlotsByGoalId
   )
   // Unit count for the summary text ("N units, M goals") - not a full per-unit plan anymore, since
   // priority is flat per-goal, not unit-grouped (add-inline-goal-reprioritize).

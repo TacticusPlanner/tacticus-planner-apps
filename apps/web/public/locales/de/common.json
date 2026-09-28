@@ -865,6 +865,7 @@
         "levelsWithXp": "{{count}} Stufen · {{xp}} EP",
         "rank": "{{slots}} Slots",
         "rankWithEnergy": "{{slots}} Slots · {{energy}} Energie",
+        "coveredByEarlierGoal": "Durch ein früheres Ziel abgedeckt",
         "shards": "{{count}} Scherben"
       },
       "potentialIndicator": "↗ {{percent}}%",

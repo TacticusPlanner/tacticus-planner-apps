@@ -169,6 +169,55 @@ describe("computePlanInsights", () => {
     expect(result.bottlenecks[0]?.label).toBe("Material One")
   })
 
+  it("allocates a Rank goal's slots once: a later, wholly covered target adds none but stays its own goal", () => {
+    const rankGoal = (goalId: string, end: number) =>
+      goalDetail({
+        goalId,
+        config: {
+          ...goalDetail({}).config,
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[end]!),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+        },
+      })
+    const far = rankGoal("far", 2)
+    const near = rankGoal("near", 1)
+
+    const covered = computePlanInsights({
+      ...baseParams,
+      details: [near, far],
+      priorityByGoalId: new Map([
+        ["far", 1],
+        ["near", 2],
+      ]),
+    })
+    const nearSlots = covered.rankSlotsByGoalId.get("near")
+    expect(covered.rankSlotsByGoalId.get("far")?.allocated).toBe(
+      covered.rankSlotsByGoalId.get("far")?.standalone
+    )
+    expect(nearSlots?.allocated).toBe(0)
+    expect(nearSlots?.standalone).toBeGreaterThan(0)
+
+    const inOrder = computePlanInsights({
+      ...baseParams,
+      details: [near, far],
+      priorityByGoalId: new Map([
+        ["near", 1],
+        ["far", 2],
+      ]),
+    })
+    const farSlots = inOrder.rankSlotsByGoalId.get("far")
+    expect(inOrder.rankSlotsByGoalId.get("near")?.allocated).toBe(
+      inOrder.rankSlotsByGoalId.get("near")?.standalone
+    )
+    expect(farSlots?.allocated).toBeLessThan(farSlots?.standalone ?? 0)
+  })
+
   it("uses the shared crafted-inventory pool in goal priority order", () => {
     const craftedId = upgradeId("crafted")
     const baseId = upgradeId("base")

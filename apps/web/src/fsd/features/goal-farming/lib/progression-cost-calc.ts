@@ -37,6 +37,10 @@ export type ResourceNeed = {
    *  to a large crafting-material count once recipes are factored in, so the two numbers intentionally
    *  don't agree — this is the "how many rank-up actions are left" reading, not "how much to farm". */
   upgradeSlotsRemaining: number | null
+  /** Rank goals in a shared plan only: an earlier goal for the same character already covers every
+   *  slot this goal would need, so it adds no work of its own (it stays uncompleted until synced
+   *  progression reaches its target). */
+  coveredByEarlierGoal?: boolean
 }
 
 /** Whether a unit's *current* progression is already in the Mythic tier — the point at which

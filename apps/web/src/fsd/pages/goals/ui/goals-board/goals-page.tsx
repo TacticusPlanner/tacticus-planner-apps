@@ -164,7 +164,8 @@ export function GoalsPage() {
   // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
   const overviewMetrics = useGoalsOverviewMetrics(
     candidateRows.map((row) => row.goalId),
-    insights.estimates
+    insights.estimates,
+    insights.rankSlotsByGoalId
   )
   const baseRows =
     tab === "blocked"

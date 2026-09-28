@@ -19,7 +19,10 @@ import {
   type GoalBlockers,
 } from "../blockers/goal-blockers"
 import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type {
+  EstimateOutcome,
+  RankSlotAllocation,
+} from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { ResourceNeed } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -68,7 +71,10 @@ export function useGoalsOverviewMetrics(
   goalIds: readonly string[],
   /** The per-goal plan estimates (`usePlanInsights`), when the caller has them — folded into
    *  `blockers` as an `EstimateBlocked` reason. Omitted where no plan run is available. */
-  estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>
+  estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>,
+  /** The plan's allocation of each Rank goal's slots (`PlanInsightsResult.rankSlotsByGoalId`): rows
+   *  then show what the goal adds to the one plan, not its standalone count. */
+  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
   const isAuthenticated = useIsAuthenticated()
   const {
@@ -243,7 +249,7 @@ export function useGoalsOverviewMetrics(
       inventoryShard,
     })
 
-    const remaining = catalogReady
+    const remainingStandalone = catalogReady
       ? calculateGoalResourceNeed({
           detail,
           character: getCharacter(unitId),
@@ -257,6 +263,16 @@ export function useGoalsOverviewMetrics(
           unlockShardCostsById: unlockShardCostsById!,
         })
       : null
+
+    const slots = rankSlotsByGoalId?.get(goalId)
+    const remaining =
+      remainingStandalone && slots
+        ? {
+            ...remainingStandalone,
+            upgradeSlotsRemaining: slots.allocated,
+            coveredByEarlierGoal: slots.allocated === 0 && slots.standalone > 0,
+          }
+        : remainingStandalone
 
     const estimateOutcome = estimatesByGoalId?.get(goalId)
     const blockers = computeGoalBlockers({
