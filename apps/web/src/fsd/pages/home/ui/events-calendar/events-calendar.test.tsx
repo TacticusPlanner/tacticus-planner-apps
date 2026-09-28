@@ -181,7 +181,7 @@ describe("EventsCalendar", () => {
     expect(wikiLinks).toHaveLength(1)
     expect(wikiLinks[0]).toHaveAttribute(
       "href",
-      "https://tacticus.fandom.com/wiki/Legendary_Character_Events"
+      "https://tacticus.wiki.gg/wiki/Legendary_Character_Events"
     )
     expect(wikiLinks[0]).toHaveAttribute("target", "_blank")
     expect(wikiLinks[0]).toHaveAttribute("rel", "noopener noreferrer")
