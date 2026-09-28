@@ -809,9 +809,6 @@
       "groupNone": "Keine Gruppierung",
       "groupByType": "Nach Typ gruppieren",
       "groupByUnit": "Nach Einheit gruppieren",
-      "densityLabel": "Zeilendichte",
-      "densityComfortable": "Komfortabel",
-      "densityCompact": "Kompakt",
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
     },
     "detail": {
@@ -1065,10 +1062,6 @@
         "projectFilter": {
           "title": "Nach Projekt eingrenzen",
           "content": "Zeige nur die Ziele eines Projekts. Das grenzt die angezeigte Liste ein und ändert nichts an deinem Plan oder an den Berechnungen der Dailies."
-        },
-        "density": {
-          "title": "Zeilendichte",
-          "content": "Wechsle zwischen komfortablen und kompakten Zeilen. Kompakt blendet die Nebenzeilen aus, damit mehr Ziele auf den Bildschirm passen."
         },
         "createGoal": {
           "title": "Ziel erstellen",

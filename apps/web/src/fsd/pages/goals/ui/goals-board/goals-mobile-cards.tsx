@@ -48,11 +48,9 @@ export function GoalsMobileCards({
   project,
   reachedByGoalId,
   cascadeContext,
-  density = "comfortable",
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
-  const compact = density === "compact"
   const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
 
   if (reorderEnabled && mobileReorderActive) {
@@ -120,10 +118,7 @@ export function GoalsMobileCards({
   return (
     <>
       <GoalProgressLegend show={hasLegend} />
-      <ul
-        className={`flex flex-col ${compact ? "gap-2" : "gap-3"}`}
-        data-testid="goals-list-cards"
-      >
+      <ul className="flex flex-col gap-3" data-testid="goals-list-cards">
         {rows.map((row) => {
           const progress =
             metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
@@ -140,7 +135,7 @@ export function GoalsMobileCards({
 
           return (
             <li
-              className={`flex cursor-pointer flex-col rounded-2xl border text-sm ${compact ? "gap-1 p-2" : "gap-2 p-3"}`}
+              className="flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm"
               data-testid="goal-row"
               key={row.goalId}
               onClick={() => onView(row.goalId)}

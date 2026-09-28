@@ -19,7 +19,6 @@ export function useGoalsOverviewTutorial() {
         | "statusFilter"
         | "filters"
         | "projectFilter"
-        | "density"
         | "createGoal"
         | "planningSettings"
         | "reprioritize"
@@ -37,7 +36,6 @@ export function useGoalsOverviewTutorial() {
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
       createStep('[data-testid="goals-project-filter"]', "projectFilter"),
-      createStep('[data-testid="goals-density-toggle"]', "density"),
     ]
     const after = [
       createStep('[data-testid="goals-create-goal"]', "createGoal"),

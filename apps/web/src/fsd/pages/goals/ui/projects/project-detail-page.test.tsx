@@ -313,7 +313,6 @@ describe("ProjectDetailPage", () => {
     // Selecting a Group value persists it to localStorage (usePersistedSelection) - reset between
     // tests so one test's selection can't leak into the next test's "first-ever visit" assumptions.
     window.localStorage.removeItem("goals.projectDetail.group")
-    window.localStorage.removeItem("goals.overview.density")
   })
 
   it("shows a not-found state for a project id that doesn't match any of the user's projects", async () => {
@@ -852,18 +851,6 @@ describe("ProjectDetailPage", () => {
 
     await screen.findAllByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
-  })
-
-  it("always renders Comfortable and offers no density control, whatever the Goals page last persisted", async () => {
-    window.localStorage.setItem("goals.overview.density", "compact")
-    listProjects.mockResolvedValue({ projects: [project()] })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-1" }), priority: 1 }],
-    })
-    renderPage("proj-a")
-
-    expect(await screen.findByTestId("goal-row")).toHaveClass("h-14")
-    expect(screen.queryByTestId("goals-density-toggle")).toBeNull()
   })
 
   it("shows no drag handle with fewer than two in-flight goals", async () => {

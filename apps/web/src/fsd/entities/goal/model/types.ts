@@ -6,15 +6,6 @@ export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
   return value === "none" || value === "unit" || value === "type"
 }
 
-/** How dense the Goals page list renders: "comfortable" is the existing presentation (default),
- *  "compact" drops the secondary caption lines and tightens spacing (goal-list-layout). */
-export type GoalDensityValue = "comfortable" | "compact"
-
-/** Type guard for the persisted density preference (`usePersistedSelection`). */
-export function isGoalDensityValue(value: unknown): value is GoalDensityValue {
-  return value === "comfortable" || value === "compact"
-}
-
 // Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).

@@ -13,9 +13,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   GoalFilters,
-  GoalDensityToggle,
   StatusFilterSelect,
-  isGoalDensityValue,
   isGoalGroupValue,
   type GoalStatusFilterValue,
   type GoalTypeFilterValue,
@@ -69,13 +67,6 @@ export function GoalsPage() {
     "goals.overview.group",
     isGoalGroupValue,
     "none"
-  )
-  // Persisted per browser like Group; only this page reads it — Project Detail's list never gets a
-  // density and stays Comfortable.
-  const [density, setDensity] = usePersistedSelection(
-    "goals.overview.density",
-    isGoalDensityValue,
-    "comfortable"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
   // Blank project-creation sheet opened from the project quick-nav; local state so opening,
@@ -265,10 +256,7 @@ export function GoalsPage() {
     </Button>
   )
   const goalFiltersAndSettings = (
-    <div
-      className="flex flex-wrap items-center gap-2"
-      data-testid="goals-filter-group"
-    >
+    <div className="flex items-center gap-2" data-testid="goals-filter-group">
       <GoalFilters
         goalType={goalType}
         group={group}
@@ -280,7 +268,6 @@ export function GoalsPage() {
         projects={projects.projects}
         value={projectFilter}
       />
-      <GoalDensityToggle onChange={setDensity} value={density} />
       {reorderToggle}
       {createGoalButton}
       {planningSettingsButton}
@@ -406,7 +393,6 @@ export function GoalsPage() {
               <GoalsList
                 actions={goalActions}
                 cascadeContext={cascadeContext}
-                density={density}
                 estimates={insights.estimates}
                 levelPotentialProgress={insights.levelPotentialProgressByGoalId}
                 metrics={overviewMetrics}

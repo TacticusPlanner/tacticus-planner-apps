@@ -22,10 +22,8 @@ export type {
   GoalStatusFilterValue,
 } from "./ui/status-filter-select"
 export { GoalFilters } from "./ui/goal-filters"
-export { GoalDensityToggle } from "./ui/goal-density-toggle"
 export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
-export { isGoalDensityValue, isGoalGroupValue } from "./model/types"
-export type { GoalDensityValue } from "./model/types"
+export { isGoalGroupValue } from "./model/types"
 export { goalRevisionConflictDetails } from "./model/goal-target-conflict"
 export {
   applyPositionMove,
