@@ -266,25 +266,31 @@ The detail route SHALL provide a project-context action that edits memberships f
 
 ### Requirement: Assembly blocks a selection whose goal-type slot is occupied
 
-A project holds at most one Active/Paused goal per `(entityType, entityId, goalType)`, and a save that would place two such goals in one project is rejected in full rather than in part. The assembly surface SHALL therefore identify a listed goal whose slot is already held by an Active/Paused member of the viewed project, SHALL prevent it from being selected, and SHALL state the reason. A save SHALL NOT be submitted in a state that would be rejected for this reason.
+A project permits distinct Active/Paused Rank end targets but at most one in-flight goal per non-Rank unit/type slot or exact Rank unit/normalized-target slot. A save that would violate a slot SHALL be rejected in full. The assembly surface SHALL identify a listed goal whose exact slot is already held, prevent it from being selected, and state the reason. It SHALL permit a different Rank target for the same unit.
 
 #### Scenario: Conflicting goal cannot be selected
 
-- **GIVEN** the viewed project contains an Active goal for a unit and goal type
-- **WHEN** the add-goals surface lists another Active goal for the same unit and goal type
-- **THEN** that goal cannot be selected and the reason is stated
+- **GIVEN** the project contains an Active Bellator Silver3 Rank goal
+- **WHEN** assembly lists another active Bellator Silver3 goal
+- **THEN** that exact-target goal cannot be selected, with the existing milestone named
 
 #### Scenario: A conflict arising after the check rejects the whole save
 
-- **GIVEN** the user has selected several goals and one of them becomes conflicting after the surface checked it
-- **WHEN** they save
-- **THEN** nothing is added, the conflict is explained, and the selection remains available to correct rather than being discarded
+- **GIVEN** several goals are selected and one exact slot becomes occupied after preview
+- **WHEN** the user saves
+- **THEN** nothing is added, the conflict is explained, and the selection stays available to correct
 
 #### Scenario: Historical goal in the project does not block selection
 
-- **GIVEN** the viewed project contains only a Completed or Archived goal for that unit and goal type
-- **WHEN** the add-goals surface lists another goal for the same unit and goal type
+- **GIVEN** the project has only Completed/Archived Bellator Silver3 goals
+- **WHEN** assembly lists an active Bellator Silver3 goal
 - **THEN** it can be selected and saved
+
+#### Scenario: Different target is selectable
+
+- **GIVEN** the project contains Bellator Silver3
+- **WHEN** assembly lists Bellator Gold1
+- **THEN** Gold1 can be selected and saved
 
 ### Requirement: Project goal rows offer removal alongside deletion
 
