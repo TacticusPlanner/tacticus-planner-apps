@@ -81,8 +81,7 @@ that does not contain the target unit SHALL NOT produce this reason.
 A prerequisite reason SHALL be suppressed when the plan already contains a
 non-archived goal that satisfies that prerequisite: an Unlock goal for the unit
 suppresses the missing-Unlock reason; an Ascension goal whose target reaches
-the required progression suppresses the missing-Ascension reason; a Level goal
-whose target reaches the required level suppresses the missing-Level reason.
+the required progression suppresses the missing-Ascension reason.
 
 A goal that declares a dependency on a covering goal SHALL instead report that
 its prerequisite is not yet reached, until that prerequisite is reached.
@@ -138,21 +137,31 @@ This is a shared presentation, not two variants.
 - **WHEN** it is rendered at a viewport below the mobile breakpoint and at one at or above it
 - **THEN** both show the blocked indicator, the same reason text, and the same remedy action
 
-### Requirement: A block caused solely by an unreached prerequisite presents as Restricted, not Blocked
+### Requirement: Routine leveling is not a restriction
 
-When every reason a goal is shown as blocked is a prerequisite-style reason — `PrerequisiteNotReached`, `MissingLevelPrerequisite`, `MissingAscensionPrerequisite`, or `MissingUnlockPrerequisite`, in any combination — the goal's indicator SHALL present with the softer "Restricted" label and treatment rather than "Blocked" — this reflects a goal that is waiting on ordinary plan sequencing, not one that is stuck. When any other reason also applies, whether alone or combined with one or more prerequisite-style reasons, the indicator SHALL present as "Blocked".
+A goal SHALL NOT show a Restricted or Blocked indicator solely because the character has not yet gained the levels intrinsic to a Rank or Ability target, and no missing-Level or Level-prerequisite reason SHALL exist. That level gap is shown as remaining progress on the goal (see `rank-level-progression`). Real independent blockers, including absent player data, missing Unlock, insufficient Ascension, and an unreached dependency, SHALL continue to appear under the existing blocker rules.
+
+#### Scenario: Only routine level progress remains
+
+- **GIVEN** Bellator's Rank target needs level 32 and Bellator is at level 31 with no other blocker
+- **WHEN** the goal row renders
+- **THEN** it shows remaining level/XP progress on the goal and no Restricted or Blocked indicator
+
+#### Scenario: Ascension blocker remains visible
+
+- **GIVEN** the same Rank target also exceeds Bellator's current rarity cap
+- **WHEN** the goal row renders
+- **THEN** the Ascension-related restriction still appears
+
+### Requirement: A block caused solely by a sequencing prerequisite presents as Restricted, not Blocked
+
+When every reason a goal is shown as blocked is a prerequisite-style reason — `PrerequisiteNotReached`, `MissingAscensionPrerequisite`, or `MissingUnlockPrerequisite`, in any combination — the goal's indicator SHALL present with the softer "Restricted" label and treatment rather than "Blocked" — this reflects a goal that is waiting on ordinary plan sequencing, not one that is stuck. When any other reason also applies, whether alone or combined with one or more prerequisite-style reasons, the indicator SHALL present as "Blocked".
 
 This is a presentation distinction only: both "Restricted" and "Blocked" are the same underlying blocked state for every other purpose (filtering, tab placement, blocker-reason text, remedy actions) defined elsewhere in this capability.
 
 #### Scenario: Prerequisite-only block reads Restricted
 
 - **GIVEN** a goal whose only reported reason is that its prerequisite goal has not yet reached its own target
-- **WHEN** the indicator renders
-- **THEN** it shows "Restricted", not "Blocked"
-
-#### Scenario: Missing-Level-prerequisite-only block reads Restricted
-
-- **GIVEN** a goal whose only reported reason is a missing-Level-prerequisite reason
 - **WHEN** the indicator renders
 - **THEN** it shows "Restricted", not "Blocked"
 

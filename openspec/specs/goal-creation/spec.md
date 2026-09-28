@@ -23,16 +23,12 @@ current validation state, rather than treating the earlier request as active.
 
 ### Requirement: Create-another success remains immediately usable
 
-The system SHALL retain the existing create-another flow: after a successful
-creation with "Create another" enabled, the sheet remains open with a reset
-form and an idle submission state so the user can create another goal.
+The system SHALL retain the existing create-another flow: after a successful creation with "Create another" enabled, the sheet remains open in an idle submission state for a new goal. It SHALL retain compatible project and goal-type context from the preceding creation while resetting entity-specific targets and start-paused state. The user SHALL be able to edit the retained choices before the next submission.
 
 #### Scenario: Create another after success
 
-- **WHEN** a user submits a valid goal with "Create another" enabled and the
-  creation succeeds
-- **THEN** the sheet stays open, the form is reset, and the submit action is
-  no longer shown as submitting
+- **WHEN** a user submits a valid goal with "Create another" enabled and the creation succeeds
+- **THEN** the sheet stays open, the project and compatible goal-type context remain available, unit-specific targets and start-paused reset, and the submit action is no longer shown as submitting
 
 ### Requirement: The Ability card has an independent target selector per ability track
 
@@ -95,64 +91,6 @@ ability cap SHALL be selectable and SHALL NOT be hidden or disabled.
 - **WHEN** a unit's passive ability is at level 20
 - **THEN** the passive target selector offers 20 (meaning "leave the passive track alone") but
   no level below 20
-
-### Requirement: An above-cap ability target auto-suggests Ascension and Level prerequisites
-
-When a chosen ability target exceeds what the unit's current progression permits, the
-create-goal sheet SHALL auto-suggest the same prerequisite goals it suggests for a
-too-high Rank target:
-
-- an Ascension prerequisite that raises the unit into the lowest rarity tier whose ability
-  cap covers the higher of the two chosen targets, unless an Ascension goal covering that
-  tier is already included; and
-- a Level prerequisite that raises the character to the character level implied by the
-  higher of the two chosen ability targets, unless a Level goal covering that level is
-  already included.
-
-Accepting a suggestion SHALL prepend the corresponding goal to the combined set with the
-correct dependency ordering. The Ability goal SHALL additionally **declare a dependency
-on** the Ascension goal whose suggestion its target drove, not merely be ordered after it;
-the declared dependency is what establishes that the ability target becomes reachable, and
-without it the target is refused as exceeding the unit's cap. This applies to Character
-goals; Machine-of-War Ability goals SHALL auto-suggest Ascension only (a MoW has no Level
-goal), and SHALL declare the same dependency.
-
-#### Scenario: Target above the current rarity cap
-
-- **GIVEN** an Epic unit whose ability cap is 35 and whose current character level is 30
-- **WHEN** the user sets an ability target of 42
-- **THEN** the sheet offers an Ascension suggestion into the Legendary tier and a Level
-  suggestion to level 42
-
-#### Scenario: The ability goal depends on the suggested Ascension
-
-- **GIVEN** an ability target above the unit's current ability cap
-- **WHEN** the suggested Ascension prerequisite is accepted and the combined set is submitted
-- **THEN** the Ability goal declares a dependency on that Ascension goal
-- **AND** the submission is accepted rather than refused for exceeding the unit's cap
-
-#### Scenario: Machine-of-War ability goal declares the same dependency
-
-- **GIVEN** a Machine-of-War Ability goal whose target exceeds its current rarity ability cap
-- **WHEN** the suggested Ascension prerequisite is accepted and the combined set is submitted
-- **THEN** the Ability goal declares a dependency on that Ascension goal
-
-#### Scenario: Ascension already included
-
-- **WHEN** the user has already enabled an Ascension goal that reaches the tier whose cap
-  covers the ability target
-- **THEN** no additional Ascension suggestion is shown for the ability target
-
-#### Scenario: Target within the current cap
-
-- **GIVEN** a Legendary unit whose ability cap is 50 and whose current character level is 50
-- **WHEN** the user sets an ability target of 45
-- **THEN** no Ascension or Level prerequisite is suggested on account of the ability target
-
-#### Scenario: Machine of War above-cap target
-
-- **WHEN** a Machine-of-War Ability goal's target exceeds its current rarity ability cap
-- **THEN** an Ascension prerequisite is suggested and no Level prerequisite is suggested
 
 ### Requirement: Ability track labels match the entity type
 
@@ -250,3 +188,94 @@ The creation sheet SHALL offer a control that creates the goal in the Paused sta
 - **GIVEN** the user created a goal with start-paused on and chose to create another
 - **WHEN** the form is presented again
 - **THEN** the start-paused control is off
+
+### Requirement: An above-cap ability target auto-suggests an Ascension prerequisite and shows its required level
+
+When a chosen ability target exceeds what the unit's current progression permits, the
+create-goal sheet SHALL auto-suggest the same Ascension prerequisite it suggests for a
+too-high Rank target: an Ascension prerequisite that raises the unit into the lowest rarity
+tier whose ability cap covers the higher of the two chosen targets, unless an Ascension goal
+covering that tier is already included. It SHALL NOT suggest a Level prerequisite. Instead, for a
+Character, when the level implied by the higher of the two chosen ability targets exceeds the
+character's current level, the Ability card SHALL show that required level as ordinary progress
+on the Ability goal (see `rank-level-progression`'s "A Rank or Ability goal shows the level it
+needs").
+
+Accepting the Ascension suggestion SHALL prepend the Ascension goal to the combined set with the
+correct dependency ordering. The Ability goal SHALL additionally **declare a dependency
+on** the Ascension goal whose suggestion its target drove, not merely be ordered after it;
+the declared dependency is what establishes that the ability target becomes reachable, and
+without it the target is refused as exceeding the unit's cap. This applies to Character
+goals and to Machine-of-War Ability goals alike; a Machine of War has no character level, so
+its Ability goal shows no required-level note, and both declare the same dependency.
+
+#### Scenario: Target above the current rarity cap
+
+- **GIVEN** an Epic unit whose ability cap is 35 and whose current character level is 30
+- **WHEN** the user sets an ability target of 42
+- **THEN** the sheet offers an Ascension suggestion into the Legendary tier and no Level suggestion
+
+#### Scenario: The Ability card shows the required level
+
+- **GIVEN** a Character whose current level is 30 and whose chosen ability target implies level 42
+- **WHEN** the user sets that ability target
+- **THEN** the Ability card shows the required level 42 and the current level as a `create-goal-level-requirement` note on the Ability goal, and no Level prerequisite is suggested or added
+
+#### Scenario: The ability goal depends on the suggested Ascension
+
+- **GIVEN** an ability target above the unit's current ability cap
+- **WHEN** the suggested Ascension prerequisite is accepted and the combined set is submitted
+- **THEN** the Ability goal declares a dependency on that Ascension goal
+- **AND** the submission is accepted rather than refused for exceeding the unit's cap
+
+#### Scenario: Machine-of-War ability goal declares the same dependency
+
+- **GIVEN** a Machine-of-War Ability goal whose target exceeds its current rarity ability cap
+- **WHEN** the suggested Ascension prerequisite is accepted and the combined set is submitted
+- **THEN** the Ability goal declares a dependency on that Ascension goal
+
+#### Scenario: Ascension already included
+
+- **WHEN** the user has already enabled an Ascension goal that reaches the tier whose cap
+  covers the ability target
+- **THEN** no additional Ascension suggestion is shown for the ability target
+
+#### Scenario: Target within the current cap
+
+- **GIVEN** a Legendary unit whose ability cap is 50 and whose current character level is 50
+- **WHEN** the user sets an ability target of 45
+- **THEN** no Ascension prerequisite is suggested on account of the ability target and no required-level note is shown
+
+#### Scenario: Machine of War above-cap target
+
+- **WHEN** a Machine-of-War Ability goal's target exceeds its current rarity ability cap
+- **THEN** an Ascension prerequisite is suggested and no Level prerequisite is suggested
+
+### Requirement: Consecutive creation retains compatible context
+
+During the current app session in one browser tab, the creation sheet SHALL offer the last successfully chosen project memberships and goal-type choices on a subsequent creation. These choices SHALL remain editable. The sheet SHALL NOT carry a previous unit's target levels, rank ranges, material quantities, or start-paused choice into a new goal. An explicit launch prefill, especially a viewed project's membership, SHALL take precedence over remembered values. A remembered goal type that is unavailable for the newly selected unit SHALL be left unselected.
+
+#### Scenario: Reopen for a related goal
+
+- **WHEN** the user completes a goal and reopens creation in the same app session without an explicit prefill
+- **THEN** the last chosen project memberships are offered and compatible goal types can be reselected without carrying the old unit's target values
+
+#### Scenario: Project-scoped launch wins
+
+- **WHEN** the user launches creation from Project Detail after previously choosing different projects
+- **THEN** the viewed project is preselected instead of remembered memberships
+
+#### Scenario: Incompatible type is dropped
+
+- **WHEN** a remembered Rank goal type is applied after the user chooses a Machine of War
+- **THEN** Rank is not selected and no invalid target configuration is carried forward
+
+#### Scenario: Remembered project no longer available
+
+- **WHEN** a remembered project has since been archived or removed and creation is reopened without an explicit prefill
+- **THEN** that project is not offered or submitted, and the user's Default project is preselected instead
+
+#### Scenario: Session boundary
+
+- **WHEN** the application is reloaded or a different browser tab starts a new session
+- **THEN** remembered choices are cleared and ordinary default/prefill behavior applies

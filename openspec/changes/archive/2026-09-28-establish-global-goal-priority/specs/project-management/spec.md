@@ -93,41 +93,6 @@ The project-goal list SHALL be a filtered projection of the canonical global ord
 - **WHEN** planning is calculated
 - **THEN** that goal receives the inventory first regardless of unit or project
 
-### Requirement: The detail route assembles membership in bulk
-
-The detail route SHALL provide an action that adds existing goals to the viewed project without visiting each goal individually. The surface SHALL list profile goals, support search, show current membership, and apply additions in one save. Existing members SHALL remain members. Membership changes SHALL never alter global priority.
-
-#### Scenario: Several goals join a project in one save
-
-- **WHEN** the user selects three existing goals and saves
-- **THEN** all three belong to the project and no other membership is lost
-
-#### Scenario: Existing membership is visible while assembling
-
-- **WHEN** the add-goals surface renders
-- **THEN** each goal shows whether it already belongs to the viewed project
-
-#### Scenario: Search narrows the assembly list
-
-- **WHEN** the user enters search text
-- **THEN** the list narrows to matching goals
-
-#### Scenario: Concurrent membership changes are not discarded
-
-- **GIVEN** membership changed elsewhere after the surface opened
-- **WHEN** the user saves a selection
-- **THEN** unrelated additions survive or a reviewable conflict prevents overwrite
-
-#### Scenario: Assembly does not remove members
-
-- **WHEN** the user saves an add-only selection
-- **THEN** no existing member is removed
-
-#### Scenario: Added goals do not reorder existing units
-
-- **WHEN** an existing goal is added to the project
-- **THEN** all goals retain their global priority and the new member appears at its already-established position
-
 ### Requirement: Goals are reordered individually via inline drag
 
 On a viewport at or above 768px, every in-flight goal row on the project detail route SHALL show a drag handle. Dropping a row at another position of the displayed project list SHALL move that goal to the global position of the project goal it displaced, and hidden goals of other projects SHALL keep their relative order; the project list SHALL show the dragged goal at its new place. Each completed drag SHALL commit immediately with no separate save step or confirmation dialog. A goal MAY be dragged ahead of a goal it `DependsOn` that has not yet been reached; that goal's blocked/restricted state is unaffected by its position. The route SHALL state that the move also changes the global plan and SHALL link to it.

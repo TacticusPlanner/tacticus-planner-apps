@@ -23,7 +23,7 @@ One canonical goal MAY belong to one or more projects. Edits to that goal SHALL 
 
 ### Requirement: Selected memberships render as project chips
 
-Creation and editing SHALL show selected memberships as removable chips containing project color/name and distinct Current plan, Default, and Archived markers where applicable.
+Creation and editing SHALL show selected memberships as removable chips containing project color/name and distinct Default and Archived markers where applicable.
 
 #### Scenario: Memberships are visible without opening picker
 
@@ -302,21 +302,49 @@ The Goals Overview SHALL offer filtering the goal list by project membership, in
 - **WHEN** the user opens a project-aware Dailies or Insights view
 - **THEN** that view's project selection is unchanged by the Overview filter
 
-### Requirement: Project membership does not change a goal's activation
+### Requirement: Membership picker can explicitly create and select a project
 
-A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, relocating it to the Default project, and making a different project the Current plan SHALL all leave the goal's status unchanged. Pausing and resuming a goal SHALL remain available per goal and SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
+In both new-goal and goal-edit forms, when a user searches for a project name with no existing match, the membership picker SHALL offer an explicit Create action using that name. Creation SHALL respect existing project naming validation. On success the returned project SHALL immediately become selected membership without submitting or closing the goal form. Merely typing or leaving the search field SHALL NOT create a project.
+
+#### Scenario: Create from new goal
+
+- **WHEN** a user enters a valid unmatched name and chooses Create in the new-goal project picker
+- **THEN** one project is created and selected while the rest of the goal draft remains intact
+
+#### Scenario: Create from goal edit
+
+- **WHEN** a user chooses Create in the goal-edit membership picker
+- **THEN** the returned project is selected without saving the goal edit until the user explicitly submits it
+
+#### Scenario: Existing or invalid name
+
+- **WHEN** the searched name matches an existing project or violates project naming rules
+- **THEN** the picker does not offer a create action that would produce a duplicate or invalid project
+
+#### Scenario: Creation fails
+
+- **WHEN** the project creation request fails
+- **THEN** the picker shows an error, retains the typed name and unsaved goal draft, and does not add a phantom membership
+
+#### Scenario: Created project is an ordinary custom project
+
+- **WHEN** a user creates a project from the picker
+- **THEN** it is a custom project (not the Default project) with no special standing, and neither its creation nor its selection changes any goal's status or position in the account-wide order
+
+#### Scenario: Search text alone has no side effect
+
+- **WHEN** a user types an unmatched name then closes the picker without choosing Create
+- **THEN** no project is created and the goal's membership remains unchanged
+
+### Requirement: Project membership changes never alter a goal's status
+
+A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, and relocating it to the Default project SHALL all leave the goal's status unchanged. Pausing and resuming a goal SHALL remain available per goal and SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
 
 #### Scenario: Editing membership leaves status alone
 
 - **GIVEN** a Paused goal belonging to project A
 - **WHEN** the user adds it to project B, or removes it from A, from any membership surface
 - **THEN** the goal is still Paused afterwards
-
-#### Scenario: Changing Current plan leaves statuses alone
-
-- **GIVEN** project B contains Active and Paused goals and project A is Current plan
-- **WHEN** the user makes project B the Current plan
-- **THEN** every goal in project B keeps the status it had
 
 #### Scenario: Membership editing states what it does and does not do
 
@@ -328,15 +356,15 @@ A project organizes goals; it does not activate or deactivate them. Adding a goa
 - **WHEN** any surface that adds or removes project membership renders
 - **THEN** it offers no control described as activating, deactivating, pausing, or resuming the goal as a consequence of membership
 
-### Requirement: A newly created goal's status does not depend on which projects it is filed into
+### Requirement: A goal's initial status is independent of its selected projects
 
-Creating a goal SHALL produce a goal with the same status whichever projects are selected for it, including when none of them is the Current plan and when the goal is filed into the Default project by default. The creation surface SHALL NOT state or imply that the chosen projects determine whether the new goal starts active.
+Creating a goal SHALL produce a goal with the same status whichever projects are selected for it, including when the goal is filed into the Default project by default. The creation surface SHALL NOT state or imply that the chosen projects determine whether the new goal starts active.
 
-#### Scenario: Creating into a non-current project
+#### Scenario: Creating into a non-default project
 
-- **GIVEN** project A is Current plan
+- **GIVEN** a Default project and a custom project B
 - **WHEN** the user creates a goal whose only selected project is project B
-- **THEN** the created goal has the same status it would have had if project A had been selected
+- **THEN** the created goal has the same status it would have had if the Default project had been selected
 
 #### Scenario: The membership field makes no promise about status
 

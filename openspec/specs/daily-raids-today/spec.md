@@ -40,54 +40,21 @@ When a goal's only scheduled resource is that same unit's shards, Today SHALL co
 - **WHEN** Today renders that goal's header
 - **THEN** it shows that goal kind's icon paired with its existing text label
 
-### Requirement: Today has its own project selector
-
-Today SHALL provide a project selector independent of any other page's project selection. Selecting a project SHALL recompute the schedule for that project alone. The selector SHALL default to the player's Active project (the project marked as their active plan) when one exists, falling back to the player's Default project (a project every account always has exactly one of, and which cannot be deleted) when no project is currently marked Active.
-
-#### Scenario: Default selection is the Active project
-
-- **GIVEN** the player has a project marked as their Active project
-- **WHEN** Today loads with no prior selection made this session
-- **THEN** Today's project selector defaults to that Active project and shows its schedule without requiring the user to pick one
-
-#### Scenario: Falls back to the Default project when there is no Active project
-
-- **GIVEN** no project is currently marked as the player's Active project
-- **WHEN** Today loads with no prior selection made this session
-- **THEN** Today's project selector defaults to the player's Default project and shows its schedule without requiring the user to pick one
-
-#### Scenario: Switching the selected project
-
-- **WHEN** the user selects a different project in Today's project selector
-- **THEN** the schedule, Bonus Raids section, and empty states are all recomputed for the newly-selected project only
-
-#### Scenario: Project list fails to load
-
-- **GIVEN** the player's project-list request fails
-- **WHEN** Today loads
-- **THEN** Today shows the load error with an action that retries the failed project-list request, and does not present the failure as an empty project list
-
-#### Scenario: Project list loads without projects
-
-- **GIVEN** the player's project-list request succeeds with no projects
-- **WHEN** Today loads
-- **THEN** Today shows an empty state prompting the user to create or select a project, and no schedule or Bonus Raids section is shown
-
 ### Requirement: Today's schedule scope
 
-Today SHALL compute its schedule from only the selected project's goals whose status is `Active`, in their configured priority order. Goals with status `Paused`, `Completed`, or `Archived` SHALL be excluded.
+Today SHALL compute its schedule from all account goals whose status is `Active` (or, when a project is selected, that project's Active goals), each once in canonical global priority order. Paused, Completed, and Archived goals SHALL be excluded.
 
 #### Scenario: Only Active goals contribute
 
-- **GIVEN** a project with a mix of Active, Paused, Completed, and Archived goals, where only the Active goals have unmet farmable upgrade needs
+- **GIVEN** Active goals in two projects and Paused/terminal goals alongside them
 - **WHEN** Today loads
-- **THEN** the schedule reflects only the Active goals' needs
+- **THEN** it schedules both Active goals in global order and excludes the others
 
 #### Scenario: Paused goals do not contribute
 
-- **GIVEN** a project with a Paused goal that has an unmet farmable upgrade need
+- **GIVEN** a Paused goal with unmet farmable need
 - **WHEN** Today loads
-- **THEN** that Paused goal's need is excluded from the schedule, inventory allocation, and Bonus Raids entirely, as if the goal did not exist
+- **THEN** its need is absent from schedule, inventory allocation, and Bonus Raids
 
 ### Requirement: Today's raid schedule
 
@@ -609,3 +576,36 @@ Assumptions this requirement depends on:
 - **GIVEN** a user starts Today's guided tour on either a mobile or a desktop viewport
 - **WHEN** the tour reaches the campaign-event status line
 - **THEN** it highlights that block with its own step explaining what the detected campaign event governs
+
+### Requirement: Today's project selector defaults to all goals
+
+Today SHALL provide a project selector, shared with Raids Plan, that defaults to all goals. With no project selected Today SHALL use the account-wide Active-goal sequence and SHALL NOT derive its scope from Current plan or Default. Selecting a project SHALL narrow the run to that project's Active goals, still in canonical global priority order. A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
+
+#### Scenario: Default selection is all goals
+
+- **GIVEN** Active goals in several projects
+- **WHEN** Today loads with no prior selection made this session
+- **THEN** the selector shows all goals and Today shows the global schedule, including every project's Active goals
+
+#### Scenario: Selecting a project narrows the schedule
+
+- **WHEN** the user selects a project in Today's project selector
+- **THEN** the schedule, Bonus Raids section and empty states are recomputed for that project's Active goals only, in global order
+
+#### Scenario: Returning to all goals
+
+- **GIVEN** a project is selected
+- **WHEN** the user selects all goals
+- **THEN** Today shows the account-wide schedule again
+
+#### Scenario: Project list fails to load
+
+- **GIVEN** project-list loading fails while global goals load successfully
+- **WHEN** Today loads
+- **THEN** Today renders the global schedule and does not misreport project-list failure as a schedule failure
+
+#### Scenario: Project list loads without projects
+
+- **GIVEN** no projects are available but global goals load successfully
+- **WHEN** Today loads
+- **THEN** Today derives its state from the global Active goals, not from project count
