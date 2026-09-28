@@ -2,7 +2,6 @@ import {
   abilityCapByRarity,
   lastProgression,
   lastRank,
-  maxCharacterLevel,
   progressionIndex,
   progressionRarity,
   rankIndex,
@@ -26,11 +25,25 @@ export const abilityLevelsByRarity: readonly {
   level: abilityCapByRarity[rarity],
 }))
 
-/** The highest character level a Level goal can ever target — the Mythic-tier level cap, owned by
- * `@workspace/game-domain` (`maxCharacterLevel` / `levelCapByRarity`). Re-exported here under its
- * long-standing name for this feature's callers. Character-only; MoWs also carry a synced `xpLevel`
- * but Level goals aren't offered for them yet. */
-export const MAX_CHARACTER_LEVEL = maxCharacterLevel
+// Rank is omitted entirely for a Mow (plan §16 phase 6) — Mows have no rank ladder, so offering the
+// toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs` never
+// handle for that entity. Unlock, by contrast, applies to both — a Mow's resource cost just isn't
+// estimated yet (see `unlockResourceNeed`'s `isMow` short-circuit).
+const CHARACTER_GOAL_KINDS: GoalKind[] = [
+  "Unlock",
+  "Ascension",
+  "Ability",
+  "Upgrade",
+  "Rank",
+]
+const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
+
+/** The goal kinds the creation form offers for a unit of the given kind. */
+export function goalKindsForEntity(
+  entityType: "Character" | "Mow"
+): GoalKind[] {
+  return entityType === "Mow" ? MOW_GOAL_KINDS : CHARACTER_GOAL_KINDS
+}
 
 /** True once a unit has climbed its entire rank ladder — a Rank goal (and, for a Character, an
  * Upgrade goal's rank-range picker) has nowhere left to target. */
@@ -62,19 +75,12 @@ export function isAtMaxAbility(
   return currentActiveAbility >= cap && currentPassiveAbility >= cap
 }
 
-/** True once a character has reached `MAX_CHARACTER_LEVEL` — a Level goal has nowhere left to
- * target. Undefined `xpLevel` (no synced/prefill data yet) reads as not-maxed. */
-export function isAtMaxLevel(currentLevel: number | undefined): boolean {
-  return !!currentLevel && currentLevel >= MAX_CHARACTER_LEVEL
-}
-
 export type GoalValidationIssue =
   | "alreadyUnlocked"
   | "rankAlreadyReached"
   | "progressionAlreadyReached"
   | "abilityRange"
   | "abilityAlreadyReached"
-  | "levelAlreadyReached"
   | "upgradeTargetsRequired"
 
 export function getGoalValidationIssue(params: {
@@ -91,8 +97,6 @@ export function getGoalValidationIssue(params: {
   abilityPassiveEnd: number
   currentActiveAbility: number
   currentPassiveAbility: number
-  currentLevel: number | undefined
-  levelEnd: number
   upgradeFieldsValid: boolean
 }): GoalValidationIssue | null {
   if (!params.hasEntityId) return null
@@ -127,13 +131,6 @@ export function getGoalValidationIssue(params: {
     ) {
       return "abilityAlreadyReached"
     }
-  }
-  if (
-    params.enabledTypes.has("Level") &&
-    params.currentLevel !== undefined &&
-    params.levelEnd <= params.currentLevel
-  ) {
-    return "levelAlreadyReached"
   }
   // An Upgrade goal is nothing without a target. This is the only gate on `upgradeFieldsValid` the
   // picker can actually leave unsatisfied (it prevents duplicate ids and quantities below 1), and

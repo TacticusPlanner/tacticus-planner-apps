@@ -167,14 +167,28 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 
 const listProjects = vi.fn()
 const listProjectGoals = vi.fn()
-const activateProject = vi.fn()
+// Fixtures give each member a `priority`: its position in the account-wide order, which the API
+// returns as `goal.globalPriority` (a project has no priority of its own).
+const withGlobalPriority = (response: {
+  goals: { goal: Record<string, unknown>; priority?: number }[]
+  orderRevision?: number
+}) => ({
+  orderRevision: 1,
+  ...response,
+  goals: response.goals.map((entry) => ({
+    goal: {
+      ...entry.goal,
+      globalPriority:
+        entry.priority ?? (entry.goal.globalPriority as number | null) ?? null,
+    },
+  })),
+})
 const updateProjectGoals = vi.fn()
-const updateProjectGoalOrder = vi.fn()
+const moveProjectGoal = vi.fn()
 const updateProjectGoalsStatus = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
-  isActivePlan: boolean
   isDefault: boolean
   [key: string]: unknown
 }
@@ -185,10 +199,8 @@ vi.mock("@/entities/project", async (importOriginal) => {
     ...actual,
     listProjects: (...args: unknown[]) => listProjects(...args),
     listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
-    activateProject: (...args: unknown[]) => activateProject(...args),
     updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
-    updateProjectGoalOrder: (...args: unknown[]) =>
-      updateProjectGoalOrder(...args),
+    moveProjectGoal: (...args: unknown[]) => moveProjectGoal(...args),
     updateProjectGoalsStatus: (...args: unknown[]) =>
       updateProjectGoalsStatus(...args),
     projectQueries: {
@@ -199,7 +211,7 @@ vi.mock("@/entities/project", async (importOriginal) => {
       }),
       goals: (projectId: string) => ({
         queryKey: ["projects", projectId, "goals"],
-        queryFn: () => listProjectGoals(projectId),
+        queryFn: () => listProjectGoals(projectId).then(withGlobalPriority),
       }),
     },
     // `useProjects` lives inside the mocked `@/entities/project` package and imports
@@ -216,7 +228,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
       const projects =
         (query.data as { projects: MockProjectSummary[] } | undefined)
           ?.projects ?? []
-      const activeProject = projects.find((project) => project.isActivePlan)
       const defaultProject = projects.find((project) => project.isDefault)
       return {
         fetchState: query.isError
@@ -225,7 +236,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
             ? { status: "success" as const, projects }
             : { status: "idle" as const },
         projects,
-        activeProjectId: activeProject?.projectId,
         defaultProjectId: defaultProject?.projectId,
         loading: isAuthenticated && query.isPending,
         retry: () => {
@@ -243,10 +253,10 @@ import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/creat
 
 function renderPage(projectId = "proj-a") {
   return render(
-    <MemoryRouter initialEntries={[`/goals/projects/${projectId}`]}>
+    <MemoryRouter initialEntries={[`/plan/projects/${projectId}`]}>
       <Routes>
         <Route
-          path="/goals/projects/:projectId"
+          path="/plan/projects/:projectId"
           element={
             <CreateGoalLauncherProvider onLaunch={onLaunch}>
               <ProjectDetailPage />
@@ -265,7 +275,6 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
     description: null,
     color: null,
     status: "Active",
-    isActivePlan: true,
     isDefault: true,
     revision: 0,
     createdAt: "2026-01-01T00:00:00Z",
@@ -292,9 +301,8 @@ describe("ProjectDetailPage", () => {
   beforeEach(() => {
     listProjects.mockReset()
     listProjectGoals.mockReset()
-    activateProject.mockReset()
     updateProjectGoals.mockReset()
-    updateProjectGoalOrder.mockReset()
+    moveProjectGoal.mockReset()
     updateProjectGoalsStatus.mockReset()
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     listAccountGoals.mockReset().mockResolvedValue({ goals: [] })
@@ -322,7 +330,9 @@ describe("ProjectDetailPage", () => {
     renderPage("proj-a")
 
     expect(await screen.findByText("Project A")).toBeInTheDocument()
-    expect(screen.getByText("goals.project.currentPlan")).toBeInTheDocument()
+    expect(screen.getByText("goals.project.defaultBadge")).toBeInTheDocument()
+    expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
+    expect(screen.queryByText("goals.project.makeCurrent")).toBeNull()
     expect(
       screen.getByRole("button", { name: "goals.project.moreActions" })
     ).toBeInTheDocument()
@@ -442,7 +452,6 @@ describe("ProjectDetailPage", () => {
           projectId: "proj-archived",
           name: "Old Plan",
           status: "Archived",
-          isActivePlan: false,
           isDefault: false,
         }),
       ],
@@ -477,7 +486,6 @@ describe("ProjectDetailPage", () => {
     const projectB = project({
       projectId: "proj-b",
       name: "Project B",
-      isActivePlan: false,
       isDefault: false,
     })
     listProjects.mockResolvedValue({ projects: [projectA, projectB] })
@@ -504,7 +512,6 @@ describe("ProjectDetailPage", () => {
   it("acting on the current project's own row does not change the route", async () => {
     listProjects.mockResolvedValue({ projects: [project()] })
     listProjectGoals.mockResolvedValue({ goals: [] })
-    activateProject.mockResolvedValue({})
     const user = userEvent.setup()
     renderPage("proj-a")
 
@@ -726,7 +733,6 @@ describe("ProjectDetailPage", () => {
         project({
           projectId: "proj-b",
           name: "Project B",
-          isActivePlan: false,
           isDefault: false,
         })
       const setup = async () => {
@@ -812,7 +818,6 @@ describe("ProjectDetailPage", () => {
         project({
           projectId: "proj-b",
           name: "Project B",
-          isActivePlan: false,
           isDefault: false,
         }),
       ],
@@ -1087,7 +1092,6 @@ describe("ProjectDetailPage", () => {
         project({
           projectId: "proj-b",
           name: "Project B",
-          isActivePlan: false,
           isDefault: false,
         }),
       ],
@@ -1178,11 +1182,50 @@ describe("ProjectDetailPage", () => {
     await selectGroup(user, "goals.filters.groupNone")
     await selectGroup(user, "goals.filters.groupByType")
 
-    expect(updateProjectGoalOrder).not.toHaveBeenCalled()
+    expect(moveProjectGoal).not.toHaveBeenCalled()
     expect(updateProjectGoals).not.toHaveBeenCalled()
   })
 
-  it("drags a goal to a new position and submits the project's full in-flight order", async () => {
+  it("shows account-wide positions with gaps and explains them in the order note", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [
+        { goal: goal({ goalId: "goal-a", globalPriority: 1 }) },
+        {
+          goal: goal({
+            goalId: "goal-c",
+            entityId: "hero2",
+            globalPriority: 3,
+          }),
+        },
+        {
+          goal: goal({
+            goalId: "goal-e",
+            entityId: "hero2",
+            globalPriority: 5,
+          }),
+        },
+      ],
+    })
+    renderPage("proj-a")
+
+    await screen.findByTestId("goals-list-table")
+    expect(
+      screen.getAllByTestId("goal-row-priority").map((n) => n.textContent)
+    ).toEqual([
+      "goals.columns.priority 1",
+      "goals.columns.priority 3",
+      "goals.columns.priority 5",
+    ])
+    const note = screen.getByTestId("project-detail-order-note")
+    expect(note).toHaveTextContent("goals.order.projectNote")
+    expect(within(note).getByRole("link")).toHaveAttribute(
+      "href",
+      "/plan/goals"
+    )
+  })
+
+  it("drags a goal to a new position and moves it within the project's projection", async () => {
     listProjectGoals.mockResolvedValue({
       goals: [
         { goal: goal({ goalId: "goal-late", entityId: "hero1" }), priority: 2 },
@@ -1193,7 +1236,7 @@ describe("ProjectDetailPage", () => {
       ],
     })
     listProjects.mockResolvedValue({ projects: [project()] })
-    updateProjectGoalOrder.mockResolvedValue({ goals: [] })
+    moveProjectGoal.mockResolvedValue({ revision: 2, goalIds: [] })
     renderPage("proj-a")
 
     await screen.findAllByTestId("goals-list-table")

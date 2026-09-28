@@ -10,8 +10,7 @@ export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).
 export type GoalEntityType = "Character" | "Mow"
-export type GoalKind =
-  "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade" | "Level"
+export type GoalKind = "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
 export type GoalStatus = "Active" | "Paused" | "Completed" | "Archived"
@@ -45,13 +44,6 @@ export type AbilityTarget = {
   passiveEnd: number
 }
 
-/** Target character level (`GoalEntityType` `"Character"` only — see `MAX_CHARACTER_LEVEL`).
- * Uncosted, like Ability — "complete" is simply the player's synced `xpLevel` reaching `end`. */
-export type LevelTarget = {
-  start: number
-  end: number
-}
-
 // The server's growable acquisition-source allow-list — kept as `string` rather than a union so
 // adding a value there (e.g. a future "Incursion", tacticus-planner-apps#106) needs no client type
 // change. `ids` holds campaign battle ids for "Campaign", shop-offer ids (`<shopId>:<rewardType>`)
@@ -83,7 +75,6 @@ export type GoalConfig = {
   // `acquisitionSources`.
   farmingLocationIds: string[] | null
   upgrade: UpgradeTarget | null
-  level: LevelTarget | null
 }
 
 export type GoalSnapshot = {
@@ -109,7 +100,6 @@ export type GoalTargetSnapshot = {
   rankEndPointFive: boolean | null
   rankEndAppliedUpgrades: number | null
   progressionEnd: string | null
-  levelEnd: number | null
   activeAbilityEnd: number | null
   passiveAbilityEnd: number | null
   upgradeTargets: UpgradeMaterialTarget[] | null
@@ -134,6 +124,33 @@ export type GoalSummary = {
   dependsOn: string[]
   createdAt: string
   updatedAt: string
+  /** Position (1 = first) in the account-wide order of in-flight goals; null for Completed/Archived. */
+  globalPriority: number | null
+}
+
+/** `GET /me/goals`: in-flight goals first in global order, then the rest. `orderRevision` is the token
+ * the reorder operations echo back. */
+export type GoalListResponse = {
+  goals: GoalSummary[]
+  orderRevision: number
+}
+
+/** The outcome of a reorder/move: the new revision and the canonical in-flight order. */
+export type GoalOrderResponse = {
+  revision: number
+  goalIds: string[]
+}
+
+/** The 409 body of a rejected reorder/move; `revision`/`goalIds` are the order as it now stands. */
+export type GoalOrderConflictDto = {
+  issueCode:
+    | "goalOrderStale"
+    | "goalOrderSetMismatch"
+    | "goalOrderDuplicate"
+    | "goalOrderSameGoal"
+  message: string
+  revision: number
+  goalIds: string[]
 }
 
 export type GoalDetail = GoalSummary & {
@@ -157,7 +174,6 @@ export type CreateGoalConfigRequest = {
   acquisitionSources?: AcquisitionSource[] | null
   farmingLocationIds?: string[] | null
   upgrade?: UpgradeTarget | null
-  level?: LevelTarget | null
 }
 
 /** One project membership for a newly created goal. Unit placement is assigned automatically. */
@@ -184,7 +200,6 @@ export type CreateGoalRequest = {
 export type GoalTargetEdit = {
   rank?: { end: number; endPointFive: boolean; endAppliedUpgrades: number }
   progression?: { end: string }
-  level?: { end: number }
   ability?: { activeEnd: number; passiveEnd: number }
   upgrade?: UpgradeTarget
 }

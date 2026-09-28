@@ -1,10 +1,50 @@
 import { useMemo } from "react"
-import { useQueries } from "@tanstack/react-query"
+import { useQueries, type UseQueryResult } from "@tanstack/react-query"
 
-import type { GoalKind } from "@/entities/goal"
+import {
+  goalQueries,
+  goalRankTargetKey,
+  type GoalDetail,
+  type GoalKind,
+} from "@/entities/goal"
 import { projectQueries, type ProjectSummary } from "@/entities/project"
 import type { ProjectMembershipConflict } from "./project-membership"
 
+type ProjectGoalEntry = {
+  goal: {
+    goalId: string
+    entityType: string
+    entityId: string
+    goalType: string
+    status: string
+  }
+}
+
+const isInFlight = (status: string) =>
+  status === "Active" || status === "Paused"
+
+// A module-level `combine` keeps the result referentially stable until a query's state changes,
+// so the memos below don't rebuild on every render.
+const combineRankKeys = (results: UseQueryResult<GoalDetail>[]) => {
+  const rankKeyByGoalId = new Map<string, string>()
+  for (const query of results) {
+    const key = query.data ? goalRankTargetKey(query.data) : null
+    if (query.data && key) rankKeyByGoalId.set(query.data.goalId, key)
+  }
+  return {
+    rankKeyByGoalId,
+    pending: results.some((query) => query.isPending),
+  }
+}
+
+/**
+ * Project-scoped slot conflicts for a goal about to be created or edited. Non-Rank goal types conflict
+ * per `(unit, goalType)`; a Rank goal conflicts only with an in-flight Rank goal for the same unit that
+ * has the *same normalized end target* (`rankTargetKey`) — distinct Rank targets coexist. A project's
+ * goal list only carries summaries, so the existing Rank goals' targets are read from their details
+ * (cached across the Goals page); `loading` covers both fetches. The server stays authoritative when a
+ * conflict appears after this check.
+ */
 export function useProjectGoalConflicts({
   projects,
   selectedProjectIds,
@@ -12,6 +52,7 @@ export function useProjectGoalConflicts({
   entityId,
   goalTypes,
   excludeGoalId,
+  rankTargetKey,
   enabled = true,
 }: {
   projects: ProjectSummary[]
@@ -20,35 +61,92 @@ export function useProjectGoalConflicts({
   entityId: string | undefined
   goalTypes: GoalKind[]
   excludeGoalId?: string
+  /** The normalized end target of the Rank goal being placed; null/undefined when there is none. */
+  rankTargetKey?: string | null
   enabled?: boolean
 }) {
   const selected = projects.filter((project) =>
     selectedProjectIds.includes(project.projectId)
   )
+  const active = Boolean(enabled && entityId && goalTypes.length > 0)
   const queries = useQueries({
     queries: selected.map((project) => ({
       ...projectQueries.goals(project.projectId),
-      enabled: Boolean(enabled && entityId && goalTypes.length > 0),
+      enabled: active,
     })),
+  })
+
+  const projectGoals = queries.map((query) => query.data?.goals ?? [])
+  // A stable dependency for "some project's goal list changed" - the number of selected projects varies,
+  // so the lists themselves can't be spread into a dependency array.
+  const projectGoalsVersion = queries
+    .map((query) => query.dataUpdatedAt)
+    .join(",")
+  const rankGoalIds = useMemo(
+    () =>
+      rankTargetKey && entityId && goalTypes.includes("Rank")
+        ? [
+            ...new Set(
+              queries.flatMap((query) =>
+                (query.data?.goals ?? [])
+                  .filter(
+                    (entry) =>
+                      entry.goal.entityType === entityType &&
+                      entry.goal.entityId === entityId &&
+                      entry.goal.goalType === "Rank" &&
+                      entry.goal.goalId !== excludeGoalId &&
+                      isInFlight(entry.goal.status)
+                  )
+                  .map((entry) => entry.goal.goalId)
+              )
+            ),
+          ]
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      rankTargetKey,
+      entityId,
+      entityType,
+      excludeGoalId,
+      goalTypes,
+      projectGoalsVersion,
+    ]
+  )
+  const { rankKeyByGoalId, pending: rankKeysPending } = useQueries({
+    queries: rankGoalIds.map((goalId) => ({
+      ...goalQueries.detail(goalId),
+      enabled: active,
+    })),
+    combine: combineRankKeys,
   })
 
   const conflicts = useMemo<ProjectMembershipConflict[]>(() => {
     if (!entityId || goalTypes.length === 0) return []
     return findProjectGoalConflicts({
       selected,
-      projectGoals: selected.map(
-        (_project, index) => queries[index]?.data?.goals ?? []
-      ),
+      projectGoals,
       entityType,
       entityId,
       goalTypes,
       excludeGoalId,
+      rankTargetKey,
+      rankKeyByGoalId,
     })
-  }, [entityId, entityType, excludeGoalId, goalTypes, queries, selected])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    entityId,
+    entityType,
+    excludeGoalId,
+    goalTypes,
+    rankTargetKey,
+    rankKeyByGoalId,
+    selected,
+    projectGoalsVersion,
+  ])
 
   return {
     conflicts,
-    loading: queries.some((query) => query.isPending),
+    loading: queries.some((query) => query.isPending) || rankKeysPending,
   }
 }
 
@@ -59,23 +157,20 @@ export function findProjectGoalConflicts({
   entityId,
   goalTypes,
   excludeGoalId,
+  rankTargetKey,
+  rankKeyByGoalId,
 }: {
   selected: ProjectSummary[]
-  projectGoals: Array<
-    Array<{
-      goal: {
-        goalId: string
-        entityType: string
-        entityId: string
-        goalType: string
-        status: string
-      }
-    }>
-  >
+  projectGoals: ProjectGoalEntry[][]
   entityType: "Character" | "Mow"
   entityId: string
   goalTypes: GoalKind[]
   excludeGoalId?: string
+  /** The normalized end target of the Rank goal being placed. Without it no Rank conflict is reported
+   *  (the server still rejects an exact duplicate). */
+  rankTargetKey?: string | null
+  /** Normalized end targets of existing Rank goals, by goal id (from their details). */
+  rankKeyByGoalId?: ReadonlyMap<string, string>
 }): ProjectMembershipConflict[] {
   return selected.flatMap((project, index) => {
     const matches = (projectGoals[index] ?? []).filter(
@@ -83,10 +178,14 @@ export function findProjectGoalConflicts({
         entry.goal.entityType === entityType &&
         entry.goal.entityId === entityId &&
         entry.goal.goalId !== excludeGoalId &&
-        (entry.goal.status === "Active" || entry.goal.status === "Paused") &&
-        goalTypes.includes(entry.goal.goalType as GoalKind)
+        isInFlight(entry.goal.status) &&
+        goalTypes.includes(entry.goal.goalType as GoalKind) &&
+        (entry.goal.goalType !== "Rank" ||
+          (!!rankTargetKey &&
+            rankKeyByGoalId?.get(entry.goal.goalId) === rankTargetKey))
     )
     if (matches.length === 0) return []
+    const rankMatch = matches.find((entry) => entry.goal.goalType === "Rank")
     return [
       {
         projectId: project.projectId,
@@ -94,6 +193,7 @@ export function findProjectGoalConflicts({
         goalTypes: [
           ...new Set(matches.map((entry) => entry.goal.goalType as GoalKind)),
         ],
+        rankTargetKey: rankMatch ? (rankTargetKey ?? undefined) : undefined,
       },
     ]
   })

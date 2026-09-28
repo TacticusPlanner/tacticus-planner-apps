@@ -40,7 +40,6 @@ function project(overrides: Record<string, unknown> = {}) {
     color: null,
     description: null,
     status: "Active",
-    isActivePlan: false,
     isDefault: false,
     revision: 1,
     createdAt: "2026-01-01T00:00:00Z",
@@ -99,7 +98,7 @@ describe("ProjectsWidget", () => {
   it("renders project rows and navigates to a project's detail route on activation", async () => {
     useHomeProjectsMock.mockReturnValue({
       status: "ready",
-      projects: [project({ projectId: "p1", isActivePlan: true })],
+      projects: [project({ projectId: "p1", isDefault: true })],
       summaries: new Map([["p1", { status: "success", units: 2, goals: 3 }]]),
       remainingCount: 0,
     })
@@ -107,7 +106,7 @@ describe("ProjectsWidget", () => {
     render(<ProjectsWidget />)
 
     screen.getByTestId("home-project-row-p1").click()
-    expect(navigateMock).toHaveBeenCalledWith("/goals/projects/p1")
+    expect(navigateMock).toHaveBeenCalledWith("/plan/projects/p1")
     expect(screen.queryByTestId("home-projects-more")).not.toBeInTheDocument()
   })
 
@@ -122,6 +121,6 @@ describe("ProjectsWidget", () => {
     render(<ProjectsWidget />)
 
     screen.getByTestId("home-projects-more").click()
-    expect(navigateMock).toHaveBeenCalledWith("/goals/projects")
+    expect(navigateMock).toHaveBeenCalledWith("/plan/projects")
   })
 })

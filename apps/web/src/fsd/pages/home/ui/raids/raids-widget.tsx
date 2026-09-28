@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
-import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -9,40 +8,23 @@ import {
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { useProjects } from "@/entities/project"
 import {
   flattenTodayLocations,
   LocationRow,
   useDailyRaids,
 } from "@/features/daily-raids"
 
-/** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the Active
- * project (falling back to Default, same as Today), flattened to one row per battle location
- * regardless of which goal it's for, with already-raided/exhausted locations excluded
- * (home-raids-widget spec). Activating the widget opens the full Today page. */
+/** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active
+ * goals in global order (the same run as Today), flattened to one row per battle location regardless
+ * of which goal it's for, with already-raided/exhausted locations excluded (home-raids-widget spec).
+ * Activating the widget opens the full Today page. */
 export function RaidsWidget() {
   const { t } = useTranslation("common")
   const navigate = useNavigate()
-  const {
-    activeProjectId,
-    defaultProjectId,
-    fetchState,
-    loading,
-    projects,
-    retry,
-  } = useProjects()
-  const projectId = activeProjectId ?? defaultProjectId
-  const projectsFailed = !loading && fetchState.status === "error"
-  const projectsUnavailable =
-    !loading && fetchState.status === "success" && projects.length === 0
-  const raids = useDailyRaids(projectId)
+  const raids = useDailyRaids()
 
   const body = (() => {
-    // Loading must be checked before "no-project": while `useProjects()` is still resolving,
-    // `activeProjectId`/`defaultProjectId` are both undefined, so `useDailyRaids(undefined)`
-    // returns `{ status: "no-project" }` immediately — checking that first would flash the
-    // no-projects empty state on every page load before the real project list arrives.
-    if (raids.status === "loading" || loading) {
+    if (raids.status === "loading") {
       return (
         <div className="flex flex-col gap-2" data-testid="home-raids-loading">
           <Skeleton className="h-12 w-full rounded-lg" />
@@ -50,30 +32,14 @@ export function RaidsWidget() {
         </div>
       )
     }
-    // Checked before the no-project branch: a failed project-list request also leaves
-    // `activeProjectId`/`defaultProjectId` undefined (so `raids.status === "no-project"` too),
-    // which would otherwise misrepresent a load failure as "you have no projects."
-    if (projectsFailed) {
+    if (raids.status === "no-goals") {
       return (
-        <div className="flex flex-col gap-2" data-testid="home-raids-error">
-          <p className="text-sm text-destructive">{t("home.projects.error")}</p>
-          <Button onClick={retry} size="sm" variant="outline">
-            {t("home.projects.retry")}
-          </Button>
-        </div>
-      )
-    }
-    if (projectsUnavailable || raids.status === "no-project") {
-      return (
-        <div
-          className="flex flex-col gap-2"
-          data-testid="home-raids-no-projects"
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="home-raids-no-goals"
         >
-          <p className="text-sm font-medium">{t("home.projects.emptyTitle")}</p>
-          <p className="text-sm text-muted-foreground">
-            {t("home.projects.emptyDescription")}
-          </p>
-        </div>
+          {t("home.raids.noGoals")}
+        </p>
       )
     }
     if (raids.status === "error") {

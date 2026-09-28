@@ -1,6 +1,5 @@
 import {
   lastRank,
-  levelCapForProgression,
   maxRankForProgression,
   progressionOrder,
   rankAt,
@@ -12,10 +11,8 @@ import {
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import {
-  reachableRankProgress,
-  xpNeededForLevelRange,
-} from "@/features/goal-farming"
+import { rankTargetSlots } from "@/entities/goal"
+import { reachableRankProgress } from "@/features/goal-farming"
 
 import { abilityTrackLevel, type GoalAttainmentParams } from "./goal-attainment"
 
@@ -34,6 +31,10 @@ export type GoalProgress =
       kind: "Rank"
       current: Rank
       target: Rank
+      /** How many of `target`'s own 6 upgrade slots the target includes (the normalized additional
+       *  target — 0 for a clean rank boundary). With `target` this labels a Rank milestone, so two goals
+       *  for one character (e.g. Silver3 and Gold1) read apart. */
+      targetSlots: number
       ratio: number
       /** How far the goal's own ratio scale can advance *right now*, given the character's current
        *  rarity and level — both independently cap how far a rank can go, whichever is lower binds.
@@ -68,22 +69,23 @@ export type GoalProgress =
     }
   | { kind: "Unlock"; owned: number; required: number; ratio: number | null }
   | {
-      kind: "Level"
+      /** Not a goal kind — the level a Rank/Ability goal's target needs while the character is below
+       *  it (`computeLevelRequirementProgress`), shown next to that goal as ordinary progress. */
+      kind: "LevelRequirement"
       current: number
       target: number
       ratio: number
-      /** How far the goal's own ratio scale can advance *right now*, given the character's current
-       *  rarity — a character can't earn XP past its rarity's level cap until it Ascends. `null` when
-       *  the target is already fully reachable. */
+      /** How far the ratio scale can advance *right now*, given the character's current rarity — a
+       *  character can't earn XP past its rarity's level cap until it Ascends. `null` when the
+       *  requirement is already fully reachable. */
       reachableRatio: number | null
       /** The actual level `reachableRatio` corresponds to — for display in the ceiling marker's
        *  tooltip. Always `null` exactly when `reachableRatio` is `null`. */
       reachableLevel: number | null
-      /** Raw XP still needed to reach the goal's target level, from the character's true current
+      /** Raw XP still needed to reach the required level, from the character's true current
        *  level+XP — *not* netted against owned XP books (mirrors how a Rank goal's Remaining column
-       *  shows the raw slot/material count, not a potential-adjusted one). `null` once the target is
-       *  already reached. */
-      remainingXp: number | null
+       *  shows the raw slot/material count, not a potential-adjusted one). */
+      remainingXp: number
     }
   | { kind: "Upgrade"; ratio: number | null }
   | { kind: "Unknown" }
@@ -167,6 +169,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
             ? rankAt(target.end)
             : params.playerCharacter.rank,
         target: rankAt(target.end),
+        targetSlots: rankTargetSlots(target),
         ratio:
           totalSlots <= 0
             ? currentIndex >= target.end
@@ -251,40 +254,6 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
         owned,
         required,
         ratio: required > 0 ? clampRatio(owned, required) : null,
-      }
-    }
-    case "Level": {
-      const target = detail.config.level
-      if (!target || !ownedUnit) return UNKNOWN_PROGRESS
-      const current = ownedUnit.xpLevel
-      const clampedCurrent = Math.min(
-        Math.max(current, target.start),
-        target.end
-      )
-      // A character can't earn XP past its current rarity's level cap until it Ascends — `null` (no
-      // marker) once that cap is at or past the target, i.e. nothing currently restricts this goal.
-      const reachableLevel = levelCapForProgression(
-        ownedUnit.progressionIndex as Progression
-      )
-      const isRestricted =
-        target.end > target.start && reachableLevel < target.end
-      const reachableRatio = isRestricted
-        ? clampRatio(reachableLevel - target.start, target.end - target.start)
-        : null
-      const xpNeeded = xpNeededForLevelRange(current, ownedUnit.xp, target.end)
-      return {
-        kind: "Level",
-        // One-sided cap at the target — `clampedCurrent` above also floors at `target.start` for
-        // the ratio, which must never apply to the displayed value.
-        current: Math.min(current, target.end),
-        target: target.end,
-        ratio: clampRatio(
-          clampedCurrent - target.start,
-          target.end - target.start
-        ),
-        reachableRatio,
-        reachableLevel: isRestricted ? reachableLevel : null,
-        remainingXp: xpNeeded > 0 ? xpNeeded : null,
       }
     }
     case "Upgrade": {

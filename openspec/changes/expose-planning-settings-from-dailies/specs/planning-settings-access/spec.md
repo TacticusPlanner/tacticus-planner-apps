@@ -6,7 +6,7 @@ Makes the same persisted Planning Settings available where users review their go
 
 ### Requirement: Raids exposes shared Planning Settings
 
-Dailies > Raids SHALL provide a visible Planning Settings action on both Today and Raids Plan at mobile and desktop widths. Activating it SHALL open the same configuration available from Plan > All Goals/Overview. Saving from either surface SHALL update one persisted setting and affect subsequent raids and broader plan estimates.
+Dailies > Raids SHALL provide a visible Planning Settings action on both Today and Raids Plan at mobile and desktop widths, placed in the same row as the Today/Raids Plan sub-tabs (trailing, icon-only on mobile with an accessible name, icon plus label on desktop). Activating it SHALL open the same configuration available from Plan > Goals (`/plan/goals`). Saving from either surface SHALL update one persisted setting and affect subsequent raids and broader plan estimates.
 
 #### Scenario: Today and Raids Plan entry
 
@@ -15,7 +15,7 @@ Dailies > Raids SHALL provide a visible Planning Settings action on both Today a
 
 #### Scenario: One setting across surfaces
 
-- **WHEN** a user changes daily energy from Raids and later opens Planning Settings on Plan Overview
+- **WHEN** a user changes daily energy from Raids and later opens Planning Settings on Plan > Goals
 - **THEN** the saved value is shown there and both raids and broader estimates use it
 
 ### Requirement: Setting copy describes its scope

@@ -19,7 +19,10 @@ import {
   type GoalBlockers,
 } from "../blockers/goal-blockers"
 import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type {
+  EstimateOutcome,
+  RankSlotAllocation,
+} from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { ResourceNeed } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -29,24 +32,32 @@ import {
 } from "./goal-attainment"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress, type GoalProgress } from "./goal-progress"
+import {
+  computeLevelRequirementProgress,
+  type LevelRequirementProgress,
+} from "./level-requirement-progress"
 
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
 export type GoalOverviewMetrics = {
   progress: GoalProgress
   /** Still-missing materials/shards/orbs (plan §2's "remaining resources") — `null` for an uncosted
-   *  goal kind (Level, Item, Upgrade) or once nothing more is needed. No energy/day figure here: that
+   *  goal kind (Item, Upgrade) or once nothing more is needed. No energy/day figure here: that
    *  depends on a shared farming plan's priority ordering, which only exists once a goal is scoped to
    *  a project (see `usePlanInsights`/the project-scoped Insights view) — not meaningful on this
    *  flat, cross-project list. */
   remaining: ResourceNeed | null
   blockers: GoalBlockers
+  /** The level this Rank/Ability goal's target needs while the character is below it — ordinary
+   *  progress shown beside the goal, never a blocker. `null` when sufficient or not applicable. */
+  levelRequirement: LevelRequirementProgress | null
 }
 
 const UNKNOWN_METRICS: GoalOverviewMetrics = {
   progress: UNKNOWN_PROGRESS,
   remaining: null,
   blockers: NO_BLOCKERS,
+  levelRequirement: null,
 }
 
 /**
@@ -58,11 +69,12 @@ const UNKNOWN_METRICS: GoalOverviewMetrics = {
  */
 export function useGoalsOverviewMetrics(
   goalIds: readonly string[],
-  /** A per-goal isolated/plan estimate, when the caller already has one (the project-scoped view's
-   *  `usePlanInsights`, or a goal's own `useGoalEstimate`) — folded into `blockers` as an
-   *  `EstimateBlocked` reason. Omitted on the flat cross-project overview, which has no such estimate
-   *  (see `GoalOverviewMetrics.remaining`'s doc comment). */
-  estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>
+  /** The per-goal plan estimates (`usePlanInsights`), when the caller has them — folded into
+   *  `blockers` as an `EstimateBlocked` reason. Omitted where no plan run is available. */
+  estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>,
+  /** The plan's allocation of each Rank goal's slots (`PlanInsightsResult.rankSlotsByGoalId`): rows
+   *  then show what the goal adds to the one plan, not its standalone count. */
+  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
   const isAuthenticated = useIsAuthenticated()
   const {
@@ -89,10 +101,7 @@ export function useGoalsOverviewMetrics(
   const prerequisiteGoalIds =
     prerequisiteListQuery.data?.goals
       .filter(
-        (goal) =>
-          goal.goalType === "Level" ||
-          goal.goalType === "Ascension" ||
-          goal.goalType === "Unlock"
+        (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
       )
       .map((goal) => goal.goalId) ?? []
   const prerequisiteQueries = useQueries({
@@ -240,7 +249,7 @@ export function useGoalsOverviewMetrics(
       inventoryShard,
     })
 
-    const remaining = catalogReady
+    const remainingStandalone = catalogReady
       ? calculateGoalResourceNeed({
           detail,
           character: getCharacter(unitId),
@@ -254,6 +263,16 @@ export function useGoalsOverviewMetrics(
           unlockShardCostsById: unlockShardCostsById!,
         })
       : null
+
+    const slots = rankSlotsByGoalId?.get(goalId)
+    const remaining =
+      remainingStandalone && slots
+        ? {
+            ...remainingStandalone,
+            upgradeSlotsRemaining: slots.allocated,
+            coveredByEarlierGoal: slots.allocated === 0 && slots.standalone > 0,
+          }
+        : remainingStandalone
 
     const estimateOutcome = estimatesByGoalId?.get(goalId)
     const blockers = computeGoalBlockers({
@@ -278,7 +297,12 @@ export function useGoalsOverviewMetrics(
       }),
     })
 
-    result.set(goalId, { progress, remaining, blockers })
+    result.set(goalId, {
+      progress,
+      remaining,
+      blockers,
+      levelRequirement: computeLevelRequirementProgress({ detail, playerUnit }),
+    })
   })
   return result
 }

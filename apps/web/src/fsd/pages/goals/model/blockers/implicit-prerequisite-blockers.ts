@@ -9,10 +9,6 @@ import {
 
 import type { GoalDetail } from "@/entities/goal"
 
-import {
-  additionalTargetFromWire,
-  requiredLevelForRankTarget,
-} from "@/features/goal-farming"
 import { abilityLevelsByRarity } from "../goal-creation-form/goal-validation"
 import type { BlockerReason } from ".//goal-blockers"
 
@@ -32,20 +28,6 @@ function minimumProgressionForAbilityLevel(level: number): Progression {
   )
 }
 
-function coveringLevelGoal(
-  goals: readonly GoalDetail[],
-  entityId: string,
-  requiredLevel: number
-) {
-  return goals.find(
-    (goal) =>
-      goal.entityId === entityId &&
-      goal.goalType === "Level" &&
-      goal.status !== "Archived" &&
-      (goal.config.level?.end ?? 0) >= requiredLevel
-  )
-}
-
 function coveringAscensionGoal(
   goals: readonly GoalDetail[],
   entityId: string,
@@ -62,15 +44,14 @@ function coveringAscensionGoal(
   )
 }
 
-function conflictingGoalId(
+function conflictingAscensionGoalId(
   goals: readonly GoalDetail[],
-  entityId: string,
-  goalType: "Level" | "Ascension"
+  entityId: string
 ) {
   return goals.find(
     (goal) =>
       goal.entityId === entityId &&
-      goal.goalType === goalType &&
+      goal.goalType === "Ascension" &&
       (goal.status === "Active" || goal.status === "Paused")
   )?.goalId
 }
@@ -113,44 +94,20 @@ export function implicitPrerequisiteBlockers(params: {
     ]
   }
 
-  let requiredLevel: number | null = null
   let requiredProgression: Progression | null = null
 
   if (detail.goalType === "Rank" && detail.config.rank) {
     const targetRank = rankAt(detail.config.rank.end)
-    if (detail.entityType === "Character") {
-      requiredLevel = requiredLevelForRankTarget(
-        targetRank,
-        additionalTargetFromWire(targetRank, detail.config.rank)
-      )
-    }
     requiredProgression = minProgressionForRank(targetRank)
   } else if (detail.goalType === "Ability" && detail.config.ability) {
     const targetLevel = Math.max(
       detail.config.ability.activeEnd,
       detail.config.ability.passiveEnd
     )
-    if (detail.entityType === "Character") requiredLevel = targetLevel
     requiredProgression = minimumProgressionForAbilityLevel(targetLevel)
   }
 
   const reasons: BlockerReason[] = []
-  if (
-    requiredLevel !== null &&
-    playerUnit.xpLevel < requiredLevel &&
-    !coveringLevelGoal(prerequisiteGoals, detail.entityId, requiredLevel)
-  ) {
-    reasons.push({
-      kind: "MissingLevelPrerequisite",
-      requiredLevel,
-      existingGoalId: conflictingGoalId(
-        prerequisiteGoals,
-        detail.entityId,
-        "Level"
-      ),
-    })
-  }
-
   if (
     requiredProgression !== null &&
     progressionIndex(playerUnit.progressionIndex as Progression) <
@@ -164,10 +121,9 @@ export function implicitPrerequisiteBlockers(params: {
     reasons.push({
       kind: "MissingAscensionPrerequisite",
       requiredProgression,
-      existingGoalId: conflictingGoalId(
+      existingGoalId: conflictingAscensionGoalId(
         prerequisiteGoals,
-        detail.entityId,
-        "Ascension"
+        detail.entityId
       ),
     })
   }

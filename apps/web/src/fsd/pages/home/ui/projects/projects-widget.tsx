@@ -15,7 +15,7 @@ import {
   ProjectSummaryRow,
 } from "@/features/project-management"
 
-/** Home dashboard's Your Projects widget: Current plan first. Mobile caps the list to 3 project
+/** Home dashboard's Your Projects widget: Default project first. Mobile caps the list to 3 project
  * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
  * room to show every non-archived project uncapped. */
 export function ProjectsWidget() {
@@ -55,7 +55,7 @@ export function ProjectsWidget() {
           </p>
           <Button
             className="self-start"
-            onClick={() => void navigate("/goals/projects")}
+            onClick={() => void navigate("/plan/projects")}
             size="sm"
           >
             {t("home.projects.emptyAction")}
@@ -71,7 +71,7 @@ export function ProjectsWidget() {
             <ProjectSummaryRow
               key={project.projectId}
               onSelect={() =>
-                void navigate(`/goals/projects/${project.projectId}`)
+                void navigate(`/plan/projects/${project.projectId}`)
               }
               project={project}
               summary={result.summaries.get(project.projectId)}
@@ -82,7 +82,7 @@ export function ProjectsWidget() {
           <Button
             className="self-start"
             data-testid="home-projects-more"
-            onClick={() => void navigate("/goals/projects")}
+            onClick={() => void navigate("/plan/projects")}
             size="sm"
             variant="ghost"
           >

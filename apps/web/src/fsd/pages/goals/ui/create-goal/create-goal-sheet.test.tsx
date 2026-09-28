@@ -308,12 +308,25 @@ vi.mock("@workspace/player-data/queries", () => ({
 const createCombinedGoals = vi.fn()
 const createGoal = vi.fn()
 const listProjects = vi.fn()
+const createProject = vi.fn()
 const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
+  // The account's Active goals in global order, which the new goal's duration estimate folds in
+  // behind — empty by default (the per-goal engine itself is covered by per-project-estimate.test.ts).
+  useGlobalGoalPlan: () => ({
+    inFlight: [],
+    active: [],
+    entries: [],
+    goals: [],
+    orderRevision: 0,
+    loading: false,
+    isError: false,
+    retry: vi.fn(),
+  }),
   // Backs useGoalTypeConflicts' active/paused-goal lookup — empty by default (no test here asserts
   // on the same-kind-goal-exists disable message, that's covered by use-goal-type-conflicts.test.ts).
   goalQueries: {
@@ -333,10 +346,10 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
+  createProject: (...args: unknown[]) => createProject(...args),
   projectQueries: {
-    // Backs use-per-project-estimates.ts's per-project member lookup — empty by default (no test
-    // here asserts on the per-project duration preview itself, that's covered by
-    // per-project-estimate.test.ts), which also keeps it from ever needing goalQueries.detail.
+    all: () => ["projects"],
+    // Backs the goal-projects lookup — empty by default.
     goals: (projectId: string) => ({
       queryKey: ["projects", "detail", projectId, "goals"],
       queryFn: () => Promise.resolve({ goals: [] }),
@@ -375,6 +388,7 @@ describe("CreateGoalSheet", () => {
     createCombinedGoals.mockReset()
     listProjects.mockReset()
     listProjects.mockResolvedValue({ projects: [] })
+    createProject.mockReset()
     listGoals.mockReset()
     listGoals.mockResolvedValue({ goals: [] })
 
@@ -386,11 +400,9 @@ describe("CreateGoalSheet", () => {
       rank: "Stone1",
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
-      // High enough that no test's Rank/Ability target implies a level the character hasn't
-      // already reached (see needsLevel in use-goal-prerequisites.ts) — otherwise a Level goal
-      // gets auto-suggested and included, changing review-item/submitted-goal counts most tests
-      // here don't expect. Below MAX_CHARACTER_LEVEL so the Level toggle itself stays enabled.
-      // Tests specifically covering Level auto-suggestion/creation override this per test.
+      // High enough that no test's Rank/Ability target implies a level the character hasn't already
+      // reached, so no level-requirement note renders (it isn't a goal or a suggestion either way).
+      // Tests specifically covering the requirement note override this per test.
       xpLevel: 59,
     })
     getPlayerMow.mockReset()
@@ -487,53 +499,57 @@ describe("CreateGoalSheet", () => {
       <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
     )
 
-    await vi.waitFor(() => {
-      expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
-    })
+    // A finished goal's form is cleared (only project/type context is remembered), so a unit must be
+    // picked again before submitting.
+    expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
     expect(
       screen
         .getByTestId("create-goal-submit")
         .querySelector('[data-slot="spinner"]')
     ).toBeNull()
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+    })
   })
 
-  it("creates a Level goal for the selected character, current level read-only, prefilled from synced xpLevel, with a books/gold cost preview", async () => {
+  it("shows a Rank target's required level, XP gap, and books/gold cost on the goal, and creates no Level goal", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
     getPlayerCharacter.mockResolvedValue({
       rank: "Stone1",
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
-      xpLevel: 31,
+      xpLevel: 1,
       xp: 0,
     })
-    const onOpenChange = vi.fn()
-    const onCreated = vi.fn()
-    render(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
-    )
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
       expect(
-        screen.getByTestId("create-goal-type-toggle-Level")
+        screen.getByTestId("create-goal-type-toggle-Rank")
       ).not.toBeDisabled()
     })
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Level"))
+    // Level goals no longer exist as a goal type.
+    expect(
+      screen.queryByTestId("create-goal-type-toggle-Level")
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
+    // Stone1 -> Stone2 implies level 3 — the requirement renders on the Rank card itself. (This file's
+    // `t` mock doesn't interpolate options; the exact figures are covered by
+    // use-level-requirement-preview.test.ts.)
     await vi.waitFor(() => {
-      expect(screen.getByTestId("create-goal-level-target")).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-level-requirement")
+      ).toHaveTextContent("goals.create.levelRequirement.title")
     })
-    fireEvent.click(screen.getByTestId("create-goal-level-target"))
-    fireEvent.click(within(await screen.findByRole("listbox")).getByText("42"))
-
-    // 31 -> 42 with 0 partial xp needs a non-zero books/gold cost (exact figures are covered by
-    // level-xp-cost.test.ts's own unit coverage — this file's `t` mock doesn't interpolate options,
-    // so the count/gold values themselves aren't observable through rendered text here).
-    await vi.waitFor(() => {
-      const cost = screen.getByTestId("create-goal-level-cost")
-      expect(cost).toHaveTextContent("goals.create.level.booksNeeded")
-      expect(cost).toHaveTextContent("goals.create.level.goldToApply")
-    })
+    expect(screen.getByTestId("create-goal-level-cost")).toHaveTextContent(
+      "goals.create.level.booksNeeded"
+    )
+    expect(
+      screen.queryByTestId("create-goal-include-level")
+    ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -541,93 +557,42 @@ describe("CreateGoalSheet", () => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
     const [request] = createCombinedGoals.mock.calls[0]
-    expect(request.goals).toHaveLength(1)
-    expect(request.goals[0]).toMatchObject({
-      goalType: "Level",
-      dependsOnIndex: [],
-    })
-    expect(request.goals[0].config.level).toEqual({ start: 31, end: 42 })
-
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(onCreated).toHaveBeenCalledTimes(1)
-  })
-
-  it("applies a prerequisite prefill for the unit, required target, and project memberships", async () => {
-    getPlayerCharacter.mockResolvedValue({
-      rank: "Stone1",
-      progressionIndex: "Common:None",
-      appliedUpgradeSlots: [],
-      xpLevel: 31,
-      xp: 0,
-    })
-    listProjects.mockResolvedValue({
-      projects: [
-        { projectId: "proj-1", name: "One", isActivePlan: true },
-        { projectId: "proj-2", name: "Two", isActivePlan: false },
-      ],
-    })
-    render(
-      <CreateGoalSheet
-        onCreated={vi.fn()}
-        onOpenChange={vi.fn()}
-        open
-        prefill={{
-          entityType: "Character",
-          entityId: "hero1" as never,
-          goalType: "Level",
-          requiredLevel: 42,
-          projectIds: ["proj-2"],
-        }}
-      />
-    )
-
     expect(
-      await screen.findByTestId("create-goal-type-card-Level")
-    ).toBeVisible()
-    await vi.waitFor(() => {
-      expect(screen.getByTestId("create-goal-level-target")).toHaveTextContent(
-        "42"
-      )
-      expect(
-        screen.getByTestId("create-goal-project-chip-proj-2")
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByTestId("create-goal-project-chip-proj-1")
-      ).not.toBeInTheDocument()
-    })
+      request.goals.map((goal: { goalType: string }) => goal.goalType)
+    ).toEqual(["Rank"])
+    expect(request.goals[0].dependsOnIndex).toEqual([])
   })
 
-  it("nets a Level goal's cost against owned XP books, hiding the cost preview once fully covered", async () => {
+  it("keeps the requirement note but hides the books cost once owned XP books fully cover the gap", async () => {
     getPlayerCharacter.mockResolvedValue({
       rank: "Stone1",
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
-      xpLevel: 31,
+      xpLevel: 1,
       xp: 0,
     })
-    // 31 -> 32 needs 94200 xp (xpNeededForLevelRange nets the target level's own cumulative
-    // threshold against currentXp, here 0); 8 owned Legendary books (100000 xp) fully covers it.
+    // Level 3 needs 60 total XP; a single owned Legendary book (12,500 XP) covers it.
     getInventoryXpBooks.mockReturnValue([
-      { xpBookId: "xpLegendary", amount: 8 },
+      { xpBookId: "xpLegendary", amount: 1 },
     ])
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
       expect(
-        screen.getByTestId("create-goal-type-toggle-Level")
+        screen.getByTestId("create-goal-type-toggle-Rank")
       ).not.toBeDisabled()
     })
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Level"))
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId("create-goal-level-target")).toBeInTheDocument()
-    })
-    await vi.waitFor(() => {
       expect(
-        screen.queryByTestId("create-goal-level-cost")
-      ).not.toBeInTheDocument()
+        screen.getByTestId("create-goal-level-requirement")
+      ).toBeInTheDocument()
     })
+    expect(
+      screen.queryByTestId("create-goal-level-cost")
+    ).not.toBeInTheDocument()
   })
 
   it("keeps the sheet open and resets the form when 'create another' is checked", async () => {
@@ -695,7 +660,6 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
           status: "Active",
         },
@@ -718,7 +682,6 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
         },
       ],
@@ -1360,7 +1323,7 @@ describe("CreateGoalSheet", () => {
     expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
   })
 
-  it("disables and unchecks Rank/Ascension/Ability/Level/Upgrade once the selected character is already maxed out", async () => {
+  it("disables and unchecks Rank/Ascension/Ability/Upgrade once the selected character is already maxed out", async () => {
     getPlayerCharacter.mockResolvedValue({
       rank: lastRank,
       progressionIndex: "Mythic:MythicWings",
@@ -1382,10 +1345,6 @@ describe("CreateGoalSheet", () => {
     expect(screen.getByTestId("create-goal-type-toggle-Ability")).toBeDisabled()
     expect(
       screen.getByTestId("create-goal-type-toggle-Ability")
-    ).not.toBeChecked()
-    expect(screen.getByTestId("create-goal-type-toggle-Level")).toBeDisabled()
-    expect(
-      screen.getByTestId("create-goal-type-toggle-Level")
     ).not.toBeChecked()
     expect(screen.getByTestId("create-goal-type-toggle-Upgrade")).toBeDisabled()
   })
@@ -1438,22 +1397,24 @@ describe("CreateGoalSheet", () => {
     ])
   })
 
-  it("auto-suggests and includes Unlock and Level for a locked character, with Rank depending on both, and lists them in the review", async () => {
+  it("auto-suggests Unlock for a locked character, with Rank depending on it, showing the level requirement instead of a Level goal", async () => {
     getPlayerCharacter.mockResolvedValue(undefined)
     createCombinedGoals.mockResolvedValue({ goals: [] })
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
     // No goal type is preselected — turn Rank on explicitly, which is what triggers the auto-
-    // suggested Unlock prerequisite for a locked entity, and (Stone1 -> Stone2 implies level 3, a
-    // locked character conservatively assumed to start at level 1) the auto-suggested Level goal.
+    // suggested Unlock prerequisite for a locked entity. Stone1 -> Stone2 implies level 3 (a locked
+    // character is conservatively assumed to start at level 1), shown on the Rank card only.
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
 
     const review = await screen.findByTestId("create-goal-review")
     expect(review).toHaveTextContent("goals.create.goalTypes.Unlock")
     expect(review).toHaveTextContent("goals.create.suggestions.unlockRequired")
-    expect(review).toHaveTextContent("goals.create.goalTypes.Level")
-    expect(review).toHaveTextContent("goals.create.suggestions.levelRequired")
+    expect(review).not.toHaveTextContent("goals.create.goalTypes.Level")
+    expect(
+      await screen.findByTestId("create-goal-level-requirement")
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -1461,50 +1422,15 @@ describe("CreateGoalSheet", () => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
     const [request] = createCombinedGoals.mock.calls[0]
-    expect(request.goals).toHaveLength(3)
+    expect(request.goals).toHaveLength(2)
     expect(request.goals[0]).toMatchObject({
       goalType: "Unlock",
       dependsOnIndex: [],
     })
     expect(request.goals[1]).toMatchObject({
-      goalType: "Level",
+      goalType: "Rank",
       dependsOnIndex: [0],
     })
-    expect(request.goals[1].config.level).toEqual({ start: 1, end: 3 })
-    expect(request.goals[2]).toMatchObject({
-      goalType: "Rank",
-      dependsOnIndex: [0, 1],
-    })
-  })
-
-  it("omits the suggested Level goal once its checkbox is unchecked", async () => {
-    getPlayerCharacter.mockResolvedValue({
-      rank: "Stone1",
-      progressionIndex: "Common:None",
-      appliedUpgradeSlots: [],
-      xpLevel: 1,
-    })
-    createCombinedGoals.mockResolvedValue({ goals: [] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
-
-    await selectCharacter()
-    await vi.waitFor(() => {
-      expect(
-        screen.getByTestId("create-goal-type-toggle-Rank")
-      ).not.toBeDisabled()
-    })
-    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
-
-    fireEvent.click(await screen.findByTestId("create-goal-include-level"))
-    fireEvent.click(screen.getByTestId("create-goal-submit"))
-
-    await vi.waitFor(() => {
-      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
-    })
-    const [request] = createCombinedGoals.mock.calls[0]
-    expect(
-      request.goals.map((goal: { goalType: string }) => goal.goalType)
-    ).toEqual(["Rank"])
   })
 
   it("shows the selected owned character's shard count, level, ability levels, rank, and progression", async () => {
@@ -1693,7 +1619,7 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("auto-suggests Ascension and Level when a Character Ability target is above the current rarity cap", async () => {
+  it("auto-suggests only Ascension, and shows the required level on the goal, when a Character Ability target is above the current rarity cap", async () => {
     getPlayerCharacter.mockResolvedValue({
       rank: "Silver1",
       progressionIndex: "Rare:FourStars", // ability cap 26
@@ -1714,10 +1640,15 @@ describe("CreateGoalSheet", () => {
     const activeList = await screen.findByRole("listbox")
     fireEvent.click(within(activeList).getByRole("option", { name: "35" }))
 
-    // Above the Rare ability cap (26) and above the current character level (20) — both
-    // prerequisites are offered.
+    // Above the Rare ability cap (26): Ascension is offered. It is also above the current character
+    // level (20): the Ability card shows that requirement, but no Level prerequisite is offered.
     await screen.findByTestId("create-goal-include-ascension")
-    expect(screen.getByTestId("create-goal-include-level")).toBeInTheDocument()
+    expect(
+      screen.getByTestId("create-goal-level-requirement")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("create-goal-include-level")
+    ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -1727,7 +1658,7 @@ describe("CreateGoalSheet", () => {
     const [request] = createCombinedGoals.mock.calls[0]
     expect(
       request.goals.map((goal: { goalType: string }) => goal.goalType)
-    ).toEqual(["Ascension", "Level", "Ability"])
+    ).toEqual(["Ascension", "Ability"])
     const ability = request.goals.find(
       (goal: { goalType: string }) => goal.goalType === "Ability"
     )
@@ -1743,14 +1674,12 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
           status: "Active",
         },
         {
           projectId: "proj-2",
           name: "Event Prep",
-          isActivePlan: false,
           isDefault: false,
           status: "Active",
         },
@@ -1776,5 +1705,336 @@ describe("CreateGoalSheet", () => {
       { projectId: "proj-1" },
       { projectId: "proj-2" },
     ])
+  })
+
+  describe("consecutive-creation context", () => {
+    const twoProjects = {
+      projects: [
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isDefault: true,
+          status: "Active",
+        },
+        {
+          projectId: "proj-2",
+          name: "Event Prep",
+          isDefault: false,
+          status: "Active",
+        },
+      ],
+    }
+
+    // Picks hero1, turns Rank on, adds Event Prep and submits (optionally with "Create another").
+    async function createRankGoalInBothProjects(createAnother: boolean) {
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Rank")
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.click(await screen.findByText("Event Prep"))
+      if (createAnother) {
+        fireEvent.click(screen.getByLabelText("goals.create.createAnother"))
+      }
+      fireEvent.click(screen.getByTestId("create-goal-start-paused-checkbox"))
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+    }
+
+    beforeEach(() => {
+      listProjects.mockResolvedValue(twoProjects)
+      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    })
+
+    it("offers the last projects and goal type again after 'create another', without the old targets or start-paused", async () => {
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(true)
+      expect(createCombinedGoals.mock.calls[0][0].startPaused).toBe(true)
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+        ).toHaveTextContent("goals.create.unitPlaceholder")
+      })
+
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeChecked()
+        // The unit resolving as owned (no auto-suggested Unlock goal) is what disables this toggle.
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Unlock")
+        ).toBeDisabled()
+      })
+      // Offered again, and still editable chips.
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-1")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-start-paused-checkbox")
+      ).not.toBeChecked()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(2)
+      })
+      const [request] = createCombinedGoals.mock.calls[1]
+      expect(request.projects).toEqual([
+        { projectId: "proj-1" },
+        { projectId: "proj-2" },
+      ])
+      expect(request.startPaused).toBeUndefined()
+      // Targets are recomputed from the unit (Stone1 -> Stone2 default), not carried over.
+      expect(request.goals).toHaveLength(1)
+      expect(request.goals[0].config.rank).toMatchObject({ start: 0, end: 1 })
+    })
+
+    it("offers the last projects and goal type again when the sheet is reopened after a completed goal", async () => {
+      const onOpenChange = vi.fn()
+      const { rerender } = render(
+        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(false)
+      await vi.waitFor(() => {
+        expect(onOpenChange).toHaveBeenCalledWith(false)
+      })
+
+      rerender(
+        <CreateGoalSheet
+          open={false}
+          onOpenChange={onOpenChange}
+          onCreated={vi.fn()}
+        />
+      )
+      rerender(
+        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeChecked()
+      })
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-1")
+      ).toBeInTheDocument()
+    })
+
+    it("lets an explicit project-scoped prefill win over the remembered projects", async () => {
+      const onOpenChange = vi.fn()
+      const { rerender } = render(
+        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(false)
+      await vi.waitFor(() => {
+        expect(onOpenChange).toHaveBeenCalledWith(false)
+      })
+      rerender(
+        <CreateGoalSheet
+          open={false}
+          onOpenChange={onOpenChange}
+          onCreated={vi.fn()}
+        />
+      )
+      // The launch from Project Detail (or a global entry point used on its route) sends this.
+      rerender(
+        <CreateGoalSheet
+          open
+          onOpenChange={onOpenChange}
+          onCreated={vi.fn()}
+          prefill={{ projectIds: ["proj-2"] }}
+        />
+      )
+
+      await selectCharacter()
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-1")
+      ).not.toBeInTheDocument()
+    })
+
+    it("leaves a remembered Rank unselected for a Machine of War and carries no invalid target", async () => {
+      getPlayerMow.mockResolvedValue({
+        progressionIndex: "Common:None",
+        abilities: [],
+        appliedUpgradeSlots: [],
+      })
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(true)
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+        ).toHaveTextContent("goals.create.unitPlaceholder")
+      })
+
+      await selectMow()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Ability")
+        ).toBeInTheDocument()
+      })
+      expect(
+        screen.queryByTestId("create-goal-type-toggle-Rank")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ability")
+      ).not.toBeChecked()
+      expect(
+        screen.queryByTestId("create-goal-type-card-Rank")
+      ).not.toBeInTheDocument()
+      expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+    })
+
+    it("keeps the draft when creation fails", async () => {
+      createCombinedGoals.mockRejectedValue(new Error("boom"))
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Rank")
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.click(await screen.findByText("Event Prep"))
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-error")).toBeInTheDocument()
+      })
+      // The unit, goal type and projects are exactly as the user left them.
+      expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeChecked()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe("inline project creation", () => {
+    const projects = [
+      {
+        projectId: "proj-1",
+        name: "My Goals",
+        isDefault: true,
+        status: "Active",
+      },
+    ]
+
+    async function openPickerAndType(text: string) {
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.change(
+        await screen.findByPlaceholderText("goals.project.searchProjects"),
+        { target: { value: text } }
+      )
+    }
+
+    it("creates and selects a project without submitting the goal, then submits with it", async () => {
+      listProjects.mockResolvedValue({ projects })
+      // Like the server, a created project shows up in the refreshed list.
+      createProject.mockImplementation((request: { name: string }) => {
+        const created = {
+          projectId: "proj-new",
+          name: request.name,
+          isDefault: false,
+          status: "Active",
+        }
+        listProjects.mockResolvedValue({ projects: [...projects, created] })
+        return Promise.resolve(created)
+      })
+      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await openPickerAndType("Brand new")
+      // Typing alone creates nothing.
+      expect(createProject).not.toHaveBeenCalled()
+      fireEvent.click(await screen.findByTestId("create-goal-create-project"))
+
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-new")
+      ).toBeInTheDocument()
+      expect(createProject).toHaveBeenCalledExactlyOnceWith({
+        name: "Brand new",
+        description: null,
+        color: null,
+      })
+      // The goal draft is intact and nothing was submitted.
+      expect(createCombinedGoals).not.toHaveBeenCalled()
+      expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeVisible()
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      const [request] = createCombinedGoals.mock.calls[0]
+      expect(request.projects).toEqual([
+        { projectId: "proj-1" },
+        { projectId: "proj-new" },
+      ])
+    })
+
+    it("keeps the draft and typed name on failure and offers no Create for an existing name", async () => {
+      listProjects.mockResolvedValue({ projects })
+      createProject.mockRejectedValueOnce(new Error("offline"))
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await openPickerAndType("my goals")
+      expect(
+        screen.queryByTestId("create-goal-create-project")
+      ).not.toBeInTheDocument()
+
+      fireEvent.change(
+        screen.getByPlaceholderText("goals.project.searchProjects"),
+        { target: { value: "Brand new" } }
+      )
+      fireEvent.click(await screen.findByTestId("create-goal-create-project"))
+
+      expect(
+        await screen.findByTestId("create-goal-create-project-error")
+      ).toHaveTextContent("goals.project.createFailed")
+      expect(
+        screen.getByPlaceholderText("goals.project.searchProjects")
+      ).toHaveValue("Brand new")
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-new")
+      ).not.toBeInTheDocument()
+      expect(createCombinedGoals).not.toHaveBeenCalled()
+    })
   })
 })

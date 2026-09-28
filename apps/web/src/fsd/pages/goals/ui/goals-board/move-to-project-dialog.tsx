@@ -16,7 +16,7 @@ type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** The account's other non-archived projects to move the goal into (`useMoveGoalFromProject`'s
-   *  `otherProjects`) — Current plan included. Only opened when non-empty; the zero-projects case
+   *  `otherProjects`) — the Default project included. Only opened when non-empty; the zero-projects case
    *  skips this dialog entirely and goes straight to project creation
    *  (`rework-goal-project-move-action`: "Move to project has a single action when there is nowhere
    *  existing to move to"). */
@@ -63,9 +63,9 @@ export function MoveToProjectDialog({
             >
               <ProjectColorDot color={project.color} />
               <span className="flex-1 text-left">{project.name}</span>
-              {project.isActivePlan ? (
-                <span className="text-xs text-primary">
-                  {t("goals.project.currentPlan")}
+              {project.isDefault ? (
+                <span className="text-xs text-muted-foreground">
+                  {t("goals.create.projectDefaultMarker")}
                 </span>
               ) : null}
             </Button>

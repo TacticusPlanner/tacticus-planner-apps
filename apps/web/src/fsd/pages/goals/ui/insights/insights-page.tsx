@@ -6,9 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { useProjectGoals } from "../../model/projects/use-project-goals"
+import { useGlobalGoalPlan } from "@/entities/goal"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { InsightsEvents } from ".//insights-events"
@@ -17,25 +19,31 @@ import { InsightsSummary } from ".//insights-summary"
 /**
  * The Insights view (plan §16 phase 7): aggregates a project's still-active goals into total missing
  * resources, a combined energy/completion estimate, farming bottlenecks, and campaign/event relevance
- * annotated with which entities benefit. Owns its own project selector (defaulting to the active
- * plan) rather than sharing the goals list's filter via a URL param — kept independent of
+ * annotated with which entities benefit. Defaults to every Active goal in the global plan and owns
+ * its own optional project filter rather than sharing the goals list's filter via a URL param — kept independent of
  * `GoalsPage`'s existing, separately-tested project-filter state.
  */
 export function InsightsPage() {
   const { t } = useTranslation()
   const projects = useProjects()
-  // No explicit user choice yet -> default to the Current plan, computed on read rather than synced
-  // into state via an effect (there is nothing to select from until `projects` loads anyway).
-  const [selectedProjectId, setSelectedProjectId] = useState<
-    string | undefined
-  >(undefined)
-  const projectId = selectedProjectId ?? projects.activeProjectId
+  // No selection means the whole plan; a project only narrows what is reported.
+  const [projectId, setProjectId] = useState<string | undefined>(undefined)
 
   const projectGoals = useProjectGoals(projectId)
-  const { result, loading } = usePlanInsights(projectId, projectGoals.goals)
+  const globalPlan = useGlobalGoalPlan()
+  const scopedGoals = projectId ? projectGoals.goals : globalPlan.entries
+  // The estimate itself is always the one global run.
+  const {
+    result,
+    loading,
+    isError: insightsError,
+    retry: retryInsights,
+  } = usePlanInsights(
+    projectId ? projectGoals.goals.map((entry) => entry.goal.goalId) : null
+  )
 
   const goalEntityById = new Map(
-    projectGoals.goals.map((member) => [
+    scopedGoals.map((member) => [
       member.goal.goalId,
       { entityType: member.goal.entityType, entityId: member.goal.entityId },
     ])
@@ -47,20 +55,38 @@ export function InsightsPage() {
           right-aligned, alone in its own row. */}
       <div className="flex items-center justify-end gap-4">
         <ProjectSelect
-          onProjectIdChange={setSelectedProjectId}
+          allowAll
+          onProjectIdChange={setProjectId}
           projectId={projectId}
           projects={projects.projects}
           testId="insights-project-select"
         />
       </div>
 
-      {!projectId ? (
+      {globalPlan.isError || insightsError ? (
+        <Card data-testid="insights-page-error">
+          <CardHeader>
+            <CardTitle>{t("goals.insights.loadError")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={globalPlan.isError ? globalPlan.retry : retryInsights}
+              size="sm"
+              variant="outline"
+            >
+              {t("goals.insights.retry")}
+            </Button>
+          </CardContent>
+        </Card>
+      ) : !projectId &&
+        !globalPlan.loading &&
+        globalPlan.active.length === 0 ? (
         <Card data-testid="insights-page-empty">
           <CardHeader>
-            <CardTitle>{t("goals.insights.noProjectTitle")}</CardTitle>
+            <CardTitle>{t("goals.insights.noGoalsTitle")}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            {t("goals.insights.noProjectDescription")}
+            {t("goals.insights.noGoalsDescription")}
           </CardContent>
         </Card>
       ) : loading ? (

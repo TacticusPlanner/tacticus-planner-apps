@@ -1,11 +1,13 @@
+import { useState } from "react"
+
 import type { UnitId } from "@workspace/game-domain"
 import type { CharacterStorageModel } from "@workspace/game-catalog"
 
 import type { FarmingStrategy, GoalKind } from "@/entities/goal"
 
+import { goalKindsForEntity } from ".//goal-validation"
 import type { useAbilityFields } from ".//use-ability-fields"
 import type { useAscensionFields } from ".//use-ascension-fields"
-import type { useLevelFields } from ".//use-level-fields"
 import type { useProjectSelection } from "../projects/use-project-selection"
 import type { useRankFields } from ".//use-rank-fields"
 import type { useAcquisitionSourceSelection } from ".//use-acquisition-source-selection"
@@ -23,11 +25,11 @@ export function useGoalFormReset(params: {
   rankFields: ReturnType<typeof useRankFields>
   ascensionFields: ReturnType<typeof useAscensionFields>
   abilityFields: ReturnType<typeof useAbilityFields>
-  levelFields: ReturnType<typeof useLevelFields>
   upgradeFields: ReturnType<typeof useUpgradeFields>
   acquisitionSourceSelection: ReturnType<typeof useAcquisitionSourceSelection>
   projectSelection: ReturnType<typeof useProjectSelection>
   setFarmingStrategy: (value: FarmingStrategy) => void
+  enabledTypes: ReadonlySet<GoalKind>
   setEnabledTypes: (
     update:
       | ReadonlySet<GoalKind>
@@ -35,13 +37,18 @@ export function useGoalFormReset(params: {
   ) => void
   setIncludeSuggestedUnlock: (value: boolean) => void
   setIncludeSuggestedAscension: (value: boolean) => void
-  setIncludeSuggestedLevel: (value: boolean) => void
   setStartPaused: (value: boolean) => void
   resetPrefillGuard: () => void
   setEntityType: (value: EntityType) => void
   setEntityId: (value: UnitId | undefined) => void
   charactersById: ReadonlyMap<string, CharacterStorageModel> | undefined
 }) {
+  // Last successfully created goal's type choices, offered again for the next unit picked (see
+  // `resetForm`, `handleEntityChange`). In-memory only, so a reload starts over.
+  const [rememberedTypes, setRememberedTypes] = useState<ReadonlySet<GoalKind>>(
+    new Set()
+  )
+
   const toggleType = (kind: GoalKind, enabled: boolean) => {
     params.setEnabledTypes((current) => {
       const next = new Set(current)
@@ -58,7 +65,6 @@ export function useGoalFormReset(params: {
     params.rankFields.reset()
     params.ascensionFields.reset()
     params.abilityFields.reset()
-    params.levelFields.reset()
     params.upgradeFields.reset()
     params.setFarmingStrategy("TotalUpgrades")
     params.acquisitionSourceSelection.reset()
@@ -71,14 +77,17 @@ export function useGoalFormReset(params: {
     params.setEnabledTypes(new Set())
     params.setIncludeSuggestedUnlock(true)
     params.setIncludeSuggestedAscension(true)
-    params.setIncludeSuggestedLevel(true)
     resetTargetFields()
     params.resetPrefillGuard()
   }
 
+  // Called after every successful creation. Remembers the chosen project memberships and goal types
+  // (never unit-specific targets or start-paused) for the next creation, then clears the form.
   // Form-level decisions (entity, projects, start-paused) clear here rather than in resetSelections,
   // which only reverts the goal-type/target fields when the user switches unit.
   const resetForm = () => {
+    params.projectSelection.remember()
+    setRememberedTypes(params.enabledTypes)
     params.setEntityType("Character")
     params.setEntityId(undefined)
     resetSelections()
@@ -97,6 +106,11 @@ export function useGoalFormReset(params: {
     params.setEntityType(type)
     params.setEntityId(id)
     resetSelections()
+    // Only types this unit kind offers; per-unit maxed/owned ones are stripped once its data loads.
+    const offered = goalKindsForEntity(type)
+    params.setEnabledTypes(
+      new Set([...rememberedTypes].filter((kind) => offered.includes(kind)))
+    )
   }
 
   return { toggleType, resetForm, handleEntityChange }

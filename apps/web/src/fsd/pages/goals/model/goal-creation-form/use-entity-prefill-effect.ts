@@ -3,7 +3,11 @@ import { useEffect, useRef } from "react"
 import type { UnitId, Rank, Progression } from "@workspace/game-domain"
 import type { GoalKind } from "@/entities/goal"
 
-import { isAtMaxAbility, isAtMaxLevel, isAtMaxRank } from ".//goal-validation"
+import {
+  isAtMaxAbility,
+  isAtMaxProgression,
+  isAtMaxRank,
+} from ".//goal-validation"
 
 type FieldsWithPrefill<TArgs extends unknown[]> = {
   prefillFrom: (...args: TArgs) => void
@@ -21,12 +25,10 @@ export function useEntityPrefillEffect({
   entityId,
   playerEntity,
   rank,
-  xpLevel,
   rankFields,
   upgradeFields,
   ascensionFields,
   abilityFields,
-  levelFields,
   setEnabledTypes,
 }: {
   entityId: UnitId | undefined
@@ -34,14 +36,10 @@ export function useEntityPrefillEffect({
     | { progressionIndex: Progression; abilities?: { level: number }[] }
     | undefined
   rank: Rank | undefined
-  // A MoW also has an `xpLevel`, but Level goals aren't offered for it yet (Character-only, plan
-  // scope decision) — the parent only ever passes a Character's synced level through here.
-  xpLevel: number | undefined
   rankFields: FieldsWithPrefill<[Rank | undefined]>
   upgradeFields: FieldsWithPrefill<[Rank | undefined]>
   ascensionFields: FieldsWithPrefill<[Progression]>
   abilityFields: FieldsWithPrefill<[number, number]>
-  levelFields: FieldsWithPrefill<[number | undefined]>
   setEnabledTypes: (
     updater: (current: ReadonlySet<GoalKind>) => ReadonlySet<GoalKind>
   ) => void
@@ -67,11 +65,11 @@ export function useEntityPrefillEffect({
     const activeLevel = playerEntity.abilities?.[0]?.level ?? 1
     const passiveLevel = playerEntity.abilities?.[1]?.level ?? 1
     abilityFields.prefillFrom(activeLevel, passiveLevel)
-    levelFields.prefillFrom(xpLevel)
 
-    // A toggle the user enabled before this synced data loaded may turn out to already be maxed
-    // out once it arrives — strip it rather than leave a checked-but-disabled toggle sitting in the
-    // form. Always called (a no-op functional updater when nothing's maxed) for the same lint-idiom
+    // A toggle the user enabled (or a remembered goal type carried over from the previous creation)
+    // before this synced data loaded may turn out to be unavailable once it arrives — an owned unit
+    // cannot be unlocked, and maxed-out targets have nowhere to go. Strip it rather than leave a
+    // checked-but-disabled toggle sitting in the form. Always called (a no-op functional updater when nothing's maxed) for the same lint-idiom
     // reason as the setState calls above — a conditionally-called setState inside an effect trips
     // the set-state-in-effect rule.
     const rankMaxed = isAtMaxRank(rank)
@@ -80,20 +78,24 @@ export function useEntityPrefillEffect({
       activeLevel,
       passiveLevel
     )
-    const levelMaxed = isAtMaxLevel(xpLevel)
+    const progressionMaxed = isAtMaxProgression(playerEntity.progressionIndex)
     setEnabledTypes((current) => {
-      if (!rankMaxed && !abilityMaxed && !levelMaxed) return current
       const next = new Set(current)
-      if (rankMaxed) next.delete("Rank")
+      // Reaching this effect means the unit is owned, so Unlock is never available.
+      next.delete("Unlock")
+      if (rankMaxed) {
+        next.delete("Rank")
+        next.delete("Upgrade")
+      }
       if (abilityMaxed) next.delete("Ability")
-      if (levelMaxed) next.delete("Level")
+      if (progressionMaxed) next.delete("Ascension")
       return next
     })
-    // rankFields/ascensionFields/abilityFields/upgradeFields/levelFields are freshly returned every
-    // render (not stable references) — their own state setters are, so depending on
-    // entityId/playerEntity/rank/xpLevel alone (as before this hook was split) is correct here.
+    // rankFields/ascensionFields/abilityFields/upgradeFields are freshly returned every render (not
+    // stable references) — their own state setters are, so depending on entityId/playerEntity/rank
+    // alone (as before this hook was split) is correct here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entityId, playerEntity, rank, xpLevel])
+  }, [entityId, playerEntity, rank])
 
   return {
     resetPrefillGuard: () => {

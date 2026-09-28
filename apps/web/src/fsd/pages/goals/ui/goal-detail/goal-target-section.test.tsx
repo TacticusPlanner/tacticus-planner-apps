@@ -64,7 +64,6 @@ const emptyConfig: GoalConfig = {
   acquisitionSources: null,
   farmingLocationIds: null,
   upgrade: null,
-  level: null,
 }
 
 function goal(
@@ -82,6 +81,7 @@ function goal(
     dependsOn: [],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
+    globalPriority: 1,
     config: { ...emptyConfig, ...config },
     snapshot: null,
     events: [],
@@ -170,7 +170,6 @@ describe("GoalTargetSection", () => {
     ["Rank", rankGoal()],
     ["Ability", abilityGoal()],
     ["Upgrade", upgradeGoal()],
-    ["Level", goal("Level", { level: { start: 1, end: 10 } })],
     [
       "Ascension",
       goal("Ascension", {

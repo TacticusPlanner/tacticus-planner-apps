@@ -197,12 +197,12 @@ describe("PostHogProvider page-view capture", () => {
     useCurrentUserMock.mockReturnValue({
       state: successState("analytics-id-1"),
     })
-    matches.mockReturnValue([{ pathname: "/goals/overview", params: {} }])
+    matches.mockReturnValue([{ pathname: "/plan/goals", params: {} }])
 
-    renderProvider("/goals")
+    renderProvider("/plan")
 
     expect(captureEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ routeGroup: "/goals" })
+      expect.objectContaining({ routeGroup: "/plan" })
     )
   })
 
@@ -274,9 +274,9 @@ describe("PostHogProvider page-view capture", () => {
     expect(captureEvent).not.toHaveBeenCalled()
 
     // A subsequent, real navigation is reported normally.
-    matches.mockReturnValue([{ pathname: "/goals", params: {} }])
+    matches.mockReturnValue([{ pathname: "/plan", params: {} }])
     rerender(
-      <PostHogProvider routeGroup="/goals">
+      <PostHogProvider routeGroup="/plan">
         <div>content</div>
       </PostHogProvider>
     )

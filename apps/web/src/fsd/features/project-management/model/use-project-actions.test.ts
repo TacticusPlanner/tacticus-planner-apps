@@ -5,17 +5,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { toast } from "sonner"
 
-import { projectQueries, type ProjectGoalSummary } from "@/entities/project"
 import { useProjectActions } from "./use-project-actions"
 
-const {
-  activateProjectMock,
-  updateProjectGoalOrderMock,
-  updateProjectGoalsStatusMock,
-  createProjectMock,
-} = vi.hoisted(() => ({
-  activateProjectMock: vi.fn(),
-  updateProjectGoalOrderMock: vi.fn(),
+const { updateProjectGoalsStatusMock, createProjectMock } = vi.hoisted(() => ({
   updateProjectGoalsStatusMock: vi.fn(),
   createProjectMock: vi.fn(),
 }))
@@ -35,29 +27,10 @@ vi.mock("@/entities/project", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/entities/project")>()
   return {
     ...actual,
-    activateProject: activateProjectMock,
-    updateProjectGoalOrder: updateProjectGoalOrderMock,
     updateProjectGoalsStatus: updateProjectGoalsStatusMock,
     createProject: createProjectMock,
   }
 })
-
-function goal(id: string, priority: number): ProjectGoalSummary {
-  return {
-    goal: {
-      goalId: id,
-      entityType: "character",
-      entityId: id,
-      goalType: "Rank",
-      status: "Active",
-      notes: null,
-      dependsOn: [],
-      createdAt: "2026-01-01",
-      updatedAt: "2026-01-01",
-    },
-    priority,
-  }
-}
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -74,8 +47,6 @@ function createWrapper() {
 
 describe("useProjectActions", () => {
   beforeEach(() => {
-    activateProjectMock.mockReset()
-    updateProjectGoalOrderMock.mockReset()
     updateProjectGoalsStatusMock.mockReset()
     createProjectMock.mockReset()
     vi.mocked(toast.success).mockReset()
@@ -85,7 +56,7 @@ describe("useProjectActions", () => {
   it("stays pending until every overlapping action has settled", async () => {
     let resolveFirst!: () => void
     let resolveSecond!: () => void
-    activateProjectMock
+    updateProjectGoalsStatusMock
       .mockReturnValueOnce(
         new Promise<void>((resolve) => {
           resolveFirst = resolve
@@ -103,8 +74,8 @@ describe("useProjectActions", () => {
     let second!: Promise<void>
 
     act(() => {
-      first = result.current.activate("p1")
-      second = result.current.activate("p2")
+      first = result.current.setGoalsStatus("p1", "Paused")
+      second = result.current.setGoalsStatus("p2", "Paused")
     })
     await waitFor(() => expect(result.current.pending).toBe(true))
 
@@ -119,56 +90,6 @@ describe("useProjectActions", () => {
       await second
     })
     expect(result.current.pending).toBe(false)
-  })
-
-  it("reorders the cached goal list immediately, before the request resolves", async () => {
-    const { queryClient, wrapper } = createWrapper()
-    const queryKey = projectQueries.goals("p1").queryKey
-    queryClient.setQueryData(queryKey, {
-      goals: [goal("a", 1), goal("b", 2), goal("c", 3)],
-    })
-    let resolveRequest!: () => void
-    updateProjectGoalOrderMock.mockReturnValue(
-      new Promise<void>((resolve) => {
-        resolveRequest = resolve
-      })
-    )
-    const { result } = renderHook(() => useProjectActions(), { wrapper })
-
-    let reordered!: Promise<boolean>
-    act(() => {
-      reordered = result.current.reorderGoals("p1", ["c", "a", "b"])
-    })
-
-    await waitFor(() =>
-      expect(
-        queryClient
-          .getQueryData<{ goals: ProjectGoalSummary[] }>(queryKey)
-          ?.goals.map((entry) => entry.goal.goalId)
-      ).toEqual(["c", "a", "b"])
-    )
-
-    await act(async () => {
-      resolveRequest()
-      await reordered
-    })
-  })
-
-  it("rolls back the cached goal list when the request fails", async () => {
-    const { queryClient, wrapper } = createWrapper()
-    const queryKey = projectQueries.goals("p1").queryKey
-    const original = [goal("a", 1), goal("b", 2), goal("c", 3)]
-    queryClient.setQueryData(queryKey, { goals: original })
-    updateProjectGoalOrderMock.mockRejectedValue(new Error("network error"))
-    const { result } = renderHook(() => useProjectActions(), { wrapper })
-
-    await act(async () => {
-      await result.current.reorderGoals("p1", ["c", "a", "b"])
-    })
-
-    expect(
-      queryClient.getQueryData<{ goals: ProjectGoalSummary[] }>(queryKey)?.goals
-    ).toEqual(original)
   })
 
   it("bulk-pauses a project's goals and reports how many were transitioned", async () => {
@@ -224,7 +145,6 @@ describe("useProjectActions", () => {
       description: null,
       color: null,
       status: "Active",
-      isActivePlan: false,
       isDefault: false,
       revision: 0,
       createdAt: "2026-01-01",

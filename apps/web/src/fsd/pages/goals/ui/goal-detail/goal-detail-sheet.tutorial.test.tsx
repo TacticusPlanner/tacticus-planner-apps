@@ -16,7 +16,15 @@ describe("useGoalDetailSheetTutorial", () => {
     const { result } = renderHook(() => useGoalDetailSheetTutorial())
 
     expect(result.current.desktop).toEqual(result.current.mobile)
-    const [step] = result.current.desktop
+    expect(result.current.desktop).toHaveLength(2)
+    const [step, projectStep] = result.current.desktop
+    expect(projectStep.target).toBe('[data-testid="goal-detail-projects"]')
+    expect(projectStep.title).toBe(
+      "localized:tour.goalDetail.steps.projects.title"
+    )
+    expect(projectStep.content).toBe(
+      "localized:tour.goalDetail.steps.projects.content"
+    )
     expect(step.target).toBe('[data-testid="goal-detail-edit-target"]')
     expect(step.title).toBe("localized:tour.goalDetail.steps.editTarget.title")
     expect(step.content).toBe(
@@ -40,6 +48,15 @@ describe("target editor and tour copy", () => {
     expect(locale.goals.target.save).not.toBe(en.goals.target.save)
     expect(locale.tour.goalDetail.steps.editTarget.content).not.toBe(
       en.tour.goalDetail.steps.editTarget.content
+    )
+    expect(locale.tour.goalDetail.steps.projects.content).not.toBe(
+      en.tour.goalDetail.steps.projects.content
+    )
+    expect(locale.tour.createGoal.steps.projects.content).not.toBe(
+      en.tour.createGoal.steps.projects.content
+    )
+    expect(locale.goals.project.createInlineNote).not.toBe(
+      en.goals.project.createInlineNote
     )
     expect(locale.tour.overview.steps.list.content).not.toBe(
       en.tour.overview.steps.list.content

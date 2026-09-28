@@ -12,7 +12,7 @@ import { GoalShardLocationsField } from ".//goal-shard-locations-field"
 import { AbilityGoalFields } from ".//ability-goal-fields"
 import { RankGoalFields } from ".//goal-type-fields"
 import { GoalTypeCard } from "../shared/goal-visuals"
-import { LevelGoalFields } from ".//level-goal-fields"
+import { LevelRequirementNote } from ".//level-requirement-note"
 import { UnlockRequirementField } from ".//unlock-requirement-field"
 import { UpgradeGoalFields } from ".//upgrade-goal-fields"
 
@@ -55,6 +55,7 @@ export function GoalTypeCards({
                     rankAppliedUpgrades={form.rankAppliedUpgrades}
                     rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
                   />
+                  <LevelRequirementNote preview={form.levelRequirements.Rank} />
                   <FarmingStrategyField
                     context="rank"
                     rankStart={form.rankStart}
@@ -209,6 +210,9 @@ export function GoalTypeCards({
                     missingUpgrades={form.missingUpgrades}
                     costingSupported={form.entityType === "Mow"}
                   />
+                  <LevelRequirementNote
+                    preview={form.levelRequirements.Ability}
+                  />
                   {form.entityType === "Mow" ? (
                     <FarmingStrategyField
                       context="ability"
@@ -247,18 +251,6 @@ export function GoalTypeCards({
                           }
                         : undefined
                     }
-                  />
-                </GoalTypeCard>
-              )
-            case "Level":
-              return (
-                <GoalTypeCard key={kind} kind="Level">
-                  <LevelGoalFields
-                    levelStart={form.levelStart}
-                    levelEnd={form.levelEnd}
-                    levelEndOptions={form.levelEndOptions}
-                    onLevelEndChange={form.setLevelEnd}
-                    cost={form.levelCost}
                   />
                 </GoalTypeCard>
               )

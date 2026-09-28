@@ -189,7 +189,7 @@ export function useSalvageRecommendations(
       track,
       roster: trackRoster.map(mapRosterCharacter),
       selectedProjectId,
-      activeProjectContributions: selectedProjectId
+      scopedGoalContributions: selectedProjectId
         ? collectContributions(
             (projectGoalsQuery.data?.goals ?? []).map((entry) => entry.goal),
             selectedProjectId

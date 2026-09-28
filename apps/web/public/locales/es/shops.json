@@ -1,6 +1,7 @@
 {
   "title": "Recomendaciones de tienda",
   "subtitle": "Ofertas de las tiendas diarias que vale la pena comprar hoy para los objetivos activos de {{project}}",
+  "subtitleAll": "Ofertas de las tiendas diarias que vale la pena comprar hoy para tus objetivos activos",
   "shopName": {
     "guild": "Tienda de gremio",
     "war": "Tienda de guerra de gremio",
@@ -48,7 +49,8 @@
     "error": "No se pudieron cargar las recomendaciones de tienda.",
     "retry": "Reintentar",
     "noProject": "Crea o selecciona un proyecto para ver recomendaciones de tienda para sus objetivos.",
-    "nothingToBuy": "Hoy no hay nada que valga la pena comprar para los objetivos activos de este proyecto."
+    "noGoals": "No tienes objetivos activos para los que comprar. Crea o reanuda un objetivo para ver recomendaciones.",
+    "nothingToBuy": "Hoy no hay nada que valga la pena comprar para estos objetivos activos."
   },
   "tour": {
     "shops": {

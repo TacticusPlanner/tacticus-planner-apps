@@ -4,6 +4,9 @@ export type ProjectMembershipConflict = {
   projectId: string
   existingGoalId: string
   goalTypes: GoalKind[]
+  /** Set when the conflict is an exact Rank end-target duplicate (the normalized `<rank>:<slots>` key);
+   *  absent for a non-Rank goal-type conflict. */
+  rankTargetKey?: string
 }
 
 export type ProjectGoalSlotConflictDetailsDto = {
@@ -15,6 +18,13 @@ export type ProjectGoalSlotConflictDetailsDto = {
   entityId: string
   goalType: string
   existingGoalId: string
+  // Rank slot conflicts: the occupied normalized end target, and every project holding it.
+  normalizedTarget?: string | null
+  conflicts?: {
+    projectId: string
+    projectName: string
+    existingGoalId: string
+  }[]
 }
 
 export function projectGoalSlotConflictDetails(

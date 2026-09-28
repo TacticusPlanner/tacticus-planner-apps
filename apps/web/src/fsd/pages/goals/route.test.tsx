@@ -1,29 +1,16 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router"
 
-const { useProjectsMock } = vi.hoisted(() => ({
-  useProjectsMock: vi.fn(),
-}))
-
-vi.mock("@/entities/project", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/entities/project")>()
-  return {
-    ...actual,
-    useProjects: () => useProjectsMock(),
-  }
-})
-
 import { routes } from "./route"
 
-// Only the index route's element is exercised here - the other routes lazy-load real pages, so
-// their elements are swapped for stubs to keep this test focused on the index route's own
-// resolution (plan-nav-default-landing).
-function renderGoalsRoutes() {
+// Only the index route's own resolution is exercised: the other routes lazy-load real pages, so
+// their elements are swapped for stubs.
+function renderPlanRoutes(initialPath: string) {
   render(
-    <MemoryRouter initialEntries={["/goals"]}>
+    <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/goals">
+        <Route path="/plan">
           {routes.map((route) =>
             route.index ? (
               <Route index element={route.element} key="index" />
@@ -41,55 +28,21 @@ function renderGoalsRoutes() {
   )
 }
 
-describe("goals routes", () => {
-  it("redirects /goals to Current plan's project detail route", () => {
-    useProjectsMock.mockReturnValue({
-      activeProjectId: "p1",
-      defaultProjectId: "p2",
-      loading: false,
-    })
+describe("plan routes", () => {
+  it("lands the bare /plan on Goals whatever the account's projects are", () => {
+    renderPlanRoutes("/plan")
 
-    renderGoalsRoutes()
-
-    expect(screen.getByTestId("projects/:projectId-child")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-child")).toBeInTheDocument()
   })
 
-  it("falls back to the Default project when there is no Current plan", () => {
-    useProjectsMock.mockReturnValue({
-      activeProjectId: undefined,
-      defaultProjectId: "p2",
-      loading: false,
-    })
+  it.each([
+    ["/plan/goals", "goals-child"],
+    ["/plan/projects", "projects-child"],
+    ["/plan/projects/p1", "projects/:projectId-child"],
+    ["/plan/insights", "insights-child"],
+  ])("routes %s to its page", (path, testId) => {
+    renderPlanRoutes(path)
 
-    renderGoalsRoutes()
-
-    expect(screen.getByTestId("projects/:projectId-child")).toBeInTheDocument()
-  })
-
-  it("falls back to All Goals when the account has no projects", () => {
-    useProjectsMock.mockReturnValue({
-      activeProjectId: undefined,
-      defaultProjectId: undefined,
-      loading: false,
-    })
-
-    renderGoalsRoutes()
-
-    expect(screen.getByTestId("overview-child")).toBeInTheDocument()
-  })
-
-  it("shows a loading state instead of redirecting while the project list is still loading", () => {
-    useProjectsMock.mockReturnValue({
-      activeProjectId: undefined,
-      defaultProjectId: undefined,
-      loading: true,
-    })
-
-    renderGoalsRoutes()
-
-    expect(
-      screen.getByTestId("default-goals-landing-loading")
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId("overview-child")).not.toBeInTheDocument()
+    expect(screen.getByTestId(testId)).toBeInTheDocument()
   })
 })

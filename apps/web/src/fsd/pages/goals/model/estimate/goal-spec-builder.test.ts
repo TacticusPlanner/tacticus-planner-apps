@@ -41,9 +41,7 @@ const craftedUpgradesById = (
   )
 
 const baseSpecParams = {
-  includesLevel: false,
   ascensionSuggestion: null,
-  levelSuggestion: null,
   rankStart: "Stone1" as const,
   rankEnd: "Stone2" as const,
   rankEndPointFive: false,
@@ -54,60 +52,46 @@ const baseSpecParams = {
   abilityActiveEnd: 0,
   abilityPassiveStart: 0,
   abilityPassiveEnd: 0,
-  levelStart: 1,
-  levelEnd: 2,
   farmingStrategy: "TotalUpgrades" as const,
   upgradeTargets: [],
   plan: emptyAcquisitionPlan(),
 }
 
 describe("buildReviewItems", () => {
-  it("flags an auto-included Unlock, Ascension and Level as suggested, not the user's own selections", () => {
-    const items = buildReviewItems(new Set(["Rank"]), true, true, true)
+  it("flags an auto-included Unlock and Ascension as suggested, not the user's own selections", () => {
+    const items = buildReviewItems(new Set(["Rank"]), true, true)
     expect(items).toEqual([
       { goalType: "Unlock", autoSuggested: true },
       { goalType: "Ascension", autoSuggested: true },
-      { goalType: "Level", autoSuggested: true },
       { goalType: "Rank", autoSuggested: false },
     ])
   })
 
-  it("does not flag Unlock/Ascension/Level as auto-suggested once explicitly toggled", () => {
+  it("does not flag Unlock/Ascension as auto-suggested once explicitly toggled", () => {
     const items = buildReviewItems(
-      new Set(["Unlock", "Ascension", "Level", "Rank"]),
-      true,
+      new Set(["Unlock", "Ascension", "Rank"]),
       true,
       true
     )
     expect(items).toEqual([
       { goalType: "Unlock", autoSuggested: false },
       { goalType: "Ascension", autoSuggested: false },
-      { goalType: "Level", autoSuggested: false },
       { goalType: "Rank", autoSuggested: false },
     ])
   })
 
   it("is empty when nothing is enabled or suggested", () => {
-    expect(buildReviewItems(new Set(), false, false, false)).toEqual([])
+    expect(buildReviewItems(new Set(), false, false)).toEqual([])
   })
 
   it("includes an enabled Upgrade goal, never auto-suggested", () => {
-    const items = buildReviewItems(new Set(["Upgrade"]), false, false, false)
+    const items = buildReviewItems(new Set(["Upgrade"]), false, false)
     expect(items).toEqual([{ goalType: "Upgrade", autoSuggested: false }])
   })
 
-  it("orders an included Level goal after Unlock/Ascension and before Rank/Ability", () => {
-    const items = buildReviewItems(
-      new Set(["Rank", "Ability"]),
-      false,
-      false,
-      true
-    )
-    expect(items.map((item) => item.goalType)).toEqual([
-      "Level",
-      "Rank",
-      "Ability",
-    ])
+  it("never lists a Level goal for a Rank/Ability target, however high its level requirement", () => {
+    const items = buildReviewItems(new Set(["Rank", "Ability"]), false, false)
+    expect(items.map((item) => item.goalType)).toEqual(["Rank", "Ability"])
   })
 })
 
@@ -289,56 +273,26 @@ describe("buildCombinedGoalSpecs", () => {
     expect(specs).toHaveLength(0)
   })
 
-  it("builds a Level spec from the current/target levels, depending on Unlock when included", () => {
-    const specs = buildCombinedGoalSpecs({
-      ...baseSpecParams,
-      enabledTypes: new Set(["Unlock", "Level"]),
-      includesUnlock: true,
-      includesAscension: false,
-      includesLevel: true,
-      levelStart: 31,
-      levelEnd: 42,
-    })
-
-    expect(specs.map((spec) => spec.goalType)).toEqual(["Unlock", "Level"])
-    expect(specs[1].config.level).toEqual({ start: 31, end: 42 })
-    expect(specs[1].dependsOnIndex).toEqual([0])
-  })
-
-  it("uses the auto-suggested Level target when Level wasn't explicitly toggled, and gates Rank/Ability on it", () => {
+  it("creates no Level spec or dependency for a Rank/Ability pair, only Ascension/Unlock", () => {
     const specs = buildCombinedGoalSpecs({
       ...baseSpecParams,
       enabledTypes: new Set(["Rank", "Ability"]),
-      includesUnlock: false,
-      includesAscension: false,
-      includesLevel: true,
-      levelSuggestion: { start: 20, end: 35 },
+      includesUnlock: true,
+      includesAscension: true,
+      ascensionSuggestion: { start: "Common:None", end: "Uncommon:TwoStars" },
+      // A target far above any current level: the level requirement lives on the goals, not as a spec.
+      rankEnd: "Gold1",
+      abilityActiveEnd: 40,
     })
 
     expect(specs.map((spec) => spec.goalType)).toEqual([
-      "Level",
+      "Unlock",
+      "Ascension",
       "Rank",
       "Ability",
     ])
-    expect(specs[0].config.level).toEqual({ start: 20, end: 35 })
-    expect(specs[0].dependsOnIndex).toEqual([])
-    expect(specs[1].dependsOnIndex).toEqual([0]) // Rank -> Level
-    expect(specs[2].dependsOnIndex).toEqual([0]) // Ability -> Level
-  })
-
-  it("prefers the user's own Level fields over the suggestion when explicitly toggled", () => {
-    const specs = buildCombinedGoalSpecs({
-      ...baseSpecParams,
-      enabledTypes: new Set(["Level"]),
-      includesUnlock: false,
-      includesAscension: false,
-      includesLevel: true,
-      levelSuggestion: { start: 20, end: 35 },
-      levelStart: 31,
-      levelEnd: 42,
-    })
-
-    expect(specs[0]?.config.level).toEqual({ start: 31, end: 42 })
+    expect(specs[2].dependsOnIndex).toEqual([0, 1])
+    expect(specs[3].dependsOnIndex).toEqual([0, 1])
   })
 })
 

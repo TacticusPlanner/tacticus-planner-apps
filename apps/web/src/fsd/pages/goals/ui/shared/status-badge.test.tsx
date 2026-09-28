@@ -31,14 +31,6 @@ describe("BlockedIndicator", () => {
 
   it.each([
     [
-      "missing Level prerequisite",
-      {
-        kind: "MissingLevelPrerequisite",
-        requiredLevel: 20,
-        existingGoalId: undefined,
-      },
-    ],
-    [
       "missing Ascension prerequisite",
       {
         kind: "MissingAscensionPrerequisite",

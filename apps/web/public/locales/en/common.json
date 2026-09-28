@@ -287,7 +287,7 @@
       "moreCount": "+{{count}} more",
       "summaryUnavailable": "Summary unavailable",
       "emptyTitle": "No projects yet",
-      "emptyDescription": "Projects group unit goals into prioritized plans.",
+      "emptyDescription": "Projects group your goals so you can browse them separately.",
       "emptyAction": "Create project",
       "error": "Couldn't load your projects.",
       "retry": "Retry"
@@ -295,7 +295,8 @@
     "raids": {
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
-      "error": "Couldn't load today's raids."
+      "error": "Couldn't load today's raids.",
+      "noGoals": "No active goals yet. Add goals to plan your raids."
     },
     "calendar": {
       "title": "Events Calendar"
@@ -394,7 +395,7 @@
       "menu": "Import from V1",
       "title": "Import from V1",
       "back": "Back",
-      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and imported goals are paused unless your default project is also your active project.",
+      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and each imported goal is Active or Paused according to whether it was in your V1 daily planning.",
       "username": "V1 username",
       "password": "V1 password",
       "selectParts": "Choose what to import",
@@ -454,10 +455,10 @@
     },
     "tabs": {
       "goals": "Goals",
-      "overview": "All Goals",
-      "overviewDescription": "Filter, sort, and group all your active goals.",
+      "overview": "Goals",
+      "overviewDescription": "Your goals in priority order — filter, group, and reprioritize.",
       "projects": "Projects",
-      "projectsDescription": "Organize goals into focused plans and control their priority.",
+      "projectsDescription": "Organize goals into focused groups and browse them separately.",
       "insights": "Insights",
       "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
@@ -475,7 +476,8 @@
       "status": "Status · Done by",
       "actions": "Actions",
       "reorder": "Reorder",
-      "reorderHandle": "Drag {{entity}} to reorder"
+      "reorderHandle": "Drag {{entity}} to reorder",
+      "priority": "Priority"
     },
     "status": {
       "Draft": "Draft",
@@ -491,7 +493,6 @@
         "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
         "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
-        "MissingLevelPrerequisite": "A Level goal reaching level {{level}} is required.",
         "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required.",
         "MissingUnlockPrerequisite": "An Unlock goal for {{unit}} is required."
       },
@@ -518,7 +519,7 @@
     },
     "project": {
       "noProjectTitle": "No projects yet",
-      "noProjectDescription": "A project is a named selection of your goals with its own priority order. Create one to plan a roster push, an event, or a long-term build separately from the rest.",
+      "noProjectDescription": "A project is a named selection of your goals. Create one to group a roster push, an event, or a long-term build and browse it separately from the rest.",
       "notFoundTitle": "Project not found",
       "notFoundDescription": "This project doesn't exist, or you don't have access to it.",
       "projectSwitcherLabel": "Project",
@@ -536,27 +537,25 @@
       "removeDestinationUnknown": "Your projects aren't loaded yet, so this goal has no destination. Try again in a moment.",
       "quicknavLabel": "Jump to a project",
       "quicknavAllProjects": "All projects",
-      "addGoalsTrigger": "Add goals",
+      "addGoalsTrigger": "Manage goals",
       "createGoalTrigger": "Create goal",
       "createNewGoal": "Create new goal",
-      "addGoalsTitle": "Add goals to this project",
-      "addGoalsDescription": "Search your goals and add them to {{project}}. Goals already in it stay where they are.",
+      "addGoalsTitle": "Manage goals in this project",
+      "addGoalsDescription": "Tick the goals that should be in {{project}} and untick members to remove them. Goals are listed in your priority order, and nothing changes until you save.",
       "addGoalsSearch": "Search goals",
       "addGoalsEmpty": "No goals match your search.",
-      "addGoalsMember": "Already here",
-      "addGoalsSave_one": "Add {{count}} goal",
-      "addGoalsSave_other": "Add {{count}} goals",
+      "addGoalsMember": "In project",
       "assemblySlotTaken": "This project can hold only one active or paused {{type}} goal for this unit.",
       "searchProjects": "Search projects",
       "noAddableProjects": "No available projects found.",
+      "createInline": "Create \"{{name}}\"",
+      "creatingInline": "Creating \"{{name}}\"…",
+      "createInlineNote": "Creating a project saves it right away, even if you cancel this goal. It doesn't change this goal's status or priority.",
+      "createFailed": "Couldn't create the project. Check your connection and try again.",
       "membershipConflict": "{{project}} already contains an active or paused {{types}} goal for this unit.",
       "reviewConflictingGoal": "Review conflicting goal",
       "filterAll": "All projects",
       "filterLabel": "Project",
-      "currentPlan": "Current plan",
-      "makeCurrent": "Make current",
-      "otherProjects": "Other projects",
-      "noOtherProjects": "No other available projects yet.",
       "archivedProjects": "Archived projects ({{count}})",
       "backToProjects": "Back to projects",
       "unitGoalSummary": "{{units}} units · {{goals}} goals",
@@ -565,7 +564,8 @@
       "completionSummary": "Done by {{date}}",
       "summaryUnavailable": "Summary unavailable — retry",
       "moreActions": "More project actions",
-      "archiveUnavailable": "Archive unavailable for Current plan or Default",
+      "archiveUnavailable": "The Default project can't be archived",
+      "defaultBadge": "Default",
       "cancel": "Cancel",
       "edit": "Edit",
       "editTitle": "Edit project",
@@ -580,31 +580,48 @@
       "restore": "Restore project",
       "save": "Save project",
       "create": "Create project",
-      "dashboardIntro": "A project is a named selection of your goals with its own priority order. Keep several to plan different things separately — a roster push, an event, a long-term build — and switch between them without losing each one's order.",
-      "currentPlanNote": "Current plan is the project Dailies and Insights use by default. It does not make goals active or paused — you pause and resume goals one at a time.",
+      "dashboardIntro": "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, managed on the Goals page.",
       "unitGoalSummaryOfAccount": "{{units}} units · {{goals}} of your {{accountGoals}} goals",
       "emptyProjectTitle": "This project has no goals yet",
       "emptyProjectDescription": "Use Add goals to put existing goals into it, or Create goal to make a new one.",
       "reorderGoals": "Reorder",
       "reorderDone": "Done",
       "pauseAllGoals": "Pause all goals",
-      "resumeAllGoals": "Resume all goals"
+      "resumeAllGoals": "Resume all goals",
+      "assemblyRankTargetTaken": "This project already has this unit's {{target}} Rank goal.",
+      "membershipConflictRank": "{{project}} already contains an active or paused Rank goal for this unit with the target {{target}}.",
+      "assemblyPendingAdd": "Will be added",
+      "assemblyPendingRemove": "Will be removed",
+      "assemblyReviewTitle": "Review changes",
+      "assemblyReviewEmpty": "No changes yet. Tick goals to add them or untick members to remove them.",
+      "assemblyReviewAdding": "Adding {{total}}",
+      "assemblyReviewRemoving": "Removing {{total}}",
+      "assemblySave_one": "Save {{count}} change",
+      "assemblySave_other": "Save {{count}} changes",
+      "assemblyUnknownGoal": "Unknown goal",
+      "assemblyStaleTitle": "This project changed while you were editing",
+      "assemblyStaleAdded": "Added elsewhere: {{goals}}",
+      "assemblyStaleRemoved": "Removed elsewhere: {{goals}}",
+      "assemblyStaleHint": "Your pending changes are kept. Refresh to load the current goals, review them together with your changes, and save again.",
+      "assemblyRefresh": "Refresh goals",
+      "assemblyLastMembershipTitle": "Nothing was saved: these goals would be left in no project",
+      "assemblyLastMembership": "This is the goal's only project. Add it to another project first (the Default project is always available), then remove it here.",
+      "assemblySlotConflictTitle": "Nothing was saved: these goals compete for the same slot",
+      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again."
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
       "deleted": "Goal deleted.",
       "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
       "goalRelocated": "{{goal}} moved to {{project}}.",
-      "goalsAddedToProject_one": "{{count}} goal added to {{project}}.",
-      "goalsAddedToProject_other": "{{count}} goals added to {{project}}.",
-      "activated": "Current plan updated.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
       "projectGoalsPaused_one": "{{count}} goal paused.",
       "projectGoalsPaused_other": "{{count}} goals paused.",
       "projectGoalsResumed_one": "{{count}} goal resumed.",
       "projectGoalsResumed_other": "{{count}} goals resumed.",
-      "projectUpdated": "Project updated."
+      "projectUpdated": "Project updated.",
+      "projectMembershipSaved": "{{project}} updated: {{added}} added, {{removed}} removed."
     },
     "create": {
       "title": "Create a goal",
@@ -625,8 +642,7 @@
         "Ascension": "Ascension",
         "Ability": "Ability",
         "Unlock": "Unlock",
-        "Upgrade": "Upgrade",
-        "Level": "Level"
+        "Upgrade": "Upgrade"
       },
       "rank": {
         "start": "From rank",
@@ -678,10 +694,8 @@
       },
       "level": {
         "current": "Current level",
-        "target": "Target level",
         "booksNeeded": "≈ {{count}} Legendary XP Books",
-        "goldToApply": "≈ {{gold}} gold to apply",
-        "costDisclaimer": "Netted against your owned XP books. No days estimate — XP books aren't farmed from campaign energy."
+        "goldToApply": "≈ {{gold}} gold to apply"
       },
       "farmingStrategy": {
         "label": "Farming strategy",
@@ -733,7 +747,7 @@
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
       "showLess": "Show less",
-      "previewDisclaimer": "The actual estimate may change depending on this goal's priority within the selected project and the selected farming strategy.",
+      "previewDisclaimer": "The actual estimate may change depending on this goal's place in your priority order and the selected farming strategy.",
       "previewUnavailable": "A detailed estimate isn't available for this goal type yet.",
       "characterAbilityCostUnsupported": "Character ability targets are validated and tracked, but their resource cost is not supported yet.",
       "projectLabel": "Projects",
@@ -751,10 +765,8 @@
       "suggestions": {
         "includeUnlock": "Include the suggested Unlock goal",
         "includeAscension": "Include the suggested Ascension goal",
-        "includeLevel": "Include the suggested Level goal (reach level {{level}})",
         "unlockRequired": "required, this character isn't owned yet",
-        "ascensionRequired": "required to reach the target rank",
-        "levelRequired": "required to reach the target rank/ability level"
+        "ascensionRequired": "required to reach the target rank"
       },
       "validation": {
         "alreadyUnlocked": "This character is already unlocked.",
@@ -762,16 +774,19 @@
         "progressionAlreadyReached": "The selected progression has already been reached.",
         "abilityRange": "At least one ability must increase and neither range may decrease.",
         "abilityAlreadyReached": "The selected ability levels have already been reached.",
-        "levelAlreadyReached": "The selected level has already been reached.",
         "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
-        "levelMaxed": "This character has already reached the maximum level.",
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit."
       },
       "startPaused": "Create paused",
-      "startPausedDescription": "The goal is created normally but stays out of daily planning until you resume it. Which projects you pick does not affect this."
+      "startPausedDescription": "The goal is created normally but stays out of daily planning until you resume it. Which projects you pick does not affect this.",
+      "levelRequirement": {
+        "title": "Requires level {{required}} (currently {{current}})",
+        "xpRemaining": "{{xp}} XP still to gain",
+        "note": "Shown for reference — this is part of the goal, not a separate goal, and never blocks it."
+      }
     },
     "estimate": {
       "none": "—",
@@ -790,20 +805,11 @@
       "search": "Search goals",
       "allTypes": "All goal types",
       "typeFilterLabel": "Goal type filter",
-      "sortByLabel": "Sort by",
       "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
       "groupByUnit": "Group by unit",
-      "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
-      "sort": {
-        "priority": "Priority",
-        "entity": "Character",
-        "type": "Goal type",
-        "status": "Status",
-        "estimate": "Estimate",
-        "updated": "Recently updated"
-      }
+      "reachedIndicatorLabel": "Reached goals are waiting to be viewed"
     },
     "detail": {
       "title": "Goal details",
@@ -820,7 +826,7 @@
       "unsavedChangesCancel": "Keep editing",
       "estimateTitle": "Estimate",
       "isolatedEstimate": "Isolated estimate",
-      "planAwareEstimate": "Accounts for higher-priority goals in this project",
+      "planAwareEstimate": "Accounts for higher-priority goals in your priority order",
       "unavailable": "Unavailable",
       "dependenciesTitle": "Dependencies",
       "historyTitle": "History",
@@ -845,7 +851,7 @@
       "actualProgress": "Actual progress",
       "actualProgressDescription": "Actual progress reflects your account's currently synced, owned state.",
       "potentialProgress": "Potential progress",
-      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in this project reserve their share. It does not change the goal's actual status.",
+      "potentialProgressDescription": "Potential progress applies the resources you already own after higher-priority goals in your priority order reserve their share. It does not change the goal's actual status.",
       "remaining": {
         "upgrades": "{{count}} upgrades remaining",
         "upgradeSlots": "{{count}} upgrade slots remaining",
@@ -859,6 +865,7 @@
         "levelsWithXp": "{{count}} levels · {{xp}} XP",
         "rank": "{{slots}} slots",
         "rankWithEnergy": "{{slots}} slots · {{energy}} energy",
+        "coveredByEarlierGoal": "Covered by an earlier goal",
         "shards": "{{count}} shards"
       },
       "potentialIndicator": "↗ {{percent}}%",
@@ -879,8 +886,10 @@
     },
     "insights": {
       "selectProject": "Select a project",
-      "noProjectTitle": "No project selected",
-      "noProjectDescription": "Select a project above to see its total missing resources, farming bottlenecks, and relevant campaign events.",
+      "noGoalsTitle": "No Active goals",
+      "noGoalsDescription": "Create or resume a goal to see its missing resources, farming bottlenecks, and relevant campaign events, as planned in your priority order. Pick a project above to narrow the view.",
+      "loadError": "Goals couldn't be loaded",
+      "retry": "Retry",
       "upgradesTitle": "Upgrades by rarity",
       "shardsTitle": "Shards & orbs",
       "shards": "Shards",
@@ -910,7 +919,6 @@
       "cancel": "Cancel",
       "rankEnd": "Target rank",
       "progressionEnd": "Target progression",
-      "levelEnd": "Target level",
       "activeEnd": "Active ability, target level",
       "passiveEnd": "Passive ability, target level",
       "primaryEnd": "Primary ability, target level",
@@ -919,8 +927,6 @@
       "issues": {
         "rankNotAboveStart": "Choose a rank above the one this goal started from.",
         "progressionNotAboveStart": "Choose a step above the one this goal started from.",
-        "levelNotAboveStart": "Choose a level above the one this goal started from.",
-        "levelAboveMax": "That level is above the maximum character level.",
         "abilityBelowStart": "An ability target can't be below the level this goal started from.",
         "abilityNoAdvance": "Raise at least one ability above where this goal started.",
         "abilityAboveMax": "That level is above the maximum ability level.",
@@ -937,6 +943,20 @@
       "planningStale": "The target was saved, but your plan couldn't refresh — the estimates shown may still reflect the old target.",
       "retryRefresh": "Retry refresh",
       "historyChanged": "Target changed"
+    },
+    "order": {
+      "conflictTitle": "The plan changed",
+      "conflictDescription": "Your move wasn't saved because the goal order changed after you loaded it. Review the refreshed order, then retry the move.",
+      "retry": "Retry move",
+      "dismiss": "Dismiss",
+      "projectNote": "Each number is the goal's position in your account-wide priority order, so a project's goals can show gaps such as 1, 3, 5. Moving a goal here also moves it in your priority order. Goals from other projects keep their relative order.",
+      "openPlan": "See goals in priority order",
+      "saving": "Saving order…",
+      "dragHint": "Drag a card to change its priority.",
+      "noFarmableDemand": "Your active goals don't need anything that can be farmed right now, so there is no farming to plan.",
+      "estimatesError": "Some plan estimates couldn't be loaded, so farming details may be missing.",
+      "estimatesRetry": "Retry estimates",
+      "listNote": "Goals are in your priority order. Drag an active or paused goal to move it — the change applies in every project, Today, Raids Plan, and Insights."
     }
   },
   "language": {
@@ -1028,17 +1048,21 @@
     },
     "overview": {
       "steps": {
+        "createProject": {
+          "title": "Create a project",
+          "content": "Start a new project from here without leaving Goals. Your filters and place on the page stay as they are."
+        },
         "statusFilter": {
           "title": "Filter by status",
           "content": "Switch between Unfulfilled, Reached, and Archived goals."
         },
         "filters": {
-          "title": "Type, sort, and group",
-          "content": "Narrow by goal type, change the sort order, or group related goals together."
+          "title": "Type and group",
+          "content": "Narrow by goal type or group related goals together."
         },
         "projectFilter": {
           "title": "Narrow by project",
-          "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about Current plan or what Dailies calculates."
+          "content": "Show only the goals in one project. This narrows the list you're looking at and changes nothing about your plan or what Dailies calculates."
         },
         "createGoal": {
           "title": "Create a goal",
@@ -1048,9 +1072,13 @@
           "title": "Planning settings",
           "content": "Set your daily energy budget here — every estimate on this page uses it."
         },
+        "reprioritize": {
+          "title": "Prioritize your goals",
+          "content": "Drag a goal to change its priority (on mobile, tap Reorder first). Each drop saves right away and applies in every project that holds the goal."
+        },
         "list": {
           "title": "Your goals",
-          "content": "Every active goal appears below, matching your current filters. Open an eligible goal to edit its target in place."
+          "content": "Every goal appears below in your priority order — active and paused goals first, then reached and archived ones. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
         }
       }
     },
@@ -1059,6 +1087,10 @@
         "acquisitionSources": {
           "title": "Acquisition sources",
           "content": "Combine campaign farming, Onslaught, and daily shops — select any mix to lower this goal's estimated time."
+        },
+        "projects": {
+          "title": "Projects",
+          "content": "Search for a project name that doesn't exist yet and choose Create to add it here without leaving this form. Which projects hold the goal never changes its status or priority."
         }
       }
     },
@@ -1066,7 +1098,7 @@
       "steps": {
         "list": {
           "title": "What a project is",
-          "content": "A project is a named selection of your goals with its own priority order — keep several to plan different things separately. Current plan is the one Dailies and Insights use by default; it does not pause or resume anything."
+          "content": "A project is a named selection of your goals — keep several to group different things. The Default project is listed first; a project does not pause or resume anything or change your priorities."
         },
         "newProject": {
           "title": "Create a project",
@@ -1078,11 +1110,11 @@
       "steps": {
         "header": {
           "title": "A selection of your goals",
-          "content": "This project holds a selection of your account's goals — the summary shows how many of them are here. Its Current plan state, progress metrics, project switcher, and actions all live in this header."
+          "content": "This project holds a selection of your account's goals — the summary shows how many of them are here. Its progress metrics, project switcher, and actions all live in this header."
         },
         "addGoals": {
-          "title": "Fill the project",
-          "content": "Add several existing goals to this project at once — search your goals, pick the ones you want, and save in a single step."
+          "title": "Choose what's in the project",
+          "content": "Add or remove several goals at once — search your goals (listed in your priority order), group them by unit or type, tick the ones that belong here, review the summary, and save in a single step. Saving never changes your priority order. A unit can have several Rank targets here, but an exact duplicate target is blocked."
         },
         "createGoal": {
           "title": "Create a new goal",
@@ -1090,7 +1122,7 @@
         },
         "reprioritize": {
           "title": "Prioritize your goals",
-          "content": "Drag any goal to change its priority. On mobile, tap Reorder first to enter reorder mode."
+          "content": "Drag any goal to change its priority. Moving a goal here also moves it in your priority order; goals from other projects keep their relative order. On mobile, tap Reorder first to enter reorder mode."
         },
         "selector": {
           "title": "Choose a project",
@@ -1098,7 +1130,7 @@
         },
         "goals": {
           "title": "Project goals",
-          "content": "This project's goals appear here, grouped by goal type to start. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
+          "content": "This project's goals appear here, grouped by goal type to start. Each Rank target is its own goal, labelled with its target, and can be reordered, paused, or deleted on its own. Use Group to switch to one block per unit, or to turn grouping off for a flat list."
         },
         "rowActions": {
           "title": "Remove without deleting",
@@ -1112,6 +1144,10 @@
         "editTarget": {
           "title": "Edit target",
           "content": "Change where this goal ends without recreating it. It keeps its projects, notes, and history, and your plan recalculates."
+        },
+        "projects": {
+          "title": "Projects",
+          "content": "Add this goal to a project, or create a new one from the picker. The new project is saved right away; the goal itself only changes when you save."
         }
       }
     }

@@ -58,7 +58,7 @@ export type ImportV1ProfileRequest = {
     goals: boolean
     onslaughtProgress: boolean
     campaignEventProgress: boolean
-    // Auto-synthesize missing Unlock/Ascension/Level prerequisites for an imported goal, same rules
+    // Auto-synthesize missing Unlock/Ascension prerequisites for an imported goal, same rules
     // and defaults as the manual create-goal flow (rewrite-v1-goal-import). Defaults true server-side
     // too, but sent explicitly so clearing the option in the dialog is honoured.
     automaticPrerequisites: boolean

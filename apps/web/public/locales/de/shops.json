@@ -1,6 +1,7 @@
 {
   "title": "Shop-Empfehlungen",
   "subtitle": "Heutige Tages-Shop-Angebote, die sich für die aktiven Ziele von {{project}} lohnen",
+  "subtitleAll": "Heutige Tages-Shop-Angebote, die sich für deine aktiven Ziele lohnen",
   "shopName": {
     "guild": "Gildenshop",
     "war": "Gildenkriegsshop",
@@ -48,7 +49,8 @@
     "error": "Shop-Empfehlungen konnten nicht geladen werden.",
     "retry": "Erneut versuchen",
     "noProject": "Erstelle oder wähle ein Projekt, um Shop-Empfehlungen für dessen Ziele zu sehen.",
-    "nothingToBuy": "Heute lohnt sich für die aktiven Ziele dieses Projekts kein Kauf."
+    "noGoals": "Du hast keine aktiven Ziele, für die du einkaufen könntest. Lege ein Ziel an oder setze eines fort, um Empfehlungen zu sehen.",
+    "nothingToBuy": "Heute lohnt sich für diese aktiven Ziele kein Kauf."
   },
   "tour": {
     "shops": {

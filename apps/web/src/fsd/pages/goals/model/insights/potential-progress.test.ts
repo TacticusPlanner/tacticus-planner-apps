@@ -54,6 +54,7 @@ describe("computePotentialProgressRatio", () => {
           kind: "Rank",
           current: "Stone1",
           target: "Iron2",
+          targetSlots: 0,
           ratio: 0,
           reachableRatio: null,
           reachableRank: null,
@@ -68,6 +69,7 @@ describe("computePotentialProgressRatio", () => {
   it("never falls below actual progress and clamps at one", () => {
     const progress = {
       kind: "Rank" as const,
+      targetSlots: 0,
       current: "Iron1" as const,
       target: "Iron2" as const,
       ratio: 0.9,
@@ -107,6 +109,7 @@ describe("computePotentialProgressRatio", () => {
           kind: "Rank",
           current: "Stone2",
           target: "Stone2",
+          targetSlots: 0,
           ratio: 0.5,
           reachableRatio: null,
           reachableRank: null,

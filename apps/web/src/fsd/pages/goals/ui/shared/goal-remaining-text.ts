@@ -70,7 +70,7 @@ export function formatGoalRemainingText(
 ): string | null {
   const fmt = (value: number) => new Intl.NumberFormat(language).format(value)
 
-  if (progress.kind === "Level") {
+  if (progress.kind === "LevelRequirement") {
     const count = progress.target - progress.current
     if (count <= 0) return null
     return progress.remainingXp
@@ -81,6 +81,8 @@ export function formatGoalRemainingText(
       : t("goals.overview.remainingText.levels", { count: fmt(count) })
   }
   if (progress.kind === "Rank") {
+    if (remaining?.coveredByEarlierGoal)
+      return t("goals.overview.remainingText.coveredByEarlierGoal")
     const slots = remaining?.upgradeSlotsRemaining
     if (!slots || slots <= 0) return null
     return energy !== undefined

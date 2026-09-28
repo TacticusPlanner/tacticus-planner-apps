@@ -77,6 +77,7 @@ export function SalvageRunPage() {
               testIdPrefix="salvage"
             />
             <ProjectSelect
+              allowAll
               projects={context.projects}
               projectId={context.projectId}
               onProjectIdChange={context.setProjectId}

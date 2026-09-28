@@ -9,7 +9,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 /** One bar, two overlaid fills: a striped "potential" layer (only when it exceeds actual) under a
  *  solid "actual" layer, plus an optional marker at the highest point *currently* reachable (a Rank
- *  or Level goal's `reachableRatio` — rarity and, for Rank, level too, cap how far the goal's own
+ *  goal's or level requirement's `reachableRatio` — rarity and, for Rank, level too, cap how far the goal's own
  *  target scale can advance before further Ascending/leveling; `null` when nothing currently
  *  restricts it). One accessible `role="progressbar"` element carries both ratios via
  *  `aria-valuetext`, replacing the two separate `Progress` bars/captions this superseded; the marker
@@ -61,7 +61,7 @@ export function StackedProgressBar({
       >
         {showStripe ? (
           <div
-            className="absolute inset-y-0 left-0 rounded-full opacity-40"
+            className="absolute inset-y-0 left-0 rounded-full opacity-85"
             data-testid="goal-progress-bar-potential-fill"
             style={{
               backgroundImage:
@@ -87,7 +87,7 @@ export function StackedProgressBar({
               data-testid="goal-progress-bar-ceiling"
               style={{ left: `${ceilingPct}%` }}
             >
-              <div className="h-full w-1 rounded-full bg-amber-400 ring-1 ring-background" />
+              <div className="h-full w-1 rounded-full bg-amber-700 ring-1 ring-background dark:bg-amber-400" />
             </div>
           </TooltipTrigger>
           <TooltipContent data-testid="goal-progress-bar-ceiling-tooltip">

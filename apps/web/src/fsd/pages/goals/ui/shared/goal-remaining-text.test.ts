@@ -6,12 +6,12 @@ const t = (key: string, opts?: Record<string, unknown>) =>
   opts ? `${key}:${JSON.stringify(opts)}` : key
 
 describe("formatGoalRemainingText", () => {
-  it("formats a Level goal as remaining levels only, when no remainingXp is known", () => {
+  it("formats a level requirement as remaining levels only, when no remainingXp is known", () => {
     const text = formatGoalRemainingText(
       t as never,
       "en",
       {
-        kind: "Level",
+        kind: "LevelRequirement",
         current: 44,
         target: 50,
         ratio: 0.5,
@@ -24,12 +24,12 @@ describe("formatGoalRemainingText", () => {
     expect(text).toContain('"count":"6"')
   })
 
-  it("formats a Level goal with remaining levels and thousands-separated xp", () => {
+  it("formats a level requirement with remaining levels and thousands-separated xp", () => {
     const text = formatGoalRemainingText(
       t as never,
       "en",
       {
-        kind: "Level",
+        kind: "LevelRequirement",
         current: 44,
         target: 50,
         ratio: 0.5,
@@ -109,12 +109,17 @@ describe("formatGoalRemainingText", () => {
     expect(text).toContain('"count":"227"')
   })
 
-  it("returns null for a fully-attained Level goal", () => {
+  it("returns null for a fully-attained level requirement", () => {
     expect(
       formatGoalRemainingText(
         t as never,
         "en",
-        { kind: "Level", current: 50, target: 50, ratio: 1 } as never,
+        {
+          kind: "LevelRequirement",
+          current: 50,
+          target: 50,
+          ratio: 1,
+        } as never,
         null,
         undefined
       )
@@ -143,5 +148,24 @@ describe("formatGoalRemainingText", () => {
     )
     expect(text).toContain("goals.overview.remaining.shards")
     expect(text).toContain("goals.overview.remaining.energy")
+  })
+
+  it("says a Rank goal is covered instead of listing slots an earlier goal already claims", () => {
+    const text = formatGoalRemainingText(
+      t as never,
+      "en",
+      { kind: "Rank" } as never,
+      {
+        upgrades: [],
+        shardId: null,
+        shards: 0,
+        mythicShards: 0,
+        orbsByType: {},
+        upgradeSlotsRemaining: 0,
+        coveredByEarlierGoal: true,
+      },
+      0
+    )
+    expect(text).toBe("goals.overview.remainingText.coveredByEarlierGoal")
   })
 })

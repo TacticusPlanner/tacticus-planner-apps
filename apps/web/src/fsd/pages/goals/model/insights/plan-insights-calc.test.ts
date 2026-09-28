@@ -42,6 +42,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     notes: null,
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z",
+    globalPriority: 1,
     config: {
       rank: null,
       progression: null,
@@ -50,7 +51,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     },
     snapshot: null,
     events: [],
@@ -152,7 +152,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -168,6 +167,55 @@ describe("computePlanInsights", () => {
     expect(result.completionDate).not.toBeNull()
     expect(result.bottlenecks).toHaveLength(1)
     expect(result.bottlenecks[0]?.label).toBe("Material One")
+  })
+
+  it("allocates a Rank goal's slots once: a later, wholly covered target adds none but stays its own goal", () => {
+    const rankGoal = (goalId: string, end: number) =>
+      goalDetail({
+        goalId,
+        config: {
+          ...goalDetail({}).config,
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[end]!),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+        },
+      })
+    const far = rankGoal("far", 2)
+    const near = rankGoal("near", 1)
+
+    const covered = computePlanInsights({
+      ...baseParams,
+      details: [near, far],
+      priorityByGoalId: new Map([
+        ["far", 1],
+        ["near", 2],
+      ]),
+    })
+    const nearSlots = covered.rankSlotsByGoalId.get("near")
+    expect(covered.rankSlotsByGoalId.get("far")?.allocated).toBe(
+      covered.rankSlotsByGoalId.get("far")?.standalone
+    )
+    expect(nearSlots?.allocated).toBe(0)
+    expect(nearSlots?.standalone).toBeGreaterThan(0)
+
+    const inOrder = computePlanInsights({
+      ...baseParams,
+      details: [near, far],
+      priorityByGoalId: new Map([
+        ["near", 1],
+        ["far", 2],
+      ]),
+    })
+    const farSlots = inOrder.rankSlotsByGoalId.get("far")
+    expect(inOrder.rankSlotsByGoalId.get("near")?.allocated).toBe(
+      inOrder.rankSlotsByGoalId.get("near")?.standalone
+    )
+    expect(farSlots?.allocated).toBeLessThan(farSlots?.standalone ?? 0)
   })
 
   it("uses the shared crafted-inventory pool in goal priority order", () => {
@@ -205,11 +253,12 @@ describe("computePlanInsights", () => {
       acquisitionSources: null,
       farmingLocationIds: null,
       upgrade: null,
-      level: null,
     }
     const details = [
-      goalDetail({ goalId: "first", config: rankConfig }),
-      goalDetail({ goalId: "second", config: rankConfig }),
+      // Different characters: the same character can't hold two identical Rank targets, and its
+      // overlapping targets share slots instead (see the rank-milestone tests).
+      goalDetail({ goalId: "first", entityId: "hero-a", config: rankConfig }),
+      goalDetail({ goalId: "second", entityId: "hero-b", config: rankConfig }),
     ]
 
     const result = computePlanInsights({
@@ -239,6 +288,78 @@ describe("computePlanInsights", () => {
     })
   })
 
+  describe("overlapping Rank milestones for one character", () => {
+    const milestone = (goalId: string, end: number) =>
+      goalDetail({
+        goalId,
+        goalType: "Rank",
+        config: {
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[end]!),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          acquisitionSources: null,
+          farmingLocationIds: null,
+          upgrade: null,
+        },
+      })
+    const plan = (
+      details: GoalDetail[],
+      order: string[],
+      overrides: Partial<Parameters<typeof computePlanInsights>[0]> = {}
+    ) =>
+      computePlanInsights({
+        ...baseParams,
+        details,
+        priorityByGoalId: new Map(order.map((id, index) => [id, index + 1])),
+        ...overrides,
+      })
+
+    it("charges the shared progression once, to the milestone ordered first", () => {
+      // near: rank0 -> rank1 (mat1). far: rank0 -> rank2 (mat1 + mat2) — mat1 is shared.
+      const result = plan(
+        [milestone("near", 1), milestone("far", 2)],
+        ["near", "far"]
+      )
+
+      expect(result.totals.upgradesByRarity).toEqual({ Common: 2 }) // not 3
+      expect(result.estimates.get("near")).toMatchObject({ energyTotal: 10 })
+      expect(result.estimates.get("far")).toMatchObject({ energyTotal: 10 })
+    })
+
+    it("gives a later, covered milestone no farmable demand but still a distinct goal", () => {
+      const result = plan(
+        [milestone("far", 2), milestone("near", 1)],
+        ["far", "near"]
+      )
+
+      expect(result.totals.upgradesByRarity).toEqual({ Common: 2 })
+      expect(result.estimates.get("far")).toMatchObject({ energyTotal: 20 })
+      expect(result.estimates.get("near")).toMatchObject({
+        status: "Estimated",
+        energyTotal: 0,
+      })
+    })
+
+    it("counts one canonical goal once even when several projects list it", () => {
+      const once = plan([milestone("near", 1)], ["near"])
+      const listedTwice = plan(
+        [milestone("near", 1), milestone("near", 1)],
+        ["near"]
+      )
+
+      expect(listedTwice.totals).toEqual(once.totals)
+      expect(listedTwice.energyTotal).toBe(once.energyTotal)
+    })
+  })
+
   it("estimates a same-rank partial-upgrade target", () => {
     const details = [
       goalDetail({
@@ -257,7 +378,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -316,7 +436,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -383,7 +502,6 @@ describe("computePlanInsights", () => {
           acquisitionSources: null,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
         },
       }),
     ]
@@ -412,7 +530,6 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades",
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
           acquisitionSources: [{ kind: "Onslaught", ids: [] }],
         },
       }),
@@ -495,7 +612,6 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades",
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
           acquisitionSources: [{ kind: "Shop", ids: ["guild:shards_hero1"] }],
         },
       }),
@@ -594,55 +710,88 @@ describe("computePlanInsights", () => {
     expect(result.potentialProgressByGoalId.get("goal-1")).toBe(0.5)
   })
 
-  it("derives Level potential from owned xp books", () => {
+  // Silver3 (rank index 11) needs level 32 in the rank-level ladder, whose total-XP threshold is 94,200.
+  const silver3 = {
+    start: 5,
+    startPointFive: false,
+    startAppliedUpgrades: 0,
+    end: 11,
+    endPointFive: false,
+    endAppliedUpgrades: 0,
+  }
+  const levelledCharacter = {
+    xpLevel: 31,
+    xp: 0,
+    progressionIndex: "Mythic:MythicWings",
+    rank: "Iron1",
+    appliedUpgradeSlots: [],
+  } as never
+  const rankNeedingLevel = (goalId: string, end = silver3.end) =>
+    goalDetail({
+      goalId,
+      goalType: "Rank",
+      config: { ...goalDetail({}).config, rank: { ...silver3, end } },
+    })
+
+  it("derives a Rank goal's level Potential from owned xp books", () => {
     const result = computePlanInsights({
       ...baseParams,
-      details: [
-        goalDetail({
-          goalType: "Level",
-          config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
-        }),
-      ],
+      details: [rankNeedingLevel("goal-1")],
       priorityByGoalId: new Map([["goal-1", 1]]),
-      playerCharacterById: new Map([
-        ["hero1", { xpLevel: 31, xp: 0 } as never],
-      ]),
-      // Level 32's own total-xp threshold is 94200; 8 Legendary books (100000) fully cover it.
+      playerCharacterById: new Map([["hero1", levelledCharacter]]),
+      // 8 Legendary books (100,000 XP) fully cover level 32's 94,200 threshold.
       inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
     })
 
-    expect(result.potentialProgressByGoalId.get("goal-1")).toBe(1)
+    expect(result.levelPotentialProgressByGoalId.get("goal-1")).toBe(1)
   })
 
-  it("gives a higher-priority Level goal first claim on the shared xp-book pool", () => {
-    const details = [
-      goalDetail({
-        goalId: "goal-low",
-        config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
-      }),
-      goalDetail({
-        goalId: "goal-high",
-        config: { ...goalDetail({}).config, level: { start: 31, end: 32 } },
-      }),
-    ].map((detail) => ({ ...detail, goalType: "Level" as const }))
+  it("gives a higher-priority goal first claim on the shared xp-book pool", () => {
     const result = computePlanInsights({
       ...baseParams,
-      details,
+      details: [
+        { ...rankNeedingLevel("goal-low"), entityId: "hero2" },
+        rankNeedingLevel("goal-high"),
+      ],
       priorityByGoalId: new Map([
         ["goal-low", 2],
         ["goal-high", 1],
       ]),
       playerCharacterById: new Map([
-        ["hero1", { xpLevel: 31, xp: 0 } as never],
+        ["hero1", levelledCharacter],
+        ["hero2", levelledCharacter],
       ]),
-      // Only enough (8 Legendary books = 100000 xp) to fully resolve one goal's 94200 xp need.
+      // Only enough (8 Legendary books = 100,000 XP) to fully resolve one goal's 94,200 XP need.
       inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
     })
 
-    expect(result.potentialProgressByGoalId.get("goal-high")).toBe(1)
-    // No books left for "goal-low" once "goal-high" claimed them — its potential stays at its own
-    // actual (unadvanced) ratio, same as if nothing were owned at all.
-    expect(result.potentialProgressByGoalId.get("goal-low")).toBe(0)
+    expect(result.levelPotentialProgressByGoalId.get("goal-high")).toBe(1)
+    // No books left for "goal-low" once "goal-high" claimed them: it stays at its actual level ratio.
+    expect(result.levelPotentialProgressByGoalId.get("goal-low")).toBe(
+      (31 - 1) / (32 - 1)
+    )
+  })
+
+  it("charges overlapping Rank milestones of one unit the shared levels once", () => {
+    // Milestones needing levels 32 (Silver3) and 33 (index 12, Gold1 is 35 — use the next rank); the
+    // second is charged only the XP beyond the first, so 8 books (100,000 XP) cover the first while the
+    // second's extra 28,000 XP is only partly reachable.
+    const result = computePlanInsights({
+      ...baseParams,
+      details: [
+        rankNeedingLevel("goal-a"),
+        { ...rankNeedingLevel("goal-b", 12), goalId: "goal-b" },
+      ],
+      priorityByGoalId: new Map([
+        ["goal-a", 1],
+        ["goal-b", 2],
+      ]),
+      playerCharacterById: new Map([["hero1", levelledCharacter]]),
+      inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 8 }],
+    })
+
+    expect(result.levelPotentialProgressByGoalId.get("goal-a")).toBe(1)
+    expect(result.levelPotentialProgressByGoalId.get("goal-b")).toBeLessThan(1)
   })
 
   it("restricts an Unlock goal's shard farming to config.farmingLocationIds, changing the resulting energy total", () => {
@@ -761,7 +910,6 @@ describe("computePlanInsights", () => {
           farmingStrategy: "TotalUpgrades" as const,
           farmingLocationIds: null,
           upgrade: null,
-          level: null,
           acquisitionSources: [{ kind: "Onslaught", ids: [] }],
         },
       }),
@@ -799,7 +947,6 @@ describe("computePlanInsights", () => {
     acquisitionSources: null,
     farmingLocationIds: null,
     upgrade: null,
-    level: null,
   }
   const strandedUpgrade: UpgradeWithFarmLocations = {
     ...upgrade,
@@ -911,6 +1058,33 @@ describe("computePlanInsights", () => {
     expect(result.unestimatedGoalCount).toBe(1)
   })
 
+  it("waits for the plan's Onslaught tokens, not just the project's own, when scoped to a project", () => {
+    const tokenGoal = ascensionWithOnslaught(100_000)
+    const scoped = computePlanInsights({
+      ...baseParams,
+      ...tokenGoal,
+      details: [
+        ...tokenGoal.details,
+        goalDetail({ goalId: "goal-3", goalType: "Rank", config: rankConfig }),
+      ],
+      priorityByGoalId: new Map([
+        ["goal-1", 1],
+        ["goal-3", 2],
+      ]),
+      scopeGoalIds: new Set(["goal-3"]),
+      currentOnslaughtTokens: 0,
+    })
+
+    // The project's own goal needs no tokens, so it reports none ...
+    expect(scoped.onslaughtTokens).toBe(0)
+    expect(scoped.onslaughtDays).toBe(0)
+    // ... but the goal ranked above it in another project drains the account's token budget, so the
+    // project's date cannot precede the wait a whole-plan run would show.
+    const own = scoped.estimates.get("goal-3")
+    expect(own).toMatchObject({ status: "Estimated" })
+    expect(scoped.completionDate! > (own as { date: string }).date).toBe(true)
+  })
+
   it("still extends an existing date past every goal's own date on a shortfall", () => {
     // A generous shop offer clears the 100-shard need in days, while the same need implies ~29
     // Onslaught tokens the account does not hold - so the plan genuinely cannot finish until those
@@ -965,5 +1139,92 @@ describe("computePlanInsights", () => {
     expect(result.unestimatedGoalCount).toBe(0)
     // Strictly later: this is the extension firing, not the goal's own date passing through.
     expect(result.completionDate! > goalDate!).toBe(true)
+  })
+
+  describe("scoped to a project's goals", () => {
+    const rankConfig = {
+      rank: {
+        start: rankIndex(rankOrder[0]),
+        startPointFive: false,
+        startAppliedUpgrades: 0,
+        end: rankIndex(rankOrder[1]),
+        endPointFive: false,
+        endAppliedUpgrades: 0,
+      },
+      progression: null,
+      ability: null,
+      farmingStrategy: "TotalUpgrades" as const,
+      acquisitionSources: null,
+      farmingLocationIds: null,
+      upgrade: null,
+    }
+    const params = {
+      ...baseParams,
+      charactersById: new Map([
+        ["hero-a", characterView],
+        ["hero-b", characterView],
+      ]),
+      getCharacter: (id: UnitId) => ({ ...character, id }),
+      // One raid a day: goal A (globally first) takes day 1, goal B day 2.
+      dailyEnergy: 10,
+    }
+    const details = [
+      goalDetail({ goalId: "a", entityId: "hero-a", config: rankConfig }),
+      goalDetail({ goalId: "b", entityId: "hero-b", config: rankConfig }),
+    ]
+    const priorityByGoalId = new Map([
+      ["a", 1],
+      ["b", 2],
+    ])
+
+    it("reports only the project's goals but keeps their place in the one global run", () => {
+      const whole = computePlanInsights({
+        ...params,
+        details,
+        priorityByGoalId,
+      })
+      const projectB = computePlanInsights({
+        ...params,
+        details,
+        priorityByGoalId,
+        scopeGoalIds: new Set(["b"]),
+      })
+      const alone = computePlanInsights({
+        ...params,
+        details: [details[1]!],
+        priorityByGoalId: new Map([["b", 1]]),
+      })
+
+      // The aggregates cover project B's goal only ...
+      expect(whole.totals.upgradesByRarity).toEqual({ Common: 2 })
+      expect(projectB.totals.upgradesByRarity).toEqual({ Common: 1 })
+      expect(projectB.unestimatedGoalCount).toBe(0)
+      // ... but B's outcome is the global run's: it waits behind A, which a project-only plan hides.
+      const inGlobalRun = projectB.estimates.get("b")
+      expect(inGlobalRun).toEqual(whole.estimates.get("b"))
+      const isolated = alone.estimates.get("b")
+      expect(inGlobalRun?.status).toBe("Estimated")
+      expect(isolated?.status).toBe("Estimated")
+      expect(
+        (inGlobalRun as { date: string }).date >
+          (isolated as { date: string }).date
+      ).toBe(true)
+      expect(projectB.completionDate).toBe(
+        (inGlobalRun as { date: string }).date
+      )
+    })
+
+    it("has nothing to report for a scope holding none of the plan's goals", () => {
+      const nothing = computePlanInsights({
+        ...params,
+        details,
+        priorityByGoalId,
+        scopeGoalIds: new Set(["elsewhere"]),
+      })
+
+      expect(nothing.totals.upgradesByRarity).toEqual({})
+      expect(nothing.completionDate).toBeNull()
+      expect(nothing.unestimatedGoalCount).toBe(0)
+    })
   })
 })

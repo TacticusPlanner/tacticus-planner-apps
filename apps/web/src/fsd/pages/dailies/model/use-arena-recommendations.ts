@@ -181,7 +181,7 @@ export function useArenaRecommendations(
       mode,
       roster: roster.map(mapRosterCharacter),
       selectedProjectId,
-      activeProjectContributions: selectedProjectId
+      scopedGoalContributions: selectedProjectId
         ? collectContributions(
             (projectGoalsQuery.data?.goals ?? []).map((entry) => entry.goal),
             selectedProjectId

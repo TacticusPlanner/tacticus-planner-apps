@@ -65,3 +65,43 @@ describe("applyOptimisticGoalStatus", () => {
     expect(applyOptimisticGoalStatus(opaque, "g1", "Paused")).toBe(opaque)
   })
 })
+
+describe("Rank milestones for one character", () => {
+  const bellator = (goalId: string, status: string) => ({
+    goalId,
+    entityType: "Character",
+    entityId: "bellator",
+    goalType: "Rank",
+    status,
+  })
+
+  it("pauses one milestone without touching the other target for the unit", () => {
+    const list = {
+      goals: [bellator("silver3", "Active"), bellator("gold1", "Active")],
+    }
+
+    const result = applyOptimisticGoalStatus(list, "silver3", "Paused") as {
+      goals: { goalId: string; status: string }[]
+    }
+
+    expect(result.goals.map((goal) => [goal.goalId, goal.status])).toEqual([
+      ["silver3", "Paused"],
+      ["gold1", "Active"],
+    ])
+  })
+
+  it("keeps a completed milestone's history separate from an in-flight one", () => {
+    const list = {
+      goals: [bellator("silver3", "Completed"), bellator("gold1", "Paused")],
+    }
+
+    const result = applyOptimisticGoalStatus(list, "gold1", "Active") as {
+      goals: { goalId: string; status: string }[]
+    }
+
+    expect(result.goals.map((goal) => goal.status)).toEqual([
+      "Completed",
+      "Active",
+    ])
+  })
+})

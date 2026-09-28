@@ -24,14 +24,17 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import {
+  LevelRequirementProgressBar,
+  LevelRequirementRemaining,
+  LevelRequirementTarget,
+} from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   EstimateCell,
   GoalNameLink,
-  LevelGoalSubProgress,
-  LevelGoalSubRemaining,
-  LevelGoalSubTarget,
+  GoalPriorityNumber,
 } from "./goal-row-shared"
 import {
   estimateEnergy,
@@ -67,7 +70,7 @@ function GoalsTable({
   onReorder,
   reorderEnabled = false,
   reorderPending = false,
-  levelGoalIdByParent,
+  levelPotentialProgress,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -78,13 +81,19 @@ function GoalsTable({
     null
   )
   const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
+  // The leading cell holds the drag handle and/or the priority number; it is not a data column.
+  const hasLeadingCell =
+    reorderEnabled ||
+    rows.some(
+      (row) => row.priority !== undefined && isInFlightStatus(row.status)
+    )
 
   return (
     <Table data-testid="goals-list-table">
       <TableHeader>
         <TableRow>
-          {reorderEnabled ? (
-            <TableHead className="w-8">
+          {hasLeadingCell ? (
+            <TableHead className="w-16">
               <span className="sr-only">{t("goals.columns.reorder")}</span>
             </TableHead>
           ) : null}
@@ -113,6 +122,7 @@ function GoalsTable({
             const progress =
               metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
             const remaining = metrics?.get(row.goalId)?.remaining ?? null
+            const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
             const energy = estimateEnergy(estimates?.get(row.goalId))
             const remainingText = formatGoalRemainingText(
               t,
@@ -124,7 +134,7 @@ function GoalsTable({
 
             return (
               <TableRow
-                className="h-14 cursor-pointer data-[dragging]:opacity-60"
+                className="h-14 cursor-pointer data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring"
                 data-dragging={sortable.isDragging || undefined}
                 data-goal-id={row.goalId}
                 data-testid="goal-row"
@@ -133,29 +143,32 @@ function GoalsTable({
                 ref={sortable.setNodeRef}
                 style={sortable.style}
               >
-                {reorderEnabled ? (
+                {hasLeadingCell ? (
                   <TableCell
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >
-                    {/* Only an in-flight row can be dragged *from* — a historical row in the same
+                    <div className="flex items-center gap-1">
+                      <GoalPriorityNumber row={row} />
+                      {/* Only an in-flight row can be dragged *from* — a historical row in the same
                         sorted list has no handle, though it can still be a drop anchor (a neighbor
                         another drag lands next to); see spliceGoalOrder. */}
-                    {isInFlightStatus(row.status) ? (
-                      <button
-                        {...sortable.dragHandle.attributes}
-                        {...sortable.dragHandle.listeners}
-                        aria-label={t("goals.columns.reorderHandle", {
-                          entity: getEntityName(row.entityType, row.entityId),
-                        })}
-                        className="cursor-grab touch-none rounded-md p-1 text-muted-foreground hover:bg-muted active:cursor-grabbing"
-                        data-testid="goal-row-drag-handle"
-                        ref={sortable.dragHandle.ref}
-                        type="button"
-                      >
-                        <GripVertical className="size-4" />
-                      </button>
-                    ) : null}
+                      {reorderEnabled && isInFlightStatus(row.status) ? (
+                        <button
+                          {...sortable.dragHandle.attributes}
+                          {...sortable.dragHandle.listeners}
+                          aria-label={t("goals.columns.reorderHandle", {
+                            entity: getEntityName(row.entityType, row.entityId),
+                          })}
+                          className="cursor-grab touch-none rounded-md p-1 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing"
+                          data-testid="goal-row-drag-handle"
+                          ref={sortable.dragHandle.ref}
+                          type="button"
+                        >
+                          <GripVertical className="size-4" />
+                        </button>
+                      ) : null}
+                    </div>
                   </TableCell>
                 ) : null}
                 <TableCell className="font-medium">
@@ -188,13 +201,7 @@ function GoalsTable({
                 </TableCell>
                 <TableCell>
                   <GoalTargetDisplay progress={progress} />
-                  {levelGoalIdByParent?.get(row.goalId) ? (
-                    <LevelGoalSubTarget
-                      levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                      metrics={metrics}
-                      onView={onView}
-                    />
-                  ) : null}
+                  <LevelRequirementTarget levelRequirement={levelRequirement} />
                 </TableCell>
                 <TableCell
                   className="min-w-[220px]"
@@ -211,15 +218,10 @@ function GoalsTable({
                     progress={progress}
                     remaining={remaining}
                   />
-                  {levelGoalIdByParent?.get(row.goalId) ? (
-                    <LevelGoalSubProgress
-                      estimates={estimates}
-                      levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                      metrics={metrics}
-                      onView={onView}
-                      potentialProgress={potentialProgress}
-                    />
-                  ) : null}
+                  <LevelRequirementProgressBar
+                    levelRequirement={levelRequirement}
+                    potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                  />
                 </TableCell>
                 <TableCell>
                   {remainingText ? (
@@ -231,12 +233,9 @@ function GoalsTable({
                       {remainingText}
                     </span>
                   ) : null}
-                  {levelGoalIdByParent?.get(row.goalId) ? (
-                    <LevelGoalSubRemaining
-                      levelGoalId={levelGoalIdByParent.get(row.goalId)!}
-                      metrics={metrics}
-                    />
-                  ) : null}
+                  <LevelRequirementRemaining
+                    levelRequirement={levelRequirement}
+                  />
                 </TableCell>
                 <TableCell>
                   <div className="grid gap-1">

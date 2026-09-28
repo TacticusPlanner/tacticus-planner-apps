@@ -16,20 +16,16 @@ const goalRow = {
 const goal = {
   ...goalRow,
   createdAt: "2026-07-15T12:00:00Z",
+  globalPriority: 4,
 }
 
 describe("goal row mappings", () => {
   it("maps a goal summary to a flat row", () => {
-    expect(goalRowFromSummary(goal)).toEqual(goalRow)
+    expect(goalRowFromSummary(goal)).toEqual({ ...goalRow, priority: 4 })
   })
 
   it("maps a project member and preserves its priority", () => {
-    expect(
-      goalRowFromProjectMember({
-        goal,
-        priority: 4,
-      })
-    ).toEqual({
+    expect(goalRowFromProjectMember({ goal })).toEqual({
       ...goalRow,
       priority: 4,
     })
@@ -41,11 +37,10 @@ describe("goal row mappings", () => {
         projectId: "proj-a",
         name: "Project A",
         color: null,
-        isActivePlan: true,
       },
     ]
 
-    expect(goalRowFromProjectMember({ goal, priority: 4 }, projects)).toEqual({
+    expect(goalRowFromProjectMember({ goal }, projects)).toEqual({
       ...goalRow,
       priority: 4,
       projects,

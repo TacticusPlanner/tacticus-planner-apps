@@ -22,7 +22,6 @@ const emptyConfig: GoalConfig = {
   acquisitionSources: null,
   farmingLocationIds: null,
   upgrade: null,
-  level: null,
 }
 
 function goal(
@@ -40,6 +39,7 @@ function goal(
     dependsOn: [],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
+    globalPriority: 1,
     config: { ...emptyConfig, ...config },
     snapshot: null,
     events: [],
@@ -61,7 +61,7 @@ const rankGoal = (end: number, endPointFive = false, applied = 0) =>
   })
 
 describe("isGoalTargetEditable", () => {
-  it.each(["Rank", "Ascension", "Level", "Ability", "Upgrade"] as const)(
+  it.each(["Rank", "Ascension", "Ability", "Upgrade"] as const)(
     "offers editing for an active %s goal",
     (kind) => {
       expect(isGoalTargetEditable({ goalType: kind, status: "Active" })).toBe(
@@ -107,9 +107,6 @@ describe("goalTargetDraftFromDetail", () => {
         })
       )
     ).toEqual({ kind: "Ascension", end: "Rare:FourStars" })
-    expect(
-      goalTargetDraftFromDetail(goal("Level", { level: { start: 1, end: 20 } }))
-    ).toEqual({ kind: "Level", end: 20 })
     expect(
       goalTargetDraftFromDetail(
         goal("Ability", {
@@ -161,9 +158,6 @@ describe("goalTargetEditFromDraft", () => {
         passiveEnd: 3,
       })
     ).toEqual({ ability: { activeEnd: 7, passiveEnd: 3 } })
-    expect(goalTargetEditFromDraft({ kind: "Level", end: 30 })).toEqual({
-      level: { end: 30 },
-    })
   })
 
   it("round-trips a stored target unchanged", () => {
@@ -254,18 +248,6 @@ describe("getGoalTargetIssue", () => {
     ).toBe("progressionNotAboveStart")
   })
 
-  it("bounds a Level target by the start and the level cap", () => {
-    const detail = goal("Level", { level: { start: 10, end: 20 } })
-
-    expect(getGoalTargetIssue(detail, { kind: "Level", end: 10 })).toBe(
-      "levelNotAboveStart"
-    )
-    expect(getGoalTargetIssue(detail, { kind: "Level", end: 999 })).toBe(
-      "levelAboveMax"
-    )
-    expect(getGoalTargetIssue(detail, { kind: "Level", end: 21 })).toBeNull()
-  })
-
   it("requires every Upgrade quantity to be a positive whole number", () => {
     const detail = goal("Upgrade", {
       upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
@@ -309,8 +291,6 @@ describe("getGoalTargetIssue", () => {
         abilityPassiveEnd: 0,
         currentActiveAbility: 0,
         currentPassiveAbility: 0,
-        currentLevel: undefined,
-        levelEnd: 1,
         upgradeFieldsValid: true,
       })
       const edit = getGoalTargetIssue(detail, {

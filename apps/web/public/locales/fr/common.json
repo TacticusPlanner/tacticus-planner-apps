@@ -287,7 +287,7 @@
       "moreCount": "+{{count}} de plus",
       "summaryUnavailable": "Résumé indisponible",
       "emptyTitle": "Aucun projet pour l'instant",
-      "emptyDescription": "Les projets regroupent les objectifs d'unités en plans priorisés.",
+      "emptyDescription": "Les projets regroupent vos objectifs pour que vous puissiez les parcourir séparément.",
       "emptyAction": "Créer un projet",
       "error": "Impossible de charger vos projets.",
       "retry": "Réessayer"
@@ -295,7 +295,8 @@
     "raids": {
       "title": "Raids quotidiens",
       "empty": "Rien à raider aujourd'hui.",
-      "error": "Impossible de charger les raids du jour."
+      "error": "Impossible de charger les raids du jour.",
+      "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids."
     },
     "calendar": {
       "title": "Calendrier des événements"
@@ -394,7 +395,7 @@
       "menu": "Importer depuis V1",
       "title": "Importer depuis V1",
       "back": "Retour",
-      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Un objectif V1 correspondant à un objectif V2 existant est ignoré, pas remplacé, et les objectifs importés sont mis en pause sauf si votre projet par défaut est aussi votre projet actif.",
+      "description": "Vos identifiants V1 ne sont utilisés qu'une seule fois et ne sont jamais enregistrés. Un objectif V1 correspondant à un objectif V2 existant est ignoré, pas remplacé, et chaque objectif importé est actif ou en pause selon qu'il figurait dans votre planification quotidienne V1.",
       "username": "Nom d'utilisateur V1",
       "password": "Mot de passe V1",
       "selectParts": "Choisissez ce qu'il faut importer",
@@ -454,10 +455,10 @@
     },
     "tabs": {
       "goals": "Objectifs",
-      "overview": "Tous les objectifs",
-      "overviewDescription": "Filtrez, triez et regroupez tous vos objectifs actifs.",
+      "overview": "Objectifs",
+      "overviewDescription": "Vos objectifs par ordre de priorité : filtrez, regroupez et repriorisez.",
       "projects": "Projets",
-      "projectsDescription": "Organisez vos objectifs en plans ciblés et maîtrisez leur priorité.",
+      "projectsDescription": "Organisez vos objectifs en groupes ciblés et parcourez-les séparément.",
       "insights": "Analyses",
       "insightsDescription": "Recommandations d'améliorations et de campagnes",
       "toReach": "Non atteints",
@@ -475,7 +476,8 @@
       "status": "Statut · Terminé le",
       "actions": "Actions",
       "reorder": "Réorganiser",
-      "reorderHandle": "Faire glisser {{entity}} pour réorganiser"
+      "reorderHandle": "Faire glisser {{entity}} pour réorganiser",
+      "priority": "Priorité"
     },
     "status": {
       "Draft": "Brouillon",
@@ -491,7 +493,6 @@
         "PrerequisiteNotReached": "En attente qu'un objectif préalable soit atteint en premier.",
         "PlayerDataUnavailable": "Les données du joueur pour cet objectif ne sont pas encore synchronisées.",
         "CatalogDataUnavailable": "Les données de jeu n'ont pas encore fini de se charger.",
-        "MissingLevelPrerequisite": "Un objectif de Niveau atteignant le niveau {{level}} est requis.",
         "MissingAscensionPrerequisite": "Un objectif d'Ascension atteignant {{progression}} est requis.",
         "MissingUnlockPrerequisite": "Un objectif de Déblocage pour {{unit}} est requis."
       },
@@ -518,7 +519,7 @@
     },
     "project": {
       "noProjectTitle": "Aucun projet pour le moment",
-      "noProjectDescription": "Un projet est une sélection nommée de vos objectifs, avec son propre ordre de priorité. Créez-en un pour planifier un renfort d'effectif, un événement ou une progression de longue haleine à part du reste.",
+      "noProjectDescription": "Un projet est une sélection nommée de vos objectifs. Créez-en un pour regrouper un renfort d'effectif, un événement ou une progression de longue haleine et le parcourir séparément du reste.",
       "notFoundTitle": "Projet introuvable",
       "notFoundDescription": "Ce projet n'existe pas, ou vous n'y avez pas accès.",
       "projectSwitcherLabel": "Projet",
@@ -536,27 +537,25 @@
       "removeDestinationUnknown": "Vos projets ne sont pas encore chargés, cet objectif n'a donc aucune destination. Réessayez dans un instant.",
       "quicknavLabel": "Aller à un projet",
       "quicknavAllProjects": "Tous les projets",
-      "addGoalsTrigger": "Ajouter des objectifs",
+      "addGoalsTrigger": "Gérer les objectifs",
       "createGoalTrigger": "Créer un objectif",
       "createNewGoal": "Créer un nouvel objectif",
-      "addGoalsTitle": "Ajouter des objectifs à ce projet",
-      "addGoalsDescription": "Recherchez vos objectifs et ajoutez-les à {{project}}. Ceux qui s'y trouvent déjà restent en place.",
+      "addGoalsTitle": "Gérer les objectifs de ce projet",
+      "addGoalsDescription": "Cochez les objectifs qui doivent figurer dans {{project}} et décochez les membres pour les retirer. Les objectifs sont listés dans votre ordre de priorité, et rien ne change avant l'enregistrement.",
       "addGoalsSearch": "Rechercher des objectifs",
       "addGoalsEmpty": "Aucun objectif ne correspond à votre recherche.",
-      "addGoalsMember": "Déjà présent",
-      "addGoalsSave_one": "Ajouter {{count}} objectif",
-      "addGoalsSave_other": "Ajouter {{count}} objectifs",
+      "addGoalsMember": "Dans le projet",
       "assemblySlotTaken": "Ce projet ne peut contenir qu'un seul objectif {{type}} actif ou en pause pour cette unité.",
       "searchProjects": "Rechercher des projets",
       "noAddableProjects": "Aucun projet disponible trouvé.",
+      "createInline": "Créer « {{name}} »",
+      "creatingInline": "Création de « {{name}} »…",
+      "createInlineNote": "Un nouveau projet est enregistré immédiatement, même si vous annulez cet objectif. Cela ne modifie ni le statut ni la priorité de cet objectif.",
+      "createFailed": "Impossible de créer le projet. Vérifiez votre connexion et réessayez.",
       "membershipConflict": "{{project}} contient déjà un objectif {{types}} actif ou en pause pour cette unité.",
       "reviewConflictingGoal": "Voir l’objectif en conflit",
       "filterAll": "Tous les projets",
       "filterLabel": "Projet",
-      "currentPlan": "Plan actuel",
-      "makeCurrent": "Définir comme actuel",
-      "otherProjects": "Autres projets",
-      "noOtherProjects": "Aucun autre projet disponible pour le moment.",
       "archivedProjects": "Projets archivés ({{count}})",
       "backToProjects": "Retour aux projets",
       "unitGoalSummary": "{{units}} unités · {{goals}} objectifs",
@@ -565,7 +564,8 @@
       "completionSummary": "Terminé le {{date}}",
       "summaryUnavailable": "Résumé indisponible — réessayer",
       "moreActions": "Autres actions du projet",
-      "archiveUnavailable": "Le plan actuel ou par défaut ne peut pas être archivé",
+      "archiveUnavailable": "Le projet par défaut ne peut pas être archivé",
+      "defaultBadge": "Par défaut",
       "cancel": "Annuler",
       "edit": "Modifier",
       "editTitle": "Modifier le projet",
@@ -580,31 +580,48 @@
       "restore": "Restaurer le projet",
       "save": "Enregistrer le projet",
       "create": "Créer le projet",
-      "dashboardIntro": "Un projet est une sélection nommée de vos objectifs, avec son propre ordre de priorité. Gardez-en plusieurs pour planifier séparément un renfort d'effectif, un événement ou une progression de longue haleine, et passez de l'un à l'autre sans perdre l'ordre de chacun.",
-      "currentPlanNote": "Le plan actuel est le projet utilisé par défaut par les Quotidiennes et les Analyses. Il ne rend aucun objectif actif ni en pause : les objectifs se mettent en pause et se reprennent un par un.",
+      "dashboardIntro": "Un projet est une sélection nommée de vos objectifs. Gardez-en plusieurs pour regrouper des choses différentes (un renfort d'effectif, un événement, une progression de longue haleine) et parcourez chacun séparément. La priorité est un ordre unique pour tous les objectifs, géré sur la page Objectifs.",
       "unitGoalSummaryOfAccount": "{{units}} unités · {{goals}} de vos {{accountGoals}} objectifs",
       "emptyProjectTitle": "Ce projet n'a pas encore d'objectifs",
       "emptyProjectDescription": "Utilisez « Ajouter des objectifs » pour y placer des objectifs existants, ou « Créer un objectif » pour en ajouter un.",
       "reorderGoals": "Réorganiser",
       "reorderDone": "Terminé",
       "pauseAllGoals": "Mettre tous les objectifs en pause",
-      "resumeAllGoals": "Reprendre tous les objectifs"
+      "resumeAllGoals": "Reprendre tous les objectifs",
+      "assemblyRankTargetTaken": "Ce projet contient déjà l'objectif de rang {{target}} de cette unité.",
+      "membershipConflictRank": "{{project}} contient déjà un objectif de rang actif ou en pause pour cette unité avec la cible {{target}}.",
+      "assemblyPendingAdd": "Sera ajouté",
+      "assemblyPendingRemove": "Sera retiré",
+      "assemblyReviewTitle": "Vérifier les modifications",
+      "assemblyReviewEmpty": "Aucune modification pour l'instant. Cochez des objectifs pour les ajouter ou décochez des membres pour les retirer.",
+      "assemblyReviewAdding": "Ajout de {{total}}",
+      "assemblyReviewRemoving": "Retrait de {{total}}",
+      "assemblySave_one": "Enregistrer {{count}} modification",
+      "assemblySave_other": "Enregistrer {{count}} modifications",
+      "assemblyUnknownGoal": "Objectif inconnu",
+      "assemblyStaleTitle": "Ce projet a changé pendant votre modification",
+      "assemblyStaleAdded": "Ajoutés ailleurs : {{goals}}",
+      "assemblyStaleRemoved": "Retirés ailleurs : {{goals}}",
+      "assemblyStaleHint": "Vos modifications en attente sont conservées. Actualisez pour charger les objectifs actuels, vérifiez-les avec vos modifications, puis enregistrez à nouveau.",
+      "assemblyRefresh": "Actualiser les objectifs",
+      "assemblyLastMembershipTitle": "Rien n'a été enregistré : ces objectifs ne seraient plus dans aucun projet",
+      "assemblyLastMembership": "C'est le seul projet de cet objectif. Ajoutez-le d'abord à un autre projet (le projet par défaut est toujours disponible), puis retirez-le ici.",
+      "assemblySlotConflictTitle": "Rien n'a été enregistré : ces objectifs se disputent le même emplacement",
+      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
       "deleted": "Objectif supprimé.",
       "goalRemovedFromProject": "{{goal}} retiré de {{project}}.",
       "goalRelocated": "{{goal}} déplacé vers {{project}}.",
-      "goalsAddedToProject_one": "{{count}} objectif ajouté à {{project}}.",
-      "goalsAddedToProject_other": "{{count}} objectifs ajoutés à {{project}}.",
-      "activated": "Plan actuel mis à jour.",
       "actionError": "Une erreur s'est produite. Veuillez réessayer.",
       "projectCreated": "Projet créé.",
       "projectGoalsPaused_one": "{{count}} objectif mis en pause.",
       "projectGoalsPaused_other": "{{count}} objectifs mis en pause.",
       "projectGoalsResumed_one": "{{count}} objectif repris.",
       "projectGoalsResumed_other": "{{count}} objectifs repris.",
-      "projectUpdated": "Projet mis à jour."
+      "projectUpdated": "Projet mis à jour.",
+      "projectMembershipSaved": "{{project}} mis à jour : {{added}} ajouté(s), {{removed}} retiré(s)."
     },
     "create": {
       "title": "Créer un objectif",
@@ -625,8 +642,7 @@
         "Ascension": "Ascension",
         "Ability": "Capacité",
         "Unlock": "Déblocage",
-        "Upgrade": "Amélioration",
-        "Level": "Niveau"
+        "Upgrade": "Amélioration"
       },
       "rank": {
         "start": "Du rang",
@@ -678,10 +694,8 @@
       },
       "level": {
         "current": "Niveau actuel",
-        "target": "Niveau cible",
         "booksNeeded": "≈ {{count}} livres d'XP légendaires",
-        "goldToApply": "≈ {{gold}} or à appliquer",
-        "costDisclaimer": "Déduit de vos livres d'XP possédés. Pas d'estimation en jours — les livres d'XP ne se farment pas avec de l'énergie de campagne."
+        "goldToApply": "≈ {{gold}} or à appliquer"
       },
       "farmingStrategy": {
         "label": "Stratégie de farming",
@@ -733,7 +747,7 @@
       "previewTitle": "Ressources nécessaires",
       "showAll": "Tout afficher ({{count}})",
       "showLess": "Afficher moins",
-      "previewDisclaimer": "L'estimation réelle peut varier selon la priorité de cet objectif dans le projet sélectionné et la stratégie de farming choisie.",
+      "previewDisclaimer": "L'estimation réelle peut varier selon la place de cet objectif dans votre ordre de priorité et la stratégie de farming choisie.",
       "previewUnavailable": "Une estimation détaillée n'est pas encore disponible pour ce type d'objectif.",
       "characterAbilityCostUnsupported": "Les cibles de capacité de personnage sont validées et suivies, mais leur coût en ressources n'est pas encore pris en charge.",
       "projectLabel": "Projets",
@@ -751,10 +765,8 @@
       "suggestions": {
         "includeUnlock": "Inclure l'objectif de Déblocage suggéré",
         "includeAscension": "Inclure l'objectif d'Ascension suggéré",
-        "includeLevel": "Inclure l'objectif de Niveau suggéré (atteindre le niveau {{level}})",
         "unlockRequired": "requis, ce personnage n'est pas encore possédé",
-        "ascensionRequired": "requis pour atteindre le rang cible",
-        "levelRequired": "requis pour atteindre le rang/niveau de capacité cible"
+        "ascensionRequired": "requis pour atteindre le rang cible"
       },
       "validation": {
         "alreadyUnlocked": "Ce personnage est déjà débloqué.",
@@ -762,16 +774,19 @@
         "progressionAlreadyReached": "L'ascension sélectionnée a déjà été atteinte.",
         "abilityRange": "Au moins une capacité doit augmenter, et aucune plage ne peut diminuer.",
         "abilityAlreadyReached": "Les niveaux de capacité sélectionnés ont déjà été atteints.",
-        "levelAlreadyReached": "Le niveau sélectionné a déjà été atteint.",
         "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
         "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
-        "levelMaxed": "Ce personnage a déjà atteint le niveau maximum.",
         "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité."
       },
       "startPaused": "Créer en pause",
-      "startPausedDescription": "L'objectif est créé normalement mais reste hors de la planification quotidienne jusqu'à ce que vous le repreniez. Les projets choisis n'y changent rien."
+      "startPausedDescription": "L'objectif est créé normalement mais reste hors de la planification quotidienne jusqu'à ce que vous le repreniez. Les projets choisis n'y changent rien.",
+      "levelRequirement": {
+        "title": "Nécessite le niveau {{required}} (actuellement {{current}})",
+        "xpRemaining": "Il reste {{xp}} XP à gagner",
+        "note": "À titre indicatif : cela fait partie de l'objectif, ce n'est pas un objectif distinct et il ne le bloque jamais."
+      }
     },
     "estimate": {
       "none": "—",
@@ -790,20 +805,11 @@
       "search": "Rechercher des objectifs",
       "allTypes": "Tous les types d'objectif",
       "typeFilterLabel": "Filtre par type d'objectif",
-      "sortByLabel": "Trier par",
       "groupByLabel": "Regrouper par",
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
       "groupByUnit": "Regrouper par unité",
-      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
-      "sort": {
-        "priority": "Priorité",
-        "entity": "Personnage",
-        "type": "Type d'objectif",
-        "status": "Statut",
-        "estimate": "Estimation",
-        "updated": "Mis à jour récemment"
-      }
+      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
     "detail": {
       "title": "Détails de l'objectif",
@@ -820,7 +826,7 @@
       "unsavedChangesCancel": "Continuer la modification",
       "estimateTitle": "Estimation",
       "isolatedEstimate": "Estimation isolée",
-      "planAwareEstimate": "Tient compte des objectifs plus prioritaires de ce projet",
+      "planAwareEstimate": "Tient compte des objectifs plus prioritaires de votre Plan global",
       "unavailable": "Indisponible",
       "dependenciesTitle": "Dépendances",
       "historyTitle": "Historique",
@@ -845,7 +851,7 @@
       "actualProgress": "Progression réelle",
       "actualProgressDescription": "La progression réelle reflète l'état actuellement synchronisé et possédé de votre compte.",
       "potentialProgress": "Progression potentielle",
-      "potentialProgressDescription": "La progression potentielle applique les ressources que vous possédez déjà après que les objectifs prioritaires de ce projet aient réservé leur part. Elle ne change pas le statut réel de l'objectif.",
+      "potentialProgressDescription": "La progression potentielle applique les ressources que vous possédez déjà après que les objectifs plus prioritaires de votre Plan global ont réservé leur part. Elle ne change pas le statut réel de l'objectif.",
       "remaining": {
         "upgrades": "{{count}} améliorations restantes",
         "upgradeSlots": "{{count}} emplacements d'amélioration restants",
@@ -859,6 +865,7 @@
         "levelsWithXp": "{{count}} niveaux · {{xp}} XP",
         "rank": "{{slots}} emplacements",
         "rankWithEnergy": "{{slots}} emplacements · {{energy}} énergie",
+        "coveredByEarlierGoal": "Couvert par un objectif précédent",
         "shards": "{{count}} éclats"
       },
       "potentialIndicator": "↗ {{percent}}%",
@@ -879,8 +886,10 @@
     },
     "insights": {
       "selectProject": "Sélectionnez un projet",
-      "noProjectTitle": "Aucun projet sélectionné",
-      "noProjectDescription": "Sélectionnez un projet ci-dessus pour voir ses ressources manquantes totales, ses goulots d'étranglement de farming et les événements de campagne pertinents.",
+      "noGoalsTitle": "Aucun objectif actif",
+      "noGoalsDescription": "Créez ou reprenez un objectif pour voir ses ressources manquantes, les goulots d'étranglement de farming et les événements de campagne pertinents, tels que planifiés dans votre ordre de priorité. Choisissez un projet ci-dessus pour restreindre la vue.",
+      "loadError": "Impossible de charger les objectifs",
+      "retry": "Réessayer",
       "upgradesTitle": "Améliorations par rareté",
       "shardsTitle": "Éclats et orbes",
       "shards": "Éclats",
@@ -910,7 +919,6 @@
       "cancel": "Annuler",
       "rankEnd": "Rang cible",
       "progressionEnd": "Progression cible",
-      "levelEnd": "Niveau cible",
       "activeEnd": "Capacité active, niveau cible",
       "passiveEnd": "Capacité passive, niveau cible",
       "primaryEnd": "Capacité principale, niveau cible",
@@ -919,8 +927,6 @@
       "issues": {
         "rankNotAboveStart": "Choisissez un rang supérieur à celui de départ de cet objectif.",
         "progressionNotAboveStart": "Choisissez une étape supérieure à celle de départ de cet objectif.",
-        "levelNotAboveStart": "Choisissez un niveau supérieur à celui de départ de cet objectif.",
-        "levelAboveMax": "Ce niveau dépasse le niveau maximal du personnage.",
         "abilityBelowStart": "L'objectif d'une capacité ne peut pas être inférieur à son niveau de départ.",
         "abilityNoAdvance": "Augmentez au moins une capacité au-dessus de son point de départ.",
         "abilityAboveMax": "Ce niveau dépasse le niveau maximal de capacité.",
@@ -937,6 +943,20 @@
       "planningStale": "L'objectif a été enregistré, mais votre plan n'a pas pu s'actualiser : les estimations affichées peuvent encore refléter l'ancien objectif.",
       "retryRefresh": "Réessayer l'actualisation",
       "historyChanged": "Objectif modifié"
+    },
+    "order": {
+      "conflictTitle": "Le plan a changé",
+      "conflictDescription": "Votre déplacement n'a pas été enregistré, car l'ordre des objectifs a changé après son chargement. Vérifiez l'ordre actualisé, puis réessayez le déplacement.",
+      "retry": "Réessayer le déplacement",
+      "dismiss": "Ignorer",
+      "projectNote": "Chaque numéro est la position de l'objectif dans votre ordre de priorité à l'échelle du compte ; les objectifs d'un projet peuvent donc présenter des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans votre ordre de priorité. Les objectifs des autres projets conservent leur ordre relatif.",
+      "openPlan": "Voir les objectifs par priorité",
+      "saving": "Enregistrement de l'ordre…",
+      "dragHint": "Faites glisser une carte pour modifier sa priorité.",
+      "noFarmableDemand": "Vos objectifs actifs n'ont actuellement besoin de rien qui puisse être farmé, il n'y a donc aucun farming à planifier.",
+      "estimatesError": "Certaines estimations du plan n'ont pas pu être chargées ; des détails de farming peuvent manquer.",
+      "estimatesRetry": "Réessayer les estimations",
+      "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses."
     }
   },
   "language": {
@@ -1028,17 +1048,21 @@
     },
     "overview": {
       "steps": {
+        "createProject": {
+          "title": "Créer un projet",
+          "content": "Créez un nouveau projet d'ici sans quitter Objectifs. Vos filtres et votre position dans la page restent inchangés."
+        },
         "statusFilter": {
           "title": "Filtrer par statut",
           "content": "Basculez entre les objectifs non atteints, atteints et archivés."
         },
         "filters": {
-          "title": "Type, tri et regroupement",
-          "content": "Filtrez par type d'objectif, changez l'ordre de tri ou regroupez des objectifs liés."
+          "title": "Type et regroupement",
+          "content": "Filtrez par type d'objectif ou regroupez des objectifs liés."
         },
         "projectFilter": {
           "title": "Filtrer par projet",
-          "content": "N'affiche que les objectifs d'un projet. Cela restreint la liste que vous consultez et ne change ni le plan actuel ni ce que calculent les quotidiennes."
+          "content": "N'affiche que les objectifs d'un projet. Cela restreint la liste que vous consultez et ne change ni votre plan ni ce que calculent les quotidiennes."
         },
         "createGoal": {
           "title": "Créer un objectif",
@@ -1048,9 +1072,13 @@
           "title": "Paramètres de planification",
           "content": "Définissez ici votre budget d'énergie quotidien — chaque estimation de cette page l'utilise."
         },
+        "reprioritize": {
+          "title": "Priorisez vos objectifs",
+          "content": "Faites glisser un objectif pour modifier sa priorité (sur mobile, appuyez d'abord sur « Réorganiser »). Chaque dépôt est enregistré immédiatement et s'applique dans tous les projets qui contiennent l'objectif."
+        },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif actif apparaît ci-dessous, selon vos filtres actuels. Ouvrez un objectif éligible pour modifier sa cible directement."
+          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints et archivés. Ouvrez un objectif éligible pour modifier sa cible directement. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1059,6 +1087,10 @@
         "acquisitionSources": {
           "title": "Sources d'acquisition",
           "content": "Combinez le farming de campagne, l'Onslaught et les boutiques quotidiennes : sélectionnez n'importe quelle combinaison pour réduire le temps estimé de cet objectif."
+        },
+        "projects": {
+          "title": "Projets",
+          "content": "Recherchez un nom de projet qui n'existe pas encore et choisissez Créer pour l'ajouter ici sans quitter ce formulaire. Les projets qui contiennent l'objectif ne changent jamais son statut ni sa priorité."
         }
       }
     },
@@ -1066,7 +1098,7 @@
       "steps": {
         "list": {
           "title": "Ce qu'est un projet",
-          "content": "Un projet est une sélection nommée de vos objectifs, avec son propre ordre de priorité : gardez-en plusieurs pour planifier séparément. Le plan actuel est celui qu'utilisent par défaut les Quotidiennes et les Analyses ; il ne met rien en pause et ne reprend rien."
+          "content": "Un projet est une sélection nommée de vos objectifs : gardez-en plusieurs pour regrouper des choses différentes. Le projet par défaut est affiché en premier ; un projet ne met rien en pause, ne reprend rien et ne modifie pas vos priorités."
         },
         "newProject": {
           "title": "Créer un projet",
@@ -1078,11 +1110,11 @@
       "steps": {
         "header": {
           "title": "Une sélection de vos objectifs",
-          "content": "Ce projet contient une sélection des objectifs de votre compte ; le résumé indique combien s'y trouvent. Son état de plan actuel, ses indicateurs de progression, le sélecteur de projet et les actions sont dans cet en-tête."
+          "content": "Ce projet contient une sélection des objectifs de votre compte ; le résumé indique combien s'y trouvent. Ses indicateurs de progression, le sélecteur de projet et les actions sont dans cet en-tête."
         },
         "addGoals": {
-          "title": "Remplir le projet",
-          "content": "Ajoutez plusieurs objectifs existants à ce projet en une fois : recherchez vos objectifs, choisissez ceux que vous voulez et enregistrez en une seule étape."
+          "title": "Choisissez ce que contient le projet",
+          "content": "Ajoutez ou retirez plusieurs objectifs en une fois : recherchez vos objectifs (dans votre ordre de priorité), regroupez-les par unité ou par type, cochez ceux qui doivent y figurer, vérifiez le récapitulatif et enregistrez en une seule étape. L'enregistrement ne modifie jamais votre ordre de priorité. Une unité peut avoir ici plusieurs cibles de rang, mais une cible exactement en double est bloquée."
         },
         "createGoal": {
           "title": "Créer un nouvel objectif",
@@ -1090,7 +1122,7 @@
         },
         "reprioritize": {
           "title": "Priorisez vos objectifs",
-          "content": "Faites glisser un objectif pour modifier sa priorité. Sur mobile, appuyez d'abord sur « Réorganiser » pour activer le mode de réorganisation."
+          "content": "Faites glisser un objectif pour modifier sa priorité. Déplacer un objectif ici le déplace aussi dans votre ordre de priorité ; les objectifs des autres projets conservent leur ordre relatif. Sur mobile, appuyez d'abord sur « Réorganiser » pour activer le mode de réorganisation."
         },
         "selector": {
           "title": "Choisir un projet",
@@ -1098,7 +1130,7 @@
         },
         "goals": {
           "title": "Objectifs du projet",
-          "content": "Les objectifs de ce projet apparaissent ici, groupés par type d'objectif au départ. Utilisez Grouper pour passer à un bloc par unité, ou pour désactiver le regroupement et obtenir une liste simple."
+          "content": "Les objectifs de ce projet apparaissent ici, d'abord regroupés par type d'objectif. Chaque cible de rang est un objectif à part entière, étiquetée avec sa cible, et peut être réordonnée, mise en pause ou supprimée séparément. Utilisez Grouper pour passer à un bloc par unité ou désactiver le regroupement pour une liste plate."
         },
         "rowActions": {
           "title": "Retirer sans supprimer",
@@ -1112,6 +1144,10 @@
         "editTarget": {
           "title": "Modifier l'objectif",
           "content": "Changez l'endroit où cet objectif se termine sans le recréer. Il conserve ses projets, ses notes et son historique, et votre plan est recalculé."
+        },
+        "projects": {
+          "title": "Projets",
+          "content": "Ajoutez cet objectif à un projet ou créez-en un nouveau depuis le sélecteur. Le nouveau projet est enregistré immédiatement ; l'objectif ne change que lorsque vous enregistrez."
         }
       }
     }

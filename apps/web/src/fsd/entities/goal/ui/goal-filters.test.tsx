@@ -17,8 +17,6 @@ function renderFilters(
       group="none"
       onGoalTypeChange={vi.fn()}
       onGroupChange={vi.fn()}
-      onSortChange={vi.fn()}
-      sort="updated"
       {...overrides}
     />
   )
@@ -29,37 +27,30 @@ describe("GoalFilters", () => {
     const user = userEvent.setup()
     renderFilters()
 
-    const sort = screen.getByTestId("goals-sort")
-    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
+    const group = screen.getByTestId("goals-group-by")
+    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
     expect(
-      document.getElementById("goals-sort-value")
+      document.getElementById("goals-group-value")
     ).not.toBeEmptyDOMElement()
 
-    await user.click(sort)
+    await user.click(group)
     await user.click(
-      screen.getByRole("option", { name: "goals.filters.sort.status" })
+      screen.getByRole("option", { name: "goals.filters.groupByType" })
     )
-    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
+    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
   })
 
-  it("calls onGoalTypeChange, onSortChange, and onGroupChange", async () => {
+  it("calls onGoalTypeChange and onGroupChange", async () => {
     const user = userEvent.setup()
     const onGoalTypeChange = vi.fn()
-    const onSortChange = vi.fn()
     const onGroupChange = vi.fn()
-    renderFilters({ onGoalTypeChange, onSortChange, onGroupChange })
+    renderFilters({ onGoalTypeChange, onGroupChange })
 
     await user.click(screen.getByTestId("goals-type-filter"))
     await user.click(
       screen.getByRole("option", { name: "goals.create.goalTypes.Rank" })
     )
     expect(onGoalTypeChange).toHaveBeenCalledWith("Rank")
-
-    await user.click(screen.getByTestId("goals-sort"))
-    await user.click(
-      screen.getByRole("option", { name: "goals.filters.sort.status" })
-    )
-    expect(onSortChange).toHaveBeenCalledWith("status")
 
     await user.click(screen.getByTestId("goals-group-by"))
     await user.click(
@@ -68,26 +59,23 @@ describe("GoalFilters", () => {
     expect(onGroupChange).toHaveBeenCalledWith("unit")
   })
 
-  it("renders Type and Sort by default", () => {
+  it("renders Type and Group by default", () => {
     renderFilters()
 
     expect(screen.getByTestId("goals-type-filter")).toBeInTheDocument()
-    expect(screen.getByTestId("goals-sort")).toBeInTheDocument()
     expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
   })
 
-  it("hides Type and Sort when showTypeFilter/showSort are false (fix-project-priority-display)", () => {
+  it("hides Type when showTypeFilter is false", () => {
     render(
       <GoalFilters
         group="none"
         onGroupChange={vi.fn()}
-        showSort={false}
         showTypeFilter={false}
       />
     )
 
     expect(screen.queryByTestId("goals-type-filter")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
     expect(screen.getByTestId("goals-group-by")).toBeInTheDocument()
   })
 

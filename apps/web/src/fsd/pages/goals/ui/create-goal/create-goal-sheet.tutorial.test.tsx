@@ -17,18 +17,25 @@ import {
 } from "./create-goal-sheet.tutorial"
 
 describe("useCreateGoalSheetTutorial", () => {
-  it("registers the same localized step for desktop and mobile, targeting the picker", () => {
+  it("registers the same localized steps for desktop and mobile, targeting the sources and project pickers", () => {
     const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
     expect(result.current.desktop).toEqual(result.current.mobile)
-    expect(result.current.desktop).toHaveLength(1)
-    const [step] = result.current.desktop
+    expect(result.current.desktop).toHaveLength(2)
+    const [step, projectStep] = result.current.desktop
     expect(step.target).toBe('[data-testid="create-goal-acquisition-sources"]')
     expect(step.title).toBe(
       "localized:tour.createGoal.steps.acquisitionSources.title"
     )
     expect(step.content).toBe(
       "localized:tour.createGoal.steps.acquisitionSources.content"
+    )
+    expect(projectStep.target).toBe('[data-testid="create-goal-projects"]')
+    expect(projectStep.title).toBe(
+      "localized:tour.createGoal.steps.projects.title"
+    )
+    expect(projectStep.content).toBe(
+      "localized:tour.createGoal.steps.projects.content"
     )
   })
 })

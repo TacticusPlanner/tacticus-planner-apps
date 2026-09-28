@@ -28,7 +28,6 @@ const outletContext = {
       name: "Active project",
       color: null,
       status: "Active",
-      isActivePlan: true,
       isDefault: false,
     },
     {
@@ -36,7 +35,6 @@ const outletContext = {
       name: "Other project",
       color: null,
       status: "Active",
-      isActivePlan: false,
       isDefault: true,
     },
   ],

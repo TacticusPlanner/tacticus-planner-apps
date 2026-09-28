@@ -8,105 +8,62 @@ Defines the project-level projected completion date — the single "when is this
 
 ### Requirement: A project reports a projected completion date over its estimable goals
 
-For the project currently being estimated, the system SHALL report a projected
-completion date derived from the latest completion date among the project's
-goals that have a successfully computed (non-blocked) estimate. Goals that
-cannot be estimated SHALL be excluded from that maximum rather than suppressing
-it, and the system SHALL report how many of the project's goals were excluded.
+A project's projected completion date SHALL be the latest successfully computed, non-blocked completion date among its member goals, taken from the one account-wide global plan run. Filtering to a project SHALL not reallocate inventory or energy or change a member's date. Unestimable, blocked, or pre-estimation-dropped member goals SHALL be counted as excluded rather than suppressing the date; the count is against all project members. If none can be estimated, there SHALL be no date. An empty project SHALL have no date and no exclusions.
 
-The excluded count SHALL be taken against the project's member goals, not
-against the subset the estimator was given — a goal dropped before estimation
-(no remaining farmable demand and no farming stages, no resolved priority, or a
-demand met entirely by uncosted resources) SHALL count as excluded, not as
-absent. A project of such goals SHALL therefore be distinguishable from a
-project with no goals at all.
+Assumptions:
 
-The date SHALL be absent when no goal in the project could be estimated. A
-project with no goals SHALL report no date and no exclusions.
-
-Assumptions this requirement depends on:
-
-- Per-goal completion dates come from the shared plan estimate and carry its
-  priority-contention semantics (see `goal-farming-estimates`), so this date is
-  "when the last estimable goal in the project's current priority order
-  finishes" and changes when priorities change.
-- A goal is excluded when its estimate status is Blocked, when no estimate was
-  produced for it, or when it was filtered out before estimation.
+- Per-goal dates include contention from all globally higher-priority Active goals, including those outside this project.
+- A goal is excluded if Blocked, missing an estimate, or dropped before estimation; project filtering never removes it from the global run.
 
 #### Scenario: All goals estimable
 
-- **GIVEN** a project whose three goals estimate to 3, 7, and 12 days
-- **WHEN** the project's projected completion date is derived
-- **THEN** it is the 12-day goal's completion date, with zero goals excluded
+- **GIVEN** a project's three goals have global-run completion dates at 3, 7, and 12 days
+- **WHEN** its outlook is derived
+- **THEN** it uses the 12-day date with zero exclusions
 
 #### Scenario: One goal blocked
 
-- **GIVEN** a project of three goals where two estimate to 3 and 7 days and the
-  third is Blocked
-- **WHEN** the project's projected completion date is derived
-- **THEN** it is the 7-day goal's completion date, with one goal excluded — not
-  an absent date
+- **GIVEN** two member goals have global-run dates at 3 and 7 days and a third is Blocked
+- **WHEN** its outlook is derived
+- **THEN** it uses the 7-day date with one exclusion
 
 #### Scenario: Every goal blocked
 
-- **GIVEN** a project whose every goal's estimate is Blocked
-- **WHEN** the project's projected completion date is derived
-- **THEN** no date is reported and every goal is counted as excluded
+- **WHEN** all project members are Blocked in the global run
+- **THEN** no date is reported and all are counted as excluded
 
 #### Scenario: Goals filtered out before estimation still count as excluded
 
-- **GIVEN** a project whose only goals are dropped before estimation — for
-  example an Ascension goal whose sole remaining demand is ascension orbs
-- **WHEN** the project's projected completion date is derived
-- **THEN** no date is reported and those goals are counted as excluded, so the
-  result differs from an empty project's
+- **GIVEN** only members dropped before estimation, such as an Ascension goal needing only orbs
+- **WHEN** its outlook is derived
+- **THEN** no date is reported and those goals are excluded, unlike an empty project
 
 #### Scenario: Empty project
 
-- **GIVEN** a project with no goals
-- **WHEN** the project's projected completion date is derived
-- **THEN** no date is reported and no goals are counted as excluded
+- **WHEN** a project has no goals
+- **THEN** it has no date and no exclusions
 
 ### Requirement: Onslaught token accumulation extends the projected date but never creates it
 
-When the project's plan requires more Onslaught tokens than the account
-currently holds, the projected completion date SHALL be extended to the day
-those tokens accumulate at the current Onslaught cadence, if that day falls
-later than the date derived from the project's estimable goals. The project date
-MAY therefore fall later than every individual goal's own completion date.
-
-This extension SHALL apply only to an existing date. When no goal in the project
-could be estimated there is no date to extend, and the system SHALL report no
-date rather than the token-accumulation day on its own — a completion date
-anchored to no goal is not a projection of the plan.
-
-Assumptions this requirement depends on: token demand is accumulated across the
-project's goals as their needs are derived, before any goal is known to be
-unestimable, so an excluded goal's token demand can still extend the date of a
-project that has at least one estimable goal. That is a known limitation of this
-requirement, not a guarantee of it.
+The global plan SHALL allocate the account's Onslaught token balance and cadence across Active goals in global priority order. A project's outlook SHALL use the already-computed token-aware dates of its members; it SHALL not recalculate a project-only token budget. Token accumulation SHALL extend an existing member-derived date if later, but SHALL not create a date where no member can be estimated. Demand from an excluded goal can still extend a plan that has an estimable goal, preserving the known limitation.
 
 #### Scenario: A shortfall extends a real date
 
-- **GIVEN** a project whose latest estimable goal completes on October 11, and
-  whose Ascension goals need more Onslaught tokens than the account holds,
-  accumulating past that day
-- **WHEN** the project's projected completion date is derived
-- **THEN** it is the later token-accumulation date, not October 11
+- **GIVEN** a project's latest estimable goal has a global-run date of October 11 and global token allocation pushes its token-ready day later
+- **WHEN** the project's outlook is derived
+- **THEN** the later token-aware date is used
 
 #### Scenario: A shortfall with nothing estimable produces no date
 
-- **GIVEN** a project whose every goal's estimate is Blocked, and whose derived
-  token demand exceeds the account's balance
-- **WHEN** the project's projected completion date is derived
-- **THEN** no date is reported — the token-accumulation day is not shown as the
-  project's completion date
+- **GIVEN** all project goals are Blocked but their token demand exceeds the account balance
+- **WHEN** outlook is derived
+- **THEN** no date is reported solely from token accumulation
 
 #### Scenario: No shortfall leaves the date alone
 
-- **GIVEN** a project whose account already holds every token its plan needs
-- **WHEN** the project's projected completion date is derived
-- **THEN** it is the date derived from the estimable goals, unextended
+- **GIVEN** the account already holds all tokens needed before the member goals finish
+- **WHEN** outlook is derived
+- **THEN** the latest member completion date is unextended
 
 ### Requirement: The projected completion date is shown formatted, labeled, and with its exclusions
 

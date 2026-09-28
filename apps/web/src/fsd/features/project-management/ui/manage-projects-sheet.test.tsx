@@ -15,7 +15,6 @@ const activeProject = {
   description: "Current",
   color: "#111111",
   status: "Active",
-  isActivePlan: false,
   isDefault: false,
   revision: 1,
 }
@@ -25,7 +24,6 @@ describe("ManageProjectsSheet", () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
     const actions = {
-      activate: vi.fn(),
       create: vi.fn().mockResolvedValue(true),
       pending: false,
       reorder: vi.fn(),
@@ -76,12 +74,10 @@ describe("ManageProjectsSheet", () => {
       description: null,
       color: null,
       status: "Active",
-      isActivePlan: false,
       isDefault: false,
       revision: 0,
     }
     const actions = {
-      activate: vi.fn(),
       create: vi.fn().mockResolvedValue(created),
       pending: false,
       reorder: vi.fn(),
@@ -109,7 +105,6 @@ describe("ManageProjectsSheet", () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
     const actions = {
-      activate: vi.fn(),
       create: vi.fn(),
       pending: false,
       reorder: vi.fn(),
@@ -146,7 +141,6 @@ describe("ManageProjectsSheet", () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
     const actions = {
-      activate: vi.fn(),
       create: vi.fn(),
       pending: false,
       reorder: vi.fn(),
@@ -169,7 +163,6 @@ describe("ManageProjectsSheet", () => {
 
   it("disables submit while pending or when the name is blank", () => {
     const actions = {
-      activate: vi.fn(),
       create: vi.fn(),
       pending: true,
       reorder: vi.fn(),
@@ -190,7 +183,6 @@ describe("ManageProjectsSheet", () => {
 
   it("resets to blank fields when reopened for a new project", () => {
     const actions = {
-      activate: vi.fn(),
       create: vi.fn(),
       pending: false,
       reorder: vi.fn(),

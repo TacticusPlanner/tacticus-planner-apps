@@ -127,6 +127,7 @@ vi.mock("@workspace/player-data/queries", () => ({
 
 const listGoals = vi.fn()
 const listProjects = vi.fn()
+const createProject = vi.fn()
 const createGoal = vi.fn()
 const updateGoalStatus = vi.fn()
 const deleteGoal = vi.fn()
@@ -154,15 +155,14 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 }))
 
 const listProjectGoals = vi.fn()
-const activateProject = vi.fn()
 const updateProjectGoals = vi.fn()
 const updateProjectGoalsStatus = vi.fn()
 
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
+  createProject: (...args: unknown[]) => createProject(...args),
   listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
-  activateProject: (...args: unknown[]) => activateProject(...args),
   updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
   updateProjectGoalsStatus: (...args: unknown[]) =>
     updateProjectGoalsStatus(...args),
@@ -179,7 +179,37 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   },
 }))
 
-vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
+// Below 768px the quick-nav's project list is read through the real `listProjects`, so route that one
+// endpoint to the same double.
+vi.mock("@/shared/api", () => ({
+  ApiError: class ApiError extends Error {},
+  apiGet: (path: string) =>
+    path === "/api/v1/me/projects"
+      ? listProjects()
+      : Promise.resolve({ goals: [] }),
+}))
+
+// The plan run behind estimates is exercised by its own tests; the page only consumes its result.
+vi.mock("../../model/insights/use-plan-insights", () => ({
+  usePlanInsights: () => ({
+    loading: false,
+    result: {
+      estimates: new Map(),
+      potentialProgressByGoalId: new Map(),
+      levelPotentialProgressByGoalId: new Map(),
+    },
+  }),
+}))
+vi.mock("@/features/goal-order", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/goal-order")>()),
+  useGoalOrderActions: () => ({
+    moveGoal: vi.fn(),
+    pending: false,
+    conflict: null,
+    retry: vi.fn(),
+    dismissConflict: vi.fn(),
+  }),
+}))
 
 const mobile = vi.hoisted(() => ({ value: false }))
 
@@ -187,9 +217,11 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
 }))
 
+const navigateMock = vi.hoisted(() => vi.fn())
+
 vi.mock("react-router", async (importOriginal) => ({
   ...(await importOriginal<typeof import("react-router")>()),
-  useNavigate: () => vi.fn(),
+  useNavigate: () => navigateMock,
 }))
 
 import { GoalsPage } from ".//goals-page"
@@ -235,7 +267,6 @@ const otherProject = {
   description: null,
   color: null,
   status: "Active",
-  isActivePlan: false,
   isDefault: false,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
@@ -248,7 +279,6 @@ const overviewProject = {
   description: null,
   color: null,
   status: "Active",
-  isActivePlan: true,
   isDefault: true,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
@@ -259,12 +289,13 @@ describe("GoalsPage", () => {
   beforeEach(() => {
     listGoals.mockReset()
     listProjects.mockReset()
+    createProject.mockReset()
+    navigateMock.mockReset()
     listProjectGoals.mockReset()
     listProjectGoals.mockResolvedValue({ goals: [] })
     listProjects.mockResolvedValue({ projects: [] })
     getGoalDetail.mockReset().mockResolvedValue(undefined)
     getPlayerCharacters.mockReset().mockReturnValue([])
-    activateProject.mockReset()
     updateProjectGoals.mockReset()
     updateProjectGoalsStatus.mockReset()
     mobile.value = false
@@ -327,32 +358,40 @@ describe("GoalsPage", () => {
     renderPage()
     await screen.findByTestId("goals-page-empty")
 
-    const sort = screen.getByTestId("goals-sort")
-    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
+    const group = screen.getByTestId("goals-group-by")
+    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
     expect(
-      document.getElementById("goals-sort-value")
+      document.getElementById("goals-group-value")
     ).not.toBeEmptyDOMElement()
 
-    await user.click(sort)
+    await user.click(group)
     await user.click(
-      screen.getByRole("option", { name: "goals.filters.sort.status" })
+      screen.getByRole("option", { name: "goals.filters.groupByType" })
     )
-    expect(sort).toHaveAccessibleName("goals.filters.sortByLabel")
-    expect(document.getElementById("goals-sort-value")).toHaveTextContent(
-      "goals.filters.sort.status"
+    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
+    expect(document.getElementById("goals-group-value")).toHaveTextContent(
+      "goals.filters.groupByType"
     )
   })
 
-  it("does not offer Priority in the Sort control (fix-project-priority-display)", async () => {
-    listGoals.mockResolvedValue({ goals: [] })
-    const user = userEvent.setup()
+  it("has no Sort control and lists Active and Paused goals in global priority order", async () => {
+    listGoals.mockResolvedValue({
+      goals: [
+        { ...activeGoal, goalId: "goal-b", globalPriority: 2 },
+        { ...pausedGoal, goalId: "goal-c", globalPriority: 3 },
+        { ...activeGoal, goalId: "goal-a", globalPriority: 1 },
+      ],
+    })
     renderPage()
-    await screen.findByTestId("goals-page-empty")
 
-    await user.click(screen.getByTestId("goals-sort"))
+    await screen.findAllByTestId("goal-row")
+
+    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
     expect(
-      screen.queryByRole("option", { name: "goals.filters.sort.priority" })
-    ).not.toBeInTheDocument()
+      screen
+        .getAllByTestId("goal-row")
+        .map((row) => row.getAttribute("data-goal-id"))
+    ).toEqual(["goal-a", "goal-b", "goal-c"])
   })
 
   it("shows a row for an active goal with lifecycle actions", async () => {
@@ -586,7 +625,9 @@ describe("GoalsPage", () => {
     renderPage()
 
     expect(
-      await screen.findByText("My Goals · goals.project.currentPlan")
+      within(await screen.findByTestId("goal-project-memberships")).getByText(
+        "My Goals"
+      )
     ).toBeInTheDocument()
     expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
   })
@@ -707,21 +748,23 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
     expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
-    // Narrowing a list is not selecting a project: nothing is written, and Current plan is untouched.
-    expect(activateProject).not.toHaveBeenCalled()
+    // Narrowing a list is not selecting a project: nothing is written.
     expect(updateProjectGoals).not.toHaveBeenCalled()
     expect(updateProjectGoalsStatus).not.toHaveBeenCalled()
     expect(updateGoalStatus).not.toHaveBeenCalled()
 
-    // Clearing the filter brings the other project's goal back with its Current-plan marker intact,
-    // so filtering changed nothing about which project is Current plan.
+    // Clearing the filter brings the other project's goal back with its membership intact.
     await user.click(screen.getByTestId("goals-project-filter"))
     await user.click(
       await screen.findByRole("option", { name: "goals.project.filterAll" })
     )
-    expect(
-      await screen.findByText("My Goals · goals.project.currentPlan")
-    ).toBeInTheDocument()
+    await vi.waitFor(() =>
+      expect(
+        screen
+          .getAllByTestId("goal-project-memberships")
+          .some((node) => within(node).queryByText("My Goals"))
+      ).toBe(true)
+    )
   })
 
   it("narrows the Archived tab by project too, rather than emptying it", async () => {
@@ -796,6 +839,174 @@ describe("GoalsPage", () => {
     expect(screen.getByTestId("goals-filter-group")).toContainElement(trigger)
     expect(within(trigger).getByText("goals.project.filterAll")).toHaveClass(
       "sr-only"
+    )
+  })
+
+  describe("project quick-nav Create project", () => {
+    const newProject = {
+      ...otherProject,
+      projectId: "proj-3",
+      name: "Fresh start",
+    }
+
+    it.each([false, true])(
+      "opens the blank sheet, creates a project and keeps the route and membership filter (mobile: %s)",
+      async (isMobile) => {
+        mobile.value = isMobile
+        listGoals.mockResolvedValue({ goals: [activeGoal] })
+        listProjects.mockResolvedValue({
+          projects: [overviewProject, otherProject],
+        })
+        createProject.mockImplementation(() => {
+          listProjects.mockResolvedValue({
+            projects: [overviewProject, otherProject, newProject],
+          })
+          return Promise.resolve(newProject)
+        })
+        const user = userEvent.setup()
+        renderPage()
+
+        await user.click(await screen.findByTestId("goals-project-filter"))
+        await user.click(
+          await screen.findByRole("option", { name: "Event Prep" })
+        )
+        expect(
+          screen.getByTestId("goals-project-filter")
+        ).toHaveAccessibleDescription("Event Prep")
+
+        await user.click(
+          await screen.findByTestId("overview-quicknav-create-project")
+        )
+        const sheet = await screen.findByTestId("manage-projects-sheet")
+        expect(
+          within(sheet).getByText("goals.project.newProjectTitle")
+        ).toBeInTheDocument()
+        expect(within(sheet).getByLabelText("goals.project.name")).toHaveValue(
+          ""
+        )
+
+        await user.type(
+          within(sheet).getByLabelText("goals.project.name"),
+          "Fresh start"
+        )
+        await user.click(
+          within(sheet).getByRole("button", { name: "goals.project.create" })
+        )
+
+        await vi.waitFor(() =>
+          expect(createProject).toHaveBeenCalledWith({
+            name: "Fresh start",
+            description: null,
+            color: null,
+          })
+        )
+        await vi.waitFor(() =>
+          expect(
+            screen.queryByTestId("manage-projects-sheet")
+          ).not.toBeInTheDocument()
+        )
+        expect(listProjects.mock.calls.length).toBeGreaterThan(1)
+        if (!isMobile)
+          expect(
+            await screen.findByTestId("overview-quicknav-chip-proj-3")
+          ).toBeInTheDocument()
+        expect(
+          screen.getByTestId("goals-project-filter")
+        ).toHaveAccessibleDescription("Event Prep")
+        expect(navigateMock).not.toHaveBeenCalled()
+      }
+    )
+
+    it.each([false, true])(
+      "keeps the sheet open with the entered fields when saving fails (mobile: %s)",
+      async (isMobile) => {
+        mobile.value = isMobile
+        listGoals.mockResolvedValue({ goals: [] })
+        listProjects.mockResolvedValue({ projects: [overviewProject] })
+        createProject.mockRejectedValue(new Error("boom"))
+        const user = userEvent.setup()
+        renderPage()
+
+        // Wait for the loaded state so the click lands on the control that stays mounted.
+        await screen.findByTestId(
+          isMobile ? "overview-quicknav-mobile" : "overview-quicknav-desktop"
+        )
+        await user.click(
+          await screen.findByTestId("overview-quicknav-create-project")
+        )
+        const sheet = await screen.findByTestId("manage-projects-sheet")
+        await user.type(
+          within(sheet).getByLabelText("goals.project.name"),
+          "Retry me"
+        )
+        await user.type(
+          within(sheet).getByLabelText("goals.project.description"),
+          "Some notes"
+        )
+        await user.click(
+          within(sheet).getByRole("button", { name: "goals.project.create" })
+        )
+
+        await vi.waitFor(() => expect(createProject).toHaveBeenCalledTimes(1))
+        expect(screen.getByTestId("manage-projects-sheet")).toBeInTheDocument()
+        expect(within(sheet).getByLabelText("goals.project.name")).toHaveValue(
+          "Retry me"
+        )
+        expect(
+          within(sheet).getByLabelText("goals.project.description")
+        ).toHaveValue("Some notes")
+        expect(navigateMock).not.toHaveBeenCalled()
+      }
+    )
+
+    it.each([false, true])(
+      "still offers Create project when there are no projects (mobile: %s)",
+      async (isMobile) => {
+        mobile.value = isMobile
+        listGoals.mockResolvedValue({ goals: [] })
+        listProjects.mockResolvedValue({ projects: [] })
+        createProject.mockResolvedValue(newProject)
+        const user = userEvent.setup()
+        renderPage()
+
+        await screen.findByTestId("goals-page-empty")
+        await screen.findByTestId(
+          isMobile ? "overview-quicknav-empty" : "overview-quicknav-create-only"
+        )
+        if (isMobile) {
+          expect(
+            screen.getByTestId("overview-quicknav-empty")
+          ).toBeInTheDocument()
+          expect(
+            screen.queryByText("home.projects.emptyAction")
+          ).not.toBeInTheDocument()
+        }
+        await user.click(
+          await screen.findByTestId("overview-quicknav-create-project")
+        )
+        const sheet = await screen.findByTestId("manage-projects-sheet")
+        await user.type(
+          within(sheet).getByLabelText("goals.project.name"),
+          "Fresh start"
+        )
+        await user.click(
+          within(sheet).getByRole("button", { name: "goals.project.create" })
+        )
+
+        await vi.waitFor(() =>
+          expect(createProject).toHaveBeenCalledWith({
+            name: "Fresh start",
+            description: null,
+            color: null,
+          })
+        )
+        await vi.waitFor(() =>
+          expect(
+            screen.queryByTestId("manage-projects-sheet")
+          ).not.toBeInTheDocument()
+        )
+        expect(navigateMock).not.toHaveBeenCalled()
+      }
     )
   })
 })

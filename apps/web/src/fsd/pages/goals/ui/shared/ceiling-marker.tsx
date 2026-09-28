@@ -18,11 +18,11 @@ function reasonSuffix(
   return <span className="opacity-75">({t(reasonKey)})</span>
 }
 
-/** "Currently reachable: <rank/level> (capped by rarity/level/both)" content for a Rank/Level goal
- *  currently capped below its target — shared by the progress bar's ceiling marker tooltip
+/** "Currently reachable: <rank/level> (capped by rarity/level/both)" content for a Rank goal or
+ *  level requirement currently capped below its target — shared by the progress bar's ceiling marker tooltip
  *  (`goal-progress-visuals.tsx`) and the "Restricted" badge's tooltip (`status-badge.tsx`), which
  *  name the same underlying condition through two different UI surfaces. `null` when the goal isn't
- *  currently restricted, or isn't a Rank/Level goal. */
+ *  currently restricted, or has no ceiling. */
 export function reachableCeilingLabel(
   t: TFunction,
   progress: GoalProgress
@@ -43,8 +43,11 @@ export function reachableCeilingLabel(
       </span>
     )
   }
-  if (progress.kind === "Level" && progress.reachableLevel !== null) {
-    // A Level goal's own ceiling has no separate "level" axis to be limited by (it's the
+  if (
+    progress.kind === "LevelRequirement" &&
+    progress.reachableLevel !== null
+  ) {
+    // A level requirement's own ceiling has no separate "level" axis to be limited by (it's the
     // character's level being capped) — rarity is always the reason, unlike Rank's two independent
     // axes above.
     return (

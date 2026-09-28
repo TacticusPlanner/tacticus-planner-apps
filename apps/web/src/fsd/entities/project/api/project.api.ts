@@ -2,9 +2,11 @@ import { apiGet, apiPost, apiPut } from "@/shared/api"
 
 import type {
   CreateProjectRequest,
+  MoveProjectGoalRequest,
   ProjectGoalEntry,
-  ProjectGoalSummary,
+  ProjectGoalsResponse,
   ProjectSummary,
+  UpdateProjectGoalsRequest,
   UpdateProjectRequest,
 } from "../model/types"
 
@@ -27,32 +29,33 @@ export function updateProject(
   })
 }
 
-export function activateProject(projectId: string) {
-  return apiPost<ProjectSummary>(
-    `/api/v1/me/projects/${projectId}/activate`,
-    {}
-  )
-}
-
+/** Atomically replaces a project's membership. `request.expectedGoalIds` is the membership the user
+ * reviewed: a mismatch is a 409 `projectMembershipStale` (see `projectMembershipStaleDetails`); a removal
+ * that would leave a goal in no project is a 400 `lastProjectMembership`. Never reorders anything. */
 export function updateProjectGoals(
   projectId: string,
-  goals: ProjectGoalEntry[]
+  request: UpdateProjectGoalsRequest
 ) {
   return apiPut<{ goals: ProjectGoalEntry[] }>(
     `/api/v1/me/projects/${projectId}/goals`,
-    { body: { goals } }
+    { body: request }
   )
 }
 
-export function updateProjectGoalOrder(projectId: string, goalIds: string[]) {
-  return apiPut<{ goals: ProjectGoalEntry[] }>(
+/** Reorders within a project's projection: writes through to the account-wide order (a 409 with the
+ * `goalOrder*` issue codes when the revision or goals are stale). Returns the new order. */
+export function moveProjectGoal(
+  projectId: string,
+  request: MoveProjectGoalRequest
+) {
+  return apiPut<{ revision: number; goalIds: string[] }>(
     `/api/v1/me/projects/${projectId}/goal-order`,
-    { body: { goalIds } }
+    { body: request }
   )
 }
 
 export function listProjectGoals(projectId: string, signal?: AbortSignal) {
-  return apiGet<{ goals: ProjectGoalSummary[] }>(
+  return apiGet<ProjectGoalsResponse>(
     `/api/v1/me/projects/${projectId}/goals`,
     { signal }
   )

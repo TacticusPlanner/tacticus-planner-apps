@@ -28,7 +28,7 @@ export function RaidState({
       ? "empty.noFarmable"
       : state === "error"
         ? "empty.error"
-        : "empty.noProject"
+        : "empty.noGoals"
   return (
     <Card data-testid={`dailies-${state}`}>
       <CardContent className="grid justify-items-center gap-4 py-10 text-center text-muted-foreground">

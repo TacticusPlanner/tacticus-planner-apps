@@ -12,7 +12,6 @@ const fns = {
   setEntityType: vi.fn(),
   setEnabledTypes: vi.fn(),
   selectProjects: vi.fn(),
-  setLevelEnd: vi.fn(),
   setProgressionEnd: vi.fn(),
 }
 
@@ -38,7 +37,6 @@ describe("useCreateGoalPrefill", () => {
     expect(fns.handleEntityChange).not.toHaveBeenCalled()
     expect(fns.setEntityType).not.toHaveBeenCalled()
     expect(fns.setEnabledTypes).not.toHaveBeenCalled()
-    expect(fns.setLevelEnd).not.toHaveBeenCalled()
     expect(fns.setProgressionEnd).not.toHaveBeenCalled()
   })
 
@@ -46,25 +44,6 @@ describe("useCreateGoalPrefill", () => {
     render(undefined)
 
     expect(fns.selectProjects).not.toHaveBeenCalled()
-  })
-
-  it("still applies entity, goal type, projects and level for a Level prefill", () => {
-    render(
-      {
-        entityType: "Character",
-        entityId: unitId,
-        goalType: "Level",
-        requiredLevel: 30,
-        projectIds: ["p1"],
-      },
-      unitId
-    )
-
-    expect(fns.handleEntityChange).toHaveBeenCalledWith(unitId)
-    expect(fns.setEntityType).toHaveBeenCalledWith("Character")
-    expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Level"]))
-    expect(fns.selectProjects).toHaveBeenCalledWith(["p1"])
-    expect(fns.setLevelEnd).toHaveBeenCalledWith(30)
   })
 
   it("still applies the progression target for an Ascension prefill", () => {
@@ -97,7 +76,6 @@ describe("useCreateGoalPrefill", () => {
 
     expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Unlock"]))
     expect(fns.selectProjects).toHaveBeenCalledWith(["p3"])
-    expect(fns.setLevelEnd).not.toHaveBeenCalled()
     expect(fns.setProgressionEnd).not.toHaveBeenCalled()
   })
 })

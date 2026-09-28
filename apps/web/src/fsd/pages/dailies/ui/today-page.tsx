@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react"
-import { useOutletContext } from "react-router"
 import { Swords } from "lucide-react"
+import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
@@ -31,10 +31,6 @@ export function TodayPage() {
   const raids = useDailyRaids(context.projectId)
   useTodayTutorial()
 
-  if (context.projectsError) {
-    return <RaidState state="error" onRetry={context.retryProjects} />
-  }
-  if (context.projectsUnavailable) return <RaidState state="no-project" />
   if (raids.status !== "ready") return <RaidState state={raids.status} />
 
   // Filter out exhausted locations before slicing to BONUS_LIMIT — otherwise an actionable entry

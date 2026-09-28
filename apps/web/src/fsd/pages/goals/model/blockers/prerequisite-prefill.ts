@@ -7,10 +7,7 @@ import type { BlockerReason } from ".//goal-blockers"
 type MissingPrerequisite = Extract<
   BlockerReason,
   {
-    kind:
-      | "MissingLevelPrerequisite"
-      | "MissingAscensionPrerequisite"
-      | "MissingUnlockPrerequisite"
+    kind: "MissingAscensionPrerequisite" | "MissingUnlockPrerequisite"
   }
 >
 
@@ -18,16 +15,6 @@ export function prerequisitePrefill(
   detail: GoalDetail,
   reason: MissingPrerequisite
 ): CreateGoalPrefill | null {
-  if (reason.kind === "MissingLevelPrerequisite") {
-    if (detail.entityType !== "Character") return null
-    return {
-      entityType: "Character",
-      entityId: detail.entityId as UnitId,
-      goalType: "Level",
-      requiredLevel: reason.requiredLevel,
-      projectIds: detail.projectIds,
-    }
-  }
   if (reason.kind === "MissingUnlockPrerequisite") {
     return {
       entityType: detail.entityType,

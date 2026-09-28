@@ -6,6 +6,7 @@ export {
   calculateGoalResourceNeed,
   computeGoalAcquisition,
   createCraftedInventoryPool,
+  createUnitCoverage,
   estimateBonusRaids,
   estimateGoal,
   estimatePlanSchedule,
@@ -22,4 +23,5 @@ export {
   type RaidDaySchedule,
   type RaidPlanSchedule,
   type RaidPlanSummary,
+  type UnitCoverage,
 } from "../index"

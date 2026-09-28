@@ -79,7 +79,6 @@ describe("goal API", () => {
   it.each([
     ["Rank", { rank: { end: 7, endPointFive: true, endAppliedUpgrades: 0 } }],
     ["Ascension", { progression: { end: "Common:TwoStars" } }],
-    ["Level", { level: { end: 30 } }],
     ["Ability", { ability: { activeEnd: 5, passiveEnd: 3 } }],
     [
       "Upgrade",

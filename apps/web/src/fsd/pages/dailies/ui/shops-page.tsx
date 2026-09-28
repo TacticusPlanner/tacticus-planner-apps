@@ -2,6 +2,8 @@ import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import { ProjectSelect } from "@/entities/project"
+
 import { useShopRecommendations } from "../model/use-shop-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopsDesktop } from "./shops/desktop/shops-desktop"
@@ -11,7 +13,7 @@ import { useShopsTutorial } from "./shops-page.tutorial"
 
 export function ShopsPage() {
   const context = useOutletContext<DailiesOutletContext>()
-  const { t } = useTranslation("shops")
+  const { t } = useTranslation(["shops", "dailies"])
   const isMobile = useIsMobile()
   const recommendations = useShopRecommendations(context.projectId)
   useShopsTutorial()
@@ -21,12 +23,14 @@ export function ShopsPage() {
   )
 
   let body: React.ReactNode
-  if (context.projectsError) {
+  // The projects list only matters once a project narrows the offers; the all-goals scope reads the
+  // global plan and needs none of it.
+  if (context.projectId && context.projectsError) {
     body = <ShopsState state="error" onRetry={context.retryProjects} />
-  } else if (context.projectsUnavailable) {
+  } else if (context.projectId && context.projectsUnavailable) {
     body = <ShopsState state="no-project" />
-  } else if (recommendations.status === "no-project") {
-    body = <ShopsState state="no-project" />
+  } else if (recommendations.status === "no-goals") {
+    body = <ShopsState state="no-goals" />
   } else if (recommendations.status === "error") {
     body = <ShopsState state="error" onRetry={recommendations.retry} />
   } else if (recommendations.status === "loading") {
@@ -46,13 +50,26 @@ export function ShopsPage() {
 
   return (
     <div className="space-y-5 md:space-y-7" data-testid="shops-page">
-      <div className="space-y-1">
-        <h1 className="text-lg font-semibold">{t("title")}</h1>
-        {project ? (
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="text-lg font-semibold">{t("title")}</h1>
+          {/* Offers are recommended for every Active goal unless a project narrows them; the
+              account-wide raid plan (Today, Raids Plan) is not affected by it. */}
           <p className="text-sm text-muted-foreground">
-            {t("subtitle", { project: project.name })}
+            {project
+              ? t("subtitle", { project: project.name })
+              : t("subtitleAll")}
           </p>
-        ) : null}
+        </div>
+        <ProjectSelect
+          allowAll
+          compact={false}
+          onProjectIdChange={context.setProjectId}
+          placeholder={t("dailies:project.placeholder")}
+          projectId={context.projectId}
+          projects={context.projects}
+          testId="shops-project-select"
+        />
       </div>
       {body}
     </div>

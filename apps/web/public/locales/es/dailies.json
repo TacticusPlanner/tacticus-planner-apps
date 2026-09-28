@@ -5,13 +5,12 @@
     "ability": "Habilidad {{value}}",
     "ascension": "Ascensión {{value}}",
     "unlock": "Desbloqueo",
-    "level": "Nivel {{value}}",
     "upgrade": "{{value}} mejoras",
     "other": "Objetivo: {{value}}"
   },
   "tabs": {
     "raids": "Incursiones",
-    "raidsDescription": "Gasta la energía de hoy según la prioridad del proyecto.",
+    "raidsDescription": "Gasta la energía de hoy en tus objetivos activos por orden de prioridad.",
     "shops": "Tiendas",
     "shopsDescription": "Consulta las rotaciones y compras de la tienda",
     "onslaught": "Onslaught",
@@ -152,15 +151,20 @@
       "unavailable": "Reglas de variante no disponibles — sincroniza Guild Raid Meta para ver las sustituciones."
     }
   },
-  "project": { "placeholder": "Selecciona un proyecto" },
+  "project": {
+    "placeholder": "Selecciona un proyecto"
+  },
   "raids": {
-    "tabs": { "today": "Hoy", "plan": "Plan" }
+    "tabs": {
+      "today": "Hoy",
+      "plan": "Plan"
+    }
   },
   "empty": {
-    "noProject": "No hay ningún proyecto disponible.",
-    "noFarmable": "Este proyecto no tiene necesidades de campaña activas.",
+    "noFarmable": "Ninguno de tus objetivos activos tiene necesidades de campaña farmeables.",
     "error": "No se pudo cargar el plan.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "noGoals": "No tienes objetivos activos. Crea o reanuda un objetivo en Objetivos para planificar tus incursiones."
   },
   "today": {
     "title": "Incursiones de hoy",
@@ -251,10 +255,6 @@
           "title": "Vistas de incursión",
           "content": "Cambia entre el plan de hoy y el plan completo de incursiones."
         },
-        "project": {
-          "title": "Elige un proyecto",
-          "content": "El plan sigue sus objetivos activos."
-        },
         "schedule": {
           "title": "Plan de hoy",
           "content": "Ataca estos nodos con la energía de hoy — aquí también aparecen sugerencias adicionales una vez cubiertas tus necesidades presupuestadas."
@@ -278,10 +278,6 @@
         "navigation": {
           "title": "Vistas",
           "content": "Cambia entre Hoy y Plan."
-        },
-        "project": {
-          "title": "Proyecto compartido",
-          "content": "Hoy y Plan usan el mismo proyecto."
         },
         "summary": {
           "title": "Resumen",

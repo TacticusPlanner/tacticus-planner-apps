@@ -7,9 +7,9 @@ import {
 } from "@/entities/project"
 
 import type { ProjectCardSummary } from "../ui/project-row"
-import { orderCurrentPlanFirst } from "./order-current-plan-first"
+import { orderDefaultFirst } from "./order-default-first"
 
-/** Current plan + up to 2 more non-archived projects (home-projects-widget spec: "Current plan
+/** Default project + up to 2 more non-archived projects (home-projects-widget spec: "Default
  * project first ... followed by up to 2 additional non-archived projects (3 project cards
  * total)"). */
 const HOME_PROJECT_LIMIT = 3
@@ -25,7 +25,7 @@ export type HomeProjectsResult =
       remainingCount: number
     }
 
-/** Selects and summarizes the projects the home dashboard's Your Projects widget shows: Current
+/** Selects and summarizes the projects the home dashboard's Your Projects widget shows: Default
  * plan first, then other non-archived projects in dashboard order, capped to `limit` (default
  * `HOME_PROJECT_LIMIT`; pass `null` for no cap, e.g. desktop's roomier layout), plus a
  * units/goals summary per visible project. Only computes summaries for the visible (capped)
@@ -39,7 +39,7 @@ export function useHomeProjects(
 ): HomeProjectsResult {
   const { fetchState, loading, projects, retry } = useProjects()
 
-  const ordered = orderCurrentPlanFirst(projects)
+  const ordered = orderDefaultFirst(projects)
   const visible = limit === null ? ordered : ordered.slice(0, limit)
   const remainingCount =
     limit === null ? 0 : Math.max(0, ordered.length - limit)

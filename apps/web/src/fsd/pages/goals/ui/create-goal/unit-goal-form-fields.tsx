@@ -5,27 +5,13 @@ import { Label } from "@workspace/ui/components/label"
 
 import type { UnitId } from "@workspace/game-domain"
 
-import type { GoalKind } from "@/entities/goal"
 import { UnitCombobox } from "@/shared/ui"
+import { goalKindsForEntity } from "../../model/goal-creation-form/goal-validation"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalTypeCards } from ".//goal-type-cards"
 import { GoalTypeToggleGroup } from "../shared/goal-visuals"
 import { UnitInfoCard } from ".//unit-info-card"
-
-// Rank is omitted entirely on the MoW tab (plan §16 phase 6) — MoWs have no rank ladder, so offering
-// the toggle would let a user attempt a goal type `useGoalPrerequisites`/`buildCombinedGoalSpecs`
-// never handle for that entity. Unlock, by contrast, applies to both — a MoW's resource cost just
-// isn't estimated yet (see `unlockResourceNeed`'s `isMow` short-circuit).
-const CHARACTER_GOAL_KINDS: GoalKind[] = [
-  "Unlock",
-  "Ascension",
-  "Ability",
-  "Upgrade",
-  "Rank",
-  "Level",
-]
-const MOW_GOAL_KINDS: GoalKind[] = ["Unlock", "Ascension", "Ability", "Upgrade"]
 
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
@@ -49,8 +35,7 @@ export function UnitGoalFormFields({
   unitIcon: (id: UnitId) => string | undefined
 }) {
   const { t } = useTranslation()
-  const goalKinds =
-    form.entityType === "Mow" ? MOW_GOAL_KINDS : CHARACTER_GOAL_KINDS
+  const goalKinds = goalKindsForEntity(form.entityType)
 
   return (
     <form
@@ -79,7 +64,9 @@ export function UnitGoalFormFields({
           progression={form.progressionStart}
           abilityActiveLevel={form.abilityActiveStart}
           abilityPassiveLevel={form.abilityPassiveStart}
-          level={form.entityType === "Character" ? form.levelStart : undefined}
+          level={
+            form.entityType === "Character" ? form.currentLevel : undefined
+          }
           shardCount={
             form.entityAlreadyOwned
               ? ((form.usesMythicShards
@@ -105,7 +92,6 @@ export function UnitGoalFormFields({
               (kind === "Rank" && form.atMaxRank) ||
               (kind === "Ascension" && form.atMaxProgression) ||
               (kind === "Ability" && form.atMaxAbility) ||
-              (kind === "Level" && form.atMaxLevel) ||
               (kind === "Upgrade" &&
                 form.entityType === "Character" &&
                 form.atMaxRank)
@@ -134,11 +120,6 @@ export function UnitGoalFormFields({
           {form.atMaxAbility ? (
             <p className="text-xs text-muted-foreground">
               {t("goals.create.validation.abilityMaxed")}
-            </p>
-          ) : null}
-          {form.atMaxLevel ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.validation.levelMaxed")}
             </p>
           ) : null}
           {/* One line per kind that already has an in-flight (Active/Paused) goal for this unit — a
@@ -179,23 +160,6 @@ export function UnitGoalFormFields({
           />
           <FieldLabel className="font-normal">
             {t("goals.create.suggestions.includeAscension")}
-          </FieldLabel>
-        </Field>
-      ) : null}
-
-      {form.prerequisites.needsLevel ? (
-        <Field orientation="horizontal">
-          <Checkbox
-            checked={form.includeSuggestedLevel}
-            data-testid="create-goal-include-level"
-            onCheckedChange={(checked) =>
-              form.setIncludeSuggestedLevel(checked === true)
-            }
-          />
-          <FieldLabel className="font-normal">
-            {t("goals.create.suggestions.includeLevel", {
-              level: form.prerequisites.needsLevel.end,
-            })}
           </FieldLabel>
         </Field>
       ) : null}
@@ -254,9 +218,7 @@ export function UnitGoalFormFields({
                     {t(
                       item.goalType === "Unlock"
                         ? "goals.create.suggestions.unlockRequired"
-                        : item.goalType === "Level"
-                          ? "goals.create.suggestions.levelRequired"
-                          : "goals.create.suggestions.ascensionRequired"
+                        : "goals.create.suggestions.ascensionRequired"
                     )}
                   </span>
                 ) : null}

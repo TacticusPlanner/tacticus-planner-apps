@@ -7,11 +7,14 @@ import type { UnitId } from "@workspace/game-domain"
 import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
+  type GoalKind,
   type ProjectMembership,
 } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 import { buildCombinedGoalSpecs } from "../estimate/goal-spec-builder"
+import { projectConflictText } from "../projects/project-conflict-copy"
+import { projectGoalSlotConflictDetails } from "../projects/project-membership"
 import type { EntityType } from ".//use-create-goal-form"
 
 type SpecParams = Parameters<typeof buildCombinedGoalSpecs>[0]
@@ -80,20 +83,34 @@ export function useGoalSubmit({
         ...(startPaused ? { startPaused: true } : {}),
       })
 
-      if (createAnother) {
-        resetForm()
-        setStatus("idle")
-      } else {
-        setStatus("idle")
+      // Success clears the form either way (remembering the project/type choice for the next one), so
+      // a reopened sheet never shows the finished goal's unit-specific targets.
+      resetForm()
+      setStatus("idle")
+      if (!createAnother) {
         onOpenChange(false)
         onCreated()
       }
     } catch (error) {
+      // The form stays open with its draft intact (status "error" only changes the message shown). A slot
+      // conflict raised after the pre-check (another session took the same Rank target first) names the
+      // occupied target and project rather than the server's generic sentence.
+      const conflict =
+        error instanceof ApiError
+          ? projectGoalSlotConflictDetails(error.details)
+          : null
       setStatus("error")
       setErrorMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("goals.create.genericError")
+        conflict
+          ? projectConflictText(
+              t,
+              conflict.projectName,
+              [conflict.goalType as GoalKind],
+              conflict.normalizedTarget
+            )
+          : error instanceof ApiError
+            ? error.message
+            : t("goals.create.genericError")
       )
     }
   }

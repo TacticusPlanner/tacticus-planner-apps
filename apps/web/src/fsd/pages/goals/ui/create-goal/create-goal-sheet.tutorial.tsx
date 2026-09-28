@@ -8,8 +8,9 @@ import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
 /**
  * The create-goal sheet's own onboarding tour (plan: acquisition-source picker,
  * tacticus-planner-apps#103) — the sheet had no tour coverage before this change. One step for
- * now, explaining that Campaigns/Onslaught/Shops sources combine. Desktop and mobile share the
- * same single step (no viewport-specific placement need yet).
+ * explaining that Campaigns/Onslaught/Shops sources combine, and one for the project picker's
+ * inline Create action (skipped by Joyride until a unit is chosen and the picker exists). Desktop
+ * and mobile share the same steps (no viewport-specific placement need yet).
  */
 export function useCreateGoalSheetTutorial(): TourPageSteps {
   const { t } = useTranslation()
@@ -23,9 +24,21 @@ export function useCreateGoalSheetTutorial(): TourPageSteps {
     [t]
   )
 
+  const projects = useMemo<Step>(
+    () => ({
+      target: '[data-testid="create-goal-projects"]',
+      title: t("tour.createGoal.steps.projects.title"),
+      content: t("tour.createGoal.steps.projects.content"),
+    }),
+    [t]
+  )
+
   return useMemo<TourPageSteps>(
-    () => ({ desktop: [acquisitionSources], mobile: [acquisitionSources] }),
-    [acquisitionSources]
+    () => ({
+      desktop: [acquisitionSources, projects],
+      mobile: [acquisitionSources, projects],
+    }),
+    [acquisitionSources, projects]
   )
 }
 

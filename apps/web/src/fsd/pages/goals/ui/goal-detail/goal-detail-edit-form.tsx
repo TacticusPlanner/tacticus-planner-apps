@@ -9,7 +9,6 @@ import type { ProjectSummary } from "@/entities/project"
 import { additionalTargetFromWire } from "@/features/goal-farming"
 import { AcquisitionSourceField } from "../create-goal/acquisition-source-field"
 import { FarmingStrategyField } from "../create-goal/farming-strategy-field"
-import { GoalLevelSummary } from "../create-goal/goal-level-summary"
 import { GoalLocationsField } from "../create-goal/goal-locations-field"
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import type { useAcquisitionSourceSelection } from "../../model/goal-creation-form/use-acquisition-source-selection"
@@ -34,7 +33,6 @@ export function GoalDetailEditForm({
   projects,
   projectsValid,
   isRank,
-  isLevel,
   isUnlock,
   isAscension,
   allLocations,
@@ -51,7 +49,6 @@ export function GoalDetailEditForm({
   projects: ProjectSummary[]
   projectsValid: boolean
   isRank: boolean
-  isLevel: boolean
   isUnlock: boolean
   isAscension: boolean
   allLocations: string[]
@@ -119,10 +116,6 @@ export function GoalDetailEditForm({
         />
       ) : null}
 
-      {isLevel && detail.config.level ? (
-        <GoalLevelSummary target={detail.config.level} />
-      ) : null}
-
       {isUnlock || isAscension ? (
         <AcquisitionSourceField
           battlesById={battlesById}
@@ -149,7 +142,7 @@ export function GoalDetailEditForm({
           showOnslaught={isAscension && detail.entityType === "Character"}
         />
       ) : null}
-      {!isRank && !isLevel && !isUnlock && !isAscension ? (
+      {!isRank && !isUnlock && !isAscension ? (
         <GoalLocationsField
           allLocations={allLocations}
           isUnlock={isUnlock}

@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet"
 
-import type { ProjectSummary } from "@/entities/project"
+import { isProjectNameValid, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectColorPicker } from ".//project-color-picker"
 
@@ -99,7 +99,7 @@ function ProjectForm({
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    if (!name.trim()) return
+    if (!isProjectNameValid(name)) return
     const trimmedName = name.trim()
     const trimmedDescription = description.trim() || null
     const trimmedColor = color.trim() || null
@@ -164,7 +164,7 @@ function ProjectForm({
 
       <SheetFooter>
         <Button
-          disabled={!name.trim() || actions.pending}
+          disabled={!isProjectNameValid(name) || actions.pending}
           form="manage-project-form"
           type="submit"
         >

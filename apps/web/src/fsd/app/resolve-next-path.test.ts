@@ -36,7 +36,16 @@ describe("resolveNextPath", () => {
   })
 
   it("does not mistake a colon inside a query for a scheme", () => {
-    expect(resolveNextPath("/goals?filter=a:b")).toBe("/goals?filter=a:b")
+    expect(resolveNextPath("/plan/goals?filter=a:b")).toBe(
+      "/plan/goals?filter=a:b"
+    )
+  })
+
+  it("maps a legacy /goals destination to its /plan equivalent", () => {
+    expect(resolveNextPath("/goals/overview?status=paused")).toBe(
+      "/plan/goals?status=paused"
+    )
+    expect(resolveNextPath("/goals/projects/abc")).toBe("/plan/projects/abc")
   })
 
   it.each(["/setup", "/setup/key", "/setup/import?next=%2Fguild%2Fmembers"])(
