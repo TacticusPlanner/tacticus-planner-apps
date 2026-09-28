@@ -45,7 +45,7 @@
 
 - [x] 7.1 Delete the superseded `make-global-plan-the-goals-landing` change directory; verify `openspec list` no longer shows it and `openspec validate --strict` still passes for the remaining changes.
 - [x] 7.2 Reword `add-goals-overview-density-option` (Overview to Goals, check the compact layout against the drag-handle column), `create-project-from-all-projects-context` (remove "without changing Current plan", update quick-nav paths/labels), and `surface-goal-farming-guidance` ("Dailies-selected project" and "outside the currently selected plan"); verify each with `openspec validate --strict`.
-- [ ] 7.3 At archive time sweep remaining "Overview", "All Goals", "Global Plan", and "Current plan" wording in the main specs (per the “Goals page” terms requirement); verify with a grep that none remain, and confirm the Purpose text of `goal-creation-entry-points` ("Goals Overview toolbar") is updated, since a delta cannot edit a Purpose. (`dailies-navigation`'s Raids-tab selector requirements are removed by this change's delta; `RaidsLayout` has no selector, so no code task is needed.)
+- [ ] 7.3 At archive time sweep remaining "Overview", "All Goals", "Global Plan", and "Current plan" wording in the main specs (per the “Goals page” terms requirement); verify with a grep that none remain, and confirm the Purpose text of `goal-creation-entry-points` ("Goals Overview toolbar") is updated, since a delta cannot edit a Purpose.
 - [ ] 7.4 Update PostHog dashboards/filters that use route group `/goals` to `/plan` when this ships (note in the PR).
 
 ## 8. Verification

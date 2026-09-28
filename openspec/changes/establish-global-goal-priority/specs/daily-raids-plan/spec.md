@@ -2,12 +2,18 @@
 
 ### Requirement: Raids Plan shares Today's selected project
 
-Raids Plan and Today SHALL share one global Active-goal execution scope and the same underlying schedule, with no project selector on either tab. Switching tabs SHALL retain only view-local presentation settings, not choose another plan.
+Raids Plan SHALL use the same project selection as Today (one selection shared across both Raids sub-tabs, defaulting to all goals) rather than maintaining an independent selector. Switching the project on either sub-tab SHALL recompute both; with no project selected both show the account-wide plan.
 
 #### Scenario: Selecting a project on Today updates Raids Plan too
 
-- **WHEN** the user changes a project-browsing preference elsewhere and switches between Today and Raids Plan
-- **THEN** both tabs still show the same account-wide plan and no project selector
+- **GIVEN** the user is on Today with all goals selected
+- **WHEN** the user selects project B and switches to Raids Plan
+- **THEN** Raids Plan shows project B's Active goals in global order without a separate selection
+
+#### Scenario: Default is all goals
+
+- **WHEN** Raids Plan loads with no prior selection this session
+- **THEN** it shows the account-wide plan and the selector reads all goals
 
 #### Scenario: Raids Plan mirrors Today's project-list failure state
 
@@ -23,7 +29,7 @@ Raids Plan and Today SHALL share one global Active-goal execution scope and the 
 
 ### Requirement: Raids Plan includes Today
 
-Raids Plan SHALL compute its schedule from the same account-wide Active goals in canonical global priority order and the same engine run as Today. It SHALL render the complete sequence beginning with Day 1 labeled "Today", followed by Day 2 onward.
+Raids Plan SHALL compute its schedule from the same Active goals (account-wide, or the selected project's) in canonical global priority order and the same engine run as Today. It SHALL render the complete sequence beginning with Day 1 labeled "Today", followed by Day 2 onward.
 
 #### Scenario: Day columns start with Today
 

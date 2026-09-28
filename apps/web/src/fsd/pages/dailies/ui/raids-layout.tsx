@@ -6,6 +6,8 @@ import {
 } from "react-router"
 import { useTranslation } from "react-i18next"
 
+import { ProjectSelect } from "@/entities/project"
+
 import type { DailiesOutletContext } from "./dailies-layout"
 import { RouteTabs } from "./dailies-layout"
 
@@ -18,8 +20,8 @@ export function RaidsLayout() {
 
   return (
     <section className="space-y-5" data-testid="dailies-raids-layout">
-      {/* Today and Raids Plan show the account-wide plan (global goal order), so there is no project
-          selector here: a project is a filter, never an execution scope. */}
+      {/* Today and Raids Plan plan over every Active goal in global order; the project selector
+          optionally narrows the run to one project (default: all goals). */}
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
           <RouteTabs
@@ -40,6 +42,14 @@ export function RaidsLayout() {
             ]}
           />
         </div>
+        <ProjectSelect
+          allowAll
+          onProjectIdChange={context.setProjectId}
+          placeholder={t("project.placeholder")}
+          projectId={context.projectId}
+          projects={context.projects}
+          testId="raids-project-select"
+        />
       </div>
       <Outlet context={context} />
     </section>

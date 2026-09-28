@@ -31,11 +31,7 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import {
-  goalQueries,
-  useGlobalGoalPlan,
-  type GoalDetail,
-} from "@/entities/goal"
+import { goalQueries, type GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
@@ -58,6 +54,7 @@ import {
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
+import { useScopedGoalPlan } from "./use-scoped-goal-plan"
 import { campaignLocationLabels } from "./daily-raids.domain"
 import type {
   DailyRaidResourceLabels,
@@ -65,11 +62,12 @@ import type {
 } from "./daily-raids.domain"
 
 /**
- * Today, Bonus Raids and Raids Plan for the account: one run over every Active goal in global order
- * (`useGlobalGoalPlan`), sharing inventory, energy and attempt caps once. No project is involved — a
- * project is a filter over the plan, never an execution scope.
+ * Today, Bonus Raids and Raids Plan: one run over every Active goal in global order
+ * (`useGlobalGoalPlan`), sharing inventory, energy and attempt caps once. `projectId` optionally
+ * narrows the run to that project's goals (still in global order); without it the run covers the
+ * whole account.
  */
-export function useDailyRaids(): DailyRaidsViewModel {
+export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const {
     name: campaignDisplayName,
@@ -77,7 +75,7 @@ export function useDailyRaids(): DailyRaidsViewModel {
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
-  const globalPlan = useGlobalGoalPlan()
+  const globalPlan = useScopedGoalPlan(projectId)
   const activeMembers = activeProjectMembers(globalPlan.entries)
   const detailQueries = useQueries({
     queries: activeMembers.map((member) =>

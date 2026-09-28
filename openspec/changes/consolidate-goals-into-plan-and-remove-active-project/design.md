@@ -52,4 +52,4 @@ The Active project is one server-persisted pointer (`Profile.ActiveProjectId`, s
 
 - Is confining drags to a single Group section acceptable, or should Group be disabled while reordering? The spec assumes the former; either is a small change in `GoalsList`.
 - `v1-profile-import`'s description says imported goals are paused unless they land in the active project, while the API's V1 import files goals into the Default project and never consults the pointer. The delta only removes the Active-project wording; a task verifies the API's real status behaviour and corrects the sentence to match.
-- (Resolved) `dailies-navigation`'s Raids-tab project-selector requirements are removed by this change's delta; `RaidsLayout` has no selector today.
+- (Resolved) The Raids sub-tab row keeps its project selector (`dailies-navigation` requirements stay); it defaults to all goals and optionally narrows Today and Raids Plan to one project.

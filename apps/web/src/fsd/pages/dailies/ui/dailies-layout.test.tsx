@@ -8,9 +8,11 @@ import { render, screen } from "@/test/render"
 import { routes } from "../route"
 import { DailiesLayout } from "./dailies-layout"
 
-const useDailyRaids = vi.fn<() => { status: "no-farmable" }>(() => ({
-  status: "no-farmable",
-}))
+const useDailyRaids = vi.fn<(projectId?: string) => { status: "no-farmable" }>(
+  () => ({
+    status: "no-farmable",
+  })
+)
 
 const useShopRecommendations = vi.fn<
   (projectId: string | undefined) => { status: "ready"; sections: never[] }
@@ -51,7 +53,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
   return {
     ...actual,
-    useDailyRaids: () => useDailyRaids(),
+    useDailyRaids: (projectId?: string) => useDailyRaids(projectId),
   }
 })
 vi.mock("../model/use-shop-recommendations", () => ({
@@ -154,19 +156,32 @@ describe("Dailies navigation", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("plans the whole account on Today and Plan, with no project selector", async () => {
+  it("plans the whole account on Today and Plan, with the project selector defaulting to all goals", async () => {
     const user = userEvent.setup()
     renderDailies("/dailies/raids/today")
     await findRouteContent("dailies-no-farmable")
-    expect(
-      screen.queryByTestId("dailies-project-select")
-    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
+    expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
 
     await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
     await findRouteContent("dailies-no-farmable")
-    expect(
-      screen.queryByTestId("dailies-project-select")
-    ).not.toBeInTheDocument()
-    expect(useDailyRaids).toHaveBeenLastCalledWith()
+    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
+    expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
+  })
+
+  it("narrows Today to the picked project and keeps it on Plan", async () => {
+    const user = userEvent.setup()
+    renderDailies("/dailies/raids/today")
+    await findRouteContent("dailies-no-farmable")
+
+    await user.click(screen.getByTestId("raids-project-select"))
+    await user.click(
+      await screen.findByRole("option", { name: /Active project/ })
+    )
+    expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
+
+    await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
+    await findRouteContent("dailies-no-farmable")
+    expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
   })
 })

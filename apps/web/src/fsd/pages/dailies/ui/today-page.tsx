@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react"
 import { Swords } from "lucide-react"
+import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
@@ -16,6 +17,7 @@ import {
 } from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import { CampaignEventStatusLine } from "./campaign-event-status"
+import type { DailiesOutletContext } from "./dailies-layout"
 import { RaidSchedule } from "./raid-schedule"
 import { RaidState } from "./raid-state"
 import { useTodayTutorial } from "./today.tutorial"
@@ -23,9 +25,10 @@ import { useTodayTutorial } from "./today.tutorial"
 const BONUS_LIMIT = 3
 
 export function TodayPage() {
+  const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("dailies")
   const [showAllBonus, setShowAllBonus] = useState(false)
-  const raids = useDailyRaids()
+  const raids = useDailyRaids(context.projectId)
   useTodayTutorial()
 
   if (raids.status !== "ready") return <RaidState state={raids.status} />
