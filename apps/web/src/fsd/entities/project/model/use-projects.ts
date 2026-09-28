@@ -18,7 +18,6 @@ export function useProjects() {
     enabled: isAuthenticated,
   })
   const projects = query.data?.projects ?? []
-  const activeProject = projects.find((project) => project.isActivePlan)
   const defaultProject = projects.find((project) => project.isDefault)
 
   let fetchState: FetchState
@@ -39,7 +38,6 @@ export function useProjects() {
   return {
     fetchState,
     projects,
-    activeProjectId: activeProject?.projectId,
     defaultProjectId: defaultProject?.projectId,
     loading: isAuthenticated && query.isPending,
     retry: () => {

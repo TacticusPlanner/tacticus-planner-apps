@@ -1,15 +1,17 @@
 import type { ProjectGoalSummary } from "@/entities/project"
-import { spliceGoalOrder } from "./goal-order"
+import { displacedByDrop } from "./goal-order"
 
 /**
- * Dragging works regardless of which sort/filter/group is currently shown: it's anchored against
- * whichever *visible* neighbor the goal was dropped next to, then spliced into the project's
- * complete in-flight priority order (`projectGoals.goals`, always fetched in true priority order) —
- * not gated on the visible set matching that order itself. See `spliceGoalOrder`.
+ * Turns a drop on a project's projection into the move the API takes. Dragging works whatever
+ * sort/filter/group is shown: the drop is anchored against the *visible* neighbour and spliced into
+ * the project's complete in-flight order (`projectGoals.goals`, always fetched in global order) to find
+ * where the goal landed — see `spliceGoalOrder`. The goal then takes the global position of the
+ * project goal that held that place before the drop (the "displaced" goal); the goals in between, and
+ * any hidden goals of other projects, keep their relative order.
  */
 export function useProjectGoalReorder(
   goals: ProjectGoalSummary[],
-  reorderGoals: (goalIds: string[]) => void
+  moveGoal: (goalId: string, displacedGoalId: string) => void
 ) {
   const fullInFlightIds = goals
     .filter(
@@ -19,7 +21,12 @@ export function useProjectGoalReorder(
     .map((entry) => entry.goal.goalId)
 
   const handleReorder = (visibleOrderedIds: string[], movedId: string) => {
-    reorderGoals(spliceGoalOrder(fullInFlightIds, visibleOrderedIds, movedId))
+    const displaced = displacedByDrop(
+      fullInFlightIds,
+      visibleOrderedIds,
+      movedId
+    )
+    if (displaced !== undefined) moveGoal(movedId, displaced)
   }
 
   return { inFlightCount: fullInFlightIds.length, handleReorder }

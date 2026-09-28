@@ -3,7 +3,11 @@ import { useEffect, useRef } from "react"
 import type { UnitId, Rank, Progression } from "@workspace/game-domain"
 import type { GoalKind } from "@/entities/goal"
 
-import { isAtMaxAbility, isAtMaxRank } from ".//goal-validation"
+import {
+  isAtMaxAbility,
+  isAtMaxProgression,
+  isAtMaxRank,
+} from ".//goal-validation"
 
 type FieldsWithPrefill<TArgs extends unknown[]> = {
   prefillFrom: (...args: TArgs) => void
@@ -62,9 +66,10 @@ export function useEntityPrefillEffect({
     const passiveLevel = playerEntity.abilities?.[1]?.level ?? 1
     abilityFields.prefillFrom(activeLevel, passiveLevel)
 
-    // A toggle the user enabled before this synced data loaded may turn out to already be maxed
-    // out once it arrives — strip it rather than leave a checked-but-disabled toggle sitting in the
-    // form. Always called (a no-op functional updater when nothing's maxed) for the same lint-idiom
+    // A toggle the user enabled (or a remembered goal type carried over from the previous creation)
+    // before this synced data loaded may turn out to be unavailable once it arrives — an owned unit
+    // cannot be unlocked, and maxed-out targets have nowhere to go. Strip it rather than leave a
+    // checked-but-disabled toggle sitting in the form. Always called (a no-op functional updater when nothing's maxed) for the same lint-idiom
     // reason as the setState calls above — a conditionally-called setState inside an effect trips
     // the set-state-in-effect rule.
     const rankMaxed = isAtMaxRank(rank)
@@ -73,11 +78,17 @@ export function useEntityPrefillEffect({
       activeLevel,
       passiveLevel
     )
+    const progressionMaxed = isAtMaxProgression(playerEntity.progressionIndex)
     setEnabledTypes((current) => {
-      if (!rankMaxed && !abilityMaxed) return current
       const next = new Set(current)
-      if (rankMaxed) next.delete("Rank")
+      // Reaching this effect means the unit is owned, so Unlock is never available.
+      next.delete("Unlock")
+      if (rankMaxed) {
+        next.delete("Rank")
+        next.delete("Upgrade")
+      }
       if (abilityMaxed) next.delete("Ability")
+      if (progressionMaxed) next.delete("Ascension")
       return next
     })
     // rankFields/ascensionFields/abilityFields/upgradeFields are freshly returned every render (not

@@ -47,7 +47,6 @@ function member(
   priority = 1
 ): ProjectGoalSummary {
   return {
-    priority,
     goal: {
       goalId,
       entityType: "Character",
@@ -58,6 +57,7 @@ function member(
       dependsOn: [],
       createdAt: "",
       updatedAt: "",
+      globalPriority: priority,
     },
   }
 }

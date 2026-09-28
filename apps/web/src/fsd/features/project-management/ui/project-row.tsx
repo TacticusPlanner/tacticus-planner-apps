@@ -1,11 +1,5 @@
 import { useTranslation } from "react-i18next"
-import {
-  Archive,
-  ArchiveRestore,
-  MoreHorizontal,
-  Pencil,
-  Star,
-} from "lucide-react"
+import { Archive, ArchiveRestore, MoreHorizontal, Pencil } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -53,8 +47,7 @@ export function ProjectRow({
 }: Props) {
   const { t, i18n } = useTranslation()
   const archived = project.status === "Archived"
-  const archiveDisabled =
-    actions.pending || project.isDefault || project.isActivePlan
+  const archiveDisabled = actions.pending || project.isDefault
   const projectContent = (
     <>
       <ProjectColorDot color={project.color} />
@@ -63,8 +56,8 @@ export function ProjectRow({
           <span className="truncate font-medium">{project.name}</span>
           {archived ? (
             <Badge variant="secondary">{t("goals.status.Archived")}</Badge>
-          ) : project.isActivePlan ? (
-            <Badge variant="secondary">{t("goals.project.currentPlan")}</Badge>
+          ) : project.isDefault ? (
+            <Badge variant="secondary">{t("goals.project.defaultBadge")}</Badge>
           ) : null}
         </div>
         {project.description ? (
@@ -143,20 +136,6 @@ export function ProjectRow({
       </div>
 
       <div className="flex items-center gap-1">
-        {!archived && !project.isActivePlan ? (
-          <Button
-            aria-label={t("goals.project.makeCurrent")}
-            data-testid={`project-row-set-active-${project.projectId}`}
-            disabled={actions.pending}
-            onClick={() => void actions.activate(project.projectId)}
-            size="sm"
-            title={t("goals.project.makeCurrent")}
-            variant="ghost"
-          >
-            <Star />
-            {t("goals.project.makeCurrent")}
-          </Button>
-        ) : null}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

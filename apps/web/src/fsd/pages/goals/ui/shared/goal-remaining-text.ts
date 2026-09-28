@@ -81,6 +81,8 @@ export function formatGoalRemainingText(
       : t("goals.overview.remainingText.levels", { count: fmt(count) })
   }
   if (progress.kind === "Rank") {
+    if (remaining?.coveredByEarlierGoal)
+      return t("goals.overview.remainingText.coveredByEarlierGoal")
     const slots = remaining?.upgradeSlotsRemaining
     if (!slots || slots <= 0) return null
     return energy !== undefined

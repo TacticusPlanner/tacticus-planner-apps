@@ -23,7 +23,6 @@ const projects = [
     description: null,
     color: "#6366f1",
     status: "Active" as const,
-    isActivePlan: true,
     isDefault: true,
     revision: 0,
     createdAt: "2026-01-01T00:00:00Z",
@@ -87,7 +86,6 @@ describe("ProjectSelect", () => {
       projectId: "proj-archived",
       name: "Old Plan",
       status: "Archived" as const,
-      isActivePlan: false,
       isDefault: false,
     }
     render(
@@ -109,7 +107,6 @@ describe("ProjectSelect", () => {
       projectId: "proj-archived",
       name: "Old Plan",
       status: "Archived" as const,
-      isActivePlan: false,
       isDefault: false,
     }
     render(
@@ -171,5 +168,31 @@ describe("ProjectSelect", () => {
     await user.click(await screen.findByRole("option", { name: /Other Plan/ }))
 
     expect(onProjectIdChange).toHaveBeenCalledWith("proj-2")
+  })
+
+  it("marks the Default project with a (default) suffix and offers an 'All projects' clearing option", async () => {
+    const user = userEvent.setup()
+    const onProjectIdChange = vi.fn()
+    render(
+      <ProjectSelect
+        allowAll
+        onProjectIdChange={onProjectIdChange}
+        projectId={undefined}
+        projects={projects}
+        testId="project-select"
+      />
+    )
+
+    expect(screen.getByTestId("project-select")).toHaveTextContent(
+      "goals.project.filterAll"
+    )
+    await user.click(screen.getByTestId("project-select"))
+    expect(
+      screen.getByRole("option", {
+        name: /My Plan \(goals\.create\.projectDefaultMarker\)/,
+      })
+    ).toBeInTheDocument()
+    await user.click(screen.getByRole("option", { name: /My Plan/ }))
+    expect(onProjectIdChange).toHaveBeenCalledWith("proj-1")
   })
 })

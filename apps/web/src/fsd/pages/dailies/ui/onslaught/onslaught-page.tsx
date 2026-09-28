@@ -95,6 +95,7 @@ export function OnslaughtPage() {
               testIdPrefix="onslaught"
             />
             <ProjectSelect
+              allowAll
               projects={context.projects}
               projectId={context.projectId}
               onProjectIdChange={context.setProjectId}

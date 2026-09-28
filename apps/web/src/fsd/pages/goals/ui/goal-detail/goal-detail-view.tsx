@@ -99,7 +99,7 @@ export function GoalDetailView({
       <section className="grid gap-2" data-testid="goal-detail-blockers">
         <h3 className="font-semibold">{t("goals.detail.blockersTitle")}</h3>
         {blockers.isBlocked ? (
-          <ul className="grid gap-1 text-amber-700">
+          <ul className="grid gap-1 text-amber-800 dark:text-amber-400">
             {uniqueBlockerReasons.map((reason, index) => {
               const missingPrerequisite =
                 reason.kind === "MissingAscensionPrerequisite" ||

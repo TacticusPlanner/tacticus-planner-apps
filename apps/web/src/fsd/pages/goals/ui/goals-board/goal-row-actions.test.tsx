@@ -67,7 +67,8 @@ vi.mock("@/entities/goal", () => ({
 let defaultProjectId: string | undefined = "proj-default"
 let mockProjects: Array<{ projectId: string; status: string }> = []
 
-vi.mock("@/entities/project", () => ({
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
     all: () => ["projects"],
     goals: (projectId: string) => ({
@@ -80,7 +81,6 @@ vi.mock("@/entities/project", () => ({
     defaultProjectId,
   }),
   createProject: (...args: unknown[]) => createProjectMock(...args),
-  activateProject: vi.fn(),
   updateProject: vi.fn(),
   updateProjectGoalOrder: vi.fn(),
   updateProjectGoalsStatus: vi.fn(),
@@ -111,7 +111,6 @@ const projectA = {
   description: null,
   color: null,
   status: "Active" as const,
-  isActivePlan: false,
   isDefault: false,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
@@ -140,7 +139,7 @@ function row(overrides: Partial<GoalRow> = {}): GoalRow {
 }
 
 function membership(projectId: string) {
-  return { projectId, name: projectId, color: null, isActivePlan: false }
+  return { projectId, name: projectId, color: null }
 }
 
 function occupyingMember() {
@@ -744,7 +743,6 @@ describe("GoalRowActions", () => {
       description: null,
       color: null,
       status: "Active",
-      isActivePlan: false,
       isDefault: false,
       revision: 0,
       createdAt: "2026-01-01T00:00:00Z",

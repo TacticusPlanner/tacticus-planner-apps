@@ -5,11 +5,13 @@ export {
   getGoal,
   listGoals,
   updateGoal,
+  updateGoalOrder,
   updateGoalProjects,
   updateGoalStatus,
   updateGoalTarget,
 } from "./api/goal.api"
 export { goalQueries } from "./api/goal.queries"
+export { useGlobalGoalPlan } from "./model/use-global-goal-plan"
 export { buildCreateGoalSnapshot } from "./model/goal-snapshot-builder"
 export type { SnapshotMissingUpgradeInput } from "./model/goal-snapshot-builder"
 export { StatusFilterSelect } from "./ui/status-filter-select"
@@ -20,13 +22,16 @@ export type {
   GoalStatusFilterValue,
 } from "./ui/status-filter-select"
 export { GoalFilters } from "./ui/goal-filters"
-export type {
-  GoalGroupValue,
-  GoalSortValue,
-  GoalTypeFilterValue,
-} from "./ui/goal-filters"
+export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
 export { isGoalGroupValue } from "./model/types"
 export { goalRevisionConflictDetails } from "./model/goal-target-conflict"
+export {
+  applyPositionMove,
+  goalOrderConflictDetails,
+  holdsGlobalPosition,
+  inFlightInGlobalOrder,
+  moveOntoDisplaced,
+} from "./model/goal-order"
 export {
   describeRankTargetKey,
   goalRankTargetKey,
@@ -48,6 +53,9 @@ export type {
   GoalKind,
   GoalSnapshot,
   GoalSnapshotResource,
+  GoalListResponse,
+  GoalOrderConflictDto,
+  GoalOrderResponse,
   GoalRevisionConflictDto,
   GoalStatus,
   GoalSummary,

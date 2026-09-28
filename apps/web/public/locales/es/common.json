@@ -287,7 +287,7 @@
       "moreCount": "+{{count}} más",
       "summaryUnavailable": "Resumen no disponible",
       "emptyTitle": "Aún no hay proyectos",
-      "emptyDescription": "Los proyectos agrupan objetivos de unidades en planes priorizados.",
+      "emptyDescription": "Los proyectos agrupan tus objetivos para que puedas consultarlos por separado.",
       "emptyAction": "Crear proyecto",
       "error": "No se pudieron cargar tus proyectos.",
       "retry": "Reintentar"
@@ -295,7 +295,8 @@
     "raids": {
       "title": "Incursiones diarias",
       "empty": "No hay nada que asaltar hoy.",
-      "error": "No se pudieron cargar las incursiones de hoy."
+      "error": "No se pudieron cargar las incursiones de hoy.",
+      "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones."
     },
     "calendar": {
       "title": "Calendario de eventos"
@@ -394,7 +395,7 @@
       "menu": "Importar desde V1",
       "title": "Importar desde V1",
       "back": "Atrás",
-      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y los objetivos importados quedan en pausa a menos que tu proyecto predeterminado sea también tu proyecto activo.",
+      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y cada objetivo importado queda activo o en pausa según si estaba en tu planificación diaria de V1.",
       "username": "Usuario de V1",
       "password": "Contraseña de V1",
       "selectParts": "Elige qué importar",
@@ -454,10 +455,10 @@
     },
     "tabs": {
       "goals": "Objetivos",
-      "overview": "Todos los objetivos",
-      "overviewDescription": "Filtra, ordena y agrupa todos tus objetivos activos.",
+      "overview": "Objetivos",
+      "overviewDescription": "Tus objetivos por orden de prioridad: filtra, agrupa y repriorízalos.",
       "projects": "Proyectos",
-      "projectsDescription": "Organiza los objetivos en planes centrados y controla su prioridad.",
+      "projectsDescription": "Organiza los objetivos en grupos concretos y consúltalos por separado.",
       "insights": "Información",
       "insightsDescription": "Recomendaciones de mejoras y campañas",
       "toReach": "No cumplidos",
@@ -475,7 +476,8 @@
       "status": "Estado · Fecha fin",
       "actions": "Acciones",
       "reorder": "Reordenar",
-      "reorderHandle": "Arrastrar {{entity}} para reordenar"
+      "reorderHandle": "Arrastrar {{entity}} para reordenar",
+      "priority": "Prioridad"
     },
     "status": {
       "Draft": "Borrador",
@@ -517,7 +519,7 @@
     },
     "project": {
       "noProjectTitle": "Aún no hay proyectos",
-      "noProjectDescription": "Un proyecto es una selección de tus objetivos, con nombre y con su propio orden de prioridad. Crea uno para planificar una ampliación de plantilla, un evento o una mejora a largo plazo aparte del resto.",
+      "noProjectDescription": "Un proyecto es una selección de tus objetivos con nombre. Crea uno para agrupar una ampliación de plantilla, un evento o una mejora a largo plazo y consultarlo por separado del resto.",
       "notFoundTitle": "Proyecto no encontrado",
       "notFoundDescription": "Este proyecto no existe, o no tienes acceso a él.",
       "projectSwitcherLabel": "Proyecto",
@@ -535,27 +537,25 @@
       "removeDestinationUnknown": "Tus proyectos aún no se han cargado, así que este objetivo no tiene destino. Vuelve a intentarlo en un momento.",
       "quicknavLabel": "Ir a un proyecto",
       "quicknavAllProjects": "Todos los proyectos",
-      "addGoalsTrigger": "Añadir objetivos",
+      "addGoalsTrigger": "Gestionar objetivos",
       "createGoalTrigger": "Crear objetivo",
       "createNewGoal": "Crear nuevo objetivo",
-      "addGoalsTitle": "Añadir objetivos a este proyecto",
-      "addGoalsDescription": "Busca tus objetivos y añádelos a {{project}}. Los que ya están en él se quedan como están.",
+      "addGoalsTitle": "Gestionar los objetivos de este proyecto",
+      "addGoalsDescription": "Marca los objetivos que deben estar en {{project}} y desmarca los miembros para quitarlos. Los objetivos aparecen en tu orden de prioridad y nada cambia hasta que guardes.",
       "addGoalsSearch": "Buscar objetivos",
       "addGoalsEmpty": "Ningún objetivo coincide con tu búsqueda.",
-      "addGoalsMember": "Ya está aquí",
-      "addGoalsSave_one": "Añadir {{count}} objetivo",
-      "addGoalsSave_other": "Añadir {{count}} objetivos",
+      "addGoalsMember": "En el proyecto",
       "assemblySlotTaken": "Este proyecto solo puede contener un objetivo {{type}} activo o pausado para esta unidad.",
       "searchProjects": "Buscar proyectos",
       "noAddableProjects": "No se encontraron proyectos disponibles.",
+      "createInline": "Crear \"{{name}}\"",
+      "creatingInline": "Creando \"{{name}}\"…",
+      "createInlineNote": "Un proyecto nuevo se guarda de inmediato, aunque canceles este objetivo. No cambia el estado ni la prioridad de este objetivo.",
+      "createFailed": "No se pudo crear el proyecto. Comprueba tu conexión e inténtalo de nuevo.",
       "membershipConflict": "{{project}} ya contiene un objetivo {{types}} activo o pausado para esta unidad.",
       "reviewConflictingGoal": "Revisar objetivo en conflicto",
       "filterAll": "Todos los proyectos",
       "filterLabel": "Proyecto",
-      "currentPlan": "Plan actual",
-      "makeCurrent": "Marcar como actual",
-      "otherProjects": "Otros proyectos",
-      "noOtherProjects": "Aún no hay otros proyectos disponibles.",
       "archivedProjects": "Proyectos archivados ({{count}})",
       "backToProjects": "Volver a proyectos",
       "unitGoalSummary": "{{units}} unidades · {{goals}} objetivos",
@@ -564,7 +564,8 @@
       "completionSummary": "Listo el {{date}}",
       "summaryUnavailable": "Resumen no disponible — reintentar",
       "moreActions": "Más acciones del proyecto",
-      "archiveUnavailable": "No se puede archivar el plan actual ni el predeterminado",
+      "archiveUnavailable": "No se puede archivar el proyecto predeterminado",
+      "defaultBadge": "Predeterminado",
       "cancel": "Cancelar",
       "edit": "Editar",
       "editTitle": "Editar proyecto",
@@ -579,8 +580,7 @@
       "restore": "Restaurar proyecto",
       "save": "Guardar proyecto",
       "create": "Crear proyecto",
-      "dashboardIntro": "Un proyecto es una selección de tus objetivos, con nombre y con su propio orden de prioridad. Ten varios para planificar cosas distintas por separado (ampliar la plantilla, un evento, una mejora a largo plazo) y cambia entre ellos sin perder el orden de cada uno.",
-      "currentPlanNote": "El plan actual es el proyecto que Diarias y Análisis usan por defecto. No activa ni pausa objetivos: los objetivos se pausan y se reanudan de uno en uno.",
+      "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en la página Objetivos.",
       "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
@@ -589,23 +589,39 @@
       "pauseAllGoals": "Pausar todos los objetivos",
       "resumeAllGoals": "Reanudar todos los objetivos",
       "assemblyRankTargetTaken": "Este proyecto ya tiene la meta de rango {{target}} de esta unidad.",
-      "membershipConflictRank": "{{project}} ya contiene una meta de rango activa o en pausa para esta unidad con el objetivo {{target}}."
+      "membershipConflictRank": "{{project}} ya contiene una meta de rango activa o en pausa para esta unidad con el objetivo {{target}}.",
+      "assemblyPendingAdd": "Se añadirá",
+      "assemblyPendingRemove": "Se quitará",
+      "assemblyReviewTitle": "Revisar cambios",
+      "assemblyReviewEmpty": "Aún no hay cambios. Marca objetivos para añadirlos o desmarca miembros para quitarlos.",
+      "assemblyReviewAdding": "Añadir {{total}}",
+      "assemblyReviewRemoving": "Quitar {{total}}",
+      "assemblySave_one": "Guardar {{count}} cambio",
+      "assemblySave_other": "Guardar {{count}} cambios",
+      "assemblyUnknownGoal": "Objetivo desconocido",
+      "assemblyStaleTitle": "Este proyecto cambió mientras lo editabas",
+      "assemblyStaleAdded": "Añadidos en otro sitio: {{goals}}",
+      "assemblyStaleRemoved": "Quitados en otro sitio: {{goals}}",
+      "assemblyStaleHint": "Se conservan tus cambios pendientes. Actualiza para cargar los objetivos actuales, revísalos junto con tus cambios y guarda de nuevo.",
+      "assemblyRefresh": "Actualizar objetivos",
+      "assemblyLastMembershipTitle": "No se guardó nada: estos objetivos se quedarían sin proyecto",
+      "assemblyLastMembership": "Este es el único proyecto del objetivo. Añádelo antes a otro proyecto (el proyecto predeterminado siempre está disponible) y luego quítalo aquí.",
+      "assemblySlotConflictTitle": "No se guardó nada: estos objetivos compiten por el mismo hueco",
+      "assemblySlotConflict": "{{project}} solo puede contener un objetivo activo o pausado para este hueco. Conserva solo uno de los objetivos en conflicto y guarda de nuevo."
     },
     "toasts": {
       "statusChangedPartial": "Se actualizaron {{succeeded}} de {{total}} objetivos.",
       "deleted": "Objetivo eliminado.",
       "goalRemovedFromProject": "{{goal}} quitado de {{project}}.",
       "goalRelocated": "{{goal}} movido a {{project}}.",
-      "goalsAddedToProject_one": "{{count}} objetivo añadido a {{project}}.",
-      "goalsAddedToProject_other": "{{count}} objetivos añadidos a {{project}}.",
-      "activated": "Plan actual actualizado.",
       "actionError": "Algo salió mal. Inténtalo de nuevo.",
       "projectCreated": "Proyecto creado.",
       "projectGoalsPaused_one": "{{count}} objetivo pausado.",
       "projectGoalsPaused_other": "{{count}} objetivos pausados.",
       "projectGoalsResumed_one": "{{count}} objetivo reanudado.",
       "projectGoalsResumed_other": "{{count}} objetivos reanudados.",
-      "projectUpdated": "Proyecto actualizado."
+      "projectUpdated": "Proyecto actualizado.",
+      "projectMembershipSaved": "{{project}} actualizado: {{added}} añadidos, {{removed}} quitados."
     },
     "create": {
       "title": "Crear un objetivo",
@@ -731,7 +747,7 @@
       "previewTitle": "Recursos necesarios",
       "showAll": "Mostrar todo ({{count}})",
       "showLess": "Mostrar menos",
-      "previewDisclaimer": "La estimación real puede cambiar según la prioridad de este objetivo dentro del proyecto seleccionado y la estrategia de farmeo elegida.",
+      "previewDisclaimer": "La estimación real puede cambiar según el lugar de este objetivo en tu orden de prioridad y la estrategia de farmeo elegida.",
       "previewUnavailable": "Aún no hay una estimación detallada disponible para este tipo de objetivo.",
       "characterAbilityCostUnsupported": "Los objetivos de habilidad de personaje se validan y siguen, pero su coste de recursos aún no es compatible.",
       "projectLabel": "Proyectos",
@@ -789,20 +805,11 @@
       "search": "Buscar objetivos",
       "allTypes": "Todos los tipos de objetivo",
       "typeFilterLabel": "Filtro de tipo de objetivo",
-      "sortByLabel": "Ordenar por",
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
       "groupByUnit": "Agrupar por unidad",
-      "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
-      "sort": {
-        "priority": "Prioridad",
-        "entity": "Personaje",
-        "type": "Tipo de objetivo",
-        "status": "Estado",
-        "estimate": "Estimación",
-        "updated": "Actualizado recientemente"
-      }
+      "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
     "detail": {
       "title": "Detalles del objetivo",
@@ -819,7 +826,7 @@
       "unsavedChangesCancel": "Seguir editando",
       "estimateTitle": "Estimación",
       "isolatedEstimate": "Estimación aislada",
-      "planAwareEstimate": "Tiene en cuenta los objetivos de mayor prioridad de este proyecto",
+      "planAwareEstimate": "Tiene en cuenta los objetivos de mayor prioridad de tu orden de prioridad",
       "unavailable": "No disponible",
       "dependenciesTitle": "Dependencias",
       "historyTitle": "Historial",
@@ -844,7 +851,7 @@
       "actualProgress": "Progreso real",
       "actualProgressDescription": "El progreso real refleja el estado actualmente sincronizado y en propiedad de tu cuenta.",
       "potentialProgress": "Progreso potencial",
-      "potentialProgressDescription": "El progreso potencial aplica los recursos que ya posees después de que los objetivos de mayor prioridad de este proyecto reserven su parte. No cambia el estado real del objetivo.",
+      "potentialProgressDescription": "El progreso potencial aplica los recursos que ya posees después de que los objetivos de mayor prioridad de tu orden de prioridad reserven su parte. No cambia el estado real del objetivo.",
       "remaining": {
         "upgrades": "{{count}} mejoras restantes",
         "upgradeSlots": "{{count}} ranuras de mejora restantes",
@@ -858,6 +865,7 @@
         "levelsWithXp": "{{count}} niveles · {{xp}} XP",
         "rank": "{{slots}} ranuras",
         "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
+        "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
         "shards": "{{count}} fragmentos"
       },
       "potentialIndicator": "↗ {{percent}}%",
@@ -878,8 +886,10 @@
     },
     "insights": {
       "selectProject": "Selecciona un proyecto",
-      "noProjectTitle": "Ningún proyecto seleccionado",
-      "noProjectDescription": "Selecciona un proyecto arriba para ver sus recursos faltantes totales, cuellos de botella de farmeo y eventos de campaña relevantes.",
+      "noGoalsTitle": "Sin objetivos activos",
+      "noGoalsDescription": "Crea o reanuda un objetivo para ver sus recursos que faltan, los cuellos de botella de farmeo y los eventos de campaña relevantes, según lo planificado en tu orden de prioridad. Elige un proyecto arriba para acotar la vista.",
+      "loadError": "No se pudieron cargar los objetivos",
+      "retry": "Reintentar",
       "upgradesTitle": "Mejoras por rareza",
       "shardsTitle": "Fragmentos y orbes",
       "shards": "Fragmentos",
@@ -933,6 +943,20 @@
       "planningStale": "El objetivo se guardó, pero tu plan no pudo actualizarse: las estimaciones mostradas pueden reflejar aún el objetivo anterior.",
       "retryRefresh": "Reintentar actualización",
       "historyChanged": "Objetivo modificado"
+    },
+    "order": {
+      "conflictTitle": "El plan ha cambiado",
+      "conflictDescription": "Tu movimiento no se guardó porque el orden de los objetivos cambió después de cargarlo. Revisa el orden actualizado y vuelve a intentar el movimiento.",
+      "retry": "Reintentar movimiento",
+      "dismiss": "Descartar",
+      "projectNote": "Cada número es la posición del objetivo en tu orden de prioridad de toda la cuenta, por lo que los objetivos de un proyecto pueden mostrar huecos como 1, 3, 5. Mover un objetivo aquí también lo mueve en tu orden de prioridad. Los objetivos de otros proyectos mantienen su orden relativo.",
+      "openPlan": "Ver los objetivos por prioridad",
+      "saving": "Guardando el orden…",
+      "dragHint": "Arrastra una tarjeta para cambiar su prioridad.",
+      "noFarmableDemand": "Tus objetivos activos no necesitan nada que se pueda farmear ahora mismo, así que no hay farmeo que planificar.",
+      "estimatesError": "No se pudieron cargar algunas estimaciones del plan, por lo que pueden faltar detalles de farmeo.",
+      "estimatesRetry": "Reintentar estimaciones",
+      "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información."
     }
   },
   "language": {
@@ -1024,17 +1048,21 @@
     },
     "overview": {
       "steps": {
+        "createProject": {
+          "title": "Crea un proyecto",
+          "content": "Crea un proyecto nuevo desde aquí sin salir de Objetivos. Tus filtros y tu posición en la página se mantienen."
+        },
         "statusFilter": {
           "title": "Filtrar por estado",
           "content": "Cambia entre objetivos no cumplidos, alcanzados y archivados."
         },
         "filters": {
-          "title": "Tipo, orden y agrupación",
-          "content": "Filtra por tipo de objetivo, cambia el orden o agrupa objetivos relacionados."
+          "title": "Tipo y agrupación",
+          "content": "Filtra por tipo de objetivo o agrupa objetivos relacionados."
         },
         "projectFilter": {
           "title": "Acota por proyecto",
-          "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia el plan actual ni lo que calculan las tareas diarias."
+          "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia tu plan ni lo que calculan las tareas diarias."
         },
         "createGoal": {
           "title": "Crear un objetivo",
@@ -1044,9 +1072,13 @@
           "title": "Ajustes de planificación",
           "content": "Define aquí tu presupuesto diario de energía — todas las estimaciones de esta página lo usan."
         },
+        "reprioritize": {
+          "title": "Prioriza tus objetivos",
+          "content": "Arrastra un objetivo para cambiar su prioridad (en el móvil, toca primero «Reordenar»). Cada cambio se guarda al instante y se aplica en todos los proyectos que contienen el objetivo."
+        },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta activa aparece abajo, según tus filtros actuales. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
+          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas y archivadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
         }
       }
     },
@@ -1055,6 +1087,10 @@
         "acquisitionSources": {
           "title": "Fuentes de obtención",
           "content": "Combina el farmeo de campaña, Onslaught y las tiendas diarias: selecciona cualquier combinación para reducir el tiempo estimado de este objetivo."
+        },
+        "projects": {
+          "title": "Proyectos",
+          "content": "Busca un nombre de proyecto que aún no exista y elige Crear para añadirlo aquí sin salir de este formulario. Los proyectos que contienen el objetivo nunca cambian su estado ni su prioridad."
         }
       }
     },
@@ -1062,7 +1098,7 @@
       "steps": {
         "list": {
           "title": "Qué es un proyecto",
-          "content": "Un proyecto es una selección de tus objetivos, con nombre y con su propio orden de prioridad: ten varios para planificar cosas distintas por separado. El plan actual es el que usan Diarias y Análisis por defecto; no pausa ni reanuda nada."
+          "content": "Un proyecto es una selección de tus objetivos con nombre: ten varios para agrupar cosas distintas. El proyecto predeterminado aparece primero; un proyecto no pausa ni reanuda nada ni cambia tus prioridades."
         },
         "newProject": {
           "title": "Crea un proyecto",
@@ -1074,11 +1110,11 @@
       "steps": {
         "header": {
           "title": "Una selección de tus objetivos",
-          "content": "Este proyecto contiene una selección de los objetivos de tu cuenta; el resumen indica cuántos de ellos están aquí. Su estado de plan actual, las métricas de progreso, el selector de proyecto y las acciones están en esta cabecera."
+          "content": "Este proyecto contiene una selección de los objetivos de tu cuenta; el resumen indica cuántos de ellos están aquí. Las métricas de progreso, el selector de proyecto y las acciones están en esta cabecera."
         },
         "addGoals": {
-          "title": "Llena el proyecto",
-          "content": "Añade varias metas existentes a este proyecto a la vez: busca tus metas, elige las que quieras y guarda en un solo paso. Una unidad puede tener aquí varios objetivos de rango, pero un objetivo exactamente duplicado se bloquea."
+          "title": "Elige qué hay en el proyecto",
+          "content": "Añade o quita varios objetivos a la vez: busca tus objetivos (en tu orden de prioridad), agrúpalos por unidad o tipo, marca los que deben estar aquí, revisa el resumen y guarda en un solo paso. Guardar nunca cambia tu orden de prioridad. Una unidad puede tener aquí varios objetivos de rango, pero un objetivo exactamente duplicado se bloquea."
         },
         "createGoal": {
           "title": "Crear un objetivo nuevo",
@@ -1086,7 +1122,7 @@
         },
         "reprioritize": {
           "title": "Prioriza tus objetivos",
-          "content": "Arrastra cualquier objetivo para cambiar su prioridad. En el móvil, toca primero «Reordenar» para entrar en el modo de reordenación."
+          "content": "Arrastra cualquier objetivo para cambiar su prioridad. Mover un objetivo aquí también lo mueve en tu orden de prioridad; los objetivos de otros proyectos mantienen su orden relativo. En el móvil, toca primero «Reordenar» para entrar en el modo de reordenación."
         },
         "selector": {
           "title": "Elige un proyecto",
@@ -1108,6 +1144,10 @@
         "editTarget": {
           "title": "Editar objetivo",
           "content": "Cambia dónde termina esta meta sin volver a crearla. Conserva sus proyectos, notas e historial, y tu plan se recalcula."
+        },
+        "projects": {
+          "title": "Proyectos",
+          "content": "Añade este objetivo a un proyecto o crea uno nuevo desde el selector. El proyecto nuevo se guarda de inmediato; el objetivo solo cambia cuando guardas."
         }
       }
     }

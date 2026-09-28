@@ -45,6 +45,7 @@ export function buildPreviewGoalDetails(
     entityId,
     goalType: spec.goalType as GoalDetail["goalType"],
     status: "Paused",
+    globalPriority: null,
     notes: null,
     createdAt: "",
     updatedAt: "",

@@ -43,7 +43,6 @@ function renderPage() {
         description: null,
         color: null,
         status: "Active",
-        isActivePlan: true,
         isDefault: false,
         revision: 1,
         createdAt: "",
@@ -123,10 +122,42 @@ describe("ShopsPage", () => {
     expect(screen.getByTestId("shops-loading")).toBeInTheDocument()
   })
 
+  it("lets the user pick which project's goals the offers are recommended for", () => {
+    useShopRecommendations.mockReturnValue({ status: "loading" })
+    renderPage()
+    expect(screen.getByTestId("shops-project-select")).toBeInTheDocument()
+  })
+
+  it("shows the no-Active-goals state when there is nothing to shop for", () => {
+    useShopRecommendations.mockReturnValue({ status: "no-goals" })
+    renderPage()
+    expect(screen.getByTestId("shops-no-goals")).toBeInTheDocument()
+  })
+
+  it("describes the offers as for every Active goal until a project is chosen", () => {
+    useShopRecommendations.mockReturnValue({ status: "loading" })
+    contextOverrides = { projectId: undefined }
+    renderPage()
+    expect(screen.getByText("subtitleAll")).toBeInTheDocument()
+  })
+
   it("shows the no-project state when no project is available", () => {
     contextOverrides = { projectsUnavailable: true }
     renderPage()
     expect(screen.getByTestId("shops-no-project")).toBeInTheDocument()
+  })
+
+  it("does not block the all-goals scope on a failed projects list", () => {
+    useShopRecommendations.mockReturnValue({ status: "no-goals" })
+    contextOverrides = { projectId: undefined, projectsError: true }
+    renderPage()
+    expect(screen.getByTestId("shops-no-goals")).toBeInTheDocument()
+  })
+
+  it("still shows the projects error when a project is selected", () => {
+    contextOverrides = { projectsError: true }
+    renderPage()
+    expect(screen.getByTestId("shops-error")).toBeInTheDocument()
   })
 
   it("shows the page-local error state with a retry action", async () => {

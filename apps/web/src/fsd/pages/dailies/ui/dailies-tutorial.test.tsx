@@ -29,7 +29,11 @@ describe("Dailies tutorials", () => {
       }
 
       expect(steps.desktop).toEqual(steps.mobile)
-      expect(steps.desktop.length).toBeGreaterThanOrEqual(4)
+      // Neither tour has a project-selector step: the raid pages plan the whole account.
+      expect(steps.desktop.length).toBeGreaterThanOrEqual(3)
+      expect(
+        steps.desktop.some((step) => step.target.includes("project"))
+      ).toBe(false)
       for (const step of steps.desktop) {
         expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
         expect(step.title).toContain(`localized:${keyPrefix}`)

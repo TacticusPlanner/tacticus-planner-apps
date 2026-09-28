@@ -193,6 +193,30 @@ export function rankSlotsRemaining(params: {
   }).length
 }
 
+export type RankSlotAllocation = {
+  /** Slots this goal adds to the plan: net of applied slots and of slots a higher-priority goal for
+   *  the same character already claimed. */
+  allocated: number
+  /** The goal's own count, ignoring other goals. `allocated` 0 with `standalone` above 0 means an
+   *  earlier goal covers it. */
+  standalone: number
+}
+
+/** A Rank goal's slots as allocated in the plan next to its standalone count. Call it *before*
+ *  `rankResourceNeed` claims the goal's slots in `coveredRankSlots`. */
+export function rankSlotAllocation(params: {
+  detail: GoalDetail
+  character: FarmingCharacter | undefined
+  playerCharacter: PlayerCharacter | undefined
+  coveredRankSlots: ReadonlySet<string> | undefined
+}): RankSlotAllocation {
+  return {
+    allocated: rankSlotsRemaining(params) ?? 0,
+    standalone:
+      rankSlotsRemaining({ ...params, coveredRankSlots: undefined }) ?? 0,
+  }
+}
+
 /** A MoW Ability goal's material demand, net of only what's applied toward each track's current
  *  level — `computeMowMissingUpgrades` called with no loose inventory, for the same plan-wide
  *  shared-pool reason as `rankResourceNeed`. */

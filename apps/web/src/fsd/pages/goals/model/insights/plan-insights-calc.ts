@@ -42,6 +42,8 @@ import {
   computeGoalAcquisition,
   createUnitCoverage,
   isMowDetail,
+  rankSlotAllocation,
+  type RankSlotAllocation,
   type UnitCoverage,
 } from "@/features/goal-farming"
 import { computeGoalProgress } from "../attainment/goal-progress"
@@ -69,6 +71,11 @@ type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 export function computePlanInsights(params: {
   details: GoalDetail[]
   priorityByGoalId: ReadonlyMap<string, number>
+  /** When set, only these goals count toward the aggregates (totals, energy, completion date,
+   *  bottlenecks, campaign insights, the unestimated count). Every goal in `details` still takes part in
+   *  the shared allocation and estimate, so a project view reports the outcome of the one global run:
+   *  goals ranked above it in other projects consume inventory and energy first. */
+  scopeGoalIds?: ReadonlySet<string>
   playerCharacterById: ReadonlyMap<string, PlayerCharacter | undefined>
   playerMowById: ReadonlyMap<string, PlayerMow | undefined>
   inventoryShardById: ReadonlyMap<string, InventoryShard | undefined>
@@ -114,7 +121,11 @@ export function computePlanInsights(params: {
   >()
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
+  const rankSlotsByGoalId = new Map<string, RankSlotAllocation>()
   let onslaughtTokens = 0
+  // The whole plan's Onslaught token demand, scoped or not: the account's tokens are one budget shared by
+  // every goal in the global run, so the wait for tokens is the plan's, never a project-only one.
+  let planOnslaughtTokens = 0
   // One reference date for every goal's shop-supply projection in this pass, so two goals sharing a
   // shop offer see the same weekday-probability schedule.
   const referenceDate = new Date()
@@ -122,6 +133,9 @@ export function computePlanInsights(params: {
     params.inventoryUpgrades,
     params.upgradesById
   )
+
+  const inScope = (goalId: string) =>
+    !params.scopeGoalIds || params.scopeGoalIds.has(goalId)
 
   const addProvenance = (id: EstimateResourceId, goalId: string) => {
     const set = provenance.get(id) ?? new Set<string>()
@@ -157,6 +171,8 @@ export function computePlanInsights(params: {
       coveredRankSlots: coverage.rankSlots,
       craftedInventory,
     }
+    if (detail.goalType === "Rank")
+      rankSlotsByGoalId.set(detail.goalId, rankSlotAllocation(needParams))
     const stages = calculateGoalFarmingStages(needParams)
     const need =
       stages !== null
@@ -188,13 +204,17 @@ export function computePlanInsights(params: {
       shops: params.shops,
       referenceDate,
     })
-    onslaughtTokens += onslaughtTokensDelta
+    const scoped = inScope(detail.goalId)
+    planOnslaughtTokens += onslaughtTokensDelta
+    if (scoped) {
+      onslaughtTokens += onslaughtTokensDelta
 
-    totals.shards += need.shards
-    totals.mythicShards += need.mythicShards
-    for (const [rarity, count] of Object.entries(need.orbsByType)) {
-      totals.orbsByType[rarity as Rarity] =
-        (totals.orbsByType[rarity as Rarity] ?? 0) + (count ?? 0)
+      totals.shards += need.shards
+      totals.mythicShards += need.mythicShards
+      for (const [rarity, count] of Object.entries(need.orbsByType)) {
+        totals.orbsByType[rarity as Rarity] =
+          (totals.orbsByType[rarity as Rarity] ?? 0) + (count ?? 0)
+      }
     }
 
     const needs: UpgradeNeed[] = []
@@ -203,19 +223,23 @@ export function computePlanInsights(params: {
       // Unlock/Shards needs never populate it; only Rank/Ability do) — `EstimateResourceId`'s wider
       // union is a typing artifact of sharing `UpgradeNeed` with the shard-aware engine.
       const rarity = params.upgradesById.get(material.id as UpgradeId)?.rarity
-      if (rarity) {
-        totals.upgradesByRarity[rarity] =
-          (totals.upgradesByRarity[rarity] ?? 0) + material.count
+      if (scoped) {
+        if (rarity) {
+          totals.upgradesByRarity[rarity] =
+            (totals.upgradesByRarity[rarity] ?? 0) + material.count
+        }
+        addProvenance(material.id, detail.goalId)
+        campaignNeeds.push({ id: material.id, count: material.count })
       }
-      addProvenance(material.id, detail.goalId)
-      campaignNeeds.push({ id: material.id, count: material.count })
       needs.push(material)
     }
 
     if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
       needs.push({ id: need.shardId, count: need.shards })
-      addProvenance(need.shardId, detail.goalId)
-      campaignNeeds.push({ id: need.shardId, count: need.shards })
+      if (scoped) {
+        addProvenance(need.shardId, detail.goalId)
+        campaignNeeds.push({ id: need.shardId, count: need.shards })
+      }
 
       const characterView = params.charactersById.get(detail.entityId)
       if (characterView && !shardCatalogEntries.has(need.shardId)) {
@@ -330,6 +354,7 @@ export function computePlanInsights(params: {
   let completionDate: string | null = null
   let estimatedGoalCount = 0
   for (const goal of goalNeeds) {
+    if (!inScope(goal.goalId)) continue
     const result = estimateResults.get(goal.goalId)
     if (!result || result.status === "Blocked") continue
     estimatedGoalCount++
@@ -342,15 +367,16 @@ export function computePlanInsights(params: {
   // (needs-or-stages plus a resolved priority), and an orb-only Ascension goal goes to
   // `orbGoalNeeds` instead — counting skips inside the loop would silently undercount and make a
   // project of such goals indistinguishable from an empty one.
-  const unestimatedGoalCount = Math.max(
-    0,
-    params.details.length - estimatedGoalCount
-  )
+  const scopedGoalCount = new Set(
+    params.details.filter((d) => inScope(d.goalId)).map((d) => d.goalId)
+  ).size
+  const unestimatedGoalCount = Math.max(0, scopedGoalCount - estimatedGoalCount)
 
   // Bottlenecks: the aggregated (not per-goal) remaining count for each distinct farmable resource,
   // ranked by energy-to-clear at its cheapest node — the resources most likely to gate the plan.
   const aggregatedNeeds = new Map<EstimateResourceId, number>()
   for (const goal of goalNeeds) {
+    if (!inScope(goal.goalId)) continue
     for (const need of goal.needs) {
       aggregatedNeeds.set(
         need.id,
@@ -402,15 +428,18 @@ export function computePlanInsights(params: {
     benefitingGoalIdsByInsightId.set(insight.id, [...goalIds])
   }
 
-  const onslaughtDays =
+  const planOnslaughtDays =
     Math.max(
       0,
-      onslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
+      planOnslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
     ) / 1.5
-  if (onslaughtDays > 0) {
+  // A scoped view reports the wait only when its own goals need tokens, but the date below always
+  // extends by the plan's wait: the project's goals queue behind everything ranked above them.
+  const onslaughtDays = onslaughtTokens > 0 ? planOnslaughtDays : 0
+  if (planOnslaughtDays > 0) {
     const onslaughtDate = new Date()
     onslaughtDate.setUTCDate(
-      onslaughtDate.getUTCDate() + Math.ceil(onslaughtDays)
+      onslaughtDate.getUTCDate() + Math.ceil(planOnslaughtDays)
     )
     const value = onslaughtDate.toISOString().slice(0, 10)
     // Extends an existing date, never creates one: with nothing estimable there is no plan date to
@@ -426,6 +455,7 @@ export function computePlanInsights(params: {
     onslaughtDays,
     estimates: estimateResults,
     potentialProgressByGoalId,
+    rankSlotsByGoalId,
     levelPotentialProgressByGoalId,
     completionDate,
     unestimatedGoalCount,

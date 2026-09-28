@@ -1,6 +1,7 @@
 {
   "title": "Recommandations de boutique",
   "subtitle": "Offres des boutiques quotidiennes qui valent la peine d'être achetées aujourd'hui pour les objectifs actifs de {{project}}",
+  "subtitleAll": "Offres des boutiques quotidiennes qui valent la peine d'être achetées aujourd'hui pour vos objectifs actifs",
   "shopName": {
     "guild": "Boutique de guilde",
     "war": "Boutique de guerre de guilde",
@@ -48,7 +49,8 @@
     "error": "Impossible de charger les recommandations de boutique.",
     "retry": "Réessayer",
     "noProject": "Créez ou sélectionnez un projet pour voir des recommandations de boutique pour ses objectifs.",
-    "nothingToBuy": "Rien à acheter aujourd'hui pour les objectifs actifs de ce projet."
+    "noGoals": "Vous n'avez aucun objectif actif pour lequel acheter. Créez ou reprenez un objectif pour voir des recommandations.",
+    "nothingToBuy": "Rien à acheter aujourd'hui pour ces objectifs actifs."
   },
   "tour": {
     "shops": {

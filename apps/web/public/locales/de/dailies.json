@@ -10,7 +10,7 @@
   },
   "tabs": {
     "raids": "Raids",
-    "raidsDescription": "Nutze die heutige Energie nach Projektpriorität.",
+    "raidsDescription": "Nutze die heutige Energie für deine aktiven Ziele in Prioritätsreihenfolge.",
     "shops": "Läden",
     "shopsDescription": "Ladenrotationen und Käufe verfolgen",
     "onslaught": "Ansturm",
@@ -151,15 +151,20 @@
       "unavailable": "Varianten-Regeln nicht verfügbar — synchronisiere Guild Raid Meta, um Ersatzoptionen zu sehen."
     }
   },
-  "project": { "placeholder": "Projekt auswählen" },
+  "project": {
+    "placeholder": "Projekt auswählen"
+  },
   "raids": {
-    "tabs": { "today": "Heute", "plan": "Plan" }
+    "tabs": {
+      "today": "Heute",
+      "plan": "Plan"
+    }
   },
   "empty": {
-    "noProject": "Kein Projekt verfügbar.",
-    "noFarmable": "Dieses Projekt hat keinen aktiven farmbaren Kampagnenbedarf.",
+    "noFarmable": "Keines deiner aktiven Ziele hat farmbaren Kampagnenbedarf.",
     "error": "Der Raid-Plan konnte nicht geladen werden.",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "noGoals": "Du hast keine aktiven Ziele. Erstelle unter Ziele ein Ziel oder setze eines fort, um deine Raids zu planen."
   },
   "today": {
     "title": "Heutige Raids",
@@ -250,10 +255,6 @@
           "title": "Raid-Ansichten",
           "content": "Wechsle zwischen dem heutigen Plan und dem vollständigen Raid-Plan."
         },
-        "project": {
-          "title": "Projekt wählen",
-          "content": "Der Plan folgt den aktiven Zielen dieses Projekts."
-        },
         "schedule": {
           "title": "Heutiger Plan",
           "content": "Raide diese Kampagnenknoten mit der heutigen Energie — zusätzliche Vorschläge erscheinen hier auch, sobald dein Budget gedeckt ist."
@@ -277,10 +278,6 @@
         "navigation": {
           "title": "Raid-Ansichten",
           "content": "Wechsle zwischen Heute und Plan."
-        },
-        "project": {
-          "title": "Gemeinsames Projekt",
-          "content": "Heute und Plan nutzen dasselbe Projekt."
         },
         "summary": {
           "title": "Gesamtübersicht",

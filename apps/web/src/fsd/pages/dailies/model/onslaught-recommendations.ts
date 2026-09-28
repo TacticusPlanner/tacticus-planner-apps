@@ -67,7 +67,7 @@ export function buildOnslaughtRecommendations(
     mode: input.mode,
     roster: trackRoster,
     selectedProjectId: input.selectedProjectId,
-    activeProjectContributions: input.activeProjectContributions,
+    scopedGoalContributions: input.scopedGoalContributions,
     activeGoalContributions: input.activeGoalContributions,
     teamSize: input.teamSize,
     lockedRandomUnitIds: input.lockedRandomUnitIds,

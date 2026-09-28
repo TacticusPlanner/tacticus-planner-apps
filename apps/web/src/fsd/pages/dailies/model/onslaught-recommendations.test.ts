@@ -58,7 +58,7 @@ const build = (
     track: "Imperial",
     roster: [],
     selectedProjectId: "p1",
-    activeProjectContributions: [],
+    scopedGoalContributions: [],
     activeGoalContributions: [],
     onslaughtAscensionGoals: [],
     teamSize: 5,
@@ -86,7 +86,7 @@ describe("buildOnslaughtRecommendations", () => {
           imp3: "Imperial",
           imp4: "Imperial",
         }),
-        activeProjectContributions: [goal("imp1", "g1", "p1")],
+        scopedGoalContributions: [goal("imp1", "g1", "p1")],
         activeGoalContributions: [goal("imp2", "g2")],
         onslaughtAscensionGoals: [
           { unitId: id("imp4"), goalId: "og-4", projectId: "p1" },

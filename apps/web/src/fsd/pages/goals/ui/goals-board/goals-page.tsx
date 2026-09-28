@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FolderKanban, Plus, Settings } from "lucide-react"
+import { Plus, Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -10,49 +10,50 @@ import {
 } from "@workspace/ui/components/card"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 
 import {
   GoalFilters,
   StatusFilterSelect,
   isGoalGroupValue,
-  type GoalSortValue,
   type GoalStatusFilterValue,
   type GoalTypeFilterValue,
 } from "@/entities/goal"
+import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
 import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
+import { usePlanInsights } from "../../model/insights/use-plan-insights"
+import { orderRowsByGlobalPriority } from "../../model/shared/goal-row-order"
 import { groupRows } from "../../model/shared/row-groups"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import { useGoalEstimate } from "../../model/estimate/use-goal-estimate"
 import { useGoals } from "../../model/goals-data/use-goals"
+import { GoalsEstimatesError, GoalsFetchError } from "./goals-estimates-error"
+import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
 import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
+import { GoalsCreateProjectSheet } from "./goals-create-project-sheet"
 import { GoalsList } from ".//goals-list"
+import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
+import { ALL_PROJECTS, ProjectFilterSelect } from "./goals-project-filter"
 import { OverviewProjectQuicknav } from "./overview-project-quicknav"
 import { buildCascadeContext } from "./goal-row-utils"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
 import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
-/** The filter's unfiltered option. Not "no project": every goal always belongs to at least one. */
-const ALL_PROJECTS = "__all__"
-
 /**
- * Complete cross-project goals view (plan §1: list on desktop, cards on mobile — no view switcher).
- * Project planning and ordering live on the routed Projects tab. Planning Settings lives only here
- * (goals-navigation spec: Overview-only control) - moved down from the shared `GoalsLayout` wrapper.
+ * The Goals page (plan §1: list on desktop, cards on mobile — no view switcher): the one list of
+ * every goal and the editable global priority order. Goals are always in that order (Active/Paused
+ * first, by position; then the rest by recency) — there is no other sort — and each Active/Paused
+ * row can be dragged (a dedicated mode on mobile). A drop is saved on its own as a single move, so
+ * it works under any status/type/project filter and Group: the goal takes the global position of the
+ * goal it displaces and hidden goals keep their relative order. Estimates come from the same plan
+ * run Today uses. Planning Settings lives only here (goals-navigation spec) - moved down from the
+ * shared `GoalsLayout` wrapper.
  */
 export function GoalsPage() {
   const { t } = useTranslation()
@@ -60,7 +61,6 @@ export function GoalsPage() {
   const [tab, setTab] = useState<GoalStatusFilterValue>("toReach")
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
-  const [sort, setSort] = useState<GoalSortValue>("updated")
   // Persisted per browser (see project detail's own group state for the same reasoning) so it
   // survives navigating away and a reload instead of resetting to "none" every time.
   const [group, setGroup] = usePersistedSelection(
@@ -69,12 +69,17 @@ export function GoalsPage() {
     "none"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // Blank project-creation sheet opened from the project quick-nav; local state so opening,
+  // saving or failing never touches the route or the membership filter below.
+  const [createProjectOpen, setCreateProjectOpen] = useState(false)
   // Membership as a filter dimension, not a project selection: local state only, deliberately
-  // unconnected to the Current-plan preference Dailies and Insights calculate against, so browsing
-  // Overview never changes what those views operate on.
+  // unconnected to the project filter Dailies and Insights use, so browsing Goals never changes
+  // what those views operate on.
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS)
   const { getEntityName } = useGoalCatalog()
   const launchCreateGoal = useCreateGoalLauncher()
+  const insightsRun = usePlanInsights(null)
+  const insights = insightsRun.result
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
@@ -109,7 +114,6 @@ export function GoalsPage() {
   )
 
   const goalActions = useGoalActions()
-  const { estimate: detailEstimate } = useGoalEstimate(detailGoalId)
 
   const nonArchivedRows = useMemo(
     () =>
@@ -159,7 +163,9 @@ export function GoalsPage() {
   // Progress bar + remaining-resource summary per visible row (plan §2) — scoped to only the rows
   // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
   const overviewMetrics = useGoalsOverviewMetrics(
-    candidateRows.map((row) => row.goalId)
+    candidateRows.map((row) => row.goalId),
+    insights.estimates,
+    insights.rankSlotsByGoalId
   )
   const baseRows =
     tab === "blocked"
@@ -168,16 +174,7 @@ export function GoalsPage() {
         )
       : candidateRows
 
-  const rows = [...baseRows].sort((left, right) => {
-    if (sort === "entity")
-      return getEntityName(left.entityType, left.entityId).localeCompare(
-        getEntityName(right.entityType, right.entityId)
-      )
-    if (sort === "type") return left.goalType.localeCompare(right.goalType)
-    if (sort === "status") return left.status.localeCompare(right.status)
-    if (sort === "updated") return right.updatedAt.localeCompare(left.updatedAt)
-    return 0
-  })
+  const rows = orderRowsByGlobalPriority(baseRows)
   const tabCounts = {
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
       .length,
@@ -190,12 +187,27 @@ export function GoalsPage() {
       .length,
   }
   const rowGroups = groupRows(rows, group)
-  // Built from every account-wide row (both fetched queries, not the filtered/sorted `rows`), so a
-  // prerequisite's status and dependent count are known regardless of the current tab/filter/sort.
+  // Built from every account-wide row (both fetched queries, not the filtered `rows`), so a
+  // prerequisite's status and dependent count are known regardless of the current tab/filter.
   const cascadeContext = useMemo(
     () => buildCascadeContext([...nonArchivedRows, ...archivedRows]),
     [nonArchivedRows, archivedRows]
   )
+
+  const {
+    orderActions,
+    handleReorder,
+    reorderAvailable,
+    reorderActive,
+    toggleReorder,
+    exitReorder,
+    listRef,
+  } = useGoalsPageReorder(nonArchivedRows, tab !== "archived")
+  const noFarmableDemand =
+    !insightsRun.loading &&
+    !insightsRun.isError &&
+    insights.estimates.size === 0 &&
+    nonArchivedRows.some((row) => row.status === "Active")
 
   const isLoading = selectedGoals.isLoading
   const fetchError =
@@ -225,6 +237,13 @@ export function GoalsPage() {
       {isMobile ? null : t("goals.createButton")}
     </Button>
   )
+  const reorderToggle =
+    isMobile && reorderAvailable ? (
+      <GoalsMobileReorderToggle
+        active={reorderActive}
+        onToggle={toggleReorder}
+      />
+    ) : null
   const planningSettingsButton = (
     <Button
       aria-label={t("goals.planningSettings.button")}
@@ -237,39 +256,6 @@ export function GoalsPage() {
       {isMobile ? null : t("goals.planningSettings.button")}
     </Button>
   )
-  // goals-navigation spec: this joins the Type/Sort/Group group rather than the status row, and is
-  // explicitly not a `ProjectSelect` — it selects no project for any view to operate on.
-  const projectFilterLabel =
-    projectFilter === ALL_PROJECTS
-      ? t("goals.project.filterAll")
-      : (projects.projects.find(
-          (candidate) => candidate.projectId === projectFilter
-        )?.name ?? t("goals.project.filterAll"))
-  const projectFilterControl = (
-    <Select onValueChange={setProjectFilter} value={projectFilter}>
-      <SelectTrigger
-        aria-describedby="goals-project-filter-value"
-        aria-label={t("goals.project.filterLabel")}
-        data-testid="goals-project-filter"
-      >
-        <FolderKanban />
-        {isMobile ? null : <SelectValue />}
-        <span className="sr-only" id="goals-project-filter-value">
-          {projectFilterLabel}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={ALL_PROJECTS}>
-          {t("goals.project.filterAll")}
-        </SelectItem>
-        {projects.projects.map((candidate) => (
-          <SelectItem key={candidate.projectId} value={candidate.projectId}>
-            {candidate.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
   const goalFiltersAndSettings = (
     <div className="flex items-center gap-2" data-testid="goals-filter-group">
       <GoalFilters
@@ -277,10 +263,13 @@ export function GoalsPage() {
         group={group}
         onGoalTypeChange={setGoalType}
         onGroupChange={setGroup}
-        onSortChange={setSort}
-        sort={sort}
       />
-      {projectFilterControl}
+      <ProjectFilterSelect
+        onChange={setProjectFilter}
+        projects={projects.projects}
+        value={projectFilter}
+      />
+      {reorderToggle}
       {createGoalButton}
       {planningSettingsButton}
     </div>
@@ -302,9 +291,10 @@ export function GoalsPage() {
         projects={projects.projects}
         projectsFailed={projects.fetchState.status === "error"}
         projectsLoading={projects.loading}
+        onCreateProject={() => setCreateProjectOpen(true)}
       />
 
-      {/* goals-navigation spec: desktop merges the status filter, Type/Sort/Group filters, and
+      {/* goals-navigation spec: desktop merges the status filter, Type/Group filters, and
           Create Goal, and Planning Settings into a single row; mobile keeps the status filter in its own row and
           compresses the filters + Create Goal + Planning Settings to icon-only triggers in a second row. */}
       {isMobile ? (
@@ -319,6 +309,36 @@ export function GoalsPage() {
         </div>
       )}
 
+      {orderActions.conflict ? (
+        <OrderConflictBanner
+          onDismiss={orderActions.dismissConflict}
+          onRetry={() => void orderActions.retry()}
+          retrying={orderActions.pending}
+        />
+      ) : null}
+
+      {reorderAvailable && rows.length > 0 ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="goals-order-note"
+        >
+          {t("goals.order.listNote")}
+        </p>
+      ) : null}
+
+      {insightsRun.isError ? (
+        <GoalsEstimatesError onRetry={insightsRun.retry} />
+      ) : null}
+
+      {noFarmableDemand ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="goals-no-farmable"
+        >
+          {t("goals.order.noFarmableDemand")}
+        </p>
+      ) : null}
+
       {isLoading ? (
         <div className="flex flex-col gap-3" data-testid="goals-page-loading">
           <Skeleton className="h-24 w-full" />
@@ -327,16 +347,7 @@ export function GoalsPage() {
       ) : null}
 
       {fetchError ? (
-        <div
-          className="flex flex-col items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
-          data-testid="goals-page-error"
-          role="alert"
-        >
-          <p className="text-destructive">{fetchError}</p>
-          <Button onClick={refreshCurrentView} size="sm" variant="outline">
-            {t("goals.retry")}
-          </Button>
-        </div>
+        <GoalsFetchError message={fetchError} onRetry={refreshCurrentView} />
       ) : null}
 
       {showPristineEmptyState ? (
@@ -362,39 +373,71 @@ export function GoalsPage() {
         </p>
       ) : null}
 
-      {rowGroups.map((rowGroup) =>
-        rowGroup.rows.length > 0 ? (
-          <section className="grid gap-2" key={rowGroup.key}>
-            {rowGroup.dimension !== "none" ? (
-              <h2 className="text-lg font-semibold">
-                {rowGroup.dimension === "type"
-                  ? t(`goals.create.goalTypes.${rowGroup.rows[0]!.goalType}`)
-                  : getEntityName(
-                      rowGroup.rows[0]!.entityType,
-                      rowGroup.rows[0]!.entityId
-                    )}
-              </h2>
-            ) : null}
-            <GoalsList
-              actions={goalActions}
-              cascadeContext={cascadeContext}
-              metrics={overviewMetrics}
-              onView={setDetailGoalId}
-              reachedByGoalId={reachedByGoalId}
-              reorderEnabled={false}
-              rows={rowGroup.rows}
-            />
-          </section>
-        ) : null
-      )}
+      <div
+        className="flex flex-col gap-6 outline-none"
+        ref={listRef}
+        tabIndex={-1}
+      >
+        {rowGroups.map((rowGroup) =>
+          rowGroup.rows.length > 0 ? (
+            <section className="grid gap-2" key={rowGroup.key}>
+              {rowGroup.dimension !== "none" ? (
+                <h2 className="text-lg font-semibold">
+                  {rowGroup.dimension === "type"
+                    ? t(`goals.create.goalTypes.${rowGroup.rows[0]!.goalType}`)
+                    : getEntityName(
+                        rowGroup.rows[0]!.entityType,
+                        rowGroup.rows[0]!.entityId
+                      )}
+                </h2>
+              ) : null}
+              <GoalsList
+                actions={goalActions}
+                cascadeContext={cascadeContext}
+                estimates={insights.estimates}
+                levelPotentialProgress={insights.levelPotentialProgressByGoalId}
+                metrics={overviewMetrics}
+                mobileReorderActive={reorderActive}
+                onReorder={handleReorder}
+                onView={setDetailGoalId}
+                potentialProgress={insights.potentialProgressByGoalId}
+                reachedByGoalId={reachedByGoalId}
+                reorderEnabled={reorderAvailable}
+                reorderPending={orderActions.pending}
+                rows={rowGroup.rows}
+              />
+            </section>
+          ) : null
+        )}
+      </div>
+
+      {isMobile && reorderActive ? (
+        <MobileReorderBar onDone={exitReorder} pending={orderActions.pending} />
+      ) : null}
 
       <GoalDetailSheet
-        estimate={detailEstimate}
-        isolated
+        estimate={
+          detailGoalId ? insights.estimates.get(detailGoalId) : undefined
+        }
         goalId={detailGoalId}
+        isolated={false}
+        levelPotentialRatio={
+          detailGoalId
+            ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
+            : undefined
+        }
         onGoalChange={setDetailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={refreshCurrentView}
+        potentialRatio={
+          detailGoalId
+            ? insights.potentialProgressByGoalId.get(detailGoalId)
+            : undefined
+        }
+      />
+      <GoalsCreateProjectSheet
+        onOpenChange={setCreateProjectOpen}
+        open={createProjectOpen}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

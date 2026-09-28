@@ -9,8 +9,14 @@ import { routes } from "../route"
 import { DailiesLayout } from "./dailies-layout"
 
 const useDailyRaids = vi.fn<(projectId?: string) => { status: "no-farmable" }>(
-  () => ({ status: "no-farmable" })
+  () => ({
+    status: "no-farmable",
+  })
 )
+
+const useShopRecommendations = vi.fn<
+  (projectId: string | undefined) => { status: "ready"; sections: never[] }
+>(() => ({ status: "ready", sections: [] }))
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -27,7 +33,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
           name: "Active project",
           color: null,
           status: "Active",
-          isActivePlan: true,
           isDefault: false,
         },
         {
@@ -35,11 +40,9 @@ vi.mock("@/entities/project", async (importOriginal) => {
           name: "Other project",
           color: null,
           status: "Active",
-          isActivePlan: false,
           isDefault: true,
         },
       ],
-      activeProjectId: "p1",
       defaultProjectId: "p2",
       fetchState: { status: "success" },
       loading: false,
@@ -50,11 +53,12 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
   return {
     ...actual,
-    useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
+    useDailyRaids: (projectId?: string) => useDailyRaids(projectId),
   }
 })
 vi.mock("../model/use-shop-recommendations", () => ({
-  useShopRecommendations: () => ({ status: "ready", sections: [] }),
+  useShopRecommendations: (projectId: string | undefined) =>
+    useShopRecommendations(projectId),
 }))
 vi.mock("../model/use-arena-recommendations", () => ({
   useArenaRecommendations: () => ({ status: "no-characters" }),
@@ -134,6 +138,15 @@ describe("Dailies navigation", () => {
     expect(await findRouteContent("shops-page")).toBeInTheDocument()
   })
 
+  it("starts with no project selected, so Shops covers every Active goal", async () => {
+    renderDailies("/dailies/shops")
+
+    expect(await findRouteContent("shops-page")).toBeInTheDocument()
+    expect(useShopRecommendations).toHaveBeenCalledWith(undefined)
+    expect(useShopRecommendations).not.toHaveBeenCalledWith("p1")
+    expect(useShopRecommendations).not.toHaveBeenCalledWith("p2")
+  })
+
   it("routes /dailies/arena to the Arena recommendations page, not the placeholder", async () => {
     renderDailies("/dailies/arena")
 
@@ -143,17 +156,32 @@ describe("Dailies navigation", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("keeps the selected project when switching from Today to Plan", async () => {
+  it("plans the whole account on Today and Plan, with the project selector defaulting to all goals", async () => {
     const user = userEvent.setup()
     renderDailies("/dailies/raids/today")
-    expect(await findRouteContent("dailies-project-select")).toBeInTheDocument()
+    await findRouteContent("dailies-no-farmable")
+    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
+    expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
 
-    await user.click(screen.getByTestId("dailies-project-select"))
-    await user.click(
-      await screen.findByRole("option", { name: /Other project/ })
-    )
     await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
     await findRouteContent("dailies-no-farmable")
-    expect(useDailyRaids).toHaveBeenLastCalledWith("p2")
+    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
+    expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
+  })
+
+  it("narrows Today to the picked project and keeps it on Plan", async () => {
+    const user = userEvent.setup()
+    renderDailies("/dailies/raids/today")
+    await findRouteContent("dailies-no-farmable")
+
+    await user.click(screen.getByTestId("raids-project-select"))
+    await user.click(
+      await screen.findByRole("option", { name: /Active project/ })
+    )
+    expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
+
+    await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
+    await findRouteContent("dailies-no-farmable")
+    expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
   })
 })

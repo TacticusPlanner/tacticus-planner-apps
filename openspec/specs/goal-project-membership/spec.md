@@ -23,7 +23,7 @@ One canonical goal MAY belong to one or more projects. Edits to that goal SHALL 
 
 ### Requirement: Selected memberships render as project chips
 
-Creation and editing SHALL show selected memberships as removable chips containing project color/name and distinct Current plan, Default, and Archived markers where applicable.
+Creation and editing SHALL show selected memberships as removable chips containing project color/name and distinct Default and Archived markers where applicable.
 
 #### Scenario: Memberships are visible without opening picker
 
@@ -97,41 +97,47 @@ An existing archived membership SHALL remain visible and marked Archived, but ar
 
 ### Requirement: In-flight goal-type uniqueness is scoped to a project
 
-Within one project, at most one Active/Paused goal SHALL exist for a given `(entityType, entityId, goalType)`. Completed/Archived goals SHALL not occupy the slot. Different projects MAY contain different Active/Paused instances for the same unit and type.
+Within one project, at most one Active/Paused non-Rank goal SHALL exist per `(entityType, entityId, goalType)`. For Rank, at most one Active/Paused goal SHALL exist per `(entityType, entityId, normalizedEndTarget)`; different Rank targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Different projects MAY contain different active instances.
 
 #### Scenario: Different projects have different targets
 
 - **GIVEN** project A contains an Active Ragnar Rank goal
-- **WHEN** a different Ragnar Rank goal is created only in project B
+- **WHEN** a different Ragnar Rank goal is created only in B
 - **THEN** creation succeeds
 
 #### Scenario: Same project rejects a second in-flight instance
 
-- **GIVEN** project A contains an Active or Paused Ragnar Rank goal
-- **WHEN** another Active/Paused Ragnar Rank goal is created in or added to A
-- **THEN** the operation is rejected and identifies project A as conflicting
+- **GIVEN** A contains an Active or Paused Ragnar Rank goal targeting Gold1
+- **WHEN** another in-flight Ragnar Rank goal with the same normalized Gold1 target is created in or added to A
+- **THEN** the operation is rejected and identifies A and its existing goal
 
 #### Scenario: Historical instance does not conflict
 
-- **GIVEN** project A contains only a Completed or Archived Ragnar Rank goal
-- **WHEN** a new Ragnar Rank goal is created in A
+- **GIVEN** A contains only Completed/Archived Ragnar Rank Gold1 goals
+- **WHEN** a new Ragnar Rank Gold1 goal is created in A
 - **THEN** creation succeeds
 
 #### Scenario: Shared canonical goal occupies every selected project
 
-- **GIVEN** one Active Ragnar Rank goal belongs to A and B
-- **WHEN** another Ragnar Rank goal is added to B
+- **GIVEN** one Active Ragnar Rank Gold1 goal belongs to A and B
+- **WHEN** another Ragnar Rank Gold1 goal is added to B
 - **THEN** the operation is rejected for B
+
+#### Scenario: Distinct Rank target in one project
+
+- **GIVEN** A contains Ragnar Silver3
+- **WHEN** Ragnar Gold1 is added to A
+- **THEN** the membership is allowed
 
 ### Requirement: Project conflicts are resolved in the membership context
 
-Goal creation/editing SHALL evaluate conflict state against selected projects rather than globally disabling a goal type for the unit. It SHALL identify each conflicting project and let the user remove that membership or use the existing goal.
+Goal creation/editing SHALL evaluate target-specific Rank conflicts and goal-type non-Rank conflicts against selected projects rather than globally disabling a goal type for the unit. It SHALL identify each conflicting project and the existing goal, and let the user remove that membership or use the existing goal.
 
 #### Scenario: Only one selected project conflicts
 
-- **GIVEN** Rank is occupied in A but available in B
-- **WHEN** both projects are selected for a new Ragnar Rank goal
-- **THEN** A is identified as conflicting while B is identified as available
+- **GIVEN** Rank Gold1 is occupied in A but available in B
+- **WHEN** both projects are selected for a new Ragnar Gold1 goal
+- **THEN** A and its existing Gold1 goal are identified as conflicting while B is available
 
 ### Requirement: Independent equipment goals are unsupported
 
@@ -214,31 +220,31 @@ When a goal's viewed project is its only membership and the account has no other
 
 ### Requirement: Relocation reports an occupied destination slot before removing
 
-Because a project holds at most one Active/Paused goal per `(entityType, entityId, goalType)`, relocating an Active or Paused goal to its destination project can conflict with a goal already there. The system SHALL detect that conflict and explain it, identifying the destination project and the conflicting goal type, rather than reporting a generic failure. The goal's memberships SHALL remain unchanged when relocation is refused. The destination is the Default project in the membership editor, or the user's chosen project (existing or newly created) for the goal row's project-removal action.
+Relocating an Active/Paused goal SHALL check the destination's non-Rank goal-type or Rank normalized-target slot before removing its last membership. A conflict SHALL name the destination and existing goal/target and leave memberships unchanged. The destination remains the Default project in the membership editor or the user's chosen project for the row action.
 
 #### Scenario: Occupied destination slot is explained
 
-- **GIVEN** a goal's only membership is project A, and its destination already contains an Active goal for the same unit and goal type
-- **WHEN** moving it from A to that destination is attempted
-- **THEN** the conflict is explained, naming the destination project and the goal type, and the goal remains a member of A
+- **GIVEN** a goal's only membership is A and the destination has an Active goal with the same non-Rank type or exact Rank target
+- **WHEN** moving it from A is attempted
+- **THEN** the conflict names the destination and existing goal/target, and the goal stays in A
 
 #### Scenario: Historical goal in the destination does not conflict
 
-- **GIVEN** the destination project contains only a Completed or Archived goal for the same unit and goal type
-- **WHEN** a goal's last membership is removed to that destination
+- **GIVEN** the destination has only Completed/Archived goals for that slot
+- **WHEN** a goal's last membership is removed to it
 - **THEN** relocation succeeds
 
 #### Scenario: Conflict arising after the check is still reported
 
-- **GIVEN** the destination slot becomes occupied between the check and the removal
-- **WHEN** the removal is submitted
-- **THEN** the same conflict explanation is shown and the goal's memberships remain unchanged
+- **GIVEN** the destination slot becomes occupied between preview and save
+- **WHEN** removal is submitted
+- **THEN** the same conflict is shown and memberships remain unchanged
 
 #### Scenario: A goal that occupies no slot relocates regardless of the destination
 
-- **GIVEN** a Completed or Archived goal whose only membership is project A, and its destination holds an Active goal for the same unit and goal type
+- **GIVEN** a Completed/Archived goal in A whose destination has an Active goal in the same slot
 - **WHEN** removal from A is attempted
-- **THEN** relocation succeeds, because a goal in that status occupies no goal-type slot
+- **THEN** relocation succeeds because the moved goal occupies no in-flight slot
 
 ### Requirement: Membership removal submits the goal's current memberships
 
@@ -302,21 +308,49 @@ The Goals Overview SHALL offer filtering the goal list by project membership, in
 - **WHEN** the user opens a project-aware Dailies or Insights view
 - **THEN** that view's project selection is unchanged by the Overview filter
 
-### Requirement: Project membership does not change a goal's activation
+### Requirement: Membership picker can explicitly create and select a project
 
-A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, relocating it to the Default project, and making a different project the Current plan SHALL all leave the goal's status unchanged. Pausing and resuming a goal SHALL remain available per goal and SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
+In both new-goal and goal-edit forms, when a user searches for a project name with no existing match, the membership picker SHALL offer an explicit Create action using that name. Creation SHALL respect existing project naming validation. On success the returned project SHALL immediately become selected membership without submitting or closing the goal form. Merely typing or leaving the search field SHALL NOT create a project.
+
+#### Scenario: Create from new goal
+
+- **WHEN** a user enters a valid unmatched name and chooses Create in the new-goal project picker
+- **THEN** one project is created and selected while the rest of the goal draft remains intact
+
+#### Scenario: Create from goal edit
+
+- **WHEN** a user chooses Create in the goal-edit membership picker
+- **THEN** the returned project is selected without saving the goal edit until the user explicitly submits it
+
+#### Scenario: Existing or invalid name
+
+- **WHEN** the searched name matches an existing project or violates project naming rules
+- **THEN** the picker does not offer a create action that would produce a duplicate or invalid project
+
+#### Scenario: Creation fails
+
+- **WHEN** the project creation request fails
+- **THEN** the picker shows an error, retains the typed name and unsaved goal draft, and does not add a phantom membership
+
+#### Scenario: Created project is an ordinary custom project
+
+- **WHEN** a user creates a project from the picker
+- **THEN** it is a custom project (not the Default project) with no special standing, and neither its creation nor its selection changes any goal's status or position in the account-wide order
+
+#### Scenario: Search text alone has no side effect
+
+- **WHEN** a user types an unmatched name then closes the picker without choosing Create
+- **THEN** no project is created and the goal's membership remains unchanged
+
+### Requirement: Project membership changes never alter a goal's status
+
+A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, and relocating it to the Default project SHALL all leave the goal's status unchanged. Pausing and resuming a goal SHALL remain available per goal and SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
 
 #### Scenario: Editing membership leaves status alone
 
 - **GIVEN** a Paused goal belonging to project A
 - **WHEN** the user adds it to project B, or removes it from A, from any membership surface
 - **THEN** the goal is still Paused afterwards
-
-#### Scenario: Changing Current plan leaves statuses alone
-
-- **GIVEN** project B contains Active and Paused goals and project A is Current plan
-- **WHEN** the user makes project B the Current plan
-- **THEN** every goal in project B keeps the status it had
 
 #### Scenario: Membership editing states what it does and does not do
 
@@ -328,15 +362,15 @@ A project organizes goals; it does not activate or deactivate them. Adding a goa
 - **WHEN** any surface that adds or removes project membership renders
 - **THEN** it offers no control described as activating, deactivating, pausing, or resuming the goal as a consequence of membership
 
-### Requirement: A newly created goal's status does not depend on which projects it is filed into
+### Requirement: A goal's initial status is independent of its selected projects
 
-Creating a goal SHALL produce a goal with the same status whichever projects are selected for it, including when none of them is the Current plan and when the goal is filed into the Default project by default. The creation surface SHALL NOT state or imply that the chosen projects determine whether the new goal starts active.
+Creating a goal SHALL produce a goal with the same status whichever projects are selected for it, including when the goal is filed into the Default project by default. The creation surface SHALL NOT state or imply that the chosen projects determine whether the new goal starts active.
 
-#### Scenario: Creating into a non-current project
+#### Scenario: Creating into a non-default project
 
-- **GIVEN** project A is Current plan
+- **GIVEN** a Default project and a custom project B
 - **WHEN** the user creates a goal whose only selected project is project B
-- **THEN** the created goal has the same status it would have had if project A had been selected
+- **THEN** the created goal has the same status it would have had if the Default project had been selected
 
 #### Scenario: The membership field makes no promise about status
 

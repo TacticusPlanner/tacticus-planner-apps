@@ -12,7 +12,7 @@ import { formatEstimateDate } from "@/shared/lib"
 import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "../../model/shared/types"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
-import { stopRowNavigation } from "./goal-row-utils"
+import { isInFlightStatus, stopRowNavigation } from "./goal-row-utils"
 
 /** The formatted completion date + "in {{days}} days" caption for a computed estimate, nothing when
  * there's no entry for this goal (no project selected, non-Rank goal type) or the farm is blocked —
@@ -88,5 +88,24 @@ export function GoalNameLink({
       <TooltipTrigger asChild>{link}</TooltipTrigger>
       <TooltipContent>{tooltipText}</TooltipContent>
     </Tooltip>
+  )
+}
+
+/** The goal's account-wide priority position (`globalPriority`), as text so it meets normal text
+ * contrast in both themes (`text-foreground`). It is the position in the whole account order, never the
+ * visible index, so filtered/project views show gaps. Rows without a position (Reached, Completed,
+ * Archived) render nothing. The "Priority" prefix is screen-reader only, so the row's accessible name
+ * reads "Priority N". */
+export function GoalPriorityNumber({ row }: { row: GoalRow }) {
+  const { t } = useTranslation()
+  if (row.priority === undefined || !isInFlightStatus(row.status)) return null
+  return (
+    <span
+      className="min-w-5 text-center text-xs font-semibold text-foreground tabular-nums"
+      data-testid="goal-row-priority"
+    >
+      <span className="sr-only">{t("goals.columns.priority")} </span>
+      {row.priority}
+    </span>
   )
 }

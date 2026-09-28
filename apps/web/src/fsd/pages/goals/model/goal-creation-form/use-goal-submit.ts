@@ -83,11 +83,11 @@ export function useGoalSubmit({
         ...(startPaused ? { startPaused: true } : {}),
       })
 
-      if (createAnother) {
-        resetForm()
-        setStatus("idle")
-      } else {
-        setStatus("idle")
+      // Success clears the form either way (remembering the project/type choice for the next one), so
+      // a reopened sheet never shows the finished goal's unit-specific targets.
+      resetForm()
+      setStatus("idle")
+      if (!createAnother) {
         onOpenChange(false)
         onCreated()
       }

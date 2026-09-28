@@ -139,8 +139,8 @@ function ShellContent({
     sectionTitle,
     // Global entry points (sidebar, bottom nav, Ctrl/Cmd+G) preselect the project being viewed.
     onCreateGoal: () => {
-      const projectId = matchPath("/goals/projects/:projectId", pathname)
-        ?.params.projectId
+      const projectId = matchPath("/plan/projects/:projectId", pathname)?.params
+        .projectId
       launchCreateGoal(projectId ? { projectIds: [projectId] } : undefined)
     },
   }

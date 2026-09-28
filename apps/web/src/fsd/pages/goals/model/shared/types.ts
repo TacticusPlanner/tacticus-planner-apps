@@ -5,12 +5,12 @@ export type GoalProject = {
   projectId: string
   name: string
   color: string | null
-  isActivePlan: boolean
 }
 
 /**
  * Unified row shape the list/grid/actions components render, regardless of whether the data came from
- * `useGoals` (flat, no project scope) or `useProjectGoals` (project-scoped, carries `priority`).
+ * `useGoals` (flat, no project scope) or `useProjectGoals` (a project's projection); `priority` is the
+ * goal's position in the account-wide order.
  */
 export type GoalRow = {
   goalId: string
@@ -38,6 +38,7 @@ export function goalRowFromSummary(
     notes: goal.notes,
     updatedAt: goal.updatedAt,
     dependsOn: goal.dependsOn,
+    priority: goal.globalPriority ?? undefined,
     ...(projects.length > 0 ? { projects } : {}),
   }
 }
@@ -55,7 +56,7 @@ export function goalRowFromProjectMember(
     notes: entry.goal.notes,
     updatedAt: entry.goal.updatedAt,
     dependsOn: entry.goal.dependsOn,
-    priority: entry.priority,
+    priority: entry.goal.globalPriority ?? undefined,
     ...(projects.length > 0 ? { projects } : {}),
   }
 }

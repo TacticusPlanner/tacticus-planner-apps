@@ -149,4 +149,23 @@ describe("formatGoalRemainingText", () => {
     expect(text).toContain("goals.overview.remaining.shards")
     expect(text).toContain("goals.overview.remaining.energy")
   })
+
+  it("says a Rank goal is covered instead of listing slots an earlier goal already claims", () => {
+    const text = formatGoalRemainingText(
+      t as never,
+      "en",
+      { kind: "Rank" } as never,
+      {
+        upgrades: [],
+        shardId: null,
+        shards: 0,
+        mythicShards: 0,
+        orbsByType: {},
+        upgradeSlotsRemaining: 0,
+        coveredByEarlierGoal: true,
+      },
+      0
+    )
+    expect(text).toBe("goals.overview.remainingText.coveredByEarlierGoal")
+  })
 })

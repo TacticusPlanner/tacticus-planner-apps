@@ -35,7 +35,6 @@ const listProjectGoals = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
-  isActivePlan: boolean
   isDefault: boolean
   [key: string]: unknown
 }
@@ -70,7 +69,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
       const projects =
         (query.data as { projects: MockProjectSummary[] } | undefined)
           ?.projects ?? []
-      const activeProject = projects.find((project) => project.isActivePlan)
       const defaultProject = projects.find((project) => project.isDefault)
       return {
         fetchState: query.isError
@@ -79,7 +77,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
             ? { status: "success" as const, projects }
             : { status: "idle" as const },
         projects,
-        activeProjectId: activeProject?.projectId,
         defaultProjectId: defaultProject?.projectId,
         loading: isAuthenticated && query.isPending,
         retry: () => {
@@ -107,11 +104,11 @@ import { ProjectsListPage } from "./projects-list-page"
 
 function renderPage() {
   return render(
-    <MemoryRouter initialEntries={["/goals/projects"]}>
+    <MemoryRouter initialEntries={["/plan/projects"]}>
       <Routes>
-        <Route path="/goals/projects" element={<ProjectsListPage />} />
+        <Route path="/plan/projects" element={<ProjectsListPage />} />
         <Route
-          path="/goals/projects/:projectId"
+          path="/plan/projects/:projectId"
           element={<div data-testid="landed-on-detail" />}
         />
       </Routes>
@@ -126,7 +123,6 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
     description: null,
     color: null,
     status: "Active",
-    isActivePlan: true,
     isDefault: true,
     revision: 0,
     createdAt: "2026-01-01T00:00:00Z",
@@ -150,7 +146,7 @@ describe("ProjectsListPage", () => {
     expect(screen.queryByTestId("project-list")).not.toBeInTheDocument()
   })
 
-  it("explains what a project is and what Current plan changes, on arrival and not behind an interaction", async () => {
+  it("explains what a project is, on arrival and not behind an interaction", async () => {
     // project-management: the explanation must be readable without hovering, focusing, or opening
     // anything — so it is plain page copy, not a tooltip, popover, or collapsed section.
     listProjects.mockResolvedValue({ projects: [project()] })
@@ -160,19 +156,11 @@ describe("ProjectsListPage", () => {
     expect(intro).toBeVisible()
     expect(intro).toHaveTextContent("goals.project.dashboardIntro")
 
-    const currentPlanNote = screen.getByTestId(
-      "projects-page-current-plan-note"
-    )
-    expect(currentPlanNote).toBeVisible()
-    expect(currentPlanNote).toHaveTextContent("goals.project.currentPlanNote")
-
-    // Neither sits inside a tooltip/popover wrapper or a collapsed <details>.
-    for (const node of [intro, currentPlanNote]) {
-      expect(node.closest("[role='tooltip']")).toBeNull()
-      expect(node.closest("[data-slot='popover-content']")).toBeNull()
-      expect(node.closest("details")).toBeNull()
-      expect(node.closest("[hidden]")).toBeNull()
-    }
+    // It sits inside no tooltip/popover wrapper or collapsed <details>.
+    expect(intro.closest("[role='tooltip']")).toBeNull()
+    expect(intro.closest("[data-slot='popover-content']")).toBeNull()
+    expect(intro.closest("details")).toBeNull()
+    expect(intro.closest("[hidden]")).toBeNull()
   })
 
   it("keeps the dashboard explanation out of the empty state, which carries its own wording", async () => {
@@ -187,12 +175,31 @@ describe("ProjectsListPage", () => {
     expect(screen.queryByTestId("projects-page-intro")).not.toBeInTheDocument()
   })
 
+  it("lists the Default project first with a Default label, and no Current plan section or control", async () => {
+    const custom = project({
+      projectId: "proj-custom",
+      name: "Custom plan",
+      isDefault: false,
+    })
+    listProjects.mockResolvedValue({ projects: [custom, project()] })
+    renderPage()
+
+    await screen.findByText("Project A")
+    const rows = screen.getAllByTestId(/^project-row-proj-/)
+    expect(rows.map((row) => row.getAttribute("data-testid"))).toEqual([
+      expect.stringContaining("proj-1"),
+      expect.stringContaining("proj-custom"),
+    ])
+    expect(screen.getByText("goals.project.defaultBadge")).toBeInTheDocument()
+    expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
+    expect(screen.queryByText("goals.project.makeCurrent")).toBeNull()
+  })
+
   it("lists every project, including archived ones, with no page heading", async () => {
     const projectA = project()
     const archived = project({
       projectId: "proj-archived",
       name: "Old plan",
-      isActivePlan: false,
       isDefault: false,
       status: "Archived",
     })

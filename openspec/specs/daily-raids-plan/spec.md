@@ -34,41 +34,46 @@ Raids Plan SHALL use the same unit portraits, resource art, and energy/raid-atte
 
 ### Requirement: Raids Plan shares Today's selected project
 
-Raids Plan SHALL use the same selected project as Today (one selection shared across both Raids sub-tabs), rather than maintaining an independent selector. Switching the project on either sub-tab SHALL recompute both.
+Raids Plan SHALL use the same project selection as Today (one selection shared across both Raids sub-tabs, defaulting to all goals) rather than maintaining an independent selector. Switching the project on either sub-tab SHALL recompute both; with no project selected both show the account-wide plan.
 
 #### Scenario: Selecting a project on Today updates Raids Plan too
 
-- **GIVEN** the user is on Raids Plan showing project A's schedule
-- **WHEN** the user switches to Today and selects project B
-- **THEN** Raids Plan now shows project B's schedule when next viewed, without requiring a separate selection
+- **GIVEN** the user is on Today with all goals selected
+- **WHEN** the user selects project B and switches to Raids Plan
+- **THEN** Raids Plan shows project B's Active goals in global order without a separate selection
+
+#### Scenario: Default is all goals
+
+- **WHEN** Raids Plan loads with no prior selection this session
+- **THEN** it shows the account-wide plan and the selector reads all goals
 
 #### Scenario: Raids Plan mirrors Today's project-list failure state
 
-- **GIVEN** the project-list request fails
+- **GIVEN** project-list loading fails but global goals load
 - **WHEN** Raids Plan loads
-- **THEN** it shows the same load error and retry action as Today, not an empty-project prompt
+- **THEN** it renders the global schedule and does not show a project-list error
 
 #### Scenario: Raids Plan mirrors Today's empty-project state
 
-- **GIVEN** the project-list request succeeds with no projects
+- **GIVEN** no projects are available but global goals load
 - **WHEN** Raids Plan loads
-- **THEN** it shows the same empty-project prompt as Today, not a load error
+- **THEN** it derives its empty or populated state from Active goals, not project count
 
 ### Requirement: Raids Plan includes Today
 
-Raids Plan SHALL compute its schedule from the same in-scope (`Active`-status, priority-ordered) goals and the same engine run as Today, and SHALL render the complete sequence beginning with Day 1 labeled "Today", followed by Day 2 onward.
+Raids Plan SHALL compute its schedule from the same Active goals (account-wide, or the selected project's) in canonical global priority order and the same engine run as Today. It SHALL render the complete sequence beginning with Day 1 labeled "Today", followed by Day 2 onward.
 
 #### Scenario: Day columns start with Today
 
-- **GIVEN** a project with an in-scope farmable schedule
+- **GIVEN** an account-wide in-scope farmable schedule
 - **WHEN** Raids Plan loads
-- **THEN** the first rendered day column is labeled "Today" and contains the same Day 1 schedule shown on the Today tab
+- **THEN** its first day is Today and matches the Today tab's schedule
 
 #### Scenario: Everything resolves within Day 1
 
-- **GIVEN** every in-scope goal's farmable need is fully covered within Day 1 (Today's own schedule already clears it)
+- **GIVEN** all in-scope farmable need resolves within Day 1
 - **WHEN** Raids Plan loads
-- **THEN** Raids Plan still renders the Today column as the complete one-day plan
+- **THEN** it still renders Today as the complete one-day plan
 
 ### Requirement: Raids Plan's per-day schedule
 

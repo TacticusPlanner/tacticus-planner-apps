@@ -21,7 +21,6 @@ export function useGoalProjects(projects: ProjectSummary[]) {
           projectId: project.projectId,
           name: project.name,
           color: project.color,
-          isActivePlan: project.isActivePlan,
         })
         result.set(member.goal.goalId, memberships)
       }

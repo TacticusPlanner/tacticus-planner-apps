@@ -86,11 +86,11 @@
         },
         "projects": {
           "title": "Tus proyectos",
-          "content": "Entra directamente en el plan de cualquier proyecto — el plan actual siempre aparece primero."
+          "content": "Entra directamente en el plan de cualquier proyecto — el proyecto predeterminado siempre aparece primero."
         },
         "raids": {
           "title": "Incursiones diarias",
-          "content": "Consulta lo que falta por asaltar hoy para tu proyecto activo, una ubicación por fila."
+          "content": "Consulta lo que falta por asaltar hoy para tus objetivos activos, una ubicación por fila."
         },
         "navigation": {
           "title": "Explorar otras semanas",

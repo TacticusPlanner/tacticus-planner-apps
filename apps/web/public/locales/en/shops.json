@@ -1,6 +1,7 @@
 {
   "title": "Shop recommendations",
   "subtitle": "Today's daily-shop offers worth buying for {{project}}'s active goals",
+  "subtitleAll": "Today's daily-shop offers worth buying for your active goals",
   "shopName": {
     "guild": "Guild Shop",
     "war": "Guild War Shop",
@@ -48,7 +49,8 @@
     "error": "Couldn't load shop recommendations.",
     "retry": "Try again",
     "noProject": "Create or select a project to see shop recommendations for its goals.",
-    "nothingToBuy": "Nothing worth buying today for this project's active goals."
+    "noGoals": "You have no Active goals to shop for. Create or resume a goal to see recommendations.",
+    "nothingToBuy": "Nothing worth buying today for these active goals."
   },
   "tour": {
     "shops": {

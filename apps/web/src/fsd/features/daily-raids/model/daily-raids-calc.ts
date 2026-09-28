@@ -77,10 +77,16 @@ export type DailyRaidsCalculationInput = {
   shops?: readonly GameCatalogShop[]
 }
 
+/** The goal's position in the account-wide order; the weight every planning calculation sorts by. */
+function globalPriorityOf(member: ProjectGoalSummary) {
+  return member.goal.globalPriority ?? Number.MAX_SAFE_INTEGER
+}
+
+/** Active goals of `members` in global order (Paused goals keep their position but do not plan). */
 export function activeProjectMembers(members: ProjectGoalSummary[]) {
   return members
     .filter((member) => member.goal.status === "Active")
-    .sort((left, right) => left.priority - right.priority)
+    .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
 }
 
 export function calculateDailyRaids(
@@ -215,7 +221,7 @@ export function calculateDailyRaids(
 
     goals.push({
       goalId: detail.goalId,
-      priority: member.priority,
+      priority: globalPriorityOf(member),
       needs,
       stages: stages ?? undefined,
       farmingLocationIds: acquisitionSources
@@ -225,7 +231,7 @@ export function calculateDailyRaids(
     })
     goalsById.set(detail.goalId, {
       goalId: detail.goalId,
-      priority: member.priority,
+      priority: globalPriorityOf(member),
       unitId: entityId,
       unitType: detail.entityType === "Mow" ? "Mow" : "Character",
       unitLabel:

@@ -32,8 +32,12 @@ import {
   getPlayerMows,
 } from "@workspace/player-data/queries"
 
-import { goalQueries, type GoalDetail } from "@/entities/goal"
-import { projectQueries } from "@/entities/project"
+import {
+  goalQueries,
+  useGlobalGoalPlan,
+  type GoalDetail,
+} from "@/entities/goal"
+import { projectQueries, type ProjectGoalSummary } from "@/entities/project"
 import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
@@ -66,7 +70,7 @@ export interface ShopRecommendationSectionView {
 export type ShopRecommendationsViewModel =
   | { status: "loading" }
   | { status: "error"; retry: () => void }
-  | { status: "no-project" }
+  | { status: "no-goals" }
   | { status: "ready"; sections: ShopRecommendationSectionView[] }
 
 // Shop dataset order — sections render in this order regardless of the stored row order.
@@ -103,6 +107,8 @@ function playerUnitIds(
   return { characterIds: [...characterIds], mowIds: [...mowIds] }
 }
 
+/** `projectId` undefined means every Active goal in the account's global order; a project narrows
+ * the offers to its members. */
 export function useShopRecommendations(
   projectId: string | undefined
 ): ShopRecommendationsViewModel {
@@ -119,7 +125,13 @@ export function useShopRecommendations(
     ...projectQueries.goals(projectId ?? "unselected"),
     enabled: Boolean(isAuthenticated && projectId),
   })
-  const activeMembers = activeProjectMembers(membersQuery.data?.goals ?? [])
+  const globalPlan = useGlobalGoalPlan()
+  const members: ProjectGoalSummary[] | undefined = projectId
+    ? membersQuery.data?.goals
+    : globalPlan.loading || globalPlan.isError
+      ? undefined
+      : globalPlan.entries
+  const activeMembers = activeProjectMembers(members ?? [])
   const detailQueries = useQueries({
     queries: activeMembers.map((member) =>
       goalQueries.detail(member.goal.goalId)
@@ -227,7 +239,7 @@ export function useShopRecommendations(
   )
 
   const isReady =
-    membersQuery.isSuccess &&
+    members !== undefined &&
     detailQueries.every((query) => query.isSuccess) &&
     charactersById &&
     mowsById &&
@@ -269,7 +281,7 @@ export function useShopRecommendations(
     }
 
     const needs = aggregateShopNeeds({
-      members: membersQuery.data.goals,
+      members: members ?? [],
       details,
       playerCharacterById: playerState.playerCharacterById,
       playerMowById: playerState.playerMowById,
@@ -328,7 +340,7 @@ export function useShopRecommendations(
     roster,
     ascensionCostsById,
     unlockShardCostsById,
-    membersQuery.data,
+    members,
     details,
     inventoryUpgradeAmountById,
     upgradesById,
@@ -337,20 +349,21 @@ export function useShopRecommendations(
   ])
 
   const retry = () => {
-    void membersQuery.refetch()
+    if (projectId) void membersQuery.refetch()
+    else globalPlan.retry()
     for (const query of detailQueries) void query.refetch()
     setRetryNonce((nonce) => nonce + 1)
   }
 
-  if (!projectId) return { status: "no-project" }
   if (
-    membersQuery.isError ||
+    (projectId ? membersQuery.isError : globalPlan.isError) ||
     detailQueries.some((query) => query.isError) ||
     liveQueryFailed
   ) {
     return { status: "error", retry }
   }
   if (!sections) return { status: "loading" }
+  if (activeMembers.length === 0) return { status: "no-goals" }
   return { status: "ready", sections }
 }
 

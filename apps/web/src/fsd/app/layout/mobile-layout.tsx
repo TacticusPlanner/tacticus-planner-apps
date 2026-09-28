@@ -171,12 +171,12 @@ function MobileBottomNav({
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState("")
   const homeItem = items.find((item) => item.path === "/home")
-  const goalsItem = items.find((item) => item.path === "/goals")
+  const goalsItem = items.find((item) => item.path === "/plan")
   const dailiesItem = items.find((item) => item.path === "/dailies")
   const filteredItems = filterNavigationItems(items, search, t)
   const isMenuItemActive = items.some(
     (item) =>
-      !["/home", "/goals", "/dailies"].includes(item.path) &&
+      !["/home", "/plan", "/dailies"].includes(item.path) &&
       isItemActive(pathname, item.path)
   )
 

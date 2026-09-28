@@ -118,18 +118,10 @@ export function ProjectDetailHeader({
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {project.isActivePlan ? (
+            {project.isDefault ? (
               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                {t("goals.project.currentPlan")}
+                {t("goals.project.defaultBadge")}
               </span>
-            ) : project.status !== "Archived" ? (
-              <Button
-                disabled={projectActions.pending}
-                onClick={() => void projectActions.activate(project.projectId)}
-                variant="outline"
-              >
-                {t("goals.project.makeCurrent")}
-              </Button>
             ) : null}
             <Button
               data-testid="project-add-goals"
@@ -223,7 +215,7 @@ export function ProjectDetailHeader({
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
-                    disabled={project.isDefault || project.isActivePlan}
+                    disabled={project.isDefault}
                     onSelect={() =>
                       void projectActions.save(project, {
                         ...project,
@@ -233,7 +225,7 @@ export function ProjectDetailHeader({
                     variant="destructive"
                   >
                     <Archive />
-                    {project.isDefault || project.isActivePlan
+                    {project.isDefault
                       ? t("goals.project.archiveUnavailable")
                       : t("goals.project.archive")}
                   </DropdownMenuItem>
@@ -325,7 +317,6 @@ export function ProjectDetailHeader({
               group={group}
               groupOptions={PROJECT_DETAIL_GROUP_OPTIONS}
               onGroupChange={onGroupChange}
-              showSort={false}
               showTypeFilter={false}
             />
           </div>

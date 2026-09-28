@@ -51,7 +51,7 @@ export type BuildSalvageRecommendationsInput = {
   /** Owned characters only, across every alliance — the builder filters to the track. */
   roster: readonly ArenaRosterCharacter[]
   selectedProjectId: string | undefined
-  activeProjectContributions: readonly ArenaGoalContribution[]
+  scopedGoalContributions: readonly ArenaGoalContribution[]
   activeGoalContributions: readonly ArenaGoalContribution[]
   teamSize: number
   lockedRandomUnitIds: readonly UnitId[]

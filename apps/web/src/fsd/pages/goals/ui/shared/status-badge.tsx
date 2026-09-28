@@ -112,7 +112,7 @@ export function BlockedIndicator({
       <TooltipTrigger asChild>
         <Badge
           asChild
-          className="gap-1 text-amber-700"
+          className="gap-1 text-amber-800 dark:text-amber-400"
           data-testid="goal-blocked-indicator"
           variant="outline"
         >

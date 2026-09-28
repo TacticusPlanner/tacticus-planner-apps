@@ -74,8 +74,7 @@ export function useMoveGoalFromProject() {
     })
 
   /** The account's other non-archived projects besides `projectId`, for the "Move to project" picker.
-   *  Current plan is included — nothing about being Current plan makes a project an invalid
-   *  destination. */
+   *  The Default project is included — it is a valid destination like any other. */
   const otherProjects = (projectId: string) =>
     projects.filter(
       (project) =>

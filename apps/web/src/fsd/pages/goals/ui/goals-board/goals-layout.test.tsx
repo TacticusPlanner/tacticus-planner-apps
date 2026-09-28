@@ -15,8 +15,8 @@ function renderLayout(initialEntry: string) {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
-        <Route element={<GoalsLayout />} path="/goals">
-          <Route index element={<div data-testid="goals-child" />} />
+        <Route element={<GoalsLayout />} path="/plan">
+          <Route element={<div data-testid="goals-child" />} path="goals" />
           <Route
             element={<div data-testid="projects-child" />}
             path="projects"
@@ -32,22 +32,22 @@ function renderLayout(initialEntry: string) {
 }
 
 describe("GoalsLayout", () => {
-  it("renders the Goals child route at /goals, with the Goals tab active", () => {
-    renderLayout("/goals")
+  it("renders the Goals child route at /plan/goals, with the Goals tab active", () => {
+    renderLayout("/plan/goals")
 
     expect(screen.getByTestId("goals-child")).toBeInTheDocument()
     expect(screen.queryByTestId("insights-child")).not.toBeInTheDocument()
   })
 
-  it("renders the Insights child route at /goals/insights, with the Insights tab active", () => {
-    renderLayout("/goals/insights")
+  it("renders the Insights child route at /plan/insights, with the Insights tab active", () => {
+    renderLayout("/plan/insights")
 
     expect(screen.getByTestId("insights-child")).toBeInTheDocument()
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
   })
 
-  it("renders the Projects child route at /goals/projects", () => {
-    renderLayout("/goals/projects")
+  it("renders the Projects child route at /plan/projects", () => {
+    renderLayout("/plan/projects")
 
     expect(screen.getByTestId("projects-child")).toBeInTheDocument()
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
@@ -58,7 +58,7 @@ describe("GoalsLayout", () => {
   // Planning Settings now lives only on Overview (goals-page.test.tsx), not in this shared
   // layout - see goals-navigation spec's "Planning Settings is an Overview-only control".
   it("does not render a Planning Settings entry point itself", () => {
-    renderLayout("/goals")
+    renderLayout("/plan/goals")
 
     expect(
       screen.queryByTestId("goals-planning-settings")

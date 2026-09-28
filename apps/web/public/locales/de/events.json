@@ -86,11 +86,11 @@
         },
         "projects": {
           "title": "Deine Projekte",
-          "content": "Steige direkt in den Plan eines Projekts ein — der aktuelle Plan wird immer zuerst angezeigt."
+          "content": "Steige direkt in den Plan eines Projekts ein — das Standardprojekt wird immer zuerst angezeigt."
         },
         "raids": {
           "title": "Tägliche Raids",
-          "content": "Sieh, was für dein aktives Projekt heute noch zu erledigen ist — eine Zeile pro Ort."
+          "content": "Sieh, was für deine aktiven Ziele heute noch zu erledigen ist — eine Zeile pro Ort."
         },
         "navigation": {
           "title": "Andere Wochen ansehen",

@@ -1,17 +1,10 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Plus } from "lucide-react"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Input } from "@workspace/ui/components/input"
 import {
   Sheet,
@@ -24,49 +17,59 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
-  describeRankTargetKey,
   goalQueries,
-  goalRankTargetKey,
+  type GoalGroupValue,
   type GoalKind,
-  type GoalSummary,
 } from "@/entities/goal"
 import {
+  projectLastMembershipDetails,
+  projectMembershipStaleDetails,
   projectQueries,
+  projectSlotConflictGoalIds,
   updateProjectGoals,
-  type ProjectGoalSummary,
   type ProjectSummary,
 } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { useUnitName } from "@/shared/unit-name"
 
-/** A project holds at most one Active/Paused goal per non-Rank unit-and-goal-type slot, and at most one
- * per unit and exact Rank end target (`rankKey`, the normalized `<rank>:<slots>` key) — different Rank
- * targets for one unit coexist. An unknown Rank target (its detail is still loading) gets a slot of its
- * own so it never blocks anything; the server stays authoritative. */
-const slotKey = (
-  goal: {
-    goalId: string
-    entityType: string
-    entityId: string
-    goalType: string
-  },
-  rankKey?: string
-) =>
-  goal.goalType === "Rank"
-    ? `${goal.entityType}:${goal.entityId}:Rank:${rankKey ?? `pending:${goal.goalId}`}`
-    : `${goal.entityType}:${goal.entityId}:${goal.goalType}`
+import {
+  desiredGoalIds,
+  EMPTY_MEMBERSHIP_DRAFT,
+  isInDesiredSet,
+  reconcileDraft,
+  toggleGoal,
+  type MembershipDraft,
+} from "../model/membership-draft"
+import type { MembershipConflict } from "../model/membership-conflict"
+import {
+  useMembershipSlots,
+  type SlotGoal,
+} from "../model/use-membership-slots"
+import { MembershipConflictBanner } from "./membership-conflict-banner"
+import { MembershipGoalRow } from "./membership-goal-row"
+import { MembershipReview } from "./membership-review"
 
-const occupiesSlot = (goal: { status: string }) =>
-  goal.status === "Active" || goal.status === "Paused"
+type RowGoal = SlotGoal & { globalPriority: number | null }
+
+type SaveInput = {
+  desired: string[]
+  expected: string[]
+  added: number
+  removed: number
+}
+
+const GROUP_OPTIONS: readonly GoalGroupValue[] = ["none", "unit", "type"]
 
 /**
- * Bulk assembly for a project's membership (`project-management`: "The detail route assembles
- * membership in bulk"). Lives here rather than in `pages/goals` because `GP-08` needs the same
+ * Reviewed add/remove editor for a project's membership (`project-management`: "The detail route
+ * assembles membership in bulk"). Lives here rather than in `pages/goals` because `GP-08` needs the same
  * surface from the goal-creation entry point, which could not reach a page-owned component.
  *
- * It only ever adds. `PUT /me/projects/{id}/goals` replaces the project's whole membership and
- * rejects a call whose removals would orphan a goal, so a sheet that also removed would need a
- * non-atomic two-phase sequence — out of scope, and removal has its own per-goal row action.
+ * Goals are listed in the account-wide priority order the server returns (no sort control: the list must
+ * never suggest another order) and may be grouped by unit or goal type. The draft is kept apart from the
+ * reviewed baseline membership, so search and grouping only change what is visible. One explicit Save
+ * replaces the whole membership atomically, sending the baseline as `expectedGoalIds`; membership never
+ * changes any goal's priority, status or target.
  */
 export function AddGoalsToProjectSheet({
   open,
@@ -85,7 +88,11 @@ export function AddGoalsToProjectSheet({
   const queryClient = useQueryClient()
   const getUnitName = useUnitName()
   const [search, setSearch] = useState("")
-  const [selectedGoalIds, setSelectedGoalIds] = useState<string[]>([])
+  const [group, setGroup] = useState<GoalGroupValue>("none")
+  const [draft, setDraft] = useState<MembershipDraft>(EMPTY_MEMBERSHIP_DRAFT)
+  // The membership the user reviewed (`null` until the sheet has read it); sent as `expectedGoalIds`.
+  const [baseline, setBaseline] = useState<string[] | null>(null)
+  const [conflict, setConflict] = useState<MembershipConflict | null>(null)
 
   // The sheet stays mounted while closed, and `ProjectDetailPage` swaps `project` underneath it when
   // the header switcher changes route — that route has no `key`, so the page never remounts. A draft
@@ -93,7 +100,8 @@ export function AddGoalsToProjectSheet({
   // Reset during render rather than in an effect (react-hooks/set-state-in-effect), and key it on the
   // open flag as well as the project so a reopened sheet never briefly shows the previous draft.
   // The one exception is "Create new goal": it closes this sheet (never two focus-trapped sheets)
-  // but suspends the draft, which survives until this project's sheet is reopened.
+  // but suspends the draft, which survives until this project's sheet is reopened. Even then the
+  // baseline is read afresh, since the new goal joined the project.
   const draftKey = `${project.projectId}:${open}`
   const [lastDraftKey, setLastDraftKey] = useState(draftKey)
   const [draftProjectId, setDraftProjectId] = useState(project.projectId)
@@ -103,8 +111,10 @@ export function AddGoalsToProjectSheet({
     const keepDraft = draftSuspended && draftProjectId === project.projectId
     if (!keepDraft) {
       setSearch("")
-      setSelectedGoalIds([])
+      setDraft(EMPTY_MEMBERSHIP_DRAFT)
     }
+    setBaseline(null)
+    setConflict(null)
     setDraftProjectId(project.projectId)
     if (open || !keepDraft) setDraftSuspended(false)
   }
@@ -118,147 +128,201 @@ export function AddGoalsToProjectSheet({
     enabled: isAuthenticated && open,
   })
 
-  const goals = goalsQuery.data?.goals ?? []
-  const members: ProjectGoalSummary[] = membersQuery.data?.goals ?? []
-  const memberIds = new Set(members.map((entry) => entry.goal.goalId))
-
-  // The list endpoints carry summaries only, so an in-flight Rank goal's end target is read from its
-  // detail (shared cache with the Goals page). Only Rank goals of a unit that already has a member or
-  // a pending selection can collide, so other units' goals are never fetched.
-  const entityKey = (goal: { entityType: string; entityId: string }) =>
-    `${goal.entityType}:${goal.entityId}`
-  const inFlightRank = (goal: { goalType: string; status: string }) =>
-    goal.goalType === "Rank" && occupiesSlot(goal)
-  const anchoredUnits = new Set(
-    [
-      ...members.map((entry) => entry.goal),
-      ...goals.filter((goal) => selectedGoalIds.includes(goal.goalId)),
-    ]
-      .filter(inFlightRank)
-      .map(entityKey)
+  const goals: RowGoal[] = goalsQuery.data?.goals ?? []
+  const memberGoals: RowGoal[] = (membersQuery.data?.goals ?? []).map(
+    (entry) => entry.goal
   )
-  const rankGoalIds = [
-    ...new Set(
-      [...goals, ...members.map((entry) => entry.goal)]
-        .filter(
-          (goal) => inFlightRank(goal) && anchoredUnits.has(entityKey(goal))
-        )
-        .map((goal) => goal.goalId)
-    ),
-  ]
-  const rankDetailQueries = useQueries({
-    queries: rankGoalIds.map((goalId) => ({
-      ...goalQueries.detail(goalId),
+
+  // Read the baseline once per draft, after any refetch triggered by opening has settled, and never again
+  // on background refetches: it is what the user reviewed, so a later change surfaces as a stale conflict
+  // instead of silently moving under the draft.
+  if (
+    open &&
+    baseline === null &&
+    membersQuery.isSuccess &&
+    !membersQuery.isFetching
+  ) {
+    const ids = memberGoals.map((goal) => goal.goalId)
+    setBaseline(ids)
+    setDraft((current) => reconcileDraft(current, ids))
+  }
+
+  const baselineIds = baseline ?? []
+  const baselineSet = new Set(baselineIds)
+  // Archived members are not listed but stay in the baseline, so a save never drops them.
+  const goalById = new Map<string, RowGoal>()
+  for (const goal of [...memberGoals, ...goals]) goalById.set(goal.goalId, goal)
+  const resolve = (ids: readonly string[]) =>
+    ids.flatMap((id) => goalById.get(id) ?? [])
+  const desiredIds = desiredGoalIds(baselineIds, draft)
+
+  const { rankKeysPending, rankTargetLabel, blockedReason } =
+    useMembershipSlots({
       enabled: isAuthenticated && open,
-    })),
-  })
-  const rankKeys = new Map<string, string>()
-  rankDetailQueries.forEach((query, index) => {
-    const key = query.data ? goalRankTargetKey(query.data) : null
-    if (key) rankKeys.set(rankGoalIds[index]!, key)
-  })
-  const rankKeysPending = rankDetailQueries.some((query) => query.isPending)
-  // "Rank · Silver3 (3/6)" — the target a Rank row stands for, so two milestones for one unit read apart.
-  const rankTargetLabel = (goal: GoalSummary) => {
-    const target = describeRankTargetKey(rankKeys.get(goal.goalId) ?? "")
-    if (!target) return null
-    const rankName = t(`ranks.${target.rank}`, {
-      ns: "progression",
-      defaultValue: target.rank,
+      candidates: goals,
+      members: resolve(baselineIds),
+      desired: resolve(desiredIds),
     })
-    return target.slots > 0 ? `${rankName} (${target.slots}/6)` : rankName
-  }
 
-  // The endpoint checks slot uniqueness across the *entire* submitted set and rejects the whole save
-  // on any collision, so the check here spans both current members and the pending selections —
-  // otherwise one conflicting pick would discard the user's whole batch.
-  const slotOwners = new Map<string, string>()
-  for (const entry of members) {
-    if (occupiesSlot(entry.goal)) {
-      slotOwners.set(
-        slotKey(entry.goal, rankKeys.get(entry.goal.goalId)),
-        entry.goal.goalId
-      )
-    }
-  }
-  for (const goalId of selectedGoalIds) {
-    const goal = goals.find((candidate) => candidate.goalId === goalId)
-    const key = goal && slotKey(goal, rankKeys.get(goal.goalId))
-    if (goal && key && occupiesSlot(goal) && !slotOwners.has(key)) {
-      slotOwners.set(key, goal.goalId)
-    }
-  }
-  const blockedReason = (goal: GoalSummary) => {
-    if (memberIds.has(goal.goalId) || !occupiesSlot(goal)) return null
-    const owner = slotOwners.get(slotKey(goal, rankKeys.get(goal.goalId)))
-    if (!owner || owner === goal.goalId) return null
-    const target = goal.goalType === "Rank" ? rankTargetLabel(goal) : null
-    return target
-      ? t("goals.project.assemblyRankTargetTaken", { target })
-      : t("goals.project.assemblySlotTaken", {
-          type: t(`goals.create.goalTypes.${goal.goalType as GoalKind}`),
-        })
-  }
-
-  const goalLabel = (goal: GoalSummary) =>
+  const goalTypeLabel = (goal: SlotGoal) =>
+    t(`goals.create.goalTypes.${goal.goalType as GoalKind}`)
+  const goalLabel = (goal: SlotGoal) =>
     getUnitName(goal.entityType, goal.entityId)
+  const goalTitle = (goal: SlotGoal) =>
+    [
+      goalLabel(goal),
+      goalTypeLabel(goal),
+      goal.goalType === "Rank" ? rankTargetLabel(goal) : null,
+    ]
+      .filter(Boolean)
+      .join(" · ")
+  const goalName = (goalId: string) => {
+    const goal = goalById.get(goalId)
+    return goal ? goalTitle(goal) : t("goals.project.assemblyUnknownGoal")
+  }
+
   const query = search.trim().toLowerCase()
-  const visibleGoals = goals.filter((goal) => {
-    if (!query) return true
-    const type = t(`goals.create.goalTypes.${goal.goalType as GoalKind}`)
-    return `${goalLabel(goal)} ${type}`.toLowerCase().includes(query)
+  const visibleGoals = goals.filter(
+    (goal) =>
+      !query ||
+      `${goalLabel(goal)} ${goalTypeLabel(goal)}`.toLowerCase().includes(query)
+  )
+  // Groups keep first-appearance order and each keeps the incoming (global-priority) order.
+  const groupKey = (goal: RowGoal) =>
+    group === "unit"
+      ? `${goal.entityType}:${goal.entityId}`
+      : group === "type"
+        ? goal.goalType
+        : "all"
+  const groups = [...new Set(visibleGoals.map(groupKey))].map((key) => {
+    const rows = visibleGoals.filter((goal) => groupKey(goal) === key)
+    return {
+      key,
+      rows,
+      heading:
+        group === "unit"
+          ? goalLabel(rows[0]!)
+          : group === "type"
+            ? goalTypeLabel(rows[0]!)
+            : null,
+    }
   })
+
+  const invalidate = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+    ])
 
   const save = useMutation({
-    mutationFn: async () => {
-      // Whole-membership replacement: read the project's members as they stand now, not as the sheet
-      // rendered them, or goals added elsewhere since it opened would be dropped by this save.
-      const current = (
-        await queryClient.fetchQuery(projectQueries.goals(project.projectId))
-      ).goals
-      const currentIds = new Set(current.map((entry) => entry.goal.goalId))
-      // Existing members resend the priority they already have and additions append above the
-      // maximum, so the server's renumbering preserves the project's established unit order and
-      // puts the added units last.
-      const maxPriority = current.reduce(
-        (highest, entry) => Math.max(highest, entry.priority),
-        0
-      )
-      const additions = selectedGoalIds.filter((id) => !currentIds.has(id))
-      return updateProjectGoals(project.projectId, [
-        ...current.map((entry) => ({
-          goalId: entry.goal.goalId,
-          priority: entry.priority,
-        })),
-        ...additions.map((goalId, index) => ({
-          goalId,
-          priority: maxPriority + 1 + index,
-        })),
-      ]).then(() => additions.length)
-    },
-    onSuccess: async (added) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-      ])
+    mutationFn: (input: SaveInput) =>
+      updateProjectGoals(project.projectId, {
+        goals: input.desired.map((goalId) => ({ goalId })),
+        expectedGoalIds: input.expected,
+      }),
+    onSuccess: async (_response, input) => {
+      await invalidate()
       toast.success(
-        t("goals.toasts.goalsAddedToProject", {
-          count: added,
+        t("goals.toasts.projectMembershipSaved", {
           project: project.name,
+          added: input.added,
+          removed: input.removed,
         })
       )
-      setSelectedGoalIds([])
+      setDraft(EMPTY_MEMBERSHIP_DRAFT)
       setSearch("")
+      setConflict(null)
       onOpenChange(false)
     },
     onError: (error) => {
-      toast.error(
-        error instanceof ApiError
-          ? error.message
-          : t("goals.toasts.actionError")
-      )
+      const details = error instanceof ApiError ? error.details : undefined
+      const stale = projectMembershipStaleDetails(details)
+      const lastMembership = projectLastMembershipDetails(details)
+      const slotGoalIds = projectSlotConflictGoalIds(details)
+      if (stale) {
+        setConflict({
+          kind: "stale",
+          message: stale.message,
+          currentGoalIds: stale.currentGoalIds,
+        })
+        // Names of goals added elsewhere resolve from the refreshed goal list.
+        void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+      } else if (lastMembership) {
+        setConflict({
+          kind: "lastMembership",
+          message: lastMembership.message,
+          goalIds: lastMembership.blockedGoalIds,
+        })
+      } else if (slotGoalIds) {
+        setConflict({
+          kind: "slot",
+          message: (error as ApiError).message,
+          goalIds: slotGoalIds,
+        })
+      } else {
+        toast.error(
+          error instanceof ApiError
+            ? error.message
+            : t("goals.toasts.actionError")
+        )
+      }
     },
   })
+
+  // Adopts the membership the server reported as current, keeping the draft's intent, so the user can
+  // review the combined result and save again.
+  const refreshMembership = () => {
+    if (conflict?.kind !== "stale") return
+    const ids = conflict.currentGoalIds
+    setBaseline(ids)
+    setDraft((current) => reconcileDraft(current, ids))
+    setConflict(null)
+    void invalidate()
+  }
+
+  const conflictGoalIds = new Set(
+    conflict && conflict.kind !== "stale" ? conflict.goalIds : []
+  )
+  const pendingCount = draft.adds.length + draft.removes.length
+
+  const renderRow = (goal: RowGoal) => {
+    const isMember = baselineSet.has(goal.goalId)
+    const inDesiredSet = isInDesiredSet(baselineSet, draft, goal.goalId)
+    const marked =
+      conflict?.kind !== "stale" && conflictGoalIds.has(goal.goalId)
+    return (
+      <MembershipGoalRow
+        blockedReason={blockedReason(goal, inDesiredSet)}
+        checked={inDesiredSet}
+        conflictMessage={
+          !marked
+            ? null
+            : conflict?.kind === "lastMembership"
+              ? t("goals.project.assemblyLastMembership")
+              : t("goals.project.assemblySlotConflict", {
+                  project: project.name,
+                })
+        }
+        disabled={baseline === null}
+        globalPriority={goal.globalPriority}
+        goalId={goal.goalId}
+        isMember={isMember}
+        key={goal.goalId}
+        onToggle={() => {
+          setDraft((current) => toggleGoal(current, goal.goalId, isMember))
+          setConflict((current) => (current?.kind === "stale" ? current : null))
+        }}
+        pending={
+          draft.adds.includes(goal.goalId)
+            ? "add"
+            : draft.removes.includes(goal.goalId)
+              ? "remove"
+              : null
+        }
+        title={goalTitle(goal)}
+      />
+    )
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -293,80 +357,89 @@ export function AddGoalsToProjectSheet({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
+          <div
+            aria-label={t("goals.filters.groupByLabel")}
+            className="flex flex-wrap gap-1"
+            role="group"
+          >
+            {GROUP_OPTIONS.map((option) => (
+              <Button
+                aria-pressed={group === option}
+                data-testid={`add-goals-group-${option}`}
+                key={option}
+                onClick={() => setGroup(option)}
+                size="sm"
+                variant={group === option ? "secondary" : "outline"}
+              >
+                {option === "none"
+                  ? t("goals.filters.groupNone")
+                  : option === "unit"
+                    ? t("goals.filters.groupByUnit")
+                    : t("goals.filters.groupByType")}
+              </Button>
+            ))}
+          </div>
 
-          {visibleGoals.length === 0 ? (
+          {conflict ? (
+            <MembershipConflictBanner
+              baselineIds={baselineIds}
+              conflict={conflict}
+              goalName={goalName}
+              onRefresh={refreshMembership}
+            />
+          ) : null}
+
+          {baseline === null ? (
+            <div className="flex justify-center py-6">
+              <Spinner />
+            </div>
+          ) : groups.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
               {t("goals.project.addGoalsEmpty")}
             </p>
           ) : (
-            <ul className="grid gap-1">
-              {visibleGoals.map((goal) => {
-                const isMember = memberIds.has(goal.goalId)
-                const blocked = blockedReason(goal)
-                return (
-                  <li
-                    className="grid gap-1 rounded-xl border p-2"
-                    data-testid={`add-goals-row-${goal.goalId}`}
-                    key={goal.goalId}
-                  >
-                    <label className="flex items-center gap-2 text-sm">
-                      <Checkbox
-                        checked={
-                          isMember || selectedGoalIds.includes(goal.goalId)
-                        }
-                        data-testid={`add-goals-check-${goal.goalId}`}
-                        disabled={isMember || blocked !== null}
-                        onCheckedChange={(checked) =>
-                          setSelectedGoalIds((current) =>
-                            checked === true
-                              ? [...current, goal.goalId]
-                              : current.filter((id) => id !== goal.goalId)
-                          )
-                        }
-                      />
-                      <span className="min-w-0 flex-1 truncate">
-                        {goalLabel(goal)} ·{" "}
-                        {t(
-                          `goals.create.goalTypes.${goal.goalType as GoalKind}`
-                        )}
-                        {goal.goalType === "Rank" && rankTargetLabel(goal)
-                          ? ` · ${rankTargetLabel(goal)}`
-                          : ""}
-                      </span>
-                      {isMember ? (
-                        <Badge
-                          data-testid={`add-goals-member-${goal.goalId}`}
-                          variant="secondary"
-                        >
-                          {t("goals.project.addGoalsMember")}
-                        </Badge>
-                      ) : null}
-                    </label>
-                    {blocked ? (
-                      <p
-                        className="text-xs text-destructive"
-                        data-testid={`add-goals-blocked-${goal.goalId}`}
-                      >
-                        {blocked}
-                      </p>
-                    ) : null}
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="grid gap-3">
+              {groups.map((entry) => (
+                <section
+                  className="grid gap-1"
+                  data-testid={`add-goals-group-section-${entry.key}`}
+                  key={entry.key}
+                >
+                  {entry.heading ? (
+                    <h3 className="px-1 text-xs font-medium text-muted-foreground uppercase">
+                      {entry.heading}
+                    </h3>
+                  ) : null}
+                  <ul className="grid gap-1">{entry.rows.map(renderRow)}</ul>
+                </section>
+              ))}
+            </div>
           )}
         </div>
 
-        <SheetFooter>
+        <SheetFooter className="sticky bottom-0 border-t bg-background">
+          <MembershipReview draft={draft} goalName={goalName} />
           <Button
             data-testid="add-goals-save"
             disabled={
-              selectedGoalIds.length === 0 || save.isPending || rankKeysPending
+              baseline === null ||
+              pendingCount === 0 ||
+              save.isPending ||
+              rankKeysPending ||
+              conflict?.kind === "stale"
             }
-            onClick={() => save.mutate()}
+            onClick={() =>
+              baseline &&
+              save.mutate({
+                desired: desiredIds,
+                expected: baseline,
+                added: draft.adds.length,
+                removed: draft.removes.length,
+              })
+            }
           >
             {save.isPending ? <Spinner /> : null}
-            {t("goals.project.addGoalsSave", { count: selectedGoalIds.length })}
+            {t("goals.project.assemblySave", { count: pendingCount })}
           </Button>
         </SheetFooter>
       </SheetContent>

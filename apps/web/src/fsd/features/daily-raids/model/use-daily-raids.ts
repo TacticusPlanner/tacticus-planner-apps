@@ -33,7 +33,6 @@ import {
 
 import { goalQueries, type GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
-import { projectQueries } from "@/entities/project"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   mapCampaignBattleStorageToDomain,
@@ -55,15 +54,20 @@ import {
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
+import { useScopedGoalPlan } from "./use-scoped-goal-plan"
 import { campaignLocationLabels } from "./daily-raids.domain"
 import type {
   DailyRaidResourceLabels,
   DailyRaidsViewModel,
 } from "./daily-raids.domain"
 
-export function useDailyRaids(
-  projectId: string | undefined
-): DailyRaidsViewModel {
+/**
+ * Today, Bonus Raids and Raids Plan: one run over every Active goal in global order
+ * (`useGlobalGoalPlan`), sharing inventory, energy and attempt caps once. `projectId` optionally
+ * narrows the run to that project's goals (still in global order); without it the run covers the
+ * whole account.
+ */
+export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const {
     name: campaignDisplayName,
@@ -71,11 +75,8 @@ export function useDailyRaids(
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
-  const membersQuery = useQuery({
-    ...projectQueries.goals(projectId ?? "unselected"),
-    enabled: Boolean(isAuthenticated && projectId),
-  })
-  const activeMembers = activeProjectMembers(membersQuery.data?.goals ?? [])
+  const globalPlan = useScopedGoalPlan(projectId)
+  const activeMembers = activeProjectMembers(globalPlan.entries)
   const detailQueries = useQueries({
     queries: activeMembers.map((member) =>
       goalQueries.detail(member.goal.goalId)
@@ -293,16 +294,15 @@ export function useDailyRaids(
     [liveProgressResult, battleAttemptIndex]
   )
 
-  if (!projectId) return { status: "no-project" }
   if (
-    membersQuery.isError ||
+    globalPlan.isError ||
     detailQueries.some((query) => query.isError) ||
     onslaughtProgressQuery.isError
   ) {
     return { status: "error" }
   }
   const ready =
-    membersQuery.isSuccess &&
+    !globalPlan.loading &&
     detailQueries.every((query) => query.isSuccess) &&
     charactersById &&
     mowsById &&
@@ -321,9 +321,10 @@ export function useDailyRaids(
     playerState &&
     !settingsLoading
   if (!ready) return { status: "loading" }
+  if (activeMembers.length === 0) return { status: "no-goals" }
 
   const result = calculateDailyRaids({
-    members: membersQuery.data.goals,
+    members: globalPlan.entries,
     details,
     ...playerState,
     inventoryUpgrades,

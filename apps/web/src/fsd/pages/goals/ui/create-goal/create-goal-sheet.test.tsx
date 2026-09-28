@@ -308,12 +308,25 @@ vi.mock("@workspace/player-data/queries", () => ({
 const createCombinedGoals = vi.fn()
 const createGoal = vi.fn()
 const listProjects = vi.fn()
+const createProject = vi.fn()
 const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
   createGoal: (...args: unknown[]) => createGoal(...args),
+  // The account's Active goals in global order, which the new goal's duration estimate folds in
+  // behind — empty by default (the per-goal engine itself is covered by per-project-estimate.test.ts).
+  useGlobalGoalPlan: () => ({
+    inFlight: [],
+    active: [],
+    entries: [],
+    goals: [],
+    orderRevision: 0,
+    loading: false,
+    isError: false,
+    retry: vi.fn(),
+  }),
   // Backs useGoalTypeConflicts' active/paused-goal lookup — empty by default (no test here asserts
   // on the same-kind-goal-exists disable message, that's covered by use-goal-type-conflicts.test.ts).
   goalQueries: {
@@ -333,10 +346,10 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   listProjects: (...args: unknown[]) => listProjects(...args),
+  createProject: (...args: unknown[]) => createProject(...args),
   projectQueries: {
-    // Backs use-per-project-estimates.ts's per-project member lookup — empty by default (no test
-    // here asserts on the per-project duration preview itself, that's covered by
-    // per-project-estimate.test.ts), which also keeps it from ever needing goalQueries.detail.
+    all: () => ["projects"],
+    // Backs the goal-projects lookup — empty by default.
     goals: (projectId: string) => ({
       queryKey: ["projects", "detail", projectId, "goals"],
       queryFn: () => Promise.resolve({ goals: [] }),
@@ -375,6 +388,7 @@ describe("CreateGoalSheet", () => {
     createCombinedGoals.mockReset()
     listProjects.mockReset()
     listProjects.mockResolvedValue({ projects: [] })
+    createProject.mockReset()
     listGoals.mockReset()
     listGoals.mockResolvedValue({ goals: [] })
 
@@ -485,14 +499,18 @@ describe("CreateGoalSheet", () => {
       <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
     )
 
-    await vi.waitFor(() => {
-      expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
-    })
+    // A finished goal's form is cleared (only project/type context is remembered), so a unit must be
+    // picked again before submitting.
+    expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
     expect(
       screen
         .getByTestId("create-goal-submit")
         .querySelector('[data-slot="spinner"]')
     ).toBeNull()
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+    })
   })
 
   it("shows a Rank target's required level, XP gap, and books/gold cost on the goal, and creates no Level goal", async () => {
@@ -642,7 +660,6 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
           status: "Active",
         },
@@ -665,7 +682,6 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
         },
       ],
@@ -1658,14 +1674,12 @@ describe("CreateGoalSheet", () => {
         {
           projectId: "proj-1",
           name: "My Goals",
-          isActivePlan: true,
           isDefault: true,
           status: "Active",
         },
         {
           projectId: "proj-2",
           name: "Event Prep",
-          isActivePlan: false,
           isDefault: false,
           status: "Active",
         },
@@ -1691,5 +1705,336 @@ describe("CreateGoalSheet", () => {
       { projectId: "proj-1" },
       { projectId: "proj-2" },
     ])
+  })
+
+  describe("consecutive-creation context", () => {
+    const twoProjects = {
+      projects: [
+        {
+          projectId: "proj-1",
+          name: "My Goals",
+          isDefault: true,
+          status: "Active",
+        },
+        {
+          projectId: "proj-2",
+          name: "Event Prep",
+          isDefault: false,
+          status: "Active",
+        },
+      ],
+    }
+
+    // Picks hero1, turns Rank on, adds Event Prep and submits (optionally with "Create another").
+    async function createRankGoalInBothProjects(createAnother: boolean) {
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Rank")
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.click(await screen.findByText("Event Prep"))
+      if (createAnother) {
+        fireEvent.click(screen.getByLabelText("goals.create.createAnother"))
+      }
+      fireEvent.click(screen.getByTestId("create-goal-start-paused-checkbox"))
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+    }
+
+    beforeEach(() => {
+      listProjects.mockResolvedValue(twoProjects)
+      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    })
+
+    it("offers the last projects and goal type again after 'create another', without the old targets or start-paused", async () => {
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(true)
+      expect(createCombinedGoals.mock.calls[0][0].startPaused).toBe(true)
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+        ).toHaveTextContent("goals.create.unitPlaceholder")
+      })
+
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeChecked()
+        // The unit resolving as owned (no auto-suggested Unlock goal) is what disables this toggle.
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Unlock")
+        ).toBeDisabled()
+      })
+      // Offered again, and still editable chips.
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-1")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-start-paused-checkbox")
+      ).not.toBeChecked()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(2)
+      })
+      const [request] = createCombinedGoals.mock.calls[1]
+      expect(request.projects).toEqual([
+        { projectId: "proj-1" },
+        { projectId: "proj-2" },
+      ])
+      expect(request.startPaused).toBeUndefined()
+      // Targets are recomputed from the unit (Stone1 -> Stone2 default), not carried over.
+      expect(request.goals).toHaveLength(1)
+      expect(request.goals[0].config.rank).toMatchObject({ start: 0, end: 1 })
+    })
+
+    it("offers the last projects and goal type again when the sheet is reopened after a completed goal", async () => {
+      const onOpenChange = vi.fn()
+      const { rerender } = render(
+        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(false)
+      await vi.waitFor(() => {
+        expect(onOpenChange).toHaveBeenCalledWith(false)
+      })
+
+      rerender(
+        <CreateGoalSheet
+          open={false}
+          onOpenChange={onOpenChange}
+          onCreated={vi.fn()}
+        />
+      )
+      rerender(
+        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeChecked()
+      })
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-1")
+      ).toBeInTheDocument()
+    })
+
+    it("lets an explicit project-scoped prefill win over the remembered projects", async () => {
+      const onOpenChange = vi.fn()
+      const { rerender } = render(
+        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(false)
+      await vi.waitFor(() => {
+        expect(onOpenChange).toHaveBeenCalledWith(false)
+      })
+      rerender(
+        <CreateGoalSheet
+          open={false}
+          onOpenChange={onOpenChange}
+          onCreated={vi.fn()}
+        />
+      )
+      // The launch from Project Detail (or a global entry point used on its route) sends this.
+      rerender(
+        <CreateGoalSheet
+          open
+          onOpenChange={onOpenChange}
+          onCreated={vi.fn()}
+          prefill={{ projectIds: ["proj-2"] }}
+        />
+      )
+
+      await selectCharacter()
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-1")
+      ).not.toBeInTheDocument()
+    })
+
+    it("leaves a remembered Rank unselected for a Machine of War and carries no invalid target", async () => {
+      getPlayerMow.mockResolvedValue({
+        progressionIndex: "Common:None",
+        abilities: [],
+        appliedUpgradeSlots: [],
+      })
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await createRankGoalInBothProjects(true)
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+        ).toHaveTextContent("goals.create.unitPlaceholder")
+      })
+
+      await selectMow()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Ability")
+        ).toBeInTheDocument()
+      })
+      expect(
+        screen.queryByTestId("create-goal-type-toggle-Rank")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ability")
+      ).not.toBeChecked()
+      expect(
+        screen.queryByTestId("create-goal-type-card-Rank")
+      ).not.toBeInTheDocument()
+      expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+    })
+
+    it("keeps the draft when creation fails", async () => {
+      createCombinedGoals.mockRejectedValue(new Error("boom"))
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Rank")
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.click(await screen.findByText("Event Prep"))
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-error")).toBeInTheDocument()
+      })
+      // The unit, goal type and projects are exactly as the user left them.
+      expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeChecked()
+      expect(
+        screen.getByTestId("create-goal-project-chip-proj-2")
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe("inline project creation", () => {
+    const projects = [
+      {
+        projectId: "proj-1",
+        name: "My Goals",
+        isDefault: true,
+        status: "Active",
+      },
+    ]
+
+    async function openPickerAndType(text: string) {
+      fireEvent.click(await screen.findByTestId("create-goal-add-project"))
+      fireEvent.change(
+        await screen.findByPlaceholderText("goals.project.searchProjects"),
+        { target: { value: text } }
+      )
+    }
+
+    it("creates and selects a project without submitting the goal, then submits with it", async () => {
+      listProjects.mockResolvedValue({ projects })
+      // Like the server, a created project shows up in the refreshed list.
+      createProject.mockImplementation((request: { name: string }) => {
+        const created = {
+          projectId: "proj-new",
+          name: request.name,
+          isDefault: false,
+          status: "Active",
+        }
+        listProjects.mockResolvedValue({ projects: [...projects, created] })
+        return Promise.resolve(created)
+      })
+      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await openPickerAndType("Brand new")
+      // Typing alone creates nothing.
+      expect(createProject).not.toHaveBeenCalled()
+      fireEvent.click(await screen.findByTestId("create-goal-create-project"))
+
+      expect(
+        await screen.findByTestId("create-goal-project-chip-proj-new")
+      ).toBeInTheDocument()
+      expect(createProject).toHaveBeenCalledExactlyOnceWith({
+        name: "Brand new",
+        description: null,
+        color: null,
+      })
+      // The goal draft is intact and nothing was submitted.
+      expect(createCombinedGoals).not.toHaveBeenCalled()
+      expect(screen.getByTestId("create-goal-type-toggle-Rank")).toBeVisible()
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      const [request] = createCombinedGoals.mock.calls[0]
+      expect(request.projects).toEqual([
+        { projectId: "proj-1" },
+        { projectId: "proj-new" },
+      ])
+    })
+
+    it("keeps the draft and typed name on failure and offers no Create for an existing name", async () => {
+      listProjects.mockResolvedValue({ projects })
+      createProject.mockRejectedValueOnce(new Error("offline"))
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await openPickerAndType("my goals")
+      expect(
+        screen.queryByTestId("create-goal-create-project")
+      ).not.toBeInTheDocument()
+
+      fireEvent.change(
+        screen.getByPlaceholderText("goals.project.searchProjects"),
+        { target: { value: "Brand new" } }
+      )
+      fireEvent.click(await screen.findByTestId("create-goal-create-project"))
+
+      expect(
+        await screen.findByTestId("create-goal-create-project-error")
+      ).toHaveTextContent("goals.project.createFailed")
+      expect(
+        screen.getByPlaceholderText("goals.project.searchProjects")
+      ).toHaveValue("Brand new")
+      expect(
+        screen.queryByTestId("create-goal-project-chip-proj-new")
+      ).not.toBeInTheDocument()
+      expect(createCombinedGoals).not.toHaveBeenCalled()
+    })
   })
 })

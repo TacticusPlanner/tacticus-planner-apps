@@ -62,7 +62,9 @@ export function GoalTargetSection({
       </p>
     ) : target.refreshState === "failed" ? (
       <div className="grid justify-items-start gap-2" role="alert">
-        <p className="text-amber-700">{t("goals.target.planningStale")}</p>
+        <p className="text-amber-800 dark:text-amber-400">
+          {t("goals.target.planningStale")}
+        </p>
         <Button onClick={target.retryRefresh} size="xs" variant="outline">
           {t("goals.target.retryRefresh")}
         </Button>

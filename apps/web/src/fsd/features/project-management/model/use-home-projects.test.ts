@@ -44,7 +44,6 @@ function project(overrides: Record<string, unknown>) {
     color: null,
     description: null,
     status: "Active",
-    isActivePlan: false,
     isDefault: false,
     revision: 1,
     createdAt: "2026-01-01T00:00:00Z",
@@ -66,7 +65,7 @@ describe("useHomeProjects", () => {
   it("shows all projects with no cap when 3 or fewer exist", async () => {
     useProjectsMock.mockReturnValue({
       projects: [
-        project({ projectId: "p1", isActivePlan: true }),
+        project({ projectId: "p1", isDefault: true }),
         project({ projectId: "p2" }),
       ],
       fetchState: { status: "success" },
@@ -86,11 +85,11 @@ describe("useHomeProjects", () => {
     expect(result.current.remainingCount).toBe(0)
   })
 
-  it("caps to 3 projects (Current plan first) and reports the remaining count", async () => {
+  it("caps to 3 projects (Default first) and reports the remaining count", async () => {
     useProjectsMock.mockReturnValue({
       projects: [
         project({ projectId: "p2" }),
-        project({ projectId: "p1", isActivePlan: true }),
+        project({ projectId: "p1", isDefault: true }),
         project({ projectId: "p3" }),
         project({ projectId: "p4" }),
         project({ projectId: "p5" }),
@@ -116,7 +115,7 @@ describe("useHomeProjects", () => {
     useProjectsMock.mockReturnValue({
       projects: [
         project({ projectId: "p2" }),
-        project({ projectId: "p1", isActivePlan: true }),
+        project({ projectId: "p1", isDefault: true }),
         project({ projectId: "p3" }),
         project({ projectId: "p4" }),
         project({ projectId: "p5" }),
@@ -138,7 +137,7 @@ describe("useHomeProjects", () => {
     expect(result.current.remainingCount).toBe(0)
   })
 
-  it("has no Current plan set", async () => {
+  it("keeps the existing order when no project is the Default", async () => {
     useProjectsMock.mockReturnValue({
       projects: [project({ projectId: "p1" }), project({ projectId: "p2" })],
       fetchState: { status: "success" },
@@ -160,7 +159,7 @@ describe("useHomeProjects", () => {
   it("excludes archived projects", async () => {
     useProjectsMock.mockReturnValue({
       projects: [
-        project({ projectId: "p1", isActivePlan: true }),
+        project({ projectId: "p1", isDefault: true }),
         project({ projectId: "p2", status: "Archived" }),
       ],
       fetchState: { status: "success" },

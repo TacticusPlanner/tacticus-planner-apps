@@ -125,14 +125,15 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     dependsOn: [],
     projectIds: ["project-1"],
     revision: 1,
+    globalPriority: 1,
     ...overrides,
   }
 }
 
 function member(status: string, priority: number): ProjectGoalSummary {
   return {
-    priority,
     goal: {
+      globalPriority: priority,
       goalId: `${status}-${priority}`,
       entityType: "Character",
       entityId: "hero1",
@@ -556,6 +557,38 @@ describe("daily raid derivation", () => {
     expect(candidates).toEqual([])
   })
 
+  it("orders interleaved Character and Machine-of-War goals by global priority alone (RAID-004)", () => {
+    const entry = (
+      goalId: string,
+      entityType: string,
+      globalPriority: number,
+      status = "Active"
+    ): ProjectGoalSummary => ({
+      goal: {
+        ...member("Active", 1).goal,
+        goalId,
+        entityType,
+        globalPriority,
+        status,
+      },
+    })
+
+    const result = activeProjectMembers([
+      entry("mow-late", "Mow", 4),
+      entry("char-first", "Character", 1),
+      entry("mow-paused", "Mow", 2, "Paused"),
+      entry("char-third", "Character", 3),
+    ])
+
+    // No unit-type weighting: the Character goal ahead of the Machine of War stays ahead, the Paused
+    // goal keeps its slot only for display and is left out of the run.
+    expect(result.map((item) => item.goal.goalId)).toEqual([
+      "char-first",
+      "char-third",
+      "mow-late",
+    ])
+  })
+
   it("keeps only Active members and preserves project priority order", () => {
     const result = activeProjectMembers([
       member("Paused", 0),
@@ -565,7 +598,7 @@ describe("daily raid derivation", () => {
       member("Active", 3),
     ])
 
-    expect(result.map((entry) => entry.priority)).toEqual([3, 8])
+    expect(result.map((entry) => entry.goal.globalPriority)).toEqual([3, 8])
     expect(result.every((entry) => entry.goal.status === "Active")).toBe(true)
   })
 
@@ -614,7 +647,7 @@ describe("daily raid derivation", () => {
     ])
 
     const result = calculateDailyRaids({
-      members: [{ priority: 1, goal: detail }],
+      members: [{ goal: { ...detail, globalPriority: 1 } }],
       details: [detail],
       playerCharacterById: new Map(),
       playerMowById: new Map(),
@@ -683,7 +716,7 @@ describe("daily raid derivation", () => {
     ])
 
     const result = calculateDailyRaids({
-      members: [{ priority: 1, goal: detail }],
+      members: [{ goal: { ...detail, globalPriority: 1 } }],
       details: [detail],
       playerCharacterById: new Map([[heroId, { unitId: heroId } as never]]),
       playerMowById: new Map(),
@@ -816,7 +849,7 @@ describe("daily raid derivation", () => {
     })
     const campaignOnly = calculateDailyRaids({
       ...baseInput,
-      members: [{ priority: 1, goal: detail }],
+      members: [{ goal: { ...detail, globalPriority: 1 } }],
       details: [detail],
     })
 
@@ -838,7 +871,7 @@ describe("daily raid derivation", () => {
     })
     const withShop = calculateDailyRaids({
       ...baseInput,
-      members: [{ priority: 1, goal: detailWithShop }],
+      members: [{ goal: { ...detailWithShop, globalPriority: 1 } }],
       details: [detailWithShop],
       shops,
     })
@@ -867,7 +900,7 @@ describe("daily raid derivation", () => {
 
     expect(
       calculateDailyRaids({
-        members: [{ priority: 1, goal: detail }],
+        members: [{ goal: { ...detail, globalPriority: 1 } }],
         details: [detail],
         playerCharacterById: new Map(),
         playerMowById: new Map(),
@@ -965,8 +998,7 @@ describe("daily raid derivation", () => {
 
     const result = calculateDailyRaids({
       members: details.map((detail, index) => ({
-        priority: index + 1,
-        goal: detail,
+        goal: { ...detail, globalPriority: index + 1 },
       })),
       details,
       playerCharacterById: new Map(),
@@ -1071,8 +1103,7 @@ describe("daily raid derivation", () => {
 
     const result = calculateDailyRaids({
       members: details.map((detail, index) => ({
-        priority: index + 1,
-        goal: detail,
+        goal: { ...detail, globalPriority: index + 1 },
       })),
       details,
       playerCharacterById: new Map(),

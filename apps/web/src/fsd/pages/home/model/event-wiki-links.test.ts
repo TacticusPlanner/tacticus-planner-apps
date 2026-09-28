@@ -5,7 +5,7 @@ import { resolveEventWikiUrl } from "./event-wiki-links"
 describe("resolveEventWikiUrl", () => {
   it("returns a wiki URL for a definition with a known article", () => {
     expect(resolveEventWikiUrl("battle-pass")).toBe(
-      "https://tacticus.fandom.com/wiki/BattlePass"
+      "https://tacticus.wiki.gg/wiki/BattlePass"
     )
   })
 
@@ -19,7 +19,7 @@ describe("resolveEventWikiUrl", () => {
     ].map(resolveEventWikiUrl)
 
     expect(new Set(urls).size).toBe(1)
-    expect(urls[0]).toBe("https://tacticus.fandom.com/wiki/Tournament_Arena")
+    expect(urls[0]).toBe("https://tacticus.wiki.gg/wiki/Tournament_Arena")
   })
 
   it("returns undefined for a definition without a wiki article", () => {
@@ -59,7 +59,7 @@ describe("resolveEventWikiUrl", () => {
       "https://tacticus.wiki.gg/wiki/Machine_Hunt"
     )
     expect(resolveEventWikiUrl("always-double-xp-sunday")).toBe(
-      "https://tacticus.fandom.com/wiki/HDTW_XP"
+      "https://tacticus.wiki.gg/wiki/HDTW_XP"
     )
   })
 })

@@ -5,6 +5,7 @@ import type { CampaignInsight } from "@/features/campaign-insights"
 import type {
   EstimateOutcome,
   EstimateResourceId,
+  RankSlotAllocation,
 } from "@/features/goal-farming"
 
 // Input/output shapes for the Insights view's plan-wide aggregation (plan-insights-calc.ts), kept
@@ -30,6 +31,10 @@ export interface PlanInsightsResult {
   onslaughtDays: number
   estimates: ReadonlyMap<string, EstimateOutcome>
   potentialProgressByGoalId: Map<string, number>
+  /** Each Rank goal's upgrade slots as allocated in the one plan (`allocated`: net of applied slots and
+   *  slots a higher-priority goal for the same character already claimed) beside the goal's own
+   *  `standalone` count — `allocated` 0 with `standalone` above 0 means an earlier goal covers it. */
+  rankSlotsByGoalId: Map<string, RankSlotAllocation>
   /** Potential progress of each Rank/Ability goal's *level requirement* from owned XP books, keyed by
    *  that goal's id — separate from `potentialProgressByGoalId`, which is the same goal's material
    *  Potential. */
@@ -59,6 +64,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   onslaughtDays: 0,
   estimates: new Map(),
   potentialProgressByGoalId: new Map(),
+  rankSlotsByGoalId: new Map(),
   levelPotentialProgressByGoalId: new Map(),
   completionDate: null,
   unestimatedGoalCount: 0,

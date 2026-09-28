@@ -14,6 +14,7 @@ import {
   NewProjectFab,
   ProjectList,
   type ProjectCardSummary,
+  orderDefaultFirst,
   useProjectActions,
 } from "@/features/project-management"
 import {
@@ -46,10 +47,8 @@ export function ProjectsListPage() {
     undefined
   )
   const projectActions = useProjectActions()
-  const current = projects.projects.find((project) => project.isActivePlan)
-  const available = projects.projects.filter(
-    (project) => !project.isActivePlan && project.status !== "Archived"
-  )
+  const defaultProject = projects.projects.find((project) => project.isDefault)
+  const available = orderDefaultFirst(projects.projects)
   const archived = projects.projects.filter(
     (project) => project.status === "Archived"
   )
@@ -61,22 +60,23 @@ export function ProjectsListPage() {
       projectQueries.goals(project.projectId)
     ),
   })
-  const currentIndex = current
+  const defaultIndex = defaultProject
     ? summaryProjects.findIndex(
-        (project) => project.projectId === current.projectId
+        (project) => project.projectId === defaultProject.projectId
       )
     : -1
-  const currentGoals =
-    currentIndex >= 0 ? (summaryQueries[currentIndex]?.data?.goals ?? []) : []
-  const currentGoalIds = currentGoals.map((entry) => entry.goal.goalId)
-  const currentAttainment = useGoalAttainment(currentGoalIds)
-  const { result: currentInsights } = usePlanInsights(
-    current?.projectId,
-    currentGoals
+  const defaultGoals =
+    defaultIndex >= 0 ? (summaryQueries[defaultIndex]?.data?.goals ?? []) : []
+  const defaultGoalIds = defaultGoals.map((entry) => entry.goal.goalId)
+  const defaultAttainment = useGoalAttainment(defaultGoalIds)
+  // The Default project's numbers are its goals' outcomes from the one global run, not a project-only plan.
+  // An empty scope (no Default project, or its goals not loaded yet) skips the run's fan-out.
+  const { result: defaultInsights } = usePlanInsights(
+    defaultProject ? defaultGoalIds : []
   )
-  const currentMetrics = useGoalsOverviewMetrics(
-    currentGoalIds,
-    currentInsights.estimates
+  const defaultMetrics = useGoalsOverviewMetrics(
+    defaultGoalIds,
+    defaultInsights.estimates
   )
   const summaries = new Map<string, ProjectCardSummary>()
   summaryProjects.forEach((project, index) => {
@@ -105,17 +105,17 @@ export function ProjectsListPage() {
       status: "success",
       units,
       goals: members.length,
-      ...(project.isActivePlan
+      ...(project.isDefault
         ? {
             reached: members.filter(
-              (entry) => currentAttainment.get(entry.goal.goalId)?.reached
+              (entry) => defaultAttainment.get(entry.goal.goalId)?.reached
             ).length,
             blocked: members.filter(
               (entry) =>
-                currentMetrics.get(entry.goal.goalId)?.blockers.isBlocked
+                defaultMetrics.get(entry.goal.goalId)?.blockers.isBlocked
             ).length,
-            completionDate: currentInsights.completionDate,
-            unestimatedGoalCount: currentInsights.unestimatedGoalCount,
+            completionDate: defaultInsights.completionDate,
+            unestimatedGoalCount: defaultInsights.unestimatedGoalCount,
           }
         : {}),
     })
@@ -130,7 +130,7 @@ export function ProjectsListPage() {
     setSheetOpen(true)
   }
   const openProjectDetail = (project: ProjectSummary) => {
-    void navigate(`/goals/projects/${project.projectId}`)
+    void navigate(`/plan/projects/${project.projectId}`)
   }
 
   return (
@@ -147,44 +147,13 @@ export function ProjectsListPage() {
           >
             {t("goals.project.dashboardIntro")}
           </p>
-          {current ? (
-            <section className="grid gap-3">
-              <h2 className="text-lg font-semibold">
-                {t("goals.project.currentPlan")}
-              </h2>
-              <p
-                className="text-sm text-muted-foreground"
-                data-testid="projects-page-current-plan-note"
-              >
-                {t("goals.project.currentPlanNote")}
-              </p>
-              <ProjectList
-                actions={projectActions}
-                onEdit={openEditProject}
-                onSelect={openProjectDetail}
-                projects={[current]}
-                summaries={summaries}
-              />
-            </section>
-          ) : null}
-          <section className="grid gap-3">
-            <h2 className="text-lg font-semibold">
-              {t("goals.project.otherProjects")}
-            </h2>
-            {available.length > 0 ? (
-              <ProjectList
-                actions={projectActions}
-                onEdit={openEditProject}
-                onSelect={openProjectDetail}
-                projects={available}
-                summaries={summaries}
-              />
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {t("goals.project.noOtherProjects")}
-              </p>
-            )}
-          </section>
+          <ProjectList
+            actions={projectActions}
+            onEdit={openEditProject}
+            onSelect={openProjectDetail}
+            projects={available}
+            summaries={summaries}
+          />
           {archived.length > 0 ? (
             <details
               onToggle={(event) => setArchivedOpen(event.currentTarget.open)}

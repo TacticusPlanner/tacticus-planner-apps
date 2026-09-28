@@ -23,8 +23,18 @@ function setup() {
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>{children}</QueryClientProvider>
   )
-  return renderHook(() => useProjectSelection({ open: true }), { wrapper })
+  return {
+    ...renderHook(() => useProjectSelection({ open: true }), { wrapper }),
+    client,
+  }
 }
+
+const projectsResponse = (otherStatus = "Active") => ({
+  projects: [
+    { projectId: "default", isDefault: true, status: "Active" },
+    { projectId: "other", isDefault: false, status: otherStatus },
+  ],
+})
 
 describe("useProjectSelection", () => {
   it("falls back to the default project when a prefilled ID is not one of the account's projects", async () => {
@@ -54,5 +64,65 @@ describe("useProjectSelection", () => {
 
     await waitFor(() => expect(result.current.projects).toHaveLength(2))
     expect(result.current.selectedProjectIds).toEqual(["other"])
+  })
+
+  describe("remembered selection", () => {
+    async function rememberOther() {
+      listProjects.mockResolvedValue(projectsResponse())
+      const hook = setup()
+      act(() => hook.result.current.selectProjects(["other"]))
+      await waitFor(() => expect(hook.result.current.projects).toHaveLength(2))
+      act(() => {
+        hook.result.current.remember()
+        hook.result.current.reset()
+      })
+      return hook
+    }
+
+    it("offers the remembered projects after a reset", async () => {
+      const { result } = await rememberOther()
+
+      expect(result.current.selectedProjectIds).toEqual(["other"])
+    })
+
+    it("lets an explicit selection win over the remembered projects", async () => {
+      const { result } = await rememberOther()
+      act(() => result.current.selectProjects(["default"]))
+
+      expect(result.current.selectedProjectIds).toEqual(["default"])
+    })
+
+    it("falls back to the default project when the remembered one was archived", async () => {
+      const { result, client } = await rememberOther()
+      act(() => {
+        client.setQueryData(["projects", "list"], projectsResponse("Archived"))
+      })
+
+      await waitFor(() =>
+        expect(result.current.selectedProjectIds).toEqual(["default"])
+      )
+    })
+
+    it("falls back to the default project when the remembered one was removed", async () => {
+      const { result, client } = await rememberOther()
+      act(() => {
+        client.setQueryData(["projects", "list"], {
+          projects: [{ projectId: "default", isDefault: true }],
+        })
+      })
+
+      await waitFor(() =>
+        expect(result.current.selectedProjectIds).toEqual(["default"])
+      )
+    })
+
+    it("starts from the default project in a fresh session", async () => {
+      await rememberOther()
+      const { result } = setup()
+
+      await waitFor(() =>
+        expect(result.current.selectedProjectIds).toEqual(["default"])
+      )
+    })
   })
 })

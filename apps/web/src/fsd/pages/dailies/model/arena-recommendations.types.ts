@@ -72,11 +72,11 @@ export type BuildArenaRecommendationsInput = {
   /** Owned characters only. The caller guarantees at least `ARENA_MIN_TEAM_SIZE`. */
   roster: readonly ArenaRosterCharacter[]
   /** The project the player has selected to drive the Plan Team, or `undefined` when the player has
-   * no selectable project. Its active goals arrive in `activeProjectContributions`. */
+   * no selectable project. Its active goals arrive in `scopedGoalContributions`. */
   selectedProjectId: string | undefined
   /** Active-status character goals belonging to the selected project. Empty when there is no
    * selected project or it has no such goals. */
-  activeProjectContributions: readonly ArenaGoalContribution[]
+  scopedGoalContributions: readonly ArenaGoalContribution[]
   /** Every active-status character goal, across all projects. */
   activeGoalContributions: readonly ArenaGoalContribution[]
   /** The page-level requested team size (3–5) — applies to both the Plan Team and the Random Team. */

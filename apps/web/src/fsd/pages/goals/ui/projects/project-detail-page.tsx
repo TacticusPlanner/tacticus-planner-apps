@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { useNavigate, useParams } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useTranslation } from "react-i18next"
@@ -23,6 +23,12 @@ import {
   isGoalGroupValue,
   type GoalStatusFilterValue,
 } from "@/entities/goal"
+import {
+  MobileReorderBar,
+  OrderConflictBanner,
+  useGoalOrderActions,
+  useMobileReorderMode,
+} from "@/features/goal-order"
 import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
@@ -85,7 +91,12 @@ export function ProjectDetailPage() {
   const group = persistedGroup === "unit" ? "type" : persistedGroup
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
-  const [mobileReorderActive, setMobileReorderActive] = useState(false)
+  const {
+    active: reorderActive,
+    toggle: toggleReorder,
+    exit: exitReorder,
+    listRef,
+  } = useMobileReorderMode()
   const [addGoalsOpen, setAddGoalsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
   const launchCreateGoal = useCreateGoalLauncher()
@@ -93,7 +104,9 @@ export function ProjectDetailPage() {
   const projectGoals = useProjectGoals(projectId)
   const goalActions = useGoalActions()
   const projectActions = useProjectActions()
-  const { result: insights } = usePlanInsights(projectId, projectGoals.goals)
+  const { result: insights } = usePlanInsights(
+    projectGoals.goals.map((entry) => entry.goal.goalId)
+  )
 
   // Rows carry their goal's full membership, not just this project's: the row menu's project
   // removal needs to know whether leaving this project is the goal's last membership.
@@ -163,7 +176,8 @@ export function ProjectDetailPage() {
               )
   const overviewMetrics = useGoalsOverviewMetrics(
     candidateRows.map((row) => row.goalId),
-    insights.estimates
+    insights.estimates,
+    insights.rankSlotsByGoalId
   )
   // Unit count for the summary text ("N units, M goals") - not a full per-unit plan anymore, since
   // priority is flat per-goal, not unit-grouped (add-inline-goal-reprioritize).
@@ -206,9 +220,20 @@ export function ProjectDetailPage() {
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
       .length,
   }
-  const { handleReorder } = useProjectGoalReorder(projectGoals.goals, (ids) => {
-    if (project) void projectActions.reorderGoals(project.projectId, ids)
-  })
+  // A drop moves the goal within this project's projection and writes through to the global order.
+  const orderActions = useGoalOrderActions()
+  const { handleReorder } = useProjectGoalReorder(
+    projectGoals.goals,
+    (goalId, displacedGoalId) => {
+      if (project) {
+        void orderActions.moveGoal({
+          goalId,
+          displacedGoalId,
+          projectId: project.projectId,
+        })
+      }
+    }
+  )
   if (!projectId) return null
   // One handler for the header button, the three-dot menu and the Add Goals sheet: an explicit
   // project-only prefill, so the sheet never falls back to the default project from here.
@@ -249,17 +274,15 @@ export function ProjectDetailPage() {
         unestimatedGoalCount={insights.unestimatedGoalCount}
         goalCount={nonArchivedRows.length}
         isMobile={isMobile}
-        mobileReorderActive={mobileReorderActive}
+        mobileReorderActive={reorderActive}
         onAddGoals={() => setAddGoalsOpen(true)}
         onCreateGoal={handleCreateGoal}
         onEdit={() => setEditOpen(true)}
-        onNavigateBack={() => void navigate("/goals/projects")}
+        onNavigateBack={() => void navigate("/plan/projects")}
         onNavigateToProject={(nextId) =>
-          void navigate(`/goals/projects/${nextId}`)
+          void navigate(`/plan/projects/${nextId}`)
         }
-        onToggleMobileReorder={() =>
-          setMobileReorderActive((active) => !active)
-        }
+        onToggleMobileReorder={toggleReorder}
         project={project}
         projectActions={projectActions}
         projectId={projectId}
@@ -274,30 +297,56 @@ export function ProjectDetailPage() {
         statusFilterCounts={counts}
       />
 
-      <ProjectDetailGoals
-        actions={goalActions}
-        cascadeContext={cascadeContext}
-        reachedByGoalId={reachedByGoalId}
-        error={
-          projectGoals.fetchState.status === "error"
-            ? projectGoals.fetchState.message
-            : null
-        }
-        estimates={insights.estimates}
-        getEntityName={getEntityName}
-        loading={projectGoals.loading}
-        metrics={overviewMetrics}
-        mobileReorderActive={mobileReorderActive}
-        onReorder={handleReorder}
-        onView={setDetailGoalId}
-        potentialProgress={insights.potentialProgressByGoalId}
-        project={project}
-        projectIsEmpty={allRows.length === 0}
-        reorderEnabled={inFlightRows.length > 1}
-        levelPotentialProgress={insights.levelPotentialProgressByGoalId}
-        reorderPending={projectActions.pending}
-        rowGroups={rowGroups}
-      />
+      {inFlightRows.length > 1 ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="project-detail-order-note"
+        >
+          {t("goals.order.projectNote")}{" "}
+          <Link className="underline" to="/plan/goals">
+            {t("goals.order.openPlan")}
+          </Link>
+        </p>
+      ) : null}
+
+      {orderActions.conflict ? (
+        <OrderConflictBanner
+          onDismiss={orderActions.dismissConflict}
+          onRetry={() => void orderActions.retry()}
+          retrying={orderActions.pending}
+        />
+      ) : null}
+
+      {/* Entering the mobile reorder mode scrolls here and focuses it (useMobileReorderMode). */}
+      <div className="outline-none" ref={listRef} tabIndex={-1}>
+        <ProjectDetailGoals
+          actions={goalActions}
+          cascadeContext={cascadeContext}
+          reachedByGoalId={reachedByGoalId}
+          error={
+            projectGoals.fetchState.status === "error"
+              ? projectGoals.fetchState.message
+              : null
+          }
+          estimates={insights.estimates}
+          getEntityName={getEntityName}
+          loading={projectGoals.loading}
+          metrics={overviewMetrics}
+          mobileReorderActive={reorderActive}
+          onReorder={handleReorder}
+          onView={setDetailGoalId}
+          potentialProgress={insights.potentialProgressByGoalId}
+          project={project}
+          projectIsEmpty={allRows.length === 0}
+          reorderEnabled={inFlightRows.length > 1}
+          levelPotentialProgress={insights.levelPotentialProgressByGoalId}
+          reorderPending={orderActions.pending}
+          rowGroups={rowGroups}
+        />
+      </div>
+      {isMobile && reorderActive ? (
+        <MobileReorderBar onDone={exitReorder} pending={orderActions.pending} />
+      ) : null}
 
       <AddGoalsToProjectSheet
         onCreateGoal={handleCreateGoal}

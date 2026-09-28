@@ -1,6 +1,6 @@
 export { useProjectActions } from "./model/use-project-actions"
 export { useHomeProjects } from "./model/use-home-projects"
-export { orderCurrentPlanFirst } from "./model/order-current-plan-first"
+export { orderDefaultFirst } from "./model/order-default-first"
 export { AddGoalsToProjectSheet } from "./ui/add-goals-to-project-sheet"
 export { ManageProjectsSheet } from "./ui/manage-projects-sheet"
 export { NewProjectFab } from "./ui/new-project-fab"

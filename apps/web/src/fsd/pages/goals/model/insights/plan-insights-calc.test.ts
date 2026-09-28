@@ -42,6 +42,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     notes: null,
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z",
+    globalPriority: 1,
     config: {
       rank: null,
       progression: null,
@@ -166,6 +167,55 @@ describe("computePlanInsights", () => {
     expect(result.completionDate).not.toBeNull()
     expect(result.bottlenecks).toHaveLength(1)
     expect(result.bottlenecks[0]?.label).toBe("Material One")
+  })
+
+  it("allocates a Rank goal's slots once: a later, wholly covered target adds none but stays its own goal", () => {
+    const rankGoal = (goalId: string, end: number) =>
+      goalDetail({
+        goalId,
+        config: {
+          ...goalDetail({}).config,
+          rank: {
+            start: rankIndex(rankOrder[0]),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(rankOrder[end]!),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+        },
+      })
+    const far = rankGoal("far", 2)
+    const near = rankGoal("near", 1)
+
+    const covered = computePlanInsights({
+      ...baseParams,
+      details: [near, far],
+      priorityByGoalId: new Map([
+        ["far", 1],
+        ["near", 2],
+      ]),
+    })
+    const nearSlots = covered.rankSlotsByGoalId.get("near")
+    expect(covered.rankSlotsByGoalId.get("far")?.allocated).toBe(
+      covered.rankSlotsByGoalId.get("far")?.standalone
+    )
+    expect(nearSlots?.allocated).toBe(0)
+    expect(nearSlots?.standalone).toBeGreaterThan(0)
+
+    const inOrder = computePlanInsights({
+      ...baseParams,
+      details: [near, far],
+      priorityByGoalId: new Map([
+        ["near", 1],
+        ["far", 2],
+      ]),
+    })
+    const farSlots = inOrder.rankSlotsByGoalId.get("far")
+    expect(inOrder.rankSlotsByGoalId.get("near")?.allocated).toBe(
+      inOrder.rankSlotsByGoalId.get("near")?.standalone
+    )
+    expect(farSlots?.allocated).toBeLessThan(farSlots?.standalone ?? 0)
   })
 
   it("uses the shared crafted-inventory pool in goal priority order", () => {
@@ -1008,6 +1058,33 @@ describe("computePlanInsights", () => {
     expect(result.unestimatedGoalCount).toBe(1)
   })
 
+  it("waits for the plan's Onslaught tokens, not just the project's own, when scoped to a project", () => {
+    const tokenGoal = ascensionWithOnslaught(100_000)
+    const scoped = computePlanInsights({
+      ...baseParams,
+      ...tokenGoal,
+      details: [
+        ...tokenGoal.details,
+        goalDetail({ goalId: "goal-3", goalType: "Rank", config: rankConfig }),
+      ],
+      priorityByGoalId: new Map([
+        ["goal-1", 1],
+        ["goal-3", 2],
+      ]),
+      scopeGoalIds: new Set(["goal-3"]),
+      currentOnslaughtTokens: 0,
+    })
+
+    // The project's own goal needs no tokens, so it reports none ...
+    expect(scoped.onslaughtTokens).toBe(0)
+    expect(scoped.onslaughtDays).toBe(0)
+    // ... but the goal ranked above it in another project drains the account's token budget, so the
+    // project's date cannot precede the wait a whole-plan run would show.
+    const own = scoped.estimates.get("goal-3")
+    expect(own).toMatchObject({ status: "Estimated" })
+    expect(scoped.completionDate! > (own as { date: string }).date).toBe(true)
+  })
+
   it("still extends an existing date past every goal's own date on a shortfall", () => {
     // A generous shop offer clears the 100-shard need in days, while the same need implies ~29
     // Onslaught tokens the account does not hold - so the plan genuinely cannot finish until those
@@ -1062,5 +1139,92 @@ describe("computePlanInsights", () => {
     expect(result.unestimatedGoalCount).toBe(0)
     // Strictly later: this is the extension firing, not the goal's own date passing through.
     expect(result.completionDate! > goalDate!).toBe(true)
+  })
+
+  describe("scoped to a project's goals", () => {
+    const rankConfig = {
+      rank: {
+        start: rankIndex(rankOrder[0]),
+        startPointFive: false,
+        startAppliedUpgrades: 0,
+        end: rankIndex(rankOrder[1]),
+        endPointFive: false,
+        endAppliedUpgrades: 0,
+      },
+      progression: null,
+      ability: null,
+      farmingStrategy: "TotalUpgrades" as const,
+      acquisitionSources: null,
+      farmingLocationIds: null,
+      upgrade: null,
+    }
+    const params = {
+      ...baseParams,
+      charactersById: new Map([
+        ["hero-a", characterView],
+        ["hero-b", characterView],
+      ]),
+      getCharacter: (id: UnitId) => ({ ...character, id }),
+      // One raid a day: goal A (globally first) takes day 1, goal B day 2.
+      dailyEnergy: 10,
+    }
+    const details = [
+      goalDetail({ goalId: "a", entityId: "hero-a", config: rankConfig }),
+      goalDetail({ goalId: "b", entityId: "hero-b", config: rankConfig }),
+    ]
+    const priorityByGoalId = new Map([
+      ["a", 1],
+      ["b", 2],
+    ])
+
+    it("reports only the project's goals but keeps their place in the one global run", () => {
+      const whole = computePlanInsights({
+        ...params,
+        details,
+        priorityByGoalId,
+      })
+      const projectB = computePlanInsights({
+        ...params,
+        details,
+        priorityByGoalId,
+        scopeGoalIds: new Set(["b"]),
+      })
+      const alone = computePlanInsights({
+        ...params,
+        details: [details[1]!],
+        priorityByGoalId: new Map([["b", 1]]),
+      })
+
+      // The aggregates cover project B's goal only ...
+      expect(whole.totals.upgradesByRarity).toEqual({ Common: 2 })
+      expect(projectB.totals.upgradesByRarity).toEqual({ Common: 1 })
+      expect(projectB.unestimatedGoalCount).toBe(0)
+      // ... but B's outcome is the global run's: it waits behind A, which a project-only plan hides.
+      const inGlobalRun = projectB.estimates.get("b")
+      expect(inGlobalRun).toEqual(whole.estimates.get("b"))
+      const isolated = alone.estimates.get("b")
+      expect(inGlobalRun?.status).toBe("Estimated")
+      expect(isolated?.status).toBe("Estimated")
+      expect(
+        (inGlobalRun as { date: string }).date >
+          (isolated as { date: string }).date
+      ).toBe(true)
+      expect(projectB.completionDate).toBe(
+        (inGlobalRun as { date: string }).date
+      )
+    })
+
+    it("has nothing to report for a scope holding none of the plan's goals", () => {
+      const nothing = computePlanInsights({
+        ...params,
+        details,
+        priorityByGoalId,
+        scopeGoalIds: new Set(["elsewhere"]),
+      })
+
+      expect(nothing.totals.upgradesByRarity).toEqual({})
+      expect(nothing.completionDate).toBeNull()
+      expect(nothing.unestimatedGoalCount).toBe(0)
+    })
   })
 })

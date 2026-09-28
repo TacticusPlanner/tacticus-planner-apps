@@ -161,7 +161,7 @@ export type DailyRaidsCalculationViewModel = Omit<
 >
 
 export type DailyRaidsViewModel =
-  | { status: "no-project" }
+  | { status: "no-goals" }
   | { status: "loading" }
   | { status: "error" }
   | { status: "no-farmable" }

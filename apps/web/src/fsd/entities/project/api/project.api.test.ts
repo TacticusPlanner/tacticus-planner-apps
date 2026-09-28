@@ -13,12 +13,11 @@ vi.mock("@/shared/api", () => ({
 }))
 
 import {
-  activateProject,
   createProject,
   listProjectGoals,
   listProjects,
+  moveProjectGoal,
   updateProject,
-  updateProjectGoalOrder,
   updateProjectGoals,
   updateProjectGoalsStatus,
 } from "./project.api"
@@ -45,15 +44,21 @@ describe("project API", () => {
   it("maps project writes to their endpoints", () => {
     const create = { name: "Plan" }
     const update = { name: "Updated" } as never
-    const goals = [{ goalId: "goal-1" }]
+    const goals = {
+      goals: [{ goalId: "goal-1" }],
+      expectedGoalIds: ["goal-2"],
+    }
 
     createProject(create)
     updateProject("project-1", update)
-    activateProject("project-1")
     updateProjectGoals("project-1", goals)
     updateProjectGoalsStatus("project-1", "Paused")
-    const goalIds = ["goal-1", "goal-2"]
-    updateProjectGoalOrder("project-1", goalIds)
+    const move = {
+      goalId: "goal-1",
+      displacedGoalId: "goal-2",
+      expectedRevision: 4,
+    }
+    moveProjectGoal("project-1", move)
 
     expect(api.post).toHaveBeenNthCalledWith(1, "/api/v1/me/projects", {
       body: create,
@@ -63,25 +68,20 @@ describe("project API", () => {
       "/api/v1/me/projects/project-1",
       { body: update }
     )
-    expect(api.post).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/projects/project-1/activate",
-      {}
-    )
     expect(api.put).toHaveBeenNthCalledWith(
       2,
       "/api/v1/me/projects/project-1/goals",
-      { body: { goals } }
+      { body: goals }
     )
     expect(api.post).toHaveBeenNthCalledWith(
-      3,
+      2,
       "/api/v1/me/projects/project-1/goals/status",
       { body: { status: "Paused" } }
     )
     expect(api.put).toHaveBeenNthCalledWith(
       3,
       "/api/v1/me/projects/project-1/goal-order",
-      { body: { goalIds } }
+      { body: move }
     )
   })
 })

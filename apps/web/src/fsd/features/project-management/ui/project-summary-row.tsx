@@ -7,7 +7,7 @@ import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import type { ProjectCardSummary } from "./project-row"
 
 /** A condensed, identity-only project row for the home dashboard's Your Projects widget: color,
- * name, Current-plan badge, and a units/goals summary — no lifecycle actions (home-projects-widget
+ * name, Default badge, and a units/goals summary — no lifecycle actions (home-projects-widget
  * spec: "Cards in this widget SHALL NOT render lifecycle actions"). The whole row navigates. */
 export function ProjectSummaryRow({
   onSelect,
@@ -32,9 +32,9 @@ export function ProjectSummaryRow({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="truncate font-medium">{project.name}</span>
-            {project.isActivePlan ? (
+            {project.isDefault ? (
               <Badge variant="secondary">
-                {t("goals.project.currentPlan")}
+                {t("goals.project.defaultBadge")}
               </Badge>
             ) : null}
           </div>

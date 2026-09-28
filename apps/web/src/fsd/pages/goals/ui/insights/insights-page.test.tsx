@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import userEvent from "@testing-library/user-event"
 import { render, screen, waitFor } from "@/test/render"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
@@ -158,7 +159,6 @@ let projectList: Array<{
   description: null
   color: null
   status: "Active"
-  isActivePlan: boolean
   isDefault: boolean
   revision: number
   createdAt: string
@@ -169,8 +169,6 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   useProjects: () => ({
     projects: projectList,
-    activeProjectId: projectList.find((project) => project.isActivePlan)
-      ?.projectId,
     defaultProjectId: projectList.find((project) => project.isDefault)
       ?.projectId,
     fetchState: { status: "success", projects: projectList },
@@ -193,8 +191,23 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 
 const getGoal = vi.fn()
 
+// The global plan (every Active goal in global order) the insights run over.
+let planGoals: Array<Record<string, unknown>> = []
+let planIsError = false
+const retryPlan = vi.fn()
+
 vi.mock("@/entities/goal", () => ({
   getGoal: (...args: unknown[]) => getGoal(...args),
+  useGlobalGoalPlan: () => ({
+    inFlight: planGoals,
+    active: planGoals,
+    entries: planGoals.map((goal) => ({ goal })),
+    goals: planGoals,
+    orderRevision: 1,
+    loading: false,
+    isError: planIsError,
+    retry: retryPlan,
+  }),
   goalQueries: {
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
@@ -247,12 +260,15 @@ const rankGoalDetail = {
 describe("InsightsPage", () => {
   beforeEach(() => {
     projectList = []
+    planGoals = []
+    planIsError = false
+    retryPlan.mockReset()
     listProjects.mockReset()
     listProjectGoals.mockReset()
     getGoal.mockReset()
   })
 
-  it("shows the no-project empty state when the profile has no projects", async () => {
+  it("shows the no-Active-goals empty state when the plan has nothing to report", async () => {
     listProjects.mockResolvedValue({ projects: [] })
     listProjectGoals.mockResolvedValue({ goals: [] })
 
@@ -265,7 +281,26 @@ describe("InsightsPage", () => {
     expect(await screen.findByTestId("insights-page-empty")).toBeInTheDocument()
   })
 
-  it("aggregates the active plan's Rank goal into the upgrades-by-rarity total", async () => {
+  it("shows a load error with retry, not the no-Active-goals state, when the goal list fails", async () => {
+    listProjects.mockResolvedValue({ projects: [] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    planIsError = true
+
+    render(
+      <TooltipProvider>
+        <InsightsPage />
+      </TooltipProvider>
+    )
+
+    expect(await screen.findByTestId("insights-page-error")).toBeInTheDocument()
+    expect(screen.queryByTestId("insights-page-empty")).not.toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole("button", { name: "goals.insights.retry" })
+    )
+    expect(retryPlan).toHaveBeenCalledOnce()
+  })
+
+  it("defaults to every Active goal in the plan, with no project selected, and aggregates its Rank goal", async () => {
     projectList = [
       {
         projectId: "proj-1",
@@ -273,7 +308,6 @@ describe("InsightsPage", () => {
         description: null,
         color: null,
         status: "Active",
-        isActivePlan: true,
         isDefault: true,
         revision: 0,
         createdAt: "2026-01-01T00:00:00Z",
@@ -281,8 +315,9 @@ describe("InsightsPage", () => {
       },
     ]
     listProjects.mockResolvedValue({ projects: projectList })
+    planGoals = [{ ...rankGoal, globalPriority: 1 }]
     listProjectGoals.mockResolvedValue({
-      goals: [{ goal: rankGoal, priority: 1 }],
+      goals: [{ goal: { ...rankGoal, globalPriority: 1 } }],
     })
     getGoal.mockResolvedValue(rankGoalDetail)
 

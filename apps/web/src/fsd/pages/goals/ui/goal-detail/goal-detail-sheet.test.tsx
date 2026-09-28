@@ -11,6 +11,7 @@ const updateGoalProjects = vi.fn()
 const updateGoalTarget = vi.fn()
 const updateGoalStatus = vi.fn()
 const listProjects = vi.fn()
+const createProject = vi.fn()
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -89,6 +90,7 @@ vi.mock("@/entities/goal", () => ({
 
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
+  createProject: (...args: unknown[]) => createProject(...args),
   projectQueries: {
     goals: (projectId: string) => ({
       queryFn: () => Promise.resolve({ goals: [] }),
@@ -299,12 +301,22 @@ describe("GoalDetailSheet", () => {
         Promise.resolve({ ...detail, projectIds })
       )
     updateGoalStatus.mockReset()
-    listProjects.mockReset().mockResolvedValue({
-      projects: [
-        { projectId: "project-1", name: "My Goals", isActivePlan: true },
-        { projectId: "project-2", name: "Event Prep", isActivePlan: false },
-        { projectId: "project-home", name: "Home", isDefault: true },
-      ],
+    const serverProjects = [
+      { projectId: "project-1", name: "My Goals" },
+      { projectId: "project-2", name: "Event Prep" },
+      { projectId: "project-home", name: "Home", isDefault: true },
+    ]
+    listProjects.mockReset().mockResolvedValue({ projects: serverProjects })
+    // Like the server, a created project shows up in the refreshed list.
+    createProject.mockReset().mockImplementation((request) => {
+      const created = {
+        projectId: "project-new",
+        name: request.name,
+        isDefault: false,
+        status: "Active",
+      }
+      listProjects.mockResolvedValue({ projects: [...serverProjects, created] })
+      return Promise.resolve(created)
     })
   })
 
@@ -600,6 +612,105 @@ describe("GoalDetailSheet", () => {
         "project-2",
       ])
     })
+  })
+
+  it("creates a project from the picker into the draft without saving the goal edit", async () => {
+    const user = userEvent.setup()
+    const onUpdated = vi.fn()
+    renderSheet({ onUpdated })
+    await enterEditMode(user)
+    fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      target: { value: "Unsaved draft" },
+    })
+
+    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.type(
+      screen.getByPlaceholderText("goals.project.searchProjects"),
+      "Brand new"
+    )
+    // Typing alone creates nothing.
+    expect(createProject).not.toHaveBeenCalled()
+    await user.click(screen.getByTestId("goal-detail-create-project"))
+
+    expect(createProject).toHaveBeenCalledExactlyOnceWith({
+      name: "Brand new",
+      description: null,
+      color: null,
+    })
+    expect(
+      await screen.findByTestId("goal-detail-project-chip-project-new")
+    ).toBeInTheDocument()
+    // The edit is still a draft: nothing saved, the sheet still editing, other fields intact.
+    expect(updateGoal).not.toHaveBeenCalled()
+    expect(updateGoalProjects).not.toHaveBeenCalled()
+    expect(screen.getByLabelText("goals.detail.notes")).toHaveValue(
+      "Unsaved draft"
+    )
+
+    await user.click(screen.getByText("goals.detail.save"))
+
+    await vi.waitFor(() => {
+      expect(updateGoalProjects).toHaveBeenCalledWith("goal-1", [
+        "project-1",
+        "project-new",
+      ])
+    })
+    // Which projects hold a goal never touches its status.
+    expect(updateGoalStatus).not.toHaveBeenCalled()
+  })
+
+  it("keeps the edit draft and adds no membership when creating a project fails, then allows a retry", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+    await enterEditMode(user)
+    fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      target: { value: "Unsaved draft" },
+    })
+    createProject.mockRejectedValueOnce(new ApiError(500, "Server down"))
+
+    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.type(
+      screen.getByPlaceholderText("goals.project.searchProjects"),
+      "Brand new"
+    )
+    await user.click(screen.getByTestId("goal-detail-create-project"))
+
+    expect(
+      await screen.findByTestId("goal-detail-create-project-error")
+    ).toHaveTextContent("Server down")
+    expect(
+      screen.queryByTestId("goal-detail-project-chip-project-new")
+    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText("goals.detail.notes")).toHaveValue(
+      "Unsaved draft"
+    )
+
+    await user.click(screen.getByTestId("goal-detail-create-project"))
+    expect(
+      await screen.findByTestId("goal-detail-project-chip-project-new")
+    ).toBeInTheDocument()
+  })
+
+  it("keeps a project created in the picker when the goal edit is cancelled", async () => {
+    const user = userEvent.setup()
+    renderSheet()
+    await enterEditMode(user)
+
+    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.type(
+      screen.getByPlaceholderText("goals.project.searchProjects"),
+      "Brand new"
+    )
+    await user.click(screen.getByTestId("goal-detail-create-project"))
+    await screen.findByTestId("goal-detail-project-chip-project-new")
+
+    await user.click(screen.getByTestId("goal-detail-cancel"))
+    await user.click(await screen.findByTestId("confirmation-dialog-confirm"))
+    expect(await screen.findByTestId("goal-detail-view")).toBeInTheDocument()
+
+    // Cancelling discards the membership draft only; the explicitly created project is not deleted.
+    expect(updateGoalProjects).not.toHaveBeenCalled()
+    expect(createProject).toHaveBeenCalledTimes(1)
   })
 
   it("issues no status mutation when memberships are edited", async () => {

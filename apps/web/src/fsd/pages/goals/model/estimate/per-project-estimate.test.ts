@@ -47,6 +47,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     notes: null,
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z",
+    globalPriority: 1,
     config: {
       rank: null,
       progression: null,

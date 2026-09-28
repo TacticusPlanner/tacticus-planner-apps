@@ -180,31 +180,40 @@ or a generic skip.
 ### Requirement: Automatic prerequisite creation is always enabled
 
 The import SHALL always request automatic prerequisite creation, matching the
-manual create-goal flow's own default. There SHALL NOT be a part-selection
+manual create-goal flow's own default. The automatic prerequisites are Unlock and
+Ascension goals only; a Level goal is never created, since the level a Rank or
+Ability goal needs is shown on that goal (see `rank-level-progression`). There SHALL NOT be a part-selection
 control to disable it — offering one that quietly leaves imported goals
 blocked on a prerequisite the user didn't realize they'd opted out of was
 worse than not offering the choice at all.
 
 #### Scenario: A missing prerequisite is added without being asked for
 
-- **GIVEN** an imported goal needs an Unlock, Ascension, or Level goal that
+- **GIVEN** an imported goal needs an Unlock or Ascension goal that
   does not yet exist
 - **WHEN** the import runs
 - **THEN** the prerequisite goal is created and reported as an automatically
   added outcome, with no user selection involved
 
+#### Scenario: No Level prerequisite is created
+
+- **GIVEN** an imported Rank goal whose character is below the level its target needs
+- **WHEN** the import runs
+- **THEN** no Level goal is created for it and the Rank goal shows its required level as ordinary progress
+
 ### Requirement: The dialog describes what the import actually does
 
 The dialog's description SHALL state the import's actual behavior. It SHALL NOT
 state that matching V2 goals are replaced, and SHALL NOT state, unconditionally,
-that imported goals are paused or that none are — a goal lands Paused only when
-the import's default project isn't the profile's active project.
+that imported goals are paused or that none are, and SHALL NOT refer to an
+active project or Current plan.
 
 #### Scenario: The description matches the behavior
 
 - **WHEN** the dialog is opened
-- **THEN** its description does not claim that matching goals are replaced, and
-  states that imported goals are paused unless they land in the active project
+- **THEN** its description does not claim that matching goals are replaced, does
+  not refer to an active project or Current plan, and states the status
+  imported goals receive as the import actually assigns it
 
 ### Requirement: An unselected part occupies no row in the result
 

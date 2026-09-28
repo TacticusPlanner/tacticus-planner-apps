@@ -29,7 +29,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
   return {
     ...actual,
-    useDailyRaids: (projectId: string | undefined) => useDailyRaids(projectId),
+    useDailyRaids: () => useDailyRaids(),
   }
 })
 vi.mock("@/shared/tour", () => ({
@@ -486,7 +486,7 @@ describe("Dailies raid pages", () => {
     expect(todaySchedule.queryByText("Indomitus")).not.toBeInTheDocument()
   })
 
-  it.each(["no-project", "no-farmable", "error"] as const)(
+  it.each(["no-goals", "no-farmable", "error"] as const)(
     "renders the %s state",
     (status) => {
       useDailyRaids.mockReturnValue({ status })
@@ -494,17 +494,6 @@ describe("Dailies raid pages", () => {
       expect(screen.getByTestId(`dailies-${status}`)).toBeInTheDocument()
     }
   )
-
-  it("shows a retry action for project-list failures", async () => {
-    const user = userEvent.setup()
-    contextOverrides = { projectsError: true }
-    renderPage(<TodayPage />)
-
-    await user.click(screen.getByRole("button", { name: "empty.retry" }))
-    expect(retryProjects).toHaveBeenCalledOnce()
-    expect(screen.queryByTestId("dailies-error")).not.toBeInTheDocument()
-    expect(screen.getByTestId("today-page")).toBeInTheDocument()
-  })
 
   it("starts the plan with Today, paginates, and toggles detail density", async () => {
     const user = userEvent.setup()
