@@ -23,10 +23,10 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   dailyEnergyTiers,
+  normalizeXpBookRarity,
   usePlanningSettings,
   xpBookRarityOptions,
 } from "@/entities/planning-setting"
-import { normalizeXpBookRarity } from "@/features/goal-farming"
 import { ApiError } from "@/shared/api"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 

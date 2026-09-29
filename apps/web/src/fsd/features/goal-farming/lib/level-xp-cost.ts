@@ -1,4 +1,7 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import { normalizeXpBookRarity } from "@/entities/planning-setting"
+
+export { normalizeXpBookRarity }
 
 // Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) — the cumulative XP required to reach
 // each character level, 0 through 65 (V1's own table max; V2's level requirements only ever reach
@@ -23,17 +26,6 @@ const xpBookValueByRarity: Record<Rarity, number> = {
   Epic: 2_500,
   Legendary: 12_500,
   Mythic: 62_500,
-}
-
-/** A missing/unrecognized stored rarity behaves as Legendary (surface-goal-farming-guidance) — the
- * one normalization point every rarity-consuming function here funnels through, so a bad stored
- * value degrades to today's Legendary-only figures rather than throwing or silently reading as 0. */
-export function normalizeXpBookRarity(
-  rarity: string | null | undefined
-): Rarity {
-  return rarity && rarity in xpBookValueByRarity
-    ? (rarity as Rarity)
-    : "Legendary"
 }
 
 /** `remainingXp` expressed as a whole-book count of `rarity` (falls back to Legendary — see

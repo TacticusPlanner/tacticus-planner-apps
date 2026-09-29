@@ -26,7 +26,6 @@ export {
 } from "./lib/goal-need"
 export {
   computeLevelGoalCost,
-  normalizeXpBookRarity,
   xpBookEquivalent,
   xpNeededForLevelRange,
   type LevelGoalCost,

@@ -24,13 +24,6 @@ vi.mock("@/entities/planning-setting", () => ({
     "Legendary",
     "Mythic",
   ],
-  usePlanningSettings: () => ({
-    settings: { dailyEnergy: 538, xpBookRarity: "Epic", revision: 7 },
-    save,
-  }),
-}))
-
-vi.mock("@/features/goal-farming", () => ({
   normalizeXpBookRarity: (rarity: string | null | undefined) =>
     rarity &&
     ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
@@ -38,6 +31,10 @@ vi.mock("@/features/goal-farming", () => ({
     )
       ? rarity
       : "Legendary",
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 538, xpBookRarity: "Epic", revision: 7 },
+    save,
+  }),
 }))
 
 vi.mock("@/shared/api", () => ({

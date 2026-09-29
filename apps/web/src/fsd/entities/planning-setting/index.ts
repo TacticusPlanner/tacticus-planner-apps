@@ -3,6 +3,7 @@ export { usePlanningSettings } from "./model/use-planning-settings"
 export {
   dailyEnergyTiers,
   defaultPlanningSettings,
+  normalizeXpBookRarity,
   xpBookRarityOptions,
 } from "./model/types"
 export type { PlanningSettings } from "./model/types"
