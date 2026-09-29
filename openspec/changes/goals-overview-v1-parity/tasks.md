@@ -40,15 +40,15 @@
 
 ## 8. V1 value parity (from the manual comparison)
 
-- [ ] 8.1 Diagnose why per-goal Rank energy differs from V1 (e.g. a second Arjac goal: V1 3,224 vs V2 971) by tracing both calculations, record the cause in design.md, and align V2 to V1 unless the difference is specced plan-aware behaviour; verify with a test reproducing the Arjac case and the account totals within tolerance
+- [x] 8.1 Diagnose why per-goal Rank energy differs from V1 (e.g. a second Arjac goal: V1 3,224 vs V2 971) by tracing both calculations, record the cause in design.md, and align V2 to V1 unless the difference is specced plan-aware behaviour; verify with a test reproducing the Arjac case and the account totals within tolerance (Resolved: see design decision 14; V2 is not changed.)
 - [x] 8.2 Net ability badges, forge badges, components, orbs and shards against inventory in priority order (gold un-netted), and verify tests for fully-held, partially-held, priority order and orbs
 - [x] 8.3 Add energy chips to MoW and Character Ability goals and Rank gold chips (source per V1), and verify with tests that Z'Kar shows energy and Rank goals show gold
 - [ ] 8.4 Use V1's icons for energy, gold, ability badge, forge badge, component, orb, shard and XP book, and verify by a render test and the browser check
 
 ## 8b. Estimate alignment and Onslaught tokens
 
-- [ ] 8.5 Restrict campaign node selection to nodes unlocked by the player's synced campaign progress (per the goal-farming-estimates delta) for every estimate consumer, carrying node/campaign identity into farm locations as needed, and verify tests for the locked-cheaper-node, no-unlocked-node and consumer-agreement scenarios; then re-compare the account energy against V1
-- [ ] 8.6 Show the projected Onslaught tokens a goal uses as a chip in Remaining (V1 token icon), energy for the campaign portion only, and verify tests for the Onslaught-only, mixed and no-source scenarios
+- [x] 8.5 Restrict campaign node selection to nodes unlocked by the player's synced campaign progress (per the goal-farming-estimates delta) for every estimate consumer, carrying node/campaign identity into farm locations as needed, and verify tests for the locked-cheaper-node, no-unlocked-node and consumer-agreement scenarios; then re-compare the account energy against V1
+- [x] 8.6 Show the projected Onslaught tokens a goal uses as a chip in Remaining (V1 token icon), energy for the campaign portion only, and verify tests for the Onslaught-only, mixed and no-source scenarios
 
 ## 8c. Level line
 
@@ -57,6 +57,11 @@
 ## 8d. Gold format
 
 - [x] 8.8 Show the gold chip's quantity in thousands with a k suffix (below 1,000 as is, otherwise floor(value / 1000) + "k", per V1's numberToThousandsString) while keeping the full value in its tooltip and accessible name, and verify chip tests for 42,235, 1,999 and 750
+
+## 8e. Overlap explanation and level chaining
+
+- [ ] 8.9 Show a Rank goal's standalone slots and energy in a tooltip when a higher-priority goal for the same unit covers part of its range (data from rankSlotAllocation / a standalone estimate), and verify tests for the overlap and no-overlap scenarios using the Arjac fixture
+- [ ] 8.10 Investigate why a second Rank goal shows its level requirement from the current level ("Lv 33 → 38") where V1 chains it ("Lv 35 → 38"), check against rank-level-progression's once-per-unit level accounting, align the display (and chart the cause in design.md) if the allocation already treats those levels as covered, and verify a test with the two Arjac goals
 
 ## 7. Verification
 

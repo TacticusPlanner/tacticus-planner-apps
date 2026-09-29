@@ -119,6 +119,10 @@ See `proposal.md` - Why. Relevant shape, confirmed by reading the code:
 
 13. **The level requirement collapses into one Progress-cell line.** `LevelRequirementTarget` (Goal cell), `LevelRequirementProgressBar` (Progress) and `LevelRequirementRemaining` (Remaining) are merged into one component rendered in the Progress cell: level target, XP-book figure (from `goalXpBookFigure`), and the Potential-only bar, laid out like the Unlock goal's count-beside-bar. `GoalResourceChips` loses its `xpBooks` prop. On mobile the same component sits in the card's progress area. V1 reference: its Progress cell shows slots/applied, the bar and "Lv 44→50" together.
 
+14. **Decision 12 resolved: V2's per-goal Rank energy stays plan-aware.** A characterization test (`plan-insights-arjac-overlap.test.ts`, fixture `arjac-catalog.json`, V1 goldens produced by running V1's real services) showed the Arjac gap is entirely overlap: V1 charges a second Rank goal for the whole range from the current rank (no cross-goal logic), while V2 charges overlapping slots once and gives the marginal cost to the lower-priority goal, as `rank-milestone-planning` requires. A goal run alone in V2 reproduces V1's slots and materials exactly, and energy within a few percent; node choice and rounding explain almost nothing. V2 is therefore not changed; per-goal energy is expected to be below V1's by about the overlap. To keep the number explainable, a goal whose need is partly covered by a higher-priority goal shows its standalone slots and energy in a tooltip.
+
+15. **Level requirement start is chained like the slots.** A second Rank goal for the same unit displays its level requirement as V1 does (from the previous goal's required level, e.g. "Lv 35 → 38" rather than "Lv 33 → 38"), if the level allocation already treats those levels as covered; the cause of the current display is investigated first.
+
 ## Risks / Trade-offs
 
 - [A seventh column narrows the others on small desktops, and badge chips wrap in a fixed-height row] -> let the Projects cell wrap to at most two lines then clip with the full list as a tooltip; verify at 768px.

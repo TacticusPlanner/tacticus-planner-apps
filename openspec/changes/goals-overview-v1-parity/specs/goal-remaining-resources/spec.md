@@ -39,6 +39,22 @@ For a goal that has not reached its target, the Remaining display SHALL show one
 - **WHEN** its Remaining display renders
 - **THEN** it shows no chips and no placeholder text
 
+### Requirement: A goal partly covered by a higher-priority goal shows its standalone figures
+
+When a Rank goal's need is reduced because a higher-priority goal for the same unit already covers part of the same rank range (the plan allocates overlapping progression once), its Remaining display SHALL expose the goal's standalone figures, what the goal would cost if it were the only goal, as a tooltip on the goal's energy chip (or on the Remaining cell when there is no energy chip): the standalone upgrade-slot count and standalone energy, labelled as standalone. The chips themselves SHALL keep showing the plan-aware (marginal) figures. A goal with no overlap SHALL show no such tooltip content.
+
+#### Scenario: A lower-priority goal covered in part
+
+- **GIVEN** a Rank goal from Silver1 to Gold2 and a higher-priority goal from Silver1 to Gold1 for the same unit
+- **WHEN** the lower-priority goal's Remaining display is hovered
+- **THEN** the chips show its marginal energy, and the tooltip also shows its standalone slots and standalone energy
+
+#### Scenario: A goal without overlap
+
+- **GIVEN** a Rank goal with no overlapping goal for its unit
+- **WHEN** its Remaining display is hovered
+- **THEN** no standalone figures are shown
+
 ### Requirement: Gold is shown in thousands
 
 A gold chip SHALL display its quantity shortened to thousands with a "k" suffix, as V1 does: a value below 1,000 is shown as is, and a value of 1,000 or more is divided by 1,000, rounded down, and suffixed with "k". The chip's tooltip and accessible name SHALL still carry the full, unabbreviated quantity with the locale's thousands separator. No other chip abbreviates its quantity.
