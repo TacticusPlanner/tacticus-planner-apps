@@ -1,3 +1,4 @@
+import { normalizeXpBookRarity } from "@/entities/planning-setting"
 import type { GoalDetail } from "@/entities/goal"
 
 import type { GoalBlockers } from "../../model/blockers/goal-blockers"
@@ -10,7 +11,7 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges } from "../shared/goal-visuals"
-import { LevelRequirementSummary } from "../shared/level-requirement-display"
+import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 
 /**
@@ -52,12 +53,14 @@ export function GoalDetailHeader({
           progress={progress}
         />
       </div>
-      <LevelRequirementSummary
-        availableBookCount={availableBookCount}
+      <LevelRequirementLine
         levelRequirement={levelRequirement}
-        neededBookCount={neededBookCount}
         potentialRatio={levelPotentialRatio}
-        xpBookRarity={xpBookRarity}
+        xpBooks={{
+          available: availableBookCount,
+          needed: neededBookCount,
+          rarity: normalizeXpBookRarity(xpBookRarity),
+        }}
       />
       {mode === "edit" ? (
         <>

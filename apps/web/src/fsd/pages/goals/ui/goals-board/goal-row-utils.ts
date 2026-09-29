@@ -8,7 +8,7 @@ import {
   levelBookAvailability,
   type EstimateOutcome,
 } from "@/features/goal-farming"
-import type { XpBookFigure } from "../shared/goal-resource-chips"
+import type { XpBookFigure } from "../shared/level-requirement-display"
 import type { GoalRow } from "../../model/shared/types"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 
@@ -114,7 +114,7 @@ export function isReachedRow(
   return reachedByGoalId?.get(row.goalId) ?? false
 }
 
-/** The XP-book available/needed figure for a goal's chip (`GoalResourceChips`' `xpBooks`), in the
+/** The XP-book available/needed figure for a goal's chip (`LevelRequirementLine`), in the
  *  selected rarity; `undefined` when the goal needs no level-up books. */
 export function goalXpBookFigure(
   chargedXp: number | undefined,

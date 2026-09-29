@@ -8,7 +8,6 @@ import {
   orbAllianceIcon,
   orbIcon,
   shardIcon,
-  xpBookIcon,
 } from "@workspace/game-catalog"
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
@@ -19,12 +18,6 @@ import { EntityIcon } from "@/shared/ui"
 /** At most this many chips render; the rest collapse into one "+N" chip whose tooltip lists all. */
 const MAX_VISIBLE_CHIPS = 6
 
-export type XpBookFigure = {
-  needed: number
-  available: number
-  rarity: Rarity
-}
-
 type Chip = {
   key: string
   icon: string
@@ -32,26 +25,22 @@ type Chip = {
   overlay?: string
   /** Full localized resource name, used in the tooltip and the accessible name. */
   name: string
-  /** Display text beside the icon (a formatted quantity, or "available / needed" for books). */
+  /** Display text beside the icon (a formatted quantity, or ). */
   text: string
 }
 
 /** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
- *  materials; zero quantities omitted; an XP-book chip only for a Character Rank/Ability goal that
- *  needs a level-up. */
+ *  materials; zero quantities omitted. The XP-book figure lives with the level line, not here. */
 export function GoalResourceChips({
   goalType,
   entityType,
   remaining,
   energy,
-  xpBooks,
 }: {
   goalType: GoalKind
   entityType: string
   remaining: ResourceNeed | null
   energy: number | undefined
-  /** The goal's needed/available level-up books in the selected rarity, when it needs a level-up. */
-  xpBooks?: XpBookFigure
 }) {
   const { t, i18n } = useTranslation()
   const fmt = (value: number) =>
@@ -104,20 +93,6 @@ export function GoalResourceChips({
       remaining?.mythicShards
     )
   }
-  const addXpBooks = () => {
-    if (!xpBooks || xpBooks.needed <= 0) return
-    chips.push({
-      key: "xpBooks",
-      icon: xpBookIcon(xpBooks.rarity),
-      name: t("goals.resourceChips.xpBooks", {
-        rarity: rarityName(xpBooks.rarity),
-      }),
-      text: t("goals.resourceChips.xpBooksValue", {
-        available: fmt(xpBooks.available),
-        needed: fmt(xpBooks.needed),
-      }),
-    })
-  }
   const materials = remaining?.abilityMaterials
   // Alliance picks the badge/component/orb art; a unit without one shows the Imperial art.
   const alliance = remaining?.alliance ?? "Imperial"
@@ -125,7 +100,6 @@ export function GoalResourceChips({
   if (goalType === "Rank") {
     addGold(remaining?.levelGold)
     addEnergy()
-    addXpBooks()
   } else if (goalType === "Ascension") {
     addByRarity(
       "orbs",
@@ -153,8 +127,6 @@ export function GoalResourceChips({
     }
     addGold(materials?.gold)
     addEnergy()
-    // A Machine of War has no character level, so never an XP-book chip.
-    if (entityType !== "Mow") addXpBooks()
   } else if (goalType === "Upgrade") {
     addEnergy()
   }

@@ -904,8 +904,7 @@
         "levels": "{{count}} Stufen",
         "rankEnergy": "{{energy}} Energie",
         "coveredByEarlierGoal": "Durch ein früheres Ziel abgedeckt",
-        "shards": "{{count}} Scherben",
-        "bookAvailability": "{{available}}/{{needed}} {{rarity}}-Bücher"
+        "shards": "{{count}} Scherben"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Fortschrittsdetails",

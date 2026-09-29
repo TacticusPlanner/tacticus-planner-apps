@@ -50,6 +50,10 @@
 - [ ] 8.5 Restrict campaign node selection to nodes unlocked by the player's synced campaign progress (per the goal-farming-estimates delta) for every estimate consumer, carrying node/campaign identity into farm locations as needed, and verify tests for the locked-cheaper-node, no-unlocked-node and consumer-agreement scenarios; then re-compare the account energy against V1
 - [ ] 8.6 Show the projected Onslaught tokens a goal uses as a chip in Remaining (V1 token icon), energy for the campaign portion only, and verify tests for the Onslaught-only, mixed and no-source scenarios
 
+## 8c. Level line
+
+- [x] 8.7 Merge the level target, XP-book figure and Potential-only bar into one line in the Progress cell (desktop and mobile), leave only the goal target in the Goal cell, remove the "N levels" text and the XP-book chip from Remaining, and verify list tests for a below-level Rank goal, a met requirement, a MoW goal, and the mobile card
+
 ## 7. Verification
 
 - [x] 7.1 Run the apps test suite, typecheck and lint for the touched packages and verify they pass

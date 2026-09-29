@@ -904,8 +904,7 @@
         "levels": "{{count}} niveaux",
         "rankEnergy": "{{energy}} énergie",
         "coveredByEarlierGoal": "Couvert par un objectif précédent",
-        "shards": "{{count}} éclats",
-        "bookAvailability": "{{available}}/{{needed}} livres {{rarity}}"
+        "shards": "{{count}} éclats"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Détails de la progression",

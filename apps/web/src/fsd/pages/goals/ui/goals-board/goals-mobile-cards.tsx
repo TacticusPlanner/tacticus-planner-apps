@@ -16,11 +16,7 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
-import {
-  LevelRequirementProgressBar,
-  LevelRequirementRemaining,
-  LevelRequirementTarget,
-} from "../shared/level-requirement-display"
+import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
@@ -214,7 +210,6 @@ export function GoalsMobileCards({
                   progress={progress}
                 />
               </div>
-              <LevelRequirementTarget levelRequirement={levelRequirement} />
               {reached ? (
                 <ReachedDash />
               ) : (
@@ -230,19 +225,16 @@ export function GoalsMobileCards({
                       remaining={remaining}
                     />
                   </div>
-                  <LevelRequirementProgressBar
+                  <LevelRequirementLine
                     levelRequirement={levelRequirement}
                     potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                    xpBooks={xpBooks}
                   />
                   <GoalResourceChips
                     energy={energy}
                     entityType={row.entityType}
                     goalType={row.goalType}
                     remaining={remaining}
-                    xpBooks={xpBooks}
-                  />
-                  <LevelRequirementRemaining
-                    levelRequirement={levelRequirement}
                   />
                 </>
               )}

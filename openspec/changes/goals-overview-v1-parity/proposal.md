@@ -33,6 +33,8 @@ Goals list without changing how priority, pausing or estimates work.
   badges, components) from the existing `mow-upgrade-costs` dataset, and add
   Character Ability costs (gold, ability badges), which need a new catalog
   dataset ported from V1's ability level-up table.
+- **Level line**: a Rank or Ability goal's level requirement becomes one line in the Progress cell (target level, XP-book figure and Potential bar, like the Unlock goal's count beside its bar); the "N levels" text and the XP-book chip leave the Remaining column.
+- **Onslaught tokens and unlocked nodes**: the Remaining column shows the projected Onslaught tokens a goal will use (as V1 does), and campaign farming estimates consider only unlocked nodes (as V1 does), which changes energy figures everywhere the shared estimate is used.
 - **Archive removed**: the row menu's Archive and Unarchive items are removed with the Archived filter option, so a goal can no longer be archived from the UI.
 - **Per-goal status toggle**: no new control — Overview already renders the
   pause/resume button through the shared row actions; the only change is that
@@ -59,6 +61,7 @@ Goals list without changing how priority, pausing or estimates work.
   indicator (no Archived).
 - `goal-list-layout`: no goal-type caption (Character column, mobile header); new Projects column and one-line notes under the name (six to seven columns); Goal column encoding by kind; reached-row presentation on desktop table and mobile
   card; Remaining column content; Ability goal track pills in the Goal cell.
+- `goal-farming-estimates`: campaign farming considers only unlocked nodes.
 - `goal-status-actions`: pause/resume not shown on a reached goal; the Archive requirement is removed.
 - `goal-progress-display`: "Remaining resource text uses a per-goal-kind
   formatter…" and the level requirement's remaining text drop "slots" and

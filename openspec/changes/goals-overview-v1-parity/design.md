@@ -117,6 +117,8 @@ See `proposal.md` - Why. Relevant shape, confirmed by reading the code:
 
 12. **Rank energy must follow V1.** A manual comparison on a real account showed V2's per-goal Rank energy differing from V1 (worst case: a second Arjac goal 971 vs V1's 3,224). It is treated as a bug: the cause is found first (shared-plan netting versus V1's per-goal calculation, or a coverage bug) and V2 is aligned to V1's numbers unless V2's difference is a deliberate, specced plan-aware behaviour.
 
+13. **The level requirement collapses into one Progress-cell line.** `LevelRequirementTarget` (Goal cell), `LevelRequirementProgressBar` (Progress) and `LevelRequirementRemaining` (Remaining) are merged into one component rendered in the Progress cell: level target, XP-book figure (from `goalXpBookFigure`), and the Potential-only bar, laid out like the Unlock goal's count-beside-bar. `GoalResourceChips` loses its `xpBooks` prop. On mobile the same component sits in the card's progress area. V1 reference: its Progress cell shows slots/applied, the bar and "Lv 44→50" together.
+
 ## Risks / Trade-offs
 
 - [A seventh column narrows the others on small desktops, and badge chips wrap in a fixed-height row] -> let the Projects cell wrap to at most two lines then clip with the full list as a tooltip; verify at 768px.

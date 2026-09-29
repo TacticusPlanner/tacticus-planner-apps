@@ -600,8 +600,9 @@ describe("GoalsPage", () => {
     }
     renderPage()
 
-    const chips = await screen.findByTestId("goal-resource-chips")
-    expect(chips).toHaveTextContent("goals.resourceChips.xpBooksValue")
+    const books = await screen.findByTestId("level-requirement-books")
+    expect(books).toHaveTextContent("goals.resourceChips.xpBooksValue")
+    expect(screen.queryByTestId("goal-resource-chip")).toBeNull()
   })
 
   it("offers no Archived option but still fetches archived goals for cascades", async () => {

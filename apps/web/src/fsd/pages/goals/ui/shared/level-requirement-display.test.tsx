@@ -13,11 +13,7 @@ vi.mock("react-i18next", () => ({
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
 import type { LevelRequirementProgress } from "../../model/attainment/level-requirement-progress"
-import {
-  LevelRequirementProgressBar,
-  LevelRequirementRemaining,
-  LevelRequirementTarget,
-} from "./level-requirement-display"
+import { LevelRequirementLine } from "./level-requirement-display"
 
 const requirement: LevelRequirementProgress = {
   kind: "LevelRequirement",
@@ -29,91 +25,51 @@ const requirement: LevelRequirementProgress = {
   remainingXp: 12_200,
 }
 
-describe("level requirement display", () => {
-  it("shows the current -> required level, potential-only progress, and the remaining levels and XP", () => {
+describe("LevelRequirementLine", () => {
+  it("shows the level target, the XP-book figure and the potential-only bar on one line, with no levels or XP text", () => {
     render(
-      <>
-        <LevelRequirementTarget levelRequirement={requirement} />
-        <LevelRequirementProgressBar
-          levelRequirement={requirement}
-          potentialRatio={1}
-        />
-        <LevelRequirementRemaining levelRequirement={requirement} />
-      </>
+      <LevelRequirementLine
+        levelRequirement={requirement}
+        potentialRatio={1}
+        xpBooks={{ needed: 6, available: 4, rarity: "Legendary" }}
+      />
     )
 
+    const line = screen.getByTestId("level-requirement-line")
     expect(screen.getByTestId("level-requirement-target")).toHaveTextContent(
       'goals.overview.levelProgress:{"current":31,"target":32}'
     )
-    expect(screen.getByTestId("level-requirement-progress")).toBeInTheDocument()
-    expect(screen.getByTestId("level-requirement-remaining")).toHaveTextContent(
-      'goals.overview.remainingText.levels:{"count":"1"}'
+    expect(line).toContainElement(
+      screen.getByTestId("level-requirement-progress")
     )
+    expect(screen.getByTestId("level-requirement-books")).toHaveTextContent(
+      'goals.resourceChips.xpBooksValue:{"available":"4","needed":"6"}'
+    )
+    expect(line).not.toHaveTextContent("remainingText.levels")
+    expect(line).not.toHaveTextContent("XP remaining")
   })
 
-  it("appends the available/needed XP-book count to the raw remaining text (worked pool example)", () => {
+  it("omits the book figure when no books are needed", () => {
     render(
-      <LevelRequirementRemaining
-        availableBookCount={8}
+      <LevelRequirementLine
         levelRequirement={requirement}
-        neededBookCount={1}
-        xpBookRarity="Legendary"
+        potentialRatio={1}
+        xpBooks={{ needed: 0, available: 8, rarity: "Legendary" }}
       />
     )
 
-    const text = screen.getByTestId("level-requirement-remaining")
-    expect(text).toHaveTextContent(
-      'goals.overview.remainingText.levels:{"count":"1"}'
-    )
-    expect(text).toHaveTextContent(
-      'goals.overview.remainingText.bookAvailability:{"available":8,"needed":1,"rarity":"progression:rarities.Legendary:{\\"defaultValue\\":\\"Legendary\\"}"}'
-    )
-  })
-
-  it("shows an available count below the needed count when the pool is only partial", () => {
-    render(
-      <LevelRequirementRemaining
-        availableBookCount={0}
-        levelRequirement={requirement}
-        neededBookCount={1}
-        xpBookRarity="Legendary"
-      />
-    )
-
-    expect(screen.getByTestId("level-requirement-remaining")).toHaveTextContent(
-      'goals.overview.remainingText.bookAvailability:{"available":0,"needed":1,"rarity":"progression:rarities.Legendary:{\\"defaultValue\\":\\"Legendary\\"}"}'
-    )
-  })
-
-  it("shows nothing extra once the goal needs no further books", () => {
-    render(
-      <LevelRequirementRemaining
-        availableBookCount={8}
-        levelRequirement={requirement}
-        neededBookCount={0}
-        xpBookRarity="Legendary"
-      />
-    )
-
-    expect(
-      screen.getByTestId("level-requirement-remaining")
-    ).not.toHaveTextContent("bookAvailability")
+    expect(screen.getByTestId("level-requirement-target")).toBeInTheDocument()
+    expect(screen.queryByTestId("level-requirement-books")).toBeNull()
   })
 
   it("renders nothing once the character's level is sufficient", () => {
     render(
-      <>
-        <LevelRequirementTarget levelRequirement={null} />
-        <LevelRequirementProgressBar
-          levelRequirement={undefined}
-          potentialRatio={undefined}
-        />
-        <LevelRequirementRemaining levelRequirement={null} />
-      </>
+      <LevelRequirementLine
+        levelRequirement={null}
+        potentialRatio={undefined}
+      />
     )
 
-    expect(screen.queryByTestId("level-requirement-target")).toBeNull()
-    expect(screen.queryByTestId("level-requirement-progress")).toBeNull()
-    expect(screen.queryByTestId("level-requirement-remaining")).toBeNull()
+    expect(screen.queryByTestId("level-requirement-line")).toBeNull()
   })
 })

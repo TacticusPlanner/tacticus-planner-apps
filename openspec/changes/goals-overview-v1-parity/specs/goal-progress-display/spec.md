@@ -23,19 +23,19 @@ Assumptions:
 
 ### Requirement: A Rank or Ability goal's level requirement carries its own remaining text and explanation
 
-When a Rank or Ability goal shows a level requirement (see `rank-level-progression`), the requirement display SHALL carry its own remaining text: "{{count}} levels" (remaining levels to the required level), with thousands separators. The text SHALL NOT include the raw XP figure; the XP still needed is represented by the XP-book chip of `goal-remaining-resources` and, in the progress explanation, by the Potential line. Where the requirement display has both an Actual and a Potential ratio to show, its explanation SHALL follow the disclosure behavior defined for the Actual/Potential captions, with the Actual line noting the remaining-levels figure (e.g. "6 levels remaining") and the Potential line noting the remaining-XP figure (e.g. "1,304,192 XP remaining").
+When a Rank or Ability goal shows a level requirement (see `rank-level-progression`), the requirement display SHALL show the level target "Lv {{current}} → {{required}}" with the XP-book figure on one line in the Progress cell (see `goal-list-layout`), and SHALL NOT render a "{{count}} levels" or raw-XP text anywhere in the Remaining column. The remaining-levels and remaining-XP figures survive only in the progress explanation below. Where the requirement display has both an Actual and a Potential ratio to show, its explanation SHALL follow the disclosure behavior defined for the Actual/Potential captions, with the Actual line noting the remaining-levels figure (e.g. "6 levels remaining") and the Potential line noting the remaining-XP figure (e.g. "1,304,192 XP remaining").
 
 #### Scenario: Requirement with a raw XP gap
 
 - **GIVEN** a Rank goal's required level is 6 levels above the character's current level, and the raw xp gap to close it is 1,304,192
-- **WHEN** the level requirement's remaining text renders
-- **THEN** it reads "6 levels", with no XP segment
+- **WHEN** the goal's row renders
+- **THEN** the Progress cell shows the level line (target level and book figure), and the Remaining cell shows no "6 levels" and no XP text
 
 #### Scenario: Requirement already covered by total xp already gained
 
 - **GIVEN** an Ability goal's required level is 2 levels above the character's current level, and the character's total xp already gained meets or exceeds that level's own threshold
-- **WHEN** the level requirement's remaining text renders
-- **THEN** it reads "2 levels", with no XP segment
+- **WHEN** the goal's row renders
+- **THEN** the Progress cell shows the level line and the Remaining cell shows no "2 levels" and no XP text
 
 #### Scenario: The requirement's explanation carries its own remaining-levels and remaining-XP figures
 

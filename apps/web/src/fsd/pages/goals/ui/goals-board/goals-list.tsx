@@ -26,11 +26,7 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
-import {
-  LevelRequirementProgressBar,
-  LevelRequirementRemaining,
-  LevelRequirementTarget,
-} from "../shared/level-requirement-display"
+import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
@@ -235,7 +231,6 @@ function GoalsTable({
                     entityType={row.entityType}
                     progress={progress}
                   />
-                  <LevelRequirementTarget levelRequirement={levelRequirement} />
                 </TableCell>
                 <TableCell
                   className="min-w-[220px]"
@@ -256,9 +251,10 @@ function GoalsTable({
                         progress={progress}
                         remaining={remaining}
                       />
-                      <LevelRequirementProgressBar
+                      <LevelRequirementLine
                         levelRequirement={levelRequirement}
                         potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                        xpBooks={xpBooks}
                       />
                     </>
                   )}
@@ -273,14 +269,8 @@ function GoalsTable({
                         entityType={row.entityType}
                         goalType={row.goalType}
                         remaining={remaining}
-                        xpBooks={xpBooks}
                       />
                     </div>
-                  )}
-                  {reached ? null : (
-                    <LevelRequirementRemaining
-                      levelRequirement={levelRequirement}
-                    />
                   )}
                 </TableCell>
                 <TableCell>

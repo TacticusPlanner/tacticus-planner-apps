@@ -904,8 +904,7 @@
         "levels": "{{count}} levels",
         "rankEnergy": "{{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
-        "shards": "{{count}} shards",
-        "bookAvailability": "{{available}}/{{needed}} {{rarity}} books"
+        "shards": "{{count}} shards"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Progress details",

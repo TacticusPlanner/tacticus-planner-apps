@@ -8,11 +8,11 @@ Defines the icon chips the Goals list's Remaining column shows for what a goal s
 
 For a goal that has not reached its target, the Remaining display SHALL show one chip per resource type still needed, each made of the resource's icon and a quantity, in place of words. Every chip SHALL expose the resource's full localized name and its quantity as a tooltip and as an accessible name. A resource with nothing left to acquire SHALL NOT render a chip. Numbers SHALL use the locale's thousands separator. Upgrade materials (crafting ingredients) SHALL NOT be shown as chips for any goal kind. Every chip SHALL use the same icon V1 uses for that resource (energy, gold coin, ability badge, forge badge, Machine of War component, orb, shard, XP book). The chips SHALL be, by goal kind:
 
-- Rank: gold (the crafting gold the goal still needs), energy when a farming energy estimate is available, and an XP-book chip when the goal needs a level-up.
+- Rank: gold (the gold to apply XP books for a level-up), and energy when a farming energy estimate is available.
 - Ascension: orbs by rarity, shards and mythic shards, and energy when estimated.
 - Unlock: shards, and energy when estimated.
-- Ability on a Machine of War: ability badges by rarity, forge badges by rarity, components, gold, and energy when estimated. A Machine of War has no character level, so it never shows an XP-book chip.
-- Ability on a Character: ability badges by rarity, gold, energy when estimated, and an XP-book chip when a level-up is needed.
+- Ability on a Machine of War: ability badges by rarity, forge badges by rarity, components, gold, and energy when estimated.
+- Ability on a Character: ability badges by rarity, gold, and energy when estimated.
 - Upgrade: energy when estimated.
 
 #### Scenario: A Rank goal shows materials and energy chips
@@ -21,11 +21,11 @@ For a goal that has not reached its target, the Remaining display SHALL show one
 - **WHEN** its Remaining display renders
 - **THEN** it shows an energy chip reading 1,674 and no upgrade-material chip
 
-#### Scenario: A Machine of War ability goal shows no XP-book chip
+#### Scenario: A Machine of War ability goal shows its materials
 
 - **GIVEN** a Machine of War Ability goal with badges, forge badges, components and gold still needed
 - **WHEN** its Remaining display renders
-- **THEN** it shows those four chips and no XP-book chip
+- **THEN** it shows those chips (net of inventory) and its energy
 
 #### Scenario: A chip's name is available without hovering
 
@@ -89,21 +89,27 @@ A chip's quantity SHALL be what the goal still needs after the player's full inv
 - **WHEN** its Remaining display renders
 - **THEN** no orb chip is shown
 
-### Requirement: The XP-book chip re-presents the available/needed book figure
+### Requirement: The XP-book figure sits with the level progress, not in Remaining
 
-When a Character's Rank or Ability goal needs a level-up, the Remaining display SHALL include a chip with the XP-book icon in the user's selected XP-book rarity showing the goal's needed book count and, next to it, the available count from the shared owned-book pool at this goal's turn in priority order, using the same figures defined by `goal-farming-guidance`. The chip SHALL NOT show a raw XP figure. When the goal needs no level-up, or its need rounds to zero books, the chip SHALL NOT render.
+When a Character's Rank or Ability goal needs a level-up, the XP-book figure (the XP-book icon in the user's selected XP-book rarity, the goal's needed book count and, next to it, the available count from the shared owned-book pool at this goal's turn in priority order, per `goal-farming-guidance`) SHALL be shown on the goal's combined level line in the Progress cell (see `goal-list-layout`'s level-requirement requirement), and SHALL NOT appear in the Remaining display. The figure SHALL NOT show a raw XP amount. When the goal needs no level-up, or its need rounds to zero books, no book figure SHALL render. A Machine of War goal never shows one.
 
 #### Scenario: A goal needing a level-up
 
 - **GIVEN** a Rank goal whose character is below the required level, with 6 books needed and 4 available in the selected rarity
-- **WHEN** its Remaining display renders
-- **THEN** it shows an XP-book chip reading 4 available of 6 needed, and no XP figure
+- **WHEN** the goal's row renders
+- **THEN** the level line in the Progress cell shows the level target and a book figure reading 4 available of 6 needed, and the Remaining cell has no book chip
 
 #### Scenario: A goal with no level-up
 
 - **GIVEN** a goal whose character already meets the required level
-- **WHEN** its Remaining display renders
-- **THEN** no XP-book chip appears
+- **WHEN** its row renders
+- **THEN** no book figure and no level line appear
+
+#### Scenario: A Machine of War goal
+
+- **GIVEN** a Machine of War Ability goal
+- **WHEN** its row renders
+- **THEN** no book figure appears
 
 ### Requirement: Remaining resources come from the same calculation the plan uses
 

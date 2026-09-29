@@ -299,24 +299,22 @@ describe("GoalsList", () => {
       )
 
       // Only goal-1 (the one below its level) shows the requirement; goal-2 has none.
-      expect(
-        await screen.findAllByTestId("level-requirement-target")
-      ).toHaveLength(1)
+      const lines = await screen.findAllByTestId("level-requirement-line")
+      expect(lines).toHaveLength(1)
       expect(screen.getAllByTestId("level-requirement-progress")).toHaveLength(
         1
       )
-      const remaining = screen.getAllByTestId("level-requirement-remaining")
-      expect(remaining).toHaveLength(1)
-      // Levels only here; the book figure (100,000 XP pool / 12,500 per Legendary book = 8 available,
-      // 12,200 charged XP = 1 needed) lives in the XP-book chip, once, never in this line.
-      expect(remaining[0]).toHaveTextContent(
-        "goals.overview.remainingText.levels"
-      )
-      expect(remaining[0]).not.toHaveTextContent("XP")
-      expect(remaining[0]).not.toHaveTextContent("bookAvailability")
-      const chips = screen.getAllByTestId("goal-resource-chip")
-      expect(chips).toHaveLength(1)
-      expect(chips[0]).toHaveTextContent("goals.resourceChips.xpBooksValue")
+      // The level target and the book figure (100,000 XP pool / 12,500 per Legendary book = 8
+      // available, 12,200 charged XP = 1 needed) share the one line, once each.
+      expect(lines[0]).toHaveTextContent("goals.overview.levelProgress")
+      expect(screen.getAllByTestId("level-requirement-books")).toHaveLength(1)
+      expect(lines[0]).toHaveTextContent("goals.resourceChips.xpBooksValue")
+      // Nothing about the requirement in the Remaining chips or Goal cell.
+      expect(
+        screen.queryAllByTestId("level-requirement-remaining")
+      ).toHaveLength(0)
+      expect(screen.queryAllByTestId("goal-resource-chip")).toHaveLength(0)
+      expect(lines[0]).not.toHaveTextContent("remainingText.levels")
       expect(screen.queryAllByTestId("level-goal-sub-target")).toHaveLength(0)
       // Ordinary progress, never a restriction.
       expect(screen.queryAllByTestId("goal-restricted-indicator")).toHaveLength(

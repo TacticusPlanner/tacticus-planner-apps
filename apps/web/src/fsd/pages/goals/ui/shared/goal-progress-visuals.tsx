@@ -396,7 +396,8 @@ export function GoalProgressDisplay({
 
   const ceilingLabel = reachableCeilingLabel(t, progress)
 
-  const mobileFooter = hasExplanation ? (
+  // The level line is one compact row, so its potential-only bar carries no footer text.
+  const mobileFooter = showPotentialOnly ? null : hasExplanation ? (
     <div className="grid gap-1">
       <button
         aria-expanded={mobileExpanded}

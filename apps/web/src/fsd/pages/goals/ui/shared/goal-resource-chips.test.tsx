@@ -12,9 +12,6 @@ vi.mock("react-i18next", () => ({
       if (key === "goals.resourceChips.chipLabel") {
         return `${opts?.name}: ${opts?.quantity}`
       }
-      if (key === "goals.resourceChips.xpBooksValue") {
-        return `${opts?.available} of ${opts?.needed}`
-      }
       return opts?.rarity ? `${opts.rarity} ${key.split(".").pop()}` : key
     },
     i18n: { resolvedLanguage: "en" },
@@ -47,50 +44,31 @@ const chipNames = () =>
     .map((chip) => within(chip).getByRole("img").getAttribute("aria-label"))
 
 describe("GoalResourceChips", () => {
-  it("Rank: gold to apply the level-up books, then energy, then XP books", () => {
+  it("Rank: gold to apply the level-up books, then energy (never an XP-book chip)", () => {
     render(
       <GoalResourceChips
         energy={1674}
         entityType="Character"
         goalType="Rank"
         remaining={need({ levelGold: 42_000 })}
-        xpBooks={{ needed: 6, available: 4, rarity: "Legendary" }}
       />
     )
     expect(chipNames()).toEqual([
       "goals.resourceChips.gold: 42,000",
       "goals.resourceChips.energy: 1,674",
-      "Legendary xpBooks: 4 of 6",
     ])
   })
 
-  it("Rank: energy with a thousands separator, XP books when a level-up is needed, no material chips", () => {
+  it("Rank: energy with a thousands separator, no material chips", () => {
     render(
       <GoalResourceChips
         energy={1674}
         entityType="Character"
         goalType="Rank"
         remaining={need()}
-        xpBooks={{ needed: 6, available: 4, rarity: "Legendary" }}
       />
     )
-    expect(chipNames()).toEqual([
-      "goals.resourceChips.energy: 1,674",
-      "Legendary xpBooks: 4 of 6",
-    ])
-  })
-
-  it("hides the XP-book chip when no level-up is needed", () => {
-    render(
-      <GoalResourceChips
-        energy={10}
-        entityType="Character"
-        goalType="Rank"
-        remaining={need()}
-        xpBooks={{ needed: 0, available: 0, rarity: "Legendary" }}
-      />
-    )
-    expect(chipNames()).toEqual(["goals.resourceChips.energy: 10"])
+    expect(chipNames()).toEqual(["goals.resourceChips.energy: 1,674"])
   })
 
   it("Ascension: orbs by rarity, shards, mythic shards and energy; zero quantities omitted", () => {
@@ -128,14 +106,13 @@ describe("GoalResourceChips", () => {
     ])
   })
 
-  it("MoW Ability: badges, forge badges, components, gold and energy, never an XP-book chip", () => {
+  it("MoW Ability: badges, forge badges, components, gold and energy", () => {
     render(
       <GoalResourceChips
         energy={900}
         entityType="Mow"
         goalType="Ability"
         remaining={need({ abilityMaterials })}
-        xpBooks={{ needed: 6, available: 4, rarity: "Legendary" }}
       />
     )
     expect(chipNames()).toEqual([
@@ -185,7 +162,7 @@ describe("GoalResourceChips", () => {
     ])
   })
 
-  it("Character Ability: badges and gold, plus XP books when a level-up is needed", () => {
+  it("Character Ability: badges and gold", () => {
     render(
       <GoalResourceChips
         energy={undefined}
@@ -198,13 +175,11 @@ describe("GoalResourceChips", () => {
             components: 0,
           },
         })}
-        xpBooks={{ needed: 2, available: 1, rarity: "Epic" }}
       />
     )
     expect(chipNames()).toEqual([
       "Epic abilityBadges: 4",
       "goals.resourceChips.gold: 12,000",
-      "Epic xpBooks: 1 of 2",
     ])
   })
 
