@@ -998,6 +998,40 @@
       "estimatesError": "Certaines estimations du plan n'ont pas pu être chargées ; des détails de farming peuvent manquer.",
       "estimatesRetry": "Réessayer les estimations",
       "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses."
+    },
+    "edit": {
+      "title": "Modifier l'objectif",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "loadError": "Impossible de charger cet objectif. Il n'existe peut-être plus.",
+      "refresh": "Actualiser l'objectif",
+      "reloadOrder": "Recharger l'ordre",
+      "priority": {
+        "label": "Priorité",
+        "hint": "1 est la priorité la plus haute. À l'enregistrement, cet objectif est déplacé à la position choisie.",
+        "option": "{{position}} sur {{total}}"
+      },
+      "unsaved": {
+        "title": "Abandonner les modifications non enregistrées ?",
+        "description": "Vous avez des modifications non enregistrées sur cet objectif. Fermer maintenant les abandonnera.",
+        "keep": "Continuer la modification",
+        "discard": "Abandonner les modifications"
+      },
+      "errors": {
+        "stale": "Cet objectif a été modifié ailleurs et rien n'a été enregistré. Actualisez l'objectif (vos modifications sont conservées), puis enregistrez à nouveau.",
+        "order": "L'ordre de vos objectifs a changé et rien n'a été enregistré. Rechargez l'ordre actuel, vérifiez la position, puis enregistrez à nouveau.",
+        "conflict": "Un autre objectif de cette unité occupe déjà cette place dans : {{project}}. Rien n'a été enregistré.",
+        "invalid": "Non valide : {{sections}}. Rien n'a été enregistré. {{message}}",
+        "failed": "Impossible d'enregistrer cet objectif. Rien n'a été enregistré."
+      },
+      "sections": {
+        "target": "cible",
+        "details": "détails",
+        "projects": "projets",
+        "priority": "priorité",
+        "unknown": "une saisie"
+      }
     }
   },
   "language": {
@@ -1185,6 +1219,22 @@
         "editTarget": {
           "title": "Modifier l'objectif",
           "content": "Changez l'endroit où cet objectif se termine sans le recréer. Il conserve ses projets, ses notes et son historique, et votre plan est recalculé."
+        },
+        "projects": {
+          "title": "Projets",
+          "content": "Ajoutez cet objectif à un projet ou créez-en un nouveau depuis le sélecteur. Le nouveau projet est enregistré immédiatement ; l'objectif ne change que lorsque vous enregistrez."
+        }
+      }
+    },
+    "editGoal": {
+      "steps": {
+        "target": {
+          "title": "Cible",
+          "content": "Modifiez où cet objectif se termine sans le recréer. Il conserve son historique et votre plan est recalculé à l'enregistrement."
+        },
+        "priority": {
+          "title": "Priorité",
+          "content": "Choisissez la position de cet objectif dans votre ordre de priorité. Il y est déplacé à l'enregistrement et les objectifs intermédiaires avancent d'une place."
         },
         "projects": {
           "title": "Projets",

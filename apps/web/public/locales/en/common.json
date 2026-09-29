@@ -998,6 +998,40 @@
       "estimatesError": "Some plan estimates couldn't be loaded, so farming details may be missing.",
       "estimatesRetry": "Retry estimates",
       "listNote": "Goals are in your priority order. Drag an active or paused goal to move it — the change applies in every project, Today, Raids Plan, and Insights."
+    },
+    "edit": {
+      "title": "Edit goal",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "loadError": "Couldn't load this goal. It may no longer exist.",
+      "refresh": "Refresh goal",
+      "reloadOrder": "Reload order",
+      "priority": {
+        "label": "Priority",
+        "hint": "1 is the highest priority. Saving a new position moves this goal there.",
+        "option": "{{position}} of {{total}}"
+      },
+      "unsaved": {
+        "title": "Discard unsaved changes?",
+        "description": "You have unsaved changes to this goal. Closing now will discard them.",
+        "keep": "Keep editing",
+        "discard": "Discard changes"
+      },
+      "errors": {
+        "stale": "This goal was changed elsewhere and nothing was saved. Refresh the goal (your edits are kept), then save again.",
+        "order": "The order of your goals changed and nothing was saved. Reload the current order, check the position, then save again.",
+        "conflict": "Another goal for this unit already holds that place in: {{project}}. Nothing was saved.",
+        "invalid": "Not valid: {{sections}}. Nothing was saved. {{message}}",
+        "failed": "Couldn't save this goal. Nothing was saved."
+      },
+      "sections": {
+        "target": "target",
+        "details": "details",
+        "projects": "projects",
+        "priority": "priority",
+        "unknown": "an entry"
+      }
     }
   },
   "language": {
@@ -1185,6 +1219,22 @@
         "editTarget": {
           "title": "Edit target",
           "content": "Change where this goal ends without recreating it. It keeps its projects, notes, and history, and your plan recalculates."
+        },
+        "projects": {
+          "title": "Projects",
+          "content": "Add this goal to a project, or create a new one from the picker. The new project is saved right away; the goal itself only changes when you save."
+        }
+      }
+    },
+    "editGoal": {
+      "steps": {
+        "target": {
+          "title": "Target",
+          "content": "Change where this goal ends without recreating it. It keeps its history, and your plan recalculates when you save."
+        },
+        "priority": {
+          "title": "Priority",
+          "content": "Pick this goal's position in your priority order. It moves there when you save, and the goals in between shift by one place."
         },
         "projects": {
           "title": "Projects",

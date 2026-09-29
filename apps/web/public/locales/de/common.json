@@ -998,6 +998,40 @@
       "estimatesError": "Einige Planschätzungen konnten nicht geladen werden, daher fehlen möglicherweise Farming-Details.",
       "estimatesRetry": "Schätzungen erneut laden",
       "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken."
+    },
+    "edit": {
+      "title": "Ziel bearbeiten",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "loadError": "Dieses Ziel konnte nicht geladen werden. Möglicherweise existiert es nicht mehr.",
+      "refresh": "Ziel aktualisieren",
+      "reloadOrder": "Reihenfolge neu laden",
+      "priority": {
+        "label": "Priorität",
+        "hint": "1 ist die höchste Priorität. Beim Speichern wird dieses Ziel an die gewählte Position verschoben.",
+        "option": "{{position}} von {{total}}"
+      },
+      "unsaved": {
+        "title": "Nicht gespeicherte Änderungen verwerfen?",
+        "description": "Du hast nicht gespeicherte Änderungen an diesem Ziel. Wenn du jetzt schließt, gehen sie verloren.",
+        "keep": "Weiter bearbeiten",
+        "discard": "Änderungen verwerfen"
+      },
+      "errors": {
+        "stale": "Dieses Ziel wurde anderswo geändert und es wurde nichts gespeichert. Aktualisiere das Ziel (deine Änderungen bleiben erhalten) und speichere erneut.",
+        "order": "Die Reihenfolge deiner Ziele hat sich geändert und es wurde nichts gespeichert. Lade die aktuelle Reihenfolge, prüfe die Position und speichere erneut.",
+        "conflict": "Ein anderes Ziel für diese Einheit belegt diesen Platz bereits in: {{project}}. Es wurde nichts gespeichert.",
+        "invalid": "Ungültig: {{sections}}. Es wurde nichts gespeichert. {{message}}",
+        "failed": "Dieses Ziel konnte nicht gespeichert werden. Es wurde nichts gespeichert."
+      },
+      "sections": {
+        "target": "Zielwert",
+        "details": "Details",
+        "projects": "Projekte",
+        "priority": "Priorität",
+        "unknown": "eine Eingabe"
+      }
     }
   },
   "language": {
@@ -1185,6 +1219,22 @@
         "editTarget": {
           "title": "Ziel bearbeiten",
           "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Projekte, Notizen und Verlauf bleiben erhalten, und dein Plan wird neu berechnet."
+        },
+        "projects": {
+          "title": "Projekte",
+          "content": "Füge dieses Ziel einem Projekt hinzu oder erstelle in der Auswahl ein neues. Das neue Projekt wird sofort gespeichert; das Ziel selbst ändert sich erst, wenn du speicherst."
+        }
+      }
+    },
+    "editGoal": {
+      "steps": {
+        "target": {
+          "title": "Zielwert",
+          "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Der Verlauf bleibt erhalten, und dein Plan wird beim Speichern neu berechnet."
+        },
+        "priority": {
+          "title": "Priorität",
+          "content": "Wähle die Position dieses Ziels in deiner Prioritätsreihenfolge. Beim Speichern wird es dorthin verschoben, und die Ziele dazwischen rücken um einen Platz."
         },
         "projects": {
           "title": "Projekte",

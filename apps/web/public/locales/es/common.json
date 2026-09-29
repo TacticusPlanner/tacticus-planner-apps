@@ -998,6 +998,40 @@
       "estimatesError": "No se pudieron cargar algunas estimaciones del plan, por lo que pueden faltar detalles de farmeo.",
       "estimatesRetry": "Reintentar estimaciones",
       "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información."
+    },
+    "edit": {
+      "title": "Editar objetivo",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "loadError": "No se pudo cargar este objetivo. Puede que ya no exista.",
+      "refresh": "Actualizar objetivo",
+      "reloadOrder": "Recargar orden",
+      "priority": {
+        "label": "Prioridad",
+        "hint": "1 es la prioridad más alta. Al guardar, este objetivo se mueve a la posición elegida.",
+        "option": "{{position}} de {{total}}"
+      },
+      "unsaved": {
+        "title": "¿Descartar cambios sin guardar?",
+        "description": "Tienes cambios sin guardar en este objetivo. Si cierras ahora, se descartarán.",
+        "keep": "Seguir editando",
+        "discard": "Descartar cambios"
+      },
+      "errors": {
+        "stale": "Este objetivo se modificó en otro lugar y no se guardó nada. Actualiza el objetivo (tus cambios se conservan) y vuelve a guardar.",
+        "order": "El orden de tus objetivos cambió y no se guardó nada. Recarga el orden actual, revisa la posición y vuelve a guardar.",
+        "conflict": "Otro objetivo de esta unidad ya ocupa ese lugar en: {{project}}. No se guardó nada.",
+        "invalid": "No válido: {{sections}}. No se guardó nada. {{message}}",
+        "failed": "No se pudo guardar este objetivo. No se guardó nada."
+      },
+      "sections": {
+        "target": "meta",
+        "details": "detalles",
+        "projects": "proyectos",
+        "priority": "prioridad",
+        "unknown": "una entrada"
+      }
     }
   },
   "language": {
@@ -1185,6 +1219,22 @@
         "editTarget": {
           "title": "Editar objetivo",
           "content": "Cambia dónde termina esta meta sin volver a crearla. Conserva sus proyectos, notas e historial, y tu plan se recalcula."
+        },
+        "projects": {
+          "title": "Proyectos",
+          "content": "Añade este objetivo a un proyecto o crea uno nuevo desde el selector. El proyecto nuevo se guarda de inmediato; el objetivo solo cambia cuando guardas."
+        }
+      }
+    },
+    "editGoal": {
+      "steps": {
+        "target": {
+          "title": "Meta",
+          "content": "Cambia dónde termina este objetivo sin volver a crearlo. Conserva su historial y tu plan se recalcula al guardar."
+        },
+        "priority": {
+          "title": "Prioridad",
+          "content": "Elige la posición de este objetivo en tu orden de prioridad. Se mueve allí al guardar y los objetivos intermedios se desplazan un lugar."
         },
         "projects": {
           "title": "Proyectos",

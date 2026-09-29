@@ -14,7 +14,10 @@ import {
   type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
 import { useGoalTargetSave } from "../../model/target-edit/use-goal-target-save"
-import { GoalTargetFields, GoalTargetStart } from "./goal-target-fields"
+import {
+  GoalTargetFields,
+  GoalTargetStart,
+} from "../goal-edit/goal-target-fields"
 
 /**
  * The goal detail's in-place target editor (`edit-goal-targets-in-place`). It lives beside — not inside —
