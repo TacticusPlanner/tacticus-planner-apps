@@ -93,6 +93,8 @@
     "noSeasonReference": "No hay datos de temporada de jefes de incursión disponibles.",
     "bosses": "Jefes",
     "primes": "Primes",
+    "pickerPlaceholder": "Buscar jefes y primes…",
+    "pickerEmpty": "No se encontró ningún jefe o prime.",
     "primarch": "Primarca",
     "progression": "Progresión",
     "stats": "Estadísticas",
@@ -125,6 +127,10 @@
         "primes": {
           "title": "Primes",
           "content": "Los enemigos prime que luchan junto a cada jefe, consultables por sí mismos."
+        },
+        "mobilePicker": {
+          "title": "Jefes de incursión de gremio",
+          "content": "Busca y selecciona un jefe o prime: cada jefe está agrupado con los primes que combaten junto a él."
         },
         "progression": {
           "title": "Paso de progresión",
