@@ -385,7 +385,7 @@
     "planningSettings": {
       "button": "Ajustes de planificación",
       "title": "Ajustes de planificación",
-      "description": "Elige el presupuesto diario de energía que usan las estimaciones de objetivos.",
+      "description": "Elige el presupuesto diario de energía que se usa para la planificación diaria de incursiones y para las estimaciones generales de objetivos.",
       "dailyEnergy": "Energía por día",
       "save": "Guardar ajustes",
       "cancel": "Cancelar",

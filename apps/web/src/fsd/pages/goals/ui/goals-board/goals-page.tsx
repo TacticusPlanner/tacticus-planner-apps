@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Plus, Settings } from "lucide-react"
+import { Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -19,6 +19,10 @@ import {
   type GoalTypeFilterValue,
 } from "@/entities/goal"
 import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
+import {
+  PlanningSettingsDialog,
+  PlanningSettingsTrigger,
+} from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
@@ -42,7 +46,6 @@ import { ALL_PROJECTS, ProjectFilterSelect } from "./goals-project-filter"
 import { OverviewProjectQuicknav } from "./overview-project-quicknav"
 import { buildCascadeContext } from "./goal-row-utils"
 import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
-import { PlanningSettingsDialog } from "../settings/planning-settings-dialog"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
@@ -52,8 +55,10 @@ import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
  * row can be dragged (a dedicated mode on mobile). A drop is saved on its own as a single move, so
  * it works under any status/type/project filter and Group: the goal takes the global position of the
  * goal it displaces and hidden goals keep their relative order. Estimates come from the same plan
- * run Today uses. Planning Settings lives only here (goals-navigation spec) - moved down from the
- * shared `GoalsLayout` wrapper.
+ * run Today uses. Within Goals, Planning Settings lives only here (goals-navigation spec: Projects
+ * and Insights render no entry point of their own) - moved down from the shared `GoalsLayout`
+ * wrapper. Dailies > Raids (`RaidsLayout`) has its own separate entry point onto the same shared
+ * dialog (`expose-planning-settings-from-dailies`); the two never import from each other.
  */
 export function GoalsPage() {
   const { t } = useTranslation()
@@ -245,16 +250,10 @@ export function GoalsPage() {
       />
     ) : null
   const planningSettingsButton = (
-    <Button
-      aria-label={t("goals.planningSettings.button")}
-      data-testid="goals-planning-settings"
+    <PlanningSettingsTrigger
       onClick={() => setSettingsOpen(true)}
-      size="sm"
-      variant="outline"
-    >
-      <Settings data-icon="inline-start" />
-      {isMobile ? null : t("goals.planningSettings.button")}
-    </Button>
+      testId="goals-planning-settings"
+    />
   )
   const goalFiltersAndSettings = (
     <div className="flex items-center gap-2" data-testid="goals-filter-group">
