@@ -65,7 +65,7 @@
 
 ## 8f. MoW materials as available/needed
 
-- [ ] 8.11 Show a Machine of War Ability goal's ability badges, forge badges and components as available/needed chips (available = stock at the goal's turn in priority order, uncapped; always shown when needed > 0; V1 icons), keep gold in k and energy, and verify tests for fully held (27/27), partly held (118/138), priority split (30/27 then 3/27), no-need, and paused-goal fallbacks, then check Z'Kar in the browser (ability 27/27, forge 27/27, components 118/138)
+- [x] 8.11 Show a Machine of War Ability goal's ability badges, forge badges and components as available/needed chips (available = stock at the goal's turn in priority order, uncapped; always shown when needed > 0; V1 icons), keep gold in k and energy, and verify tests for fully held (27/27), partly held (118/138), priority split (30/27 then 3/27), no-need, and paused-goal fallbacks, then check Z'Kar in the browser (verified: ability 86/27, forge 49/27 - available is uncapped, like the XP-book figure, so it can exceed the need - components 118/138; V1 caps the held amount at the need and shows 27/27)
 
 ## 7. Verification
 
