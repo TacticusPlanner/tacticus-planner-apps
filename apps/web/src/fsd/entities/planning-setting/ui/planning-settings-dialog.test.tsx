@@ -20,7 +20,7 @@ vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},
 }))
 
-import { PlanningSettingsDialog } from ".//planning-settings-dialog"
+import { PlanningSettingsDialog } from "./planning-settings-dialog"
 
 describe("PlanningSettingsDialog", () => {
   beforeEach(() => {

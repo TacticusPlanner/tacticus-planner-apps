@@ -385,7 +385,7 @@
     "planningSettings": {
       "button": "Planungseinstellungen",
       "title": "Planungseinstellungen",
-      "description": "Wähle das tägliche Energiebudget, das für Zielschätzungen verwendet wird.",
+      "description": "Wähle das tägliche Energiebudget, das für die tägliche Raid-Planung und für umfassendere Zielschätzungen verwendet wird.",
       "dailyEnergy": "Energie pro Tag",
       "save": "Einstellungen speichern",
       "cancel": "Abbrechen",

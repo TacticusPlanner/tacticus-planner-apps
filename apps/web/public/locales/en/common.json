@@ -385,7 +385,7 @@
     "planningSettings": {
       "button": "Planning settings",
       "title": "Planning settings",
-      "description": "Choose the daily energy budget used by goal estimates.",
+      "description": "Choose the daily energy budget used for daily raid planning and broader goal estimates.",
       "dailyEnergy": "Energy per day",
       "save": "Save settings",
       "cancel": "Cancel",

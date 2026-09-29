@@ -385,7 +385,7 @@
     "planningSettings": {
       "button": "Paramètres de planification",
       "title": "Paramètres de planification",
-      "description": "Choisissez le budget d'énergie quotidien utilisé par les estimations d'objectifs.",
+      "description": "Choisissez le budget d'énergie quotidien utilisé pour la planification quotidienne des raids et pour les estimations d'objectifs plus larges.",
       "dailyEnergy": "Énergie par jour",
       "save": "Enregistrer les paramètres",
       "cancel": "Annuler",
