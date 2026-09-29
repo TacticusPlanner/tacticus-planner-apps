@@ -6,15 +6,44 @@ import { getLiveProgress } from "@workspace/player-data/queries"
 
 import { useCampaignDisplay } from "@/shared/lib"
 
-import {
-  seasonEndCountdown,
-  type GuildRaidCountdown,
-} from "./guild-raids/guild-raid-countdowns"
+import { seasonEndCountdown } from "./guild-raids/guild-raid-countdowns"
 
 // The calendar's own definition id for a campaign-event window. The calendar carries no campaign
 // identity at all, so it only ever supplies the end time — which event is running comes from
 // `live-progress.activeCampaignEventId` (see design.md).
 const CAMPAIGN_EVENT_DEFINITION_ID = "campaign-event"
+
+/** The active calendar window for the campaign-event definition, as read from the catalog. */
+export type CampaignEventWindow = {
+  endUtc: string
+  /** Whether this window is an authored occurrence rather than a server-projected placeholder. */
+  confirmed: boolean
+}
+
+// Three distinct end-time presentations (see design.md): an authored occurrence gets an exact
+// countdown; a projected placeholder's endUtc is the catalog's best-known schedule, not a
+// guarantee from the game, so it must never render as one; no active window has nothing to show.
+type CampaignEventEndStatus =
+  | { kind: "confirmed"; targetMs: number }
+  | { kind: "unconfirmed" }
+  | { kind: "unavailable" }
+
+function campaignEventEndStatus(
+  window: CampaignEventWindow | null,
+  nowMs: number
+): CampaignEventEndStatus {
+  if (!window) {
+    return { kind: "unavailable" }
+  }
+  if (!window.confirmed) {
+    return { kind: "unconfirmed" }
+  }
+  // Reuse the guild-raid countdown math only for a confirmed window, per design.md decision 1.
+  const countdown = seasonEndCountdown(window.endUtc, nowMs)
+  return countdown.kind === "pending"
+    ? { kind: "confirmed", targetMs: countdown.targetMs }
+    : { kind: "unavailable" }
+}
 
 export type CampaignEventStatus = {
   /** Whether Today detected an active campaign event — the same signal that gates event nodes. */
@@ -23,18 +52,18 @@ export type CampaignEventStatus = {
   name: string | null
   /** Standard-tier campaign icon, or undefined when the id resolves to no catalog descriptor. */
   icon: string | undefined
-  /** End of the active calendar window; "unavailable" when the calendar has none for right now. */
-  endsAt: GuildRaidCountdown
+  /** End-time presentation for the active calendar window; see `CampaignEventEndStatus`. */
+  endStatus: CampaignEventEndStatus
 }
 
 export function buildCampaignEventStatus({
   activeCampaignEventId,
-  campaignEventEndUtc,
+  campaignEventWindow,
   nowMs,
   campaignName,
 }: {
   activeCampaignEventId: CampaignId | null | undefined
-  campaignEventEndUtc: string | null
+  campaignEventWindow: CampaignEventWindow | null
   nowMs: number
   campaignName: (groupId: CampaignId) => string | null
 }): CampaignEventStatus {
@@ -45,7 +74,7 @@ export function buildCampaignEventStatus({
       active: false,
       name: null,
       icon: undefined,
-      endsAt: { kind: "unavailable" },
+      endStatus: { kind: "unavailable" },
     }
   }
   return {
@@ -53,7 +82,7 @@ export function buildCampaignEventStatus({
     name: campaignName(activeCampaignEventId),
     // The group's two tiers share one icon stem, so either tier resolves the same artwork.
     icon: campaignIcon(activeCampaignEventId, "Standard"),
-    endsAt: seasonEndCountdown(campaignEventEndUtc, nowMs),
+    endStatus: campaignEventEndStatus(campaignEventWindow, nowMs),
   }
 }
 
@@ -62,15 +91,17 @@ async function readCampaignEventInputs() {
     getLiveProgress(),
     getEventsActiveAt(new Date()),
   ])
+  const campaignEvent = activeEvents.find(
+    (event) => event.definitionId === CAMPAIGN_EVENT_DEFINITION_ID
+  )
   return {
     // Read here rather than during render: the countdown is coarse ("in 3 days"), so recomputing
     // it whenever the underlying Dexie tables change is frequent enough, and render stays pure.
     nowMs: Date.now(),
     activeCampaignEventId: liveProgress?.activeCampaignEventId ?? null,
-    campaignEventEndUtc:
-      activeEvents.find(
-        (event) => event.definitionId === CAMPAIGN_EVENT_DEFINITION_ID
-      )?.endUtc ?? null,
+    campaignEventWindow: campaignEvent
+      ? { endUtc: campaignEvent.endUtc, confirmed: campaignEvent.confirmed }
+      : null,
   }
 }
 
@@ -81,7 +112,7 @@ export function useCampaignEventStatus(): CampaignEventStatus {
 
   return buildCampaignEventStatus({
     activeCampaignEventId: inputs?.activeCampaignEventId,
-    campaignEventEndUtc: inputs?.campaignEventEndUtc ?? null,
+    campaignEventWindow: inputs?.campaignEventWindow ?? null,
     nowMs: inputs?.nowMs ?? 0,
     campaignName: (groupId) => {
       // `activeCampaignEventId` comes from synced player data, not the catalog, so an event that
