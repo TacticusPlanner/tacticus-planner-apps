@@ -44,11 +44,11 @@ type StatRowSpec = {
   percent?: boolean
 }
 
-function affectedRows(
+function allRows(
   unit: RaidBoss,
   step: RaidBossStatStep,
-  view: AdjustedStatsView,
   labels: {
+    health: string
     damage: string
     armor: string
     movement: string
@@ -57,37 +57,34 @@ function affectedRows(
     blockChance: string
   }
 ): StatRowSpec[] {
-  const touched = new Set([
-    ...Object.keys(view.statAdjustments.pctByStat),
-    ...Object.keys(view.statAdjustments.flatByStat),
-  ])
-  const candidates: StatRowSpec[] = [
+  const rows: StatRowSpec[] = [
+    { key: "health", label: labels.health, base: step.health },
     { key: "dmg", label: labels.damage, base: step.damage },
     { key: "fixedArmor", label: labels.armor, base: step.fixedArmor },
     { key: "movement", label: labels.movement, base: unit.movement },
   ]
   if (step.critChance != null)
-    candidates.push({
+    rows.push({
       key: "critChance",
       label: labels.critChance,
       base: Math.round(step.critChance * 100),
       percent: true,
     })
   if (step.critDamage != null)
-    candidates.push({
+    rows.push({
       key: "critDmg",
       label: labels.critDamage,
       base: Math.round(step.critDamage * 100),
       percent: true,
     })
   if (step.blockChance != null)
-    candidates.push({
+    rows.push({
       key: "blockChance",
       label: labels.blockChance,
       base: Math.round(step.blockChance * 100),
       percent: true,
     })
-  return candidates.filter((row) => touched.has(row.key))
+  return rows
 }
 
 /**
@@ -113,7 +110,8 @@ export function RaidBossAdjustedStats({
   const { t } = useTranslation("library")
   const [showAdjusted, setShowAdjusted] = useState(!compact)
 
-  const rows = affectedRows(unit, step, view, {
+  const rows = allRows(unit, step, {
+    health: t("raidBosses.health"),
     damage: t("raidBosses.damage"),
     armor: t("raidBosses.armor"),
     movement: t("raidBosses.movement"),
@@ -165,13 +163,14 @@ export function RaidBossAdjustedStats({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {panel.hpLostPoints.map((point) => (
+                {panel.hpLostPoints.map((point, k) => (
                   <SelectItem key={point} value={String(point)}>
-                    {point === 0
+                    {k === 0
                       ? t("raidBosses.fullHp")
-                      : t("raidBosses.hpLostAmount", {
-                          hpLost: point.toLocaleString(),
-                          total: panel.totalHp.toLocaleString(),
+                      : t("raidBosses.hpLostPercent", {
+                          hpLost: Math.round(
+                            (100 * k) / (panel.hpLostPoints.length - 1)
+                          ),
                         })}
                   </SelectItem>
                 ))}
