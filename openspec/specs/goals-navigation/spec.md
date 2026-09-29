@@ -22,7 +22,7 @@ The Goals section SHALL render its Planning Settings entry point only on the Goa
 
 ### Requirement: Shared status filter control
 
-Overview and a project's detail route SHALL each present the same status filter — Unfulfilled, Reached, Archived — as a single select control defaulting to Unfulfilled, rather than three separate tab buttons. Each option SHALL show its count of matching goals.
+Overview and a project's detail route SHALL each present the same status filter — Unfulfilled, Reached, Blocked, Active, Paused — as a single select control defaulting to Unfulfilled. There SHALL be no "Archived" option. Each option except Blocked SHALL show its count of matching goals. The Reached option lists Reached goals in the same list presentation as every other option; Reached goals SHALL NOT be omitted from any option they otherwise match (see `goal-list-layout` for how a Reached row renders).
 
 #### Scenario: Status filter defaults to Unfulfilled
 
@@ -31,8 +31,13 @@ Overview and a project's detail route SHALL each present the same status filter 
 
 #### Scenario: Selecting a status filters the goal list
 
-- **WHEN** the user selects "Reached" or "Archived" from the status filter
-- **THEN** the goal list updates to show only goals in that status, and the control retains the selected value
+- **WHEN** the user selects "Reached" from the status filter
+- **THEN** the goal list updates to show only Reached goals, and the control retains the selected value
+
+#### Scenario: No Archived option
+
+- **WHEN** the user opens the status filter
+- **THEN** the options are Unfulfilled, Reached, Blocked, Active and Paused, and no "Archived" option is offered
 
 ### Requirement: Reached-goal indicator on the status filter
 
@@ -40,7 +45,7 @@ When there is at least one goal in the Reached status and the status filter's cu
 
 #### Scenario: Indicator appears when Reached goals exist and are not being viewed
 
-- **GIVEN** at least one goal has reached status and the status filter is currently set to "Unfulfilled" or "Archived"
+- **GIVEN** at least one goal has reached status and the status filter is currently set to "Unfulfilled"
 - **WHEN** the page renders
 - **THEN** the status filter's trigger shows the reached-goal indicator
 

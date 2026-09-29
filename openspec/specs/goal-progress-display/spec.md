@@ -156,19 +156,19 @@ The marker is a supplementary visual cue, not a replacement for the "Restricted"
 
 ### Requirement: A Rank or Ability goal's level requirement carries its own remaining text and explanation
 
-When a Rank or Ability goal shows a level requirement (see `rank-level-progression`), the requirement display SHALL carry its own remaining text, separate from the goal's own remaining-text formatter: "{{count}} levels" (remaining levels to the required level) or, when the raw XP still needed to close that gap is nonzero, "{{count}} levels · {{xp}} XP", with thousands separators. The XP figure is the gap between the required level's own total-XP threshold and the character's true total XP already gained (the real Tacticus API's `xp` field — "total XP gained for character", not a per-level-reset partial amount); it is NOT netted against owned XP books, and is omitted (not shown as "0 XP") whenever the character's total XP already gained meets or exceeds that threshold. Where the requirement display has both an Actual and a Potential ratio to show, its explanation SHALL follow the disclosure behavior defined for the Actual/Potential captions, with the Actual line noting the remaining-levels figure (e.g. "6 levels remaining") and the Potential line noting the remaining-XP figure (e.g. "1,304,192 XP remaining").
+When a Rank or Ability goal shows a level requirement (see `rank-level-progression`), the requirement display SHALL show the level target "Lv {{current}} → {{required}}" with the XP-book figure on one line in the Progress cell (see `goal-list-layout`), and SHALL NOT render a "{{count}} levels" or raw-XP text anywhere in the Remaining column. The remaining-levels and remaining-XP figures survive only in the progress explanation below. Where the requirement display has both an Actual and a Potential ratio to show, its explanation SHALL follow the disclosure behavior defined for the Actual/Potential captions, with the Actual line noting the remaining-levels figure (e.g. "6 levels remaining") and the Potential line noting the remaining-XP figure (e.g. "1,304,192 XP remaining").
 
 #### Scenario: Requirement with a raw XP gap
 
 - **GIVEN** a Rank goal's required level is 6 levels above the character's current level, and the raw xp gap to close it is 1,304,192
-- **WHEN** the level requirement's remaining text renders
-- **THEN** it reads "6 levels · 1,304,192 XP"
+- **WHEN** the goal's row renders
+- **THEN** the Progress cell shows the level line (target level and book figure), and the Remaining cell shows no "6 levels" and no XP text
 
 #### Scenario: Requirement already covered by total xp already gained
 
 - **GIVEN** an Ability goal's required level is 2 levels above the character's current level, and the character's total xp already gained meets or exceeds that level's own threshold
-- **WHEN** the level requirement's remaining text renders
-- **THEN** it reads "2 levels", with no XP segment
+- **WHEN** the goal's row renders
+- **THEN** the Progress cell shows the level line and the Remaining cell shows no "2 levels" and no XP text
 
 #### Scenario: The requirement's explanation carries its own remaining-levels and remaining-XP figures
 
@@ -257,18 +257,18 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 ### Requirement: Remaining resource text uses a per-goal-kind formatter for Rank and Unlock goals with thousands separators
 
-Wherever the goal progress display shows a still-needed resource count for a goal, it SHALL use one formatter per goal kind rather than a generic material/shard/orb breakdown: a Rank goal SHALL show "{{slots}} slots · {{energy}} energy" (remaining upgrade slots and, when a farming energy estimate is available, the remaining energy); an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The level requirement a Rank or Ability goal shows keeps its own remaining text ("{{count}} levels" or "{{count}} levels · {{xp}} XP", see "A Rank or Ability goal's level requirement carries its own remaining text and explanation"), rendered beneath the goal's own remaining text rather than replacing it. Every number formatted by this requirement SHALL render with the locale's thousands separator.
+Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (the tooltip on the Progress column's percent readout, a screen-reader label, the goal-detail header), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". Every number formatted by this requirement SHALL render with the locale's thousands separator.
 
 Assumptions:
 
 - This requirement only changes how an already-computed remaining count is formatted for display; it does not change any calculation in `goal-farming-estimates` or `computeGoalProgress`.
-- A Rank goal with no farming energy estimate available (for example, no project context) SHALL show only the slots figure ("{{slots}} slots"), omitting the "· {{energy}} energy" segment rather than showing a placeholder.
+- A Rank goal with no farming energy estimate available (for example, no project context) SHALL show no remaining text from this requirement rather than a placeholder.
 
 #### Scenario: Rank goal with both slots and energy available
 
 - **GIVEN** a Rank goal has 9 upgrade slots remaining and a farming estimate of 1,674 remaining energy
-- **WHEN** its remaining text renders
-- **THEN** it reads "9 slots · 1,674 energy"
+- **WHEN** its remaining text renders in the progress tooltip
+- **THEN** it reads "1,674 energy", with no slot count
 
 #### Scenario: Unlock goal
 

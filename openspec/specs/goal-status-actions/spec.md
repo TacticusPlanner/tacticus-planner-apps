@@ -8,17 +8,17 @@ How a user changes a goal's lifecycle status from the goals list: the primary pa
 
 ### Requirement: Pause and resume are primary row actions
 
-Every goal row SHALL show a pause/resume control directly in its Actions area, visible without opening the "⋯" menu: an Active goal SHALL show a control that pauses it, and a Paused goal SHALL show a control that resumes it. A Completed or Archived goal SHALL show neither, since neither status accepts a pause/resume transition.
+Every goal row that has not reached its target SHALL show a pause/resume control directly in its Actions area, visible without opening the "⋯" menu: an Active goal SHALL show a control that pauses it, and a Paused goal SHALL show a control that resumes it. A Completed or Archived goal SHALL show neither, since neither status accepts a pause/resume transition. A goal whose computed attainment is Reached SHALL show neither control, whatever its stored status; its stored status is not changed by being Reached.
 
 #### Scenario: An Active goal shows a pause control
 
-- **GIVEN** a goal has status `Active`
+- **GIVEN** a goal has status `Active` and has not reached its target
 - **WHEN** its row renders
 - **THEN** the Actions area shows a visible pause control, reachable without opening the "⋯" menu
 
 #### Scenario: A Paused goal shows a resume control
 
-- **GIVEN** a goal has status `Paused`
+- **GIVEN** a goal has status `Paused` and has not reached its target
 - **WHEN** its row renders
 - **THEN** the Actions area shows a visible resume control, reachable without opening the "⋯" menu
 
@@ -28,27 +28,11 @@ Every goal row SHALL show a pause/resume control directly in its Actions area, v
 - **WHEN** its row renders
 - **THEN** the Actions area shows no pause or resume control
 
-### Requirement: Archive is available only once a goal has reached its target
+#### Scenario: A Reached goal shows neither control
 
-The "⋯" menu's Archive item SHALL be offered only for a goal whose computed attainment is Reached (the same Reached signal the status filter's Reached count uses). A goal that has not reached its target SHALL NOT offer Archive as an option, so the choice between Pause and Archive is never ambiguous: Pause is for a goal not being worked on yet, Archive is for a goal whose target is already met. An already-archived goal SHALL always offer Unarchive, regardless of its current reached state, since restoring an archived goal to tracking is not gated the same way entering Archive is.
-
-#### Scenario: An unreached goal offers no Archive option
-
-- **GIVEN** a goal's target has not been reached
-- **WHEN** its "⋯" menu opens
-- **THEN** no Archive item is offered
-
-#### Scenario: A reached goal offers Archive
-
-- **GIVEN** a goal's target has been reached
-- **WHEN** its "⋯" menu opens
-- **THEN** an Archive item is offered
-
-#### Scenario: An archived goal always offers Unarchive
-
-- **GIVEN** a goal has status `Archived`
-- **WHEN** its "⋯" menu opens
-- **THEN** an Unarchive item is offered, whether or not the goal's target is currently reached
+- **GIVEN** a goal has status `Active` or `Paused` and its computed attainment is Reached
+- **WHEN** its row or card renders on the Goals page or a project detail route, on desktop or mobile
+- **THEN** the Actions area shows no pause or resume control, and the goal's stored status is unchanged
 
 ### Requirement: Pausing or resuming a goal cascades to its prerequisites
 
