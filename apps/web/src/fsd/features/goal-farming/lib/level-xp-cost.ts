@@ -1,4 +1,7 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import { normalizeXpBookRarity } from "@/entities/planning-setting"
+
+export { normalizeXpBookRarity }
 
 // Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) — the cumulative XP required to reach
 // each character level, 0 through 65 (V1's own table max; V2's level requirements only ever reach
@@ -25,14 +28,16 @@ export const xpBookValueByRarity: Record<Rarity, number> = {
   Mythic: 62_500,
 }
 
-/** A missing/unrecognized rarity behaves as Legendary - the one normalization point every
- * rarity-consuming function here funnels through. */
-export function normalizeXpBookRarity(
-  rarity: string | null | undefined
-): Rarity {
-  return rarity && rarity in xpBookValueByRarity
-    ? (rarity as Rarity)
-    : "Legendary"
+/** `remainingXp` expressed as a whole-book count of `rarity` (falls back to Legendary — see
+ * `normalizeXpBookRarity`). 0 for a non-positive amount. */
+export function xpBookEquivalent(
+  remainingXp: number,
+  rarity?: string | null
+): number {
+  if (remainingXp <= 0) return 0
+  return Math.ceil(
+    remainingXp / xpBookValueByRarity[normalizeXpBookRarity(rarity)]
+  )
 }
 
 export type LevelBookAvailability = {
@@ -47,7 +52,8 @@ export type LevelBookAvailability = {
 /** Available/needed book-equivalent counts for a goal's own charged XP interval, in the user's
  * selected XP-book rarity (show-xp-book-availability-per-goal) — the priority-ordered-pool figures
  * `allocateLevelXp`/`buildLevelPotentialProgress` already compute (`chargedXp`, `poolXpAvailable`),
- * rounded only for display. */
+ * rounded only for display; see `xpBookEquivalent` for the single-value shortfall used elsewhere
+ * (the create-goal preview). */
 export function levelBookAvailability(
   chargedXp: number,
   poolXpAvailable: number,
@@ -191,13 +197,15 @@ export type LevelGoalCost = {
 /** A level requirement's resource-cost preview (plan scope decision: books required + gold to apply,
  * netted against owned books — no "days left" estimate, since XP books aren't farmed from campaign
  * energy the way upgrade materials are; V1 only computes that from a manually-configured per-day
- * income rate this app doesn't have). Remaining XP after netting is expressed as a Legendary-book
- * count (V1's own default reference rarity). `null` when nothing is actually needed. */
+ * income rate this app doesn't have). Remaining XP after netting is expressed as a book count in
+ * `rarity` (default/fallback Legendary — see `normalizeXpBookRarity`; surface-goal-farming-guidance's
+ * XP-book rarity planning setting). `null` when nothing is actually needed. */
 export function computeLevelGoalCost(params: {
   currentLevel: number
   currentXp: number
   targetLevel: number
   ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
+  rarity?: string | null
 }): LevelGoalCost | null {
   const xpNeeded = xpNeededForLevelRange(
     params.currentLevel,
@@ -212,6 +220,6 @@ export function computeLevelGoalCost(params: {
   )
   if (remaining <= 0) return null
 
-  const books = Math.ceil(remaining / xpBookValueByRarity.Legendary)
+  const books = xpBookEquivalent(remaining, params.rarity)
   return { books, gold: books * XP_BOOK_APPLY_GOLD }
 }

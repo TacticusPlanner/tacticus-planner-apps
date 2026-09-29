@@ -47,13 +47,26 @@ export function LevelRequirementProgressBar({
 }
 
 /** The requirement's own "N levels remaining (M XP)" line — always-visible text (a sub-line has no
- * hover target of its own worth relying on). */
+ * hover target of its own worth relying on). When the goal is charged a nonzero XP interval, an
+ * available/needed book-equivalent count is appended in the user's selected XP-book rarity
+ * (show-xp-book-availability-per-goal): the shared owned-book pool's size at this goal's turn in
+ * priority order over what this goal itself needs — never a guaranteed source, just an equivalent;
+ * the raw XP figure above is unchanged, and neither count is capped to the other. */
 export function LevelRequirementRemaining({
   levelRequirement,
+  availableBookCount,
+  neededBookCount,
+  xpBookRarity,
 }: {
   levelRequirement: LevelRequirementProgress | null | undefined
+  /** The shared pool's book-equivalent size at this goal's turn, in `xpBookRarity` — shown only
+   *  alongside a positive `neededBookCount`. */
+  availableBookCount?: number
+  /** This goal's own book-equivalent need, in `xpBookRarity` — 0/undefined shows nothing. */
+  neededBookCount?: number
+  xpBookRarity?: string
 }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation(["common", "progression"])
   if (!levelRequirement) return null
   const remainingText = formatGoalRemainingText(
     t,
@@ -63,14 +76,28 @@ export function LevelRequirementRemaining({
     undefined
   )
   if (!remainingText) return null
+  const bookText =
+    neededBookCount &&
+    neededBookCount > 0 &&
+    availableBookCount !== undefined &&
+    xpBookRarity
+      ? t("goals.overview.remainingText.bookAvailability", {
+          available: availableBookCount,
+          needed: neededBookCount,
+          rarity: t(`progression:rarities.${xpBookRarity}`, {
+            defaultValue: xpBookRarity,
+          }),
+        })
+      : null
+  const text = bookText ? `${remainingText} · ${bookText}` : remainingText
 
   return (
     <span
       className="mt-1 block max-w-[190px] truncate text-xs text-muted-foreground"
       data-testid="level-requirement-remaining"
-      title={remainingText}
+      title={text}
     >
-      {remainingText}
+      {text}
     </span>
   )
 }
@@ -79,9 +106,15 @@ export function LevelRequirementRemaining({
 export function LevelRequirementSummary({
   levelRequirement,
   potentialRatio,
+  availableBookCount,
+  neededBookCount,
+  xpBookRarity,
 }: {
   levelRequirement: LevelRequirementProgress | null | undefined
   potentialRatio: number | undefined
+  availableBookCount?: number
+  neededBookCount?: number
+  xpBookRarity?: string
 }) {
   if (!levelRequirement) return null
   return (
@@ -91,7 +124,12 @@ export function LevelRequirementSummary({
         levelRequirement={levelRequirement}
         potentialRatio={potentialRatio}
       />
-      <LevelRequirementRemaining levelRequirement={levelRequirement} />
+      <LevelRequirementRemaining
+        availableBookCount={availableBookCount}
+        levelRequirement={levelRequirement}
+        neededBookCount={neededBookCount}
+        xpBookRarity={xpBookRarity}
+      />
     </div>
   )
 }

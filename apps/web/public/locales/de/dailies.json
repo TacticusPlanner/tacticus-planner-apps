@@ -177,8 +177,10 @@
       "title": "Kampagnen-Event",
       "named": "{{name}}",
       "namedWithTime": "{{name}} · endet {{time}}",
+      "namedUnconfirmed": "{{name}} · Endzeit nicht bestätigt",
       "unnamed": "Aktiv · Name nicht verfügbar",
       "unnamedWithTime": "Aktiv · Name nicht verfügbar · endet {{time}}",
+      "unnamedUnconfirmed": "Aktiv · Name nicht verfügbar · Endzeit nicht bestätigt",
       "inactive": "Nicht aktiv"
     }
   },
@@ -261,7 +263,7 @@
         },
         "campaignEvent": {
           "title": "Aktives Kampagnen-Event",
-          "content": "Zeigt das aus deinem synchronisierten Fortschritt erkannte Kampagnen-Event und wann es endet – nur dessen Knoten können heute geraidet werden."
+          "content": "Zeigt das aus deinem synchronisierten Fortschritt erkannte Kampagnen-Event und wann es endet – nur dessen Knoten können heute geraidet werden. Eine nicht bestätigte Endzeit ist der geplante Zeitplan des Spiels, keine Garantie, deshalb wird kein Countdown angezeigt, bis sie bestätigt ist."
         },
         "energyUsage": {
           "title": "Tägliche Energienutzung",

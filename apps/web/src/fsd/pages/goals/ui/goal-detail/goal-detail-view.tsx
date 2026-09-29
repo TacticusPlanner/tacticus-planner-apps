@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
+import type { CharacterStorageModel } from "@workspace/game-catalog"
+import type { BattleId, UpgradeId } from "@workspace/game-domain"
+
 import type { GoalDetail } from "@/entities/goal"
 
 import {
@@ -8,7 +11,12 @@ import {
   type BlockerReason,
   type GoalBlockers,
 } from "../../model/blockers/goal-blockers"
-import type { EstimateOutcome, ResourceNeed } from "@/features/goal-farming"
+import type {
+  Battle,
+  EstimateOutcome,
+  FarmingUpgrade,
+  ResourceNeed,
+} from "@/features/goal-farming"
 import type { GoalProgress } from "../../model/attainment/goal-progress"
 import type { GoalProject } from "../../model/shared/types"
 import {
@@ -17,6 +25,7 @@ import {
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges } from "../shared/goal-visuals"
 import { GoalEstimateSection } from "./goal-estimate-section"
+import { GoalFarmingGuidance } from "./goal-farming-guidance"
 
 type MissingPrerequisiteReason = Extract<
   BlockerReason,
@@ -44,6 +53,10 @@ export function GoalDetailView({
   potentialRatio,
   onCreatePrerequisite,
   onViewGoal,
+  dailyEnergy,
+  upgradesById,
+  battlesById,
+  charactersById,
 }: {
   detail: GoalDetail
   estimate: EstimateOutcome | undefined
@@ -58,6 +71,12 @@ export function GoalDetailView({
   potentialRatio?: number
   onCreatePrerequisite: (reason: MissingPrerequisiteReason) => void
   onViewGoal: (goalId: string) => void
+  /** Farming-guidance inputs (surface-goal-farming-guidance) — the same catalog/settings data
+   *  planning already uses, so eligible/unavailable node guidance never disagrees with it. */
+  dailyEnergy: number
+  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  battlesById: ReadonlyMap<BattleId, Battle>
+  charactersById: ReadonlyMap<string, CharacterStorageModel>
 }) {
   const { t } = useTranslation()
   // Two different unreached-prerequisite goals (or any other pair of reasons that happen to render
@@ -98,6 +117,29 @@ export function GoalDetailView({
       </section>
 
       <GoalEstimateSection estimate={estimate} isolated={isolated} />
+
+      {remaining?.coveredByEarlierGoal ? (
+        <section
+          className="grid gap-2"
+          data-testid="goal-detail-farming-guidance-covered"
+        >
+          <h3 className="font-semibold">
+            {t("goals.detail.farmingGuidanceTitle")}
+          </h3>
+          <p className="text-muted-foreground">
+            {t("goals.detail.farmingGuidanceCovered")}
+          </p>
+        </section>
+      ) : remaining ? (
+        <GoalFarmingGuidance
+          battlesById={battlesById}
+          charactersById={charactersById}
+          dailyEnergy={dailyEnergy}
+          farmingLocationIds={detail.config.farmingLocationIds}
+          remaining={remaining}
+          upgradesById={upgradesById}
+        />
+      ) : null}
 
       <section className="grid gap-2" data-testid="goal-detail-blockers">
         <h3 className="font-semibold">{t("goals.detail.blockersTitle")}</h3>

@@ -65,13 +65,26 @@ vi.mock("@/entities/player-data-override", () => ({
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 
-vi.mock("@/entities/planning-setting", () => ({
-  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
-  usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
-    save: vi.fn(),
-  }),
-}))
+vi.mock("@/entities/planning-setting", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/entities/planning-setting")>()
+  return {
+    ...actual,
+    dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+    xpBookRarityOptions: [
+      "Common",
+      "Uncommon",
+      "Rare",
+      "Epic",
+      "Legendary",
+      "Mythic",
+    ],
+    usePlanningSettings: () => ({
+      settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
+      save: vi.fn(),
+    }),
+  }
+})
 
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },

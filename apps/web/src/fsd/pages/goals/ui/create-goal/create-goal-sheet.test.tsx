@@ -81,8 +81,23 @@ vi.mock("@/entities/player-data-override", () => ({
 
 vi.mock("@/entities/planning-setting", () => ({
   dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+  xpBookRarityOptions: [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Epic",
+    "Legendary",
+    "Mythic",
+  ],
+  normalizeXpBookRarity: (rarity: string | null | undefined) =>
+    rarity &&
+    ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
+      rarity
+    )
+      ? rarity
+      : "Legendary",
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: vi.fn(),
   }),
 }))

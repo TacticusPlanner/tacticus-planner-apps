@@ -107,7 +107,7 @@ vi.mock("@/entities/planning-setting", () => ({
       ? rarity
       : "Legendary",
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: vi.fn(),
   }),
 }))
@@ -446,6 +446,28 @@ describe("ProjectDetailPage", () => {
     // Not the filtered-empty message, which would claim no goals match rather than that the project
     // is empty.
     expect(screen.queryByText("goals.empty.filtered")).not.toBeInTheDocument()
+  })
+
+  it("shows the farming guidance summary as an explicit preview, never today's Dailies schedule", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-a")
+
+    const guidance = await screen.findByTestId(
+      "project-detail-farming-guidance"
+    )
+    expect(guidance).toHaveTextContent("goals.detail.projectGuidancePreview")
+  })
+
+  it("tells an empty project there is nothing outstanding to farm", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-a")
+
+    const guidance = await screen.findByTestId(
+      "project-detail-farming-guidance"
+    )
+    expect(guidance).toHaveTextContent("goals.detail.projectGuidanceNone")
   })
 
   it("states nothing in the header or empty state that makes membership sound like activation", async () => {

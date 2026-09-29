@@ -5,6 +5,7 @@ export {
   estimateGoal,
   selectFarmNodes,
 } from "./lib/estimate"
+export { unavailableReason } from "./lib/estimate-blocked"
 export {
   estimateBonusRaids,
   estimatePlan,
@@ -26,7 +27,6 @@ export {
 export {
   computeLevelGoalCost,
   levelBookAvailability,
-  normalizeXpBookRarity,
   xpNeededForLevelRange,
   type LevelGoalCost,
 } from "./lib/level-xp-cost"

@@ -385,8 +385,10 @@
     "planningSettings": {
       "button": "Planning settings",
       "title": "Planning settings",
-      "description": "Choose the daily energy budget used by goal estimates.",
+      "description": "Choose the daily energy budget used for daily raid planning and broader goal estimates.",
       "dailyEnergy": "Energy per day",
+      "xpBookRarity": "XP-book rarity",
+      "xpBookRarityHint": "Required-level guidance shows its additional book count in this rarity.",
       "save": "Save settings",
       "cancel": "Cancel",
       "error": "Planning settings could not be saved."
@@ -693,7 +695,8 @@
       },
       "level": {
         "current": "Current level",
-        "booksNeeded": "≈ {{count}} Legendary XP Books",
+        "booksNeeded_one": "≈ {{count}} {{rarity}} XP Book",
+        "booksNeeded_other": "≈ {{count}} {{rarity}} XP Books",
         "goldToApply": "≈ {{gold}} gold to apply"
       },
       "farmingStrategy": {
@@ -842,7 +845,17 @@
       "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
       "none": "None",
-      "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself."
+      "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself.",
+      "farmingGuidanceTitle": "Farming guidance",
+      "farmingGuidanceEligible_one": "{{count}} farmable location now",
+      "farmingGuidanceEligible_other": "{{count}} farmable locations now",
+      "farmingGuidanceLink": "Open Dailies raids",
+      "farmingGuidanceCovered": "Covered by an earlier goal — nothing of its own to farm.",
+      "projectGuidanceTitle": "Farming guidance",
+      "projectGuidancePreview": "Preview — not today's Dailies schedule",
+      "projectGuidanceSummary_one": "{{count}} material still needed across this project's goals.",
+      "projectGuidanceSummary_other": "{{count}} materials still needed across this project's goals.",
+      "projectGuidanceNone": "Nothing outstanding to farm for this project."
     },
     "resourceChips": {
       "energy": "Energy",
@@ -891,7 +904,8 @@
         "levels": "{{count}} levels",
         "rankEnergy": "{{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
-        "shards": "{{count}} shards"
+        "shards": "{{count}} shards",
+        "bookAvailability": "{{available}}/{{needed}} {{rarity}} books"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Progress details",

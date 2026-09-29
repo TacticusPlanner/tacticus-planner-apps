@@ -2,10 +2,10 @@ import type { SyntheticEvent } from "react"
 
 import type { GoalStatus } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
+import { normalizeXpBookRarity } from "@/entities/planning-setting"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import {
   levelBookAvailability,
-  normalizeXpBookRarity,
   type EstimateOutcome,
 } from "@/features/goal-farming"
 import type { XpBookFigure } from "../shared/goal-resource-chips"

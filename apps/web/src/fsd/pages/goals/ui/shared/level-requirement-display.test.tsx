@@ -51,6 +51,55 @@ describe("level requirement display", () => {
     )
   })
 
+  it("appends the available/needed XP-book count to the raw remaining text (worked pool example)", () => {
+    render(
+      <LevelRequirementRemaining
+        availableBookCount={8}
+        levelRequirement={requirement}
+        neededBookCount={1}
+        xpBookRarity="Legendary"
+      />
+    )
+
+    const text = screen.getByTestId("level-requirement-remaining")
+    expect(text).toHaveTextContent(
+      'goals.overview.remainingText.levels:{"count":"1"}'
+    )
+    expect(text).toHaveTextContent(
+      'goals.overview.remainingText.bookAvailability:{"available":8,"needed":1,"rarity":"progression:rarities.Legendary:{\\"defaultValue\\":\\"Legendary\\"}"}'
+    )
+  })
+
+  it("shows an available count below the needed count when the pool is only partial", () => {
+    render(
+      <LevelRequirementRemaining
+        availableBookCount={0}
+        levelRequirement={requirement}
+        neededBookCount={1}
+        xpBookRarity="Legendary"
+      />
+    )
+
+    expect(screen.getByTestId("level-requirement-remaining")).toHaveTextContent(
+      'goals.overview.remainingText.bookAvailability:{"available":0,"needed":1,"rarity":"progression:rarities.Legendary:{\\"defaultValue\\":\\"Legendary\\"}"}'
+    )
+  })
+
+  it("shows nothing extra once the goal needs no further books", () => {
+    render(
+      <LevelRequirementRemaining
+        availableBookCount={8}
+        levelRequirement={requirement}
+        neededBookCount={0}
+        xpBookRarity="Legendary"
+      />
+    )
+
+    expect(
+      screen.getByTestId("level-requirement-remaining")
+    ).not.toHaveTextContent("bookAvailability")
+  })
+
   it("renders nothing once the character's level is sufficient", () => {
     render(
       <>

@@ -35,6 +35,11 @@ export type LevelXpAllocation = {
   /** The highest level (capped at `requiredLevel`) the unit could reach *right now* by spending the
    *  account's owned XP books on this goal and every higher-priority goal of the same unit. */
   potentialLevel: number
+  /** `chargedXp` still unmet after spending owned XP books on this goal and every higher-priority goal
+   *  of the same unit, in global goal order (surface-goal-farming-guidance) — the raw-XP figure a
+   *  caller converts to an *additional* book-equivalent count in the user's selected rarity via
+   *  `xpBookEquivalent`. 0 once owned books fully cover this goal's own interval. */
+  remainingXp: number
   /** The shared owned-book pool's raw XP total at this goal's own turn in priority order, captured
    *  before this goal spends from it (show-xp-book-availability-per-goal) — the raw-XP figure a caller
    *  converts to an available book-equivalent count in the user's selected rarity, floored (a partial
@@ -86,6 +91,7 @@ export function allocateLevelXp(
         need.requiredLevel,
         spentXp
       ),
+      remainingXp,
       poolXpAvailable,
     })
   }

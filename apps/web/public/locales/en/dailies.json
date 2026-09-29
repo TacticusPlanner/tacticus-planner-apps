@@ -177,8 +177,10 @@
       "title": "Campaign event",
       "named": "{{name}}",
       "namedWithTime": "{{name}} · ends {{time}}",
+      "namedUnconfirmed": "{{name}} · end time not confirmed",
       "unnamed": "Active · name unavailable",
       "unnamedWithTime": "Active · name unavailable · ends {{time}}",
+      "unnamedUnconfirmed": "Active · name unavailable · end time not confirmed",
       "inactive": "Not active"
     }
   },
@@ -261,7 +263,7 @@
         },
         "campaignEvent": {
           "title": "Active campaign event",
-          "content": "Shows the campaign event detected from your synced progress, and when it ends — only that event's nodes can be raided today."
+          "content": "Shows the campaign event detected from your synced progress, and when it ends — only that event's nodes can be raided today. An unconfirmed end time is the game's projected schedule, not a guaranteed one, so no countdown is shown until it's verified."
         },
         "energyUsage": {
           "title": "Daily energy usage",

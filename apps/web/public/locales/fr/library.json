@@ -93,6 +93,8 @@
     "noSeasonReference": "Aucune donnée de saison de boss de raid n'est disponible.",
     "bosses": "Boss",
     "primes": "Primes",
+    "pickerPlaceholder": "Rechercher des boss et des primes…",
+    "pickerEmpty": "Aucun boss ou prime trouvé.",
     "primarch": "Primarque",
     "progression": "Progression",
     "stats": "Statistiques",
@@ -125,6 +127,10 @@
         "primes": {
           "title": "Primes",
           "content": "Les ennemis primes qui combattent aux côtés de chaque boss, consultables individuellement."
+        },
+        "mobilePicker": {
+          "title": "Boss de raid de guilde",
+          "content": "Recherchez et sélectionnez un boss ou un prime : chaque boss est regroupé avec les primes qui combattent à ses côtés."
         },
         "progression": {
           "title": "Palier de progression",
@@ -176,13 +182,13 @@
     "noPrimeModifiers": "Aucun modificateur de prime pour ce boss.",
     "modifierReduces": "Réduit {{name}}",
     "modifierIncreases": "Augmente {{name}}",
-    "progressionStep": "Palier {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} PV",
     "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}",
     "adjustedStatsHeading": "Statistiques ajustées",
     "showAdjusted": "Afficher ajustées",
     "hideAdjusted": "Masquer ajustées",
     "fullHp": "PV complets",
-    "hpLostAmount": "{{hpLost}} / {{total}} PV perdus",
+    "hpLostPercent": "{{hpLost}} % de PV perdus",
     "noActiveModifiers": "Aucun modificateur actif à ce stade.",
     "baseColumn": "Base",
     "adjustedColumn": "Ajustée",
