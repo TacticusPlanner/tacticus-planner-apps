@@ -870,6 +870,7 @@
       "xpBooks": "Libros de XP {{rarity}}",
       "xpBooksValue": "{{available}} de {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
+      "poolLabel": "{{name}}: {{available}} de {{needed}}",
       "standalone": "Por sí solo: {{slots}} ranuras de mejora, {{energy}} de energía",
       "rarity": {
         "Common": "Común",

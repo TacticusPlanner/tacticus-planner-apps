@@ -19,6 +19,12 @@ import { EntityIcon } from "@/shared/ui"
 /** At most this many chips render; the rest collapse into one "+N" chip whose tooltip lists all. */
 const MAX_VISIBLE_CHIPS = 6
 
+const EMPTY_AVAILABLE = {
+  badgesByRarity: {},
+  forgeBadgesByRarity: {},
+  components: 0,
+}
+
 type Chip = {
   key: string
   icon: string
@@ -26,6 +32,8 @@ type Chip = {
   overlay?: string
   /** Full localized resource name, used in the tooltip and the accessible name. */
   name: string
+  /** Available/needed quantities (Machine of War materials): shows "a/n", the label reads "a of n". */
+  pool?: { available: number; needed: number }
   /** Display text beside the icon (a formatted quantity, or ). */
   text: string
   /** Shortened text shown instead of `text` when they differ (gold: "42k"); the label keeps the full value. */
@@ -67,20 +75,45 @@ export function GoalResourceChips({
       chips.push({ key, icon, overlay, name, text: fmt(quantity) })
     }
   }
+  const addPool = (
+    key: string,
+    icon: string,
+    name: string,
+    needed: number | undefined,
+    available: number | undefined
+  ) => {
+    if (!needed || needed <= 0) return
+    const pool = { available: available ?? 0, needed }
+    chips.push({
+      key,
+      icon,
+      name,
+      pool,
+      text: `${fmt(pool.available)}/${fmt(needed)}`,
+    })
+  }
   const addByRarity = (
     kind: "orbs" | "abilityBadges" | "forgeBadges",
     amounts: Partial<Record<Rarity, number>> | undefined,
     icon: (rarity: Rarity) => string,
-    overlay?: string
+    overlay?: string,
+    available?: Partial<Record<Rarity, number>>
   ) => {
     for (const rarity of rarityOrder) {
-      add(
-        `${kind}-${rarity}`,
-        icon(rarity),
-        t(`goals.resourceChips.${kind}`, { rarity: rarityName(rarity) }),
-        amounts?.[rarity],
-        overlay
-      )
+      const name = t(`goals.resourceChips.${kind}`, {
+        rarity: rarityName(rarity),
+      })
+      if (available) {
+        addPool(
+          `${kind}-${rarity}`,
+          icon(rarity),
+          name,
+          amounts?.[rarity],
+          available[rarity]
+        )
+      } else {
+        add(`${kind}-${rarity}`, icon(rarity), name, amounts?.[rarity], overlay)
+      }
     }
   }
   const addEnergy = () => {
@@ -146,16 +179,30 @@ export function GoalResourceChips({
     addShards()
     addEnergy()
   } else if (goalType === "Ability") {
-    addByRarity("abilityBadges", materials?.badgesByRarity, (rarity) =>
-      abilityBadgeIcon(rarity, alliance)
+    const isMow = entityType === "Mow"
+    // Machine of War materials read available/needed; a Character's stay net-remaining.
+    const pool = isMow ? (materials?.available ?? EMPTY_AVAILABLE) : undefined
+    addByRarity(
+      "abilityBadges",
+      materials?.badgesByRarity,
+      (rarity) => abilityBadgeIcon(rarity, alliance),
+      undefined,
+      pool?.badgesByRarity
     )
-    if (entityType === "Mow") {
-      addByRarity("forgeBadges", materials?.forgeBadgesByRarity, forgeBadgeIcon)
-      add(
+    if (isMow) {
+      addByRarity(
+        "forgeBadges",
+        materials?.forgeBadgesByRarity,
+        forgeBadgeIcon,
+        undefined,
+        pool?.forgeBadgesByRarity
+      )
+      addPool(
         "components",
         mowComponentIcon(alliance),
         t("goals.resourceChips.components"),
-        materials?.components
+        materials?.components,
+        pool?.components
       )
     }
     addGold(materials?.gold)
@@ -169,7 +216,16 @@ export function GoalResourceChips({
   if (chips.length === 0) return null
 
   const label = (chip: Chip) =>
-    t("goals.resourceChips.chipLabel", { name: chip.name, quantity: chip.text })
+    chip.pool
+      ? t("goals.resourceChips.poolLabel", {
+          name: chip.name,
+          available: fmt(chip.pool.available),
+          needed: fmt(chip.pool.needed),
+        })
+      : t("goals.resourceChips.chipLabel", {
+          name: chip.name,
+          quantity: chip.text,
+        })
   const tooltip = (chip: Chip) =>
     chip.hint
       ? `${label(chip)}

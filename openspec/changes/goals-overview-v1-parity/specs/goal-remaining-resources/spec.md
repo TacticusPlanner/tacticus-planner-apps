@@ -11,7 +11,7 @@ For a goal that has not reached its target, the Remaining display SHALL show one
 - Rank: gold (the gold to apply XP books for a level-up), and energy when a farming energy estimate is available.
 - Ascension: orbs by rarity, shards and mythic shards, and energy when estimated.
 - Unlock: shards, and energy when estimated.
-- Ability on a Machine of War: ability badges by rarity, forge badges by rarity, components, gold, and energy when estimated.
+- Ability on a Machine of War: ability badges by rarity, forge badges by rarity and components, each shown as available/needed (see "Machine of War materials show available/needed"), plus gold, and energy when estimated.
 - Ability on a Character: ability badges by rarity, gold, and energy when estimated.
 - Upgrade: energy when estimated.
 
@@ -105,27 +105,49 @@ A chip's quantity SHALL be what the goal still needs after the player's full inv
 
 #### Scenario: Fully held resource shows no chip
 
-- **GIVEN** a Machine of War Ability goal needs 27 Legendary ability badges and the player holds 27 that no higher-priority goal claims
+- **GIVEN** a Character Ability goal needs 27 Legendary ability badges and the player holds 27 that no higher-priority goal claims
 - **WHEN** its Remaining display renders
 - **THEN** no Legendary ability-badge chip is shown
 
 #### Scenario: Partially held resource shows the shortfall
 
-- **GIVEN** a Machine of War Ability goal needs 138 components and the player holds 118 that no higher-priority goal claims
+- **GIVEN** an Ascension goal needs 161 shards and the player holds none of them
 - **WHEN** its Remaining display renders
-- **THEN** the components chip reads 20
-
-#### Scenario: Higher priority consumes stock first
-
-- **GIVEN** two goals both need Legendary ability badges, the player holds 30, and the first needs 27
-- **WHEN** both render
-- **THEN** the higher-priority goal shows no badge chip and the lower-priority goal shows its need minus 3
+- **THEN** the shards chip reads 161
 
 #### Scenario: Orbs are netted
 
 - **GIVEN** an Ascension goal needs 10 orbs and the player holds 10
 - **WHEN** its Remaining display renders
 - **THEN** no orb chip is shown
+
+### Requirement: Machine of War materials show available/needed
+
+For a Machine of War Ability goal, the ability badges (per rarity), forge badges (per rarity) and components the goal needs SHALL each render as an "available/needed" chip, always, including when the need is fully held, with the same pool logic as the XP-book figure: "needed" is the goal's own requirement, and "available" is the player's stock of that resource as it stands at the goal's turn in global priority order, after higher-priority goals have consumed their share. Available is not capped at needed (30 held, 27 needed by the first goal, then 3 available to the next). A goal that needs none of a resource shows no chip for it. Gold and energy are unchanged (gold in thousands, energy as a number). A goal that is paused is not part of the allocation and shows its standalone need against the full stock.
+
+#### Scenario: Fully held
+
+- **GIVEN** a Machine of War Ability goal needs 27 Legendary ability badges and 27 forge badges, and the player holds 27 of each that no higher-priority goal claims
+- **WHEN** its Remaining display renders
+- **THEN** it shows an ability-badge chip reading 27/27 and a forge-badge chip reading 27/27
+
+#### Scenario: Partly held
+
+- **GIVEN** a Machine of War Ability goal needs 138 components and the player holds 118 that no higher-priority goal claims
+- **WHEN** its Remaining display renders
+- **THEN** the components chip reads 118/138
+
+#### Scenario: Higher priority consumes stock first
+
+- **GIVEN** two Machine of War goals both need 27 Legendary ability badges, and the player holds 30
+- **WHEN** both render
+- **THEN** the higher-priority goal's chip reads 30/27 and the lower-priority goal's chip reads 3/27
+
+#### Scenario: A resource the goal does not need
+
+- **GIVEN** a Machine of War Ability goal that needs no forge badges
+- **WHEN** its Remaining display renders
+- **THEN** no forge-badge chip is shown
 
 ### Requirement: The XP-book figure sits with the level progress, not in Remaining
 

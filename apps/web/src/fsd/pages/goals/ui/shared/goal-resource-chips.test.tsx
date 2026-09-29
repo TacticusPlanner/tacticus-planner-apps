@@ -12,6 +12,9 @@ vi.mock("react-i18next", () => ({
       if (key === "goals.resourceChips.chipLabel") {
         return `${opts?.name}: ${opts?.quantity}`
       }
+      if (key === "goals.resourceChips.poolLabel") {
+        return `${opts?.name}: ${opts?.available} of ${opts?.needed}`
+      }
       return opts?.rarity ? `${opts.rarity} ${key.split(".").pop()}` : key
     },
     i18n: { resolvedLanguage: "en" },
@@ -131,19 +134,34 @@ describe("GoalResourceChips", () => {
     ])
   })
 
-  it("MoW Ability: badges, forge badges, components, gold and energy", () => {
+  it("MoW Ability: available/needed badges, forge badges and components, then gold and energy", () => {
     render(
       <GoalResourceChips
         energy={900}
         entityType="Mow"
         goalType="Ability"
-        remaining={need({ abilityMaterials })}
+        remaining={need({
+          abilityMaterials: {
+            ...abilityMaterials,
+            badgesByRarity: { Legendary: 27 },
+            forgeBadgesByRarity: { Legendary: 27 },
+            components: 138,
+            available: {
+              badgesByRarity: { Legendary: 27 },
+              forgeBadgesByRarity: { Legendary: 30 },
+              components: 118,
+            },
+          },
+        })}
       />
     )
+    expect(
+      screen.getAllByTestId("goal-resource-chip").map((c) => c.textContent)
+    ).toEqual(["27/27", "30/27", "118/138", "12k", "900"])
     expect(chipNames()).toEqual([
-      "Epic abilityBadges: 4",
-      "Rare forgeBadges: 2",
-      "goals.resourceChips.components: 30",
+      "Legendary abilityBadges: 27 of 27",
+      "Legendary forgeBadges: 30 of 27",
+      "goals.resourceChips.components: 118 of 138",
       "goals.resourceChips.gold: 12,000",
       "goals.resourceChips.energy: 900",
     ])
@@ -185,6 +203,25 @@ describe("GoalResourceChips", () => {
       "/game_catalog/resources/ui_hero_ascension_orbs_rare.png",
       "/game_catalog/resources/ui_hero_ascension_orbs_chaos.png",
     ])
+  })
+
+  it("MoW Ability without available stock shows 0/needed; no need shows no chip", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Mow"
+        goalType="Ability"
+        remaining={need({
+          abilityMaterials: {
+            gold: 0,
+            badgesByRarity: { Epic: 4 },
+            forgeBadgesByRarity: {},
+            components: 0,
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Epic abilityBadges: 0 of 4"])
   })
 
   it("Character Ability: badges and gold", () => {

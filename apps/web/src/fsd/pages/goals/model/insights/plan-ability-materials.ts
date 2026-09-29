@@ -52,6 +52,49 @@ function stockOf(inventory: AbilityInventory) {
   return stock
 }
 
+/** The stock as it stands now for what `materials` needs (Machine of War available/needed chips). */
+function availableFor(
+  materials: AbilityMaterials,
+  stock: ReadonlyMap<string, number>,
+  alliance: string | undefined
+): NonNullable<AbilityMaterials["available"]> {
+  const lower = alliance?.toLowerCase()
+  const pick = (
+    amounts: Partial<Record<Rarity, number>>,
+    keyOf: (rarity: Rarity) => string | undefined
+  ) => {
+    const out: Partial<Record<Rarity, number>> = {}
+    for (const rarity of Object.keys(amounts) as Rarity[]) {
+      const key = keyOf(rarity)
+      out[rarity] = key ? (stock.get(key) ?? 0) : 0
+    }
+    return out
+  }
+  return {
+    badgesByRarity: pick(
+      materials.badgesByRarity,
+      (rarity) => lower && `badge:${lower}:${rarity}`
+    ),
+    forgeBadgesByRarity: pick(
+      materials.forgeBadgesByRarity,
+      (rarity) => `forge:${rarity}`
+    ),
+    components: lower ? (stock.get(`component:${lower}`) ?? 0) : 0,
+  }
+}
+
+/** A paused Machine of War goal (outside the plan run): its standalone need against the full stock. */
+export function withStandaloneAvailable(
+  materials: AbilityMaterials,
+  inventory: AbilityInventory,
+  alliance: string | undefined
+): AbilityMaterials {
+  return {
+    ...materials,
+    available: availableFor(materials, stockOf(inventory), alliance),
+  }
+}
+
 /** Spends the shared stock on one goal's materials and returns what is still needed (gold is never
  *  netted). `null` when nothing but zero gold is left. */
 function netAgainstStock(
@@ -140,6 +183,13 @@ export function createAbilityMaterialsPlan(
       covered,
       claim: true,
     })
+    if (materials && stock && isMow) {
+      // Machine of War chips read available/needed: keep the gross need, record the stock at this turn.
+      const available = availableFor(materials, stock, alliance)
+      netAgainstStock(materials, stock, alliance) // consume for lower-priority goals
+      byGoalId.set(detail.goalId, { ...materials, available })
+      return
+    }
     byGoalId.set(
       detail.goalId,
       materials && stock

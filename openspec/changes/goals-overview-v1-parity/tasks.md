@@ -63,6 +63,10 @@
 - [x] 8.9 Show a Rank goal's standalone slots and energy in a tooltip when a higher-priority goal for the same unit covers part of its range (data from rankSlotAllocation / a standalone estimate), and verify tests for the overlap and no-overlap scenarios using the Arjac fixture
 - [x] 8.10 Investigate why a second Rank goal shows its level requirement from the current level ("Lv 33 → 38") where V1 chains it ("Lv 35 → 38"), check against rank-level-progression's once-per-unit level accounting, align the display (and chart the cause in design.md) if the allocation already treats those levels as covered, and verify a test with the two Arjac goals
 
+## 8f. MoW materials as available/needed
+
+- [ ] 8.11 Show a Machine of War Ability goal's ability badges, forge badges and components as available/needed chips (available = stock at the goal's turn in priority order, uncapped; always shown when needed > 0; V1 icons), keep gold in k and energy, and verify tests for fully held (27/27), partly held (118/138), priority split (30/27 then 3/27), no-need, and paused-goal fallbacks, then check Z'Kar in the browser (ability 27/27, forge 27/27, components 118/138)
+
 ## 7. Verification
 
 - [x] 7.1 Run the apps test suite, typecheck and lint for the touched packages and verify they pass

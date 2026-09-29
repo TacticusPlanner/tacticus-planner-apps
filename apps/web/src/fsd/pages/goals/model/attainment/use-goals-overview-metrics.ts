@@ -5,6 +5,7 @@ import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import {
+  getInventoryAbilityMaterials,
   getInventoryShard,
   getInventoryUpgrades,
   getPlayerCharacters,
@@ -25,6 +26,7 @@ import type {
 } from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { AbilityMaterials, ResourceNeed } from "@/features/goal-farming"
+import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import {
@@ -144,6 +146,10 @@ export function useGoalsOverviewMetrics(
   const playerMows = useLiveQuery(() => getPlayerMows(), [])
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const inventoryItems = useLiveQuery(() => getPlayerInventoryItems(), [])
+  const abilityInventory = useLiveQuery(
+    () => getInventoryAbilityMaterials(),
+    []
+  )
 
   const playerCharacterById = useMemo(
     () =>
@@ -286,13 +292,27 @@ export function useGoalsOverviewMetrics(
           }
         : remainingStandalone
     // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
-    const withMaterials =
+    // A paused Machine of War goal is outside the plan run: its standalone need against the full stock.
+    const standaloneMaterials = withSlots?.abilityMaterials
+    const withMaterials: typeof withSlots =
       withSlots && abilityMaterialsByGoalId?.has(goalId)
         ? {
             ...withSlots,
             abilityMaterials: abilityMaterialsByGoalId.get(goalId) ?? undefined,
           }
-        : withSlots
+        : withSlots &&
+            detail.entityType === "Mow" &&
+            standaloneMaterials &&
+            abilityInventory
+          ? {
+              ...withSlots,
+              abilityMaterials: withStandaloneAvailable(
+                standaloneMaterials,
+                abilityInventory,
+                mowsById?.get(detail.entityId)?.alliance
+              ),
+            }
+          : withSlots
     const planNet = planNetByGoalId?.get(goalId)
     const alliance = (
       detail.entityType === "Mow" ? mowsById : charactersById

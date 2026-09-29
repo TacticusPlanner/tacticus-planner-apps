@@ -13,6 +13,13 @@ export type AbilityMaterials = {
   badgesByRarity: Partial<Record<Rarity, number>>
   forgeBadgesByRarity: Partial<Record<Rarity, number>>
   components: number
+  /** Machine of War only: the stock available at the goal's turn (before it consumes), for the
+   *  needed rarities and components; uncapped. Set by the plan allocator, absent on a raw need. */
+  available?: {
+    badgesByRarity: Partial<Record<Rarity, number>>
+    forgeBadgesByRarity: Partial<Record<Rarity, number>>
+    components: number
+  }
 }
 
 type CoveredTransitions = { primary: Set<number>; secondary: Set<number> }

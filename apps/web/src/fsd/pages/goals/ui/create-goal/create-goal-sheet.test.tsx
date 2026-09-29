@@ -333,6 +333,7 @@ vi.mock("@workspace/player-data/queries", () => ({
   getInventoryUpgrades: (...args: unknown[]) => getInventoryUpgrades(...args),
   getInventoryXpBooks: () => getInventoryXpBooks(),
   getPlayerInventoryItems: () => getPlayerInventoryItems(),
+  getInventoryAbilityMaterials: () => undefined,
   getInventoryShard: (...args: unknown[]) => getInventoryShard(...args),
   getLiveProgress: () => undefined,
 }))
