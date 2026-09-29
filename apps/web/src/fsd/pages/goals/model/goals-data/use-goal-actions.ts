@@ -48,7 +48,7 @@ export function useGoalActions(_onChanged?: () => void) {
 
   /** Patches every cached query under both slices' prefixes in place — a goal can be cached by
    *  Goals Overview's flat list, any number of Project Detail's per-project lists, and its own
-   *  detail sheet simultaneously, and all of them need to agree instantly for the pause/resume
+   *  cached detail simultaneously, and all of them need to agree instantly for the pause/resume
    *  toggle to feel immediate rather than waiting on the round trip + refetch. */
   const patchStatusCache = (goalId: string, status: GoalStatus) => {
     queryClient.setQueriesData({ queryKey: goalQueries.all() }, (old) =>

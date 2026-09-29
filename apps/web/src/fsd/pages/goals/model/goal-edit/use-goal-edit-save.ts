@@ -25,7 +25,7 @@ export type GoalEditSaveError =
   | { kind: "invalid"; sections: GoalEditSection[]; message: string | null }
   | { kind: "failed"; message: string | null }
 
-export type GoalEditSection = "target" | "details" | "projects" | "priority"
+type GoalEditSection = "target" | "details" | "projects" | "priority"
 
 /** Rewrites the cached goal lists with the order the server just returned, so a follow-up edit (or the
  * dialog's own select) reads the new positions and revision before the refetch lands. */

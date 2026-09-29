@@ -259,7 +259,7 @@ const CASES: Case[] = [
     (c) => c.rowHover
   ),
   text(
-    "Blocked text on card / detail sheet",
+    "Blocked text on card",
     (c) => (c.theme === "light" ? c.amber(800) : c.amber(400)),
     (c) => c.card
   ),

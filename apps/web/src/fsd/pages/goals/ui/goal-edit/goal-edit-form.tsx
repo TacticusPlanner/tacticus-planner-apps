@@ -185,7 +185,6 @@ export function GoalEditForm({
             projects={projects}
             projectsValid={projectsValid}
             selectedProjectIds={draft.projectIds}
-            testIdPrefix="goal-edit"
           />
 
           <GoalEditFarmingFields

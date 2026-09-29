@@ -170,7 +170,7 @@ describe("GoalProjectsField", () => {
       />
     )
 
-    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.click(screen.getByTestId("goal-edit-add-project"))
     expect(screen.queryByText("archived")).not.toBeInTheDocument()
     await user.type(
       screen.getByPlaceholderText("goals.project.searchProjects"),
@@ -195,7 +195,7 @@ describe("GoalProjectsField", () => {
       />
     )
 
-    await user.click(screen.getByTestId("goal-detail-add-project"))
+    await user.click(screen.getByTestId("goal-edit-add-project"))
     expect(portalContainer).toContainElement(
       screen.getByPlaceholderText("goals.project.searchProjects")
     )
@@ -229,13 +229,13 @@ describe("GoalProjectsField", () => {
   })
 
   describe("inline project creation", () => {
-    const createRow = () => screen.queryByTestId("goal-detail-create-project")
+    const createRow = () => screen.queryByTestId("goal-edit-create-project")
 
     async function openAndType(
       user: ReturnType<typeof userEvent.setup>,
       text: string
     ) {
-      await user.click(screen.getByTestId("goal-detail-add-project"))
+      await user.click(screen.getByTestId("goal-edit-add-project"))
       await user.type(
         screen.getByPlaceholderText("goals.project.searchProjects"),
         text
@@ -353,7 +353,7 @@ describe("GoalProjectsField", () => {
       await user.click(createRow()!)
 
       expect(
-        await screen.findByTestId("goal-detail-create-project-error")
+        await screen.findByTestId("goal-edit-create-project-error")
       ).toHaveTextContent("Server down")
       expect(
         screen.getByPlaceholderText("goals.project.searchProjects")

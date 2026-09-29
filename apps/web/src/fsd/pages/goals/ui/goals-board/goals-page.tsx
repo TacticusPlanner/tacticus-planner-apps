@@ -46,7 +46,7 @@ import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { ALL_PROJECTS, ProjectFilterSelect } from "./goals-project-filter"
 import { OverviewProjectQuicknav } from "./overview-project-quicknav"
 import { buildCascadeContext } from "./goal-row-utils"
-import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
+import { GoalEditDialog } from "../goal-edit/goal-edit-dialog"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
@@ -65,7 +65,7 @@ export function GoalsPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const [tab, setTab] = useState<GoalStatusFilterValue>("toReach")
-  const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
+  const [editGoalId, setEditGoalId] = useState<string | null>(null)
   const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
   // Persisted per browser (see project detail's own group state for the same reasoning) so it
   // survives navigating away and a reload instead of resetting to "none" every time.
@@ -87,10 +87,6 @@ export function GoalsPage() {
   const insightsRun = usePlanInsights(null)
   const insights = insightsRun.result
   const { settings: planningSettings } = usePlanningSettings()
-  // The detail sheet's per-goal insight props all follow this same "only once a goal is selected"
-  // shape; one helper keeps GoalDetailSheet's props list from repeating the ternary per map.
-  const forDetail = <T,>(map: ReadonlyMap<string, T>) =>
-    detailGoalId ? map.get(detailGoalId) : undefined
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
@@ -405,7 +401,7 @@ export function GoalsPage() {
                 metrics={overviewMetrics}
                 mobileReorderActive={reorderActive}
                 onReorder={handleReorder}
-                onView={setDetailGoalId}
+                onEdit={setEditGoalId}
                 potentialProgress={insights.potentialProgressByGoalId}
                 reachedByGoalId={reachedByGoalId}
                 reorderEnabled={reorderAvailable}
@@ -422,18 +418,9 @@ export function GoalsPage() {
         <MobileReorderBar onDone={exitReorder} pending={orderActions.pending} />
       ) : null}
 
-      <GoalDetailSheet
-        estimate={forDetail(insights.estimates)}
-        goalId={detailGoalId}
-        isolated={false}
-        levelChargedXp={forDetail(insights.levelChargedXpByGoalId)}
-        levelPoolXpAvailable={forDetail(insights.levelPoolXpAvailableByGoalId)}
-        levelPotentialRatio={forDetail(insights.levelPotentialProgressByGoalId)}
-        rankSlotAllocation={forDetail(insights.rankSlotsByGoalId)}
-        onGoalChange={setDetailGoalId}
-        onOpenChange={(open) => !open && setDetailGoalId(null)}
-        onUpdated={refreshCurrentView}
-        potentialRatio={forDetail(insights.potentialProgressByGoalId)}
+      <GoalEditDialog
+        goalId={editGoalId}
+        onOpenChange={(open) => !open && setEditGoalId(null)}
       />
       <GoalsCreateProjectSheet
         onOpenChange={setCreateProjectOpen}

@@ -36,6 +36,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 }))
 
 const updateGoalStatus = vi.fn()
+const onEdit = vi.fn()
 const deleteGoal = vi.fn()
 const updateGoalProjects = vi.fn()
 const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>()
@@ -175,6 +176,7 @@ function Harness({
     <GoalRowActions
       actions={actions}
       cascadeContext={cascadeContext}
+      onEdit={onEdit}
       project={project}
       reached={reached}
       row={goalRow}
@@ -209,7 +211,7 @@ function CachedListsHarness({
         {goals.data?.goals.map((goal) => (
           <div key={goal.goalId}>
             <span>{goal.goalId}</span>
-            <GoalRowActions row={goal} actions={actions} />
+            <GoalRowActions row={goal} actions={actions} onEdit={onEdit} />
           </div>
         ))}
       </section>
@@ -217,7 +219,12 @@ function CachedListsHarness({
         {projectGoals.data?.goals.map(({ goal }) => (
           <div key={goal.goalId}>
             <span>{goal.goalId}</span>
-            <GoalRowActions row={goal} actions={actions} project={projectA} />
+            <GoalRowActions
+              row={goal}
+              actions={actions}
+              onEdit={onEdit}
+              project={projectA}
+            />
           </div>
         ))}
       </section>
@@ -228,6 +235,7 @@ function CachedListsHarness({
 describe("GoalRowActions", () => {
   beforeEach(() => {
     updateGoalStatus.mockReset()
+    onEdit.mockReset()
     deleteGoal.mockReset()
     updateGoalProjects.mockReset().mockResolvedValue({})
     getGoalDetail.mockReset()
@@ -238,6 +246,26 @@ describe("GoalRowActions", () => {
     defaultProjectId = "proj-default"
     mockProjects = [projectA, defaultProject]
     isMobileRef.current = false
+  })
+
+  it.each([false, true])(
+    "offers an Edit action that reports the goal (mobile: %s)",
+    async (mobile) => {
+      isMobileRef.current = mobile
+      const user = userEvent.setup()
+      render(<Harness />)
+
+      await user.click(screen.getByTestId("goal-row-edit-goal-1"))
+
+      expect(onEdit).toHaveBeenCalledExactlyOnceWith("goal-1")
+    }
+  )
+
+  it("offers Edit on a Reached goal, which has no pause or resume", async () => {
+    render(<Harness reached />)
+
+    expect(screen.getByTestId("goal-row-edit-goal-1")).toBeInTheDocument()
+    expect(screen.queryByTestId("goal-row-pause-goal-1")).toBeNull()
   })
 
   it("pauses an active goal via the primary control and refreshes", async () => {

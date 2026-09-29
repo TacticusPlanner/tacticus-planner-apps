@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 import { Calendar } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 import {
   Tooltip,
   TooltipContent,
@@ -12,7 +11,7 @@ import { formatEstimateDate } from "@/shared/lib"
 import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "../../model/shared/types"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
-import { isInFlightStatus, stopRowNavigation } from "./goal-row-utils"
+import { isInFlightStatus } from "./goal-row-utils"
 
 /** The formatted completion date + "in {{days}} days" caption for a computed estimate, nothing when
  * there's no entry for this goal (no project selected, non-Rank goal type) or the farm is blocked —
@@ -60,34 +59,22 @@ export function ReachedDash() {
   )
 }
 
-/** The character/MoW name, with the Unlock goal's flavor text (and, once the Remaining column is
- *  hidden in the compact-desktop band, its remaining-shard figure too) reachable as a tooltip on the
- *  name instead of a persistent caption line — `goal-progress-display`'s Unlock-tooltip requirement. */
+/** The character/MoW name as plain text (activating it opens nothing; the row's Edit action does),
+ *  with the Unlock goal's flavor text (and, once the Remaining column is hidden in the compact-desktop
+ *  band, its remaining-shard figure too) reachable as a tooltip on the name instead of a persistent
+ *  caption line — `goal-progress-display`'s Unlock-tooltip requirement. */
 export function GoalNameLink({
   row,
   remainingText,
-  onView,
 }: {
   row: GoalRow
   remainingText: string | null
-  onView: (goalId: string) => void
 }) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
   const name = getEntityName(row.entityType, row.entityId)
 
-  const link = (
-    <Button
-      className="h-auto p-0 font-medium"
-      onClick={(event) => {
-        stopRowNavigation(event)
-        onView(row.goalId)
-      }}
-      variant="link"
-    >
-      {name}
-    </Button>
-  )
+  const link = <span className="font-medium">{name}</span>
 
   if (row.goalType !== "Unlock") return link
 
@@ -97,7 +84,12 @@ export function GoalNameLink({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      {/* Focusable so the tooltip stays reachable by keyboard now the name is not a button. */}
+      <TooltipTrigger asChild>
+        <span className="font-medium" tabIndex={0}>
+          {name}
+        </span>
+      </TooltipTrigger>
       <TooltipContent>{tooltipText}</TooltipContent>
     </Tooltip>
   )

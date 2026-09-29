@@ -42,7 +42,7 @@ export function GoalsMobileCards({
   estimates,
   metrics,
   potentialProgress,
-  onView = () => undefined,
+  onEdit = () => undefined,
   onReorder,
   reorderEnabled = false,
   mobileReorderActive = false,
@@ -157,13 +157,12 @@ export function GoalsMobileCards({
           return (
             <li
               className={cn(
-                "flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm",
+                "flex flex-col gap-2 rounded-2xl border p-3 text-sm",
                 reached && REACHED_ROW_CLASS
               )}
               data-reached={reached || undefined}
               data-testid="goal-row"
               key={row.goalId}
-              onClick={() => onView(row.goalId)}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
@@ -175,11 +174,7 @@ export function GoalsMobileCards({
                     name={getEntityName(row.entityType, row.entityId)}
                   />
                   <div className="min-w-0">
-                    <GoalNameLink
-                      onView={onView}
-                      remainingText={remainingText}
-                      row={row}
-                    />
+                    <GoalNameLink remainingText={remainingText} row={row} />
                     {reached ? (
                       <ReachedDash />
                     ) : estimates ? (
@@ -200,6 +195,7 @@ export function GoalsMobileCards({
                   >
                     <GoalRowActions
                       actions={actions}
+                      onEdit={onEdit}
                       cascadeContext={cascadeContext}
                       project={project}
                       reached={reached}

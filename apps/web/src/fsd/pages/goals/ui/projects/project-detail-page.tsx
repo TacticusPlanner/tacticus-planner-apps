@@ -46,7 +46,7 @@ import { useProjectGoals } from "../../model/projects/use-project-goals"
 import { useProjectGoalReorder } from "../../model/projects/use-project-goal-reorder"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
-import { GoalDetailSheet } from "../goal-detail/goal-detail-sheet"
+import { GoalEditDialog } from "../goal-edit/goal-edit-dialog"
 import {
   buildCascadeContext,
   isInFlightStatus,
@@ -90,7 +90,7 @@ export function ProjectDetailPage() {
   // shared `goals.projectDetail.group` storage key (Overview doesn't use "unit" here at all, and a
   // future revert of this change should still see the raw stored value).
   const group = persistedGroup === "unit" ? "type" : persistedGroup
-  const [detailGoalId, setDetailGoalId] = useState<string | null>(null)
+  const [editGoalId, setEditGoalId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const {
     active: reorderActive,
@@ -367,7 +367,7 @@ export function ProjectDetailPage() {
           metrics={overviewMetrics}
           mobileReorderActive={reorderActive}
           onReorder={handleReorder}
-          onView={setDetailGoalId}
+          onEdit={setEditGoalId}
           potentialProgress={insights.potentialProgressByGoalId}
           project={project}
           projectIsEmpty={allRows.length === 0}
@@ -394,40 +394,9 @@ export function ProjectDetailPage() {
         open={editOpen}
         project={project}
       />
-      <GoalDetailSheet
-        estimate={
-          detailGoalId ? insights.estimates.get(detailGoalId) : undefined
-        }
-        goalId={detailGoalId}
-        isolated={false}
-        onGoalChange={setDetailGoalId}
-        onOpenChange={(open) => !open && setDetailGoalId(null)}
-        onUpdated={projectGoals.retry}
-        levelPotentialRatio={
-          detailGoalId
-            ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
-            : undefined
-        }
-        levelChargedXp={
-          detailGoalId
-            ? insights.levelChargedXpByGoalId.get(detailGoalId)
-            : undefined
-        }
-        levelPoolXpAvailable={
-          detailGoalId
-            ? insights.levelPoolXpAvailableByGoalId.get(detailGoalId)
-            : undefined
-        }
-        rankSlotAllocation={
-          detailGoalId
-            ? insights.rankSlotsByGoalId.get(detailGoalId)
-            : undefined
-        }
-        potentialRatio={
-          detailGoalId
-            ? insights.potentialProgressByGoalId.get(detailGoalId)
-            : undefined
-        }
+      <GoalEditDialog
+        goalId={editGoalId}
+        onOpenChange={(open) => !open && setEditGoalId(null)}
       />
     </div>
   )

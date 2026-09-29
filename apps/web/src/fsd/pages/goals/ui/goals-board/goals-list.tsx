@@ -48,7 +48,7 @@ import {
 import { GoalsMobileCards } from "./goals-mobile-cards"
 
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
- * responsive split. The whole row/card is clickable (opens the goal's detail view); the actions menu
+ * responsive split. The row itself opens nothing; its Edit action opens the Edit goal dialog, and the actions
  * and nested buttons stop activation from bubbling so they keep working independently.
  * `reorderEnabled` shows a drag handle on every desktop row directly (no separate mode); mobile
  * additionally needs `mobileReorderActive` (add-inline-goal-reprioritize). */
@@ -69,7 +69,7 @@ function GoalsTable({
   estimates,
   metrics,
   potentialProgress,
-  onView = () => undefined,
+  onEdit = () => undefined,
   onReorder,
   reorderEnabled = false,
   reorderPending = false,
@@ -153,7 +153,7 @@ function GoalsTable({
             return (
               <TableRow
                 className={cn(
-                  "h-14 cursor-pointer data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring",
+                  "h-14 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring",
                   reached && REACHED_ROW_CLASS
                 )}
                 data-dragging={sortable.isDragging || undefined}
@@ -161,7 +161,6 @@ function GoalsTable({
                 data-reached={reached || undefined}
                 data-testid="goal-row"
                 key={row.goalId}
-                onClick={() => onView(row.goalId)}
                 ref={sortable.setNodeRef}
                 style={sortable.style}
               >
@@ -201,11 +200,7 @@ function GoalsTable({
                       name={getEntityName(row.entityType, row.entityId)}
                     />
                     <div className="min-w-0">
-                      <GoalNameLink
-                        onView={onView}
-                        remainingText={remainingText}
-                        row={row}
-                      />
+                      <GoalNameLink remainingText={remainingText} row={row} />
                       {row.notes ? (
                         <p
                           className="max-w-64 truncate text-xs font-normal text-muted-foreground"
@@ -306,6 +301,7 @@ function GoalsTable({
                   >
                     <GoalRowActions
                       actions={actions}
+                      onEdit={onEdit}
                       cascadeContext={cascadeContext}
                       onOpenChange={(open) => {
                         if (open) setOpenPopoverGoalId(null)

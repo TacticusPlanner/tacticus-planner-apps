@@ -10,6 +10,12 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
+// The dialog has its own tests; here only which goal the page hands it matters.
+vi.mock("../goal-edit/goal-edit-dialog", () => ({
+  GoalEditDialog: ({ goalId }: { goalId: string | null }) =>
+    goalId ? <div data-testid="goal-edit-dialog">{goalId}</div> : null,
+}))
+
 const mobile = vi.hoisted(() => ({ value: false }))
 const onLaunch = vi.hoisted(() => vi.fn())
 
@@ -168,20 +174,27 @@ const updateGoalStatus = vi.fn<
   (goalId: string, status: string) => Promise<unknown>
 >(() => Promise.resolve({}))
 
-vi.mock("@/entities/goal", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/entities/goal")>()),
-  updateGoalStatus: (...args: [string, string]) => updateGoalStatus(...args),
+// Mocked at the module the entity's own hooks (`useGlobalGoalPlan`) import from too, so every observer
+// of the account list shares one query function instead of racing a real network one.
+vi.mock("@/entities/goal/api/goal.queries", () => ({
   goalQueries: {
     all: () => ["goals"],
+    lists: () => ["goals", "list"],
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
       queryFn: () => listAccountGoals(),
     }),
+    details: () => ["goals", "detail"],
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
       queryFn: () => getGoalDetail(goalId),
     }),
   },
+}))
+
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
+  updateGoalStatus: (...args: [string, string]) => updateGoalStatus(...args),
 }))
 
 const listProjects = vi.fn()
@@ -850,6 +863,23 @@ describe("ProjectDetailPage", () => {
           screen.queryByTestId("goal-row-move-to-project-goal-1")
       ).toBeInTheDocument()
     })
+  })
+
+  it("opens the same Edit goal dialog from a project goal's Edit action, but not from its row", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({
+      goals: [{ goal: goal(), priority: 1 }],
+    })
+    const user = userEvent.setup()
+    renderPage("proj-a")
+
+    await user.click(await screen.findByTestId("goal-row"))
+    expect(screen.queryByTestId("goal-edit-dialog")).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("goal-row-edit-goal-1"))
+    expect(await screen.findByTestId("goal-edit-dialog")).toHaveTextContent(
+      "goal-1"
+    )
   })
 
   it("carries each row's full project membership, not only the viewed project", async () => {

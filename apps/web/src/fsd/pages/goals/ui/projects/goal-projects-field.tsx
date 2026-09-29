@@ -34,7 +34,7 @@ export function GoalProjectsField({
   conflicts = [],
   onSelectionChange,
   portalContainer,
-  testIdPrefix = "goal-detail",
+  testIdPrefix = "goal-edit",
 }: {
   projects: ProjectSummary[]
   selectedProjectIds: string[]
