@@ -14,7 +14,7 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 - **WHEN** a desktop project goal has both ratios
 - **THEN** it uses the same info disclosure and global-priority explanation as Global Plan
 
-#### Scenario: Both bars render in the goal-detail sheet
+#### Scenario: The Edit goal dialog shows no progress bars
 
 - **WHEN** the Edit goal dialog is open
 - **THEN** it renders no progress bars and no progress explanation (the read-only goal detail no longer exists)

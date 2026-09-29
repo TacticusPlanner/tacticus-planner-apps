@@ -15,18 +15,18 @@
 
 ## 3. Edit goal dialog
 
-- [ ] 3.1 Add the single `GoalEditDraft` and dirty comparison (target, notes, strategy, locations, sources, projects, priority position) and verify unit tests for each field's dirty state
-- [ ] 3.2 Inline the target editors into the dialog (no own Edit/Save/Cancel), hidden for Unlock and non-editable statuses; verify tests for Rank, Ascension, Ability, Upgrade, and Unlock
-- [ ] 3.3 Add the Priority position select (1..N over in-flight goals, hidden for goals without a position, shown for Reached goals) and verify tests for move up, move down, unchanged, and hidden cases using the A..E scenarios from the spec
-- [ ] 3.4 Implement `useGoalEditSave` (build the request from changed sections only, one `editGoal` call, apply the returned goal and order, one query invalidation) and verify tests for all-success, only-changed-sections request body, stale revision, membership conflict keeping the whole draft with nothing shown as saved, and stale order (409)
-- [ ] 3.5 Build `GoalEditDialog` (read-only unit/kind header, two-column field layout, skeleton, load-failure state, discard confirmation on Cancel/close/Escape, outside click blocked, Save disabled when unchanged or invalid) and verify component tests for each spec scenario in `goal-edit-dialog`
-- [ ] 3.6 Replace the goal-detail tutorial with an Edit dialog tutorial (desktop and mobile steps, i18n `tour.*` keys) and verify its test at both viewport widths
+- [x] 3.1 Add the single `GoalEditDraft` and dirty comparison (target, notes, strategy, locations, sources, projects, priority position) and verify unit tests for each field's dirty state
+- [x] 3.2 Inline the target editors into the dialog (no own Edit/Save/Cancel), hidden for Unlock and non-editable statuses; verify tests for Rank, Ascension, Ability, Upgrade, and Unlock
+- [x] 3.3 Add the Priority position select (1..N over in-flight goals, hidden for goals without a position, shown for Reached goals) and verify tests for move up, move down, unchanged, and hidden cases using the A..E scenarios from the spec
+- [x] 3.4 Implement `useGoalEditSave` (build the request from changed sections only, one `editGoal` call, apply the returned goal and order, one query invalidation) and verify tests for all-success, only-changed-sections request body, stale revision, membership conflict keeping the whole draft with nothing shown as saved, and stale order (409)
+- [x] 3.5 Build `GoalEditDialog` (read-only unit/kind header, two-column field layout, skeleton, load-failure state, discard confirmation on Cancel/close/Escape, outside click blocked, Save disabled when unchanged or invalid) and verify component tests for each spec scenario in `goal-edit-dialog`
+- [x] 3.6 Replace the goal-detail tutorial with an Edit dialog tutorial (desktop and mobile steps, i18n `tour.*` keys) and verify its test at both viewport widths
 
 ## 4. Entry points and removal
 
-- [ ] 4.1 Add the Edit action to `goal-row-actions.tsx` (desktop table) and the mobile card; make `GoalNameLink` non-interactive for opening; wire `editGoalId` state and `GoalEditDialog` into `goals-page.tsx` and `project-detail-page.tsx`; verify list and page tests that Edit opens the dialog and name/row activation does not
-- [ ] 4.2 Delete the read-only detail (`goal-detail-view`, header, estimate section, detail farming guidance and summary, metrics hook, dependency queries, unsaved dialog if superseded, footer, old sheet and their tests) and drop dialog-only props/computations from the pages; verify `pnpm knip` and `pnpm lint:fsd` report nothing left unreferenced
-- [ ] 4.3 Remove now-unused `goals.detail.*` i18n keys and add the new Edit dialog keys (title, priority label and options, read-only kind label, save/cancel/discard, save-failure and order-conflict messages) with real de/es/fr translations in the same namespace; verify locale key parity test passes
+- [x] 4.1 Add the Edit action to `goal-row-actions.tsx` (desktop table) and the mobile card; make `GoalNameLink` non-interactive for opening; wire `editGoalId` state and `GoalEditDialog` into `goals-page.tsx` and `project-detail-page.tsx`; verify list and page tests that Edit opens the dialog and name/row activation does not
+- [x] 4.2 Delete the read-only detail (`goal-detail-view`, header, estimate section, detail farming guidance and summary, metrics hook, dependency queries, unsaved dialog if superseded, footer, old sheet and their tests) and drop dialog-only props/computations from the pages; verify `pnpm knip` and `pnpm lint:fsd` report nothing left unreferenced
+- [x] 4.3 Remove now-unused `goals.detail.*` i18n keys and add the new Edit dialog keys (title, priority label and options, read-only kind label, save/cancel/discard, save-failure and order-conflict messages) with real de/es/fr translations in the same namespace; verify locale key parity test passes
 - [ ] 4.4 Sweep `openspec/specs` and `apps/web` for remaining "goal detail"/"detail sheet" references (for example `goal-farming-guidance`'s XP-book requirement text, `dailies-onslaught-recommendations`) and reconcile them in this change's deltas or code; verify `grep` shows no stale reference
 
 ## 5. Verification
@@ -34,4 +34,4 @@
 - [ ] 5.1 Desktop verification (viewport at or above 768px, Aspire stack, account with Rank, Ascension, Ability, Upgrade, Unlock, and a Reached goal): Create and Edit dialogs at 1440x900 and 1280x600 use two columns and keep header/footer visible; Edit shows only the specified fields; changing target + notes + priority saves in one action and the list updates; discard prompt; outside click does nothing; combobox lists scroll; Edit tour steps
 - [ ] 5.2 Mobile verification (viewport below 768px, same data states): Edit opens as the bottom sheet from a card action with one column and the same fields and single Save; Create unchanged; tour steps
 - [ ] 5.3 Conflict check with an account state that yields a project membership conflict on save (a second goal with the same target in a selected project): the dialog stays open with the whole draft and reloading shows that nothing was saved
-- [ ] 5.4 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `pnpm knip`, and `git diff --check` and verify all pass
+- [x] 5.4 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `pnpm knip`, and `git diff --check` and verify all pass
