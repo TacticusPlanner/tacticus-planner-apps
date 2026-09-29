@@ -27,7 +27,7 @@
 - [x] 4.1 Add the Edit action to `goal-row-actions.tsx` (desktop table) and the mobile card; make `GoalNameLink` non-interactive for opening; wire `editGoalId` state and `GoalEditDialog` into `goals-page.tsx` and `project-detail-page.tsx`; verify list and page tests that Edit opens the dialog and name/row activation does not
 - [x] 4.2 Delete the read-only detail (`goal-detail-view`, header, estimate section, detail farming guidance and summary, metrics hook, dependency queries, unsaved dialog if superseded, footer, old sheet and their tests) and drop dialog-only props/computations from the pages; verify `pnpm knip` and `pnpm lint:fsd` report nothing left unreferenced
 - [x] 4.3 Remove now-unused `goals.detail.*` i18n keys and add the new Edit dialog keys (title, priority label and options, read-only kind label, save/cancel/discard, save-failure and order-conflict messages) with real de/es/fr translations in the same namespace; verify locale key parity test passes
-- [ ] 4.4 Sweep `openspec/specs` and `apps/web` for remaining "goal detail"/"detail sheet" references (for example `goal-farming-guidance`'s XP-book requirement text, `dailies-onslaught-recommendations`) and reconcile them in this change's deltas or code; verify `grep` shows no stale reference
+- [x] 4.4 Sweep `openspec/specs` and `apps/web` for remaining "goal detail"/"detail sheet" references (for example `goal-farming-guidance`'s XP-book requirement text, `dailies-onslaught-recommendations`) and reconcile them in this change's deltas or code; verify `grep` shows no stale reference
 
 ## 5. Verification
 

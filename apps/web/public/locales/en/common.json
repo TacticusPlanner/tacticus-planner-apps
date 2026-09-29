@@ -1099,7 +1099,7 @@
         },
         "createGoal": {
           "title": "Create a goal",
-          "content": "Start a new goal from here — it opens the same creation sheet as the sidebar button."
+          "content": "Start a new goal from here — it opens the same creation dialog as the sidebar button."
         },
         "planningSettings": {
           "title": "Planning settings",

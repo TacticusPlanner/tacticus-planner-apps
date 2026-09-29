@@ -1099,7 +1099,7 @@
         },
         "createGoal": {
           "title": "Crear un objetivo",
-          "content": "Empieza un objetivo nuevo desde aquí: abre la misma hoja de creación que el botón de la barra lateral."
+          "content": "Empieza un objetivo nuevo desde aquí: abre el mismo formulario de creación que el botón de la barra lateral."
         },
         "planningSettings": {
           "title": "Ajustes de planificación",

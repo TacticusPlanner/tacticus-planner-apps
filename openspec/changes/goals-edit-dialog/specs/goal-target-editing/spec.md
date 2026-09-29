@@ -43,9 +43,23 @@ The Edit goal dialog has one Save. When the target changed, Save SHALL submit it
 - **WHEN** the owner changes only the target and saves
 - **THEN** only the target update is submitted, not the notes, projects, sources, strategy, or order
 
+### Requirement: Conflicts preserve the draft
+
+If the server rejects a target edit because the goal revision is stale or the target collides with another milestone, the Edit goal dialog SHALL stay open, retain the proposed target and the rest of the draft, explain the conflict, and offer a way to refresh the current goal before retrying. It SHALL not claim success or overwrite the newer server state.
+
+#### Scenario: Stale revision
+
+- **WHEN** the goal changes elsewhere before the dialog's Save is submitted
+- **THEN** the dialog keeps the draft and shows a refresh-and-retry path
+
+#### Scenario: Rank milestone collision
+
+- **WHEN** the new Rank end target matches an existing Rank milestone for the same character in a shared project
+- **THEN** the dialog keeps the draft and identifies the conflicting target or goal
+
 ### Requirement: Planning reflects the saved target
 
-After a successful edit, the goal list, project views, progress, blockers, farming estimates, and daily planning SHALL reflect the new target without requiring a full browser reload. Loading and failed refreshes SHALL be distinguishable from a valid zero-need result.
+After a successful edit, the goal list, project views, progress, blockers, farming estimates, and daily planning SHALL reflect the new target without requiring a full browser reload. On success the dialog SHALL close and invalidate the affected queries without awaiting their refetch. Loading and failed refreshes SHALL be distinguishable from a valid zero-need result.
 
 #### Scenario: Rank target expands
 
@@ -54,5 +68,5 @@ After a successful edit, the goal list, project views, progress, blockers, farmi
 
 #### Scenario: Refresh fails
 
-- **WHEN** the save succeeds but a dependent planning query cannot refresh
-- **THEN** the UI reports stale planning data and offers retry rather than presenting the previous estimate as current
+- **WHEN** the save succeeds and the dialog closes but a dependent planning query cannot refetch
+- **THEN** the list's existing fetch-error state reports the failure rather than presenting the previous estimate as current

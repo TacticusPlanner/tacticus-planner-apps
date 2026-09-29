@@ -1099,7 +1099,7 @@
         },
         "createGoal": {
           "title": "Créer un objectif",
-          "content": "Lancez un nouvel objectif d'ici : cela ouvre la même feuille de création que le bouton de la barre latérale."
+          "content": "Lancez un nouvel objectif d'ici : cela ouvre le même formulaire de création que le bouton de la barre latérale."
         },
         "planningSettings": {
           "title": "Paramètres de planification",
