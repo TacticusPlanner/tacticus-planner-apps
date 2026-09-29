@@ -1,6 +1,16 @@
+import type {
+  CharacterStorageModel,
+  UnlockShardCostStorageModel,
+} from "@workspace/game-catalog"
+import type { UpgradeId } from "@workspace/game-domain"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
+
 import type { GoalDetail } from "@/entities/goal"
 
-import type { GoalProgress } from "../attainment/goal-progress"
+import {
+  computeGoalProgress,
+  type GoalProgress,
+} from "../attainment/goal-progress"
 import type { GoalInventoryAllocation } from "@/features/goal-farming"
 
 function clampRatio(value: number): number {
@@ -72,4 +82,54 @@ export function computePotentialProgressRatio(
   }
 
   return clampRatio(Math.max(current, potential))
+}
+
+/** Each Ascension/Rank/Ability goal's Potential-progress ratio from its plan allocation (orb allocation
+ *  for Ascension, upgrade allocation for Rank/Ability), keyed by goal id. */
+export function buildPotentialProgressByGoalId(params: {
+  orderedDetails: readonly GoalDetail[]
+  orbAllocations: ReadonlyMap<string, GoalInventoryAllocation<string>>
+  allocations: ReadonlyMap<string, GoalInventoryAllocation<string>>
+  playerCharacterById: ReadonlyMap<
+    string,
+    PlayerDataChunkDto<"characters">[number] | undefined
+  >
+  playerMowById: ReadonlyMap<
+    string,
+    PlayerDataChunkDto<"mows">[number] | undefined
+  >
+  inventoryUpgrades: readonly { upgradeId: string; amount: number }[]
+  charactersById: ReadonlyMap<string, CharacterStorageModel>
+  unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
+  inventoryShardById: ReadonlyMap<
+    string,
+    PlayerDataChunkDto<"inventory-shards">[number] | undefined
+  >
+}): Map<string, number> {
+  const byGoalId = new Map<string, number>()
+  for (const detail of params.orderedDetails) {
+    const allocation =
+      detail.goalType === "Ascension"
+        ? params.orbAllocations.get(detail.goalId)
+        : detail.goalType === "Rank" || detail.goalType === "Ability"
+          ? params.allocations.get(detail.goalId)
+          : undefined
+    if (!allocation) continue
+    const progress = computeGoalProgress({
+      detail,
+      playerCharacter: params.playerCharacterById.get(detail.entityId),
+      playerMow: params.playerMowById.get(detail.entityId),
+      inventoryUpgrades: params.inventoryUpgrades.map((entry) => ({
+        ...entry,
+        upgradeId: entry.upgradeId as UpgradeId,
+      })),
+      inventoryItems: undefined,
+      initialRarity: params.charactersById.get(detail.entityId)?.initialRarity,
+      unlockShardCostsById: params.unlockShardCostsById,
+      inventoryShard: params.inventoryShardById.get(detail.entityId),
+    })
+    const ratio = computePotentialProgressRatio(detail, progress, allocation)
+    if (ratio !== null) byGoalId.set(detail.goalId, ratio)
+  }
+  return byGoalId
 }

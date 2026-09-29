@@ -72,4 +72,21 @@ describe("LevelRequirementLine", () => {
 
     expect(screen.queryByTestId("level-requirement-line")).toBeNull()
   })
+
+  it("reads a chained goal's level target from the covered boundary", () => {
+    render(
+      <LevelRequirementLine
+        levelRequirement={{
+          ...requirement,
+          current: 33,
+          target: 38,
+          chainedFrom: 35,
+        }}
+        potentialRatio={0}
+      />
+    )
+    expect(screen.getByTestId("level-requirement-target")).toHaveTextContent(
+      'goals.overview.levelProgress:{"current":35,"target":38}'
+    )
+  })
 })

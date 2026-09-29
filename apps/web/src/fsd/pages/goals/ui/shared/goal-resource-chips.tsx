@@ -30,6 +30,8 @@ type Chip = {
   text: string
   /** Shortened text shown instead of `text` when they differ (gold: "42k"); the label keeps the full value. */
   display?: string
+  /** Extra tooltip line (the energy chip's standalone figures). */
+  hint?: string
 }
 
 /** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
@@ -81,8 +83,17 @@ export function GoalResourceChips({
       )
     }
   }
-  const addEnergy = () =>
+  const addEnergy = () => {
     add("energy", energyIcon(), t("goals.resourceChips.energy"), energy)
+    const standalone = remaining?.standalone
+    const chip = chips.find((c) => c.key === "energy")
+    if (chip && standalone) {
+      chip.hint = t("goals.resourceChips.standalone", {
+        slots: fmt(standalone.slots),
+        energy: fmt(standalone.energy),
+      })
+    }
+  }
   const addTokens = () =>
     add(
       "onslaughtTokens",
@@ -159,6 +170,11 @@ export function GoalResourceChips({
 
   const label = (chip: Chip) =>
     t("goals.resourceChips.chipLabel", { name: chip.name, quantity: chip.text })
+  const tooltip = (chip: Chip) =>
+    chip.hint
+      ? `${label(chip)}
+${chip.hint}`
+      : label(chip)
   const visible =
     chips.length > MAX_VISIBLE_CHIPS
       ? chips.slice(0, MAX_VISIBLE_CHIPS - 1)
@@ -174,10 +190,10 @@ export function GoalResourceChips({
       {visible.map((chip) => (
         <li data-testid="goal-resource-chip" key={chip.key}>
           <span
-            aria-label={label(chip)}
+            aria-label={tooltip(chip)}
             className="flex items-center gap-1 tabular-nums"
             role="img"
-            title={label(chip)}
+            title={tooltip(chip)}
           >
             <span className="relative inline-flex">
               <EntityIcon alt="" className="size-5" src={chip.icon} />

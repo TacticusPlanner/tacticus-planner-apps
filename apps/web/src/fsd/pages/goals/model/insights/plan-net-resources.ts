@@ -140,6 +140,8 @@ export function createPlanNetResources() {
     orderedDetails: readonly GoalDetail[]
     orbAllocations: ReadonlyMap<string, GoalInventoryAllocation<string>>
     levelGoldByGoalId: ReadonlyMap<string, number>
+    standaloneByGoalId: ReadonlyMap<string, { slots: number; energy: number }>
+    chainedFromLevelByGoalId: ReadonlyMap<string, number>
   }) => {
     const shardAllocations = allocateShardInventory(goals, ownedByEntityId)
     const netByGoalId = new Map<string, PlanNetResources>()
@@ -161,6 +163,10 @@ export function createPlanNetResources() {
       if (detail.goalType === "Rank" && levelGold !== undefined) {
         net.levelGold = levelGold
       }
+      const standalone = params.standaloneByGoalId.get(detail.goalId)
+      if (standalone) net.standalone = standalone
+      const chainedFrom = params.chainedFromLevelByGoalId.get(detail.goalId)
+      if (chainedFrom !== undefined) net.levelChainedFrom = chainedFrom
       if (Object.keys(net).length > 0) netByGoalId.set(detail.goalId, net)
     }
     return netByGoalId

@@ -36,6 +36,11 @@ export type LevelXpAllocation = {
   /** XP newly charged to this goal: the interval from the highest level a higher-priority goal of the
    *  same unit already covers up to this goal's own required level (0 when fully covered already). */
   chargedXp: number
+  /** The level a higher-priority goal of the same unit already covers up to, when that lies strictly
+   *  between this goal's current and required level: the goal's own charged interval starts there
+   *  (a second Rank goal reads "Lv 35 -> 38" chained after the first goal's 35, not "Lv 33 -> 38").
+   *  `null` when no earlier goal covers a level inside this goal's range. */
+  chainedFromLevel: number | null
   /** The highest level (capped at `requiredLevel`) the unit could reach *right now* by spending the
    *  account's owned XP books on this goal and every higher-priority goal of the same unit. */
   potentialLevel: number
@@ -71,6 +76,7 @@ export function allocateLevelXp(
   let pool = ownedBooksByRarity(ownedXpBooks)
   const coveredXpByUnit = new Map<string, number>()
   const spentXpByUnit = new Map<string, number>()
+  const coveredLevelByUnit = new Map<string, number>()
   const result = new Map<string, LevelXpAllocation>()
 
   for (const need of [...needs].sort((a, b) => a.priority - b.priority)) {
@@ -106,9 +112,18 @@ export function allocateLevelXp(
       (spentXpByUnit.get(need.unitKey) ?? 0) + (chargedXp - remainingXp)
     spentXpByUnit.set(need.unitKey, spentXp)
     coveredXpByUnit.set(need.unitKey, Math.max(alreadyCovered, xpToRequired))
+    const coveredLevel = coveredLevelByUnit.get(need.unitKey) ?? 0
+    coveredLevelByUnit.set(
+      need.unitKey,
+      Math.max(coveredLevel, need.requiredLevel)
+    )
 
     result.set(need.goalId, {
       chargedXp,
+      chainedFromLevel:
+        coveredLevel > need.currentLevel && coveredLevel < need.requiredLevel
+          ? coveredLevel
+          : null,
       potentialLevel: maxLevelReachableWithXp(
         need.currentLevel,
         need.currentXp,

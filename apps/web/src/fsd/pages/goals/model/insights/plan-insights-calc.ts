@@ -43,8 +43,7 @@ import {
   type UnitCoverage,
 } from "@/features/goal-farming"
 import { createAbilityMaterialsPlan } from "./plan-ability-materials"
-import { computeGoalProgress } from "../attainment/goal-progress"
-import { computePotentialProgressRatio } from "./potential-progress"
+import { buildPotentialProgressByGoalId } from "./potential-progress"
 import {
   allocateOrbInventory,
   createOrbGoalNeed,
@@ -54,6 +53,7 @@ import {
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks } from "./plan-bottlenecks"
 import { createPlanNetResources } from "./plan-net-resources"
+import { createStandaloneEstimates } from "./plan-standalone-estimates"
 import type {
   PlanInsightsResult,
   PlanInsightsTotals,
@@ -132,6 +132,10 @@ export function computePlanInsights(params: {
     params.abilityInventory
   )
   const planNet = createPlanNetResources()
+  const standalone = createStandaloneEstimates(
+    params.inventoryUpgrades,
+    params.upgradesById
+  )
   let onslaughtTokens = 0
   // The whole plan's Onslaught token demand, scoped or not: the account's tokens are one budget shared by
   // every goal in the global run, so the wait for tokens is the plan's, never a project-only one.
@@ -189,8 +193,9 @@ export function computePlanInsights(params: {
       ).get(detail.entityId)?.alliance,
     })
     planNet.add(detail, needParams, params.priorityByGoalId.get(detail.goalId))
-    if (detail.goalType === "Rank")
-      rankSlotsByGoalId.set(detail.goalId, rankSlotAllocation(needParams))
+    const slots =
+      detail.goalType === "Rank" ? rankSlotAllocation(needParams) : null
+    if (slots) rankSlotsByGoalId.set(detail.goalId, slots)
     const stages = calculateGoalFarmingStages(needParams)
     const need =
       stages !== null
@@ -307,6 +312,8 @@ export function computePlanInsights(params: {
         flatSuppliers: flatSuppliers.length > 0 ? flatSuppliers : undefined,
       })
     }
+
+    standalone.add({ detail, needParams, slots, priority, flatSuppliers })
   }
 
   const combinedUpgradesById = new Map<
@@ -321,6 +328,12 @@ export function computePlanInsights(params: {
 
   const estimateResults = estimatePlan({
     goals: goalNeeds,
+    upgradesById: combinedUpgradesById,
+    battlesById: params.battlesById,
+    dailyEnergy: params.dailyEnergy ?? 288,
+    inventory,
+  })
+  const standaloneByGoalId = standalone.resolve({
     upgradesById: combinedUpgradesById,
     battlesById: params.battlesById,
     dailyEnergy: params.dailyEnergy ?? 288,
@@ -344,33 +357,21 @@ export function computePlanInsights(params: {
     orderedDetails,
     orbAllocations,
     levelGoldByGoalId: levelPotential.goldByGoalId,
+    standaloneByGoalId,
+    chainedFromLevelByGoalId: levelPotential.chainedFromLevelByGoalId,
   })
 
-  const potentialProgressByGoalId = new Map<string, number>()
-  for (const detail of orderedDetails) {
-    const allocation =
-      detail.goalType === "Ascension"
-        ? orbAllocations.get(detail.goalId)
-        : detail.goalType === "Rank" || detail.goalType === "Ability"
-          ? allocations.get(detail.goalId)
-          : undefined
-    if (!allocation) continue
-    const progress = computeGoalProgress({
-      detail,
-      playerCharacter: params.playerCharacterById.get(detail.entityId),
-      playerMow: params.playerMowById.get(detail.entityId),
-      inventoryUpgrades: params.inventoryUpgrades.map((entry) => ({
-        ...entry,
-        upgradeId: entry.upgradeId as UpgradeId,
-      })),
-      inventoryItems: undefined,
-      initialRarity: params.charactersById.get(detail.entityId)?.initialRarity,
-      unlockShardCostsById: params.unlockShardCostsById,
-      inventoryShard: params.inventoryShardById.get(detail.entityId),
-    })
-    const ratio = computePotentialProgressRatio(detail, progress, allocation)
-    if (ratio !== null) potentialProgressByGoalId.set(detail.goalId, ratio)
-  }
+  const potentialProgressByGoalId = buildPotentialProgressByGoalId({
+    orderedDetails,
+    orbAllocations,
+    allocations,
+    playerCharacterById: params.playerCharacterById,
+    playerMowById: params.playerMowById,
+    inventoryUpgrades: params.inventoryUpgrades,
+    charactersById: params.charactersById,
+    unlockShardCostsById: params.unlockShardCostsById,
+    inventoryShardById: params.inventoryShardById,
+  })
 
   // The projected completion date is the latest date among the goals that *can* be estimated, and
   // `unestimatedGoalCount` reports the rest — a single blocked goal no longer erases the whole

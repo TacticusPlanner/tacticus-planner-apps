@@ -22,6 +22,10 @@ export type LevelPotentialProgress = {
    *  `floor(poolXpAvailable / bookXp)`). Only a goal whose character is below its required level gets
    *  an entry. */
   poolXpAvailableByGoalId: Map<string, number>
+  /** Where a goal's own level interval starts when a higher-priority goal of the same unit covers the
+   *  levels below (`LevelXpAllocation.chainedFromLevel`): the display reads "Lv 35 -> 38" from it. Only
+   *  goals partly covered get an entry. */
+  chainedFromLevelByGoalId: Map<string, number>
   /** Gold to apply each goal's needed books (`LevelXpAllocation.gold`) � V1's Rank "Gold". */
   goldByGoalId: Map<string, number>
 }
@@ -66,13 +70,14 @@ export function buildLevelPotentialProgress(params: {
   const chargedXpByGoalId = new Map<string, number>()
   const poolXpAvailableByGoalId = new Map<string, number>()
   const goldByGoalId = new Map<string, number>()
+  const chainedFromLevelByGoalId = new Map<string, number>()
   for (const need of needs) {
     const result = allocation.get(need.goalId)
     if (!result) continue
     ratioByGoalId.set(
       need.goalId,
       levelPotentialRatio(
-        need.currentLevel,
+        result.chainedFromLevel ?? need.currentLevel,
         result.potentialLevel,
         need.requiredLevel
       )
@@ -80,11 +85,15 @@ export function buildLevelPotentialProgress(params: {
     chargedXpByGoalId.set(need.goalId, result.chargedXp)
     poolXpAvailableByGoalId.set(need.goalId, result.poolXpAvailable)
     goldByGoalId.set(need.goalId, result.gold)
+    if (result.chainedFromLevel !== null) {
+      chainedFromLevelByGoalId.set(need.goalId, result.chainedFromLevel)
+    }
   }
   return {
     ratioByGoalId,
     chargedXpByGoalId,
     poolXpAvailableByGoalId,
     goldByGoalId,
+    chainedFromLevelByGoalId,
   }
 }

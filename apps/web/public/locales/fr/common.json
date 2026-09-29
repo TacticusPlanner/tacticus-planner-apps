@@ -870,6 +870,7 @@
       "xpBooks": "Livres d’XP {{rarity}}",
       "xpBooksValue": "{{available}} sur {{needed}}",
       "chipLabel": "{{name}} : {{quantity}}",
+      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie",
       "rarity": {
         "Common": "Commun",
         "Uncommon": "Peu commun",

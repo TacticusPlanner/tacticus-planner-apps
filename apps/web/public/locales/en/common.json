@@ -870,6 +870,7 @@
       "xpBooks": "{{rarity}} XP books",
       "xpBooksValue": "{{available}} of {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
+      "standalone": "Standalone: {{slots}} upgrade slots, {{energy}} energy",
       "rarity": {
         "Common": "Common",
         "Uncommon": "Uncommon",

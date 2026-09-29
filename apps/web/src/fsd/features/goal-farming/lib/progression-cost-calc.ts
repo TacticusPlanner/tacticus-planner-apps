@@ -49,6 +49,9 @@ export type ResourceNeed = {
   /** Rank goals in a shared plan only: gold to apply the level-up books the goal still needs (V1's
    *  Rank "Gold"); never netted against inventory. */
   levelGold?: number
+  /** Rank goals partly covered by a higher-priority goal for the same unit: what the goal would cost
+   *  alone (upgrade slots and estimated energy), shown as a tooltip beside the plan-aware figures. */
+  standalone?: { slots: number; energy: number }
   /** The unit's alliance, which picks the ability-badge, component and orb art. Set by the overview
    *  metrics from the catalog. */
   alliance?: string

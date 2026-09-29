@@ -60,8 +60,8 @@
 
 ## 8e. Overlap explanation and level chaining
 
-- [ ] 8.9 Show a Rank goal's standalone slots and energy in a tooltip when a higher-priority goal for the same unit covers part of its range (data from rankSlotAllocation / a standalone estimate), and verify tests for the overlap and no-overlap scenarios using the Arjac fixture
-- [ ] 8.10 Investigate why a second Rank goal shows its level requirement from the current level ("Lv 33 → 38") where V1 chains it ("Lv 35 → 38"), check against rank-level-progression's once-per-unit level accounting, align the display (and chart the cause in design.md) if the allocation already treats those levels as covered, and verify a test with the two Arjac goals
+- [x] 8.9 Show a Rank goal's standalone slots and energy in a tooltip when a higher-priority goal for the same unit covers part of its range (data from rankSlotAllocation / a standalone estimate), and verify tests for the overlap and no-overlap scenarios using the Arjac fixture
+- [x] 8.10 Investigate why a second Rank goal shows its level requirement from the current level ("Lv 33 → 38") where V1 chains it ("Lv 35 → 38"), check against rank-level-progression's once-per-unit level accounting, align the display (and chart the cause in design.md) if the allocation already treats those levels as covered, and verify a test with the two Arjac goals
 
 ## 7. Verification
 

@@ -174,7 +174,7 @@ export function GoalTargetDisplay({
   ) : progress.kind === "LevelRequirement" ? (
     <span>
       {t("goals.overview.levelProgress", {
-        current: progress.current,
+        current: progress.chainedFrom ?? progress.current,
         target: progress.target,
       })}
     </span>

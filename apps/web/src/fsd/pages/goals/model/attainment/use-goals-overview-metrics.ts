@@ -328,7 +328,11 @@ export function useGoalsOverviewMetrics(
       progress,
       remaining,
       blockers,
-      levelRequirement: computeLevelRequirementProgress({ detail, playerUnit }),
+      levelRequirement: computeLevelRequirementProgress({
+        detail,
+        playerUnit,
+        chainedFrom: planNet?.levelChainedFrom,
+      }),
     })
   })
   return result

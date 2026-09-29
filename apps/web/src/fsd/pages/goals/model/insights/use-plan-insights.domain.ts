@@ -33,6 +33,11 @@ export interface PlanNetResources {
   mythicShards?: number
   /** Rank goals: gold to apply the level-up books (V1's Rank "Gold"), never netted against stock. */
   levelGold?: number
+  /** Rank goals partly covered by a higher-priority goal: the goal's standalone slots and energy. */
+  standalone?: { slots: number; energy: number }
+  /** Rank/Ability goals whose level requirement is partly covered by a higher-priority goal of the
+   *  same unit: the level the goal's own interval starts from (displayed "Lv 35 -> 38"). */
+  levelChainedFrom?: number
 }
 
 export interface PlanInsightsResult {

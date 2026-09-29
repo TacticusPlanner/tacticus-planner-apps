@@ -161,6 +161,9 @@ type GoalOutcome = {
   standaloneSlots: number
   materials: number
   energy: number
+  standalone: { slots: number; energy: number } | undefined
+  levelChainedFrom: number | undefined
+  levelChargedXp: number | undefined
 }
 
 /** The real planning path: per-goal need (shared slot coverage, like `computePlanInsights`) and the
@@ -202,6 +205,7 @@ function simulate({
         appliedUpgradeSlots: applied,
         progressionIndex: "Legendary:RedThreeStars",
         level: 33,
+        xpLevel: 33,
         xp: 0,
       } as never,
     ],
@@ -270,6 +274,9 @@ function simulate({
       standaloneSlots: result.rankSlotsByGoalId.get(goalId)?.standalone ?? 0,
       materials: materials[index] ?? 0,
       energy: energyOf(goalId),
+      standalone: result.planNetByGoalId.get(goalId)?.standalone,
+      levelChainedFrom: result.planNetByGoalId.get(goalId)?.levelChainedFrom,
+      levelChargedXp: result.levelChargedXpByGoalId.get(goalId),
     }
   })
   return { energyTotal: result.energyTotal, goals: byGoal }
@@ -476,5 +483,45 @@ describe("campaign progress gates the farm nodes (goals-overview-v1-parity 8.5)"
     const early = simulate({ rank: "Silver1", progressCap: 10, goals: [A] })
     expect(early.goals.A?.energy).toBe(0)
     expect(early.energyTotal).toBe(0)
+  })
+})
+
+describe("standalone figures for a partly covered Rank goal (goals-overview-v1-parity 8.9)", () => {
+  const plan = simulate({ rank: "Silver3", goals: [A, B] })
+  const bAlone = simulate({ rank: "Silver3", goals: [B] })
+
+  it("B, partly covered by A, carries its own standalone slots and energy", () => {
+    expect(plan.goals.B?.slots).toBe(6)
+    expect(plan.goals.B?.standalone).toEqual({
+      slots: 12,
+      energy: bAlone.goals.B?.energy,
+    })
+    // The chip keeps the marginal figure, well below the standalone one.
+    expect(plan.goals.B?.energy).toBeLessThan(
+      plan.goals.B?.standalone?.energy ?? 0
+    )
+  })
+
+  it("A, with no overlap, and a goal alone expose no standalone figures", () => {
+    expect(plan.goals.A?.standalone).toBeUndefined()
+    expect(bAlone.goals.B?.standalone).toBeUndefined()
+  })
+})
+
+describe("chained level requirement (goals-overview-v1-parity 8.10)", () => {
+  const plan = simulate({ rank: "Silver3", goals: [A, B] })
+  const aLevel = plan.goals.A?.levelChargedXp
+  const bLevel = plan.goals.B?.levelChargedXp
+
+  it("the first goal reads from the current level; the second chains from the first's required level", () => {
+    expect(plan.goals.A?.levelChainedFrom).toBeUndefined()
+    expect(plan.goals.B?.levelChainedFrom).toBeGreaterThan(33)
+  })
+
+  it("the second goal is charged only the XP beyond the first's interval", () => {
+    expect(aLevel).toBeGreaterThan(0)
+    expect(bLevel).toBeGreaterThan(0)
+    const alone = simulate({ rank: "Silver3", goals: [B] })
+    expect((aLevel ?? 0) + (bLevel ?? 0)).toBe(alone.goals.B?.levelChargedXp)
   })
 })

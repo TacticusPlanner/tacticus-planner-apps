@@ -305,4 +305,37 @@ describe("GoalResourceChips", () => {
       expect(renderTokens(400, 0)).toEqual(["goals.resourceChips.energy: 400"])
     })
   })
+
+  it("adds the standalone slots and energy to the energy chip's tooltip, keeping the marginal figure", () => {
+    render(
+      <GoalResourceChips
+        energy={1995}
+        entityType="Character"
+        goalType="Rank"
+        remaining={need({ standalone: { slots: 12, energy: 3410 } })}
+      />
+    )
+    const chip = screen.getByTestId("goal-resource-chip")
+    expect(chip).toHaveTextContent("1,995")
+    const title = within(chip).getByRole("img").getAttribute("title")
+    expect(title).toContain("goals.resourceChips.energy: 1,995")
+    expect(title).toContain("goals.resourceChips.standalone")
+  })
+
+  it("shows no standalone tooltip content without overlap", () => {
+    cleanup()
+    render(
+      <GoalResourceChips
+        energy={1995}
+        entityType="Character"
+        goalType="Rank"
+        remaining={need()}
+      />
+    )
+    expect(
+      within(screen.getByTestId("goal-resource-chip"))
+        .getByRole("img")
+        .getAttribute("title")
+    ).not.toContain("standalone")
+  })
 })

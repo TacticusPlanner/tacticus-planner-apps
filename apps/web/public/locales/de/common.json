@@ -870,6 +870,7 @@
       "xpBooks": "{{rarity}} EP-Bücher",
       "xpBooksValue": "{{available}} von {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
+      "standalone": "Einzeln: {{slots}} Upgrade-Slots, {{energy}} Energie",
       "rarity": {
         "Common": "Gewöhnlich",
         "Uncommon": "Ungewöhnlich",

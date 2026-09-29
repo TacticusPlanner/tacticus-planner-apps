@@ -35,6 +35,7 @@ describe("allocateLevelXp", () => {
     )
     expect(result.get("silver3")).toEqual({
       chargedXp: 12200,
+      chainedFromLevel: null,
       potentialLevel: 32,
       remainingXp: 0,
       poolXpAvailable: 12500,
@@ -140,6 +141,7 @@ describe("allocateLevelXp", () => {
     )
     expect(result.get("low")).toEqual({
       chargedXp: 0,
+      chainedFromLevel: null,
       potentialLevel: 32,
       remainingXp: 0,
       // "high" charges 40,200 XP and spends all 4 Legendary books (50,000 XP: 3 by floor division

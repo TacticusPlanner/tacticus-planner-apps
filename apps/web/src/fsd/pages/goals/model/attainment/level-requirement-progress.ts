@@ -54,6 +54,9 @@ export function computeLevelRequirementProgress(params: {
   detail: Pick<GoalDetail, "goalType" | "entityType" | "config" | "status">
   playerUnit:
     { xpLevel: number; xp: number; progressionIndex: string } | undefined
+  /** The level a higher-priority goal of the same unit already covers up to, from the plan's level
+   *  allocation (`PlanNetResources.levelChainedFrom`): the line then reads from it, not the current level. */
+  chainedFrom?: number
 }): LevelRequirementProgress | null {
   const { detail, playerUnit } = params
   const required = requiredLevelForGoal(detail)
@@ -74,6 +77,7 @@ export function computeLevelRequirementProgress(params: {
     kind: "LevelRequirement",
     current: playerUnit.xpLevel,
     target: required,
+    chainedFrom: params.chainedFrom,
     ratio: levelRequirementRatio(playerUnit.xpLevel, required),
     reachableRatio: isRestricted ? levelRequirementRatio(cap, required) : null,
     reachableLevel: isRestricted ? cap : null,
