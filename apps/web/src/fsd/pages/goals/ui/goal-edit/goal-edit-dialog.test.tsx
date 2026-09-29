@@ -430,6 +430,57 @@ describe("GoalEditDialog", () => {
       })
     })
 
+    describe("Ability goal with an untargeted track (stored end below start)", () => {
+      const untargeted = {
+        ...abilityGoal,
+        config: {
+          ...abilityGoal.config,
+          ability: {
+            activeStart: 47,
+            activeEnd: 48,
+            passiveStart: 26,
+            passiveEnd: 0,
+          },
+        },
+      } as GoalDetail
+
+      it("opens without an error, and notes alone save without sending the target", async () => {
+        goalOnScreen(untargeted)
+        renderDialog()
+        await loaded()
+
+        expect(screen.queryByTestId("goal-target-issue")).toBeNull()
+        expect(
+          screen.getByTestId("goal-target-ability-passiveEnd")
+        ).toHaveTextContent("26")
+        fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+          target: { value: "New note" },
+        })
+        expect(screen.getByTestId("goal-edit-save")).toBeEnabled()
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        expect(editGoal.mock.calls[0]![1]).not.toHaveProperty("target")
+      })
+
+      it("editing the targeted track sends the untargeted one at its start", async () => {
+        goalOnScreen(untargeted)
+        renderDialog()
+        await loaded()
+
+        await chooseOption("goal-target-ability-activeEnd", "50")
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        expect(editGoal).toHaveBeenCalledWith("goal-1", {
+          target: {
+            expectedRevision: 5,
+            target: { ability: { activeEnd: 50, passiveEnd: 26 } },
+          },
+        })
+      })
+    })
+
     it("Upgrade: blocks Save with a reason for a zero quantity", async () => {
       goalOnScreen(upgradeGoal)
       renderDialog()

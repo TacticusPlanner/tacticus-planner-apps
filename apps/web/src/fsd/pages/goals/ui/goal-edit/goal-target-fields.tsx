@@ -196,11 +196,20 @@ function AbilityFields({
           key={track.key}
           label={track.label}
           onValueChange={(value) =>
-            onChange({ ...draft, [track.key]: Number(value) })
+            onChange({
+              ...draft,
+              // An untargeted track may be stored below its start; send it as creation does (end = start).
+              activeEnd: Math.max(draft.activeEnd, ability?.activeStart ?? 0),
+              passiveEnd: Math.max(
+                draft.passiveEnd,
+                ability?.passiveStart ?? 0
+              ),
+              [track.key]: Number(value),
+            })
           }
           portalContainer={portalContainer}
           testId={`goal-target-ability-${track.key}`}
-          value={String(draft[track.key])}
+          value={String(Math.max(draft[track.key], track.start))}
         >
           {range(track.start, maxAbilityLevel).map((level) => (
             <SelectItem key={level} value={String(level)}>

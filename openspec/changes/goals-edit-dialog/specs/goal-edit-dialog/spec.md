@@ -89,6 +89,16 @@ The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only w
 - **WHEN** the dialog opens and no field changes
 - **THEN** Save is disabled
 
+#### Scenario: Untouched target does not block Save
+
+- **WHEN** the owner edits only notes, priority or projects of a goal whose stored target would not pass target validation (for example an untargeted Machine-of-War Ability track stored below its start)
+- **THEN** no target error is shown, Save is enabled, and the request carries no target section
+
+#### Scenario: Untargeted Ability track
+
+- **WHEN** the owner changes only one Ability track's target
+- **THEN** the other track's select shows its start level and the request sends it at its start, as creation does
+
 #### Scenario: One section fails, nothing is saved
 
 - **GIVEN** the user changed the target and the projects

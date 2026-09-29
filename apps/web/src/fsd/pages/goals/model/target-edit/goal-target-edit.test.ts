@@ -5,6 +5,7 @@ import type { GoalConfig, GoalDetail } from "@/entities/goal"
 
 import { getGoalValidationIssue } from "../goal-creation-form/goal-validation"
 import {
+  getChangedGoalTargetIssue,
   getGoalTargetIssue,
   goalTargetDraftFromDetail,
   goalTargetEditFromDraft,
@@ -301,6 +302,48 @@ describe("getGoalTargetIssue", () => {
 
       expect(edit === null).toBe(creation === null)
       expect(edit === null).toBe(rankIndex(end) > start)
+    }
+  })
+})
+
+describe("getChangedGoalTargetIssue", () => {
+  it("never flags an untouched stored target, even one below its start", () => {
+    const detail = goal("Ability", {
+      ability: {
+        activeStart: 47,
+        activeEnd: 48,
+        passiveStart: 26,
+        passiveEnd: 0,
+      },
+    })
+    const stored = goalTargetDraftFromDetail(detail)!
+
+    expect(getGoalTargetIssue(detail, stored)).toBe("abilityBelowStart")
+    expect(getChangedGoalTargetIssue(detail, stored)).toBeNull()
+    expect(
+      getChangedGoalTargetIssue(detail, {
+        ...stored,
+        activeEnd: 50,
+      } as GoalTargetDraft)
+    ).toBe("abilityBelowStart")
+    expect(
+      getChangedGoalTargetIssue(detail, {
+        kind: "Ability",
+        activeEnd: 50,
+        passiveEnd: 26,
+      })
+    ).toBeNull()
+  })
+
+  it("does not flag an untouched Rank or Ascension target at or below its start", () => {
+    const rank = rankGoal(rankIndex(Rank.Silver1))
+    const asc = goal("Ascension", {
+      progression: { start: "Common:TwoStars", end: "Common:TwoStars" },
+    } as Partial<GoalConfig>)
+    for (const detail of [rank, asc]) {
+      const stored = goalTargetDraftFromDetail(detail)!
+      expect(getGoalTargetIssue(detail, stored)).not.toBeNull()
+      expect(getChangedGoalTargetIssue(detail, stored)).toBeNull()
     }
   })
 })

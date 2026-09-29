@@ -26,7 +26,7 @@ import { useGoalEditSave } from "../../model/goal-edit/use-goal-edit-save"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
 import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
-import { getGoalTargetIssue } from "../../model/target-edit/goal-target-edit"
+import { getChangedGoalTargetIssue } from "../../model/target-edit/goal-target-edit"
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalEditError } from "./goal-edit-error"
 import { GoalEditFarmingFields, GoalEditNotesField } from "./goal-edit-fields"
@@ -113,7 +113,7 @@ export function GoalEditForm({
     draft.farmingLocationIds
   )
   const targetIssue = draft.target
-    ? getGoalTargetIssue(detail, draft.target)
+    ? getChangedGoalTargetIssue(detail, draft.target)
     : null
 
   const changes = goalEditChanges(baseline, draft)

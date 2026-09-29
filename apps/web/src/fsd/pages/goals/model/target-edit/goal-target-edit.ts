@@ -194,6 +194,18 @@ export function getGoalTargetIssue(
   }
 }
 
+/** `getGoalTargetIssue`, but only for a target the owner actually changed: an untouched stored target is
+ * never validated (it may predate these rules, e.g. an untargeted ability track stored below its start)
+ * and is never sent, so it must not block Save. */
+export function getChangedGoalTargetIssue(
+  detail: GoalDetail,
+  draft: GoalTargetDraft
+): GoalTargetIssue | null {
+  return isGoalTargetDraftChanged(detail, draft)
+    ? getGoalTargetIssue(detail, draft)
+    : null
+}
+
 /** Ranks a Rank target can be raised or lowered to: everything above the stored start, up to the top of
  * the ladder (never an empty list — the start's own rank stands in when it is the last one). */
 export function rankEndOptionsFor(detail: GoalDetail): Rank[] {

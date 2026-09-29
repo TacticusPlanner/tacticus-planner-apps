@@ -5,7 +5,7 @@ import type { GoalDetail } from "@/entities/goal"
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
 
 import {
-  getGoalTargetIssue,
+  getChangedGoalTargetIssue,
   type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
 import { GoalTargetFields, GoalTargetStart } from "./goal-target-fields"
@@ -26,7 +26,7 @@ export function GoalEditTarget({
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
 }) {
   const { t } = useTranslation()
-  const issue = getGoalTargetIssue(detail, draft)
+  const issue = getChangedGoalTargetIssue(detail, draft)
 
   return (
     <section className="grid gap-3" data-testid="goal-edit-target">
