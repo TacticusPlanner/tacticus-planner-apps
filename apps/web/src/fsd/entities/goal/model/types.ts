@@ -223,6 +223,23 @@ export type UpdateGoalRequest = {
   acquisitionSources?: AcquisitionSource[] | null
 }
 
+/** Body of `PUT /me/goals/{id}/edit`. Every section is optional and an absent one is left unchanged; the
+ * server applies the present sections all-or-nothing. `target` and `details` are the bodies of the
+ * dedicated target / details endpoints; `priority.position` is the 1-based target position among the
+ * account's in-flight goals. */
+export type EditGoalRequest = {
+  target?: UpdateGoalTargetRequest
+  details?: UpdateGoalRequest
+  projectIds?: string[]
+  priority?: { position: number; expectedOrderRevision: number }
+}
+
+/** 200 body of `PUT /me/goals/{id}/edit`: the updated goal, plus the new order when `priority` was sent. */
+export type EditGoalResponse = {
+  goal: GoalDetail
+  order?: GoalOrderResponse | null
+}
+
 /** One goal within a combined-creation request (plan §6/§16 phase 5). `dependsOnIndex` holds indices
  * into the parent request's `goals` array — each must reference a strictly earlier position; the server
  * resolves them into real goal ids. */

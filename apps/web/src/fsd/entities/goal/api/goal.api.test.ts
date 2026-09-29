@@ -18,6 +18,7 @@ import {
   createCombinedGoals,
   createGoal,
   deleteGoal,
+  editGoal,
   getGoal,
   listGoals,
   updateGoal,
@@ -90,5 +91,14 @@ describe("goal API", () => {
     expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/target", {
       body: { expectedRevision: 7, target },
     })
+  })
+
+  it("sends only the present sections of a goal edit", () => {
+    editGoal("goal-1", { priority: { position: 2, expectedOrderRevision: 7 } })
+
+    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/edit", {
+      body: { priority: { position: 2, expectedOrderRevision: 7 } },
+    })
+    expect(Object.keys(api.put.mock.calls[0][1].body)).toEqual(["priority"])
   })
 })
