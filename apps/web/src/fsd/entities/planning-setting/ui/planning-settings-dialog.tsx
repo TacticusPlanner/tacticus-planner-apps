@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -10,13 +11,22 @@ import {
   DialogTitle,
 } from "@workspace/ui/components/dialog"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   dailyEnergyTiers,
   usePlanningSettings,
+  xpBookRarityOptions,
 } from "@/entities/planning-setting"
+import { normalizeXpBookRarity } from "@/features/goal-farming"
 import { ApiError } from "@/shared/api"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
@@ -45,7 +55,7 @@ export function PlanningSettingsDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(["common", "progression"])
   const { settings, save } = usePlanningSettings()
   const [tierIndex, setTierIndex] = useState(() =>
     Math.max(
@@ -54,6 +64,9 @@ export function PlanningSettingsDialog({
         settings.dailyEnergy as (typeof dailyEnergyTiers)[number]
       )
     )
+  )
+  const [xpBookRarity, setXpBookRarity] = useState<Rarity>(() =>
+    normalizeXpBookRarity(settings.xpBookRarity)
   )
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle")
   const [error, setError] = useState<string | null>(null)
@@ -64,6 +77,7 @@ export function PlanningSettingsDialog({
     try {
       await save({
         dailyEnergy: dailyEnergyTiers[tierIndex],
+        xpBookRarity,
         revision: settings.revision,
       })
       onOpenChange(false)
@@ -114,6 +128,31 @@ export function PlanningSettingsDialog({
               <span>288</span>
               <span>938</span>
             </div>
+          </Field>
+
+          <Field>
+            <FieldLabel>{t("goals.planningSettings.xpBookRarity")}</FieldLabel>
+            <Select
+              onValueChange={(value) => setXpBookRarity(value as Rarity)}
+              value={xpBookRarity}
+            >
+              <SelectTrigger
+                className="w-full"
+                data-testid="planning-settings-xp-book-rarity"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {xpBookRarityOptions.map((rarity) => (
+                  <SelectItem key={rarity} value={rarity}>
+                    {t(`progression:rarities.${rarity}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {t("goals.planningSettings.xpBookRarityHint")}
+            </p>
           </Field>
         </div>
 

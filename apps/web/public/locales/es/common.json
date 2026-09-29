@@ -387,6 +387,8 @@
       "title": "Ajustes de planificación",
       "description": "Elige el presupuesto diario de energía que se usa para la planificación diaria de incursiones y para las estimaciones generales de objetivos.",
       "dailyEnergy": "Energía por día",
+      "xpBookRarity": "Rareza de libro de XP",
+      "xpBookRarityHint": "La guía de nivel requerido muestra su cantidad adicional de libros en esta rareza.",
       "save": "Guardar ajustes",
       "cancel": "Cancelar",
       "error": "No se pudieron guardar los ajustes de planificación."
@@ -694,7 +696,8 @@
       },
       "level": {
         "current": "Nivel actual",
-        "booksNeeded": "≈ {{count}} libros de XP legendarios",
+        "booksNeeded_one": "≈ {{count}} libro de XP {{rarity}}",
+        "booksNeeded_other": "≈ {{count}} libros de XP {{rarity}}",
         "goldToApply": "≈ {{gold}} de oro para aplicar"
       },
       "farmingStrategy": {
@@ -843,7 +846,17 @@
       "shardsDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
       "farmingInvalid": "Cada recurso necesario debe estar disponible en al menos un nodo seleccionado.",
       "none": "Ninguno",
-      "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo."
+      "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo.",
+      "farmingGuidanceTitle": "Guía de farmeo",
+      "farmingGuidanceEligible_one": "{{count}} lugar farmeable ahora",
+      "farmingGuidanceEligible_other": "{{count}} lugares farmeables ahora",
+      "farmingGuidanceLink": "Abrir incursiones diarias",
+      "farmingGuidanceCovered": "Cubierto por un objetivo anterior — nada propio que farmear.",
+      "projectGuidanceTitle": "Guía de farmeo",
+      "projectGuidancePreview": "Vista previa — no es el plan diario de hoy",
+      "projectGuidanceSummary_one": "Aún se necesita {{count}} material para los objetivos de este proyecto.",
+      "projectGuidanceSummary_other": "Aún se necesitan {{count}} materiales para los objetivos de este proyecto.",
+      "projectGuidanceNone": "No queda nada por farmear en este proyecto."
     },
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
@@ -866,7 +879,9 @@
         "rank": "{{slots}} ranuras",
         "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
         "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
-        "shards": "{{count}} fragmentos"
+        "shards": "{{count}} fragmentos",
+        "additionalBooks_one": "+{{count}} libro {{rarity}} adicional",
+        "additionalBooks_other": "+{{count}} libros {{rarity}} adicionales"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Detalles del progreso",

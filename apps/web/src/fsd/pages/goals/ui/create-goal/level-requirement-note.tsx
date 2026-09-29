@@ -8,10 +8,15 @@ import type { LevelRequirementPreview } from "../../model/goal-creation-form/use
  * (integrate-level-progression-into-rank-goals). Renders nothing once the level is sufficient. */
 export function LevelRequirementNote({
   preview,
+  xpBookRarity,
 }: {
   preview: LevelRequirementPreview | undefined
+  /** The user's selected XP-book equivalent rarity (Planning settings, default Legendary) — the
+   *  book count above is already expressed in it (`computeLevelGoalCost`'s `rarity` param); this is
+   *  only for naming that rarity in the label. */
+  xpBookRarity?: string
 }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation(["common", "progression"])
   if (!preview) return null
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
@@ -35,7 +40,12 @@ export function LevelRequirementNote({
       {preview.cost ? (
         <>
           <p data-testid="create-goal-level-cost">
-            {t("goals.create.level.booksNeeded", { count: preview.cost.books })}
+            {t("goals.create.level.booksNeeded", {
+              count: preview.cost.books,
+              rarity: t(`progression:rarities.${xpBookRarity ?? "Legendary"}`, {
+                defaultValue: xpBookRarity ?? "Legendary",
+              }),
+            })}
           </p>
           <p>
             {t("goals.create.level.goldToApply", { gold: preview.cost.gold })}

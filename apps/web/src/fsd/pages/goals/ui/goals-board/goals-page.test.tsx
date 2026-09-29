@@ -71,8 +71,16 @@ vi.mock("@/entities/planning-setting", async (importOriginal) => {
   return {
     ...actual,
     dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+    xpBookRarityOptions: [
+      "Common",
+      "Uncommon",
+      "Rare",
+      "Epic",
+      "Legendary",
+      "Mythic",
+    ],
     usePlanningSettings: () => ({
-      settings: { dailyEnergy: 288, revision: 1 },
+      settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
       save: vi.fn(),
     }),
   }
@@ -202,6 +210,8 @@ vi.mock("../../model/insights/use-plan-insights", () => ({
       estimates: new Map(),
       potentialProgressByGoalId: new Map(),
       levelPotentialProgressByGoalId: new Map(),
+      levelXpRemainingByGoalId: new Map(),
+      rankSlotsByGoalId: new Map(),
     },
   }),
 }))

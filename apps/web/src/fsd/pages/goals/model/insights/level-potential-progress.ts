@@ -7,6 +7,17 @@ import type { GoalDetail } from "@/entities/goal"
 
 import { levelRequirementRatio } from "../attainment/level-requirement-progress"
 
+export type LevelPotentialProgress = {
+  /** Potential progress ratio of each Rank/Ability goal's level requirement, keyed by goal id — how far
+   *  the account's owned XP books could take the character toward the required level *right now*. */
+  ratioByGoalId: Map<string, number>
+  /** Each goal's still-unmet XP after its own owned-book allocation (`LevelXpAllocation.remainingXp`)
+   *  — the raw input a caller converts to an *additional* book-equivalent count in the user's selected
+   *  XP-book rarity (surface-goal-farming-guidance, `xpBookEquivalent`). Only a goal whose character is
+   *  below its required level gets an entry. */
+  remainingXpByGoalId: Map<string, number>
+}
+
 /** Potential progress of each Rank/Ability goal's level requirement, keyed by that goal's id — how far
  *  the account's owned XP books could take the character toward the required level *right now*, spent in
  *  priority order through the one shared `allocateLevelXp` so overlapping Rank milestones (and an Ability
@@ -20,7 +31,7 @@ export function buildLevelPotentialProgress(params: {
     { xpLevel: number; xp: number } | undefined
   >
   inventoryXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
-}): Map<string, number> {
+}): LevelPotentialProgress {
   const needs: LevelXpNeed[] = []
   for (const detail of params.orderedDetails) {
     const requiredLevel = requiredLevelForGoal(detail)
@@ -39,6 +50,7 @@ export function buildLevelPotentialProgress(params: {
 
   const allocation = allocateLevelXp(needs, params.inventoryXpBooks)
   const ratioByGoalId = new Map<string, number>()
+  const remainingXpByGoalId = new Map<string, number>()
   for (const need of needs) {
     const result = allocation.get(need.goalId)
     if (!result) continue
@@ -46,6 +58,7 @@ export function buildLevelPotentialProgress(params: {
       need.goalId,
       levelRequirementRatio(result.potentialLevel, need.requiredLevel)
     )
+    remainingXpByGoalId.set(need.goalId, result.remainingXp)
   }
-  return ratioByGoalId
+  return { ratioByGoalId, remainingXpByGoalId }
 }

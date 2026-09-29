@@ -51,6 +51,38 @@ describe("level requirement display", () => {
     )
   })
 
+  it("appends the additional XP-book equivalent to the raw remaining text (worked Bellator example)", () => {
+    render(
+      <LevelRequirementRemaining
+        additionalBookCount={1}
+        levelRequirement={requirement}
+        xpBookRarity="Legendary"
+      />
+    )
+
+    const text = screen.getByTestId("level-requirement-remaining")
+    expect(text).toHaveTextContent(
+      'goals.overview.remainingText.levelsWithXp:{"count":"1","xp":"12,200"}'
+    )
+    expect(text).toHaveTextContent(
+      'goals.overview.remainingText.additionalBooks:{"count":1,"rarity":"progression:rarities.Legendary:{\\"defaultValue\\":\\"Legendary\\"}"}'
+    )
+  })
+
+  it("shows nothing extra once no additional books are needed", () => {
+    render(
+      <LevelRequirementRemaining
+        additionalBookCount={0}
+        levelRequirement={requirement}
+        xpBookRarity="Legendary"
+      />
+    )
+
+    expect(
+      screen.getByTestId("level-requirement-remaining")
+    ).not.toHaveTextContent("additionalBooks")
+  })
+
   it("renders nothing once the character's level is sufficient", () => {
     render(
       <>

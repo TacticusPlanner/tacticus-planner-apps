@@ -19,8 +19,10 @@ import {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
 } from "../../model/attainment/goal-overview-metrics-defaults"
-import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type {
+  EstimateOutcome,
+  RankSlotAllocation,
+} from "@/features/goal-farming"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
@@ -28,16 +30,10 @@ import type { BlockerReason } from "../../model/blockers/goal-blockers"
 import { prerequisitePrefill } from "../../model/blockers/prerequisite-prefill"
 import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
 import {
-  GoalProgressDisplay,
-  GoalTargetDisplay,
-} from "../shared/goal-progress-visuals"
-import { GoalProjectBadges } from "../shared/goal-visuals"
-import { LevelRequirementSummary } from "../shared/level-requirement-display"
-import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
-import {
   GoalDetailEditForm,
   type GoalDetailDraft,
 } from "./goal-detail-edit-form"
+import { GoalDetailHeader } from "./goal-detail-header"
 import { GoalDetailView } from "./goal-detail-view"
 import { GoalDetailFooter } from "./goal-detail-footer"
 import { GoalDetailError } from "./goal-detail-error"
@@ -52,6 +48,7 @@ import {
   hasSelectionChanged,
 } from "./goal-detail-draft"
 import { useGoalDetailAcquisition } from "./use-goal-detail-acquisition"
+import { useGoalDetailMetrics } from "./use-goal-detail-metrics"
 import { useGoalDetailSave } from "./use-goal-detail-save"
 
 type ConfirmAction = "cancel" | "close" | "navigate" | null
@@ -65,6 +62,8 @@ export function GoalDetailSheet({
   onUpdated,
   potentialRatio,
   levelPotentialRatio,
+  rankSlotAllocation,
+  levelXpRemaining,
   onGoalChange,
 }: {
   goalId: string | null
@@ -75,6 +74,13 @@ export function GoalDetailSheet({
   potentialRatio?: number
   /** Potential progress of this goal's level requirement (owned XP books). */
   levelPotentialRatio?: number
+  /** This Rank goal's slots as allocated in the one plan (`PlanInsightsResult.rankSlotsByGoalId`) —
+   *  `allocated === 0 && standalone > 0` means an earlier goal in the global order already covers it. */
+  rankSlotAllocation?: RankSlotAllocation
+  /** This goal's still-unmet level-requirement XP after its own owned-book allocation
+   *  (`PlanInsightsResult.levelXpRemainingByGoalId`) — converted to the selected XP-book rarity's
+   *  additional-book equivalent below. */
+  levelXpRemaining?: number
   onGoalChange?: (goalId: string) => void
 }) {
   const { t } = useTranslation()
@@ -141,11 +147,13 @@ export function GoalDetailSheet({
     enabled: mode === "edit",
   })
 
-  const overviewMetrics = useGoalsOverviewMetrics(
-    goalId ? [goalId] : [],
-    goalId && estimate ? new Map([[goalId, estimate]]) : undefined
-  )
-  const metrics = goalId ? overviewMetrics.get(goalId) : undefined
+  const { metrics, additionalBookCount } = useGoalDetailMetrics({
+    goalId,
+    estimate,
+    rankSlotAllocation,
+    levelXpRemaining,
+    xpBookRarity: planningSettings.xpBookRarity,
+  })
   const progress = metrics?.progress ?? UNKNOWN_PROGRESS
 
   const { isRank, isUnlock, allLocations, overrideValid } =
@@ -319,31 +327,18 @@ export function GoalDetailSheet({
         ) : null}
         {detail ? (
           <>
-            <div className="grid gap-2 px-4 text-sm">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={detail.status} />
-                <BlockedIndicator
-                  blockers={metrics?.blockers ?? NO_BLOCKERS}
-                  progress={progress}
-                />
-              </div>
-              <LevelRequirementSummary
-                levelRequirement={metrics?.levelRequirement}
-                potentialRatio={levelPotentialRatio}
-              />
-              {mode === "edit" ? (
-                <>
-                  <GoalTargetDisplay progress={progress} />
-                  <GoalProgressDisplay
-                    potentialRatio={potentialRatio}
-                    progress={progress}
-                  />
-                  {assignedProjects.length > 0 ? (
-                    <GoalProjectBadges projects={assignedProjects} />
-                  ) : null}
-                </>
-              ) : null}
-            </div>
+            <GoalDetailHeader
+              additionalBookCount={additionalBookCount}
+              assignedProjects={assignedProjects}
+              blockers={metrics?.blockers}
+              detail={detail}
+              levelPotentialRatio={levelPotentialRatio}
+              levelRequirement={metrics?.levelRequirement}
+              mode={mode}
+              potentialRatio={potentialRatio}
+              progress={progress}
+              xpBookRarity={planningSettings.xpBookRarity}
+            />
 
             <GoalTargetSection
               detail={detail}
@@ -358,7 +353,10 @@ export function GoalDetailSheet({
             {mode === "view" ? (
               <GoalDetailView
                 assignedProjects={assignedProjects}
+                battlesById={battlesById}
                 blockers={metrics?.blockers ?? NO_BLOCKERS}
+                charactersById={charactersById ?? new Map()}
+                dailyEnergy={planningSettings.dailyEnergy}
                 dependencies={dependencies}
                 detail={detail}
                 estimate={estimate}
@@ -370,6 +368,7 @@ export function GoalDetailSheet({
                 progress={progress}
                 potentialRatio={potentialRatio}
                 remaining={metrics?.remaining ?? null}
+                upgradesById={upgradesById}
               />
             ) : (
               <GoalDetailEditForm

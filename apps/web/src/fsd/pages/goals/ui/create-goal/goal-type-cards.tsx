@@ -55,7 +55,10 @@ export function GoalTypeCards({
                     rankAppliedUpgrades={form.rankAppliedUpgrades}
                     rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
                   />
-                  <LevelRequirementNote preview={form.levelRequirements.Rank} />
+                  <LevelRequirementNote
+                    preview={form.levelRequirements.Rank}
+                    xpBookRarity={form.xpBookRarity}
+                  />
                   <FarmingStrategyField
                     context="rank"
                     rankStart={form.rankStart}
@@ -212,6 +215,7 @@ export function GoalTypeCards({
                   />
                   <LevelRequirementNote
                     preview={form.levelRequirements.Ability}
+                    xpBookRarity={form.xpBookRarity}
                   />
                   {form.entityType === "Mow" ? (
                     <FarmingStrategyField
