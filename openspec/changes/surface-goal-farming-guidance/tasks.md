@@ -6,8 +6,8 @@
 
 ## 2. Surfaces and verification
 
-- [ ] 2.1 Add concise resource/source guidance and next action to goal detail, keeping raw XP and correctly labeled additional book equivalent; verify goal-detail tests and the worked Bellator fixture.
-- [ ] 2.2 Add project-level summary/link and explicit preview label for a project that is not Dailies' applied project filter; verify tests for populated, empty, and blocked projects.
+- [ ] 2.1 Add concise resource/source guidance and next action to goal detail, keeping raw XP and correctly labeled additional book equivalent; read `rankSlotAllocation`/`rankSlotsByGoalId` for the covered-by-earlier-goal state (no resource breakdown when `allocated === 0`) rather than re-deriving it; verify goal-detail tests, the worked Bellator fixture, and a covered-milestone fixture.
+- [ ] 2.2 Add project-level summary/link and explicit preview label for a project that is not Dailies' applied project filter; verify tests for populated, empty, and blocked projects, and against the real Raids `ProjectSelect` filter (`RaidsLayout`, restored after this change was authored).
 - [ ] 2.3 Localize new copy (including the rarity setting label and rarity names) in all supported locales and update materially changed goal/project Joyride steps with localized content; verify desktop/mobile tutorial tests.
 - [ ] 2.4 In the Aspire stack, inspect mixed eligible/locked nodes, owned books across two Rank milestones or a Rank and Ability goal of one unit, projects inside and outside the Dailies project filter, and no-actionable-source states at mobile and desktop widths; verify no preview claims to be today's schedule.
 - [ ] 2.5 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`, plus the API gates for the paired rarity-field change; verify all pass.

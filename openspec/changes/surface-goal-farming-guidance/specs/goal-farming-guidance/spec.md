@@ -8,6 +8,8 @@ Connects a goal or project view to the resources and eligible sources needed for
 
 For a goal with outstanding farmable needs, goal detail SHALL show a concise breakdown of remaining resources and quantities, suitable farming locations, and a reachable next action or Dailies link. It SHALL distinguish a location usable now from one locked, out of attempts, or otherwise unavailable, with the reason stated rather than silently omitting it. The quantities SHALL derive from the same need/allocation result used by planning, not an independent UI calculation.
 
+A Rank goal whose milestone is fully covered by an earlier goal in the global order (`rankSlotAllocation.allocated === 0` for that slot) has no outstanding farmable need of its own to show; guidance SHALL state that it is covered by the earlier goal instead of a resource breakdown or a duplicate farming list.
+
 #### Scenario: Farmable and locked locations
 
 - **WHEN** a Rank goal needs a material obtainable at one eligible node and one locked node
@@ -17,6 +19,11 @@ For a goal with outstanding farmable needs, goal detail SHALL show a concise bre
 
 - **WHEN** a goal has a true outstanding need but no currently usable source
 - **THEN** its detail states the unmet need and blocker without claiming the goal can complete now
+
+#### Scenario: Covered by an earlier goal
+
+- **WHEN** a Rank goal's milestone is fully allocated to an earlier goal in the global order and this goal's own remaining allocation is zero
+- **THEN** its detail states that the milestone is covered by the earlier goal instead of listing resources to farm
 
 ### Requirement: Project detail provides scoped guidance
 

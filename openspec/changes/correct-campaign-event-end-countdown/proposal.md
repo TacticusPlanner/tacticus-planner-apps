@@ -23,4 +23,4 @@ None.
 ## Impact
 
 - Dailies campaign-event status derivation/rendering, tests, localized copy, and tour wording in apps. Existing catalog schema already exposes `confirmed`; no client schema or API shape change is expected.
-- Companion `tacticus-planner-api/openspec/changes/correct-campaign-event-end-countdown`; API applies first.
+- Companion `tacticus-planner-api/openspec/changes/correct-campaign-event-end-countdown` authors the verified Tyranid occurrence, but its evidence is not yet available (see its `Apply investigation` note) and this apps change does not depend on it: `confirmed` and `endUtc` are already served for every campaign-event window today, so this change can apply and ship on its own. The API change remains a separate, independent follow-up that flips the same served flag once evidence exists — no further apps work is needed when it lands.

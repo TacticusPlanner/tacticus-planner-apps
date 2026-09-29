@@ -15,7 +15,7 @@ The daily-energy setting affects raid planning but is discoverable only from the
 
 ### Modified Capabilities
 
-None. `goals-navigation`'s Goals-only rule ("Planning Settings is a Goals-only control", renamed from "Overview-only" by `consolidate-goals-into-plan-and-remove-active-project`) remains true _within Goals_; it does not bar a Dailies entry.
+None. `goals-navigation`'s Goals-only rule ("Planning Settings is a Goals-only control", renamed from "Overview-only" by `consolidate-goals-into-plan-and-remove-active-project`) remains true _within Goals_; it does not bar a Dailies entry. `dailies-navigation`'s Raids tab/project-selector row requirement is unchanged; the new trigger shares that row without editing its delta.
 
 ## Impact
 
