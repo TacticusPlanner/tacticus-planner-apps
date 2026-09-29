@@ -7,6 +7,7 @@ import {
 } from "@workspace/game-catalog/queries"
 
 import {
+  buildRaidBossRosterGroups,
   resolvePrimeCharacterId,
   resolvePrimeName,
   useRaidBossLabels,
@@ -22,6 +23,8 @@ export type RaidBossesCatalog = {
   payload: RaidBossesPayload | undefined
   bosses: RaidBossListItem[]
   primes: RaidBossListItem[]
+  /** One group per boss, in served boss order, for the mobile roster picker. */
+  rosterGroups: { boss: RaidBossListItem; primes: RaidBossListItem[] }[]
   byId: Map<string, RaidBoss>
   /** unit-set id -> resolved display label, for every boss and prime. */
   nameById: Map<string, string>
@@ -37,6 +40,7 @@ const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
   payload: undefined,
   bosses: [],
   primes: [],
+  rosterGroups: [],
   byId: new Map(),
   nameById: new Map(),
   portraitById: new Map(),
@@ -103,12 +107,22 @@ export function useRaidBossesCatalog(): RaidBossesCatalog {
 
     const bosses = result.bosses.map(toItem)
     const primes = result.primes.map(toItem)
+    const itemByUnitSetId = new Map(
+      [...bosses, ...primes].map((item) => [item.unitSetId, item])
+    )
+    const rosterGroups = buildRaidBossRosterGroups(result).map((group) => ({
+      boss: itemByUnitSetId.get(group.boss.unitSetId)!,
+      primes: group.primes.map((prime) =>
+        itemByUnitSetId.get(prime.unitSetId)!
+      ),
+    }))
 
     return {
       status: "ready",
       payload: result,
       bosses,
       primes,
+      rosterGroups,
       byId: new Map(
         [...result.bosses, ...result.primes].map((unit) => [
           unit.unitSetId,

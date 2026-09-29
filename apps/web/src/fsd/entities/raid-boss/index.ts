@@ -48,6 +48,10 @@ export {
   maxKnownProgressionIndex,
 } from "./lib/encounters"
 export {
+  buildRaidBossRosterGroups,
+  type RaidBossRosterGroup,
+} from "./lib/roster-groups"
+export {
   computeAbilityAdjustments,
   applyAbilityVariableAdjustments,
   applyAbilityConstantAdjustments,

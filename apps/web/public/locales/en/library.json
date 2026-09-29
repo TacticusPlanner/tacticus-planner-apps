@@ -93,6 +93,8 @@
     "noSeasonReference": "No raid-boss season data is available.",
     "bosses": "Bosses",
     "primes": "Primes",
+    "pickerPlaceholder": "Search bosses and primes…",
+    "pickerEmpty": "No boss or prime found.",
     "primarch": "Primarch",
     "progression": "Progression",
     "stats": "Stats",
@@ -125,6 +127,10 @@
         "primes": {
           "title": "Primes",
           "content": "The prime enemies fought alongside each boss — browsable in their own right."
+        },
+        "mobilePicker": {
+          "title": "Guild Raid Bosses",
+          "content": "Search and select a boss or prime — each boss is grouped with the primes fought alongside it."
         },
         "progression": {
           "title": "Progression step",
