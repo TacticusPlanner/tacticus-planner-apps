@@ -5,7 +5,7 @@ import {
 } from "@/features/goal-farming"
 import type { GoalDetail } from "@/entities/goal"
 
-import { levelRequirementRatio } from "../attainment/level-requirement-progress"
+import { levelPotentialRatio } from "../attainment/level-requirement-progress"
 
 export type LevelPotentialProgress = {
   /** Potential progress ratio of each Rank/Ability goal's level requirement, keyed by goal id — how far
@@ -63,7 +63,11 @@ export function buildLevelPotentialProgress(params: {
     if (!result) continue
     ratioByGoalId.set(
       need.goalId,
-      levelRequirementRatio(result.potentialLevel, need.requiredLevel)
+      levelPotentialRatio(
+        need.currentLevel,
+        result.potentialLevel,
+        need.requiredLevel
+      )
     )
     chargedXpByGoalId.set(need.goalId, result.chargedXp)
     poolXpAvailableByGoalId.set(need.goalId, result.poolXpAvailable)

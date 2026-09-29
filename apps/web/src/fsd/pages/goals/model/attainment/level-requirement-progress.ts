@@ -25,11 +25,23 @@ function clampRatio(done: number, total: number): number {
 }
 
 /** Where `level` sits on the requirement's bar (level 1 → the required level). */
-export function levelRequirementRatio(
-  level: number,
+function levelRequirementRatio(level: number, requiredLevel: number): number {
+  return clampRatio(level - LEVEL_FLOOR, requiredLevel - LEVEL_FLOOR)
+}
+
+/** How much of the *remaining* gap from `currentLevel` to `requiredLevel` the account's owned XP
+ * books could close right now (show-xp-book-availability-per-goal) — deliberately not
+ * `levelRequirementRatio`, which is anchored at level 1 and would report a high ratio for a
+ * near-target character even when zero books are actually available (e.g. level 44 of a 1→50
+ * range reads ~88% on that absolute scale regardless of book availability). A goal that gets no
+ * benefit from owned books (`potentialLevel === currentLevel`) SHALL read 0%, not the character's
+ * unrelated absolute level position. */
+export function levelPotentialRatio(
+  currentLevel: number,
+  potentialLevel: number,
   requiredLevel: number
 ): number {
-  return clampRatio(level - LEVEL_FLOOR, requiredLevel - LEVEL_FLOOR)
+  return clampRatio(potentialLevel - currentLevel, requiredLevel - currentLevel)
 }
 
 /** The level a Rank/Ability goal needs, shown next to that goal while the character is below it — the

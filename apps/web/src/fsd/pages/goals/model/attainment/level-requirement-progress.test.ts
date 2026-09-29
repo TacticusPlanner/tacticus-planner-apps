@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest"
 
 import type { GoalDetail } from "@/entities/goal"
 
-import { computeLevelRequirementProgress } from "./level-requirement-progress"
+import {
+  computeLevelRequirementProgress,
+  levelPotentialRatio,
+} from "./level-requirement-progress"
 
 // Bellator's Silver3 needs level 32 in the rank-level ladder; an Ability target's level is the higher of
 // its two tracks (they share one scale with character levels).
@@ -119,5 +122,27 @@ describe("computeLevelRequirementProgress", () => {
       reachableRatio: (26 - 1) / (32 - 1),
       reachableLevel: 26,
     })
+  })
+})
+
+describe("levelPotentialRatio", () => {
+  it("reads 0% when owned books get a near-target character no further, not its absolute level position", () => {
+    // A level-44 character on a 1..50 ladder reads ~88% on the absolute scale
+    // (levelRequirementRatio(44, 50) = 43/49), but zero owned books means zero potential gain —
+    // the bug this function fixes (show-xp-book-availability-per-goal).
+    expect(levelPotentialRatio(44, 44, 50)).toBe(0)
+  })
+
+  it("reads 100% when owned books fully close the remaining gap", () => {
+    expect(levelPotentialRatio(31, 32, 32)).toBe(1)
+  })
+
+  it("reads the fraction of the remaining gap owned books partially close", () => {
+    // Halfway from 44 to 50 is level 47.
+    expect(levelPotentialRatio(44, 47, 50)).toBeCloseTo(0.5)
+  })
+
+  it("is 1 when currentLevel already meets requiredLevel (nothing left to gain)", () => {
+    expect(levelPotentialRatio(50, 50, 50)).toBe(1)
   })
 })

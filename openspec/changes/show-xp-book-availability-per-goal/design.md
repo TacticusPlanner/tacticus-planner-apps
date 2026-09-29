@@ -18,9 +18,10 @@ See proposal.md - Why/What Changes. The relevant pipeline today:
 
 **Non-Goals:**
 
-- No change to the level-based Potential progress bar/percentage — it already exists, is already rarity-independent, and stays as the single source of "how close is this goal" framing.
 - No change to `computeLevelGoalCost` / the create-goal preview.
 - No new capability, no API change.
+
+(The level-based Potential progress bar/percentage was originally intended to stay untouched — see the bug found during live verification, addressed below, which required a small correction to its formula. Its role as rarity-independent and the single source of "how close is this goal" framing is unchanged.)
 
 ## Decisions
 
@@ -39,6 +40,8 @@ Alternative considered: recompute pool state from `remainingXp` deltas after the
 **Desktop and mobile:** no layout-level difference — both `goals-list.tsx`'s desktop table and `goals-mobile-cards.tsx` call the same shared `LevelRequirementRemaining`, so passing the new props to both call sites is the entire mobile-specific work. No new Joyride step needed — this augments an existing, already-toured remaining-text line rather than adding a new interactive control.
 
 **Locale copy:** replace `goals.overview.remainingText.additionalBooks` with a new key expressing "`{{available}}/{{needed}} {{rarity}} books`" (exact wording decided during `en` translation, mirrored to `de`/`es`/`fr`), rather than reusing the old key's interpolation shape, since the meaning inverts (was a single shortfall count, now a pair).
+
+**Bug found during live verification: the Potential % bar was measuring absolute level position, not book-driven gain.** `buildLevelPotentialProgress` computed its ratio via `levelRequirementRatio(potentialLevel, requiredLevel)` — a formula anchored at level 1, correct for "Actual" progress (`computeLevelRequirementProgress`'s own use of it) but wrong for "Potential": a near-target character reads a high percentage there purely from already being close to the target on the absolute 1→N scale, even when zero owned books are actually available (e.g. a level-44 character on a 1→50 ladder read ~88% Potential with 0 books available, directly contradicting the new "0/N books" figure shown right beside it). Fixed by adding `levelPotentialRatio(currentLevel, potentialLevel, requiredLevel)` — `(potentialLevel − currentLevel) / (requiredLevel − currentLevel)`, i.e. how much of the _remaining_ gap books close — used only by `buildLevelPotentialProgress`'s `ratioByGoalId`. `levelRequirementRatio`'s two existing call sites (Actual progress, the restricted-rarity reachable ratio) are absolute-position by design and are untouched.
 
 ## Risks / Trade-offs
 

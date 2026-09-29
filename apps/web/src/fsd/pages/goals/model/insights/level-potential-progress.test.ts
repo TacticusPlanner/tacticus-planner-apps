@@ -56,6 +56,21 @@ describe("buildLevelPotentialProgress", () => {
     expect(result.ratioByGoalId.get("p1")).toBe(1)
   })
 
+  it("reads 0% potential for a near-target character with no owned books, not an absolute-level artifact", () => {
+    // 1 XP short of level 32 (94,200 threshold) reads ~97% on an absolute 1..32 scale, but with no
+    // owned books at all, books give this goal zero benefit — the bug show-xp-book-availability-per-
+    // goal's available/needed count exposed (a near-max-level character showed a misleadingly high
+    // Potential % purely from being close to the target already, unrelated to book availability).
+    const result = buildLevelPotentialProgress({
+      orderedDetails: [rankGoal("near", "solo")],
+      priorityByGoalId: new Map([["near", 1]]),
+      playerCharacterById: new Map([["solo", { xpLevel: 31, xp: 94199 }]]),
+      inventoryXpBooks: undefined,
+    })
+
+    expect(result.ratioByGoalId.get("near")).toBe(0)
+  })
+
   it("gives no entries for a goal already at its required level", () => {
     const result = buildLevelPotentialProgress({
       orderedDetails: [rankGoal("done", "one")],

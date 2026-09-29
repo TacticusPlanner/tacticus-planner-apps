@@ -766,10 +766,11 @@ describe("computePlanInsights", () => {
     })
 
     expect(result.levelPotentialProgressByGoalId.get("goal-high")).toBe(1)
-    // No books left for "goal-low" once "goal-high" claimed them: it stays at its actual level ratio.
-    expect(result.levelPotentialProgressByGoalId.get("goal-low")).toBe(
-      (31 - 1) / (32 - 1)
-    )
+    // No books left for "goal-low" once "goal-high" claimed them: owned books give it zero benefit,
+    // so its Potential reads 0% — not its unrelated absolute level position on the 1..32 scale
+    // (show-xp-book-availability-per-goal fixed this: Potential used to read ~97% here purely from
+    // hero2 already being close to level 32, even though no books could help it further).
+    expect(result.levelPotentialProgressByGoalId.get("goal-low")).toBe(0)
   })
 
   it("charges overlapping Rank milestones of one unit the shared levels once", () => {
