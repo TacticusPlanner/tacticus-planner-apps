@@ -39,6 +39,28 @@ For a goal that has not reached its target, the Remaining display SHALL show one
 - **WHEN** its Remaining display renders
 - **THEN** it shows no chips and no placeholder text
 
+### Requirement: Gold is shown in thousands
+
+A gold chip SHALL display its quantity shortened to thousands with a "k" suffix, as V1 does: a value below 1,000 is shown as is, and a value of 1,000 or more is divided by 1,000, rounded down, and suffixed with "k". The chip's tooltip and accessible name SHALL still carry the full, unabbreviated quantity with the locale's thousands separator. No other chip abbreviates its quantity.
+
+#### Scenario: Large gold values
+
+- **GIVEN** a goal needs 42,235 gold
+- **WHEN** its gold chip renders
+- **THEN** it reads "42k", and its tooltip and accessible name read 42,235
+
+#### Scenario: Rounding down
+
+- **GIVEN** a goal needs 1,999 gold
+- **WHEN** its gold chip renders
+- **THEN** it reads "1k"
+
+#### Scenario: Small gold values
+
+- **GIVEN** a goal needs 750 gold
+- **WHEN** its gold chip renders
+- **THEN** it reads "750"
+
 ### Requirement: Remaining shows the projected Onslaught tokens a goal will use
 
 When a goal's estimate obtains part of its need from a selected Onslaught source, the Remaining display SHALL include an Onslaught-token chip showing the projected number of Onslaught tokens (runs) the goal will use, as V1 shows next to its energy, using V1's token icon. Energy chips SHALL cover only the campaign-farmed portion of the goal. A goal with no Onslaught source selected SHALL show no token chip. The figure SHALL come from the same estimate the plan uses (the Onslaught contribution already attributed per source), never a separate calculation.

@@ -44,6 +44,31 @@ const chipNames = () =>
     .map((chip) => within(chip).getByRole("img").getAttribute("aria-label"))
 
 describe("GoalResourceChips", () => {
+  it("shows gold in thousands (k, rounded down) but keeps the full value in the label", () => {
+    const shown = (levelGold: number) => {
+      cleanup()
+      render(
+        <GoalResourceChips
+          energy={undefined}
+          entityType="Character"
+          goalType="Rank"
+          remaining={need({ levelGold })}
+        />
+      )
+      const chip = screen.getByTestId("goal-resource-chip")
+      return {
+        text: chip.textContent,
+        label: within(chip).getByRole("img").getAttribute("aria-label"),
+      }
+    }
+    expect(shown(42_235)).toEqual({
+      text: "42k",
+      label: "goals.resourceChips.gold: 42,235",
+    })
+    expect(shown(1_999).text).toBe("1k")
+    expect(shown(750).text).toBe("750")
+  })
+
   it("Rank: gold to apply the level-up books, then energy (never an XP-book chip)", () => {
     render(
       <GoalResourceChips

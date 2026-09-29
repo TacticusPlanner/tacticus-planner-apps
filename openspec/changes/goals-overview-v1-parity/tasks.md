@@ -54,6 +54,10 @@
 
 - [x] 8.7 Merge the level target, XP-book figure and Potential-only bar into one line in the Progress cell (desktop and mobile), leave only the goal target in the Goal cell, remove the "N levels" text and the XP-book chip from Remaining, and verify list tests for a below-level Rank goal, a met requirement, a MoW goal, and the mobile card
 
+## 8d. Gold format
+
+- [x] 8.8 Show the gold chip's quantity in thousands with a k suffix (below 1,000 as is, otherwise floor(value / 1000) + "k", per V1's numberToThousandsString) while keeping the full value in its tooltip and accessible name, and verify chip tests for 42,235, 1,999 and 750
+
 ## 7. Verification
 
 - [x] 7.1 Run the apps test suite, typecheck and lint for the touched packages and verify they pass

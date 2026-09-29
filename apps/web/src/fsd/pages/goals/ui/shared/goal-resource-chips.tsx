@@ -27,6 +27,8 @@ type Chip = {
   name: string
   /** Display text beside the icon (a formatted quantity, or ). */
   text: string
+  /** Shortened text shown instead of `text` when they differ (gold: "42k"); the label keeps the full value. */
+  display?: string
 }
 
 /** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
@@ -77,8 +79,17 @@ export function GoalResourceChips({
   }
   const addEnergy = () =>
     add("energy", energyIcon(), t("goals.resourceChips.energy"), energy)
-  const addGold = (gold: number | undefined) =>
-    add("gold", goldIcon(), t("goals.resourceChips.gold"), gold)
+  // V1 parity (numberToThousandsString): below 1,000 as is, otherwise floor(value / 1000) + "k".
+  const addGold = (gold: number | undefined) => {
+    if (!gold || gold <= 0) return
+    chips.push({
+      key: "gold",
+      icon: goldIcon(),
+      name: t("goals.resourceChips.gold"),
+      text: fmt(gold),
+      display: gold < 1000 ? fmt(gold) : `${Math.floor(gold / 1000)}k`,
+    })
+  }
   const addShards = () => {
     add(
       "shards",
@@ -165,7 +176,7 @@ export function GoalResourceChips({
                 />
               ) : null}
             </span>
-            <span aria-hidden>{chip.text}</span>
+            <span aria-hidden>{chip.display ?? chip.text}</span>
           </span>
         </li>
       ))}
