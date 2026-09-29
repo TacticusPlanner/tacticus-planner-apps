@@ -5,6 +5,7 @@ import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 import {
+  getInventoryAbilityMaterials,
   getInventoryShard,
   getInventoryOrbs,
   getInventoryUpgrades,
@@ -74,6 +75,10 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const inventoryOrbs = useLiveQuery(() => getInventoryOrbs(), [])
   const inventoryXpBooks = useLiveQuery(() => getInventoryXpBooks(), [])
+  const abilityInventory = useLiveQuery(
+    () => getInventoryAbilityMaterials(),
+    []
+  )
   const liveProgress = useLiveQuery(() => getLiveProgress(), [])
   const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
   const shops = useLiveQuery(() => getShops(), [])
@@ -97,6 +102,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     inventoryUpgrades,
     inventoryOrbs,
     inventoryXpBooks,
+    abilityInventory,
+    xpBookRarity: planningSettings.xpBookRarity,
   })}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
@@ -218,6 +225,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             inventoryUpgrades: inventoryUpgrades ?? [],
             inventoryOrbs,
             inventoryXpBooks,
+            abilityInventory,
+            xpBookRarity: planningSettings.xpBookRarity,
             upgradesById,
             battlesById,
             charactersById: charactersById!,

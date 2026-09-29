@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next"
-import { Zap } from "lucide-react"
 import {
   abilityBadgeIcon,
+  energyIcon,
   forgeBadgeIcon,
   goldIcon,
   mowComponentIcon,
+  orbAllianceIcon,
   orbIcon,
   shardIcon,
   xpBookIcon,
@@ -26,8 +27,9 @@ export type XpBookFigure = {
 
 type Chip = {
   key: string
-  /** Icon URL, or `null` for the energy glyph (no game asset). */
-  icon: string | null
+  icon: string
+  /** Alliance emblem drawn over the icon (V1's orb: rarity orb with the alliance on top). */
+  overlay?: string
   /** Full localized resource name, used in the tooltip and the accessible name. */
   name: string
   /** Display text beside the icon (a formatted quantity, or "available / needed" for books). */
@@ -59,30 +61,35 @@ export function GoalResourceChips({
   const chips: Chip[] = []
   const add = (
     key: string,
-    icon: string | null,
+    icon: string,
     name: string,
-    quantity: number | undefined
+    quantity: number | undefined,
+    overlay?: string
   ) => {
     if (quantity && quantity > 0) {
-      chips.push({ key, icon, name, text: fmt(quantity) })
+      chips.push({ key, icon, overlay, name, text: fmt(quantity) })
     }
   }
   const addByRarity = (
     kind: "orbs" | "abilityBadges" | "forgeBadges",
     amounts: Partial<Record<Rarity, number>> | undefined,
-    icon: (rarity: Rarity) => string
+    icon: (rarity: Rarity) => string,
+    overlay?: string
   ) => {
     for (const rarity of rarityOrder) {
       add(
         `${kind}-${rarity}`,
         icon(rarity),
         t(`goals.resourceChips.${kind}`, { rarity: rarityName(rarity) }),
-        amounts?.[rarity]
+        amounts?.[rarity],
+        overlay
       )
     }
   }
   const addEnergy = () =>
-    add("energy", null, t("goals.resourceChips.energy"), energy)
+    add("energy", energyIcon(), t("goals.resourceChips.energy"), energy)
+  const addGold = (gold: number | undefined) =>
+    add("gold", goldIcon(), t("goals.resourceChips.gold"), gold)
   const addShards = () => {
     add(
       "shards",
@@ -112,29 +119,40 @@ export function GoalResourceChips({
     })
   }
   const materials = remaining?.abilityMaterials
+  // Alliance picks the badge/component/orb art; a unit without one shows the Imperial art.
+  const alliance = remaining?.alliance ?? "Imperial"
 
   if (goalType === "Rank") {
+    addGold(remaining?.levelGold)
     addEnergy()
     addXpBooks()
   } else if (goalType === "Ascension") {
-    addByRarity("orbs", remaining?.orbsByType, orbIcon)
+    addByRarity(
+      "orbs",
+      remaining?.orbsByType,
+      orbIcon,
+      orbAllianceIcon(alliance)
+    )
     addShards()
     addEnergy()
   } else if (goalType === "Unlock") {
     addShards()
     addEnergy()
   } else if (goalType === "Ability") {
-    addByRarity("abilityBadges", materials?.badgesByRarity, abilityBadgeIcon)
+    addByRarity("abilityBadges", materials?.badgesByRarity, (rarity) =>
+      abilityBadgeIcon(rarity, alliance)
+    )
     if (entityType === "Mow") {
       addByRarity("forgeBadges", materials?.forgeBadgesByRarity, forgeBadgeIcon)
       add(
         "components",
-        mowComponentIcon(),
+        mowComponentIcon(alliance),
         t("goals.resourceChips.components"),
         materials?.components
       )
     }
-    add("gold", goldIcon(), t("goals.resourceChips.gold"), materials?.gold)
+    addGold(materials?.gold)
+    addEnergy()
     // A Machine of War has no character level, so never an XP-book chip.
     if (entityType !== "Mow") addXpBooks()
   } else if (goalType === "Upgrade") {
@@ -165,11 +183,16 @@ export function GoalResourceChips({
             role="img"
             title={label(chip)}
           >
-            {chip.icon ? (
+            <span className="relative inline-flex">
               <EntityIcon alt="" className="size-5" src={chip.icon} />
-            ) : (
-              <Zap aria-hidden className="size-4 text-muted-foreground" />
-            )}
+              {chip.overlay ? (
+                <img
+                  alt=""
+                  className="absolute top-1/2 left-1/2 size-3 -translate-x-1/2 -translate-y-1/2 object-contain"
+                  src={chip.overlay}
+                />
+              ) : null}
+            </span>
             <span aria-hidden>{chip.text}</span>
           </span>
         </li>

@@ -177,7 +177,8 @@ export function ProjectDetailPage() {
     candidateRows.map((row) => row.goalId),
     insights.estimates,
     insights.rankSlotsByGoalId,
-    insights.abilityMaterialsByGoalId
+    insights.abilityMaterialsByGoalId,
+    insights.planNetByGoalId
   )
   // Farming guidance is always a preview here (surface-goal-farming-guidance): Dailies plans across
   // every goal in the global order by default, and even when the user has separately narrowed

@@ -28,6 +28,26 @@ export const xpBookValueByRarity: Record<Rarity, number> = {
   Mythic: 62_500,
 }
 
+/** Ported from V1's `XP_BOOK_GOLD_COST` � the gold paid to apply one book of each rarity. */
+export const xpBookGoldByRarity: Record<Rarity, number> = {
+  Common: 5,
+  Uncommon: 15,
+  Rare: 50,
+  Epic: 150,
+  Legendary: 500,
+  Mythic: 2_000,
+}
+
+/** V1's `pickXpBookRarity`: the preferred rarity, or the largest whose book fits inside `xp` when a
+ * single preferred book would overshoot (the smallest rarity if even that overshoots). */
+export function pickXpBookRarity(xp: number, preferred: Rarity): Rarity {
+  if (xpBookValueByRarity[preferred] <= xp) return preferred
+  const fitting = [...rarityOrder]
+    .reverse()
+    .find((rarity) => xpBookValueByRarity[rarity] <= xp)
+  return fitting ?? rarityOrder[0]
+}
+
 /** `remainingXp` expressed as a whole-book count of `rarity` (falls back to Legendary — see
  * `normalizeXpBookRarity`). 0 for a non-positive amount. */
 export function xpBookEquivalent(

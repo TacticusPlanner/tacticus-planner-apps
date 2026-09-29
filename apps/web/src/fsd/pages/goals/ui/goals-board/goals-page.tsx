@@ -175,7 +175,8 @@ export function GoalsPage() {
     candidateRows.map((row) => row.goalId),
     insights.estimates,
     insights.rankSlotsByGoalId,
-    insights.abilityMaterialsByGoalId
+    insights.abilityMaterialsByGoalId,
+    insights.planNetByGoalId
   )
   const baseRows =
     tab === "blocked"

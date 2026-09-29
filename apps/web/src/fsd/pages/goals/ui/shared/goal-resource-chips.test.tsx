@@ -1,3 +1,4 @@
+import { cleanup } from "@testing-library/react"
 import { render, screen, within } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
@@ -46,6 +47,23 @@ const chipNames = () =>
     .map((chip) => within(chip).getByRole("img").getAttribute("aria-label"))
 
 describe("GoalResourceChips", () => {
+  it("Rank: gold to apply the level-up books, then energy, then XP books", () => {
+    render(
+      <GoalResourceChips
+        energy={1674}
+        entityType="Character"
+        goalType="Rank"
+        remaining={need({ levelGold: 42_000 })}
+        xpBooks={{ needed: 6, available: 4, rarity: "Legendary" }}
+      />
+    )
+    expect(chipNames()).toEqual([
+      "goals.resourceChips.gold: 42,000",
+      "goals.resourceChips.energy: 1,674",
+      "Legendary xpBooks: 4 of 6",
+    ])
+  })
+
   it("Rank: energy with a thousands separator, XP books when a level-up is needed, no material chips", () => {
     render(
       <GoalResourceChips
@@ -110,10 +128,10 @@ describe("GoalResourceChips", () => {
     ])
   })
 
-  it("MoW Ability: badges, forge badges, components and gold, never an XP-book chip", () => {
+  it("MoW Ability: badges, forge badges, components, gold and energy, never an XP-book chip", () => {
     render(
       <GoalResourceChips
-        energy={undefined}
+        energy={900}
         entityType="Mow"
         goalType="Ability"
         remaining={need({ abilityMaterials })}
@@ -125,6 +143,45 @@ describe("GoalResourceChips", () => {
       "Rare forgeBadges: 2",
       "goals.resourceChips.components: 30",
       "goals.resourceChips.gold: 12,000",
+      "goals.resourceChips.energy: 900",
+    ])
+  })
+
+  it("uses V1's alliance art for badges, components and orbs, and its energy glyph", () => {
+    const { container } = render(
+      <GoalResourceChips
+        energy={5}
+        entityType="Mow"
+        goalType="Ability"
+        remaining={need({ alliance: "Xenos", abilityMaterials })}
+      />
+    )
+    const sources = [...container.querySelectorAll("img")].map((img) =>
+      img.getAttribute("src")
+    )
+    expect(sources).toEqual([
+      "/game_catalog/badges/xenos-epic.png",
+      "/game_catalog/resources/ui_forge_badges_rare.png",
+      "/game_catalog/resources/ui_machines_of_war_tokens_xenos.png",
+      "/game_catalog/misc/ui_icon_resource_coin.png",
+      "/game_catalog/misc/energy.png",
+    ])
+    cleanup()
+    const orbs = render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ascension"
+        remaining={need({ alliance: "Chaos", orbsByType: { Rare: 3 } })}
+      />
+    )
+    expect(
+      [...orbs.container.querySelectorAll("img")].map((img) =>
+        img.getAttribute("src")
+      )
+    ).toEqual([
+      "/game_catalog/resources/ui_hero_ascension_orbs_rare.png",
+      "/game_catalog/resources/ui_hero_ascension_orbs_chaos.png",
     ])
   })
 
@@ -202,7 +259,7 @@ describe("GoalResourceChips", () => {
       />
     )
     const overflow = screen.getByTestId("goal-resource-chips-overflow")
-    expect(overflow).toHaveTextContent("+2")
+    expect(overflow).toHaveTextContent("+3")
     expect(within(overflow).getByRole("img")).toHaveAttribute(
       "title",
       expect.stringContaining("goals.resourceChips.gold: 1")

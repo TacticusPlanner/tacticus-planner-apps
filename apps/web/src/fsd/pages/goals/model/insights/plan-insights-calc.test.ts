@@ -263,6 +263,79 @@ describe("computePlanInsights", () => {
     })
   })
 
+  describe("ability materials net of inventory (goal-remaining-resources)", () => {
+    const abilityGoal = (goalId: string, start: number, end: number) =>
+      goalDetail({
+        goalId,
+        goalType: "Ability",
+        config: {
+          ...goalDetail({}).config,
+          ability: {
+            activeStart: start,
+            activeEnd: end,
+            passiveStart: 1,
+            passiveEnd: 1,
+          },
+        },
+      })
+    // Level 9 costs 27 Epic badges, level 10 costs 5.
+    const ladder = new Map([
+      [9, { level: 9, gold: 90, badges: { rarity: "Epic", amount: 27 } }],
+      [10, { level: 10, gold: 100, badges: { rarity: "Epic", amount: 5 } }],
+    ])
+    const inventory = (xenosEpic: number) => ({
+      abilityBadges: {
+        imperial: [{ rarity: "Epic", amount: 999 }],
+        xenos: [{ rarity: "Epic", amount: xenosEpic }],
+        chaos: [],
+      },
+      forgeBadges: [],
+      components: {
+        imperial: { amount: 0 },
+        xenos: { amount: 0 },
+        chaos: { amount: 0 },
+      },
+    })
+    const run = (xenosEpic: number) =>
+      computePlanInsights({
+        ...baseParams,
+        abilityLadders: { characterAbilityCostsByLevel: ladder as never },
+        abilityInventory: inventory(xenosEpic) as never,
+        details: [abilityGoal("second", 9, 10), abilityGoal("first", 8, 9)],
+        priorityByGoalId: new Map([
+          ["first", 1],
+          ["second", 2],
+        ]),
+      })
+
+    it("shows no badge chip for a resource the player fully holds, and keeps gold un-netted", () => {
+      expect(run(40).abilityMaterialsByGoalId.get("first")).toEqual({
+        gold: 90,
+        badgesByRarity: {},
+        forgeBadgesByRarity: {},
+        components: 0,
+      })
+    })
+
+    it("shows the shortfall for a partly held resource, in priority order, from the unit's alliance", () => {
+      // 30 Xenos Epic badges (the 999 Imperial ones must not count): first takes 27, second sees 3 of 5.
+      const result = run(30)
+      expect(result.abilityMaterialsByGoalId.get("first")).toMatchObject({
+        badgesByRarity: {},
+      })
+      expect(result.abilityMaterialsByGoalId.get("second")).toMatchObject({
+        gold: 100,
+        badgesByRarity: { Epic: 2 },
+      })
+    })
+
+    it("leaves the full need when nothing is held", () => {
+      expect(
+        run(0).abilityMaterialsByGoalId.get("first")?.badgesByRarity
+      ).toEqual({ Epic: 27 })
+    })
+  })
+
   it("uses the shared crafted-inventory pool in goal priority order", () => {
     const craftedId = upgradeId("crafted")
     const baseId = upgradeId("base")
@@ -707,6 +780,65 @@ describe("computePlanInsights", () => {
     expect(withShop.energyTotal).toBe(0)
   })
 
+  describe("orbs and shards net of inventory (goal-remaining-resources)", () => {
+    const ascension = (goalId: string, start: string, end: string) =>
+      goalDetail({
+        goalId,
+        goalType: "Ascension",
+        config: { ...goalDetail({}).config, progression: { start, end } },
+      })
+    const cost = (progression: string, shards: number, orbs: number) =>
+      [
+        progression,
+        {
+          id: progression,
+          progression,
+          shards,
+          mythicShards: 0,
+          orbs,
+          orbRarity: "Uncommon",
+        } as AscensionCostStorageModel,
+      ] as const
+    const params = (shards: number, xenosOrbs: number) => ({
+      ...baseParams,
+      details: [
+        ascension("b", "Common:OneStar", "Common:TwoStars"),
+        ascension("a", "Common:None", "Common:OneStar"),
+      ],
+      priorityByGoalId: new Map([
+        ["a", 1],
+        ["b", 2],
+      ]),
+      playerCharacterById: new Map([
+        [
+          "hero1",
+          { unitId: "hero1", progressionIndex: "Common:None", shards } as never,
+        ],
+      ]),
+      ascensionCostsById: new Map([
+        cost("Common:OneStar", 30, 10),
+        cost("Common:TwoStars", 50, 4),
+      ]),
+      inventoryOrbs: {
+        imperial: [],
+        xenos: [{ rarity: "Uncommon" as const, amount: xenosOrbs }],
+        chaos: [],
+      },
+    })
+
+    it("spends the unit's shards on the higher-priority goal first", () => {
+      const net = computePlanInsights(params(40, 0)).planNetByGoalId
+      expect(net.get("a")).toMatchObject({ shards: 0 })
+      expect(net.get("b")).toMatchObject({ shards: 40 })
+    })
+
+    it("shows no orb shortfall when the orbs are fully held and the shortfall otherwise", () => {
+      const net = computePlanInsights(params(0, 10)).planNetByGoalId
+      expect(net.get("a")?.orbsByType).toEqual({})
+      expect(net.get("b")?.orbsByType).toEqual({ Uncommon: 4 })
+    })
+  })
+
   it("derives Ascension potential from owned alliance orbs", () => {
     const result = computePlanInsights({
       ...baseParams,
@@ -777,6 +909,21 @@ describe("computePlanInsights", () => {
       goalType: "Rank",
       config: { ...goalDetail({}).config, rank: { ...silver3, end } },
     })
+
+  it("prices a Rank goal's level-up books as Rank gold", () => {
+    const result = computePlanInsights({
+      ...baseParams,
+      details: [rankNeedingLevel("goal-1")],
+      priorityByGoalId: new Map([["goal-1", 1]]),
+      playerCharacterById: new Map([["hero1", levelledCharacter]]),
+      // 94,200 XP needed: 7 owned Legendary books (87,500 XP, 500 gold each) plus the 6,700 XP
+      // shortfall as 1 selected-rarity (Legendary) book at 500 gold.
+      inventoryXpBooks: [{ xpBookId: "xpLegendary", amount: 7 }],
+      xpBookRarity: "Legendary",
+    })
+
+    expect(result.planNetByGoalId.get("goal-1")?.levelGold).toBe(8 * 500)
+  })
 
   it("derives a Rank goal's level Potential from owned xp books", () => {
     const result = computePlanInsights({

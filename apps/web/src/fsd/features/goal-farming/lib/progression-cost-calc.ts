@@ -46,6 +46,12 @@ export type ResourceNeed = {
    *  the catalog's per-level cost ladders. Absent for other goal kinds, and for an Ability goal whose
    *  ladder is not loaded or that has nothing left to raise. */
   abilityMaterials?: AbilityMaterials
+  /** Rank goals in a shared plan only: gold to apply the level-up books the goal still needs (V1's
+   *  Rank "Gold"); never netted against inventory. */
+  levelGold?: number
+  /** The unit's alliance, which picks the ability-badge, component and orb art. Set by the overview
+   *  metrics from the catalog. */
+  alliance?: string
 }
 
 /** Whether a unit's *current* progression is already in the Mythic tier — the point at which

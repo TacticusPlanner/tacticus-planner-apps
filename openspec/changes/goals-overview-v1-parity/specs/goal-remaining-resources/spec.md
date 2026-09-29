@@ -6,13 +6,13 @@ Defines the icon chips the Goals list's Remaining column shows for what a goal s
 
 ### Requirement: Remaining shows one icon chip per resource still needed
 
-For a goal that has not reached its target, the Remaining display SHALL show one chip per resource type still needed, each made of the resource's icon and a quantity, in place of words. Every chip SHALL expose the resource's full localized name and its quantity as a tooltip and as an accessible name. A resource with nothing left to acquire SHALL NOT render a chip. Numbers SHALL use the locale's thousands separator. Upgrade materials (crafting ingredients) SHALL NOT be shown as chips for any goal kind. The chips SHALL be, by goal kind:
+For a goal that has not reached its target, the Remaining display SHALL show one chip per resource type still needed, each made of the resource's icon and a quantity, in place of words. Every chip SHALL expose the resource's full localized name and its quantity as a tooltip and as an accessible name. A resource with nothing left to acquire SHALL NOT render a chip. Numbers SHALL use the locale's thousands separator. Upgrade materials (crafting ingredients) SHALL NOT be shown as chips for any goal kind. Every chip SHALL use the same icon V1 uses for that resource (energy, gold coin, ability badge, forge badge, Machine of War component, orb, shard, XP book). The chips SHALL be, by goal kind:
 
-- Rank: energy when a farming energy estimate is available, and an XP-book chip when the goal needs a level-up.
+- Rank: gold (the crafting gold the goal still needs), energy when a farming energy estimate is available, and an XP-book chip when the goal needs a level-up.
 - Ascension: orbs by rarity, shards and mythic shards, and energy when estimated.
 - Unlock: shards, and energy when estimated.
-- Ability on a Machine of War: ability badges by rarity, forge badges by rarity, components, gold. A Machine of War has no character level, so it never shows an XP-book chip.
-- Ability on a Character: ability badges by rarity and gold, and an XP-book chip when a level-up is needed.
+- Ability on a Machine of War: ability badges by rarity, forge badges by rarity, components, gold, and energy when estimated. A Machine of War has no character level, so it never shows an XP-book chip.
+- Ability on a Character: ability badges by rarity, gold, energy when estimated, and an XP-book chip when a level-up is needed.
 - Upgrade: energy when estimated.
 
 #### Scenario: A Rank goal shows materials and energy chips
@@ -38,6 +38,56 @@ For a goal that has not reached its target, the Remaining display SHALL show one
 - **GIVEN** a goal that has not reached its target but has no resource left to acquire
 - **WHEN** its Remaining display renders
 - **THEN** it shows no chips and no placeholder text
+
+### Requirement: Remaining shows the projected Onslaught tokens a goal will use
+
+When a goal's estimate obtains part of its need from a selected Onslaught source, the Remaining display SHALL include an Onslaught-token chip showing the projected number of Onslaught tokens (runs) the goal will use, as V1 shows next to its energy, using V1's token icon. Energy chips SHALL cover only the campaign-farmed portion of the goal. A goal with no Onslaught source selected SHALL show no token chip. The figure SHALL come from the same estimate the plan uses (the Onslaught contribution already attributed per source), never a separate calculation.
+
+#### Scenario: An Onslaught-only goal
+
+- **GIVEN** an Ascension goal whose shards come only from Onslaught, projected to use 30 tokens
+- **WHEN** its Remaining display renders
+- **THEN** it shows a token chip reading 30, and no energy chip
+
+#### Scenario: A mixed goal
+
+- **GIVEN** a goal with campaign farming and an Onslaught source using 12 tokens and 400 energy
+- **WHEN** its Remaining display renders
+- **THEN** it shows an energy chip reading 400 and a token chip reading 12
+
+#### Scenario: No Onslaught source
+
+- **GIVEN** a goal with no Onslaught source selected
+- **WHEN** its Remaining display renders
+- **THEN** no token chip is shown
+
+### Requirement: Owned inventory is subtracted in priority order
+
+A chip's quantity SHALL be what the goal still needs after the player's full inventory of that resource has been applied to goals in global priority order, the same shared-pool model the XP-book figure uses: a higher-priority goal consumes the owned stock first, and a lower-priority goal only sees what is left. This applies to ability badges, forge badges, Machine of War components, ascension orbs, and shards. A resource whose need is fully covered by the stock available to the goal SHALL show no chip. Gold SHALL NOT be netted against inventory (V1 parity). A goal that is paused is not part of the allocation and shows its standalone need.
+
+#### Scenario: Fully held resource shows no chip
+
+- **GIVEN** a Machine of War Ability goal needs 27 Legendary ability badges and the player holds 27 that no higher-priority goal claims
+- **WHEN** its Remaining display renders
+- **THEN** no Legendary ability-badge chip is shown
+
+#### Scenario: Partially held resource shows the shortfall
+
+- **GIVEN** a Machine of War Ability goal needs 138 components and the player holds 118 that no higher-priority goal claims
+- **WHEN** its Remaining display renders
+- **THEN** the components chip reads 20
+
+#### Scenario: Higher priority consumes stock first
+
+- **GIVEN** two goals both need Legendary ability badges, the player holds 30, and the first needs 27
+- **WHEN** both render
+- **THEN** the higher-priority goal shows no badge chip and the lower-priority goal shows its need minus 3
+
+#### Scenario: Orbs are netted
+
+- **GIVEN** an Ascension goal needs 10 orbs and the player holds 10
+- **WHEN** its Remaining display renders
+- **THEN** no orb chip is shown
 
 ### Requirement: The XP-book chip re-presents the available/needed book figure
 

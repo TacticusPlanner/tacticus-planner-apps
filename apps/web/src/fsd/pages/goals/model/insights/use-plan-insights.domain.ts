@@ -25,6 +25,16 @@ export interface PlanInsightsBottleneck {
   energyToClear: number
 }
 
+/** A goal's remaining resources after the plan spends the shared stock in priority order, overriding
+ *  the goal's standalone figures. Absent (a paused goal) means the standalone need applies. */
+export interface PlanNetResources {
+  orbsByType?: Partial<Record<Rarity, number>>
+  shards?: number
+  mythicShards?: number
+  /** Rank goals: gold to apply the level-up books (V1's Rank "Gold"), never netted against stock. */
+  levelGold?: number
+}
+
 export interface PlanInsightsResult {
   totals: PlanInsightsTotals
   energyTotal: number
@@ -39,6 +49,7 @@ export interface PlanInsightsResult {
   /** Each Ability goal's gold/badges/forge badges/components as allocated in the one plan (net of
    *  levels a higher-priority goal for the same unit covers); `null` when nothing is left. */
   abilityMaterialsByGoalId: Map<string, AbilityMaterials | null>
+  planNetByGoalId: Map<string, PlanNetResources>
   /** Potential progress of each Rank/Ability goal's *level requirement* from owned XP books, keyed by
    *  that goal's id — separate from `potentialProgressByGoalId`, which is the same goal's material
    *  Potential. */
@@ -79,6 +90,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   potentialProgressByGoalId: new Map(),
   rankSlotsByGoalId: new Map(),
   abilityMaterialsByGoalId: new Map(),
+  planNetByGoalId: new Map(),
   levelPotentialProgressByGoalId: new Map(),
   levelChargedXpByGoalId: new Map(),
   levelPoolXpAvailableByGoalId: new Map(),

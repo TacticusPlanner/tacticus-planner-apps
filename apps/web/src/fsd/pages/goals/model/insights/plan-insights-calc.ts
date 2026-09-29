@@ -27,13 +27,11 @@ import {
   allocatePlanInventory,
   createCraftedInventoryPool,
   estimatePlan,
-  selectFarmNodes,
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
   type UpgradeNeed,
 } from "@/features/goal-farming"
-import { resourceLabel } from "@/features/goal-farming"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -54,8 +52,9 @@ import {
   type OrbGoalNeed,
 } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
+import { computeBottlenecks } from "./plan-bottlenecks"
+import { createPlanNetResources } from "./plan-net-resources"
 import type {
-  PlanInsightsBottleneck,
   PlanInsightsResult,
   PlanInsightsTotals,
 } from ".//use-plan-insights.domain"
@@ -92,6 +91,11 @@ export function computePlanInsights(params: {
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
   /** Ability cost ladders for the Remaining chips' plan-wide materials (`abilityMaterialsByGoalId`). */
   abilityLadders?: Parameters<typeof createAbilityMaterialsPlan>[0]
+  /** The account's ability badges, forge badges and MoW components, netted against Ability goals in
+   *  priority order. Omitted, the ability materials stay gross of stock. */
+  abilityInventory?: Parameters<typeof createAbilityMaterialsPlan>[1]
+  /** The user's selected XP-book rarity, pricing the books a Rank goal still needs (Rank gold). */
+  xpBookRarity?: string | null
   releaseTypeByGroupId: ReadonlyMap<CampaignId, string>
   getCharacter: (unitId: UnitId) => Character | undefined
   campaignName: (descriptor: Pick<CampaignDescriptor, "nameKey">) => string
@@ -123,7 +127,11 @@ export function computePlanInsights(params: {
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
   const rankSlotsByGoalId = new Map<string, RankSlotAllocation>()
-  const abilityMaterials = createAbilityMaterialsPlan(params.abilityLadders)
+  const abilityMaterials = createAbilityMaterialsPlan(
+    params.abilityLadders,
+    params.abilityInventory
+  )
+  const planNet = createPlanNetResources()
   let onslaughtTokens = 0
   // The whole plan's Onslaught token demand, scoped or not: the account's tokens are one budget shared by
   // every goal in the global run, so the wait for tokens is the plan's, never a project-only one.
@@ -173,7 +181,14 @@ export function computePlanInsights(params: {
       coveredRankSlots: coverage.rankSlots,
       craftedInventory,
     }
-    abilityMaterials.add(detail, needParams)
+    abilityMaterials.add(detail, {
+      ...needParams,
+      alliance: (isMowDetail(detail)
+        ? params.mowsById
+        : params.charactersById
+      ).get(detail.entityId)?.alliance,
+    })
+    planNet.add(detail, needParams, params.priorityByGoalId.get(detail.goalId))
     if (detail.goalType === "Rank")
       rankSlotsByGoalId.set(detail.goalId, rankSlotAllocation(needParams))
     const stages = calculateGoalFarmingStages(needParams)
@@ -321,6 +336,14 @@ export function computePlanInsights(params: {
     priorityByGoalId: params.priorityByGoalId,
     playerCharacterById: params.playerCharacterById,
     inventoryXpBooks: params.inventoryXpBooks,
+    xpBookRarity: params.xpBookRarity,
+  })
+  // What each active goal still needs once the plan's orb and shard stock is spent in priority order,
+  // plus the gold to apply a Rank goal's level-up books (goal-remaining-resources).
+  const planNetByGoalId = planNet.resolve({
+    orderedDetails,
+    orbAllocations,
+    levelGoldByGoalId: levelPotential.goldByGoalId,
   })
 
   const potentialProgressByGoalId = new Map<string, number>()
@@ -375,39 +398,13 @@ export function computePlanInsights(params: {
   ).size
   const unestimatedGoalCount = Math.max(0, scopedGoalCount - estimatedGoalCount)
 
-  // Bottlenecks: the aggregated (not per-goal) remaining count for each distinct farmable resource,
-  // ranked by energy-to-clear at its cheapest node — the resources most likely to gate the plan.
-  const aggregatedNeeds = new Map<EstimateResourceId, number>()
-  for (const goal of goalNeeds) {
-    if (!inScope(goal.goalId)) continue
-    for (const need of goal.needs) {
-      aggregatedNeeds.set(
-        need.id,
-        (aggregatedNeeds.get(need.id) ?? 0) + need.count
-      )
-    }
-  }
-  const bottlenecks: PlanInsightsBottleneck[] = [...aggregatedNeeds.entries()]
-    .map(([id, count]) => {
-      const nodes = selectFarmNodes(
-        { id, count },
-        combinedUpgradesById,
-        params.battlesById
-      )
-      const cheapest = nodes[0]
-      const energyToClear = cheapest
-        ? Math.ceil(count / cheapest.dropRate) * cheapest.energyCost
-        : Number.POSITIVE_INFINITY
-      const label = resourceLabel(
-        id,
-        params.upgradesById,
-        params.charactersById
-      )
-      return { id, label, energyToClear }
-    })
-    .filter((entry) => Number.isFinite(entry.energyToClear))
-    .sort((a, b) => b.energyToClear - a.energyToClear)
-    .slice(0, 5)
+  const bottlenecks = computeBottlenecks({
+    goalNeeds: goalNeeds.filter((goal) => inScope(goal.goalId)),
+    combinedUpgradesById,
+    battlesById: params.battlesById,
+    upgradesById: params.upgradesById,
+    charactersById: params.charactersById,
+  })
 
   const { campaignInsights, eventInsights } = computeCampaignInsights(
     campaignNeeds,
@@ -463,6 +460,7 @@ export function computePlanInsights(params: {
     levelChargedXpByGoalId: levelPotential.chargedXpByGoalId,
     levelPoolXpAvailableByGoalId: levelPotential.poolXpAvailableByGoalId,
     abilityMaterialsByGoalId: abilityMaterials.byGoalId,
+    planNetByGoalId,
     completionDate,
     unestimatedGoalCount,
     bottlenecks,

@@ -11,6 +11,8 @@ export {
   forgeBadgeIcon,
   mowComponentIcon,
   orbIcon,
+  orbAllianceIcon,
+  energyIcon,
   goldIcon,
   xpBookIcon,
   characterIcon,

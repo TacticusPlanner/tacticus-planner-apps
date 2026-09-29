@@ -39,6 +39,8 @@ export {
   forgeBadgeIcon,
   mowComponentIcon,
   orbIcon,
+  orbAllianceIcon,
+  energyIcon,
   goldIcon,
   xpBookIcon,
 } from "./resource"

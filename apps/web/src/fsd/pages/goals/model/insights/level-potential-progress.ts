@@ -22,6 +22,8 @@ export type LevelPotentialProgress = {
    *  `floor(poolXpAvailable / bookXp)`). Only a goal whose character is below its required level gets
    *  an entry. */
   poolXpAvailableByGoalId: Map<string, number>
+  /** Gold to apply each goal's needed books (`LevelXpAllocation.gold`) � V1's Rank "Gold". */
+  goldByGoalId: Map<string, number>
 }
 
 /** Potential progress of each Rank/Ability goal's level requirement, keyed by that goal's id — how far
@@ -37,6 +39,7 @@ export function buildLevelPotentialProgress(params: {
     { xpLevel: number; xp: number } | undefined
   >
   inventoryXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
+  xpBookRarity?: string | null
 }): LevelPotentialProgress {
   const needs: LevelXpNeed[] = []
   for (const detail of params.orderedDetails) {
@@ -54,10 +57,15 @@ export function buildLevelPotentialProgress(params: {
     })
   }
 
-  const allocation = allocateLevelXp(needs, params.inventoryXpBooks)
+  const allocation = allocateLevelXp(
+    needs,
+    params.inventoryXpBooks,
+    params.xpBookRarity
+  )
   const ratioByGoalId = new Map<string, number>()
   const chargedXpByGoalId = new Map<string, number>()
   const poolXpAvailableByGoalId = new Map<string, number>()
+  const goldByGoalId = new Map<string, number>()
   for (const need of needs) {
     const result = allocation.get(need.goalId)
     if (!result) continue
@@ -71,6 +79,12 @@ export function buildLevelPotentialProgress(params: {
     )
     chargedXpByGoalId.set(need.goalId, result.chargedXp)
     poolXpAvailableByGoalId.set(need.goalId, result.poolXpAvailable)
+    goldByGoalId.set(need.goalId, result.gold)
   }
-  return { ratioByGoalId, chargedXpByGoalId, poolXpAvailableByGoalId }
+  return {
+    ratioByGoalId,
+    chargedXpByGoalId,
+    poolXpAvailableByGoalId,
+    goldByGoalId,
+  }
 }

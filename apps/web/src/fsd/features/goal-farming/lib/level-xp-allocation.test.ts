@@ -38,6 +38,36 @@ describe("allocateLevelXp", () => {
       potentialLevel: 32,
       remainingXp: 0,
       poolXpAvailable: 12500,
+      gold: 500,
+    })
+  })
+
+  describe("gold (V1 Rank gold)", () => {
+    it("prices held books at their own rarity and the shortfall at the selected rarity", () => {
+      // 12,200 XP needed: two owned Rare books (1,000 XP, 50 gold each) are spent; a Legendary book
+      // (12,500) would overshoot the 12,200 need, so V1 prices the 11,200 XP shortfall in Epic books
+      // (5 x 150 gold).
+      const result = allocateLevelXp(
+        [bellator("g", 1, 32)],
+        [{ xpBookId: "xpRare", amount: 2 }],
+        "Legendary"
+      )
+      expect(result.get("g")?.gold).toBe(2 * 50 + 5 * 150)
+    })
+
+    it("prices the whole need at the selected rarity when no books are owned", () => {
+      const result = allocateLevelXp([bellator("g", 1, 32)], [], "Epic")
+      // 12,200 XP -> 5 Epic books (2,500 XP each) at 150 gold.
+      expect(result.get("g")?.gold).toBe(5 * 150)
+    })
+
+    it("charges a goal already covered by a higher-priority one no gold", () => {
+      const result = allocateLevelXp(
+        [bellator("high", 1, 33), bellator("low", 2, 32)],
+        [],
+        "Legendary"
+      )
+      expect(result.get("low")?.gold).toBe(0)
     })
   })
 
@@ -115,6 +145,7 @@ describe("allocateLevelXp", () => {
       // "high" charges 40,200 XP and spends all 4 Legendary books (50,000 XP: 3 by floor division
       // plus 1 more whole book to cover the 2,700 remainder), leaving nothing for "low".
       poolXpAvailable: 0,
+      gold: 0,
     })
   })
 

@@ -113,6 +113,10 @@ See `proposal.md` - Why. Relevant shape, confirmed by reading the code:
 
 10. **A `Projects` column reuses `GoalProjectBadges` unchanged.** `GoalsTable` gains one `TableHead`/`TableCell` pair between Character and Goal, rendering the existing `GoalProjectBadges`; the Character cell drops those badges and the type caption, and its notes move from a `max-w-64 truncate` paragraph below the cell into a `truncate` line under the name link (with `title` for the full text). The `h-14` row still fits name plus one line. The mobile card already shows notes and badges in its body, so it is untouched. _Alternative:_ fold projects into the Goal column; rejected, the request is a standalone column.
 
+11. **Chips net inventory through one priority-ordered allocation.** The plan-net materials allocator (`plan-ability-materials.ts`) is extended from covering level ranges to also consuming the player's inventory of ability badges, forge badges, components, orbs and shards in priority order (shared pool, like `levelPoolXpAvailable`), producing the per-goal remaining that `GoalResourceChips` shows. Gold is not netted. Energy for MoW/Character Ability goals comes from the existing estimate, and Rank gold is taken from the same upgrade-cost source V1 uses for its Gold column (to be confirmed against `tacticusplanner` `goals.service`). Icons are V1's (`MiscIcon`, `BadgeImage`, `ForgeBadgeImage`, `ComponentImage`, `OrbIcon`).
+
+12. **Rank energy must follow V1.** A manual comparison on a real account showed V2's per-goal Rank energy differing from V1 (worst case: a second Arjac goal 971 vs V1's 3,224). It is treated as a bug: the cause is found first (shared-plan netting versus V1's per-goal calculation, or a coverage bug) and V2 is aligned to V1's numbers unless V2's difference is a deliberate, specced plan-aware behaviour.
+
 ## Risks / Trade-offs
 
 - [A seventh column narrows the others on small desktops, and badge chips wrap in a fixed-height row] -> let the Projects cell wrap to at most two lines then clip with the full list as a tooltip; verify at 768px.

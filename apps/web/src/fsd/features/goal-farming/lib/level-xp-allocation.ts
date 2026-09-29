@@ -1,8 +1,12 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import { normalizeXpBookRarity } from "@/entities/planning-setting"
+
 import {
   consumeOwnedBooks,
   maxLevelReachableWithXp,
   ownedBooksByRarity,
+  pickXpBookRarity,
+  xpBookGoldByRarity,
   xpBookValueByRarity,
   xpNeededForLevelRange,
 } from "./level-xp-cost"
@@ -46,6 +50,9 @@ export type LevelXpAllocation = {
    *  book isn't obtainable from the pool). Not capped to `chargedXp`: a goal whose pool exceeds its own
    *  need reports the full surplus, not a value clamped to what it needs. */
   poolXpAvailable: number
+  /** Gold to apply the books this goal needs (V1's Rank "Gold"): every owned book it spends at its own
+   *  rarity's price, plus the books still to be obtained at the selected rarity's price. */
+  gold: number
 }
 
 /** Allocates the account's shared, indivisible XP-book pool across every goal that needs a level, in
@@ -57,7 +64,9 @@ export type LevelXpAllocation = {
  *  and never a later one. A goal already at its required level gets no entry. */
 export function allocateLevelXp(
   needs: readonly LevelXpNeed[],
-  ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
+  ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined,
+  /** The user's selected XP-book rarity, used only to price the books still to be obtained. */
+  xpBookRarity?: string | null
 ): Map<string, LevelXpAllocation> {
   let pool = ownedBooksByRarity(ownedXpBooks)
   const coveredXpByUnit = new Map<string, number>()
@@ -76,6 +85,21 @@ export function allocateLevelXp(
     const chargedXp = Math.max(0, xpToRequired - alreadyCovered)
     const poolXpAvailable = poolXpTotal(pool)
     const { remainingXp, remainingOwned } = consumeOwnedBooks(chargedXp, pool)
+    const heldGold = rarityOrder.reduce(
+      (sum, rarity) =>
+        sum +
+        ((pool[rarity] ?? 0) - (remainingOwned[rarity] ?? 0)) *
+          xpBookGoldByRarity[rarity],
+      0
+    )
+    const displayRarity = pickXpBookRarity(
+      chargedXp,
+      normalizeXpBookRarity(xpBookRarity)
+    )
+    const gold =
+      heldGold +
+      Math.ceil(remainingXp / xpBookValueByRarity[displayRarity]) *
+        xpBookGoldByRarity[displayRarity]
     pool = remainingOwned
 
     const spentXp =
@@ -93,6 +117,7 @@ export function allocateLevelXp(
       ),
       remainingXp,
       poolXpAvailable,
+      gold,
     })
   }
   return result

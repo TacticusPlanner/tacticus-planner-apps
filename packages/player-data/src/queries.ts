@@ -97,3 +97,21 @@ export async function getInventoryOrbs(): Promise<
 > {
   return (await getChunkData("inventory"))?.orbs
 }
+
+/** Owned ability badges (by alliance), forge badges and Machine of War components. */
+export async function getInventoryAbilityMaterials(): Promise<
+  | Pick<
+      PlayerDataChunkDto<"inventory">,
+      "abilityBadges" | "forgeBadges" | "components"
+    >
+  | undefined
+> {
+  const inventory = await getChunkData("inventory")
+  return (
+    inventory && {
+      abilityBadges: inventory.abilityBadges,
+      forgeBadges: inventory.forgeBadges,
+      components: inventory.components,
+    }
+  )
+}

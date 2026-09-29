@@ -25,6 +25,7 @@ import type {
 } from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { AbilityMaterials, ResourceNeed } from "@/features/goal-farming"
+import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import {
   computeGoalAttainment,
@@ -78,7 +79,10 @@ export function useGoalsOverviewMetrics(
   /** The plan's ability materials per Ability goal (`PlanInsightsResult.abilityMaterialsByGoalId`), net
    *  of levels a higher-priority goal for the same unit covers. Absent (no plan run yet) keeps each
    *  goal's standalone figure. */
-  abilityMaterialsByGoalId?: ReadonlyMap<string, AbilityMaterials | null>
+  abilityMaterialsByGoalId?: ReadonlyMap<string, AbilityMaterials | null>,
+  /** The plan's inventory-netted orbs/shards and Rank gold per goal
+   *  (`PlanInsightsResult.planNetByGoalId`); a goal without an entry (paused) keeps its standalone need. */
+  planNetByGoalId?: ReadonlyMap<string, PlanNetResources>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
   const isAuthenticated = useIsAuthenticated()
   const {
@@ -282,13 +286,20 @@ export function useGoalsOverviewMetrics(
           }
         : remainingStandalone
     // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
-    const remaining =
+    const withMaterials =
       withSlots && abilityMaterialsByGoalId?.has(goalId)
         ? {
             ...withSlots,
             abilityMaterials: abilityMaterialsByGoalId.get(goalId) ?? undefined,
           }
         : withSlots
+    const planNet = planNetByGoalId?.get(goalId)
+    const alliance = (
+      detail.entityType === "Mow" ? mowsById : charactersById
+    )?.get(detail.entityId)?.alliance
+    const remaining = withMaterials
+      ? { ...withMaterials, ...planNet, alliance }
+      : withMaterials
 
     const estimateOutcome = estimatesByGoalId?.get(goalId)
     const blockers = computeGoalBlockers({

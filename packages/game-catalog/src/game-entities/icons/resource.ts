@@ -6,22 +6,34 @@ import { ASSET_BASE_PATH } from "./asset-path"
 // gold, XP books). Every asset is a Snowprint file already shipped under /game_catalog; the shop
 // reward vocabulary maps the same files ad hoc, these are the shared resolvers for goal chips.
 
-/** Ability badge (`draft_abilityTokens{Rarity}`); alliance-agnostic, V2 ships no per-alliance badge art. */
-export function abilityBadgeIcon(rarity: Rarity): string {
-  return `${ASSET_BASE_PATH}/resources/ui_icon_droptable_draft_abilityTokens${rarity}.png`
+const allianceKey = (alliance: string) => alliance.toLowerCase()
+
+/** Ability badge art per alliance and rarity (V1's `BadgeImage` assets). */
+export function abilityBadgeIcon(rarity: Rarity, alliance: string): string {
+  return `${ASSET_BASE_PATH}/badges/${allianceKey(alliance)}-${rarity.toLowerCase()}.png`
 }
 
 export function forgeBadgeIcon(rarity: Rarity): string {
   return `${ASSET_BASE_PATH}/resources/ui_forge_badges_${rarity.toLowerCase()}.png`
 }
 
-/** Machine of War components are costed as one count (no alliance breakdown), so one generic icon. */
-export function mowComponentIcon(): string {
-  return `${ASSET_BASE_PATH}/misc/components_generic.png`
+/** Machine of War component art per alliance (V1's `ComponentImage`). */
+export function mowComponentIcon(alliance: string): string {
+  return `${ASSET_BASE_PATH}/resources/ui_machines_of_war_tokens_${allianceKey(alliance)}.png`
 }
 
+/** Ascension orb: the rarity orb, with `orbAllianceIcon` overlaid (V1's `OrbIcon`). */
 export function orbIcon(rarity: Rarity): string {
   return `${ASSET_BASE_PATH}/resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.png`
+}
+
+export function orbAllianceIcon(alliance: string): string {
+  return `${ASSET_BASE_PATH}/resources/ui_hero_ascension_orbs_${allianceKey(alliance)}.png`
+}
+
+/** V1's energy glyph. */
+export function energyIcon(): string {
+  return `${ASSET_BASE_PATH}/misc/energy.png`
 }
 
 export function goldIcon(): string {
