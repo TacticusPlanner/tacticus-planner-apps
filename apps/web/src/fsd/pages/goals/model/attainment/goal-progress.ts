@@ -74,6 +74,9 @@ export type GoalProgress =
       kind: "LevelRequirement"
       current: number
       target: number
+      /** Where a goal partly covered by a higher-priority goal of the same unit starts its own level
+       *  interval (a second Rank goal reads "Lv 35 -> 38"); absent when nothing is covered. */
+      chainedFrom?: number
       ratio: number
       /** How far the ratio scale can advance *right now*, given the character's current rarity — a
        *  character can't earn XP past its rarity's level cap until it Ascends. `null` when the

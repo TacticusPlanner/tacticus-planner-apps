@@ -34,3 +34,14 @@ export {
   starsVisual,
   type ProgressionVisual,
 } from "./progression"
+export {
+  abilityBadgeIcon,
+  forgeBadgeIcon,
+  mowComponentIcon,
+  orbIcon,
+  orbAllianceIcon,
+  energyIcon,
+  onslaughtTokenIcon,
+  goldIcon,
+  xpBookIcon,
+} from "./resource"

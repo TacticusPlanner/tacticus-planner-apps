@@ -5,6 +5,7 @@ import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import {
+  getInventoryAbilityMaterials,
   getInventoryShard,
   getInventoryUpgrades,
   getPlayerCharacters,
@@ -24,7 +25,9 @@ import type {
   RankSlotAllocation,
 } from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
-import type { ResourceNeed } from "@/features/goal-farming"
+import type { AbilityMaterials, ResourceNeed } from "@/features/goal-farming"
+import { withStandaloneAvailable } from "../insights/plan-ability-materials"
+import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import {
   computeGoalAttainment,
@@ -74,7 +77,14 @@ export function useGoalsOverviewMetrics(
   estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>,
   /** The plan's allocation of each Rank goal's slots (`PlanInsightsResult.rankSlotsByGoalId`): rows
    *  then show what the goal adds to the one plan, not its standalone count. */
-  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>
+  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>,
+  /** The plan's ability materials per Ability goal (`PlanInsightsResult.abilityMaterialsByGoalId`), net
+   *  of levels a higher-priority goal for the same unit covers. Absent (no plan run yet) keeps each
+   *  goal's standalone figure. */
+  abilityMaterialsByGoalId?: ReadonlyMap<string, AbilityMaterials | null>,
+  /** The plan's inventory-netted orbs/shards and Rank gold per goal
+   *  (`PlanInsightsResult.planNetByGoalId`); a goal without an entry (paused) keeps its standalone need. */
+  planNetByGoalId?: ReadonlyMap<string, PlanNetResources>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
   const isAuthenticated = useIsAuthenticated()
   const {
@@ -83,6 +93,8 @@ export function useGoalsOverviewMetrics(
     upgradesById,
     ascensionCostsById,
     unlockShardCostsById,
+    mowUpgradeCostsByLevel,
+    characterAbilityCostsByLevel,
     getCharacter,
     getEntityName,
     loading: catalogLoading,
@@ -134,6 +146,10 @@ export function useGoalsOverviewMetrics(
   const playerMows = useLiveQuery(() => getPlayerMows(), [])
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
   const inventoryItems = useLiveQuery(() => getPlayerInventoryItems(), [])
+  const abilityInventory = useLiveQuery(
+    () => getInventoryAbilityMaterials(),
+    []
+  )
 
   const playerCharacterById = useMemo(
     () =>
@@ -261,11 +277,13 @@ export function useGoalsOverviewMetrics(
           upgradesById,
           ascensionCostsById: ascensionCostsById!,
           unlockShardCostsById: unlockShardCostsById!,
+          mowUpgradeCostsByLevel,
+          characterAbilityCostsByLevel,
         })
       : null
 
     const slots = rankSlotsByGoalId?.get(goalId)
-    const remaining =
+    const withSlots =
       remainingStandalone && slots
         ? {
             ...remainingStandalone,
@@ -273,6 +291,35 @@ export function useGoalsOverviewMetrics(
             coveredByEarlierGoal: slots.allocated === 0 && slots.standalone > 0,
           }
         : remainingStandalone
+    // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
+    // A paused Machine of War goal is outside the plan run: its standalone need against the full stock.
+    const standaloneMaterials = withSlots?.abilityMaterials
+    const withMaterials: typeof withSlots =
+      withSlots && abilityMaterialsByGoalId?.has(goalId)
+        ? {
+            ...withSlots,
+            abilityMaterials: abilityMaterialsByGoalId.get(goalId) ?? undefined,
+          }
+        : withSlots &&
+            detail.entityType === "Mow" &&
+            standaloneMaterials &&
+            abilityInventory
+          ? {
+              ...withSlots,
+              abilityMaterials: withStandaloneAvailable(
+                standaloneMaterials,
+                abilityInventory,
+                mowsById?.get(detail.entityId)?.alliance
+              ),
+            }
+          : withSlots
+    const planNet = planNetByGoalId?.get(goalId)
+    const alliance = (
+      detail.entityType === "Mow" ? mowsById : charactersById
+    )?.get(detail.entityId)?.alliance
+    const remaining = withMaterials
+      ? { ...withMaterials, ...planNet, alliance }
+      : withMaterials
 
     const estimateOutcome = estimatesByGoalId?.get(goalId)
     const blockers = computeGoalBlockers({
@@ -301,7 +348,11 @@ export function useGoalsOverviewMetrics(
       progress,
       remaining,
       blockers,
-      levelRequirement: computeLevelRequirementProgress({ detail, playerUnit }),
+      levelRequirement: computeLevelRequirementProgress({
+        detail,
+        playerUnit,
+        chainedFrom: planNet?.levelChainedFrom,
+      }),
     })
   })
   return result

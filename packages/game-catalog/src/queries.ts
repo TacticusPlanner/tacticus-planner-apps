@@ -5,6 +5,8 @@
 import { getDatasetRecords } from "./game-catalog-storage"
 import type {
   AscensionCostStorageModel,
+  CharacterAbilityCostStorageModel,
+  MowUpgradeCostStorageModel,
   CampaignBattleStorageModel,
   CampaignDefinitionStorageModel,
   CharacterStorageModel,
@@ -52,6 +54,16 @@ export async function getNpcsMap(): Promise<Map<string, NpcStorageModel>> {
 export async function getMowsMap(): Promise<Map<string, MowStorageModel>> {
   const mows = await getMows()
   return new Map(mows.map((mow) => [mow.id, mow]))
+}
+
+export function getMowUpgradeCosts(): Promise<MowUpgradeCostStorageModel[]> {
+  return getDatasetRecords("mow-upgrade-costs")
+}
+
+export function getCharacterAbilityCosts(): Promise<
+  CharacterAbilityCostStorageModel[]
+> {
+  return getDatasetRecords("character-ability-costs")
 }
 
 export function getAscensionCosts(): Promise<AscensionCostStorageModel[]> {

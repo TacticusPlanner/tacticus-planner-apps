@@ -28,6 +28,8 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -139,6 +141,8 @@
   --event-shop: #d9b3bc;
   --event-crusade: #b58a5c;
   --event-bar-foreground: oklch(0.243 0.015 261.655);
+  --success: oklch(0.93 0.05 150);
+  --success-foreground: oklch(0.37 0.09 150);
 }
 
 .dark {
@@ -227,6 +231,8 @@
   --event-shop: #90636e;
   --event-crusade: #8a6540;
   --event-bar-foreground: oklch(0.97 0.005 264.532);
+  --success: oklch(0.29 0.055 150);
+  --success-foreground: oklch(0.87 0.11 150);
 }
 
 @layer base {

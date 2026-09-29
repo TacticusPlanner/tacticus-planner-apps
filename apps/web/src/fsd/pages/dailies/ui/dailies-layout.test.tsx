@@ -22,6 +22,19 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
+const save = vi.fn()
+vi.mock("@/entities/planning-setting", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/entities/planning-setting")>()
+  return {
+    ...actual,
+    dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+    usePlanningSettings: () => ({
+      settings: { dailyEnergy: 288, revision: 1 },
+      save,
+    }),
+  }
+})
 vi.mock("@/entities/project", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/entities/project")>()
   return {
@@ -91,7 +104,10 @@ function findRouteContent(testId: string) {
 }
 
 describe("Dailies navigation", () => {
-  beforeEach(() => useDailyRaids.mockClear())
+  beforeEach(() => {
+    useDailyRaids.mockClear()
+    save.mockClear()
+  })
 
   it("redirects /dailies to Raids Today", async () => {
     renderDailies()
@@ -183,5 +199,52 @@ describe("Dailies navigation", () => {
     await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
     await findRouteContent("dailies-no-farmable")
     expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
+  })
+
+  it("exposes the shared Planning Settings action trailing the project selector on Today and Plan", async () => {
+    const user = userEvent.setup()
+    renderDailies("/dailies/raids/today")
+    await findRouteContent("dailies-no-farmable")
+
+    const settingsButton = screen.getByTestId("raids-planning-settings")
+    expect(settingsButton).toHaveAccessibleName("goals.planningSettings.button")
+    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
+
+    await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
+    await findRouteContent("dailies-no-farmable")
+    expect(screen.getByTestId("raids-planning-settings")).toHaveAccessibleName(
+      "goals.planningSettings.button"
+    )
+  })
+
+  it("opens the shared Planning Settings dialog from Raids", async () => {
+    const user = userEvent.setup()
+    renderDailies("/dailies/raids/today")
+    await findRouteContent("dailies-no-farmable")
+
+    await user.click(screen.getByTestId("raids-planning-settings"))
+    const dialog = await screen.findByTestId("planning-settings-dialog")
+    expect(dialog).toBeInTheDocument()
+    // The dialog's own save/persist behavior against the shared `usePlanningSettings` hook is
+    // covered by planning-settings-dialog.test.tsx; this test only verifies Raids reaches the one
+    // shared dialog, not the dialog's internals again.
+    expect(
+      screen.getByTestId("planning-settings-energy-value")
+    ).toHaveTextContent("288")
+  })
+
+  it("opens the Planning Settings dialog via keyboard activation", async () => {
+    const user = userEvent.setup()
+    renderDailies("/dailies/raids/today")
+    await findRouteContent("dailies-no-farmable")
+
+    const settingsButton = screen.getByTestId("raids-planning-settings")
+    settingsButton.focus()
+    expect(settingsButton).toHaveFocus()
+
+    await user.keyboard("{Enter}")
+    expect(
+      await screen.findByTestId("planning-settings-dialog")
+    ).toBeInTheDocument()
   })
 })

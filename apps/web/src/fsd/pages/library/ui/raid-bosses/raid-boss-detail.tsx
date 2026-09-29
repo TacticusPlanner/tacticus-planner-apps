@@ -24,6 +24,7 @@ import {
   type RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
 
+import { buildProgressionStepLabels } from "./progression-step-labels"
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
 import {
   RaidBossAdjustedStats,
@@ -114,6 +115,7 @@ export function RaidBossDetail({
     Math.max(ladder.length - 1, 0)
   )
   const step = ladder[clamped]
+  const stepLabels = buildProgressionStepLabels(ladder)
 
   return (
     <div className="flex flex-col gap-6" data-testid="raid-boss-detail">
@@ -146,11 +148,10 @@ export function RaidBossDetail({
             <SelectContent>
               {ladder.map((entry, index) => (
                 <SelectItem key={index} value={String(index)}>
-                  {t("raidBosses.progressionStep", {
-                    step: index + 1,
-                    total: ladder.length,
-                    rarity: humanizeToken(entry.baseRarity),
+                  {t("raidBosses.progressionStepLabelled", {
+                    rarityTier: stepLabels[index].rarityTierLabel,
                     stars: entry.starLevel,
+                    health: stepLabels[index].health.toLocaleString(),
                   })}
                 </SelectItem>
               ))}

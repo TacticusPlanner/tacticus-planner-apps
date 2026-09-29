@@ -63,6 +63,7 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerMows: () => [],
   getInventoryUpgrades: () => [],
   getPlayerInventoryItems: () => [],
+  getInventoryAbilityMaterials: () => Promise.resolve(undefined),
   getInventoryShard: () => Promise.resolve(undefined),
 }))
 
@@ -105,8 +106,15 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 }))
 
 vi.mock("@/entities/planning-setting", () => ({
+  normalizeXpBookRarity: (rarity: string | null | undefined) =>
+    rarity &&
+    ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
+      rarity
+    )
+      ? rarity
+      : "Legendary",
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: () => {},
   }),
 }))

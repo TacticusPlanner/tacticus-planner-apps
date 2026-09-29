@@ -16,6 +16,7 @@ import type {
   UpgradeNeed,
 } from "../model/estimate.domain"
 import { blocked, unavailableReason } from "./estimate-blocked"
+import { onslaughtTokensFromSupply } from "./shop-supply"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
@@ -365,6 +366,10 @@ export function estimateGoal({
         raidsTotal,
         flatSupplyTotal,
         flatSupplyBySupplier,
+        onslaughtTokens: onslaughtTokensFromSupply(
+          flatSupplyBySupplier,
+          flatSuppliers
+        ),
       }
 }
 

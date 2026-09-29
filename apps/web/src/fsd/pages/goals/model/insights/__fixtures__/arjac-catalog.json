@@ -1,0 +1,5144 @@
+{
+  "rankUpUpgrades": [
+    {
+      "rank": "Silver1",
+      "upgradeIds": [
+        "upgHpE031C",
+        "upgHpE012",
+        "upgDmgE031C",
+        "upgDmgE009C",
+        "upgArmE031C",
+        "upgArmE004C"
+      ]
+    },
+    {
+      "rank": "Silver2",
+      "upgradeIds": [
+        "upgHpE031C",
+        "upgHpE007C",
+        "upgDmgL031C",
+        "upgDmgE001",
+        "upgArmL031C",
+        "upgArmE001C"
+      ]
+    },
+    {
+      "rank": "Silver3",
+      "upgradeIds": [
+        "upgHpL031C",
+        "upgHpL002C",
+        "upgDmgE031C",
+        "upgDmgL015C",
+        "upgArmE031C",
+        "upgArmL004C"
+      ]
+    },
+    {
+      "rank": "Gold1",
+      "upgradeIds": [
+        "upgHpL131C",
+        "upgHpL001C",
+        "upgDmgL031C",
+        "upgDmgL005C",
+        "upgArmL031C",
+        "upgArmL010C"
+      ]
+    },
+    {
+      "rank": "Gold2",
+      "upgradeIds": [
+        "upgHpL031C",
+        "upgHpL009C",
+        "upgDmgL131C",
+        "upgDmgL008C",
+        "upgArmL131C",
+        "upgArmL004C"
+      ]
+    }
+  ],
+  "upgrades": [
+    {
+      "id": "upgArmC001",
+      "label": "Purity Seal",
+      "rarity": "Common",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS07",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "AME07",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC46",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "FoCM16",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "I19",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 12.5
+        },
+        {
+          "battleId": "IE05",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "OM01",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SH69",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "SHM56",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "SHME22",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "ASS03",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "ASE03",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgArmC002",
+      "label": "Fine Purity Seal",
+      "rarity": "Common",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCM07",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "I32",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 15
+        },
+        {
+          "battleId": "DAS03",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAE03",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM31",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OME01",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "SH25",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "ASS12",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "ASE10",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgArmC003",
+      "label": "Pile of Salvage",
+      "rarity": "Common",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS07",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "DGE07",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC16",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "FoCE25",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "FoCM09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "FoCME01",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "I28",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 12.5
+        },
+        {
+          "battleId": "O57",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OM18",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHM16",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "TS12",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "TE10",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgArmC011",
+      "label": "Filaments",
+      "rarity": "Common",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC48",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IE25",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "O05",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHM09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        }
+      ]
+    },
+    {
+      "id": "upgArmC012",
+      "label": "Metal Joints",
+      "rarity": "Common",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC26",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "TAS03",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "TAE03",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "O06",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OM35",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OME27",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "SHM21",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        }
+      ]
+    },
+    {
+      "id": "upgArmC013",
+      "label": "Armor Trim",
+      "rarity": "Common",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS03",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DGE03",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC07",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAS07",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "DAE07",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "O11",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OM22",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SH05",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHM05",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHME12",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        }
+      ]
+    },
+    {
+      "id": "upgArmE001C",
+      "label": "Grand Purity Seal",
+      "rarity": "Epic",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgArmR001C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgArmU001", "count": 5, "recipe": null },
+            { "material": "upgArmC001", "count": 3, "recipe": null },
+            { "material": "upgHpC016", "count": 3, "recipe": null }
+          ]
+        },
+        { "material": "upgHpR002", "count": 4, "recipe": null },
+        { "material": "upgArmC002", "count": 4, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmE004C",
+      "label": "Ceramite Sheet",
+      "rarity": "Epic",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmR015", "count": 6, "recipe": null },
+        {
+          "material": "upgArmU010C",
+          "count": 1,
+          "recipe": [{ "material": "upgArmC002", "count": 6, "recipe": null }]
+        },
+        { "material": "upgArmU005", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmE010",
+      "label": "Unyielding Rivets",
+      "rarity": "Epic",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGEC3B",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 6,
+          "effectiveRate": 0.428,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "AMEC3B",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 6,
+          "effectiveRate": 0.428,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "FoCM26",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "O73",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 6,
+          "effectiveRate": 0.285,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OE27",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "ASEC3B",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 6,
+          "effectiveRate": 0.428,
+          "isMythic": false,
+          "expectedGold": 83
+        }
+      ]
+    },
+    {
+      "id": "upgArmE031C",
+      "label": "Ice Troll Hide",
+      "rarity": "Epic",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmR031", "count": 9, "recipe": null }],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmL004C",
+      "label": "Ceramite Plates",
+      "rarity": "Legendary",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgArmE004C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgArmR015", "count": 6, "recipe": null },
+            {
+              "material": "upgArmU010C",
+              "count": 1,
+              "recipe": [
+                { "material": "upgArmC002", "count": 6, "recipe": null }
+              ]
+            },
+            { "material": "upgArmU005", "count": 6, "recipe": null }
+          ]
+        },
+        { "material": "upgArmE010", "count": 3, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmL010C",
+      "label": "Seal of the Emperor's Protection",
+      "rarity": "Legendary",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE003", "count": 5, "recipe": null },
+        {
+          "material": "upgArmR001C",
+          "count": 3,
+          "recipe": [
+            { "material": "upgArmU001", "count": 5, "recipe": null },
+            { "material": "upgArmC001", "count": 3, "recipe": null },
+            { "material": "upgHpC016", "count": 3, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmL031C",
+      "label": "Ice Wyrm Hide",
+      "rarity": "Legendary",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgArmE031C",
+          "count": 2,
+          "recipe": [{ "material": "upgArmR031", "count": 9, "recipe": null }]
+        },
+        {
+          "material": "upgArmE001C",
+          "count": 1,
+          "recipe": [
+            {
+              "material": "upgArmR001C",
+              "count": 1,
+              "recipe": [
+                { "material": "upgArmU001", "count": 5, "recipe": null },
+                { "material": "upgArmC001", "count": 3, "recipe": null },
+                { "material": "upgHpC016", "count": 3, "recipe": null }
+              ]
+            },
+            { "material": "upgHpR002", "count": 4, "recipe": null },
+            { "material": "upgArmC002", "count": 4, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmL131C",
+      "label": "Runic Tasset Plate",
+      "rarity": "Legendary",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL111", "count": 9, "recipe": null },
+        {
+          "material": "upgArmR003C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgArmU005", "count": 5, "recipe": null },
+            { "material": "upgArmC002", "count": 6, "recipe": null }
+          ]
+        },
+        { "material": "upgArmR005", "count": 9, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmR001C",
+      "label": "Blessed Purity Seal",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU001", "count": 5, "recipe": null },
+        { "material": "upgArmC001", "count": 3, "recipe": null },
+        { "material": "upgHpC016", "count": 3, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmR003C",
+      "label": "Ceramite Bar",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU005", "count": 5, "recipe": null },
+        { "material": "upgArmC002", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmR005",
+      "label": "Artificer Tasset Plate",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCE35",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "FoCM47",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IM18",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "O37",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OM49",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "SH54",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "ASS28",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "ASE18",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgArmR006",
+      "label": "Crate of Salvage",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS28",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "DGE18",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "AMS28",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "AME18",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "FoC11",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "FoCM40",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "IM12",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "IME33",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "OE35",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "SH33",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 65
+        }
+      ]
+    },
+    {
+      "id": "upgArmR012C",
+      "label": "Impressive Armor Trim",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU009", "count": 5, "recipe": null },
+        { "material": "upgArmC013", "count": 4, "recipe": null },
+        { "material": "upgHpC013", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgArmR015",
+      "label": "Subdermal Plating",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "IE35",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "IM54",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "DAS28",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "DAE18",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "O29",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "TS28",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "TE18",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgArmR031",
+      "label": "Beast Hide",
+      "rarity": "Rare",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC51",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OME23",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "SH62",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "SHE25",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 163
+        }
+      ]
+    },
+    {
+      "id": "upgArmU001",
+      "label": "Oath Seal",
+      "rarity": "Uncommon",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS15",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "I40",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 15
+        },
+        {
+          "battleId": "IE09",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "IM62",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "DAS25",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "O26",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OM40",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SHM53",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "SHME28",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "ASS20",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "ASE12",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgArmU005",
+      "label": "Ceramite Lump",
+      "rarity": "Uncommon",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCM10",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "I26",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 12.5
+        },
+        {
+          "battleId": "IE33",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "DAS15",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "O20",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OM39",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SHM25",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "ASS15",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        }
+      ]
+    },
+    {
+      "id": "upgArmU008",
+      "label": "Advanced Rebreather",
+      "rarity": "Uncommon",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS20",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "DGE12",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "FoCE33",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "I68",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 20
+        },
+        {
+          "battleId": "O33",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SH74",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgArmU009",
+      "label": "Blessed Tasset Plate",
+      "rarity": "Uncommon",
+      "stat": "Armour",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC23",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "IM10",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OE33",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "OM24",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SH35",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SHM27",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        }
+      ]
+    },
+    {
+      "id": "upgArmU010C",
+      "label": "Blessed Ceramite",
+      "rarity": "Uncommon",
+      "stat": "Armour",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmC002", "count": 6, "recipe": null }],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgC003",
+      "label": "Canister of Chemicals",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC24",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "I46",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 17.5
+        },
+        {
+          "battleId": "DAS05",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAE05",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHM37",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SHME27",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "TS02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "TE02",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "ASS02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "ASE02",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgDmgC007",
+      "label": "Single Power Pack",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCME27",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "TAS09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "TAE09",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "I55",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 17.5
+        },
+        {
+          "battleId": "IM51",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "O68",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHM11",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        }
+      ]
+    },
+    {
+      "id": "upgDmgC010",
+      "label": "Auspex",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS05",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "AME05",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC19",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "FoCE13",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "IM59",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "O64",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM19",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHME19",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "ASS09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "ASE09",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgDmgC011",
+      "label": "Weapon Anointment Oils",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC44",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "I52",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 17.5
+        },
+        {
+          "battleId": "IE02",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "O65",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM10",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OME09",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SH21",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHM17",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "ASS05",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "ASE05",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgDmgC012",
+      "label": "Weapon parts",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS05",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DGE05",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC13",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "FoCM23",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "FoCME09",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "IM02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAS02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAE02",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "O08",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OM03",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        }
+      ]
+    },
+    {
+      "id": "upgDmgC013",
+      "label": "Vox-Caster",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DGE02",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "AMS09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "AME09",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC08",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "FoCE19",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "O14",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OM21",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SH04",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        }
+      ]
+    },
+    {
+      "id": "upgDmgC014",
+      "label": "Nasty Spikes",
+      "rarity": "Common",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "DGE09",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC02",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "FoCM21",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "O04",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SH09",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHM02",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHME09",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "TS09",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "TE09",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgDmgE001",
+      "label": "Special Issue Ammo",
+      "rarity": "Epic",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCM36",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "IM28",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "O40",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 6,
+          "effectiveRate": 0.285,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OME05",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 126.5
+        }
+      ]
+    },
+    {
+      "id": "upgDmgE006C",
+      "label": "Anointed Micro-Generator",
+      "rarity": "Epic",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgDmgR010C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgDmgU010", "count": 5, "recipe": null },
+            { "material": "upgArmC012", "count": 4, "recipe": null },
+            { "material": "upgDmgC007", "count": 2, "recipe": null }
+          ]
+        },
+        { "material": "upgArmR006", "count": 4, "recipe": null },
+        { "material": "upgArmC011", "count": 4, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgE009C",
+      "label": "Refined Combat Stimms",
+      "rarity": "Epic",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgDmgR012C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgDmgU014", "count": 5, "recipe": null },
+            { "material": "upgHpC007", "count": 6, "recipe": null }
+          ]
+        },
+        { "material": "upgDmgR003", "count": 4, "recipe": null },
+        { "material": "upgHpC006", "count": 4, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgE011",
+      "label": "Elaborate Hilt",
+      "rarity": "Epic",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCM28",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "DASC25B",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "OME14",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SHME30",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 163
+        }
+      ]
+    },
+    {
+      "id": "upgDmgE031C",
+      "label": "Thunderwolf Tooth Necklace",
+      "rarity": "Epic",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [{ "material": "upgDmgR031", "count": 9, "recipe": null }],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgL005C",
+      "label": "Optimal Micro-Generator",
+      "rarity": "Legendary",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgDmgE006C",
+          "count": 2,
+          "recipe": [
+            {
+              "material": "upgDmgR010C",
+              "count": 1,
+              "recipe": [
+                { "material": "upgDmgU010", "count": 5, "recipe": null },
+                { "material": "upgArmC012", "count": 4, "recipe": null },
+                { "material": "upgDmgC007", "count": 2, "recipe": null }
+              ]
+            },
+            { "material": "upgArmR006", "count": 4, "recipe": null },
+            { "material": "upgArmC011", "count": 4, "recipe": null }
+          ]
+        },
+        { "material": "upgHpE017", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgL008C",
+      "label": "Powered Blade",
+      "rarity": "Legendary",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE011", "count": 7, "recipe": null },
+        { "material": "upgHpR018", "count": 7, "recipe": null },
+        {
+          "material": "upgDmgR010C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgDmgU010", "count": 5, "recipe": null },
+            { "material": "upgArmC012", "count": 4, "recipe": null },
+            { "material": "upgDmgC007", "count": 2, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgL015C",
+      "label": "Digital Weapons",
+      "rarity": "Legendary",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgDmgR015C",
+          "count": 2,
+          "recipe": [
+            {
+              "material": "upgDmgU015C",
+              "count": 1,
+              "recipe": [
+                { "material": "upgDmgC011", "count": 4, "recipe": null },
+                { "material": "upgDmgC003", "count": 2, "recipe": null }
+              ]
+            },
+            { "material": "upgDmgU003", "count": 5, "recipe": null }
+          ]
+        },
+        {
+          "material": "upgDmgR13C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgDmgU012", "count": 5, "recipe": null },
+            { "material": "upgDmgC010", "count": 3, "recipe": null },
+            { "material": "upgDmgC013", "count": 3, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgL031C",
+      "label": "Kraken Tooth Necklace",
+      "rarity": "Legendary",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgDmgE031C",
+          "count": 2,
+          "recipe": [{ "material": "upgDmgR031", "count": 9, "recipe": null }]
+        },
+        {
+          "material": "upgDmgR015C",
+          "count": 2,
+          "recipe": [
+            {
+              "material": "upgDmgU015C",
+              "count": 1,
+              "recipe": [
+                { "material": "upgDmgC011", "count": 4, "recipe": null },
+                { "material": "upgDmgC003", "count": 2, "recipe": null }
+              ]
+            },
+            { "material": "upgDmgU003", "count": 5, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgL131C",
+      "label": "Frostblade",
+      "rarity": "Legendary",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL111", "count": 9, "recipe": null },
+        {
+          "material": "upgDmgU018C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgDmgC012", "count": 4, "recipe": null },
+            { "material": "upgHpC013", "count": 2, "recipe": null }
+          ]
+        },
+        { "material": "upgDmgE011", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgR003",
+      "label": "Tank of Promethium",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS27",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "DGE16",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "FoCE15",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "TAS27",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "TAE16",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "I62",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 20
+        },
+        {
+          "battleId": "IM44",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OM48",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "SHME33",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        }
+      ]
+    },
+    {
+      "id": "upgDmgR006",
+      "label": "Bionic Eye",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS27",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "AME16",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "FoC69",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoCM32",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "IM19",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OE15",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SH48",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "ASS27",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "ASE16",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgDmgR010C",
+      "label": "Powerful Micro-Generator",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU010", "count": 5, "recipe": null },
+        { "material": "upgArmC012", "count": 4, "recipe": null },
+        { "material": "upgDmgC007", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgR012C",
+      "label": "Advanced Combat Stimms",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU014", "count": 5, "recipe": null },
+        { "material": "upgHpC007", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgR015C",
+      "label": "Sanctified Weapon Oils",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgDmgU015C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgDmgC011", "count": 4, "recipe": null },
+            { "material": "upgDmgC003", "count": 2, "recipe": null }
+          ]
+        },
+        { "material": "upgDmgU003", "count": 5, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgR031",
+      "label": "Wolf Tooth Necklace",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "OM64",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OME18",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "SH50",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "SHE19",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 151.5
+        }
+      ]
+    },
+    {
+      "id": "upgDmgR13C",
+      "label": "Prey-Sight",
+      "rarity": "Rare",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU012", "count": 5, "recipe": null },
+        { "material": "upgDmgC010", "count": 3, "recipe": null },
+        { "material": "upgDmgC013", "count": 3, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgU003",
+      "label": "Barrel of Promethium",
+      "rarity": "Uncommon",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC33",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "FoCE01",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "TAS24",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "I54",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 17.5
+        },
+        {
+          "battleId": "IM52",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "DAS24",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "O56",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OM28",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHM20",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "TS24",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "ASS14",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "ASE14",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgDmgU010",
+      "label": "Fine Micro-Generator",
+      "rarity": "Uncommon",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS18",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "FoC31",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "I43",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 15
+        },
+        {
+          "battleId": "IE01",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "IM64",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "IME35",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "O69",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM29",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SH23",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        }
+      ]
+    },
+    {
+      "id": "upgDmgU012",
+      "label": "Locator Beacon",
+      "rarity": "Uncommon",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCM03",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "TAS18",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "I36",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 15
+        },
+        {
+          "battleId": "DAS18",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OE14",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "OM43",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SH16",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHM55",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "ASS24",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgDmgU014",
+      "label": "Combat Stimms",
+      "rarity": "Uncommon",
+      "stat": "Damage",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC58",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "FoCM56",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IM06",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "O09",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OE01",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "SHM51",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "TS14",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "TE14",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "ASS18",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        }
+      ]
+    },
+    {
+      "id": "upgDmgU015C",
+      "label": "Blessed Weapon Oils",
+      "rarity": "Uncommon",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgC011", "count": 4, "recipe": null },
+        { "material": "upgDmgC003", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgDmgU018C",
+      "label": "Adamantium Blades",
+      "rarity": "Uncommon",
+      "stat": "Damage",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgC012", "count": 4, "recipe": null },
+        { "material": "upgHpC013", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpC002",
+      "label": "Minor Bionic Enhancement",
+      "rarity": "Common",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS08",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 60
+        },
+        {
+          "battleId": "AME08",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC10",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "I49",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 17.5
+        },
+        {
+          "battleId": "IM57",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IME21",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "DAS01",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAE01",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "O62",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM11",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        }
+      ]
+    },
+    {
+      "id": "upgHpC006",
+      "label": "Standard-Issue Tourniquet",
+      "rarity": "Common",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS04",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DGE04",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC12",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "I39",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 15
+        },
+        {
+          "battleId": "IM27",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "IME34",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "O59",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OM05",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHM48",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 71
+        }
+      ]
+    },
+    {
+      "id": "upgHpC007",
+      "label": "Healing Ointment",
+      "rarity": "Common",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC18",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "I53",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 17.5
+        },
+        {
+          "battleId": "IE38",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "IM53",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OM06",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SH49",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "ASS04",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "ASE04",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgHpC013",
+      "label": "Chip Damage",
+      "rarity": "Common",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS01",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DGE01",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC06",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "IM24",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "O03",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "OM16",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OME21",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "SHM18",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 59
+        }
+      ]
+    },
+    {
+      "id": "upgHpC016",
+      "label": "Scrolls",
+      "rarity": "Common",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC25",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "FoCM13",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "O16",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OME13",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SH02",
+          "guaranteed": false,
+          "numerator": 6,
+          "denominator": 7,
+          "effectiveRate": 0.874,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "SHE10",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.571,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SHM06",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "ASS01",
+          "guaranteed": false,
+          "numerator": 12,
+          "denominator": 13,
+          "effectiveRate": 0.928,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "ASE01",
+          "guaranteed": false,
+          "numerator": 15,
+          "denominator": 16,
+          "effectiveRate": 0.941,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgHpE001C",
+      "label": "Advanced Bionics",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR006", "count": 6, "recipe": null },
+        {
+          "material": "upgHpU004C",
+          "count": 1,
+          "recipe": [{ "material": "upgHpC002", "count": 6, "recipe": null }]
+        },
+        { "material": "upgHpU014", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpE002C",
+      "label": "Greater Reliquary of Protection",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpR005", "count": 6, "recipe": null },
+        { "material": "upgHpU007", "count": 6, "recipe": null },
+        { "material": "upgArmC001", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpE003",
+      "label": "Terminator Honours",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoCM31",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "IM31",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "IME36",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "DASC13B",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "O42",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 6,
+          "effectiveRate": 0.285,
+          "isMythic": false,
+          "expectedGold": 65
+        }
+      ]
+    },
+    {
+      "id": "upgHpE007C",
+      "label": "Grand Helmet Trophy",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgHpR015C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgHpU012", "count": 5, "recipe": null },
+            { "material": "upgArmC003", "count": 4, "recipe": null },
+            { "material": "upgHpC013", "count": 2, "recipe": null }
+          ]
+        },
+        { "material": "upgHpR018", "count": 4, "recipe": null },
+        { "material": "upgDmgC014", "count": 4, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpE012",
+      "label": "Golden Ornamental Skull",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMSC13B",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "FoC72",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 6,
+          "effectiveRate": 0.285,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoCM27",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "FoCME14",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SH73",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 6,
+          "effectiveRate": 0.285,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "ASSC13B",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 83
+        }
+      ]
+    },
+    {
+      "id": "upgHpE017",
+      "label": "Secret Agenda",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC61",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 6,
+          "effectiveRate": 0.285,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoCM74",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "TASC13B",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "IME14",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SHM73",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 4,
+          "effectiveRate": 0.4,
+          "isMythic": false,
+          "expectedGold": 77
+        }
+      ]
+    },
+    {
+      "id": "upgHpE031C",
+      "label": "Runic Talisman",
+      "rarity": "Epic",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [{ "material": "upgHpR031", "count": 9, "recipe": null }],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpL001C",
+      "label": "Optimal Bionic Enhancement",
+      "rarity": "Legendary",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgHpE001C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgDmgR006", "count": 6, "recipe": null },
+            {
+              "material": "upgHpU004C",
+              "count": 1,
+              "recipe": [
+                { "material": "upgHpC002", "count": 6, "recipe": null }
+              ]
+            },
+            { "material": "upgHpU014", "count": 6, "recipe": null }
+          ]
+        },
+        {
+          "material": "upgHpR004C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgArmU008", "count": 5, "recipe": null },
+            { "material": "upgDmgC010", "count": 6, "recipe": null }
+          ]
+        },
+        { "material": "upgDmgU012", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpL002C",
+      "label": "Legendary Reliquary of Protection",
+      "rarity": "Legendary",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgHpE002C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgHpR005", "count": 6, "recipe": null },
+            { "material": "upgHpU007", "count": 6, "recipe": null },
+            { "material": "upgArmC001", "count": 6, "recipe": null }
+          ]
+        },
+        {
+          "material": "upgHpR016C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgHpU016", "count": 5, "recipe": null },
+            { "material": "upgHpC016", "count": 4, "recipe": null },
+            { "material": "upgDmgC013", "count": 2, "recipe": null }
+          ]
+        },
+        { "material": "upgArmU001", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpL009C",
+      "label": "Grandiose Skull Ornament",
+      "rarity": "Legendary",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE012", "count": 5, "recipe": null },
+        {
+          "material": "upgArmR012C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgArmU009", "count": 5, "recipe": null },
+            { "material": "upgArmC013", "count": 4, "recipe": null },
+            { "material": "upgHpC013", "count": 2, "recipe": null }
+          ]
+        },
+        {
+          "material": "upgHpR015C",
+          "count": 2,
+          "recipe": [
+            { "material": "upgHpU012", "count": 5, "recipe": null },
+            { "material": "upgArmC003", "count": 4, "recipe": null },
+            { "material": "upgHpC013", "count": 2, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpL031C",
+      "label": "Talisman of Storms",
+      "rarity": "Legendary",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        {
+          "material": "upgHpE031C",
+          "count": 2,
+          "recipe": [{ "material": "upgHpR031", "count": 9, "recipe": null }]
+        },
+        {
+          "material": "upgHpE002C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgHpR005", "count": 6, "recipe": null },
+            { "material": "upgHpU007", "count": 6, "recipe": null },
+            { "material": "upgArmC001", "count": 6, "recipe": null }
+          ]
+        }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpL111",
+      "label": "Mj\u00f8d",
+      "rarity": "Legendary",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "OM71",
+          "guaranteed": false,
+          "numerator": 1,
+          "denominator": 9,
+          "effectiveRate": 0.199,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OME29",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 6,
+          "effectiveRate": 0.428,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "SHE30",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 6,
+          "effectiveRate": 0.428,
+          "isMythic": false,
+          "expectedGold": 163
+        }
+      ]
+    },
+    {
+      "id": "upgHpL131C",
+      "label": "Personal Saga",
+      "rarity": "Legendary",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL111", "count": 9, "recipe": null },
+        {
+          "material": "upgHpR015C",
+          "count": 1,
+          "recipe": [
+            { "material": "upgHpU012", "count": 5, "recipe": null },
+            { "material": "upgArmC003", "count": 4, "recipe": null },
+            { "material": "upgHpC013", "count": 2, "recipe": null }
+          ]
+        },
+        { "material": "upgHpE003", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpR002",
+      "label": "Metal Decorative Skull",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS26",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "AME15",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "I71",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 20
+        },
+        {
+          "battleId": "IE07",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "IM35",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "O72",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "OM52",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OME33",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "ASS26",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "ASE15",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgHpR004C",
+      "label": "Refined Bionics",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU008", "count": 5, "recipe": null },
+        { "material": "upgDmgC010", "count": 6, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpR005",
+      "label": "The Phoenix Ascendant",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMSC3B",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "FoC64",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoCM49",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IE34",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 175
+        },
+        {
+          "battleId": "IM20",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "DASC3B",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 83
+        },
+        {
+          "battleId": "OM37",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "ASSC3B",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 83
+        }
+      ]
+    },
+    {
+      "id": "upgHpR015C",
+      "label": "Grand Skull Trophy",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU012", "count": 5, "recipe": null },
+        { "material": "upgArmC003", "count": 4, "recipe": null },
+        { "material": "upgHpC013", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpR016C",
+      "label": "Grandiloquent Litanical",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU016", "count": 5, "recipe": null },
+        { "material": "upgHpC016", "count": 4, "recipe": null },
+        { "material": "upgDmgC013", "count": 2, "recipe": null }
+      ],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpR018",
+      "label": "Kill Count",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "FoC17",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "FoCE07",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "TAS26",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "TAE15",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "IM14",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAS26",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "DAE15",
+          "guaranteed": false,
+          "numerator": 8,
+          "denominator": 12,
+          "effectiveRate": 0.692,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "O34",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OM38",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SH29",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 59
+        }
+      ]
+    },
+    {
+      "id": "upgHpR031",
+      "label": "Wolf Tail Talisman",
+      "rarity": "Rare",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "OM54",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 6,
+          "effectiveRate": 0.571,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OME11",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 137
+        },
+        {
+          "battleId": "SH38",
+          "guaranteed": false,
+          "numerator": 2,
+          "denominator": 5,
+          "effectiveRate": 0.5,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SHE12",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.153,
+          "isMythic": false,
+          "expectedGold": 137
+        }
+      ]
+    },
+    {
+      "id": "upgHpU004C",
+      "label": "Bionic Enhancement",
+      "rarity": "Uncommon",
+      "stat": "Health",
+      "crafted": true,
+      "recipe": [{ "material": "upgHpC002", "count": 6, "recipe": null }],
+      "farmLocations": []
+    },
+    {
+      "id": "upgHpU007",
+      "label": "Purifier",
+      "rarity": "Uncommon",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "TAS23",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "I61",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 20
+        },
+        {
+          "battleId": "IM46",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "OM58",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "SH18",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHE05",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "ASS13",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "ASE13",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        }
+      ]
+    },
+    {
+      "id": "upgHpU012",
+      "label": "Helmet Trophy",
+      "rarity": "Uncommon",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS19",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "FoC41",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "FoCM54",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IM05",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "O31",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "OE05",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 126.5
+        },
+        {
+          "battleId": "OME19",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "SHM41",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        }
+      ]
+    },
+    {
+      "id": "upgHpU014",
+      "label": "Reinforced Cables",
+      "rarity": "Uncommon",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "AMS13",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "AME13",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "FoC40",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "FoCM57",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "IM07",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 53
+        },
+        {
+          "battleId": "DAS19",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        },
+        {
+          "battleId": "O27",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OE21",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "SHM26",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 59
+        }
+      ]
+    },
+    {
+      "id": "upgHpU016",
+      "label": "Writings",
+      "rarity": "Uncommon",
+      "stat": "Health",
+      "crafted": false,
+      "recipe": [],
+      "farmLocations": [
+        {
+          "battleId": "DGS13",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "DGE13",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 5,
+          "effectiveRate": 0.833,
+          "isMythic": false,
+          "expectedGold": 98.5
+        },
+        {
+          "battleId": "AMS23",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 77
+        },
+        {
+          "battleId": "FoC42",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "FoCE31",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 163
+        },
+        {
+          "battleId": "O24",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "OM33",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 65
+        },
+        {
+          "battleId": "SH24",
+          "guaranteed": false,
+          "numerator": 4,
+          "denominator": 6,
+          "effectiveRate": 0.714,
+          "isMythic": false,
+          "expectedGold": 59
+        },
+        {
+          "battleId": "SHE21",
+          "guaranteed": true,
+          "numerator": null,
+          "denominator": null,
+          "effectiveRate": 1.333,
+          "isMythic": false,
+          "expectedGold": 151.5
+        },
+        {
+          "battleId": "ASS19",
+          "guaranteed": false,
+          "numerator": 3,
+          "denominator": 4,
+          "effectiveRate": 0.799,
+          "isMythic": false,
+          "expectedGold": 71
+        }
+      ]
+    }
+  ],
+  "battleColumns": [
+    "id",
+    "campaignGroupId",
+    "type",
+    "challenge",
+    "nodeNumber",
+    "battleIndex",
+    "energyCost",
+    "dailyAttempts",
+    "releaseType"
+  ],
+  "battles": [
+    ["AME05", "eventCampaign1", "Extremis", false, 5, 5, 6, 10, "event"],
+    ["AME07", "eventCampaign1", "Extremis", false, 7, 7, 6, 10, "event"],
+    ["AME08", "eventCampaign1", "Extremis", false, 8, 8, 6, 10, "event"],
+    ["AME09", "eventCampaign1", "Extremis", false, 9, 9, 6, 10, "event"],
+    ["AME13", "eventCampaign1", "Extremis", false, 13, 13, 6, 10, "event"],
+    ["AME15", "eventCampaign1", "Extremis", false, 15, 16, 6, 10, "event"],
+    ["AME16", "eventCampaign1", "Extremis", false, 16, 17, 6, 10, "event"],
+    ["AME18", "eventCampaign1", "Extremis", false, 18, 19, 6, 10, "event"],
+    ["AMEC3B", "eventCampaign1", "Extremis", true, 3, 3, 6, 10, "event"],
+    ["AMS05", "eventCampaign1", "Standard", false, 5, 5, 6, 10, "event"],
+    ["AMS07", "eventCampaign1", "Standard", false, 7, 7, 6, 10, "event"],
+    ["AMS08", "eventCampaign1", "Standard", false, 8, 8, 6, 10, "event"],
+    ["AMS09", "eventCampaign1", "Standard", false, 9, 9, 6, 10, "event"],
+    ["AMS13", "eventCampaign1", "Standard", false, 13, 13, 6, 10, "event"],
+    ["AMS15", "eventCampaign1", "Standard", false, 15, 16, 6, 10, "event"],
+    ["AMS18", "eventCampaign1", "Standard", false, 18, 19, 6, 10, "event"],
+    ["AMS23", "eventCampaign1", "Standard", false, 23, 24, 6, 10, "event"],
+    ["AMS26", "eventCampaign1", "Standard", false, 26, 28, 6, 10, "event"],
+    ["AMS27", "eventCampaign1", "Standard", false, 27, 29, 6, 10, "event"],
+    ["AMS28", "eventCampaign1", "Standard", false, 28, 30, 6, 10, "event"],
+    ["AMSC13B", "eventCampaign1", "Standard", true, 13, 14, 6, 10, "event"],
+    ["AMSC3B", "eventCampaign1", "Standard", true, 3, 3, 6, 10, "event"],
+    ["ASE01", "eventCampaign5", "Extremis", false, 1, 0, 6, 10, "event"],
+    ["ASE02", "eventCampaign5", "Extremis", false, 2, 1, 6, 10, "event"],
+    ["ASE03", "eventCampaign5", "Extremis", false, 3, 2, 6, 10, "event"],
+    ["ASE04", "eventCampaign5", "Extremis", false, 4, 4, 6, 10, "event"],
+    ["ASE05", "eventCampaign5", "Extremis", false, 5, 5, 6, 10, "event"],
+    ["ASE09", "eventCampaign5", "Extremis", false, 9, 9, 6, 10, "event"],
+    ["ASE10", "eventCampaign5", "Extremis", false, 10, 10, 6, 10, "event"],
+    ["ASE12", "eventCampaign5", "Extremis", false, 12, 12, 6, 10, "event"],
+    ["ASE13", "eventCampaign5", "Extremis", false, 13, 13, 6, 10, "event"],
+    ["ASE14", "eventCampaign5", "Extremis", false, 14, 15, 6, 10, "event"],
+    ["ASE15", "eventCampaign5", "Extremis", false, 15, 16, 6, 10, "event"],
+    ["ASE16", "eventCampaign5", "Extremis", false, 16, 17, 6, 10, "event"],
+    ["ASE18", "eventCampaign5", "Extremis", false, 18, 19, 6, 10, "event"],
+    ["ASEC3B", "eventCampaign5", "Extremis", true, 3, 3, 6, 10, "event"],
+    ["ASS01", "eventCampaign5", "Standard", false, 1, 0, 6, 10, "event"],
+    ["ASS02", "eventCampaign5", "Standard", false, 2, 1, 6, 10, "event"],
+    ["ASS03", "eventCampaign5", "Standard", false, 3, 2, 6, 10, "event"],
+    ["ASS04", "eventCampaign5", "Standard", false, 4, 4, 6, 10, "event"],
+    ["ASS05", "eventCampaign5", "Standard", false, 5, 5, 6, 10, "event"],
+    ["ASS09", "eventCampaign5", "Standard", false, 9, 9, 6, 10, "event"],
+    ["ASS12", "eventCampaign5", "Standard", false, 12, 12, 6, 10, "event"],
+    ["ASS13", "eventCampaign5", "Standard", false, 13, 13, 6, 10, "event"],
+    ["ASS14", "eventCampaign5", "Standard", false, 14, 15, 6, 10, "event"],
+    ["ASS15", "eventCampaign5", "Standard", false, 15, 16, 6, 10, "event"],
+    ["ASS18", "eventCampaign5", "Standard", false, 18, 19, 6, 10, "event"],
+    ["ASS19", "eventCampaign5", "Standard", false, 19, 20, 6, 10, "event"],
+    ["ASS20", "eventCampaign5", "Standard", false, 20, 21, 6, 10, "event"],
+    ["ASS24", "eventCampaign5", "Standard", false, 24, 25, 6, 10, "event"],
+    ["ASS26", "eventCampaign5", "Standard", false, 26, 28, 6, 10, "event"],
+    ["ASS27", "eventCampaign5", "Standard", false, 27, 29, 6, 10, "event"],
+    ["ASS28", "eventCampaign5", "Standard", false, 28, 30, 6, 10, "event"],
+    ["ASSC13B", "eventCampaign5", "Standard", true, 13, 14, 6, 10, "event"],
+    ["ASSC3B", "eventCampaign5", "Standard", true, 3, 3, 6, 10, "event"],
+    ["DAE01", "eventCampaign6", "Extremis", false, 1, 0, 6, 10, "event"],
+    ["DAE02", "eventCampaign6", "Extremis", false, 2, 1, 6, 10, "event"],
+    ["DAE03", "eventCampaign6", "Extremis", false, 3, 2, 6, 10, "event"],
+    ["DAE05", "eventCampaign6", "Extremis", false, 5, 5, 6, 10, "event"],
+    ["DAE07", "eventCampaign6", "Extremis", false, 7, 7, 6, 10, "event"],
+    ["DAE15", "eventCampaign6", "Extremis", false, 15, 16, 6, 10, "event"],
+    ["DAE18", "eventCampaign6", "Extremis", false, 18, 19, 6, 10, "event"],
+    ["DAS01", "eventCampaign6", "Standard", false, 1, 0, 6, 10, "event"],
+    ["DAS02", "eventCampaign6", "Standard", false, 2, 1, 6, 10, "event"],
+    ["DAS03", "eventCampaign6", "Standard", false, 3, 2, 6, 10, "event"],
+    ["DAS05", "eventCampaign6", "Standard", false, 5, 5, 6, 10, "event"],
+    ["DAS07", "eventCampaign6", "Standard", false, 7, 7, 6, 10, "event"],
+    ["DAS15", "eventCampaign6", "Standard", false, 15, 16, 6, 10, "event"],
+    ["DAS18", "eventCampaign6", "Standard", false, 18, 19, 6, 10, "event"],
+    ["DAS19", "eventCampaign6", "Standard", false, 19, 20, 6, 10, "event"],
+    ["DAS24", "eventCampaign6", "Standard", false, 24, 25, 6, 10, "event"],
+    ["DAS25", "eventCampaign6", "Standard", false, 25, 26, 6, 10, "event"],
+    ["DAS26", "eventCampaign6", "Standard", false, 26, 28, 6, 10, "event"],
+    ["DAS28", "eventCampaign6", "Standard", false, 28, 30, 6, 10, "event"],
+    ["DASC13B", "eventCampaign6", "Standard", true, 13, 14, 6, 10, "event"],
+    ["DASC25B", "eventCampaign6", "Standard", true, 25, 27, 6, 10, "event"],
+    ["DASC3B", "eventCampaign6", "Standard", true, 3, 3, 6, 10, "event"],
+    ["DGE01", "eventCampaign4", "Extremis", false, 1, 0, 6, 10, "event"],
+    ["DGE02", "eventCampaign4", "Extremis", false, 2, 1, 6, 10, "event"],
+    ["DGE03", "eventCampaign4", "Extremis", false, 3, 2, 6, 10, "event"],
+    ["DGE04", "eventCampaign4", "Extremis", false, 4, 4, 6, 10, "event"],
+    ["DGE05", "eventCampaign4", "Extremis", false, 5, 5, 6, 10, "event"],
+    ["DGE07", "eventCampaign4", "Extremis", false, 7, 7, 6, 10, "event"],
+    ["DGE09", "eventCampaign4", "Extremis", false, 9, 9, 6, 10, "event"],
+    ["DGE12", "eventCampaign4", "Extremis", false, 12, 12, 6, 10, "event"],
+    ["DGE13", "eventCampaign4", "Extremis", false, 13, 13, 6, 10, "event"],
+    ["DGE16", "eventCampaign4", "Extremis", false, 16, 17, 6, 10, "event"],
+    ["DGE18", "eventCampaign4", "Extremis", false, 18, 19, 6, 10, "event"],
+    ["DGEC3B", "eventCampaign4", "Extremis", true, 3, 3, 6, 10, "event"],
+    ["DGS01", "eventCampaign4", "Standard", false, 1, 0, 6, 10, "event"],
+    ["DGS02", "eventCampaign4", "Standard", false, 2, 1, 6, 10, "event"],
+    ["DGS03", "eventCampaign4", "Standard", false, 3, 2, 6, 10, "event"],
+    ["DGS04", "eventCampaign4", "Standard", false, 4, 4, 6, 10, "event"],
+    ["DGS05", "eventCampaign4", "Standard", false, 5, 5, 6, 10, "event"],
+    ["DGS07", "eventCampaign4", "Standard", false, 7, 7, 6, 10, "event"],
+    ["DGS09", "eventCampaign4", "Standard", false, 9, 9, 6, 10, "event"],
+    ["DGS13", "eventCampaign4", "Standard", false, 13, 13, 6, 10, "event"],
+    ["DGS19", "eventCampaign4", "Standard", false, 19, 20, 6, 10, "event"],
+    ["DGS20", "eventCampaign4", "Standard", false, 20, 21, 6, 10, "event"],
+    ["DGS27", "eventCampaign4", "Standard", false, 27, 29, 6, 10, "event"],
+    ["DGS28", "eventCampaign4", "Standard", false, 28, 30, 6, 10, "event"],
+    ["FoC02", "campaign2", "Standard", false, 2, 1, 6, 10, "standard"],
+    ["FoC06", "campaign2", "Standard", false, 6, 5, 6, 10, "standard"],
+    ["FoC07", "campaign2", "Standard", false, 7, 6, 6, 10, "standard"],
+    ["FoC08", "campaign2", "Standard", false, 8, 7, 6, 10, "standard"],
+    ["FoC10", "campaign2", "Standard", false, 10, 9, 6, 10, "standard"],
+    ["FoC11", "campaign2", "Standard", false, 11, 10, 6, 10, "standard"],
+    ["FoC12", "campaign2", "Standard", false, 12, 11, 6, 10, "standard"],
+    ["FoC13", "campaign2", "Standard", false, 13, 12, 6, 10, "standard"],
+    ["FoC16", "campaign2", "Standard", false, 16, 15, 6, 10, "standard"],
+    ["FoC17", "campaign2", "Standard", false, 17, 16, 6, 10, "standard"],
+    ["FoC18", "campaign2", "Standard", false, 18, 17, 6, 10, "standard"],
+    ["FoC19", "campaign2", "Standard", false, 19, 18, 6, 10, "standard"],
+    ["FoC23", "campaign2", "Standard", false, 23, 22, 6, 10, "standard"],
+    ["FoC24", "campaign2", "Standard", false, 24, 23, 6, 10, "standard"],
+    ["FoC25", "campaign2", "Standard", false, 25, 24, 6, 10, "standard"],
+    ["FoC26", "campaign2", "Standard", false, 26, 25, 6, 10, "standard"],
+    ["FoC31", "campaign2", "Standard", false, 31, 30, 6, 10, "standard"],
+    ["FoC33", "campaign2", "Standard", false, 33, 32, 6, 10, "standard"],
+    ["FoC40", "campaign2", "Standard", false, 40, 39, 6, 10, "standard"],
+    ["FoC41", "campaign2", "Standard", false, 41, 40, 6, 10, "standard"],
+    ["FoC42", "campaign2", "Standard", false, 42, 41, 6, 10, "standard"],
+    ["FoC44", "campaign2", "Standard", false, 44, 43, 6, 10, "standard"],
+    ["FoC46", "campaign2", "Standard", false, 46, 45, 6, 10, "standard"],
+    ["FoC48", "campaign2", "Standard", false, 48, 47, 6, 10, "standard"],
+    ["FoC51", "campaign2", "Standard", false, 51, 50, 6, 10, "standard"],
+    ["FoC58", "campaign2", "Standard", false, 58, 57, 6, 10, "standard"],
+    ["FoC61", "campaign2", "Standard", false, 61, 60, 6, 10, "standard"],
+    ["FoC64", "campaign2", "Standard", false, 64, 63, 6, 10, "standard"],
+    ["FoC69", "campaign2", "Standard", false, 69, 68, 6, 10, "standard"],
+    ["FoC72", "campaign2", "Standard", false, 72, 71, 6, 10, "standard"],
+    ["FoCE01", "elite2", "Elite", false, 1, 0, 10, 6, "standard"],
+    ["FoCE07", "elite2", "Elite", false, 7, 6, 10, 6, "standard"],
+    ["FoCE13", "elite2", "Elite", false, 13, 12, 10, 6, "standard"],
+    ["FoCE15", "elite2", "Elite", false, 15, 14, 10, 6, "standard"],
+    ["FoCE19", "elite2", "Elite", false, 19, 18, 10, 6, "standard"],
+    ["FoCE25", "elite2", "Elite", false, 25, 24, 10, 6, "standard"],
+    ["FoCE31", "elite2", "Elite", false, 31, 30, 10, 6, "standard"],
+    ["FoCE33", "elite2", "Elite", false, 33, 32, 10, 6, "standard"],
+    ["FoCE35", "elite2", "Elite", false, 35, 34, 10, 6, "standard"],
+    ["FoCM03", "mirror2", "Mirror", false, 3, 2, 6, 10, "standard"],
+    ["FoCM07", "mirror2", "Mirror", false, 7, 6, 6, 10, "standard"],
+    ["FoCM09", "mirror2", "Mirror", false, 9, 8, 6, 10, "standard"],
+    ["FoCM10", "mirror2", "Mirror", false, 10, 9, 6, 10, "standard"],
+    ["FoCM13", "mirror2", "Mirror", false, 13, 12, 6, 10, "standard"],
+    ["FoCM16", "mirror2", "Mirror", false, 16, 15, 6, 10, "standard"],
+    ["FoCM21", "mirror2", "Mirror", false, 21, 20, 6, 10, "standard"],
+    ["FoCM23", "mirror2", "Mirror", false, 23, 22, 6, 10, "standard"],
+    ["FoCM26", "mirror2", "Mirror", false, 26, 25, 6, 10, "standard"],
+    ["FoCM27", "mirror2", "Mirror", false, 27, 26, 6, 10, "standard"],
+    ["FoCM28", "mirror2", "Mirror", false, 28, 27, 6, 10, "standard"],
+    ["FoCM31", "mirror2", "Mirror", false, 31, 30, 6, 10, "standard"],
+    ["FoCM32", "mirror2", "Mirror", false, 32, 31, 6, 10, "standard"],
+    ["FoCM36", "mirror2", "Mirror", false, 36, 35, 6, 10, "standard"],
+    ["FoCM40", "mirror2", "Mirror", false, 40, 39, 6, 10, "standard"],
+    ["FoCM47", "mirror2", "Mirror", false, 47, 46, 6, 10, "standard"],
+    ["FoCM49", "mirror2", "Mirror", false, 49, 48, 6, 10, "standard"],
+    ["FoCM54", "mirror2", "Mirror", false, 54, 53, 6, 10, "standard"],
+    ["FoCM56", "mirror2", "Mirror", false, 56, 55, 6, 10, "standard"],
+    ["FoCM57", "mirror2", "Mirror", false, 57, 56, 6, 10, "standard"],
+    ["FoCM74", "mirror2", "Mirror", false, 74, 73, 6, 10, "standard"],
+    ["FoCME01", "eliteMirror2", "EliteMirror", false, 1, 0, 10, 6, "standard"],
+    ["FoCME09", "eliteMirror2", "EliteMirror", false, 9, 8, 10, 6, "standard"],
+    [
+      "FoCME14",
+      "eliteMirror2",
+      "EliteMirror",
+      false,
+      14,
+      13,
+      10,
+      6,
+      "standard"
+    ],
+    [
+      "FoCME27",
+      "eliteMirror2",
+      "EliteMirror",
+      false,
+      27,
+      26,
+      10,
+      6,
+      "standard"
+    ],
+    ["I19", "campaign1", "Standard", false, 19, 18, 5, 10, "standard"],
+    ["I26", "campaign1", "Standard", false, 26, 25, 5, 10, "standard"],
+    ["I28", "campaign1", "Standard", false, 28, 27, 5, 10, "standard"],
+    ["I32", "campaign1", "Standard", false, 32, 31, 6, 10, "standard"],
+    ["I36", "campaign1", "Standard", false, 36, 35, 6, 10, "standard"],
+    ["I39", "campaign1", "Standard", false, 39, 38, 6, 10, "standard"],
+    ["I40", "campaign1", "Standard", false, 40, 39, 6, 10, "standard"],
+    ["I43", "campaign1", "Standard", false, 43, 42, 6, 10, "standard"],
+    ["I46", "campaign1", "Standard", false, 46, 45, 6, 10, "standard"],
+    ["I49", "campaign1", "Standard", false, 49, 48, 6, 10, "standard"],
+    ["I52", "campaign1", "Standard", false, 52, 51, 6, 10, "standard"],
+    ["I53", "campaign1", "Standard", false, 53, 52, 6, 10, "standard"],
+    ["I54", "campaign1", "Standard", false, 54, 53, 6, 10, "standard"],
+    ["I55", "campaign1", "Standard", false, 55, 54, 6, 10, "standard"],
+    ["I61", "campaign1", "Standard", false, 61, 60, 6, 10, "standard"],
+    ["I62", "campaign1", "Standard", false, 62, 61, 6, 10, "standard"],
+    ["I68", "campaign1", "Standard", false, 68, 67, 6, 10, "standard"],
+    ["I71", "campaign1", "Standard", false, 71, 70, 6, 10, "standard"],
+    ["IE01", "elite1", "Elite", false, 1, 0, 10, 6, "standard"],
+    ["IE02", "elite1", "Elite", false, 2, 1, 10, 6, "standard"],
+    ["IE05", "elite1", "Elite", false, 5, 4, 10, 6, "standard"],
+    ["IE07", "elite1", "Elite", false, 7, 6, 10, 6, "standard"],
+    ["IE09", "elite1", "Elite", false, 9, 8, 10, 6, "standard"],
+    ["IE25", "elite1", "Elite", false, 25, 24, 10, 6, "standard"],
+    ["IE33", "elite1", "Elite", false, 33, 32, 10, 6, "standard"],
+    ["IE34", "elite1", "Elite", false, 34, 33, 10, 6, "standard"],
+    ["IE35", "elite1", "Elite", false, 35, 34, 10, 6, "standard"],
+    ["IE38", "elite1", "Elite", false, 38, 37, 10, 6, "standard"],
+    ["IM02", "mirror1", "Mirror", false, 2, 1, 6, 10, "standard"],
+    ["IM05", "mirror1", "Mirror", false, 5, 4, 6, 10, "standard"],
+    ["IM06", "mirror1", "Mirror", false, 6, 5, 6, 10, "standard"],
+    ["IM07", "mirror1", "Mirror", false, 7, 6, 6, 10, "standard"],
+    ["IM10", "mirror1", "Mirror", false, 10, 9, 6, 10, "standard"],
+    ["IM12", "mirror1", "Mirror", false, 12, 11, 6, 10, "standard"],
+    ["IM14", "mirror1", "Mirror", false, 14, 13, 6, 10, "standard"],
+    ["IM18", "mirror1", "Mirror", false, 18, 17, 6, 10, "standard"],
+    ["IM19", "mirror1", "Mirror", false, 19, 18, 6, 10, "standard"],
+    ["IM20", "mirror1", "Mirror", false, 20, 19, 6, 10, "standard"],
+    ["IM24", "mirror1", "Mirror", false, 24, 23, 6, 10, "standard"],
+    ["IM27", "mirror1", "Mirror", false, 27, 26, 6, 10, "standard"],
+    ["IM28", "mirror1", "Mirror", false, 28, 27, 6, 10, "standard"],
+    ["IM31", "mirror1", "Mirror", false, 31, 30, 6, 10, "standard"],
+    ["IM35", "mirror1", "Mirror", false, 35, 34, 6, 10, "standard"],
+    ["IM44", "mirror1", "Mirror", false, 44, 43, 6, 10, "standard"],
+    ["IM46", "mirror1", "Mirror", false, 46, 45, 6, 10, "standard"],
+    ["IM51", "mirror1", "Mirror", false, 51, 50, 6, 10, "standard"],
+    ["IM52", "mirror1", "Mirror", false, 52, 51, 6, 10, "standard"],
+    ["IM53", "mirror1", "Mirror", false, 53, 52, 6, 10, "standard"],
+    ["IM54", "mirror1", "Mirror", false, 54, 53, 6, 10, "standard"],
+    ["IM57", "mirror1", "Mirror", false, 57, 56, 6, 10, "standard"],
+    ["IM59", "mirror1", "Mirror", false, 59, 58, 6, 10, "standard"],
+    ["IM62", "mirror1", "Mirror", false, 62, 61, 6, 10, "standard"],
+    ["IM64", "mirror1", "Mirror", false, 64, 63, 6, 10, "standard"],
+    ["IME14", "eliteMirror1", "EliteMirror", false, 14, 13, 10, 6, "standard"],
+    ["IME21", "eliteMirror1", "EliteMirror", false, 21, 20, 10, 6, "standard"],
+    ["IME33", "eliteMirror1", "EliteMirror", false, 33, 32, 10, 6, "standard"],
+    ["IME34", "eliteMirror1", "EliteMirror", false, 34, 33, 10, 6, "standard"],
+    ["IME35", "eliteMirror1", "EliteMirror", false, 35, 34, 10, 6, "standard"],
+    ["IME36", "eliteMirror1", "EliteMirror", false, 36, 35, 10, 6, "standard"],
+    ["O03", "campaign3", "Standard", false, 3, 2, 6, 10, "standard"],
+    ["O04", "campaign3", "Standard", false, 4, 3, 6, 10, "standard"],
+    ["O05", "campaign3", "Standard", false, 5, 4, 6, 10, "standard"],
+    ["O06", "campaign3", "Standard", false, 6, 5, 6, 10, "standard"],
+    ["O08", "campaign3", "Standard", false, 8, 7, 6, 10, "standard"],
+    ["O09", "campaign3", "Standard", false, 9, 8, 6, 10, "standard"],
+    ["O11", "campaign3", "Standard", false, 11, 10, 6, 10, "standard"],
+    ["O14", "campaign3", "Standard", false, 14, 13, 6, 10, "standard"],
+    ["O16", "campaign3", "Standard", false, 16, 15, 6, 10, "standard"],
+    ["O20", "campaign3", "Standard", false, 20, 19, 6, 10, "standard"],
+    ["O24", "campaign3", "Standard", false, 24, 23, 6, 10, "standard"],
+    ["O26", "campaign3", "Standard", false, 26, 25, 6, 10, "standard"],
+    ["O27", "campaign3", "Standard", false, 27, 26, 6, 10, "standard"],
+    ["O29", "campaign3", "Standard", false, 29, 28, 6, 10, "standard"],
+    ["O31", "campaign3", "Standard", false, 31, 30, 6, 10, "standard"],
+    ["O33", "campaign3", "Standard", false, 33, 32, 6, 10, "standard"],
+    ["O34", "campaign3", "Standard", false, 34, 33, 6, 10, "standard"],
+    ["O37", "campaign3", "Standard", false, 37, 36, 6, 10, "standard"],
+    ["O40", "campaign3", "Standard", false, 40, 39, 6, 10, "standard"],
+    ["O42", "campaign3", "Standard", false, 42, 41, 6, 10, "standard"],
+    ["O56", "campaign3", "Standard", false, 56, 55, 6, 10, "standard"],
+    ["O57", "campaign3", "Standard", false, 57, 56, 6, 10, "standard"],
+    ["O59", "campaign3", "Standard", false, 59, 58, 6, 10, "standard"],
+    ["O62", "campaign3", "Standard", false, 62, 61, 6, 10, "standard"],
+    ["O64", "campaign3", "Standard", false, 64, 63, 6, 10, "standard"],
+    ["O65", "campaign3", "Standard", false, 65, 64, 6, 10, "standard"],
+    ["O68", "campaign3", "Standard", false, 68, 67, 6, 10, "standard"],
+    ["O69", "campaign3", "Standard", false, 69, 68, 6, 10, "standard"],
+    ["O72", "campaign3", "Standard", false, 72, 71, 6, 10, "standard"],
+    ["O73", "campaign3", "Standard", false, 73, 72, 6, 10, "standard"],
+    ["OE01", "elite3", "Elite", false, 1, 0, 10, 6, "standard"],
+    ["OE05", "elite3", "Elite", false, 5, 4, 10, 6, "standard"],
+    ["OE14", "elite3", "Elite", false, 14, 13, 10, 6, "standard"],
+    ["OE15", "elite3", "Elite", false, 15, 14, 10, 6, "standard"],
+    ["OE21", "elite3", "Elite", false, 21, 20, 10, 6, "standard"],
+    ["OE27", "elite3", "Elite", false, 27, 26, 10, 6, "standard"],
+    ["OE33", "elite3", "Elite", false, 33, 32, 10, 6, "standard"],
+    ["OE35", "elite3", "Elite", false, 35, 34, 10, 6, "standard"],
+    ["OM01", "mirror3", "Mirror", false, 1, 0, 6, 10, "standard"],
+    ["OM02", "mirror3", "Mirror", false, 2, 1, 6, 10, "standard"],
+    ["OM03", "mirror3", "Mirror", false, 3, 2, 6, 10, "standard"],
+    ["OM05", "mirror3", "Mirror", false, 5, 4, 6, 10, "standard"],
+    ["OM06", "mirror3", "Mirror", false, 6, 5, 6, 10, "standard"],
+    ["OM09", "mirror3", "Mirror", false, 9, 8, 6, 10, "standard"],
+    ["OM10", "mirror3", "Mirror", false, 10, 9, 6, 10, "standard"],
+    ["OM11", "mirror3", "Mirror", false, 11, 10, 6, 10, "standard"],
+    ["OM16", "mirror3", "Mirror", false, 16, 15, 6, 10, "standard"],
+    ["OM18", "mirror3", "Mirror", false, 18, 17, 6, 10, "standard"],
+    ["OM19", "mirror3", "Mirror", false, 19, 18, 6, 10, "standard"],
+    ["OM21", "mirror3", "Mirror", false, 21, 20, 6, 10, "standard"],
+    ["OM22", "mirror3", "Mirror", false, 22, 21, 6, 10, "standard"],
+    ["OM24", "mirror3", "Mirror", false, 24, 23, 6, 10, "standard"],
+    ["OM28", "mirror3", "Mirror", false, 28, 27, 6, 10, "standard"],
+    ["OM29", "mirror3", "Mirror", false, 29, 28, 6, 10, "standard"],
+    ["OM31", "mirror3", "Mirror", false, 31, 30, 6, 10, "standard"],
+    ["OM33", "mirror3", "Mirror", false, 33, 32, 6, 10, "standard"],
+    ["OM35", "mirror3", "Mirror", false, 35, 34, 6, 10, "standard"],
+    ["OM37", "mirror3", "Mirror", false, 37, 36, 6, 10, "standard"],
+    ["OM38", "mirror3", "Mirror", false, 38, 37, 6, 10, "standard"],
+    ["OM39", "mirror3", "Mirror", false, 39, 38, 6, 10, "standard"],
+    ["OM40", "mirror3", "Mirror", false, 40, 39, 6, 10, "standard"],
+    ["OM43", "mirror3", "Mirror", false, 43, 42, 6, 10, "standard"],
+    ["OM48", "mirror3", "Mirror", false, 48, 47, 6, 10, "standard"],
+    ["OM49", "mirror3", "Mirror", false, 49, 48, 6, 10, "standard"],
+    ["OM52", "mirror3", "Mirror", false, 52, 51, 6, 10, "standard"],
+    ["OM54", "mirror3", "Mirror", false, 54, 53, 6, 10, "standard"],
+    ["OM58", "mirror3", "Mirror", false, 58, 57, 6, 10, "standard"],
+    ["OM64", "mirror3", "Mirror", false, 64, 63, 6, 10, "standard"],
+    ["OM71", "mirror3", "Mirror", false, 71, 70, 6, 10, "standard"],
+    ["OME01", "eliteMirror3", "EliteMirror", false, 1, 0, 10, 6, "standard"],
+    ["OME05", "eliteMirror3", "EliteMirror", false, 5, 4, 10, 6, "standard"],
+    ["OME09", "eliteMirror3", "EliteMirror", false, 9, 8, 10, 6, "standard"],
+    ["OME11", "eliteMirror3", "EliteMirror", false, 11, 10, 10, 6, "standard"],
+    ["OME13", "eliteMirror3", "EliteMirror", false, 13, 12, 10, 6, "standard"],
+    ["OME14", "eliteMirror3", "EliteMirror", false, 14, 13, 10, 6, "standard"],
+    ["OME18", "eliteMirror3", "EliteMirror", false, 18, 17, 10, 6, "standard"],
+    ["OME19", "eliteMirror3", "EliteMirror", false, 19, 18, 10, 6, "standard"],
+    ["OME21", "eliteMirror3", "EliteMirror", false, 21, 20, 10, 6, "standard"],
+    ["OME23", "eliteMirror3", "EliteMirror", false, 23, 22, 10, 6, "standard"],
+    ["OME27", "eliteMirror3", "EliteMirror", false, 27, 26, 10, 6, "standard"],
+    ["OME29", "eliteMirror3", "EliteMirror", false, 29, 28, 10, 6, "standard"],
+    ["OME33", "eliteMirror3", "EliteMirror", false, 33, 32, 10, 6, "standard"],
+    ["SH02", "campaign4", "Standard", false, 2, 1, 6, 10, "standard"],
+    ["SH04", "campaign4", "Standard", false, 4, 3, 6, 10, "standard"],
+    ["SH05", "campaign4", "Standard", false, 5, 4, 6, 10, "standard"],
+    ["SH09", "campaign4", "Standard", false, 9, 8, 6, 10, "standard"],
+    ["SH16", "campaign4", "Standard", false, 16, 15, 6, 10, "standard"],
+    ["SH18", "campaign4", "Standard", false, 18, 17, 6, 10, "standard"],
+    ["SH21", "campaign4", "Standard", false, 21, 20, 6, 10, "standard"],
+    ["SH23", "campaign4", "Standard", false, 23, 22, 6, 10, "standard"],
+    ["SH24", "campaign4", "Standard", false, 24, 23, 6, 10, "standard"],
+    ["SH25", "campaign4", "Standard", false, 25, 24, 6, 10, "standard"],
+    ["SH29", "campaign4", "Standard", false, 29, 28, 6, 10, "standard"],
+    ["SH33", "campaign4", "Standard", false, 33, 32, 6, 10, "standard"],
+    ["SH35", "campaign4", "Standard", false, 35, 34, 6, 10, "standard"],
+    ["SH38", "campaign4", "Standard", false, 38, 37, 6, 10, "standard"],
+    ["SH48", "campaign4", "Standard", false, 48, 47, 6, 10, "standard"],
+    ["SH49", "campaign4", "Standard", false, 49, 48, 6, 10, "standard"],
+    ["SH50", "campaign4", "Standard", false, 50, 49, 6, 10, "standard"],
+    ["SH54", "campaign4", "Standard", false, 54, 53, 6, 10, "standard"],
+    ["SH62", "campaign4", "Standard", false, 62, 61, 6, 10, "standard"],
+    ["SH69", "campaign4", "Standard", false, 69, 68, 6, 10, "standard"],
+    ["SH73", "campaign4", "Standard", false, 73, 72, 6, 10, "standard"],
+    ["SH74", "campaign4", "Standard", false, 74, 73, 6, 10, "standard"],
+    ["SHE05", "elite4", "Elite", false, 5, 4, 10, 6, "standard"],
+    ["SHE10", "elite4", "Elite", false, 10, 9, 10, 6, "standard"],
+    ["SHE12", "elite4", "Elite", false, 12, 11, 10, 6, "standard"],
+    ["SHE19", "elite4", "Elite", false, 19, 18, 10, 6, "standard"],
+    ["SHE21", "elite4", "Elite", false, 21, 20, 10, 6, "standard"],
+    ["SHE25", "elite4", "Elite", false, 25, 24, 10, 6, "standard"],
+    ["SHE30", "elite4", "Elite", false, 30, 29, 10, 6, "standard"],
+    ["SHM02", "mirror4", "Mirror", false, 2, 1, 6, 10, "standard"],
+    ["SHM05", "mirror4", "Mirror", false, 5, 4, 6, 10, "standard"],
+    ["SHM06", "mirror4", "Mirror", false, 6, 5, 6, 10, "standard"],
+    ["SHM09", "mirror4", "Mirror", false, 9, 8, 6, 10, "standard"],
+    ["SHM11", "mirror4", "Mirror", false, 11, 10, 6, 10, "standard"],
+    ["SHM16", "mirror4", "Mirror", false, 16, 15, 6, 10, "standard"],
+    ["SHM17", "mirror4", "Mirror", false, 17, 16, 6, 10, "standard"],
+    ["SHM18", "mirror4", "Mirror", false, 18, 17, 6, 10, "standard"],
+    ["SHM20", "mirror4", "Mirror", false, 20, 19, 6, 10, "standard"],
+    ["SHM21", "mirror4", "Mirror", false, 21, 20, 6, 10, "standard"],
+    ["SHM25", "mirror4", "Mirror", false, 25, 24, 6, 10, "standard"],
+    ["SHM26", "mirror4", "Mirror", false, 26, 25, 6, 10, "standard"],
+    ["SHM27", "mirror4", "Mirror", false, 27, 26, 6, 10, "standard"],
+    ["SHM37", "mirror4", "Mirror", false, 37, 36, 6, 10, "standard"],
+    ["SHM41", "mirror4", "Mirror", false, 41, 40, 6, 10, "standard"],
+    ["SHM48", "mirror4", "Mirror", false, 48, 47, 6, 10, "standard"],
+    ["SHM51", "mirror4", "Mirror", false, 51, 50, 6, 10, "standard"],
+    ["SHM53", "mirror4", "Mirror", false, 53, 52, 6, 10, "standard"],
+    ["SHM55", "mirror4", "Mirror", false, 55, 54, 6, 10, "standard"],
+    ["SHM56", "mirror4", "Mirror", false, 56, 55, 6, 10, "standard"],
+    ["SHM73", "mirror4", "Mirror", false, 73, 72, 6, 10, "standard"],
+    ["SHME09", "eliteMirror4", "EliteMirror", false, 9, 8, 10, 6, "standard"],
+    ["SHME12", "eliteMirror4", "EliteMirror", false, 12, 11, 10, 6, "standard"],
+    ["SHME19", "eliteMirror4", "EliteMirror", false, 19, 18, 10, 6, "standard"],
+    ["SHME22", "eliteMirror4", "EliteMirror", false, 22, 21, 10, 6, "standard"],
+    ["SHME27", "eliteMirror4", "EliteMirror", false, 27, 26, 10, 6, "standard"],
+    ["SHME28", "eliteMirror4", "EliteMirror", false, 28, 27, 10, 6, "standard"],
+    ["SHME30", "eliteMirror4", "EliteMirror", false, 30, 29, 10, 6, "standard"],
+    ["SHME33", "eliteMirror4", "EliteMirror", false, 33, 32, 10, 6, "standard"],
+    ["TAE03", "eventCampaign3", "Extremis", false, 3, 2, 6, 10, "event"],
+    ["TAE09", "eventCampaign3", "Extremis", false, 9, 9, 6, 10, "event"],
+    ["TAE15", "eventCampaign3", "Extremis", false, 15, 16, 6, 10, "event"],
+    ["TAE16", "eventCampaign3", "Extremis", false, 16, 17, 6, 10, "event"],
+    ["TAS03", "eventCampaign3", "Standard", false, 3, 2, 6, 10, "event"],
+    ["TAS09", "eventCampaign3", "Standard", false, 9, 9, 6, 10, "event"],
+    ["TAS18", "eventCampaign3", "Standard", false, 18, 19, 6, 10, "event"],
+    ["TAS23", "eventCampaign3", "Standard", false, 23, 24, 6, 10, "event"],
+    ["TAS24", "eventCampaign3", "Standard", false, 24, 25, 6, 10, "event"],
+    ["TAS26", "eventCampaign3", "Standard", false, 26, 28, 6, 10, "event"],
+    ["TAS27", "eventCampaign3", "Standard", false, 27, 29, 6, 10, "event"],
+    ["TASC13B", "eventCampaign3", "Standard", true, 13, 14, 6, 10, "event"],
+    ["TE02", "eventCampaign2", "Extremis", false, 2, 1, 6, 10, "event"],
+    ["TE09", "eventCampaign2", "Extremis", false, 9, 9, 6, 10, "event"],
+    ["TE10", "eventCampaign2", "Extremis", false, 10, 10, 6, 10, "event"],
+    ["TE14", "eventCampaign2", "Extremis", false, 14, 15, 6, 10, "event"],
+    ["TE18", "eventCampaign2", "Extremis", false, 18, 19, 6, 10, "event"],
+    ["TS02", "eventCampaign2", "Standard", false, 2, 1, 6, 10, "event"],
+    ["TS09", "eventCampaign2", "Standard", false, 9, 9, 6, 10, "event"],
+    ["TS12", "eventCampaign2", "Standard", false, 12, 12, 6, 10, "event"],
+    ["TS14", "eventCampaign2", "Standard", false, 14, 15, 6, 10, "event"],
+    ["TS24", "eventCampaign2", "Standard", false, 24, 25, 6, 10, "event"],
+    ["TS28", "eventCampaign2", "Standard", false, 28, 30, 6, 10, "event"]
+  ]
+}

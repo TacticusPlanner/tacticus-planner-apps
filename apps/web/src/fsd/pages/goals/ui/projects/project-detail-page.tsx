@@ -18,6 +18,7 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 import { useProjects } from "@/entities/project"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   goalQueries,
   isGoalGroupValue,
@@ -107,6 +108,7 @@ export function ProjectDetailPage() {
   const { result: insights } = usePlanInsights(
     projectGoals.goals.map((entry) => entry.goal.goalId)
   )
+  const { settings: planningSettings } = usePlanningSettings()
 
   // Rows carry their goal's full membership, not just this project's: the row menu's project
   // removal needs to know whether leaving this project is the goal's last membership.
@@ -125,7 +127,6 @@ export function ProjectDetailPage() {
   const accountGoalTotal = accountGoalsQuery.data?.goals.length
   // Project detail always shows every goal type (fix-project-priority-display) - there is no Type
   // filter to narrow this by, unlike Goals Overview.
-  const filteredAllRows = allRows
   const filteredNonArchivedRows = nonArchivedRows
   const attainmentByGoalId = useGoalAttainment(
     nonArchivedRows.map((row) => row.goalId)
@@ -163,22 +164,34 @@ export function ProjectDetailPage() {
   // full non-archived candidate set instead, then filters afterward (see the comment on
   // `GoalStatusFilterCounts` for why this tab has no live count in the dropdown).
   const candidateRows =
-    tab === "archived"
-      ? filteredAllRows.filter((row) => row.status === "Archived")
-      : tab === "active"
-        ? filteredNonArchivedRows.filter((row) => row.status === "Active")
-        : tab === "paused"
-          ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
-          : tab === "blocked"
-            ? filteredNonArchivedRows
-            : filteredNonArchivedRows.filter(
-                (row) => isReached(row.goalId) === (tab === "reached")
-              )
+    tab === "active"
+      ? filteredNonArchivedRows.filter((row) => row.status === "Active")
+      : tab === "paused"
+        ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
+        : tab === "blocked"
+          ? filteredNonArchivedRows
+          : filteredNonArchivedRows.filter(
+              (row) => isReached(row.goalId) === (tab === "reached")
+            )
   const overviewMetrics = useGoalsOverviewMetrics(
     candidateRows.map((row) => row.goalId),
     insights.estimates,
-    insights.rankSlotsByGoalId
+    insights.rankSlotsByGoalId,
+    insights.abilityMaterialsByGoalId,
+    insights.planNetByGoalId
   )
+  // Farming guidance is always a preview here (surface-goal-farming-guidance): Dailies plans across
+  // every goal in the global order by default, and even when the user has separately narrowed
+  // Dailies' own project filter to this same project, that filter is session-local UI state
+  // (`DailiesLayout`) this route has no way to observe — so this project's guidance can never be
+  // asserted to match what Dailies currently shows, only ever offered as a preview of it.
+  const outstandingMaterialCount = new Set(
+    nonArchivedRows.flatMap((row) => {
+      const remaining = overviewMetrics.get(row.goalId)?.remaining
+      if (!remaining || remaining.coveredByEarlierGoal) return []
+      return remaining.upgrades.map((need) => need.id)
+    })
+  ).size
   // Unit count for the summary text ("N units, M goals") - not a full per-unit plan anymore, since
   // priority is flat per-goal, not unit-grouped (add-inline-goal-reprioritize).
   const inFlightRows = allRows.filter((row) => isInFlightStatus(row.status))
@@ -214,7 +227,6 @@ export function ProjectDetailPage() {
       .length,
     reached: filteredNonArchivedRows.filter((row) => isReached(row.goalId))
       .length,
-    archived: filteredAllRows.filter((row) => row.status === "Archived").length,
     active: filteredNonArchivedRows.filter((row) => row.status === "Active")
       .length,
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
@@ -297,6 +309,25 @@ export function ProjectDetailPage() {
         statusFilterCounts={counts}
       />
 
+      <section
+        className="flex flex-wrap items-center gap-2 text-sm"
+        data-testid="project-detail-farming-guidance"
+      >
+        <span className="font-medium">
+          {t("goals.detail.projectGuidanceTitle")}
+        </span>
+        <span className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground">
+          {t("goals.detail.projectGuidancePreview")}
+        </span>
+        <span className="text-muted-foreground">
+          {outstandingMaterialCount > 0
+            ? t("goals.detail.projectGuidanceSummary", {
+                count: outstandingMaterialCount,
+              })
+            : t("goals.detail.projectGuidanceNone")}
+        </span>
+      </section>
+
       {inFlightRows.length > 1 ? (
         <p
           className="text-sm text-muted-foreground"
@@ -330,6 +361,8 @@ export function ProjectDetailPage() {
           }
           estimates={insights.estimates}
           getEntityName={getEntityName}
+          levelChargedXp={insights.levelChargedXpByGoalId}
+          levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
           loading={projectGoals.loading}
           metrics={overviewMetrics}
           mobileReorderActive={reorderActive}
@@ -342,6 +375,7 @@ export function ProjectDetailPage() {
           levelPotentialProgress={insights.levelPotentialProgressByGoalId}
           reorderPending={orderActions.pending}
           rowGroups={rowGroups}
+          xpBookRarity={planningSettings.xpBookRarity}
         />
       </div>
       {isMobile && reorderActive ? (
@@ -372,6 +406,21 @@ export function ProjectDetailPage() {
         levelPotentialRatio={
           detailGoalId
             ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
+            : undefined
+        }
+        levelChargedXp={
+          detailGoalId
+            ? insights.levelChargedXpByGoalId.get(detailGoalId)
+            : undefined
+        }
+        levelPoolXpAvailable={
+          detailGoalId
+            ? insights.levelPoolXpAvailableByGoalId.get(detailGoalId)
+            : undefined
+        }
+        rankSlotAllocation={
+          detailGoalId
+            ? insights.rankSlotsByGoalId.get(detailGoalId)
             : undefined
         }
         potentialRatio={

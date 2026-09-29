@@ -81,8 +81,23 @@ vi.mock("@/entities/player-data-override", () => ({
 
 vi.mock("@/entities/planning-setting", () => ({
   dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+  xpBookRarityOptions: [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Epic",
+    "Legendary",
+    "Mythic",
+  ],
+  normalizeXpBookRarity: (rarity: string | null | undefined) =>
+    rarity &&
+    ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
+      rarity
+    )
+      ? rarity
+      : "Legendary",
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: vi.fn(),
   }),
 }))
@@ -208,6 +223,7 @@ const battles = [
     type: "Standard",
     challenge: false,
     nodeNumber: 1,
+    battleIndex: 0,
     energyCost: 10,
     dailyAttempts: 10,
   },
@@ -217,6 +233,7 @@ const battles = [
     type: "Extremis",
     challenge: false,
     nodeNumber: 28,
+    battleIndex: 27,
     energyCost: 15,
     dailyAttempts: 10,
   },
@@ -275,6 +292,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   // Y in the Unlock card's "X out of Y shards required to unlock at R" — 30 total for Common.
   getUnlockShardCostsMap: () =>
     new Map([["Common", { rarity: "Common", shards: 30 }]]),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
   getOnslaughtRewards: () => [],
   getEquipmentMap: () => Promise.resolve(equipmentItems),
   // No shop currently offers any unit's shards by default — the acquisition-source picker's
@@ -294,6 +313,19 @@ const getPlayerCharacters = vi.fn(() => Promise.resolve([]))
 const getPlayerMows = vi.fn(() => Promise.resolve([]))
 
 vi.mock("@workspace/player-data/queries", () => ({
+  // Every fixture node is unlocked (goal farming only considers unlocked campaign nodes).
+  getCampaignProgress: vi.fn(async () => [
+    {
+      tacticusCampaignId: "campaign1",
+      type: "Standard",
+      highestCompletedBattleIndex: 99,
+    },
+    {
+      tacticusCampaignId: "CGM",
+      type: "Extremis",
+      highestCompletedBattleIndex: 99,
+    },
+  ]),
   getPlayerCharacter: (...args: unknown[]) => getPlayerCharacter(...args),
   getPlayerMow: (...args: unknown[]) => getPlayerMow(...args),
   getPlayerCharacters: () => getPlayerCharacters(),
@@ -301,6 +333,7 @@ vi.mock("@workspace/player-data/queries", () => ({
   getInventoryUpgrades: (...args: unknown[]) => getInventoryUpgrades(...args),
   getInventoryXpBooks: () => getInventoryXpBooks(),
   getPlayerInventoryItems: () => getPlayerInventoryItems(),
+  getInventoryAbilityMaterials: () => undefined,
   getInventoryShard: (...args: unknown[]) => getInventoryShard(...args),
   getLiveProgress: () => undefined,
 }))

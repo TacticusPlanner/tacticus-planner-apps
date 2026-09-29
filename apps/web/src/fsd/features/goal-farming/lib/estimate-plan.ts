@@ -21,6 +21,7 @@ import {
   selectFarmNodes,
   spendDay,
 } from "./estimate"
+import { onslaughtTokensFromSupply } from "./shop-supply"
 
 const MAX_DAYS = 1000
 const UNUSED_ENERGY_THRESHOLD = 60
@@ -211,6 +212,10 @@ function runPlanSchedule(
           flatSupplyTotal: flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
           flatSupplyBySupplier:
             flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+          onslaughtTokens: onslaughtTokensFromSupply(
+            flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+            goal.flatSuppliers
+          ),
         })
         pending.delete(goal.goalId)
       }

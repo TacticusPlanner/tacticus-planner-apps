@@ -131,6 +131,7 @@ export function useCreateGoalForm({
     currentLevel: playerCharacter?.xpLevel,
     currentXp: playerCharacter?.xp,
     inventoryXpBooks,
+    rarity: planningSettings.xpBookRarity,
   })
 
   const upgradeFields = useUpgradeFields({
@@ -385,6 +386,7 @@ export function useCreateGoalForm({
     ...ascensionFields.state,
     ...abilityFields.state,
     levelRequirements,
+    xpBookRarity: planningSettings.xpBookRarity,
     farmingStrategy,
     setFarmingStrategy,
     ...upgradeFields.state,

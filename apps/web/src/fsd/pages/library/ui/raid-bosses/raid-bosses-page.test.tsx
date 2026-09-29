@@ -463,7 +463,28 @@ describe("RaidBossesPage", () => {
     renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
-    expect(screen.getByTestId("raid-boss-list-bosses")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-boss-mobile-picker")).toBeInTheDocument()
+  })
+
+  it("selects an entity from the mobile picker and shows its detail", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    getRaidBossesMock.mockResolvedValue(payload)
+    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+
+    await screen.findByTestId("raid-boss-detail")
+    fireEvent.click(screen.getByTestId("raid-boss-mobile-picker"))
+    fireEvent.change(
+      screen.getByPlaceholderText("raidBosses.pickerPlaceholder"),
+      { target: { value: "Warrior" } }
+    )
+    fireEvent.click(await screen.findByRole("option"))
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/library/raid-bosses/GuildBoss1MiniBoss1Warrior"
+      )
+    )
+    await screen.findByTestId("raid-boss-detail")
   })
 
   it("switches to Season Config and keeps its selected season in the shareable URL", async () => {

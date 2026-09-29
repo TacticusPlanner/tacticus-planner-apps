@@ -137,15 +137,19 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
   getOnslaughtRewards: () => [],
   getShops: () => [],
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignProgress: vi.fn(async () => []),
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
   getInventoryUpgrades: () => undefined,
   getInventoryOrbs: () => undefined,
+  getInventoryAbilityMaterials: () => Promise.resolve(undefined),
   getInventoryXpBooks: () => undefined,
   getInventoryShard: () => Promise.resolve(undefined),
   getLiveProgress: () => undefined,

@@ -13,13 +13,9 @@ import type { GoalRow } from "../shared/types"
 /**
  * Reordering on the Goals page: turns a drop on the visible (filtered and/or grouped) list into the
  * single move the API takes, resolved against the complete in-flight order so hidden goals keep their
- * relative order, plus the mobile reorder mode. `available` is false when the shown status cannot
- * hold in-flight goals (Archived) or there is nothing to reorder.
+ * relative order, plus the mobile reorder mode. Not available when there is nothing to reorder.
  */
-export function useGoalsPageReorder(
-  allRows: readonly GoalRow[],
-  available: boolean
-) {
+export function useGoalsPageReorder(allRows: readonly GoalRow[]) {
   const orderActions = useGoalOrderActions()
   const {
     active,
@@ -35,8 +31,8 @@ export function useGoalsPageReorder(
         .map((row) => row.goalId),
     [allRows]
   )
-  const reorderAvailable = available && fullInFlightIds.length > 1
-  // Leaving the list that can be reordered (Archived tab, fewer than two in-flight goals) ends the
+  const reorderAvailable = fullInFlightIds.length > 1
+  // Leaving the list that can be reordered (fewer than two in-flight goals) ends the
   // mode, so the mobile Done bar is never left pinned over a list that has no handles.
   useEffect(() => {
     if (!reorderAvailable) exitReorder()

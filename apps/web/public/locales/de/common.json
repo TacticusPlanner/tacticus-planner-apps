@@ -385,8 +385,10 @@
     "planningSettings": {
       "button": "Planungseinstellungen",
       "title": "Planungseinstellungen",
-      "description": "Wähle das tägliche Energiebudget, das für Zielschätzungen verwendet wird.",
+      "description": "Wähle das tägliche Energiebudget, das für die tägliche Raid-Planung und für umfassendere Zielschätzungen verwendet wird.",
       "dailyEnergy": "Energie pro Tag",
+      "xpBookRarity": "XP-Buch-Seltenheit",
+      "xpBookRarityHint": "Die Anforderungen zum Levelaufstieg zeigen die zusätzliche Buchanzahl in dieser Seltenheit.",
       "save": "Einstellungen speichern",
       "cancel": "Abbrechen",
       "error": "Die Planungseinstellungen konnten nicht gespeichert werden."
@@ -463,13 +465,13 @@
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
       "toReach": "Unerfüllt",
       "reached": "Erreicht",
-      "archived": "Archiviert",
       "blocked": "Blockiert",
       "active": "Aktiv",
       "paused": "Pausiert"
     },
     "columns": {
       "entity": "Charakter",
+      "projects": "Projekte",
       "goal": "Ziel",
       "progress": "Fortschritt",
       "remaining": "Verbleibend",
@@ -484,7 +486,8 @@
       "Active": "Aktiv",
       "Paused": "Pausiert",
       "Completed": "Abgeschlossen",
-      "Archived": "Archiviert"
+      "Archived": "Archiviert",
+      "Reached": "Erreicht"
     },
     "blocked": {
       "label": "Blockiert",
@@ -504,8 +507,6 @@
       "openMenu": "Zielaktionen öffnen",
       "pause": "Pausieren",
       "resume": "Fortsetzen",
-      "archive": "Archivieren",
-      "unarchive": "Aus Archiv wiederherstellen",
       "delete": "Löschen",
       "moveUp": "Nach oben verschieben",
       "moveDown": "Nach unten verschieben"
@@ -694,7 +695,8 @@
       },
       "level": {
         "current": "Aktuelle Stufe",
-        "booksNeeded": "≈ {{count}} legendäre XP-Bücher",
+        "booksNeeded_one": "≈ {{count}} {{rarity}}-XP-Buch",
+        "booksNeeded_other": "≈ {{count}} {{rarity}}-XP-Bücher",
         "goldToApply": "≈ {{gold}} Gold zum Anwenden"
       },
       "farmingStrategy": {
@@ -843,10 +845,51 @@
       "shardsDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
       "farmingInvalid": "Jede benötigte Ressource muss von mindestens einem gewählten Knoten verfügbar sein.",
       "none": "Keine",
-      "projectsActivationNote": "Die Zuordnung ändert nur, welche Projekte dieses Ziel enthalten. Pausieren oder Fortsetzen ist eine eigene Aktion am Ziel selbst."
+      "projectsActivationNote": "Die Zuordnung ändert nur, welche Projekte dieses Ziel enthalten. Pausieren oder Fortsetzen ist eine eigene Aktion am Ziel selbst.",
+      "farmingGuidanceTitle": "Farming-Hinweise",
+      "farmingGuidanceEligible_one": "{{count}} jetzt farmbarer Ort",
+      "farmingGuidanceEligible_other": "{{count}} jetzt farmbare Orte",
+      "farmingGuidanceLink": "Tägliche Raids öffnen",
+      "farmingGuidanceCovered": "Durch ein früheres Ziel abgedeckt — nichts Eigenes zu farmen.",
+      "projectGuidanceTitle": "Farming-Hinweise",
+      "projectGuidancePreview": "Vorschau — nicht der heutige Dailies-Zeitplan",
+      "projectGuidanceSummary_one": "{{count}} Material wird für die Ziele dieses Projekts noch benötigt.",
+      "projectGuidanceSummary_other": "{{count}} Materialien werden für die Ziele dieses Projekts noch benötigt.",
+      "projectGuidanceNone": "Für dieses Projekt gibt es nichts mehr zu farmen."
+    },
+    "resourceChips": {
+      "energy": "Energie",
+      "onslaughtTokens": "Onslaught-Token",
+      "shards": "Scherben",
+      "mythicShards": "Mythische Scherben",
+      "gold": "Gold",
+      "components": "Kriegsmaschinen-Komponenten",
+      "orbs": "{{rarity}} Orbs",
+      "abilityBadges": "{{rarity}} Fähigkeitsabzeichen",
+      "forgeBadges": "{{rarity}} Schmiedeabzeichen",
+      "xpBooks": "{{rarity}} EP-Bücher",
+      "xpBooksValue": "{{available}} von {{needed}}",
+      "chipLabel": "{{name}}: {{quantity}}",
+      "poolLabel": "{{name}}: {{available}} von {{needed}}",
+      "standalone": "Einzeln: {{slots}} Upgrade-Slots, {{energy}} Energie",
+      "rarity": {
+        "Common": "Gewöhnlich",
+        "Uncommon": "Ungewöhnlich",
+        "Rare": "Selten",
+        "Epic": "Episch",
+        "Legendary": "Legendär",
+        "Mythic": "Mythisch"
+      }
     },
     "overview": {
       "levelProgress": "Stufe {{current}} → {{target}}",
+      "ownedOfRequired": "{{owned}} / {{required}}",
+      "abilityTrack": {
+        "active": "Aktiv",
+        "passive": "Passiv",
+        "primary": "Primär",
+        "secondary": "Sekundär"
+      },
       "progressLabel": "Zielfortschritt",
       "actualProgress": "Tatsächlicher Fortschritt",
       "actualProgressDescription": "Der tatsächliche Fortschritt spiegelt den aktuell synchronisierten, im Besitz befindlichen Stand deines Accounts wider.",
@@ -862,9 +905,7 @@
       },
       "remainingText": {
         "levels": "{{count}} Stufen",
-        "levelsWithXp": "{{count}} Stufen · {{xp}} EP",
-        "rank": "{{slots}} Slots",
-        "rankWithEnergy": "{{slots}} Slots · {{energy}} Energie",
+        "rankEnergy": "{{energy}} Energie",
         "coveredByEarlierGoal": "Durch ein früheres Ziel abgedeckt",
         "shards": "{{count}} Scherben"
       },
@@ -1054,7 +1095,7 @@
         },
         "statusFilter": {
           "title": "Nach Status filtern",
-          "content": "Wechsle zwischen unerfüllten, erreichten und archivierten Zielen."
+          "content": "Filtere Ziele nach unerfüllt, erreicht, blockiert, aktiv oder pausiert."
         },
         "filters": {
           "title": "Typ und Gruppierung",
@@ -1078,7 +1119,7 @@
         },
         "list": {
           "title": "Deine Ziele",
-          "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte und archivierte. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
+          "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
         }
       }
     },

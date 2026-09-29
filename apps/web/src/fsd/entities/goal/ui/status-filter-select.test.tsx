@@ -11,7 +11,6 @@ import { StatusFilterSelect } from "./status-filter-select"
 const baseCounts = {
   toReach: 2,
   reached: 0,
-  archived: 1,
   active: 2,
   paused: 0,
 }
@@ -36,8 +35,8 @@ describe("StatusFilterSelect", () => {
       screen.getByRole("option", { name: "goals.tabs.reached (0)" })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole("option", { name: "goals.tabs.archived (1)" })
-    ).toBeInTheDocument()
+      screen.queryByRole("option", { name: /goals\.tabs\.archived/ })
+    ).not.toBeInTheDocument()
     expect(
       screen.getByRole("option", { name: "goals.tabs.active (2)" })
     ).toBeInTheDocument()
@@ -141,7 +140,6 @@ describe("StatusFilterSelect", () => {
         counts={{
           toReach: 0,
           reached: 0,
-          archived: 0,
           active: 0,
           paused: 0,
         }}

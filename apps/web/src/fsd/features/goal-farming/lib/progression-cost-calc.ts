@@ -8,6 +8,7 @@ import {
   type Rarity,
 } from "@workspace/game-domain"
 
+import type { AbilityMaterials } from "./ability-materials"
 import {
   shardResourceId,
   type ShardResourceId,
@@ -41,6 +42,19 @@ export type ResourceNeed = {
    *  slot this goal would need, so it adds no work of its own (it stays uncompleted until synced
    *  progression reaches its target). */
   coveredByEarlierGoal?: boolean
+  /** Ability goals only: gold, ability badges, forge badges and components still needed, summed from
+   *  the catalog's per-level cost ladders. Absent for other goal kinds, and for an Ability goal whose
+   *  ladder is not loaded or that has nothing left to raise. */
+  abilityMaterials?: AbilityMaterials
+  /** Rank goals in a shared plan only: gold to apply the level-up books the goal still needs (V1's
+   *  Rank "Gold"); never netted against inventory. */
+  levelGold?: number
+  /** Rank goals partly covered by a higher-priority goal for the same unit: what the goal would cost
+   *  alone (upgrade slots and estimated energy), shown as a tooltip beside the plan-aware figures. */
+  standalone?: { slots: number; energy: number }
+  /** The unit's alliance, which picks the ability-badge, component and orb art. Set by the overview
+   *  metrics from the catalog. */
+  alliance?: string
 }
 
 /** Whether a unit's *current* progression is already in the Mythic tier — the point at which

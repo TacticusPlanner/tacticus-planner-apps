@@ -26,6 +26,11 @@ function useSharedSteps() {
         title: t("raidBosses.tour.steps.primes.title"),
         content: t("raidBosses.tour.steps.primes.content"),
       } satisfies Step,
+      mobilePicker: {
+        target: '[data-testid="raid-boss-mobile-picker"]',
+        title: t("raidBosses.tour.steps.mobilePicker.title"),
+        content: t("raidBosses.tour.steps.mobilePicker.content"),
+      } satisfies Step,
       progression: {
         target: '[data-testid="raid-boss-progression"]',
         title: t("raidBosses.tour.steps.progression.title"),
@@ -84,6 +89,7 @@ export function useRaidBossesTutorial(
     tabs,
     bosses,
     primes,
+    mobilePicker,
     progression,
     primeModifiers,
     adjustedStats,
@@ -120,8 +126,7 @@ export function useRaidBossesTutorial(
       ],
       mobile: [
         { ...tabs, placement: "bottom" },
-        { ...bosses, placement: "bottom" },
-        { ...primes, placement: "bottom" },
+        { ...mobilePicker, placement: "bottom" },
         { ...progression, placement: "bottom" },
         { ...primeModifiers, placement: "top" },
         { ...adjustedStats, placement: "top" },
@@ -131,6 +136,7 @@ export function useRaidBossesTutorial(
     adjustedStats,
     bosses,
     hasEntityDetail,
+    mobilePicker,
     primeModifiers,
     primes,
     progression,

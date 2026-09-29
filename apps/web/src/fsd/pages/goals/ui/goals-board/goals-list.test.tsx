@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -55,6 +55,10 @@ const mows = new Map([
   ["mow1", { id: "mow1", name: "Stormbird", faction: "Ultramarines" }],
 ])
 
+vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignProgress: () => [],
+}))
+
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
   getMowsMap: () => mows,
@@ -63,6 +67,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
 }))
 
 import type { GoalRow } from "../../model/shared/types"
@@ -231,10 +237,15 @@ describe("GoalsList", () => {
     expect(
       screen.getByTestId("goal-progress-bar-potential-fill")
     ).toBeInTheDocument()
-    // The desktop Remaining column shows the same formatted text as the info popover.
-    expect(screen.getByTestId("goal-remaining-column")).toHaveTextContent(
-      "goals.overview.remainingText.rankWithEnergy"
-    )
+    // The desktop Remaining column shows icon chips (energy here), not the prose sentence.
+    const remainingColumn = screen.getByTestId("goal-remaining-column")
+    expect(remainingColumn).toHaveTextContent("50")
+    expect(remainingColumn).not.toHaveTextContent("slots")
+    expect(
+      within(remainingColumn).getByRole("img", {
+        name: /goals.resourceChips.chipLabel/,
+      })
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("goal-progress-info-trigger"))
     const explanation = screen.getByTestId("goal-progress-explanation")
@@ -281,23 +292,33 @@ describe("GoalsList", () => {
       render(
         <GoalsList
           actions={stubActions}
+          levelChargedXp={new Map([["goal-1", 12_200]])}
+          levelPoolXpAvailable={new Map([["goal-1", 100_000]])}
           levelPotentialProgress={new Map([["goal-1", 1]])}
           metrics={metrics as never}
           reorderEnabled={false}
           rows={rows}
+          xpBookRarity="Legendary"
         />
       )
 
       // Only goal-1 (the one below its level) shows the requirement; goal-2 has none.
-      expect(
-        await screen.findAllByTestId("level-requirement-target")
-      ).toHaveLength(1)
+      const lines = await screen.findAllByTestId("level-requirement-line")
+      expect(lines).toHaveLength(1)
       expect(screen.getAllByTestId("level-requirement-progress")).toHaveLength(
         1
       )
-      expect(screen.getAllByTestId("level-requirement-remaining")).toHaveLength(
-        1
-      )
+      // The level target and the book figure (100,000 XP pool / 12,500 per Legendary book = 8
+      // available, 12,200 charged XP = 1 needed) share the one line, once each.
+      expect(lines[0]).toHaveTextContent("goals.overview.levelProgress")
+      expect(screen.getAllByTestId("level-requirement-books")).toHaveLength(1)
+      expect(lines[0]).toHaveTextContent("goals.resourceChips.xpBooksValue")
+      // Nothing about the requirement in the Remaining chips or Goal cell.
+      expect(
+        screen.queryAllByTestId("level-requirement-remaining")
+      ).toHaveLength(0)
+      expect(screen.queryAllByTestId("goal-resource-chip")).toHaveLength(0)
+      expect(lines[0]).not.toHaveTextContent("remainingText.levels")
       expect(screen.queryAllByTestId("level-goal-sub-target")).toHaveLength(0)
       // Ordinary progress, never a restriction.
       expect(screen.queryAllByTestId("goal-restricted-indicator")).toHaveLength(
@@ -390,12 +411,12 @@ describe("GoalsList", () => {
         "goals.columns.priority 3",
         "goals.columns.priority 5",
       ])
-      // The number sits in the same leading cell as the drag handle, not in a seventh column.
+      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Progress, Remaining, Status, Actions).
       const cell = screen.getAllByTestId("goal-row-priority")[0]!.closest("td")!
       expect(cell).toContainElement(
         screen.getAllByTestId("goal-row-drag-handle")[0]!
       )
-      expect(screen.getAllByRole("columnheader")).toHaveLength(7)
+      expect(screen.getAllByRole("columnheader")).toHaveLength(8)
     })
 
     it("shows the number for a Paused row and none for Reached, Completed, Archived or position-less rows", async () => {
@@ -498,5 +519,298 @@ describe("GoalsList", () => {
       expect(row.className).not.toMatch(/opacity/)
       expect(row).toHaveClass("data-[dragging]:bg-card")
     })
+  })
+})
+
+describe("GoalsList reached rows and column layout", () => {
+  beforeEach(() => useIsMobileMock.mockReturnValue(false))
+
+  const rankMetrics = (goalId: string) =>
+    new Map([
+      [
+        goalId,
+        {
+          progress: {
+            kind: "Rank",
+            current: "Stone1",
+            target: "Iron1",
+            ratio: 0.25,
+            reachableRatio: null,
+            targetSlots: 3,
+          },
+          remaining: null,
+          blockers: { isBlocked: false, reasons: [] },
+        },
+      ],
+    ]) as never
+  const estimates = new Map([
+    ["goal-1", { days: 5, date: "2026-01-06", energyTotal: 50, raidsTotal: 5 }],
+  ])
+
+  it.each([
+    ["desktop", false],
+    ["mobile", true],
+  ])(
+    "shows no XP-book chip on a reached goal on %s",
+    async (_layout, mobile) => {
+      useIsMobileMock.mockReturnValue(mobile)
+      render(
+        <GoalsList
+          actions={stubActions}
+          levelChargedXp={new Map([["goal-1", 12_200]])}
+          levelPoolXpAvailable={new Map([["goal-1", 100_000]])}
+          metrics={rankMetrics("goal-1")}
+          reachedByGoalId={new Map([["goal-1", true]])}
+          reorderEnabled={false}
+          rows={[rows[0]!]}
+          xpBookRarity="Legendary"
+        />
+      )
+
+      await screen.findByTestId("goal-row")
+      expect(screen.queryByTestId("goal-resource-chips")).toBeNull()
+    }
+  )
+
+  it.each([
+    ["desktop", false],
+    ["mobile", true],
+  ])(
+    "renders a reached Paused goal as a completed %s row with dashes and no pause/resume",
+    async (_layout, mobile) => {
+      useIsMobileMock.mockReturnValue(mobile)
+      const paused: GoalRow = { ...rows[0]!, status: "Paused" }
+      render(
+        <GoalsList
+          actions={stubActions}
+          estimates={estimates}
+          metrics={rankMetrics("goal-1")}
+          reachedByGoalId={new Map([["goal-1", true]])}
+          reorderEnabled={false}
+          rows={[paused]}
+        />
+      )
+
+      const row = await screen.findByTestId("goal-row")
+      expect(row).toHaveClass("bg-success")
+      expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
+        "goals.status.Reached"
+      )
+      expect(screen.queryByText("goals.status.Paused")).toBeNull()
+      expect(screen.queryByTestId("goal-progress")).toBeNull()
+      expect(screen.queryByTestId("goal-row-estimate")).toBeNull()
+      expect(screen.queryByTestId("goal-remaining-column")).toBeNull()
+      expect(screen.getAllByTestId("goal-reached-dash").length).toBeGreaterThan(
+        0
+      )
+      expect(screen.queryByTestId("goal-row-resume-goal-1")).toBeNull()
+      expect(stubActions.setStatus).not.toHaveBeenCalled()
+      // The Goal cell/line renders as for any other goal.
+      expect(screen.getByAltText("Iron1")).toBeInTheDocument()
+    }
+  )
+
+  it("shows dashes for progress, remaining and done-by in the three desktop cells of a reached row", async () => {
+    render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates}
+        metrics={rankMetrics("goal-1")}
+        reachedByGoalId={new Map([["goal-1", true]])}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+    await screen.findByTestId("goal-row")
+    expect(screen.getAllByTestId("goal-reached-dash")).toHaveLength(3)
+  })
+
+  it("leaves a not-reached row untinted with its own status and progress", async () => {
+    render(
+      <GoalsList
+        actions={stubActions}
+        metrics={rankMetrics("goal-1")}
+        reachedByGoalId={new Map([["goal-1", false]])}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+    const row = await screen.findByTestId("goal-row")
+    expect(row).not.toHaveClass("bg-success")
+    expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
+      "goals.status.Active"
+    )
+    expect(screen.queryByTestId("goal-reached-dash")).toBeNull()
+  })
+
+  it("has no goal-type caption and no overflow menu on a desktop row", async () => {
+    render(
+      <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
+    )
+    await screen.findByText("Hero One")
+    expect(screen.queryByText("goals.create.goalTypes.Rank")).toBeNull()
+    expect(screen.queryByTestId("goal-row-actions-trigger-goal-1")).toBeNull()
+  })
+
+  it("puts Projects between Character and Goal, holding the badges, and keeps them out of the Character cell", async () => {
+    const withProjects: GoalRow = {
+      ...rows[0]!,
+      priority: undefined,
+      projects: [
+        { projectId: "p1", name: "My Goals", color: null },
+        { projectId: "p2", name: "Neuro", color: null },
+      ],
+    }
+    render(
+      <GoalsList
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={[withProjects, { ...rows[1]!, priority: undefined }]}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    expect(
+      screen.getAllByRole("columnheader").map((h) => h.textContent)
+    ).toEqual([
+      "goals.columns.entity",
+      "goals.columns.projects",
+      "goals.columns.goal",
+      "goals.columns.progress",
+      "goals.columns.remaining",
+      "goals.columns.status",
+      "goals.columns.actions",
+    ])
+    const [first, second] = screen.getAllByTestId("goal-row")
+    const cells = first!.querySelectorAll("td")
+    expect(cells).toHaveLength(7)
+    expect(cells[0]).not.toContainElement(
+      screen.getAllByTestId("goal-project-memberships")[0]!
+    )
+    expect(cells[1]).toHaveTextContent("My Goals")
+    expect(cells[1]).toHaveTextContent("Neuro")
+    // A goal in no project: empty cell, same alignment.
+    expect(second!.querySelectorAll("td")).toHaveLength(7)
+    expect(second!.querySelectorAll("td")[1]!.textContent).toBe("")
+  })
+
+  it("renders notes on one truncated line under the name, with the full text as a tooltip", async () => {
+    const long = "some very long note ".repeat(10)
+    render(
+      <GoalsList
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={[{ ...rows[0]!, notes: long }]}
+      />
+    )
+    const notes = await screen.findByTestId("goal-row-notes")
+    expect(notes).toHaveClass("truncate")
+    expect(notes).toHaveAttribute("title", long)
+    // Directly beneath the name, in the same block.
+    expect(notes.previousElementSibling).toContainElement(
+      screen.getByText("Hero One")
+    )
+  })
+
+  it("keeps the mobile card's notes line and project badges, with the Unlock word once and its count", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    render(
+      <GoalsList
+        actions={stubActions}
+        metrics={
+          new Map([
+            [
+              "goal-1",
+              {
+                progress: {
+                  kind: "Unlock",
+                  owned: 329,
+                  required: 500,
+                  ratio: 0.66,
+                },
+                remaining: null,
+                blockers: { isBlocked: false, reasons: [] },
+              },
+            ],
+          ]) as never
+        }
+        reorderEnabled={false}
+        rows={[
+          {
+            ...rows[0]!,
+            goalType: "Unlock",
+            notes: "card note",
+            projects: [{ projectId: "p1", name: "My Goals", color: null }],
+          },
+        ]}
+      />
+    )
+    const card = await screen.findByTestId("goal-row")
+    expect(card).toHaveTextContent("card note")
+    expect(card).toHaveTextContent("My Goals")
+    expect(screen.getAllByText("goals.create.goalTypes.Unlock")).toHaveLength(1)
+    expect(screen.getByTestId("goal-unlock-count")).toHaveTextContent(
+      "goals.overview.ownedOfRequired"
+    )
+  })
+})
+
+describe("GoalsList remaining chips on mobile", () => {
+  const chipMetrics = new Map([
+    [
+      "goal-1",
+      {
+        progress: {
+          kind: "Rank",
+          current: "Stone1",
+          target: "Iron1",
+          ratio: 0.25,
+        },
+        remaining: {
+          upgrades: [],
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+          upgradeSlotsRemaining: 3,
+        },
+        blockers: { isBlocked: false, reasons: [] },
+      },
+    ],
+  ])
+  const estimates = new Map([
+    [
+      "goal-1",
+      { days: 5, date: "2026-01-06", energyTotal: 1674, raidsTotal: 5 },
+    ],
+  ])
+
+  it("shows chips on the card and dashes (no chips) once reached", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    const { unmount } = render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates as never}
+        metrics={chipMetrics as never}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+    await screen.findByText("Hero One")
+    expect(screen.getByTestId("goal-resource-chips")).toHaveTextContent("1,674")
+    unmount()
+
+    render(
+      <GoalsList
+        actions={stubActions}
+        estimates={estimates as never}
+        metrics={chipMetrics as never}
+        reachedByGoalId={new Map([["goal-1", true]])}
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+    await screen.findByText("Hero One")
+    expect(screen.queryByTestId("goal-resource-chips")).toBeNull()
   })
 })

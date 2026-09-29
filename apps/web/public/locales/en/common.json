@@ -385,8 +385,10 @@
     "planningSettings": {
       "button": "Planning settings",
       "title": "Planning settings",
-      "description": "Choose the daily energy budget used by goal estimates.",
+      "description": "Choose the daily energy budget used for daily raid planning and broader goal estimates.",
       "dailyEnergy": "Energy per day",
+      "xpBookRarity": "XP-book rarity",
+      "xpBookRarityHint": "Required-level guidance shows its additional book count in this rarity.",
       "save": "Save settings",
       "cancel": "Cancel",
       "error": "Planning settings could not be saved."
@@ -463,13 +465,13 @@
       "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
       "reached": "Reached",
-      "archived": "Archived",
       "blocked": "Blocked",
       "active": "Active",
       "paused": "Paused"
     },
     "columns": {
       "entity": "Character",
+      "projects": "Projects",
       "goal": "Goal",
       "progress": "Progress",
       "remaining": "Remaining",
@@ -484,7 +486,8 @@
       "Active": "Active",
       "Paused": "Paused",
       "Completed": "Completed",
-      "Archived": "Archived"
+      "Archived": "Archived",
+      "Reached": "Reached"
     },
     "blocked": {
       "label": "Blocked",
@@ -504,8 +507,6 @@
       "openMenu": "Open goal actions",
       "pause": "Pause",
       "resume": "Resume",
-      "archive": "Archive",
-      "unarchive": "Restore from archive",
       "delete": "Delete",
       "moveUp": "Move up",
       "moveDown": "Move down"
@@ -694,7 +695,8 @@
       },
       "level": {
         "current": "Current level",
-        "booksNeeded": "≈ {{count}} Legendary XP Books",
+        "booksNeeded_one": "≈ {{count}} {{rarity}} XP Book",
+        "booksNeeded_other": "≈ {{count}} {{rarity}} XP Books",
         "goldToApply": "≈ {{gold}} gold to apply"
       },
       "farmingStrategy": {
@@ -843,10 +845,51 @@
       "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
       "none": "None",
-      "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself."
+      "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself.",
+      "farmingGuidanceTitle": "Farming guidance",
+      "farmingGuidanceEligible_one": "{{count}} farmable location now",
+      "farmingGuidanceEligible_other": "{{count}} farmable locations now",
+      "farmingGuidanceLink": "Open Dailies raids",
+      "farmingGuidanceCovered": "Covered by an earlier goal — nothing of its own to farm.",
+      "projectGuidanceTitle": "Farming guidance",
+      "projectGuidancePreview": "Preview — not today's Dailies schedule",
+      "projectGuidanceSummary_one": "{{count}} material still needed across this project's goals.",
+      "projectGuidanceSummary_other": "{{count}} materials still needed across this project's goals.",
+      "projectGuidanceNone": "Nothing outstanding to farm for this project."
+    },
+    "resourceChips": {
+      "energy": "Energy",
+      "onslaughtTokens": "Onslaught tokens",
+      "shards": "Shards",
+      "mythicShards": "Mythic shards",
+      "gold": "Gold",
+      "components": "Machine of War components",
+      "orbs": "{{rarity}} orbs",
+      "abilityBadges": "{{rarity}} ability badges",
+      "forgeBadges": "{{rarity}} forge badges",
+      "xpBooks": "{{rarity}} XP books",
+      "xpBooksValue": "{{available}} of {{needed}}",
+      "chipLabel": "{{name}}: {{quantity}}",
+      "poolLabel": "{{name}}: {{available}} of {{needed}}",
+      "standalone": "Standalone: {{slots}} upgrade slots, {{energy}} energy",
+      "rarity": {
+        "Common": "Common",
+        "Uncommon": "Uncommon",
+        "Rare": "Rare",
+        "Epic": "Epic",
+        "Legendary": "Legendary",
+        "Mythic": "Mythic"
+      }
     },
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",
+      "ownedOfRequired": "{{owned}} / {{required}}",
+      "abilityTrack": {
+        "active": "Active",
+        "passive": "Passive",
+        "primary": "Primary",
+        "secondary": "Secondary"
+      },
       "progressLabel": "Goal progress",
       "actualProgress": "Actual progress",
       "actualProgressDescription": "Actual progress reflects your account's currently synced, owned state.",
@@ -862,9 +905,7 @@
       },
       "remainingText": {
         "levels": "{{count}} levels",
-        "levelsWithXp": "{{count}} levels · {{xp}} XP",
-        "rank": "{{slots}} slots",
-        "rankWithEnergy": "{{slots}} slots · {{energy}} energy",
+        "rankEnergy": "{{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
         "shards": "{{count}} shards"
       },
@@ -1054,7 +1095,7 @@
         },
         "statusFilter": {
           "title": "Filter by status",
-          "content": "Switch between Unfulfilled, Reached, and Archived goals."
+          "content": "Filter goals by Unfulfilled, Reached, Blocked, Active, or Paused."
         },
         "filters": {
           "title": "Type and group",
@@ -1078,7 +1119,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every goal appears below in your priority order — active and paused goals first, then reached and archived ones. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
+          "content": "Every goal appears below in your priority order — active and paused goals first, then reached ones. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
         }
       }
     },

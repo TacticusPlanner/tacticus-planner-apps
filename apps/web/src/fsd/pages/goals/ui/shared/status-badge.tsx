@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Link2, LockKeyhole } from "lucide-react"
+import { Check, Link2, LockKeyhole } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Tooltip,
@@ -26,8 +26,29 @@ const VARIANT_BY_STATUS: Record<
   Archived: "outline",
 }
 
-export function StatusBadge({ status }: { status: GoalStatus }) {
+/** `reached` is display only (`goal-list-layout`: a Reached goal reads "Reached" with a check mark
+ *  whatever its stored status) — the stored `status` prop is left as it is for every other caller. */
+export function StatusBadge({
+  status,
+  reached = false,
+}: {
+  status: GoalStatus
+  reached?: boolean
+}) {
   const { t } = useTranslation()
+
+  if (reached) {
+    return (
+      <Badge
+        className="gap-1 border-transparent bg-success text-success-foreground"
+        data-testid="goal-status-badge"
+        variant="outline"
+      >
+        <Check aria-hidden="true" className="size-3.5" />
+        {t("goals.status.Reached")}
+      </Badge>
+    )
+  }
 
   return (
     <Badge data-testid="goal-status-badge" variant={VARIANT_BY_STATUS[status]}>

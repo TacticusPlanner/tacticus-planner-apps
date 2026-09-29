@@ -325,6 +325,42 @@ const CASES: Case[] = [
     (c) => c.tok("ring"),
     (c) => c.background
   ),
+  // --- Reached row/card (bg-success tint, "Reached" badge, check mark, "-" cells) ---
+  text(
+    "reached row text-foreground on tint (success)",
+    (c) => c.tok("foreground"),
+    (c) => c.tok("success")
+  ),
+  text(
+    "reached row text-muted-foreground on tint (notes, '-' cells, Remaining)",
+    (c) => c.tok("muted-foreground"),
+    (c) => c.tok("success")
+  ),
+  text(
+    "Reached badge: success-foreground on success",
+    (c) => c.tok("success-foreground"),
+    (c) => c.tok("success")
+  ),
+  text(
+    "reached row name link (text-primary) on tint",
+    (c) => c.tok("primary"),
+    (c) => c.tok("success")
+  ),
+  graphic(
+    "reached check mark (success-foreground) vs tint",
+    (c) => c.tok("success-foreground"),
+    (c) => c.tok("success")
+  ),
+  text(
+    "Ability pill: text-muted-foreground on bg-muted",
+    (c) => c.tok("muted-foreground"),
+    (c) => c.tok("muted")
+  ),
+  text(
+    "Ability pill target: foreground on bg-muted",
+    (c) => c.tok("foreground"),
+    (c) => c.tok("muted")
+  ),
   // --- Progress graphics (3:1) ---
   graphic(
     "actual fill (primary) vs track (muted)",

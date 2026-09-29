@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { GripVertical } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
 
 import {
   NO_BLOCKERS,
@@ -7,6 +8,7 @@ import {
 } from "../../model/attainment/goal-overview-metrics-defaults"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalRowActions } from ".//goal-row-actions"
+import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
 import {
   GoalProgressDisplay,
@@ -14,21 +16,22 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
-import {
-  LevelRequirementProgressBar,
-  LevelRequirementRemaining,
-  LevelRequirementTarget,
-} from "../shared/level-requirement-display"
+import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { SortableList } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   EstimateCell,
   GoalNameLink,
   GoalPriorityNumber,
+  ReachedDash,
 } from "./goal-row-shared"
 import {
   estimateEnergy,
+  estimateOnslaughtTokens,
   isInFlightStatus,
+  isReachedRow,
+  goalXpBookFigure,
+  REACHED_ROW_CLASS,
   stopRowNavigation,
   type GoalsListProps,
 } from "./goal-row-utils"
@@ -45,6 +48,9 @@ export function GoalsMobileCards({
   mobileReorderActive = false,
   reorderPending = false,
   levelPotentialProgress,
+  levelChargedXp,
+  levelPoolXpAvailable,
+  xpBookRarity,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -101,13 +107,17 @@ export function GoalsMobileCards({
                   {getEntityName(row.entityType, row.entityId)}
                 </p>
                 <GoalTargetDisplay
+                  entityType={row.entityType}
                   progress={
                     metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
                   }
                 />
               </div>
               {/* State stays readable as text in this mode too (a Paused row would otherwise look like an Active one). */}
-              <StatusBadge status={row.status} />
+              <StatusBadge
+                reached={isReachedRow(row, reachedByGoalId)}
+                status={row.status}
+              />
             </li>
           )}
         />
@@ -125,6 +135,17 @@ export function GoalsMobileCards({
           const remaining = metrics?.get(row.goalId)?.remaining ?? null
           const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
           const energy = estimateEnergy(estimates?.get(row.goalId))
+          const onslaughtTokens = estimateOnslaughtTokens(
+            estimates?.get(row.goalId)
+          )
+          const reached = isReachedRow(row, reachedByGoalId)
+          const xpBooks = reached
+            ? undefined
+            : goalXpBookFigure(
+                levelChargedXp?.get(row.goalId),
+                levelPoolXpAvailable?.get(row.goalId),
+                xpBookRarity
+              )
           const remainingText = formatGoalRemainingText(
             t,
             i18n?.resolvedLanguage,
@@ -135,7 +156,11 @@ export function GoalsMobileCards({
 
           return (
             <li
-              className="flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm"
+              className={cn(
+                "flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm",
+                reached && REACHED_ROW_CLASS
+              )}
+              data-reached={reached || undefined}
               data-testid="goal-row"
               key={row.goalId}
               onClick={() => onView(row.goalId)}
@@ -155,16 +180,15 @@ export function GoalsMobileCards({
                       remainingText={remainingText}
                       row={row}
                     />
-                    <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                      {t(`goals.create.goalTypes.${row.goalType}`)}
-                      {estimates ? (
-                        <EstimateCell estimate={estimates.get(row.goalId)} />
-                      ) : null}
-                    </p>
+                    {reached ? (
+                      <ReachedDash />
+                    ) : estimates ? (
+                      <EstimateCell estimate={estimates.get(row.goalId)} />
+                    ) : null}
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-end gap-1">
-                  <StatusBadge status={row.status} />
+                  <StatusBadge reached={reached} status={row.status} />
                   <BlockedIndicator
                     blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
                     progress={progress}
@@ -178,29 +202,47 @@ export function GoalsMobileCards({
                       actions={actions}
                       cascadeContext={cascadeContext}
                       project={project}
-                      reached={reachedByGoalId?.get(row.goalId) ?? false}
+                      reached={reached}
                       row={row}
                     />
                   </div>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <GoalTargetDisplay progress={progress} />
-              </div>
-              <LevelRequirementTarget levelRequirement={levelRequirement} />
-              <div onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
-                <GoalProgressDisplay
-                  energy={energy}
-                  potentialRatio={potentialProgress?.get(row.goalId)}
+                <GoalTargetDisplay
+                  entityType={row.entityType}
                   progress={progress}
-                  remaining={remaining}
                 />
               </div>
-              <LevelRequirementProgressBar
-                levelRequirement={levelRequirement}
-                potentialRatio={levelPotentialProgress?.get(row.goalId)}
-              />
-              <LevelRequirementRemaining levelRequirement={levelRequirement} />
+              {reached ? (
+                <ReachedDash />
+              ) : (
+                <>
+                  <div
+                    onClick={stopRowNavigation}
+                    onKeyDown={stopRowNavigation}
+                  >
+                    <GoalProgressDisplay
+                      energy={energy}
+                      potentialRatio={potentialProgress?.get(row.goalId)}
+                      progress={progress}
+                      remaining={remaining}
+                    />
+                  </div>
+                  <LevelRequirementLine
+                    levelRequirement={levelRequirement}
+                    potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                    xpBooks={xpBooks}
+                  />
+                  <GoalResourceChips
+                    onslaughtTokens={onslaughtTokens}
+                    energy={energy}
+                    entityType={row.entityType}
+                    goalType={row.goalType}
+                    remaining={remaining}
+                  />
+                </>
+              )}
               {row.notes ? (
                 <p className="truncate text-muted-foreground" title={row.notes}>
                   {row.notes}

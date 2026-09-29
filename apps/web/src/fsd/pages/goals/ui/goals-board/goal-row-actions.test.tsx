@@ -282,38 +282,47 @@ describe("GoalRowActions", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("shows no '⋯' menu on desktop when nothing applies to it (not reached, no project)", () => {
-    render(<Harness reached={false} />)
+  it("shows no '⋯' menu on desktop, whether or not the goal is reached", () => {
+    const { unmount } = render(<Harness reached={false} />)
+    expect(
+      screen.queryByTestId("goal-row-actions-trigger-goal-1")
+    ).not.toBeInTheDocument()
+    unmount()
+
+    render(<Harness reached />)
     expect(
       screen.queryByTestId("goal-row-actions-trigger-goal-1")
     ).not.toBeInTheDocument()
   })
 
-  it("shows the '⋯' menu on desktop with Archive once the goal is reached", async () => {
+  it("offers no Archive or Unarchive item in the mobile menu", async () => {
+    isMobileRef.current = true
     const user = userEvent.setup()
     render(<Harness reached />)
 
     await openMenu(user)
-    expect(await screen.findByText("goals.actions.archive")).toBeInTheDocument()
+    expect(await screen.findByText("goals.actions.delete")).toBeInTheDocument()
+    expect(screen.queryByText("goals.actions.archive")).not.toBeInTheDocument()
+    expect(
+      screen.queryByText("goals.actions.unarchive")
+    ).not.toBeInTheDocument()
   })
 
-  it("always offers Unarchive for an archived goal, regardless of reached state", async () => {
-    const user = userEvent.setup()
-    const { unmount } = render(
-      <Harness goalRow={row({ status: "Archived" })} reached={false} />
-    )
-
-    await openMenu(user)
+  it("shows neither pause nor resume for a reached goal and leaves its stored status alone", () => {
+    const { unmount } = render(<Harness reached />)
     expect(
-      await screen.findByText("goals.actions.unarchive")
-    ).toBeInTheDocument()
+      screen.queryByTestId("goal-row-pause-goal-1")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("goal-row-resume-goal-1")
+    ).not.toBeInTheDocument()
     unmount()
 
-    render(<Harness goalRow={row({ status: "Archived" })} reached />)
-    await openMenu(user)
+    render(<Harness goalRow={row({ status: "Paused" })} reached />)
     expect(
-      await screen.findByText("goals.actions.unarchive")
-    ).toBeInTheDocument()
+      screen.queryByTestId("goal-row-resume-goal-1")
+    ).not.toBeInTheDocument()
+    expect(updateGoalStatus).not.toHaveBeenCalled()
   })
 
   it("cascades pause to a sole-dependent prerequisite", async () => {

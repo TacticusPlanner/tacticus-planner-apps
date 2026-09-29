@@ -93,6 +93,8 @@
     "noSeasonReference": "Keine Raid-Boss-Saisondaten verfügbar.",
     "bosses": "Bosse",
     "primes": "Prime",
+    "pickerPlaceholder": "Bosse und Prime suchen…",
+    "pickerEmpty": "Kein Boss oder Prime gefunden.",
     "primarch": "Primarch",
     "progression": "Fortschritt",
     "stats": "Werte",
@@ -125,6 +127,10 @@
         "primes": {
           "title": "Prime",
           "content": "Die Prime-Gegner, die neben jedem Boss kämpfen – auch einzeln durchsuchbar."
+        },
+        "mobilePicker": {
+          "title": "Gildenraid-Bosse",
+          "content": "Suche und wähle einen Boss oder Prime – jeder Boss ist mit den Prime-Gegnern gruppiert, die an seiner Seite kämpfen."
         },
         "progression": {
           "title": "Fortschrittsstufe",
@@ -176,13 +182,13 @@
     "noPrimeModifiers": "Keine Prime-Modifikatoren für diesen Boss.",
     "modifierReduces": "Reduziert {{name}}",
     "modifierIncreases": "Erhöht {{name}}",
-    "progressionStep": "Stufe {{step}}/{{total}} · {{rarity}} · ★{{stars}}",
+    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} LP",
     "abilityTextLevelCaption": "Werte für Fähigkeitsstufe {{level}}",
     "adjustedStatsHeading": "Angepasste Werte",
     "showAdjusted": "Angepasst anzeigen",
     "hideAdjusted": "Angepasst ausblenden",
     "fullHp": "Volles Leben",
-    "hpLostAmount": "{{hpLost}} / {{total}} Leben verloren",
+    "hpLostPercent": "{{hpLost}} % Leben verloren",
     "noActiveModifiers": "An diesem Punkt sind keine Modifikatoren aktiv.",
     "baseColumn": "Basis",
     "adjustedColumn": "Angepasst",

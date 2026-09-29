@@ -38,12 +38,12 @@ describe("formatGoalRemainingText", () => {
       null,
       undefined
     )
-    expect(text).toContain("goals.overview.remainingText.levelsWithXp:")
+    expect(text).toContain("goals.overview.remainingText.levels:")
     expect(text).toContain('"count":"6"')
-    expect(text).toContain('"xp":"12,674"')
+    expect(text).not.toContain("xp")
   })
 
-  it("formats a Rank goal with slots only when no energy estimate is available", () => {
+  it("shows no text for a Rank goal without an energy estimate, never a slot count", () => {
     const text = formatGoalRemainingText(
       t as never,
       "en",
@@ -63,11 +63,10 @@ describe("formatGoalRemainingText", () => {
       },
       undefined
     )
-    expect(text).toContain("goals.overview.remainingText.rank:")
-    expect(text).toContain('"slots":"9"')
+    expect(text).toBeNull()
   })
 
-  it("formats a Rank goal with slots and thousands-separated energy when an estimate is available", () => {
+  it("formats a Rank goal as thousands-separated energy only, without slots", () => {
     const text = formatGoalRemainingText(
       t as never,
       "en",
@@ -87,8 +86,9 @@ describe("formatGoalRemainingText", () => {
       },
       1674
     )
-    expect(text).toContain("goals.overview.remainingText.rankWithEnergy:")
+    expect(text).toContain("goals.overview.remainingText.rankEnergy:")
     expect(text).toContain('"energy":"1,674"')
+    expect(text).not.toContain("slots")
   })
 
   it("formats an Unlock goal as remaining shards", () => {

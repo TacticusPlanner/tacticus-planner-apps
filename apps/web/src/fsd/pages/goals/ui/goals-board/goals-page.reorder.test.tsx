@@ -89,8 +89,13 @@ vi.mock("./overview-project-quicknav", () => ({
 vi.mock("../goal-detail/goal-detail-sheet", () => ({
   GoalDetailSheet: () => null,
 }))
-vi.mock("../settings/planning-settings-dialog", () => ({
+vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsDialog: () => null,
+  PlanningSettingsTrigger: () => null,
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
+    save: vi.fn(),
+  }),
 }))
 vi.mock("./goals-list", () => ({
   GoalsList: ({
@@ -254,32 +259,14 @@ describe("GoalsPage reordering", () => {
     )
   })
 
-  it("does not offer reordering for a single in-flight goal or on the Archived status", async () => {
+  it("does not offer reordering for a single in-flight goal", async () => {
     state.goals = [goal("a", 1)]
-    const { unmount } = render(<GoalsPage />)
+    render(<GoalsPage />)
     expect(screen.getByTestId("goals-list")).toHaveAttribute(
       "data-reorder",
       "false"
     )
     expect(screen.queryByTestId("goals-order-note")).not.toBeInTheDocument()
-    unmount()
-
-    state.goals = fiveGoals()
-    state.archivedGoals = [goal("old", null, { status: "Archived" })]
-    const user = userEvent.setup()
-    render(<GoalsPage />)
-    expect(screen.getByTestId("goals-list")).toHaveAttribute(
-      "data-reorder",
-      "true"
-    )
-    await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
-    )
-    expect(screen.getByTestId("goals-list")).toHaveAttribute(
-      "data-reorder",
-      "false"
-    )
   })
 
   it("keeps a rejected move for review and retries it only on request", () => {
@@ -310,26 +297,6 @@ describe("GoalsPage reordering", () => {
     )
     fireEvent.click(screen.getByTestId("mobile-reorder-done"))
     expect(screen.queryByTestId("mobile-reorder-bar")).not.toBeInTheDocument()
-  })
-
-  it("drops the mobile reorder bar when the shown status can no longer be reordered", async () => {
-    state.isMobile = true
-    state.goals = fiveGoals()
-    state.archivedGoals = [goal("old", null, { status: "Archived" })]
-    const user = userEvent.setup()
-    render(<GoalsPage />)
-    await user.click(screen.getByTestId("goals-mobile-reorder-toggle"))
-    expect(screen.getByTestId("mobile-reorder-bar")).toBeInTheDocument()
-
-    await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
-    )
-
-    expect(screen.queryByTestId("mobile-reorder-bar")).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId("goals-mobile-reorder-toggle")
-    ).not.toBeInTheDocument()
   })
 
   it("says the estimates failed to load, with a retry, instead of hiding the farming details silently", () => {

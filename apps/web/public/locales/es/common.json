@@ -385,8 +385,10 @@
     "planningSettings": {
       "button": "Ajustes de planificación",
       "title": "Ajustes de planificación",
-      "description": "Elige el presupuesto diario de energía que usan las estimaciones de objetivos.",
+      "description": "Elige el presupuesto diario de energía que se usa para la planificación diaria de incursiones y para las estimaciones generales de objetivos.",
       "dailyEnergy": "Energía por día",
+      "xpBookRarity": "Rareza de libro de XP",
+      "xpBookRarityHint": "La guía de nivel requerido muestra su cantidad adicional de libros en esta rareza.",
       "save": "Guardar ajustes",
       "cancel": "Cancelar",
       "error": "No se pudieron guardar los ajustes de planificación."
@@ -463,13 +465,13 @@
       "insightsDescription": "Recomendaciones de mejoras y campañas",
       "toReach": "No cumplidos",
       "reached": "Alcanzados",
-      "archived": "Archivados",
       "blocked": "Bloqueado",
       "active": "Activo",
       "paused": "Pausado"
     },
     "columns": {
       "entity": "Personaje",
+      "projects": "Proyectos",
       "goal": "Objetivo",
       "progress": "Progreso",
       "remaining": "Restante",
@@ -484,7 +486,8 @@
       "Active": "Activo",
       "Paused": "Pausado",
       "Completed": "Completado",
-      "Archived": "Archivado"
+      "Archived": "Archivado",
+      "Reached": "Alcanzado"
     },
     "blocked": {
       "label": "Bloqueado",
@@ -504,8 +507,6 @@
       "openMenu": "Abrir acciones del objetivo",
       "pause": "Pausar",
       "resume": "Reanudar",
-      "archive": "Archivar",
-      "unarchive": "Restaurar del archivo",
       "delete": "Eliminar",
       "moveUp": "Subir",
       "moveDown": "Bajar"
@@ -694,7 +695,8 @@
       },
       "level": {
         "current": "Nivel actual",
-        "booksNeeded": "≈ {{count}} libros de XP legendarios",
+        "booksNeeded_one": "≈ {{count}} libro de XP {{rarity}}",
+        "booksNeeded_other": "≈ {{count}} libros de XP {{rarity}}",
         "goldToApply": "≈ {{gold}} de oro para aplicar"
       },
       "farmingStrategy": {
@@ -843,10 +845,51 @@
       "shardsDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
       "farmingInvalid": "Cada recurso necesario debe estar disponible en al menos un nodo seleccionado.",
       "none": "Ninguno",
-      "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo."
+      "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo.",
+      "farmingGuidanceTitle": "Guía de farmeo",
+      "farmingGuidanceEligible_one": "{{count}} lugar farmeable ahora",
+      "farmingGuidanceEligible_other": "{{count}} lugares farmeables ahora",
+      "farmingGuidanceLink": "Abrir incursiones diarias",
+      "farmingGuidanceCovered": "Cubierto por un objetivo anterior — nada propio que farmear.",
+      "projectGuidanceTitle": "Guía de farmeo",
+      "projectGuidancePreview": "Vista previa — no es el plan diario de hoy",
+      "projectGuidanceSummary_one": "Aún se necesita {{count}} material para los objetivos de este proyecto.",
+      "projectGuidanceSummary_other": "Aún se necesitan {{count}} materiales para los objetivos de este proyecto.",
+      "projectGuidanceNone": "No queda nada por farmear en este proyecto."
+    },
+    "resourceChips": {
+      "energy": "Energía",
+      "onslaughtTokens": "Fichas de Onslaught",
+      "shards": "Fragmentos",
+      "mythicShards": "Fragmentos míticos",
+      "gold": "Oro",
+      "components": "Componentes de Máquina de Guerra",
+      "orbs": "Orbes {{rarity}}",
+      "abilityBadges": "Insignias de habilidad {{rarity}}",
+      "forgeBadges": "Insignias de forja {{rarity}}",
+      "xpBooks": "Libros de XP {{rarity}}",
+      "xpBooksValue": "{{available}} de {{needed}}",
+      "chipLabel": "{{name}}: {{quantity}}",
+      "poolLabel": "{{name}}: {{available}} de {{needed}}",
+      "standalone": "Por sí solo: {{slots}} ranuras de mejora, {{energy}} de energía",
+      "rarity": {
+        "Common": "Común",
+        "Uncommon": "Poco común",
+        "Rare": "Raro",
+        "Epic": "Épico",
+        "Legendary": "Legendario",
+        "Mythic": "Mítico"
+      }
     },
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
+      "ownedOfRequired": "{{owned}} / {{required}}",
+      "abilityTrack": {
+        "active": "Activa",
+        "passive": "Pasiva",
+        "primary": "Primaria",
+        "secondary": "Secundaria"
+      },
       "progressLabel": "Progreso del objetivo",
       "actualProgress": "Progreso real",
       "actualProgressDescription": "El progreso real refleja el estado actualmente sincronizado y en propiedad de tu cuenta.",
@@ -862,9 +905,7 @@
       },
       "remainingText": {
         "levels": "{{count}} niveles",
-        "levelsWithXp": "{{count}} niveles · {{xp}} XP",
-        "rank": "{{slots}} ranuras",
-        "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
+        "rankEnergy": "{{energy}} energía",
         "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
         "shards": "{{count}} fragmentos"
       },
@@ -1054,7 +1095,7 @@
         },
         "statusFilter": {
           "title": "Filtrar por estado",
-          "content": "Cambia entre objetivos no cumplidos, alcanzados y archivados."
+          "content": "Filtra los objetivos por no cumplidos, alcanzados, bloqueados, activos o en pausa."
         },
         "filters": {
           "title": "Tipo y agrupación",
@@ -1078,7 +1119,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas y archivadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
+          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
         }
       }
     },

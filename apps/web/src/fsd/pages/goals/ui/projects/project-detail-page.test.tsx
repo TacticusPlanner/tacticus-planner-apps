@@ -91,8 +91,23 @@ vi.mock("@/entities/player-data-override", () => ({
 
 vi.mock("@/entities/planning-setting", () => ({
   dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
+  xpBookRarityOptions: [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Epic",
+    "Legendary",
+    "Mythic",
+  ],
+  normalizeXpBookRarity: (rarity: string | null | undefined) =>
+    rarity &&
+    ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
+      rarity
+    )
+      ? rarity
+      : "Legendary",
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 288, revision: 1 },
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: vi.fn(),
   }),
 }))
@@ -119,17 +134,21 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
   getOnslaughtRewards: () => [],
   getShops: () => Promise.resolve([]),
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignProgress: vi.fn(async () => []),
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
   getPlayerCharacters: () => Promise.resolve([]),
   getPlayerMows: () => Promise.resolve([]),
   getInventoryUpgrades: () => Promise.resolve(undefined),
   getInventoryOrbs: () => Promise.resolve(undefined),
+  getInventoryAbilityMaterials: () => Promise.resolve(undefined),
   getInventoryXpBooks: () => Promise.resolve(undefined),
   getPlayerInventoryItems: () => Promise.resolve([]),
   getInventoryShard: () => Promise.resolve(undefined),
@@ -429,6 +448,28 @@ describe("ProjectDetailPage", () => {
     // Not the filtered-empty message, which would claim no goals match rather than that the project
     // is empty.
     expect(screen.queryByText("goals.empty.filtered")).not.toBeInTheDocument()
+  })
+
+  it("shows the farming guidance summary as an explicit preview, never today's Dailies schedule", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-a")
+
+    const guidance = await screen.findByTestId(
+      "project-detail-farming-guidance"
+    )
+    expect(guidance).toHaveTextContent("goals.detail.projectGuidancePreview")
+  })
+
+  it("tells an empty project there is nothing outstanding to farm", async () => {
+    listProjects.mockResolvedValue({ projects: [project()] })
+    listProjectGoals.mockResolvedValue({ goals: [] })
+    renderPage("proj-a")
+
+    const guidance = await screen.findByTestId(
+      "project-detail-farming-guidance"
+    )
+    expect(guidance).toHaveTextContent("goals.detail.projectGuidanceNone")
   })
 
   it("states nothing in the header or empty state that makes membership sound like activation", async () => {
@@ -923,40 +964,6 @@ describe("ProjectDetailPage", () => {
         name: "goals.create.goalTypes.Rank",
       })
     ).toBeInTheDocument()
-  })
-
-  it("groups archived goals too rather than rendering them flat", async () => {
-    listProjects.mockResolvedValue({ projects: [project()] })
-    listProjectGoals.mockResolvedValue({
-      goals: [
-        {
-          goal: goal({ goalId: "goal-archived-rank", status: "Archived" }),
-          priority: 1,
-        },
-        {
-          goal: goal({
-            goalId: "goal-archived-ability",
-            goalType: "Ability",
-            status: "Archived",
-          }),
-          priority: 2,
-        },
-      ],
-    })
-    const user = userEvent.setup()
-    renderPage("proj-a")
-
-    await screen.findByTestId("project-detail-page")
-    await user.click(screen.getByTestId("projects-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
-    )
-
-    await screen.findAllByTestId("goals-list-table")
-    expect(groupHeadings()).toEqual([
-      "goals.create.goalTypes.Rank",
-      "goals.create.goalTypes.Ability",
-    ])
   })
 
   it("sorts by Priority by default, with a historical goal's higher priority number following in-flight ones", async () => {

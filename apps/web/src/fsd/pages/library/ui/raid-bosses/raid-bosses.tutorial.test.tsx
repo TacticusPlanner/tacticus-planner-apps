@@ -9,22 +9,36 @@ vi.mock("react-i18next", () => ({
 vi.mock("@/shared/tour", () => ({}))
 
 describe("useRaidBossesTutorial", () => {
-  it("covers the detail view on both platforms", () => {
+  it("covers the detail view on desktop with the two-section roster", () => {
     const { result } = renderHook(() => useRaidBossesTutorial("details"))
 
-    for (const set of [result.current.desktop, result.current.mobile ?? []]) {
-      expect(set.map((step) => step.target)).toEqual([
-        '[data-testid="raid-boss-tabs"]',
-        '[data-testid="raid-boss-list-bosses"]',
-        '[data-testid="raid-boss-list-primes"]',
-        '[data-testid="raid-boss-progression"]',
-        '[data-testid="raid-boss-prime-modifiers"]',
-        '[data-testid="raid-boss-adjusted-stats"]',
-      ])
-      for (const step of set) {
-        expect(step.title).toContain("localized:raidBosses.tour.steps")
-        expect(step.content).toContain("localized:raidBosses.tour.steps")
-      }
+    expect(result.current.desktop.map((step) => step.target)).toEqual([
+      '[data-testid="raid-boss-tabs"]',
+      '[data-testid="raid-boss-list-bosses"]',
+      '[data-testid="raid-boss-list-primes"]',
+      '[data-testid="raid-boss-progression"]',
+      '[data-testid="raid-boss-prime-modifiers"]',
+      '[data-testid="raid-boss-adjusted-stats"]',
+    ])
+    for (const step of result.current.desktop) {
+      expect(step.title).toContain("localized:raidBosses.tour.steps")
+      expect(step.content).toContain("localized:raidBosses.tour.steps")
+    }
+  })
+
+  it("covers the detail view on mobile with the single collapsed picker step", () => {
+    const { result } = renderHook(() => useRaidBossesTutorial("details"))
+
+    expect((result.current.mobile ?? []).map((step) => step.target)).toEqual([
+      '[data-testid="raid-boss-tabs"]',
+      '[data-testid="raid-boss-mobile-picker"]',
+      '[data-testid="raid-boss-progression"]',
+      '[data-testid="raid-boss-prime-modifiers"]',
+      '[data-testid="raid-boss-adjusted-stats"]',
+    ])
+    for (const step of result.current.mobile ?? []) {
+      expect(step.title).toContain("localized:raidBosses.tour.steps")
+      expect(step.content).toContain("localized:raidBosses.tour.steps")
     }
   })
 
