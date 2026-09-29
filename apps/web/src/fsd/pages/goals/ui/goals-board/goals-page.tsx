@@ -426,6 +426,16 @@ export function GoalsPage() {
             ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
             : undefined
         }
+        levelXpRemaining={
+          detailGoalId
+            ? insights.levelXpRemainingByGoalId.get(detailGoalId)
+            : undefined
+        }
+        rankSlotAllocation={
+          detailGoalId
+            ? insights.rankSlotsByGoalId.get(detailGoalId)
+            : undefined
+        }
         onGoalChange={setDetailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={refreshCurrentView}

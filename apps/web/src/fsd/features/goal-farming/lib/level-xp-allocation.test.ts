@@ -36,15 +36,18 @@ describe("allocateLevelXp", () => {
     expect(result.get("silver3")).toEqual({
       chargedXp: 12200,
       potentialLevel: 32,
+      remainingXp: 0,
     })
   })
 
-  it("stays at the current level when books fall short of the first level", () => {
+  it("stays at the current level when books fall short of the first level, and reports the unmet remainder", () => {
     const result = allocateLevelXp(
       [bellator("silver3", 1, 32, { currentXp: 0 })],
       [{ xpBookId: "xpLegendary", amount: 1 }] // 12,500 of the 94,200 needed
     )
     expect(result.get("silver3")?.potentialLevel).toBe(31)
+    // 94,200 needed - 12,500 spent = 81,700 still unmet (the "additional equivalent" input).
+    expect(result.get("silver3")?.remainingXp).toBe(81700)
   })
 
   it("reaches a partial level when owned books partly cover the need", () => {
@@ -104,6 +107,10 @@ describe("allocateLevelXp", () => {
       [bellator("high", 1, 33), bellator("low", 2, 32)],
       [{ xpBookId: "xpLegendary", amount: 4 }]
     )
-    expect(result.get("low")).toEqual({ chargedXp: 0, potentialLevel: 32 })
+    expect(result.get("low")).toEqual({
+      chargedXp: 0,
+      potentialLevel: 32,
+      remainingXp: 0,
+    })
   })
 })

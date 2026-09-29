@@ -47,13 +47,21 @@ export function LevelRequirementProgressBar({
 }
 
 /** The requirement's own "N levels remaining (M XP)" line — always-visible text (a sub-line has no
- * hover target of its own worth relying on). */
+ * hover target of its own worth relying on). When owned XP books still leave a gap after the shared
+ * global-order allocation (`allocateLevelXp`), an explicitly-labeled *additional* book-equivalent
+ * count is appended in the user's selected XP-book rarity (surface-goal-farming-guidance) — never a
+ * guaranteed source, just an equivalent; the raw XP figure above is unchanged. */
 export function LevelRequirementRemaining({
   levelRequirement,
+  additionalBookCount,
+  xpBookRarity,
 }: {
   levelRequirement: LevelRequirementProgress | null | undefined
+  /** Additional books needed in `xpBookRarity`, after owned-book netting — 0/undefined shows nothing. */
+  additionalBookCount?: number
+  xpBookRarity?: string
 }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation(["common", "progression"])
   if (!levelRequirement) return null
   const remainingText = formatGoalRemainingText(
     t,
@@ -63,14 +71,24 @@ export function LevelRequirementRemaining({
     undefined
   )
   if (!remainingText) return null
+  const bookText =
+    additionalBookCount && additionalBookCount > 0 && xpBookRarity
+      ? t("goals.overview.remainingText.additionalBooks", {
+          count: additionalBookCount,
+          rarity: t(`progression:rarities.${xpBookRarity}`, {
+            defaultValue: xpBookRarity,
+          }),
+        })
+      : null
+  const text = bookText ? `${remainingText} · ${bookText}` : remainingText
 
   return (
     <span
       className="mt-1 block max-w-[190px] truncate text-xs text-muted-foreground"
       data-testid="level-requirement-remaining"
-      title={remainingText}
+      title={text}
     >
-      {remainingText}
+      {text}
     </span>
   )
 }
@@ -79,9 +97,13 @@ export function LevelRequirementRemaining({
 export function LevelRequirementSummary({
   levelRequirement,
   potentialRatio,
+  additionalBookCount,
+  xpBookRarity,
 }: {
   levelRequirement: LevelRequirementProgress | null | undefined
   potentialRatio: number | undefined
+  additionalBookCount?: number
+  xpBookRarity?: string
 }) {
   if (!levelRequirement) return null
   return (
@@ -91,7 +113,11 @@ export function LevelRequirementSummary({
         levelRequirement={levelRequirement}
         potentialRatio={potentialRatio}
       />
-      <LevelRequirementRemaining levelRequirement={levelRequirement} />
+      <LevelRequirementRemaining
+        additionalBookCount={additionalBookCount}
+        levelRequirement={levelRequirement}
+        xpBookRarity={xpBookRarity}
+      />
     </div>
   )
 }

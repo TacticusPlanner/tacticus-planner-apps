@@ -387,6 +387,8 @@
       "title": "Planungseinstellungen",
       "description": "Wähle das tägliche Energiebudget, das für Zielschätzungen verwendet wird.",
       "dailyEnergy": "Energie pro Tag",
+      "xpBookRarity": "XP-Buch-Seltenheit",
+      "xpBookRarityHint": "Die Anforderungen zum Levelaufstieg zeigen die zusätzliche Buchanzahl in dieser Seltenheit.",
       "save": "Einstellungen speichern",
       "cancel": "Abbrechen",
       "error": "Die Planungseinstellungen konnten nicht gespeichert werden."
@@ -694,7 +696,8 @@
       },
       "level": {
         "current": "Aktuelle Stufe",
-        "booksNeeded": "≈ {{count}} legendäre XP-Bücher",
+        "booksNeeded_one": "≈ {{count}} {{rarity}}-XP-Buch",
+        "booksNeeded_other": "≈ {{count}} {{rarity}}-XP-Bücher",
         "goldToApply": "≈ {{gold}} Gold zum Anwenden"
       },
       "farmingStrategy": {
@@ -843,7 +846,17 @@
       "shardsDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
       "farmingInvalid": "Jede benötigte Ressource muss von mindestens einem gewählten Knoten verfügbar sein.",
       "none": "Keine",
-      "projectsActivationNote": "Die Zuordnung ändert nur, welche Projekte dieses Ziel enthalten. Pausieren oder Fortsetzen ist eine eigene Aktion am Ziel selbst."
+      "projectsActivationNote": "Die Zuordnung ändert nur, welche Projekte dieses Ziel enthalten. Pausieren oder Fortsetzen ist eine eigene Aktion am Ziel selbst.",
+      "farmingGuidanceTitle": "Farming-Hinweise",
+      "farmingGuidanceEligible_one": "{{count}} jetzt farmbarer Ort",
+      "farmingGuidanceEligible_other": "{{count}} jetzt farmbare Orte",
+      "farmingGuidanceLink": "Tägliche Raids öffnen",
+      "farmingGuidanceCovered": "Durch ein früheres Ziel abgedeckt — nichts Eigenes zu farmen.",
+      "projectGuidanceTitle": "Farming-Hinweise",
+      "projectGuidancePreview": "Vorschau — nicht der heutige Dailies-Zeitplan",
+      "projectGuidanceSummary_one": "{{count}} Material wird für die Ziele dieses Projekts noch benötigt.",
+      "projectGuidanceSummary_other": "{{count}} Materialien werden für die Ziele dieses Projekts noch benötigt.",
+      "projectGuidanceNone": "Für dieses Projekt gibt es nichts mehr zu farmen."
     },
     "overview": {
       "levelProgress": "Stufe {{current}} → {{target}}",
@@ -866,7 +879,9 @@
         "rank": "{{slots}} Slots",
         "rankWithEnergy": "{{slots}} Slots · {{energy}} Energie",
         "coveredByEarlierGoal": "Durch ein früheres Ziel abgedeckt",
-        "shards": "{{count}} Scherben"
+        "shards": "{{count}} Scherben",
+        "additionalBooks_one": "+{{count}} zusätzliches {{rarity}}-Buch",
+        "additionalBooks_other": "+{{count}} zusätzliche {{rarity}}-Bücher"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Fortschrittsdetails",

@@ -5,7 +5,9 @@ import {
   consumeOwnedBooks,
   maxLevelReachableWithXp,
   netXpAgainstOwnedBooks,
+  normalizeXpBookRarity,
   ownedBooksByRarity,
+  xpBookEquivalent,
   xpNeededForLevelRange,
 } from "./level-xp-cost"
 
@@ -122,6 +124,35 @@ describe("ownedBooksByRarity", () => {
   })
 })
 
+describe("normalizeXpBookRarity", () => {
+  it("passes through a supported rarity", () => {
+    expect(normalizeXpBookRarity("Epic")).toBe("Epic")
+  })
+
+  it("falls back to Legendary for missing or unsupported values", () => {
+    expect(normalizeXpBookRarity(undefined)).toBe("Legendary")
+    expect(normalizeXpBookRarity(null)).toBe("Legendary")
+    expect(normalizeXpBookRarity("")).toBe("Legendary")
+    expect(normalizeXpBookRarity("Ultra")).toBe("Legendary")
+  })
+})
+
+describe("xpBookEquivalent", () => {
+  it("rounds a 12,200 XP gap up to 1 Legendary book (default/fallback rarity)", () => {
+    expect(xpBookEquivalent(12_200)).toBe(1)
+    expect(xpBookEquivalent(12_200, "Legendary")).toBe(1)
+  })
+
+  it("rounds the same gap up to 5 Epic books", () => {
+    expect(xpBookEquivalent(12_200, "Epic")).toBe(5)
+  })
+
+  it("is 0 for a non-positive amount", () => {
+    expect(xpBookEquivalent(0, "Epic")).toBe(0)
+    expect(xpBookEquivalent(-100, "Epic")).toBe(0)
+  })
+})
+
 describe("computeLevelGoalCost", () => {
   it("expresses the netted remainder as a Legendary-equivalent book count plus gold to apply", () => {
     const cost = computeLevelGoalCost({
@@ -154,5 +185,42 @@ describe("computeLevelGoalCost", () => {
         ownedXpBooks: undefined,
       })
     ).toBeNull()
+  })
+
+  // Worked Bellator example from the surface-goal-farming-guidance spec: level 31, 82,000 XP, a
+  // required level 32 (94,200 threshold) is a 12,200 XP gap. No owned books.
+  it("follows the selected XP-book rarity (default Legendary: 1 book, 500 gold)", () => {
+    expect(
+      computeLevelGoalCost({
+        currentLevel: 31,
+        currentXp: 82_000,
+        targetLevel: 32,
+        ownedXpBooks: undefined,
+      })
+    ).toEqual({ books: 1, gold: 500 })
+  })
+
+  it("raises both book count and gold together for a lower rarity (Epic: 5 books, 2,500 gold)", () => {
+    expect(
+      computeLevelGoalCost({
+        currentLevel: 31,
+        currentXp: 82_000,
+        targetLevel: 32,
+        ownedXpBooks: undefined,
+        rarity: "Epic",
+      })
+    ).toEqual({ books: 5, gold: 2_500 })
+  })
+
+  it("falls back to Legendary for a missing or unsupported stored rarity", () => {
+    expect(
+      computeLevelGoalCost({
+        currentLevel: 31,
+        currentXp: 82_000,
+        targetLevel: 32,
+        ownedXpBooks: undefined,
+        rarity: "not-a-rarity",
+      })
+    ).toEqual({ books: 1, gold: 500 })
   })
 })
