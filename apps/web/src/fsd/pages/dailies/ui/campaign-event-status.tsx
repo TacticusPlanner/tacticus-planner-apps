@@ -12,22 +12,27 @@ import { useCampaignEventStatus } from "./use-campaign-event-status"
  */
 export function CampaignEventStatusLine({ className }: { className?: string }) {
   const { t, i18n } = useTranslation("dailies")
-  const { active, name, icon, endsAt } = useCampaignEventStatus()
+  const { active, name, icon, endStatus } = useCampaignEventStatus()
 
   const remaining =
-    endsAt.kind === "pending"
-      ? formatRelativeTime(endsAt.targetMs, i18n.language)
+    endStatus.kind === "confirmed"
+      ? formatRelativeTime(endStatus.targetMs, i18n.language)
       : null
+  const unconfirmed = endStatus.kind === "unconfirmed"
 
   const detail = !active
     ? t("today.campaignEvent.inactive")
     : name
       ? remaining
         ? t("today.campaignEvent.namedWithTime", { name, time: remaining })
-        : t("today.campaignEvent.named", { name })
+        : unconfirmed
+          ? t("today.campaignEvent.namedUnconfirmed", { name })
+          : t("today.campaignEvent.named", { name })
       : remaining
         ? t("today.campaignEvent.unnamedWithTime", { time: remaining })
-        : t("today.campaignEvent.unnamed")
+        : unconfirmed
+          ? t("today.campaignEvent.unnamedUnconfirmed")
+          : t("today.campaignEvent.unnamed")
 
   return (
     <div className={className} data-testid="campaign-event-status">
