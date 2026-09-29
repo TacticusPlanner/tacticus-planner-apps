@@ -503,7 +503,7 @@ An event-campaign attempt's energy cost is included using the same per-node pric
 
 ### Requirement: Today states the detected campaign event and its remaining time
 
-Today SHALL show a campaign-event status block reporting the campaign event it has detected as active and how long remains until that event ends. The block SHALL carry its own heading at the same weight as the schedule's own "Today's raids" heading, with the detected event — its campaign icon, its name, and the remaining time — on the line beneath.
+Today SHALL show a campaign-event status block reporting the campaign event it has detected as active and, only when the active calendar occurrence is confirmed, how long remains until that event ends. The block SHALL carry its own heading at the same weight as the schedule's own "Today's raids" heading, with the detected event — its campaign icon, its name, and its end-time status — on the line beneath.
 
 The detected campaign event SHALL be the one named by `live-progress.activeCampaignEventId`, rendered by that campaign group's localized display name. This is the same signal that governs which event-campaign nodes are farmable (see "Only the active campaign event is farmable"), so the status line and Today's schedule can never disagree about whether an event is active.
 
@@ -511,21 +511,28 @@ When `live-progress.activeCampaignEventId` is present but does not resolve to a 
 
 When `live-progress.activeCampaignEventId` is absent or null, the status line SHALL state that no campaign event is active, regardless of what the events calendar shows for the current instant. Today's schedule excludes every event-campaign node in exactly that situation, so the status line SHALL NOT claim an event is active that Today will not schedule.
 
-The remaining time SHALL be taken from the end of the events-calendar entry for the `campaign-event` definition whose window contains the current instant, rendered as localized relative time at the same coarseness the app's other remaining-time displays use. When no such calendar entry is active, the status line SHALL name the detected campaign event and omit the remaining time rather than showing an estimated, stale, or zero duration.
+The remaining time SHALL be taken from the `endUtc` of a `confirmed: true` events-calendar entry for the `campaign-event` definition whose window contains the current instant, rendered as localized relative time at the same coarseness the app's other remaining-time displays use. If that window is a `confirmed: false` projection, the status line SHALL keep the detected event identity and state that its end time is not confirmed, without a numeric remaining-time phrase. When no such calendar entry is active, the status line SHALL name the detected campaign event and omit the remaining time rather than showing an estimated, stale, or zero duration.
 
 Assumptions this requirement depends on:
 
 - `live-progress.activeCampaignEventId` is a campaign group id, and a campaign group's display name is the same for both of its tiers — the status line names the event, not a tier.
 - That id originates in synced player data, not the catalog, so the catalog may not yet carry a display name for a campaign event that has already gone live in game.
 - At most one `campaign-event` calendar entry is active at any instant.
-- `campaign-event` calendar entries may be projected placeholders rather than authored occurrences, so their boundaries are the calendar's best-known schedule rather than a guarantee from the game.
+- `campaign-event` calendar entries may be projected placeholders rather than authored occurrences. A projected boundary is the catalog's best-known schedule, not a guarantee from the game; the served `confirmed` flag distinguishes it from an authored occurrence.
 
 #### Scenario: An event is detected and the calendar knows when it ends
 
 - **GIVEN** `live-progress.activeCampaignEventId` names the Adepta Sororitas event campaign group
-- **AND** a `campaign-event` calendar entry's window contains the current instant and ends in three days
+- **AND** a confirmed `campaign-event` calendar entry's window contains the current instant and ends in three days
 - **WHEN** Today loads
 - **THEN** the status line names "Adepta Sororitas" and states that it ends in three days
+
+#### Scenario: The active window is only projected
+
+- **GIVEN** `live-progress.activeCampaignEventId` names a known event campaign group
+- **AND** the only active `campaign-event` entry is unconfirmed and its projected `endUtc` is three hours away
+- **WHEN** Today loads
+- **THEN** the status line names the detected event and states that the end time is not confirmed, without saying it ends in three hours
 
 #### Scenario: No campaign event is detected
 
@@ -544,7 +551,7 @@ Assumptions this requirement depends on:
 
 - **GIVEN** `live-progress.activeCampaignEventId` names a campaign group the catalog does not recognize
 - **WHEN** Today loads
-- **THEN** the status line reports that a campaign event is active without naming it, shows the remaining time if the calendar has an active window, does not display the raw group id, and Today renders normally rather than failing
+- **THEN** the status line reports that a campaign event is active without naming it, shows remaining time only if the calendar has a confirmed active window, does not display the raw group id, and Today renders normally rather than failing
 
 #### Scenario: An event is detected but the calendar has no active window
 
@@ -575,7 +582,7 @@ Assumptions this requirement depends on:
 
 - **GIVEN** a user starts Today's guided tour on either a mobile or a desktop viewport
 - **WHEN** the tour reaches the campaign-event status line
-- **THEN** it highlights that block with its own step explaining what the detected campaign event governs
+- **THEN** it highlights that block with its own step explaining what the detected campaign event governs and why an unconfirmed end has no countdown
 
 ### Requirement: Today's project selector defaults to all goals
 

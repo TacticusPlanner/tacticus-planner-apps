@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { GripVertical } from "lucide-react"
 
+import { levelBookAvailability } from "@/features/goal-farming"
 import {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
@@ -45,6 +46,9 @@ export function GoalsMobileCards({
   mobileReorderActive = false,
   reorderPending = false,
   levelPotentialProgress,
+  levelChargedXp,
+  levelPoolXpAvailable,
+  xpBookRarity,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -124,6 +128,12 @@ export function GoalsMobileCards({
             metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
           const remaining = metrics?.get(row.goalId)?.remaining ?? null
           const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
+          const { available: availableBookCount, needed: neededBookCount } =
+            levelBookAvailability(
+              levelChargedXp?.get(row.goalId) ?? 0,
+              levelPoolXpAvailable?.get(row.goalId) ?? 0,
+              xpBookRarity
+            )
           const energy = estimateEnergy(estimates?.get(row.goalId))
           const remainingText = formatGoalRemainingText(
             t,
@@ -200,7 +210,12 @@ export function GoalsMobileCards({
                 levelRequirement={levelRequirement}
                 potentialRatio={levelPotentialProgress?.get(row.goalId)}
               />
-              <LevelRequirementRemaining levelRequirement={levelRequirement} />
+              <LevelRequirementRemaining
+                availableBookCount={availableBookCount}
+                levelRequirement={levelRequirement}
+                neededBookCount={neededBookCount}
+                xpBookRarity={xpBookRarity}
+              />
               {row.notes ? (
                 <p className="truncate text-muted-foreground" title={row.notes}>
                   {row.notes}

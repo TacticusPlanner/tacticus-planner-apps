@@ -1,9 +1,21 @@
+import { rarityOrder, type Rarity } from "@workspace/game-domain"
 import {
   consumeOwnedBooks,
   maxLevelReachableWithXp,
   ownedBooksByRarity,
+  xpBookValueByRarity,
   xpNeededForLevelRange,
 } from "./level-xp-cost"
+
+/** Sums a book pool's raw XP value across every rarity — used to report the shared pool's size at a
+ *  point in the priority-ordered allocation below (surface-goal-farming-guidance's available/needed
+ *  book display), independent of which rarities actually make up the pool. */
+function poolXpTotal(pool: Partial<Record<Rarity, number>>): number {
+  return rarityOrder.reduce(
+    (sum, rarity) => sum + (pool[rarity] ?? 0) * xpBookValueByRarity[rarity],
+    0
+  )
+}
 
 /** One goal's level requirement, anchored to its unit's *current* level and total XP. */
 export type LevelXpNeed = {
@@ -23,6 +35,17 @@ export type LevelXpAllocation = {
   /** The highest level (capped at `requiredLevel`) the unit could reach *right now* by spending the
    *  account's owned XP books on this goal and every higher-priority goal of the same unit. */
   potentialLevel: number
+  /** `chargedXp` still unmet after spending owned XP books on this goal and every higher-priority goal
+   *  of the same unit, in global goal order (surface-goal-farming-guidance) — the raw-XP figure a
+   *  caller converts to an *additional* book-equivalent count in the user's selected rarity via
+   *  `xpBookEquivalent`. 0 once owned books fully cover this goal's own interval. */
+  remainingXp: number
+  /** The shared owned-book pool's raw XP total at this goal's own turn in priority order, captured
+   *  before this goal spends from it (show-xp-book-availability-per-goal) — the raw-XP figure a caller
+   *  converts to an available book-equivalent count in the user's selected rarity, floored (a partial
+   *  book isn't obtainable from the pool). Not capped to `chargedXp`: a goal whose pool exceeds its own
+   *  need reports the full surplus, not a value clamped to what it needs. */
+  poolXpAvailable: number
 }
 
 /** Allocates the account's shared, indivisible XP-book pool across every goal that needs a level, in
@@ -51,6 +74,7 @@ export function allocateLevelXp(
 
     const alreadyCovered = coveredXpByUnit.get(need.unitKey) ?? 0
     const chargedXp = Math.max(0, xpToRequired - alreadyCovered)
+    const poolXpAvailable = poolXpTotal(pool)
     const { remainingXp, remainingOwned } = consumeOwnedBooks(chargedXp, pool)
     pool = remainingOwned
 
@@ -67,6 +91,8 @@ export function allocateLevelXp(
         need.requiredLevel,
         spentXp
       ),
+      remainingXp,
+      poolXpAvailable,
     })
   }
   return result

@@ -29,7 +29,8 @@ function preview(
   requiredLevel: number,
   currentLevel: number,
   currentXp: number,
-  ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
+  ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined,
+  rarity: string | undefined
 ): LevelRequirementPreview | undefined {
   if (requiredLevel <= currentLevel) return undefined
   return {
@@ -41,6 +42,7 @@ function preview(
       currentXp,
       targetLevel: requiredLevel,
       ownedXpBooks,
+      rarity,
     }),
   }
 }
@@ -60,6 +62,7 @@ export function useLevelRequirementPreviews({
   currentLevel,
   currentXp,
   inventoryXpBooks,
+  rarity,
 }: {
   entityType: "Character" | "Mow"
   enabledTypes: ReadonlySet<GoalKind>
@@ -70,6 +73,8 @@ export function useLevelRequirementPreviews({
   currentLevel: number | undefined
   currentXp: number | undefined
   inventoryXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
+  /** The user's selected XP-book equivalent rarity (Planning settings); default/fallback Legendary. */
+  rarity?: string
 }): LevelRequirementPreviews {
   return useMemo(() => {
     if (entityType !== "Character") return {}
@@ -81,7 +86,8 @@ export function useLevelRequirementPreviews({
             requiredLevelForRankTarget(rankEnd, rankAdditionalTarget),
             level,
             xp,
-            inventoryXpBooks
+            inventoryXpBooks,
+            rarity
           )
         : undefined,
       Ability: enabledTypes.has("Ability")
@@ -89,7 +95,8 @@ export function useLevelRequirementPreviews({
             Math.max(abilityActiveEnd, abilityPassiveEnd),
             level,
             xp,
-            inventoryXpBooks
+            inventoryXpBooks,
+            rarity
           )
         : undefined,
     }
@@ -103,5 +110,6 @@ export function useLevelRequirementPreviews({
     currentLevel,
     currentXp,
     inventoryXpBooks,
+    rarity,
   ])
 }

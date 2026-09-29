@@ -30,6 +30,9 @@ type Props = {
   onReorder?: (orderedGoalIds: string[], movedGoalId: string) => void
   reorderPending?: boolean
   levelPotentialProgress?: ReadonlyMap<string, number>
+  levelChargedXp?: ReadonlyMap<string, number>
+  levelPoolXpAvailable?: ReadonlyMap<string, number>
+  xpBookRarity?: string
   reachedByGoalId?: ReadonlyMap<string, boolean>
   cascadeContext?: CascadeContext
 }
@@ -57,6 +60,9 @@ export function ProjectDetailGoals({
   onReorder,
   reorderPending = false,
   levelPotentialProgress,
+  levelChargedXp,
+  levelPoolXpAvailable,
+  xpBookRarity,
   reachedByGoalId,
   cascadeContext,
 }: Props) {
@@ -113,6 +119,8 @@ export function ProjectDetailGoals({
                 actions={actions}
                 cascadeContext={cascadeContext}
                 estimates={estimates}
+                levelChargedXp={levelChargedXp}
+                levelPoolXpAvailable={levelPoolXpAvailable}
                 levelPotentialProgress={levelPotentialProgress}
                 metrics={metrics}
                 mobileReorderActive={mobileReorderActive}
@@ -124,6 +132,7 @@ export function ProjectDetailGoals({
                 reorderEnabled={reorderEnabled}
                 reorderPending={reorderPending}
                 rows={rowGroup.rows}
+                xpBookRarity={xpBookRarity}
               />
             </section>
           ))}

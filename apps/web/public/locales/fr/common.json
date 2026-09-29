@@ -385,8 +385,10 @@
     "planningSettings": {
       "button": "Paramètres de planification",
       "title": "Paramètres de planification",
-      "description": "Choisissez le budget d'énergie quotidien utilisé par les estimations d'objectifs.",
+      "description": "Choisissez le budget d'énergie quotidien utilisé pour la planification quotidienne des raids et pour les estimations d'objectifs plus larges.",
       "dailyEnergy": "Énergie par jour",
+      "xpBookRarity": "Rareté du livre d'XP",
+      "xpBookRarityHint": "Le guide de niveau requis affiche son nombre de livres supplémentaires dans cette rareté.",
       "save": "Enregistrer les paramètres",
       "cancel": "Annuler",
       "error": "Les paramètres de planification n'ont pas pu être enregistrés."
@@ -694,7 +696,8 @@
       },
       "level": {
         "current": "Niveau actuel",
-        "booksNeeded": "≈ {{count}} livres d'XP légendaires",
+        "booksNeeded_one": "≈ {{count}} livre d'XP {{rarity}}",
+        "booksNeeded_other": "≈ {{count}} livres d'XP {{rarity}}",
         "goldToApply": "≈ {{gold}} or à appliquer"
       },
       "farmingStrategy": {
@@ -843,7 +846,17 @@
       "shardsDescription": "Laissez chaque nœud non coché pour une sélection automatique au moindre coût en énergie.",
       "farmingInvalid": "Chaque ressource requise doit être disponible sur au moins un nœud sélectionné.",
       "none": "Aucun",
-      "projectsActivationNote": "L'appartenance change seulement les projets qui contiennent cet objectif. Le mettre en pause ou le reprendre est une action distincte sur l'objectif lui-même."
+      "projectsActivationNote": "L'appartenance change seulement les projets qui contiennent cet objectif. Le mettre en pause ou le reprendre est une action distincte sur l'objectif lui-même.",
+      "farmingGuidanceTitle": "Conseils de farming",
+      "farmingGuidanceEligible_one": "{{count}} lieu farmable maintenant",
+      "farmingGuidanceEligible_other": "{{count}} lieux farmables maintenant",
+      "farmingGuidanceLink": "Ouvrir les raids quotidiens",
+      "farmingGuidanceCovered": "Couvert par un objectif précédent — rien à farmer de son côté.",
+      "projectGuidanceTitle": "Conseils de farming",
+      "projectGuidancePreview": "Aperçu — pas le programme des Dailies d'aujourd'hui",
+      "projectGuidanceSummary_one": "{{count}} matériau encore nécessaire pour les objectifs de ce projet.",
+      "projectGuidanceSummary_other": "{{count}} matériaux encore nécessaires pour les objectifs de ce projet.",
+      "projectGuidanceNone": "Rien à farmer pour ce projet."
     },
     "overview": {
       "levelProgress": "Niv {{current}} → {{target}}",
@@ -866,7 +879,8 @@
         "rank": "{{slots}} emplacements",
         "rankWithEnergy": "{{slots}} emplacements · {{energy}} énergie",
         "coveredByEarlierGoal": "Couvert par un objectif précédent",
-        "shards": "{{count}} éclats"
+        "shards": "{{count}} éclats",
+        "bookAvailability": "{{available}}/{{needed}} livres {{rarity}}"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Détails de la progression",

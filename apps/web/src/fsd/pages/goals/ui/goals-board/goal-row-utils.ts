@@ -81,6 +81,16 @@ export type GoalsListProps = {
   /** Potential progress of each Rank/Ability goal's *level requirement* (owned XP books), keyed by that
    *  goal's id — beside `potentialProgress`, which carries the same goal's material Potential. */
   levelPotentialProgress?: ReadonlyMap<string, number>
+  /** Each Rank/Ability goal's own charged level-requirement XP interval, keyed by goal id
+   *  (`PlanInsightsResult.levelChargedXpByGoalId`) — paired with `levelPoolXpAvailable` below to show
+   *  an available/needed book-equivalent count (show-xp-book-availability-per-goal). */
+  levelChargedXp?: ReadonlyMap<string, number>
+  /** The shared owned-book pool's raw XP total at each Rank/Ability goal's own turn in priority order,
+   *  keyed by goal id (`PlanInsightsResult.levelPoolXpAvailableByGoalId`). */
+  levelPoolXpAvailable?: ReadonlyMap<string, number>
+  /** The user's selected XP-book rarity, used to express `levelChargedXp`/`levelPoolXpAvailable` as
+   *  book-equivalent counts. Absent renders no book count even when the maps above have entries. */
+  xpBookRarity?: string
   /** Whether each row's target has been reached (attainment-computed) — gates the "⋯" menu's Archive
    *  item (`goal-status-actions`: "Archive is available only once a goal has reached its target").
    *  Absent renders every row as not-reached, so Archive stays hidden by default. */

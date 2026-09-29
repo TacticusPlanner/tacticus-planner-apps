@@ -177,8 +177,10 @@
       "title": "Evento de campaña",
       "named": "{{name}}",
       "namedWithTime": "{{name}} · termina {{time}}",
+      "namedUnconfirmed": "{{name}} · hora de finalización no confirmada",
       "unnamed": "Activo · nombre no disponible",
       "unnamedWithTime": "Activo · nombre no disponible · termina {{time}}",
+      "unnamedUnconfirmed": "Activo · nombre no disponible · hora de finalización no confirmada",
       "inactive": "No activo"
     }
   },
@@ -261,7 +263,7 @@
         },
         "campaignEvent": {
           "title": "Evento de campaña activo",
-          "content": "Muestra el evento de campaña detectado en tu progreso sincronizado y cuándo termina: hoy solo se pueden incursionar sus nodos."
+          "content": "Muestra el evento de campaña detectado en tu progreso sincronizado y cuándo termina: hoy solo se pueden incursionar sus nodos. Una hora de finalización no confirmada es el calendario previsto del juego, no una garantía, así que no se muestra cuenta regresiva hasta que se confirme."
         },
         "energyUsage": {
           "title": "Uso diario de energía",

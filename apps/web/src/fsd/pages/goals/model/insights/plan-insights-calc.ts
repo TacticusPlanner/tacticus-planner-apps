@@ -313,7 +313,7 @@ export function computePlanInsights(params: {
     orbGoalNeeds,
     params.inventoryOrbs
   )
-  const levelPotentialProgressByGoalId = buildLevelPotentialProgress({
+  const levelPotential = buildLevelPotentialProgress({
     orderedDetails,
     priorityByGoalId: params.priorityByGoalId,
     playerCharacterById: params.playerCharacterById,
@@ -456,7 +456,9 @@ export function computePlanInsights(params: {
     estimates: estimateResults,
     potentialProgressByGoalId,
     rankSlotsByGoalId,
-    levelPotentialProgressByGoalId,
+    levelPotentialProgressByGoalId: levelPotential.ratioByGoalId,
+    levelChargedXpByGoalId: levelPotential.chargedXpByGoalId,
+    levelPoolXpAvailableByGoalId: levelPotential.poolXpAvailableByGoalId,
     completionDate,
     unestimatedGoalCount,
     bottlenecks,

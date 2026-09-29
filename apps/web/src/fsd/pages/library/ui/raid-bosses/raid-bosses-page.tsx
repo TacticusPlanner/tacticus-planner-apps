@@ -478,6 +478,7 @@ export function RaidBossesPage() {
   const viewProps: RaidBossesPageViewProps = {
     bosses: catalog.bosses,
     primes: catalog.primes,
+    rosterGroups: catalog.rosterGroups,
     selectedId: selectedUnit?.unitSetId,
     selectedUnit,
     selectedName,

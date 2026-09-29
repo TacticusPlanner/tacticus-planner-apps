@@ -177,8 +177,10 @@
       "title": "Événement de campagne",
       "named": "{{name}}",
       "namedWithTime": "{{name}} · se termine {{time}}",
+      "namedUnconfirmed": "{{name}} · heure de fin non confirmée",
       "unnamed": "Actif · nom indisponible",
       "unnamedWithTime": "Actif · nom indisponible · se termine {{time}}",
+      "unnamedUnconfirmed": "Actif · nom indisponible · heure de fin non confirmée",
       "inactive": "Inactif"
     }
   },
@@ -261,7 +263,7 @@
         },
         "campaignEvent": {
           "title": "Événement de campagne actif",
-          "content": "Indique l'événement de campagne détecté dans votre progression synchronisée et sa date de fin : seuls ses nœuds peuvent être raidés aujourd'hui."
+          "content": "Indique l'événement de campagne détecté dans votre progression synchronisée et sa date de fin : seuls ses nœuds peuvent être raidés aujourd'hui. Une heure de fin non confirmée est le calendrier prévu du jeu, pas une garantie, donc aucun compte à rebours n'est affiché tant qu'elle n'est pas confirmée."
         },
         "energyUsage": {
           "title": "Énergie quotidienne utilisée",

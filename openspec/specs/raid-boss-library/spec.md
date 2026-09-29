@@ -10,46 +10,71 @@ Defines the `/library/raid-bosses` experience: a public Library page listing eve
 
 The public **Guild Raid Bosses** Library SHALL render a tab control with
 **Seasons Config**, **Meta**, and **Boss / Prime Details** views. The Details
-tab SHALL render two labelled sections—**Bosses** and **Primes**—each listing
-its entities in catalog served order with a resolved portrait and name. The
+tab SHALL present the roster so that every boss and every raid-boss prime is
+selectable, showing each entity's resolved portrait and resolved name. The
 portrait is the round portrait resolved from `unitSetId` (see
 `raid-boss-catalog`); when no portrait resolves, a readable initials badge is
 shown. The Library remains available to anonymous and signed-in users and
 shall not depend on signed-in user data.
 
+The Details roster presentation depends on viewport:
+
+- **Desktop (≥768px)**: two labelled sections — **Bosses** and **Primes** —
+  each listing its entities as a portrait grid in the catalog's served order.
+- **Mobile (<768px)**: a single searchable Select (a combobox — trigger with
+  the selected entity's portrait and name, a text search field, a scrollable
+  grouped list). The list is grouped one group per boss, in the catalog's
+  served boss order; each group's heading is the boss name and its members
+  are the boss entry followed by the primes fought alongside it — the primes
+  referenced by that boss's encounter sets' `Crystal` encounters, deduped and
+  in encounter order. The served dataset is assumed to reference every prime
+  through the boss(es) it fights with.
+
+Selecting an entity in either form SHALL behave identically.
+
 #### Scenario: Details tab shows both entity sections
 
-- **WHEN** an anonymous user opens the Details tab after the `raid-bosses`
-  dataset has synced
+- **WHEN** an anonymous user opens the Details tab at ≥768px after the
+  `raid-bosses` dataset has synced
 - **THEN** Bosses and Primes sections are shown in served order, with a
   portrait or readable initials fallback for every entity
 
 #### Scenario: Both sections render
 
-- **WHEN** an anonymous user opens `/library/raid-bosses` after the dataset has
-  synced
-- **THEN** a Bosses section and a Primes section are shown in the Details tab,
-  each populated with served entities in order and a portrait or initials-badge
-  fallback
+- **WHEN** an anonymous user opens `/library/raid-bosses` at ≥768px after the
+  dataset has synced
+- **THEN** a Bosses section and a Primes section are shown in the Details
+  tab, each populated with served entities in order and a portrait or
+  initials-badge fallback
+
+#### Scenario: Mobile shows a grouped searchable Select
+
+- **WHEN** an anonymous user opens `/library/raid-bosses` below 768px after
+  the dataset has synced
+- **THEN** the roster is a single combobox whose list is grouped per boss,
+  each group headed by the boss name and containing that boss followed by
+  its primes, with a search field that filters options by name
 
 #### Scenario: Selecting an entity opens its detail
 
-- **WHEN** the user activates a boss or prime entry in the Details tab
+- **WHEN** the user activates a boss or prime entry in either the desktop
+  sections or the mobile Select
 - **THEN** the app navigates to `/library/raid-bosses/{unitSetId}` while
   retaining the Details tab and shows that entity's detail
 
 #### Scenario: Primes are browsable in their own right
 
-- **WHEN** the user selects a prime from the Details tab
-- **THEN** its detail opens the same way as a boss detail; primes remain
-  first-class entities rather than a sub-view of a boss
+- **WHEN** the user selects a prime — from the desktop Primes section or
+  from a boss's group in the mobile Select
+- **THEN** its detail view opens the same way a boss's does — primes are
+  first-class entities, not a sub-view of a boss
 
 #### Scenario: Field enemies show an icon
 
 - **WHEN** the selected detail's field-enemy list renders an enemy whose
   portrait resolves through `questUnitId` or the npc portrait map
-- **THEN** that enemy shows its portrait; an unresolved asset renders a badge
-  or plain name, never a broken image
+- **THEN** that enemy shows its portrait; an unresolved asset renders a
+  badge or plain name, never a broken image
 
 ### Requirement: Route selection follows the shared Library contract
 
@@ -107,6 +132,8 @@ its selection/filter.
 
 The detail view SHALL provide a control to choose a progression step across the entity's `statProgression`, and SHALL display for the chosen step: health, damage, fixed armor, rank, star level, base rarity, and ability level, plus block chance/damage and crit chance/damage when the data carries them. Faction and movement SHALL be shown. Changing the step SHALL update the stat block without navigation.
 
+Each option in the step control SHALL be labelled with the step's in-game rarity tier name — the step's base rarity followed by its 1-based position among the steps that share that base rarity (e.g. `Legendary 2` for the second Legendary step) — and with that step's total health, so a reader can identify and compare steps without selecting each one. A step count MAY also be shown; the rarity tier name and health SHALL be present.
+
 #### Scenario: Stat block reflects the selected step
 
 - **WHEN** the user picks a later progression step
@@ -116,6 +143,11 @@ The detail view SHALL provide a control to choose a progression step across the 
 
 - **WHEN** a step has no crit or block values in the data
 - **THEN** those rows are omitted rather than shown as zero or blank
+
+#### Scenario: Step options are labelled by rarity tier and health
+
+- **WHEN** the step control lists an entity's progression steps and several steps share the base rarity Legendary
+- **THEN** those options read `Legendary 1`, `Legendary 2`, … in rarity order, and each option also shows its step's total health
 
 ### Requirement: The detail view shows weapons, abilities, and traits resolved from ids
 
@@ -187,9 +219,9 @@ Each modifier row SHALL show its activation threshold (`hpLost`, as a percentage
 
 ### Requirement: The detail view previews stats adjusted by active modifiers
 
-The detail view SHALL let the user choose an HP-lost point across the resolved encounter's modifier schedule — `0` (full HP) plus each modifier's activation threshold — and SHALL show, for the modifiers active at or below that point:
+The detail view SHALL let the user choose an HP-lost point across the resolved encounter's modifier schedule — `0` (full HP) plus each modifier's activation threshold — with each point labelled as a percentage of the unit's HP lost, using the same framing as the Prime Modifiers panel's threshold labels (`0` shown as a full-HP label, the rest as `… % HP lost`). It SHALL show, for the modifiers active at or below the chosen point:
 
-- the boss's or prime's **stat block** with each affected stat recomputed (percentage and flat `bossStat*Decrease` modifiers summed additively per stat, applied as `round(base × (1 + pct/100) + flat)`, clamped at 0), shown alongside its unadjusted value;
+- the boss's or prime's **stat block** listing the full stat set — health, damage, fixed armor, movement, and the crit/block stats when the step carries them — with each row showing its unadjusted value and its recomputed value side by side, whether or not a modifier changes that row. Affected stats are recomputed by summing percentage and flat `bossStat*Decrease` modifiers additively per stat, applied as `round(base × (1 + pct/100) + flat)`, clamped at 0; a stat with no active modifier has an adjusted value equal to its base;
 - **ability variables and constants** for each affected ability recomputed by the same additive rule (`bossAbilityAllStatsPctDecrease` applies to every variable of its target ability; per-variable percent and flat modifiers apply to the named variables), clamped at 0;
 - the **field-enemy list** with `unitAmountDecrease` removals applied (up to N copies of each targeted unit-set id removed, progression suffix ignored for matching), noting how many of which enemy were removed.
 
@@ -198,12 +230,17 @@ The modifier thresholds SHALL be rescaled to the currently displayed total HP so
 #### Scenario: Stats recompute at an HP-lost point
 
 - **WHEN** the user moves the HP-lost control to a point where a `bossStatPctDecrease` of `dmg` by 45 and a `bossStatDecrease` of `movement` by 1 are active
-- **THEN** the damage row shows `round(baseDamage × 0.55)` next to the base damage and the movement row shows `base − 1`, and stats with no active modifier are unchanged
+- **THEN** the damage row shows `round(baseDamage × 0.55)` next to the base damage, the movement row shows `base − 1`, and every other stat row (health, armor, …) still renders with its adjusted value equal to its base
 
 #### Scenario: Full-HP point shows base values
 
 - **WHEN** the HP-lost control is at `0` (full HP)
 - **THEN** every adjusted value equals its base value
+
+#### Scenario: HP-lost points labelled consistently with the panel
+
+- **WHEN** the Prime Modifiers panel lists a prime's thresholds as `At 13% HP lost … At 100% HP lost` and the user opens that prime's HP-lost control in the adjusted-stats view
+- **THEN** the control's points read with the same percentage framing (a full-HP label plus `13% … 100% HP lost`), not an absolute HP amount
 
 #### Scenario: Enemy removals applied
 
@@ -229,13 +266,15 @@ The page's Joyride tour (desktop and mobile step sets) SHALL include a step anch
 ### Requirement: Desktop and mobile present distinct layouts
 
 The page SHALL render its tab control and shared route state at all viewport
-sizes. At ≥768px, Details keeps the portrait list beside the selected detail;
-Seasons Config uses a dense selectable season/tier/set presentation; Meta uses
-scannable boss recommendation cards and a Comp filter/guidance area. Below
-768px, the tab control remains touch-accessible, Details uses the existing
-compact card form and mobile entity picker, Seasons Config uses stacked
-expandable tier/set cards, and Meta uses stacked recommendation and Comp
-guidance cards. Both layouts expose the same datasets, tab state, and content.
+sizes. At ≥768px, Details keeps the two-section portrait grid beside the
+selected detail; Seasons Config uses a dense selectable season/tier/set
+presentation; Meta uses scannable boss recommendation cards and a Comp
+filter/guidance area. Below 768px, the tab control remains touch-accessible,
+Details uses a single searchable Select grouped by boss (each boss heading
+followed by the primes it is fought alongside) plus compact stacked detail
+cards, Seasons Config uses stacked expandable tier/set cards, and Meta uses
+stacked recommendation and Comp guidance cards. Both layouts expose the same
+datasets, tab state, content, and entity selection behavior.
 
 #### Scenario: Desktop season reference
 
@@ -248,19 +287,21 @@ guidance cards. Both layouts expose the same datasets, tab state, and content.
 
 - **WHEN** the Seasons Config tab renders below 768px
 - **THEN** every tier and set is reachable through stacked, expandable,
-  touch-oriented cards, while the Details tab retains its compact form
+  touch-oriented cards, while the Details tab retains its searchable picker
+  and compact form
 
 #### Scenario: Desktop layout
 
 - **WHEN** the page renders at a viewport ≥768px
-- **THEN** the desktop tab layout is used, with the Details side-by-side view
-  and dense season/Meta forms appropriate to the wider viewport
+- **THEN** the desktop tab layout is used, with the Details two-section
+  portrait grid beside the selected detail, and dense season/Meta forms
+  appropriate to the wider viewport
 
 #### Scenario: Mobile layout
 
 - **WHEN** the page renders at a viewport below 768px
-- **THEN** the mobile tab layout uses touch-sized controls, the mobile entity
-  picker in Details, and stacked/expandable season and Meta content
+- **THEN** the mobile tab layout is used, with the Details roster as a
+  grouped searchable Select and stacked/expandable season and Meta content
 
 ### Requirement: Loading, dataset-absent, and failure states are distinct
 
@@ -311,12 +352,14 @@ Meta shows an explicit no-recommendation state for that boss or filter.
 ### Requirement: The page has an onboarding tour covering both platforms
 
 The page SHALL register a Joyride tour via `useTourPageSteps` with localized
-`library` keys and targets that exist for the active tab. Every tour includes a
-tab-control step. The Details tour covers choosing an entity, Bosses vs
-Primes, progression, encounter modifiers, and adjusted stats; the Seasons
-Config tour covers season selection and tier/set content; the Meta tour covers
-recommendations, Comp filtering, and expandable core/flex/Machine-of-War
-guidance. Desktop and mobile tours SHALL use platform-appropriate targets.
+`library` keys and targets that exist for the active tab. Every tour includes
+a tab-control step. The Details tour covers choosing an entity, the roster
+layout (the Bosses/Primes split on desktop and one grouped searchable Select
+on mobile), progression, encounter modifiers, and adjusted stats; the
+Seasons Config tour covers season selection and tier/set content; the Meta
+tour covers recommendations, Comp filtering, and expandable core/flex/
+Machine-of-War guidance. Desktop and mobile tours SHALL use
+platform-appropriate targets.
 
 #### Scenario: Tour runs on the season reference on both platforms
 
@@ -330,7 +373,8 @@ guidance. Desktop and mobile tours SHALL use platform-appropriate targets.
 - **WHEN** a user starts the page tour with Details active on a valid entity
   route at a viewport at or above 768px and again below 768px
 - **THEN** the applicable tour steps target only visible detail navigation,
-  progression, modifier, and adjusted-stats controls with localized copy
+  progression, modifier, and adjusted-stats controls, using the two section
+  targets on desktop and the single picker target on mobile
 
 #### Scenario: A Details tour includes adjusted stats
 
@@ -349,8 +393,10 @@ guidance. Desktop and mobile tours SHALL use platform-appropriate targets.
 
 - **WHEN** a user starts the page tour at a viewport ≥768px and again below
   768px
-- **THEN** the platform-appropriate active-tab step set runs, each step anchors
-  to a present element, and every step has localized copy
+- **THEN** the platform-appropriate active-tab step set runs, each step
+  anchors to a present element, with localized copy — on desktop the roster
+  steps anchor to the Bosses and Primes sections, on mobile a single roster
+  step anchors to the searchable Select
 
 ### Requirement: Season-board navigation preserves an exact encounter context
 

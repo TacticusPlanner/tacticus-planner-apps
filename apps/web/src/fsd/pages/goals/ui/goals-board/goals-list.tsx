@@ -11,6 +11,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import { levelBookAvailability } from "@/features/goal-farming"
 import {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
@@ -71,6 +72,9 @@ function GoalsTable({
   reorderEnabled = false,
   reorderPending = false,
   levelPotentialProgress,
+  levelChargedXp,
+  levelPoolXpAvailable,
+  xpBookRarity,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -123,6 +127,12 @@ function GoalsTable({
               metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
             const remaining = metrics?.get(row.goalId)?.remaining ?? null
             const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
+            const { available: availableBookCount, needed: neededBookCount } =
+              levelBookAvailability(
+                levelChargedXp?.get(row.goalId) ?? 0,
+                levelPoolXpAvailable?.get(row.goalId) ?? 0,
+                xpBookRarity
+              )
             const energy = estimateEnergy(estimates?.get(row.goalId))
             const remainingText = formatGoalRemainingText(
               t,
@@ -234,7 +244,10 @@ function GoalsTable({
                     </span>
                   ) : null}
                   <LevelRequirementRemaining
+                    availableBookCount={availableBookCount}
                     levelRequirement={levelRequirement}
+                    neededBookCount={neededBookCount}
+                    xpBookRarity={xpBookRarity}
                   />
                 </TableCell>
                 <TableCell>

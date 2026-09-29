@@ -10,6 +10,8 @@ import type { RaidBossAdjustedProps } from "./raid-boss-adjusted-stats"
 export type RaidBossesPageViewProps = {
   bosses: RaidBossListItem[]
   primes: RaidBossListItem[]
+  /** One group per boss, in served boss order — consumed by the mobile picker only. */
+  rosterGroups: { boss: RaidBossListItem; primes: RaidBossListItem[] }[]
   selectedId: string | undefined
   selectedUnit: RaidBoss | undefined
   selectedName: string

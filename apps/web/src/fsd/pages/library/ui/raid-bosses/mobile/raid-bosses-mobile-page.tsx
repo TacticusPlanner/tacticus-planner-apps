@@ -1,10 +1,9 @@
 import type { RaidBossesPageViewProps } from "../raid-bosses-page.view-model"
 import { RaidBossDetail } from "../raid-boss-detail"
-import { RaidBossList } from "../raid-boss-list"
+import { RaidBossMobilePicker } from "./raid-boss-mobile-picker"
 
 export function RaidBossesMobilePage({
-  bosses,
-  primes,
+  rosterGroups,
   selectedUnit,
   selectedName,
   selectedId,
@@ -17,9 +16,8 @@ export function RaidBossesMobilePage({
 }: RaidBossesPageViewProps) {
   return (
     <div className="flex flex-col gap-6">
-      <RaidBossList
-        bosses={bosses}
-        primes={primes}
+      <RaidBossMobilePicker
+        rosterGroups={rosterGroups}
         selectedId={selectedId}
         onSelect={onSelect}
       />
