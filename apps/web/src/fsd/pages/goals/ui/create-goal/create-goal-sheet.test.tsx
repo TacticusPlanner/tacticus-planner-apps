@@ -275,6 +275,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   // Y in the Unlock card's "X out of Y shards required to unlock at R" — 30 total for Common.
   getUnlockShardCostsMap: () =>
     new Map([["Common", { rarity: "Common", shards: 30 }]]),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
   getOnslaughtRewards: () => [],
   getEquipmentMap: () => Promise.resolve(equipmentItems),
   // No shop currently offers any unit's shards by default — the acquisition-source picker's

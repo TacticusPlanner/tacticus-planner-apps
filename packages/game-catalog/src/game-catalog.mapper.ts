@@ -13,7 +13,7 @@ function groupsWithId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((group) => ({ id: group.groupId, ...group }))
 }
 
-// The mow upgrade-cost ladder is keyed by the ability level it raises a MoW to (server-provided), so the
+// The mow upgrade-cost and character ability-cost ladders are keyed by the ability level it raises a MoW to (server-provided), so the
 // store id correlates with the in-game level rather than an opaque array index.
 function byLevel(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.level, ...row }))
@@ -68,6 +68,7 @@ export const datasetToStorageModels: Record<
   npcs: asArray,
   mows: asArray,
   "mow-upgrade-costs": byLevel,
+  "character-ability-costs": byLevel,
   "ascension-costs": byProgression,
   "unlock-shard-costs": byRarity,
   "onslaught-rewards": asArray,

@@ -5,7 +5,24 @@ import {
 } from "@/features/goal-farming"
 import type { GoalDetail } from "@/entities/goal"
 
-import { levelRequirementRatio } from "../attainment/level-requirement-progress"
+import { levelPotentialRatio } from "../attainment/level-requirement-progress"
+
+export type LevelPotentialProgress = {
+  /** Potential progress ratio of each Rank/Ability goal's level requirement, keyed by goal id — how far
+   *  the account's owned XP books could take the character toward the required level *right now*. */
+  ratioByGoalId: Map<string, number>
+  /** Each goal's own charged XP interval (`LevelXpAllocation.chargedXp`) — the raw input a caller
+   *  converts to a *needed* book-equivalent count in the user's selected XP-book rarity
+   *  (show-xp-book-availability-per-goal, `ceil(chargedXp / bookXp)`). Only a goal whose character is
+   *  below its required level gets an entry. */
+  chargedXpByGoalId: Map<string, number>
+  /** The shared owned-book pool's raw XP total at each goal's own turn in priority order
+   *  (`LevelXpAllocation.poolXpAvailable`) — the raw input a caller converts to an *available*
+   *  book-equivalent count in the user's selected XP-book rarity (show-xp-book-availability-per-goal,
+   *  `floor(poolXpAvailable / bookXp)`). Only a goal whose character is below its required level gets
+   *  an entry. */
+  poolXpAvailableByGoalId: Map<string, number>
+}
 
 /** Potential progress of each Rank/Ability goal's level requirement, keyed by that goal's id — how far
  *  the account's owned XP books could take the character toward the required level *right now*, spent in
@@ -20,7 +37,7 @@ export function buildLevelPotentialProgress(params: {
     { xpLevel: number; xp: number } | undefined
   >
   inventoryXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
-}): Map<string, number> {
+}): LevelPotentialProgress {
   const needs: LevelXpNeed[] = []
   for (const detail of params.orderedDetails) {
     const requiredLevel = requiredLevelForGoal(detail)
@@ -39,13 +56,21 @@ export function buildLevelPotentialProgress(params: {
 
   const allocation = allocateLevelXp(needs, params.inventoryXpBooks)
   const ratioByGoalId = new Map<string, number>()
+  const chargedXpByGoalId = new Map<string, number>()
+  const poolXpAvailableByGoalId = new Map<string, number>()
   for (const need of needs) {
     const result = allocation.get(need.goalId)
     if (!result) continue
     ratioByGoalId.set(
       need.goalId,
-      levelRequirementRatio(result.potentialLevel, need.requiredLevel)
+      levelPotentialRatio(
+        need.currentLevel,
+        result.potentialLevel,
+        need.requiredLevel
+      )
     )
+    chargedXpByGoalId.set(need.goalId, result.chargedXp)
+    poolXpAvailableByGoalId.set(need.goalId, result.poolXpAvailable)
   }
-  return ratioByGoalId
+  return { ratioByGoalId, chargedXpByGoalId, poolXpAvailableByGoalId }
 }

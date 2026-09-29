@@ -463,13 +463,13 @@
       "insightsDescription": "Upgrade and campaign recommendations",
       "toReach": "Unfulfilled",
       "reached": "Reached",
-      "archived": "Archived",
       "blocked": "Blocked",
       "active": "Active",
       "paused": "Paused"
     },
     "columns": {
       "entity": "Character",
+      "projects": "Projects",
       "goal": "Goal",
       "progress": "Progress",
       "remaining": "Remaining",
@@ -484,7 +484,8 @@
       "Active": "Active",
       "Paused": "Paused",
       "Completed": "Completed",
-      "Archived": "Archived"
+      "Archived": "Archived",
+      "Reached": "Reached"
     },
     "blocked": {
       "label": "Blocked",
@@ -504,8 +505,6 @@
       "openMenu": "Open goal actions",
       "pause": "Pause",
       "resume": "Resume",
-      "archive": "Archive",
-      "unarchive": "Restore from archive",
       "delete": "Delete",
       "moveUp": "Move up",
       "moveDown": "Move down"
@@ -845,8 +844,36 @@
       "none": "None",
       "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself."
     },
+    "resourceChips": {
+      "energy": "Energy",
+      "shards": "Shards",
+      "mythicShards": "Mythic shards",
+      "gold": "Gold",
+      "components": "Machine of War components",
+      "orbs": "{{rarity}} orbs",
+      "abilityBadges": "{{rarity}} ability badges",
+      "forgeBadges": "{{rarity}} forge badges",
+      "xpBooks": "{{rarity}} XP books",
+      "xpBooksValue": "{{available}} of {{needed}}",
+      "chipLabel": "{{name}}: {{quantity}}",
+      "rarity": {
+        "Common": "Common",
+        "Uncommon": "Uncommon",
+        "Rare": "Rare",
+        "Epic": "Epic",
+        "Legendary": "Legendary",
+        "Mythic": "Mythic"
+      }
+    },
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",
+      "ownedOfRequired": "{{owned}} / {{required}}",
+      "abilityTrack": {
+        "active": "Active",
+        "passive": "Passive",
+        "primary": "Primary",
+        "secondary": "Secondary"
+      },
       "progressLabel": "Goal progress",
       "actualProgress": "Actual progress",
       "actualProgressDescription": "Actual progress reflects your account's currently synced, owned state.",
@@ -862,9 +889,7 @@
       },
       "remainingText": {
         "levels": "{{count}} levels",
-        "levelsWithXp": "{{count}} levels · {{xp}} XP",
-        "rank": "{{slots}} slots",
-        "rankWithEnergy": "{{slots}} slots · {{energy}} energy",
+        "rankEnergy": "{{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
         "shards": "{{count}} shards"
       },
@@ -1054,7 +1079,7 @@
         },
         "statusFilter": {
           "title": "Filter by status",
-          "content": "Switch between Unfulfilled, Reached, and Archived goals."
+          "content": "Filter goals by Unfulfilled, Reached, Blocked, Active, or Paused."
         },
         "filters": {
           "title": "Type and group",
@@ -1078,7 +1103,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every goal appears below in your priority order — active and paused goals first, then reached and archived ones. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
+          "content": "Every goal appears below in your priority order — active and paused goals first, then reached ones. Open an eligible goal to edit its target in place. A character can have several Rank goals, each labelled with its own target."
         }
       }
     },

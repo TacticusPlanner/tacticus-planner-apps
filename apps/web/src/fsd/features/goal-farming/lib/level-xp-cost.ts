@@ -16,13 +16,48 @@ const xpTotalAtLevel: readonly number[] = [
 
 /** Ported from V1's `XP_BOOK_VALUE` (`rarity.enum.ts`) — the XP a single book of each rarity is
  * worth when applied. */
-const xpBookValueByRarity: Record<Rarity, number> = {
+export const xpBookValueByRarity: Record<Rarity, number> = {
   Common: 20,
   Uncommon: 100,
   Rare: 500,
   Epic: 2_500,
   Legendary: 12_500,
   Mythic: 62_500,
+}
+
+/** A missing/unrecognized rarity behaves as Legendary - the one normalization point every
+ * rarity-consuming function here funnels through. */
+export function normalizeXpBookRarity(
+  rarity: string | null | undefined
+): Rarity {
+  return rarity && rarity in xpBookValueByRarity
+    ? (rarity as Rarity)
+    : "Legendary"
+}
+
+export type LevelBookAvailability = {
+  /** The shared owned-book pool's book-equivalent size at this goal's turn in priority order,
+   *  floored (a partial book isn't obtainable from the pool). Not capped to `needed`. */
+  available: number
+  /** This goal's own charged XP interval, expressed as a book-equivalent count, ceiled (a partial
+   *  book still costs a whole one to apply). 0 when the goal needs no further levels. */
+  needed: number
+}
+
+/** Available/needed book-equivalent counts for a goal's own charged XP interval, in the user's
+ * selected XP-book rarity (show-xp-book-availability-per-goal) — the priority-ordered-pool figures
+ * `allocateLevelXp`/`buildLevelPotentialProgress` already compute (`chargedXp`, `poolXpAvailable`),
+ * rounded only for display. */
+export function levelBookAvailability(
+  chargedXp: number,
+  poolXpAvailable: number,
+  rarity?: string | null
+): LevelBookAvailability {
+  const bookXp = xpBookValueByRarity[normalizeXpBookRarity(rarity)]
+  return {
+    available: Math.max(0, Math.floor(poolXpAvailable / bookXp)),
+    needed: Math.max(0, Math.ceil(chargedXp / bookXp)),
+  }
 }
 
 /** Gold cost to apply a single book, independent of rarity (V1's `legendaryTomeApplyCost`). */

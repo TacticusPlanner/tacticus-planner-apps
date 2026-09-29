@@ -37,6 +37,10 @@ const datasetData: Record<string, unknown> = {
     { level: 2, gold: 10, salvage: 5 },
     { level: 3, gold: 20, salvage: 8 },
   ],
+  "character-ability-costs": [
+    { level: 2, gold: 25, badges: { rarity: "Common", amount: 1 } },
+    { level: 3, gold: 50, badges: { rarity: "Common", amount: 1 } },
+  ],
   upgrades: [
     { id: "u1", material: "Seal", rarity: "Common", craftable: false },
   ],
@@ -227,6 +231,9 @@ describe("syncGameCatalog", () => {
     // The mow upgrade-cost ladder is its own dataset, keyed by the ability level it raises a MoW to.
     const ladder = await getDatasetRecords("mow-upgrade-costs")
     expect(ladder.map((row) => row.id)).toEqual(["2", "3"])
+
+    const abilityLadder = await getDatasetRecords("character-ability-costs")
+    expect(abilityLadder.map((row) => row.id)).toEqual(["2", "3"])
 
     // lres key on the snowprint string id.
     expect((await getDatasetRecords("lres"))[0]?.id).toBe("emperLucius")

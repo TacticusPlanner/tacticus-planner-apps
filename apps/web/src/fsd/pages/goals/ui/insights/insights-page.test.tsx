@@ -137,6 +137,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
   getOnslaughtRewards: () => [],
   getShops: () => [],
 }))

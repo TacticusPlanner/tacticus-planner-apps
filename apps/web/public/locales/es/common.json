@@ -463,13 +463,13 @@
       "insightsDescription": "Recomendaciones de mejoras y campañas",
       "toReach": "No cumplidos",
       "reached": "Alcanzados",
-      "archived": "Archivados",
       "blocked": "Bloqueado",
       "active": "Activo",
       "paused": "Pausado"
     },
     "columns": {
       "entity": "Personaje",
+      "projects": "Proyectos",
       "goal": "Objetivo",
       "progress": "Progreso",
       "remaining": "Restante",
@@ -484,7 +484,8 @@
       "Active": "Activo",
       "Paused": "Pausado",
       "Completed": "Completado",
-      "Archived": "Archivado"
+      "Archived": "Archivado",
+      "Reached": "Alcanzado"
     },
     "blocked": {
       "label": "Bloqueado",
@@ -504,8 +505,6 @@
       "openMenu": "Abrir acciones del objetivo",
       "pause": "Pausar",
       "resume": "Reanudar",
-      "archive": "Archivar",
-      "unarchive": "Restaurar del archivo",
       "delete": "Eliminar",
       "moveUp": "Subir",
       "moveDown": "Bajar"
@@ -845,8 +844,36 @@
       "none": "Ninguno",
       "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo."
     },
+    "resourceChips": {
+      "energy": "Energía",
+      "shards": "Fragmentos",
+      "mythicShards": "Fragmentos míticos",
+      "gold": "Oro",
+      "components": "Componentes de Máquina de Guerra",
+      "orbs": "Orbes {{rarity}}",
+      "abilityBadges": "Insignias de habilidad {{rarity}}",
+      "forgeBadges": "Insignias de forja {{rarity}}",
+      "xpBooks": "Libros de XP {{rarity}}",
+      "xpBooksValue": "{{available}} de {{needed}}",
+      "chipLabel": "{{name}}: {{quantity}}",
+      "rarity": {
+        "Common": "Común",
+        "Uncommon": "Poco común",
+        "Rare": "Raro",
+        "Epic": "Épico",
+        "Legendary": "Legendario",
+        "Mythic": "Mítico"
+      }
+    },
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
+      "ownedOfRequired": "{{owned}} / {{required}}",
+      "abilityTrack": {
+        "active": "Activa",
+        "passive": "Pasiva",
+        "primary": "Primaria",
+        "secondary": "Secundaria"
+      },
       "progressLabel": "Progreso del objetivo",
       "actualProgress": "Progreso real",
       "actualProgressDescription": "El progreso real refleja el estado actualmente sincronizado y en propiedad de tu cuenta.",
@@ -862,9 +889,7 @@
       },
       "remainingText": {
         "levels": "{{count}} niveles",
-        "levelsWithXp": "{{count}} niveles · {{xp}} XP",
-        "rank": "{{slots}} ranuras",
-        "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
+        "rankEnergy": "{{energy}} energía",
         "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
         "shards": "{{count}} fragmentos"
       },
@@ -1054,7 +1079,7 @@
         },
         "statusFilter": {
           "title": "Filtrar por estado",
-          "content": "Cambia entre objetivos no cumplidos, alcanzados y archivados."
+          "content": "Filtra los objetivos por no cumplidos, alcanzados, bloqueados, activos o en pausa."
         },
         "filters": {
           "title": "Tipo y agrupación",
@@ -1078,7 +1103,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas y archivadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
+          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
         }
       }
     },

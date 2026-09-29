@@ -79,7 +79,10 @@ export function GoalDetailView({
           <p className="text-muted-foreground">{t("goals.detail.none")}</p>
         ) : (
           <>
-            <GoalTargetDisplay progress={progress} />
+            <GoalTargetDisplay
+              entityType={detail.entityType}
+              progress={progress}
+            />
             <GoalProgressDisplay
               energy={
                 estimate && estimate.status !== "Blocked"

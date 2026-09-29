@@ -218,6 +218,51 @@ describe("computePlanInsights", () => {
     expect(farSlots?.allocated).toBeLessThan(farSlots?.standalone ?? 0)
   })
 
+  it("nets a lower-priority Ability goal's materials against levels a higher-priority goal covers", () => {
+    const abilityGoal = (goalId: string, start: number, end: number) =>
+      goalDetail({
+        goalId,
+        goalType: "Ability",
+        config: {
+          ...goalDetail({}).config,
+          ability: {
+            activeStart: start,
+            activeEnd: end,
+            passiveStart: 1,
+            passiveEnd: 1,
+          },
+        },
+      })
+    const rung = (level: number) =>
+      [
+        level,
+        { level, gold: level * 10, badges: { rarity: "Epic", amount: 1 } },
+      ] as const
+    const ladder = new Map([rung(9), rung(10), rung(11)])
+    const first = abilityGoal("first", 8, 10)
+    const second = abilityGoal("second", 9, 11)
+
+    const result = computePlanInsights({
+      ...baseParams,
+      abilityLadders: { characterAbilityCostsByLevel: ladder as never },
+      details: [second, first],
+      priorityByGoalId: new Map([
+        ["first", 1],
+        ["second", 2],
+      ]),
+    })
+
+    // first: levels 8->9, 9->10 = rungs 9 and 10; second: only 10->11 (rung 11) is uncovered.
+    expect(result.abilityMaterialsByGoalId.get("first")).toMatchObject({
+      gold: 190,
+      badgesByRarity: { Epic: 2 },
+    })
+    expect(result.abilityMaterialsByGoalId.get("second")).toMatchObject({
+      gold: 110,
+      badgesByRarity: { Epic: 1 },
+    })
+  })
+
   it("uses the shared crafted-inventory pool in goal priority order", () => {
     const craftedId = upgradeId("crafted")
     const baseId = upgradeId("base")
@@ -766,10 +811,11 @@ describe("computePlanInsights", () => {
     })
 
     expect(result.levelPotentialProgressByGoalId.get("goal-high")).toBe(1)
-    // No books left for "goal-low" once "goal-high" claimed them: it stays at its actual level ratio.
-    expect(result.levelPotentialProgressByGoalId.get("goal-low")).toBe(
-      (31 - 1) / (32 - 1)
-    )
+    // No books left for "goal-low" once "goal-high" claimed them: owned books give it zero benefit,
+    // so its Potential reads 0% — not its unrelated absolute level position on the 1..32 scale
+    // (show-xp-book-availability-per-goal fixed this: Potential used to read ~97% here purely from
+    // hero2 already being close to level 32, even though no books could help it further).
+    expect(result.levelPotentialProgressByGoalId.get("goal-low")).toBe(0)
   })
 
   it("charges overlapping Rank milestones of one unit the shared levels once", () => {

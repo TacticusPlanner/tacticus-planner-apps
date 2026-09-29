@@ -1,7 +1,9 @@
 import type {
   AscensionCostStorageModel,
+  CharacterAbilityCostStorageModel,
   CharacterStorageModel,
   MowStorageModel,
+  MowUpgradeCostStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
@@ -10,7 +12,9 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type { GoalDetail } from "@/entities/goal"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
+import { abilityMaterialsNeed } from "./ability-materials"
 import { farmingStageTargets } from "./farming-stages"
+import { mowAbilityTrackLevel } from "./mow-ability-calc"
 import type { CraftedInventoryPool } from "./upgrade-recipe"
 import {
   abilityResourceNeed,
@@ -53,6 +57,14 @@ export type GoalRequirementParams = {
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
+  /** `mow-upgrade-costs` keyed by the level a rung raises a MoW ability to. Omit (or leave empty) and a
+   *  MoW Ability need simply carries no `abilityMaterials`. */
+  mowUpgradeCostsByLevel?: ReadonlyMap<number, MowUpgradeCostStorageModel>
+  /** `character-ability-costs` keyed by level; same absent-means-no-materials contract. */
+  characterAbilityCostsByLevel?: ReadonlyMap<
+    number,
+    CharacterAbilityCostStorageModel
+  >
   coveredAbilityTransitions?: { primary: Set<number>; secondary: Set<number> }
   /** The Rank slots earlier (higher-priority) goals of this character already claimed — one set per
    *  character across the plan, goals invoked in priority order (see `rankResourceNeed`). */
@@ -94,24 +106,46 @@ export function calculateGoalResourceNeed(
       : null
   }
   if (detail.goalType === "Ability") {
+    // Materials first, without claiming: `abilityResourceNeed` claims this goal's MoW transitions next
+    // (a Character has no upgrade need, so its materials claim them here).
+    const coveredTransitions = params.coveredAbilityTransitions ?? {
+      primary: new Set<number>(),
+      secondary: new Set<number>(),
+    }
+    const playerUnit = isMow ? params.playerMow : params.playerCharacter
+    const abilityMaterials =
+      isMow && !params.mow
+        ? null
+        : abilityMaterialsNeed({
+            detail,
+            ladder: isMow
+              ? params.mowUpgradeCostsByLevel
+              : params.characterAbilityCostsByLevel,
+            currentLevels: {
+              primary: mowAbilityTrackLevel(playerUnit, "primary"),
+              secondary: mowAbilityTrackLevel(playerUnit, "secondary"),
+            },
+            covered: coveredTransitions,
+            claim: !isMow,
+          })
     const upgrades = abilityResourceNeed({
       detail,
       mow: params.mow,
       playerMow: params.playerMow,
       upgradesById,
-      coveredTransitions: params.coveredAbilityTransitions,
+      coveredTransitions,
       craftedInventory: params.craftedInventory,
     })
-    return upgrades
-      ? {
-          upgrades,
-          shardId: null,
-          shards: 0,
-          mythicShards: 0,
-          orbsByType: {},
-          upgradeSlotsRemaining: null,
-        }
-      : null
+    if (!upgrades && !abilityMaterials) return null
+    return {
+      upgrades: upgrades ?? [],
+      shardId: null,
+      shards: 0,
+      mythicShards: 0,
+      orbsByType: {},
+      upgradeSlotsRemaining: null,
+      ...(abilityMaterials && { abilityMaterials }),
+    }
   }
   if (detail.goalType === "Ascension" && detail.config.progression) {
     const owned = isMow ? params.playerMow : params.playerCharacter

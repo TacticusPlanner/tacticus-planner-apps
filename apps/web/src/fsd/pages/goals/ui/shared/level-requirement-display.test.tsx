@@ -47,7 +47,7 @@ describe("level requirement display", () => {
     )
     expect(screen.getByTestId("level-requirement-progress")).toBeInTheDocument()
     expect(screen.getByTestId("level-requirement-remaining")).toHaveTextContent(
-      'goals.overview.remainingText.levelsWithXp:{"count":"1","xp":"12,200"}'
+      'goals.overview.remainingText.levels:{"count":"1"}'
     )
   })
 

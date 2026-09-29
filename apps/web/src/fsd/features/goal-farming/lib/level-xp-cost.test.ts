@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   computeLevelGoalCost,
   consumeOwnedBooks,
+  levelBookAvailability,
   maxLevelReachableWithXp,
   netXpAgainstOwnedBooks,
   ownedBooksByRarity,
@@ -154,5 +155,43 @@ describe("computeLevelGoalCost", () => {
         ownedXpBooks: undefined,
       })
     ).toBeNull()
+  })
+})
+
+describe("levelBookAvailability", () => {
+  // Design's worked example: a 100,000-XP pool, a goal charged 12,200 XP.
+  it("floors available and ceils needed, uncapped, at the default Legendary rarity", () => {
+    expect(levelBookAvailability(12_200, 100_000)).toEqual({
+      available: 8, // floor(100,000 / 12,500)
+      needed: 1, // ceil(12,200 / 12,500)
+    })
+  })
+
+  it("scales both counts to a selected rarity's book value", () => {
+    expect(levelBookAvailability(12_200, 100_000, "Epic")).toEqual({
+      available: 40, // floor(100,000 / 2,500)
+      needed: 5, // ceil(12,200 / 2,500)
+    })
+  })
+
+  it("reports zero available when the pool is exhausted", () => {
+    expect(levelBookAvailability(12_200, 0)).toEqual({
+      available: 0,
+      needed: 1,
+    })
+  })
+
+  it("reports zero needed once the goal has no further charged XP", () => {
+    expect(levelBookAvailability(0, 100_000)).toEqual({
+      available: 8,
+      needed: 0,
+    })
+  })
+
+  it("falls back to Legendary for a missing or unsupported stored rarity", () => {
+    expect(levelBookAvailability(12_200, 100_000, "not-a-rarity")).toEqual({
+      available: 8,
+      needed: 1,
+    })
   })
 })

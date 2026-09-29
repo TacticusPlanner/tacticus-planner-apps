@@ -13,7 +13,9 @@ import {
   getCampaignBattles,
   getCampaignDefinitions,
   getCharactersMap,
+  getCharacterAbilityCosts,
   getMowsMap,
+  getMowUpgradeCosts,
   getUnlockShardCostsMap,
   getUpgrades,
 } from "@workspace/game-catalog/queries"
@@ -128,6 +130,17 @@ export function useGoalCatalog() {
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
 
+  // Per-level ability cost ladders, keyed by the level a rung raises an ability to. `undefined` until
+  // loaded; a missing/empty dataset just means no ability materials (see `abilityMaterialsNeed`).
+  const mowUpgradeCostsByLevel = useLiveQuery(
+    async () => byLevel(await getMowUpgradeCosts()),
+    []
+  )
+  const characterAbilityCostsByLevel = useLiveQuery(
+    async () => byLevel(await getCharacterAbilityCosts()),
+    []
+  )
+
   /** Display name for a goal row (list/grid) — the shared resolver, so the Goals pages, the V1
    * import report, and `features/project-management`'s assembly sheet all name units identically. */
   const getEntityName = useUnitName()
@@ -141,6 +154,8 @@ export function useGoalCatalog() {
     battlesById,
     ascensionCostsById,
     unlockShardCostsById,
+    mowUpgradeCostsByLevel,
+    characterAbilityCostsByLevel,
     releaseTypeByGroupId,
     characterGroups,
     mowGroups,
@@ -151,6 +166,9 @@ export function useGoalCatalog() {
     loading,
   }
 }
+
+const byLevel = <T extends { level: number }>(rows: readonly T[]) =>
+  new Map(rows.map((row) => [row.level, row]))
 
 /** Combines two already-faction-grouped lists into one, merging same-faction groups (rather than
  * appending a second same-named faction heading) and re-sorting by the shared faction order. */

@@ -208,6 +208,25 @@ describe("catalog schemas", () => {
     expect(result.success).toBe(true)
   })
 
+  it("accepts a valid character-ability-costs ladder and rejects a malformed one", () => {
+    const schema = datasetPayloadSchemas["character-ability-costs"]
+
+    expect(
+      schema.safeParse([
+        { level: 2, gold: 25, badges: { rarity: "Common", amount: 1 } },
+        { level: 9, gold: 100, badges: { rarity: "Uncommon", amount: 2 } },
+      ]).success
+    ).toBe(true)
+    expect(
+      schema.safeParse([{ level: 2, gold: 25, badges: { rarity: "Nope" } }])
+        .success
+    ).toBe(false)
+    expect(
+      schema.safeParse([{ level: 2, badges: { rarity: "Common", amount: 1 } }])
+        .success
+    ).toBe(false)
+  })
+
   it("validates the ascension-costs ladder as its own dataset", () => {
     const result = datasetPayloadSchemas["ascension-costs"].safeParse([
       {

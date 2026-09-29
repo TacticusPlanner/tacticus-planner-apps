@@ -19,6 +19,7 @@ import {
   type GoalTypeFilterValue,
 } from "@/entities/goal"
 import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
@@ -80,13 +81,15 @@ export function GoalsPage() {
   const launchCreateGoal = useCreateGoalLauncher()
   const insightsRun = usePlanInsights(null)
   const insights = insightsRun.result
+  const { settings: planningSettings } = usePlanningSettings()
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
   const projectsByGoalId = useGoalProjects(projects.projects)
   const nonArchivedGoals = useGoals()
   const archivedGoals = useGoals({ archived: true })
-  const selectedGoals = tab === "archived" ? archivedGoals : nonArchivedGoals
+  // The archived query stays for prerequisite cascades only; there is no Archived view any more.
+  const selectedGoals = nonArchivedGoals
   const refreshCurrentView = selectedGoals.retry
 
   const nonArchivedGoalIds = useMemo(
@@ -142,30 +145,28 @@ export function GoalsPage() {
         (membership) => membership.projectId === projectFilter
       ))
   const filteredNonArchivedRows = nonArchivedRows.filter(matchesFilters)
-  const filteredArchivedRows = archivedRows.filter(matchesFilters)
 
   // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
   // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
   // full non-archived candidate set instead, then filters afterward (see the comment on
   // `GoalStatusFilterCounts` for why this tab has no live count in the dropdown).
   const candidateRows =
-    tab === "archived"
-      ? filteredArchivedRows
-      : tab === "active"
-        ? filteredNonArchivedRows.filter((row) => row.status === "Active")
-        : tab === "paused"
-          ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
-          : tab === "blocked"
-            ? filteredNonArchivedRows
-            : filteredNonArchivedRows.filter(
-                (row) => isReached(row.goalId) === (tab === "reached")
-              )
+    tab === "active"
+      ? filteredNonArchivedRows.filter((row) => row.status === "Active")
+      : tab === "paused"
+        ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
+        : tab === "blocked"
+          ? filteredNonArchivedRows
+          : filteredNonArchivedRows.filter(
+              (row) => isReached(row.goalId) === (tab === "reached")
+            )
   // Progress bar + remaining-resource summary per visible row (plan §2) — scoped to only the rows
   // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
   const overviewMetrics = useGoalsOverviewMetrics(
     candidateRows.map((row) => row.goalId),
     insights.estimates,
-    insights.rankSlotsByGoalId
+    insights.rankSlotsByGoalId,
+    insights.abilityMaterialsByGoalId
   )
   const baseRows =
     tab === "blocked"
@@ -180,7 +181,6 @@ export function GoalsPage() {
       .length,
     reached: filteredNonArchivedRows.filter((row) => isReached(row.goalId))
       .length,
-    archived: filteredArchivedRows.length,
     active: filteredNonArchivedRows.filter((row) => row.status === "Active")
       .length,
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
@@ -202,7 +202,7 @@ export function GoalsPage() {
     toggleReorder,
     exitReorder,
     listRef,
-  } = useGoalsPageReorder(nonArchivedRows, tab !== "archived")
+  } = useGoalsPageReorder(nonArchivedRows)
   const noFarmableDemand =
     !insightsRun.loading &&
     !insightsRun.isError &&
@@ -395,6 +395,8 @@ export function GoalsPage() {
                 actions={goalActions}
                 cascadeContext={cascadeContext}
                 estimates={insights.estimates}
+                levelChargedXp={insights.levelChargedXpByGoalId}
+                levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
                 levelPotentialProgress={insights.levelPotentialProgressByGoalId}
                 metrics={overviewMetrics}
                 mobileReorderActive={reorderActive}
@@ -405,6 +407,7 @@ export function GoalsPage() {
                 reorderEnabled={reorderAvailable}
                 reorderPending={orderActions.pending}
                 rows={rowGroup.rows}
+                xpBookRarity={planningSettings.xpBookRarity}
               />
             </section>
           ) : null

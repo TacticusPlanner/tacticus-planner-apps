@@ -35,8 +35,9 @@ type Props = {
    *  (`goal-progress-display`'s "closes on ... opening the row menu" requirement) rather than
    *  letting both float over the row at once. */
   onOpenChange?: (open: boolean) => void
-  /** Whether this goal's target has been reached — gates the "⋯" menu's Archive item. Absent (e.g. a
-   *  caller that hasn't computed attainment) renders as not-reached, so Archive stays hidden. */
+  /** Whether this goal's target has been reached — hides pause/resume (`goal-status-actions`: "A
+   *  Reached goal shows neither control"); the stored status is untouched. Absent renders as
+   *  not-reached. */
   reached?: boolean
   /** Enables the primary pause/resume control's prerequisite cascade. Absent disables it entirely
    *  (the primary control still pauses/resumes this goal alone). */
@@ -47,9 +48,8 @@ type Props = {
  * and resume are primary row actions" — reachable in one click, not behind the "⋯" menu), project
  * removal/move when the row is viewed inside a project, and a destructive delete gated behind
  * `DeleteGoalDialog`. On desktop, project removal/move and delete render as their own icon buttons
- * (`rework-goal-project-move-action`), leaving the "⋯" menu for Archive/Unarchive only — rendered
- * only when one of those applies. On mobile, every non-primary action stays inside the "⋯" menu,
- * unchanged. Removal and deletion are deliberately unalike: removal/move is an ordinary item that
+ * (`rework-goal-project-move-action`), so desktop has no "⋯" menu at all. On mobile, every non-primary
+ * action stays inside the "⋯" menu. Removal and deletion are deliberately unalike: removal/move is an ordinary item that
  * acts immediately on one project, delete is destructive, account-wide, and confirmed. Reaching a
  * goal's target is computed automatically (see `model/attainment/`), never a manual action here. */
 export function GoalRowActions({
@@ -142,12 +142,9 @@ export function GoalRowActions({
     </Button>
   )
 
-  const canArchiveOrUnarchive = row.status === "Archived" || reached
-  const showMenu = isMobile || canArchiveOrUnarchive
-
   return (
     <>
-      {row.status === "Active" ? (
+      {row.status === "Active" && !reached ? (
         <Button
           aria-label={t("goals.actions.pause")}
           data-testid={`goal-row-pause-${goalId}`}
@@ -159,7 +156,7 @@ export function GoalRowActions({
           <Pause />
         </Button>
       ) : null}
-      {row.status === "Paused" ? (
+      {row.status === "Paused" && !reached ? (
         <Button
           aria-label={t("goals.actions.resume")}
           data-testid={`goal-row-resume-${goalId}`}
@@ -175,7 +172,7 @@ export function GoalRowActions({
       {!isMobile ? projectAction : null}
       {!isMobile ? deleteAction : null}
 
-      {showMenu ? (
+      {isMobile ? (
         <DropdownMenu onOpenChange={onOpenChange}>
           <DropdownMenuTrigger asChild>
             <Button
@@ -189,18 +186,8 @@ export function GoalRowActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {row.status === "Archived" ? (
-              <DropdownMenuItem onSelect={() => setStatus("Active")}>
-                {t("goals.actions.unarchive")}
-              </DropdownMenuItem>
-            ) : reached ? (
-              <DropdownMenuItem onSelect={() => setStatus("Archived")}>
-                {t("goals.actions.archive")}
-              </DropdownMenuItem>
-            ) : null}
-            {isMobile && project ? (
+            {project ? (
               <>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   data-testid={
                     hasOtherMembership
@@ -220,18 +207,14 @@ export function GoalRowActions({
                 </DropdownMenuItem>
               </>
             ) : null}
-            {isMobile ? (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  data-testid={`goal-row-delete-${goalId}`}
-                  variant="destructive"
-                  onSelect={() => setConfirmOpen(true)}
-                >
-                  {t("goals.actions.delete")}
-                </DropdownMenuItem>
-              </>
-            ) : null}
+            {project ? <DropdownMenuSeparator /> : null}
+            <DropdownMenuItem
+              data-testid={`goal-row-delete-${goalId}`}
+              variant="destructive"
+              onSelect={() => setConfirmOpen(true)}
+            >
+              {t("goals.actions.delete")}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}

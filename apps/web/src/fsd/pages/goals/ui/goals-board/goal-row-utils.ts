@@ -3,7 +3,12 @@ import type { SyntheticEvent } from "react"
 import type { GoalStatus } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import type { EstimateOutcome } from "@/features/goal-farming"
+import {
+  levelBookAvailability,
+  normalizeXpBookRarity,
+  type EstimateOutcome,
+} from "@/features/goal-farming"
+import type { XpBookFigure } from "../shared/goal-resource-chips"
 import type { GoalRow } from "../../model/shared/types"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 
@@ -81,14 +86,52 @@ export type GoalsListProps = {
   /** Potential progress of each Rank/Ability goal's *level requirement* (owned XP books), keyed by that
    *  goal's id — beside `potentialProgress`, which carries the same goal's material Potential. */
   levelPotentialProgress?: ReadonlyMap<string, number>
-  /** Whether each row's target has been reached (attainment-computed) — gates the "⋯" menu's Archive
-   *  item (`goal-status-actions`: "Archive is available only once a goal has reached its target").
-   *  Absent renders every row as not-reached, so Archive stays hidden by default. */
+  /** Each Rank/Ability goal's own charged level-requirement XP interval, keyed by goal id
+   *  (`PlanInsightsResult.levelChargedXpByGoalId`) — paired with `levelPoolXpAvailable` below to show
+   *  an available/needed book-equivalent count (show-xp-book-availability-per-goal). */
+  levelChargedXp?: ReadonlyMap<string, number>
+  /** The shared owned-book pool's raw XP total at each Rank/Ability goal's own turn in priority order,
+   *  keyed by goal id (`PlanInsightsResult.levelPoolXpAvailableByGoalId`). */
+  levelPoolXpAvailable?: ReadonlyMap<string, number>
+  /** The user's selected XP-book rarity, used to express `levelChargedXp`/`levelPoolXpAvailable` as
+   *  book-equivalent counts. Absent renders no book count even when the maps above have entries. */
+  xpBookRarity?: string
+  /** Whether each row's target has been reached (attainment-computed) — drives the completed-row
+   *  presentation (`goal-list-layout`) and hides pause/resume. Absent renders every row as
+   *  not-reached. */
   reachedByGoalId?: ReadonlyMap<string, boolean>
   /** Built once per page render (`buildCascadeContext`) from this list's full, unfiltered row set —
    *  not `rows`, which may be a filtered/grouped subset. Absent disables the cascade entirely. */
   cascadeContext?: CascadeContext
 }
+
+/** Whether a row renders as a completed (Reached) row/card — a display state derived from computed
+ *  attainment, never the goal's stored status. */
+export function isReachedRow(
+  row: GoalRow,
+  reachedByGoalId: ReadonlyMap<string, boolean> | undefined
+): boolean {
+  return reachedByGoalId?.get(row.goalId) ?? false
+}
+
+/** The XP-book available/needed figure for a goal's chip (`GoalResourceChips`' `xpBooks`), in the
+ *  selected rarity; `undefined` when the goal needs no level-up books. */
+export function goalXpBookFigure(
+  chargedXp: number | undefined,
+  poolXpAvailable: number | undefined,
+  xpBookRarity: string | undefined
+): XpBookFigure | undefined {
+  const rarity = normalizeXpBookRarity(xpBookRarity)
+  const { available, needed } = levelBookAvailability(
+    chargedXp ?? 0,
+    poolXpAvailable ?? 0,
+    rarity
+  )
+  return needed > 0 ? { available, needed, rarity } : undefined
+}
+
+/** Shared classes for the green Reached tint (theme token, so the contrast audit covers it). */
+export const REACHED_ROW_CLASS = "bg-success hover:bg-success"
 
 /** Stops activation on an inner control from
  * also bubbling up to the row/card's own "open detail" handler. */

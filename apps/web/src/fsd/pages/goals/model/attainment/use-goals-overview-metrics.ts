@@ -24,7 +24,7 @@ import type {
   RankSlotAllocation,
 } from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
-import type { ResourceNeed } from "@/features/goal-farming"
+import type { AbilityMaterials, ResourceNeed } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import {
   computeGoalAttainment,
@@ -74,7 +74,11 @@ export function useGoalsOverviewMetrics(
   estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>,
   /** The plan's allocation of each Rank goal's slots (`PlanInsightsResult.rankSlotsByGoalId`): rows
    *  then show what the goal adds to the one plan, not its standalone count. */
-  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>
+  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>,
+  /** The plan's ability materials per Ability goal (`PlanInsightsResult.abilityMaterialsByGoalId`), net
+   *  of levels a higher-priority goal for the same unit covers. Absent (no plan run yet) keeps each
+   *  goal's standalone figure. */
+  abilityMaterialsByGoalId?: ReadonlyMap<string, AbilityMaterials | null>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
   const isAuthenticated = useIsAuthenticated()
   const {
@@ -83,6 +87,8 @@ export function useGoalsOverviewMetrics(
     upgradesById,
     ascensionCostsById,
     unlockShardCostsById,
+    mowUpgradeCostsByLevel,
+    characterAbilityCostsByLevel,
     getCharacter,
     getEntityName,
     loading: catalogLoading,
@@ -261,11 +267,13 @@ export function useGoalsOverviewMetrics(
           upgradesById,
           ascensionCostsById: ascensionCostsById!,
           unlockShardCostsById: unlockShardCostsById!,
+          mowUpgradeCostsByLevel,
+          characterAbilityCostsByLevel,
         })
       : null
 
     const slots = rankSlotsByGoalId?.get(goalId)
-    const remaining =
+    const withSlots =
       remainingStandalone && slots
         ? {
             ...remainingStandalone,
@@ -273,6 +281,14 @@ export function useGoalsOverviewMetrics(
             coveredByEarlierGoal: slots.allocated === 0 && slots.standalone > 0,
           }
         : remainingStandalone
+    // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
+    const remaining =
+      withSlots && abilityMaterialsByGoalId?.has(goalId)
+        ? {
+            ...withSlots,
+            abilityMaterials: abilityMaterialsByGoalId.get(goalId) ?? undefined,
+          }
+        : withSlots
 
     const estimateOutcome = estimatesByGoalId?.get(goalId)
     const blockers = computeGoalBlockers({

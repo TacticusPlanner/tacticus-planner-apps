@@ -12,6 +12,7 @@ import {
 import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
+import { characterAbilityCostSchema } from "./character-ability-costs"
 import { npcSchema } from "./npc"
 import { onslaughtRewardSchema } from "./onslaught"
 import { ascensionCostSchema, unlockShardCostSchema } from "./progression-costs"
@@ -27,6 +28,7 @@ export const datasetPayloadSchemas = {
   npcs: z.array(npcSchema),
   mows: z.array(mowSchema),
   "mow-upgrade-costs": z.array(mowUpgradeCostSchema),
+  "character-ability-costs": z.array(characterAbilityCostSchema),
   "ascension-costs": z.array(ascensionCostSchema),
   "unlock-shard-costs": z.array(unlockShardCostSchema),
   "onslaught-rewards": z.array(onslaughtRewardSchema),
@@ -54,6 +56,7 @@ export type GameCatalogRecordByKey = {
   npcs: z.infer<typeof npcSchema>
   mows: z.infer<typeof mowSchema>
   "mow-upgrade-costs": z.infer<typeof mowUpgradeCostSchema>
+  "character-ability-costs": z.infer<typeof characterAbilityCostSchema>
   "ascension-costs": z.infer<typeof ascensionCostSchema>
   "unlock-shard-costs": z.infer<typeof unlockShardCostSchema>
   "onslaught-rewards": z.infer<typeof onslaughtRewardSchema>

@@ -18,6 +18,7 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 import { useProjects } from "@/entities/project"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   goalQueries,
   isGoalGroupValue,
@@ -107,6 +108,7 @@ export function ProjectDetailPage() {
   const { result: insights } = usePlanInsights(
     projectGoals.goals.map((entry) => entry.goal.goalId)
   )
+  const { settings: planningSettings } = usePlanningSettings()
 
   // Rows carry their goal's full membership, not just this project's: the row menu's project
   // removal needs to know whether leaving this project is the goal's last membership.
@@ -125,7 +127,6 @@ export function ProjectDetailPage() {
   const accountGoalTotal = accountGoalsQuery.data?.goals.length
   // Project detail always shows every goal type (fix-project-priority-display) - there is no Type
   // filter to narrow this by, unlike Goals Overview.
-  const filteredAllRows = allRows
   const filteredNonArchivedRows = nonArchivedRows
   const attainmentByGoalId = useGoalAttainment(
     nonArchivedRows.map((row) => row.goalId)
@@ -163,21 +164,20 @@ export function ProjectDetailPage() {
   // full non-archived candidate set instead, then filters afterward (see the comment on
   // `GoalStatusFilterCounts` for why this tab has no live count in the dropdown).
   const candidateRows =
-    tab === "archived"
-      ? filteredAllRows.filter((row) => row.status === "Archived")
-      : tab === "active"
-        ? filteredNonArchivedRows.filter((row) => row.status === "Active")
-        : tab === "paused"
-          ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
-          : tab === "blocked"
-            ? filteredNonArchivedRows
-            : filteredNonArchivedRows.filter(
-                (row) => isReached(row.goalId) === (tab === "reached")
-              )
+    tab === "active"
+      ? filteredNonArchivedRows.filter((row) => row.status === "Active")
+      : tab === "paused"
+        ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
+        : tab === "blocked"
+          ? filteredNonArchivedRows
+          : filteredNonArchivedRows.filter(
+              (row) => isReached(row.goalId) === (tab === "reached")
+            )
   const overviewMetrics = useGoalsOverviewMetrics(
     candidateRows.map((row) => row.goalId),
     insights.estimates,
-    insights.rankSlotsByGoalId
+    insights.rankSlotsByGoalId,
+    insights.abilityMaterialsByGoalId
   )
   // Unit count for the summary text ("N units, M goals") - not a full per-unit plan anymore, since
   // priority is flat per-goal, not unit-grouped (add-inline-goal-reprioritize).
@@ -214,7 +214,6 @@ export function ProjectDetailPage() {
       .length,
     reached: filteredNonArchivedRows.filter((row) => isReached(row.goalId))
       .length,
-    archived: filteredAllRows.filter((row) => row.status === "Archived").length,
     active: filteredNonArchivedRows.filter((row) => row.status === "Active")
       .length,
     paused: filteredNonArchivedRows.filter((row) => row.status === "Paused")
@@ -330,6 +329,8 @@ export function ProjectDetailPage() {
           }
           estimates={insights.estimates}
           getEntityName={getEntityName}
+          levelChargedXp={insights.levelChargedXpByGoalId}
+          levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
           loading={projectGoals.loading}
           metrics={overviewMetrics}
           mobileReorderActive={reorderActive}
@@ -342,6 +343,7 @@ export function ProjectDetailPage() {
           levelPotentialProgress={insights.levelPotentialProgressByGoalId}
           reorderPending={orderActions.pending}
           rowGroups={rowGroups}
+          xpBookRarity={planningSettings.xpBookRarity}
         />
       </div>
       {isMobile && reorderActive ? (

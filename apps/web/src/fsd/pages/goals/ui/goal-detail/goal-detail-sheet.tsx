@@ -333,7 +333,10 @@ export function GoalDetailSheet({
               />
               {mode === "edit" ? (
                 <>
-                  <GoalTargetDisplay progress={progress} />
+                  <GoalTargetDisplay
+                    entityType={detail.entityType}
+                    progress={progress}
+                  />
                   <GoalProgressDisplay
                     potentialRatio={potentialRatio}
                     progress={progress}

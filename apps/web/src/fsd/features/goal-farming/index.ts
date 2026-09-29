@@ -25,6 +25,8 @@ export {
 } from "./lib/goal-need"
 export {
   computeLevelGoalCost,
+  levelBookAvailability,
+  normalizeXpBookRarity,
   xpNeededForLevelRange,
   type LevelGoalCost,
 } from "./lib/level-xp-cost"
@@ -49,6 +51,10 @@ export {
   unlockResourceNeed,
   type ResourceNeed,
 } from "./lib/progression-cost-calc"
+export {
+  abilityMaterialsNeed,
+  type AbilityMaterials,
+} from "./lib/ability-materials"
 export { estimateRemainingShardEnergy } from "./lib/shard-energy-estimate"
 export {
   ONSLAUGHT_RUNS_PER_DAY,

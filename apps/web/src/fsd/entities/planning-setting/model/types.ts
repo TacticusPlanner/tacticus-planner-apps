@@ -1,5 +1,7 @@
 export type PlanningSettings = {
   dailyEnergy: number
+  /** Preferred XP-book rarity for level-up book figures; absent means Legendary. */
+  xpBookRarity?: string
   revision: number
 }
 

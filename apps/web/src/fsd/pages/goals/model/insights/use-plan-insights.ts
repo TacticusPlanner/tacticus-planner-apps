@@ -64,6 +64,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     mowsById,
     ascensionCostsById,
     unlockShardCostsById,
+    mowUpgradeCostsByLevel,
+    characterAbilityCostsByLevel,
     releaseTypeByGroupId,
     getCharacter,
   } = useGoalCatalog()
@@ -222,6 +224,10 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             mowsById: mowsById!,
             ascensionCostsById: ascensionCostsById!,
             unlockShardCostsById: unlockShardCostsById!,
+            abilityLadders: {
+              mowUpgradeCostsByLevel,
+              characterAbilityCostsByLevel,
+            },
             releaseTypeByGroupId,
             getCharacter,
             campaignName,
@@ -256,6 +262,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     catalogReady,
     serverDataReady,
     serverDataVersion,
+    mowUpgradeCostsByLevel,
+    characterAbilityCostsByLevel,
     isAuthenticated,
     calculationKey,
     planningSettings.dailyEnergy,

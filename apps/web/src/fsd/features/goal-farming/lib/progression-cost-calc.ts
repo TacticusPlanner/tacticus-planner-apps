@@ -8,6 +8,7 @@ import {
   type Rarity,
 } from "@workspace/game-domain"
 
+import type { AbilityMaterials } from "./ability-materials"
 import {
   shardResourceId,
   type ShardResourceId,
@@ -41,6 +42,10 @@ export type ResourceNeed = {
    *  slot this goal would need, so it adds no work of its own (it stays uncompleted until synced
    *  progression reaches its target). */
   coveredByEarlierGoal?: boolean
+  /** Ability goals only: gold, ability badges, forge badges and components still needed, summed from
+   *  the catalog's per-level cost ladders. Absent for other goal kinds, and for an Ability goal whose
+   *  ladder is not loaded or that has nothing left to raise. */
+  abilityMaterials?: AbilityMaterials
 }
 
 /** Whether a unit's *current* progression is already in the Mythic tier — the point at which

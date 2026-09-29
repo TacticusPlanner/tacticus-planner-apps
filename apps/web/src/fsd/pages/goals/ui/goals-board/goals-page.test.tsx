@@ -107,6 +107,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => [],
   getAscensionCostsMap: () => new Map(),
   getUnlockShardCostsMap: () => new Map(),
+  getMowUpgradeCosts: () => [],
+  getCharacterAbilityCosts: () => [],
   getOnslaughtRewards: () => [],
   getShops: () => Promise.resolve([]),
 }))
@@ -190,14 +192,25 @@ vi.mock("@/shared/api", () => ({
 }))
 
 // The plan run behind estimates is exercised by its own tests; the page only consumes its result.
+// A mutable `.value` (not a static object) so a test that needs non-empty level-requirement maps
+// (the available/needed book count) can override it before rendering.
+const insightsResult = vi.hoisted(() => ({
+  emptyResult: {
+    estimates: new Map(),
+    potentialProgressByGoalId: new Map(),
+    levelPotentialProgressByGoalId: new Map(),
+    levelChargedXpByGoalId: new Map(),
+    levelPoolXpAvailableByGoalId: new Map(),
+    rankSlotsByGoalId: new Map(),
+  },
+  value: {} as Record<string, unknown>,
+}))
+insightsResult.value = insightsResult.emptyResult
+
 vi.mock("../../model/insights/use-plan-insights", () => ({
   usePlanInsights: () => ({
     loading: false,
-    result: {
-      estimates: new Map(),
-      potentialProgressByGoalId: new Map(),
-      levelPotentialProgressByGoalId: new Map(),
-    },
+    result: insightsResult.value,
   }),
 }))
 vi.mock("@/features/goal-order", async (importOriginal) => ({
@@ -300,6 +313,7 @@ describe("GoalsPage", () => {
     updateProjectGoalsStatus.mockReset()
     mobile.value = false
     onLaunch.mockReset()
+    insightsResult.value = insightsResult.emptyResult
   })
 
   it("does not render page-level creation actions", async () => {
@@ -530,7 +544,54 @@ describe("GoalsPage", () => {
     })
   })
 
-  it("retains non-archived status counts while Archived is selected", async () => {
+  it("shows the available/needed XP-book count on a Rank goal's row from the plan's priority-ordered allocation", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    getGoalDetail.mockResolvedValue({
+      goalId: activeGoal.goalId,
+      entityType: "Character",
+      entityId: "hero1",
+      goalType: "Rank",
+      status: "Active",
+      notes: null,
+      projectIds: [],
+      dependsOn: [],
+      events: [],
+      updatedAt: activeGoal.updatedAt,
+      config: {
+        rank: {
+          start: 5,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: 11, // Silver3 — requires level 32 (94,200 XP threshold)
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+      },
+    })
+    getPlayerCharacters.mockReturnValue([
+      {
+        unitId: "hero1",
+        rank: "Stone1",
+        appliedUpgradeSlots: [],
+        progressionIndex: "Mythic:MythicWings",
+        xpLevel: 31,
+        xp: 82_000,
+      },
+    ])
+    // 94,200 - 82,000 = 12,200 XP charged; a 100,000-XP pool at the default Legendary rarity
+    // (12,500/book) is floor(100,000 / 12,500) = 8 available against ceil(12,200 / 12,500) = 1 needed.
+    insightsResult.value = {
+      ...insightsResult.emptyResult,
+      levelChargedXpByGoalId: new Map([[activeGoal.goalId, 12_200]]),
+      levelPoolXpAvailableByGoalId: new Map([[activeGoal.goalId, 100_000]]),
+    }
+    renderPage()
+
+    const chips = await screen.findByTestId("goal-resource-chips")
+    expect(chips).toHaveTextContent("goals.resourceChips.xpBooksValue")
+  })
+
+  it("offers no Archived option but still fetches archived goals for cascades", async () => {
     listGoals.mockImplementation((options?: { archived?: boolean }) =>
       Promise.resolve({
         goals: options?.archived ? [archivedGoal] : [activeGoal],
@@ -541,17 +602,13 @@ describe("GoalsPage", () => {
 
     await screen.findByTestId("goals-list-table")
     await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.tabs.archived (1)" })
-    )
-
-    await user.click(screen.getByTestId("goals-status-filter"))
     expect(
       await screen.findByRole("option", { name: "goals.tabs.toReach (1)" })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole("option", { name: "goals.tabs.archived (1)" })
-    ).toBeInTheDocument()
+      screen.queryByRole("option", { name: /^goals\.tabs\.archived/ })
+    ).not.toBeInTheDocument()
+    expect(listGoals).toHaveBeenCalledWith({ archived: true })
   })
 
   it("opens the goal detail sheet when clicking anywhere on the row", async () => {
@@ -630,34 +687,6 @@ describe("GoalsPage", () => {
       )
     ).toBeInTheDocument()
     expect(listProjectGoals).toHaveBeenCalledWith("proj-1")
-  })
-
-  it("carries project membership onto archived rows too", async () => {
-    listGoals.mockImplementation((options?: { archived?: boolean }) =>
-      Promise.resolve({
-        goals: options?.archived ? [archivedGoal] : [activeGoal],
-      })
-    )
-    listProjects.mockResolvedValue({ projects: [overviewProject] })
-    listProjectGoals.mockResolvedValue({
-      goals: [
-        { goal: activeGoal, priority: 0 },
-        { goal: archivedGoal, priority: 1 },
-      ],
-    })
-    const user = userEvent.setup()
-    renderPage()
-
-    await screen.findByTestId("goals-list-table")
-    await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.tabs.archived (1)" })
-    )
-
-    const row = await screen.findByTestId("goal-row")
-    expect(
-      within(row).getByTestId("goal-project-memberships")
-    ).toHaveTextContent("My Goals")
   })
 
   it("offers no project-removal action, because Overview has no project scope", async () => {
@@ -764,50 +793,6 @@ describe("GoalsPage", () => {
           .getAllByTestId("goal-project-memberships")
           .some((node) => within(node).queryByText("My Goals"))
       ).toBe(true)
-    )
-  })
-
-  it("narrows the Archived tab by project too, rather than emptying it", async () => {
-    listGoals.mockImplementation((options?: { archived?: boolean }) =>
-      Promise.resolve({
-        goals: options?.archived
-          ? [archivedGoal, { ...archivedGoal, goalId: "goal-archived-b" }]
-          : [activeGoal],
-      })
-    )
-    listProjects.mockResolvedValue({
-      projects: [overviewProject, otherProject],
-    })
-    listProjectGoals.mockImplementation((projectId: string) =>
-      Promise.resolve({
-        goals:
-          projectId === "proj-1"
-            ? [{ goal: archivedGoal, priority: 0 }]
-            : [
-                {
-                  goal: { ...archivedGoal, goalId: "goal-archived-b" },
-                  priority: 0,
-                },
-              ],
-      })
-    )
-    const user = userEvent.setup()
-    renderPage()
-
-    await screen.findByTestId("goals-list-table")
-    await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.archived/ })
-    )
-    await vi.waitFor(() =>
-      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
-    )
-
-    await user.click(screen.getByTestId("goals-project-filter"))
-    await user.click(await screen.findByRole("option", { name: "Event Prep" }))
-
-    await vi.waitFor(() =>
-      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
   })
 

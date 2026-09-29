@@ -73,24 +73,15 @@ export function formatGoalRemainingText(
   if (progress.kind === "LevelRequirement") {
     const count = progress.target - progress.current
     if (count <= 0) return null
-    return progress.remainingXp
-      ? t("goals.overview.remainingText.levelsWithXp", {
-          count: fmt(count),
-          xp: fmt(progress.remainingXp),
-        })
-      : t("goals.overview.remainingText.levels", { count: fmt(count) })
+    return t("goals.overview.remainingText.levels", { count: fmt(count) })
   }
   if (progress.kind === "Rank") {
     if (remaining?.coveredByEarlierGoal)
       return t("goals.overview.remainingText.coveredByEarlierGoal")
-    const slots = remaining?.upgradeSlotsRemaining
-    if (!slots || slots <= 0) return null
-    return energy !== undefined
-      ? t("goals.overview.remainingText.rankWithEnergy", {
-          slots: fmt(slots),
-          energy: fmt(energy),
-        })
-      : t("goals.overview.remainingText.rank", { slots: fmt(slots) })
+    // No upgrade-slot count: the slots are not a resource, energy is the readable cost.
+    return energy
+      ? t("goals.overview.remainingText.rankEnergy", { energy: fmt(energy) })
+      : null
   }
   if (progress.kind === "Unlock") {
     const shards = remaining?.shards ?? 0

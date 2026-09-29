@@ -28,8 +28,6 @@ import {
   createCraftedInventoryPool,
   estimatePlan,
   selectFarmNodes,
-} from "@/features/goal-farming"
-import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
@@ -46,6 +44,7 @@ import {
   type RankSlotAllocation,
   type UnitCoverage,
 } from "@/features/goal-farming"
+import { createAbilityMaterialsPlan } from "./plan-ability-materials"
 import { computeGoalProgress } from "../attainment/goal-progress"
 import { computePotentialProgressRatio } from "./potential-progress"
 import {
@@ -91,6 +90,8 @@ export function computePlanInsights(params: {
   mowsById: ReadonlyMap<string, MowStorageModel>
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
   unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
+  /** Ability cost ladders for the Remaining chips' plan-wide materials (`abilityMaterialsByGoalId`). */
+  abilityLadders?: Parameters<typeof createAbilityMaterialsPlan>[0]
   releaseTypeByGroupId: ReadonlyMap<CampaignId, string>
   getCharacter: (unitId: UnitId) => Character | undefined
   campaignName: (descriptor: Pick<CampaignDescriptor, "nameKey">) => string
@@ -122,6 +123,7 @@ export function computePlanInsights(params: {
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
   const rankSlotsByGoalId = new Map<string, RankSlotAllocation>()
+  const abilityMaterials = createAbilityMaterialsPlan(params.abilityLadders)
   let onslaughtTokens = 0
   // The whole plan's Onslaught token demand, scoped or not: the account's tokens are one budget shared by
   // every goal in the global run, so the wait for tokens is the plan's, never a project-only one.
@@ -171,6 +173,7 @@ export function computePlanInsights(params: {
       coveredRankSlots: coverage.rankSlots,
       craftedInventory,
     }
+    abilityMaterials.add(detail, needParams)
     if (detail.goalType === "Rank")
       rankSlotsByGoalId.set(detail.goalId, rankSlotAllocation(needParams))
     const stages = calculateGoalFarmingStages(needParams)
@@ -313,7 +316,7 @@ export function computePlanInsights(params: {
     orbGoalNeeds,
     params.inventoryOrbs
   )
-  const levelPotentialProgressByGoalId = buildLevelPotentialProgress({
+  const levelPotential = buildLevelPotentialProgress({
     orderedDetails,
     priorityByGoalId: params.priorityByGoalId,
     playerCharacterById: params.playerCharacterById,
@@ -456,7 +459,10 @@ export function computePlanInsights(params: {
     estimates: estimateResults,
     potentialProgressByGoalId,
     rankSlotsByGoalId,
-    levelPotentialProgressByGoalId,
+    levelPotentialProgressByGoalId: levelPotential.ratioByGoalId,
+    levelChargedXpByGoalId: levelPotential.chargedXpByGoalId,
+    levelPoolXpAvailableByGoalId: levelPotential.poolXpAvailableByGoalId,
+    abilityMaterialsByGoalId: abilityMaterials.byGoalId,
     completionDate,
     unestimatedGoalCount,
     bottlenecks,

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { GripVertical } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
 } from "../../model/attainment/goal-overview-metrics-defaults"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalRowActions } from ".//goal-row-actions"
+import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
 import {
   GoalProgressDisplay,
@@ -35,10 +37,14 @@ import {
   EstimateCell,
   GoalNameLink,
   GoalPriorityNumber,
+  ReachedDash,
 } from "./goal-row-shared"
 import {
   estimateEnergy,
   isInFlightStatus,
+  isReachedRow,
+  goalXpBookFigure,
+  REACHED_ROW_CLASS,
   stopRowNavigation,
   type GoalsListProps,
 } from "./goal-row-utils"
@@ -71,6 +77,9 @@ function GoalsTable({
   reorderEnabled = false,
   reorderPending = false,
   levelPotentialProgress,
+  levelChargedXp,
+  levelPoolXpAvailable,
+  xpBookRarity,
   project,
   reachedByGoalId,
   cascadeContext,
@@ -98,6 +107,7 @@ function GoalsTable({
             </TableHead>
           ) : null}
           <TableHead>{t("goals.columns.entity")}</TableHead>
+          <TableHead>{t("goals.columns.projects")}</TableHead>
           <TableHead>{t("goals.columns.goal")}</TableHead>
           <TableHead>
             <span className="flex items-center gap-2">
@@ -124,6 +134,14 @@ function GoalsTable({
             const remaining = metrics?.get(row.goalId)?.remaining ?? null
             const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
             const energy = estimateEnergy(estimates?.get(row.goalId))
+            const reached = isReachedRow(row, reachedByGoalId)
+            const xpBooks = reached
+              ? undefined
+              : goalXpBookFigure(
+                  levelChargedXp?.get(row.goalId),
+                  levelPoolXpAvailable?.get(row.goalId),
+                  xpBookRarity
+                )
             const remainingText = formatGoalRemainingText(
               t,
               i18n?.resolvedLanguage,
@@ -134,9 +152,13 @@ function GoalsTable({
 
             return (
               <TableRow
-                className="h-14 cursor-pointer data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring"
+                className={cn(
+                  "h-14 cursor-pointer data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring",
+                  reached && REACHED_ROW_CLASS
+                )}
                 data-dragging={sortable.isDragging || undefined}
                 data-goal-id={row.goalId}
+                data-reached={reached || undefined}
                 data-testid="goal-row"
                 key={row.goalId}
                 onClick={() => onView(row.goalId)}
@@ -184,23 +206,35 @@ function GoalsTable({
                         remainingText={remainingText}
                         row={row}
                       />
-                      <p className="text-xs text-muted-foreground">
-                        {t(`goals.create.goalTypes.${row.goalType}`)}
-                      </p>
-                      <GoalProjectBadges projects={row.projects ?? []} />
+                      {row.notes ? (
+                        <p
+                          className="max-w-64 truncate text-xs font-normal text-muted-foreground"
+                          data-testid="goal-row-notes"
+                          title={row.notes}
+                        >
+                          {row.notes}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
-                  {row.notes ? (
-                    <p
-                      className="max-w-64 truncate text-xs font-normal text-muted-foreground"
-                      title={row.notes}
-                    >
-                      {row.notes}
-                    </p>
-                  ) : null}
                 </TableCell>
                 <TableCell>
-                  <GoalTargetDisplay progress={progress} />
+                  {/* At most two lines inside the fixed row height; the full list is the tooltip. */}
+                  <div
+                    className="max-h-10 max-w-48 overflow-hidden"
+                    data-testid="goal-row-projects"
+                    title={(row.projects ?? [])
+                      .map((project) => project.name)
+                      .join(", ")}
+                  >
+                    <GoalProjectBadges projects={row.projects ?? []} />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <GoalTargetDisplay
+                    entityType={row.entityType}
+                    progress={progress}
+                  />
                   <LevelRequirementTarget levelRequirement={levelRequirement} />
                 </TableCell>
                 <TableCell
@@ -208,39 +242,51 @@ function GoalsTable({
                   onClick={stopRowNavigation}
                   onKeyDown={stopRowNavigation}
                 >
-                  <GoalProgressDisplay
-                    energy={energy}
-                    onOpenChange={(open) =>
-                      setOpenPopoverGoalId(open ? row.goalId : null)
-                    }
-                    open={openPopoverGoalId === row.goalId}
-                    potentialRatio={potentialProgress?.get(row.goalId)}
-                    progress={progress}
-                    remaining={remaining}
-                  />
-                  <LevelRequirementProgressBar
-                    levelRequirement={levelRequirement}
-                    potentialRatio={levelPotentialProgress?.get(row.goalId)}
-                  />
+                  {reached ? (
+                    <ReachedDash />
+                  ) : (
+                    <>
+                      <GoalProgressDisplay
+                        energy={energy}
+                        onOpenChange={(open) =>
+                          setOpenPopoverGoalId(open ? row.goalId : null)
+                        }
+                        open={openPopoverGoalId === row.goalId}
+                        potentialRatio={potentialProgress?.get(row.goalId)}
+                        progress={progress}
+                        remaining={remaining}
+                      />
+                      <LevelRequirementProgressBar
+                        levelRequirement={levelRequirement}
+                        potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                      />
+                    </>
+                  )}
                 </TableCell>
                 <TableCell>
-                  {remainingText ? (
-                    <span
-                      className="block max-w-[190px] truncate text-xs text-muted-foreground"
-                      data-testid="goal-remaining-column"
-                      title={remainingText}
-                    >
-                      {remainingText}
-                    </span>
-                  ) : null}
-                  <LevelRequirementRemaining
-                    levelRequirement={levelRequirement}
-                  />
+                  {reached ? (
+                    <ReachedDash />
+                  ) : (
+                    <div data-testid="goal-remaining-column">
+                      <GoalResourceChips
+                        energy={energy}
+                        entityType={row.entityType}
+                        goalType={row.goalType}
+                        remaining={remaining}
+                        xpBooks={xpBooks}
+                      />
+                    </div>
+                  )}
+                  {reached ? null : (
+                    <LevelRequirementRemaining
+                      levelRequirement={levelRequirement}
+                    />
+                  )}
                 </TableCell>
                 <TableCell>
                   <div className="grid gap-1">
                     <div className="flex flex-wrap items-center gap-1">
-                      <StatusBadge status={row.status} />
+                      <StatusBadge reached={reached} status={row.status} />
                       <BlockedIndicator
                         blockers={
                           metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS
@@ -248,7 +294,9 @@ function GoalsTable({
                         progress={progress}
                       />
                     </div>
-                    {estimates ? (
+                    {reached ? (
+                      <ReachedDash />
+                    ) : estimates ? (
                       <EstimateCell estimate={estimates.get(row.goalId)} />
                     ) : null}
                   </div>
@@ -268,7 +316,7 @@ function GoalsTable({
                         if (open) setOpenPopoverGoalId(null)
                       }}
                       project={project}
-                      reached={reachedByGoalId?.get(row.goalId) ?? false}
+                      reached={reached}
                       row={row}
                     />
                   </div>

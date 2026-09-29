@@ -348,16 +348,18 @@ describe("GoalTargetDisplay for Rank milestones", () => {
       reachableRatio: null,
     }) as never
 
-  it("labels each milestone's own target so two goals for one character read apart", () => {
+  it("shows emblems only, each carrying its rank name as accessible name, so milestones still read apart", () => {
     const { unmount } = render(
       <GoalTargetDisplay progress={rank("Silver3", 0)} />
     )
-    expect(screen.getByText(/ranks\.Silver3/)).toBeInTheDocument()
+    expect(screen.getByAltText(/ranks\.Silver3/)).toBeInTheDocument()
+    expect(screen.getByAltText(/ranks\.Silver2/)).toBeInTheDocument()
+    expect(screen.queryByText(/ranks\./)).not.toBeInTheDocument()
     unmount()
 
     render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
-    expect(screen.getByText(/ranks\.Gold1/)).toBeInTheDocument()
-    expect(screen.queryByText(/ranks\.Silver3/)).not.toBeInTheDocument()
+    expect(screen.getByAltText(/ranks\.Gold1/)).toBeInTheDocument()
+    expect(screen.queryByAltText(/ranks\.Silver3/)).not.toBeInTheDocument()
   })
 
   it("adds the applied slots for a partial target and nothing for a clean one", () => {
@@ -369,5 +371,110 @@ describe("GoalTargetDisplay for Rank milestones", () => {
 
     render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
     expect(screen.queryByText(/\/6\)/)).not.toBeInTheDocument()
+  })
+})
+
+describe("GoalTargetDisplay for Ability goals", () => {
+  const ability = (
+    currentActive: number,
+    targetActive: number,
+    currentPassive: number,
+    targetPassive: number
+  ) =>
+    ({
+      kind: "Ability",
+      currentActive,
+      targetActive,
+      currentPassive,
+      targetPassive,
+      ratio: 0.2,
+    }) as never
+  const pill = (key: string) => screen.queryByTestId(`goal-ability-pill-${key}`)
+
+  it("labels a Machine of War's tracks Primary and Secondary, one pill each", () => {
+    render(
+      <GoalTargetDisplay entityType="Mow" progress={ability(47, 50, 12, 15)} />
+    )
+    expect(pill("primary")).toHaveTextContent(
+      "goals.overview.abilityTrack.primary4750"
+    )
+    expect(pill("secondary")).toHaveTextContent(
+      "goals.overview.abilityTrack.secondary1215"
+    )
+    expect(pill("active")).toBeNull()
+    expect(pill("passive")).toBeNull()
+  })
+
+  it("labels a Character's tracks Active and Passive", () => {
+    render(
+      <GoalTargetDisplay
+        entityType="Character"
+        progress={ability(8, 10, 5, 7)}
+      />
+    )
+    expect(pill("active")).toHaveTextContent(
+      "goals.overview.abilityTrack.active810"
+    )
+    expect(pill("passive")).toHaveTextContent(
+      "goals.overview.abilityTrack.passive57"
+    )
+    expect(pill("primary")).toBeNull()
+    expect(pill("secondary")).toBeNull()
+  })
+
+  it("shows only the track still being raised", () => {
+    render(
+      <GoalTargetDisplay entityType="Mow" progress={ability(47, 50, 12, 12)} />
+    )
+    expect(pill("primary")).toBeInTheDocument()
+    expect(pill("secondary")).toBeNull()
+  })
+
+  it("omits a track that already reached its target", () => {
+    render(
+      <GoalTargetDisplay entityType="Mow" progress={ability(50, 50, 12, 15)} />
+    )
+    expect(pill("primary")).toBeNull()
+    expect(pill("secondary")).toBeInTheDocument()
+  })
+})
+
+describe("Goal kind without a type label", () => {
+  it("shows Ascension as icons only", () => {
+    render(
+      <GoalTargetDisplay
+        progress={
+          {
+            kind: "Ascension",
+            current: "Epic:OneStar",
+            target: "Legendary:OneStar",
+            ratio: 0.5,
+          } as never
+        }
+      />
+    )
+    expect(screen.queryByText(/goalTypes/)).not.toBeInTheDocument()
+  })
+
+  it("shows the word Unlock in the Goal cell and the shard count beside the bar", () => {
+    const unlock = {
+      kind: "Unlock",
+      owned: 329,
+      required: 500,
+      ratio: 0.66,
+    } as never
+    const { container } = render(
+      <>
+        <GoalTargetDisplay progress={unlock} />
+        <GoalProgressDisplay progress={unlock} />
+      </>
+    )
+    expect(
+      screen.getByText("goals.create.goalTypes.Unlock")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("goal-unlock-count")).toHaveTextContent(
+      'goals.overview.ownedOfRequired:{"owned":329,"required":500}'
+    )
+    expect(container).not.toHaveTextContent("ownedOfTotal")
   })
 })

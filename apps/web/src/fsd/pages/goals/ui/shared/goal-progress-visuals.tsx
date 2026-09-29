@@ -42,16 +42,52 @@ function displayPercent(ratio: number): number {
   return Math.min(99, Math.round(ratio * 100))
 }
 
-/** The track with the larger remaining gap — the one that's actually gating the goal, so that's the
- *  one `GoalTargetDisplay` shows a current/target pair for. */
-function widestAbilityTrack(
+/** One pill per ability track still being raised: an uppercase label, the current level, an arrow and
+ *  the emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
+ *  Active/Passive (`active*` fields hold the first track, `passive*` the second, for both). A track at
+ *  or above its target gets no pill. */
+function AbilityTargetPills({
+  progress,
+  entityType,
+}: {
   progress: Extract<GoalProgress, { kind: "Ability" }>
-): { current: number; target: number } {
-  const activeGap = progress.targetActive - progress.currentActive
-  const passiveGap = progress.targetPassive - progress.currentPassive
-  return activeGap > passiveGap
-    ? { current: progress.currentActive, target: progress.targetActive }
-    : { current: progress.currentPassive, target: progress.targetPassive }
+  entityType?: string
+}) {
+  const { t } = useTranslation()
+  const mow = entityType === "Mow"
+  const tracks = [
+    {
+      key: (mow ? "primary" : "active") as "primary" | "active",
+      current: progress.currentActive,
+      target: progress.targetActive,
+    },
+    {
+      key: (mow ? "secondary" : "passive") as "secondary" | "passive",
+      current: progress.currentPassive,
+      target: progress.targetPassive,
+    },
+  ].filter((track) => track.target > track.current)
+
+  return (
+    <span className="flex flex-wrap items-center gap-1.5">
+      {tracks.map((track) => (
+        <span
+          className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs"
+          data-testid={`goal-ability-pill-${track.key}`}
+          key={track.key}
+        >
+          <span className="font-medium tracking-wide text-muted-foreground uppercase">
+            {t(`goals.overview.abilityTrack.${track.key}`)}
+          </span>
+          <span className="text-muted-foreground tabular-nums">
+            {track.current}
+          </span>
+          <ArrowRight aria-hidden="true" className="size-3" />
+          <span className="font-semibold tabular-nums">{track.target}</span>
+        </span>
+      ))}
+    </span>
+  )
 }
 
 /** Small legend dot — solid for Actual, a hollow ring for Potential (mirrors the stacked bar's
@@ -99,18 +135,25 @@ export function GoalProgressLegend({ show }: { show: boolean }) {
  *  mobile card's "goal line"). Reuses `RankBadge`/`ProgressionBadge` so a goal's target reads
  *  identically here and in the create-goal form. Renders nothing for `Unknown` progress or a kind
  *  with no natural current/target pair and no ratio to fall back to. */
-export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
+export function GoalTargetDisplay({
+  progress,
+  entityType,
+}: {
+  progress: GoalProgress
+  /** Picks the Ability track labels (Machine of War: Primary/Secondary; otherwise Active/Passive). */
+  entityType?: string
+}) {
   const { t } = useTranslation()
 
   if (progress.kind === "Unknown") return null
 
   return progress.kind === "Rank" ? (
     <span className="flex items-center gap-1.5">
-      <RankBadge rank={progress.current} showLabel={false} />
+      <RankBadge rank={progress.current} showLabel={false} tooltip />
       <ArrowRight className="size-3.5 text-muted-foreground" />
-      {/* The target is labelled (icon + rank name, plus applied slots for a partial target) so two Rank
-          milestones for one character can be told apart at a glance. */}
-      <RankBadge rank={progress.target} />
+      {/* Emblems only: the rank name is each emblem's tooltip and accessible name. The `(n/6)` marker
+          below is a target modifier, so it stays. */}
+      <RankBadge rank={progress.target} showLabel={false} tooltip />
       {progress.targetSlots > 0 ? (
         <span className="text-xs text-muted-foreground">
           ({progress.targetSlots}/6)
@@ -124,16 +167,10 @@ export function GoalTargetDisplay({ progress }: { progress: GoalProgress }) {
       <ProgressionBadge value={progress.target} />
     </span>
   ) : progress.kind === "Ability" ? (
-    <span>
-      {t("goals.overview.levelProgress", widestAbilityTrack(progress))}
-    </span>
+    <AbilityTargetPills entityType={entityType} progress={progress} />
   ) : progress.kind === "Unlock" ? (
-    <span>
-      {t("goals.create.unlock.ownedOfTotal", {
-        owned: progress.owned,
-        total: progress.required,
-      })}
-    </span>
+    // The owned / required shard count lives in the Progress cell (`GoalProgressDisplay`).
+    <span>{t("goals.create.goalTypes.Unlock")}</span>
   ) : progress.kind === "LevelRequirement" ? (
     <span>
       {t("goals.overview.levelProgress", {
@@ -185,15 +222,33 @@ export function GoalProgressDisplay({
   const isMobile = useIsMobile()
   const [mobileExpanded, setMobileExpanded] = useState(false)
 
+  const unlockCount =
+    progress.kind === "Unlock" ? (
+      <span
+        className="text-xs whitespace-nowrap text-muted-foreground tabular-nums"
+        data-testid="goal-unlock-count"
+      >
+        {t("goals.overview.ownedOfRequired", {
+          owned: progress.owned,
+          required: progress.required,
+        })}
+      </span>
+    ) : null
+
   if (progress.kind === "Unknown" || progress.ratio === null) {
     const remainingText = formatGenericRemainingText(t, remaining, energy)
-    return remainingText ? (
-      <p
-        className="text-xs text-muted-foreground"
-        data-testid="goal-remaining-text"
-      >
-        {remainingText}
-      </p>
+    return remainingText || unlockCount ? (
+      <div className="grid gap-1">
+        {unlockCount}
+        {remainingText ? (
+          <p
+            className="text-xs text-muted-foreground"
+            data-testid="goal-remaining-text"
+          >
+            {remainingText}
+          </p>
+        ) : null}
+      </div>
     ) : null
   }
 
@@ -383,6 +438,7 @@ export function GoalProgressDisplay({
             valueText={valueText}
           />
         </div>
+        {unlockCount}
         {percentWithTooltip}
         {!isMobile ? infoTrigger : null}
       </div>

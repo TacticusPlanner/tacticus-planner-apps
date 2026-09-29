@@ -1,0 +1,191 @@
+import { useTranslation } from "react-i18next"
+import { Zap } from "lucide-react"
+import {
+  abilityBadgeIcon,
+  forgeBadgeIcon,
+  goldIcon,
+  mowComponentIcon,
+  orbIcon,
+  shardIcon,
+  xpBookIcon,
+} from "@workspace/game-catalog"
+import { rarityOrder, type Rarity } from "@workspace/game-domain"
+
+import type { GoalKind } from "@/entities/goal"
+import type { ResourceNeed } from "@/features/goal-farming"
+import { EntityIcon } from "@/shared/ui"
+
+/** At most this many chips render; the rest collapse into one "+N" chip whose tooltip lists all. */
+const MAX_VISIBLE_CHIPS = 6
+
+export type XpBookFigure = {
+  needed: number
+  available: number
+  rarity: Rarity
+}
+
+type Chip = {
+  key: string
+  /** Icon URL, or `null` for the energy glyph (no game asset). */
+  icon: string | null
+  /** Full localized resource name, used in the tooltip and the accessible name. */
+  name: string
+  /** Display text beside the icon (a formatted quantity, or "available / needed" for books). */
+  text: string
+}
+
+/** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
+ *  materials; zero quantities omitted; an XP-book chip only for a Character Rank/Ability goal that
+ *  needs a level-up. */
+export function GoalResourceChips({
+  goalType,
+  entityType,
+  remaining,
+  energy,
+  xpBooks,
+}: {
+  goalType: GoalKind
+  entityType: string
+  remaining: ResourceNeed | null
+  energy: number | undefined
+  /** The goal's needed/available level-up books in the selected rarity, when it needs a level-up. */
+  xpBooks?: XpBookFigure
+}) {
+  const { t, i18n } = useTranslation()
+  const fmt = (value: number) =>
+    new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
+  const rarityName = (rarity: Rarity) =>
+    t(`goals.resourceChips.rarity.${rarity}`)
+  const chips: Chip[] = []
+  const add = (
+    key: string,
+    icon: string | null,
+    name: string,
+    quantity: number | undefined
+  ) => {
+    if (quantity && quantity > 0) {
+      chips.push({ key, icon, name, text: fmt(quantity) })
+    }
+  }
+  const addByRarity = (
+    kind: "orbs" | "abilityBadges" | "forgeBadges",
+    amounts: Partial<Record<Rarity, number>> | undefined,
+    icon: (rarity: Rarity) => string
+  ) => {
+    for (const rarity of rarityOrder) {
+      add(
+        `${kind}-${rarity}`,
+        icon(rarity),
+        t(`goals.resourceChips.${kind}`, { rarity: rarityName(rarity) }),
+        amounts?.[rarity]
+      )
+    }
+  }
+  const addEnergy = () =>
+    add("energy", null, t("goals.resourceChips.energy"), energy)
+  const addShards = () => {
+    add(
+      "shards",
+      shardIcon("Regular"),
+      t("goals.resourceChips.shards"),
+      remaining?.shards
+    )
+    add(
+      "mythicShards",
+      shardIcon("Mythic"),
+      t("goals.resourceChips.mythicShards"),
+      remaining?.mythicShards
+    )
+  }
+  const addXpBooks = () => {
+    if (!xpBooks || xpBooks.needed <= 0) return
+    chips.push({
+      key: "xpBooks",
+      icon: xpBookIcon(xpBooks.rarity),
+      name: t("goals.resourceChips.xpBooks", {
+        rarity: rarityName(xpBooks.rarity),
+      }),
+      text: t("goals.resourceChips.xpBooksValue", {
+        available: fmt(xpBooks.available),
+        needed: fmt(xpBooks.needed),
+      }),
+    })
+  }
+  const materials = remaining?.abilityMaterials
+
+  if (goalType === "Rank") {
+    addEnergy()
+    addXpBooks()
+  } else if (goalType === "Ascension") {
+    addByRarity("orbs", remaining?.orbsByType, orbIcon)
+    addShards()
+    addEnergy()
+  } else if (goalType === "Unlock") {
+    addShards()
+    addEnergy()
+  } else if (goalType === "Ability") {
+    addByRarity("abilityBadges", materials?.badgesByRarity, abilityBadgeIcon)
+    if (entityType === "Mow") {
+      addByRarity("forgeBadges", materials?.forgeBadgesByRarity, forgeBadgeIcon)
+      add(
+        "components",
+        mowComponentIcon(),
+        t("goals.resourceChips.components"),
+        materials?.components
+      )
+    }
+    add("gold", goldIcon(), t("goals.resourceChips.gold"), materials?.gold)
+    // A Machine of War has no character level, so never an XP-book chip.
+    if (entityType !== "Mow") addXpBooks()
+  } else if (goalType === "Upgrade") {
+    addEnergy()
+  }
+
+  if (chips.length === 0) return null
+
+  const label = (chip: Chip) =>
+    t("goals.resourceChips.chipLabel", { name: chip.name, quantity: chip.text })
+  const visible =
+    chips.length > MAX_VISIBLE_CHIPS
+      ? chips.slice(0, MAX_VISIBLE_CHIPS - 1)
+      : chips
+  const hidden = chips.slice(visible.length)
+  const fullList = chips.map(label).join(", ")
+
+  return (
+    <ul
+      className="flex max-h-12 max-w-[220px] flex-wrap gap-x-2 gap-y-1 overflow-hidden text-xs"
+      data-testid="goal-resource-chips"
+    >
+      {visible.map((chip) => (
+        <li data-testid="goal-resource-chip" key={chip.key}>
+          <span
+            aria-label={label(chip)}
+            className="flex items-center gap-1 tabular-nums"
+            role="img"
+            title={label(chip)}
+          >
+            {chip.icon ? (
+              <EntityIcon alt="" className="size-5" src={chip.icon} />
+            ) : (
+              <Zap aria-hidden className="size-4 text-muted-foreground" />
+            )}
+            <span aria-hidden>{chip.text}</span>
+          </span>
+        </li>
+      ))}
+      {hidden.length > 0 ? (
+        <li data-testid="goal-resource-chips-overflow">
+          <span
+            aria-label={fullList}
+            className="text-muted-foreground"
+            role="img"
+            title={fullList}
+          >
+            <span aria-hidden>+{hidden.length}</span>
+          </span>
+        </li>
+      ) : null}
+    </ul>
+  )
+}

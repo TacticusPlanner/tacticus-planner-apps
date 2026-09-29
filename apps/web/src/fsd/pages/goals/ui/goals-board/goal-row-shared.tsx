@@ -48,6 +48,18 @@ export function EstimateCell({
   )
 }
 
+/** The "-" a Reached row/card shows in place of its progress, remaining and "Done by" content. */
+export function ReachedDash() {
+  return (
+    <span
+      className="text-sm text-muted-foreground"
+      data-testid="goal-reached-dash"
+    >
+      -
+    </span>
+  )
+}
+
 /** The character/MoW name, with the Unlock goal's flavor text (and, once the Remaining column is
  *  hidden in the compact-desktop band, its remaining-shard figure too) reachable as a tooltip on the
  *  name instead of a persistent caption line — `goal-progress-display`'s Unlock-tooltip requirement. */
