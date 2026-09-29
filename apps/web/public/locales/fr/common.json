@@ -880,8 +880,7 @@
         "rankWithEnergy": "{{slots}} emplacements · {{energy}} énergie",
         "coveredByEarlierGoal": "Couvert par un objectif précédent",
         "shards": "{{count}} éclats",
-        "additionalBooks_one": "+{{count}} livre {{rarity}} supplémentaire",
-        "additionalBooks_other": "+{{count}} livres {{rarity}} supplémentaires"
+        "bookAvailability": "{{available}}/{{needed}} livres {{rarity}}"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Détails de la progression",

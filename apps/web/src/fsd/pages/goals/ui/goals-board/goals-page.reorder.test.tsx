@@ -89,8 +89,13 @@ vi.mock("./overview-project-quicknav", () => ({
 vi.mock("../goal-detail/goal-detail-sheet", () => ({
   GoalDetailSheet: () => null,
 }))
-vi.mock("../settings/planning-settings-dialog", () => ({
+vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsDialog: () => null,
+  PlanningSettingsTrigger: () => null,
+  usePlanningSettings: () => ({
+    settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
+    save: vi.fn(),
+  }),
 }))
 vi.mock("./goals-list", () => ({
   GoalsList: ({

@@ -47,18 +47,23 @@ export function LevelRequirementProgressBar({
 }
 
 /** The requirement's own "N levels remaining (M XP)" line — always-visible text (a sub-line has no
- * hover target of its own worth relying on). When owned XP books still leave a gap after the shared
- * global-order allocation (`allocateLevelXp`), an explicitly-labeled *additional* book-equivalent
- * count is appended in the user's selected XP-book rarity (surface-goal-farming-guidance) — never a
- * guaranteed source, just an equivalent; the raw XP figure above is unchanged. */
+ * hover target of its own worth relying on). When the goal is charged a nonzero XP interval, an
+ * available/needed book-equivalent count is appended in the user's selected XP-book rarity
+ * (show-xp-book-availability-per-goal): the shared owned-book pool's size at this goal's turn in
+ * priority order over what this goal itself needs — never a guaranteed source, just an equivalent;
+ * the raw XP figure above is unchanged, and neither count is capped to the other. */
 export function LevelRequirementRemaining({
   levelRequirement,
-  additionalBookCount,
+  availableBookCount,
+  neededBookCount,
   xpBookRarity,
 }: {
   levelRequirement: LevelRequirementProgress | null | undefined
-  /** Additional books needed in `xpBookRarity`, after owned-book netting — 0/undefined shows nothing. */
-  additionalBookCount?: number
+  /** The shared pool's book-equivalent size at this goal's turn, in `xpBookRarity` — shown only
+   *  alongside a positive `neededBookCount`. */
+  availableBookCount?: number
+  /** This goal's own book-equivalent need, in `xpBookRarity` — 0/undefined shows nothing. */
+  neededBookCount?: number
   xpBookRarity?: string
 }) {
   const { t, i18n } = useTranslation(["common", "progression"])
@@ -72,9 +77,13 @@ export function LevelRequirementRemaining({
   )
   if (!remainingText) return null
   const bookText =
-    additionalBookCount && additionalBookCount > 0 && xpBookRarity
-      ? t("goals.overview.remainingText.additionalBooks", {
-          count: additionalBookCount,
+    neededBookCount &&
+    neededBookCount > 0 &&
+    availableBookCount !== undefined &&
+    xpBookRarity
+      ? t("goals.overview.remainingText.bookAvailability", {
+          available: availableBookCount,
+          needed: neededBookCount,
           rarity: t(`progression:rarities.${xpBookRarity}`, {
             defaultValue: xpBookRarity,
           }),
@@ -97,12 +106,14 @@ export function LevelRequirementRemaining({
 export function LevelRequirementSummary({
   levelRequirement,
   potentialRatio,
-  additionalBookCount,
+  availableBookCount,
+  neededBookCount,
   xpBookRarity,
 }: {
   levelRequirement: LevelRequirementProgress | null | undefined
   potentialRatio: number | undefined
-  additionalBookCount?: number
+  availableBookCount?: number
+  neededBookCount?: number
   xpBookRarity?: string
 }) {
   if (!levelRequirement) return null
@@ -114,8 +125,9 @@ export function LevelRequirementSummary({
         potentialRatio={potentialRatio}
       />
       <LevelRequirementRemaining
-        additionalBookCount={additionalBookCount}
+        availableBookCount={availableBookCount}
         levelRequirement={levelRequirement}
+        neededBookCount={neededBookCount}
         xpBookRarity={xpBookRarity}
       />
     </div>

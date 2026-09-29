@@ -63,7 +63,8 @@ export function GoalDetailSheet({
   potentialRatio,
   levelPotentialRatio,
   rankSlotAllocation,
-  levelXpRemaining,
+  levelChargedXp,
+  levelPoolXpAvailable,
   onGoalChange,
 }: {
   goalId: string | null
@@ -77,10 +78,14 @@ export function GoalDetailSheet({
   /** This Rank goal's slots as allocated in the one plan (`PlanInsightsResult.rankSlotsByGoalId`) —
    *  `allocated === 0 && standalone > 0` means an earlier goal in the global order already covers it. */
   rankSlotAllocation?: RankSlotAllocation
-  /** This goal's still-unmet level-requirement XP after its own owned-book allocation
-   *  (`PlanInsightsResult.levelXpRemainingByGoalId`) — converted to the selected XP-book rarity's
-   *  additional-book equivalent below. */
-  levelXpRemaining?: number
+  /** This goal's own charged level-requirement XP interval
+   *  (`PlanInsightsResult.levelChargedXpByGoalId`) — converted to the selected XP-book rarity's
+   *  needed-book equivalent below. */
+  levelChargedXp?: number
+  /** The shared owned-book pool's raw XP total at this goal's own turn in priority order
+   *  (`PlanInsightsResult.levelPoolXpAvailableByGoalId`) — converted to the selected XP-book rarity's
+   *  available-book equivalent below. */
+  levelPoolXpAvailable?: number
   onGoalChange?: (goalId: string) => void
 }) {
   const { t } = useTranslation()
@@ -147,13 +152,16 @@ export function GoalDetailSheet({
     enabled: mode === "edit",
   })
 
-  const { metrics, additionalBookCount } = useGoalDetailMetrics({
-    goalId,
-    estimate,
-    rankSlotAllocation,
-    levelXpRemaining,
-    xpBookRarity: planningSettings.xpBookRarity,
-  })
+  const { metrics, availableBookCount, neededBookCount } = useGoalDetailMetrics(
+    {
+      goalId,
+      estimate,
+      rankSlotAllocation,
+      levelChargedXp,
+      levelPoolXpAvailable,
+      xpBookRarity: planningSettings.xpBookRarity,
+    }
+  )
   const progress = metrics?.progress ?? UNKNOWN_PROGRESS
 
   const { isRank, isUnlock, allLocations, overrideValid } =
@@ -328,13 +336,14 @@ export function GoalDetailSheet({
         {detail ? (
           <>
             <GoalDetailHeader
-              additionalBookCount={additionalBookCount}
               assignedProjects={assignedProjects}
+              availableBookCount={availableBookCount}
               blockers={metrics?.blockers}
               detail={detail}
               levelPotentialRatio={levelPotentialRatio}
               levelRequirement={metrics?.levelRequirement}
               mode={mode}
+              neededBookCount={neededBookCount}
               potentialRatio={potentialRatio}
               progress={progress}
               xpBookRarity={planningSettings.xpBookRarity}

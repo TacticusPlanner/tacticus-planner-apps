@@ -880,8 +880,7 @@
         "rankWithEnergy": "{{slots}} slots · {{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
         "shards": "{{count}} shards",
-        "additionalBooks_one": "+{{count}} additional {{rarity}} book",
-        "additionalBooks_other": "+{{count}} additional {{rarity}} books"
+        "bookAvailability": "{{available}}/{{needed}} {{rarity}} books"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Progress details",

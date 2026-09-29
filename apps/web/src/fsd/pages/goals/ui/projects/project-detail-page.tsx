@@ -18,6 +18,7 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 import { useProjects } from "@/entities/project"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   goalQueries,
   isGoalGroupValue,
@@ -107,6 +108,7 @@ export function ProjectDetailPage() {
   const { result: insights } = usePlanInsights(
     projectGoals.goals.map((entry) => entry.goal.goalId)
   )
+  const { settings: planningSettings } = usePlanningSettings()
 
   // Rows carry their goal's full membership, not just this project's: the row menu's project
   // removal needs to know whether leaving this project is the goal's last membership.
@@ -361,6 +363,8 @@ export function ProjectDetailPage() {
           }
           estimates={insights.estimates}
           getEntityName={getEntityName}
+          levelChargedXp={insights.levelChargedXpByGoalId}
+          levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
           loading={projectGoals.loading}
           metrics={overviewMetrics}
           mobileReorderActive={reorderActive}
@@ -373,6 +377,7 @@ export function ProjectDetailPage() {
           levelPotentialProgress={insights.levelPotentialProgressByGoalId}
           reorderPending={orderActions.pending}
           rowGroups={rowGroups}
+          xpBookRarity={planningSettings.xpBookRarity}
         />
       </div>
       {isMobile && reorderActive ? (
@@ -405,9 +410,14 @@ export function ProjectDetailPage() {
             ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
             : undefined
         }
-        levelXpRemaining={
+        levelChargedXp={
           detailGoalId
-            ? insights.levelXpRemainingByGoalId.get(detailGoalId)
+            ? insights.levelChargedXpByGoalId.get(detailGoalId)
+            : undefined
+        }
+        levelPoolXpAvailable={
+          detailGoalId
+            ? insights.levelPoolXpAvailableByGoalId.get(detailGoalId)
             : undefined
         }
         rankSlotAllocation={

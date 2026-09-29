@@ -22,6 +22,7 @@ import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
 import {
   PlanningSettingsDialog,
   PlanningSettingsTrigger,
+  usePlanningSettings,
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
@@ -85,6 +86,11 @@ export function GoalsPage() {
   const launchCreateGoal = useCreateGoalLauncher()
   const insightsRun = usePlanInsights(null)
   const insights = insightsRun.result
+  const { settings: planningSettings } = usePlanningSettings()
+  // The detail sheet's per-goal insight props all follow this same "only once a goal is selected"
+  // shape; one helper keeps GoalDetailSheet's props list from repeating the ternary per map.
+  const forDetail = <T,>(map: ReadonlyMap<string, T>) =>
+    detailGoalId ? map.get(detailGoalId) : undefined
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
@@ -394,6 +400,8 @@ export function GoalsPage() {
                 actions={goalActions}
                 cascadeContext={cascadeContext}
                 estimates={insights.estimates}
+                levelChargedXp={insights.levelChargedXpByGoalId}
+                levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
                 levelPotentialProgress={insights.levelPotentialProgressByGoalId}
                 metrics={overviewMetrics}
                 mobileReorderActive={reorderActive}
@@ -404,6 +412,7 @@ export function GoalsPage() {
                 reorderEnabled={reorderAvailable}
                 reorderPending={orderActions.pending}
                 rows={rowGroup.rows}
+                xpBookRarity={planningSettings.xpBookRarity}
               />
             </section>
           ) : null
@@ -415,34 +424,17 @@ export function GoalsPage() {
       ) : null}
 
       <GoalDetailSheet
-        estimate={
-          detailGoalId ? insights.estimates.get(detailGoalId) : undefined
-        }
+        estimate={forDetail(insights.estimates)}
         goalId={detailGoalId}
         isolated={false}
-        levelPotentialRatio={
-          detailGoalId
-            ? insights.levelPotentialProgressByGoalId.get(detailGoalId)
-            : undefined
-        }
-        levelXpRemaining={
-          detailGoalId
-            ? insights.levelXpRemainingByGoalId.get(detailGoalId)
-            : undefined
-        }
-        rankSlotAllocation={
-          detailGoalId
-            ? insights.rankSlotsByGoalId.get(detailGoalId)
-            : undefined
-        }
+        levelChargedXp={forDetail(insights.levelChargedXpByGoalId)}
+        levelPoolXpAvailable={forDetail(insights.levelPoolXpAvailableByGoalId)}
+        levelPotentialRatio={forDetail(insights.levelPotentialProgressByGoalId)}
+        rankSlotAllocation={forDetail(insights.rankSlotsByGoalId)}
         onGoalChange={setDetailGoalId}
         onOpenChange={(open) => !open && setDetailGoalId(null)}
         onUpdated={refreshCurrentView}
-        potentialRatio={
-          detailGoalId
-            ? insights.potentialProgressByGoalId.get(detailGoalId)
-            : undefined
-        }
+        potentialRatio={forDetail(insights.potentialProgressByGoalId)}
       />
       <GoalsCreateProjectSheet
         onOpenChange={setCreateProjectOpen}

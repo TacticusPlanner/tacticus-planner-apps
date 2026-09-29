@@ -39,11 +39,15 @@ export interface PlanInsightsResult {
    *  that goal's id — separate from `potentialProgressByGoalId`, which is the same goal's material
    *  Potential. */
   levelPotentialProgressByGoalId: Map<string, number>
-  /** Each Rank/Ability goal's still-unmet XP after its own owned-book allocation (surface-goal-
-   *  farming-guidance) — raw XP, rarity-agnostic; a consumer converts it to an *additional*
-   *  book-equivalent count in the user's selected XP-book rarity via `xpBookEquivalent`. Only a goal
-   *  whose character is below its required level gets an entry. */
-  levelXpRemainingByGoalId: Map<string, number>
+  /** Each Rank/Ability goal's own charged XP interval (show-xp-book-availability-per-goal) — raw XP,
+   *  rarity-agnostic; a consumer converts it to a *needed* book-equivalent count in the user's
+   *  selected XP-book rarity. Only a goal whose character is below its required level gets an entry. */
+  levelChargedXpByGoalId: Map<string, number>
+  /** The shared owned-book pool's raw XP total at each Rank/Ability goal's own turn in priority order
+   *  (show-xp-book-availability-per-goal) — raw XP, rarity-agnostic; a consumer converts it to an
+   *  *available* book-equivalent count in the user's selected XP-book rarity. Only a goal whose
+   *  character is below its required level gets an entry. */
+  levelPoolXpAvailableByGoalId: Map<string, number>
   /** The latest completion date (ISO `yyyy-mm-dd`) among the plan's goals that could be estimated,
    *  extended by Onslaught token accumulation when the plan needs more tokens than the account
    *  holds. `null` only when *no* goal in the plan could be estimated — a goal that is blocked or
@@ -71,7 +75,8 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   potentialProgressByGoalId: new Map(),
   rankSlotsByGoalId: new Map(),
   levelPotentialProgressByGoalId: new Map(),
-  levelXpRemainingByGoalId: new Map(),
+  levelChargedXpByGoalId: new Map(),
+  levelPoolXpAvailableByGoalId: new Map(),
   completionDate: null,
   unestimatedGoalCount: 0,
   bottlenecks: [],

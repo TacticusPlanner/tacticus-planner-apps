@@ -25,7 +25,8 @@ export function GoalDetailHeader({
   blockers,
   levelRequirement,
   levelPotentialRatio,
-  additionalBookCount,
+  availableBookCount,
+  neededBookCount,
   xpBookRarity,
   potentialRatio,
   assignedProjects,
@@ -36,7 +37,8 @@ export function GoalDetailHeader({
   blockers: GoalBlockers | undefined
   levelRequirement: LevelRequirementProgress | null | undefined
   levelPotentialRatio: number | undefined
-  additionalBookCount: number
+  availableBookCount: number
+  neededBookCount: number
   xpBookRarity: string
   potentialRatio: number | undefined
   assignedProjects: GoalProject[]
@@ -51,8 +53,9 @@ export function GoalDetailHeader({
         />
       </div>
       <LevelRequirementSummary
-        additionalBookCount={additionalBookCount}
+        availableBookCount={availableBookCount}
         levelRequirement={levelRequirement}
+        neededBookCount={neededBookCount}
         potentialRatio={levelPotentialRatio}
         xpBookRarity={xpBookRarity}
       />

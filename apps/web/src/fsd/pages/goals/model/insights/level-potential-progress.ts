@@ -11,11 +11,17 @@ export type LevelPotentialProgress = {
   /** Potential progress ratio of each Rank/Ability goal's level requirement, keyed by goal id — how far
    *  the account's owned XP books could take the character toward the required level *right now*. */
   ratioByGoalId: Map<string, number>
-  /** Each goal's still-unmet XP after its own owned-book allocation (`LevelXpAllocation.remainingXp`)
-   *  — the raw input a caller converts to an *additional* book-equivalent count in the user's selected
-   *  XP-book rarity (surface-goal-farming-guidance, `xpBookEquivalent`). Only a goal whose character is
+  /** Each goal's own charged XP interval (`LevelXpAllocation.chargedXp`) — the raw input a caller
+   *  converts to a *needed* book-equivalent count in the user's selected XP-book rarity
+   *  (show-xp-book-availability-per-goal, `ceil(chargedXp / bookXp)`). Only a goal whose character is
    *  below its required level gets an entry. */
-  remainingXpByGoalId: Map<string, number>
+  chargedXpByGoalId: Map<string, number>
+  /** The shared owned-book pool's raw XP total at each goal's own turn in priority order
+   *  (`LevelXpAllocation.poolXpAvailable`) — the raw input a caller converts to an *available*
+   *  book-equivalent count in the user's selected XP-book rarity (show-xp-book-availability-per-goal,
+   *  `floor(poolXpAvailable / bookXp)`). Only a goal whose character is below its required level gets
+   *  an entry. */
+  poolXpAvailableByGoalId: Map<string, number>
 }
 
 /** Potential progress of each Rank/Ability goal's level requirement, keyed by that goal's id — how far
@@ -50,7 +56,8 @@ export function buildLevelPotentialProgress(params: {
 
   const allocation = allocateLevelXp(needs, params.inventoryXpBooks)
   const ratioByGoalId = new Map<string, number>()
-  const remainingXpByGoalId = new Map<string, number>()
+  const chargedXpByGoalId = new Map<string, number>()
+  const poolXpAvailableByGoalId = new Map<string, number>()
   for (const need of needs) {
     const result = allocation.get(need.goalId)
     if (!result) continue
@@ -58,7 +65,8 @@ export function buildLevelPotentialProgress(params: {
       need.goalId,
       levelRequirementRatio(result.potentialLevel, need.requiredLevel)
     )
-    remainingXpByGoalId.set(need.goalId, result.remainingXp)
+    chargedXpByGoalId.set(need.goalId, result.chargedXp)
+    poolXpAvailableByGoalId.set(need.goalId, result.poolXpAvailable)
   }
-  return { ratioByGoalId, remainingXpByGoalId }
+  return { ratioByGoalId, chargedXpByGoalId, poolXpAvailableByGoalId }
 }

@@ -281,10 +281,13 @@ describe("GoalsList", () => {
       render(
         <GoalsList
           actions={stubActions}
+          levelChargedXp={new Map([["goal-1", 12_200]])}
+          levelPoolXpAvailable={new Map([["goal-1", 100_000]])}
           levelPotentialProgress={new Map([["goal-1", 1]])}
           metrics={metrics as never}
           reorderEnabled={false}
           rows={rows}
+          xpBookRarity="Legendary"
         />
       )
 
@@ -295,8 +298,11 @@ describe("GoalsList", () => {
       expect(screen.getAllByTestId("level-requirement-progress")).toHaveLength(
         1
       )
-      expect(screen.getAllByTestId("level-requirement-remaining")).toHaveLength(
-        1
+      const remaining = screen.getAllByTestId("level-requirement-remaining")
+      expect(remaining).toHaveLength(1)
+      // 100,000 XP pool / 12,500 per Legendary book = 8 available; 12,200 charged XP = 1 needed.
+      expect(remaining[0]).toHaveTextContent(
+        "goals.overview.remainingText.bookAvailability"
       )
       expect(screen.queryAllByTestId("level-goal-sub-target")).toHaveLength(0)
       // Ordinary progress, never a restriction.

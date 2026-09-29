@@ -99,6 +99,13 @@ vi.mock("@/entities/planning-setting", () => ({
     "Legendary",
     "Mythic",
   ],
+  normalizeXpBookRarity: (rarity: string | null | undefined) =>
+    rarity &&
+    ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
+      rarity
+    )
+      ? rarity
+      : "Legendary",
   usePlanningSettings: () => ({
     settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: vi.fn(),

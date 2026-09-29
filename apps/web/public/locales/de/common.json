@@ -880,8 +880,7 @@
         "rankWithEnergy": "{{slots}} Slots · {{energy}} Energie",
         "coveredByEarlierGoal": "Durch ein früheres Ziel abgedeckt",
         "shards": "{{count}} Scherben",
-        "additionalBooks_one": "+{{count}} zusätzliches {{rarity}}-Buch",
-        "additionalBooks_other": "+{{count}} zusätzliche {{rarity}}-Bücher"
+        "bookAvailability": "{{available}}/{{needed}} {{rarity}}-Bücher"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Fortschrittsdetails",

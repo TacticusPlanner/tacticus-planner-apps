@@ -880,8 +880,7 @@
         "rankWithEnergy": "{{slots}} ranuras · {{energy}} energía",
         "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
         "shards": "{{count}} fragmentos",
-        "additionalBooks_one": "+{{count}} libro {{rarity}} adicional",
-        "additionalBooks_other": "+{{count}} libros {{rarity}} adicionales"
+        "bookAvailability": "{{available}}/{{needed}} libros {{rarity}}"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Detalles del progreso",
