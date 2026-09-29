@@ -554,7 +554,6 @@
       "createInlineNote": "Un proyecto nuevo se guarda de inmediato, aunque canceles este objetivo. No cambia el estado ni la prioridad de este objetivo.",
       "createFailed": "No se pudo crear el proyecto. Comprueba tu conexión e inténtalo de nuevo.",
       "membershipConflict": "{{project}} ya contiene un objetivo {{types}} activo o pausado para esta unidad.",
-      "reviewConflictingGoal": "Revisar objetivo en conflicto",
       "filterAll": "Todos los proyectos",
       "filterLabel": "Proyecto",
       "archivedProjects": "Proyectos archivados ({{count}})",
@@ -814,43 +813,16 @@
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
     "detail": {
-      "title": "Detalles del objetivo",
-      "loadError": "No se pudo cargar este objetivo.",
-      "saveError": "No se pudo guardar este objetivo.",
-      "save": "Guardar cambios",
-      "cancel": "Cancelar",
-      "edit": "Editar",
-      "progressTitle": "Progreso y objetivo",
-      "blockersTitle": "Bloqueos",
-      "unsavedChangesTitle": "¿Descartar cambios sin guardar?",
-      "unsavedChangesDescription": "Tienes cambios sin guardar en este objetivo. Si cierras ahora, se descartarán.",
-      "unsavedChangesConfirm": "Descartar cambios",
-      "unsavedChangesCancel": "Seguir editando",
-      "estimateTitle": "Estimación",
-      "isolatedEstimate": "Estimación aislada",
-      "planAwareEstimate": "Tiene en cuenta los objetivos de mayor prioridad de tu orden de prioridad",
-      "unavailable": "No disponible",
-      "dependenciesTitle": "Dependencias",
-      "historyTitle": "Historial",
       "notes": "Notas",
       "projectsTitle": "Proyectos",
       "projectsDescription": "Un objetivo debe pertenecer al menos a un proyecto.",
       "projectsRequired": "Selecciona al menos un proyecto.",
       "farmingTitle": "Lugares de farmeo",
       "farmingDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
-      "farmingSummaryTitle": "Estrategia de farmeo",
-      "farmingSelected": "{{count}} lugar(es) seleccionados",
-      "farmingAuto": "Automático (menor energía)",
       "shardsTitle": "Lugar de fragmentos",
       "shardsDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
       "farmingInvalid": "Cada recurso necesario debe estar disponible en al menos un nodo seleccionado.",
-      "none": "Ninguno",
       "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo.",
-      "farmingGuidanceTitle": "Guía de farmeo",
-      "farmingGuidanceEligible_one": "{{count}} lugar farmeable ahora",
-      "farmingGuidanceEligible_other": "{{count}} lugares farmeables ahora",
-      "farmingGuidanceLink": "Abrir incursiones diarias",
-      "farmingGuidanceCovered": "Cubierto por un objetivo anterior — nada propio que farmear.",
       "projectGuidanceTitle": "Guía de farmeo",
       "projectGuidancePreview": "Vista previa — no es el plan diario de hoy",
       "projectGuidanceSummary_one": "Aún se necesita {{count}} material para los objetivos de este proyecto.",
@@ -952,12 +924,7 @@
     },
     "target": {
       "title": "Objetivo",
-      "edit": "Editar objetivo",
-      "hint": "Cambia dónde termina esta meta. Sus notas, proyectos y demás ajustes no se ven afectados.",
       "startedFrom": "Empezó en",
-      "save": "Guardar objetivo",
-      "saving": "Guardando…",
-      "cancel": "Cancelar",
       "rankEnd": "Rango objetivo",
       "progressionEnd": "Progresión objetivo",
       "activeEnd": "Habilidad activa, nivel objetivo",
@@ -974,16 +941,7 @@
         "upgradeQuantity": "Cada cantidad debe ser un número entero de 1 a 10.000.",
         "upgradeEmpty": "Una meta de mejoras necesita al menos un material."
       },
-      "reachedNote": "Un objetivo que ya alcanzaste es válido: simplemente no necesita nada más. La meta conserva su estado hasta que tú la completes.",
-      "saveError": "No se pudo guardar este objetivo.",
-      "saved": "Objetivo guardado.",
-      "refreshing": "Actualizando tu plan con el nuevo objetivo…",
-      "stale": "Esta meta se modificó en otro lugar. Carga su versión actual, revisa tu objetivo y vuelve a guardar.",
-      "loadCurrent": "Cargar versión actual",
-      "collision": "Otra meta para esta unidad ya tiene ese objetivo en: {{project}}.",
-      "planningStale": "El objetivo se guardó, pero tu plan no pudo actualizarse: las estimaciones mostradas pueden reflejar aún el objetivo anterior.",
-      "retryRefresh": "Reintentar actualización",
-      "historyChanged": "Objetivo modificado"
+      "reachedNote": "Un objetivo que ya alcanzaste es válido: simplemente no necesita nada más. La meta conserva su estado hasta que tú la completes."
     },
     "order": {
       "conflictTitle": "El plan ha cambiado",
@@ -1153,7 +1111,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Abre una meta compatible para editar su objetivo directamente. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
+          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Usa la acción Editar de una meta para cambiar su objetivo, prioridad, notas o proyectos. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
         }
       }
     },
@@ -1214,18 +1172,6 @@
       }
     },
     "startPage": "Recorrer esta página",
-    "goalDetail": {
-      "steps": {
-        "editTarget": {
-          "title": "Editar objetivo",
-          "content": "Cambia dónde termina esta meta sin volver a crearla. Conserva sus proyectos, notas e historial, y tu plan se recalcula."
-        },
-        "projects": {
-          "title": "Proyectos",
-          "content": "Añade este objetivo a un proyecto o crea uno nuevo desde el selector. El proyecto nuevo se guarda de inmediato; el objetivo solo cambia cuando guardas."
-        }
-      }
-    },
     "editGoal": {
       "steps": {
         "target": {

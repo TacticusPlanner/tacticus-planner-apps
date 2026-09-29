@@ -554,7 +554,6 @@
       "createInlineNote": "Un nouveau projet est enregistré immédiatement, même si vous annulez cet objectif. Cela ne modifie ni le statut ni la priorité de cet objectif.",
       "createFailed": "Impossible de créer le projet. Vérifiez votre connexion et réessayez.",
       "membershipConflict": "{{project}} contient déjà un objectif {{types}} actif ou en pause pour cette unité.",
-      "reviewConflictingGoal": "Voir l’objectif en conflit",
       "filterAll": "Tous les projets",
       "filterLabel": "Projet",
       "archivedProjects": "Projets archivés ({{count}})",
@@ -814,43 +813,16 @@
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
     "detail": {
-      "title": "Détails de l'objectif",
-      "loadError": "Impossible de charger cet objectif.",
-      "saveError": "Impossible d'enregistrer cet objectif.",
-      "save": "Enregistrer les modifications",
-      "cancel": "Annuler",
-      "edit": "Modifier",
-      "progressTitle": "Progression et cible",
-      "blockersTitle": "Blocages",
-      "unsavedChangesTitle": "Abandonner les modifications non enregistrées ?",
-      "unsavedChangesDescription": "Vous avez des modifications non enregistrées sur cet objectif. Fermer maintenant les abandonnera.",
-      "unsavedChangesConfirm": "Abandonner les modifications",
-      "unsavedChangesCancel": "Continuer la modification",
-      "estimateTitle": "Estimation",
-      "isolatedEstimate": "Estimation isolée",
-      "planAwareEstimate": "Tient compte des objectifs plus prioritaires de votre Plan global",
-      "unavailable": "Indisponible",
-      "dependenciesTitle": "Dépendances",
-      "historyTitle": "Historique",
       "notes": "Notes",
       "projectsTitle": "Projets",
       "projectsDescription": "Un objectif doit appartenir à au moins un projet.",
       "projectsRequired": "Sélectionnez au moins un projet.",
       "farmingTitle": "Lieux de farming",
       "farmingDescription": "Laissez chaque nœud non coché pour une sélection automatique au moindre coût en énergie.",
-      "farmingSummaryTitle": "Stratégie de farming",
-      "farmingSelected": "{{count}} lieu(x) sélectionné(s)",
-      "farmingAuto": "Automatique (énergie minimale)",
       "shardsTitle": "Lieu des éclats",
       "shardsDescription": "Laissez chaque nœud non coché pour une sélection automatique au moindre coût en énergie.",
       "farmingInvalid": "Chaque ressource requise doit être disponible sur au moins un nœud sélectionné.",
-      "none": "Aucun",
       "projectsActivationNote": "L'appartenance change seulement les projets qui contiennent cet objectif. Le mettre en pause ou le reprendre est une action distincte sur l'objectif lui-même.",
-      "farmingGuidanceTitle": "Conseils de farming",
-      "farmingGuidanceEligible_one": "{{count}} lieu farmable maintenant",
-      "farmingGuidanceEligible_other": "{{count}} lieux farmables maintenant",
-      "farmingGuidanceLink": "Ouvrir les raids quotidiens",
-      "farmingGuidanceCovered": "Couvert par un objectif précédent — rien à farmer de son côté.",
       "projectGuidanceTitle": "Conseils de farming",
       "projectGuidancePreview": "Aperçu — pas le programme des Dailies d'aujourd'hui",
       "projectGuidanceSummary_one": "{{count}} matériau encore nécessaire pour les objectifs de ce projet.",
@@ -952,12 +924,7 @@
     },
     "target": {
       "title": "Objectif",
-      "edit": "Modifier l'objectif",
-      "hint": "Changez l'endroit où cet objectif se termine. Ses notes, projets et autres réglages ne sont pas modifiés.",
       "startedFrom": "Point de départ",
-      "save": "Enregistrer l'objectif",
-      "saving": "Enregistrement…",
-      "cancel": "Annuler",
       "rankEnd": "Rang cible",
       "progressionEnd": "Progression cible",
       "activeEnd": "Capacité active, niveau cible",
@@ -974,16 +941,7 @@
         "upgradeQuantity": "Chaque quantité doit être un nombre entier de 1 à 10 000.",
         "upgradeEmpty": "Un objectif d'améliorations nécessite au moins un matériau."
       },
-      "reachedNote": "Un objectif déjà atteint est valide : il n'a simplement plus besoin de rien. L'objectif garde son statut jusqu'à ce que vous le terminiez vous-même.",
-      "saveError": "Impossible d'enregistrer cet objectif.",
-      "saved": "Objectif enregistré.",
-      "refreshing": "Mise à jour de votre plan avec le nouvel objectif…",
-      "stale": "Cet objectif a été modifié ailleurs. Chargez sa version actuelle, vérifiez votre cible, puis enregistrez à nouveau.",
-      "loadCurrent": "Charger la version actuelle",
-      "collision": "Un autre objectif pour cette unité a déjà cette cible dans : {{project}}.",
-      "planningStale": "L'objectif a été enregistré, mais votre plan n'a pas pu s'actualiser : les estimations affichées peuvent encore refléter l'ancien objectif.",
-      "retryRefresh": "Réessayer l'actualisation",
-      "historyChanged": "Objectif modifié"
+      "reachedNote": "Un objectif déjà atteint est valide : il n'a simplement plus besoin de rien. L'objectif garde son statut jusqu'à ce que vous le terminiez vous-même."
     },
     "order": {
       "conflictTitle": "Le plan a changé",
@@ -1153,7 +1111,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Ouvrez un objectif éligible pour modifier sa cible directement. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
+          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Utilisez l'action Modifier d'un objectif pour changer sa cible, sa priorité, ses notes ou ses projets. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1214,18 +1172,6 @@
       }
     },
     "startPage": "Visiter cette page",
-    "goalDetail": {
-      "steps": {
-        "editTarget": {
-          "title": "Modifier l'objectif",
-          "content": "Changez l'endroit où cet objectif se termine sans le recréer. Il conserve ses projets, ses notes et son historique, et votre plan est recalculé."
-        },
-        "projects": {
-          "title": "Projets",
-          "content": "Ajoutez cet objectif à un projet ou créez-en un nouveau depuis le sélecteur. Le nouveau projet est enregistré immédiatement ; l'objectif ne change que lorsque vous enregistrez."
-        }
-      }
-    },
     "editGoal": {
       "steps": {
         "target": {
