@@ -77,5 +77,22 @@ export function projectOnslaughtSupply({
       ? mythicShardResourceId(entityId)
       : shardResourceId(entityId),
     supplyOnDay: () => supply,
+    shardsPerRun: avgShardsPerRun,
   }
+}
+
+/** Projected Onslaught tokens (runs) from what each Onslaught supplier supplied (V1 `oTokensTotal`:
+ *  shards from Onslaught over the shards per run, rounded up); 0 when none contributed. */
+export function onslaughtTokensFromSupply(
+  bySupplier: ReadonlyMap<string, number>,
+  suppliers: readonly FlatSupplier[] | undefined
+): number {
+  let tokens = 0
+  for (const supplier of suppliers ?? []) {
+    const supplied = bySupplier.get(supplier.key) ?? 0
+    if (supplier.shardsPerRun && supplied > 0) {
+      tokens += Math.ceil(supplied / supplier.shardsPerRun)
+    }
+  }
+  return tokens
 }

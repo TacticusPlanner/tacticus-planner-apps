@@ -266,4 +266,43 @@ describe("GoalResourceChips", () => {
     )
     expect(screen.getAllByTestId("goal-resource-chip")).toHaveLength(5)
   })
+
+  describe("Onslaught tokens", () => {
+    const renderTokens = (
+      energy: number | undefined,
+      onslaughtTokens: number | undefined
+    ) => {
+      cleanup()
+      render(
+        <GoalResourceChips
+          energy={energy}
+          entityType="Character"
+          goalType="Unlock"
+          onslaughtTokens={onslaughtTokens}
+          remaining={need()}
+        />
+      )
+      return chipNames()
+    }
+
+    it("shows a token chip and no energy chip for an Onslaught-only goal", () => {
+      expect(renderTokens(0, 30)).toEqual([
+        "goals.resourceChips.onslaughtTokens: 30",
+      ])
+    })
+
+    it("shows energy and tokens for a mixed goal", () => {
+      expect(renderTokens(400, 12)).toEqual([
+        "goals.resourceChips.energy: 400",
+        "goals.resourceChips.onslaughtTokens: 12",
+      ])
+    })
+
+    it("shows no token chip without an Onslaught source", () => {
+      expect(renderTokens(400, undefined)).toEqual([
+        "goals.resourceChips.energy: 400",
+      ])
+      expect(renderTokens(400, 0)).toEqual(["goals.resourceChips.energy: 400"])
+    })
+  })
 })

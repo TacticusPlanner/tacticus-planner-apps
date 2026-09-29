@@ -859,6 +859,7 @@
     },
     "resourceChips": {
       "energy": "Energía",
+      "onslaughtTokens": "Fichas de Onslaught",
       "shards": "Fragmentos",
       "mythicShards": "Fragmentos míticos",
       "gold": "Oro",

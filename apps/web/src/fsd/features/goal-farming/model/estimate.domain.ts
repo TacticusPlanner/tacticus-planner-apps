@@ -83,6 +83,9 @@ export interface FlatSupplier {
   key: string
   resourceId: EstimateResourceId
   supplyOnDay: (dayIndex: number) => number
+  /** Set only on an Onslaught source: the average shards one token (run) yields, so a consumer can
+   *  turn the shards it supplied into projected tokens (V1's `oTokensTotal`). */
+  shardsPerRun?: number
 }
 
 /** One battle node's farming economics for a single material. */
@@ -181,6 +184,9 @@ interface EstimateResult {
    *  consumer can attribute shards to one shop offer or the Onslaught source when several feed the
    *  same resource — present whenever any `FlatSupplier` contributed. */
   flatSupplyBySupplier?: ReadonlyMap<string, number>
+  /** Projected Onslaught tokens (runs) this estimate uses: each Onslaught supplier's supplied shards
+   *  over its shards per run, rounded up. Absent when no Onslaught source contributed. */
+  onslaughtTokens?: number
 }
 
 export type EstimateBlockedReason =

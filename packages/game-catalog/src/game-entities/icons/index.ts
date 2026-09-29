@@ -41,6 +41,7 @@ export {
   orbIcon,
   orbAllianceIcon,
   energyIcon,
+  onslaughtTokenIcon,
   goldIcon,
   xpBookIcon,
 } from "./resource"

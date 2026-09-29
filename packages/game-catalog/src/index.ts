@@ -141,6 +141,7 @@ export {
   orbIcon,
   orbAllianceIcon,
   energyIcon,
+  onslaughtTokenIcon,
   goldIcon,
   xpBookIcon,
   characterIcon,

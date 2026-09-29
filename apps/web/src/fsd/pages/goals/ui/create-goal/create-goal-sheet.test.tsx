@@ -223,6 +223,7 @@ const battles = [
     type: "Standard",
     challenge: false,
     nodeNumber: 1,
+    battleIndex: 0,
     energyCost: 10,
     dailyAttempts: 10,
   },
@@ -232,6 +233,7 @@ const battles = [
     type: "Extremis",
     challenge: false,
     nodeNumber: 28,
+    battleIndex: 27,
     energyCost: 15,
     dailyAttempts: 10,
   },
@@ -311,6 +313,19 @@ const getPlayerCharacters = vi.fn(() => Promise.resolve([]))
 const getPlayerMows = vi.fn(() => Promise.resolve([]))
 
 vi.mock("@workspace/player-data/queries", () => ({
+  // Every fixture node is unlocked (goal farming only considers unlocked campaign nodes).
+  getCampaignProgress: vi.fn(async () => [
+    {
+      tacticusCampaignId: "campaign1",
+      type: "Standard",
+      highestCompletedBattleIndex: 99,
+    },
+    {
+      tacticusCampaignId: "CGM",
+      type: "Extremis",
+      highestCompletedBattleIndex: 99,
+    },
+  ]),
   getPlayerCharacter: (...args: unknown[]) => getPlayerCharacter(...args),
   getPlayerMow: (...args: unknown[]) => getPlayerMow(...args),
   getPlayerCharacters: () => getPlayerCharacters(),

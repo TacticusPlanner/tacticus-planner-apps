@@ -5,6 +5,7 @@ import {
   forgeBadgeIcon,
   goldIcon,
   mowComponentIcon,
+  onslaughtTokenIcon,
   orbAllianceIcon,
   orbIcon,
   shardIcon,
@@ -38,11 +39,14 @@ export function GoalResourceChips({
   entityType,
   remaining,
   energy,
+  onslaughtTokens,
 }: {
   goalType: GoalKind
   entityType: string
   remaining: ResourceNeed | null
   energy: number | undefined
+  /** Projected Onslaught tokens (runs) from the goal's estimate; absent or 0 shows no chip. */
+  onslaughtTokens?: number
 }) {
   const { t, i18n } = useTranslation()
   const fmt = (value: number) =>
@@ -79,6 +83,13 @@ export function GoalResourceChips({
   }
   const addEnergy = () =>
     add("energy", energyIcon(), t("goals.resourceChips.energy"), energy)
+  const addTokens = () =>
+    add(
+      "onslaughtTokens",
+      onslaughtTokenIcon(),
+      t("goals.resourceChips.onslaughtTokens"),
+      onslaughtTokens
+    )
   // V1 parity (numberToThousandsString): below 1,000 as is, otherwise floor(value / 1000) + "k".
   const addGold = (gold: number | undefined) => {
     if (!gold || gold <= 0) return
@@ -141,6 +152,8 @@ export function GoalResourceChips({
   } else if (goalType === "Upgrade") {
     addEnergy()
   }
+
+  addTokens()
 
   if (chips.length === 0) return null
 

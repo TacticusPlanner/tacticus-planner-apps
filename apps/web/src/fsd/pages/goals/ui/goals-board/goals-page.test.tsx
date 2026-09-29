@@ -129,6 +129,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 const getPlayerCharacters = vi.fn<() => unknown[]>(() => [])
 
 vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignProgress: vi.fn(async () => []),
   getPlayerCharacter: () => Promise.resolve(undefined),
   getPlayerMow: () => Promise.resolve(undefined),
   getPlayerCharacters: (...args: unknown[]) =>

@@ -8,6 +8,7 @@ import {
   type UnitId,
 } from "@workspace/game-domain"
 import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
+import { getCampaignProgress } from "@workspace/player-data/queries"
 import {
   getAscensionCostsMap,
   getCampaignBattles,
@@ -25,6 +26,7 @@ import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup"
+import { filterUnlockedBattles } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
 /**
@@ -54,20 +56,6 @@ export function useGoalCatalog() {
   // `pages/library/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
   // page-can't-import-page reason as the rest of this hook.
   const campaignBattles = useLiveQuery(() => getCampaignBattles(), [])
-  const battlesById = useMemo(
-    () =>
-      new Map(
-        (campaignBattles ?? []).map((b) => [
-          b.id,
-          mapCampaignBattleStorageToDomain(b),
-        ])
-      ),
-    [campaignBattles]
-  )
-
-  // Event-vs-standing-campaign detection for the Insights view's campaign/event scoring (plan §16
-  // phase 7) — mirrors `pages/library/.../use-character-lookup-catalog.ts`'s `releaseTypeByGroupId`,
-  // duplicated for the same page-can't-import-page reason as the rest of this hook.
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
   const releaseTypeByGroupId = useMemo(
     () =>
@@ -79,6 +67,33 @@ export function useGoalCatalog() {
       ),
     [campaignDefinitions]
   )
+  // Only nodes unlocked by the synced campaign progress are farmable (goal-farming-estimates:
+  // "Campaign farming considers only unlocked nodes") — filtering the shared battle map here makes
+  // every estimate consumer (Goals, Insights, blockers, per-project) choose from the same set.
+  // `undefined` until the progress chunk loads, in which case nothing is gated yet.
+  const campaignProgressResult = useLiveQuery(
+    async () => ({ value: await getCampaignProgress() }),
+    []
+  )
+  const battlesById = useMemo(() => {
+    const all = new Map(
+      (campaignBattles ?? []).map((b) => [
+        b.id,
+        mapCampaignBattleStorageToDomain(b),
+      ])
+    )
+    if (!campaignProgressResult) return all
+    const eventIds = new Set(
+      (campaignDefinitions ?? [])
+        .filter((d) => d.releaseType === "event")
+        .map((d) => d.groupId)
+    )
+    return filterUnlockedBattles(
+      all,
+      campaignProgressResult.value ?? [],
+      eventIds
+    )
+  }, [campaignBattles, campaignDefinitions, campaignProgressResult])
 
   const characterGroups = useMemo(
     () =>

@@ -859,6 +859,7 @@
     },
     "resourceChips": {
       "energy": "Énergie",
+      "onslaughtTokens": "Jetons Onslaught",
       "shards": "Éclats",
       "mythicShards": "Éclats mythiques",
       "gold": "Or",

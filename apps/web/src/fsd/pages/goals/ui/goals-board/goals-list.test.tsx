@@ -55,6 +55,10 @@ const mows = new Map([
   ["mow1", { id: "mow1", name: "Stormbird", faction: "Ultramarines" }],
 ])
 
+vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignProgress: () => [],
+}))
+
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () => characters,
   getMowsMap: () => mows,

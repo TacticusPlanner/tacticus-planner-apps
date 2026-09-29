@@ -36,6 +36,11 @@ export function energyIcon(): string {
   return `${ASSET_BASE_PATH}/misc/energy.png`
 }
 
+/** V1's Onslaught glyph shown beside a goal's projected tokens (`CampaignImage` "Onslaught"). */
+export function onslaughtTokenIcon(): string {
+  return `${ASSET_BASE_PATH}/campaigns/Onslaught.png`
+}
+
 export function goldIcon(): string {
   return `${ASSET_BASE_PATH}/misc/ui_icon_resource_coin.png`
 }

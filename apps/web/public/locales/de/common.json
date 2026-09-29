@@ -859,6 +859,7 @@
     },
     "resourceChips": {
       "energy": "Energie",
+      "onslaughtTokens": "Onslaught-Token",
       "shards": "Scherben",
       "mythicShards": "Mythische Scherben",
       "gold": "Gold",

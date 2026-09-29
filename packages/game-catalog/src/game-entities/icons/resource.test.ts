@@ -5,6 +5,7 @@ import {
   forgeBadgeIcon,
   goldIcon,
   energyIcon,
+  onslaughtTokenIcon,
   mowComponentIcon,
   orbAllianceIcon,
   orbIcon,
@@ -33,5 +34,6 @@ describe("goal resource icons", () => {
       "/game_catalog/resources/ui_hero_ascension_orbs_chaos.png"
     )
     expect(energyIcon()).toBe("/game_catalog/misc/energy.png")
+    expect(onslaughtTokenIcon()).toBe("/game_catalog/campaigns/Onslaught.png")
   })
 })

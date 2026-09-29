@@ -27,6 +27,7 @@ import {
 } from "./goal-row-shared"
 import {
   estimateEnergy,
+  estimateOnslaughtTokens,
   isInFlightStatus,
   isReachedRow,
   goalXpBookFigure,
@@ -134,6 +135,9 @@ export function GoalsMobileCards({
           const remaining = metrics?.get(row.goalId)?.remaining ?? null
           const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
           const energy = estimateEnergy(estimates?.get(row.goalId))
+          const onslaughtTokens = estimateOnslaughtTokens(
+            estimates?.get(row.goalId)
+          )
           const reached = isReachedRow(row, reachedByGoalId)
           const xpBooks = reached
             ? undefined
@@ -231,6 +235,7 @@ export function GoalsMobileCards({
                     xpBooks={xpBooks}
                   />
                   <GoalResourceChips
+                    onslaughtTokens={onslaughtTokens}
                     energy={energy}
                     entityType={row.entityType}
                     goalType={row.goalType}

@@ -22,6 +22,8 @@ import type {
   UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
 
+import { filterUnlockedBattles } from "@/shared/lib"
+
 import catalog from "./__fixtures__/arjac-catalog.json"
 import { computePlanInsights } from "./plan-insights-calc"
 
@@ -148,6 +150,8 @@ type Scenario = {
   /** Slot indices already applied at the current rank. */
   applied?: number[]
   standing?: boolean
+  /** Highest completed battle index on every standing track; absent = every campaign unlocked. */
+  progressCap?: number
   inventory?: Record<string, number>
   goals: GoalSpec[]
 }
@@ -165,10 +169,30 @@ function simulate({
   rank,
   applied = [],
   standing = true,
+  progressCap,
   inventory = {},
   goals,
 }: Scenario) {
-  const { battlesById, upgradesById } = catalogData(standing)
+  const catalogBattles = catalogData(standing)
+  const { upgradesById } = catalogBattles
+  const battlesById =
+    progressCap === undefined
+      ? catalogBattles.battlesById
+      : filterUnlockedBattles(
+          catalogBattles.battlesById,
+          [
+            ...new Set(
+              [...catalogBattles.battlesById.values()].map(
+                (b) => `${b.campaignGroupId}:${b.type}`
+              )
+            ),
+          ].map((key) => ({
+            tacticusCampaignId: key.split(":")[0]!,
+            type: key.split(":")[1]!,
+            highestCompletedBattleIndex: progressCap,
+          })),
+          new Set()
+        )
   const details = goals.map(([goalId, end]) => rankGoal(goalId, end))
   const player = new Map([
     [
@@ -437,5 +461,20 @@ describe("Arjac Silver1->Gold1 (A) and Silver1->Gold2 (B): V1 vs V2 Rank plannin
       expect(plan.goals.A?.energy).toBe(0)
       expect(plan.goals.B?.energy).toBe(3410)
     })
+  })
+})
+
+describe("campaign progress gates the farm nodes (goals-overview-v1-parity 8.5)", () => {
+  it("costs more energy when the cheaper, later nodes are still locked", () => {
+    const open = simulate({ rank: "Silver1", goals: [A] })
+    const partial = simulate({ rank: "Silver1", progressCap: 30, goals: [A] })
+    expect(open.goals.A?.energy).toBe(2990)
+    expect(partial.goals.A?.energy).toBe(3070)
+  })
+
+  it("blocks the goal (no energy attributed) when a needed material has no unlocked node", () => {
+    const early = simulate({ rank: "Silver1", progressCap: 10, goals: [A] })
+    expect(early.goals.A?.energy).toBe(0)
+    expect(early.energyTotal).toBe(0)
   })
 })
