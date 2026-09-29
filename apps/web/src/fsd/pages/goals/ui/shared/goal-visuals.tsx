@@ -88,10 +88,13 @@ export function GoalTypeCard({
   kind,
   entityType,
   children,
+  wide,
 }: {
   kind: GoalKind
   entityType?: string
   children: ReactNode
+  /** Spans both columns of the create dialog's two-column body (for wide content like source trees). */
+  wide?: boolean
 }) {
   const { t } = useTranslation()
 
@@ -100,7 +103,7 @@ export function GoalTypeCard({
     // without this, the Sheet's scrolling `flex flex-col` form squeezes every card down to a sliver
     // (flex-shrink has nothing content-sized to stop at) instead of the form scrolling past them.
     <Card
-      className="shrink-0"
+      className={wide ? "col-span-full shrink-0" : "shrink-0"}
       data-testid={`create-goal-type-card-${kind}`}
       size="sm"
     >

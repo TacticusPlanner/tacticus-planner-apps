@@ -40,10 +40,10 @@ export function UnitGoalFormFields({
   return (
     <form
       id="create-goal-form"
-      className="flex flex-1 flex-col gap-4 overflow-y-auto px-6"
+      className="grid items-start gap-4 pb-2 @2xl:grid-cols-2"
       onSubmit={(event) => void form.handleSubmit(event)}
     >
-      <div className="mt-2 grid gap-2">
+      <div className="col-span-full mt-2 grid gap-2">
         <UnitCombobox
           groups={form.unitGroups}
           value={form.entityId}
@@ -79,7 +79,7 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.entityId ? (
-        <div className="grid gap-1.5">
+        <div className="col-span-full grid gap-1.5">
           <Label className="text-xs text-muted-foreground">
             {t("goals.create.goalTypeLabel")}
           </Label>
@@ -135,7 +135,7 @@ export function UnitGoalFormFields({
       {/* Prerequisite suggestions describe extra goals to prepend to the set above — shown after
           the config cards so the user sees what they configured before what gets auto-added. */}
       {form.prerequisites.needsUnlock ? (
-        <Field orientation="horizontal">
+        <Field className="col-span-full" orientation="horizontal">
           <Checkbox
             checked={form.includeSuggestedUnlock}
             data-testid="create-goal-include-unlock"
@@ -150,7 +150,7 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.prerequisites.needsAscension ? (
-        <Field orientation="horizontal">
+        <Field className="col-span-full" orientation="horizontal">
           <Checkbox
             checked={form.includeSuggestedAscension}
             data-testid="create-goal-include-ascension"
@@ -165,7 +165,7 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.entityId ? (
-        <>
+        <div className="grid content-start gap-4">
           <GoalProjectsField
             conflicts={form.projectConflicts}
             onSelectionChange={form.selectProjects}
@@ -199,12 +199,12 @@ export function UnitGoalFormFields({
               {t("goals.create.startPausedDescription")}
             </p>
           </div>
-        </>
+        </div>
       ) : null}
 
       {form.entityId && form.reviewItems.length > 0 ? (
         <div
-          className="grid gap-1 rounded-2xl border p-3 text-sm"
+          className="col-span-full grid gap-1 rounded-2xl border p-3 text-sm"
           data-testid="create-goal-review"
         >
           <p className="font-medium">{t("goals.create.reviewTitle")}</p>
@@ -259,12 +259,15 @@ export function UnitGoalFormFields({
       ) : null}
 
       {form.status === "error" && form.errorMessage ? (
-        <FieldError data-testid="create-goal-error">
+        <FieldError className="col-span-full" data-testid="create-goal-error">
           {form.errorMessage}
         </FieldError>
       ) : null}
       {form.validationMessage ? (
-        <FieldError data-testid="create-goal-validation-error">
+        <FieldError
+          className="col-span-full"
+          data-testid="create-goal-validation-error"
+        >
           {form.validationMessage}
         </FieldError>
       ) : null}

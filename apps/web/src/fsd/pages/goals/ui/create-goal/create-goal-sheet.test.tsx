@@ -450,6 +450,42 @@ describe("CreateGoalSheet", () => {
     getInventoryShard.mockReturnValue(undefined)
   })
 
+  it("opens as a centered dialog at or above 768px with a scrolling body and a fixed footer", () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    const shell = screen.getByTestId("create-goal-sheet")
+    expect(shell).toHaveAttribute("data-slot", "dialog-content")
+    expect(
+      shell.querySelector('[data-slot="responsive-dialog-body"]')
+    ).toHaveClass("overflow-y-auto")
+    expect(shell.querySelector("#create-goal-form")).toHaveClass(
+      "@2xl:grid-cols-2"
+    )
+    expect(
+      shell.querySelector('[data-slot="responsive-dialog-footer"]')
+    ).toContainElement(screen.getByTestId("create-goal-submit"))
+  })
+
+  it("opens as the bottom sheet below 768px", () => {
+    const matchMedia = vi.mocked(window.matchMedia)
+    const original = matchMedia.getMockImplementation()
+    matchMedia.mockImplementation(
+      (query: string) => ({ ...original?.(query), matches: true }) as never
+    )
+    try {
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+
+      expect(screen.getByTestId("create-goal-sheet")).toHaveAttribute(
+        "data-slot",
+        "sheet-content"
+      )
+    } finally {
+      if (original) matchMedia.mockImplementation(original)
+    }
+  })
+
   it("creates a Rank goal for the selected character and closes on success", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
     const onOpenChange = vi.fn()

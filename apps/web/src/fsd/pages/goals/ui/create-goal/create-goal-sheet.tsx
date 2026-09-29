@@ -3,18 +3,18 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { CreateGoalSheetTourRegistration } from ".//create-goal-sheet.tutorial"
@@ -29,11 +29,11 @@ type CreateGoalSheetProps = {
 }
 
 /**
- * Goal-creation side panel for the combined multi-goal-type composer (plan §6/§16 phase 5) for a
+ * Goal-creation dialog (bottom sheet below 768px) for the combined multi-goal-type composer (plan §6/§16 phase 5) for a
  * single Character or Mow. One combined combobox infers the unit kind, and the offered goal kinds
  * adapt to it (for example, Rank is never offered for a Mow). Mirrors
  * `manage-account-dialog.tsx`'s controlled-form shape (reset-and-stay-open on
- * "create another", Unit pill only), but hosted in a `Sheet` instead of a `Dialog`.
+ * "create another", Unit pill only), hosted in a `ResponsiveDialog`.
  */
 export function CreateGoalSheet({
   open,
@@ -51,58 +51,60 @@ export function CreateGoalSheet({
     form.charactersById?.has(id) ? characterIcon(id) : mowIcon(id)
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <ResponsiveDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      data-testid="create-goal-sheet"
+      contentRef={setPortalContainer}
+      preventOutsideClose
+    >
       {open ? <CreateGoalSheetTourRegistration /> : null}
-      <SheetContent
-        data-testid="create-goal-sheet"
-        onPointerDownOutside={(event) => event.preventDefault()}
-        ref={setPortalContainer}
-      >
-        <SheetHeader>
-          <SheetTitle>{t("goals.create.title")}</SheetTitle>
-        </SheetHeader>
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>{t("goals.create.title")}</ResponsiveDialogTitle>
+      </ResponsiveDialogHeader>
 
+      <ResponsiveDialogBody>
         <UnitGoalFormFields
           form={form}
           portalContainer={portalContainer}
           unitIcon={unitIcon}
         />
+      </ResponsiveDialogBody>
 
-        <SheetFooter>
-          <Field orientation="horizontal">
-            <Checkbox
-              id="create-goal-another"
-              checked={form.createAnother}
-              onCheckedChange={(checked) =>
-                form.setCreateAnother(checked === true)
-              }
-            />
-            <FieldLabel
-              className="font-normal text-muted-foreground"
-              htmlFor="create-goal-another"
-            >
-              {t("goals.create.createAnother")}
-            </FieldLabel>
-          </Field>
-          <Button
-            data-testid="create-goal-submit"
-            disabled={!form.canSubmit || form.status === "submitting"}
-            form="create-goal-form"
-            type="submit"
+      <ResponsiveDialogFooter>
+        <Field className="md:mr-auto md:w-auto" orientation="horizontal">
+          <Checkbox
+            id="create-goal-another"
+            checked={form.createAnother}
+            onCheckedChange={(checked) =>
+              form.setCreateAnother(checked === true)
+            }
+          />
+          <FieldLabel
+            className="font-normal text-muted-foreground"
+            htmlFor="create-goal-another"
           >
-            {form.status === "submitting" ? <Spinner /> : null}
-            {t("goals.create.submit")}
-          </Button>
-          <Button
-            data-testid="create-goal-close"
-            onClick={() => onOpenChange(false)}
-            type="button"
-            variant="outline"
-          >
-            {t("goals.create.close")}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+            {t("goals.create.createAnother")}
+          </FieldLabel>
+        </Field>
+        <Button
+          data-testid="create-goal-submit"
+          disabled={!form.canSubmit || form.status === "submitting"}
+          form="create-goal-form"
+          type="submit"
+        >
+          {form.status === "submitting" ? <Spinner /> : null}
+          {t("goals.create.submit")}
+        </Button>
+        <Button
+          data-testid="create-goal-close"
+          onClick={() => onOpenChange(false)}
+          type="button"
+          variant="outline"
+        >
+          {t("goals.create.close")}
+        </Button>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialog>
   )
 }

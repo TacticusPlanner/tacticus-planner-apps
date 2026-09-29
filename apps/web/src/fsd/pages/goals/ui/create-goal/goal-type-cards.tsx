@@ -99,7 +99,7 @@ export function GoalTypeCards({
                   ? (form.shopOffers ?? []).filter((offer) => offer.isMythic)
                   : []
               return (
-                <GoalTypeCard key={kind} kind="Ascension">
+                <GoalTypeCard key={kind} kind="Ascension" wide>
                   <AscensionFarmingFields
                     progressionEnd={form.progressionEnd}
                     progressionPreview={form.progressionPreview}
@@ -234,7 +234,7 @@ export function GoalTypeCards({
               )
             case "Upgrade":
               return (
-                <GoalTypeCard key={kind} kind="Upgrade">
+                <GoalTypeCard key={kind} kind="Upgrade" wide>
                   <UpgradeGoalFields
                     targets={form.upgradeTargets}
                     relevantUpgradeQuantities={form.relevantUpgradeQuantities}
@@ -260,7 +260,7 @@ export function GoalTypeCards({
               )
             case "Unlock":
               return (
-                <GoalTypeCard key={kind} kind="Unlock">
+                <GoalTypeCard key={kind} kind="Unlock" wide>
                   <p className="text-sm text-muted-foreground">
                     {t("goals.create.unlockDescription")}
                   </p>

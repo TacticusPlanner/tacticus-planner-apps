@@ -51,7 +51,7 @@ export function UnitInfoCard({
 
   return (
     <div
-      className="grid gap-2 rounded-2xl border p-3 text-sm"
+      className="col-span-full grid gap-2 rounded-2xl border p-3 text-sm"
       data-testid="create-goal-unit-info"
     >
       <p className="font-medium">{t("goals.create.info.title")}</p>
