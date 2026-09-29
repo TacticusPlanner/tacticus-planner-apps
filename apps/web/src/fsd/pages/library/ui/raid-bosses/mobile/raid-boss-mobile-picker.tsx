@@ -17,6 +17,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { closestOverlayContent } from "@/shared/ui"
 import { RaidBossPortrait, type RaidBossListItem } from "@/entities/raid-boss"
 
 export type RaidBossMobilePickerGroup = {
@@ -87,11 +88,7 @@ export function RaidBossMobilePicker({
       onOpenChange={(next) => {
         setOpen(next)
         if (next) {
-          setPortalContainer(
-            (triggerRef.current?.closest(
-              '[data-slot="sheet-content"]'
-            ) as HTMLElement | null) ?? undefined
-          )
+          setPortalContainer(closestOverlayContent(triggerRef.current))
         } else {
           setSearch("")
         }

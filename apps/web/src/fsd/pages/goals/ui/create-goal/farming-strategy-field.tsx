@@ -13,7 +13,7 @@ import {
 import { rankAt, rankIndex, type Rank } from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
-import { RankBadge } from "@/shared/ui"
+import { RankBadge, closestOverlayContent } from "@/shared/ui"
 import { farmingStageTargets } from "@/features/goal-farming"
 import { farmingStrategyAvailability } from "../../model/farming/farming-strategy-availability"
 import type { RankAdditionalTarget } from "@/features/goal-farming"
@@ -106,9 +106,7 @@ export function FarmingStrategyField({
         onOpenChange={(open) => {
           if (open) {
             setStrategyContainer(
-              (strategyTriggerRef.current?.closest(
-                '[data-slot="sheet-content"]'
-              ) as HTMLElement | null) ?? undefined
+              closestOverlayContent(strategyTriggerRef.current)
             )
           }
         }}
