@@ -4,7 +4,7 @@
 
 For a Rank or Ability goal whose character is below the level it requires, the existing raw remaining-XP figure SHALL remain visible. Where the XP-book inventory allows allocation, guidance SHALL additionally show, in the user's selected XP-book rarity, an available/needed book-equivalent count: the shared owned-book pool's book-equivalent size at this goal's position in global priority order (before this goal's own consumption) over the book-equivalent count this goal itself needs to reach its required level, after subtracting levels already covered by a higher-priority goal of the same unit. It SHALL label both counts with the selected rarity as an equivalent, not as owned actual books of that rarity or a guaranteed shop/farm source. It SHALL not double-count books reserved for higher-priority goals or levels already covered by a higher-priority goal of the same unit.
 
-Both counts SHALL derive from the same raw-XP priority-ordered allocation used by planning (the same one that produces the existing Potential progress bar/percentage), rounding only for display: the available count rounds down (a partial book isn't obtainable from the pool), the needed count rounds up (a partial book still costs a whole one to apply). The available count is not capped to the needed count — a goal whose pool comfortably exceeds its own need shows that surplus rather than being clamped to 100%. The existing Potential progress percentage is unchanged by this requirement and continues to reflect level-reachability, not this book-count ratio; changing the selected rarity SHALL change the displayed book counts and SHALL NOT change that percentage.
+Both counts SHALL derive from the same raw-XP priority-ordered allocation used by planning (the same one that produces the existing Potential progress bar/percentage), rounding only for display: the available count rounds down (a partial book isn't obtainable from the pool), the needed count rounds up (a partial book still costs a whole one to apply). The available count is not capped to the needed count — a goal whose pool comfortably exceeds its own need shows that surplus rather than being clamped to 100%. The Potential progress percentage SHALL reflect only the gain owned books actually provide toward this goal's required level (0% when the available count is 0), never the character's unrelated absolute position on the level scale; changing the selected rarity SHALL change the displayed book counts and SHALL NOT change that percentage.
 
 Assumptions:
 
@@ -30,6 +30,11 @@ Assumptions:
 
 - **WHEN** a goal earlier in the global order (in any project) requires a level and consumes all owned XP books in the account's shared pool
 - **THEN** a later goal's available count reflects the remaining, depleted pool, not the original inventory again
+
+#### Scenario: A near-target goal with no available books shows zero potential
+
+- **WHEN** a goal's available count is 0 (the pool is exhausted before its turn), regardless of how close the character's current level already is to the required level
+- **THEN** the Potential progress percentage reads 0%, not a high percentage derived from the character's absolute level position
 
 ### Requirement: Planning settings choose the XP-book equivalent rarity
 
