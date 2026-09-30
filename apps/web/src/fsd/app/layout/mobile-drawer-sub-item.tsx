@@ -24,7 +24,7 @@ export function MobileDrawerSubItem({
       className={cn(
         "flex min-h-10 flex-col justify-center rounded-md px-3 py-2 text-sm transition-colors",
         isActive
-          ? "bg-accent text-accent-foreground"
+          ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       )}
       onClick={onSelect}

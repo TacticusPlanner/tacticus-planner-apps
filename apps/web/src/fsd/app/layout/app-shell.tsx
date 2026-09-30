@@ -26,12 +26,20 @@ import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { createGoalScopeProjectId } from "./create-goal-scope"
+import { useDesktopMenuState } from "./use-desktop-menu-state"
+import { useQuickActions } from "./use-quick-actions"
 import { useSectionEntryPath } from "./use-section-entry-path"
 
 // Idle until the user opens it (via onCreateGoal), so it's lazy-loaded rather than pulled into the
 // shell's own chunk — mirrors the route-level lazy-load idiom in routes.tsx.
 const CreateGoalSheet = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.CreateGoalSheet }))
+)
+
+const QuickCreateProjectSheet = lazy(() =>
+  import("./quick-create-project-sheet").then((m) => ({
+    default: m.QuickCreateProjectSheet,
+  }))
 )
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -114,6 +122,15 @@ function ShellContent({
 }) {
   const [createOpen, setCreateOpen] = useState(false)
   const [createPrefill, setCreatePrefill] = useState<CreateGoalPrefill>()
+  const [createProjectOpen, setCreateProjectOpen] = useState(false)
+  // Lives here, above the mobile/desktop branch, so it survives route changes and breakpoint
+  // crossings.
+  const {
+    primaryExpanded,
+    setPrimaryExpanded,
+    sectionExpanded,
+    setSectionExpanded,
+  } = useDesktopMenuState()
   const { pathname, search } = useLocation()
   const { getEntryPath } = useSectionEntryPath(visibleItems, pathname)
   const queryClient = useQueryClient()
@@ -131,6 +148,15 @@ function ShellContent({
     setCreateOpen(open)
     if (!open) setCreatePrefill(undefined)
   }
+  const onCreateGoal = () => {
+    const projectId = createGoalScopeProjectId(pathname, search)
+    launchCreateGoal(projectId ? { projectIds: [projectId] } : undefined)
+  }
+  const quickActions = useQuickActions({
+    isAuthenticated,
+    onCreateGoal,
+    onCreateProject: () => setCreateProjectOpen(true),
+  })
   const shellProps = {
     activeSection,
     isAuthenticated,
@@ -139,10 +165,8 @@ function ShellContent({
     pageTitle,
     sectionTitle,
     // Global entry points (sidebar, bottom nav, Ctrl/Cmd+G) preselect the Goals page's project scope.
-    onCreateGoal: () => {
-      const projectId = createGoalScopeProjectId(pathname, search)
-      launchCreateGoal(projectId ? { projectIds: [projectId] } : undefined)
-    },
+    onCreateGoal,
+    quickActions,
   }
 
   return (
@@ -150,7 +174,14 @@ function ShellContent({
       {isMobile ? (
         <MobileShell {...shellProps} />
       ) : (
-        <DesktopShell {...shellProps} getEntryPath={getEntryPath} />
+        <DesktopShell
+          {...shellProps}
+          getEntryPath={getEntryPath}
+          onPrimaryExpandedChange={setPrimaryExpanded}
+          onSectionExpandedChange={setSectionExpanded}
+          primaryExpanded={primaryExpanded}
+          sectionExpanded={sectionExpanded}
+        />
       )}
       {isAuthenticated ? (
         <Suspense fallback={null}>
@@ -159,6 +190,10 @@ function ShellContent({
             onOpenChange={handleCreateOpenChange}
             onCreated={refreshGoals}
             prefill={createPrefill}
+          />
+          <QuickCreateProjectSheet
+            onOpenChange={setCreateProjectOpen}
+            open={createProjectOpen}
           />
         </Suspense>
       ) : null}

@@ -1,13 +1,6 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { useNavigate } from "react-router"
-import {
-  LoaderCircle,
-  Download,
-  LogIn,
-  LogOut,
-  MessageSquareText,
-  Settings,
-} from "lucide-react"
+import { LoaderCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -16,7 +9,6 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
-  DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
@@ -26,9 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import { Separator } from "@workspace/ui/components/separator"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import { cn } from "@workspace/ui/lib/utils"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
@@ -49,11 +39,8 @@ import {
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { AccountAvatar } from "./account-avatar"
-import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
-import { LanguageSwitcher } from "./language-switcher"
-import { ThemeSwitcher } from "./theme-switcher"
-import { EditDisplayNameButton } from "./edit-display-name-button"
-import { UserJotBoardLink } from "./userjot-board-link"
+import { AccountCard } from "./account-card"
+import { GuestAccountMenu } from "./guest-account-menu"
 import { useUserJot } from "./userjot-provider"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
@@ -85,7 +72,7 @@ function logAuthenticationError(operation: AuthOperation, error: unknown) {
   console.error(message, { value: String(error) })
 }
 
-export function AuthControl({ compact = false }: { compact?: boolean }) {
+export function AuthControl() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const { accounts, inProgress, instance } = useMsal()
@@ -137,27 +124,13 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
 
   if (!isAuthenticated || !account) {
     return (
-      <Button
-        aria-label={
-          compact
-            ? isCheckingSilentSignIn
-              ? t("auth.checkingSignIn")
-              : t("auth.signIn")
-            : undefined
-        }
-        data-testid="auth-sign-in"
+      <GuestAccountMenu
+        checkingSignIn={isCheckingSilentSignIn}
         disabled={isInteractionInProgress}
-        onClick={handleSignIn}
-        size={compact ? "icon" : "sm"}
-        variant="outline"
-      >
-        <LogIn data-icon={compact ? undefined : "inline-start"} />
-        {compact
-          ? null
-          : isCheckingSilentSignIn
-            ? t("auth.checkingSignIn")
-            : t("auth.signIn")}
-      </Button>
+        onOpenChange={setMenuOpen}
+        onSignIn={handleSignIn}
+        open={menuOpen}
+      />
     )
   }
 
@@ -183,14 +156,31 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
     setMenuOpen(false)
   }
 
-  const editNameButton = currentUser ? (
-    <EditDisplayNameButton onClick={() => openManageAccount("profile")} />
-  ) : null
-
   const goToV1Import = () => {
     setMenuOpen(false)
     void navigate("/account/v1-import")
   }
+
+  const accountCard = (tourRow?: ReactNode) => (
+    <AccountCard
+      accountEmail={accountEmail}
+      accountName={accountName}
+      applicationAccountId={applicationAccountId}
+      canEditName={currentUser !== null}
+      className={tourRow ? "[&_[data-slot=menu-row]]:min-h-11" : undefined}
+      onEditName={() => openManageAccount("profile")}
+      onFeedback={() => {
+        setMenuOpen(false)
+        openUserJot()
+      }}
+      onImportV1={goToV1Import}
+      onOpenAccountSettings={() => openManageAccount("integration")}
+      onRoadmap={() => setMenuOpen(false)}
+      onSignOut={handleSignOut}
+      signOutDisabled={isInteractionInProgress}
+      tourRow={tourRow}
+    />
+  )
 
   if (isMobile) {
     return (
@@ -214,77 +204,18 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
             className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"
             data-testid="auth-account-drawer"
           >
-            <DrawerHeader className="border-b px-6 py-5 text-left">
-              <DrawerTitle className="flex items-center gap-1 text-xl">
-                <span className="min-w-0 truncate">{accountName}</span>
-                {editNameButton}
-              </DrawerTitle>
-              <DrawerDescription className="break-all">
-                {accountEmail}
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-5">
-              <CatalogSyncStatusBadge />
-              <div className="space-y-2">
-                <span className="text-sm font-medium">{t("theme.label")}</span>
-                <ThemeSwitcher className="w-full" />
-              </div>
-              <div className="space-y-2">
-                <span className="text-sm font-medium">
-                  {t("language.label")}
-                </span>
-                <LanguageSwitcher className="w-full" showNativeName />
-              </div>
-              <TourButton
-                className="w-full justify-start"
-                onStarted={() => setMenuOpen(false)}
-              />
-              <Button
-                className="w-full justify-start"
-                data-testid="auth-feedback"
-                onClick={() => {
-                  openUserJot()
-                  setMenuOpen(false)
-                }}
-                variant="outline"
-              >
-                <MessageSquareText data-icon="inline-start" />
-                {t("feedback.button")}
-              </Button>
-              <UserJotBoardLink
-                className="w-full"
-                onClick={() => setMenuOpen(false)}
-                showLabel
-              />
-              <Separator />
-              <Button
-                className="w-full justify-start"
-                data-testid="auth-v1-import"
-                onClick={goToV1Import}
-                variant="outline"
-              >
-                <Download data-icon="inline-start" />
-                {t("goals.v1Import.menu")}
-              </Button>
-              <Button
-                className="w-full justify-start"
-                data-testid="auth-manage-account"
-                onClick={() => openManageAccount("integration")}
-                variant="outline"
-              >
-                <Settings data-icon="inline-start" />
-                {t("auth.manageAccount")}
-              </Button>
-              <Button
-                className="w-full justify-start"
-                data-testid="auth-sign-out"
-                disabled={isInteractionInProgress}
-                onClick={handleSignOut}
-                variant="outline"
-              >
-                <LogOut data-icon="inline-start" />
-                {t("auth.signOut")}
-              </Button>
+            <DrawerTitle className="sr-only">{accountName}</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              {accountEmail}
+            </DrawerDescription>
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              {accountCard(
+                <TourButton
+                  className="h-8 w-full justify-start px-2 font-normal"
+                  onStarted={() => setMenuOpen(false)}
+                  variant="ghost"
+                />
+              )}
             </div>
             <DrawerFooter className="border-t px-6 py-4">
               <DrawerClose asChild>
@@ -307,10 +238,7 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
           <button
             type="button"
             aria-label={t("auth.userMenu")}
-            className={cn(
-              "flex min-w-0 items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
-              compact ? "size-8 justify-center" : "max-w-56 px-1.5 py-1"
-            )}
+            className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
             data-testid="auth-account-trigger"
           >
             <AccountAvatar
@@ -318,97 +246,40 @@ export function AuthControl({ compact = false }: { compact?: boolean }) {
               className="size-6 shrink-0 text-xs"
               displayName={accountName}
             />
-            {compact ? null : (
+            <div
+              className="hidden min-w-0 text-left leading-tight lg:block"
+              data-testid="auth-account-panel"
+            >
               <div
-                className="min-w-0 text-left leading-tight"
-                data-testid="auth-account-panel"
+                className="truncate"
+                data-testid="auth-account-name"
+                title={accountName}
               >
-                <div
-                  className="truncate"
-                  data-testid="auth-account-name"
-                  title={accountName}
-                >
-                  {accountName}
-                </div>
-                {accountState.status === "loading" ? (
-                  <div
-                    className="flex items-center gap-1 text-xs"
-                    data-testid="auth-account-loading"
-                  >
-                    <LoaderCircle
-                      className="size-3 animate-spin"
-                      aria-hidden="true"
-                    />
-                    {t("auth.accountLoading")}
-                  </div>
-                ) : null}
+                {accountName}
               </div>
-            )}
+              {accountState.status === "loading" ? (
+                <div
+                  className="flex items-center gap-1 text-xs"
+                  data-testid="auth-account-loading"
+                >
+                  <LoaderCircle
+                    className="size-3 animate-spin"
+                    aria-hidden="true"
+                  />
+                  {t("auth.accountLoading")}
+                </div>
+              ) : null}
+            </div>
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-80 gap-3" side="top">
+        <PopoverContent
+          align="end"
+          className="w-72 gap-2"
+          collisionPadding={8}
+          side="bottom"
+        >
           <PopoverArrow />
-          <div
-            className="flex items-center gap-3"
-            data-testid="auth-account-identity"
-          >
-            <AccountAvatar
-              applicationAccountId={applicationAccountId}
-              className="size-10 shrink-0 text-base"
-              displayName={accountName}
-            />
-            <div className="min-w-0 text-left leading-tight">
-              <div className="flex items-center gap-1">
-                <div className="truncate font-medium" title={accountName}>
-                  {accountName}
-                </div>
-                {editNameButton}
-              </div>
-              <div
-                className="truncate text-xs text-muted-foreground"
-                title={accountEmail}
-              >
-                {accountEmail}
-              </div>
-            </div>
-          </div>
-          <CatalogSyncStatusBadge />
-          <Separator />
-          <Button
-            aria-label={t("goals.v1Import.menu")}
-            className="w-full justify-start"
-            data-testid="auth-v1-import"
-            onClick={goToV1Import}
-            size="sm"
-            variant="ghost"
-          >
-            <Download data-icon="inline-start" />
-            {t("goals.v1Import.menu")}
-          </Button>
-          <Button
-            aria-label={t("auth.manageAccount")}
-            className="w-full justify-start"
-            data-testid="auth-manage-account"
-            onClick={() => openManageAccount("integration")}
-            size="sm"
-            variant="ghost"
-          >
-            <Settings data-icon="inline-start" />
-            {t("auth.manageAccount")}
-          </Button>
-          <Separator />
-          <Button
-            aria-label={t("auth.signOut")}
-            className="w-full justify-start text-destructive hover:text-destructive"
-            data-testid="auth-sign-out"
-            disabled={isInteractionInProgress}
-            onClick={handleSignOut}
-            size="sm"
-            variant="ghost"
-          >
-            <LogOut data-icon="inline-start" />
-            {t("auth.signOut")}
-          </Button>
+          {accountCard()}
         </PopoverContent>
       </Popover>
       {dialogs}

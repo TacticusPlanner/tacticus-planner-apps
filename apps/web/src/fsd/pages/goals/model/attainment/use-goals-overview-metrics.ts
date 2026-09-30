@@ -26,6 +26,7 @@ import type {
 } from "@/features/goal-farming"
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { AbilityMaterials, ResourceNeed } from "@/features/goal-farming"
+import { useStableMap } from "../shared/use-stable-map"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -70,7 +71,7 @@ const UNKNOWN_METRICS: GoalOverviewMetrics = {
  * this answers "how far along, and what's left" (drives row display) — different questions, different
  * call sites, some shared inputs re-fetched from the same TanStack Query cache (no extra network cost).
  */
-export function useGoalsOverviewMetrics(
+function useComputedGoalsOverviewMetrics(
   goalIds: readonly string[],
   /** The per-goal plan estimates (`usePlanInsights`), when the caller has them — folded into
    *  `blockers` as an `EstimateBlocked` reason. Omitted where no plan run is available. */
@@ -359,4 +360,10 @@ export function useGoalsOverviewMetrics(
     })
   })
   return result
+}
+
+export function useGoalsOverviewMetrics(
+  ...args: Parameters<typeof useComputedGoalsOverviewMetrics>
+): ReadonlyMap<string, GoalOverviewMetrics> {
+  return useStableMap(useComputedGoalsOverviewMetrics(...args))
 }

@@ -23,7 +23,7 @@ export function MobileNavLink({
       className={cn(
         "flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-medium transition-colors",
         isActive
-          ? "text-primary"
+          ? "text-primary shadow-[inset_0_2px_0_0_var(--primary)]"
           : "text-muted-foreground hover:text-foreground"
       )}
       data-testid={`mobile-nav-${item.path.slice(1)}`}

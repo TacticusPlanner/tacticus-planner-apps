@@ -82,8 +82,8 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual([
-      "goals.resourceChips.gold: 42,000",
       "goals.resourceChips.energy: 1,674",
+      "goals.resourceChips.gold: 42,000",
     ])
   })
 
@@ -113,9 +113,27 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual([
+      "goals.resourceChips.energy: 50",
       "Rare orbs: 3",
       "goals.resourceChips.shards: 200",
+    ])
+  })
+
+  it("Ascension: energy, gold, then onslaught tokens lead; orbs and shards follow", () => {
+    render(
+      <GoalResourceChips
+        energy={50}
+        entityType="Character"
+        goalType="Ascension"
+        onslaughtTokens={7}
+        remaining={need({ orbsByType: { Rare: 3 }, shards: 200 })}
+      />
+    )
+    expect(chipNames()).toEqual([
       "goals.resourceChips.energy: 50",
+      "goals.resourceChips.onslaughtTokens: 7",
+      "Rare orbs: 3",
+      "goals.resourceChips.shards: 200",
     ])
   })
 
@@ -129,8 +147,8 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual([
-      "goals.resourceChips.shards: 227",
       "goals.resourceChips.energy: 5",
+      "goals.resourceChips.shards: 227",
     ])
   })
 
@@ -157,13 +175,13 @@ describe("GoalResourceChips", () => {
     )
     expect(
       screen.getAllByTestId("goal-resource-chip").map((c) => c.textContent)
-    ).toEqual(["27/27", "30/27", "118/138", "12k", "900"])
+    ).toEqual(["900", "12k", "27/27", "30/27", "118/138"])
     expect(chipNames()).toEqual([
+      "goals.resourceChips.energy: 900",
+      "goals.resourceChips.gold: 12,000",
       "Legendary abilityBadges: 27 of 27",
       "Legendary forgeBadges: 30 of 27",
       "goals.resourceChips.components: 118 of 138",
-      "goals.resourceChips.gold: 12,000",
-      "goals.resourceChips.energy: 900",
     ])
   })
 
@@ -180,11 +198,11 @@ describe("GoalResourceChips", () => {
       img.getAttribute("src")
     )
     expect(sources).toEqual([
+      "/game_catalog/misc/energy.png",
+      "/game_catalog/misc/ui_icon_resource_coin.png",
       "/game_catalog/badges/xenos-epic.png",
       "/game_catalog/resources/ui_forge_badges_rare.png",
       "/game_catalog/resources/ui_machines_of_war_tokens_xenos.png",
-      "/game_catalog/misc/ui_icon_resource_coin.png",
-      "/game_catalog/misc/energy.png",
     ])
     cleanup()
     const orbs = render(
@@ -240,8 +258,8 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual([
-      "Epic abilityBadges: 4",
       "goals.resourceChips.gold: 12,000",
+      "Epic abilityBadges: 4",
     ])
   })
 
@@ -279,29 +297,31 @@ describe("GoalResourceChips", () => {
     expect(empty.container).toBeEmptyDOMElement()
   })
 
-  it("collapses overflow into +N with the full list in its tooltip", () => {
+  it("renders every chip of a Machine of War ability goal, with no +N overflow", () => {
     render(
       <GoalResourceChips
         energy={9}
         entityType="Mow"
         goalType="Ability"
+        onslaughtTokens={2}
         remaining={need({
           abilityMaterials: {
             gold: 1,
-            badgesByRarity: { Common: 1, Rare: 1, Epic: 1 },
-            forgeBadgesByRarity: { Rare: 1, Epic: 1 },
+            badgesByRarity: {
+              Common: 1,
+              Uncommon: 1,
+              Rare: 1,
+              Epic: 1,
+              Legendary: 1,
+            },
+            forgeBadgesByRarity: { Rare: 1, Epic: 1, Legendary: 1 },
             components: 1,
           },
         })}
       />
     )
-    const overflow = screen.getByTestId("goal-resource-chips-overflow")
-    expect(overflow).toHaveTextContent("+3")
-    expect(within(overflow).getByRole("img")).toHaveAttribute(
-      "title",
-      expect.stringContaining("goals.resourceChips.gold: 1")
-    )
-    expect(screen.getAllByTestId("goal-resource-chip")).toHaveLength(5)
+    expect(screen.getAllByTestId("goal-resource-chip")).toHaveLength(12)
+    expect(screen.queryByTestId("goal-resource-chips-overflow")).toBeNull()
   })
 
   describe("Onslaught tokens", () => {

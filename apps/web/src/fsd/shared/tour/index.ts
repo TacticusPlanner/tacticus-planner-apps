@@ -1,6 +1,7 @@
 export {
   TourProvider,
   useAutoStartTourOnce,
+  useTour,
   useTourControlledPopoverOpen,
   useTourPageSteps,
 } from "./tour-provider"

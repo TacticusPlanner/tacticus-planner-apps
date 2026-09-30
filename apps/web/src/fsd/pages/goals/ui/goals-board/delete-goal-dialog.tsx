@@ -14,13 +14,12 @@ type Props = {
   onOpenChange: (open: boolean) => void
   pending: boolean
   onConfirm: () => void
-  /** The project the goal is being viewed inside, when there is one — deletion is account-wide
-   *  either way, so in that context the confirmation says so and names project removal instead. */
-  projectName?: string
+  /** How many goals are being deleted (1 for a row's own menu); the copy pluralises on it. */
+  count: number
 }
 
 /**
- * Single-goal hard-delete confirmation. A single-goal delete's blast radius is far smaller than the guild
+ * Hard-delete confirmation for one or several goals. A delete's blast radius is far smaller than the guild
  * purge's, so this skips `guild-purge-dialog.tsx`'s type-to-confirm-word gate but keeps its destructive
  * warning + pending-state shape.
  */
@@ -29,7 +28,7 @@ export function DeleteGoalDialog({
   onOpenChange,
   pending,
   onConfirm,
-  projectName,
+  count,
 }: Props) {
   const { t } = useTranslation()
 
@@ -44,19 +43,11 @@ export function DeleteGoalDialog({
     >
       <DialogContent className="sm:max-w-md" data-testid="delete-goal-dialog">
         <DialogHeader>
-          <DialogTitle>{t("goals.delete.title")}</DialogTitle>
+          <DialogTitle>{t("goals.delete.title", { count })}</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          {t("goals.delete.description")}
+          {t("goals.delete.description", { count })}
         </p>
-        {projectName ? (
-          <p
-            className="text-sm text-muted-foreground"
-            data-testid="delete-goal-project-alternative"
-          >
-            {t("goals.delete.projectAlternative", { project: projectName })}
-          </p>
-        ) : null}
         <DialogFooter>
           <Button
             disabled={pending}
@@ -72,7 +63,7 @@ export function DeleteGoalDialog({
             onClick={onConfirm}
           >
             {pending ? <Spinner /> : null}
-            {t("goals.delete.confirm")}
+            {t("goals.delete.confirm", { count })}
           </Button>
         </DialogFooter>
       </DialogContent>

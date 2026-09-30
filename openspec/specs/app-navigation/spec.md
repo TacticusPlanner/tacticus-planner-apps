@@ -36,7 +36,7 @@ Desktop navigation search and the mobile menu drawer's search field SHALL contin
 
 ### Requirement: A desktop keyboard shortcut toggles navigation search
 
-On desktop, pressing Ctrl+K (or Cmd+K on macOS) from anywhere in the app SHALL open the navigation search dialog if it is currently closed, and close it if it is currently open, regardless of which element has focus at the time. The desktop sidebar's Search button SHALL display the platform-appropriate shortcut hint. This requirement is desktop-only; there is no mobile equivalent.
+On desktop, pressing Ctrl+K (or Cmd+K on macOS) from anywhere in the app SHALL open the navigation search dialog if it is currently closed, and close it if it is currently open, regardless of which element has focus at the time. The desktop global top bar's Search button SHALL display the platform-appropriate shortcut hint, hiding the hint, but not the button's accessible name, when desktop width is constrained. The Search button SHALL NOT show a hover tooltip. This requirement is desktop-only; there is no mobile equivalent.
 
 #### Scenario: Shortcut opens the dialog
 
@@ -50,7 +50,7 @@ On desktop, pressing Ctrl+K (or Cmd+K on macOS) from anywhere in the app SHALL o
 
 #### Scenario: Search button shows the shortcut hint
 
-- **WHEN** a user views the desktop sidebar
+- **WHEN** a user views the desktop global top bar
 - **THEN** the Search button displays the platform-appropriate shortcut hint ("⌘K" on macOS, "Ctrl+K" elsewhere)
 
 ### Requirement: A desktop keyboard shortcut triggers Create Goal
@@ -111,87 +111,18 @@ The page header SHALL display a short description beneath its title, on both des
 
 #### Scenario: Mobile header swaps to the child's title and description on a child page
 
-- **WHEN** a user on mobile navigates to a child page of a multi-child section (e.g. `/lookup/mow`)
+- **WHEN** a user on mobile navigates to a child page of a multi-child section (e.g. `/library/machines-of-war`)
 - **THEN** the header title switches to that child's own label (e.g. "Machines of War"), and the description beneath it switches to that child's own description — neither stays fixed to the parent section
 
 #### Scenario: Mobile header title and description update when switching between sibling child pages
 
-- **WHEN** a user on mobile switches from one child page to a sibling child page within the same section (e.g. `/lookup/character` to `/lookup/mow`), by any means (the header's own tab row, mobile drawer, or search)
+- **WHEN** a user on mobile switches from one child page to a sibling child page within the same section (e.g. `/library/characters` to `/library/machines-of-war`), by any means (the header's own tab row, mobile drawer, or search)
 - **THEN** the header title and description update to the newly active child's own label and description
 
 #### Scenario: Desktop header description updates when switching between sibling child pages, independent of the title
 
-- **WHEN** a user on desktop switches from one child page to a sibling child page within the same section (e.g. `/lookup/character` to `/lookup/mow`), by any means (the header's own child-picker, the mobile drawer's equivalent state, or search)
-- **THEN** the header description updates to the newly active child's own description, while the header title continues to show the section's own label per the following requirement
-
-### Requirement: Desktop sidebar exposes each section's child pages via a hover/click flyout
-
-For any top-level section that has child pages, the desktop sidebar SHALL render a small chevron indicator on that section's own row, in both the expanded and icon-collapsed sidebar states, as a static hint that it has child pages. Hovering that row (after a short delay, to avoid opening for a pointer only passing through) or clicking it while it is not already the active navigation target SHALL open a flyout positioned beside that row, in both sidebar states. Every section that has at least one child page SHALL get this flyout, including a section with only one child.
-
-The flyout SHALL show the parent section's own title at the top, styled as a quiet, non-interactive label (not a link, not visually prominent), followed by one row per child page. Each child row SHALL show that child's label and its short description, and SHALL be visually distinguished when it is the currently active route. Selecting a child row SHALL navigate to that child's route and close the flyout.
-
-The flyout SHALL be dismissible via Escape and via moving focus or the pointer away from both the triggering row and the flyout itself, and SHALL be operable via keyboard alone (not hover-only), without trapping focus in a way that prevents continuing to navigate the rest of the sidebar.
-
-Clicking the section's own row (as opposed to a row inside its flyout) SHALL continue to navigate using the existing entry-path resolution (the section's last-visited child this session, or its default child) — the flyout is an additional way to reach a specific child directly, not a replacement for that existing click behavior.
-
-#### Scenario: Hovering a section with children opens its flyout
-
-- **WHEN** a user's pointer rests on a top-level section's sidebar row that has child pages, for longer than the flyout's open delay
-- **THEN** a flyout opens beside that row listing the section's child pages, with the section's own title shown as a quiet label above them
-
-#### Scenario: Flyout opens the same way when the sidebar is collapsed to icons
-
-- **WHEN** the sidebar is in its icon-collapsed state and a user hovers or clicks a section's icon that has child pages
-- **THEN** the same flyout opens beside that icon, rather than the plain label-only tooltip a childless section's icon shows
-
-#### Scenario: A passing pointer does not open the flyout
-
-- **WHEN** a user's pointer moves across a section's sidebar row that has children without pausing for the flyout's open delay
-- **THEN** no flyout opens
-
-#### Scenario: Clicking a section row still uses last-visited-child navigation
-
-- **WHEN** a user clicks a section's own sidebar row (not a row inside its flyout)
-- **THEN** the app navigates using that section's existing entry-path resolution, unaffected by whether its flyout is open
-
-#### Scenario: Selecting a child in the flyout navigates to it and closes the flyout
-
-- **WHEN** a user selects a child page's row inside an open flyout
-- **THEN** the app navigates to that child's route and the flyout closes
-
-#### Scenario: A single-child section still gets a flyout
-
-- **WHEN** a user hovers or clicks the Guild section's sidebar row
-- **THEN** its flyout opens showing Guild's own title as the quiet label and its one child page ("Members") as a selectable row, the same as any multi-child section
-
-#### Scenario: Escape closes an open flyout
-
-- **WHEN** a flyout is open and the user presses Escape
-- **THEN** the flyout closes and focus returns to the triggering sidebar row
-
-#### Scenario: A childless section shows no chevron and no flyout
-
-- **WHEN** a user views or hovers a top-level section's sidebar row that has no child pages (e.g. Home)
-- **THEN** no chevron is shown on that row and no flyout opens
-
-### Requirement: Desktop header shows a static section/child breadcrumb, with no picker
-
-On desktop, when the active top-level section has child pages, the page header's title SHALL be rendered as a plain, non-interactive breadcrumb reading "{Section label} › {Active child label}". Neither the section segment nor the child segment SHALL be clickable or otherwise interactive — switching to a different child happens only through the sidebar flyout, navigation search, or a bookmark/direct link, never through the header itself. When the active top-level section has no child pages, the header title SHALL remain the section's own plain label, unchanged from today.
-
-#### Scenario: A section with children shows a plain breadcrumb title
-
-- **WHEN** a user on desktop is on any child page of a section that has children (e.g. `/lookup/mow`)
-- **THEN** the header title reads "Lookup › Machines of War" as plain text, with neither segment clickable
-
-#### Scenario: Breadcrumb updates when the active child changes
-
-- **WHEN** a user on desktop switches from one child page to a sibling child page within the same section, by any means (the sidebar flyout, navigation search, or a direct link)
-- **THEN** the header breadcrumb's child segment updates to the newly active child's label
-
-#### Scenario: A childless section keeps a plain title
-
-- **WHEN** a user on desktop is on a top-level section's own page that has no child pages (e.g. Home)
-- **THEN** the header shows only that section's own label as the title, with no breadcrumb separator
+- **WHEN** a user on desktop switches from one child page to a sibling child page within the same section (e.g. `/library/characters` to `/library/machines-of-war`), by any means (the section menu or navigation search)
+- **THEN** the header description updates to the newly active child's own description, while the header title (or, with the section menu collapsed, its breadcrumb) updates to the active child
 
 ### Requirement: Library replaces Lookup in public navigation
 
@@ -205,8 +136,7 @@ reference area.
 
 #### Scenario: Desktop navigation presents the Library hierarchy
 
-- **WHEN** a user views the desktop sidebar or opens the public reference
-  section's child flyout
+- **WHEN** a user opens Library with its desktop section menu expanded
 - **THEN** it presents Library and the five Library child destinations with
   their Library routes
 
@@ -253,23 +183,23 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 #### Scenario: First entry into a multi-child section uses its default child
 
-- **WHEN** a user who has not visited any Lookup page this session clicks the Lookup entry in the desktop sidebar
-- **THEN** they land on Lookup's existing default child page (Character)
+- **WHEN** a user who has not visited any Library page this session clicks the Library entry in the desktop sidebar
+- **THEN** they land on Library's existing default child page (Characters)
 
 #### Scenario: Re-entering a multi-child section returns to its last-visited child
 
-- **WHEN** a user views `/lookup/mow` (via the sidebar flyout, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Lookup entry in the desktop sidebar
-- **THEN** they land on `/lookup/mow`, not Lookup's default child
+- **WHEN** a user views `/library/machines-of-war` (via the section menu, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Library entry in the desktop sidebar
+- **THEN** they land on `/library/machines-of-war`, not Library's default child
 
 #### Scenario: Directly visiting a child route counts as visiting it
 
-- **WHEN** a user opens a child route directly (e.g. via a bookmark, search, the mobile drawer, the mobile header's own tab row, or the desktop sidebar's flyout) without first clicking the section's desktop sidebar entry
+- **WHEN** a user opens a child route directly (e.g. via a bookmark, search, the mobile drawer, the mobile header's own tab row, or the desktop section menu) without first clicking the section's desktop sidebar entry
 - **THEN** that route is recorded as the section's last-visited child for the remainder of the session, so a later desktop sidebar click into that section honors it
 
 #### Scenario: Last-visited child survives a page reload within the same session
 
-- **WHEN** a user visits `/lookup/mow`, reloads the page (staying in the same browser tab), then clicks the Lookup entry in the desktop sidebar
-- **THEN** they land on `/lookup/mow`, not Lookup's default child — the last-visited child is not lost on reload
+- **WHEN** a user visits `/library/machines-of-war`, reloads the page (staying in the same browser tab), then clicks the Library entry in the desktop sidebar
+- **THEN** they land on `/library/machines-of-war`, not Library's default child — the last-visited child is not lost on reload
 
 #### Scenario: Single-child sections keep their existing default on desktop
 
@@ -278,7 +208,7 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 #### Scenario: Dailies follows the same multi-child behavior as any other section
 
-- **WHEN** a user visits `/dailies/shops` (via the sidebar flyout, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
+- **WHEN** a user visits `/dailies/shops` (via the section menu, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
 - **THEN** they land on `/dailies/shops`, not Dailies' default child (`/dailies/raids`) — Dailies is not special-cased once it has more than one child route
 
 #### Scenario: Plan's default is Goals
@@ -303,7 +233,7 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 On mobile, each top-level section that has child pages (`NavItem.children`) SHALL expose them via a routed tab row directly beneath the header's title and description, replacing any tab row a page previously rendered on its own. This applies to every multi-child section, including Dailies and Plan (whose children are Goals, Projects, Insights, and Schedule). No child page renders a further level of tabs inside its own content.
 
-On desktop, the header does not host a child-page picker at all — a section's child pages are discovered through the desktop sidebar's flyout instead (see the sidebar flyout requirement), and the desktop header shows only a static breadcrumb (see the breadcrumb requirement). On mobile, the menu drawer also lists a section's child pages, per the drawer requirement — that duplication with the mobile header's tab row is intentional and out of scope for this capability to remove.
+On desktop, the header does not host a child-page picker at all — a section's child pages are discovered through the desktop section menu instead (see the persistent desktop section menu requirement), and the desktop header shows only the active page's title, plus a reopen button and "{Section} ›" breadcrumb while the section menu is collapsed (see the header title requirement). On mobile, the menu drawer also lists a section's child pages, per the drawer requirement — that duplication with the mobile header's tab row is intentional and out of scope for this capability to remove.
 
 #### Scenario: The header's child-picker lists all of a section's child pages
 
@@ -313,7 +243,7 @@ On desktop, the header does not host a child-page picker at all — a section's 
 #### Scenario: Desktop header offers no child-picker
 
 - **WHEN** a user is on any page within a section that has child pages, on desktop
-- **THEN** the shared header shows only the static breadcrumb title (and, beneath it, the active page's description) — no tab row, dropdown, or other interactive picker is rendered in the header
+- **THEN** the shared header shows only the page title (and, beneath it, the active page's description) — no tab row, dropdown, or other interactive picker is rendered in the header
 
 #### Scenario: No third-level tab row anywhere
 
@@ -339,3 +269,295 @@ On desktop, the header does not host a child-page picker at all — a section's 
 
 - **WHEN** a user is on a child page's own path and activates that page's tab, on mobile
 - **THEN** no navigation occurs and the user stays on that page
+
+### Requirement: Navigation search includes quick actions on desktop and mobile
+
+Desktop navigation search and mobile Menu search SHALL include a Quick actions group before Pages. The action order SHALL be Create Goal, Create Project, Sync with Tacticus, Submit Feedback, and Tour this page, subject to eligibility. Each action SHALL show an icon, localized label, and short description, with button semantics distinct from page links. An empty query SHALL show all eligible actions and the existing route hierarchy. Queries SHALL match trimmed case-insensitive substrings of localized action labels/descriptions and supported keywords; API SHALL match sync. Page search SHALL retain its existing label/description matching, hierarchy, and route behavior. Empty groups SHALL be omitted, and no-results feedback SHALL appear only when both groups have no matches.
+
+#### Scenario: Desktop search includes actions
+
+- **WHEN** a signed-in desktop user opens top-bar search or presses Ctrl/Cmd+K on a page with a tour
+- **THEN** all five actions appear before Pages with the search input focused
+
+#### Scenario: Mobile Menu includes actions
+
+- **WHEN** a signed-in mobile user opens Menu on a page with a tour
+- **THEN** the same five actions appear before the existing route tree and are searchable in the drawer's search field
+
+#### Scenario: Query matches actions and pages independently
+
+- **WHEN** a user searches for project
+- **THEN** matching Create Project and project-related page results appear in separate labeled groups
+
+#### Scenario: Sync is discoverable by API
+
+- **WHEN** a signed-in user searches for API with surrounding whitespace or different letter case
+- **THEN** Sync with Tacticus appears
+
+#### Scenario: No matching results
+
+- **WHEN** no eligible action or page matches a query
+- **THEN** one localized no-results message appears without empty group headings
+
+#### Scenario: Localized search
+
+- **WHEN** the active language changes
+- **THEN** action labels, descriptions, group names, disabled explanations, and search matching use that language
+
+### Requirement: Quick actions follow current availability
+
+Create Goal, Create Project, and Sync with Tacticus SHALL be hidden for signed-out users. Feedback SHALL be available to signed-in and anonymous users when the widget is ready, otherwise visible but disabled with an unavailable explanation. Tour this page SHALL be hidden without a registered page tour and disabled with an explanation while a tour is running. Sync SHALL remain visible but disabled while syncing and expose current progress/status. Eligibility SHALL be checked again at activation; stale results MUST NOT bypass authentication or running-state guards. Disabled actions SHALL NOT close search or execute.
+
+#### Scenario: Guest search
+
+- **WHEN** an anonymous Library user opens search
+- **THEN** creation/sync actions are absent, feedback is present, and page tour appears only if that page has a tour
+
+#### Scenario: Sync in progress
+
+- **WHEN** a sync is running while search is open
+- **THEN** its matching action is disabled with status and cannot start another sync
+
+#### Scenario: Page without a tour
+
+- **WHEN** search is opened on a page without registered tour steps
+- **THEN** Tour this page is absent and is not replaced by the general app tour
+
+#### Scenario: Running tour
+
+- **WHEN** a tour is already running
+- **THEN** Tour this page is disabled and cannot start a second tour
+
+#### Scenario: Session changes while search is open
+
+- **WHEN** authentication is lost before a creation or sync action is dispatched
+- **THEN** the action does not execute and its eligibility is updated
+
+#### Scenario: Widget unavailable
+
+- **WHEN** the feedback widget is not ready or is blocked from loading
+- **THEN** Submit Feedback remains discoverable but disabled with an explanation instead of closing search and silently doing nothing
+
+### Requirement: Quick actions launch existing flows without changing page context
+
+Activating an enabled action SHALL close and reset search before launching its target exactly once. It SHALL preserve the current route and page state, except for navigation inherently required by existing authentication recovery. Create Goal SHALL use the current global creation behavior, including active Goals project scope/defaults. Create Project SHALL open a blank project form on the current page and use existing validation, persistence, feedback, and cache refresh behavior. Successful project creation SHALL close its form without navigation; cancellation SHALL not create a project. Sync SHALL invoke the existing sync operation with existing retry/reauthentication behavior. Submit Feedback SHALL open the existing widget without posting feedback. Tour this page SHALL start the current page's registered tour, not the general app tour. Opening search or typing SHALL execute nothing.
+
+#### Scenario: Goal creation retains project scope
+
+- **GIVEN** a signed-in user is viewing Goals scoped to a project
+- **WHEN** they choose Create Goal in search
+- **THEN** the normal creation form opens with the same project preselection as the global Create Goal button and no goal is saved automatically
+
+#### Scenario: Project creation from another page
+
+- **WHEN** a signed-in user chooses Create Project from Library search
+- **THEN** a blank project form opens over Library, and saving creates the project and refreshes project data without navigating away
+
+#### Scenario: No projects or failed list query
+
+- **WHEN** a signed-in user launches Create Project with no projects or while the project list has failed to load
+- **THEN** the blank form remains available; save failures retain the form and entered values for retry using existing error handling
+
+#### Scenario: Cancel creation
+
+- **WHEN** the user cancels a quick-action creation form
+- **THEN** no record is created and the underlying page remains in its previous state
+
+#### Scenario: Feedback requires separate submission
+
+- **WHEN** Submit Feedback is selected
+- **THEN** the widget opens and the user must compose and submit feedback themselves
+
+#### Scenario: Start the current page tour
+
+- **WHEN** Tour this page is selected
+- **THEN** search closes before the first page-tour step starts and the search overlay does not obscure or intercept its targets
+
+#### Scenario: Sync uses existing behavior
+
+- **WHEN** Sync with Tacticus is selected while enabled
+- **THEN** exactly one existing sync begins, with its existing progress, failure, retry, and reauthentication behavior
+
+### Requirement: Search action handoff is accessible on both platforms
+
+Action buttons SHALL support keyboard focus and Enter/Space activation, and mobile touch. Typing or pressing Enter while only the search input is focused SHALL NOT automatically run an action. The search modal SHALL release focus/pointer restrictions before another form/widget/tour opens. Search cancellation SHALL restore focus to its launcher; launched forms SHALL receive focus and return it to the originating search launcher on close when still present. Sync SHALL return focus to the launcher while existing status reports progress. Reopening search SHALL start with an empty query.
+
+#### Scenario: Desktop keyboard activation
+
+- **WHEN** a user opens search with Ctrl/Cmd+K, tabs to Create Project, and presses Enter
+- **THEN** search closes and focus enters one project form with no remaining search focus trap
+
+#### Scenario: Mobile action with keyboard visible
+
+- **WHEN** a mobile user filters Menu results with the on-screen keyboard and taps Create Goal
+- **THEN** the drawer and keyboard dismiss before the creation surface becomes interactive, and its controls respond to the first tap
+
+#### Scenario: Search is passive until selection
+
+- **WHEN** a user types sync and presses Enter while focus stays in the search input
+- **THEN** no sync starts until the action button is explicitly activated
+
+#### Scenario: Repeated activation is not replayed
+
+- **WHEN** an action is activated and the search surface closes or rerenders
+- **THEN** it is dispatched only once, without duplicate forms or operations
+
+#### Scenario: Search cancellation and reopening
+
+- **WHEN** a user dismisses search with Escape or Close and later reopens it
+- **THEN** focus first returns to the launcher and the reopened search query is empty
+
+### Requirement: Desktop header titles the active page and hosts the collapsed section-menu breadcrumb
+
+On desktop, when the active top-level section has child pages, the page header's title SHALL be the active child page's own label, because the section menu beside the page already names the section. Only while the section menu is collapsed SHALL the header additionally show, before the title, a reopen button for the section menu and a plain, non-interactive "{Section label} ›" breadcrumb, so the location reads "{Section label} › {Active child label}" and the section menu's own header is not repeated. The breadcrumb and title SHALL NOT be links or pickers - switching to a different child happens only through the section menu, navigation search, or a bookmark/direct link. When the active top-level section has no child pages, the header title SHALL remain the section's own plain label with no breadcrumb and no reopen button.
+
+#### Scenario: Expanded section menu shows only the child title
+
+- **WHEN** a user on desktop is on a child page of a section that has children (e.g. `/plan/goals`) with the section menu expanded
+- **THEN** the header title reads "Goals" as plain text with no breadcrumb, and the section menu header reads "Plan"
+
+#### Scenario: Collapsed section menu shows a reopen button and breadcrumb
+
+- **WHEN** a user on desktop hides the section menu on `/plan/goals`
+- **THEN** the header, at its left edge, shows a reopen button, a plain "Plan ›" breadcrumb, and the "Goals" title, and no other reopen control remains elsewhere
+
+#### Scenario: Breadcrumb and title update when the active child changes
+
+- **WHEN** a user on desktop switches from one child page to a sibling child page within the same section, by any means (the section menu, navigation search, or a direct link)
+- **THEN** the header title (and the breadcrumb's preceding section, when shown) reflects the newly active child
+
+#### Scenario: A childless section keeps a plain title
+
+- **WHEN** a user on desktop is on a top-level section's own page that has no child pages (e.g. Home)
+- **THEN** the header shows only that section's own label as the title, with no breadcrumb separator and no reopen button
+
+### Requirement: Desktop global bar separates global controls from page context
+
+At viewport widths of at least 768px, the application SHALL show a slim global bar above the main rail, section menu, and page header. It SHALL contain app identity on the left, a navigation search launcher in the middle, and at the far right the existing UserJot feedback button followed by account/preferences access. The feedback button SHALL replace any notification control and SHALL keep its existing behavior, label, and unread indicator. Search and account access SHALL no longer appear in the sidebar. The page header SHALL retain the title/breadcrumb, description, and page tour, and SHALL NOT host the language selector, the feedback button, or the public board link (which moves to the account menu as "Roadmap"). The sidebar SHALL retain Create Goal, Sync, the general tour button, and its expansion control, with the expansion control alone on the first row as a full-width row button (whole row is the click target; icon at the right end when expanded, on the shared icon axis when compact; icon and `aria-expanded` reflect the state) and the tour button alone on the second row (a full-width pill when expanded, icon-only when compact) at the top of the rail, above Create Goal and Sync; the two SHALL NOT share a row. In the compact rail the toggle, tour, Create Goal, Sync, and navigation icons SHALL share the same size and horizontal center axis; in the expanded rail the Sync, Create Goal, and navigation icons SHALL share the same left edge. Theme and language selection SHALL be inside the account/preferences menu only on desktop, so there is one language control.
+
+#### Scenario: Desktop global controls are present once
+
+- **WHEN** a user views an authenticated desktop page
+- **THEN** one global search launcher, one feedback button, and one top-right account trigger are visible, with no sidebar duplicates and no standalone page-header theme, language, or feedback controls
+
+#### Scenario: Feedback button opens the existing widget
+
+- **WHEN** a user activates the global bar's feedback button
+- **THEN** the existing UserJot widget opens, and the public board is reachable from the account menu's Roadmap row
+
+#### Scenario: Narrow desktop remains usable
+
+- **WHEN** a desktop viewport is 768px wide and both navigation panels are expanded
+- **THEN** global controls remain reachable without overlap, optional text truncates or hides with accessible labels retained, and wide page content scrolls within its own area rather than stretching the shell
+
+#### Scenario: Mobile shell is preserved
+
+- **WHEN** the viewport is below 768px
+- **THEN** the existing mobile header, bottom navigation, drawer, and child-page tabs remain unchanged, the account drawer follows the shared account card layout (see account-menu), and there is no desktop top bar or section column
+
+### Requirement: Persistent desktop section menu lists the active section's child pages
+
+On desktop, a section with one or more child pages SHALL expose them in a persistent full-height column, from just under the global bar to the bottom of the viewport, beside the page content. The page header (title or breadcrumb, description, page tour) and route content SHALL sit in the content column to the right of the panel, so an expanded panel pushes the page header right instead of the header spanning above the panel; when the panel is collapsed or absent the header spans the full content width. The column's header row SHALL show the section label at the left and the collapse icon at the right, the whole row being the collapse button, with the same top padding as the page header so the section label and page title share a vertical center. Below it, child links SHALL appear in navigation order, visibly mark the active child including nested detail routes. Child rows SHALL be text-only, with no icons or counts. Clicking a child SHALL navigate directly to its route without closing the menu. Collapsing the menu SHALL remove the whole column and release its width - leaving no separate floating control - and the page header SHALL provide the reopen button (see the header title requirement). A childless destination SHALL render neither an empty section column nor any toggle. Main rail entries SHALL use label tooltips rather than child flyouts and SHALL retain existing section-entry resolution.
+
+#### Scenario: Sibling pages stay visible
+
+- **WHEN** a user visits Plan with its section menu expanded and selects Schedule
+- **THEN** Goals, Projects, Insights, and Schedule remain visible as text-only rows and Schedule becomes active
+
+#### Scenario: Section rows are text-only
+
+- **WHEN** a signed-in user views the Plan section menu
+- **THEN** Goals, Projects, Insights, and Schedule render as plain text rows with no icons and no count badge
+
+#### Scenario: Rail tools sit at the top of the rail
+
+- **WHEN** a user views the desktop main rail
+- **THEN** the expansion toggle is alone on its first row and the tour button alone on its second row, both above Create Goal and Sync, and no control sits at the bottom of the rail
+
+#### Scenario: Sync aligns with Create Goal
+
+- **WHEN** the main rail is compact or expanded
+- **THEN** the Sync control has the same size and horizontal center as the Create Goal control when compact, and the same icon left edge when expanded
+
+#### Scenario: Search launcher has no tooltip
+
+- **WHEN** a user hovers or focuses the global bar's search launcher
+- **THEN** no tooltip appears, and the launcher keeps its accessible name and visible shortcut hint
+
+#### Scenario: Single-child and childless sections
+
+- **WHEN** a user opens Guild and then Home
+- **THEN** Guild displays Members in its section menu, while Home displays no section column or section toggle
+
+#### Scenario: Nested route highlights its collection
+
+- **WHEN** a user opens a Library character detail route directly
+- **THEN** Library is active in the main rail and Characters is active in the section menu
+
+#### Scenario: Panel is a full-height sibling column of the page header
+
+- **WHEN** a user views Plan with the section menu expanded at a desktop width
+- **THEN** the panel extends from below the global bar to the bottom of the viewport, and the page header sits to its right above the page content
+
+#### Scenario: Ctrl/Cmd+B toggles the section menu
+
+- **WHEN** a user on a page whose section has a menu presses Ctrl+B (Cmd+B on macOS), including while an input is focused
+- **THEN** the section menu collapses or expands, the main rail is unchanged, the browser default is prevented, and focus moves to the reopen button only if it was inside the panel being hidden
+
+#### Scenario: Ctrl/Cmd+B does nothing on childless pages or the rail
+
+- **WHEN** a user presses Ctrl+B on a page with no section menu (for example Home)
+- **THEN** nothing changes and the keypress is not prevented; the main rail has no keyboard shortcut on any page
+
+#### Scenario: Shortcut hint is visible on the expanded panel toggle only
+
+- **WHEN** a user views the expanded section menu's collapse row on desktop
+- **THEN** a small hint with the platform-aware shortcut ("⌘B" on macOS, "Ctrl+B" elsewhere, styled like the search launcher's hint) is visible, is hidden from assistive technology (which gets `aria-keyshortcuts` and the title instead), while the page header reopen button (collapsed view) and the main rail toggle show no visible hint
+
+#### Scenario: Section menu animates like the main rail
+
+- **WHEN** the section menu is toggled
+- **THEN** its column width transitions over about 200ms with linear easing (no transition when reduced motion is preferred), content does not reflow during the transition, and once collapsed its links are inert, hidden from assistive technology, and out of the tab order
+
+#### Scenario: Panel header names the section and collapses it
+
+- **WHEN** a user views an expanded section menu
+- **THEN** its header shows the section name and a collapse button
+
+#### Scenario: Keyboard collapse and reopen
+
+- **WHEN** a user activates the section collapse button with the keyboard
+- **THEN** the column and its links leave the DOM and tab order, focus moves to the reopen button in the page header, and activating that button restores the column, moves focus to the collapse button, and announces the expanded state accurately
+
+### Requirement: Desktop menu presentation resets only on full document load
+
+On initial document load or refresh, the main rail SHALL start compact and the section menu SHALL start expanded. Each menu SHALL be independently controllable. Manual choices SHALL persist across all client-side navigation, including sibling pages, different sections, search navigation, and Back/Forward, using one shared section-menu choice. Visiting a childless page or temporarily switching to the mobile layout SHALL NOT reset either choice. These menu defaults SHALL NOT change the existing session memory for last-visited section children or persisted theme selection.
+
+#### Scenario: Refresh resets both choices
+
+- **GIVEN** the main rail has been expanded and the section menu collapsed
+- **WHEN** the user refreshes on a child page
+- **THEN** the main rail is compact and the section menu is expanded, including when an older saved sidebar preference exists
+
+#### Scenario: Navigation preserves both choices
+
+- **GIVEN** the main rail is expanded and the section menu collapsed
+- **WHEN** the user navigates among Plan children, into Library through search, and Back/Forward
+- **THEN** the main rail remains expanded and the section menu remains collapsed
+
+#### Scenario: Childless page preserves hidden menu choice
+
+- **GIVEN** the section menu is collapsed
+- **WHEN** the user visits Home and returns to a section with children without refreshing
+- **THEN** the section menu returns collapsed
+
+#### Scenario: Breakpoint transitions preserve choices
+
+- **GIVEN** a user has manually changed both desktop menu states
+- **WHEN** the viewport shrinks below 768px and returns to desktop without refresh
+- **THEN** both choices are retained
+
+#### Scenario: Each toggle controls only its own menu
+
+- **WHEN** the user expands or collapses one navigation panel
+- **THEN** the other panel's expansion state is unchanged

@@ -2,6 +2,7 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { GripVertical } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import {
   NO_BLOCKERS,
@@ -13,7 +14,6 @@ import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
 import {
   GoalProgressDisplay,
-  GoalProgressLegend,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
@@ -34,6 +34,7 @@ import {
   goalXpBookFigure,
   REACHED_ROW_CLASS,
   stopRowNavigation,
+  toggleGoalStatus,
   type GoalsListProps,
 } from "./goal-row-utils"
 
@@ -102,13 +103,14 @@ export function GoalsMobileCards({
   levelChargedXp,
   levelPoolXpAvailable,
   xpBookRarity,
-  project,
   reachedByGoalId,
   cascadeContext,
+  selection,
+  onToggleSelected,
+  selectActive = false,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
-  const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
 
   if (reorderEnabled && mobileReorderActive) {
     // Only in-flight rows are worth showing in reorder mode — a historical row has nothing to
@@ -150,7 +152,6 @@ export function GoalsMobileCards({
 
   return (
     <>
-      <GoalProgressLegend show={hasLegend} />
       <ul className="flex flex-col gap-3" data-testid="goals-list-cards">
         {rows.map((row) => {
           const progress =
@@ -189,6 +190,21 @@ export function GoalsMobileCards({
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
+                  {selectActive ? (
+                    <div
+                      onClick={stopRowNavigation}
+                      onKeyDown={stopRowNavigation}
+                    >
+                      <Checkbox
+                        aria-label={t("goals.bulk.selectRow", {
+                          entity: getEntityName(row.entityType, row.entityId),
+                        })}
+                        checked={selection?.has(row.goalId) ?? false}
+                        data-testid={`goal-row-select-${row.goalId}`}
+                        onCheckedChange={() => onToggleSelected?.(row.goalId)}
+                      />
+                    </div>
+                  ) : null}
                   <GoalPriorityNumber row={row} />
                   <GoalUnitIcon
                     className="size-8"
@@ -206,9 +222,17 @@ export function GoalsMobileCards({
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-end gap-1">
-                  <StatusBadge reached={reached} status={row.status} />
+                  <StatusBadge
+                    disabled={actions.pendingIds.has(row.goalId)}
+                    onToggle={(next) =>
+                      void toggleGoalStatus(actions, row, next, cascadeContext)
+                    }
+                    reached={reached}
+                    status={row.status}
+                  />
                   <BlockedIndicator
                     blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
+                    estimate={estimates?.get(row.goalId)}
                     progress={progress}
                   />
                   <div
@@ -220,7 +244,6 @@ export function GoalsMobileCards({
                       actions={actions}
                       onEdit={onEdit}
                       cascadeContext={cascadeContext}
-                      project={project}
                       reached={reached}
                       row={row}
                     />

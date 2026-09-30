@@ -10,10 +10,12 @@ export function TourButton({
   className,
   iconOnly = false,
   onStarted,
+  variant = "outline",
 }: {
   className?: string
   iconOnly?: boolean
   onStarted?: () => void
+  variant?: "outline" | "ghost"
 }) {
   const { t } = useTranslation()
   const { isRunning, startTour } = useTour()
@@ -21,7 +23,7 @@ export function TourButton({
   return (
     <Button
       aria-label={t("tour.start")}
-      className={cn(iconOnly && "size-10 rounded-full", className)}
+      className={cn(iconOnly && "size-8 rounded-full", className)}
       data-testid="tour-button"
       disabled={isRunning}
       onClick={() => {
@@ -29,7 +31,7 @@ export function TourButton({
         onStarted?.()
       }}
       size={iconOnly ? "icon" : "sm"}
-      variant="outline"
+      variant={variant}
     >
       <Compass data-icon="inline-start" />
       {iconOnly ? null : t("tour.start")}

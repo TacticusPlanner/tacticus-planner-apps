@@ -3,7 +3,8 @@
     "name": "Tacticus Planner"
   },
   "common": {
-    "close": "Schließen"
+    "close": "Schließen",
+    "back": "Zurück"
   },
   "auth": {
     "account": "Angemeldetes Konto",
@@ -11,10 +12,11 @@
     "checkingSignIn": "Konto erkannt – Anmeldung läuft…",
     "editDisplayName": "Planer-Namen bearbeiten",
     "error": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
-    "manageAccount": "Konto verwalten",
     "signIn": "Anmelden",
     "signOut": "Abmelden",
-    "userMenu": "Kontomenü"
+    "userMenu": "Kontomenü",
+    "preferences": "Voreinstellungen",
+    "accountSettings": "Kontoeinstellungen"
   },
   "catalog": {
     "badge": {
@@ -37,7 +39,7 @@
     }
   },
   "manageAccount": {
-    "title": "Konto verwalten",
+    "title": "Kontoeinstellungen",
     "tabs": {
       "integration": "Tacticus-Integration",
       "profile": "Profil",
@@ -207,11 +209,28 @@
     "guildDescription": "Deine Gildenliste und Einstellungen",
     "menu": "Menü",
     "navigation": "Navigation",
-    "navigationHint": "Wähle ein Ziel oder filtere die Liste.",
-    "noResults": "Keine Navigationseinträge gefunden.",
-    "search": "Navigation durchsuchen",
+    "navigationHint": "Wähle eine Seite oder Schnellaktion oder filtere die Liste.",
+    "noResults": "Keine passenden Seiten oder Aktionen gefunden.",
+    "search": "Seiten und Aktionen durchsuchen",
     "sync": "Sync",
-    "syncWithTacticus": "Mit Tacticus synchronisieren"
+    "syncWithTacticus": "Mit Tacticus synchronisieren",
+    "primaryNavigation": "Hauptnavigation",
+    "sectionNavigation": "Seiten von {{section}}",
+    "collapseSection": "Menü „{{section}}“ ausblenden",
+    "expandSection": "Menü „{{section}}“ einblenden",
+    "quickActions": {
+      "heading": "Schnellaktionen",
+      "pagesHeading": "Seiten",
+      "createGoalDescription": "Formular für ein neues Ziel öffnen",
+      "createProjectDescription": "Leeres Projektformular öffnen",
+      "syncDescription": "Planer über die Tacticus-API aktualisieren",
+      "feedbackLabel": "Feedback senden",
+      "feedbackDescription": "Widget für Feedback, Roadmap und Neuigkeiten öffnen",
+      "feedbackUnavailable": "Feedback ist gerade nicht verfügbar",
+      "tourDescription": "Die Funktionen dieser Seite kennenlernen",
+      "tourRunning": "Eine Tour läuft bereits"
+    },
+    "breadcrumb": "Seitenpfad"
   },
   "onslaught": {
     "sector": "Sektor",
@@ -478,7 +497,6 @@
       "progress": "Fortschritt",
       "remaining": "Verbleibend",
       "status": "Status · Fertig am",
-      "actions": "Aktionen",
       "reorder": "Neu anordnen",
       "reorderHandle": "{{entity}} ziehen, um neu zu priorisieren",
       "priority": "Priorität"
@@ -511,13 +529,32 @@
       "resume": "Fortsetzen",
       "delete": "Löschen",
       "moveUp": "Nach oben verschieben",
-      "moveDown": "Nach unten verschieben"
+      "moveDown": "Nach unten verschieben",
+      "edit": "Bearbeiten"
+    },
+    "bulk": {
+      "pause": "Pausieren",
+      "pauseCount": "Pausieren ({{count}})",
+      "resume": "Fortsetzen",
+      "resumeCount": "Fortsetzen ({{count}})",
+      "addToProject": "Zu Projekt hinzufügen",
+      "addToProjectCount": "Zu Projekt hinzufügen ({{count}})",
+      "delete": "Löschen",
+      "deleteCount": "Löschen ({{count}})",
+      "selected_one": "{{count}} ausgewählt",
+      "selected_other": "{{count}} ausgewählt",
+      "selectAll": "Alle Ziele auswählen",
+      "selectRow": "{{entity}} auswählen",
+      "selectMode": "Ziele auswählen",
+      "selectDone": "Fertig"
     },
     "delete": {
-      "title": "Dieses Ziel löschen?",
-      "description": "Dies löscht das Ziel dauerhaft aus deinem Konto, einschließlich aller Projekte, zu denen es gehört – nicht nur aus dem gerade angezeigten. Dies kann nicht rückgängig gemacht werden.",
-      "projectAlternative": "Um es nur aus {{project}} zu nehmen, brich ab und verwende stattdessen „Aus diesem Projekt entfernen“.",
-      "confirm": "Ziel löschen",
+      "title_one": "Dieses Ziel löschen?",
+      "title_other": "{{count}} Ziele löschen?",
+      "description_one": "Dies löscht das Ziel dauerhaft aus deinem Konto, einschließlich aller Projekte, zu denen es gehört. Dies kann nicht rückgängig gemacht werden.",
+      "description_other": "Dies löscht diese {{count}} Ziele dauerhaft aus deinem Konto, einschließlich aller Projekte, zu denen sie gehören. Dies kann nicht rückgängig gemacht werden.",
+      "confirm_one": "Ziel löschen",
+      "confirm_other": "{{count}} Ziele löschen",
       "cancel": "Abbrechen"
     },
     "project": {
@@ -526,11 +563,9 @@
       "membership": "Projekte mit diesem Ziel",
       "addMembership": "Zu Projekt hinzufügen",
       "removeMembership": "{{project}} entfernen",
-      "removeFromProject": "Aus diesem Projekt entfernen",
-      "moveToProject": "In Projekt verschieben",
-      "moveToProjectTitle": "In Projekt verschieben",
-      "moveToProjectDescription": "Wähle ein Projekt, in das dieses Ziel verschoben werden soll, oder erstelle ein neues.",
       "createNewProject": "Neues Projekt erstellen…",
+      "addToProjectTitle": "Zu Projekt hinzufügen",
+      "addToProjectDescription": "Wähle ein Projekt, zu dem die ausgewählten Ziele hinzugefügt werden sollen, oder erstelle ein neues.",
       "removeLastMembership": "Dies ist das einzige Projekt des Ziels, und es gibt kein anderes Ziel dafür. Füge es zuerst einem anderen Projekt hinzu.",
       "removeDestinationUnknown": "Deine Projekte sind noch nicht geladen, deshalb gibt es kein Ziel für dieses Vorhaben. Versuche es gleich noch einmal.",
       "addGoalsTrigger": "Ziele verwalten",
@@ -604,12 +639,13 @@
     "toasts": {
       "statusChangedPartial": "{{succeeded}} von {{total}} Zielen aktualisiert.",
       "deleted": "Ziel gelöscht.",
-      "goalRemovedFromProject": "{{goal}} aus {{project}} entfernt.",
-      "goalRelocated": "{{goal}} nach {{project}} verschoben.",
       "actionError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
       "projectCreated": "Projekt erstellt.",
       "projectUpdated": "Projekt aktualisiert.",
-      "projectMembershipSaved": "{{project}} aktualisiert: {{added}} hinzugefügt, {{removed}} entfernt."
+      "projectMembershipSaved": "{{project}} aktualisiert: {{added}} hinzugefügt, {{removed}} entfernt.",
+      "goalsAddedToProject_one": "{{count}} Ziel zu {{project}} hinzugefügt.",
+      "goalsAddedToProject_other": "{{count}} Ziele zu {{project}} hinzugefügt.",
+      "bulkPartial": "Nur {{succeeded}} von {{total}} Zielen wurden verarbeitet."
     },
     "create": {
       "title": "Ziel erstellen",
@@ -988,7 +1024,8 @@
   },
   "feedback": {
     "button": "Feedback",
-    "viewBoard": "Vollständiges Board anzeigen"
+    "send": "Feedback senden",
+    "roadmap": "Roadmap"
   },
   "theme": {
     "dark": "Dunkel",
@@ -1011,6 +1048,10 @@
         "title": "Willkommen bei Tacticus Planner",
         "content": "Mach eine kurze Tour, um die wichtigsten Teile der Oberfläche zu entdecken."
       },
+      "search": {
+        "title": "Seiten und Aktionen durchsuchen",
+        "content": "Öffne die Suche über die Schaltfläche oder mit Strg/Cmd+K, um zu einer Seite zu springen oder eine Schnellaktion wie Ziel erstellen, Synchronisieren oder Feedback senden auszuführen."
+      },
       "accountDrawer": {
         "title": "Konto und Einstellungen",
         "content": "Verwalte hier Design, Sprache, Tour, Importe, Planer-Name, Konto und Anmeldeoptionen."
@@ -1029,21 +1070,29 @@
         "title": "Schnell navigieren",
         "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."
       },
-      "headerControls": {
-        "title": "Design, Sprache & Feedback",
-        "content": "Wechsle über diese Symbole das Design, ändere die Sprache oder sende Feedback."
-      },
       "sidebarFooter": {
-        "title": "Dein Konto",
-        "content": "Verwalte hier jederzeit dein Konto und deinen Planer-Namen, prüfe den Synchronisierungsstatus und wiederhole diese Tour."
+        "title": "Seitenleisten-Werkzeuge",
+        "content": "Hier startest du diese Tour jederzeit neu und erweiterst oder verkleinerst die Hauptnavigation."
       },
       "bottomNavigationGroup": {
         "title": "Deine Hauptleiste",
-        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere — alles von hier."
+        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen."
       },
       "mobileHeader": {
         "title": "Seitenkopf",
         "content": "Zeigt, wo du dich befindest. Dein Kontomenü — Design, Sprache und diese Tour — findest du rechts."
+      },
+      "accountMenu": {
+        "title": "Konto und Einstellungen",
+        "content": "Öffne dieses Menü für Design, Sprache, Kontoeinstellungen, Importe, Feedback, Synchronisierungsstatus sowie An- und Abmeldung."
+      },
+      "sectionNavigation": {
+        "title": "Seiten des Bereichs",
+        "content": "Dieses Menü listet die Seiten des aktuellen Bereichs. Blende es mit der Schaltfläche in seiner Kopfzeile aus und mit der Schaltfläche neben dem Seitentitel wieder ein; es bleibt beim Navigieren so, wie du es gelassen hast."
+      },
+      "feedback": {
+        "title": "Feedback senden",
+        "content": "Teile Feedback oder Ideen über die Schaltfläche neben deinem Konto. Der Link zum öffentlichen Board bleibt in der Seitenkopfzeile."
       }
     },
     "lookup": {
@@ -1079,6 +1128,14 @@
         "filters": {
           "title": "Typ und Gruppierung",
           "content": "Filtere nach Zieltyp oder gruppiere verwandte Ziele."
+        },
+        "select": {
+          "title": "Ziele auswählen",
+          "content": "Markiere Ziele mit ihrem Kontrollkästchen. Das Kästchen in der Kopfzeile wählt alle angezeigten Ziele aus (auf Mobilgeräten zuerst „Auswählen“ aktivieren)."
+        },
+        "bulkActions": {
+          "title": "Sammelaktionen",
+          "content": "Pausiere, setze fort, füge zu einem Projekt hinzu oder lösche alle ausgewählten Ziele auf einmal. Sammel-Pausieren und -Fortsetzen betreffen nur die ausgewählten Ziele."
         },
         "createGoal": {
           "title": "Ziel erstellen",

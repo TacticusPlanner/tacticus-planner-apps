@@ -65,4 +65,7 @@ default.
   rename, level-requirement sub-lines) and
   `consolidate-goals-into-plan-and-remove-active-project` (Goals page
   rename, drag handle, control-row renames) create or modify, so both are
-  archived first.
+  archived first. It also lands after `add-goals-bulk-actions`, which
+  splits the desktop control area into an actions row and a filters row
+  (and adds the mobile select toggle) — the density toggle goes on the
+  filters row.

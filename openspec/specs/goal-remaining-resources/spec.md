@@ -8,7 +8,7 @@ Defines the icon chips the Goals list's Remaining column shows for what a goal s
 
 ### Requirement: Remaining shows one icon chip per resource still needed
 
-For a goal that has not reached its target, the Remaining display SHALL show one chip per resource type still needed, each made of the resource's icon and a quantity, in place of words. Every chip SHALL expose the resource's full localized name and its quantity as a tooltip and as an accessible name. A resource with nothing left to acquire SHALL NOT render a chip. Numbers SHALL use the locale's thousands separator. Upgrade materials (crafting ingredients) SHALL NOT be shown as chips for any goal kind. Every chip SHALL use the same icon V1 uses for that resource (energy, gold coin, ability badge, forge badge, Machine of War component, orb, shard, XP book). The chips SHALL be, by goal kind:
+For a goal that has not reached its target, the Remaining display SHALL show one chip per resource type still needed, each made of the resource's icon and a quantity, in place of words. Every chip SHALL expose the resource's full localized name and its quantity as a tooltip and as an accessible name. A resource with nothing left to acquire SHALL NOT render a chip. Every chip SHALL render: the display SHALL NOT cap the number of visible chips, collapse any into a "+N" summary, or clip chips by width or height — chips wrap onto further lines within the cell, and the row grows to fit them (see `goal-list-layout`'s row-height exception). Numbers SHALL use the locale's thousands separator. Upgrade materials (crafting ingredients) SHALL NOT be shown as chips for any goal kind. Every chip SHALL use the same icon V1 uses for that resource (energy, gold coin, ability badge, forge badge, Machine of War component, orb, shard, XP book). The chips SHALL be, by goal kind:
 
 - Rank: gold (the gold to apply XP books for a level-up), and energy when a farming energy estimate is available.
 - Ascension: orbs by rarity, shards and mythic shards, and energy when estimated.
@@ -28,6 +28,12 @@ For a goal that has not reached its target, the Remaining display SHALL show one
 - **GIVEN** a Machine of War Ability goal with badges, forge badges, components and gold still needed
 - **WHEN** its Remaining display renders
 - **THEN** it shows those chips (net of inventory) and its energy
+
+#### Scenario: A Machine of War goal with twelve chips shows all twelve
+
+- **GIVEN** a Machine of War Ability goal needing ability badges of five rarities, forge badges of four rarities, components, gold and energy
+- **WHEN** its Remaining cell renders on the desktop table
+- **THEN** twelve chips are visible, wrapped onto as many lines as needed, with no "+N" chip and nothing cut off
 
 #### Scenario: A chip's name is available without hovering
 

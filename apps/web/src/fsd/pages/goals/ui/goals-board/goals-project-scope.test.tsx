@@ -134,4 +134,12 @@ describe("GoalsProjectScope", () => {
       view.unmount()
     }
   })
+
+  it("collapses into a select once there are more than three projects", () => {
+    renderScope({
+      projects: [...projects, project("a", "A"), project("b", "B")],
+    })
+    expect(screen.queryByTestId("goals-project-scope-all")).toBeNull()
+    expect(screen.getByRole("combobox")).toBeInTheDocument()
+  })
 })

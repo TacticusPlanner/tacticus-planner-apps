@@ -7,6 +7,13 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
+vi.mock("../../model/shared/use-goal-catalog", () => ({
+  useGoalCatalog: () => ({
+    upgradesById: new Map(),
+    charactersById: new Map(),
+  }),
+}))
+
 import { BlockedIndicator } from "./status-badge"
 
 describe("BlockedIndicator", () => {
@@ -140,6 +147,36 @@ describe("BlockedIndicator", () => {
     expect(await screen.findByRole("tooltip")).toHaveTextContent(
       "goals.blocked.reasons.PlayerDataUnavailable"
     )
+  })
+
+  it("lists the blocked estimate's unavailable materials after the reasons in the tooltip", async () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [{ kind: "PlayerDataUnavailable" }],
+          isBlocked: true,
+        }}
+        estimate={{
+          status: "Blocked",
+          reason: "NoFarmLocation",
+          resourceIds: ["upgHpM004" as never],
+          actionableResourceIds: [],
+          blockers: [
+            {
+              resourceId: "upgHpM004" as never,
+              reason: "NoFarmLocation",
+              remaining: 6,
+            },
+          ],
+        }}
+      />
+    )
+    await userEvent.hover(screen.getByTestId("goal-blocked-indicator"))
+    const tooltip = await screen.findByRole("tooltip")
+    expect(tooltip).toHaveTextContent(
+      "goals.blocked.reasons.PlayerDataUnavailable"
+    )
+    expect(tooltip).toHaveTextContent("common:goals.estimate.unavailableRow")
   })
 
   it("shows a duplicate-text reason only once, when two different prerequisite goals produce the same generic sentence", async () => {

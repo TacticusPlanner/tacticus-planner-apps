@@ -3,7 +3,8 @@
     "name": "Tacticus Planner"
   },
   "common": {
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "back": "Atrás"
   },
   "auth": {
     "account": "Cuenta conectada",
@@ -11,10 +12,11 @@
     "checkingSignIn": "Cuenta detectada; iniciando sesión…",
     "editDisplayName": "Editar nombre en el planificador",
     "error": "No se pudo completar la autenticación. Inténtalo de nuevo.",
-    "manageAccount": "Gestionar cuenta",
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
-    "userMenu": "Menú de la cuenta"
+    "userMenu": "Menú de la cuenta",
+    "preferences": "Preferencias",
+    "accountSettings": "Ajustes de la cuenta"
   },
   "catalog": {
     "badge": {
@@ -37,7 +39,7 @@
     }
   },
   "manageAccount": {
-    "title": "Gestionar cuenta",
+    "title": "Ajustes de la cuenta",
     "tabs": {
       "integration": "Integración con Tacticus",
       "profile": "Perfil",
@@ -207,11 +209,28 @@
     "guildDescription": "El plantel y los ajustes de tu gremio",
     "menu": "Menú",
     "navigation": "Navegación",
-    "navigationHint": "Elige un destino o filtra la lista.",
-    "noResults": "No se encontraron elementos de navegación.",
-    "search": "Buscar en la navegación",
+    "navigationHint": "Elige una página o acción rápida, o filtra la lista.",
+    "noResults": "No se encontraron páginas ni acciones coincidentes.",
+    "search": "Buscar páginas y acciones",
     "sync": "Sincronizar",
-    "syncWithTacticus": "Sincronizar con Tacticus"
+    "syncWithTacticus": "Sincronizar con Tacticus",
+    "primaryNavigation": "Navegación principal",
+    "sectionNavigation": "Páginas de {{section}}",
+    "collapseSection": "Ocultar el menú de {{section}}",
+    "expandSection": "Mostrar el menú de {{section}}",
+    "quickActions": {
+      "heading": "Acciones rápidas",
+      "pagesHeading": "Páginas",
+      "createGoalDescription": "Abrir el formulario de nuevo objetivo",
+      "createProjectDescription": "Abrir un formulario de proyecto en blanco",
+      "syncDescription": "Actualizar tu Planner desde la API de Tacticus",
+      "feedbackLabel": "Enviar comentarios",
+      "feedbackDescription": "Abrir el widget de comentarios, hoja de ruta y novedades",
+      "feedbackUnavailable": "Los comentarios no están disponibles ahora mismo",
+      "tourDescription": "Recorrer las funciones de esta página",
+      "tourRunning": "Ya hay un recorrido en curso"
+    },
+    "breadcrumb": "Ruta de navegación"
   },
   "onslaught": {
     "sector": "Sector",
@@ -478,7 +497,6 @@
       "progress": "Progreso",
       "remaining": "Restante",
       "status": "Estado · Fecha fin",
-      "actions": "Acciones",
       "reorder": "Reordenar",
       "reorderHandle": "Arrastrar {{entity}} para reordenar",
       "priority": "Prioridad"
@@ -511,13 +529,32 @@
       "resume": "Reanudar",
       "delete": "Eliminar",
       "moveUp": "Subir",
-      "moveDown": "Bajar"
+      "moveDown": "Bajar",
+      "edit": "Editar"
+    },
+    "bulk": {
+      "pause": "Pausar",
+      "pauseCount": "Pausar ({{count}})",
+      "resume": "Reanudar",
+      "resumeCount": "Reanudar ({{count}})",
+      "addToProject": "Añadir al proyecto",
+      "addToProjectCount": "Añadir al proyecto ({{count}})",
+      "delete": "Eliminar",
+      "deleteCount": "Eliminar ({{count}})",
+      "selected_one": "{{count}} seleccionado",
+      "selected_other": "{{count}} seleccionados",
+      "selectAll": "Seleccionar todos los objetivos",
+      "selectRow": "Seleccionar {{entity}}",
+      "selectMode": "Seleccionar objetivos",
+      "selectDone": "Listo"
     },
     "delete": {
-      "title": "¿Eliminar este objetivo?",
-      "description": "Esto elimina el objetivo de forma permanente de tu cuenta, incluidos todos los proyectos a los que pertenece, no solo el que estás viendo. Esta acción no se puede deshacer.",
-      "projectAlternative": "Para sacarlo solo de {{project}}, cancela y usa «Quitar de este proyecto».",
-      "confirm": "Eliminar objetivo",
+      "title_one": "¿Eliminar este objetivo?",
+      "title_other": "¿Eliminar {{count}} objetivos?",
+      "description_one": "Esto elimina el objetivo de forma permanente de tu cuenta, incluidos todos los proyectos a los que pertenece. Esta acción no se puede deshacer.",
+      "description_other": "Esto elimina de forma permanente estos {{count}} objetivos de tu cuenta, incluidos todos los proyectos a los que pertenecen. Esta acción no se puede deshacer.",
+      "confirm_one": "Eliminar objetivo",
+      "confirm_other": "Eliminar {{count}} objetivos",
       "cancel": "Cancelar"
     },
     "project": {
@@ -526,11 +563,9 @@
       "membership": "Proyectos que contienen este objetivo",
       "addMembership": "Añadir al proyecto",
       "removeMembership": "Quitar {{project}}",
-      "removeFromProject": "Quitar de este proyecto",
-      "moveToProject": "Mover a proyecto",
-      "moveToProjectTitle": "Mover a proyecto",
-      "moveToProjectDescription": "Elige un proyecto al que mover este objetivo, o crea uno nuevo.",
       "createNewProject": "Crear nuevo proyecto…",
+      "addToProjectTitle": "Añadir al proyecto",
+      "addToProjectDescription": "Elige un proyecto al que añadir los objetivos seleccionados, o crea uno nuevo.",
       "removeLastMembership": "Este es el único proyecto del objetivo y no tiene otro destino. Añádelo antes a otro proyecto.",
       "removeDestinationUnknown": "Tus proyectos aún no se han cargado, así que este objetivo no tiene destino. Vuelve a intentarlo en un momento.",
       "addGoalsTrigger": "Gestionar objetivos",
@@ -604,12 +639,13 @@
     "toasts": {
       "statusChangedPartial": "Se actualizaron {{succeeded}} de {{total}} objetivos.",
       "deleted": "Objetivo eliminado.",
-      "goalRemovedFromProject": "{{goal}} quitado de {{project}}.",
-      "goalRelocated": "{{goal}} movido a {{project}}.",
       "actionError": "Algo salió mal. Inténtalo de nuevo.",
       "projectCreated": "Proyecto creado.",
       "projectUpdated": "Proyecto actualizado.",
-      "projectMembershipSaved": "{{project}} actualizado: {{added}} añadidos, {{removed}} quitados."
+      "projectMembershipSaved": "{{project}} actualizado: {{added}} añadidos, {{removed}} quitados.",
+      "goalsAddedToProject_one": "{{count}} objetivo añadido a {{project}}.",
+      "goalsAddedToProject_other": "{{count}} objetivos añadidos a {{project}}.",
+      "bulkPartial": "Solo se procesaron {{succeeded}} de {{total}} objetivos."
     },
     "create": {
       "title": "Crear un objetivo",
@@ -988,7 +1024,8 @@
   },
   "feedback": {
     "button": "Comentarios",
-    "viewBoard": "Ver el tablero completo"
+    "send": "Enviar comentarios",
+    "roadmap": "Hoja de ruta"
   },
   "theme": {
     "dark": "Oscuro",
@@ -1011,6 +1048,10 @@
         "title": "Bienvenido a Tacticus Planner",
         "content": "Haz un recorrido rápido para descubrir las partes clave de la interfaz."
       },
+      "search": {
+        "title": "Buscar páginas y acciones",
+        "content": "Abre la búsqueda con el botón o con Ctrl/Cmd+K para ir a cualquier página o ejecutar una acción rápida, como crear un objetivo, sincronizar o enviar comentarios."
+      },
       "accountDrawer": {
         "title": "Cuenta y preferencias",
         "content": "Gestiona aquí el tema, idioma, recorrido, importaciones, nombre en el planificador, cuenta y opciones de sesión."
@@ -1029,21 +1070,29 @@
         "title": "Desplázate con facilidad",
         "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."
       },
-      "headerControls": {
-        "title": "Tema, idioma y comentarios",
-        "content": "Cambia el tema, el idioma o envía comentarios desde estos iconos."
-      },
       "sidebarFooter": {
-        "title": "Tu cuenta",
-        "content": "Gestiona tu cuenta y tu nombre en el planificador, comprueba el estado de sincronización y vuelve a ver este recorrido en cualquier momento desde aquí."
+        "title": "Herramientas de la barra lateral",
+        "content": "Desde aquí puedes repetir este recorrido en cualquier momento y expandir o contraer la navegación principal."
       },
       "bottomNavigationGroup": {
         "title": "Tu barra principal",
-        "content": "Cambia de sección, añade un objetivo o sincroniza — todo desde aquí."
+        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas."
       },
       "mobileHeader": {
         "title": "Encabezado de página",
         "content": "Muestra dónde estás. Tu menú de cuenta — tema, idioma y este recorrido — está a la derecha."
+      },
+      "accountMenu": {
+        "title": "Cuenta y preferencias",
+        "content": "Abre este menú para el tema, el idioma, los ajustes de la cuenta, las importaciones, los comentarios, el estado de sincronización y para iniciar o cerrar sesión."
+      },
+      "sectionNavigation": {
+        "title": "Páginas de la sección",
+        "content": "Este menú enumera las páginas de la sección actual. Ocúltalo con el botón de su encabezado y vuelve a mostrarlo con el botón junto al título de la página; se mantiene como lo dejaste mientras navegas."
+      },
+      "feedback": {
+        "title": "Enviar comentarios",
+        "content": "Comparte comentarios o ideas con el botón junto a tu cuenta. El enlace al tablero público sigue en el encabezado de la página."
       }
     },
     "lookup": {
@@ -1079,6 +1128,14 @@
         "filters": {
           "title": "Tipo y agrupación",
           "content": "Filtra por tipo de objetivo o agrupa objetivos relacionados."
+        },
+        "select": {
+          "title": "Seleccionar objetivos",
+          "content": "Marca objetivos con su casilla. La casilla del encabezado selecciona todos los que se muestran (en el móvil, activa primero «Seleccionar»)."
+        },
+        "bulkActions": {
+          "title": "Acciones en lote",
+          "content": "Pausa, reanuda, añade a un proyecto o elimina a la vez todos los objetivos seleccionados. Pausar y reanudar en lote solo afectan a los objetivos que elijas."
         },
         "createGoal": {
           "title": "Crear un objetivo",

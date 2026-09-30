@@ -52,7 +52,7 @@ type ManageAccountDialogProps = {
 }
 
 /**
- * "Manage Account" dialog reachable from the user menu: Tacticus Integration (view masked values, update the
+ * "Account settings" dialog reachable from the user menu: Tacticus Integration (view masked values, update the
  * key, update/remove the user id) and Account (purge — requires typing the literal word "Confirm").
  */
 export function ManageAccountDialog({

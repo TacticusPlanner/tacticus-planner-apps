@@ -6,27 +6,6 @@ Connects a goal or project view to the resources and eligible sources needed for
 
 ## Requirements
 
-### Requirement: Goal detail exposes resource and source guidance
-
-For a goal with outstanding farmable needs, goal detail SHALL show a concise breakdown of remaining resources and quantities, suitable farming locations, and a reachable next action or Dailies link. It SHALL distinguish a location usable now from one locked, out of attempts, or otherwise unavailable, with the reason stated rather than silently omitting it. The quantities SHALL derive from the same need/allocation result used by planning, not an independent UI calculation.
-
-A Rank goal whose milestone is fully covered by an earlier goal in the global order (`rankSlotAllocation.allocated === 0` for that slot) has no outstanding farmable need of its own to show; guidance SHALL state that it is covered by the earlier goal instead of a resource breakdown or a duplicate farming list.
-
-#### Scenario: Farmable and locked locations
-
-- **WHEN** a Rank goal needs a material obtainable at one eligible node and one locked node
-- **THEN** its detail identifies the remaining quantity, the usable node as actionable, and the locked node as unavailable with a reason
-
-#### Scenario: No actionable source
-
-- **WHEN** a goal has a true outstanding need but no currently usable source
-- **THEN** its detail states the unmet need and blocker without claiming the goal can complete now
-
-#### Scenario: Covered by an earlier goal
-
-- **WHEN** a Rank goal's milestone is fully allocated to an earlier goal in the global order and this goal's own remaining allocation is zero
-- **THEN** its detail states that the milestone is covered by the earlier goal instead of listing resources to farm
-
 ### Requirement: Project detail provides scoped guidance
 
 Project detail SHALL present a summary or direct link to outstanding goal farming guidance for that project. Dailies plans across all goals in the global goal order and a project is only an optional filter, so a project's guidance SHALL be labeled a preview whenever it is not the scope Dailies currently shows (all goals, or a different project filter), and SHALL NOT imply its listed nodes are today's schedule. Empty or fully satisfied projects SHALL show an appropriate next step rather than a misleading farming list.
@@ -93,12 +72,12 @@ Assumptions:
 
 ### Requirement: Required-level book availability is visible wherever the goal is listed
 
-The available/needed XP-book count (see "Required-level guidance preserves raw XP and adds an equivalent") SHALL render everywhere a Rank/Ability goal's level requirement already renders remaining-XP text — the Goals overview list and its mobile cards, project detail's goal list and its mobile cards, and the goal detail view — not only in goal detail as before. Every one of these surfaces SHALL use the same selected XP-book rarity and the same priority-ordered pool state, so the count for a given goal never disagrees between the list and its own detail view.
+The available/needed XP-book count (see "Required-level guidance preserves raw XP and adds an equivalent") SHALL render everywhere a Rank/Ability goal's level requirement already renders remaining-XP text — the Goals overview list and its mobile cards, and project detail's goal list and its mobile cards — and the create-goal preview; there is no goal detail view. Every one of these surfaces SHALL use the same selected XP-book rarity and the same priority-ordered pool state, so the count for a given goal never disagrees between the Goals list, the project list, and the create-goal preview.
 
 #### Scenario: Goals overview list shows the count
 
 - **WHEN** a user viewing the Goals overview desktop table has a Rank or Ability goal below its required level
-- **THEN** that goal's row shows the same available/needed book count its detail view would show
+- **THEN** that goal's row shows the available/needed book count computed with the selected XP-book rarity
 
 #### Scenario: Mobile cards show the count
 
@@ -108,7 +87,7 @@ The available/needed XP-book count (see "Required-level guidance preserves raw X
 #### Scenario: Project detail list shows the count
 
 - **WHEN** a user views a project's goal list containing a Rank or Ability goal below its required level
-- **THEN** that goal's row shows the available/needed book count, consistent with the Goals overview and the goal's own detail view
+- **THEN** that goal's row shows the available/needed book count, consistent with the Goals overview
 
 ### Requirement: The create-goal required-level preview follows the selected rarity
 
@@ -124,4 +103,4 @@ The required-level cost preview on a Rank or Ability goal's creation card (`comp
 
 - **GIVEN** the user selected Epic (2,500 XP per book) and the same 12,200 XP gap with no owned books
 - **WHEN** the creation card previews the required level
-- **THEN** it shows 5 books and 2,500 gold, and the goal detail guidance shows the same 5 Epic-book equivalent
+- **THEN** it shows 5 books and 2,500 gold, and, once the goal is created, the Goals list and project list show the same 5 Epic-book equivalent

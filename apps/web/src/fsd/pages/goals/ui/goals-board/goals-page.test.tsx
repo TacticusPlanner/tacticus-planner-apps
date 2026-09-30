@@ -155,6 +155,7 @@ const createProject = vi.fn()
 const createGoal = vi.fn()
 const updateGoalStatus = vi.fn()
 const deleteGoal = vi.fn()
+const updateGoalProjects = vi.fn()
 const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
   Promise.resolve(undefined)
 )
@@ -165,6 +166,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   createGoal: (...args: unknown[]) => createGoal(...args),
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
+  updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
   goalQueries: {
     all: () => ["goals"],
     list: (archived: boolean) => ({
@@ -372,7 +374,12 @@ describe("GoalsPage", () => {
       await screen.findByTestId("goals-page-empty")
       const button = screen.getByTestId("goals-create-goal")
       expect(button).toHaveAccessibleName("goals.createButton")
-      expect(screen.getByTestId("goals-filter-group")).toContainElement(button)
+      // Desktop: Create goal leads the actions row. Mobile: it sits in the icon row.
+      expect(
+        screen.getByTestId(
+          isMobile ? "goals-filter-group" : "goals-actions-row"
+        )
+      ).toContainElement(button)
       if (isMobile)
         expect(within(button).queryByText("goals.createButton")).toBeNull()
       else expect(button).toHaveTextContent("goals.createButton")
@@ -447,7 +454,7 @@ describe("GoalsPage", () => {
     expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
     expect(screen.getByText("Hero One")).toBeInTheDocument()
     expect(
-      screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`)
+      screen.getByTestId(`goal-row-menu-${activeGoal.goalId}`)
     ).toBeInTheDocument()
   })
 
@@ -483,7 +490,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     expect(
-      screen.getByTestId(`goal-row-delete-${pausedGoal.goalId}`)
+      screen.getByTestId(`goal-row-menu-${pausedGoal.goalId}`)
     ).toBeInTheDocument()
   })
 
@@ -502,7 +509,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     expect(
-      screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`)
+      screen.getByTestId(`goal-row-menu-${activeGoal.goalId}`)
     ).toBeInTheDocument()
   })
 
@@ -650,7 +657,12 @@ describe("GoalsPage", () => {
     renderPage()
 
     await screen.findByTestId("goal-row")
-    await user.click(screen.getByTestId(`goal-row-edit-${activeGoal.goalId}`))
+    await user.click(
+      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    )
+    await user.click(
+      await screen.findByTestId(`goal-row-edit-${activeGoal.goalId}`)
+    )
 
     expect(await screen.findByTestId("goal-edit-dialog")).toHaveTextContent(
       activeGoal.goalId
@@ -675,7 +687,12 @@ describe("GoalsPage", () => {
     renderPage()
 
     await screen.findByTestId("goal-row")
-    await user.click(screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`))
+    await user.click(
+      screen.getByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    )
+    await user.click(
+      await screen.findByTestId(`goal-row-delete-${activeGoal.goalId}`)
+    )
 
     expect(screen.queryByTestId("goal-edit-dialog")).not.toBeInTheDocument()
   })
@@ -689,7 +706,7 @@ describe("GoalsPage", () => {
     })
     renderPage()
 
-    await screen.findByTestId(`goal-row-delete-${activeGoal.goalId}`)
+    await screen.findByTestId(`goal-row-menu-${activeGoal.goalId}`)
     expect(
       screen.queryByRole("heading", { name: "goals.create.goalTypes.Rank" })
     ).not.toBeInTheDocument()
@@ -744,6 +761,10 @@ describe("GoalsPage", () => {
     })
     renderPage()
 
+    const user = userEvent.setup()
+    await user.click(
+      await screen.findByTestId(`goal-row-actions-trigger-${activeGoal.goalId}`)
+    )
     await screen.findByTestId(`goal-row-delete-${activeGoal.goalId}`)
     expect(
       screen.queryByTestId(`goal-row-remove-from-project-${activeGoal.goalId}`)
@@ -1028,5 +1049,206 @@ describe("GoalsPage", () => {
       await screen.findByTestId("goals-page-filtered-empty")
     ).toBeInTheDocument()
     expect(screen.queryByTestId("goals-page-empty-project")).toBeNull()
+  })
+})
+
+describe("GoalsPage bulk actions", () => {
+  const goalB = { ...activeGoal, goalId: "goal-b", entityId: "hero1" }
+  const pausedB = { ...pausedGoal, goalId: "goal-p", entityId: "hero1" }
+
+  beforeEach(() => {
+    listGoals.mockReset()
+    listProjects.mockReset()
+    listProjectGoals.mockReset().mockResolvedValue({ goals: [] })
+    listProjects.mockResolvedValue({ projects: [] })
+    getGoalDetail.mockReset().mockResolvedValue(undefined)
+    getPlayerCharacters.mockReset().mockReturnValue([])
+    updateGoalStatus.mockReset().mockResolvedValue({})
+    deleteGoal.mockReset().mockResolvedValue({})
+    updateGoalProjects.mockReset().mockResolvedValue({})
+    mobile.value = false
+    onLaunch.mockReset()
+    insightsResult.value = insightsResult.emptyResult
+    listGoals.mockResolvedValue({
+      goals: [
+        { ...activeGoal, globalPriority: 1 },
+        { ...goalB, globalPriority: 2 },
+        { ...pausedB, globalPriority: 3 },
+      ],
+    })
+  })
+
+  const select = (user: ReturnType<typeof userEvent.setup>, id: string) =>
+    user.click(screen.getByTestId(`goal-row-select-${id}`))
+
+  it("lays out an actions row (Create goal first) above a filters row", async () => {
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+
+    const actions = screen.getByTestId("goals-actions-row")
+    const filters = screen.getByTestId("goals-filters-row")
+    expect(
+      actions.compareDocumentPosition(filters) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(actions.querySelector("button")).toBe(
+      screen.getByTestId("goals-create-goal")
+    )
+    expect(actions).toContainElement(screen.getByTestId("goals-bulk-actions"))
+    expect(actions).toContainElement(
+      screen.getByTestId("goals-planning-settings")
+    )
+    expect(filters).toContainElement(screen.getByTestId("goals-status-filter"))
+    expect(filters).toContainElement(screen.getByTestId("goals-type-filter"))
+  })
+
+  it("disables every bulk action until something is selected, then enables the applicable ones", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+
+    for (const key of ["pause", "resume", "addToProject", "delete"])
+      expect(screen.getByTestId(`goals-bulk-${key}`)).toBeDisabled()
+
+    await select(user, "goal-p")
+    expect(screen.getByTestId("goals-bulk-pause")).toBeDisabled()
+    expect(screen.getByTestId("goals-bulk-resume")).toBeEnabled()
+    expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
+  })
+
+  it("bulk pause acts on the selected active goals only, then clears the selection", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-select-all"))
+    await user.click(screen.getByTestId("goals-bulk-pause"))
+
+    await vi.waitFor(() => expect(updateGoalStatus).toHaveBeenCalledTimes(2))
+    expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+    expect(updateGoalStatus).toHaveBeenCalledWith("goal-b", "Paused")
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goals-select-all")).not.toBeChecked()
+    )
+  })
+
+  it("clears the selection when the status filter changes", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+    await select(user, "goal-p")
+    expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
+
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
+    )
+
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
+    )
+    expect(screen.getByTestId("goal-row-select-goal-p")).not.toBeChecked()
+  })
+
+  it("confirms bulk delete once, removes the rows before the requests resolve and empties the selection; cancel keeps it", async () => {
+    deleteGoal.mockReturnValue(new Promise(() => undefined))
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goals-select-all"))
+
+    await user.click(screen.getByTestId("goals-bulk-delete"))
+    expect(await screen.findByTestId("delete-goal-dialog")).toBeInTheDocument()
+    await user.click(screen.getByText("goals.delete.cancel"))
+    expect(deleteGoal).not.toHaveBeenCalled()
+    expect(screen.getByTestId("goal-row-select-goal-1")).toBeChecked()
+
+    await user.click(screen.getByTestId("goals-bulk-delete"))
+    await user.click(await screen.findByTestId("delete-goal-confirm"))
+
+    await vi.waitFor(() =>
+      expect(screen.queryAllByTestId("goal-row")).toHaveLength(0)
+    )
+    expect(deleteGoal).toHaveBeenCalledWith("goal-1")
+  })
+
+  it("adds the selection to the chosen project keeping existing memberships", async () => {
+    listProjects.mockResolvedValue({
+      projects: [overviewProject, otherProject],
+    })
+    listProjectGoals.mockImplementation((projectId: string) =>
+      Promise.resolve({
+        goals:
+          projectId === "proj-1" ? [{ goal: activeGoal, priority: 0 }] : [],
+      })
+    )
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goal-row-menu-goal-1")).toBeInTheDocument()
+    )
+    await select(user, "goal-1")
+
+    await user.click(screen.getByTestId("goals-bulk-addToProject"))
+    await user.click(await screen.findByTestId("project-picker-option-proj-2"))
+
+    await vi.waitFor(() =>
+      expect(updateGoalProjects).toHaveBeenCalledExactlyOnceWith("goal-1", [
+        "proj-1",
+        "proj-2",
+      ])
+    )
+  })
+
+  it("opens project creation instead of a picker when there is no project", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+    await select(user, "goal-1")
+
+    await user.click(screen.getByTestId("goals-bulk-addToProject"))
+
+    expect(await screen.findByTestId("manage-projects-sheet")).toBeVisible()
+    expect(screen.queryByTestId("project-picker-dialog")).toBeNull()
+  })
+
+  describe("on mobile", () => {
+    beforeEach(() => {
+      mobile.value = true
+    })
+
+    it("enters select mode with a bar showing zero selected and disabled actions, and Done clears it", async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await screen.findByTestId("goals-list-cards")
+
+      await user.click(screen.getByTestId("goals-mobile-select-toggle"))
+      const bar = await screen.findByTestId("mobile-select-bar")
+      expect(within(bar).getByTestId("mobile-select-count")).toHaveTextContent(
+        "goals.bulk.selected"
+      )
+      expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
+
+      await user.click(screen.getByTestId("goal-row-select-goal-1"))
+      expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
+
+      await user.click(screen.getByTestId("mobile-select-done"))
+      expect(screen.queryByTestId("mobile-select-bar")).toBeNull()
+      expect(screen.queryByTestId("goal-row-select-goal-1")).toBeNull()
+    })
+
+    it("leaves select mode when reorder mode is entered", async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await screen.findByTestId("goals-list-cards")
+      await user.click(screen.getByTestId("goals-mobile-select-toggle"))
+      await screen.findByTestId("mobile-select-bar")
+
+      await user.click(screen.getByTestId("goals-mobile-reorder-toggle"))
+
+      expect(screen.queryByTestId("mobile-select-bar")).toBeNull()
+      expect(screen.getByTestId("mobile-reorder-bar")).toBeInTheDocument()
+    })
   })
 })

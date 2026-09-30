@@ -49,7 +49,7 @@ function TraitChip({ trait, rarity }: { trait: string; rarity: Rarity }) {
           <button
             type="button"
             aria-label={label}
-            className={`${chipClass} hover:bg-accent focus-visible:outline-2 focus-visible:outline-primary`}
+            className={`${chipClass} hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary`}
           >
             {chip}
           </button>

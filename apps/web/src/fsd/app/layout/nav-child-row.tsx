@@ -25,7 +25,7 @@ export function NavChildRow({
       className={cn(
         "flex min-h-9 flex-col rounded-md px-3 py-1.5 text-sm transition-colors",
         isActive
-          ? "bg-accent text-accent-foreground"
+          ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
         className
       )}

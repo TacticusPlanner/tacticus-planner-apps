@@ -30,8 +30,11 @@ const statusIcons: Record<GameCatalogStatus, typeof CheckCircle2> = {
  *  rendering (with progress, e.g. "3/12", while syncing) for the collapsed sidebar. */
 export function CatalogSyncStatusBadge({
   compact = false,
+  plain = false,
 }: {
   compact?: boolean
+  /** Quiet footer-line text instead of a badge (desktop account card). */
+  plain?: boolean
 }) {
   const { t } = useTranslation()
   const { error, gameVersion, progress, status } = useGameCatalogStatus()
@@ -66,6 +69,22 @@ export function CatalogSyncStatusBadge({
           {error ?? label}
         </TooltipContent>
       </Tooltip>
+    )
+  }
+
+  if (plain) {
+    return (
+      <p
+        className={
+          status === "error"
+            ? "px-2 text-xs text-destructive"
+            : "px-2 text-xs text-muted-foreground"
+        }
+        data-testid="catalog-sync-status"
+        title={error ?? label}
+      >
+        {label}
+      </p>
     )
   }
 

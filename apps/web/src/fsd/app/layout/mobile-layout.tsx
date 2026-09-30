@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { Link, Outlet, useLocation } from "react-router"
 import {
   AlertTriangle,
@@ -33,7 +33,15 @@ import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
 import { filterNavigationItems } from "./navigation-filter"
 import type { NavItem } from "./nav-items"
+import {
+  filterQuickActions,
+  type QuickActionsController,
+} from "./quick-actions"
+import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
+
+// Matches vaul's exit transition (TRANSITIONS.DURATION = 0.5s).
+const DRAWER_EXIT_MS = 500
 
 function LoadingFill() {
   return (
@@ -50,6 +58,7 @@ export function MobileShell({
   pageDescription,
   pageTitle,
   onCreateGoal,
+  quickActions,
 }: {
   activeSection: NavItem | undefined
   isAuthenticated: boolean
@@ -57,6 +66,7 @@ export function MobileShell({
   pageDescription: string | undefined
   pageTitle: string | undefined
   onCreateGoal: () => void
+  quickActions: QuickActionsController
 }) {
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
@@ -72,7 +82,11 @@ export function MobileShell({
         </Suspense>
       </div>
       <ScrollToTopButton />
-      <MobileBottomNav items={visibleItems} onCreateGoal={onCreateGoal} />
+      <MobileBottomNav
+        items={visibleItems}
+        onCreateGoal={onCreateGoal}
+        quickActions={quickActions}
+      />
     </div>
   )
 }
@@ -160,9 +174,11 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
 function MobileBottomNav({
   items,
   onCreateGoal,
+  quickActions,
 }: {
   items: NavItem[]
   onCreateGoal: () => void
+  quickActions: QuickActionsController
 }) {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
@@ -170,10 +186,13 @@ function MobileBottomNav({
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState("")
+  const flushTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(flushTimer.current), [])
   const homeItem = items.find((item) => item.path === "/home")
   const goalsItem = items.find((item) => item.path === "/plan")
   const dailiesItem = items.find((item) => item.path === "/dailies")
   const filteredItems = filterNavigationItems(items, search, t)
+  const filteredActions = filterQuickActions(quickActions.actions, search)
   const isMenuItemActive = items.some(
     (item) =>
       !["/home", "/plan", "/dailies"].includes(item.path) &&
@@ -182,7 +201,7 @@ function MobileBottomNav({
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-sidebar pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-topbar pb-[env(safe-area-inset-bottom)]"
       data-testid="primary-nav"
     >
       {homeItem ? <MobileNavLink item={homeItem} pathname={pathname} /> : null}
@@ -225,47 +244,87 @@ function MobileBottomNav({
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
             <DrawerDescription>{t("nav.navigationHint")}</DrawerDescription>
           </DrawerHeader>
-          <div className="flex-1 space-y-1 overflow-y-auto px-4 py-4">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item) => {
-                const isActive = isItemActive(pathname, item.path)
-                return (
-                  <div key={item.path}>
-                    <Link
-                      aria-current={pathname === item.path ? "page" : undefined}
-                      className={cn(
-                        "flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
-                        isActive
-                          ? "bg-accent text-accent-foreground"
-                          : "hover:bg-accent hover:text-accent-foreground"
-                      )}
-                      onClick={() => setMenuOpen(false)}
-                      to={item.path}
-                    >
-                      <item.icon className="size-5 shrink-0" />
-                      <span className="flex min-w-0 flex-col">
-                        <span className="truncate">{t(item.labelKey)}</span>
-                        <span className="truncate text-xs font-normal text-muted-foreground">
-                          {t(item.descriptionKey)}
-                        </span>
-                      </span>
-                    </Link>
-                    {item.children?.length ? (
-                      <div className="mt-1 ml-8 space-y-1 border-l pl-3">
-                        {item.children.map((child) => (
-                          <MobileDrawerSubItem
-                            key={child.path}
-                            item={child}
-                            onSelect={() => setMenuOpen(false)}
-                            pathname={pathname}
-                          />
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
+          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            <QuickActionsGroup
+              actions={filteredActions}
+              onSelect={(id) => {
+                if (!quickActions.select(id)) return
+                // Dismiss the on-screen keyboard before the drawer hands off to the target overlay.
+                if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur()
+                }
+                setMenuOpen(false)
+                setSearch("")
+                // Dispatch once the drawer's exit transition is done so its modal layer no longer
+                // holds focus/pointer locks. vaul's onAnimationEnd does not fire for a parent-driven
+                // close, so use its own exit duration as a bounded timer (works in hidden tabs).
+                clearTimeout(flushTimer.current)
+                flushTimer.current = setTimeout(
+                  quickActions.flush,
+                  DRAWER_EXIT_MS
                 )
-              })
-            ) : (
+              }}
+              rowClassName="group/nav-row flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors"
+            />
+            {filteredItems.length > 0 ? (
+              <section aria-labelledby="pages-heading">
+                <h3
+                  className="px-3 pb-1 text-xs font-medium text-muted-foreground"
+                  id="pages-heading"
+                >
+                  {t("nav.quickActions.pagesHeading")}
+                </h3>
+                <div className="space-y-1">
+                  {filteredItems.map((item) => {
+                    const isActive = isItemActive(pathname, item.path)
+                    return (
+                      <div key={item.path}>
+                        <Link
+                          aria-current={
+                            pathname === item.path ? "page" : undefined
+                          }
+                          className={cn(
+                            "group/nav-row flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
+                            isActive
+                              ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
+                              : "hover:bg-accent hover:text-accent-foreground"
+                          )}
+                          onClick={() => setMenuOpen(false)}
+                          to={item.path}
+                        >
+                          <item.icon className="size-5 shrink-0" />
+                          <span className="flex min-w-0 flex-col">
+                            <span className="truncate">{t(item.labelKey)}</span>
+                            <span
+                              className={cn(
+                                "truncate text-xs font-normal",
+                                isActive
+                                  ? "text-accent-foreground"
+                                  : "text-muted-foreground group-hover/nav-row:text-accent-foreground"
+                              )}
+                            >
+                              {t(item.descriptionKey)}
+                            </span>
+                          </span>
+                        </Link>
+                        {item.children?.length ? (
+                          <div className="mt-1 ml-8 space-y-1 border-l pl-3">
+                            {item.children.map((child) => (
+                              <MobileDrawerSubItem
+                                key={child.path}
+                                item={child}
+                                onSelect={() => setMenuOpen(false)}
+                                pathname={pathname}
+                              />
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            ) : filteredActions.length > 0 ? null : (
               <p className="px-3 py-8 text-center text-muted-foreground">
                 {t("nav.noResults")}
               </p>

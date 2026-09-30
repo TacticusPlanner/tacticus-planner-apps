@@ -19,6 +19,12 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-topbar: var(--topbar);
+  --color-topbar-foreground: var(--topbar-foreground);
+  --color-section-menu: var(--section-menu);
+  --color-section-menu-foreground: var(--section-menu-foreground);
+  --color-page-header: var(--page-header);
+  --color-page-header-foreground: var(--page-header-foreground);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -87,6 +93,14 @@
   --sidebar-accent-foreground: oklch(0.379 0.025 266.905);
   --sidebar-border: oklch(0.888 0.01 267.352);
   --sidebar-ring: oklch(0.47 0.125 246.682);
+  /* Shell roles (applied to components in a later task): bar = white above the off-white canvas,
+     section menu = one step darker than canvas, page header continues the canvas. */
+  --topbar: oklch(1 0 89.876);
+  --topbar-foreground: oklch(0.243 0.015 261.655);
+  --section-menu: oklch(0.925 0.008 252.392);
+  --section-menu-foreground: oklch(0.243 0.015 261.655);
+  --page-header: var(--background);
+  --page-header-foreground: var(--foreground);
 
   --rarity-common: #cdb3a0;
   --rarity-uncommon: #f9cb9c;
@@ -147,11 +161,11 @@
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.252 0.014 267.008);
+  --background: oklch(0.195 0.014 267.008);
   --foreground: oklch(0.866 0.013 266.689);
-  --card: oklch(0.205 0.015 266.853);
+  --card: oklch(0.245 0.015 266.853);
   --card-foreground: oklch(0.866 0.013 266.689);
-  --popover: oklch(0.205 0.015 266.853);
+  --popover: oklch(0.27 0.016 266.853);
   --popover-foreground: oklch(0.866 0.013 266.689);
   --primary: oklch(0.68 0.13 240.047);
   --primary-foreground: oklch(0.243 0.015 261.655);
@@ -170,7 +184,7 @@
   --chart-3: oklch(0.68 0.14 155);
   --chart-4: oklch(0.82 0.16 80);
   --chart-5: oklch(0.82 0.05 235);
-  --sidebar: oklch(0.12 0.026 249.153);
+  --sidebar: oklch(0.165 0.016 255);
   --sidebar-foreground: oklch(0.866 0.013 266.689);
   --sidebar-primary: oklch(0.64 0.13 240.047);
   --sidebar-primary-foreground: oklch(0.243 0.015 261.655);
@@ -178,6 +192,13 @@
   --sidebar-accent-foreground: oklch(0.866 0.013 266.689);
   --sidebar-border: oklch(0.305 0.021 265.89);
   --sidebar-ring: oklch(0.64 0.13 240.047);
+  /* Shell roles: bar slightly above canvas, section menu between canvas and cards, header = canvas. */
+  --topbar: oklch(0.225 0.015 266.853);
+  --topbar-foreground: oklch(0.866 0.013 266.689);
+  --section-menu: oklch(0.225 0.015 266.853);
+  --section-menu-foreground: oklch(0.866 0.013 266.689);
+  --page-header: var(--background);
+  --page-header-foreground: var(--foreground);
 
   --rarity-common: #8a705d;
   --rarity-uncommon: #b3845f;

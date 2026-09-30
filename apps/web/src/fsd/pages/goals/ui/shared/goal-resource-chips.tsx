@@ -16,9 +16,6 @@ import type { GoalKind } from "@/entities/goal"
 import type { ResourceNeed } from "@/features/goal-farming"
 import { EntityIcon } from "@/shared/ui"
 
-/** At most this many chips render; the rest collapse into one "+N" chip whose tooltip lists all. */
-const MAX_VISIBLE_CHIPS = 6
-
 const EMPTY_AVAILABLE = {
   badgesByRarity: {},
   forgeBadgesByRarity: {},
@@ -215,6 +212,15 @@ export function GoalResourceChips({
 
   if (chips.length === 0) return null
 
+  // Same leading order on every goal (energy, gold, tokens); the rest keep their per-kind order
+  // (Array.sort is stable).
+  const leading = ["energy", "gold", "onslaughtTokens"]
+  const rank = (chip: Chip) => {
+    const index = leading.indexOf(chip.key)
+    return index === -1 ? leading.length : index
+  }
+  chips.sort((a, b) => rank(a) - rank(b))
+
   const label = (chip: Chip) =>
     chip.pool
       ? t("goals.resourceChips.poolLabel", {
@@ -231,19 +237,12 @@ export function GoalResourceChips({
       ? `${label(chip)}
 ${chip.hint}`
       : label(chip)
-  const visible =
-    chips.length > MAX_VISIBLE_CHIPS
-      ? chips.slice(0, MAX_VISIBLE_CHIPS - 1)
-      : chips
-  const hidden = chips.slice(visible.length)
-  const fullList = chips.map(label).join(", ")
-
   return (
     <ul
-      className="flex max-h-12 max-w-[220px] flex-wrap gap-x-2 gap-y-1 overflow-hidden text-xs"
+      className="flex flex-wrap gap-x-2 gap-y-1 text-xs"
       data-testid="goal-resource-chips"
     >
-      {visible.map((chip) => (
+      {chips.map((chip) => (
         <li data-testid="goal-resource-chip" key={chip.key}>
           <span
             aria-label={tooltip(chip)}
@@ -265,18 +264,6 @@ ${chip.hint}`
           </span>
         </li>
       ))}
-      {hidden.length > 0 ? (
-        <li data-testid="goal-resource-chips-overflow">
-          <span
-            aria-label={fullList}
-            className="text-muted-foreground"
-            role="img"
-            title={fullList}
-          >
-            <span aria-hidden>+{hidden.length}</span>
-          </span>
-        </li>
-      ) : null}
     </ul>
   )
 }

@@ -7,10 +7,11 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import {
   deleteGoal,
   goalQueries,
+  updateGoalProjects,
   updateGoalStatus,
   type GoalStatus,
 } from "@/entities/goal"
-import { projectQueries } from "@/entities/project"
+import { projectQueries, type ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
 import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
@@ -38,11 +39,11 @@ export function useGoalActions(_onChanged?: () => void) {
   )
   const mutation = useMutation({
     mutationFn: (action: () => Promise<unknown>) => action(),
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-      ])
+    // Refresh in the background: awaiting the refetch held the row pending (and the UI stale) for
+    // the whole round trip after the PATCH had already succeeded.
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+      void queryClient.invalidateQueries({ queryKey: projectQueries.all() })
     },
   })
 
@@ -201,5 +202,133 @@ export function useGoalActions(_onChanged?: () => void) {
     return Boolean(ok)
   }
 
-  return { setStatus, remove, pendingIds }
+  const invalidateAll = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+    ])
+
+  /** Bulk pause/resume over an explicit selection (no prerequisite cascade). Every id stays pending for
+   *  the whole loop, rows patch optimistically up front, and each failed id reverts on its own; one
+   *  aggregate toast reports a partial failure and nothing is shown when all succeed.
+   *  ponytail: sequential per-goal calls, ~150ms each; add a batch endpoint if users routinely select
+   *  50+ goals. */
+  const setStatusMany = async (
+    targets: readonly CascadeTarget[],
+    status: "Active" | "Paused"
+  ) => {
+    if (!isAuthenticated || targets.length === 0) return
+    targets.forEach((entry) => addPending(entry.goalId))
+    targets.forEach((entry) => patchStatusCache(entry.goalId, status))
+    let succeeded = 0
+    try {
+      for (const entry of targets) {
+        const ok = await run(
+          entry.goalId,
+          () => updateGoalStatus(entry.goalId, status),
+          { silent: true, trackPending: false }
+        )
+        if (ok) succeeded++
+        else patchStatusCache(entry.goalId, entry.previousStatus)
+      }
+      if (succeeded < targets.length) {
+        toast.error(
+          t("goals.toasts.statusChangedPartial", {
+            succeeded,
+            total: targets.length,
+          })
+        )
+      }
+    } finally {
+      targets.forEach((entry) => removePending(entry.goalId))
+    }
+  }
+
+  /** Bulk delete: every row leaves the caches immediately, then one delete per goal runs
+   *  sequentially. A failure refetches once after the loop (restoring only the failed ids) and one
+   *  aggregate error toast is shown; success shows no toast. */
+  const removeMany = async (goalIds: readonly string[]) => {
+    if (!isAuthenticated || goalIds.length === 0) return
+    goalIds.forEach(addPending)
+    goalIds.forEach(patchRemovalCache)
+    let succeeded = 0
+    try {
+      for (const goalId of goalIds) {
+        const ok = await run(goalId, () => deleteGoal(goalId), {
+          silent: true,
+          trackPending: false,
+        })
+        if (ok) succeeded++
+      }
+      if (succeeded < goalIds.length) {
+        await invalidateAll()
+        toast.error(
+          t("goals.toasts.bulkPartial", {
+            succeeded,
+            total: goalIds.length,
+          })
+        )
+      }
+    } finally {
+      goalIds.forEach(removePending)
+    }
+  }
+
+  /** Adds each row to `project`, keeping its other memberships; rows already members are skipped. */
+  const addToProject = async (
+    rows: readonly {
+      goalId: string
+      projects?: readonly { projectId: string }[]
+    }[],
+    project: ProjectSummary
+  ) => {
+    if (!isAuthenticated) return
+    const targets = rows.filter(
+      (row) => !row.projects?.some((p) => p.projectId === project.projectId)
+    )
+    if (targets.length === 0) return
+    targets.forEach((row) => addPending(row.goalId))
+    let succeeded = 0
+    try {
+      for (const row of targets) {
+        const ok = await run(
+          row.goalId,
+          () =>
+            updateGoalProjects(row.goalId, [
+              ...(row.projects ?? []).map((p) => p.projectId),
+              project.projectId,
+            ]),
+          { silent: true, trackPending: false }
+        )
+        if (ok) succeeded++
+      }
+      if (succeeded > 0) {
+        toast.success(
+          t("goals.toasts.goalsAddedToProject", {
+            project: project.name,
+            count: succeeded,
+          })
+        )
+      }
+      if (succeeded < targets.length) {
+        toast.error(
+          t("goals.toasts.bulkPartial", {
+            succeeded,
+            total: targets.length,
+          })
+        )
+      }
+    } finally {
+      targets.forEach((row) => removePending(row.goalId))
+    }
+  }
+
+  return {
+    setStatus,
+    setStatusMany,
+    remove,
+    removeMany,
+    addToProject,
+    pendingIds,
+  }
 }

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check, Link2, LockKeyhole } from "lucide-react"
+import { Check, Link2, LockKeyhole, Pause, Play } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Tooltip,
@@ -8,12 +8,18 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import type { GoalStatus } from "@/entities/goal"
+import {
+  resourceLabel,
+  type EstimateOutcome,
+  type EstimateResourceId,
+} from "@/features/goal-farming"
 
 import type { GoalProgress } from "../../model/attainment/goal-progress"
 import {
   blockerReasonText,
   type GoalBlockers,
 } from "../../model/blockers/goal-blockers"
+import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { reachableCeilingLabel } from "./ceiling-marker"
 
 const VARIANT_BY_STATUS: Record<
@@ -31,9 +37,14 @@ const VARIANT_BY_STATUS: Record<
 export function StatusBadge({
   status,
   reached = false,
+  onToggle,
+  disabled = false,
 }: {
   status: GoalStatus
   reached?: boolean
+  /** When given, an Active/Paused chip becomes a one-click Pause/Resume toggle (no extra space). */
+  onToggle?: (next: "Active" | "Paused") => void
+  disabled?: boolean
 }) {
   const { t } = useTranslation()
 
@@ -47,6 +58,38 @@ export function StatusBadge({
         <Check aria-hidden="true" className="size-3.5" />
         {t("goals.status.Reached")}
       </Badge>
+    )
+  }
+
+  if (onToggle && (status === "Active" || status === "Paused")) {
+    const next = status === "Active" ? "Paused" : "Active"
+    const label = t(`goals.actions.${next === "Paused" ? "pause" : "resume"}`)
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge
+            asChild
+            data-testid="goal-status-badge"
+            variant={VARIANT_BY_STATUS[status]}
+          >
+            <button
+              aria-label={`${t(`goals.status.${status}`)} — ${label}`}
+              className="cursor-pointer hover:opacity-80 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-default"
+              disabled={disabled}
+              onClick={() => onToggle(next)}
+              type="button"
+            >
+              {status === "Active" ? (
+                <Pause aria-hidden="true" className="size-3 fill-current" />
+              ) : (
+                <Play aria-hidden="true" className="size-3 fill-current" />
+              )}
+              {t(`goals.status.${status}`)}
+            </button>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
     )
   }
 
@@ -77,9 +120,12 @@ export function StatusBadge({
 export function BlockedIndicator({
   blockers,
   progress,
+  estimate,
 }: {
   blockers: GoalBlockers
   progress?: GoalProgress
+  /** A Blocked estimate's unavailable-materials rows are appended to the tooltip. */
+  estimate?: EstimateOutcome
 }) {
   const { t } = useTranslation()
   if (!blockers.isBlocked) return null
@@ -94,6 +140,7 @@ export function BlockedIndicator({
         <div key={line}>{line}</div>
       ))}
       {ceilingLabel ? <div>{ceilingLabel}</div> : null}
+      {estimate ? <UnavailableMaterials estimate={estimate} /> : null}
     </div>
   )
   const isOnlyRestrictedByPrerequisite = blockers.reasons.every(
@@ -152,5 +199,43 @@ export function BlockedIndicator({
         {tooltip}
       </TooltipContent>
     </Tooltip>
+  )
+}
+
+/** Each requirement with no supported source: material, remaining quantity and reason, with no
+ * completion date (the goal cannot complete). Same rows on the desktop table and the mobile card. */
+function UnavailableMaterials({ estimate }: { estimate: EstimateOutcome }) {
+  const { t } = useTranslation(["common", "upgrades", "characters", "dailies"])
+  const { upgradesById, charactersById } = useGoalCatalog()
+  if (estimate.status !== "Blocked" || !estimate.blockers?.length) return null
+  const label = (id: EstimateResourceId) => {
+    const fallback = resourceLabel(
+      id,
+      upgradesById,
+      charactersById ?? new Map()
+    )
+    if (id.startsWith("shard:")) {
+      const unitId = id.slice("shard:".length)
+      return t("dailies:resource.shards", {
+        unit: t(`characters:${unitId}`, { defaultValue: fallback }),
+      })
+    }
+    return t(`upgrades:${id}`, { defaultValue: fallback })
+  }
+  return (
+    <ul
+      className="grid gap-0.5 text-xs"
+      data-testid="goal-unavailable-materials"
+    >
+      {estimate.blockers.map((blocker) => (
+        <li key={blocker.resourceId}>
+          {t("common:goals.estimate.unavailableRow", {
+            material: label(blocker.resourceId),
+            count: blocker.remaining,
+            reason: t(`common:goals.estimate.blocked.${blocker.reason}`),
+          })}
+        </li>
+      ))}
+    </ul>
   )
 }

@@ -27,7 +27,7 @@
         },
       });
     </script>
-    <script type="module" async src="https://cdn.userjot.com/sdk/v3/uj.js"></script>
+    <script type="module" async src="https://cdn.userjot.com/sdk/v3/uj.js" onload="window.__ujLoaded=true;window.dispatchEvent(new Event('uj-loaded'))"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
