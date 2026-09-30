@@ -1,7 +1,6 @@
 import { renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useRaidsPlanTutorial } from "./raids-plan.tutorial"
 import { useTodayTutorial } from "./today.tutorial"
 
 const register = vi.fn()
@@ -16,10 +15,7 @@ vi.mock("@/shared/tour", () => ({
 describe("Dailies tutorials", () => {
   beforeEach(() => register.mockClear())
 
-  it.each([
-    ["Today", useTodayTutorial, "tour.today.steps"],
-    ["Raids Plan", useRaidsPlanTutorial, "tour.raidsPlan.steps"],
-  ] as const)(
+  it.each([["Today", useTodayTutorial, "tour.today.steps"]] as const)(
     "registers localized desktop and mobile %s steps",
     (_name, hook, keyPrefix) => {
       renderHook(() => hook())
@@ -29,7 +25,7 @@ describe("Dailies tutorials", () => {
       }
 
       expect(steps.desktop).toEqual(steps.mobile)
-      // Neither tour has a project-selector step: the raid pages plan the whole account.
+      // No project-selector step: the raid pages plan the whole account.
       expect(steps.desktop.length).toBeGreaterThanOrEqual(3)
       expect(
         steps.desktop.some((step) => step.target.includes("project"))
@@ -56,35 +52,6 @@ describe("Dailies tutorials", () => {
       expect(
         targets.indexOf('[data-testid="campaign-event-status"]')
       ).toBeLessThan(targets.indexOf('[data-testid="energy-usage"]'))
-    }
-  )
-
-  it("uses distinct copy for the Dailies and Raids tab steps", () => {
-    renderHook(() => useTodayTutorial())
-    const steps = register.mock.lastCall?.[0] as {
-      desktop: { target: string; title: string; content: string }[]
-    }
-
-    expect(steps.desktop.slice(0, 2).map((step) => step.title)).toEqual([
-      "localized:tour.today.steps.navigation.title",
-      "localized:tour.today.steps.raids.title",
-    ])
-  })
-
-  it.each(["desktop", "mobile"] as const)(
-    "walks the Raids Plan unit filter before the day strip on %s",
-    (viewport) => {
-      renderHook(() => useRaidsPlanTutorial())
-      const steps = register.mock.lastCall?.[0] as Record<
-        "desktop" | "mobile",
-        { target: string }[]
-      >
-      const targets = steps[viewport].map((step) => step.target)
-
-      expect(targets.slice(-2)).toEqual([
-        '[data-testid="plan-unit-filter"]',
-        '[data-testid="plan-days"]',
-      ])
     }
   )
 })

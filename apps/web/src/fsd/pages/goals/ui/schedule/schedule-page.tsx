@@ -1,31 +1,75 @@
 import { useMemo, useState } from "react"
 import { BatteryLow, CalendarClock, CalendarDays, Swords } from "lucide-react"
-import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 
 import {
+  buildPlanDayCells,
+  buildPlanUnitRanges,
+  PLAN_DAY_LIMIT,
+  PlanBlockers,
+  PlanDayStrip,
+  PlanUnitFilter,
+  RaidState,
   useDailyRaids,
   type DailyRaidsReadyViewModel,
 } from "@/features/daily-raids"
+import {
+  PlanningSettingsDialog,
+  PlanningSettingsTrigger,
+} from "@/entities/planning-setting"
+import { ProjectSelect, useProjects } from "@/entities/project"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
-import { buildPlanDayCells, buildPlanUnitRanges } from "../model/plan-day-cells"
-import type { DailiesOutletContext } from "./dailies-layout"
-import { PlanBlockers } from "./plan-blockers"
-import { PLAN_DAY_LIMIT, PlanDayStrip } from "./plan/plan-day-strip"
-import { PlanUnitFilter } from "./plan/plan-unit-filter"
-import { RaidState } from "./raid-state"
-import { useRaidsPlanTutorial } from "./raids-plan.tutorial"
+import { useScheduleTutorial } from "./schedule-page.tutorial"
 
-export function RaidsPlanPage() {
-  const context = useOutletContext<DailiesOutletContext>()
-  const raids = useDailyRaids(context.projectId)
-  useRaidsPlanTutorial()
+/**
+ * Plan > Schedule: the day-by-day continuation of Today's raid plan (formerly Dailies > Raids >
+ * Raids Plan). Like Insights it owns a session-local project selection (default: all goals) rather
+ * than sharing Dailies' outlet-context one, and it carries its own Planning Settings trigger since
+ * every total here depends on daily energy. The dailies namespace is kept for its copy - it is
+ * preloaded app-wide (see nav-items.ts) and the keys did not change meaning by moving sections.
+ */
+export function SchedulePage() {
+  const { t } = useTranslation("dailies")
+  const projects = useProjects()
+  const [projectId, setProjectId] = useState<string>()
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const raids = useDailyRaids(projectId)
+  useScheduleTutorial()
 
-  if (raids.status !== "ready") return <RaidState state={raids.status} />
-  return <RaidsPlan raids={raids} />
+  return (
+    <div className="space-y-5" data-testid="schedule-page">
+      {/* goals-navigation spec: a subpage with a project selector but no tab/status row renders it
+          right-aligned alone; the Planning Settings trigger trails it (planning-settings-access). */}
+      <div className="flex items-center justify-end gap-2">
+        <ProjectSelect
+          allowAll
+          onProjectIdChange={setProjectId}
+          placeholder={t("project.placeholder")}
+          projectId={projectId}
+          projects={projects.projects}
+          testId="schedule-project-select"
+        />
+        <PlanningSettingsTrigger
+          onClick={() => setSettingsOpen(true)}
+          testId="schedule-planning-settings"
+        />
+      </div>
+      {raids.status === "ready" ? (
+        <SchedulePlan raids={raids} />
+      ) : (
+        <RaidState state={raids.status} />
+      )}
+      {settingsOpen ? (
+        <PlanningSettingsDialog
+          onOpenChange={setSettingsOpen}
+          open={settingsOpen}
+        />
+      ) : null}
+    </div>
+  )
 }
 
-function RaidsPlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
+function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
   const { t } = useTranslation("dailies")
   const [selectedUnitId, setSelectedUnitId] = useState<string>()
   const [showAllDays, setShowAllDays] = useState(false)

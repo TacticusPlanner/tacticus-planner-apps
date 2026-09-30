@@ -2,8 +2,8 @@ import { Swords } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
-import type { RaidDaySchedule } from "@/features/goal-farming"
+import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
+import type { RaidDaySchedule } from "@/features/goal-farming/@x/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { PlanCell, PlanDayCells } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
@@ -58,9 +58,7 @@ export function PlanDayCard({
       <header className="space-y-2">
         <div className="flex items-baseline justify-between gap-2">
           <h2 className="font-heading text-base font-medium">
-            {day.day === 1
-              ? t("raids.tabs.today")
-              : t("plan.day", { day: day.day })}
+            {day.day === 1 ? t("plan.today") : t("plan.day", { day: day.day })}
           </h2>
           <span className="text-xs text-muted-foreground">
             {new Intl.DateTimeFormat(i18n.language, {

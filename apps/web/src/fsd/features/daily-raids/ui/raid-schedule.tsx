@@ -1,17 +1,17 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
 
-import type { RaidBreakdownEntry } from "@/features/goal-farming"
+import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
 import {
   dailyRaidResourceKey,
-  isLocationVisible,
   type DailyRaidGoalViewModel,
   type DailyRaidLocationViewModel,
   type DailyRaidResourceProgress,
   type DailyRaidResourceUrgency,
   type DailyRaidResourceVisual,
-} from "@/features/daily-raids"
+} from "../model/daily-raids.domain"
+import { isLocationVisible } from "../model/location-visibility"
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
 
 // Stable default so callers that never use "location" emphasis (Raids Plan) don't need to pass

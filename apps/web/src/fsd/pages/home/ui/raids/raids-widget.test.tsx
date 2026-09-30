@@ -190,6 +190,6 @@ describe("RaidsWidget", () => {
     render(<RaidsWidget />)
 
     screen.getByTestId("home-raids-widget").click()
-    expect(navigateMock).toHaveBeenCalledWith("/dailies/raids/today")
+    expect(navigateMock).toHaveBeenCalledWith("/dailies/raids")
   })
 })

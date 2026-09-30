@@ -2,15 +2,8 @@
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
 
-import { RaidsLayout } from "./ui/raids-layout"
-
 const TodayPage = lazy(() =>
   import("./ui/today-page").then((module) => ({ default: module.TodayPage }))
-)
-const RaidsPlanPage = lazy(() =>
-  import("./ui/raids-plan-page").then((module) => ({
-    default: module.RaidsPlanPage,
-  }))
 )
 const GuildRaidsPage = lazy(() =>
   import("./ui/guild-raids/guild-raids-page").then((module) => ({
@@ -38,15 +31,8 @@ const OnslaughtPage = lazy(() =>
 
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/dailies/raids" /> },
-  {
-    path: "raids",
-    element: <RaidsLayout />,
-    children: [
-      { index: true, element: <Navigate replace to="/dailies/raids/today" /> },
-      { path: "today", element: <TodayPage /> },
-      { path: "plan", element: <RaidsPlanPage /> },
-    ],
-  },
+  // Raids is the Today page itself: the multi-day plan lives at Plan > Schedule.
+  { path: "raids", element: <TodayPage /> },
   { path: "shops", element: <ShopsPage /> },
   { path: "arena", element: <ArenaPage /> },
   { path: "salvage-run", element: <SalvageRunPage /> },

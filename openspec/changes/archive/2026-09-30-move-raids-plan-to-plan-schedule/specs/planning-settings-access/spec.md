@@ -1,10 +1,4 @@
-# planning-settings-access Specification
-
-## Purpose
-
-Makes the same persisted Planning Settings available where users review their goals and execute daily raids, without creating separate settings values.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Raids exposes shared Planning Settings
 
@@ -19,12 +13,3 @@ Dailies > Raids (the Today page) SHALL provide a visible Planning Settings actio
 
 - **WHEN** a user changes daily energy from Raids or Schedule and later opens Planning Settings on Plan > Goals
 - **THEN** the saved value is shown there and both raids and broader estimates use it
-
-### Requirement: Setting copy describes its scope
-
-The Planning Settings dialog SHALL explain that the configured daily energy affects both daily raid planning and broader goal estimates, not only the current page.
-
-#### Scenario: Opened from Raids
-
-- **WHEN** the dialog opens from Dailies > Raids
-- **THEN** its description accurately names the setting's cross-surface effect and does not imply a Raids-only override

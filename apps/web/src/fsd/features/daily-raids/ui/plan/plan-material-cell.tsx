@@ -1,3 +1,4 @@
+import { ResourceIcon } from "../resource-icon"
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
@@ -8,11 +9,10 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  ResourceIcon,
-  type DailyRaidLocationViewModel,
-  type DailyRaidResourceVisual,
-} from "@/features/daily-raids"
+import type {
+  DailyRaidLocationViewModel,
+  DailyRaidResourceVisual,
+} from "../../model/daily-raids.domain"
 import { EntityIcon } from "@/shared/ui"
 import type { PlanCell } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"

@@ -11,7 +11,6 @@ export function useTodayTutorial() {
       target: string,
       key:
         | "navigation"
-        | "raids"
         | "schedule"
         | "campaignEvent"
         | "energyUsage"
@@ -23,7 +22,6 @@ export function useTodayTutorial() {
     })
     const shared = [
       createStep('[data-testid="dailies-primary-tabs"]', "navigation"),
-      createStep('[data-testid="raids-tabs"]', "raids"),
       createStep('[data-testid="campaign-event-status"]', "campaignEvent"),
       createStep('[data-testid="energy-usage"]', "energyUsage"),
       createStep('[data-testid="today-schedule"]', "schedule"),

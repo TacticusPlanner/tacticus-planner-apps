@@ -4,8 +4,8 @@ import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 /**
- * The one Planning Settings trigger, reused from both Plan > Goals and Dailies > Raids (Today and
- * Raids Plan) — see `PlanningSettingsDialog` alongside it. Icon plus label on desktop, icon-only
+ * The one Planning Settings trigger, reused from Plan > Goals, Plan > Schedule and Dailies > Raids
+ * (Today) — see `PlanningSettingsDialog` alongside it. Icon plus label on desktop, icon-only
  * with an accessible name below the 768px breakpoint (`expose-planning-settings-from-dailies`).
  * Callers own the dialog's open state and pass it their own toggle.
  */

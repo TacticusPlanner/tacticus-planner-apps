@@ -1,43 +1,4 @@
-# dailies-navigation Specification
-
-## Purpose
-
-Gives players a single `/dailies` entry point for day-to-day play activities (raiding, shops, onslaught, salvage, arena, guild raids), with a working Raids section and clearly-marked placeholders for everything not yet built.
-
-## Requirements
-
-### Requirement: Dailies primary navigation
-
-The system SHALL present a `/dailies` section with 6 primary tabs — Raids, Shops, Onslaught, Salvage Run, Arena, Guild Raids — and SHALL land the user on the Raids tab by default.
-
-#### Scenario: Opening Dailies lands on Raids
-
-- **WHEN** a signed-in user navigates to `/dailies`
-- **THEN** all 6 tabs are visible and the Raids tab's content is shown without further navigation
-
-#### Scenario: Switching to a tab preserves the tab bar
-
-- **WHEN** the user selects any of the 6 primary tabs
-- **THEN** the tab bar remains visible and the selected tab is highlighted as active
-
-### Requirement: Every Dailies primary tab opens its implemented page
-
-Every Dailies primary tab SHALL render its implemented page. Guild Raids SHALL render its access-aware page shell, which may show shared guild onboarding until access is ready, rather than the shared Under Construction placeholder.
-
-#### Scenario: Opening Guild Raids before guild access is ready
-
-- **WHEN** the user opens `/dailies/guild-raids` while a guild prerequisite is missing
-- **THEN** the Guild Raids page shows the shared guild onboarding state and the Guild Raids primary tab remains active
-
-#### Scenario: Opening Guild Raids with ready access
-
-- **WHEN** the user opens `/dailies/guild-raids` with ready guild access
-- **THEN** the Guild Raids page shell renders its ready content slot rather than Under Construction
-
-#### Scenario: Opening another implemented primary tab
-
-- **WHEN** the user opens Raids, Shops, Arena, Salvage Run, or Onslaught
-- **THEN** that tab's existing implemented page is shown
+## ADDED Requirements
 
 ### Requirement: The Raids tab is the Today page
 
@@ -80,3 +41,30 @@ Every primary tab SHALL be addressable by its own URL path, not by client-only t
 
 - **WHEN** a user switches tabs one or more times and then uses the browser's back button
 - **THEN** the previously-active tab's URL and content are restored
+
+## REMOVED Requirements
+
+### Requirement: Each tab is its own route
+
+**Reason**: Its Raids sub-tab scenario no longer applies.
+**Migration**: "Each primary tab is its own route" above.
+
+### Requirement: Raids sub-navigation
+
+**Reason**: Raids has one page now; the plan moved to Plan › Schedule.
+**Migration**: "The Raids tab is the Today page" above; `daily-raids-plan` "Schedule is a Plan section page".
+
+### Requirement: Raids sub-tabs open their implemented pages
+
+**Reason**: No sub-tabs remain.
+**Migration**: Today renders at `/dailies/raids`; Schedule at `/plan/schedule`.
+
+### Requirement: Raids tabs and project selector share one row
+
+**Reason**: No sub-tabs remain to share the row with.
+**Migration**: "Today's project selector and Planning Settings share one row" above.
+
+### Requirement: Project selector compresses on mobile
+
+**Reason**: Restated without the sub-tab wording.
+**Migration**: "Today's project selector and Planning Settings share one row" above (mobile scenario).

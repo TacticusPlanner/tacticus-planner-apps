@@ -1,11 +1,11 @@
+import { dailyRaidResourceKey } from "./daily-raids.domain"
 import type { BattleId } from "@workspace/game-domain"
 
-import {
-  dailyRaidResourceKey,
-  type DailyRaidGoalViewModel,
-  type DailyRaidsReadyViewModel,
-} from "@/features/daily-raids"
-import type { RaidDaySchedule } from "@/features/goal-farming"
+import type {
+  DailyRaidGoalViewModel,
+  DailyRaidsReadyViewModel,
+} from "./daily-raids.domain"
+import type { RaidDaySchedule } from "@/features/goal-farming/@x/daily-raids"
 
 export type PlanCell = {
   resourceId: string
@@ -127,7 +127,7 @@ export type PlanUnitRange = {
 }
 
 /** Filter-bar units (goal-priority order) with the first/last day each has an actionable cell, across
- * every plan day — including days the strip hasn't revealed yet. */
+ * every plan day вЂ” including days the strip hasn't revealed yet. */
 export function buildPlanUnitRanges(days: PlanDayCells[]): PlanUnitRange[] {
   const ranges = new Map<string, PlanUnitRange>()
   for (const { day, units } of days) {

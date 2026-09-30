@@ -154,12 +154,6 @@
   "project": {
     "placeholder": "Projekt auswählen"
   },
-  "raids": {
-    "tabs": {
-      "today": "Heute",
-      "plan": "Plan"
-    }
-  },
   "empty": {
     "noFarmable": "Keines deiner aktiven Ziele hat farmbaren Kampagnenbedarf.",
     "error": "Der Raid-Plan konnte nicht geladen werden.",
@@ -212,6 +206,7 @@
       "completion": "Abschlussdatum",
       "noCompletion": "Nicht verfügbar"
     },
+    "today": "Heute",
     "day": "Tag {{day}}",
     "dayStats": "{{energy}} / {{available}} Energie · {{raids}} Raids",
     "showAll": "Alle Tage anzeigen",
@@ -264,10 +259,6 @@
           "title": "Navigation",
           "content": "Wechsle zwischen den täglichen Planern."
         },
-        "raids": {
-          "title": "Raid-Ansichten",
-          "content": "Wechsle zwischen dem heutigen Plan und dem vollständigen Raid-Plan."
-        },
         "schedule": {
           "title": "Heutiger Plan",
           "content": "Raide diese Kampagnenknoten mit der heutigen Energie — zusätzliche Vorschläge erscheinen hier auch, sobald dein Budget gedeckt ist."
@@ -288,10 +279,6 @@
     },
     "raidsPlan": {
       "steps": {
-        "navigation": {
-          "title": "Raid-Ansichten",
-          "content": "Wechsle zwischen Heute und Plan."
-        },
         "summary": {
           "title": "Gesamtübersicht",
           "content": "Die Summen umfassen jeden geplanten Tag, beginnend mit heute. Hat ein Ziel eine Anforderung ohne unterstützte Quelle, bleibt das Abschlussdatum nicht verfügbar und die Blocker werden darunter aufgelistet."

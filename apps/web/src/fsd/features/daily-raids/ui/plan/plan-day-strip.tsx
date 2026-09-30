@@ -8,7 +8,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
+import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
 import type { PlanDayCells } from "../../model/plan-day-cells"
 import { PlanDayCard } from "./plan-day-card"
 import { useDragScroll } from "./use-drag-scroll"

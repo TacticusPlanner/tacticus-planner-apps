@@ -6,7 +6,7 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 
-import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
+import type { DailyRaidsReadyViewModel } from "../model/daily-raids.domain"
 
 /**
  * The blockers behind a partial plan, straight from the plan's own per-goal outcome: each goal

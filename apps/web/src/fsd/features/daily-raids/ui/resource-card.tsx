@@ -6,16 +6,15 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { goalTypeIcon } from "@/entities/goal"
-import type { RaidBreakdownEntry } from "@/features/goal-farming"
-import {
-  isLocationVisible,
-  ResourceIcon,
-  ResourceIconWithTooltip,
-  type DailyRaidGoalViewModel,
-  type DailyRaidLocationViewModel,
-  type DailyRaidResourceProgress,
-  type DailyRaidResourceVisual,
-} from "@/features/daily-raids"
+import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type {
+  DailyRaidGoalViewModel,
+  DailyRaidLocationViewModel,
+  DailyRaidResourceProgress,
+  DailyRaidResourceVisual,
+} from "../model/daily-raids.domain"
+import { isLocationVisible } from "../model/location-visibility"
+import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
 import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
 
 /** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (an accessible

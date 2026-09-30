@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { battleIdSchema } from "@workspace/game-domain"
 
-import type { DailyRaidGoalViewModel } from "@/features/daily-raids"
-import type { RaidDaySchedule } from "@/features/goal-farming"
+import type { DailyRaidGoalViewModel } from "./daily-raids.domain"
+import type { RaidDaySchedule } from "@/features/goal-farming/@x/daily-raids"
 import { buildPlanDayCells, buildPlanUnitRanges } from "./plan-day-cells"
 
 const b1 = battleIdSchema.parse("B1")

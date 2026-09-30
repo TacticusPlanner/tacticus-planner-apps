@@ -154,12 +154,6 @@
   "project": {
     "placeholder": "Choisir un projet"
   },
-  "raids": {
-    "tabs": {
-      "today": "Aujourd'hui",
-      "plan": "Plan"
-    }
-  },
   "empty": {
     "noFarmable": "Aucun de vos objectifs actifs n'a de besoin de campagne farmable.",
     "error": "Impossible de charger le plan.",
@@ -212,6 +206,7 @@
       "completion": "Date de fin",
       "noCompletion": "Indisponible"
     },
+    "today": "Aujourd'hui",
     "day": "Jour {{day}}",
     "dayStats": "{{energy}} / {{available}} énergie · {{raids}} raids",
     "showAll": "Afficher tous les jours",
@@ -264,10 +259,6 @@
           "title": "Navigation",
           "content": "Passez entre les planificateurs quotidiens."
         },
-        "raids": {
-          "title": "Vues de raid",
-          "content": "Passez du programme du jour au plan de raid complet."
-        },
         "schedule": {
           "title": "Plan du jour",
           "content": "Attaquez ces nœuds avec l'énergie du jour — des suggestions supplémentaires apparaissent ici aussi une fois vos besoins budgétés couverts."
@@ -288,10 +279,6 @@
     },
     "raidsPlan": {
       "steps": {
-        "navigation": {
-          "title": "Vues de raid",
-          "content": "Passez entre Aujourd'hui et Plan."
-        },
         "summary": {
           "title": "Résumé",
           "content": "Les totaux couvrent chaque jour planifié, à commencer par aujourd'hui. Si un objectif a une exigence sans source prise en charge, la date d'achèvement reste indisponible et les blocages sont listés en dessous."

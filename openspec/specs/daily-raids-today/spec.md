@@ -606,7 +606,7 @@ Assumptions this requirement depends on:
 
 ### Requirement: Today's project selector defaults to all goals
 
-Today SHALL provide a project selector, shared with Raids Plan, that defaults to all goals. With no project selected Today SHALL use the account-wide Active-goal sequence and SHALL NOT derive its scope from Current plan or Default. Selecting a project SHALL narrow the run to that project's Active goals, still in canonical global priority order. A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
+Today SHALL provide its own project selector that defaults to all goals; it is not shared with Schedule (see `daily-raids-plan` "Schedule owns its project selection"). With no project selected Today SHALL use the account-wide Active-goal sequence and SHALL NOT derive its scope from Current plan or Default. Selecting a project SHALL narrow the run to that project's Active goals, still in canonical global priority order. The selection SHALL NOT be persisted across a full page reload. A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
 
 #### Scenario: Default selection is all goals
 
@@ -624,6 +624,12 @@ Today SHALL provide a project selector, shared with Raids Plan, that defaults to
 - **GIVEN** a project is selected
 - **WHEN** the user selects all goals
 - **THEN** Today shows the account-wide schedule again
+
+#### Scenario: Schedule's selection does not leak into Today
+
+- **GIVEN** the user selected project B on Plan > Schedule this session
+- **WHEN** they open Dailies > Raids
+- **THEN** Today's selector shows all goals unless a project was chosen on Today itself
 
 #### Scenario: Project list fails to load
 

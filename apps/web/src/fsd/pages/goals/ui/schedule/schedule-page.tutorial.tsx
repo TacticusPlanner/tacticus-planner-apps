@@ -4,19 +4,18 @@ import type { Step } from "react-joyride"
 
 import { useTourPageSteps } from "@/shared/tour"
 
-export function useRaidsPlanTutorial() {
+export function useScheduleTutorial() {
   const { t } = useTranslation("dailies")
   const steps = useMemo(() => {
     const createStep = (
       target: string,
-      key: "navigation" | "summary" | "filter" | "days"
+      key: "summary" | "filter" | "days"
     ): Step => ({
       target,
       title: t(`tour.raidsPlan.steps.${key}.title`),
       content: t(`tour.raidsPlan.steps.${key}.content`),
     })
     const shared = [
-      createStep('[data-testid="raids-tabs"]', "navigation"),
       createStep('[data-testid="plan-summary"]', "summary"),
       createStep('[data-testid="plan-unit-filter"]', "filter"),
       createStep('[data-testid="plan-days"]', "days"),

@@ -102,13 +102,13 @@ export function RaidsWidget() {
     <Card
       className="cursor-pointer"
       data-testid="home-raids-widget"
-      onClick={() => void navigate("/dailies/raids/today")}
+      onClick={() => void navigate("/dailies/raids")}
       role="button"
       tabIndex={0}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault()
-          void navigate("/dailies/raids/today")
+          void navigate("/dailies/raids")
         }
       }}
     >
