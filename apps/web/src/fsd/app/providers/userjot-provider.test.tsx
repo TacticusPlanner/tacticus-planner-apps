@@ -36,9 +36,9 @@ vi.mock("@tanstack/react-query", () => ({
 import { UserJotProvider, useUserJot } from "./userjot-provider"
 
 function Consumer() {
-  const { open, unreadCount } = useUserJot()
+  const { open, unreadCount, isReady } = useUserJot()
   return (
-    <button data-testid="consumer" onClick={() => open()}>
+    <button data-testid="consumer" data-ready={isReady} onClick={() => open()}>
       {unreadCount}
     </button>
   )
@@ -102,6 +102,27 @@ describe("UserJotProvider", () => {
 
   afterEach(() => {
     delete window.uj
+    delete window.__ujLoaded
+  })
+
+  it("reports the widget ready only once the SDK script has loaded", async () => {
+    renderProvider()
+    expect(screen.getByTestId("consumer")).toHaveAttribute(
+      "data-ready",
+      "false"
+    )
+
+    act(() => {
+      window.__ujLoaded = true
+      window.dispatchEvent(new Event("uj-loaded"))
+    })
+
+    await waitFor(() =>
+      expect(screen.getByTestId("consumer")).toHaveAttribute(
+        "data-ready",
+        "true"
+      )
+    )
   })
 
   it("identifies the signed-in user with a token from the API", async () => {

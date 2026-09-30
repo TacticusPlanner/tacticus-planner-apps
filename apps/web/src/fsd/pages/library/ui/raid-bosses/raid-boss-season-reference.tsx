@@ -77,7 +77,7 @@ export function RaidBossSeasonReference({
                       type="button"
                       aria-label={located.item.name}
                       onClick={() => onEncounterSelect(located)}
-                      className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border p-2 text-center transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-primary"
+                      className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border p-2 text-center transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
                     >
                       <RaidBossPortrait
                         name={located.item.name}

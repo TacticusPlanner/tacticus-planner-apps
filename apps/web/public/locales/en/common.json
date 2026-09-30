@@ -3,7 +3,8 @@
     "name": "Tacticus Planner"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "back": "Back"
   },
   "auth": {
     "account": "Signed-in account",
@@ -11,10 +12,11 @@
     "checkingSignIn": "Account detected — signing you in…",
     "editDisplayName": "Edit planner name",
     "error": "Authentication could not be completed. Please try again.",
-    "manageAccount": "Manage Account",
     "signIn": "Sign in",
     "signOut": "Sign out",
-    "userMenu": "Account menu"
+    "userMenu": "Account menu",
+    "preferences": "Preferences",
+    "accountSettings": "Account settings"
   },
   "catalog": {
     "badge": {
@@ -37,7 +39,7 @@
     }
   },
   "manageAccount": {
-    "title": "Manage Account",
+    "title": "Account settings",
     "tabs": {
       "integration": "Tacticus Integration",
       "profile": "Profile",
@@ -207,11 +209,28 @@
     "guildDescription": "Your guild roster and settings",
     "menu": "Menu",
     "navigation": "Navigation",
-    "navigationHint": "Choose a destination or filter the list.",
-    "noResults": "No navigation items found.",
-    "search": "Search navigation",
+    "navigationHint": "Choose a page or quick action, or filter the list.",
+    "noResults": "No matching pages or actions found.",
+    "search": "Search pages and actions",
     "sync": "Sync",
-    "syncWithTacticus": "Sync with Tacticus"
+    "syncWithTacticus": "Sync with Tacticus",
+    "primaryNavigation": "Main navigation",
+    "sectionNavigation": "{{section}} pages",
+    "collapseSection": "Hide {{section}} menu",
+    "expandSection": "Show {{section}} menu",
+    "quickActions": {
+      "heading": "Quick actions",
+      "pagesHeading": "Pages",
+      "createGoalDescription": "Open the new goal form",
+      "createProjectDescription": "Open a blank project form",
+      "syncDescription": "Refresh your Planner from the Tacticus API",
+      "feedbackLabel": "Submit Feedback",
+      "feedbackDescription": "Open the feedback, roadmap, and updates widget",
+      "feedbackUnavailable": "Feedback is unavailable right now",
+      "tourDescription": "Walk through this page's features",
+      "tourRunning": "A tour is already running"
+    },
+    "breadcrumb": "Breadcrumb"
   },
   "onslaught": {
     "sector": "Sector",
@@ -478,7 +497,6 @@
       "progress": "Progress",
       "remaining": "Remaining",
       "status": "Status · Done by",
-      "actions": "Actions",
       "reorder": "Reorder",
       "reorderHandle": "Drag {{entity}} to reorder",
       "priority": "Priority"
@@ -511,13 +529,32 @@
       "resume": "Resume",
       "delete": "Delete",
       "moveUp": "Move up",
-      "moveDown": "Move down"
+      "moveDown": "Move down",
+      "edit": "Edit"
+    },
+    "bulk": {
+      "pause": "Pause",
+      "pauseCount": "Pause ({{count}})",
+      "resume": "Resume",
+      "resumeCount": "Resume ({{count}})",
+      "addToProject": "Add to project",
+      "addToProjectCount": "Add to project ({{count}})",
+      "delete": "Delete",
+      "deleteCount": "Delete ({{count}})",
+      "selected_one": "{{count}} selected",
+      "selected_other": "{{count}} selected",
+      "selectAll": "Select all goals",
+      "selectRow": "Select {{entity}}",
+      "selectMode": "Select goals",
+      "selectDone": "Done"
     },
     "delete": {
-      "title": "Delete this goal?",
-      "description": "This permanently deletes the goal from your account, including every project it belongs to — not only the one you're viewing. This can't be undone.",
-      "projectAlternative": "To take it out of {{project}} only, cancel and use “Remove from this project” instead.",
-      "confirm": "Delete goal",
+      "title_one": "Delete this goal?",
+      "title_other": "Delete {{count}} goals?",
+      "description_one": "This permanently deletes the goal from your account, including every project it belongs to. This can't be undone.",
+      "description_other": "This permanently deletes these {{count}} goals from your account, including every project they belong to. This can't be undone.",
+      "confirm_one": "Delete goal",
+      "confirm_other": "Delete {{count}} goals",
       "cancel": "Cancel"
     },
     "project": {
@@ -526,11 +563,9 @@
       "membership": "Projects containing this goal",
       "addMembership": "Add to project",
       "removeMembership": "Remove {{project}}",
-      "removeFromProject": "Remove from this project",
-      "moveToProject": "Move to project",
-      "moveToProjectTitle": "Move to project",
-      "moveToProjectDescription": "Choose a project to move this goal into, or create a new one.",
       "createNewProject": "Create new project…",
+      "addToProjectTitle": "Add to project",
+      "addToProjectDescription": "Choose a project to add the selected goals to, or create a new one.",
       "removeLastMembership": "This is the goal's only project, and it has nowhere else to go. Add it to another project first.",
       "removeDestinationUnknown": "Your projects aren't loaded yet, so this goal has no destination. Try again in a moment.",
       "addGoalsTrigger": "Manage goals",
@@ -604,12 +639,13 @@
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
       "deleted": "Goal deleted.",
-      "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
-      "goalRelocated": "{{goal}} moved to {{project}}.",
       "actionError": "Something went wrong. Please try again.",
       "projectCreated": "Project created.",
       "projectUpdated": "Project updated.",
-      "projectMembershipSaved": "{{project}} updated: {{added}} added, {{removed}} removed."
+      "projectMembershipSaved": "{{project}} updated: {{added}} added, {{removed}} removed.",
+      "goalsAddedToProject_one": "Added {{count}} goal to {{project}}.",
+      "goalsAddedToProject_other": "Added {{count}} goals to {{project}}.",
+      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed."
     },
     "create": {
       "title": "Create a goal",
@@ -988,7 +1024,8 @@
   },
   "feedback": {
     "button": "Feedback",
-    "viewBoard": "View full board"
+    "send": "Send feedback",
+    "roadmap": "Roadmap"
   },
   "theme": {
     "dark": "Dark",
@@ -1011,6 +1048,10 @@
         "title": "Welcome to Tacticus Planner",
         "content": "Take a quick tour to discover the key parts of the interface."
       },
+      "search": {
+        "title": "Search pages and actions",
+        "content": "Open search with the button or Ctrl/Cmd+K to jump to any page or run a quick action such as creating a goal, syncing, or sending feedback."
+      },
       "accountDrawer": {
         "title": "Account and preferences",
         "content": "Manage your theme, language, guided tour, imports, planner name, account, and sign-in options here."
@@ -1029,21 +1070,29 @@
         "title": "Find your way around",
         "content": "This menu groups the app's sections — use it to navigate between them at any time."
       },
-      "headerControls": {
-        "title": "Theme, language & feedback",
-        "content": "Switch themes, change the language, or send feedback from these icons."
-      },
       "sidebarFooter": {
-        "title": "Your account",
-        "content": "Manage your account and planner name, check sync status, and replay this tour any time from here."
+        "title": "Sidebar tools",
+        "content": "Replay this tour any time, and expand or collapse the main navigation rail from here."
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",
-        "content": "Switch sections, add a goal, or sync — all from here."
+        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions."
       },
       "mobileHeader": {
         "title": "Page header",
         "content": "Shows where you are. Your account menu — theme, language, and this tour — lives on the right."
+      },
+      "accountMenu": {
+        "title": "Account and preferences",
+        "content": "Open this menu for your theme, language, account settings, imports, feedback, sync status, and sign-in or sign-out."
+      },
+      "sectionNavigation": {
+        "title": "Section pages",
+        "content": "This menu lists the pages in the current section. Hide it with the button in its header and bring it back with the button beside the page title; it stays as you left it while you navigate."
+      },
+      "feedback": {
+        "title": "Send feedback",
+        "content": "Share feedback or ideas with the button next to your account. The public board link stays in the page header."
       }
     },
     "lookup": {
@@ -1079,6 +1128,14 @@
         "filters": {
           "title": "Type and group",
           "content": "Narrow by goal type or group related goals together."
+        },
+        "select": {
+          "title": "Select goals",
+          "content": "Tick goals to select them. The checkbox in the header selects every goal shown (on mobile, turn on Select first)."
+        },
+        "bulkActions": {
+          "title": "Bulk actions",
+          "content": "Pause, resume, add to a project or delete every selected goal at once. Bulk pause and resume act only on the goals you selected."
         },
         "createGoal": {
           "title": "Create a goal",

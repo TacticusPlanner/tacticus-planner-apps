@@ -8,21 +8,24 @@ vi.mock("react-i18next", () => ({
 import {
   useDesktopTutorialSteps,
   useMobileTutorialSteps,
+  withoutMissingOptionalSteps,
 } from "./general.tutorial"
 
 describe("useDesktopTutorialSteps", () => {
-  it("is a short tour: welcome, distinct actions, and two group spotlights", () => {
+  it("is a short tour: global bar, distinct actions, and group spotlights", () => {
     const { result } = renderHook(() => useDesktopTutorialSteps())
     const targets = result.current.map((step) => step.target)
 
     expect(targets).toEqual([
       "body",
-      '[data-testid="desktop-header-controls"]',
+      '[data-testid="desktop-navigation-search"]',
+      '[data-testid="desktop-feedback"]',
+      '[data-testid="desktop-account-menu"]',
+      '[data-testid="desktop-sidebar-tools"]',
       '[data-testid="desktop-create-goal-button"]',
       '[data-testid="player-data-sync-button"]',
-      '[data-testid="desktop-navigation-search"]',
       '[data-testid="primary-nav"]',
-      '[data-testid="desktop-sidebar-footer"]',
+      '[data-testid="desktop-section-navigation"], [data-testid="desktop-section-toggle"]',
     ])
   })
 
@@ -34,13 +37,49 @@ describe("useDesktopTutorialSteps", () => {
     expect(targets).not.toContain('[data-testid="desktop-nav-goals"]')
   })
 
-  it("spotlights theme/language/feedback as one group, not each icon individually", () => {
+  it("spotlights account preferences as one menu, not theme/language/feedback individually", () => {
     const { result } = renderHook(() => useDesktopTutorialSteps())
     const targets = result.current.map((step) => step.target)
 
     expect(targets).not.toContain('[data-testid="language-switcher"]')
     expect(targets).not.toContain('[data-testid="theme-switcher"]')
     expect(targets).not.toContain('[data-testid="userjot-feedback-button"]')
+    expect(targets).not.toContain('[data-testid="desktop-header-controls"]')
+  })
+})
+
+describe("section navigation step", () => {
+  afterEach(() => document.body.replaceChildren())
+
+  const sectionStepTarget =
+    '[data-testid="desktop-section-navigation"], [data-testid="desktop-section-toggle"]'
+
+  function stepsAfterFiltering() {
+    const { result } = renderHook(() => useDesktopTutorialSteps())
+    return withoutMissingOptionalSteps(result.current).map(
+      (step) => step.target
+    )
+  }
+
+  it("is dropped on a childless page, where there is no section menu", () => {
+    expect(stepsAfterFiltering()).not.toContain(sectionStepTarget)
+    expect(stepsAfterFiltering()).toContain('[data-testid="primary-nav"]')
+  })
+
+  it("is kept when the section menu is expanded", () => {
+    const nav = document.createElement("nav")
+    nav.dataset.testid = "desktop-section-navigation"
+    document.body.append(nav)
+
+    expect(stepsAfterFiltering()).toContain(sectionStepTarget)
+  })
+
+  it("is kept when the menu is collapsed, because the header reopen button remains", () => {
+    const reopen = document.createElement("button")
+    reopen.dataset.testid = "desktop-section-toggle"
+    document.body.append(reopen)
+
+    expect(stepsAfterFiltering()).toContain(sectionStepTarget)
   })
 })
 

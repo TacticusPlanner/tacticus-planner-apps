@@ -20,7 +20,8 @@ type UserJotOpenTarget = {
   to?: "home" | "feedback" | "roadmap" | "updates"
 }
 
-export const USERJOT_BOARD_URL = "https://tacticusplanner.userjot.com"
+const USERJOT_BOARD_URL = "https://tacticusplanner.userjot.com"
+export const USERJOT_ROADMAP_URL = `${USERJOT_BOARD_URL}/roadmap`
 
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
@@ -36,6 +37,8 @@ type UserJotSdk = {
 declare global {
   interface Window {
     uj?: UserJotSdk
+    /** Set by index.html once the real SDK script has loaded (the inline stub only queues calls). */
+    __ujLoaded?: boolean
   }
 }
 
@@ -48,6 +51,8 @@ const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
 type UserJotContextValue = {
   open: (target?: UserJotOpenTarget) => void
   unreadCount: number
+  /** False until the real SDK script has loaded; before that (or if blocked) `open` silently queues. */
+  isReady: boolean
 }
 
 const UserJotContext = createContext<UserJotContextValue | undefined>(undefined)
@@ -61,6 +66,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   } = useTranslation()
   const queryClient = useQueryClient()
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isReady, setIsReady] = useState(() => !!window.__ujLoaded)
   // Bumped at the start of every identify() call and rechecked after each await, so a slow call
   // superseded by a newer one (sign-out or a different user, mid-fetch) becomes a no-op instead of
   // applying a stale identity after the newer call already ran.
@@ -128,12 +134,20 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  useEffect(() => {
+    const markReady = () => setIsReady(true)
+    window.addEventListener("uj-loaded", markReady)
+    if (window.__ujLoaded) markReady()
+    return () => window.removeEventListener("uj-loaded", markReady)
+  }, [])
+
   const value = useMemo<UserJotContextValue>(
     () => ({
       open: (target) => window.uj?.open(target),
       unreadCount,
+      isReady,
     }),
-    [unreadCount]
+    [unreadCount, isReady]
   )
 
   return (

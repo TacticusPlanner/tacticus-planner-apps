@@ -101,7 +101,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
               ? `${upgrade.label} (${t("unitLookup.alreadyApplied")})`
               : upgrade.label
           }
-          className="relative rounded-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+          className="relative rounded-sm hover:bg-accent/10 focus-visible:bg-accent/10 focus-visible:outline-none"
         >
           <UpgradeIcon
             id={upgrade.id}

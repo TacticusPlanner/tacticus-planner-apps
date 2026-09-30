@@ -37,7 +37,7 @@ export function AccountSetupLayout() {
   return (
     <PostHogProvider routeGroup="/setup">
       <div className="flex min-h-svh flex-col bg-background text-foreground">
-        <header className="flex items-center justify-between gap-2 border-b bg-sidebar px-4 py-3">
+        <header className="flex items-center justify-between gap-2 border-b bg-topbar px-4 py-3">
           <div className="flex items-center gap-2">
             <AppLogo className="size-7" />
             <span className="font-heading text-sm font-medium">

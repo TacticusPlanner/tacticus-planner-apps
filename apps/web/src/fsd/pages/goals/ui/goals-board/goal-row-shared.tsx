@@ -8,11 +8,7 @@ import {
 
 import { formatEstimateDate } from "@/shared/lib"
 
-import {
-  resourceLabel,
-  type EstimateOutcome,
-  type EstimateResourceId,
-} from "@/features/goal-farming"
+import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "../../model/shared/types"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { isInFlightStatus } from "./goal-row-utils"
@@ -30,9 +26,8 @@ export function EstimateCell({
 }) {
   const { t, i18n } = useTranslation()
   if (!estimate) return null
-  if (estimate.status === "Blocked") {
-    return <UnavailableMaterials estimate={estimate} />
-  }
+  // A Blocked estimate has no date; its reasons and materials live in the Blocked badge's tooltip.
+  if (estimate.status === "Blocked") return null
   // Shared with the project surfaces, which render the same date from the features layer and so
   // cannot import it from here — see `shared/lib/format-estimate-date`, which also documents the
   // UTC parsing this value needs.
@@ -49,44 +44,6 @@ export function EstimateCell({
       <Calendar className="size-3.5 shrink-0" />
       {formattedDate} · {t("goals.estimate.days", { days: estimate.days })}
     </span>
-  )
-}
-
-/** Each requirement with no supported source: material, remaining quantity and reason, with no
- * completion date (the goal cannot complete). Same rows on the desktop table and the mobile card. */
-function UnavailableMaterials({ estimate }: { estimate: EstimateOutcome }) {
-  const { t } = useTranslation(["common", "upgrades", "characters", "dailies"])
-  const { upgradesById, charactersById } = useGoalCatalog()
-  if (estimate.status !== "Blocked" || !estimate.blockers?.length) return null
-  const label = (id: EstimateResourceId) => {
-    const fallback = resourceLabel(
-      id,
-      upgradesById,
-      charactersById ?? new Map()
-    )
-    if (id.startsWith("shard:")) {
-      const unitId = id.slice("shard:".length)
-      return t("dailies:resource.shards", {
-        unit: t(`characters:${unitId}`, { defaultValue: fallback }),
-      })
-    }
-    return t(`upgrades:${id}`, { defaultValue: fallback })
-  }
-  return (
-    <ul
-      className="grid gap-0.5 text-xs text-muted-foreground"
-      data-testid="goal-unavailable-materials"
-    >
-      {estimate.blockers.map((blocker) => (
-        <li key={blocker.resourceId}>
-          {t("common:goals.estimate.unavailableRow", {
-            material: label(blocker.resourceId),
-            count: blocker.remaining,
-            reason: t(`common:goals.estimate.blocked.${blocker.reason}`),
-          })}
-        </li>
-      ))}
-    </ul>
   )
 }
 

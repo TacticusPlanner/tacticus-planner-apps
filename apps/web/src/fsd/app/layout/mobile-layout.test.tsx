@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react"
+import { act, fireEvent, render, screen, within } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -29,9 +29,6 @@ vi.mock("@/shared/auth", () => ({
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
-vi.mock("../providers/language-switcher", () => ({
-  LanguageSwitcher: () => null,
-}))
 vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
 const { startTour } = vi.hoisted(() => ({ startTour: vi.fn() }))
 vi.mock("@/shared/tour", () => ({
@@ -57,12 +54,16 @@ vi.mock("../providers/player-data-sync-button", () => ({
 import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
+import type { QuickAction, QuickActionsController } from "./quick-actions"
+
+const noQuickActions = { actions: [], select: () => false, flush: () => {} }
 
 function renderShell(
   onCreateGoal = vi.fn(),
   isAuthenticated = false,
   initialEntry = "/",
-  activeSection: NavItem | undefined = undefined
+  activeSection: NavItem | undefined = undefined,
+  quickActions: QuickActionsController = noQuickActions
 ) {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
@@ -73,6 +74,7 @@ function renderShell(
         pageDescription="Home description"
         pageTitle="Home"
         onCreateGoal={onCreateGoal}
+        quickActions={quickActions}
       />
     </MemoryRouter>
   )
@@ -287,5 +289,114 @@ describe("MobileBottomNav actions", () => {
     expect(syncButton.querySelector("svg")).toHaveClass(
       "motion-safe:animate-spin"
     )
+  })
+})
+
+describe("MobileBottomNav quick actions in Menu search", () => {
+  const createGoalAction: QuickAction = {
+    id: "createGoal",
+    icon: (() => null) as unknown as QuickAction["icon"],
+    label: "Create Goal",
+    description: "Open the new goal form",
+    keywords: [],
+  }
+  const syncAction: QuickAction = {
+    ...createGoalAction,
+    id: "sync",
+    label: "Sync with Tacticus",
+    keywords: ["api"],
+    disabledReason: "Syncing 1/2",
+  }
+  const controller = (actions: QuickAction[]) => ({
+    actions,
+    select: vi.fn((id: QuickAction["id"]) => {
+      const found = actions.find((action) => action.id === id)
+      return !!found && !found.disabledReason
+    }),
+    flush: vi.fn(),
+  })
+
+  it("shows the Quick actions group before Pages, with action buttons and page links", () => {
+    renderShell(vi.fn(), true, "/", undefined, controller([createGoalAction]))
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(
+      drawer
+        .getAllByRole("heading", { level: 3 })
+        .map((heading) => heading.textContent)
+    ).toEqual(["nav.quickActions.heading", "nav.quickActions.pagesHeading"])
+    expect(drawer.getByRole("button", { name: /Create Goal/ })).toBeVisible()
+    expect(drawer.getAllByRole("link").length).toBeGreaterThan(0)
+  })
+
+  it("selects an action, closes the drawer, and resets the query", () => {
+    const quickActions = controller([createGoalAction])
+    renderShell(vi.fn(), true, "/", undefined, quickActions)
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "goal" },
+    })
+
+    fireEvent.click(screen.getByRole("button", { name: /Create Goal/ }))
+
+    expect(quickActions.select).toHaveBeenCalledWith("createGoal")
+    expect(screen.getByTestId("mobile-menu-trigger")).toHaveAttribute(
+      "data-state",
+      "closed"
+    )
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    expect(screen.getByLabelText("nav.search")).toHaveValue("")
+  })
+
+  it("dispatches the selected action once after the drawer closes and never on a later close", () => {
+    vi.useFakeTimers()
+    try {
+      const quickActions = controller([createGoalAction])
+      renderShell(vi.fn(), true, "/", undefined, quickActions)
+      fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+      fireEvent.click(screen.getByRole("button", { name: /Create Goal/ }))
+      expect(quickActions.flush).not.toHaveBeenCalled()
+
+      act(() => void vi.advanceTimersByTime(600))
+      expect(quickActions.flush).toHaveBeenCalledTimes(1)
+
+      fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+      fireEvent.keyDown(screen.getByTestId("mobile-menu"), { key: "Escape" })
+      act(() => void vi.advanceTimersByTime(1000))
+      expect(quickActions.flush).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("keeps a disabled action visible with its reason and does not close the drawer", () => {
+    const quickActions = controller([syncAction])
+    renderShell(vi.fn(), true, "/", undefined, quickActions)
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+
+    const row = screen.getByRole("button", { name: /Sync with Tacticus/ })
+    expect(row).toBeDisabled()
+    expect(row).toHaveTextContent("Syncing 1/2")
+    fireEvent.click(row)
+    expect(quickActions.select).not.toHaveBeenCalled()
+    expect(screen.getByTestId("mobile-menu")).toBeVisible()
+  })
+
+  it("shows no-results only when neither group matches", () => {
+    renderShell(vi.fn(), true, "/", undefined, controller([createGoalAction]))
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "new goal form" },
+    })
+    expect(drawer.getByRole("button", { name: /Create Goal/ })).toBeVisible()
+    expect(drawer.queryByText("nav.noResults")).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "zzzz-nothing" },
+    })
+    expect(drawer.getByText("nav.noResults")).toBeVisible()
   })
 })

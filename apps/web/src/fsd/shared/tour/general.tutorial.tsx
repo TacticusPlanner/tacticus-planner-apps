@@ -5,6 +5,21 @@ import type { Step } from "react-joyride"
 const ACCOUNT_MENU_TARGET_SELECTOR =
   '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]'
 
+// The expanded panel, or (when it is collapsed and gone) the reopen button in the page header.
+const SECTION_NAVIGATION_SELECTOR =
+  '[data-testid="desktop-section-navigation"], [data-testid="desktop-section-toggle"]'
+
+/** Drops steps flagged `data.optional` whose target is not on the page, so a tour started on a
+ *  page without that element (e.g. the section menu on Home) never waits on a missing target. */
+export function withoutMissingOptionalSteps(steps: Step[]): Step[] {
+  return steps.filter(
+    (step) =>
+      !(step.data as { optional?: boolean } | undefined)?.optional ||
+      (typeof step.target === "string" &&
+        document.querySelector(step.target) !== null)
+  )
+}
+
 function waitForElementSettled(
   selector: string,
   { timeoutMs }: { timeoutMs: number }
@@ -58,9 +73,9 @@ function waitForElementSettled(
  *  UI Kit) that doesn't register its own steps via useTourPageSteps.
  *
  *  Kept short ("quick tour" per its own welcome copy): related controls are spotlighted as one
- *  group step (e.g. every sidebar nav item, or the header's theme/language/feedback icons)
+ *  group step (e.g. every sidebar nav item, or the section menu)
  *  instead of walking each one individually - only genuinely distinct actions worth their own
- *  callout (Create Goal, Sync, Search) get a dedicated step. */
+ *  callout (Create Goal, Sync, Search, Feedback, Account) get a dedicated step. */
 export function useDesktopTutorialSteps(): Step[] {
   const { t } = useTranslation()
 
@@ -73,10 +88,28 @@ export function useDesktopTutorialSteps(): Step[] {
         content: t("tour.steps.welcome.content"),
       },
       {
-        target: '[data-testid="desktop-header-controls"]',
+        target: '[data-testid="desktop-navigation-search"]',
+        placement: "bottom",
+        title: t("tour.steps.search.title"),
+        content: t("tour.steps.search.content"),
+      },
+      {
+        target: '[data-testid="desktop-feedback"]',
         placement: "bottom-end",
-        title: t("tour.steps.headerControls.title"),
-        content: t("tour.steps.headerControls.content"),
+        title: t("tour.steps.feedback.title"),
+        content: t("tour.steps.feedback.content"),
+      },
+      {
+        target: '[data-testid="desktop-account-menu"]',
+        placement: "bottom-end",
+        title: t("tour.steps.accountMenu.title"),
+        content: t("tour.steps.accountMenu.content"),
+      },
+      {
+        target: '[data-testid="desktop-sidebar-tools"]',
+        placement: "right",
+        title: t("tour.steps.sidebarFooter.title"),
+        content: t("tour.steps.sidebarFooter.content"),
       },
       {
         target: '[data-testid="desktop-create-goal-button"]',
@@ -91,22 +124,19 @@ export function useDesktopTutorialSteps(): Step[] {
         content: t("tour.steps.bottomNavigation.sync.content"),
       },
       {
-        target: '[data-testid="desktop-navigation-search"]',
-        placement: "right",
-        title: t("nav.search"),
-        content: t("nav.navigationHint"),
-      },
-      {
         target: '[data-testid="primary-nav"]',
         placement: "right",
         title: t("tour.steps.navigation.title"),
         content: t("tour.steps.navigation.content"),
       },
       {
-        target: '[data-testid="desktop-sidebar-footer"]',
+        // Present (expanded, or collapsed to its reopen toggle) on every page with child pages;
+        // absent on childless pages such as Home, where the step is dropped at tour start.
+        target: SECTION_NAVIGATION_SELECTOR,
         placement: "right",
-        title: t("tour.steps.sidebarFooter.title"),
-        content: t("tour.steps.sidebarFooter.content"),
+        data: { optional: true },
+        title: t("tour.steps.sectionNavigation.title"),
+        content: t("tour.steps.sectionNavigation.content"),
       },
     ],
     [t]

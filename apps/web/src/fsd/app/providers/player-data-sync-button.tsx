@@ -162,7 +162,10 @@ export function PlayerDataSyncButton() {
 
   return (
     <SidebarMenuButton
-      className={cn("mt-2 h-auto min-h-12", statusClasses[status])}
+      className={cn(
+        "mt-2 h-auto min-h-12 pl-2.5 group-data-[collapsible=icon]:min-h-8 group-data-[collapsible=icon]:justify-center",
+        statusClasses[status]
+      )}
       data-testid="player-data-sync-button"
       onClick={syncNow}
       disabled={isSyncing}

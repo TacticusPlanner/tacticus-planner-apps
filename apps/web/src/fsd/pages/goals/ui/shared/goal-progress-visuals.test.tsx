@@ -18,11 +18,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))
 
-import {
-  GoalProgressDisplay,
-  GoalProgressLegend,
-  GoalTargetDisplay,
-} from "./goal-progress-visuals"
+import { GoalProgressDisplay, GoalTargetDisplay } from "./goal-progress-visuals"
 
 describe("GoalProgressDisplay", () => {
   it("never shows 100% unless the ratio has truly reached 1, even when rounding would otherwise round up", () => {
@@ -322,18 +318,6 @@ describe("GoalProgressDisplay", () => {
     fireEvent.click(footer)
     expect(screen.queryByTestId("goal-progress-mobile-explanation")).toBeNull()
     useIsMobileMock.mockReturnValue(false)
-  })
-})
-
-describe("GoalProgressLegend", () => {
-  it("renders nothing when show is false", () => {
-    render(<GoalProgressLegend show={false} />)
-    expect(screen.queryByTestId("goal-progress-legend")).toBeNull()
-  })
-
-  it("renders once when show is true", () => {
-    render(<GoalProgressLegend show={true} />)
-    expect(screen.getByTestId("goal-progress-legend")).toBeInTheDocument()
   })
 })
 

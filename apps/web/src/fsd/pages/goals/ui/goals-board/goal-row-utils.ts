@@ -1,7 +1,6 @@
 import type { SyntheticEvent } from "react"
 
 import type { GoalStatus } from "@/entities/goal"
-import type { ProjectSummary } from "@/entities/project"
 import { normalizeXpBookRarity } from "@/entities/planning-setting"
 import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import {
@@ -56,12 +55,38 @@ export function cascadeTargets(
   })
 }
 
+/** Pauses/resumes one goal together with its cascade prerequisites — shared by the row menu and the
+ *  status chip's quick toggle. */
+export function toggleGoalStatus(
+  actions: ReturnType<typeof useGoalActions>,
+  row: GoalRow,
+  next: "Active" | "Paused",
+  cascadeContext: CascadeContext | undefined
+) {
+  const cascade = cascadeTargets(row.dependsOn, next, cascadeContext).map(
+    (id) => ({
+      goalId: id,
+      // cascadeTargets only returns ids whose status cascadeContext knows — the fallback is unreachable.
+      previousStatus: cascadeContext?.statusById.get(id) ?? next,
+    })
+  )
+  return actions.setStatus(row.goalId, next, row.status, cascade)
+}
+
 export type GoalsListProps = {
   rows: GoalRow[]
   actions: ReturnType<typeof useGoalActions>
-  /** The project these rows are being viewed inside, when there is one. Project scope is what makes
-   *  the row menu's "Remove from this project" action meaningful; Overview has none and omits it. */
-  project?: ProjectSummary
+  /** Ids of the selected goals (the page owns the selection). Absent renders nothing selected. */
+  selection?: ReadonlySet<string>
+  /** Toggles one goal in the selection. */
+  onToggleSelected?: (goalId: string) => void
+  /** Every visible row id across all groups — what the header select-all checkbox covers (desktop).
+   *  Defaults to this list's own rows. */
+  visibleIds?: readonly string[]
+  /** Header select-all: selects every visible row, or clears when all are already selected. */
+  onSelectAllVisible?: () => void
+  /** Mobile-only: whether select mode is active (each card shows a header checkbox). */
+  selectActive?: boolean
   /** Whether this list is a reorderable surface at all — true only on project detail (never Goals
    *  Overview). Desktop shows a drag handle on every row whenever this is true; mobile additionally
    *  needs `mobileReorderActive` (add-inline-goal-reprioritize: desktop has no separate reorder mode,

@@ -76,7 +76,9 @@ export function LevelRequirementLine({
       <div className="min-w-0 flex-1" data-testid="level-requirement-progress">
         <GoalProgressDisplay
           potentialOnly
-          potentialRatio={potentialRatio}
+          // Paused goals have no plan potential; fall back to the actual ratio so the line keeps the
+          // same compact potential-only layout (and height) as an Active goal's.
+          potentialRatio={potentialRatio ?? levelRequirement.ratio ?? undefined}
           progress={levelRequirement}
         />
       </div>

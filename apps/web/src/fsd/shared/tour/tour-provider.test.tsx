@@ -32,6 +32,7 @@ vi.mock("../theme/theme-provider", () => ({
 vi.mock("./general.tutorial", () => ({
   useDesktopTutorialSteps: () => [{ target: "general-step", content: "" }],
   useMobileTutorialSteps: () => [{ target: "general-step", content: "" }],
+  withoutMissingOptionalSteps: (steps: unknown[]) => steps,
 }))
 
 function IsRunningProbe() {

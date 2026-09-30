@@ -15,7 +15,7 @@ of a single source.
 The Unlock and Ascension goal cards SHALL present shard acquisition sources as a multi-select
 tree of top-level groups — Campaigns, Onslaught, Shops — replacing any single-select source
 control. The user SHALL be able to select any combination of the offered groups at the same
-time. The control SHALL appear in both the goal-creation sheet and the goal detail/edit sheet
+time. The control SHALL appear in both the goal-creation dialog or sheet and the Edit goal dialog or sheet
 with the same groups and semantics.
 
 #### Scenario: Multiple groups selected together
@@ -25,7 +25,7 @@ with the same groups and semantics.
 
 #### Scenario: Same control on create and edit
 
-- **WHEN** a user opens the detail/edit sheet for an existing Unlock or Ascension goal
+- **WHEN** a user opens the Edit goal dialog for an existing Unlock or Ascension goal
 - **THEN** the acquisition-source control offers the same groups and reflects the goal's saved
   selection
 

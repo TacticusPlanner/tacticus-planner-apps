@@ -21,8 +21,19 @@ const requestApiAccess = vi.fn().mockResolvedValue(undefined)
 const signOut = vi.fn().mockResolvedValue(undefined)
 const silentSignInStatus = vi.fn(() => "idle")
 
+const changeLanguage = vi.fn()
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: "en", resolvedLanguage: "en", changeLanguage },
+  }),
+}))
+vi.mock("@/shared/config", () => ({
+  getSupportedLanguage: (language: string) => language,
+  supportedLocales: [
+    { code: "en", nativeName: "English" },
+    { code: "de", nativeName: "Deutsch" },
+  ],
 }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -83,12 +94,10 @@ vi.mock("./theme-switcher", () => ({
 vi.mock("./catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => <div data-testid="catalog-sync-status-badge" />,
 }))
-vi.mock("./language-switcher", () => ({
-  LanguageSwitcher: () => <div data-testid="language-switcher" />,
-}))
 const openUserJot = vi.fn()
 vi.mock("./userjot-provider", () => ({
   USERJOT_BOARD_URL: "https://tacticusplanner.userjot.com",
+  USERJOT_ROADMAP_URL: "https://tacticusplanner.userjot.com/roadmap",
   useUserJot: () => ({ open: openUserJot, unreadCount: 0 }),
 }))
 vi.mock("@/shared/tour", () => ({
@@ -119,12 +128,12 @@ const confirmedState = {
   },
 } as const
 
-function renderAuthControl(props?: { compact?: boolean }) {
+function renderAuthControl() {
   return render(
     <MemoryRouter initialEntries={["/home"]}>
       <TooltipProvider>
         <Routes>
-          <Route element={<AuthControl {...props} />} path="/home" />
+          <Route element={<AuthControl />} path="/home" />
           <Route element={<Probe />} path="/account/v1-import" />
         </Routes>
       </TooltipProvider>
@@ -145,6 +154,7 @@ describe("AuthControl", () => {
     useCurrentUser.mockReturnValue({ state: { status: "loading" } })
     silentSignInStatus.mockReturnValue("idle")
     openUserJot.mockClear()
+    changeLanguage.mockClear()
   })
 
   it("opens a user menu with manage-account and sign-out on desktop", () => {
@@ -163,8 +173,109 @@ describe("AuthControl", () => {
 
     expect(screen.getByTestId("auth-manage-account")).toBeVisible()
     expect(screen.getByTestId("auth-sign-out")).toBeVisible()
-    expect(screen.queryByTestId("theme-switcher")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("language-switcher")).not.toBeInTheDocument()
+    // Theme is an inline switch and language a row in the desktop card's Preferences section;
+    // the language Select is not mounted there.
+    expect(screen.getByTestId("theme-switcher")).toBeVisible()
+    expect(screen.getByTestId("account-language-row")).toHaveTextContent(
+      "English"
+    )
+  })
+
+  it("opens a language picker from the Language row and switches language", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    fireEvent.click(screen.getByTestId("account-language-row"))
+
+    expect(screen.getByRole("radio", { name: "English" })).toBeChecked()
+    fireEvent.click(screen.getByTestId("account-language-de"))
+
+    expect(changeLanguage).toHaveBeenCalledWith("de")
+    // Back on the main view afterwards.
+    expect(screen.getByTestId("auth-sign-out")).toBeVisible()
+  })
+
+  it("lays out identity, preferences, account rows, sign out and catalog footer in order", () => {
+    useCurrentUser.mockReturnValue({ state: confirmedState })
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    const ids = [
+      "auth-account-identity",
+      "account-preferences",
+      "auth-manage-account",
+      "auth-v1-import",
+      "auth-feedback",
+      "auth-roadmap",
+      "auth-sign-out",
+      "catalog-sync-status-badge",
+    ]
+    const nodes = ids.map((id) => screen.getByTestId(id))
+    nodes.slice(1).forEach((node, index) => {
+      expect(
+        nodes[index].compareDocumentPosition(node) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+    })
+    // Out of scope for this layout pass: no export/restore, shortcuts, or delete rows.
+    expect(screen.queryByText(/export backup|restore|delete/i)).toBeNull()
+  })
+
+  it("links Roadmap to the public roadmap in a new tab from the desktop menu", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    const roadmap = screen.getByTestId("auth-roadmap")
+    expect(roadmap).toHaveAttribute(
+      "href",
+      "https://tacticusplanner.userjot.com/roadmap"
+    )
+    expect(roadmap).toHaveAttribute("target", "_blank")
+    expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
+    expect(roadmap).toHaveTextContent("feedback.roadmap")
+  })
+
+  it("also offers Roadmap in the guest preferences menu", () => {
+    useIsAuthenticated.mockReturnValue(false)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
+
+    expect(screen.getByTestId("auth-roadmap")).toHaveAttribute(
+      "href",
+      "https://tacticusplanner.userjot.com/roadmap"
+    )
+  })
+
+  it("opens the UserJot widget and closes the desktop menu from the Send feedback row", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    fireEvent.click(screen.getByTestId("auth-feedback"))
+
+    expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(screen.queryByTestId("auth-feedback")).not.toBeInTheDocument()
+  })
+
+  it("opens the desktop card below the trigger, right-aligned, and closes on Escape returning focus", async () => {
+    isMobile.mockReturnValue(false)
+    renderAuthControl()
+
+    const trigger = screen.getByTestId("auth-account-trigger")
+    trigger.focus()
+    fireEvent.click(trigger)
+
+    const card = screen.getByTestId("auth-sign-out").closest("[data-side]")
+    expect(card).toHaveAttribute("data-side", "bottom")
+    expect(card).toHaveAttribute("data-align", "end")
+    expect(trigger).toHaveAttribute("data-state", "open")
+
+    fireEvent.keyDown(screen.getByTestId("auth-sign-out"), { key: "Escape" })
+
+    expect(screen.queryByTestId("auth-sign-out")).not.toBeInTheDocument()
+    await vi.waitFor(() => expect(trigger).toHaveFocus())
   })
 
   it("shows the signed-in user's identity above the menu actions on desktop", () => {
@@ -222,15 +333,53 @@ describe("AuthControl", () => {
     expect(screen.getByTestId("catalog-sync-status-badge")).toBeInTheDocument()
   })
 
-  it("also surfaces theme and language switchers in the user menu on mobile", () => {
+  it("lays the mobile drawer out like the desktop card, plus a tour row after Send feedback", () => {
     isMobile.mockReturnValue(true)
+    useCurrentUser.mockReturnValue({ state: confirmedState })
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
 
-    expect(screen.getByTestId("auth-sign-out")).toBeVisible()
+    const ids = [
+      "auth-account-identity",
+      "account-preferences",
+      "auth-manage-account",
+      "auth-v1-import",
+      "auth-feedback",
+      "tour-button",
+      "auth-roadmap",
+      "auth-sign-out",
+      "catalog-sync-status-badge",
+    ]
+    const nodes = ids.map((id) => screen.getByTestId(id))
+    nodes.slice(1).forEach((node, index) => {
+      expect(
+        nodes[index].compareDocumentPosition(node) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+    })
     expect(screen.getByTestId("theme-switcher")).toBeVisible()
-    expect(screen.getByTestId("language-switcher")).toBeVisible()
+    expect(screen.getByTestId("account-language-row")).toBeVisible()
+    expect(screen.getByTestId("auth-roadmap")).toHaveAttribute(
+      "href",
+      "https://tacticusplanner.userjot.com/roadmap"
+    )
+    expect(screen.getByTestId("auth-roadmap")).toHaveAttribute(
+      "target",
+      "_blank"
+    )
+  })
+
+  it("opens the language picker in the mobile drawer and switches language", () => {
+    isMobile.mockReturnValue(true)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    fireEvent.click(screen.getByTestId("account-language-row"))
+    fireEvent.click(screen.getByTestId("account-language-de"))
+
+    expect(changeLanguage).toHaveBeenCalledWith("de")
+    expect(screen.getByTestId("auth-sign-out")).toBeVisible()
   })
 
   it("opens the UserJot widget and closes the drawer from the mobile user menu", () => {
@@ -246,25 +395,14 @@ describe("AuthControl", () => {
     expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
   })
 
-  it("renders the public UserJot board link and closes the mobile drawer when activated", () => {
+  it("closes the mobile drawer when the Roadmap row is activated", () => {
     isMobile.mockReturnValue(true)
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
-    expect(screen.getByTestId("userjot-board-link")).toBeVisible()
-
-    fireEvent.click(screen.getByTestId("userjot-board-link"))
+    fireEvent.click(screen.getByTestId("auth-roadmap"))
 
     expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
-  })
-
-  it("does not show the feedback row in the desktop user menu (it has its own header button)", () => {
-    isMobile.mockReturnValue(false)
-    renderAuthControl()
-
-    fireEvent.click(screen.getByTestId("auth-account-trigger"))
-
-    expect(screen.queryByTestId("auth-feedback")).not.toBeInTheDocument()
   })
 
   it("opens the manage-account dialog when the menu item is clicked", () => {
@@ -292,7 +430,7 @@ describe("AuthControl", () => {
   })
 
   it.each([false, true])(
-    "opens Manage Account on the profile tab from the name edit icon (mobile: %s)",
+    "opens Account settings on the profile tab from the name edit icon (mobile: %s)",
     (mobile) => {
       isMobile.mockReturnValue(mobile)
       useCurrentUser.mockReturnValue({ state: confirmedState })
@@ -310,7 +448,7 @@ describe("AuthControl", () => {
     }
   )
 
-  it("opens Manage Account on its default tab from the menu item", () => {
+  it("opens Account settings on its default tab from the menu item", () => {
     useCurrentUser.mockReturnValue({ state: confirmedState })
     renderAuthControl()
 
@@ -334,36 +472,43 @@ describe("AuthControl", () => {
     )
   })
 
-  it("shows a compact, aria-labeled sign-in button when unauthenticated", () => {
+  it("offers theme selection and sign-in from a guest preferences menu when unauthenticated", () => {
     useIsAuthenticated.mockReturnValue(false)
-    renderAuthControl({ compact: true })
+    renderAuthControl()
 
-    const signIn = screen.getByTestId("auth-sign-in")
-    expect(signIn).toHaveAttribute("aria-label", "auth.signIn")
-    expect(signIn).not.toBeDisabled()
+    expect(screen.queryByTestId("auth-sign-in")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
+
+    expect(screen.getByTestId("theme-switcher")).toBeVisible()
+    expect(screen.getByTestId("account-language-row")).toBeVisible()
+    expect(screen.getByTestId("auth-sign-in")).not.toBeDisabled()
+    // No authenticated identity or account-only actions.
+    expect(screen.queryByTestId("auth-sign-out")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("auth-manage-account")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("auth-account-trigger")).not.toBeInTheDocument()
   })
 
-  it("disables sign-in and sign-out while an MSAL interaction is already in progress", () => {
+  it("disables sign-in while an MSAL interaction is already in progress", () => {
     inProgress.mockReturnValue(InteractionStatus.Startup)
     useIsAuthenticated.mockReturnValue(false)
     renderAuthControl()
 
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
+
     expect(screen.getByTestId("auth-sign-in")).toBeDisabled()
   })
 
-  it("shows a 'checking' label while a silent restore is in progress, compact or not", () => {
+  it("shows a 'checking' label while a silent restore is in progress", () => {
     useIsAuthenticated.mockReturnValue(false)
     silentSignInStatus.mockReturnValue("checking")
     renderAuthControl()
 
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
+
     expect(
       screen.getByRole("button", { name: "auth.checkingSignIn" })
     ).toBeInTheDocument()
-
-    renderAuthControl({ compact: true })
-    expect(
-      screen.getAllByRole("button", { name: "auth.checkingSignIn" })
-    ).toHaveLength(2)
   })
 
   it("still signs in on click while a silent restore is in progress", async () => {
@@ -371,6 +516,7 @@ describe("AuthControl", () => {
     silentSignInStatus.mockReturnValue("checking")
     renderAuthControl()
 
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
     fireEvent.click(screen.getByRole("button", { name: "auth.checkingSignIn" }))
 
     await vi.waitFor(() => {
@@ -383,6 +529,7 @@ describe("AuthControl", () => {
     loginRedirect.mockRejectedValue(new Error("network down"))
     renderAuthControl()
 
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
     fireEvent.click(screen.getByTestId("auth-sign-in"))
 
     await vi.waitFor(() => {

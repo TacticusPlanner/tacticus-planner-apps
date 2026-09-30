@@ -65,7 +65,7 @@ function AbilityChip({
         aria-expanded={open}
         className={cn(
           rowClass,
-          "hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+          "hover:bg-accent/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
         )}
       >
         {chip}

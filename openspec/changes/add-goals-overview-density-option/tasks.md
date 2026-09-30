@@ -6,7 +6,7 @@
 ## 2. Density toggle control
 
 - [ ] 2.1 Add a `GoalDensityToggle` component to `apps/web/src/fsd/entities/goal` (new file, e.g. `ui/goal-density-toggle.tsx`, exported from `index.ts`), rendering a two-option control (Comfortable/Compact) following `GoalFilters`' (`ui/goal-filters.tsx`) existing icon-with-hidden-label-on-mobile pattern, with `data-testid="goals-density-toggle"` and an accessible name distinct from its current-value label (matching `GoalFilters`' `typeFilterAriaLabel`-style pattern). Verify by reading the new component.
-- [ ] 2.2 Add the toggle to `goals-page.tsx`'s `goalFiltersAndSettings` row, next to the existing Group control and before the reorder toggle/Create Goal/Planning Settings buttons. Let the mobile control row wrap (`flex-wrap`) instead of clipping. Verify at 360px, below 768px and at/above 768px with the mobile reorder toggle visible.
+- [ ] 2.2 Add the toggle to `goals-page.tsx`'s desktop filters row (`goals-filters-row`, introduced by `add-goals-bulk-actions`), next to the existing Group control, and to the mobile icon row (`goalFilters` group) before the reorder/select toggles and Create Goal/Planning Settings buttons. Let the mobile control row wrap (`flex-wrap`) instead of clipping. Verify at 360px, below 768px and at/above 768px with the mobile reorder toggle visible.
 - [ ] 2.3 Add `goals.filters.density*` translation keys (label, aria-label, and the two option labels "Comfortable"/"Compact") to `apps/web/public/locales/en/common.json` (next to the existing `goals.filters.*` keys), with matching real translations in `de/common.json`, `es/common.json`, `fr/common.json`. Verify by re-reading each edited file and `pnpm typecheck` (typed i18n keys).
 
 ## 3. Apply density to the desktop table

@@ -93,23 +93,6 @@ vi.mock("../../model/shared/use-goal-catalog", async (importActual) => {
   }
 })
 
-vi.mock(
-  "../../model/projects/use-move-goal-from-project",
-  async (importActual) => {
-    const actual =
-      await importActual<
-        typeof import("../../model/projects/use-move-goal-from-project")
-      >()
-    return {
-      ...actual,
-      useMoveGoalFromProject: () => {
-        counts.move++
-        return actual.useMoveGoalFromProject()
-      },
-    }
-  }
-)
-
 import type { GoalRow } from "../../model/shared/types"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { GoalsList } from ".//goals-list"

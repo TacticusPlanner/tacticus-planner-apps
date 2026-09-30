@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Table,
   TableBody,
@@ -10,11 +11,9 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { GoalProgressLegend } from "../shared/goal-progress-visuals"
 import { SortableList } from "../shared/sortable-list"
 import { GoalRowCells } from "./goal-table-row"
 import {
-  isInFlightStatus,
   isReachedRow,
   REACHED_ROW_CLASS,
   type GoalsListProps,
@@ -37,6 +36,8 @@ export function GoalsList(props: GoalsListProps) {
   return isMobile ? <GoalsMobileCards {...props} /> : <GoalsTable {...props} />
 }
 
+const EMPTY_SELECTION: ReadonlySet<string> = new Set()
+
 function GoalsTable({
   rows,
   actions,
@@ -51,45 +52,49 @@ function GoalsTable({
   levelChargedXp,
   levelPoolXpAvailable,
   xpBookRarity,
-  project,
   reachedByGoalId,
   cascadeContext,
+  selection = EMPTY_SELECTION,
+  onToggleSelected,
+  visibleIds,
+  onSelectAllVisible,
 }: GoalsListProps) {
   const { t } = useTranslation()
   const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
     null
   )
-  const hasLegend = rows.some((row) => potentialProgress?.has(row.goalId))
-  // The leading cell holds the drag handle and/or the priority number; it is not a data column.
-  const hasLeadingCell =
-    reorderEnabled ||
-    rows.some(
-      (row) => row.priority !== undefined && isInFlightStatus(row.status)
-    )
+  // Select-all covers every visible row (across groups), not just this table's rows.
+  const scopeIds = visibleIds ?? rows.map((row) => row.goalId)
+  const selectedCount = scopeIds.filter((id) => selection.has(id)).length
+  const allSelected = scopeIds.length > 0 && selectedCount === scopeIds.length
 
   return (
     <Table data-testid="goals-list-table">
       <TableHeader>
         <TableRow>
-          {hasLeadingCell ? (
-            <TableHead className="w-16">
+          <TableHead className="w-24">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                aria-label={t("goals.bulk.selectAll")}
+                checked={
+                  allSelected
+                    ? true
+                    : selectedCount > 0
+                      ? "indeterminate"
+                      : false
+                }
+                data-testid="goals-select-all"
+                onCheckedChange={() => onSelectAllVisible?.()}
+              />
               <span className="sr-only">{t("goals.columns.reorder")}</span>
-            </TableHead>
-          ) : null}
+            </div>
+          </TableHead>
           <TableHead>{t("goals.columns.entity")}</TableHead>
           <TableHead>{t("goals.columns.projects")}</TableHead>
           <TableHead>{t("goals.columns.goal")}</TableHead>
-          <TableHead>
-            <span className="flex items-center gap-2">
-              {t("goals.columns.progress")}
-              <GoalProgressLegend show={hasLegend} />
-            </span>
-          </TableHead>
-          <TableHead>{t("goals.columns.remaining")}</TableHead>
+          <TableHead>{t("goals.columns.progress")}</TableHead>
           <TableHead>{t("goals.columns.status")}</TableHead>
-          <TableHead className="text-right">
-            <span className="sr-only">{t("goals.columns.actions")}</span>
-          </TableHead>
+          <TableHead>{t("goals.columns.remaining")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -119,7 +124,6 @@ function GoalsTable({
                   cascadeContext={cascadeContext}
                   dragHandle={sortable.dragHandle}
                   estimates={estimates}
-                  hasLeadingCell={hasLeadingCell}
                   levelChargedXp={levelChargedXp}
                   levelPoolXpAvailable={levelPoolXpAvailable}
                   levelPotentialProgress={levelPotentialProgress}
@@ -127,7 +131,8 @@ function GoalsTable({
                   onEdit={onEdit}
                   popoverOpen={openPopoverGoalId === row.goalId}
                   potentialProgress={potentialProgress}
-                  project={project}
+                  onToggleSelected={onToggleSelected}
+                  selected={selection.has(row.goalId)}
                   reachedByGoalId={reachedByGoalId}
                   reorderEnabled={reorderEnabled}
                   row={row}

@@ -32,7 +32,7 @@ export function TopRarityChip({
             onClick()
           }
         }}
-        className="cursor-pointer gap-2 py-3 transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+        className="cursor-pointer gap-2 py-3 transition-colors hover:bg-accent/10 focus-visible:bg-accent/10 focus-visible:outline-none"
       >
         <CardContent className="flex items-center gap-3 px-3">
           <UpgradeIcon
@@ -57,7 +57,7 @@ export function TopRarityChip({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-2 rounded-xl border px-2 py-1.5 text-left transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+      className="flex items-center gap-2 rounded-xl border px-2 py-1.5 text-left transition-colors hover:bg-accent/10 focus-visible:bg-accent/10 focus-visible:outline-none"
     >
       <UpgradeIcon
         id={upgrade.id}

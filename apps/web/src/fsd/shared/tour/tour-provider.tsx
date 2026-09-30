@@ -17,6 +17,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useTheme } from "../theme/theme-provider"
 import {
   useDesktopTutorialSteps,
+  withoutMissingOptionalSteps,
   useMobileTutorialSteps,
 } from "./general.tutorial"
 
@@ -172,7 +173,15 @@ export function TourProvider({ children }: { children: ReactNode }) {
   // UI Kit) that doesn't register its own steps via useTourPageSteps.
   const desktopDefaultSteps = useDesktopTutorialSteps()
   const mobileDefaultSteps = useMobileTutorialSteps(setMobileMenuForceOpen)
-  const defaultSteps = isMobile ? mobileDefaultSteps : desktopDefaultSteps
+  // Re-evaluated when a run starts, so optional steps reflect the page the tour starts on.
+  const desktopSteps = React.useMemo(
+    () =>
+      run
+        ? withoutMissingOptionalSteps(desktopDefaultSteps)
+        : desktopDefaultSteps,
+    [run, desktopDefaultSteps]
+  )
+  const defaultSteps = isMobile ? mobileDefaultSteps : desktopSteps
 
   const steps = React.useMemo<Step[]>(() => {
     if (tourKind === "general" || !pageSteps) return defaultSteps

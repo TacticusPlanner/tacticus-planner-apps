@@ -65,8 +65,10 @@ export function NpcList({
             title={`${item.name} · ${item.factionName}`}
             className={cn(
               "flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors",
-              "hover:bg-accent focus-visible:outline-2 focus-visible:outline-primary",
-              selected ? "border-primary bg-accent" : "border-border"
+              "focus-visible:outline-2 focus-visible:outline-primary",
+              selected
+                ? "border-primary bg-accent"
+                : "border-border hover:bg-accent/10"
             )}
             data-testid={`npc-tile-${item.id}`}
           >

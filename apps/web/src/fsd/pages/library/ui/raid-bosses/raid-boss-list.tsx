@@ -32,10 +32,10 @@ function Section({
             aria-pressed={item.unitSetId === selectedId}
             className={cn(
               "flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors",
-              "hover:bg-accent focus-visible:outline-2 focus-visible:outline-primary",
+              "focus-visible:outline-2 focus-visible:outline-primary",
               item.unitSetId === selectedId
                 ? "border-primary bg-accent"
-                : "border-border"
+                : "border-border hover:bg-accent/10"
             )}
           >
             <RaidBossPortrait

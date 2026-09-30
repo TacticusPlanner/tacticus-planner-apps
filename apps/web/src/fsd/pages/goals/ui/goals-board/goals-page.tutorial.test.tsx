@@ -13,7 +13,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useGoalsOverviewTutorial", () => {
-  it("registers localized desktop and mobile steps, differing only in the reprioritize target", () => {
+  it("registers localized desktop and mobile steps, differing only in the reprioritize, select and bulk-actions targets", () => {
     renderHook(() => useGoalsOverviewTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
@@ -31,17 +31,25 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
       '[data-testid="goal-row-drag-handle"]',
+      '[data-testid="goals-select-all"]',
+      '[data-testid="goals-bulk-actions"]',
       '[data-testid="goals-order-hint"]',
       '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
     ])
+    // Mobile swaps the reprioritize and select targets for the control-row toggles and has no
+    // bulk-actions step (the bar only exists inside select mode).
     expect(steps.mobile.map((step) => step.target)).toEqual(
-      steps.desktop.map((step) =>
-        step.target === '[data-testid="goal-row-drag-handle"]'
-          ? '[data-testid="goals-mobile-reorder-toggle"]'
-          : step.target
-      )
+      steps.desktop
+        .filter((step) => step.target !== '[data-testid="goals-bulk-actions"]')
+        .map((step) =>
+          step.target === '[data-testid="goal-row-drag-handle"]'
+            ? '[data-testid="goals-mobile-reorder-toggle"]'
+            : step.target === '[data-testid="goals-select-all"]'
+              ? '[data-testid="goals-mobile-select-toggle"]'
+              : step.target
+        )
     )
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")

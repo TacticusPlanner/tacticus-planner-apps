@@ -18,6 +18,8 @@ export function useGoalsOverviewTutorial() {
         | "projectScope"
         | "statusFilter"
         | "filters"
+        | "select"
+        | "bulkActions"
         | "createGoal"
         | "planningSettings"
         | "reprioritize"
@@ -46,6 +48,8 @@ export function useGoalsOverviewTutorial() {
       desktop: [
         ...before,
         createStep('[data-testid="goal-row-drag-handle"]', "reprioritize"),
+        createStep('[data-testid="goals-select-all"]', "select"),
+        createStep('[data-testid="goals-bulk-actions"]', "bulkActions"),
         ...after,
       ],
       mobile: [
@@ -54,6 +58,7 @@ export function useGoalsOverviewTutorial() {
           '[data-testid="goals-mobile-reorder-toggle"]',
           "reprioritize"
         ),
+        createStep('[data-testid="goals-mobile-select-toggle"]', "select"),
         ...after,
       ],
     }

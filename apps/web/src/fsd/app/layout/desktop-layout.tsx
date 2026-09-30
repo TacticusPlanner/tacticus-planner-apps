@@ -1,17 +1,11 @@
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useRef } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { ChevronRight, LogIn, PlusCircle, Search } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, PlusCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { CommandShortcut } from "@workspace/ui/components/command"
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@workspace/ui/components/hover-card"
-import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarInset,
@@ -19,28 +13,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
   useSidebar,
 } from "@workspace/ui/components/sidebar"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { cn } from "@workspace/ui/lib/utils"
-import { useMsal } from "@azure/msal-react"
-
-import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import { PageTourButton, TourButton } from "@/shared/tour"
 
-import { AuthControl } from "../providers/auth-control"
-import { LanguageSwitcher } from "../providers/language-switcher"
 import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
-import { ThemeSwitcher } from "../providers/theme-switcher"
-import { UserJotBoardLink } from "../providers/userjot-board-link"
-import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
-import { AppLogo } from "./app-logo"
-import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import { DesktopSectionHeader } from "./desktop-section-header"
+import { DesktopSectionNavigation } from "./desktop-section-navigation"
+import { DesktopTopBar } from "./desktop-top-bar"
 import { isMacPlatform } from "./is-mac-platform"
-import { NavChildrenFlyout } from "./nav-children-flyout"
 import type { NavItem } from "./nav-items"
+import type { QuickActionsController } from "./quick-actions"
 
 function LoadingFill() {
   return (
@@ -52,98 +36,151 @@ function LoadingFill() {
 
 export function DesktopShell({
   activeSection,
-  isAuthenticated,
   visibleItems,
   pageDescription,
   sectionTitle,
   onCreateGoal,
   getEntryPath,
+  quickActions,
+  primaryExpanded,
+  onPrimaryExpandedChange,
+  sectionExpanded,
+  onSectionExpandedChange,
 }: {
   activeSection: NavItem | undefined
-  isAuthenticated: boolean
   visibleItems: NavItem[]
   pageDescription: string | undefined
   sectionTitle: string | undefined
   onCreateGoal: () => void
   getEntryPath: (item: NavItem) => string
+  quickActions: QuickActionsController
+  // Menu presentation is owned by the caller (above the desktop/mobile branch) so it survives
+  // navigation and breakpoint changes, and resets only with a new document.
+  primaryExpanded: boolean
+  onPrimaryExpandedChange: (expanded: boolean) => void
+  sectionExpanded: boolean
+  onSectionExpandedChange: (expanded: boolean) => void
 }) {
+  // The expand and collapse buttons are different elements (panel vs. page header), so hand
+  // focus to whichever one replaces the clicked button.
+  const moveFocusToToggle = useRef(false)
+  const changeSectionExpanded = (expanded: boolean, moveFocus = true) => {
+    moveFocusToToggle.current = moveFocus
+    onSectionExpandedChange(expanded)
+  }
+  useEffect(() => {
+    if (!moveFocusToToggle.current) return
+    moveFocusToToggle.current = false
+    document
+      .querySelector<HTMLElement>('[data-testid="desktop-section-toggle"]')
+      ?.focus()
+  }, [sectionExpanded])
+
+  // Ctrl/Cmd+B toggles the section menu (the main rail has no shortcut). It acts only on pages whose
+  // section has a menu, and only hands focus to the toggle when focus was inside the hiding panel.
+  const hasSectionMenu = Boolean(activeSection?.children?.length)
+  useEffect(() => {
+    if (!hasSectionMenu) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || !(event.metaKey || event.ctrlKey)) return
+      if (event.key.toLowerCase() !== "b") return
+
+      event.preventDefault()
+      const panel = document.querySelector(
+        '[data-testid="desktop-section-navigation"]'
+      )
+      changeSectionExpanded(
+        !sectionExpanded,
+        Boolean(panel?.contains(document.activeElement))
+      )
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  })
+
   return (
-    <SidebarProvider>
-      <AppSidebar
-        isAuthenticated={isAuthenticated}
-        visibleItems={visibleItems}
-        onCreateGoal={onCreateGoal}
+    <div className="flex min-h-svh flex-col">
+      <DesktopTopBar
         getEntryPath={getEntryPath}
+        quickActions={quickActions}
+        visibleItems={visibleItems}
       />
-      <SidebarInset>
-        <header className="border-b bg-sidebar">
-          <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
-            <div className="flex min-w-0 items-center gap-2">
-              <DesktopSectionHeader item={activeSection} title={sectionTitle} />
-              {/* Renders only on a page that registered its own tour - the app-wide navigation
-                  tour lives on the sidebar footer's persistent "Show me around" button. */}
-              <PageTourButton className="shrink-0" />
-            </div>
-            <div
-              className="flex shrink-0 items-center gap-2"
-              data-testid="desktop-header-controls"
-            >
-              <ThemeSwitcher />
-              <LanguageSwitcher />
-              <UserJotFeedbackButton />
-              <UserJotBoardLink />
+      <SidebarProvider
+        className="min-h-0 flex-1"
+        keyboardShortcut={false}
+        onOpenChange={onPrimaryExpandedChange}
+        open={primaryExpanded}
+        style={{ "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}
+      >
+        <AppSidebar
+          visibleItems={visibleItems}
+          onCreateGoal={onCreateGoal}
+          getEntryPath={getEntryPath}
+        />
+        <SidebarInset>
+          <div className="flex min-h-0 flex-1">
+            {activeSection?.children?.length ? (
+              <DesktopSectionNavigation
+                expanded={sectionExpanded}
+                item={activeSection}
+                onExpandedChange={changeSectionExpanded}
+              />
+            ) : null}
+            <div className="flex min-w-0 flex-1 flex-col">
+              <header className="border-b bg-page-header">
+                <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <DesktopSectionHeader
+                      item={activeSection}
+                      onSectionExpandedChange={changeSectionExpanded}
+                      sectionExpanded={sectionExpanded}
+                      title={sectionTitle}
+                    />
+                    {/* Renders only on a page that registered its own tour - the app-wide navigation
+                      tour lives on the sidebar footer's persistent "Show me around" button. */}
+                    <PageTourButton className="shrink-0" />
+                  </div>
+                </div>
+                {pageDescription ? (
+                  <p className="truncate px-6 pb-3 text-sm text-muted-foreground">
+                    {pageDescription}
+                  </p>
+                ) : null}
+              </header>
+              <Suspense fallback={<LoadingFill />}>
+                <Outlet />
+              </Suspense>
             </div>
           </div>
-          {pageDescription ? (
-            <p className="truncate px-6 pb-3 text-sm text-muted-foreground">
-              {pageDescription}
-            </p>
-          ) : null}
-        </header>
-        <Suspense fallback={<LoadingFill />}>
-          <Outlet />
-        </Suspense>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   )
 }
 
 function AppSidebar({
-  isAuthenticated,
   visibleItems,
   onCreateGoal,
   getEntryPath,
 }: {
-  isAuthenticated: boolean
   visibleItems: NavItem[]
   onCreateGoal: () => void
   getEntryPath: (item: NavItem) => string
 }) {
   const { t } = useTranslation()
-  const { instance } = useMsal()
   const { state } = useSidebar()
   const compact = state === "collapsed"
-  const [navigationOpen, setNavigationOpen] = useState(false)
   const shortcutHint = (key: string) =>
     isMacPlatform() ? `⌘${key}` : `Ctrl+${key}`
-  const isCheckingSilentSignIn = useSilentSignInStatus() === "checking"
-  const signInLabel = isCheckingSilentSignIn
-    ? t("auth.checkingSignIn")
-    : t("auth.signIn")
-
-  const handleSignIn = () => {
-    void instance.loginRedirect(loginRequest)
-  }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return
       if (!(event.metaKey || event.ctrlKey)) return
 
-      if (event.key === "k") {
-        event.preventDefault()
-        setNavigationOpen((open) => !open)
-      } else if (event.key === "g") {
+      if (event.key === "g") {
         event.preventDefault()
         onCreateGoal()
       }
@@ -157,23 +194,23 @@ function AppSidebar({
   }, [onCreateGoal])
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar className="top-12! h-[calc(100svh-3rem)]" collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center">
-          <div className="flex min-w-0 items-center gap-2">
-            <AppLogo className="size-15 shrink-0" />
-            {compact ? null : (
-              <span className="truncate text-sm font-semibold tracking-tight">
-                {t("app.name")}
-              </span>
-            )}
-          </div>
+        {/* Rail tools come first: the expand/collapse toggle, then the general tour. */}
+        <div
+          className="flex flex-col items-start gap-2"
+          data-testid="desktop-sidebar-tools"
+        >
+          <RailToggle />
+          <TourButton
+            className={compact ? undefined : "h-8 w-full justify-start"}
+            iconOnly={compact}
+          />
         </div>
-
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className="bg-primary text-primary-foreground hover:bg-primary/80"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
               data-testid="desktop-create-goal-button"
               onClick={onCreateGoal}
               tooltip={t("nav.createGoal")}
@@ -181,7 +218,7 @@ function AppSidebar({
               <PlusCircle />
               <span>{t("nav.createGoal")}</span>
               {compact ? null : (
-                <CommandShortcut className="text-primary-foreground/70">
+                <CommandShortcut className="text-primary-foreground/90">
                   {shortcutHint("G")}
                 </CommandShortcut>
               )}
@@ -190,71 +227,45 @@ function AppSidebar({
           <SidebarMenuItem>
             <PlayerDataSyncButton />
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              data-testid="desktop-navigation-search"
-              onClick={() => setNavigationOpen(true)}
-              tooltip={t("nav.search")}
-            >
-              <Search />
-              <span>{t("nav.search")}</span>
-              {compact ? null : (
-                <CommandShortcut>{shortcutHint("K")}</CommandShortcut>
-              )}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
-        <DesktopNavigationDialog
-          getEntryPath={getEntryPath}
-          items={visibleItems}
-          onOpenChange={setNavigationOpen}
-          open={navigationOpen}
-        />
       </SidebarHeader>
 
       <SidebarContent data-testid="primary-nav">
         <SidebarGroup>
-          <SidebarMenu>
-            {visibleItems.map((item) => (
-              <NavMenuItem
-                key={item.path}
-                getEntryPath={getEntryPath}
-                item={item}
-              />
-            ))}
-          </SidebarMenu>
+          <nav aria-label={t("nav.primaryNavigation")}>
+            <SidebarMenu>
+              {visibleItems.map((item) => (
+                <NavMenuItem
+                  key={item.path}
+                  getEntryPath={getEntryPath}
+                  item={item}
+                />
+              ))}
+            </SidebarMenu>
+          </nav>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter data-testid="desktop-sidebar-footer">
-        <div className="flex flex-col gap-2">
-          <TourButton
-            className={cn(!compact && "w-full justify-start")}
-            iconOnly={compact}
-          />
-          <div
-            className={cn(
-              "flex items-center gap-1",
-              compact ? "flex-col" : "justify-between"
-            )}
-          >
-            {isAuthenticated ? (
-              <AuthControl compact={compact} />
-            ) : (
-              <SidebarMenuButton
-                className="bg-primary text-primary-foreground hover:bg-primary/80"
-                onClick={handleSignIn}
-                tooltip={signInLabel}
-              >
-                <LogIn />
-                {compact ? null : <span>{signInLabel}</span>}
-              </SidebarMenuButton>
-            )}
-            <SidebarTrigger />
-          </div>
-        </div>
-      </SidebarFooter>
     </Sidebar>
+  )
+}
+
+/** Full-width rail row (like Azure's «): the whole row toggles the rail, with the icon at the
+ *  right end when expanded and on the shared icon axis when compact. */
+function RailToggle() {
+  const { open, toggleSidebar } = useSidebar()
+  const Icon = open ? PanelLeftClose : PanelLeftOpen
+
+  return (
+    <button
+      aria-expanded={open}
+      className="flex h-8 w-full items-center justify-end rounded-xl px-2 text-sidebar-foreground outline-hidden group-data-[collapsible=icon]:justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-3 focus-visible:ring-sidebar-ring [&>svg]:size-4"
+      data-slot="sidebar-trigger"
+      onClick={toggleSidebar}
+      type="button"
+    >
+      <Icon />
+      <span className="sr-only">Toggle Sidebar</span>
+    </button>
   )
 }
 
@@ -272,17 +283,6 @@ function NavMenuItem({
   const isActive =
     pathname === item.path || pathname.startsWith(item.path + "/")
 
-  if (item.children?.length) {
-    return (
-      <NavMenuItemWithFlyout
-        getEntryPath={getEntryPath}
-        isActive={isActive}
-        item={item}
-        pathname={pathname}
-      />
-    )
-  }
-
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -299,77 +299,6 @@ function NavMenuItem({
           <span>{t(item.labelKey)}</span>
         </Link>
       </SidebarMenuButton>
-    </SidebarMenuItem>
-  )
-}
-
-/**
- * A sidebar row for a section with child pages: clicking it still navigates via `getEntryPath`
- * (unchanged), but hovering or clicking it also opens a flyout listing its children beside the
- * row, in both the expanded and icon-collapsed sidebar states. The `›` chevron is a static hint
- * that the row has more behind it, independent of hover state.
- */
-function NavMenuItemWithFlyout({
-  getEntryPath,
-  isActive,
-  item,
-  pathname,
-}: {
-  getEntryPath: (item: NavItem) => string
-  isActive: boolean
-  item: NavItem
-  pathname: string
-}) {
-  const { t } = useTranslation(["common", "dailies", "library"])
-  const [open, setOpen] = useState(false)
-  const triggerRef = useRef<HTMLAnchorElement>(null)
-
-  const closeAndRefocus = () => {
-    setOpen(false)
-    triggerRef.current?.focus()
-  }
-
-  return (
-    <SidebarMenuItem>
-      <HoverCard onOpenChange={setOpen} open={open}>
-        <HoverCardTrigger asChild>
-          <SidebarMenuButton
-            asChild
-            data-open={open || undefined}
-            data-testid={`desktop-nav-${item.path.slice(1)}`}
-            isActive={isActive}
-          >
-            <Link
-              aria-current={pathname === item.path ? "page" : undefined}
-              onClick={() => setOpen(true)}
-              onKeyDown={(event) => {
-                if (event.key === "Escape") closeAndRefocus()
-              }}
-              ref={triggerRef}
-              to={getEntryPath(item)}
-            >
-              <item.icon />
-              <span className="truncate">{t(item.labelKey)}</span>
-              <ChevronRight
-                aria-hidden="true"
-                className="ml-auto size-3.5 shrink-0 text-sidebar-foreground/50 group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:top-0.5 group-data-[collapsible=icon]:right-0.5 group-data-[collapsible=icon]:ml-0 group-data-[collapsible=icon]:size-2.5"
-              />
-            </Link>
-          </SidebarMenuButton>
-        </HoverCardTrigger>
-        <HoverCardContent
-          align="start"
-          data-testid={`desktop-nav-flyout-${item.path.slice(1)}`}
-          onEscapeKeyDown={closeAndRefocus}
-          side="right"
-        >
-          <NavChildrenFlyout
-            item={item}
-            onSelect={() => setOpen(false)}
-            pathname={pathname}
-          />
-        </HoverCardContent>
-      </HoverCard>
     </SidebarMenuItem>
   )
 }

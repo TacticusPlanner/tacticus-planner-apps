@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
@@ -46,17 +46,40 @@ describe("DesktopSectionHeader", () => {
     expect(container.querySelector("h1")).toBeNull()
   })
 
-  it("renders a plain, non-interactive '{Section} › {Active child}' breadcrumb for a section with children", () => {
+  it("renders only the active child's title while the section menu is expanded", () => {
     renderHeader(lookupItem, "Library", "/library/machines-of-war")
 
     const title = screen.getByTestId("section-header-title")
-    expect(title).toHaveTextContent("Library")
-    expect(title).toHaveTextContent("›")
     expect(title).toHaveTextContent("library:collections.machinesOfWar.label")
-    // Neither segment is a link or a button - switching children happens only via the sidebar
-    // flyout, search, or a direct link now.
-    expect(screen.queryByRole("link")).not.toBeInTheDocument()
+    expect(title).not.toHaveTextContent("Library")
+    expect(screen.queryByTestId("section-header-breadcrumb")).toBeNull()
     expect(screen.queryByRole("button")).not.toBeInTheDocument()
+  })
+
+  it("adds a reopen button and a 'Section >' breadcrumb while the menu is collapsed", () => {
+    const onExpand = vi.fn()
+    render(
+      <MemoryRouter initialEntries={["/library/machines-of-war"]}>
+        <DesktopSectionHeader
+          item={lookupItem}
+          onSectionExpandedChange={onExpand}
+          sectionExpanded={false}
+          title="Library"
+        />
+      </MemoryRouter>
+    )
+
+    const breadcrumb = screen.getByTestId("section-header-breadcrumb")
+    expect(breadcrumb).toHaveTextContent("Library")
+    expect(breadcrumb).toHaveTextContent("\u203a")
+    expect(screen.getByTestId("section-header-title")).toHaveTextContent(
+      "library:collections.machinesOfWar.label"
+    )
+    const reopen = screen.getByRole("button")
+    expect(reopen).toHaveAttribute("aria-expanded", "false")
+
+    fireEvent.click(reopen)
+    expect(onExpand).toHaveBeenCalledWith(true)
   })
 
   it("falls back to the section's default child when the route matches no specific child", () => {

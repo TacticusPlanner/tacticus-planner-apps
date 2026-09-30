@@ -218,7 +218,7 @@ Assumptions:
 
 ### Requirement: Actual Progress and Potential Progress captions carry a visible explanation on every goal kind
 
-Where Actual and Potential ratios render together, their explanation SHALL be reachable without hover. At or above 768px it SHALL use an explicit info-triggered popover; below 768px tapping the remaining-text line SHALL expand it inline. Actual SHALL describe synced/owned state and its remaining count. Potential SHALL describe applying owned resources after globally higher-priority Active goals reserve their share, state that it does not change actual status, and show its remaining count. The explanation SHALL not describe a selected project as a separate allocation pool. The same disclosure applies in goal list, project detail, and goal detail, at most once per ratio. With no Potential ratio, only Actual appears and no explanation trigger is required.
+Where Actual and Potential ratios render together, their explanation SHALL be reachable without hover. At or above 768px it SHALL use an explicit info-triggered popover; below 768px tapping the remaining-text line SHALL expand it inline. Actual SHALL describe synced/owned state and its remaining count. Potential SHALL describe applying owned resources after globally higher-priority Active goals reserve their share, state that it does not change actual status, and show its remaining count. The explanation SHALL not describe a selected project as a separate allocation pool. The same disclosure applies in goal list and project detail, at most once per ratio. With no Potential ratio, only Actual appears and no explanation trigger is required.
 
 #### Scenario: Both bars render in the compact goals list
 
@@ -232,8 +232,8 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 #### Scenario: Both bars render in the goal-detail sheet
 
-- **WHEN** goal detail has both ratios
-- **THEN** the breakpoint-appropriate disclosure appears once, without duplicate explanation lines
+- **WHEN** the Edit goal dialog is open, which replaced the former goal-detail sheet
+- **THEN** it renders no progress bars and no progress explanation (the read-only goal detail no longer exists)
 
 #### Scenario: Desktop — activating the info trigger reveals both lines
 
@@ -257,7 +257,7 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 ### Requirement: Remaining resource text uses a per-goal-kind formatter for Rank and Unlock goals with thousands separators
 
-Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (the tooltip on the Progress column's percent readout, a screen-reader label, the goal-detail header), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". Every number formatted by this requirement SHALL render with the locale's thousands separator.
+Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (the tooltip on the Progress column's percent readout or a screen-reader label), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". Every number formatted by this requirement SHALL render with the locale's thousands separator.
 
 Assumptions:
 

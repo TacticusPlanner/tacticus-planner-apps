@@ -106,29 +106,6 @@ function ProgressSwatch({ variant }: { variant: "actual" | "potential" }) {
   )
 }
 
-/** The "■ Actual / ▨ Potential" legend (`goal-list-layout`'s legend requirement) — renders once per
- *  list, not per row/card, and only when at least one visible goal actually shows both ratios. */
-export function GoalProgressLegend({ show }: { show: boolean }) {
-  const { t } = useTranslation()
-  if (!show) return null
-
-  return (
-    <div
-      className="flex items-center gap-3 text-xs text-muted-foreground"
-      data-testid="goal-progress-legend"
-    >
-      <span className="flex items-center gap-1">
-        <ProgressSwatch variant="actual" />
-        {t("goals.overview.actualProgress")}
-      </span>
-      <span className="flex items-center gap-1">
-        <ProgressSwatch variant="potential" />
-        {t("goals.overview.potentialProgress")}
-      </span>
-    </div>
-  )
-}
-
 /** The goal's own from → target representation (Rank/Ascension badges, "Lv 44 → 50", "273 / 500
  *  shards", …) — split out from the progress bar/percent/explanation (`GoalProgressDisplay`) so a
  *  caller can lay the two out independently (the desktop table's separate Goal/Progress columns; the
@@ -281,7 +258,13 @@ export function GoalProgressDisplay({
       {t("goals.overview.potentialIndicator", { percent: potentialPct })}
     </span>
   ) : (
-    <span className="text-right text-sm font-medium tabular-nums">
+    <span
+      className={cn(
+        "block text-right text-sm font-medium tabular-nums",
+        // Holds the potential line's slot so a Paused goal (no potential) doesn't reflow.
+        !potentialOnly && "min-h-9"
+      )}
+    >
       {actualPct}%
       {showIndicator ? (
         <span className="block text-xs font-normal text-primary tabular-nums">

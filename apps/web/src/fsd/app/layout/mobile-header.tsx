@@ -16,8 +16,7 @@ import {
 } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
-import { LanguageSwitcher } from "../providers/language-switcher"
-import { ThemeSwitcher } from "../providers/theme-switcher"
+import { GuestPreferencesCard } from "../providers/guest-account-menu"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
@@ -46,7 +45,7 @@ export function MobileHeader({
 
   return (
     <header
-      className="sticky top-0 z-40 border-b bg-sidebar pt-[env(safe-area-inset-top)]"
+      className="sticky top-0 z-40 border-b bg-topbar pt-[env(safe-area-inset-top)]"
       data-testid="mobile-header"
     >
       <div className="flex h-20 items-center justify-between gap-3 px-4">
@@ -107,18 +106,15 @@ function MobileGuestSettings() {
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-56 gap-2"
+        className="w-72 gap-2"
         data-testid="mobile-guest-settings-content"
       >
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm">{t("theme.label")}</span>
-          <ThemeSwitcher />
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm">{t("language.label")}</span>
-          <LanguageSwitcher />
-        </div>
-        <TourButton />
+        <GuestPreferencesCard>
+          <TourButton
+            className="h-8 w-full justify-start px-2 font-normal"
+            variant="ghost"
+          />
+        </GuestPreferencesCard>
       </PopoverContent>
     </Popover>
   )

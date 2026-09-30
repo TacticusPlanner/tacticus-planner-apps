@@ -184,7 +184,7 @@ describe("GoalsList", () => {
   })
 
   it.each([false, true])(
-    "lists each unavailable material with quantity and reason, and no date (mobile: %s)",
+    "keeps unavailable-material rows and the date out of a Blocked goal's cell (mobile: %s)",
     async (mobile) => {
       useIsMobileMock.mockReturnValue(mobile)
       const estimates = new Map([
@@ -215,8 +215,8 @@ describe("GoalsList", () => {
       )
       await screen.findByText("Hero One")
 
-      const list = screen.getAllByTestId("goal-unavailable-materials")[0]!
-      expect(list).toHaveTextContent("goals.estimate.unavailableRow")
+      // The material rows live in the Blocked badge's tooltip now (status-badge.test.tsx).
+      expect(screen.queryByTestId("goal-unavailable-materials")).toBeNull()
       expect(screen.queryByTestId("goal-row-estimate")).toBeNull()
     }
   )
@@ -386,13 +386,15 @@ describe("GoalsList", () => {
         />
       )
 
-      const edit = await screen.findByRole("button", {
-        name: "goals.edit.title",
-      })
+      const trigger = await screen.findByTestId(
+        "goal-row-actions-trigger-goal-1"
+      )
       const row = screen.getByTestId("goal-row")
       expect(row).not.toHaveAttribute("tabindex")
-      edit.focus()
-      expect(edit).toHaveFocus()
+      trigger.focus()
+      expect(trigger).toHaveFocus()
+      await user.keyboard("{Enter}")
+      await screen.findByTestId("goal-row-edit-goal-1")
       await user.keyboard("{Enter}")
 
       expect(onEdit).toHaveBeenCalledWith("goal-1")
@@ -436,7 +438,7 @@ describe("GoalsList", () => {
       />
     )
 
-    const trigger = await screen.findByTestId("goal-row-delete-goal-1")
+    const trigger = await screen.findByTestId("goal-row-actions-trigger-goal-1")
     fireEvent.keyDown(trigger, { key: "Enter" })
 
     expect(onEdit).not.toHaveBeenCalled()
@@ -485,12 +487,12 @@ describe("GoalsList", () => {
         "goals.columns.priority 3",
         "goals.columns.priority 5",
       ])
-      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Progress, Remaining, Status, Actions).
+      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Progress, Status, Remaining).
       const cell = screen.getAllByTestId("goal-row-priority")[0]!.closest("td")!
       expect(cell).toContainElement(
         screen.getAllByTestId("goal-row-drag-handle")[0]!
       )
-      expect(screen.getAllByRole("columnheader")).toHaveLength(8)
+      expect(screen.getAllByRole("columnheader")).toHaveLength(7)
     })
 
     it("shows the number for a Paused row and none for Reached, Completed, Archived or position-less rows", async () => {
@@ -717,13 +719,22 @@ describe("GoalsList reached rows and column layout", () => {
     expect(screen.queryByTestId("goal-reached-dash")).toBeNull()
   })
 
-  it("has no goal-type caption and no overflow menu on a desktop row", async () => {
+  it("has no goal-type caption and puts the row menu at the end of the Character cell", async () => {
     render(
       <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
     )
     await screen.findByText("Hero One")
     expect(screen.queryByText("goals.create.goalTypes.Rank")).toBeNull()
-    expect(screen.queryByTestId("goal-row-actions-trigger-goal-1")).toBeNull()
+    const [first] = screen.getAllByTestId("goal-row")
+    const characterCell = first!.querySelectorAll("td")[1]!
+    expect(characterCell).toContainElement(
+      screen.getByTestId("goal-row-menu-goal-1")
+    )
+    expect(
+      within(screen.getByTestId("goal-row-menu-goal-1")).getByTestId(
+        "goal-row-actions-trigger-goal-1"
+      )
+    ).toBeInTheDocument()
   })
 
   it("puts Projects between Character and Goal, holding the badges, and keeps them out of the Character cell", async () => {
@@ -744,28 +755,31 @@ describe("GoalsList reached rows and column layout", () => {
     )
     await screen.findByText("Hero One")
 
+    // The first header is the selection/reorder cell; the data columns follow, with no Actions column.
     expect(
-      screen.getAllByRole("columnheader").map((h) => h.textContent)
+      screen
+        .getAllByRole("columnheader")
+        .slice(1)
+        .map((h) => h.textContent)
     ).toEqual([
       "goals.columns.entity",
       "goals.columns.projects",
       "goals.columns.goal",
       "goals.columns.progress",
-      "goals.columns.remaining",
       "goals.columns.status",
-      "goals.columns.actions",
+      "goals.columns.remaining",
     ])
     const [first, second] = screen.getAllByTestId("goal-row")
     const cells = first!.querySelectorAll("td")
     expect(cells).toHaveLength(7)
-    expect(cells[0]).not.toContainElement(
+    expect(cells[1]).not.toContainElement(
       screen.getAllByTestId("goal-project-memberships")[0]!
     )
-    expect(cells[1]).toHaveTextContent("My Goals")
-    expect(cells[1]).toHaveTextContent("Neuro")
+    expect(cells[2]).toHaveTextContent("My Goals")
+    expect(cells[2]).toHaveTextContent("Neuro")
     // A goal in no project: empty cell, same alignment.
     expect(second!.querySelectorAll("td")).toHaveLength(7)
-    expect(second!.querySelectorAll("td")[1]!.textContent).toBe("")
+    expect(second!.querySelectorAll("td")[2]!.textContent).toBe("")
   })
 
   it("renders notes on one truncated line under the name, with the full text as a tooltip", async () => {
@@ -886,5 +900,78 @@ describe("GoalsList remaining chips on mobile", () => {
     )
     await screen.findByText("Hero One")
     expect(screen.queryByTestId("goal-resource-chips")).toBeNull()
+  })
+})
+
+describe("GoalsList selection", () => {
+  beforeEach(() => useIsMobileMock.mockReturnValue(false))
+
+  it("puts a select-all header checkbox and per-row checkboxes in the leading cell", async () => {
+    const onToggleSelected = vi.fn()
+    const onSelectAllVisible = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <GoalsList
+        actions={stubActions}
+        onSelectAllVisible={onSelectAllVisible}
+        onToggleSelected={onToggleSelected}
+        reorderEnabled
+        rows={rows}
+        selection={new Set(["goal-1"])}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
+      "aria-checked",
+      "mixed"
+    )
+    const rowBox = screen.getByTestId("goal-row-select-goal-1")
+    expect(rowBox).toBeChecked()
+    expect(rowBox.closest("td")).toContainElement(
+      screen.getAllByTestId("goal-row-drag-handle")[0]!
+    )
+
+    await user.click(screen.getByTestId("goal-row-select-goal-2"))
+    expect(onToggleSelected).toHaveBeenCalledExactlyOnceWith("goal-2")
+    await user.click(screen.getByTestId("goals-select-all"))
+    expect(onSelectAllVisible).toHaveBeenCalledOnce()
+  })
+
+  it("shows the header checkbox checked when every visible id is selected (ids across groups)", async () => {
+    render(
+      <GoalsList
+        actions={stubActions}
+        rows={[rows[0]!]}
+        selection={new Set(["goal-1", "goal-2"])}
+        visibleIds={["goal-1", "goal-2"]}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    expect(screen.getByTestId("goals-select-all")).toBeChecked()
+  })
+
+  it("shows mobile checkboxes only in select mode, without opening the menu", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    const onToggleSelected = vi.fn()
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <GoalsList actions={stubActions} rows={[rows[0]!]} />
+    )
+    await screen.findByText("Hero One")
+    expect(screen.queryByTestId("goal-row-select-goal-1")).toBeNull()
+
+    rerender(
+      <GoalsList
+        actions={stubActions}
+        onToggleSelected={onToggleSelected}
+        rows={[rows[0]!]}
+        selectActive
+      />
+    )
+    await user.click(await screen.findByTestId("goal-row-select-goal-1"))
+    expect(onToggleSelected).toHaveBeenCalledExactlyOnceWith("goal-1")
+    expect(screen.queryByTestId("goal-row-delete-goal-1")).toBeNull()
   })
 })
