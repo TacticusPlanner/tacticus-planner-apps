@@ -137,7 +137,7 @@ export function RankGoalFields({
   const [additionalContainer, setAdditionalContainer] = useState<HTMLElement>()
 
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-2">
       <div className="grid grid-cols-2 gap-3">
         <ReadOnlyField label={t("goals.create.rank.current")}>
           <RankBadge rank={rankStart} />

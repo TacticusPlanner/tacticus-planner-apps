@@ -8,6 +8,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { InfoHint } from "../shared/info-hint"
+
 /** The Priority position select: 1..`total` over the account's in-flight goals (1 is the highest
  * priority). Saving a different position moves the goal there, like a drag reorder to that spot. */
 export function GoalEditPriorityField({
@@ -25,10 +27,13 @@ export function GoalEditPriorityField({
   const id = useId()
 
   return (
-    <div className="grid gap-2" data-testid="goal-edit-priority">
-      <label className="font-semibold" htmlFor={id}>
-        {t("goals.edit.priority.label")}
-      </label>
+    <div className="grid gap-1.5" data-testid="goal-edit-priority">
+      <div className="flex items-center gap-1.5">
+        <label className="font-semibold" htmlFor={id}>
+          {t("goals.edit.priority.label")}
+        </label>
+        <InfoHint text={t("goals.edit.priority.hint")} />
+      </div>
       <Select
         onValueChange={(next) => {
           // Radix can fire onValueChange("") while the option list regenerates; ignore non-options.
@@ -53,9 +58,6 @@ export function GoalEditPriorityField({
           )}
         </SelectContent>
       </Select>
-      <span className="text-xs text-muted-foreground">
-        {t("goals.edit.priority.hint")}
-      </span>
     </div>
   )
 }

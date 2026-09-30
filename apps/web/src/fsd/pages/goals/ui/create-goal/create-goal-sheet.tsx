@@ -72,21 +72,55 @@ export function CreateGoalSheet({
       </ResponsiveDialogBody>
 
       <ResponsiveDialogFooter>
-        <Field className="md:mr-auto md:w-auto" orientation="horizontal">
-          <Checkbox
-            id="create-goal-another"
-            checked={form.createAnother}
-            onCheckedChange={(checked) =>
-              form.setCreateAnother(checked === true)
-            }
-          />
-          <FieldLabel
-            className="font-normal text-muted-foreground"
-            htmlFor="create-goal-another"
+        <div
+          className="flex flex-col gap-2 md:mr-auto md:flex-row md:items-center md:gap-5"
+          data-testid="create-goal-footer-options"
+        >
+          <Field
+            className="md:w-auto"
+            data-testid="create-goal-start-paused"
+            orientation="horizontal"
           >
-            {t("goals.create.createAnother")}
-          </FieldLabel>
-        </Field>
+            <Checkbox
+              checked={form.startPaused}
+              data-testid="create-goal-start-paused-checkbox"
+              id="create-goal-start-paused-checkbox"
+              onCheckedChange={(checked) =>
+                form.setStartPaused(checked === true)
+              }
+            />
+            <FieldLabel
+              className="font-normal text-muted-foreground"
+              htmlFor="create-goal-start-paused-checkbox"
+              title={t("goals.create.startPausedHint")}
+            >
+              {t("goals.create.startPaused")}
+            </FieldLabel>
+          </Field>
+          <Field className="md:w-auto" orientation="horizontal">
+            <Checkbox
+              id="create-goal-another"
+              checked={form.createAnother}
+              onCheckedChange={(checked) =>
+                form.setCreateAnother(checked === true)
+              }
+            />
+            <FieldLabel
+              className="font-normal text-muted-foreground"
+              htmlFor="create-goal-another"
+            >
+              {t("goals.create.createAnother")}
+            </FieldLabel>
+          </Field>
+        </div>
+        <Button
+          data-testid="create-goal-close"
+          onClick={() => onOpenChange(false)}
+          type="button"
+          variant="outline"
+        >
+          {t("goals.create.close")}
+        </Button>
         <Button
           data-testid="create-goal-submit"
           disabled={!form.canSubmit || form.status === "submitting"}
@@ -95,14 +129,6 @@ export function CreateGoalSheet({
         >
           {form.status === "submitting" ? <Spinner /> : null}
           {t("goals.create.submit")}
-        </Button>
-        <Button
-          data-testid="create-goal-close"
-          onClick={() => onOpenChange(false)}
-          type="button"
-          variant="outline"
-        >
-          {t("goals.create.close")}
         </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>

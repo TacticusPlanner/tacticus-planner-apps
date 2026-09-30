@@ -782,7 +782,7 @@
         "activeOrPausedGoalExists": "Ya existe un objetivo de {{goalType}} activo o pausado para esta unidad."
       },
       "startPaused": "Crear en pausa",
-      "startPausedDescription": "El objetivo se crea con normalidad, pero queda fuera de la planificación diaria hasta que lo reanudes. Los proyectos que elijas no influyen en esto.",
+      "startPausedHint": "Queda fuera de la planificación diaria hasta que lo reanudes.",
       "levelRequirement": {
         "title": "Requiere nivel {{required}} (actualmente {{current}})",
         "xpRemaining": "Faltan {{xp}} XP",
@@ -815,14 +815,12 @@
     "detail": {
       "notes": "Notas",
       "projectsTitle": "Proyectos",
-      "projectsDescription": "Un objetivo debe pertenecer al menos a un proyecto.",
       "projectsRequired": "Selecciona al menos un proyecto.",
       "farmingTitle": "Lugares de farmeo",
       "farmingDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
       "shardsTitle": "Lugar de fragmentos",
       "shardsDescription": "Deja todos los nodos sin marcar para la selección automática de menor energía.",
       "farmingInvalid": "Cada recurso necesario debe estar disponible en al menos un nodo seleccionado.",
-      "projectsActivationNote": "La pertenencia solo cambia qué proyectos contienen este objetivo. Pausarlo o reanudarlo es una acción aparte sobre el objetivo.",
       "projectGuidanceTitle": "Guía de farmeo",
       "projectGuidancePreview": "Vista previa — no es el plan diario de hoy",
       "projectGuidanceSummary_one": "Aún se necesita {{count}} material para los objetivos de este proyecto.",
@@ -941,7 +939,7 @@
         "upgradeQuantity": "Cada cantidad debe ser un número entero de 1 a 10.000.",
         "upgradeEmpty": "Una meta de mejoras necesita al menos un material."
       },
-      "reachedNote": "Un objetivo que ya alcanzaste es válido: simplemente no necesita nada más. La meta conserva su estado hasta que tú la completes."
+      "reachedNote": "Un objetivo ya alcanzado es válido: no necesita nada más y el objetivo conserva su estado hasta que lo completes."
     },
     "order": {
       "conflictTitle": "El plan ha cambiado",
@@ -967,7 +965,7 @@
       "reloadOrder": "Recargar orden",
       "priority": {
         "label": "Prioridad",
-        "hint": "1 es la prioridad más alta. Al guardar, este objetivo se mueve a la posición elegida.",
+        "hint": "1 es la prioridad más alta.",
         "option": "{{position}} de {{total}}"
       },
       "unsaved": {
