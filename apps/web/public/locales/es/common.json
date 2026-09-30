@@ -793,6 +793,7 @@
       "none": "—",
       "days": "en {{days}} días",
       "blockedLabel": "Bloqueado",
+      "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
       "blocked": {
         "NoFarmLocation": "Ningún lugar de farmeo accesible proporciona un recurso necesario.",
         "FarmingOverrideUnavailable": "Los lugares de farmeo seleccionados no proporcionan todos los recursos necesarios.",

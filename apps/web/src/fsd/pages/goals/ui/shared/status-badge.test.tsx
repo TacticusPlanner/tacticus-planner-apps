@@ -257,4 +257,47 @@ describe("BlockedIndicator", () => {
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip).not.toHaveTextContent("reachableCeilingLabel")
   })
+
+  it.each([
+    [
+      "a partial plan (obtainable work remains)",
+      true,
+      "goal-restricted-indicator",
+    ],
+    ["nothing obtainable", false, "goal-blocked-indicator"],
+  ])(
+    "presents an estimate block with %s as the matching label",
+    (_d, partial, testId) => {
+      render(
+        <BlockedIndicator
+          blockers={{
+            reasons: [
+              { kind: "EstimateBlocked", reason: "NoFarmLocation", partial },
+            ],
+            isBlocked: true,
+          }}
+        />
+      )
+      expect(screen.getByTestId(testId)).toBeInTheDocument()
+    }
+  )
+
+  it("keeps Blocked when a partial estimate block sits beside a non-source reason", () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [
+            {
+              kind: "EstimateBlocked",
+              reason: "NoFarmLocation",
+              partial: true,
+            },
+            { kind: "PlayerDataUnavailable" },
+          ],
+          isBlocked: true,
+        }}
+      />
+    )
+    expect(screen.getByTestId("goal-blocked-indicator")).toBeInTheDocument()
+  })
 })

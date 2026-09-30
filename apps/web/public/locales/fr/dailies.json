@@ -209,14 +209,25 @@
       "energy": "Énergie totale",
       "raids": "Tentatives",
       "unusedDays": "Jours inutilisés",
-      "completion": "Date de fin"
+      "completion": "Date de fin",
+      "noCompletion": "Indisponible"
     },
     "day": "Jour {{day}}",
     "dayStats": "{{energy}} / {{available}} énergie · {{raids}} raids",
     "showAll": "Afficher tous les jours",
-    "collapse": "Réduire les détails",
-    "expand": "Développer les détails",
-    "raided": "Attaqués"
+    "raided": "Attaqués",
+    "cell": {
+      "label": "{{material}}, {{owned}} sur {{target}} possédés",
+      "node": "{{campaign}} {{node}} × {{raids}}",
+      "moreNodes": "+{{count}} de plus",
+      "moreUnits": "+{{count}}"
+    },
+    "filter": {
+      "label": "Filtrer par unité",
+      "first": "← Jour {{day}}",
+      "last": "Jour {{day}} →",
+      "hint": "Cliquez sur une unité pour mettre en évidence ses améliorations sur tous les jours."
+    }
   },
   "tour": {
     "guildRaids": {
@@ -283,13 +294,23 @@
         },
         "summary": {
           "title": "Résumé",
-          "content": "Les totaux incluent le Jour 1."
+          "content": "Les totaux couvrent chaque jour planifié, à commencer par aujourd'hui. Si un objectif a une exigence sans source prise en charge, la date d'achèvement reste indisponible et les blocages sont listés en dessous."
+        },
+        "filter": {
+          "title": "Filtre d'unités",
+          "content": "Choisissez une unité pour estomper tout le reste sur tous les jours, puis sautez à son premier ou dernier jour."
         },
         "days": {
           "title": "Jours de raid",
-          "content": "Chaque jour regroupe les raids par objectif."
+          "content": "Chaque carte de jour liste les améliorations à farmer sous forme de grille. Survolez ou touchez une amélioration pour voir ses unités et ses nœuds ; les améliorations terminées sont sous « Attaqués ». Faites glisser ou balayez pour parcourir les jours."
         }
       }
     }
+  },
+  "blockers": {
+    "title": "Certains objectifs ne peuvent pas encore être terminés",
+    "partial": "Le travail réalisable est planifié ; le reste n'a aucune source prise en charge, donc il n'y a pas de date d'achèvement.",
+    "none": "Rien n'est encore réalisable : rien n'est planifié et il n'y a pas de date d'achèvement.",
+    "row": "{{material}} ×{{count}} : {{reason}}"
   }
 }

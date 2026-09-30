@@ -66,7 +66,8 @@ export function StatusBadge({
  * A goal blocked *only* by prerequisite-style reasons reads as
  * "Restricted" with a link icon rather than "Blocked" with a lock — a dependency isn't a dead end the
  * way "no farming node exists" or "catalog data missing" is; it resolves itself once the prerequisite
- * is met. A goal blocked for a prerequisite *and* another reason still gets the stronger "Blocked"
+ * is met. A goal whose estimate is blocked but still has obtainable work scheduled (a partial plan,
+ * `partial`) reads "Restricted" too - presentation only, the same blocked state. A goal blocked for a prerequisite *and* another reason still gets the stronger "Blocked"
  * treatment, since at least one reason genuinely is a dead end right now.
  *
  * `progress`, when passed, folds in the rarity/level reachable-ceiling line (`reachableCeilingLabel`)
@@ -97,6 +98,7 @@ export function BlockedIndicator({
   )
   const isOnlyRestrictedByPrerequisite = blockers.reasons.every(
     (reason) =>
+      (reason.kind === "EstimateBlocked" && reason.partial === true) ||
       reason.kind === "PrerequisiteNotReached" ||
       reason.kind === "MissingAscensionPrerequisite" ||
       reason.kind === "MissingUnlockPrerequisite"

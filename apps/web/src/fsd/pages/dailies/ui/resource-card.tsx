@@ -50,7 +50,6 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
 export function ResourceCard({
   attemptsLeftByBattle,
   attemptsUsedByBattle,
-  compact,
   emphasis,
   goal,
   label,
@@ -64,7 +63,6 @@ export function ResourceCard({
   // path de-dupes a location out of this list once it hits zero, deferring to Today's Attempts.
   attemptsLeftByBattle: ReadonlyMap<BattleId, number>
   attemptsUsedByBattle: ReadonlyMap<BattleId, number>
-  compact: boolean
   emphasis: "material" | "location"
   goal: DailyRaidGoalViewModel | undefined
   label: string
@@ -193,41 +191,38 @@ export function ResourceCard({
               })}
             </Badge>
           </div>
-          {!compact ? (
-            <div className="flex flex-wrap items-center gap-1.5">
-              {!goal && progress ? (
-                <ResourceProgress progress={progress} standalone />
-              ) : null}
-              <LocationChips
-                locations={resourceEntries.map((entry) => {
-                  const location = locationsByBattleId.get(entry.battleId)
-                  const fullyRaided =
-                    attemptsUsedByBattle.get(entry.battleId) ===
-                    entry.dailyAttempts
-                  return {
-                    id: `${entry.battleId}-${entry.raidsPerformed}`,
-                    icon: location?.icon,
-                    label: location
-                      ? `${location.shortLabel} · ${t("schedule.raids", { count: entry.raidsPerformed })}`
-                      : t("schedule.node", {
-                          node: entry.battleId,
-                          raids: entry.raidsPerformed,
-                        }),
-                    variant: fullyRaided
-                      ? ("secondary" as const)
-                      : ("outline" as const),
-                  }
-                })}
-              />
-              {resourceEntries.some(
-                (entry) =>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {!goal && progress ? (
+              <ResourceProgress progress={progress} standalone />
+            ) : null}
+            <LocationChips
+              locations={resourceEntries.map((entry) => {
+                const location = locationsByBattleId.get(entry.battleId)
+                const fullyRaided =
                   attemptsUsedByBattle.get(entry.battleId) ===
                   entry.dailyAttempts
-              ) ? (
-                <span className="sr-only">{t("schedule.fullyRaided")}</span>
-              ) : null}
-            </div>
-          ) : null}
+                return {
+                  id: `${entry.battleId}-${entry.raidsPerformed}`,
+                  icon: location?.icon,
+                  label: location
+                    ? `${location.shortLabel} · ${t("schedule.raids", { count: entry.raidsPerformed })}`
+                    : t("schedule.node", {
+                        node: entry.battleId,
+                        raids: entry.raidsPerformed,
+                      }),
+                  variant: fullyRaided
+                    ? ("secondary" as const)
+                    : ("outline" as const),
+                }
+              })}
+            />
+            {resourceEntries.some(
+              (entry) =>
+                attemptsUsedByBattle.get(entry.battleId) === entry.dailyAttempts
+            ) ? (
+              <span className="sr-only">{t("schedule.fullyRaided")}</span>
+            ) : null}
+          </div>
         </div>
       </CardContent>
     </Card>

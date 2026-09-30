@@ -2,6 +2,7 @@ import type { BattleId } from "@workspace/game-domain"
 
 import type {
   Battle,
+  EstimateBlocker,
   EstimateOutcome,
   EstimateResourceId,
   EstimateUpgrade,
@@ -12,13 +13,13 @@ import type {
   RaidPlanSchedule,
   UpgradeNeed,
 } from "../model/estimate.domain"
-import { blocked, unavailableReason } from "./estimate-blocked"
+import { blocked, partiallyBlocked } from "./estimate-blocked"
 import {
   allocatePlanInventory,
   applyFlatSuppliers,
+  classifyNeed,
   formatDate,
   inclusiveCompletionDate,
-  selectFarmNodes,
   spendDay,
 } from "./estimate"
 import { onslaughtTokensFromSupply } from "./shop-supply"
@@ -56,50 +57,50 @@ function runPlanSchedule(
   const stagesByGoal = new Map<string, StageState[]>()
   const results = new Map<string, EstimateOutcome>()
 
+  const blockersByGoal = new Map<string, EstimateBlocker[]>()
+  const actionableByGoal = new Map<string, EstimateResourceId[]>()
+
   for (const goal of ordered) {
     const stages: StageState[] = []
-    let blockedOutcome: EstimateOutcome | null = null
+    const blockers: EstimateBlocker[] = []
     const allocation = allocations.get(goal.goalId)
     const suppliedResourceIds = new Set(
       goal.flatSuppliers?.map((supplier) => supplier.resourceId)
     )
+    // A blocked need is reported and left out of the stage; its actionable peers still schedule.
     for (const sourceStage of allocation?.stages ?? []) {
       const remaining = new Map<EstimateResourceId, number>()
       const nodesById = new Map<EstimateResourceId, FarmNode[]>()
       for (const need of sourceStage.remaining) {
-        const hasSupplier = suppliedResourceIds.has(need.id)
-        const unavailable = unavailableReason(
+        const { nodes, blocker } = classifyNeed(
           need,
+          suppliedResourceIds.has(need.id),
           upgradesById,
           battlesById,
           goal.farmingLocationIds,
           dailyEnergy
         )
-        if (unavailable && !hasSupplier) {
-          blockedOutcome = blocked(unavailable, [need.id])
-          break
-        }
-        const nodes = unavailable
-          ? []
-          : selectFarmNodes(
-              need,
-              upgradesById,
-              battlesById,
-              goal.farmingLocationIds
-            )
-        if (nodes.length === 0 && !unavailable && !hasSupplier) {
-          blockedOutcome = blocked("NoFarmLocation", [need.id])
-          break
+        if (blocker) {
+          blockers.push({
+            resourceId: need.id,
+            reason: blocker,
+            remaining: need.count,
+          })
+          continue
         }
         remaining.set(need.id, need.count)
         nodesById.set(need.id, nodes)
       }
-      if (blockedOutcome) break
       if (remaining.size > 0) stages.push({ remaining, nodesById })
     }
 
-    if (blockedOutcome) {
-      results.set(goal.goalId, blockedOutcome)
+    blockersByGoal.set(goal.goalId, blockers)
+    actionableByGoal.set(
+      goal.goalId,
+      stages.flatMap((stage) => [...stage.remaining.keys()])
+    )
+    if (stages.length === 0 && blockers.length > 0) {
+      results.set(goal.goalId, partiallyBlocked(blockers, []))
     } else if (stages.length === 0) {
       results.set(goal.goalId, {
         status: "Estimated",
@@ -183,6 +184,7 @@ function runPlanSchedule(
           stage.remaining,
           stage.nodesById,
           energy,
+          dailyEnergy,
           attemptsUsedByBattle
         )
         energy -= spent.energySpent
@@ -203,20 +205,31 @@ function runPlanSchedule(
         (raidsTotalByGoal.get(goal.goalId) ?? 0) + goalRaids
       )
       if (stages.length === 0) {
-        results.set(goal.goalId, {
-          status: "Estimated",
-          days,
-          date: formatDate(inclusiveCompletionDate(referenceDate, days)),
-          energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
-          raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
-          flatSupplyTotal: flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
-          flatSupplyBySupplier:
-            flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
-          onslaughtTokens: onslaughtTokensFromSupply(
-            flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
-            goal.flatSuppliers
-          ),
-        })
+        const goalBlockers = blockersByGoal.get(goal.goalId) ?? []
+        // Obtainable work is done; a remaining blocker means the goal never completes.
+        results.set(
+          goal.goalId,
+          goalBlockers.length > 0
+            ? partiallyBlocked(
+                goalBlockers,
+                actionableByGoal.get(goal.goalId) ?? []
+              )
+            : {
+                status: "Estimated",
+                days,
+                date: formatDate(inclusiveCompletionDate(referenceDate, days)),
+                energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
+                raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
+                flatSupplyTotal:
+                  flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
+                flatSupplyBySupplier:
+                  flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+                onslaughtTokens: onslaughtTokensFromSupply(
+                  flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+                  goal.flatSuppliers
+                ),
+              }
+        )
         pending.delete(goal.goalId)
       }
     }
@@ -262,9 +275,13 @@ function runPlanSchedule(
       daysWithUnusedEnergy: scheduleDays.filter(
         (day) => dailyEnergy - day.energyTotal > UNUSED_ENERGY_THRESHOLD
       ).length,
-      completionDate: formatDate(
-        inclusiveCompletionDate(referenceDate, scheduleDays.length)
-      ),
+      completionDate: [...results.values()].some(
+        (outcome) => outcome.status === "Blocked"
+      )
+        ? null
+        : formatDate(
+            inclusiveCompletionDate(referenceDate, scheduleDays.length)
+          ),
     },
   }
 }

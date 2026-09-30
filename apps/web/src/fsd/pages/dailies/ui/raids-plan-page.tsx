@@ -1,60 +1,47 @@
-import { useState } from "react"
-import {
-  BatteryLow,
-  CalendarClock,
-  CalendarDays,
-  ChevronsDownUp,
-  ChevronsUpDown,
-  Swords,
-} from "lucide-react"
+import { useMemo, useState } from "react"
+import { BatteryLow, CalendarClock, CalendarDays, Swords } from "lucide-react"
 import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { isLocationVisible, useDailyRaids } from "@/features/daily-raids"
+import {
+  useDailyRaids,
+  type DailyRaidsReadyViewModel,
+} from "@/features/daily-raids"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import { buildPlanDayCells, buildPlanUnitRanges } from "../model/plan-day-cells"
 import type { DailiesOutletContext } from "./dailies-layout"
-import { RaidSchedule } from "./raid-schedule"
+import { PlanBlockers } from "./plan-blockers"
+import { PLAN_DAY_LIMIT, PlanDayStrip } from "./plan/plan-day-strip"
+import { PlanUnitFilter } from "./plan/plan-unit-filter"
 import { RaidState } from "./raid-state"
 import { useRaidsPlanTutorial } from "./raids-plan.tutorial"
 
-const DAY_LIMIT = 3
-
 export function RaidsPlanPage() {
   const context = useOutletContext<DailiesOutletContext>()
-  const { t } = useTranslation("dailies")
-  const isMobile = useIsMobile()
-  const [showAllDays, setShowAllDays] = useState(false)
-  const [compact, setCompact] = useState(false)
   const raids = useDailyRaids(context.projectId)
   useRaidsPlanTutorial()
 
   if (raids.status !== "ready") return <RaidState state={raids.status} />
+  return <RaidsPlan raids={raids} />
+}
 
-  const visibleDays = showAllDays
-    ? raids.planDays
-    : raids.planDays.slice(0, DAY_LIMIT)
-
-  const showAllDaysButton =
-    !showAllDays && raids.planDays.length > DAY_LIMIT ? (
-      <Button variant="outline" onClick={() => setShowAllDays(true)}>
-        {t("plan.showAll")}
-      </Button>
-    ) : null
+function RaidsPlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
+  const { t } = useTranslation("dailies")
+  const [selectedUnitId, setSelectedUnitId] = useState<string>()
+  const [showAllDays, setShowAllDays] = useState(false)
+  const [jumpTo, setJumpTo] = useState<{ day: number }>()
+  const cellsByDay = useMemo(
+    () => raids.planDays.map((day) => buildPlanDayCells(day, raids)),
+    [raids]
+  )
+  const unitRanges = useMemo(
+    () => buildPlanUnitRanges(cellsByDay),
+    [cellsByDay]
+  )
 
   return (
     <div className="space-y-5" data-testid="raids-plan-page">
-      {/* daily-raids-plan spec: the Collapse/Expand density toggle and "Show all days" both live in
-          this whole-plan summary area (trailing, below the stat grid) instead of each occupying its
-          own row; Collapse/Expand compresses to icon-only on mobile, "Show all days" stays text. */}
-      <section className="space-y-3" data-testid="plan-summary">
+      <section data-testid="plan-summary">
         <div
           className="grid grid-cols-2 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/5 md:grid-cols-5 dark:ring-foreground/10"
           data-testid="plan-summary-stats"
@@ -88,7 +75,8 @@ export function RaidsPlanPage() {
               ],
               [
                 "plan.summary.completion",
-                raids.planSummary.completionDate,
+                raids.planSummary.completionDate ??
+                  t("plan.summary.noCompletion"),
                 <CalendarClock key="completion" />,
               ],
             ] as const
@@ -114,120 +102,35 @@ export function RaidsPlanPage() {
             </div>
           ))}
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {showAllDaysButton}
-          <Button
-            aria-label={t(compact ? "plan.expand" : "plan.collapse")}
-            data-testid="plan-density-toggle"
-            onClick={() => setCompact((value) => !value)}
-            variant="outline"
-          >
-            {compact ? (
-              <ChevronsUpDown data-icon="inline-start" />
-            ) : (
-              <ChevronsDownUp data-icon="inline-start" />
-            )}
-            {isMobile ? null : t(compact ? "plan.expand" : "plan.collapse")}
-          </Button>
-        </div>
       </section>
-      <div
-        className="grid gap-3 md:[grid-template-columns:repeat(auto-fit,minmax(20rem,24rem))] md:gap-4"
-        data-testid="plan-days"
-      >
-        {visibleDays.map((day) => {
-          // daily-raids-plan spec: only Day 1 has real synced attempts, so only it splits
-          // exhausted nodes into a trailing "Raided" section (V1 Today layout); later days always
-          // get their original entries even when a battle ID repeats from Day 1.
-          const isExhausted = (entry: (typeof day.entries)[number]) =>
-            day.day === 1 &&
-            !isLocationVisible(entry, raids.attemptsLeftByBattle)
-          const raided = day.entries.filter(isExhausted)
-          const actionable = day.entries.filter((entry) => !isExhausted(entry))
-          const renderSchedule = (
-            entries: typeof day.entries,
-            testId: string
-          ) => (
-            <RaidSchedule
-              entries={entries}
-              attemptsUsedByBattle={day.attemptsUsedByBattle}
-              goalsById={raids.goalsById}
-              locationsByBattleId={raids.locationsByBattleId}
-              resourceLabels={raids.resourceLabels}
-              resourceProgress={
-                raids.resourceProgressByDay.get(day.day) ?? new Map()
-              }
-              resourceVisuals={raids.resourceVisuals}
-              compact={compact}
-              layout="column"
-              testId={testId}
-            />
-          )
-          return (
-            <Card
-              key={day.day}
-              className="gap-3 py-3 md:gap-4 md:py-4"
-              data-testid={`plan-day-${day.day}`}
-              size="sm"
-            >
-              <CardHeader className="gap-2 px-3 md:px-4">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle>
-                    {day.day === 1
-                      ? t("raids.tabs.today")
-                      : t("plan.day", { day: day.day })}
-                  </CardTitle>
-                  <div aria-hidden="true" className="flex gap-2">
-                    <span className="flex items-center gap-1 text-xs tabular-nums">
-                      <EntityIcon
-                        alt=""
-                        className="size-4"
-                        src={energyIconUrl}
-                      />
-                      {day.energyTotal}/{raids.dailyEnergy}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs tabular-nums">
-                      <Swords className="size-3.5 text-muted-foreground" />
-                      {day.raidsTotal}
-                    </span>
-                  </div>
-                </div>
-                <p className="sr-only">
-                  {t("plan.dayStats", {
-                    energy: day.energyTotal,
-                    available: raids.dailyEnergy,
-                    raids: day.raidsTotal,
-                  })}
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4 px-3 md:px-4">
-                {actionable.length > 0 || raided.length === 0
-                  ? renderSchedule(actionable, `plan-day-${day.day}-raids`)
-                  : null}
-                {raided.length > 0 ? (
-                  <>
-                    <div
-                      className="flex items-center gap-3 text-xs font-medium tracking-wide text-muted-foreground uppercase"
-                      data-testid="plan-day-1-raided-divider"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="h-px flex-1 bg-border"
-                      />
-                      <h3>{t("plan.raided")}</h3>
-                      <span
-                        aria-hidden="true"
-                        className="h-px flex-1 bg-border"
-                      />
-                    </div>
-                    {renderSchedule(raided, "plan-day-1-raided")}
-                  </>
-                ) : null}
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+      <PlanBlockers raids={raids} />
+      <PlanUnitFilter
+        onJump={(day) => {
+          if (day > PLAN_DAY_LIMIT) setShowAllDays(true)
+          setJumpTo({ day })
+        }}
+        onSelect={(unitId) => {
+          setSelectedUnitId(unitId)
+          if (!unitId) return
+          // Filtering is only useful across the whole plan: reveal every day and go to the
+          // unit's first one.
+          setShowAllDays(true)
+          const firstDay = unitRanges.find(
+            ({ unit }) => unit.unitId === unitId
+          )?.firstDay
+          if (firstDay) setJumpTo({ day: firstDay })
+        }}
+        ranges={unitRanges}
+        selectedUnitId={selectedUnitId}
+      />
+      <PlanDayStrip
+        cellsByDay={cellsByDay}
+        jumpTo={jumpTo}
+        onShowAll={() => setShowAllDays(true)}
+        raids={raids}
+        selectedUnitId={selectedUnitId}
+        showAllDays={showAllDays}
+      />
     </div>
   )
 }

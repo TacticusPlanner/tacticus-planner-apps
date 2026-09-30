@@ -15,7 +15,13 @@ export type BlockerReason =
    *  finish within its horizon). Only present where an estimate was actually computed for this goal
    *  (the project-scoped Insights view) — the flat cross-project
    *  overview has no per-goal estimate to check (see `use-goals-overview-metrics.ts`). */
-  | { kind: "EstimateBlocked"; reason: EstimateBlockedReason }
+  | {
+      kind: "EstimateBlocked"
+      reason: EstimateBlockedReason
+      /** Obtainable work is still scheduled (the outcome has actionable resources): presents as
+       *  Restricted rather than Blocked — presentation only, same blocked state. */
+      partial?: boolean
+    }
   /** A goal this one `dependsOn` hasn't reached its own target yet. */
   | { kind: "PrerequisiteNotReached"; goalId: string }
   /** The synced player record this goal's kind needs (character/MoW/inventory) hasn't loaded yet. */
@@ -47,6 +53,7 @@ export type GoalBlockers = {
 
 export function computeGoalBlockers(params: {
   estimateReason: EstimateBlockedReason | undefined
+  estimatePartial?: boolean
   unreachedPrerequisiteGoalIds: readonly string[]
   playerDataUnavailable: boolean
   catalogDataUnavailable: boolean
@@ -64,7 +71,11 @@ export function computeGoalBlockers(params: {
     reasons.push({ kind: "PrerequisiteNotReached", goalId })
   }
   if (params.estimateReason) {
-    reasons.push({ kind: "EstimateBlocked", reason: params.estimateReason })
+    reasons.push({
+      kind: "EstimateBlocked",
+      reason: params.estimateReason,
+      partial: params.estimatePartial,
+    })
   }
   reasons.push(...(params.implicitReasons ?? []))
 

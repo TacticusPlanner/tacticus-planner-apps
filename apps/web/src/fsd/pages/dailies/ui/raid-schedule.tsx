@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
-import { cn } from "@workspace/ui/lib/utils"
 
 import type { RaidBreakdownEntry } from "@/features/goal-farming"
 
@@ -36,9 +35,7 @@ export function RaidSchedule({
   resourceProgress,
   resourceUrgencyByGoalAndResource = NO_RESOURCE_URGENCY_DATA,
   resourceVisuals,
-  compact = false,
   emphasis = "material",
-  layout = "wide",
   testId,
 }: {
   entries: RaidBreakdownEntry[]
@@ -62,9 +59,7 @@ export function RaidSchedule({
     DailyRaidResourceUrgency
   >
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
-  compact?: boolean
   emphasis?: "material" | "location"
-  layout?: "wide" | "column"
   testId: string
 }) {
   const grouped = groupEntries(
@@ -108,10 +103,7 @@ export function RaidSchedule({
     return (
       <section
         key={`${keyPrefix}-${goal.goalId}`}
-        className={cn(
-          "space-y-2 md:space-y-3",
-          layout === "wide" && "md:mb-5 md:break-inside-avoid-column"
-        )}
+        className="space-y-2 md:mb-5 md:break-inside-avoid-column md:space-y-3"
       >
         {header}
         {!combinesShardIdentity ? <GoalHeader goal={goal} /> : null}
@@ -124,7 +116,6 @@ export function RaidSchedule({
               key={resourceId}
               attemptsLeftByBattle={attemptsLeftByBattle}
               attemptsUsedByBattle={attemptsUsedByBattle}
-              compact={compact}
               emphasis={emphasis}
               goal={combinesShardIdentity ? goal : undefined}
               label={resourceLabels.get(resourceId) ?? resourceId}
@@ -149,10 +140,7 @@ export function RaidSchedule({
     // cell, which left dead space beneath short cards; columns instead pack items top-to-bottom
     // per column, masonry-style, with no such gap.
     <div
-      className={cn(
-        "flex flex-col gap-4 md:gap-5",
-        layout === "wide" && "md:block md:columns-[20rem] md:gap-x-5"
-      )}
+      className="flex flex-col gap-4 md:block md:columns-[20rem] md:gap-5 md:gap-x-5"
       data-testid={testId}
     >
       {grouped.map((group) => renderGroup(group, "today"))}
@@ -178,7 +166,7 @@ export function RaidSchedule({
         // heading/footer (e.g. "Show more") must still surface — there's no visible group section
         // left to attach them to, so render them as their own flow item instead of dropping them.
         <div
-          className={cn(layout === "wide" && "md:break-inside-avoid-column")}
+          className="md:break-inside-avoid-column"
           key="bonus-raids-fallback"
         >
           <h3

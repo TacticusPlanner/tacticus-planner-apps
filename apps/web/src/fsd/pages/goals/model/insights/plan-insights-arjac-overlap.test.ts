@@ -439,7 +439,7 @@ describe("Arjac Silver1->Gold1 (A) and Silver1->Gold2 (B): V1 vs V2 Rank plannin
         goals: [A, B],
       })
       expect(everyNode.goals.A?.energy).toBe(1427)
-      expect(everyNode.goals.B?.energy).toBe(1971)
+      expect(everyNode.goals.B?.energy).toBe(1985)
       within(
         everyNode.goals.A?.energy ?? 0,
         standing.goals.A?.energy ?? 0,

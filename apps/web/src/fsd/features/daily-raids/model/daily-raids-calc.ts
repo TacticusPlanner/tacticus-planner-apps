@@ -39,6 +39,7 @@ import {
 } from "@/features/goal-farming/@x/daily-raids"
 import type { Battle } from "@/shared/lib"
 
+import { blockedGoalsOf } from "./blocked-goals"
 import type {
   DailyRaidGoalViewModel,
   DailyRaidsCalculationViewModel,
@@ -270,7 +271,16 @@ export function calculateDailyRaids(
   const today = estimateTodaySchedule(calculation)
   const bonus = estimateBonusRaids(calculation)
   const plan: RaidPlanSchedule = estimatePlanSchedule(calculation)
-  if (today.entries.length === 0 && bonus.entries.length === 0) return null
+  const blockedGoals = blockedGoalsOf(goals, plan.outcomes)
+  // Nothing to raid and nothing to explain: no plan. A goal blocked outright still gets a plan view
+  // so its blockers are reported rather than silently dropped.
+  if (
+    today.entries.length === 0 &&
+    bonus.entries.length === 0 &&
+    blockedGoals.length === 0
+  ) {
+    return null
+  }
 
   return {
     status: "ready",
@@ -278,6 +288,7 @@ export function calculateDailyRaids(
     bonus,
     planDays: plan.days,
     planSummary: plan.summary,
+    blockedGoals,
     dailyEnergy: params.dailyEnergy,
     goalsById,
     resourceLabels,

@@ -4,6 +4,8 @@ import type {
   Battle,
   CountedResourceNeed,
   EstimateResourceId,
+  EstimateBlockedReason,
+  EstimateBlocker,
   EstimateOutcome,
   EstimateUpgrade,
   FarmLocation,
@@ -15,7 +17,11 @@ import type {
   RaidBreakdownEntry,
   UpgradeNeed,
 } from "../model/estimate.domain"
-import { blocked, unavailableReason } from "./estimate-blocked"
+import {
+  blocked,
+  partiallyBlocked,
+  unavailableReason,
+} from "./estimate-blocked"
 import { onslaughtTokensFromSupply } from "./shop-supply"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
@@ -52,7 +58,7 @@ export function dropRate(location: FarmLocation): number {
 /**
  * The farm node(s) to raid for one material need: every location restricted to `farmingLocationIds`
  * when the goal pins specific nodes, otherwise the least-`energyPerItem` node(s) across all its drop
- * locations, tied nodes broken toward the higher `expectedGold` (a port of V1
+ * locations, every node tied on two-decimal `energyPerItem`, ordered higher `expectedGold` first (a port of V1
  * `CampaignsService.selectBestLocations`, which sorts `['energyPerItem', 'expectedGold']` ascending
  * then descending — a location with no `expectedGold` sorts lowest for this tie-break, never winning
  * over one that reports a value). Locations with no energy cost or no drop chance are never
@@ -96,22 +102,43 @@ export function selectFarmNodes(
   const candidates = [...candidatesByBattle.values()]
   if (candidates.length === 0 || restricted) return candidates
 
-  const minEnergyPerItem = Math.min(
-    ...candidates.map((c) => c.energyCost / c.dropRate)
-  )
-  const mostEfficient = candidates.filter(
-    (c) => c.energyCost / c.dropRate === minEnergyPerItem
-  )
-  if (mostEfficient.length <= 1) return mostEfficient
+  // Tie test only: two-decimal efficiency as V1 (`campaigns.service.ts`); nodes keep their real dropRate.
+  const efficiency = (c: FarmNode) =>
+    Number((c.energyCost / c.dropRate).toFixed(2))
+  const minEnergyPerItem = Math.min(...candidates.map(efficiency))
+  return candidates
+    .filter((c) => efficiency(c) === minEnergyPerItem)
+    .sort((a, b) => (b.expectedGold ?? -1) - (a.expectedGold ?? -1))
+}
 
-  const maxExpectedGold = Math.max(
-    ...mostEfficient.map((c) => c.expectedGold ?? Number.NEGATIVE_INFINITY)
+/**
+ * Classifies one residual need: the farm nodes to raid for it, or the reason it has no supported
+ * source (a flat supplier makes a campaign-less need actionable). Shared by `estimateGoal` and the
+ * plan estimate so both classify every need identically.
+ */
+export function classifyNeed(
+  need: UpgradeNeed,
+  hasSupplier: boolean,
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
+  battlesById: ReadonlyMap<BattleId, Battle>,
+  farmingLocationIds: readonly string[] | null | undefined,
+  dailyEnergy: number
+): { nodes: FarmNode[]; blocker: EstimateBlockedReason | null } {
+  const unavailable = unavailableReason(
+    need,
+    upgradesById,
+    battlesById,
+    farmingLocationIds,
+    dailyEnergy
   )
-  if (!Number.isFinite(maxExpectedGold)) return mostEfficient
-
-  return mostEfficient.filter(
-    (c) => (c.expectedGold ?? Number.NEGATIVE_INFINITY) === maxExpectedGold
-  )
+  if (unavailable && !hasSupplier) return { nodes: [], blocker: unavailable }
+  const nodes = unavailable
+    ? []
+    : selectFarmNodes(need, upgradesById, battlesById, farmingLocationIds)
+  if (nodes.length === 0 && !unavailable && !hasSupplier) {
+    return { nodes, blocker: "NoFarmLocation" }
+  }
+  return { nodes, blocker: null }
 }
 
 /**
@@ -186,7 +213,32 @@ export function formatDate(date: Date): string {
 }
 
 /**
- * Spends one day's energy against a goal's still-remaining materials, cheapest node first, mutating
+ * Days to finish `count` items from `nodes`: `count / Σ itemsPerDay(node)`. Zero yield is Infinity.
+ * V1 (`calculateDaysToCompleteMaterial`) uses `energyPerDay / energyPerItem` per suggested node
+ * with `energyPerDay = dailyBattleCount * energyCost` (campaigns.service.ts:134-160), i.e.
+ * `dropRate * attempt cap` and only the attempt cap. V2 deliberately also bounds a node by the
+ * daily energy budget (`floor(dailyEnergy / energyCost)`), so order can still differ from V1 for
+ * cheap high-cap nodes.
+ */
+function daysToFinish(
+  count: number,
+  nodes: readonly FarmNode[],
+  dailyEnergy: number
+): number {
+  let itemsPerDay = 0
+  for (const node of nodes) {
+    const attempts = Math.min(
+      Math.floor(dailyEnergy / node.energyCost),
+      node.dailyAttempts > 0 ? node.dailyAttempts : Infinity
+    )
+    const items = node.dropRate * attempts
+    if (items > 0) itemsPerDay += items
+  }
+  return itemsPerDay > 0 ? count / itemsPerDay : Infinity
+}
+
+/**
+ * Spends one day's energy against a goal's still-remaining materials, longest-to-finish material first, mutating
  * `remaining` and returning the energy/raids spent. Shared by `estimateGoal` (one goal) and
  * `estimatePlan` (each goal's turn within a combined day), so both loops spend a day identically.
  * `attemptsUsedByBattle` is a caller-owned accumulator mutated in place. Each battle node's
@@ -198,6 +250,7 @@ export function spendDay(
   remaining: Map<EstimateResourceId, number>,
   nodesById: ReadonlyMap<EstimateResourceId, FarmNode[]>,
   startingEnergy: number,
+  dailyEnergy: number,
   attemptsUsedByBattle = new Map<BattleId, number>()
 ): {
   energySpent: number
@@ -209,9 +262,17 @@ export function spendDay(
   let raidsPerformed = 0
   const breakdown: Omit<RaidBreakdownEntry, "goalId">[] = []
 
+  // V1 `sortLocationsForRaiding`: longest time to finish first. `Array.sort` is stable, so ties
+  // keep the material's existing order; each material's nodes stay in `nodesById` order.
   const spendable = [...remaining.entries()]
-    .flatMap(([id]) => (nodesById.get(id) ?? []).map((node) => ({ id, node })))
-    .sort((a, b) => a.node.energyCost - b.node.energyCost)
+    .map(([id, count]) => ({
+      id,
+      days: daysToFinish(count, nodesById.get(id) ?? [], dailyEnergy),
+    }))
+    .sort((a, b) => b.days - a.days)
+    .flatMap(({ id }) =>
+      (nodesById.get(id) ?? []).map((node) => ({ id, node }))
+    )
 
   for (const { id, node } of spendable) {
     const remainingCount = remaining.get(id)
@@ -294,28 +355,32 @@ export function estimateGoal({
     flatSuppliers?.map((supplier) => supplier.resourceId)
   )
 
+  const blockers: EstimateBlocker[] = []
   for (const need of needs) {
     if (need.count <= 0) continue
-    const hasSupplier = suppliedResourceIds.has(need.id)
-    const unavailable = unavailableReason(
+    const { nodes, blocker } = classifyNeed(
       need,
+      suppliedResourceIds.has(need.id),
       upgradesById,
       battlesById,
       farmingLocationIds,
       dailyEnergy
     )
-    if (unavailable && !hasSupplier) return blocked(unavailable, [need.id])
-
-    const nodes = unavailable
-      ? []
-      : selectFarmNodes(need, upgradesById, battlesById, farmingLocationIds)
-    if (nodes.length === 0 && !unavailable && !hasSupplier) {
-      return blocked("NoFarmLocation", [need.id])
+    if (blocker) {
+      blockers.push({
+        resourceId: need.id,
+        reason: blocker,
+        remaining: need.count,
+      })
+      continue
     }
     remaining.set(need.id, need.count)
     nodesById.set(need.id, nodes)
   }
 
+  if (remaining.size === 0 && blockers.length > 0) {
+    return partiallyBlocked(blockers, [])
+  }
   if (remaining.size === 0) {
     return {
       status: "Estimated",
@@ -328,6 +393,7 @@ export function estimateGoal({
     }
   }
 
+  const actionableIds = [...remaining.keys()]
   let days = 0
   let energyTotal = 0
   let raidsTotal = 0
@@ -350,27 +416,29 @@ export function estimateGoal({
     const { energySpent, raidsPerformed } = spendDay(
       remaining,
       nodesById,
+      dailyEnergy,
       dailyEnergy
     )
     energyTotal += energySpent
     raidsTotal += raidsPerformed
   }
 
-  return remaining.size > 0
-    ? blocked("SimulationLimit", [...remaining.keys()])
-    : {
-        status: "Estimated",
-        days,
-        date: formatDate(inclusiveCompletionDate(referenceDate, days)),
-        energyTotal,
-        raidsTotal,
-        flatSupplyTotal,
-        flatSupplyBySupplier,
-        onslaughtTokens: onslaughtTokensFromSupply(
-          flatSupplyBySupplier,
-          flatSuppliers
-        ),
-      }
+  if (remaining.size > 0)
+    return blocked("SimulationLimit", [...remaining.keys()])
+  if (blockers.length > 0) return partiallyBlocked(blockers, actionableIds)
+  return {
+    status: "Estimated",
+    days,
+    date: formatDate(inclusiveCompletionDate(referenceDate, days)),
+    energyTotal,
+    raidsTotal,
+    flatSupplyTotal,
+    flatSupplyBySupplier,
+    onslaughtTokens: onslaughtTokensFromSupply(
+      flatSupplyBySupplier,
+      flatSuppliers
+    ),
+  }
 }
 
 /**

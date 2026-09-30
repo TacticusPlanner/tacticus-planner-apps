@@ -11,6 +11,7 @@ import {
   estimateGoal,
   inclusiveCompletionDate,
   selectFarmNodes,
+  spendDay,
 } from "./estimate"
 import { estimatePlan } from "./estimate-plan"
 import { shardResourceId } from "../model/estimate.domain"
@@ -19,6 +20,7 @@ import type {
   EstimateResourceId,
   EstimateUpgrade,
   FarmLocation,
+  FarmNode,
   GoalNeed,
 } from "../model/estimate.domain"
 
@@ -211,9 +213,9 @@ describe("selectFarmNodes", () => {
     ).toEqual([])
   })
 
-  describe("expectedGold tie-break", () => {
+  describe("tied nodes", () => {
     // FoCE13/SHME19 both cost 10 energy for one guaranteed copy (energyPerItem 10), differing only
-    // in expected gold — matches the fix-daily-raid-location-recommendations spec's worked example.
+    // in expected gold - matches the fix-daily-raid-location-recommendations spec's worked example.
     const tiedUpgrade = (
       foceExpectedGold: number | null,
       shmeExpectedGold: number | null
@@ -237,16 +239,57 @@ describe("selectFarmNodes", () => {
         ],
       ])
     const tiedBattles = new Map([battle("FoCE13", 10), battle("SHME19", 10)])
+    const select = (foce: number | null, shme: number | null) =>
+      selectFarmNodes(
+        { id: upgradeId("upgDmgC010"), count: 1 },
+        tiedUpgrade(foce, shme),
+        tiedBattles
+      ).map((node) => node.battleId)
 
-    it("breaks an efficiency tie toward the higher expectedGold", () => {
+    it("returns every tied node, higher expectedGold first", () => {
+      expect(select(137, 151.5)).toEqual([
+        battleId("SHME19"),
+        battleId("FoCE13"),
+      ])
+    })
+
+    it("keeps a tied node with null expectedGold, last", () => {
+      expect(select(null, 151.5)).toEqual([
+        battleId("SHME19"),
+        battleId("FoCE13"),
+      ])
+    })
+
+    it("keeps a tied node with expectedGold entirely absent, last", () => {
+      const untyped = new Map<ReturnType<typeof upgradeId>, EstimateUpgrade>([
+        [
+          upgradeId("upgDmgC010"),
+          {
+            id: upgradeId("upgDmgC010"),
+            farmLocations: [
+              location("FoCE13", { guaranteed: true }),
+              location("SHME19", { guaranteed: true, expectedGold: 151.5 }),
+            ],
+          },
+        ],
+      ])
       const nodes = selectFarmNodes(
         { id: upgradeId("upgDmgC010"), count: 1 },
-        tiedUpgrade(137, 151.5),
+        untyped,
         tiedBattles
       )
+      expect(nodes.map((node) => node.battleId)).toEqual([
+        battleId("SHME19"),
+        battleId("FoCE13"),
+      ])
+    })
 
-      expect(nodes).toHaveLength(1)
-      expect(nodes[0]?.battleId).toEqual(battleId("SHME19"))
+    it("keeps existing order when expectedGold is equal or missing", () => {
+      expect(select(100, 100)).toEqual([battleId("FoCE13"), battleId("SHME19")])
+      expect(select(null, null)).toEqual([
+        battleId("FoCE13"),
+        battleId("SHME19"),
+      ])
     })
 
     it("never lets expectedGold override a genuine efficiency difference", () => {
@@ -259,9 +302,9 @@ describe("selectFarmNodes", () => {
           {
             id: upgradeId("U1"),
             farmLocations: [
-              // energyPerItem 10 — cheaper, should win despite the lower expectedGold
+              // energyPerItem 10 - cheaper, should win despite the lower expectedGold
               location("B2", { guaranteed: true, expectedGold: 10 }),
-              // energyPerItem 12 — less efficient, higher expectedGold doesn't matter
+              // energyPerItem 12 - less efficient, higher expectedGold doesn't matter
               location("B1", { effectiveRate: 0.5, expectedGold: 999 }),
             ],
           },
@@ -274,58 +317,57 @@ describe("selectFarmNodes", () => {
         battlesById
       )
 
-      expect(nodes).toHaveLength(1)
-      expect(nodes[0]?.battleId).toEqual(battleId("B2"))
+      expect(nodes.map((node) => node.battleId)).toEqual([battleId("B2")])
     })
 
-    it("a tied location reporting a value beats a tied location with expectedGold null", () => {
-      const nodes = selectFarmNodes(
-        { id: upgradeId("upgDmgC010"), count: 1 },
-        tiedUpgrade(null, 151.5),
-        tiedBattles
-      )
-
-      expect(nodes).toHaveLength(1)
-      expect(nodes[0]?.battleId).toEqual(battleId("SHME19"))
-    })
-
-    it("a tied location reporting a value beats a tied location with expectedGold entirely absent", () => {
-      const untypedLocations = new Map<
-        ReturnType<typeof upgradeId>,
-        EstimateUpgrade
-      >([
-        [
-          upgradeId("upgDmgC010"),
-          {
-            id: upgradeId("upgDmgC010"),
-            farmLocations: [
-              location("FoCE13", { guaranteed: true }),
-              location("SHME19", { guaranteed: true, expectedGold: 151.5 }),
+    describe("two-decimal efficiency rounding", () => {
+      // energyCost 1 so energyPerItem = 1 / dropRate.
+      const pick = (perItemA: number, perItemB: number) =>
+        selectFarmNodes(
+          { id: upgradeId("R"), count: 1 },
+          new Map([
+            [
+              upgradeId("R"),
+              {
+                id: upgradeId("R"),
+                farmLocations: [
+                  location("RA", { effectiveRate: 1 / perItemA }),
+                  location("RB", { effectiveRate: 1 / perItemB }),
+                ],
+              },
             ],
-          },
-        ],
-      ])
+          ]),
+          new Map([battle("RA", 1), battle("RB", 1)])
+        )
 
-      const nodes = selectFarmNodes(
-        { id: upgradeId("upgDmgC010"), count: 1 },
-        untypedLocations,
-        tiedBattles
-      )
+      it("ties 33.331 and 33.334, keeping each real dropRate", () => {
+        const nodes = pick(33.331, 33.334)
+        expect(nodes.map((node) => node.battleId)).toEqual([
+          battleId("RA"),
+          battleId("RB"),
+        ])
+        expect(nodes[0]?.dropRate).toBeCloseTo(1 / 33.331, 10)
+        expect(nodes[1]?.dropRate).toBeCloseTo(1 / 33.334, 10)
+      })
 
-      expect(nodes).toHaveLength(1)
-      expect(nodes[0]?.battleId).toEqual(battleId("SHME19"))
+      it("does not tie 33.33 and 33.34", () => {
+        expect(pick(33.33, 33.34).map((node) => node.battleId)).toEqual([
+          battleId("RA"),
+        ])
+      })
     })
 
-    it("keeps every tied candidate when none report expectedGold", () => {
+    it("returns a restricted set as chosen, in catalog order", () => {
       const nodes = selectFarmNodes(
         { id: upgradeId("upgDmgC010"), count: 1 },
-        tiedUpgrade(null, null),
-        tiedBattles
+        tiedUpgrade(137, 151.5),
+        tiedBattles,
+        ["FoCE13", "SHME19"]
       )
-
-      expect(nodes.map((node) => node.battleId).sort()).toEqual(
-        [battleId("FoCE13"), battleId("SHME19")].sort()
-      )
+      expect(nodes.map((node) => node.battleId)).toEqual([
+        battleId("FoCE13"),
+        battleId("SHME19"),
+      ])
     })
   })
 })
@@ -840,5 +882,197 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
     // Both share the same single node — one raid/day clears one unit of whichever is spendable
     // first, so it takes 2 days total to clear both.
     expect(result?.days).toBe(2)
+  })
+})
+
+describe("spendDay ordering (align-raid-spend-order-with-v1)", () => {
+  const node = (
+    id: string,
+    energyCost: number,
+    dailyAttempts = 999
+  ): FarmNode => ({
+    battleId: battleId(id),
+    energyCost,
+    dropRate: 1,
+    dailyAttempts,
+  })
+  const run = (
+    counts: [string, number][],
+    nodes: [string, FarmNode][],
+    startingEnergy: number,
+    dailyEnergy = startingEnergy
+  ) =>
+    spendDay(
+      new Map(counts.map(([id, n]) => [upgradeId(id), n])),
+      new Map(nodes.map(([id, n]) => [upgradeId(id), [n]])),
+      startingEnergy,
+      dailyEnergy
+    )
+
+  it("farms a capped bottleneck material before a cheap one", () => {
+    // A: 30 / 4 per day = 7.5 days; B: 30 / 10 per day = 3 days
+    const { breakdown } = run(
+      [
+        ["B", 30],
+        ["A", 30],
+      ],
+      [
+        ["A", node("A1", 5, 4)],
+        ["B", node("B1", 10)],
+      ],
+      100
+    )
+    expect(breakdown[0]).toMatchObject({
+      resourceId: upgradeId("A"),
+      raidsPerformed: 4,
+      energySpent: 20,
+    })
+    expect(breakdown[1]?.resourceId).toBe(upgradeId("B"))
+  })
+
+  it("keeps the existing order when times to finish are equal", () => {
+    // A: 5 / 10 per day = 0.5 days; B: 10 / 20 per day = 0.5 days. Cheapest-first would put B first.
+    const { breakdown } = run(
+      [
+        ["A", 5],
+        ["B", 10],
+      ],
+      [
+        ["A", node("A1", 10)],
+        ["B", node("B1", 5)],
+      ],
+      100
+    )
+    expect(breakdown.map((entry) => entry.resourceId)).toEqual([
+      upgradeId("A"),
+      upgradeId("B"),
+    ])
+  })
+
+  it("sorts a zero-yield material first", () => {
+    // Daily budget 50 can't afford Z's 60-energy node (yield 0 -> Infinity days), but the
+    // remaining energy today (100) can.
+    const { breakdown } = run(
+      [
+        ["B", 100],
+        ["Z", 5],
+      ],
+      [
+        ["B", node("B1", 10)],
+        ["Z", node("Z1", 60)],
+      ],
+      100,
+      50
+    )
+    expect(breakdown[0]?.resourceId).toBe(upgradeId("Z"))
+  })
+
+  it("finishes a Neurothrope-like goal in 3 days, not the 4 cheapest-first takes", () => {
+    // Cheap uncapped C (120 raids x 5 = 600 energy) plus two capped expensive materials
+    // (12 items each, 30 energy, 4 attempts/day = 3 days). At 538/day cheapest-first burns day 1
+    // on C and needs a 4th day for the capped nodes; bottleneck-first starts them on day 1.
+    const upgradesById = new Map<ReturnType<typeof upgradeId>, EstimateUpgrade>(
+      ["C", "K1", "K2"].map((id) => [
+        upgradeId(id),
+        {
+          id: upgradeId(id),
+          farmLocations: [location(`${id}-node`, { guaranteed: true })],
+        },
+      ])
+    )
+    const result = estimateGoal({
+      needs: [
+        { id: upgradeId("C"), count: 120 },
+        { id: upgradeId("K1"), count: 12 },
+        { id: upgradeId("K2"), count: 12 },
+      ],
+      upgradesById,
+      battlesById: new Map([
+        battle("C-node", 5),
+        battle("K1-node", 30, 4),
+        battle("K2-node", 30, 4),
+      ]),
+      dailyEnergy: 538,
+      referenceDate: REFERENCE_DATE,
+    })
+    expect(result?.days).toBe(3)
+  })
+
+  it("raids two tied 6-raid nodes the same day, higher gold first, doubling day-1 yield", () => {
+    const mk = (id: string, gold: number): FarmNode => ({
+      battleId: battleId(id),
+      energyCost: 10,
+      dropRate: 0.43,
+      dailyAttempts: 6,
+      expectedGold: gold,
+    })
+    const day1 = (nodes: FarmNode[]) =>
+      spendDay(
+        new Map([[upgradeId("M"), 10]]),
+        new Map([[upgradeId("M"), nodes]]),
+        538,
+        538
+      )
+    const one = day1([mk("N1", 151.5)])
+    const two = day1([mk("N1", 151.5), mk("N2", 137)])
+    expect(two.breakdown.map((e) => e.battleId)).toEqual([
+      battleId("N1"),
+      battleId("N2"),
+    ])
+    expect(two.breakdown.map((e) => e.raidsPerformed)).toEqual([6, 6])
+    const farmed = (r: typeof one) =>
+      r.breakdown.reduce((sum, e) => sum + e.itemsFarmed, 0)
+    expect(farmed(two)).toBeCloseTo(2 * farmed(one), 10)
+  })
+
+  it("finishes a Neurothrope-like goal sooner with two tied nodes than one", () => {
+    // M needs 24 items from tied 30-energy nodes capped at 4 raids/day each; K (capped) and C
+    // (cheap, uncapped) compete for the same 538 energy/day.
+    const run = (mNodes: string[]) =>
+      estimateGoal({
+        needs: [
+          { id: upgradeId("C"), count: 100 },
+          { id: upgradeId("K"), count: 12 },
+          { id: upgradeId("M"), count: 24 },
+        ],
+        upgradesById: new Map<ReturnType<typeof upgradeId>, EstimateUpgrade>([
+          [
+            upgradeId("C"),
+            {
+              id: upgradeId("C"),
+              farmLocations: [location("C-node", { guaranteed: true })],
+            },
+          ],
+          [
+            upgradeId("K"),
+            {
+              id: upgradeId("K"),
+              farmLocations: [location("K-node", { guaranteed: true })],
+            },
+          ],
+          [
+            upgradeId("M"),
+            {
+              id: upgradeId("M"),
+              farmLocations: mNodes.map((id) =>
+                location(id, { guaranteed: true })
+              ),
+            },
+          ],
+        ]),
+        battlesById: new Map([
+          battle("C-node", 5),
+          battle("K-node", 30, 4),
+          battle("M1", 30, 4),
+          battle("M2", 30, 4),
+        ]),
+        dailyEnergy: 538,
+        referenceDate: REFERENCE_DATE,
+      })
+    const single = run(["M1"])
+    const tied = run(["M1", "M2"])
+    expect(tied?.days).toBeLessThan(single?.days ?? Infinity)
+    expect(tied?.days).toBe(3)
+    expect(single?.days).toBe(6)
   })
 })

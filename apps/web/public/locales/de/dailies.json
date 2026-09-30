@@ -209,14 +209,25 @@
       "energy": "Energie gesamt",
       "raids": "Raid-Versuche",
       "unusedDays": "Ungenutzte Tage",
-      "completion": "Abschlussdatum"
+      "completion": "Abschlussdatum",
+      "noCompletion": "Nicht verfügbar"
     },
     "day": "Tag {{day}}",
     "dayStats": "{{energy}} / {{available}} Energie · {{raids}} Raids",
     "showAll": "Alle Tage anzeigen",
-    "collapse": "Raid-Details einklappen",
-    "expand": "Raid-Details ausklappen",
-    "raided": "Geraidet"
+    "raided": "Geraidet",
+    "cell": {
+      "label": "{{material}}, {{owned}} von {{target}} vorhanden",
+      "node": "{{campaign}} {{node}} × {{raids}}",
+      "moreNodes": "+{{count}} weitere",
+      "moreUnits": "+{{count}}"
+    },
+    "filter": {
+      "label": "Nach Einheit filtern",
+      "first": "← Tag {{day}}",
+      "last": "Tag {{day}} →",
+      "hint": "Klicke auf eine Einheit, um ihre Verbesserungen an allen Tagen hervorzuheben."
+    }
   },
   "tour": {
     "guildRaids": {
@@ -283,13 +294,23 @@
         },
         "summary": {
           "title": "Gesamtübersicht",
-          "content": "Die Summen enthalten Tag 1."
+          "content": "Die Summen umfassen jeden geplanten Tag, beginnend mit heute. Hat ein Ziel eine Anforderung ohne unterstützte Quelle, bleibt das Abschlussdatum nicht verfügbar und die Blocker werden darunter aufgelistet."
+        },
+        "filter": {
+          "title": "Einheitenfilter",
+          "content": "Wähle eine Einheit, um an allen Tagen alles andere abzudunkeln, und springe dann zu ihrem ersten oder letzten Tag."
         },
         "days": {
           "title": "Raid-Tage",
-          "content": "Jeder Tag gruppiert Raids nach Ziel."
+          "content": "Jede Tageskarte listet die zu farmenden Verbesserungen als Raster. Fahre mit der Maus über eine Verbesserung oder tippe darauf, um Einheiten und Knoten zu sehen; erledigte Verbesserungen stehen unter „Geraidet“. Ziehe oder wische, um durch die Tage zu scrollen."
         }
       }
     }
+  },
+  "blockers": {
+    "title": "Einige Ziele können noch nicht abgeschlossen werden",
+    "partial": "Erreichbare Arbeit ist eingeplant; für den Rest gibt es keine unterstützte Quelle, daher gibt es kein Abschlussdatum.",
+    "none": "Noch nichts ist erreichbar, daher wird nichts eingeplant und es gibt kein Abschlussdatum.",
+    "row": "{{material}} ×{{count}}: {{reason}}"
   }
 }

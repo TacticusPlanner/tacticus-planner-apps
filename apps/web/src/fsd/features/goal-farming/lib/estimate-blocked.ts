@@ -3,6 +3,7 @@ import type { BattleId } from "@workspace/game-domain"
 import type {
   Battle,
   EstimateBlockedReason,
+  EstimateBlocker,
   EstimateOutcome,
   EstimateResourceId,
   EstimateUpgrade,
@@ -15,6 +16,31 @@ export function blocked(
   resourceIds: EstimateResourceId[]
 ): EstimateOutcome {
   return { status: "Blocked", reason, resourceIds }
+}
+
+/** A goal's residual needs that cannot be sourced, plus the resources still scheduled around them. */
+export function partiallyBlocked(
+  blockers: EstimateBlocker[],
+  actionableResourceIds: EstimateResourceId[]
+): EstimateOutcome {
+  const merged = new Map<EstimateResourceId, EstimateBlocker>()
+  for (const blocker of blockers) {
+    const existing = merged.get(blocker.resourceId)
+    merged.set(
+      blocker.resourceId,
+      existing
+        ? { ...existing, remaining: existing.remaining + blocker.remaining }
+        : { ...blocker }
+    )
+  }
+  const list = [...merged.values()]
+  return {
+    status: "Blocked",
+    reason: list[0]!.reason,
+    resourceIds: list.map((blocker) => blocker.resourceId),
+    blockers: list,
+    actionableResourceIds: [...new Set(actionableResourceIds)],
+  }
 }
 
 export function unavailableReason(

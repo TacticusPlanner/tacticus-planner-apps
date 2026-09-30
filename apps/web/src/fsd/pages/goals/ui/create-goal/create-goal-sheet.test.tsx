@@ -314,6 +314,7 @@ const getPlayerMows = vi.fn(() => Promise.resolve([]))
 
 vi.mock("@workspace/player-data/queries", () => ({
   // Every fixture node is unlocked (goal farming only considers unlocked campaign nodes).
+  getCampaignEventProgress: async () => [],
   getCampaignProgress: vi.fn(async () => [
     {
       tacticusCampaignId: "campaign1",
