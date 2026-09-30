@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 vi.mock("@/shared/tour", () => ({
@@ -259,16 +259,26 @@ vi.mock("react-router", async (importOriginal) => ({
   useNavigate: () => navigateMock,
 }))
 
+import { MemoryRouter, useLocation } from "react-router"
+
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 
 const onLaunch = vi.fn()
 
-function renderPage() {
+function LocationProbe() {
+  return <span data-testid="location-search">{useLocation().search}</span>
+}
+
+// Seeded behind a `/home` entry so a test can tell a replaced scope from a pushed one.
+function renderPage(initialEntry = "/plan/goals") {
   return render(
-    <CreateGoalLauncherProvider onLaunch={onLaunch}>
-      <GoalsPage />
-    </CreateGoalLauncherProvider>
+    <MemoryRouter initialEntries={["/home", initialEntry]} initialIndex={1}>
+      <CreateGoalLauncherProvider onLaunch={onLaunch}>
+        <GoalsPage />
+        <LocationProbe />
+      </CreateGoalLauncherProvider>
+    </MemoryRouter>
   )
 }
 
@@ -742,13 +752,10 @@ describe("GoalsPage", () => {
       screen.queryByTestId(`goal-row-move-to-project-${activeGoal.goalId}`)
     ).not.toBeInTheDocument()
   })
-  it("applies no project filter initially, listing goals from every project", async () => {
-    listGoals.mockResolvedValue({
-      goals: [
-        activeGoal,
-        { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
-      ],
-    })
+  const goalB = { ...activeGoal, goalId: "goal-b", entityId: "hero2" }
+  /** Two projects: proj-1 (Default) holds activeGoal, proj-2 holds goalB. */
+  function twoProjects() {
+    listGoals.mockResolvedValue({ goals: [activeGoal, goalB] })
     listProjects.mockResolvedValue({
       projects: [overviewProject, otherProject],
     })
@@ -757,48 +764,35 @@ describe("GoalsPage", () => {
         goals:
           projectId === "proj-1"
             ? [{ goal: activeGoal, priority: 0 }]
-            : [
-                {
-                  goal: { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
-                  priority: 0,
-                },
-              ],
+            : [{ goal: goalB, priority: 0 }],
       })
     )
+  }
+
+  it("applies no project scope initially, listing goals from every project with counts per chip", async () => {
+    twoProjects()
     renderPage()
 
     await screen.findByTestId("goals-list-table")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
-    expect(
-      document.getElementById("goals-project-filter-value")
-    ).toHaveTextContent("goals.project.filterAll")
+    expect(screen.getByTestId("goals-project-scope-all")).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    )
+    await vi.waitFor(() =>
+      expect(
+        within(screen.getByTestId("goals-project-scope"))
+          .getAllByRole("button")
+          .map((chip) => chip.textContent)
+      ).toEqual(["goals.project.scopeAll2", "My Goals1", "Event Prep1"])
+    )
+    expect(screen.getByTestId("location-search")).toHaveTextContent("")
   })
 
-  it("narrows the list to one project's goals without mutating anything", async () => {
-    listGoals.mockResolvedValue({
-      goals: [
-        activeGoal,
-        { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
-      ],
-    })
-    listProjects.mockResolvedValue({
-      projects: [overviewProject, otherProject],
-    })
-    listProjectGoals.mockImplementation((projectId: string) =>
-      Promise.resolve({
-        goals:
-          projectId === "proj-1"
-            ? [{ goal: activeGoal, priority: 0 }]
-            : [
-                {
-                  goal: { ...activeGoal, goalId: "goal-b", entityId: "hero2" },
-                  priority: 0,
-                },
-              ],
-      })
-    )
+  it("narrows the list via a scope chip, replaces the URL in place, and restores on All goals", async () => {
+    twoProjects()
     const user = userEvent.setup()
     renderPage()
 
@@ -807,23 +801,26 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
 
-    await user.click(screen.getByTestId("goals-project-filter"))
-    await user.click(await screen.findByRole("option", { name: "Event Prep" }))
-
+    await user.click(screen.getByTestId("goals-project-scope-chip-proj-2"))
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
     expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
+    expect(screen.getByTestId("location-search")).toHaveTextContent(
+      "?project=proj-2"
+    )
+    expect(
+      screen.getByTestId("goals-project-scope-chip-proj-2")
+    ).toHaveAttribute("aria-pressed", "true")
     // Narrowing a list is not selecting a project: nothing is written.
     expect(updateProjectGoals).not.toHaveBeenCalled()
-    expect(updateProjectGoalsStatus).not.toHaveBeenCalled()
     expect(updateGoalStatus).not.toHaveBeenCalled()
 
-    // Clearing the filter brings the other project's goal back with its membership intact.
-    await user.click(screen.getByTestId("goals-project-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.project.filterAll" })
+    await user.click(screen.getByTestId("goals-project-scope-all"))
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
+    expect(screen.getByTestId("location-search")).toHaveTextContent("")
     await vi.waitFor(() =>
       expect(
         screen
@@ -833,202 +830,203 @@ describe("GoalsPage", () => {
     )
   })
 
-  it("renders the project filter with the other filters, not in the status row", async () => {
-    listGoals.mockResolvedValue({ goals: [] })
-    renderPage()
+  it("opens scoped from a ?project= deep link and keeps status, type and group across scopes while counts follow the scope", async () => {
+    twoProjects()
+    window.localStorage.setItem("goals.overview.group", "type")
+    const user = userEvent.setup()
+    renderPage("/plan/goals?project=proj-2")
 
-    await screen.findByTestId("goals-page-empty")
-    const group = screen.getByTestId("goals-filter-group")
-    expect(group).toContainElement(screen.getByTestId("goals-project-filter"))
-    expect(group).toContainElement(screen.getByTestId("goals-type-filter"))
-    expect(group).not.toContainElement(
-      screen.getByTestId("goals-status-filter")
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
-    expect(screen.getByTestId("goals-project-filter")).toHaveAccessibleName(
-      "goals.project.filterLabel"
+    expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
+    expect(
+      screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("goals-type-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: "goals.create.goalTypes.Rank" })
     )
+    await user.click(screen.getByTestId("goals-status-filter"))
+    expect(
+      await screen.findByRole("option", { name: "goals.tabs.toReach (1)" })
+    ).toBeInTheDocument()
+    await user.keyboard("{Escape}")
+
+    await user.click(screen.getByTestId("goals-project-scope-all"))
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+    )
+    expect(
+      screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
+    ).toBeInTheDocument()
+    expect(
+      document.getElementById("goals-type-filter-value")
+    ).toHaveTextContent("goals.create.goalTypes.Rank")
+    await user.click(screen.getByTestId("goals-status-filter"))
+    expect(
+      await screen.findByRole("option", { name: "goals.tabs.toReach (2)" })
+    ).toBeInTheDocument()
+    window.localStorage.removeItem("goals.overview.group")
   })
 
-  it("compresses the project filter to an icon with an accessible name below 768px", async () => {
-    mobile.value = true
-    listGoals.mockResolvedValue({ goals: [] })
-    listProjects.mockResolvedValue({ projects: [overviewProject] })
-    renderPage()
+  it.each([
+    ["unknown", "nope"],
+    ["archived", "proj-old"],
+  ])(
+    "drops an %s project id from the URL and lists all goals",
+    async (_, id) => {
+      twoProjects()
+      listProjects.mockResolvedValue({
+        projects: [
+          overviewProject,
+          otherProject,
+          { ...otherProject, projectId: "proj-old", status: "Archived" },
+        ],
+      })
+      renderPage(`/plan/goals?project=${id}`)
 
-    await screen.findByTestId("goals-page-empty")
-    const trigger = screen.getByTestId("goals-project-filter")
-    expect(trigger).toHaveAccessibleName("goals.project.filterLabel")
-    expect(screen.getByTestId("goals-filter-group")).toContainElement(trigger)
-    expect(within(trigger).getByText("goals.project.filterAll")).toHaveClass(
-      "sr-only"
-    )
-  })
-
-  describe("project quick-nav Create project", () => {
-    const newProject = {
-      ...otherProject,
-      projectId: "proj-3",
-      name: "Fresh start",
+      await screen.findByTestId("goals-list-table")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+      await vi.waitFor(() =>
+        expect(screen.getByTestId("location-search")).toHaveTextContent(/^$/)
+      )
+      expect(screen.getByTestId("goals-project-scope-all")).toHaveAttribute(
+        "aria-pressed",
+        "true"
+      )
+      expect(
+        screen.queryByTestId("goals-project-scope-chip-proj-old")
+      ).not.toBeInTheDocument()
     }
+  )
 
-    it.each([false, true])(
-      "opens the blank sheet, creates a project and keeps the route and membership filter (mobile: %s)",
-      async (isMobile) => {
-        mobile.value = isMobile
-        listGoals.mockResolvedValue({ goals: [activeGoal] })
-        listProjects.mockResolvedValue({
-          projects: [overviewProject, otherProject],
-        })
-        createProject.mockImplementation(() => {
-          listProjects.mockResolvedValue({
-            projects: [overviewProject, otherProject, newProject],
-          })
-          return Promise.resolve(newProject)
-        })
-        const user = userEvent.setup()
-        renderPage()
+  it("keeps the param but lists all goals with only the All goals chip while projects fail to load", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal, goalB] })
+    listProjects.mockRejectedValue(new Error("boom"))
+    renderPage("/plan/goals?project=proj-1")
 
-        await user.click(await screen.findByTestId("goals-project-filter"))
-        await user.click(
-          await screen.findByRole("option", { name: "Event Prep" })
-        )
-        expect(
-          screen.getByTestId("goals-project-filter")
-        ).toHaveAccessibleDescription("Event Prep")
-
-        await user.click(
-          await screen.findByTestId("overview-quicknav-create-project")
-        )
-        const sheet = await screen.findByTestId("manage-projects-sheet")
-        expect(
-          within(sheet).getByText("goals.project.newProjectTitle")
-        ).toBeInTheDocument()
-        expect(within(sheet).getByLabelText("goals.project.name")).toHaveValue(
-          ""
-        )
-
-        await user.type(
-          within(sheet).getByLabelText("goals.project.name"),
-          "Fresh start"
-        )
-        await user.click(
-          within(sheet).getByRole("button", { name: "goals.project.create" })
-        )
-
-        await vi.waitFor(() =>
-          expect(createProject).toHaveBeenCalledWith({
-            name: "Fresh start",
-            description: null,
-            color: null,
-          })
-        )
-        await vi.waitFor(() =>
-          expect(
-            screen.queryByTestId("manage-projects-sheet")
-          ).not.toBeInTheDocument()
-        )
-        expect(listProjects.mock.calls.length).toBeGreaterThan(1)
-        if (!isMobile)
-          expect(
-            await screen.findByTestId("overview-quicknav-chip-proj-3")
-          ).toBeInTheDocument()
-        expect(
-          screen.getByTestId("goals-project-filter")
-        ).toHaveAccessibleDescription("Event Prep")
-        expect(navigateMock).not.toHaveBeenCalled()
-      }
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
-
-    it.each([false, true])(
-      "keeps the sheet open with the entered fields when saving fails (mobile: %s)",
-      async (isMobile) => {
-        mobile.value = isMobile
-        listGoals.mockResolvedValue({ goals: [] })
-        listProjects.mockResolvedValue({ projects: [overviewProject] })
-        createProject.mockRejectedValue(new Error("boom"))
-        const user = userEvent.setup()
-        renderPage()
-
-        // Wait for the loaded state so the click lands on the control that stays mounted.
-        await screen.findByTestId(
-          isMobile ? "overview-quicknav-mobile" : "overview-quicknav-desktop"
-        )
-        await user.click(
-          await screen.findByTestId("overview-quicknav-create-project")
-        )
-        const sheet = await screen.findByTestId("manage-projects-sheet")
-        await user.type(
-          within(sheet).getByLabelText("goals.project.name"),
-          "Retry me"
-        )
-        await user.type(
-          within(sheet).getByLabelText("goals.project.description"),
-          "Some notes"
-        )
-        await user.click(
-          within(sheet).getByRole("button", { name: "goals.project.create" })
-        )
-
-        await vi.waitFor(() => expect(createProject).toHaveBeenCalledTimes(1))
-        expect(screen.getByTestId("manage-projects-sheet")).toBeInTheDocument()
-        expect(within(sheet).getByLabelText("goals.project.name")).toHaveValue(
-          "Retry me"
-        )
-        expect(
-          within(sheet).getByLabelText("goals.project.description")
-        ).toHaveValue("Some notes")
-        expect(navigateMock).not.toHaveBeenCalled()
-      }
+    expect(screen.getByTestId("location-search")).toHaveTextContent(
+      "?project=proj-1"
     )
-
-    it.each([false, true])(
-      "still offers Create project when there are no projects (mobile: %s)",
-      async (isMobile) => {
-        mobile.value = isMobile
-        listGoals.mockResolvedValue({ goals: [] })
-        listProjects.mockResolvedValue({ projects: [] })
-        createProject.mockResolvedValue(newProject)
-        const user = userEvent.setup()
-        renderPage()
-
-        await screen.findByTestId("goals-page-empty")
-        await screen.findByTestId(
-          isMobile ? "overview-quicknav-empty" : "overview-quicknav-create-only"
-        )
-        if (isMobile) {
-          expect(
-            screen.getByTestId("overview-quicknav-empty")
-          ).toBeInTheDocument()
-          expect(
-            screen.queryByText("home.projects.emptyAction")
-          ).not.toBeInTheDocument()
-        }
-        await user.click(
-          await screen.findByTestId("overview-quicknav-create-project")
-        )
-        const sheet = await screen.findByTestId("manage-projects-sheet")
-        await user.type(
-          within(sheet).getByLabelText("goals.project.name"),
-          "Fresh start"
-        )
-        await user.click(
-          within(sheet).getByRole("button", { name: "goals.project.create" })
-        )
-
-        await vi.waitFor(() =>
-          expect(createProject).toHaveBeenCalledWith({
-            name: "Fresh start",
-            description: null,
-            color: null,
-          })
-        )
-        await vi.waitFor(() =>
-          expect(
-            screen.queryByTestId("manage-projects-sheet")
-          ).not.toBeInTheDocument()
-        )
-        expect(navigateMock).not.toHaveBeenCalled()
-      }
+    await vi.waitFor(() =>
+      expect(
+        within(screen.getByTestId("goals-project-scope")).getAllByRole("button")
+      ).toHaveLength(1)
     )
+  })
+
+  it.each([false, true])(
+    "renders the scope chips as their own row above the controls, with no project select (mobile: %s)",
+    async (isMobile) => {
+      mobile.value = isMobile
+      twoProjects()
+      renderPage()
+
+      await screen.findByTestId("goals-status-filter")
+      const chips = screen.getByTestId("goals-project-scope")
+      const status = screen.getByTestId("goals-status-filter")
+      expect(screen.getByTestId("goals-filter-group")).not.toContainElement(
+        chips
+      )
+      expect(screen.queryByTestId("goals-project-filter")).toBeNull()
+      expect(
+        chips.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      expect(
+        screen.queryByTestId("overview-quicknav-create-project")
+      ).toBeNull()
+    }
+  )
+
+  it("explains the order from a control-row hint that adds the account-wide note only when scoped", async () => {
+    twoProjects()
+    const user = userEvent.setup()
+    const view = renderPage()
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.queryByTestId("goals-order-note")).toBeNull()
+    await user.click(await screen.findByTestId("goals-order-hint"))
+    const content = await screen.findByTestId("goals-order-hint-content")
+    expect(content).toHaveTextContent("goals.order.listNote")
+    expect(content).not.toHaveTextContent("goals.order.scopedNote")
+    view.unmount()
+
+    renderPage("/plan/goals?project=proj-1")
+    await screen.findByTestId("goals-list-table")
+    await user.click(await screen.findByTestId("goals-order-hint"))
+    expect(
+      await screen.findByTestId("goals-order-hint-content")
+    ).toHaveTextContent("goals.order.scopedNote")
+  })
+
+  it("opens the order hint on keyboard focus and hides it when reordering is unavailable", async () => {
+    twoProjects()
+    const view = renderPage()
+    await screen.findByTestId("goals-list-table")
+    act(() => screen.getByTestId("goals-order-hint").focus())
+    expect(
+      await screen.findByTestId("goals-order-hint-content")
+    ).toBeInTheDocument()
+    view.unmount()
+
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+    expect(screen.queryByTestId("goals-order-hint")).toBeNull()
+  })
+
+  it("preselects the scoped project when creating a goal from the control row", async () => {
+    twoProjects()
+    const user = userEvent.setup()
+    renderPage("/plan/goals?project=proj-2")
+
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    )
+    await user.click(screen.getByTestId("goals-create-goal"))
+    expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-2"] })
+  })
+
+  it("tells an empty project apart from a filter that matches nothing", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    listProjects.mockResolvedValue({
+      projects: [overviewProject, otherProject],
+    })
+    listProjectGoals.mockImplementation((projectId: string) =>
+      Promise.resolve({
+        goals:
+          projectId === "proj-1" ? [{ goal: activeGoal, priority: 0 }] : [],
+      })
+    )
+    const view = renderPage("/plan/goals?project=proj-2")
+
+    expect(
+      await screen.findByTestId("goals-page-empty-project")
+    ).toHaveTextContent("goals.project.emptyProjectDescription")
+    expect(screen.queryByTestId("goals-page-filtered-empty")).toBeNull()
+    expect(screen.queryByTestId("goals-page-empty")).toBeNull()
+    view.unmount()
+
+    const user = userEvent.setup()
+    renderPage("/plan/goals?project=proj-1")
+    await screen.findByTestId("goals-list-table")
+    await user.click(screen.getByTestId("goals-status-filter"))
+    await user.click(
+      await screen.findByRole("option", { name: /^goals\.tabs\.reached/ })
+    )
+    expect(
+      await screen.findByTestId("goals-page-filtered-empty")
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-page-empty-project")).toBeNull()
   })
 })

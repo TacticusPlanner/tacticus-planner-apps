@@ -71,7 +71,7 @@ export function ProjectsWidget() {
             <ProjectSummaryRow
               key={project.projectId}
               onSelect={() =>
-                void navigate(`/plan/projects/${project.projectId}`)
+                void navigate(`/plan/goals?project=${project.projectId}`)
               }
               project={project}
               summary={result.summaries.get(project.projectId)}

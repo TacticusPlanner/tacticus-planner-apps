@@ -66,11 +66,8 @@ describe("Rank milestone copy in every locale", () => {
       expect(locale.goals.project.membershipConflictRank).toContain(
         "{{target}}"
       )
-      expect(locale.tour.projectDetail.steps.addGoals.content).not.toBe(
-        en.tour.projectDetail.steps.addGoals.content
-      )
-      expect(locale.tour.projectDetail.steps.goals.content).not.toBe(
-        en.tour.projectDetail.steps.goals.content
+      expect(locale.tour.overview.steps.projectScope.content).not.toBe(
+        en.tour.overview.steps.projectScope.content
       )
     }
   )

@@ -10,28 +10,72 @@ import { Separator } from "@workspace/ui/components/separator"
 
 import {
   useDailyRaids,
+  RaidSchedule,
+  RaidState,
   ResourceIconWithTooltip,
   type DailyRaidBattleResource,
   type DailyRaidLocationViewModel,
+  type DailyRaidsReadyViewModel,
   type TodaysAttempt,
 } from "@/features/daily-raids"
+import {
+  PlanningSettingsDialog,
+  PlanningSettingsTrigger,
+} from "@/entities/planning-setting"
+import { ProjectSelect } from "@/entities/project"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import { CampaignEventStatusLine } from "./campaign-event-status"
 import type { DailiesOutletContext } from "./dailies-layout"
-import { RaidSchedule } from "./raid-schedule"
-import { RaidState } from "./raid-state"
 import { useTodayTutorial } from "./today.tutorial"
 
 const BONUS_LIMIT = 3
 
+/**
+ * Dailies > Raids is the Today page itself (the multi-day plan is Plan > Schedule). Above the
+ * schedule sits the Dailies-wide project selector (default: all goals) with the shared Planning
+ * Settings trigger trailing it (`planning-settings-access`) - the same dialog Plan > Goals opens.
+ */
 export function TodayPage() {
   const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("dailies")
-  const [showAllBonus, setShowAllBonus] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const raids = useDailyRaids(context.projectId)
   useTodayTutorial()
 
-  if (raids.status !== "ready") return <RaidState state={raids.status} />
+  return (
+    <section className="space-y-5" data-testid="dailies-raids-layout">
+      <div className="flex items-center justify-end gap-2">
+        <ProjectSelect
+          allowAll
+          onProjectIdChange={context.setProjectId}
+          placeholder={t("project.placeholder")}
+          projectId={context.projectId}
+          projects={context.projects}
+          testId="raids-project-select"
+        />
+        <PlanningSettingsTrigger
+          onClick={() => setSettingsOpen(true)}
+          testId="raids-planning-settings"
+        />
+      </div>
+      {raids.status === "ready" ? (
+        <TodaySchedule raids={raids} />
+      ) : (
+        <RaidState state={raids.status} />
+      )}
+      {settingsOpen ? (
+        <PlanningSettingsDialog
+          onOpenChange={setSettingsOpen}
+          open={settingsOpen}
+        />
+      ) : null}
+    </section>
+  )
+}
+
+function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
+  const { t } = useTranslation("dailies")
+  const [showAllBonus, setShowAllBonus] = useState(false)
 
   // Filter out exhausted locations before slicing to BONUS_LIMIT — otherwise an actionable entry
   // past the limit can become unreachable if the first few entries all happen to be exhausted.

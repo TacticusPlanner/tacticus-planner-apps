@@ -40,11 +40,11 @@ import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
-import { GoalsCreateProjectSheet } from "./goals-create-project-sheet"
 import { GoalsList } from ".//goals-list"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
-import { ALL_PROJECTS, ProjectFilterSelect } from "./goals-project-filter"
-import { OverviewProjectQuicknav } from "./overview-project-quicknav"
+import { GoalsOrderHint } from "./goals-order-hint"
+import { GoalsProjectScope } from "./goals-project-scope"
+import { useGoalsProjectScope } from "../../model/projects/use-goals-project-scope"
 import { buildCascadeContext } from "./goal-row-utils"
 import { GoalEditDialog } from "../goal-edit/goal-edit-dialog"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
@@ -58,7 +58,7 @@ import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
  * goal it displaces and hidden goals keep their relative order. Estimates come from the same plan
  * run Today uses. Within Goals, Planning Settings lives only here (goals-navigation spec: Projects
  * and Insights render no entry point of their own) - moved down from the shared `GoalsLayout`
- * wrapper. Dailies > Raids (`RaidsLayout`) has its own separate entry point onto the same shared
+ * wrapper. Dailies > Raids (Today) and Plan > Schedule each have its own separate entry point onto the same shared
  * dialog (`expose-planning-settings-from-dailies`); the two never import from each other.
  */
 export function GoalsPage() {
@@ -75,13 +75,6 @@ export function GoalsPage() {
     "none"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
-  // Blank project-creation sheet opened from the project quick-nav; local state so opening,
-  // saving or failing never touches the route or the membership filter below.
-  const [createProjectOpen, setCreateProjectOpen] = useState(false)
-  // Membership as a filter dimension, not a project selection: local state only, deliberately
-  // unconnected to the project filter Dailies and Insights use, so browsing Goals never changes
-  // what those views operate on.
-  const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS)
   const { getEntityName } = useGoalCatalog()
   const launchCreateGoal = useCreateGoalLauncher()
   const insightsRun = usePlanInsights(null)
@@ -90,7 +83,16 @@ export function GoalsPage() {
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
-  const projectsByGoalId = useGoalProjects(projects.projects)
+  // Membership as a URL-backed filter dimension (`?project=`), not a project selection: deliberately
+  // unconnected to the project filter Dailies and Insights use, so scoping Goals never changes what
+  // those views operate on (goals-navigation: "Goals project scope is URL state").
+  const { projectId: scopeId, setProjectId: setScopeId } = useGoalsProjectScope(
+    projects.projects,
+    projects.fetchState.status === "success"
+  )
+  const { byGoalId: projectsByGoalId, loadedProjectIds } = useGoalProjects(
+    projects.projects
+  )
   const nonArchivedGoals = useGoals()
   const archivedGoals = useGoals({ archived: true })
   // The archived query stays for prerequisite cascades only; there is no Archived view any more.
@@ -145,11 +147,21 @@ export function GoalsPage() {
   )
   const matchesFilters = (row: GoalRow) =>
     (goalType === "all" || row.goalType === goalType) &&
-    (projectFilter === ALL_PROJECTS ||
+    (!scopeId ||
       (row.projects ?? []).some(
-        (membership) => membership.projectId === projectFilter
+        (membership) => membership.projectId === scopeId
       ))
   const filteredNonArchivedRows = nonArchivedRows.filter(matchesFilters)
+  const scopeCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const row of nonArchivedRows)
+      for (const membership of row.projects ?? [])
+        counts.set(
+          membership.projectId,
+          (counts.get(membership.projectId) ?? 0) + 1
+        )
+    return counts
+  }, [nonArchivedRows])
 
   // "Blocked" needs every candidate goal's computed blockers to know which ones match, so unlike the
   // other tabs it can't narrow to a final row set before fetching metrics - it fetches metrics for the
@@ -230,12 +242,25 @@ export function GoalsPage() {
     !fetchError &&
     nonArchivedGoals.fetchState.status === "success" &&
     nonArchivedRows.length === 0
+  // The scoped project has no non-archived goals at all (not merely none matching the status/type
+  // filters) - goals-navigation: "Scoped Goals adjusts contextual actions and copy".
+  const showEmptyProjectState =
+    !!scopeId &&
+    !isLoading &&
+    !fetchError &&
+    nonArchivedGoals.fetchState.status === "success" &&
+    loadedProjectIds.has(scopeId) &&
+    (scopeCounts.get(scopeId) ?? 0) === 0
 
   const createGoalButton = (
     <Button
       aria-label={t("goals.createButton")}
       data-testid="goals-create-goal"
-      onClick={() => launchCreateGoal()}
+      onClick={() =>
+        scopeId
+          ? launchCreateGoal({ projectIds: [scopeId] })
+          : launchCreateGoal()
+      }
       size="sm"
       variant="outline"
     >
@@ -264,12 +289,10 @@ export function GoalsPage() {
         onGoalTypeChange={setGoalType}
         onGroupChange={setGroup}
       />
-      <ProjectFilterSelect
-        onChange={setProjectFilter}
-        projects={projects.projects}
-        value={projectFilter}
-      />
       {reorderToggle}
+      {reorderAvailable && rows.length > 0 ? (
+        <GoalsOrderHint scoped={!!scopeId} />
+      ) : null}
       {createGoalButton}
       {planningSettingsButton}
     </div>
@@ -285,18 +308,21 @@ export function GoalsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
-      {/* overview-project-quicknav spec: a project jump-to row/widget above the control row below -
-          not part of goals-navigation's control row itself. */}
-      <OverviewProjectQuicknav
+      {/* goals-navigation spec: the project scope chip row is the only row above the control row,
+          at both breakpoints. */}
+      <GoalsProjectScope
+        counts={scopeCounts}
+        failed={projects.fetchState.status === "error"}
+        loading={projects.loading}
+        onSelect={setScopeId}
         projects={projects.projects}
-        projectsFailed={projects.fetchState.status === "error"}
-        projectsLoading={projects.loading}
-        onCreateProject={() => setCreateProjectOpen(true)}
+        selectedId={scopeId}
+        totalCount={nonArchivedRows.length}
       />
 
-      {/* goals-navigation spec: desktop merges the status filter, Type/Group filters, and
-          Create Goal, and Planning Settings into a single row; mobile keeps the status filter in its own row and
-          compresses the filters + Create Goal + Planning Settings to icon-only triggers in a second row. */}
+      {/* goals-navigation spec: desktop merges the status filter, Type/Group filters, the order hint,
+          Create Goal, and Planning Settings into a single row beneath the chips; mobile keeps the status
+          filter in its own row and compresses the rest to icon-only triggers in a third row. */}
       {isMobile ? (
         <>
           {statusFilter}
@@ -315,15 +341,6 @@ export function GoalsPage() {
           onRetry={() => void orderActions.retry()}
           retrying={orderActions.pending}
         />
-      ) : null}
-
-      {reorderAvailable && rows.length > 0 ? (
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="goals-order-note"
-        >
-          {t("goals.order.listNote")}
-        </p>
       ) : null}
 
       {insightsRun.isError ? (
@@ -361,9 +378,21 @@ export function GoalsPage() {
         </Card>
       ) : null}
 
+      {showEmptyProjectState ? (
+        <Card data-testid="goals-page-empty-project">
+          <CardHeader>
+            <CardTitle>{t("goals.project.emptyProjectTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("goals.project.emptyProjectDescription")}
+          </CardContent>
+        </Card>
+      ) : null}
+
       {!isLoading &&
       !fetchError &&
       !showPristineEmptyState &&
+      !showEmptyProjectState &&
       rows.length === 0 ? (
         <p
           className="py-10 text-center text-muted-foreground"
@@ -421,10 +450,6 @@ export function GoalsPage() {
       <GoalEditDialog
         goalId={editGoalId}
         onOpenChange={(open) => !open && setEditGoalId(null)}
-      />
-      <GoalsCreateProjectSheet
-        onOpenChange={setCreateProjectOpen}
-        open={createProjectOpen}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

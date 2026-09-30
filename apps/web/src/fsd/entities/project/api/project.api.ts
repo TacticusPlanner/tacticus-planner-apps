@@ -60,13 +60,3 @@ export function listProjectGoals(projectId: string, signal?: AbortSignal) {
     { signal }
   )
 }
-
-export function updateProjectGoalsStatus(
-  projectId: string,
-  status: "Active" | "Paused"
-) {
-  return apiPost<{ goalsTransitioned: number }>(
-    `/api/v1/me/projects/${projectId}/goals/status`,
-    { body: { status } }
-  )
-}

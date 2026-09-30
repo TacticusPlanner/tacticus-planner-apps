@@ -18,6 +18,12 @@ const useShopRecommendations = vi.fn<
   (projectId: string | undefined) => { status: "ready"; sections: never[] }
 >(() => ({ status: "ready", sections: [] }))
 
+const { useIsMobileMock } = vi.hoisted(() => ({
+  useIsMobileMock: vi.fn(() => false),
+}))
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => useIsMobileMock(),
+}))
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
@@ -107,16 +113,27 @@ describe("Dailies navigation", () => {
   beforeEach(() => {
     useDailyRaids.mockClear()
     save.mockClear()
+    useIsMobileMock.mockReturnValue(false)
   })
 
-  it("redirects /dailies to Raids Today", async () => {
+  it("redirects /dailies to Raids, which is the Today page with no sub-tab bar", async () => {
     renderDailies()
 
     expect(await findRouteContent("dailies-no-farmable")).toBeInTheDocument()
-    expect(
-      screen.getByRole("tab", { name: "raids.tabs.today" })
-    ).toHaveAttribute("data-state", "active")
+    expect(screen.getByTestId("dailies-raids-layout")).toBeInTheDocument()
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument()
   })
+
+  it.each(["/dailies/raids/today", "/dailies/raids/plan"])(
+    "no longer serves %s",
+    (path) => {
+      renderDailies(path)
+
+      expect(
+        screen.queryByTestId("dailies-raids-layout")
+      ).not.toBeInTheDocument()
+    }
+  )
 
   it("routes Guild Raids to its access-aware page", async () => {
     renderDailies("/dailies/guild-raids")
@@ -172,22 +189,16 @@ describe("Dailies navigation", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("plans the whole account on Today and Plan, with the project selector defaulting to all goals", async () => {
-    const user = userEvent.setup()
-    renderDailies("/dailies/raids/today")
-    await findRouteContent("dailies-no-farmable")
-    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
-    expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
-
-    await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
+  it("plans the whole account on Today, with the project selector defaulting to all goals", async () => {
+    renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
     expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
     expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
   })
 
-  it("narrows Today to the picked project and keeps it on Plan", async () => {
+  it("narrows Today to the picked project", async () => {
     const user = userEvent.setup()
-    renderDailies("/dailies/raids/today")
+    renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
 
     await user.click(screen.getByTestId("raids-project-select"))
@@ -195,31 +206,38 @@ describe("Dailies navigation", () => {
       await screen.findByRole("option", { name: /Active project/ })
     )
     expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
-
-    await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
-    await findRouteContent("dailies-no-farmable")
-    expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
   })
 
-  it("exposes the shared Planning Settings action trailing the project selector on Today and Plan", async () => {
-    const user = userEvent.setup()
-    renderDailies("/dailies/raids/today")
+  it("labels the project selector on desktop and compresses it to an icon on mobile", async () => {
+    renderDailies("/dailies/raids")
+    await findRouteContent("dailies-no-farmable")
+    expect(screen.getByTestId("raids-project-select")).toHaveTextContent(/\S/)
+
+    useIsMobileMock.mockReturnValue(true)
+    renderDailies("/dailies/raids")
+    const [, mobileSelect] = await screen.findAllByTestId(
+      "raids-project-select"
+    )
+    expect(mobileSelect).toHaveAccessibleName("project.placeholder")
+    expect(mobileSelect).not.toHaveTextContent(/\S/)
+  })
+
+  it("exposes the shared Planning Settings action trailing the project selector on Today", async () => {
+    renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
 
     const settingsButton = screen.getByTestId("raids-planning-settings")
     expect(settingsButton).toHaveAccessibleName("goals.planningSettings.button")
-    expect(screen.getByTestId("raids-project-select")).toBeInTheDocument()
-
-    await user.click(screen.getByRole("tab", { name: "raids.tabs.plan" }))
-    await findRouteContent("dailies-no-farmable")
-    expect(screen.getByTestId("raids-planning-settings")).toHaveAccessibleName(
-      "goals.planningSettings.button"
-    )
+    const select = screen.getByTestId("raids-project-select")
+    expect(
+      select.compareDocumentPosition(settingsButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
   })
 
   it("opens the shared Planning Settings dialog from Raids", async () => {
     const user = userEvent.setup()
-    renderDailies("/dailies/raids/today")
+    renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
 
     await user.click(screen.getByTestId("raids-planning-settings"))
@@ -235,7 +253,7 @@ describe("Dailies navigation", () => {
 
   it("opens the Planning Settings dialog via keyboard activation", async () => {
     const user = userEvent.setup()
-    renderDailies("/dailies/raids/today")
+    renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
 
     const settingsButton = screen.getByTestId("raids-planning-settings")

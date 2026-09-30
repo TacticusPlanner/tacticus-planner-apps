@@ -27,6 +27,7 @@ type NavLabelKey =
   | "goals.tabs.overview"
   | "goals.tabs.projects"
   | "goals.tabs.insights"
+  | "goals.tabs.schedule"
   | "progress.tabs.onslaught"
   | "progress.tabs.campaigns"
   | "progress.tabs.campaign-events"
@@ -71,9 +72,9 @@ export interface NavSubItem {
   // This child's own path renders a screen a user can land on, so its header tab returns there from
   // a route nested below it (see `section-tabs.tsx`). Opt-in, because for most children the path is
   // not a destination: `use-library-route-selection` canonicalizes a Library collection path,
-  // `replace`-ing it with `<collection>/<firstId>`, and `/dailies/raids` is an index redirect to
-  // `/dailies/raids/today`. Navigating to either throws the user somewhere they did not ask for, so
-  // a child added later must declare this deliberately rather than inherit it.
+  // `replace`-ing it with `<collection>/<firstId>`. Navigating to it throws the user somewhere
+  // they did not ask for, so a child added later must declare this deliberately rather than
+  // inherit it.
   isLandingPage?: boolean
 }
 
@@ -154,13 +155,16 @@ export const navItems: NavItem[] = [
         path: "/plan/projects",
         labelKey: "goals.tabs.projects",
         descriptionKey: "goals.tabs.projectsDescription",
-        // The all-projects screen; `/plan/projects/:projectId` is a detail route above it.
-        isLandingPage: true,
       },
       {
         path: "/plan/insights",
         labelKey: "goals.tabs.insights",
         descriptionKey: "goals.tabs.insightsDescription",
+      },
+      {
+        path: "/plan/schedule",
+        labelKey: "goals.tabs.schedule",
+        descriptionKey: "goals.tabs.scheduleDescription",
       },
     ],
   },

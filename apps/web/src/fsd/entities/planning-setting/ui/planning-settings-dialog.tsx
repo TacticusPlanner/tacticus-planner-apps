@@ -43,7 +43,7 @@ const tierLabels = [
 
 /**
  * The one Planning Settings dialog, reused from both Plan > Goals (`/plan/goals`) and Dailies >
- * Raids (`RaidsLayout`, Today/Raids Plan) — see `PlanningSettingsTrigger` for the matching shared
+ * Raids (Today) and Plan > Schedule — see `PlanningSettingsTrigger` for the matching shared
  * trigger. Lives here rather than under a page so neither page imports the other
  * (`expose-planning-settings-from-dailies`). Callers own their own open state; this component is
  * only mounted while `open` should be true.

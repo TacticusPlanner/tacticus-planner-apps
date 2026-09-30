@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react"
-import { matchPath, useLocation } from "react-router"
+import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -25,6 +25,7 @@ import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
+import { createGoalScopeProjectId } from "./create-goal-scope"
 import { useSectionEntryPath } from "./use-section-entry-path"
 
 // Idle until the user opens it (via onCreateGoal), so it's lazy-loaded rather than pulled into the
@@ -113,7 +114,7 @@ function ShellContent({
 }) {
   const [createOpen, setCreateOpen] = useState(false)
   const [createPrefill, setCreatePrefill] = useState<CreateGoalPrefill>()
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const { getEntryPath } = useSectionEntryPath(visibleItems, pathname)
   const queryClient = useQueryClient()
   const refreshGoals = () => {
@@ -137,10 +138,9 @@ function ShellContent({
     pageDescription,
     pageTitle,
     sectionTitle,
-    // Global entry points (sidebar, bottom nav, Ctrl/Cmd+G) preselect the project being viewed.
+    // Global entry points (sidebar, bottom nav, Ctrl/Cmd+G) preselect the Goals page's project scope.
     onCreateGoal: () => {
-      const projectId = matchPath("/plan/projects/:projectId", pathname)?.params
-        .projectId
+      const projectId = createGoalScopeProjectId(pathname, search)
       launchCreateGoal(projectId ? { projectIds: [projectId] } : undefined)
     },
   }

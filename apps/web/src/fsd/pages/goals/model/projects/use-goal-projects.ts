@@ -5,7 +5,9 @@ import { projectQueries, type ProjectSummary } from "@/entities/project"
 
 import type { GoalProject } from "../shared/types"
 
-/** Loads each project's members in parallel and indexes project membership by goal id. */
+/** Loads each project's members in parallel and indexes project membership by goal id, plus the
+ * ids of the projects whose member list has loaded - so a scoped Goals page can tell "this project
+ * has no goals" from "membership is still loading". */
 export function useGoalProjects(projects: ProjectSummary[]) {
   const queries = useQueries({
     queries: projects.map((project) => projectQueries.goals(project.projectId)),
@@ -13,8 +15,10 @@ export function useGoalProjects(projects: ProjectSummary[]) {
 
   return useMemo(() => {
     const result = new Map<string, GoalProject[]>()
+    const loadedProjectIds = new Set<string>()
 
     projects.forEach((project, index) => {
+      if (queries[index]?.data) loadedProjectIds.add(project.projectId)
       for (const member of queries[index]?.data?.goals ?? []) {
         const memberships = result.get(member.goal.goalId) ?? []
         memberships.push({
@@ -26,6 +30,6 @@ export function useGoalProjects(projects: ProjectSummary[]) {
       }
     })
 
-    return result
+    return { byGoalId: result, loadedProjectIds }
   }, [projects, queries])
 }

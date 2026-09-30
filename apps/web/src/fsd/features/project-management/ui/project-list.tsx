@@ -6,6 +6,8 @@ type Props = {
   projects: ProjectSummary[]
   actions: ReturnType<typeof useProjectActions>
   onEdit: (project: ProjectSummary) => void
+  onCreateGoal?: (project: ProjectSummary) => void
+  onManageGoals?: (project: ProjectSummary) => void
   onSelect: (project: ProjectSummary) => void
   summaries?: ReadonlyMap<string, ProjectCardSummary>
 }
@@ -13,13 +15,15 @@ type Props = {
 /**
  * The Projects list route's permanent, inline project list (project-management spec: "The list
  * route shows every project without its goal table") - every non-deleted project, active and
- * archived, as its own row (`ProjectRow`). Activating a row outside its action icons navigates to
- * that project's detail route via `onSelect`; the icons themselves never do.
+ * archived, as its own row (`ProjectRow`). Activating a row outside its action icons opens that
+ * project on the Goals page via `onSelect`; the icons themselves never do.
  */
 export function ProjectList({
   projects,
   actions,
   onEdit,
+  onCreateGoal,
+  onManageGoals,
   onSelect,
   summaries,
 }: Props) {
@@ -29,7 +33,9 @@ export function ProjectList({
         <ProjectRow
           actions={actions}
           key={project.projectId}
+          onCreateGoal={onCreateGoal}
           onEdit={onEdit}
+          onManageGoals={onManageGoals}
           onSelect={() => onSelect(project)}
           project={project}
           summary={summaries?.get(project.projectId)}

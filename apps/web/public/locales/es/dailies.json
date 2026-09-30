@@ -154,12 +154,6 @@
   "project": {
     "placeholder": "Selecciona un proyecto"
   },
-  "raids": {
-    "tabs": {
-      "today": "Hoy",
-      "plan": "Plan"
-    }
-  },
   "empty": {
     "noFarmable": "Ninguno de tus objetivos activos tiene necesidades de campaña farmeables.",
     "error": "No se pudo cargar el plan.",
@@ -212,6 +206,7 @@
       "completion": "Fecha final",
       "noCompletion": "No disponible"
     },
+    "today": "Hoy",
     "day": "Día {{day}}",
     "dayStats": "{{energy}} / {{available}} energía · {{raids}} incursiones",
     "showAll": "Mostrar todos los días",
@@ -264,10 +259,6 @@
           "title": "Navegación",
           "content": "Cambia entre los planificadores diarios."
         },
-        "raids": {
-          "title": "Vistas de incursión",
-          "content": "Cambia entre el plan de hoy y el plan completo de incursiones."
-        },
         "schedule": {
           "title": "Plan de hoy",
           "content": "Ataca estos nodos con la energía de hoy — aquí también aparecen sugerencias adicionales una vez cubiertas tus necesidades presupuestadas."
@@ -288,10 +279,6 @@
     },
     "raidsPlan": {
       "steps": {
-        "navigation": {
-          "title": "Vistas",
-          "content": "Cambia entre Hoy y Plan."
-        },
         "summary": {
           "title": "Resumen",
           "content": "Los totales abarcan cada día planificado, empezando por hoy. Si un objetivo tiene un requisito sin fuente compatible, la fecha de finalización no estará disponible y los bloqueos se listan debajo."

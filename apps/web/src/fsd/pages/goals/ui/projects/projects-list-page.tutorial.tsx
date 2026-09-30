@@ -6,8 +6,8 @@ import { useTourPageSteps } from "@/shared/tour"
 
 /**
  * Projects list route's guided tour (project-management spec: the on-page project list and the
- * "New project" FAB). Split from the single combined `useProjectsTutorial` this page previously
- * shared with the goal table/selector, now that those moved to `ProjectDetailPage`'s own tour.
+ * "New project" FAB, whose step copy also introduces each row's action menu - Create goal, Manage
+ * goals, Edit, Archive/Restore).
  */
 export function useProjectsListTutorial() {
   const { t } = useTranslation()

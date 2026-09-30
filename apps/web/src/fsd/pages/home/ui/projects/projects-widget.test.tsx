@@ -95,7 +95,7 @@ describe("ProjectsWidget", () => {
     expect(screen.getByTestId("home-projects-empty")).toBeInTheDocument()
   })
 
-  it("renders project rows and navigates to a project's detail route on activation", async () => {
+  it("renders project rows and opens a project on the Goals page on activation", async () => {
     useHomeProjectsMock.mockReturnValue({
       status: "ready",
       projects: [project({ projectId: "p1", isDefault: true })],
@@ -106,7 +106,7 @@ describe("ProjectsWidget", () => {
     render(<ProjectsWidget />)
 
     screen.getByTestId("home-project-row-p1").click()
-    expect(navigateMock).toHaveBeenCalledWith("/plan/projects/p1")
+    expect(navigateMock).toHaveBeenCalledWith("/plan/goals?project=p1")
     expect(screen.queryByTestId("home-projects-more")).not.toBeInTheDocument()
   })
 

@@ -1,5 +1,12 @@
 import { useTranslation } from "react-i18next"
-import { Archive, ArchiveRestore, MoreHorizontal, Pencil } from "lucide-react"
+import {
+  Archive,
+  ArchiveRestore,
+  ListChecks,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+} from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -17,7 +24,11 @@ type Props = {
   project: ProjectSummary
   actions: ReturnType<typeof useProjectActions>
   onEdit: (project: ProjectSummary) => void
-  /** Present where clicking the card should navigate to project detail. */
+  /** Project-specific actions (project-management: "The Projects row menu hosts every
+   *  project-specific action"); offered on non-archived rows only. */
+  onCreateGoal?: (project: ProjectSummary) => void
+  onManageGoals?: (project: ProjectSummary) => void
+  /** Present where clicking the card should open the project on the Goals page. */
   onSelect?: () => void
   summary?: ProjectCardSummary
 }
@@ -42,6 +53,8 @@ export function ProjectRow({
   project,
   actions,
   onEdit,
+  onCreateGoal,
+  onManageGoals,
   onSelect,
   summary,
 }: Props) {
@@ -148,6 +161,24 @@ export function ProjectRow({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {!archived && onCreateGoal ? (
+              <DropdownMenuItem
+                data-testid={`project-row-create-goal-${project.projectId}`}
+                onSelect={() => onCreateGoal(project)}
+              >
+                <Plus />
+                {t("goals.project.createGoalTrigger")}
+              </DropdownMenuItem>
+            ) : null}
+            {!archived && onManageGoals ? (
+              <DropdownMenuItem
+                data-testid={`project-row-manage-goals-${project.projectId}`}
+                onSelect={() => onManageGoals(project)}
+              >
+                <ListChecks />
+                {t("goals.project.addGoalsTrigger")}
+              </DropdownMenuItem>
+            ) : null}
             <DropdownMenuItem
               data-testid={`project-row-edit-${project.projectId}`}
               onSelect={() => onEdit(project)}

@@ -34,11 +34,10 @@ type Props = {
   onGoalTypeChange?: (value: GoalTypeFilterValue) => void
   group: GoalGroupValue
   onGroupChange: (value: GoalGroupValue) => void
-  /** Project Detail hides the Type filter: every goal type is always shown there. Defaults to
-   *  `true`, matching the Goals page. */
+  /** Hides the Type filter where every goal type is always shown. Defaults to `true`, matching
+   *  the Goals page. */
   showTypeFilter?: boolean
-  /** Restricts which Group options render (default: all three, i.e. Overview's behavior). Project
-   *  Detail passes `["none", "type"]` — it drops "by unit" (relayout-project-detail-controls). */
+  /** Restricts which Group options render (default: all three, the Goals page's behavior). */
   groupOptions?: readonly GoalGroupValue[]
 }
 
