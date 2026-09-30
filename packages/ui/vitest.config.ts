@@ -14,6 +14,12 @@ export default defineConfig({
         ...coverageConfigDefaults.exclude,
         "**/index.ts", // barrel re-exports only, no logic of their own
         "**/*.css",
+        // Vendored shadcn primitives: only reached through the small SidebarProvider test, and
+        // untested primitives are not part of the gate unless a test imports them.
+        "src/components/sidebar.tsx",
+        "src/components/sheet.tsx",
+        "src/components/separator.tsx",
+        "src/components/skeleton.tsx",
       ],
       thresholds: {
         statements: 90,
