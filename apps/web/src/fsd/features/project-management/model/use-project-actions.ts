@@ -7,7 +7,6 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import {
   createProject,
   updateProject,
-  updateProjectGoalsStatus,
   projectQueries,
   type ProjectSummary,
 } from "@/entities/project"
@@ -15,8 +14,9 @@ import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 /**
- * Project-level mutations: active-plan toggle and bulk pause/resume. Reordering goals is a move on the
- * account-wide order and lives in `features/goal-order`.
+ * Project-level mutations: create and save (name/description/color/status). Reordering goals is a
+ * move on the account-wide order and lives in `features/goal-order`; there is no bulk pause/resume
+ * (project-management: "No bulk pause/resume on Projects").
  */
 export function useProjectActions(_onChanged?: () => void) {
   void _onChanged
@@ -64,30 +64,6 @@ export function useProjectActions(_onChanged?: () => void) {
     }
   }
 
-  /** GP-22: bulk-pause or bulk-resume every applicable goal in a project (`UpdateProjectGoalsStatusEndpoint`
-   *  already excludes `Completed`/`Archived` goals server-side — this is not a per-goal prerequisite
-   *  cascade, unlike `useGoalActions`'s row-level pause/resume). */
-  const setGoalsStatus = async (
-    projectId: string,
-    status: "Active" | "Paused"
-  ) => {
-    if (!isAuthenticated) return
-
-    let transitioned = 0
-    const ok = await run(async () => {
-      const response = await updateProjectGoalsStatus(projectId, status)
-      transitioned = response.goalsTransitioned
-      return response
-    })
-    if (ok) {
-      toast.success(
-        status === "Paused"
-          ? t("goals.toasts.projectGoalsPaused", { count: transitioned })
-          : t("goals.toasts.projectGoalsResumed", { count: transitioned })
-      )
-    }
-  }
-
   const create = async (
     name: string,
     description: string | null,
@@ -118,5 +94,5 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { setGoalsStatus, create, save, pending }
+  return { create, save, pending }
 }

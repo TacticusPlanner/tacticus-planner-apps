@@ -1,5 +1,3 @@
-import { mapLegacyGoalsPath } from "./legacy-goals-path"
-
 /** Where a user lands when no usable destination was remembered. */
 export const DEFAULT_SIGNED_IN_PATH = "/home"
 
@@ -49,5 +47,5 @@ export function resolveNextPath(
     }
   }
 
-  return mapLegacyGoalsPath(next)
+  return next
 }

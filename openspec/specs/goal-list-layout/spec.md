@@ -12,7 +12,7 @@ At or above the mobile breakpoint (see the platform-switch requirement below), t
 
 Each row SHALL render at a fixed height sized to one line of content per column (with the Character column's name-and-notes lines and the "Status · Done by" column's two stacked lines accommodated within that same fixed height), a substantial reduction from today's variable, content-driven row height. The existing alternating row (zebra) striping SHALL be preserved.
 
-When the table renders on a route where inline reordering is available (the Goals page and project detail — see `global-goal-priority`'s "Owner can reorder from Goals" and `project-management`'s "Goals are reordered individually via inline drag"), each Active or Paused row SHALL additionally show a leading drag handle before the Character column. This handle is a control affordance, not a seventh data column, and does not change the six static columns above; it is present only in a reorderable context and absent elsewhere (for example, the Insights page or any list that is not in priority order), which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
+When the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals"), each Active or Paused row SHALL additionally show a leading drag handle before the Character column. This handle is a control affordance, not a seventh data column, and does not change the six static columns above; it is present only in a reorderable context and absent elsewhere (for example, the Insights page or any list that is not in priority order), which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
 
 Assumptions:
 
@@ -124,7 +124,7 @@ A Rank or Ability goal whose character is below its required level SHALL additio
 
 ### Requirement: A Rank or Ability goal shows its level requirement as sub-lines of its own row or card
 
-Wherever the Goals list renders (desktop table or mobile cards, on either the Goals Overview or a project detail route), a Rank or Ability goal whose character is below the level its target needs SHALL render that requirement as sub-lines nested under the goal's own cells or card body, using the level-requirement display defined by `rank-level-progression`: one combined line in the Progress cell, beneath the goal's own progress: the level target "Lv {{current}} → {{required}}", the XP-book figure (the book icon with the available and needed counts, per `goal-remaining-resources`), and a Potential-only progress bar (owned XP books' reach, with no Actual fill because Actual level has not reached the requirement), in the same manner as the Unlock goal's "329 / 500" count sits beside its bar. The Goal cell SHALL show only the goal's own target (no level line), and the Remaining cell SHALL NOT show a "{{levels}} levels" or XP text for the requirement. The requirement SHALL never render as its own row or card, and SHALL NOT be rendered as a separate goal, a dependency, or a Restricted reason. When the character is at or above the required level, or the goal is not a Character Rank or Ability goal, no requirement sub-lines SHALL render.
+Wherever the Goals list renders (desktop table or mobile cards, on the Goals page, with or without a project scope), a Rank or Ability goal whose character is below the level its target needs SHALL render that requirement as sub-lines nested under the goal's own cells or card body, using the level-requirement display defined by `rank-level-progression`: one combined line in the Progress cell, beneath the goal's own progress: the level target "Lv {{current}} → {{required}}", the XP-book figure (the book icon with the available and needed counts, per `goal-remaining-resources`), and a Potential-only progress bar (owned XP books' reach, with no Actual fill because Actual level has not reached the requirement), in the same manner as the Unlock goal's "329 / 500" count sits beside its bar. The Goal cell SHALL show only the goal's own target (no level line), and the Remaining cell SHALL NOT show a "{{levels}} levels" or XP text for the requirement. The requirement SHALL never render as its own row or card, and SHALL NOT be rendered as a separate goal, a dependency, or a Restricted reason. When the character is at or above the required level, or the goal is not a Character Rank or Ability goal, no requirement sub-lines SHALL render.
 
 #### Scenario: Desktop Rank row below its required level
 
@@ -152,7 +152,7 @@ Wherever the Goals list renders (desktop table or mobile cards, on either the Go
 
 ### Requirement: In-flight rows show their account-wide priority position
 
-Wherever the Goals list renders Active or Paused goals in priority order — the Goals page (`/plan/goals`) and a project's detail route — each such row SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text in the row's leading cell beside the drag handle on the desktop table, and in the card header on mobile. The position is not a seventh column and SHALL NOT change the six-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave the leading cell empty. The number SHALL appear in Comfortable and Compact density and on mobile cards, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
+Wherever the Goals list renders Active or Paused goals in priority order — the Goals page (`/plan/goals`), with or without a project scope — each such row SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text in the row's leading cell beside the drag handle on the desktop table, and in the card header on mobile. The position is not a seventh column and SHALL NOT change the six-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave the leading cell empty. The number SHALL appear in Comfortable and Compact density and on mobile cards, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
 
 #### Scenario: Active and Paused rows show a position
 
@@ -169,7 +169,7 @@ Wherever the Goals list renders Active or Paused goals in priority order — the
 #### Scenario: Filtered or project views show account-wide numbers
 
 - **GIVEN** global order A, B, C, D, E (positions 1 to 5) and a project holding A, C, and E
-- **WHEN** the project's detail route renders
+- **WHEN** the Goals page renders scoped to that project
 - **THEN** its rows show 1, 3, and 5, not 1, 2, and 3, and the same goals show the same numbers on the Goals page
 
 #### Scenario: Compact density and mobile cards keep the number
@@ -180,13 +180,13 @@ Wherever the Goals list renders Active or Paused goals in priority order — the
 #### Scenario: A reorder updates the numbers optimistically
 
 - **GIVEN** global order A, B, C, D, E and a project holding A, C, and E
-- **WHEN** the user moves E onto C in the project's detail route
+- **WHEN** the user moves E onto C on the Goals page scoped to that project
 - **THEN** the rows immediately read A 1, E 3, C 4, and the Goals page shows A 1, B 2, E 3, C 4, D 5
 - **AND** if the move is rejected the numbers return to A 1, C 3, E 5
 
 ### Requirement: A Reached goal renders as a completed row or card
 
-Wherever the Goals list renders (desktop table or mobile cards, on Overview or a project detail route), a goal whose computed attainment is Reached SHALL render with a green-tinted row/card background and a completed check mark beside its status label, and its status label SHALL read "Reached" in place of its stored "Active"/"Paused" label. This is display only: the goal's stored status, priority position, and sort order SHALL NOT change. The Progress and Remaining values, and the "Done by" estimate content, SHALL each render as "-" for a Reached goal. Its Character and Goal cells (unit, from → to target) SHALL render as for any other goal. The tint and check mark SHALL meet the contrast requirements of `goal-visual-accessibility` in both themes, and the state SHALL be conveyed by the check mark and label as well as by color.
+Wherever the Goals list renders (desktop table or mobile cards, on the Goals page, with or without a project scope), a goal whose computed attainment is Reached SHALL render with a green-tinted row/card background and a completed check mark beside its status label, and its status label SHALL read "Reached" in place of its stored "Active"/"Paused" label. This is display only: the goal's stored status, priority position, and sort order SHALL NOT change. The Progress and Remaining values, and the "Done by" estimate content, SHALL each render as "-" for a Reached goal. Its Character and Goal cells (unit, from → to target) SHALL render as for any other goal. The tint and check mark SHALL meet the contrast requirements of `goal-visual-accessibility` in both themes, and the state SHALL be conveyed by the check mark and label as well as by color.
 
 #### Scenario: A reached Active goal on the desktop table
 

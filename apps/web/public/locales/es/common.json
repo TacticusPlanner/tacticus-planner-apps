@@ -463,6 +463,8 @@
       "projectsDescription": "Organiza los objetivos en grupos concretos y consúltalos por separado.",
       "insights": "Información",
       "insightsDescription": "Recomendaciones de mejoras y campañas",
+      "schedule": "Calendario",
+      "scheduleDescription": "Plan de incursiones día a día para tus objetivos activos, desde hoy hasta completarlos.",
       "toReach": "No cumplidos",
       "reached": "Alcanzados",
       "blocked": "Bloqueado",
@@ -521,11 +523,6 @@
     "project": {
       "noProjectTitle": "Aún no hay proyectos",
       "noProjectDescription": "Un proyecto es una selección de tus objetivos con nombre. Crea uno para agrupar una ampliación de plantilla, un evento o una mejora a largo plazo y consultarlo por separado del resto.",
-      "notFoundTitle": "Proyecto no encontrado",
-      "notFoundDescription": "Este proyecto no existe, o no tienes acceso a él.",
-      "projectSwitcherLabel": "Proyecto",
-      "statusFilterFieldLabel": "Filtro",
-      "groupByFieldLabel": "Agrupar por",
       "membership": "Proyectos que contienen este objetivo",
       "addMembership": "Añadir al proyecto",
       "removeMembership": "Quitar {{project}}",
@@ -536,8 +533,6 @@
       "createNewProject": "Crear nuevo proyecto…",
       "removeLastMembership": "Este es el único proyecto del objetivo y no tiene otro destino. Añádelo antes a otro proyecto.",
       "removeDestinationUnknown": "Tus proyectos aún no se han cargado, así que este objetivo no tiene destino. Vuelve a intentarlo en un momento.",
-      "quicknavLabel": "Ir a un proyecto",
-      "quicknavAllProjects": "Todos los proyectos",
       "addGoalsTrigger": "Gestionar objetivos",
       "createGoalTrigger": "Crear objetivo",
       "createNewGoal": "Crear nuevo objetivo",
@@ -555,9 +550,7 @@
       "createFailed": "No se pudo crear el proyecto. Comprueba tu conexión e inténtalo de nuevo.",
       "membershipConflict": "{{project}} ya contiene un objetivo {{types}} activo o pausado para esta unidad.",
       "filterAll": "Todos los proyectos",
-      "filterLabel": "Proyecto",
       "archivedProjects": "Proyectos archivados ({{count}})",
-      "backToProjects": "Volver a proyectos",
       "unitGoalSummary": "{{units}} unidades · {{goals}} objetivos",
       "reachedSummary": "{{count}} alcanzados",
       "blockedSummary": "{{count}} bloqueados",
@@ -581,13 +574,12 @@
       "save": "Guardar proyecto",
       "create": "Crear proyecto",
       "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en la página Objetivos.",
-      "unitGoalSummaryOfAccount": "{{units}} unidades · {{goals}} de tus {{accountGoals}} objetivos",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
-      "emptyProjectDescription": "Usa «Añadir objetivos» para incorporar objetivos existentes, o «Crear objetivo» para añadir uno nuevo.",
+      "emptyProjectDescription": "Usa «Gestionar objetivos» en la página de Proyectos para añadir objetivos existentes, o «Crear objetivo» para crear uno nuevo.",
+      "scopeLabel": "Alcance por proyecto",
+      "scopeAll": "Todos los objetivos",
       "reorderGoals": "Reordenar",
       "reorderDone": "Listo",
-      "pauseAllGoals": "Pausar todos los objetivos",
-      "resumeAllGoals": "Reanudar todos los objetivos",
       "assemblyRankTargetTaken": "Este proyecto ya tiene la meta de rango {{target}} de esta unidad.",
       "membershipConflictRank": "{{project}} ya contiene una meta de rango activa o en pausa para esta unidad con el objetivo {{target}}.",
       "assemblyPendingAdd": "Se añadirá",
@@ -616,10 +608,6 @@
       "goalRelocated": "{{goal}} movido a {{project}}.",
       "actionError": "Algo salió mal. Inténtalo de nuevo.",
       "projectCreated": "Proyecto creado.",
-      "projectGoalsPaused_one": "{{count}} objetivo pausado.",
-      "projectGoalsPaused_other": "{{count}} objetivos pausados.",
-      "projectGoalsResumed_one": "{{count}} objetivo reanudado.",
-      "projectGoalsResumed_other": "{{count}} objetivos reanudados.",
       "projectUpdated": "Proyecto actualizado.",
       "projectMembershipSaved": "{{project}} actualizado: {{added}} añadidos, {{removed}} quitados."
     },
@@ -947,14 +935,14 @@
       "conflictDescription": "Tu movimiento no se guardó porque el orden de los objetivos cambió después de cargarlo. Revisa el orden actualizado y vuelve a intentar el movimiento.",
       "retry": "Reintentar movimiento",
       "dismiss": "Descartar",
-      "projectNote": "Cada número es la posición del objetivo en tu orden de prioridad de toda la cuenta, por lo que los objetivos de un proyecto pueden mostrar huecos como 1, 3, 5. Mover un objetivo aquí también lo mueve en tu orden de prioridad. Los objetivos de otros proyectos mantienen su orden relativo.",
-      "openPlan": "Ver los objetivos por prioridad",
       "saving": "Guardando el orden…",
       "dragHint": "Arrastra una tarjeta para cambiar su prioridad.",
       "noFarmableDemand": "Tus objetivos activos no necesitan nada que se pueda farmear ahora mismo, así que no hay farmeo que planificar.",
       "estimatesError": "No se pudieron cargar algunas estimaciones del plan, por lo que pueden faltar detalles de farmeo.",
       "estimatesRetry": "Reintentar estimaciones",
-      "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información."
+      "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información.",
+      "hintLabel": "Sobre el orden",
+      "scopedNote": "Cada número es la posición del objetivo en tu orden de prioridad de toda la cuenta, por lo que los objetivos de un proyecto pueden mostrar huecos como 1, 3, 5. Mover un objetivo aquí también lo mueve en ese orden; los objetivos de otros proyectos mantienen su orden relativo."
     },
     "edit": {
       "title": "Editar objetivo",
@@ -1080,9 +1068,9 @@
     },
     "overview": {
       "steps": {
-        "createProject": {
-          "title": "Crea un proyecto",
-          "content": "Crea un proyecto nuevo desde aquí sin salir de Objetivos. Tus filtros y tu posición en la página se mantienen."
+        "projectScope": {
+          "title": "Filtrar por proyecto",
+          "content": "Elige un proyecto para ver solo sus objetivos; la URL se actualiza para que puedas guardar o compartir la vista. Esto solo acota la lista y no cambia nada de tu plan ni de lo que calcula Diarias."
         },
         "statusFilter": {
           "title": "Filtrar por estado",
@@ -1091,10 +1079,6 @@
         "filters": {
           "title": "Tipo y agrupación",
           "content": "Filtra por tipo de objetivo o agrupa objetivos relacionados."
-        },
-        "projectFilter": {
-          "title": "Acota por proyecto",
-          "content": "Muestra solo los objetivos de un proyecto. Esto acota la lista que estás viendo y no cambia tu plan ni lo que calculan las tareas diarias."
         },
         "createGoal": {
           "title": "Crear un objetivo",
@@ -1107,6 +1091,10 @@
         "reprioritize": {
           "title": "Prioriza tus objetivos",
           "content": "Arrastra un objetivo para cambiar su prioridad (en el móvil, toca primero «Reordenar»). Cada cambio se guarda al instante y se aplica en todos los proyectos que contienen el objetivo."
+        },
+        "orderHint": {
+          "title": "Cómo funciona el orden",
+          "content": "Abre esta ayuda para ver cómo funciona la prioridad aquí: un único orden para toda la cuenta, que se cambia arrastrando y se aplica en todos los proyectos."
         },
         "list": {
           "title": "Tus objetivos",
@@ -1134,39 +1122,7 @@
         },
         "newProject": {
           "title": "Crea un proyecto",
-          "content": "Crea un proyecto aquí o usa su menú de acciones para renombrarlo, describirlo, cambiar su color, archivarlo o restaurarlo."
-        }
-      }
-    },
-    "projectDetail": {
-      "steps": {
-        "header": {
-          "title": "Una selección de tus objetivos",
-          "content": "Este proyecto contiene una selección de los objetivos de tu cuenta; el resumen indica cuántos de ellos están aquí. Las métricas de progreso, el selector de proyecto y las acciones están en esta cabecera."
-        },
-        "addGoals": {
-          "title": "Elige qué hay en el proyecto",
-          "content": "Añade o quita varios objetivos a la vez: busca tus objetivos (en tu orden de prioridad), agrúpalos por unidad o tipo, marca los que deben estar aquí, revisa el resumen y guarda en un solo paso. Guardar nunca cambia tu orden de prioridad. Una unidad puede tener aquí varios objetivos de rango, pero un objetivo exactamente duplicado se bloquea."
-        },
-        "createGoal": {
-          "title": "Crear un objetivo nuevo",
-          "content": "Empieza un objetivo totalmente nuevo ya asignado a este proyecto. A diferencia de «Añadir objetivos», que incorpora los existentes, este crea uno nuevo; aún puedes cambiar su proyecto antes de guardar."
-        },
-        "reprioritize": {
-          "title": "Prioriza tus objetivos",
-          "content": "Arrastra cualquier objetivo para cambiar su prioridad. Mover un objetivo aquí también lo mueve en tu orden de prioridad; los objetivos de otros proyectos mantienen su orden relativo. En el móvil, toca primero «Reordenar» para entrar en el modo de reordenación."
-        },
-        "selector": {
-          "title": "Elige un proyecto",
-          "content": "Cambia a la vista propia de otro proyecto — algo separado de gestionar proyectos en la lista."
-        },
-        "goals": {
-          "title": "Objetivos del proyecto",
-          "content": "Las metas de este proyecto aparecen aquí, agrupadas primero por tipo de meta. Cada objetivo de rango es una meta propia, etiquetada con su objetivo, y se puede reordenar, pausar o eliminar por separado. Usa Agrupar para ver un bloque por unidad o desactivar la agrupación y obtener una lista plana."
-        },
-        "rowActions": {
-          "title": "Quitar sin eliminar",
-          "content": "El menú de cada objetivo permite sacarlo solo de este proyecto. Eliminar, más abajo en ese mismo menú, lo borra de toda tu cuenta."
+          "content": "Crea un proyecto nuevo aquí. El menú de acciones de un proyecto permite crear un objetivo dentro de él, gestionar qué objetivos contiene y renombrarlo, recolorearlo, archivarlo o restaurarlo."
         }
       }
     },

@@ -19,7 +19,6 @@ import {
   moveProjectGoal,
   updateProject,
   updateProjectGoals,
-  updateProjectGoalsStatus,
 } from "./project.api"
 
 describe("project API", () => {
@@ -52,7 +51,6 @@ describe("project API", () => {
     createProject(create)
     updateProject("project-1", update)
     updateProjectGoals("project-1", goals)
-    updateProjectGoalsStatus("project-1", "Paused")
     const move = {
       goalId: "goal-1",
       displacedGoalId: "goal-2",
@@ -72,11 +70,6 @@ describe("project API", () => {
       2,
       "/api/v1/me/projects/project-1/goals",
       { body: goals }
-    )
-    expect(api.post).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/projects/project-1/goals/status",
-      { body: { status: "Paused" } }
     )
     expect(api.put).toHaveBeenNthCalledWith(
       3,

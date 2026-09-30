@@ -27,11 +27,11 @@ describe("useGoalsOverviewTutorial", () => {
       expect(step.content).toContain("localized:tour.overview.steps")
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
-      '[data-testid="overview-quicknav-create-project"]',
+      '[data-testid="goals-project-scope"]',
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
-      '[data-testid="goals-project-filter"]',
       '[data-testid="goal-row-drag-handle"]',
+      '[data-testid="goals-order-hint"]',
       '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
@@ -45,11 +45,11 @@ describe("useGoalsOverviewTutorial", () => {
     )
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
-    ).toContain("tour.overview.steps.projectFilter")
+    ).toContain("tour.overview.steps.orderHint")
     for (const list of [steps.desktop, steps.mobile]) {
       expect(list[0]).toMatchObject({
-        title: "localized:tour.overview.steps.createProject.title",
-        content: "localized:tour.overview.steps.createProject.content",
+        title: "localized:tour.overview.steps.projectScope.title",
+        content: "localized:tour.overview.steps.projectScope.content",
       })
     }
     expect(

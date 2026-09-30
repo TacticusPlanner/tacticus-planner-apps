@@ -350,7 +350,7 @@ describe("ProjectRow", () => {
     expect(onSelect).not.toHaveBeenCalled()
   })
 
-  it("is not clickable when onSelect is omitted (the detail route's current-project row)", async () => {
+  it("is not clickable when onSelect is omitted", async () => {
     const user = userEvent.setup()
     render(
       <ul>
@@ -366,5 +366,63 @@ describe("ProjectRow", () => {
     // doesn't throw and the row isn't wired to a click handler at all.
     await user.click(screen.getByText("Other plan"))
     expect(screen.getByText("Other plan")).toBeInTheDocument()
+  })
+
+  it("lists Create goal, Manage goals, Edit, Archive in that order on a live row, and no bulk pause/resume", async () => {
+    const user = userEvent.setup()
+    const onCreateGoal = vi.fn()
+    const onManageGoals = vi.fn()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onCreateGoal={onCreateGoal}
+          onEdit={vi.fn()}
+          onManageGoals={onManageGoals}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, otherProject.projectId)
+    const items = screen.getAllByRole("menuitem")
+    expect(items.map((item) => item.textContent)).toEqual([
+      "goals.project.createGoalTrigger",
+      "goals.project.addGoalsTrigger",
+      "goals.project.edit",
+      "goals.project.archive",
+    ])
+    expect(screen.queryByText("goals.project.pauseAllGoals")).toBeNull()
+    expect(screen.queryByText("goals.project.resumeAllGoals")).toBeNull()
+
+    await user.click(
+      screen.getByTestId(`project-row-manage-goals-${otherProject.projectId}`)
+    )
+    expect(onManageGoals).toHaveBeenCalledWith(otherProject)
+    await openActions(user, otherProject.projectId)
+    await user.click(
+      screen.getByTestId(`project-row-create-goal-${otherProject.projectId}`)
+    )
+    expect(onCreateGoal).toHaveBeenCalledWith(otherProject)
+  })
+
+  it("offers only Edit and Restore on an archived row", async () => {
+    const user = userEvent.setup()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness() as never}
+          onCreateGoal={vi.fn()}
+          onEdit={vi.fn()}
+          onManageGoals={vi.fn()}
+          project={archivedProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, archivedProject.projectId)
+    expect(
+      screen.getAllByRole("menuitem").map((item) => item.textContent)
+    ).toEqual(["goals.project.edit", "goals.project.restore"])
   })
 })

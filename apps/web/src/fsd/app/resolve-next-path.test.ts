@@ -41,13 +41,6 @@ describe("resolveNextPath", () => {
     )
   })
 
-  it("maps a legacy /goals destination to its /plan equivalent", () => {
-    expect(resolveNextPath("/goals/overview?status=paused")).toBe(
-      "/plan/goals?status=paused"
-    )
-    expect(resolveNextPath("/goals/projects/abc")).toBe("/plan/projects/abc")
-  })
-
   it.each(["/setup", "/setup/key", "/setup/import?next=%2Fguild%2Fmembers"])(
     "allows the setup address %s when the caller opts in",
     (next) => {

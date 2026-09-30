@@ -68,15 +68,6 @@ Implementation note: the Projects dashboard's full available/blocked/estimate su
 - **WHEN** its card renders
 - **THEN** the card shows identity with a summary skeleton, consistent with how the Projects dashboard handles the same loading state
 
-### Requirement: Activating a card navigates to that project's detail route
-
-Activating a project card SHALL navigate to that project's `/plan/projects/{id}` route.
-
-#### Scenario: Card opens project detail
-
-- **WHEN** the user activates a project card in the widget
-- **THEN** `/plan/projects/{id}` opens for that project
-
 ### Requirement: No projects yet
 
 When the player has no projects, the widget SHALL explain that projects group unit goals into prioritized plans and provide a labeled action that navigates to `/plan/projects` to create one, instead of rendering empty project cards.
@@ -99,3 +90,12 @@ The widget SHALL present a distinct state for project data still loading versus 
 
 - **WHEN** the player's project list fails to load
 - **THEN** the widget shows an explicit failure state with a retry action, not the empty-projects message
+
+### Requirement: Activating a card opens that project on Goals
+
+Activating a project card SHALL navigate to the Goals page scoped to that project, `/plan/goals?project={id}`.
+
+#### Scenario: Card opens the scoped Goals page
+
+- **WHEN** the user activates a project card in the widget
+- **THEN** `/plan/goals?project={id}` opens with that project's scope chip selected

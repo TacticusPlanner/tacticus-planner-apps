@@ -1,14 +1,7 @@
 import type { ReactNode } from "react"
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import {
-  MemoryRouter,
-  Navigate,
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-} from "react-router"
+import { MemoryRouter, Routes, useLocation, useNavigate } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
@@ -41,20 +34,6 @@ function LocationProbe() {
   )
 }
 
-/** A stand-in for the real Dailies routes: mounting those drags in lazy page modules and
- * `ProtectedRoute`, and all this needs to reproduce is the shape - an index that redirects, so a
- * navigation to `/dailies/raids` lands back on `today` and leaves the pathname looking untouched. */
-const raidsRedirectRoutes = (
-  <>
-    <Route path="/dailies/raids">
-      <Route index element={<Navigate replace to="/dailies/raids/today" />} />
-      <Route path="today" element={null} />
-      <Route path="plan" element={null} />
-    </Route>
-    <Route path="*" element={null} />
-  </>
-)
-
 function renderTabs(
   item: (typeof navItems)[number],
   initialEntry: string,
@@ -75,7 +54,7 @@ function renderTabs(
 const section = (path: string) => navItems.find((item) => item.path === path)!
 
 /** Exact-match, deliberately: `toHaveTextContent` is a substring check, so asserting
- * "/plan/projects" would also pass while still sitting on "/plan/projects/p1". */
+ * "/library/raid-bosses" would also pass while still sitting on "/library/raid-bosses/b1". */
 function expectPath(pathname: string) {
   expect(screen.getByTestId("current-path")).toHaveTextContent(
     new RegExp(`^${pathname}$`)
@@ -83,7 +62,7 @@ function expectPath(pathname: string) {
 }
 
 describe("navItems landing pages", () => {
-  it("declares exactly the two child pages that render a screen of their own", () => {
+  it("declares exactly the child page that has a nested route and renders a screen of its own", () => {
     const flagged = navItems.flatMap(
       (item) =>
         item.children
@@ -91,7 +70,7 @@ describe("navItems landing pages", () => {
           .map((child) => child.path) ?? []
     )
 
-    expect(flagged).toEqual(["/library/raid-bosses", "/plan/projects"])
+    expect(flagged).toEqual(["/library/raid-bosses"])
   })
 })
 
@@ -134,7 +113,7 @@ describe("SectionTabs", () => {
   })
 
   it.each([
-    ["raids", "/dailies/raids/today"],
+    ["raids", "/dailies/raids"],
     ["shops", "/dailies/shops"],
     ["onslaught", "/dailies/onslaught"],
     ["salvage-run", "/dailies/salvage-run"],
@@ -149,23 +128,6 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("reports the post-redirect pathname when a mounted route tree redirects", () => {
-    renderTabs(section("/dailies"), "/dailies/raids", {
-      routes: raidsRedirectRoutes,
-    })
-
-    expectPath("/dailies/raids/today")
-  })
-
-  it("returns to the all-projects screen when the Projects tab is activated from a project", async () => {
-    const user = userEvent.setup()
-    renderTabs(section("/plan"), "/plan/projects/p1")
-
-    await user.click(screen.getByTestId("section-tab-plan-projects"))
-
-    expectPath("/plan/projects")
-  })
-
   it("returns to the raid-boss picker when the Raid Bosses tab is activated from a boss", async () => {
     const user = userEvent.setup()
     renderTabs(section("/library"), "/library/raid-bosses/b1")
@@ -176,36 +138,35 @@ describe("SectionTabs", () => {
   })
 
   it("keeps the parent tab active on a route nested below it", () => {
-    renderTabs(section("/plan"), "/plan/projects/p1")
+    renderTabs(section("/library"), "/library/raid-bosses/b1")
 
-    expect(screen.getByTestId("section-tab-plan-projects")).toHaveAttribute(
-      "data-state",
-      "active"
-    )
+    expect(
+      screen.getByTestId("section-tab-library-raid-bosses")
+    ).toHaveAttribute("data-state", "active")
   })
 
   it("navigates exactly once when a different tab is activated", async () => {
     const user = userEvent.setup()
-    renderTabs(section("/plan"), "/plan/projects/p1")
+    renderTabs(section("/library"), "/library/raid-bosses/b1")
 
-    await user.click(screen.getByTestId("section-tab-plan-insights"))
-    expectPath("/plan/insights")
+    await user.click(screen.getByTestId("section-tab-library-npcs"))
+    expectPath("/library/npcs")
 
     await user.click(screen.getByTestId("go-back"))
-    expectPath("/plan/projects/p1")
+    expectPath("/library/raid-bosses/b1")
   })
 
   it("navigates exactly once when a landing-page tab is activated from a sibling tab", async () => {
     // The double-navigation this change most risks: `onValueChange` fires on mousedown and the
-    // click handler runs after, so a missing guard would push /plan/projects twice.
+    // click handler runs after, so a missing guard would push /library/raid-bosses twice.
     const user = userEvent.setup()
-    renderTabs(section("/plan"), "/plan/goals")
+    renderTabs(section("/library"), "/library/npcs")
 
-    await user.click(screen.getByTestId("section-tab-plan-projects"))
-    expectPath("/plan/projects")
+    await user.click(screen.getByTestId("section-tab-library-raid-bosses"))
+    expectPath("/library/raid-bosses")
 
     await user.click(screen.getByTestId("go-back"))
-    expectPath("/plan/goals")
+    expectPath("/library/npcs")
   })
 
   it("pushes one history entry when Radix reports the same activation twice", async () => {
@@ -264,25 +225,6 @@ describe("SectionTabs", () => {
       renderTabs(section("/library"), path, { previousEntry: "/home" })
 
       await user.click(screen.getByTestId(`section-tab-library-${tab}`))
-      expectPath(path)
-
-      await user.click(screen.getByTestId("go-back"))
-      expectPath("/home")
-    }
-  )
-
-  it.each(["/dailies/raids/today", "/dailies/raids/plan"])(
-    "leaves %s alone, pushing no entry the Back button would swallow",
-    async (path) => {
-      // The pathname alone cannot catch a regression here: navigating to `/dailies/raids` would
-      // redirect straight back to `today`. The Back press is what proves nothing was pushed.
-      const user = userEvent.setup()
-      renderTabs(section("/dailies"), path, {
-        previousEntry: "/home",
-        routes: raidsRedirectRoutes,
-      })
-
-      await user.click(screen.getByTestId("section-tab-dailies-raids"))
       expectPath(path)
 
       await user.click(screen.getByTestId("go-back"))

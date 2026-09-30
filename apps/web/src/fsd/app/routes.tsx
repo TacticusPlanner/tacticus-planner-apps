@@ -2,7 +2,7 @@
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode } from "react"
-import { Navigate, useLocation, type RouteObject } from "react-router"
+import { Navigate, type RouteObject } from "react-router"
 
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
@@ -23,7 +23,6 @@ import {
 } from "./auth-route-guards"
 import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
-import { mapLegacyGoalsPath } from "./legacy-goals-path"
 import { OnboardingGate } from "./onboarding-gate"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
@@ -68,12 +67,6 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
       <OnboardingGate>{children}</OnboardingGate>
     </AuthenticatedRoute>
   )
-}
-
-// TEMPORARY (see legacy-goals-path.ts): the Plan section used to live under `/goals`.
-function LegacyGoalsRedirect() {
-  const { pathname, search, hash } = useLocation()
-  return <Navigate replace to={mapLegacyGoalsPath(pathname + search + hash)} />
 }
 
 function NotFoundRedirect() {
@@ -178,7 +171,6 @@ export const routes: RouteObject[] = [
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
       // there regardless of how someone reaches the URL.
       ...(isUiKitEnabled ? [{ path: "/ui-kit", element: <UiKitPage /> }] : []),
-      { path: "/goals/*", element: <LegacyGoalsRedirect /> },
       { path: "*", element: <NotFoundRedirect /> },
     ],
   },

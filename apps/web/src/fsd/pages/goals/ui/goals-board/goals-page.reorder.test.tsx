@@ -56,7 +56,7 @@ vi.mock("../../model/goals-data/use-goal-actions", () => ({
   useGoalActions: () => ({}),
 }))
 vi.mock("../../model/projects/use-goal-projects", () => ({
-  useGoalProjects: () => new Map(),
+  useGoalProjects: () => ({ byGoalId: new Map(), loadedProjectIds: new Set() }),
 }))
 vi.mock("../../model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({ getEntityName: (_type: string, id: string) => id }),
@@ -83,8 +83,11 @@ vi.mock("@/features/project-management", () => ({
   useProjectActions: () => ({}),
   ManageProjectsSheet: () => null,
 }))
-vi.mock("./overview-project-quicknav", () => ({
-  OverviewProjectQuicknav: () => null,
+vi.mock("./goals-project-scope", () => ({
+  GoalsProjectScope: () => null,
+}))
+vi.mock("../../model/projects/use-goals-project-scope", () => ({
+  useGoalsProjectScope: () => ({ projectId: undefined, setProjectId: vi.fn() }),
 }))
 vi.mock("../goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: () => null,
@@ -266,7 +269,7 @@ describe("GoalsPage reordering", () => {
       "data-reorder",
       "false"
     )
-    expect(screen.queryByTestId("goals-order-note")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("goals-order-hint")).not.toBeInTheDocument()
   })
 
   it("keeps a rejected move for review and retries it only on request", () => {

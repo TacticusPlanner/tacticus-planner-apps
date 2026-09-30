@@ -463,6 +463,8 @@
       "projectsDescription": "Organisiere Ziele in fokussierten Gruppen und sieh sie dir getrennt an.",
       "insights": "Einblicke",
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
+      "schedule": "Zeitplan",
+      "scheduleDescription": "Tag-für-Tag-Raidplan für deine aktiven Ziele – von heute bis sie erreicht sind.",
       "toReach": "Unerfüllt",
       "reached": "Erreicht",
       "blocked": "Blockiert",
@@ -521,11 +523,6 @@
     "project": {
       "noProjectTitle": "Noch keine Projekte",
       "noProjectDescription": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege eines an, um einen Kaderausbau, ein Event oder einen langfristigen Aufbau zu bündeln und getrennt vom Rest zu durchsuchen.",
-      "notFoundTitle": "Projekt nicht gefunden",
-      "notFoundDescription": "Dieses Projekt existiert nicht, oder du hast keinen Zugriff darauf.",
-      "projectSwitcherLabel": "Projekt",
-      "statusFilterFieldLabel": "Filter",
-      "groupByFieldLabel": "Gruppieren nach",
       "membership": "Projekte mit diesem Ziel",
       "addMembership": "Zu Projekt hinzufügen",
       "removeMembership": "{{project}} entfernen",
@@ -536,8 +533,6 @@
       "createNewProject": "Neues Projekt erstellen…",
       "removeLastMembership": "Dies ist das einzige Projekt des Ziels, und es gibt kein anderes Ziel dafür. Füge es zuerst einem anderen Projekt hinzu.",
       "removeDestinationUnknown": "Deine Projekte sind noch nicht geladen, deshalb gibt es kein Ziel für dieses Vorhaben. Versuche es gleich noch einmal.",
-      "quicknavLabel": "Zu einem Projekt springen",
-      "quicknavAllProjects": "Alle Projekte",
       "addGoalsTrigger": "Ziele verwalten",
       "createGoalTrigger": "Ziel erstellen",
       "createNewGoal": "Neues Ziel erstellen",
@@ -555,9 +550,7 @@
       "createFailed": "Das Projekt konnte nicht erstellt werden. Prüfe deine Verbindung und versuche es erneut.",
       "membershipConflict": "{{project}} enthält bereits ein aktives oder pausiertes {{types}}-Ziel für diese Einheit.",
       "filterAll": "Alle Projekte",
-      "filterLabel": "Projekt",
       "archivedProjects": "Archivierte Projekte ({{count}})",
-      "backToProjects": "Zurück zu Projekten",
       "unitGoalSummary": "{{units}} Einheiten · {{goals}} Ziele",
       "reachedSummary": "{{count}} erreicht",
       "blockedSummary": "{{count}} blockiert",
@@ -581,13 +574,12 @@
       "save": "Projekt speichern",
       "create": "Projekt erstellen",
       "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege mehrere an, um Verschiedenes zu bündeln – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und durchsuche jedes für sich. Die Priorität ist eine einzige Reihenfolge für alle Ziele und wird auf der Seite „Ziele“ verwaltet.",
-      "unitGoalSummaryOfAccount": "{{units}} Einheiten · {{goals}} von deinen {{accountGoals}} Zielen",
       "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
-      "emptyProjectDescription": "Nutze „Ziele hinzufügen“, um vorhandene Ziele aufzunehmen, oder „Ziel erstellen“ für ein neues.",
+      "emptyProjectDescription": "Füge über „Ziele verwalten“ auf der Projektseite vorhandene Ziele hinzu oder erstelle mit „Ziel erstellen“ ein neues.",
+      "scopeLabel": "Projektbereich",
+      "scopeAll": "Alle Ziele",
       "reorderGoals": "Neu anordnen",
       "reorderDone": "Fertig",
-      "pauseAllGoals": "Alle Ziele pausieren",
-      "resumeAllGoals": "Alle Ziele fortsetzen",
       "assemblyRankTargetTaken": "Dieses Projekt enthält bereits das Rang-Ziel {{target}} dieser Einheit.",
       "membershipConflictRank": "{{project}} enthält bereits ein aktives oder pausiertes Rang-Ziel für diese Einheit mit dem Ziel {{target}}.",
       "assemblyPendingAdd": "Wird hinzugefügt",
@@ -616,10 +608,6 @@
       "goalRelocated": "{{goal}} nach {{project}} verschoben.",
       "actionError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
       "projectCreated": "Projekt erstellt.",
-      "projectGoalsPaused_one": "{{count}} Ziel pausiert.",
-      "projectGoalsPaused_other": "{{count}} Ziele pausiert.",
-      "projectGoalsResumed_one": "{{count}} Ziel fortgesetzt.",
-      "projectGoalsResumed_other": "{{count}} Ziele fortgesetzt.",
       "projectUpdated": "Projekt aktualisiert.",
       "projectMembershipSaved": "{{project}} aktualisiert: {{added}} hinzugefügt, {{removed}} entfernt."
     },
@@ -947,14 +935,14 @@
       "conflictDescription": "Deine Verschiebung wurde nicht gespeichert, da sich die Zielreihenfolge nach dem Laden geändert hat. Prüfe die aktualisierte Reihenfolge und wiederhole dann die Verschiebung.",
       "retry": "Verschieben wiederholen",
       "dismiss": "Verwerfen",
-      "projectNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Wenn du ein Ziel hier verschiebst, wird es auch in deiner Prioritätsreihenfolge verschoben. Ziele aus anderen Projekten behalten ihre relative Reihenfolge.",
-      "openPlan": "Ziele in Prioritätsreihenfolge ansehen",
       "saving": "Reihenfolge wird gespeichert…",
       "dragHint": "Ziehe eine Karte, um ihre Priorität zu ändern.",
       "noFarmableDemand": "Deine aktiven Ziele benötigen derzeit nichts, das sich farmen lässt – es gibt also kein Farming zu planen.",
       "estimatesError": "Einige Planschätzungen konnten nicht geladen werden, daher fehlen möglicherweise Farming-Details.",
       "estimatesRetry": "Schätzungen erneut laden",
-      "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken."
+      "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken.",
+      "hintLabel": "Zur Reihenfolge",
+      "scopedNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Ein Ziel hier zu verschieben verschiebt es auch in dieser Reihenfolge; Ziele anderer Projekte behalten ihre relative Reihenfolge."
     },
     "edit": {
       "title": "Ziel bearbeiten",
@@ -1080,9 +1068,9 @@
     },
     "overview": {
       "steps": {
-        "createProject": {
-          "title": "Ein Projekt erstellen",
-          "content": "Starte von hier aus ein neues Projekt, ohne die Ziele zu verlassen. Deine Filter und deine Position auf der Seite bleiben erhalten."
+        "projectScope": {
+          "title": "Nach Projekt eingrenzen",
+          "content": "Wähle ein Projekt, um nur dessen Ziele zu sehen – die URL wird aktualisiert, sodass du die Ansicht speichern oder teilen kannst. Das grenzt nur die Liste ein und ändert nichts an deinem Plan oder daran, was Tägliches berechnet."
         },
         "statusFilter": {
           "title": "Nach Status filtern",
@@ -1091,10 +1079,6 @@
         "filters": {
           "title": "Typ und Gruppierung",
           "content": "Filtere nach Zieltyp oder gruppiere verwandte Ziele."
-        },
-        "projectFilter": {
-          "title": "Nach Projekt eingrenzen",
-          "content": "Zeige nur die Ziele eines Projekts. Das grenzt die angezeigte Liste ein und ändert nichts an deinem Plan oder an den Berechnungen der Dailies."
         },
         "createGoal": {
           "title": "Ziel erstellen",
@@ -1107,6 +1091,10 @@
         "reprioritize": {
           "title": "Ziele priorisieren",
           "content": "Ziehe ein Ziel, um seine Priorität zu ändern (tippe auf Mobilgeräten zuerst auf „Neu anordnen“). Jedes Ablegen wird sofort gespeichert und gilt in jedem Projekt, das das Ziel enthält."
+        },
+        "orderHint": {
+          "title": "So funktioniert die Reihenfolge",
+          "content": "Öffne diesen Hinweis, um zu sehen, wie Priorität hier funktioniert: eine kontoweite Reihenfolge, per Ziehen verändert, gültig in jedem Projekt."
         },
         "list": {
           "title": "Deine Ziele",
@@ -1134,39 +1122,7 @@
         },
         "newProject": {
           "title": "Ein Projekt erstellen",
-          "content": "Starte hier ein neues Projekt oder nutze das Aktionsmenü eines Projekts zum Umbenennen, Beschreiben, Färben, Archivieren oder Wiederherstellen."
-        }
-      }
-    },
-    "projectDetail": {
-      "steps": {
-        "header": {
-          "title": "Eine Auswahl deiner Ziele",
-          "content": "Dieses Projekt enthält eine Auswahl der Ziele deines Kontos – die Übersicht zeigt, wie viele davon hier liegen. Fortschrittswerte, Projektwechsler und Aktionen findest du in dieser Kopfzeile."
-        },
-        "addGoals": {
-          "title": "Lege fest, was im Projekt ist",
-          "content": "Füge mehrere Ziele auf einmal hinzu oder entferne sie – durchsuche deine Ziele (in deiner Prioritätsreihenfolge), gruppiere sie nach Einheit oder Typ, hake die passenden an, prüfe die Zusammenfassung und speichere in einem Schritt. Speichern ändert deine Prioritätsreihenfolge nie. Eine Einheit kann hier mehrere Rang-Ziele haben, ein exakt doppeltes Ziel wird jedoch blockiert."
-        },
-        "createGoal": {
-          "title": "Neues Ziel erstellen",
-          "content": "Starte ein ganz neues Ziel, das bereits diesem Projekt zugeordnet ist. Anders als „Ziele hinzufügen“, das vorhandene Ziele aufnimmt, entsteht hier ein neues – das Projekt kannst du vor dem Speichern noch ändern."
-        },
-        "reprioritize": {
-          "title": "Ziele priorisieren",
-          "content": "Ziehe ein beliebiges Ziel, um seine Priorität zu ändern. Wenn du ein Ziel hier verschiebst, wird es auch in deiner Prioritätsreihenfolge verschoben; Ziele aus anderen Projekten behalten ihre relative Reihenfolge. Tippe auf Mobilgeräten zuerst auf „Neu anordnen“, um den Anordnungsmodus zu öffnen."
-        },
-        "selector": {
-          "title": "Ein Projekt auswählen",
-          "content": "Wechsle zur eigenen Ansicht eines anderen Projekts — getrennt von der Verwaltung in der Liste."
-        },
-        "goals": {
-          "title": "Projektziele",
-          "content": "Die Ziele dieses Projekts erscheinen hier, zunächst nach Zieltyp gruppiert. Jedes Rang-Ziel ist ein eigenes Ziel, mit seinem Zielrang gekennzeichnet, und kann einzeln umsortiert, pausiert oder gelöscht werden. Mit Gruppieren wechselst du zu einem Block pro Einheit oder schaltest die Gruppierung für eine flache Liste aus."
-        },
-        "rowActions": {
-          "title": "Entfernen statt löschen",
-          "content": "Über das Menü jedes Ziels kannst du es nur aus diesem Projekt nehmen. Löschen, weiter unten im selben Menü, entfernt es aus deinem gesamten Konto."
+          "content": "Starte hier ein neues Projekt. Über das Aktionsmenü eines Projekts erstellst du darin ein Ziel, verwaltest seine Ziele und kannst es umbenennen, umfärben, archivieren oder wiederherstellen."
         }
       }
     },

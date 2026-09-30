@@ -10,6 +10,7 @@ import {
 } from "@workspace/ui/components/card"
 
 import {
+  AddGoalsToProjectSheet,
   ManageProjectsSheet,
   NewProjectFab,
   ProjectList,
@@ -23,6 +24,7 @@ import {
   type ProjectSummary,
 } from "@/entities/project"
 
+import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
@@ -32,8 +34,9 @@ import { useProjectsListTutorial } from "./projects-list-page.tutorial"
  * The dedicated project-management surface (project-management spec: "The list route shows every
  * project without its goal table") - every project (including archived) as its own row with
  * inline lifecycle-action icons, a narrowed create/edit form Sheet opened via a row's Edit action
- * or the "New project" FAB. No goal table, filters, or project selector here - those live on a
- * project's own detail route (`ProjectDetailPage`), reached by clicking a row.
+ * or the "New project" FAB, and the project-specific actions (Create goal, Manage goals) in each
+ * row's menu. No goal table, filters, or project selector here - clicking a row opens the project on
+ * the Goals page (`/plan/goals?project=`).
  */
 export function ProjectsListPage() {
   const { t } = useTranslation()
@@ -46,7 +49,14 @@ export function ProjectsListPage() {
   const [sheetProject, setSheetProject] = useState<ProjectSummary | undefined>(
     undefined
   )
+  // The row whose Manage goals (bulk membership) sheet is open; one sheet for the whole page.
+  const [manageGoalsProject, setManageGoalsProject] = useState<
+    ProjectSummary | undefined
+  >(undefined)
   const projectActions = useProjectActions()
+  const launchCreateGoal = useCreateGoalLauncher()
+  const createGoalIn = (project: ProjectSummary) =>
+    launchCreateGoal({ projectIds: [project.projectId] })
   const defaultProject = projects.projects.find((project) => project.isDefault)
   const available = orderDefaultFirst(projects.projects)
   const archived = projects.projects.filter(
@@ -129,8 +139,8 @@ export function ProjectsListPage() {
     setSheetProject(project)
     setSheetOpen(true)
   }
-  const openProjectDetail = (project: ProjectSummary) => {
-    void navigate(`/plan/projects/${project.projectId}`)
+  const openProjectOnGoals = (project: ProjectSummary) => {
+    void navigate(`/plan/goals?project=${project.projectId}`)
   }
 
   return (
@@ -149,8 +159,10 @@ export function ProjectsListPage() {
           </p>
           <ProjectList
             actions={projectActions}
+            onCreateGoal={createGoalIn}
             onEdit={openEditProject}
-            onSelect={openProjectDetail}
+            onManageGoals={setManageGoalsProject}
+            onSelect={openProjectOnGoals}
             projects={available}
             summaries={summaries}
           />
@@ -168,7 +180,7 @@ export function ProjectsListPage() {
                 <ProjectList
                   actions={projectActions}
                   onEdit={openEditProject}
-                  onSelect={openProjectDetail}
+                  onSelect={openProjectOnGoals}
                   projects={archived}
                   summaries={summaries}
                 />
@@ -194,6 +206,16 @@ export function ProjectsListPage() {
         open={sheetOpen}
         project={sheetProject}
       />
+      {manageGoalsProject ? (
+        <AddGoalsToProjectSheet
+          onCreateGoal={() => createGoalIn(manageGoalsProject)}
+          onOpenChange={(open) => {
+            if (!open) setManageGoalsProject(undefined)
+          }}
+          open
+          project={manageGoalsProject}
+        />
+      ) : null}
     </div>
   )
 }

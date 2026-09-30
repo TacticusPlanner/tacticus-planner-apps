@@ -286,31 +286,6 @@ for its active route.
 - **THEN** the public reference navigation and its contextual copy use that
   locale's Library terminology rather than the former Lookup terminology
 
-### Requirement: Legacy Goals URLs redirect to Plan
-
-The app SHALL redirect the former Goals-section URLs to their Plan equivalents, replacing the history entry: `/goals` and `/goals/plan` to `/plan/goals`, `/goals/overview` to `/plan/goals`, `/goals/projects` to `/plan/projects`, `/goals/projects/{id}` to `/plan/projects/{id}` and `/goals/insights` to `/plan/insights`. Bare `/plan` SHALL redirect (replace) to `/plan/goals`. The same mapping SHALL apply to a stored post-login `next` path. Query strings and hashes SHALL be preserved. These redirects are temporary and are removed by a later change once shared links have aged out.
-
-#### Scenario: Old bookmark opens the Goals page
-
-- **WHEN** the user opens `/goals/overview`
-- **THEN** the app replaces the URL with `/plan/goals` and shows Goals, and Back does not return to the old URL
-
-#### Scenario: Old project detail link keeps its project
-
-- **WHEN** the user opens `/goals/projects/{id}`
-- **THEN** the app shows that project at `/plan/projects/{id}`
-
-#### Scenario: Bare Plan redirects to Goals
-
-- **WHEN** the user opens `/plan`
-- **THEN** the app replaces the URL with `/plan/goals`
-
-#### Scenario: Login next path is mapped
-
-- **GIVEN** a signed-out user opens `/goals/projects`
-- **WHEN** they sign in and the app resumes the stored `next` path
-- **THEN** they land on `/plan/projects`
-
 ### Requirement: Entering a section navigates to its last-visited child on desktop, defaulting to a fixed default child on first entry
 
 For a top-level section with more than one child page, activating that section's entry point in the desktop sidebar SHALL navigate to the child route the user most recently visited within that section during the current session. Before the user has visited any child of that section in the session, it SHALL navigate to that section's existing default child route. For the Plan section (route prefix `/plan`), that default child route is the fixed Goals route `/plan/goals`; it does not depend on projects. Every other section's default child route remains the fixed route it is today, unaffected.

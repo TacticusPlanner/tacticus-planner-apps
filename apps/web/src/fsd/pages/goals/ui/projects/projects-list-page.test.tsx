@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { MemoryRouter, Route, Routes } from "react-router"
+import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { render, screen } from "@/test/render"
@@ -101,18 +101,24 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { ProjectsListPage } from "./projects-list-page"
+import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
+
+const onLaunch = vi.fn()
+
+function ScopedGoalsProbe() {
+  return <div data-testid="landed-on-goals">{useLocation().search}</div>
+}
 
 function renderPage() {
   return render(
-    <MemoryRouter initialEntries={["/plan/projects"]}>
-      <Routes>
-        <Route path="/plan/projects" element={<ProjectsListPage />} />
-        <Route
-          path="/plan/projects/:projectId"
-          element={<div data-testid="landed-on-detail" />}
-        />
-      </Routes>
-    </MemoryRouter>
+    <CreateGoalLauncherProvider onLaunch={onLaunch}>
+      <MemoryRouter initialEntries={["/plan/projects"]}>
+        <Routes>
+          <Route path="/plan/projects" element={<ProjectsListPage />} />
+          <Route path="/plan/goals" element={<ScopedGoalsProbe />} />
+        </Routes>
+      </MemoryRouter>
+    </CreateGoalLauncherProvider>
   )
 }
 
@@ -135,6 +141,7 @@ describe("ProjectsListPage", () => {
   beforeEach(() => {
     listProjects.mockReset()
     listProjectGoals.mockReset().mockResolvedValue({ goals: [] })
+    onLaunch.mockReset()
   })
 
   it("shows only the New project affordance (FAB) when there are no projects yet", async () => {
@@ -241,14 +248,61 @@ describe("ProjectsListPage", () => {
     expect(screen.getByLabelText("goals.project.name")).toHaveValue("Project A")
   })
 
-  it("navigates to the project's detail route when a row is clicked outside its icons", async () => {
+  it("opens the project on the Goals page when a row is clicked outside its icons", async () => {
     const projectA = project()
     listProjects.mockResolvedValue({ projects: [projectA] })
     const user = userEvent.setup()
     renderPage()
 
     await user.click(await screen.findByText("Project A"))
-    expect(await screen.findByTestId("landed-on-detail")).toBeInTheDocument()
+    expect(await screen.findByTestId("landed-on-goals")).toHaveTextContent(
+      "?project=proj-1"
+    )
+  })
+
+  it("opens Manage goals for the clicked row's project without leaving the page", async () => {
+    const projectA = project()
+    const projectB = project({
+      projectId: "proj-2",
+      name: "Project B",
+      isDefault: false,
+    })
+    listProjects.mockResolvedValue({ projects: [projectA, projectB] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByText("Project B")
+    await user.click(screen.getByTestId("project-row-actions-proj-2"))
+    await user.click(screen.getByTestId("project-row-manage-goals-proj-2"))
+
+    const sheet = await screen.findByTestId("add-goals-to-project-sheet")
+    expect(sheet).toBeInTheDocument()
+    expect(screen.getByTestId("projects-page")).toBeInTheDocument()
+    expect(screen.queryByTestId("landed-on-goals")).not.toBeInTheDocument()
+    await vi.waitFor(() =>
+      expect(listProjectGoals).toHaveBeenCalledWith("proj-2")
+    )
+
+    await user.click(screen.getByTestId("add-goals-create-new"))
+    expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-2"] })
+  })
+
+  it("launches goal creation preselecting the row's project from its menu", async () => {
+    const projectB = project({
+      projectId: "proj-2",
+      name: "Project B",
+      isDefault: false,
+    })
+    listProjects.mockResolvedValue({ projects: [project(), projectB] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByText("Project B")
+    await user.click(screen.getByTestId("project-row-actions-proj-2"))
+    await user.click(screen.getByTestId("project-row-create-goal-proj-2"))
+
+    expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-2"] })
+    expect(screen.getByTestId("projects-page")).toBeInTheDocument()
   })
 
   it("does not navigate when a row's action icon is clicked", async () => {
@@ -264,7 +318,7 @@ describe("ProjectsListPage", () => {
     await user.click(
       screen.getByTestId(`project-row-edit-${projectA.projectId}`)
     )
-    expect(screen.queryByTestId("landed-on-detail")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("landed-on-goals")).not.toBeInTheDocument()
     expect(screen.getByTestId("projects-page")).toBeInTheDocument()
   })
 })

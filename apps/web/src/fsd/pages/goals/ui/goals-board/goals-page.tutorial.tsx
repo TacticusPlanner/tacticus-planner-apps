@@ -5,9 +5,9 @@ import type { Step } from "react-joyride"
 import { useTourPageSteps } from "@/shared/tour"
 
 /**
- * The Goals page's guided tour (goals-navigation spec: the consolidated status filter / Type-Group
- * filters / Planning Settings row) plus how to reprioritize the one account-wide order. Mirrors the
- * Dailies tutorials' shape (registered via `useTourPageSteps`).
+ * The Goals page's guided tour (goals-navigation spec: the project scope chips, then the status
+ * filter / Type-Group filters / Planning Settings row) plus how to reprioritize the one account-wide
+ * order. Mirrors the Dailies tutorials' shape (registered via `useTourPageSteps`).
  */
 export function useGoalsOverviewTutorial() {
   const { t } = useTranslation()
@@ -15,29 +15,27 @@ export function useGoalsOverviewTutorial() {
     const createStep = (
       target: string,
       key:
-        | "createProject"
+        | "projectScope"
         | "statusFilter"
         | "filters"
-        | "projectFilter"
         | "createGoal"
         | "planningSettings"
         | "reprioritize"
+        | "orderHint"
         | "list"
     ): Step => ({
       target,
       title: t(`tour.overview.steps.${key}.title`),
       content: t(`tour.overview.steps.${key}.content`),
     })
+    // The chip row is one shared component on both breakpoints, so the step target is the same.
     const before = [
-      createStep(
-        '[data-testid="overview-quicknav-create-project"]',
-        "createProject"
-      ),
+      createStep('[data-testid="goals-project-scope"]', "projectScope"),
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
-      createStep('[data-testid="goals-project-filter"]', "projectFilter"),
     ]
     const after = [
+      createStep('[data-testid="goals-order-hint"]', "orderHint"),
       createStep('[data-testid="goals-create-goal"]', "createGoal"),
       createStep('[data-testid="goals-planning-settings"]', "planningSettings"),
       createStep('[data-testid="goals-page"]', "list"),

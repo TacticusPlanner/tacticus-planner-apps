@@ -29,6 +29,14 @@ function renderPlanRoutes(initialPath: string) {
 }
 
 describe("plan routes", () => {
+  it("serves no per-project detail route", () => {
+    expect(routes.some((route) => route.path?.startsWith("projects/"))).toBe(
+      false
+    )
+    renderPlanRoutes("/plan/projects/p1")
+    expect(screen.queryByTestId("projects-child")).not.toBeInTheDocument()
+  })
+
   it("lands the bare /plan on Goals whatever the account's projects are", () => {
     renderPlanRoutes("/plan")
 
@@ -38,8 +46,8 @@ describe("plan routes", () => {
   it.each([
     ["/plan/goals", "goals-child"],
     ["/plan/projects", "projects-child"],
-    ["/plan/projects/p1", "projects/:projectId-child"],
     ["/plan/insights", "insights-child"],
+    ["/plan/schedule", "schedule-child"],
   ])("routes %s to its page", (path, testId) => {
     renderPlanRoutes(path)
 

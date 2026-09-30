@@ -7,8 +7,7 @@ import { toast } from "sonner"
 
 import { useProjectActions } from "./use-project-actions"
 
-const { updateProjectGoalsStatusMock, createProjectMock } = vi.hoisted(() => ({
-  updateProjectGoalsStatusMock: vi.fn(),
+const { createProjectMock } = vi.hoisted(() => ({
   createProjectMock: vi.fn(),
 }))
 
@@ -27,7 +26,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/entities/project")>()
   return {
     ...actual,
-    updateProjectGoalsStatus: updateProjectGoalsStatusMock,
     createProject: createProjectMock,
   }
 })
@@ -45,9 +43,20 @@ function createWrapper() {
   return { queryClient, wrapper }
 }
 
+const created = {
+  projectId: "p-new",
+  name: "New Project",
+  description: null,
+  color: null,
+  status: "Active",
+  isDefault: false,
+  revision: 0,
+  createdAt: "2026-01-01",
+  updatedAt: "2026-01-01",
+}
+
 describe("useProjectActions", () => {
   beforeEach(() => {
-    updateProjectGoalsStatusMock.mockReset()
     createProjectMock.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -56,7 +65,7 @@ describe("useProjectActions", () => {
   it("stays pending until every overlapping action has settled", async () => {
     let resolveFirst!: () => void
     let resolveSecond!: () => void
-    updateProjectGoalsStatusMock
+    createProjectMock
       .mockReturnValueOnce(
         new Promise<void>((resolve) => {
           resolveFirst = resolve
@@ -70,12 +79,12 @@ describe("useProjectActions", () => {
     const { result } = renderHook(() => useProjectActions(), {
       wrapper: createWrapper().wrapper,
     })
-    let first!: Promise<void>
-    let second!: Promise<void>
+    let first!: Promise<unknown>
+    let second!: Promise<unknown>
 
     act(() => {
-      first = result.current.setGoalsStatus("p1", "Paused")
-      second = result.current.setGoalsStatus("p2", "Paused")
+      first = result.current.create("A", null, null)
+      second = result.current.create("B", null, null)
     })
     await waitFor(() => expect(result.current.pending).toBe(true))
 
@@ -92,64 +101,14 @@ describe("useProjectActions", () => {
     expect(result.current.pending).toBe(false)
   })
 
-  it("bulk-pauses a project's goals and reports how many were transitioned", async () => {
-    updateProjectGoalsStatusMock.mockResolvedValue({ goalsTransitioned: 3 })
+  it("offers no bulk pause/resume action", () => {
     const { result } = renderHook(() => useProjectActions(), {
       wrapper: createWrapper().wrapper,
     })
-
-    await act(async () => {
-      await result.current.setGoalsStatus("p1", "Paused")
-    })
-
-    expect(updateProjectGoalsStatusMock).toHaveBeenCalledWith("p1", "Paused")
-    const message = String(vi.mocked(toast.success).mock.calls[0]?.[0])
-    expect(message).toContain("projectGoalsPaused")
-    expect(message).toContain('"count":3')
-  })
-
-  it("bulk-resumes a project's goals", async () => {
-    updateProjectGoalsStatusMock.mockResolvedValue({ goalsTransitioned: 1 })
-    const { result } = renderHook(() => useProjectActions(), {
-      wrapper: createWrapper().wrapper,
-    })
-
-    await act(async () => {
-      await result.current.setGoalsStatus("p1", "Active")
-    })
-
-    expect(updateProjectGoalsStatusMock).toHaveBeenCalledWith("p1", "Active")
-    const message = String(vi.mocked(toast.success).mock.calls[0]?.[0])
-    expect(message).toContain("projectGoalsResumed")
-    expect(message).toContain('"count":1')
-  })
-
-  it("shows an error toast and no success toast when the bulk request fails", async () => {
-    updateProjectGoalsStatusMock.mockRejectedValue(new Error("network error"))
-    const { result } = renderHook(() => useProjectActions(), {
-      wrapper: createWrapper().wrapper,
-    })
-
-    await act(async () => {
-      await result.current.setGoalsStatus("p1", "Paused")
-    })
-
-    expect(toast.error).toHaveBeenCalled()
-    expect(toast.success).not.toHaveBeenCalled()
+    expect(result.current).not.toHaveProperty("setGoalsStatus")
   })
 
   it("returns the created project on success", async () => {
-    const created = {
-      projectId: "p-new",
-      name: "New Project",
-      description: null,
-      color: null,
-      status: "Active",
-      isDefault: false,
-      revision: 0,
-      createdAt: "2026-01-01",
-      updatedAt: "2026-01-01",
-    }
     createProjectMock.mockResolvedValue(created)
     const { result } = renderHook(() => useProjectActions(), {
       wrapper: createWrapper().wrapper,

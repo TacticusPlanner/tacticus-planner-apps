@@ -12,14 +12,14 @@ const ProjectsListPage = lazy(() =>
     default: m.ProjectsListPage,
   }))
 )
-const ProjectDetailPage = lazy(() =>
-  import("./ui/projects/project-detail-page").then((m) => ({
-    default: m.ProjectDetailPage,
-  }))
-)
 const InsightsPage = lazy(() =>
   import("./ui/insights/insights-page").then((m) => ({
     default: m.InsightsPage,
+  }))
+)
+const SchedulePage = lazy(() =>
+  import("./ui/schedule/schedule-page").then((m) => ({
+    default: m.SchedulePage,
   }))
 )
 
@@ -30,6 +30,6 @@ export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="goals" /> },
   { path: "goals", element: <GoalsPage /> },
   { path: "projects", element: <ProjectsListPage /> },
-  { path: "projects/:projectId", element: <ProjectDetailPage /> },
   { path: "insights", element: <InsightsPage /> },
+  { path: "schedule", element: <SchedulePage /> },
 ]
