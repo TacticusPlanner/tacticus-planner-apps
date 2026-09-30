@@ -772,7 +772,7 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("renders sections in order: config cards, then prerequisite suggestions, then project selection, then the review", async () => {
+  it("renders sections in order: status, goal types and projects, then config cards, then prerequisite suggestions, then the review", async () => {
     // A locked character (getPlayerCharacter unresolved) is what puts a prerequisite-suggestion
     // checkbox and a config card and the review on screen simultaneously (see the auto-suggests
     // test below) — reused here purely to compare their DOM positions.
@@ -791,18 +791,11 @@ describe("CreateGoalSheet", () => {
 
     // Node.DOCUMENT_POSITION_FOLLOWING set on the bitmask means the argument comes after `this` in
     // the document.
-    expect(
-      rankCard.compareDocumentPosition(unlockSuggestion) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(
-      unlockSuggestion.compareDocumentPosition(projectLabel) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(
-      projectLabel.compareDocumentPosition(review) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+    const follows = (first: Element, second: Element) =>
+      first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
+    expect(follows(projectLabel, rankCard)).toBeTruthy()
+    expect(follows(rankCard, unlockSuggestion)).toBeTruthy()
+    expect(follows(unlockSuggestion, review)).toBeTruthy()
   })
 
   it("shows the character's shard farm locations with an energy-per-shard figure on the Unlock card, defaulting farmingLocationIds to the lowest-energy node", async () => {
