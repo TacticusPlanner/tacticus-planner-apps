@@ -86,8 +86,8 @@ vi.mock("@/features/project-management", () => ({
 vi.mock("./overview-project-quicknav", () => ({
   OverviewProjectQuicknav: () => null,
 }))
-vi.mock("../goal-detail/goal-detail-sheet", () => ({
-  GoalDetailSheet: () => null,
+vi.mock("../goal-edit/goal-edit-dialog", () => ({
+  GoalEditDialog: () => null,
 }))
 vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsDialog: () => null,

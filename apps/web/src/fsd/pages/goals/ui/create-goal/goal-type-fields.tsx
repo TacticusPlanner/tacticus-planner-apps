@@ -17,6 +17,7 @@ import {
 } from "@workspace/game-domain"
 
 import {
+  closestOverlayContent,
   ProgressionBadge,
   RankBadge,
   ReadOnlyField,
@@ -136,7 +137,7 @@ export function RankGoalFields({
   const [additionalContainer, setAdditionalContainer] = useState<HTMLElement>()
 
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-2">
       <div className="grid grid-cols-2 gap-3">
         <ReadOnlyField label={t("goals.create.rank.current")}>
           <RankBadge rank={rankStart} />
@@ -161,9 +162,7 @@ export function RankGoalFields({
             onOpenChange={(open) => {
               if (open) {
                 setTargetContainer(
-                  (targetTriggerRef.current?.closest(
-                    '[data-slot="sheet-content"]'
-                  ) as HTMLElement | null) ?? undefined
+                  closestOverlayContent(targetTriggerRef.current)
                 )
               }
             }}
@@ -196,9 +195,7 @@ export function RankGoalFields({
           onOpenChange={(open) => {
             if (open) {
               setAdditionalContainer(
-                (additionalTriggerRef.current?.closest(
-                  '[data-slot="sheet-content"]'
-                ) as HTMLElement | null) ?? undefined
+                closestOverlayContent(additionalTriggerRef.current)
               )
             }
           }}
@@ -265,11 +262,7 @@ export function AscensionGoalFields({
         <Select
           onOpenChange={(open) => {
             if (open) {
-              setEndContainer(
-                (endTriggerRef.current?.closest(
-                  '[data-slot="sheet-content"]'
-                ) as HTMLElement | null) ?? undefined
-              )
+              setEndContainer(closestOverlayContent(endTriggerRef.current))
             }
           }}
           onValueChange={(value) =>

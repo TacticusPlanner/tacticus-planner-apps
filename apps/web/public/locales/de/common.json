@@ -554,7 +554,6 @@
       "createInlineNote": "Ein neues Projekt wird sofort gespeichert, auch wenn du dieses Ziel abbrichst. Status und Priorität dieses Ziels ändern sich dadurch nicht.",
       "createFailed": "Das Projekt konnte nicht erstellt werden. Prüfe deine Verbindung und versuche es erneut.",
       "membershipConflict": "{{project}} enthält bereits ein aktives oder pausiertes {{types}}-Ziel für diese Einheit.",
-      "reviewConflictingGoal": "Konfliktziel ansehen",
       "filterAll": "Alle Projekte",
       "filterLabel": "Projekt",
       "archivedProjects": "Archivierte Projekte ({{count}})",
@@ -783,7 +782,7 @@
         "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel."
       },
       "startPaused": "Pausiert erstellen",
-      "startPausedDescription": "Das Ziel wird ganz normal erstellt, bleibt aber aus der Tagesplanung heraus, bis du es fortsetzt. Die Wahl der Projekte ändert daran nichts.",
+      "startPausedHint": "Bleibt aus der Tagesplanung, bis du es fortsetzt.",
       "levelRequirement": {
         "title": "Benötigt Level {{required}} (aktuell {{current}})",
         "xpRemaining": "Noch {{xp}} XP nötig",
@@ -814,43 +813,14 @@
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
     },
     "detail": {
-      "title": "Zieldetails",
-      "loadError": "Dieses Ziel konnte nicht geladen werden.",
-      "saveError": "Dieses Ziel konnte nicht gespeichert werden.",
-      "save": "Änderungen speichern",
-      "cancel": "Abbrechen",
-      "edit": "Bearbeiten",
-      "progressTitle": "Fortschritt & Ziel",
-      "blockersTitle": "Blockaden",
-      "unsavedChangesTitle": "Nicht gespeicherte Änderungen verwerfen?",
-      "unsavedChangesDescription": "Du hast nicht gespeicherte Änderungen an diesem Ziel. Wenn du jetzt schließt, gehen sie verloren.",
-      "unsavedChangesConfirm": "Änderungen verwerfen",
-      "unsavedChangesCancel": "Weiter bearbeiten",
-      "estimateTitle": "Schätzung",
-      "isolatedEstimate": "Isolierte Schätzung",
-      "planAwareEstimate": "Berücksichtigt höher priorisierte Ziele in deiner Prioritätsreihenfolge",
-      "unavailable": "Nicht verfügbar",
-      "dependenciesTitle": "Abhängigkeiten",
-      "historyTitle": "Verlauf",
       "notes": "Notizen",
       "projectsTitle": "Projekte",
-      "projectsDescription": "Ein Ziel muss mindestens einem Projekt angehören.",
       "projectsRequired": "Wähle mindestens ein Projekt aus.",
       "farmingTitle": "Farm-Orte",
       "farmingDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
-      "farmingSummaryTitle": "Farming-Strategie",
-      "farmingSelected": "{{count}} Ort(e) ausgewählt",
-      "farmingAuto": "Automatisch (geringste Energie)",
       "shardsTitle": "Scherben-Ort",
       "shardsDescription": "Lasse jeden Knoten deaktiviert für die automatische Auswahl mit dem geringsten Energieaufwand.",
       "farmingInvalid": "Jede benötigte Ressource muss von mindestens einem gewählten Knoten verfügbar sein.",
-      "none": "Keine",
-      "projectsActivationNote": "Die Zuordnung ändert nur, welche Projekte dieses Ziel enthalten. Pausieren oder Fortsetzen ist eine eigene Aktion am Ziel selbst.",
-      "farmingGuidanceTitle": "Farming-Hinweise",
-      "farmingGuidanceEligible_one": "{{count}} jetzt farmbarer Ort",
-      "farmingGuidanceEligible_other": "{{count}} jetzt farmbare Orte",
-      "farmingGuidanceLink": "Tägliche Raids öffnen",
-      "farmingGuidanceCovered": "Durch ein früheres Ziel abgedeckt — nichts Eigenes zu farmen.",
       "projectGuidanceTitle": "Farming-Hinweise",
       "projectGuidancePreview": "Vorschau — nicht der heutige Dailies-Zeitplan",
       "projectGuidanceSummary_one": "{{count}} Material wird für die Ziele dieses Projekts noch benötigt.",
@@ -952,12 +922,7 @@
     },
     "target": {
       "title": "Ziel",
-      "edit": "Ziel bearbeiten",
-      "hint": "Ändere, wo dieses Ziel endet. Notizen, Projekte und andere Einstellungen bleiben unverändert.",
       "startedFrom": "Gestartet bei",
-      "save": "Ziel speichern",
-      "saving": "Wird gespeichert…",
-      "cancel": "Abbrechen",
       "rankEnd": "Zielrang",
       "progressionEnd": "Zielstufe (Aufstieg)",
       "activeEnd": "Aktive Fähigkeit, Zielstufe",
@@ -974,16 +939,7 @@
         "upgradeQuantity": "Jede Menge muss eine ganze Zahl von 1 bis 10.000 sein.",
         "upgradeEmpty": "Ein Upgrade-Ziel braucht mindestens ein Material."
       },
-      "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung – es braucht dann nichts mehr. Das Ziel behält seinen Status, bis du es selbst abschließt.",
-      "saveError": "Dieses Ziel konnte nicht gespeichert werden.",
-      "saved": "Ziel gespeichert.",
-      "refreshing": "Dein Plan wird für das neue Ziel aktualisiert…",
-      "stale": "Dieses Ziel wurde anderswo geändert. Lade die aktuelle Version, prüfe dein Ziel und speichere erneut.",
-      "loadCurrent": "Aktuelle Version laden",
-      "collision": "Ein anderes Ziel für diese Einheit hat dieses Ziel bereits in: {{project}}.",
-      "planningStale": "Das Ziel wurde gespeichert, aber dein Plan konnte nicht aktualisiert werden – die angezeigten Schätzungen können noch das alte Ziel widerspiegeln.",
-      "retryRefresh": "Aktualisierung wiederholen",
-      "historyChanged": "Ziel geändert"
+      "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung: Es braucht nichts mehr, und das Ziel behält seinen Status, bis du es abschließt."
     },
     "order": {
       "conflictTitle": "Der Plan hat sich geändert",
@@ -998,6 +954,40 @@
       "estimatesError": "Einige Planschätzungen konnten nicht geladen werden, daher fehlen möglicherweise Farming-Details.",
       "estimatesRetry": "Schätzungen erneut laden",
       "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken."
+    },
+    "edit": {
+      "title": "Ziel bearbeiten",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "loadError": "Dieses Ziel konnte nicht geladen werden. Möglicherweise existiert es nicht mehr.",
+      "refresh": "Ziel aktualisieren",
+      "reloadOrder": "Reihenfolge neu laden",
+      "priority": {
+        "label": "Priorität",
+        "hint": "1 ist die höchste Priorität.",
+        "option": "{{position}} von {{total}}"
+      },
+      "unsaved": {
+        "title": "Nicht gespeicherte Änderungen verwerfen?",
+        "description": "Du hast nicht gespeicherte Änderungen an diesem Ziel. Wenn du jetzt schließt, gehen sie verloren.",
+        "keep": "Weiter bearbeiten",
+        "discard": "Änderungen verwerfen"
+      },
+      "errors": {
+        "stale": "Dieses Ziel wurde anderswo geändert und es wurde nichts gespeichert. Aktualisiere das Ziel (deine Änderungen bleiben erhalten) und speichere erneut.",
+        "order": "Die Reihenfolge deiner Ziele hat sich geändert und es wurde nichts gespeichert. Lade die aktuelle Reihenfolge, prüfe die Position und speichere erneut.",
+        "conflict": "Ein anderes Ziel für diese Einheit belegt diesen Platz bereits in: {{project}}. Es wurde nichts gespeichert.",
+        "invalid": "Ungültig: {{sections}}. Es wurde nichts gespeichert. {{message}}",
+        "failed": "Dieses Ziel konnte nicht gespeichert werden. Es wurde nichts gespeichert."
+      },
+      "sections": {
+        "target": "Zielwert",
+        "details": "Details",
+        "projects": "Projekte",
+        "priority": "Priorität",
+        "unknown": "eine Eingabe"
+      }
     }
   },
   "language": {
@@ -1119,7 +1109,7 @@
         },
         "list": {
           "title": "Deine Ziele",
-          "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte. Öffne ein geeignetes Ziel, um sein Ziel direkt zu bearbeiten. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
+          "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte. Mit der Aktion „Bearbeiten“ eines Ziels änderst du Zielwert, Priorität, Notizen oder Projekte. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
         }
       }
     },
@@ -1180,11 +1170,15 @@
       }
     },
     "startPage": "Diese Seite erkunden",
-    "goalDetail": {
+    "editGoal": {
       "steps": {
-        "editTarget": {
-          "title": "Ziel bearbeiten",
-          "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Projekte, Notizen und Verlauf bleiben erhalten, und dein Plan wird neu berechnet."
+        "target": {
+          "title": "Zielwert",
+          "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Der Verlauf bleibt erhalten, und dein Plan wird beim Speichern neu berechnet."
+        },
+        "priority": {
+          "title": "Priorität",
+          "content": "Wähle die Position dieses Ziels in deiner Prioritätsreihenfolge. Beim Speichern wird es dorthin verschoben, und die Ziele dazwischen rücken um einen Platz."
         },
         "projects": {
           "title": "Projekte",

@@ -42,35 +42,41 @@ export function GoalTypeCards({
           switch (kind) {
             case "Rank":
               return (
-                <GoalTypeCard key={kind} kind="Rank">
-                  <RankGoalFields
-                    rankStart={form.rankStart}
-                    rankEnd={form.rankEnd}
-                    rankEndOptions={form.rankEndOptions}
-                    rankAdditionalTarget={form.rankAdditionalTarget}
-                    additionalTargetChoices={form.additionalTargetChoices}
-                    onRankEndChange={form.setRankEnd}
-                    onRankAdditionalTargetChange={form.setRankAdditionalTarget}
-                    missingUpgrades={form.missingUpgrades}
-                    rankAppliedUpgrades={form.rankAppliedUpgrades}
-                    rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
-                  />
-                  <LevelRequirementNote
-                    preview={form.levelRequirements.Rank}
-                    xpBookRarity={form.xpBookRarity}
-                  />
-                  <FarmingStrategyField
-                    context="rank"
-                    rankStart={form.rankStart}
-                    rankEnd={form.rankEnd}
-                    rankAdditionalTarget={form.rankAdditionalTarget}
-                    abilityActiveStart={form.abilityActiveStart}
-                    abilityActiveEnd={form.abilityActiveEnd}
-                    abilityPassiveStart={form.abilityPassiveStart}
-                    abilityPassiveEnd={form.abilityPassiveEnd}
-                    farmingStrategy={form.farmingStrategy}
-                    onFarmingStrategyChange={form.setFarmingStrategy}
-                  />
+                <GoalTypeCard key={kind} kind="Rank" wide>
+                  <div className="grid items-start gap-2 @2xl:grid-cols-2">
+                    <RankGoalFields
+                      rankStart={form.rankStart}
+                      rankEnd={form.rankEnd}
+                      rankEndOptions={form.rankEndOptions}
+                      rankAdditionalTarget={form.rankAdditionalTarget}
+                      additionalTargetChoices={form.additionalTargetChoices}
+                      onRankEndChange={form.setRankEnd}
+                      onRankAdditionalTargetChange={
+                        form.setRankAdditionalTarget
+                      }
+                      missingUpgrades={form.missingUpgrades}
+                      rankAppliedUpgrades={form.rankAppliedUpgrades}
+                      rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
+                    />
+                    <div className="grid gap-2">
+                      <LevelRequirementNote
+                        preview={form.levelRequirements.Rank}
+                        xpBookRarity={form.xpBookRarity}
+                      />
+                      <FarmingStrategyField
+                        context="rank"
+                        rankStart={form.rankStart}
+                        rankEnd={form.rankEnd}
+                        rankAdditionalTarget={form.rankAdditionalTarget}
+                        abilityActiveStart={form.abilityActiveStart}
+                        abilityActiveEnd={form.abilityActiveEnd}
+                        abilityPassiveStart={form.abilityPassiveStart}
+                        abilityPassiveEnd={form.abilityPassiveEnd}
+                        farmingStrategy={form.farmingStrategy}
+                        onFarmingStrategyChange={form.setFarmingStrategy}
+                      />
+                    </div>
+                  </div>
                 </GoalTypeCard>
               )
             case "Ascension": {
@@ -99,7 +105,7 @@ export function GoalTypeCards({
                   ? (form.shopOffers ?? []).filter((offer) => offer.isMythic)
                   : []
               return (
-                <GoalTypeCard key={kind} kind="Ascension">
+                <GoalTypeCard key={kind} kind="Ascension" wide>
                   <AscensionFarmingFields
                     progressionEnd={form.progressionEnd}
                     progressionPreview={form.progressionPreview}
@@ -234,7 +240,7 @@ export function GoalTypeCards({
               )
             case "Upgrade":
               return (
-                <GoalTypeCard key={kind} kind="Upgrade">
+                <GoalTypeCard key={kind} kind="Upgrade" wide>
                   <UpgradeGoalFields
                     targets={form.upgradeTargets}
                     relevantUpgradeQuantities={form.relevantUpgradeQuantities}
@@ -260,7 +266,7 @@ export function GoalTypeCards({
               )
             case "Unlock":
               return (
-                <GoalTypeCard key={kind} kind="Unlock">
+                <GoalTypeCard key={kind} kind="Unlock" wide>
                   <p className="text-sm text-muted-foreground">
                     {t("goals.create.unlockDescription")}
                   </p>

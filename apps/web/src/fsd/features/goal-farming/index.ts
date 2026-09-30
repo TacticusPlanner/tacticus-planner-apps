@@ -5,7 +5,6 @@ export {
   estimateGoal,
   selectFarmNodes,
 } from "./lib/estimate"
-export { unavailableReason } from "./lib/estimate-blocked"
 export {
   estimateBonusRaids,
   estimatePlan,

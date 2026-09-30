@@ -9,8 +9,9 @@ import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
  * The create-goal sheet's own onboarding tour (plan: acquisition-source picker,
  * tacticus-planner-apps#103) — the sheet had no tour coverage before this change. One step for
  * explaining that Campaigns/Onslaught/Shops sources combine, and one for the project picker's
- * inline Create action (skipped by Joyride until a unit is chosen and the picker exists). Desktop
- * and mobile share the same steps (no viewport-specific placement need yet).
+ * inline Create action (skipped by Joyride until a unit is chosen and the picker exists). The targets
+ * are `data-testid`s inside the form body, which both shells render (centered dialog at or above
+ * 768px, bottom sheet below), so desktop and mobile share the same steps.
  */
 export function useCreateGoalSheetTutorial(): TourPageSteps {
   const { t } = useTranslation()

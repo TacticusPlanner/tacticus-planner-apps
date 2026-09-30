@@ -7,6 +7,12 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
+// The dialog has its own tests; here only which goal the page hands it matters.
+vi.mock("../goal-edit/goal-edit-dialog", () => ({
+  GoalEditDialog: ({ goalId }: { goalId: string | null }) =>
+    goalId ? <div data-testid="goal-edit-dialog">{goalId}</div> : null,
+}))
+
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (
     querier: () => unknown,
@@ -627,18 +633,32 @@ describe("GoalsPage", () => {
     expect(listGoals).toHaveBeenCalledWith({ archived: true })
   })
 
-  it("opens the goal detail sheet when clicking anywhere on the row", async () => {
+  it("opens the Edit goal dialog for the goal whose Edit action is activated", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goal-row")
+    await user.click(screen.getByTestId(`goal-row-edit-${activeGoal.goalId}`))
+
+    expect(await screen.findByTestId("goal-edit-dialog")).toHaveTextContent(
+      activeGoal.goalId
+    )
+  })
+
+  it("opens nothing when the goal name or the row is clicked", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const user = userEvent.setup()
     renderPage()
 
     const row = await screen.findByTestId("goal-row")
+    await user.click(row.querySelector("td span.font-medium") as HTMLElement)
     await user.click(row)
 
-    expect(await screen.findByTestId("goal-detail-sheet")).toBeInTheDocument()
+    expect(screen.queryByTestId("goal-edit-dialog")).not.toBeInTheDocument()
   })
 
-  it("does not open the goal detail sheet when using a row action", async () => {
+  it("does not open the Edit goal dialog when using another row action", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const user = userEvent.setup()
     renderPage()
@@ -646,7 +666,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goal-row")
     await user.click(screen.getByTestId(`goal-row-delete-${activeGoal.goalId}`))
 
-    expect(screen.queryByTestId("goal-detail-sheet")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("goal-edit-dialog")).not.toBeInTheDocument()
   })
 
   it("opens ungrouped, unlike project detail", async () => {

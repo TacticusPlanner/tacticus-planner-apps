@@ -195,8 +195,7 @@ export function GoalTargetDisplay({
  *
  * `open`/`onOpenChange` make the desktop popover a controlled component when the caller needs to
  * coordinate one-open-at-a-time across a list (see `goals-list.tsx`'s `openPopoverGoalId`); omit
- * both for an uncontrolled popover (Radix manages its own state) in a single-instance context like
- * the goal-detail sheet.
+ * both for an uncontrolled popover (Radix manages its own state) in a single-instance context.
  *
  * `potentialOnly` drops the actual reading: the bar renders fully in
  * the striped "potential" style, the percent shows only the small potential-styled reading, and the

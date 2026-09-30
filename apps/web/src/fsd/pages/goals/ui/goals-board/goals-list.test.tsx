@@ -328,35 +328,69 @@ describe("GoalsList", () => {
     }
   )
 
-  it("opens the goal detail via keyboard from the goal-name button", async () => {
-    const onView = vi.fn()
-    const user = userEvent.setup()
+  it.each([
+    ["desktop row", false],
+    ["mobile card", true],
+  ])(
+    "opens the editor via keyboard from the %s's Edit action",
+    async (_layout, mobile) => {
+      useIsMobileMock.mockReturnValue(mobile)
+      const onEdit = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <GoalsList
+          actions={stubActions}
+          onEdit={onEdit}
+          reorderEnabled={false}
+          rows={[rows[0]!]}
+        />
+      )
+
+      const edit = await screen.findByRole("button", {
+        name: "goals.edit.title",
+      })
+      const row = screen.getByTestId("goal-row")
+      expect(row).not.toHaveAttribute("tabindex")
+      edit.focus()
+      expect(edit).toHaveFocus()
+      await user.keyboard("{Enter}")
+
+      expect(onEdit).toHaveBeenCalledWith("goal-1")
+    }
+  )
+
+  it.each([
+    ["desktop row", false],
+    ["mobile card", true],
+  ])(
+    "opens nothing when the goal name or the %s is clicked",
+    async (_layout, mobile) => {
+      useIsMobileMock.mockReturnValue(mobile)
+      const onEdit = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <GoalsList
+          actions={stubActions}
+          onEdit={onEdit}
+          reorderEnabled={false}
+          rows={[rows[0]!]}
+        />
+      )
+
+      await user.click(await screen.findByText("Hero One"))
+      await user.click(screen.getByTestId("goal-row"))
+
+      expect(screen.queryByRole("button", { name: "Hero One" })).toBeNull()
+      expect(onEdit).not.toHaveBeenCalled()
+    }
+  )
+
+  it("does not open the editor when Enter is pressed on another row action", async () => {
+    const onEdit = vi.fn()
     render(
       <GoalsList
         actions={stubActions}
-        onView={onView}
-        reorderEnabled={false}
-        rows={[rows[0]!]}
-      />
-    )
-
-    const nameButton = await screen.findByRole("button", { name: "Hero One" })
-    const row = screen.getByTestId("goal-row")
-    expect(screen.getByRole("row", { name: /Hero One/ })).toBe(row)
-    expect(row).not.toHaveAttribute("tabindex")
-    nameButton.focus()
-    expect(nameButton).toHaveFocus()
-    await user.keyboard("{Enter}")
-
-    expect(onView).toHaveBeenCalledWith("goal-1")
-  })
-
-  it("does not open the goal detail when Enter is pressed on a row action", async () => {
-    const onView = vi.fn()
-    render(
-      <GoalsList
-        actions={stubActions}
-        onView={onView}
+        onEdit={onEdit}
         reorderEnabled={false}
         rows={[rows[0]!]}
       />
@@ -365,7 +399,7 @@ describe("GoalsList", () => {
     const trigger = await screen.findByTestId("goal-row-delete-goal-1")
     fireEvent.keyDown(trigger, { key: "Enter" })
 
-    expect(onView).not.toHaveBeenCalled()
+    expect(onEdit).not.toHaveBeenCalled()
   })
 
   it("resolves a Machine of War row's display name from the mows catalog", async () => {

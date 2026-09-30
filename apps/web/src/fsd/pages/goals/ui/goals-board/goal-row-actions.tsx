@@ -1,6 +1,13 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FolderInput, MoreHorizontal, Pause, Play, Trash2 } from "lucide-react"
+import {
+  FolderInput,
+  MoreHorizontal,
+  Pause,
+  Pencil,
+  Play,
+  Trash2,
+} from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -28,6 +35,8 @@ import { cascadeTargets, type CascadeContext } from "./goal-row-utils"
 type Props = {
   row: GoalRow
   actions: ReturnType<typeof useGoalActions>
+  /** Opens the Edit goal dialog for this goal. */
+  onEdit: (goalId: string) => void
   /** The project this row is being viewed inside, when there is one. Present on a project's detail
    *  route and absent on Overview, which is what decides whether project removal is offered. */
   project?: ProjectSummary
@@ -44,7 +53,7 @@ type Props = {
   cascadeContext?: CascadeContext
 }
 
-/** A goal row's status controls: a primary pause/resume icon button (`goal-status-actions`: "Pause
+/** A goal row's controls: an Edit icon button (opens the Edit goal dialog), a primary pause/resume icon button (`goal-status-actions`: "Pause
  * and resume are primary row actions" — reachable in one click, not behind the "⋯" menu), project
  * removal/move when the row is viewed inside a project, and a destructive delete gated behind
  * `DeleteGoalDialog`. On desktop, project removal/move and delete render as their own icon buttons
@@ -55,6 +64,7 @@ type Props = {
 export function GoalRowActions({
   row,
   actions,
+  onEdit,
   project,
   onOpenChange,
   reached = false,
@@ -144,6 +154,15 @@ export function GoalRowActions({
 
   return (
     <>
+      <Button
+        aria-label={t("goals.edit.title")}
+        data-testid={`goal-row-edit-${goalId}`}
+        onClick={() => onEdit(goalId)}
+        size="icon-sm"
+        variant="ghost"
+      >
+        <Pencil />
+      </Button>
       {row.status === "Active" && !reached ? (
         <Button
           aria-label={t("goals.actions.pause")}

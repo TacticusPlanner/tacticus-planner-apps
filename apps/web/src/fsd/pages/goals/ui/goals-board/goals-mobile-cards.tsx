@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { GripVertical } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
@@ -17,7 +18,7 @@ import {
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
-import { SortableList } from "../shared/sortable-list"
+import { SortableList, type SortableRenderProps } from "../shared/sortable-list"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   EstimateCell,
@@ -36,13 +37,63 @@ import {
   type GoalsListProps,
 } from "./goal-row-utils"
 
+type ReorderCardBodyProps = {
+  row: NonNullable<GoalsListProps["rows"]>[number]
+  progress: Parameters<typeof GoalTargetDisplay>[0]["progress"]
+  reached: boolean
+  /** Stable across drag-state changes, so a drag moving other cards never re-renders this body. */
+  dragHandle: SortableRenderProps["dragHandle"]
+}
+
+/** A reorder card's content. Memoized so the drag (which re-renders every sortable `<li>` shell on
+ *  each over-target change) only pays for the cheap shell, not the handle/icon/name/target. */
+const ReorderCardBody = memo(function ReorderCardBody({
+  row,
+  progress,
+  reached,
+  dragHandle,
+}: ReorderCardBodyProps) {
+  const { t } = useTranslation()
+  const { getEntityName } = useGoalCatalog()
+  const name = getEntityName(row.entityType, row.entityId)
+  const { ref: setHandleNode, attributes, listeners } = dragHandle
+  return (
+    <>
+      <button
+        {...attributes}
+        {...listeners}
+        aria-label={t("goals.columns.reorderHandle", { entity: name })}
+        className="cursor-grab touch-none rounded-md p-2 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing"
+        data-testid="goal-row-drag-handle"
+        ref={setHandleNode}
+        type="button"
+      >
+        <GripVertical />
+      </button>
+      <GoalPriorityNumber row={row} />
+      <GoalUnitIcon
+        className="size-8"
+        entityId={row.entityId}
+        entityType={row.entityType}
+        name={name}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">{name}</p>
+        <GoalTargetDisplay entityType={row.entityType} progress={progress} />
+      </div>
+      {/* State stays readable as text in this mode too (a Paused row would otherwise look like an Active one). */}
+      <StatusBadge reached={reached} status={row.status} />
+    </>
+  )
+})
+
 export function GoalsMobileCards({
   rows,
   actions,
   estimates,
   metrics,
   potentialProgress,
-  onView = () => undefined,
+  onEdit = () => undefined,
   onReorder,
   reorderEnabled = false,
   mobileReorderActive = false,
@@ -82,41 +133,13 @@ export function GoalsMobileCards({
               ref={sortable.setNodeRef}
               style={sortable.style}
             >
-              <button
-                {...sortable.dragHandle.attributes}
-                {...sortable.dragHandle.listeners}
-                aria-label={t("goals.columns.reorderHandle", {
-                  entity: getEntityName(row.entityType, row.entityId),
-                })}
-                className="cursor-grab touch-none rounded-md p-2 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing"
-                data-testid="goal-row-drag-handle"
-                ref={sortable.dragHandle.ref}
-                type="button"
-              >
-                <GripVertical />
-              </button>
-              <GoalPriorityNumber row={row} />
-              <GoalUnitIcon
-                className="size-8"
-                entityId={row.entityId}
-                entityType={row.entityType}
-                name={getEntityName(row.entityType, row.entityId)}
-              />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">
-                  {getEntityName(row.entityType, row.entityId)}
-                </p>
-                <GoalTargetDisplay
-                  entityType={row.entityType}
-                  progress={
-                    metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
-                  }
-                />
-              </div>
-              {/* State stays readable as text in this mode too (a Paused row would otherwise look like an Active one). */}
-              <StatusBadge
+              <ReorderCardBody
+                dragHandle={sortable.dragHandle}
+                progress={
+                  metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
+                }
                 reached={isReachedRow(row, reachedByGoalId)}
-                status={row.status}
+                row={row}
               />
             </li>
           )}
@@ -157,13 +180,12 @@ export function GoalsMobileCards({
           return (
             <li
               className={cn(
-                "flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 text-sm",
+                "flex flex-col gap-2 rounded-2xl border p-3 text-sm",
                 reached && REACHED_ROW_CLASS
               )}
               data-reached={reached || undefined}
               data-testid="goal-row"
               key={row.goalId}
-              onClick={() => onView(row.goalId)}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
@@ -175,11 +197,7 @@ export function GoalsMobileCards({
                     name={getEntityName(row.entityType, row.entityId)}
                   />
                   <div className="min-w-0">
-                    <GoalNameLink
-                      onView={onView}
-                      remainingText={remainingText}
-                      row={row}
-                    />
+                    <GoalNameLink remainingText={remainingText} row={row} />
                     {reached ? (
                       <ReachedDash />
                     ) : estimates ? (
@@ -200,6 +218,7 @@ export function GoalsMobileCards({
                   >
                     <GoalRowActions
                       actions={actions}
+                      onEdit={onEdit}
                       cascadeContext={cascadeContext}
                       project={project}
                       reached={reached}

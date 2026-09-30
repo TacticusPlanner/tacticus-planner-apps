@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { cn } from "@workspace/ui/lib/utils"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 
@@ -59,7 +60,7 @@ export function GoalTypeToggleGroup({
   const { t } = useTranslation()
 
   return (
-    <div className="grid grid-cols-2 gap-2 rounded-2xl border p-3">
+    <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 rounded-2xl border p-3">
       {kinds.map((kind) => (
         <Field key={kind} orientation="horizontal">
           <Checkbox
@@ -88,10 +89,13 @@ export function GoalTypeCard({
   kind,
   entityType,
   children,
+  wide,
 }: {
   kind: GoalKind
   entityType?: string
   children: ReactNode
+  /** Spans both columns of the create dialog's two-column body (for wide content like source trees). */
+  wide?: boolean
 }) {
   const { t } = useTranslation()
 
@@ -100,11 +104,14 @@ export function GoalTypeCard({
     // without this, the Sheet's scrolling `flex flex-col` form squeezes every card down to a sliver
     // (flex-shrink has nothing content-sized to stop at) instead of the form scrolling past them.
     <Card
-      className="shrink-0"
+      className={cn(
+        "shrink-0 data-[size=sm]:[--card-spacing:--spacing(3)]",
+        wide && "col-span-full"
+      )}
       data-testid={`create-goal-type-card-${kind}`}
       size="sm"
     >
-      <CardHeader>
+      <CardHeader className="gap-0">
         <CardTitle className="flex items-center gap-2">
           <EntityIcon
             alt=""
@@ -114,7 +121,7 @@ export function GoalTypeCard({
           {t(`goals.create.goalTypes.${kind}`)}
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-3">{children}</CardContent>
+      <CardContent className="grid gap-2">{children}</CardContent>
     </Card>
   )
 }

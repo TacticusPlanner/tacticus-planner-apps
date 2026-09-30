@@ -48,7 +48,7 @@ function defaultLocationIds(
   ].filter((id): id is string => id != null)
 }
 
-/** A previously-saved selection to seed the control from (goal detail/edit — spec: *Goal created
+/** A previously-saved selection to seed the control from (Edit goal dialog — spec: *Goal created
  *  before this control existed* / round-trip through edit). Absent means "fresh goal", which uses
  *  the campaign-only lowest-energy default instead of an empty selection. */
 export type AcquisitionSourceSeed = {
@@ -200,7 +200,7 @@ export function useAcquisitionSourceSelection(params: {
 
   // The plan a null seed resolves to (Campaigns-only, cheapest-node default, no manual edits) —
   // exposed so a caller can tell "untouched since seeding" apart from "user made an empty
-  // selection" without re-deriving the same default-node logic itself (goal-detail's dirty check).
+  // selection" without re-deriving the same default-node logic itself (the Edit goal dialog's dirty check).
   const defaultRegularShardLocationIds = useMemo(() => {
     const regularIds = new Set<string>(
       regularShardLocations.map((location) => location.battleId)

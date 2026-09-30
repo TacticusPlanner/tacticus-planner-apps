@@ -12,7 +12,7 @@ import {
 
 import type { Rarity } from "@workspace/game-domain"
 
-import { ReadOnlyField } from "@/shared/ui"
+import { ReadOnlyField, closestOverlayContent } from "@/shared/ui"
 import { abilityLevelsByRarity } from "../../model/goal-creation-form/goal-validation"
 import { ResourcesNeededList, type MissingUpgrade } from ".//goal-type-fields"
 
@@ -84,11 +84,7 @@ function AbilityTargetSelect({
       <Select
         onOpenChange={(open) => {
           if (open) {
-            setContainer(
-              (triggerRef.current?.closest(
-                '[data-slot="sheet-content"]'
-              ) as HTMLElement | null) ?? undefined
-            )
+            setContainer(closestOverlayContent(triggerRef.current))
           }
         }}
         onValueChange={(next) => onValueChange(Number(next))}

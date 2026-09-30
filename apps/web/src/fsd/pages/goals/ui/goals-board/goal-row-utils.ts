@@ -76,7 +76,8 @@ export type GoalsListProps = {
   /** While true, the drag surface ignores drops — closes the race a second drag could otherwise
    *  cause while the previous drop's reorder mutation is still in flight. */
   reorderPending?: boolean
-  onView?: (goalId: string) => void
+  /** Opens the Edit goal dialog for a goal (the row's Edit action). */
+  onEdit?: (goalId: string) => void
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
    *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
   estimates?: ReadonlyMap<string, EstimateOutcome>

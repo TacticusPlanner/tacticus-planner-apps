@@ -17,7 +17,7 @@ type Props = {
   getEntityName: (entityType: string, entityId: string) => string
   loading: boolean
   metrics: ReadonlyMap<string, GoalOverviewMetrics>
-  onView: (goalId: string) => void
+  onEdit: (goalId: string) => void
   potentialProgress: ReadonlyMap<string, number>
   project: ProjectSummary
   /** The project holds no goals at all, as opposed to a filter hiding the ones it holds. */
@@ -50,7 +50,7 @@ export function ProjectDetailGoals({
   getEntityName,
   loading,
   metrics,
-  onView,
+  onEdit,
   potentialProgress,
   project,
   projectIsEmpty,
@@ -125,7 +125,7 @@ export function ProjectDetailGoals({
                 metrics={metrics}
                 mobileReorderActive={mobileReorderActive}
                 onReorder={onReorder}
-                onView={onView}
+                onEdit={onEdit}
                 potentialProgress={potentialProgress}
                 project={project}
                 reachedByGoalId={reachedByGoalId}

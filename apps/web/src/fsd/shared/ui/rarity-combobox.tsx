@@ -19,6 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { rarityRank, type Rarity } from "@workspace/game-domain"
 
+import { closestOverlayContent } from "./overlay-content"
+
 /** Overrides an item's default rarity-based group (heading + sort position) — e.g. relic
  * equipment sorting into its own group above Mythic instead of being grouped by its raw rarity. */
 type RarityComboboxGroupOverride = {
@@ -125,11 +127,7 @@ export function RarityCombobox<TId extends string>({
       onOpenChange={(next) => {
         setOpen(next)
         if (next) {
-          setPortalContainer(
-            (triggerRef.current?.closest(
-              '[data-slot="sheet-content"]'
-            ) as HTMLElement | null) ?? undefined
-          )
+          setPortalContainer(closestOverlayContent(triggerRef.current))
         } else {
           setSearch("")
         }

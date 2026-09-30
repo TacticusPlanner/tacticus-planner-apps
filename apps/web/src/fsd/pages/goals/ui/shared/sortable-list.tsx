@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react"
+import { useMemo, type CSSProperties, type ReactNode } from "react"
 import {
   closestCenter,
   DndContext,
@@ -54,10 +54,17 @@ function SortableItem<T>({
     isDragging,
   } = useSortable({ id: getId(item) })
 
+  // Stable while this item's drag wiring is unchanged, so a memoized row body that only takes the
+  // handle is not re-rendered by drag-state changes elsewhere in the list.
+  const dragHandle = useMemo(
+    () => ({ ref: setActivatorNodeRef, attributes, listeners }),
+    [setActivatorNodeRef, attributes, listeners]
+  )
+
   return renderItem(item, {
     setNodeRef,
     style: { transform: CSS.Transform.toString(transform), transition },
-    dragHandle: { ref: setActivatorNodeRef, attributes, listeners },
+    dragHandle,
     isDragging,
   })
 }

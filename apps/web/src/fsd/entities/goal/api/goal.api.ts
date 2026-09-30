@@ -3,6 +3,8 @@ import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
 import type {
   CreateCombinedGoalsRequest,
   CreateGoalRequest,
+  EditGoalRequest,
+  EditGoalResponse,
   GoalDetail,
   GoalListResponse,
   GoalOrderResponse,
@@ -37,6 +39,16 @@ export function createCombinedGoals(request: CreateCombinedGoalsRequest) {
 
 export function updateGoal(goalId: string, request: UpdateGoalRequest) {
   return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}`, { body: request })
+}
+
+/** Applies every present section of `request` (target, details, projects, priority) to the goal in one
+ * atomic call; absent sections are unchanged. Failures change nothing: 400 (`errors` map keyed by
+ * section), 404, or 409 � `goalRevisionStale` (see `goalRevisionConflictDetails`), `goalOrderStale` (see
+ * `goalOrderConflictDetails`) or `projectGoalSlotOccupied`. */
+export function editGoal(goalId: string, request: EditGoalRequest) {
+  return apiPut<EditGoalResponse>(`/api/v1/me/goals/${goalId}/edit`, {
+    body: request,
+  })
 }
 
 /** Changes an Active/Paused goal's end target in place (Rank, Ascension, Ability, Upgrade).

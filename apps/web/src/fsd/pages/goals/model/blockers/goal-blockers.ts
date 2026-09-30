@@ -13,7 +13,7 @@ export type BlockerReason =
    *  the specific farming-availability cause (no accessible node, daily energy too low, the
    *  selected-locations override excludes every viable node, or the day-by-day simulation couldn't
    *  finish within its horizon). Only present where an estimate was actually computed for this goal
-   *  (the project-scoped Insights view, or a goal's own detail sheet) — the flat cross-project
+   *  (the project-scoped Insights view) — the flat cross-project
    *  overview has no per-goal estimate to check (see `use-goals-overview-metrics.ts`). */
   | { kind: "EstimateBlocked"; reason: EstimateBlockedReason }
   /** A goal this one `dependsOn` hasn't reached its own target yet. */
@@ -33,7 +33,7 @@ export type BlockerReason =
    *  Unlike the Ascension prerequisite, an existing Unlock goal always fully covers this one
    *  (no partial-progress case), so a covering goal suppresses the reason entirely rather than
    *  surfacing here as `existingGoalId` — the field stays `undefined` so the shared "create vs.
-   *  review" rendering in `goal-detail-view.tsx` can read it across both reasons. */
+   *  review" rendering can read it across both reasons. */
   | {
       kind: "MissingUnlockPrerequisite"
       unitName: string
@@ -72,7 +72,7 @@ export function computeGoalBlockers(params: {
 }
 
 /** A blocker reason's display text — shared by `BlockedIndicator`'s tooltip (a joined one-liner) and
- * the detail view's full "Blockers" list (plan §5). `t` is passed in rather than called via
+ * a full "Blockers" list (plan §5). `t` is passed in rather than called via
  * `useTranslation` here so this stays a plain function (mirrors `project-marker.ts`'s
  * `projectMarkerSuffix` for the same react-refresh only-export-components reason). */
 export function blockerReasonText(t: TFunction, reason: BlockerReason): string {

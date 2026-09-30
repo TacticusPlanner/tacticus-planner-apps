@@ -19,6 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { characterIcon } from "@workspace/game-catalog"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
+import { closestOverlayContent } from "./overlay-content"
+
 // Fixed-size avatar slot shared by the trigger and every list item, so Character and MoW rows line
 // up identically regardless of entity type — rather than leaving a gap when an icon fails to resolve
 // (the previous behavior), this always reserves the circle and falls back to a generic glyph, which
@@ -140,11 +142,7 @@ export function UnitCombobox({
       onOpenChange={(next) => {
         setOpen(next)
         if (next) {
-          setPortalContainer(
-            (triggerRef.current?.closest(
-              '[data-slot="sheet-content"]'
-            ) as HTMLElement | null) ?? undefined
-          )
+          setPortalContainer(closestOverlayContent(triggerRef.current))
         } else {
           setSearch("")
         }
