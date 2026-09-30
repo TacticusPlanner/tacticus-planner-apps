@@ -782,7 +782,7 @@
         "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité."
       },
       "startPaused": "Créer en pause",
-      "startPausedDescription": "L'objectif est créé normalement mais reste hors de la planification quotidienne jusqu'à ce que vous le repreniez. Les projets choisis n'y changent rien.",
+      "startPausedHint": "Reste hors de la planification quotidienne jusqu'à sa reprise.",
       "levelRequirement": {
         "title": "Nécessite le niveau {{required}} (actuellement {{current}})",
         "xpRemaining": "Il reste {{xp}} XP à gagner",
@@ -815,14 +815,12 @@
     "detail": {
       "notes": "Notes",
       "projectsTitle": "Projets",
-      "projectsDescription": "Un objectif doit appartenir à au moins un projet.",
       "projectsRequired": "Sélectionnez au moins un projet.",
       "farmingTitle": "Lieux de farming",
       "farmingDescription": "Laissez chaque nœud non coché pour une sélection automatique au moindre coût en énergie.",
       "shardsTitle": "Lieu des éclats",
       "shardsDescription": "Laissez chaque nœud non coché pour une sélection automatique au moindre coût en énergie.",
       "farmingInvalid": "Chaque ressource requise doit être disponible sur au moins un nœud sélectionné.",
-      "projectsActivationNote": "L'appartenance change seulement les projets qui contiennent cet objectif. Le mettre en pause ou le reprendre est une action distincte sur l'objectif lui-même.",
       "projectGuidanceTitle": "Conseils de farming",
       "projectGuidancePreview": "Aperçu — pas le programme des Dailies d'aujourd'hui",
       "projectGuidanceSummary_one": "{{count}} matériau encore nécessaire pour les objectifs de ce projet.",
@@ -941,7 +939,7 @@
         "upgradeQuantity": "Chaque quantité doit être un nombre entier de 1 à 10 000.",
         "upgradeEmpty": "Un objectif d'améliorations nécessite au moins un matériau."
       },
-      "reachedNote": "Un objectif déjà atteint est valide : il n'a simplement plus besoin de rien. L'objectif garde son statut jusqu'à ce que vous le terminiez vous-même."
+      "reachedNote": "Un objectif déjà atteint est valide : il n'a plus besoin de rien et garde son statut jusqu'à ce que vous le terminiez."
     },
     "order": {
       "conflictTitle": "Le plan a changé",
@@ -967,7 +965,7 @@
       "reloadOrder": "Recharger l'ordre",
       "priority": {
         "label": "Priorité",
-        "hint": "1 est la priorité la plus haute. À l'enregistrement, cet objectif est déplacé à la position choisie.",
+        "hint": "1 est la priorité la plus haute.",
         "option": "{{position}} sur {{total}}"
       },
       "unsaved": {

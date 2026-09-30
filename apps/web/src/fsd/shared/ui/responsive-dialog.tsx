@@ -72,7 +72,10 @@ export function ResponsiveDialogHeader({
   return (
     <div
       data-slot="responsive-dialog-header"
-      className={cn("flex shrink-0 flex-col gap-1.5 p-6 pr-14", className)}
+      className={cn(
+        "flex shrink-0 flex-col gap-1 px-6 pt-5 pr-14 pb-3",
+        className
+      )}
       {...props}
     />
   )
@@ -109,7 +112,7 @@ export function ResponsiveDialogFooter({
     <div
       data-slot="responsive-dialog-footer"
       className={cn(
-        "flex shrink-0 flex-col gap-2 p-6 md:flex-row md:items-center md:justify-end",
+        "flex shrink-0 flex-col gap-2 px-6 py-4 md:flex-row md:items-center md:justify-end",
         className
       )}
       {...props}

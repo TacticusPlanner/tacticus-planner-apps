@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
+import { InfoHint } from "../shared/info-hint"
+
 /**
  * Checkbox list of a goal's farmable locations — either upgrade farm nodes (most costed goal types)
  * or a character's shard-drop nodes (Unlock, picked via `isUnlock`). Split out of
@@ -23,26 +25,30 @@ export function GoalLocationsField({
   const { t } = useTranslation()
 
   return (
-    <section className="grid gap-2" data-testid="goal-edit-locations">
-      <h3 className="font-semibold">
+    <section className="grid gap-1.5" data-testid="goal-edit-locations">
+      <h3 className="flex items-center gap-1.5 font-semibold">
         {t(isUnlock ? "goals.detail.shardsTitle" : "goals.detail.farmingTitle")}
+        <InfoHint
+          text={t(
+            isUnlock
+              ? "goals.detail.shardsDescription"
+              : "goals.detail.farmingDescription"
+          )}
+        />
       </h3>
-      <p className="text-muted-foreground">
-        {t(
-          isUnlock
-            ? "goals.detail.shardsDescription"
-            : "goals.detail.farmingDescription"
-        )}
-      </p>
-      {allLocations.map((battleId) => (
-        <label className="flex items-center gap-2" key={battleId}>
-          <Checkbox
-            checked={selectedLocations.includes(battleId)}
-            onCheckedChange={(checked) => onToggle(battleId, checked === true)}
-          />
-          {battleId}
-        </label>
-      ))}
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+        {allLocations.map((battleId) => (
+          <label className="flex items-center gap-2" key={battleId}>
+            <Checkbox
+              checked={selectedLocations.includes(battleId)}
+              onCheckedChange={(checked) =>
+                onToggle(battleId, checked === true)
+              }
+            />
+            {battleId}
+          </label>
+        ))}
+      </div>
       {!overrideValid ? (
         <p className="text-destructive">{t("goals.detail.farmingInvalid")}</p>
       ) : null}

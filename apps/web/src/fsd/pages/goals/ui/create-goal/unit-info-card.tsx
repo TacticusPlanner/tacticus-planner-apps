@@ -51,11 +51,11 @@ export function UnitInfoCard({
 
   return (
     <div
-      className="col-span-full grid gap-2 rounded-2xl border p-3 text-sm"
+      className="grid gap-1.5 rounded-2xl border p-3 text-sm"
       data-testid="create-goal-unit-info"
     >
       <p className="font-medium">{t("goals.create.info.title")}</p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 @lg:grid-cols-3">
         <ReadOnlyField label={shardLabel}>
           <EntityIcon
             alt=""

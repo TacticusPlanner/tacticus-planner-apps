@@ -25,6 +25,7 @@ export function LevelRequirementNote({
     <div
       className="grid gap-0.5 rounded-2xl border p-3 text-sm"
       data-testid="create-goal-level-requirement"
+      title={t("goals.create.levelRequirement.note")}
     >
       <p className="font-medium">
         {t("goals.create.levelRequirement.title", {
@@ -52,9 +53,6 @@ export function LevelRequirementNote({
           </p>
         </>
       ) : null}
-      <p className="text-xs font-normal text-muted-foreground">
-        {t("goals.create.levelRequirement.note")}
-      </p>
     </div>
   )
 }

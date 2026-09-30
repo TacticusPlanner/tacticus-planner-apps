@@ -34,6 +34,7 @@ import { useRankUpgradeSlotsSummary } from ".//use-rank-upgrade-slots-summary"
 import { useUpgradeFields } from ".//use-upgrade-fields"
 import type { CreateGoalPrefill } from ".//create-goal-launcher-context"
 import { useCreateGoalPrefill } from ".//use-create-goal-prefill"
+import { useDefaultUnitPreselect } from ".//use-default-unit-preselect"
 
 export type EntityType = "Character" | "Mow"
 
@@ -223,6 +224,15 @@ export function useCreateGoalForm({
     setEnabledTypes,
     selectProjects: projectSelection.selectProjects,
     setProgressionEnd: ascensionFields.state.setProgressionEnd,
+  })
+
+  useDefaultUnitPreselect({
+    open,
+    prefill,
+    entityId,
+    unitGroups,
+    isCharacter: (id) => !!charactersById?.has(id),
+    handleEntityChange,
   })
 
   const lockedUnitIds = useLockedUnitIds(characterGroups, mowGroups)

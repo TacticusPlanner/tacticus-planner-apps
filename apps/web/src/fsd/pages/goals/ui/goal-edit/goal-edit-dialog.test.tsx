@@ -378,6 +378,40 @@ describe("GoalEditDialog", () => {
       )
     })
 
+    it("puts Cancel before the primary Save, which is the last footer button", async () => {
+      renderDialog()
+      await loaded()
+
+      const footer = screen
+        .getByTestId("goal-edit-dialog")
+        .querySelector('[data-slot="responsive-dialog-footer"]') as HTMLElement
+      const buttons = Array.from(footer.querySelectorAll("button"))
+      expect(buttons.map((b) => b.dataset.testid)).toEqual([
+        "goal-edit-cancel",
+        "goal-edit-save",
+      ])
+    })
+
+    it("has no helper paragraphs, keeping the hints as tooltips", async () => {
+      renderDialog()
+      await loaded()
+
+      for (const removed of [
+        "goals.detail.projectsDescription",
+        "goals.detail.projectsActivationNote",
+      ]) {
+        expect(screen.queryByText(removed)).not.toBeInTheDocument()
+      }
+      // Moved into an accessible tooltip instead of a visible line.
+      expect(screen.queryByText("goals.edit.priority.hint")).toBeNull()
+      expect(screen.getByTitle("goals.edit.priority.hint")).toHaveAttribute(
+        "aria-label",
+        "goals.edit.priority.hint"
+      )
+      expect(screen.queryByText("goals.target.reachedNote")).toBeNull()
+      expect(screen.getByTitle("goals.target.reachedNote")).toBeInTheDocument()
+    })
+
     it("renders the same form in the bottom sheet below 768px", async () => {
       mobile.value = true
       renderDialog()
