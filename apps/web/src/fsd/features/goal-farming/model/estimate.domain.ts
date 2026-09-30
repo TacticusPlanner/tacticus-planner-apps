@@ -125,7 +125,9 @@ export interface RaidPlanSummary {
   totalEnergy: number
   totalRaids: number
   daysWithUnusedEnergy: number
-  completionDate: string
+  /** `null` while any goal still has a blocker or hit the simulation limit: the schedule's last day
+   *  is then only the end of the obtainable work, never a completion. */
+  completionDate: string | null
 }
 
 export interface RaidPlanSchedule {
@@ -196,10 +198,25 @@ export type EstimateBlockedReason =
   | "SimulationLimit"
   | "UnsupportedCost"
 
+/** One residual need (after inventory) with no usable supported source. */
+export interface EstimateBlocker {
+  resourceId: EstimateResourceId
+  reason: EstimateBlockedReason
+  remaining: number
+}
+
 interface EstimateBlocked {
   status: "Blocked"
+  /** The first blocker's reason (`blockers[0]`). */
   reason: EstimateBlockedReason
+  /** Every blocked resource. */
   resourceIds: EstimateResourceId[]
+  /** Every unsatisfied requirement with its reason and remaining quantity. Absent for goal-wide
+   *  blocks (`SimulationLimit`, `UnsupportedCost`). */
+  blockers?: EstimateBlocker[]
+  /** Resources still scheduled for raiding/supply despite the blocker. Non-empty means a partial
+   *  plan: the schedule holds this goal's obtainable work but the goal cannot complete. */
+  actionableResourceIds?: EstimateResourceId[]
   days?: never
   date?: never
   energyTotal?: never

@@ -793,6 +793,7 @@
       "none": "—",
       "days": "in {{days}} days",
       "blockedLabel": "Blocked",
+      "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
       "blocked": {
         "NoFarmLocation": "No accessible farming location provides a required resource.",
         "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",

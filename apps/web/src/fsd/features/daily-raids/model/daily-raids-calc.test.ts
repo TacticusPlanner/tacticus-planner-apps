@@ -1147,4 +1147,111 @@ describe("daily raid derivation", () => {
     expect(farmed("far")).toBe(1) // baseB only — baseA is already claimed by the earlier milestone
     expect(result.today).toEqual(result.planDays[0])
   })
+
+  it("keeps a mixed Rank goal's farmable work and reports its blocker with no completion date (PLAN-014)", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const farmable = upgradeIdSchema.parse("farmable")
+    const noSource = upgradeIdSchema.parse("noSource")
+    const nodeId = battleIdSchema.parse("B1")
+    const character: FarmingCharacter = {
+      id: heroId,
+      name: "Synthetic hero",
+      rankUpUpgrades: [
+        { rank: rankOrder[0], upgradeIds: [farmable, noSource] },
+      ],
+    }
+    const upgrade = (id: typeof farmable, withNode: boolean) =>
+      ({
+        id,
+        label: id,
+        rarity: "Common",
+        stat: "health",
+        crafted: false,
+        recipe: [],
+        farmLocations: withNode
+          ? [
+              {
+                battleId: nodeId,
+                guaranteed: true,
+                effectiveRate: null,
+                numerator: null,
+                denominator: null,
+                isMythic: false,
+              },
+            ]
+          : [],
+      }) as FarmingUpgrade
+    const detail = goalDetail({
+      goalId: "mixed",
+      entityId: heroId,
+      goalType: "Rank",
+      config: {
+        rank: {
+          start: rankIndex(rankOrder[0]),
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: rankIndex(rankOrder[1]!),
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+        progression: null,
+        ability: null,
+        farmingStrategy: "TotalUpgrades",
+        acquisitionSources: null,
+        farmingLocationIds: null,
+        upgrade: null,
+      },
+    })
+
+    const result = calculateDailyRaids({
+      members: [{ goal: { ...detail, globalPriority: 1 } }],
+      details: [detail],
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      inventoryShardById: new Map(),
+      inventoryUpgrades: [],
+      upgradesById: new Map([
+        [farmable, upgrade(farmable, true)],
+        [noSource, upgrade(noSource, false)],
+      ]),
+      battlesById: new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 6,
+            dailyAttempts: 999,
+          },
+        ],
+      ]),
+      charactersById: new Map(),
+      mowsById: new Map(),
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: new Map(),
+      getCharacter: () => character,
+      dailyEnergy: 100,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    })
+
+    expect(result?.status).toBe("ready")
+    if (!result) return
+    expect(result.today.entries.map((entry) => entry.resourceId)).toEqual([
+      farmable,
+    ])
+    expect(result.today).toEqual(result.planDays[0])
+    expect(result.blockedGoals).toEqual([
+      {
+        goalId: "mixed",
+        partial: true,
+        blockers: [
+          { resourceId: noSource, reason: "NoFarmLocation", remaining: 1 },
+        ],
+      },
+    ])
+    expect(result.planSummary.completionDate).toBeNull()
+  })
 })

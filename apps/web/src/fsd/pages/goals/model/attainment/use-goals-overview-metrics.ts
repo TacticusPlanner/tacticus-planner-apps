@@ -323,6 +323,9 @@ export function useGoalsOverviewMetrics(
 
     const estimateOutcome = estimatesByGoalId?.get(goalId)
     const blockers = computeGoalBlockers({
+      estimatePartial:
+        estimateOutcome?.status === "Blocked" &&
+        (estimateOutcome.actionableResourceIds?.length ?? 0) > 0,
       estimateReason:
         estimateOutcome?.status === "Blocked"
           ? estimateOutcome.reason

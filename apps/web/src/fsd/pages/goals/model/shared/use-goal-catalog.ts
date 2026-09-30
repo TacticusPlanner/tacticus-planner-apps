@@ -8,7 +8,6 @@ import {
   type UnitId,
 } from "@workspace/game-domain"
 import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
-import { getCampaignProgress } from "@workspace/player-data/queries"
 import {
   getAscensionCostsMap,
   getCampaignBattles,
@@ -21,12 +20,12 @@ import {
   getUpgrades,
 } from "@workspace/game-catalog/queries"
 
+import { useEligibleCampaignBattles } from "@/features/daily-raids"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup"
-import { filterUnlockedBattles } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
 /**
@@ -67,33 +66,21 @@ export function useGoalCatalog() {
       ),
     [campaignDefinitions]
   )
-  // Only nodes unlocked by the synced campaign progress are farmable (goal-farming-estimates:
-  // "Campaign farming considers only unlocked nodes") — filtering the shared battle map here makes
-  // every estimate consumer (Goals, Insights, blockers, per-project) choose from the same set.
-  // `undefined` until the progress chunk loads, in which case nothing is gated yet.
-  const campaignProgressResult = useLiveQuery(
-    async () => ({ value: await getCampaignProgress() }),
-    []
+  // Only eligible nodes are farmable: the same rule Today and Raids Plan use (standing nodes
+  // reached; event nodes only for the active event and once reached), applied through the
+  // daily-raids public API so every estimate consumer (Goals, Insights, blockers, per-project)
+  // chooses from the same set. Not-yet-loaded event inputs mean no event node is eligible.
+  const { availableBattles } = useEligibleCampaignBattles(
+    campaignBattles,
+    campaignDefinitions
   )
-  const battlesById = useMemo(() => {
-    const all = new Map(
-      (campaignBattles ?? []).map((b) => [
-        b.id,
-        mapCampaignBattleStorageToDomain(b),
-      ])
-    )
-    if (!campaignProgressResult) return all
-    const eventIds = new Set(
-      (campaignDefinitions ?? [])
-        .filter((d) => d.releaseType === "event")
-        .map((d) => d.groupId)
-    )
-    return filterUnlockedBattles(
-      all,
-      campaignProgressResult.value ?? [],
-      eventIds
-    )
-  }, [campaignBattles, campaignDefinitions, campaignProgressResult])
+  const battlesById = useMemo(
+    () =>
+      new Map(
+        availableBattles.map((b) => [b.id, mapCampaignBattleStorageToDomain(b)])
+      ),
+    [availableBattles]
+  )
 
   const characterGroups = useMemo(
     () =>

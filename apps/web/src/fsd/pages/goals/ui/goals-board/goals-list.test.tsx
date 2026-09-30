@@ -56,6 +56,8 @@ const mows = new Map([
 ])
 
 vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignEventProgress: async () => [],
+  getLiveProgress: async () => undefined,
   getCampaignProgress: () => [],
 }))
 
@@ -180,6 +182,44 @@ describe("GoalsList", () => {
     expect(mobileCell).toHaveTextContent("goals.estimate.days")
     expect(mobileCell.innerHTML).toBe(desktopCell.innerHTML)
   })
+
+  it.each([false, true])(
+    "lists each unavailable material with quantity and reason, and no date (mobile: %s)",
+    async (mobile) => {
+      useIsMobileMock.mockReturnValue(mobile)
+      const estimates = new Map([
+        [
+          "goal-1",
+          {
+            status: "Blocked" as const,
+            reason: "NoFarmLocation" as const,
+            resourceIds: ["upgHpM004" as never],
+            actionableResourceIds: [],
+            blockers: [
+              {
+                resourceId: "upgHpM004" as never,
+                reason: "NoFarmLocation" as const,
+                remaining: 6,
+              },
+            ],
+          },
+        ],
+      ])
+      render(
+        <GoalsList
+          actions={stubActions}
+          estimates={estimates}
+          reorderEnabled={false}
+          rows={rows}
+        />
+      )
+      await screen.findByText("Hero One")
+
+      const list = screen.getAllByTestId("goal-unavailable-materials")[0]!
+      expect(list).toHaveTextContent("goals.estimate.unavailableRow")
+      expect(screen.queryByTestId("goal-row-estimate")).toBeNull()
+    }
+  )
 
   it("renders no estimate column when no estimates are given", async () => {
     render(

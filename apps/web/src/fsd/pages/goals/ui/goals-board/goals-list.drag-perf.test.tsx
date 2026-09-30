@@ -57,6 +57,8 @@ vi.mock("react-i18next", () => ({
 }))
 
 vi.mock("@workspace/player-data/queries", () => ({
+  getCampaignEventProgress: async () => [],
+  getLiveProgress: async () => undefined,
   getCampaignProgress: () => [],
 }))
 

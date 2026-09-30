@@ -71,6 +71,7 @@ export {
   type Battle,
   type CountedResourceNeed,
   type EstimateBlockedReason,
+  type EstimateBlocker,
   type EstimateOutcome,
   type EstimateResourceId,
   type EstimateUpgrade,

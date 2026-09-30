@@ -209,14 +209,25 @@
       "energy": "Total energy",
       "raids": "Raid attempts",
       "unusedDays": "Days unused",
-      "completion": "Completion date"
+      "completion": "Completion date",
+      "noCompletion": "Not available"
     },
     "day": "Day {{day}}",
     "dayStats": "{{energy}} / {{available}} energy · {{raids}} raids",
     "showAll": "Show all days",
-    "collapse": "Collapse raid details",
-    "expand": "Expand raid details",
-    "raided": "Raided"
+    "raided": "Raided",
+    "cell": {
+      "label": "{{material}}, {{owned}} of {{target}} owned",
+      "node": "{{campaign}} {{node}} × {{raids}}",
+      "moreNodes": "+{{count}} more",
+      "moreUnits": "+{{count}}"
+    },
+    "filter": {
+      "label": "Filter by unit",
+      "first": "← Day {{day}}",
+      "last": "Day {{day}} →",
+      "hint": "Click a unit to highlight its upgrades across all days."
+    }
   },
   "tour": {
     "guildRaids": {
@@ -283,13 +294,23 @@
         },
         "summary": {
           "title": "Whole-plan summary",
-          "content": "These totals cover every planned day, beginning with Today."
+          "content": "These totals cover every planned day, beginning with Today. If a goal has a requirement with no supported source, the completion date stays unavailable and the blockers are listed below."
+        },
+        "filter": {
+          "title": "Unit filter",
+          "content": "Pick a unit to dim everything else across every day, then jump to its first or last day."
         },
         "days": {
           "title": "Raid days",
-          "content": "Each day groups its raids by goal and campaign resource."
+          "content": "Each day card lists the upgrades to farm as a grid. Hover or tap an upgrade for its units and nodes; finished upgrades sit under \"Raided\". Drag or swipe to scroll through the days."
         }
       }
     }
+  },
+  "blockers": {
+    "title": "Some goals cannot finish yet",
+    "partial": "Obtainable work is scheduled; the rest has no supported source, so there is no completion date.",
+    "none": "Nothing is obtainable yet, so nothing is scheduled and there is no completion date.",
+    "row": "{{material}} ×{{count}}: {{reason}}"
   }
 }

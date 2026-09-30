@@ -22,11 +22,8 @@ import {
   getUpgrades,
 } from "@workspace/game-catalog/queries"
 import {
-  getCampaignEventProgress,
-  getCampaignProgress,
   getInventoryShard,
   getInventoryUpgrades,
-  getLiveProgress,
   getPlayerCharacter,
   getPlayerMow,
 } from "@workspace/player-data/queries"
@@ -42,11 +39,7 @@ import {
 import { useCampaignDisplay } from "@/shared/lib"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
-import {
-  availableCampaignBattles,
-  buildCampaignEventProgressByKey,
-  buildCampaignProgressByKey,
-} from "./campaign-event-eligibility"
+import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
 import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,
@@ -94,18 +87,12 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
   const upgrades = useLiveQuery(() => getUpgrades(), [])
   const battles = useLiveQuery(() => getCampaignBattles(), [])
   const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
-  const liveProgressResult = useLiveQuery(
-    async () => ({ value: await getLiveProgress() }),
-    []
-  )
-  const campaignEventProgressResult = useLiveQuery(
-    async () => ({ value: await getCampaignEventProgress() }),
-    []
-  )
-  const campaignProgressResult = useLiveQuery(
-    async () => ({ value: await getCampaignProgress() }),
-    []
-  )
+  const {
+    availableBattles,
+    liveProgressResult,
+    campaignEventProgressResult,
+    campaignProgressResult,
+  } = useEligibleCampaignBattles(battles, campaignDefinitions)
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
   const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
@@ -150,24 +137,6 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
       ),
     [upgrades]
   )
-  const eventCampaignIds = useMemo(
-    () =>
-      new Set(
-        (campaignDefinitions ?? [])
-          .filter((definition) => definition.releaseType === "event")
-          .map((definition) => definition.groupId)
-      ),
-    [campaignDefinitions]
-  )
-  const campaignEventProgressByKey = useMemo(
-    () =>
-      buildCampaignEventProgressByKey(campaignEventProgressResult?.value ?? []),
-    [campaignEventProgressResult]
-  )
-  const campaignProgressByKey = useMemo(
-    () => buildCampaignProgressByKey(campaignProgressResult?.value ?? []),
-    [campaignProgressResult]
-  )
   // Full catalog, unfiltered by eligibility — the source for real-attempt/energy/location-label
   // lookups (buildBattleAttemptIndex and friends below), which must reflect a real synced attempt
   // even at a battle the eligibility filter currently excludes (campaign-progress/campaign-events-
@@ -183,27 +152,16 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
     [battles]
   )
   // Eligibility-restricted — only this map feeds the scheduling/estimate engine (calculateDailyRaids).
-  const battlesById = useMemo(() => {
-    const availableBattles = availableCampaignBattles(
-      battles ?? [],
-      eventCampaignIds,
-      liveProgressResult?.value?.activeCampaignEventId,
-      campaignEventProgressByKey,
-      campaignProgressByKey
-    )
-    return new Map(
-      availableBattles.map((battle) => [
-        battle.id as BattleId,
-        mapCampaignBattleStorageToDomain(battle),
-      ])
-    )
-  }, [
-    battles,
-    eventCampaignIds,
-    liveProgressResult,
-    campaignEventProgressByKey,
-    campaignProgressByKey,
-  ])
+  const battlesById = useMemo(
+    () =>
+      new Map(
+        availableBattles.map((battle) => [
+          battle.id as BattleId,
+          mapCampaignBattleStorageToDomain(battle),
+        ])
+      ),
+    [availableBattles]
+  )
   const locationsByBattleId = useMemo(
     () =>
       new Map(

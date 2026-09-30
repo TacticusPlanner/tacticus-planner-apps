@@ -11,6 +11,7 @@ import type {
   FarmLocation,
   GoalNeed,
 } from "../model/estimate.domain"
+import { estimateGoal } from "./estimate"
 import {
   estimateBonusRaids,
   estimatePlanSchedule,
@@ -326,5 +327,134 @@ describe("shared daily energy budget (goal-farming-estimates)", () => {
     expect(plan.outcomes.get("trajann")?.days).toBe(3)
     // Day 1's energy all went to Trajann; Aesoth finished without spending any.
     expect(plan.days[0]?.energyTotal).toBe(100)
+  })
+})
+
+describe("partial plans: blocked needs do not discard actionable peers (PLAN-014)", () => {
+  // Modelled on the reported Rank goal: A (upgDmgC010) has a node, B (upgHpM004) has none.
+  const A = upgradeId("A")
+  const B = upgradeId("B")
+  const upgradesById = new Map([
+    [A, { id: A, farmLocations: [location("N1")] }],
+    [B, { id: B, farmLocations: [] }],
+  ])
+  const battlesById = new Map([battle("N1")])
+  const base = {
+    upgradesById,
+    battlesById,
+    dailyEnergy: 100,
+    referenceDate,
+  }
+  const mixed: GoalNeed = {
+    goalId: "rank",
+    priority: 1,
+    needs: [
+      { id: A, count: 2 },
+      { id: B, count: 1 },
+    ],
+  }
+
+  it("schedules the obtainable need, reports the blocker, withholds completion", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [mixed],
+      inventory: [{ id: A, count: 1 }],
+    })
+
+    expect(plan.days).toHaveLength(1)
+    expect(plan.days[0]?.entries).toMatchObject([
+      { goalId: "rank", resourceId: A, raidsPerformed: 1, energySpent: 10 },
+    ])
+    expect(plan.outcomes.get("rank")).toEqual({
+      status: "Blocked",
+      reason: "NoFarmLocation",
+      resourceIds: [B],
+      blockers: [{ resourceId: B, reason: "NoFarmLocation", remaining: 1 }],
+      actionableResourceIds: [A],
+    })
+    expect(plan.summary.completionDate).toBeNull()
+  })
+
+  it("all-blocked goal schedules nothing and reports every requirement", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [{ ...mixed, needs: [{ id: B, count: 3 }] }],
+      inventory: [],
+    })
+
+    expect(plan.days).toHaveLength(0)
+    expect(plan.outcomes.get("rank")).toMatchObject({
+      status: "Blocked",
+      blockers: [{ resourceId: B, remaining: 3 }],
+      actionableResourceIds: [],
+    })
+  })
+
+  it("all-actionable goal is unchanged and keeps a completion date", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [{ ...mixed, needs: [{ id: A, count: 2 }] }],
+      inventory: [],
+    })
+
+    expect(plan.outcomes.get("rank")).toMatchObject({
+      status: "Estimated",
+      days: 1,
+    })
+    expect(plan.summary.completionDate).toBe("2026-01-01")
+  })
+
+  it("a blocked goal still consumes shared energy ahead of a lower-priority goal", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      dailyEnergy: 20,
+      goals: [
+        mixed,
+        { goalId: "other", priority: 2, needs: [{ id: A, count: 2 }] },
+      ],
+      inventory: [],
+    })
+
+    const day1 = plan.days[0]!.entries.map((entry) => [
+      entry.goalId,
+      entry.raidsPerformed,
+    ])
+    expect(day1).toEqual([["rank", 2]])
+    expect(plan.outcomes.get("other")).toMatchObject({ status: "Estimated" })
+  })
+
+  it("a supported flat supplier removes the blocker", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [
+        {
+          ...mixed,
+          flatSuppliers: [{ key: "shop", resourceId: B, supplyOnDay: () => 1 }],
+        },
+      ],
+      inventory: [],
+    })
+
+    expect(plan.outcomes.get("rank")).toMatchObject({ status: "Estimated" })
+  })
+
+  it("inventory covering the blocker allows a completion estimate", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [mixed],
+      inventory: [{ id: B, count: 1 }],
+    })
+
+    expect(plan.outcomes.get("rank")).toMatchObject({ status: "Estimated" })
+  })
+
+  it("estimateGoal keeps the same blocker and no date", () => {
+    const outcome = estimateGoal({ ...base, needs: mixed.needs })
+
+    expect(outcome).toMatchObject({
+      status: "Blocked",
+      blockers: [{ resourceId: B, reason: "NoFarmLocation", remaining: 1 }],
+      actionableResourceIds: [A],
+    })
   })
 })

@@ -70,4 +70,21 @@ describe("Dailies tutorials", () => {
       "localized:tour.today.steps.raids.title",
     ])
   })
+
+  it.each(["desktop", "mobile"] as const)(
+    "walks the Raids Plan unit filter before the day strip on %s",
+    (viewport) => {
+      renderHook(() => useRaidsPlanTutorial())
+      const steps = register.mock.lastCall?.[0] as Record<
+        "desktop" | "mobile",
+        { target: string }[]
+      >
+      const targets = steps[viewport].map((step) => step.target)
+
+      expect(targets.slice(-2)).toEqual([
+        '[data-testid="plan-unit-filter"]',
+        '[data-testid="plan-days"]',
+      ])
+    }
+  )
 })

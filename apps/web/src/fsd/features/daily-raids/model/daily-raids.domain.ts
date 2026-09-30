@@ -9,6 +9,7 @@ import type {
 
 import type { GoalKind } from "@/entities/goal"
 import type {
+  EstimateBlocker,
   RaidDaySchedule,
   RaidPlanSummary,
 } from "@/features/goal-farming/@x/daily-raids"
@@ -40,6 +41,14 @@ export type DailyRaidResourceVisual =
 export type DailyRaidBattleResource = {
   label: string
   visual: DailyRaidResourceVisual
+}
+
+/** A goal in the plan with at least one requirement that has no supported source. `partial` means
+ *  its obtainable work is still scheduled; either way it has no completion date. */
+export type DailyRaidBlockedGoal = {
+  goalId: string
+  blockers: EstimateBlocker[]
+  partial: boolean
 }
 
 export type DailyRaidResourceProgress = {
@@ -122,6 +131,8 @@ export type DailyRaidsReadyViewModel = {
   bonus: RaidDaySchedule
   planDays: RaidDaySchedule[]
   planSummary: RaidPlanSummary
+  /** Goals whose plan outcome is Blocked, in priority order — same result the schedule came from. */
+  blockedGoals: DailyRaidBlockedGoal[]
   dailyEnergy: number
   goalsById: ReadonlyMap<string, DailyRaidGoalViewModel>
   resourceLabels: ReadonlyMap<string, string>
