@@ -398,13 +398,16 @@ vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { CreateGoalSheet } from ".//create-goal-sheet"
 
+// The dialog preselects the first character of the unit list (Hero One is the only one here), so
+// "selecting" it means waiting for that preselection rather than opening the picker.
 async function selectCharacter() {
-  fireEvent.click(
-    screen.getByRole("combobox", {
-      name: "goals.create.unitPlaceholder",
-    })
-  )
-  fireEvent.click(await screen.findByText("Hero One"))
+  await vi.waitFor(() => {
+    expect(
+      screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+    ).toHaveTextContent("Hero One")
+    // Its saved data has loaded too (the unit card hides while loading).
+    expect(screen.getByTestId("create-goal-unit-info")).toBeInTheDocument()
+  })
 }
 
 async function selectMow() {
@@ -568,9 +571,8 @@ describe("CreateGoalSheet", () => {
       <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
     )
 
-    // A finished goal's form is cleared (only project/type context is remembered), so a unit must be
-    // picked again before submitting.
-    expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+    // A finished goal's form is cleared (only project/type context is remembered) and the first
+    // character is preselected again.
     expect(
       screen
         .getByTestId("create-goal-submit")
@@ -682,11 +684,13 @@ describe("CreateGoalSheet", () => {
     // registers synchronously, before its resolved promise lets handleSubmit's resetForm() run.
     await vi.waitFor(() => {
       expect(
-        screen.getByRole("combobox", {
-          name: "goals.create.unitPlaceholder",
-        })
-      ).toHaveTextContent("goals.create.unitPlaceholder")
+        screen
+          .getByTestId("create-goal-submit")
+          .querySelector('[data-slot="spinner"]')
+      ).toBeNull()
     })
+    // The reset re-applies the same preselect rule: the first character, not an empty picker.
+    await selectCharacter()
     expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     expect(onOpenChange).not.toHaveBeenCalledWith(false)
     expect(
@@ -768,7 +772,7 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("renders sections in order: config cards, then prerequisite suggestions, then project selection, then the review", async () => {
+  it("renders sections in order: status, goal types and projects, then config cards, then prerequisite suggestions, then the review", async () => {
     // A locked character (getPlayerCharacter unresolved) is what puts a prerequisite-suggestion
     // checkbox and a config card and the review on screen simultaneously (see the auto-suggests
     // test below) — reused here purely to compare their DOM positions.
@@ -787,18 +791,11 @@ describe("CreateGoalSheet", () => {
 
     // Node.DOCUMENT_POSITION_FOLLOWING set on the bitmask means the argument comes after `this` in
     // the document.
-    expect(
-      rankCard.compareDocumentPosition(unlockSuggestion) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(
-      unlockSuggestion.compareDocumentPosition(projectLabel) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(
-      projectLabel.compareDocumentPosition(review) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+    const follows = (first: Element, second: Element) =>
+      first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
+    expect(follows(projectLabel, rankCard)).toBeTruthy()
+    expect(follows(rankCard, unlockSuggestion)).toBeTruthy()
+    expect(follows(unlockSuggestion, review)).toBeTruthy()
   })
 
   it("shows the character's shard farm locations with an energy-per-shard figure on the Unlock card, defaulting farmingLocationIds to the lowest-energy node", async () => {
@@ -1170,6 +1167,7 @@ describe("CreateGoalSheet", () => {
     // The default path's body must stay identical to what it was before the flag existed — the API's
     // own default is what produces the Active goal.
     createCombinedGoals.mockResolvedValue({ goals: [] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
@@ -1185,6 +1183,7 @@ describe("CreateGoalSheet", () => {
 
   it("sends startPaused: true when the control is turned on", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
@@ -1233,25 +1232,119 @@ describe("CreateGoalSheet", () => {
     }
   })
 
-  it("shows the start-paused control and its explanation without any hover or opened control", async () => {
+  it("puts the Create paused checkbox in the footer beside 'Create another', with no helper paragraph", async () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
 
-    const control = await screen.findByTestId("create-goal-start-paused")
-    expect(control).toBeVisible()
+    const footer = screen
+      .getByTestId("create-goal-sheet")
+      .querySelector('[data-slot="responsive-dialog-footer"]') as HTMLElement
+    const paused = screen.getByTestId("create-goal-start-paused-checkbox")
+    expect(footer).toContainElement(paused)
+    expect(footer).toContainElement(
+      screen.getByLabelText("goals.create.createAnother")
+    )
+    expect(paused).not.toBeChecked()
     expect(
-      within(control).getByText("goals.create.startPausedDescription")
-    ).toBeVisible()
+      screen.queryByText("goals.create.startPausedDescription")
+    ).not.toBeInTheDocument()
     expect(
-      screen.getByTestId("create-goal-start-paused-checkbox")
-    ).not.toBeChecked()
+      screen.queryByTestId("create-goal-projects-activation-note")
+    ).toBeNull()
+  })
+
+  it("lays out the footer as options on the left, then Close, then the primary Create goal button last", () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    const footer = screen
+      .getByTestId("create-goal-sheet")
+      .querySelector('[data-slot="responsive-dialog-footer"]') as HTMLElement
+    const order = [
+      screen.getByTestId("create-goal-start-paused-checkbox"),
+      screen.getByLabelText("goals.create.createAnother"),
+      screen.getByTestId("create-goal-close"),
+      screen.getByTestId("create-goal-submit"),
+    ]
+    const focusOrder = Array.from(
+      footer.querySelectorAll("button, [role=checkbox]")
+    )
+    expect(order.map((el) => focusOrder.indexOf(el))).toEqual([0, 1, 2, 3])
+    expect(screen.getByTestId("create-goal-close")).toHaveAttribute(
+      "data-variant",
+      "outline"
+    )
+  })
+
+  it("shows no helper paragraph in the Projects field", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const projects = await screen.findByTestId("create-goal-projects")
+    expect(
+      within(projects).queryByText("goals.detail.projectsDescription")
+    ).not.toBeInTheDocument()
+    expect(
+      within(projects).queryByText("goals.detail.projectsActivationNote")
+    ).not.toBeInTheDocument()
+  })
+
+  it("preselects the first character when launched with no prefill and shows the status and goal-type sections side by side", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+
+    const sections = screen.getByTestId("create-goal-status-and-types")
+    expect(sections).toHaveClass("@2xl:grid-cols-2")
+    expect(sections).toContainElement(
+      screen.getByTestId("create-goal-unit-info")
+    )
+    expect(sections).toContainElement(
+      screen.getByTestId("create-goal-type-toggle-Rank")
+    )
+  })
+
+  it("lets a prefilled unit win over the first-character preselect", async () => {
+    render(
+      <CreateGoalSheet
+        open
+        onOpenChange={vi.fn()}
+        onCreated={vi.fn()}
+        prefill={{
+          entityType: "Mow",
+          entityId: "mow1" as never,
+          goalType: "Unlock",
+          projectIds: [],
+        }}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(
+        screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+      ).toHaveTextContent("Stormbird")
+    })
+  })
+
+  it("does not override a unit the user picked once the list changes", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    await selectCharacter()
+
+    await selectMow()
+
+    await vi.waitFor(() => {
+      expect(
+        screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+      ).toHaveTextContent("Stormbird")
+    })
   })
 
   it("clears start-paused on the reset that follows a create-another submission", async () => {
     // startPaused configures the goal, so a reset must clear it — unlike createAnother, which
     // configures the form and deliberately survives the same reset.
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
@@ -1267,8 +1360,8 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    // The unit picker clears on reset, so the control unmounts with it; reselecting a unit brings it
-    // back in its reset state rather than carrying the previous choice forward.
+    // The reset clears the paused choice (the first character is preselected again) rather than
+    // carrying the previous choice forward.
     await selectCharacter()
     await vi.waitFor(() => {
       expect(
@@ -1280,6 +1373,7 @@ describe("CreateGoalSheet", () => {
 
   it("submits only the explicitly toggled types, with no rank/progression/ability target for Unlock", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
     render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
 
     await selectCharacter()
@@ -1432,6 +1526,29 @@ describe("CreateGoalSheet", () => {
     expect(
       screen.getByText("goals.create.validation.alreadyUnlocked")
     ).toBeVisible()
+  })
+
+  it("preselects the first character again after 'create another' even when a Machine of War was submitted", async () => {
+    getPlayerMow.mockResolvedValue(undefined)
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await selectMow()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    fireEvent.click(screen.getByLabelText("goals.create.createAnother"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    // The reset clears the Mow and the same rule preselects the first character again.
+    await selectCharacter()
   })
 
   it("allows an Unlock goal for a locked Machine of War", async () => {
@@ -1832,8 +1949,8 @@ describe("CreateGoalSheet", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
-        ).toHaveTextContent("goals.create.unitPlaceholder")
+          screen.getByTestId("create-goal-start-paused-checkbox")
+        ).not.toBeChecked()
       })
 
       await selectCharacter()
@@ -1953,8 +2070,8 @@ describe("CreateGoalSheet", () => {
       await createRankGoalInBothProjects(true)
       await vi.waitFor(() => {
         expect(
-          screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
-        ).toHaveTextContent("goals.create.unitPlaceholder")
+          screen.getByTestId("create-goal-start-paused-checkbox")
+        ).not.toBeChecked()
       })
 
       await selectMow()

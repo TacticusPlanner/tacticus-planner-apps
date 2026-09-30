@@ -119,20 +119,9 @@ export function GoalProjectsField({
   }
 
   return (
-    <section className="grid gap-2" data-testid={`${testIdPrefix}-projects`}>
+    <section className="grid gap-1.5" data-testid={`${testIdPrefix}-projects`}>
       <h3 className="font-semibold">{t("goals.detail.projectsTitle")}</h3>
-      <p className="text-muted-foreground">
-        {t("goals.detail.projectsDescription")}
-      </p>
-      {/* States the negative on purpose: the users who asked what membership does had already formed
-          the opposite belief, and behavior that silently stops happening does not correct it. */}
-      <p
-        className="text-sm text-muted-foreground"
-        data-testid={`${testIdPrefix}-projects-activation-note`}
-      >
-        {t("goals.detail.projectsActivationNote")}
-      </p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-start gap-1.5">
         {selected.map((project) => {
           const conflict = conflicts.find(
             (candidate) => candidate.projectId === project.projectId
@@ -176,92 +165,92 @@ export function GoalProjectsField({
             </div>
           )
         })}
-      </div>
-
-      <Popover open={open} onOpenChange={changeOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            className="w-fit"
-            data-testid={`${testIdPrefix}-add-project`}
-            type="button"
-            variant="outline"
-          >
-            <Plus />
-            {t("goals.project.addMembership")}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          className="w-[min(24rem,calc(100vw-2rem))] p-0"
-          container={portalContainer ?? undefined}
-        >
-          <Command>
-            <CommandInput
-              onValueChange={(value) => {
-                setSearch(value)
-                setCreateError(null)
-              }}
-              placeholder={t("goals.project.searchProjects")}
-              value={search}
-            />
-            <CommandList>
-              {canCreate ? null : (
-                <CommandEmpty>
-                  {t("goals.project.noAddableProjects")}
-                </CommandEmpty>
-              )}
-              {addable.map((project) => (
-                <CommandItem
-                  key={project.projectId}
-                  onSelect={() => {
-                    onSelectionChange([
-                      ...selectedProjectIds,
-                      project.projectId,
-                    ])
-                    setRemovalBlocked(null)
-                    changeOpen(false)
-                  }}
-                  value={project.name}
-                >
-                  <ProjectColorDot color={project.color} />
-                  <span className="flex-1">{project.name}</span>
-                  {project.isDefault ? <Check className="size-4" /> : null}
-                </CommandItem>
-              ))}
-              {canCreate ? (
-                <CommandItem
-                  data-testid={`${testIdPrefix}-create-project`}
-                  disabled={creating}
-                  forceMount
-                  onSelect={() => void createAndSelect()}
-                  value={`create-project:${searched}`}
-                >
-                  <Plus className="size-4" />
-                  <span className="flex-1 break-all">
-                    {creating
-                      ? t("goals.project.creatingInline", { name: searched })
-                      : t("goals.project.createInline", { name: searched })}
-                  </span>
-                </CommandItem>
-              ) : null}
-            </CommandList>
-          </Command>
-          {canCreate ? (
-            <p className="border-t px-3 py-2 text-xs text-muted-foreground">
-              {t("goals.project.createInlineNote")}
-            </p>
-          ) : null}
-          {createError ? (
-            <p
-              className="border-t px-3 py-2 text-xs text-destructive"
-              data-testid={`${testIdPrefix}-create-project-error`}
-              role="alert"
+        <Popover open={open} onOpenChange={changeOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              className="w-fit"
+              data-testid={`${testIdPrefix}-add-project`}
+              size="sm"
+              type="button"
+              variant="outline"
             >
-              {createError}
-            </p>
-          ) : null}
-        </PopoverContent>
-      </Popover>
+              <Plus />
+              {t("goals.project.addMembership")}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="start"
+            className="w-[min(24rem,calc(100vw-2rem))] p-0"
+            container={portalContainer ?? undefined}
+          >
+            <Command>
+              <CommandInput
+                onValueChange={(value) => {
+                  setSearch(value)
+                  setCreateError(null)
+                }}
+                placeholder={t("goals.project.searchProjects")}
+                value={search}
+              />
+              <CommandList>
+                {canCreate ? null : (
+                  <CommandEmpty>
+                    {t("goals.project.noAddableProjects")}
+                  </CommandEmpty>
+                )}
+                {addable.map((project) => (
+                  <CommandItem
+                    key={project.projectId}
+                    onSelect={() => {
+                      onSelectionChange([
+                        ...selectedProjectIds,
+                        project.projectId,
+                      ])
+                      setRemovalBlocked(null)
+                      changeOpen(false)
+                    }}
+                    value={project.name}
+                  >
+                    <ProjectColorDot color={project.color} />
+                    <span className="flex-1">{project.name}</span>
+                    {project.isDefault ? <Check className="size-4" /> : null}
+                  </CommandItem>
+                ))}
+                {canCreate ? (
+                  <CommandItem
+                    data-testid={`${testIdPrefix}-create-project`}
+                    disabled={creating}
+                    forceMount
+                    onSelect={() => void createAndSelect()}
+                    value={`create-project:${searched}`}
+                  >
+                    <Plus className="size-4" />
+                    <span className="flex-1 break-all">
+                      {creating
+                        ? t("goals.project.creatingInline", { name: searched })
+                        : t("goals.project.createInline", { name: searched })}
+                    </span>
+                  </CommandItem>
+                ) : null}
+              </CommandList>
+            </Command>
+            {canCreate ? (
+              <p className="border-t px-3 py-2 text-xs text-muted-foreground">
+                {t("goals.project.createInlineNote")}
+              </p>
+            ) : null}
+            {createError ? (
+              <p
+                className="border-t px-3 py-2 text-xs text-destructive"
+                data-testid={`${testIdPrefix}-create-project-error`}
+                role="alert"
+              >
+                {createError}
+              </p>
+            ) : null}
+          </PopoverContent>
+        </Popover>
+      </div>
 
       {!projectsValid || removalBlocked ? (
         <p className="text-destructive" role="alert">

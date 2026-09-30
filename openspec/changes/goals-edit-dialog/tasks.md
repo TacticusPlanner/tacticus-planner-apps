@@ -35,3 +35,11 @@
 - [ ] 5.2 Mobile verification (viewport below 768px, same data states): Edit opens as the bottom sheet from a card action with one column and the same fields and single Save; Create unchanged; tour steps
 - [ ] 5.3 Conflict check with an account state that yields a project membership conflict on save (a second goal with the same target in a selected project): the dialog stays open with the whole draft and reloading shows that nothing was saved
 - [x] 5.4 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `pnpm knip`, and `git diff --check` and verify all pass
+
+## 6. Dialog compaction
+
+- [x] 6.1 Remove the Projects helper paragraphs (membership description, activation note) and the Create paused description, and turn the priority hint, reached-target note, farming/shard location hints and level-requirement note into tooltips; verify tests that none of these paragraphs render and the tooltips carry their text
+- [x] 6.2 Move "Create paused" into the Create footer next to "Create another goal" and order the footers Close/Cancel then the primary button; verify footer-order tests for Create and Edit
+- [x] 6.3 Preselect the first Character (no prefill, never over a user choice, again after "create another") via `useDefaultUnitPreselect`; verify tests for no prefill, prefill wins, and the reset re-application, and that the tutorial tests pass
+- [x] 6.4 Put "Current status" and "Goal type" side by side (`create-goal-status-and-types`) and tighten spacing in Create and Edit (header/footer padding, card spacing, gaps, inline project chips); verify the wrapper-class test, `pnpm test:run`, and a browser check at 1536x735 (Create Rank/Ability and Edit Rank/Ability fit without body scroll)
+- [x] 6.5 Update en/de/es/fr strings (remove unused keys, add `startPausedHint`) and run `pnpm lint`, `pnpm lint:fsd`, `pnpm typecheck` and `git diff --check`

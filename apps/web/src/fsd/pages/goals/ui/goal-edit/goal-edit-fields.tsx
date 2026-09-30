@@ -21,15 +21,21 @@ export function GoalEditNotesField({
   const { t } = useTranslation()
 
   return (
-    <Field>
-      <FieldLabel htmlFor="goal-notes">{t("goals.detail.notes")}</FieldLabel>
+    <Field className="gap-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel htmlFor="goal-notes">{t("goals.detail.notes")}</FieldLabel>
+        <span className="text-xs text-muted-foreground">
+          {notes.length}/200
+        </span>
+      </div>
       <Textarea
+        className="min-h-12"
         id="goal-notes"
         maxLength={200}
-        value={notes}
         onChange={(event) => onChange(event.target.value)}
+        rows={2}
+        value={notes}
       />
-      <span className="text-xs text-muted-foreground">{notes.length}/200</span>
     </Field>
   )
 }

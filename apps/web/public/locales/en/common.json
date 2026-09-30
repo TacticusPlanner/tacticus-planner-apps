@@ -782,7 +782,7 @@
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit."
       },
       "startPaused": "Create paused",
-      "startPausedDescription": "The goal is created normally but stays out of daily planning until you resume it. Which projects you pick does not affect this.",
+      "startPausedHint": "Stays out of daily planning until you resume it.",
       "levelRequirement": {
         "title": "Requires level {{required}} (currently {{current}})",
         "xpRemaining": "{{xp}} XP still to gain",
@@ -815,14 +815,12 @@
     "detail": {
       "notes": "Notes",
       "projectsTitle": "Projects",
-      "projectsDescription": "A goal must belong to at least one project.",
       "projectsRequired": "Select at least one project.",
       "farmingTitle": "Farming locations",
       "farmingDescription": "Leave every node unchecked for automatic least-energy selection.",
       "shardsTitle": "Shards location",
       "shardsDescription": "Leave every node unchecked for automatic least-energy selection.",
       "farmingInvalid": "Each required resource must be available from at least one selected node.",
-      "projectsActivationNote": "Membership only changes which projects contain this goal. Pausing or resuming it is a separate action on the goal itself.",
       "projectGuidanceTitle": "Farming guidance",
       "projectGuidancePreview": "Preview — not today's Dailies schedule",
       "projectGuidanceSummary_one": "{{count}} material still needed across this project's goals.",
@@ -941,7 +939,7 @@
         "upgradeQuantity": "Every quantity must be a whole number from 1 to 10,000.",
         "upgradeEmpty": "An upgrade goal needs at least one material."
       },
-      "reachedNote": "A target you have already reached is fine — it simply needs nothing more. The goal keeps its current status until you complete it yourself."
+      "reachedNote": "An already-reached target is fine: it needs nothing more, and the goal keeps its status until you complete it."
     },
     "order": {
       "conflictTitle": "The plan changed",
@@ -967,7 +965,7 @@
       "reloadOrder": "Reload order",
       "priority": {
         "label": "Priority",
-        "hint": "1 is the highest priority. Saving a new position moves this goal there.",
+        "hint": "1 is the highest priority.",
         "option": "{{position}} of {{total}}"
       },
       "unsaved": {

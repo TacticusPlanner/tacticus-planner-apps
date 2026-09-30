@@ -40,10 +40,10 @@ export function UnitGoalFormFields({
   return (
     <form
       id="create-goal-form"
-      className="grid items-start gap-4 pb-2 @2xl:grid-cols-2"
+      className="grid items-start gap-3 pb-3 @2xl:grid-cols-2"
       onSubmit={(event) => void form.handleSubmit(event)}
     >
-      <div className="col-span-full mt-2 grid gap-2">
+      <div className="col-span-full">
         <UnitCombobox
           groups={form.unitGroups}
           value={form.entityId}
@@ -56,75 +56,87 @@ export function UnitGoalFormFields({
       </div>
 
       {form.entityId ? (
-        <UnitInfoCard
-          entityType={form.entityType}
-          isOwned={form.entityAlreadyOwned}
-          loading={form.entityLoading}
-          rank={form.entityType === "Character" ? form.rankStart : undefined}
-          progression={form.progressionStart}
-          abilityActiveLevel={form.abilityActiveStart}
-          abilityPassiveLevel={form.abilityPassiveStart}
-          level={
-            form.entityType === "Character" ? form.currentLevel : undefined
-          }
-          shardCount={
-            form.entityAlreadyOwned
-              ? ((form.usesMythicShards
-                  ? form.ownedMythicShards
-                  : form.ownedShards) ?? 0)
-              : (form.lockedShards ?? 0)
-          }
-          shardIsMythic={form.entityAlreadyOwned && form.usesMythicShards}
-        />
-      ) : null}
-
-      {form.entityId ? (
-        <div className="col-span-full grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">
-            {t("goals.create.goalTypeLabel")}
-          </Label>
-          <GoalTypeToggleGroup
-            kinds={goalKinds}
-            enabledTypes={form.enabledTypes}
-            onToggle={form.toggleType}
-            isDisabled={(kind) =>
-              (kind === "Unlock" && !form.unlockAvailable) ||
-              (kind === "Rank" && form.atMaxRank) ||
-              (kind === "Ascension" && form.atMaxProgression) ||
-              (kind === "Ability" && form.atMaxAbility) ||
-              (kind === "Upgrade" &&
-                form.entityType === "Character" &&
-                form.atMaxRank)
-            }
+        <div
+          className="col-span-full grid items-start gap-3 @2xl:grid-cols-2"
+          data-testid="create-goal-status-and-types"
+        >
+          <UnitInfoCard
             entityType={form.entityType}
+            isOwned={form.entityAlreadyOwned}
+            loading={form.entityLoading}
+            rank={form.entityType === "Character" ? form.rankStart : undefined}
+            progression={form.progressionStart}
+            abilityActiveLevel={form.abilityActiveStart}
+            abilityPassiveLevel={form.abilityPassiveStart}
+            level={
+              form.entityType === "Character" ? form.currentLevel : undefined
+            }
+            shardCount={
+              form.entityAlreadyOwned
+                ? ((form.usesMythicShards
+                    ? form.ownedMythicShards
+                    : form.ownedShards) ?? 0)
+                : (form.lockedShards ?? 0)
+            }
+            shardIsMythic={form.entityAlreadyOwned && form.usesMythicShards}
           />
-          {!form.unlockAvailable ? (
-            <p className="text-xs text-muted-foreground">
-              {t(
-                form.entityAlreadyOwned
-                  ? "goals.create.validation.alreadyUnlocked"
-                  : "goals.create.unlockUnavailable"
-              )}
-            </p>
-          ) : null}
-          {form.atMaxRank ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.validation.rankMaxed")}
-            </p>
-          ) : null}
-          {form.atMaxProgression ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.validation.progressionMaxed")}
-            </p>
-          ) : null}
-          {form.atMaxAbility ? (
-            <p className="text-xs text-muted-foreground">
-              {t("goals.create.validation.abilityMaxed")}
-            </p>
-          ) : null}
-          {/* One line per kind that already has an in-flight (Active/Paused) goal for this unit — a
-              unit may still accumulate any number of Completed/Archived goals of the same type, so
-              only these count (mirrors the backend's create/resume conflict check). */}
+
+          <div className="grid content-start gap-3">
+            <div className="grid gap-1">
+              <Label className="text-xs text-muted-foreground">
+                {t("goals.create.goalTypeLabel")}
+              </Label>
+              <GoalTypeToggleGroup
+                kinds={goalKinds}
+                enabledTypes={form.enabledTypes}
+                onToggle={form.toggleType}
+                isDisabled={(kind) =>
+                  (kind === "Unlock" && !form.unlockAvailable) ||
+                  (kind === "Rank" && form.atMaxRank) ||
+                  (kind === "Ascension" && form.atMaxProgression) ||
+                  (kind === "Ability" && form.atMaxAbility) ||
+                  (kind === "Upgrade" &&
+                    form.entityType === "Character" &&
+                    form.atMaxRank)
+                }
+                entityType={form.entityType}
+              />
+              {!form.unlockAvailable ? (
+                <p className="text-xs text-muted-foreground">
+                  {t(
+                    form.entityAlreadyOwned
+                      ? "goals.create.validation.alreadyUnlocked"
+                      : "goals.create.unlockUnavailable"
+                  )}
+                </p>
+              ) : null}
+              {form.atMaxRank ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("goals.create.validation.rankMaxed")}
+                </p>
+              ) : null}
+              {form.atMaxProgression ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("goals.create.validation.progressionMaxed")}
+                </p>
+              ) : null}
+              {form.atMaxAbility ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("goals.create.validation.abilityMaxed")}
+                </p>
+              ) : null}
+            </div>
+
+            <GoalProjectsField
+              conflicts={form.projectConflicts}
+              onSelectionChange={form.selectProjects}
+              portalContainer={portalContainer}
+              projects={form.projects}
+              projectsValid={form.selectedProjectIds.length > 0}
+              selectedProjectIds={form.selectedProjectIds}
+              testIdPrefix="create-goal"
+            />
+          </div>
         </div>
       ) : null}
 
@@ -164,51 +176,13 @@ export function UnitGoalFormFields({
         </Field>
       ) : null}
 
-      {form.entityId ? (
-        <div className="grid content-start gap-4">
-          <GoalProjectsField
-            conflicts={form.projectConflicts}
-            onSelectionChange={form.selectProjects}
-            portalContainer={portalContainer}
-            projects={form.projects}
-            projectsValid={form.selectedProjectIds.length > 0}
-            selectedProjectIds={form.selectedProjectIds}
-            testIdPrefix="create-goal"
-          />
-          {/* Sits with membership rather than in the SheetFooter beside "Create another": this
-              configures the goal being created, not the form's post-submit behavior, and it belongs
-              where the reader is most likely to still assume the project choice decided it. */}
-          <div className="grid gap-2" data-testid="create-goal-start-paused">
-            <Field orientation="horizontal">
-              <Checkbox
-                checked={form.startPaused}
-                data-testid="create-goal-start-paused-checkbox"
-                id="create-goal-start-paused-checkbox"
-                onCheckedChange={(checked) =>
-                  form.setStartPaused(checked === true)
-                }
-              />
-              <FieldLabel
-                className="font-normal"
-                htmlFor="create-goal-start-paused-checkbox"
-              >
-                {t("goals.create.startPaused")}
-              </FieldLabel>
-            </Field>
-            <p className="text-sm text-muted-foreground">
-              {t("goals.create.startPausedDescription")}
-            </p>
-          </div>
-        </div>
-      ) : null}
-
       {form.entityId && form.reviewItems.length > 0 ? (
         <div
-          className="col-span-full grid gap-1 rounded-2xl border p-3 text-sm"
+          className="col-span-full flex flex-wrap items-baseline gap-x-4 gap-y-0.5 rounded-2xl border px-3 py-2 text-sm"
           data-testid="create-goal-review"
         >
           <p className="font-medium">{t("goals.create.reviewTitle")}</p>
-          <ul className="grid gap-0.5 text-muted-foreground">
+          <ul className="flex flex-wrap gap-x-3 text-muted-foreground">
             {form.reviewItems.map((item) => (
               <li key={item.goalType}>
                 {t(`goals.create.goalTypes.${item.goalType}`)}
@@ -226,7 +200,7 @@ export function UnitGoalFormFields({
             ))}
           </ul>
           {form.estimatedProjectIds.length > 0 ? (
-            <ul className="grid gap-0.5 border-t pt-1 text-muted-foreground">
+            <ul className="flex flex-wrap gap-x-3 border-l pl-3 text-muted-foreground">
               {form.estimatedProjectIds.map((projectId) => {
                 const project = form.projects.find(
                   (candidate) => candidate.projectId === projectId

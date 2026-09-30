@@ -33,6 +33,8 @@
 8. **Desktop vs mobile split (per repo rule).** Same fields and Save behavior on both; only the shell differs (desktop centered dialog with two columns; mobile bottom sheet with one column). Tour: the Edit dialog tutorial targets `data-testid` selectors that exist in both shells; the desktop steps use the two-column layout targets and the mobile steps the sheet's, registered while open as today.
 9. **Removal is by deletion.** `goal-detail-view`, `goal-detail-header`, `goal-estimate-section`, `goal-farming-guidance` (the detail one), `goal-farming-summary`, `use-goal-detail-metrics`, `goal-detail-projects`, the dependency queries, and their tests are deleted; helpers with other consumers (`prerequisitePrefill`, blockers) stay. knip and `lint:fsd` catch anything left unreferenced.
 
+10. **Compact dialogs (follow-up after desktop review).** Helper paragraphs are removed or become `InfoHint` tooltips (`title` + accessible name); "Create paused" moves to the footer beside "Create another"; footers end with the primary button. Create preselects the first Character of the unit list (`useDefaultUnitPreselect`, Mows skipped, only when no unit is chosen or prefilled, so it also re-applies after "create another"), and Current status and Goal type share a two-column row. Shared shell paddings shrink, which also tightens the mobile sheet slightly.
+
 ## Risks / Trade-offs
 
 - [Combobox scroll-lock/portal regressions inside `Dialog`] -> shared portal-container helper plus tests that scroll a popover list inside the dialog, and a browser check on both shells.

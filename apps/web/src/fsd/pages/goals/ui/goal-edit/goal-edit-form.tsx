@@ -149,7 +149,7 @@ export function GoalEditForm({
     <>
       <ResponsiveDialogBody>
         <div
-          className="grid content-start gap-6 pb-6 text-sm @2xl:grid-cols-2"
+          className="grid content-start items-start gap-x-6 gap-y-3 pb-3 text-sm @2xl:grid-cols-2"
           data-testid="goal-edit-form"
         >
           {draft.target ? (
@@ -219,16 +219,16 @@ export function GoalEditForm({
             />
           </div>
         ) : null}
-        <Button data-testid="goal-edit-save" disabled={!canSave} onClick={save}>
-          {saver.isSaving ? <Spinner /> : null}
-          {t("goals.edit.save")}
-        </Button>
         <Button
           data-testid="goal-edit-cancel"
           onClick={onRequestClose}
           variant="outline"
         >
           {t("goals.edit.cancel")}
+        </Button>
+        <Button data-testid="goal-edit-save" disabled={!canSave} onClick={save}>
+          {saver.isSaving ? <Spinner /> : null}
+          {t("goals.edit.save")}
         </Button>
       </ResponsiveDialogFooter>
     </>
