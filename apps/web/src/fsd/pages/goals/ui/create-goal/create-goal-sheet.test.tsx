@@ -1528,6 +1528,29 @@ describe("CreateGoalSheet", () => {
     ).toBeVisible()
   })
 
+  it("preselects the first character again after 'create another' even when a Machine of War was submitted", async () => {
+    getPlayerMow.mockResolvedValue(undefined)
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectCharacter()
+    await selectMow()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+    fireEvent.click(screen.getByLabelText("goals.create.createAnother"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    // The reset clears the Mow and the same rule preselects the first character again.
+    await selectCharacter()
+  })
+
   it("allows an Unlock goal for a locked Machine of War", async () => {
     getPlayerMow.mockResolvedValue(undefined)
     createCombinedGoals.mockResolvedValue({ goals: [] })

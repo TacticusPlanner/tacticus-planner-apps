@@ -55,7 +55,7 @@ export function ResponsiveDialog({
       <DialogContent
         {...contentProps}
         className={cn(
-          "flex max-h-[90vh] w-full flex-col gap-0 p-0 sm:max-w-5xl",
+          "flex max-h-[calc(100vh-1rem)] w-full flex-col gap-0 p-0 sm:max-w-5xl",
           contentClassName
         )}
       >
@@ -73,7 +73,7 @@ export function ResponsiveDialogHeader({
     <div
       data-slot="responsive-dialog-header"
       className={cn(
-        "flex shrink-0 flex-col gap-1 px-6 pt-5 pr-14 pb-3",
+        "flex shrink-0 flex-col gap-1 px-6 pt-4 pr-14 pb-2",
         className
       )}
       {...props}
@@ -112,7 +112,7 @@ export function ResponsiveDialogFooter({
     <div
       data-slot="responsive-dialog-footer"
       className={cn(
-        "flex shrink-0 flex-col gap-2 px-6 py-4 md:flex-row md:items-center md:justify-end",
+        "flex shrink-0 flex-col gap-2 px-6 py-3 md:flex-row md:items-center md:justify-end",
         className
       )}
       {...props}

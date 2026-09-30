@@ -178,11 +178,11 @@ export function UnitGoalFormFields({
 
       {form.entityId && form.reviewItems.length > 0 ? (
         <div
-          className="grid gap-1 rounded-2xl border p-3 text-sm"
+          className="col-span-full flex flex-wrap items-baseline gap-x-4 gap-y-0.5 rounded-2xl border px-3 py-2 text-sm"
           data-testid="create-goal-review"
         >
           <p className="font-medium">{t("goals.create.reviewTitle")}</p>
-          <ul className="grid gap-0.5 text-muted-foreground">
+          <ul className="flex flex-wrap gap-x-3 text-muted-foreground">
             {form.reviewItems.map((item) => (
               <li key={item.goalType}>
                 {t(`goals.create.goalTypes.${item.goalType}`)}
@@ -200,7 +200,7 @@ export function UnitGoalFormFields({
             ))}
           </ul>
           {form.estimatedProjectIds.length > 0 ? (
-            <ul className="grid gap-0.5 border-t pt-1 text-muted-foreground">
+            <ul className="flex flex-wrap gap-x-3 border-l pl-3 text-muted-foreground">
               {form.estimatedProjectIds.map((projectId) => {
                 const project = form.projects.find(
                   (candidate) => candidate.projectId === projectId
