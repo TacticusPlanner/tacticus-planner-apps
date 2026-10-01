@@ -515,6 +515,80 @@ describe("GoalEditDialog", () => {
       })
     })
 
+    describe("Upgrade range", () => {
+      const mowUpgradeGoal = {
+        ...upgradeGoal,
+        entityType: "Mow",
+        config: {
+          ...config,
+          upgrade: {
+            targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+            activeRange: { start: 2, end: 5 },
+          },
+        },
+      } as unknown as GoalDetail
+
+      it("prefills the stored range and shows an unset track as not set", async () => {
+        goalOnScreen(mowUpgradeGoal)
+        renderDialog()
+        await loaded()
+
+        expect(
+          screen.getByTestId("goal-target-upgrade-range-primary-start")
+        ).toHaveTextContent("2")
+        expect(
+          screen.getByTestId("goal-target-upgrade-range-primary-end")
+        ).toHaveTextContent("5")
+        expect(
+          screen.getByTestId("goal-target-upgrade-range-secondary-start")
+        ).toHaveTextContent("goals.create.upgrade.range.unset")
+      })
+
+      it("clearing the range saves the target without one", async () => {
+        goalOnScreen(mowUpgradeGoal)
+        renderDialog()
+        await loaded()
+
+        await chooseOption(
+          "goal-target-upgrade-range-primary-start",
+          "goals.create.upgrade.range.unset"
+        )
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        expect(editGoal).toHaveBeenCalledWith("goal-1", {
+          target: {
+            expectedRevision: 5,
+            target: {
+              upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
+            },
+          },
+        })
+      })
+
+      it("sends a changed range together with the targets", async () => {
+        goalOnScreen(mowUpgradeGoal)
+        renderDialog()
+        await loaded()
+
+        await chooseOption("goal-target-upgrade-range-primary-end", "9")
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        expect(editGoal).toHaveBeenCalledWith("goal-1", {
+          target: {
+            expectedRevision: 5,
+            target: {
+              upgrade: {
+                targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+                activeRange: { start: 2, end: 9 },
+              },
+            },
+          },
+        })
+      })
+    })
+
     it("Upgrade: blocks Save with a reason for a zero quantity", async () => {
       goalOnScreen(upgradeGoal)
       renderDialog()

@@ -55,7 +55,7 @@ export function resourceLabel(
  * `effectiveStart` is the rank the range actually starts from), and not already claimed by an earlier goal
  * (`coveredRankSlots`). Pure — the caller decides whether to claim the result.
  */
-function uncoveredRankSlots(params: {
+export function uncoveredRankSlots(params: {
   occurrences: readonly RankSlotOccurrence[]
   effectiveStart: number
   playerCharacter: PlayerCharacter | undefined

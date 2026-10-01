@@ -12,6 +12,7 @@ import {
   maxAbilityLevel,
   progressionOrder,
   rankAt,
+  rankOrder,
   type Progression,
   type Rank,
   type UpgradeId,
@@ -30,6 +31,7 @@ import {
   rankEndOptionsFor,
   type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
+import { OptionalRangeField } from "../shared/optional-range-field"
 import { AdditionalTargetLabel } from "../create-goal/goal-type-fields"
 
 type FieldsProps<Kind extends GoalTargetDraft["kind"]> = {
@@ -222,18 +224,58 @@ function AbilityFields({
   )
 }
 
-/** Only the quantities are editable — each material keeps its identity. */
+const rankOptions = rankOrder.map((rank, index) => ({
+  value: index,
+  label: <RankBadge rank={rank} />,
+}))
+const abilityLevelOptions = range(1, maxAbilityLevel).map((level) => ({
+  value: level,
+  label: level,
+}))
+
+/** The quantities and the optional range(s) are editable � each material keeps its identity. */
 function UpgradeFields({
+  detail,
   draft,
   onChange,
+  portalContainer,
   upgradesById,
-}: Pick<FieldsProps<"Upgrade">, "draft" | "onChange"> & {
+}: FieldsProps<"Upgrade"> & {
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
 }) {
   const { t } = useTranslation()
 
   return (
     <div className="grid gap-2">
+      {detail.entityType === "Mow" ? (
+        <>
+          <OptionalRangeField
+            label={t("goals.create.upgrade.range.primary")}
+            onChange={(activeRange) => onChange({ ...draft, activeRange })}
+            options={abilityLevelOptions}
+            portalContainer={portalContainer}
+            testId="goal-target-upgrade-range-primary"
+            value={draft.activeRange}
+          />
+          <OptionalRangeField
+            label={t("goals.create.upgrade.range.secondary")}
+            onChange={(passiveRange) => onChange({ ...draft, passiveRange })}
+            options={abilityLevelOptions}
+            portalContainer={portalContainer}
+            testId="goal-target-upgrade-range-secondary"
+            value={draft.passiveRange}
+          />
+        </>
+      ) : (
+        <OptionalRangeField
+          label={t("goals.create.upgrade.range.rank")}
+          onChange={(rankRange) => onChange({ ...draft, rankRange })}
+          options={rankOptions}
+          portalContainer={portalContainer}
+          testId="goal-target-upgrade-range-rank"
+          value={draft.rankRange}
+        />
+      )}
       {draft.targets.map((target) => {
         const upgrade = upgradesById.get(target.upgradeId as UpgradeId)
         return (
@@ -303,11 +345,7 @@ export function GoalTargetFields({
       return <AbilityFields {...common} draft={draft} />
     case "Upgrade":
       return (
-        <UpgradeFields
-          draft={draft}
-          onChange={onChange}
-          upgradesById={upgradesById}
-        />
+        <UpgradeFields {...common} draft={draft} upgradesById={upgradesById} />
       )
   }
 }

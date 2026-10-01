@@ -44,6 +44,7 @@ export {
 export {
   computeMowMissingUpgrades,
   mowAbilityTrackLevel,
+  mowAbilityUpgradeIds,
 } from "./lib/mow-ability-calc"
 export {
   ascensionResourceNeed,

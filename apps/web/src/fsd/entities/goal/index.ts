@@ -68,6 +68,7 @@ export type {
   ProjectMembership,
   RankTarget,
   UpgradeMaterialTarget,
+  UpgradeRange,
   UpgradeTarget,
   AcquisitionSource,
   FarmingStrategy,
