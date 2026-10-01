@@ -22,3 +22,10 @@
 ## Open Questions
 
 - Which of the four UserJot inputs (unified view, attempts wording, inline upgrade names, wide-desktop layout) become deltas here, and which become separate changes? Decide after the walkthrough and record on the UserJot threads.
+
+## Recorded Decisions (apply, 2026-10-01)
+
+- **Unified Raids/Shops view:** keep separate tabs. No evidence of bouncing between them; not widened here, revisit as a `dailies-navigation` follow-up if feedback repeats.
+- **"X attempts used" wording:** already unambiguous in current copy ("N attempts used", node rows "· N attempts used"; empty state "No real attempts recorded yet today"). No copy change; the delta in `dailies-action-hierarchy` is satisfied as-is.
+- **Inline upgrade names:** not changed here. Rows keep icon + tooltip; the goal/unit name is already inline. Deferred to the user's call — name text on dense mobile rows needs a design pass.
+- **Wide-desktop empty space:** Today, Bonus Raids and Today's Attempts become three auto-fit lanes (`repeat(auto-fit, minmax(20rem, 1fr))`) on `md+`, stacked on mobile; no new breakpoint. Delta: `daily-raids-today`. Tutorial `schedule` step now targets `today-lanes`.

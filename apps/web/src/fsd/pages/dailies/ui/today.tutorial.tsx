@@ -26,7 +26,7 @@ export function useTodayTutorial() {
       createStep('[data-testid="raids-filters"]', "filters"),
       createStep('[data-testid="campaign-event-status"]', "campaignEvent"),
       createStep('[data-testid="energy-usage"]', "energyUsage"),
-      createStep('[data-testid="today-schedule"]', "schedule"),
+      createStep('[data-testid="today-lanes"]', "schedule"),
       createStep('[data-testid="todays-attempts"]', "todaysAttempts"),
     ]
     return { desktop: shared, mobile: shared }
