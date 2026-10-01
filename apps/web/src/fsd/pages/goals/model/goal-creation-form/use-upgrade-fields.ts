@@ -11,6 +11,7 @@ import {
 } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
 
+import type { UpgradeRange } from "@/entities/goal"
 import type {
   UpgradeWithFarmLocations,
   Character,
@@ -20,6 +21,7 @@ import {
   characterRelevantUpgradeQuantities,
   computeUpgradeGoalNeed,
   mowRelevantUpgradeQuantities,
+  type UpgradeRanges,
 } from "../estimate/goal-spec-builder"
 
 /**
@@ -47,6 +49,13 @@ export function useUpgradeFields({
 }) {
   const [upgradeRankStart, setUpgradeRankStart] = useState<Rank>(firstRank)
   const [upgradeRankEnd, setUpgradeRankEnd] = useState<Rank>(rankAt(1))
+  // A Mow's two ability tracks each take an optional range of their own.
+  const [mowActiveRange, setMowActiveRange] = useState<UpgradeRange | null>(
+    null
+  )
+  const [mowPassiveRange, setMowPassiveRange] = useState<UpgradeRange | null>(
+    null
+  )
   const [upgradeTargets, setUpgradeTargets] = useState<
     { upgradeId: UpgradeId; quantity: number }[]
   >([])
@@ -78,9 +87,44 @@ export function useUpgradeFields({
         upgradesById
       )
     }
-    if (mow) return mowRelevantUpgradeQuantities(mow, upgradesById)
+    if (mow) {
+      return mowRelevantUpgradeQuantities(mow, upgradesById, {
+        activeRange: mowActiveRange,
+        passiveRange: mowPassiveRange,
+      })
+    }
     return new Map<UpgradeId, number>()
-  }, [character, mow, upgradeRankStart, upgradeRankEnd, upgradesById])
+  }, [
+    character,
+    mow,
+    upgradeRankStart,
+    upgradeRankEnd,
+    mowActiveRange,
+    mowPassiveRange,
+    upgradesById,
+  ])
+
+  // The range(s) sent with the goal: a Character's rank range, a Mow's set tracks only.
+  const upgradeRanges = useMemo<UpgradeRanges>(() => {
+    if (character) {
+      return {
+        rankRange: {
+          start: rankIndex(upgradeRankStart),
+          end: rankIndex(upgradeRankEnd),
+        },
+      }
+    }
+    return {
+      ...(mowActiveRange && { activeRange: mowActiveRange }),
+      ...(mowPassiveRange && { passiveRange: mowPassiveRange }),
+    }
+  }, [
+    character,
+    upgradeRankStart,
+    upgradeRankEnd,
+    mowActiveRange,
+    mowPassiveRange,
+  ])
 
   const upgradeGoalNeed = useMemo(
     () =>
@@ -120,6 +164,8 @@ export function useUpgradeFields({
   const reset = () => {
     setUpgradeRankStart(firstRank)
     setUpgradeRankEnd(rankAt(1))
+    setMowActiveRange(null)
+    setMowPassiveRange(null)
     setUpgradeTargets([])
   }
 
@@ -150,6 +196,16 @@ export function useUpgradeFields({
       setUpgradeRankEnd,
       upgradeRankEndOptions,
       upgradeRankStartOptions,
+      // Level n -> n+1 is recipe row n - 1, so a track of R rows spans levels 1..R+1.
+      mowTrackMaxLevels: mow && {
+        primary: mow.primaryAbility.recipes.length + 1,
+        secondary: mow.secondaryAbility.recipes.length + 1,
+      },
+      mowActiveRange,
+      setMowActiveRange,
+      mowPassiveRange,
+      setMowPassiveRange,
+      upgradeRanges,
       upgradeTargets,
       addUpgradeTarget,
       removeUpgradeTarget,

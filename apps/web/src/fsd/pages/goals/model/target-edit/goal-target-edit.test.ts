@@ -129,7 +129,23 @@ describe("goalTargetDraftFromDetail", () => {
     ).toEqual({
       kind: "Upgrade",
       targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+      rankRange: null,
+      activeRange: null,
+      passiveRange: null,
     })
+  })
+
+  it("prefills an Upgrade goal's stored ranges", () => {
+    expect(
+      goalTargetDraftFromDetail(
+        goal("Upgrade", {
+          upgrade: {
+            targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+            rankRange: { start: 1, end: 4 },
+          },
+        })
+      )
+    ).toMatchObject({ rankRange: { start: 1, end: 4 }, activeRange: null })
   })
 
   it("has no draft for an Unlock goal", () => {
@@ -256,6 +272,9 @@ describe("getGoalTargetIssue", () => {
     const withQuantity = (quantity: number): GoalTargetDraft => ({
       kind: "Upgrade",
       targets: [{ upgradeId: "upgHpC014", quantity }],
+      rankRange: null,
+      activeRange: null,
+      passiveRange: null,
     })
 
     expect(getGoalTargetIssue(detail, withQuantity(0))).toBe("upgradeQuantity")
@@ -267,9 +286,35 @@ describe("getGoalTargetIssue", () => {
     )
     expect(getGoalTargetIssue(detail, withQuantity(10000))).toBeNull()
     expect(getGoalTargetIssue(detail, withQuantity(4))).toBeNull()
-    expect(getGoalTargetIssue(detail, { kind: "Upgrade", targets: [] })).toBe(
-      "upgradeEmpty"
+    expect(
+      getGoalTargetIssue(detail, {
+        kind: "Upgrade",
+        targets: [],
+        rankRange: null,
+        activeRange: null,
+        passiveRange: null,
+      })
+    ).toBe("upgradeEmpty")
+  })
+
+  it("rejects an Upgrade range that does not end above its start", () => {
+    const detail = goal("Upgrade", {
+      upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
+    })
+    const draft = (rankRange: { start: number; end: number } | null) =>
+      ({
+        kind: "Upgrade",
+        targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+        rankRange,
+        activeRange: null,
+        passiveRange: null,
+      }) as GoalTargetDraft
+
+    expect(getGoalTargetIssue(detail, draft({ start: 3, end: 3 }))).toBe(
+      "upgradeRange"
     )
+    expect(getGoalTargetIssue(detail, draft({ start: 1, end: 4 }))).toBeNull()
+    expect(getGoalTargetIssue(detail, draft(null))).toBeNull()
   })
 
   it("agrees with creation validation on shape when live progress equals the start", () => {

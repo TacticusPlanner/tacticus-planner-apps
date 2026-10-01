@@ -10,7 +10,12 @@ import {
   type Rank,
 } from "@workspace/game-domain"
 
-import type { GoalDetail, GoalKind, GoalTargetEdit } from "@/entities/goal"
+import type {
+  GoalDetail,
+  GoalKind,
+  GoalTargetEdit,
+  UpgradeRange,
+} from "@/entities/goal"
 import {
   additionalTargetFromWire,
   additionalTargetSelection,
@@ -28,6 +33,10 @@ export type GoalTargetDraft =
   | {
       kind: "Upgrade"
       targets: { upgradeId: string; quantity: number }[]
+      /** The range(s) the goal was created against, `null` when it has none. */
+      rankRange: UpgradeRange | null
+      activeRange: UpgradeRange | null
+      passiveRange: UpgradeRange | null
     }
 
 export type GoalTargetIssue =
@@ -38,6 +47,7 @@ export type GoalTargetIssue =
   | "abilityAboveMax"
   | "upgradeQuantity"
   | "upgradeEmpty"
+  | "upgradeRange"
 
 /** The largest Upgrade quantity the editor accepts — the same ceiling the creation form's quantity input
  * uses (`max` on its `Input`). */
@@ -94,6 +104,9 @@ export function goalTargetDraftFromDetail(
         ? {
             kind: "Upgrade",
             targets: config.upgrade.targets.map((target) => ({ ...target })),
+            rankRange: config.upgrade.rankRange ?? null,
+            activeRange: config.upgrade.activeRange ?? null,
+            passiveRange: config.upgrade.passiveRange ?? null,
           }
         : null
     default:
@@ -125,7 +138,15 @@ export function goalTargetEditFromDraft(
         ability: { activeEnd: draft.activeEnd, passiveEnd: draft.passiveEnd },
       }
     case "Upgrade":
-      return { upgrade: { targets: draft.targets } }
+      // The ranges are replaced with the targets as one unit, so a cleared range is simply left out.
+      return {
+        upgrade: {
+          targets: draft.targets,
+          ...(draft.rankRange && { rankRange: draft.rankRange }),
+          ...(draft.activeRange && { activeRange: draft.activeRange }),
+          ...(draft.passiveRange && { passiveRange: draft.passiveRange }),
+        },
+      }
   }
 }
 
@@ -182,6 +203,14 @@ export function getGoalTargetIssue(
     }
     case "Upgrade": {
       if (draft.targets.length === 0) return "upgradeEmpty"
+      const ranges = [draft.rankRange, draft.activeRange, draft.passiveRange]
+      if (
+        ranges.some(
+          (range) => range && (range.start < 0 || range.end <= range.start)
+        )
+      ) {
+        return "upgradeRange"
+      }
       return draft.targets.every(
         (target) =>
           Number.isInteger(target.quantity) &&

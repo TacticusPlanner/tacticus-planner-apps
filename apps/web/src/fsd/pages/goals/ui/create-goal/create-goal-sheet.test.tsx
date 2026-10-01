@@ -1520,10 +1520,54 @@ describe("CreateGoalSheet", () => {
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Upgrade",
-        config: { upgrade: { targets: [{ upgradeId: "h1", quantity: 3 }] } },
+        config: {
+          upgrade: {
+            targets: [{ upgradeId: "h1", quantity: 3 }],
+            // The Upgrade card's default rank range, Stone1 -> Stone2.
+            rankRange: { start: 0, end: 1 },
+          },
+        },
         dependsOnIndex: [],
       }),
     ])
+  })
+
+  it("offers per-track range selectors for a Machine of War and sends no range while both are unset", async () => {
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+
+    await selectMow()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Upgrade")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
+
+    expect(
+      screen.getByTestId("create-goal-upgrade-range-primary")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId("create-goal-upgrade-range-secondary")
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "goals.create.upgrade.add" })
+    )
+    const listbox = await screen.findByRole("listbox")
+    fireEvent.click(within(listbox).getByText("Health Base"))
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const [request] = createCombinedGoals.mock.calls[0]
+    const upgrade = request.goals.find(
+      (goal: { goalType: string }) => goal.goalType === "Upgrade"
+    )
+    expect(upgrade.config.upgrade).toEqual({
+      targets: [{ upgradeId: "h1", quantity: 1 }],
+    })
   })
 
   it("shows the required quantity for each upgrade in the picker and prefills the selected quantity from it", async () => {

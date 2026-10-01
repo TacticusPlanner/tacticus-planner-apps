@@ -58,8 +58,21 @@ export type UpgradeMaterialTarget = {
   quantity: number
 }
 
+/** A progression range an Upgrade goal was created against: rank indices for a Character, ability
+ * levels for one Machine of War track. Absent/`null` means no range (additive planning). */
+export type UpgradeRange = {
+  start: number
+  end: number
+}
+
 export type UpgradeTarget = {
   targets: UpgradeMaterialTarget[]
+  /** Character only. */
+  rankRange?: UpgradeRange | null
+  /** Machine of War primary ability track only. */
+  activeRange?: UpgradeRange | null
+  /** Machine of War secondary ability track only. */
+  passiveRange?: UpgradeRange | null
 }
 
 export type GoalConfig = {

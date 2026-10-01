@@ -1358,3 +1358,151 @@ describe("daily raid derivation", () => {
     expect({ ...withEvent, eventFarm: undefined }).toEqual(plain)
   })
 })
+
+describe("Upgrade goals in the plan", () => {
+  const heroId = unitIdSchema.parse("hero1")
+  const baseA = upgradeIdSchema.parse("baseA")
+  const baseB = upgradeIdSchema.parse("baseB")
+  const nodeId = battleIdSchema.parse("B1")
+  const farmable = (id: typeof baseA) =>
+    ({
+      id,
+      label: id,
+      rarity: "Common",
+      stat: "health",
+      crafted: false,
+      recipe: [],
+      farmLocations: [
+        {
+          battleId: nodeId,
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+          isMythic: false,
+        },
+      ],
+    }) as FarmingUpgrade
+  const upgradeGoal = (
+    goalId: string,
+    upgradeId: typeof baseA,
+    quantity: number,
+    priority: number,
+    status = "Active"
+  ) => {
+    const detail = goalDetail({
+      goalId,
+      entityId: heroId,
+      goalType: "Upgrade",
+      status: status as GoalDetail["status"],
+      config: {
+        rank: null,
+        progression: null,
+        ability: null,
+        farmingStrategy: "TotalUpgrades",
+        acquisitionSources: null,
+        farmingLocationIds: null,
+        upgrade: { targets: [{ upgradeId, quantity }] },
+      },
+    })
+    return { ...detail, globalPriority: priority }
+  }
+  const run = (
+    details: GoalDetail[],
+    inventoryUpgrades: { upgradeId: typeof baseA; amount: number }[] = [],
+    dailyEnergy = 100
+  ) => {
+    const result = calculateDailyRaids({
+      members: details.map((detail) => ({ goal: detail })),
+      details,
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      inventoryShardById: new Map(),
+      inventoryUpgrades,
+      upgradesById: new Map([
+        [baseA, farmable(baseA)],
+        [baseB, farmable(baseB)],
+      ]),
+      battlesById: new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 10,
+            dailyAttempts: 999,
+          },
+        ],
+      ]),
+      charactersById: new Map(),
+      mowsById: new Map(),
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: new Map(),
+      getCharacter: () => undefined,
+      dailyEnergy,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    })
+    return result
+  }
+  const ready = (...args: Parameters<typeof run>) => {
+    const result = run(...args)
+    if (result?.status !== "ready") throw new Error("not ready")
+    return result
+  }
+  const farmedFor = (
+    entries: { goalId: string; itemsFarmed: number }[],
+    goalId: string
+  ) =>
+    entries
+      .filter((entry) => entry.goalId === goalId)
+      .reduce((total, entry) => total + entry.itemsFarmed, 0)
+
+  it("appears in Today and Plan Day 1", () => {
+    const result = ready([upgradeGoal("up", baseA, 5, 1)])
+    expect(farmedFor(result.today.entries, "up")).toBe(5)
+    expect(result.today).toEqual(result.planDays[0])
+  })
+
+  it("carries a non-empty entityId for a Machine of War goal too", () => {
+    const goal = {
+      ...upgradeGoal("mow-up", baseA, 2, 1),
+      entityType: "Mow" as const,
+      entityId: "mow1",
+    }
+    expect(goal.entityId).not.toBe("")
+    const result = ready([goal])
+    expect(farmedFor(result.today.entries, "mow-up")).toBe(2)
+  })
+
+  it("is ordered by priority and spills to later days after higher-priority goals", () => {
+    const result = ready(
+      [upgradeGoal("low", baseB, 5, 2), upgradeGoal("high", baseA, 5, 1)],
+      [],
+      50
+    )
+    expect(farmedFor(result.today.entries, "high")).toBe(5)
+    expect(farmedFor(result.today.entries, "low")).toBe(0)
+    expect(farmedFor(result.planDays[1]!.entries, "low")).toBe(5)
+  })
+
+  it("is absent when inventory covers it", () => {
+    const result = run(
+      [upgradeGoal("up", baseA, 5, 1)],
+      [{ upgradeId: baseA, amount: 5 }]
+    )
+    // Nothing left to farm, so there is no plan at all.
+    expect(result?.status).not.toBe("ready")
+  })
+
+  it("is absent when Paused", () => {
+    const result = ready([
+      upgradeGoal("up", baseA, 5, 1, "Paused"),
+      upgradeGoal("other", baseB, 1, 2),
+    ])
+    expect(farmedFor(result.today.entries, "up")).toBe(0)
+    expect(farmedFor(result.today.entries, "other")).toBe(1)
+  })
+})

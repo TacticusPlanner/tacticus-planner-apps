@@ -777,7 +777,15 @@
         "quantity": "Cantidad",
         "remove": "Quitar",
         "required": "necesario × {{count}}",
-        "empty": "Añade al menos una mejora para farmear hacia una cantidad objetivo."
+        "empty": "Añade al menos una mejora para farmear hacia una cantidad objetivo.",
+        "range": {
+          "primary": "Niveles de la habilidad primaria",
+          "secondary": "Niveles de la habilidad secundaria",
+          "rank": "Rangos",
+          "start": "{{label}}: inicio",
+          "end": "{{label}}: fin",
+          "unset": "Sin definir"
+        }
       },
       "previewTitle": "Recursos necesarios",
       "showAll": "Mostrar todo ({{count}})",
@@ -973,7 +981,8 @@
         "abilityNoAdvance": "Sube al menos una habilidad por encima de su punto de partida.",
         "abilityAboveMax": "Ese nivel supera el nivel máximo de habilidad.",
         "upgradeQuantity": "Cada cantidad debe ser un número entero de 1 a 10.000.",
-        "upgradeEmpty": "Una meta de mejoras necesita al menos un material."
+        "upgradeEmpty": "Una meta de mejoras necesita al menos un material.",
+        "upgradeRange": "Elige un rango que termine por encima de su inicio."
       },
       "reachedNote": "Un objetivo ya alcanzado es válido: no necesita nada más y el objetivo conserva su estado hasta que lo completes."
     },

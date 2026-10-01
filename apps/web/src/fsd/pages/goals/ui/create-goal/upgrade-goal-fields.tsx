@@ -6,10 +6,24 @@ import { Input } from "@workspace/ui/components/input"
 
 import type { Rank, UpgradeId } from "@workspace/game-domain"
 
+import type { UpgradeRange } from "@/entities/goal"
 import { RankSelect, RarityCombobox, UpgradeIcon } from "@/shared/ui"
+import { OptionalRangeField } from "../shared/optional-range-field"
 import type { RarityComboboxItem } from "@/shared/ui"
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
 import type { MissingUpgradeEntry } from "../../model/estimate/goal-spec-builder"
+
+type MowTrackRange = {
+  value: UpgradeRange | null
+  maxLevel: number
+  onChange: (range: UpgradeRange | null) => void
+}
+
+const levelOptions = (maxLevel: number) =>
+  Array.from({ length: maxLevel }, (_, index) => ({
+    value: index + 1,
+    label: index + 1,
+  }))
 
 /** Repeatable upgrade target list (plan: re-introduced V1 "Upgrade" goal, phase 9+) — an add-a-row
  * picker restricted to `relevantUpgradeQuantities`' keys (already-selected ids excluded, so the
@@ -31,6 +45,7 @@ export function UpgradeGoalFields({
   onQuantityChange,
   missingUpgrades,
   rankRange,
+  mowRanges,
 }: {
   targets: { upgradeId: UpgradeId; quantity: number }[]
   relevantUpgradeQuantities: ReadonlyMap<UpgradeId, number>
@@ -49,6 +64,11 @@ export function UpgradeGoalFields({
     endOptions: Rank[]
     onStartChange: (rank: Rank) => void
     onEndChange: (rank: Rank) => void
+  }
+  /** Machine of War only � one optional level range per ability track. */
+  mowRanges?: {
+    primary: MowTrackRange
+    secondary: MowTrackRange
   }
 }) {
   const { t } = useTranslation()
@@ -89,6 +109,25 @@ export function UpgradeGoalFields({
             onChange={rankRange.onEndChange}
           />
         </div>
+      ) : null}
+
+      {mowRanges ? (
+        <>
+          <OptionalRangeField
+            label={t("goals.create.upgrade.range.primary")}
+            onChange={mowRanges.primary.onChange}
+            options={levelOptions(mowRanges.primary.maxLevel)}
+            testId="create-goal-upgrade-range-primary"
+            value={mowRanges.primary.value}
+          />
+          <OptionalRangeField
+            label={t("goals.create.upgrade.range.secondary")}
+            onChange={mowRanges.secondary.onChange}
+            options={levelOptions(mowRanges.secondary.maxLevel)}
+            testId="create-goal-upgrade-range-secondary"
+            value={mowRanges.secondary.value}
+          />
+        </>
       ) : null}
 
       {targets.length > 0 ? (

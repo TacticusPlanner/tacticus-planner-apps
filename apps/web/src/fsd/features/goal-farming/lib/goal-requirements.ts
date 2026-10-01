@@ -21,6 +21,7 @@ import {
   rankResourceNeed,
   rankSlotsRemaining,
 } from "./goal-need"
+import { upgradeResourceNeed } from "./upgrade-goal-need"
 import {
   ascensionResourceNeed,
   unlockResourceNeed,
@@ -146,6 +147,28 @@ export function calculateGoalResourceNeed(
       upgradeSlotsRemaining: null,
       ...(abilityMaterials && { abilityMaterials }),
     }
+  }
+  if (detail.goalType === "Upgrade") {
+    const upgrades = upgradeResourceNeed({
+      detail,
+      character: params.character,
+      mow: params.mow,
+      playerCharacter: params.playerCharacter,
+      playerMow: params.playerMow,
+      upgradesById,
+      coveredRankSlots: params.coveredRankSlots,
+      coveredAbilityTransitions: params.coveredAbilityTransitions,
+    })
+    return upgrades
+      ? {
+          upgrades,
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+          upgradeSlotsRemaining: null,
+        }
+      : null
   }
   if (detail.goalType === "Ascension" && detail.config.progression) {
     const owned = isMow ? params.playerMow : params.playerCharacter

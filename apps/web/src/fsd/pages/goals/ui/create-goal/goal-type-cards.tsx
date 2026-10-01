@@ -261,6 +261,22 @@ export function GoalTypeCards({
                           }
                         : undefined
                     }
+                    mowRanges={
+                      form.mowTrackMaxLevels
+                        ? {
+                            primary: {
+                              value: form.mowActiveRange,
+                              maxLevel: form.mowTrackMaxLevels.primary,
+                              onChange: form.setMowActiveRange,
+                            },
+                            secondary: {
+                              value: form.mowPassiveRange,
+                              maxLevel: form.mowTrackMaxLevels.secondary,
+                              onChange: form.setMowPassiveRange,
+                            },
+                          }
+                        : undefined
+                    }
                   />
                 </GoalTypeCard>
               )

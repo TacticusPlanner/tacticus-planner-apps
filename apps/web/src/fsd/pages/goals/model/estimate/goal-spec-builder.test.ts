@@ -448,6 +448,40 @@ describe("mowRelevantUpgradeQuantities", () => {
   })
 })
 
+describe("mowRelevantUpgradeQuantities with ranges", () => {
+  it("covers only the tracks that have a range, over that range's rows", () => {
+    expect(
+      mowRelevantUpgradeQuantities(mow, noCraftedUpgrades, {
+        activeRange: { start: 1, end: 2 },
+      })
+    ).toEqual(
+      new Map([
+        [upgradeId("h1"), 1],
+        [upgradeId("d1"), 1],
+      ])
+    )
+    expect(
+      mowRelevantUpgradeQuantities(mow, noCraftedUpgrades, {
+        passiveRange: { start: 1, end: 2 },
+      })
+    ).toEqual(
+      new Map([
+        [upgradeId("h2"), 1],
+        [upgradeId("d2"), 1],
+      ])
+    )
+  })
+
+  it("offers the whole ladder when no track has a range", () => {
+    expect(
+      mowRelevantUpgradeQuantities(mow, noCraftedUpgrades, {
+        activeRange: null,
+        passiveRange: null,
+      })
+    ).toEqual(mowRelevantUpgradeQuantities(mow, noCraftedUpgrades))
+  })
+})
+
 describe("computeUpgradeGoalNeed", () => {
   const upgradesById = new Map<
     ReturnType<typeof upgradeId>,

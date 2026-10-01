@@ -15,7 +15,9 @@ import type {
   CombinedGoalSpec,
   FarmingStrategy,
   GoalKind,
+  UpgradeTarget,
 } from "@/entities/goal"
+import { mowAbilityUpgradeIds } from "@/features/goal-farming"
 import { acquisitionSourcesFromPlan } from "../goal-creation-form/acquisition-plan"
 import type { GoalAcquisitionPlan } from "../goal-creation-form/acquisition-plan"
 
@@ -151,17 +153,46 @@ export function characterRelevantUpgradeQuantities(
   )
 }
 
-/** Same shape as `characterRelevantUpgradeQuantities`, but for a Mow's whole ability ladder (both
- * tracks combined) — a Mow's Upgrade goal isn't scoped to a level range (unlike a Character's rank
- * range), since a single level range can't unambiguously cover two independent ability tracks. */
+/** An Upgrade goal's progression range(s): a Character's rank range, or a Mow's per-track ability level
+ * ranges (each track optional). */
+export type UpgradeRanges = Pick<
+  UpgradeTarget,
+  "rankRange" | "activeRange" | "passiveRange"
+>
+
+/** Same shape as `characterRelevantUpgradeQuantities`, but for a Mow: the transitions of each ability
+ * track that has a range set, or the whole ladder of both tracks when neither is. */
 export function mowRelevantUpgradeQuantities(
   mow: MowStorageModel,
-  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>,
+  ranges: Pick<UpgradeRanges, "activeRange" | "passiveRange"> = {}
 ): Map<UpgradeId, number> {
+  const { activeRange, passiveRange } = ranges
+  if (!activeRange && !passiveRange) {
+    return decomposeToBaseQuantities(
+      [
+        ...mow.primaryAbility.recipes.flat(),
+        ...mow.secondaryAbility.recipes.flat(),
+      ],
+      upgradesById
+    )
+  }
   return decomposeToBaseQuantities(
     [
-      ...mow.primaryAbility.recipes.flat(),
-      ...mow.secondaryAbility.recipes.flat(),
+      ...(activeRange
+        ? mowAbilityUpgradeIds(
+            mow.primaryAbility.recipes,
+            activeRange.start,
+            activeRange.end
+          )
+        : []),
+      ...(passiveRange
+        ? mowAbilityUpgradeIds(
+            mow.secondaryAbility.recipes,
+            passiveRange.start,
+            passiveRange.end
+          )
+        : []),
     ],
     upgradesById
   )
@@ -270,6 +301,8 @@ export function buildCombinedGoalSpecs(params: {
   abilityPassiveEnd: number
   farmingStrategy: FarmingStrategy
   upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
+  /** The progression range(s) the Upgrade goal is created against; absent groups mean no range. */
+  upgradeRanges?: UpgradeRanges
   /** The acquisition-source picker's selection (plan: Campaigns/Onslaught/Shops picker,
    * tacticus-planner-apps#103) — the same plan feeds both Unlock and Ascension specs; each is
    * translated to the wire `acquisitionSources` set independently since they're separate goals. */
@@ -357,7 +390,7 @@ export function buildCombinedGoalSpecs(params: {
     specs.push({
       goalType: "Upgrade",
       config: {
-        upgrade: { targets: params.upgradeTargets },
+        upgrade: { targets: params.upgradeTargets, ...params.upgradeRanges },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
     })
