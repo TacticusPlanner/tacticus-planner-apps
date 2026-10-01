@@ -158,6 +158,7 @@
   },
   "today": {
     "title": "Heutige Raids",
+    "plan": "Heutiger Plan",
     "summary": "{{energy}} Energie · {{raids}} Raid-Versuche",
     "energyUsage": {
       "label": "Genutzte Tagesenergie",

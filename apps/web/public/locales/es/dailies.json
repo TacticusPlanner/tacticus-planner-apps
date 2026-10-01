@@ -158,6 +158,7 @@
   },
   "today": {
     "title": "Incursiones de hoy",
+    "plan": "Plan de hoy",
     "summary": "{{energy}} de energía · {{raids}} intentos",
     "energyUsage": {
       "label": "Energía diaria usada",

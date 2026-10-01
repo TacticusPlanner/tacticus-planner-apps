@@ -191,7 +191,8 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
         {raids.today.entries.length > 0 || bonusEntries.length > 0 ? (
           <>
             {raids.today.entries.length > 0 ? (
-              <section data-testid="today-lane">
+              <section className="space-y-2" data-testid="today-lane">
+                <h2 className="text-lg font-semibold">{t("today.plan")}</h2>
                 <RaidSchedule
                   {...scheduleProps}
                   entries={raids.today.entries}
@@ -201,12 +202,12 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
             ) : null}
             {bonusEntries.length > 0 ? (
               <section className="space-y-2" data-testid="bonus-lane">
-                <h3
-                  className="text-sm font-semibold text-muted-foreground"
+                <h2
+                  className="text-lg font-semibold"
                   data-testid="bonus-raids-heading"
                 >
                   {t("bonus.title")}
-                </h3>
+                </h2>
                 <RaidSchedule
                   {...scheduleProps}
                   entries={bonusEntries}

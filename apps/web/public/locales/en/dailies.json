@@ -158,6 +158,7 @@
   },
   "today": {
     "title": "Today's raids",
+    "plan": "Today's plan",
     "summary": "{{energy}} energy · {{raids}} raid attempts",
     "energyUsage": {
       "label": "Daily energy used",
