@@ -177,6 +177,12 @@ export function estimateOnslaughtTokens(estimate: EstimateOutcome | undefined) {
     : undefined
 }
 
+export function estimateShopSpend(estimate: EstimateOutcome | undefined) {
+  return estimate && estimate.status !== "Blocked"
+    ? estimate.shopSpend
+    : undefined
+}
+
 /** Only an Active/Paused goal occupies an in-flight priority slot — a historical (Completed/Archived)
  *  row can be visible in the same sorted list, but has nothing to reorder (see `spliceGoalOrder`). */
 export function isInFlightStatus(status: string) {

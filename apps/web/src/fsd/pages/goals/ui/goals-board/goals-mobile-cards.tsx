@@ -29,6 +29,7 @@ import {
 import {
   estimateEnergy,
   estimateOnslaughtTokens,
+  estimateShopSpend,
   isInFlightStatus,
   isReachedRow,
   goalXpBookFigure,
@@ -162,6 +163,7 @@ export function GoalsMobileCards({
           const onslaughtTokens = estimateOnslaughtTokens(
             estimates?.get(row.goalId)
           )
+          const shopSpend = estimateShopSpend(estimates?.get(row.goalId))
           const reached = isReachedRow(row, reachedByGoalId)
           const xpBooks = reached
             ? undefined
@@ -278,6 +280,7 @@ export function GoalsMobileCards({
                   />
                   <GoalResourceChips
                     onslaughtTokens={onslaughtTokens}
+                    shopSpend={shopSpend}
                     energy={energy}
                     entityType={row.entityType}
                     goalType={row.goalType}

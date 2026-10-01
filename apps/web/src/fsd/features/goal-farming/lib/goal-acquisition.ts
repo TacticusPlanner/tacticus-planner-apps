@@ -3,6 +3,7 @@ import type {
   GameCatalogShop,
   MowStorageModel,
   OnslaughtRewardStorageModel,
+  ShopShardOffer,
 } from "@workspace/game-catalog"
 import { resolveUnitShardShopOffers } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -62,6 +63,9 @@ export function computeGoalAcquisition(params: {
   campaignSource: AcquisitionSource | undefined
   campaignShardsEnabled: boolean
   flatSuppliers: FlatSupplier[]
+  /** The selected shop offers behind `flatSuppliers` (same `offerId` as each supplier's key), so a
+   *  consumer can show their cost and shop without re-resolving. */
+  shopOffers: ShopShardOffer[]
   onslaughtTokensDelta: number
 } {
   const { detail, need } = params
@@ -84,6 +88,7 @@ export function computeGoalAcquisition(params: {
   )
   const campaignShardsEnabled = acquisitionSources ? !!campaignSource : true
   const flatSuppliers: FlatSupplier[] = []
+  const shopOffers: ShopShardOffer[] = []
   let onslaughtTokensDelta = 0
 
   if (
@@ -140,6 +145,7 @@ export function computeGoalAcquisition(params: {
       // a selected mythic Shop offer is intentionally excluded from `flatSuppliers` here.
       if (offer.isMythic || !shopSource.ids.includes(offer.offerId)) continue
       flatSuppliers.push(projectShopSupply(offer, params.referenceDate))
+      shopOffers.push(offer)
     }
   }
 
@@ -148,6 +154,7 @@ export function computeGoalAcquisition(params: {
     campaignSource,
     campaignShardsEnabled,
     flatSuppliers,
+    shopOffers,
     onslaughtTokensDelta,
   }
 }

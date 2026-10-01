@@ -1,10 +1,33 @@
 import { useLiveQuery } from "dexie-react-hooks"
 
 import type { Progression, UnitId } from "@workspace/game-domain"
+import type { ShopShardOffer } from "@workspace/game-catalog"
 import { getInventoryShard } from "@workspace/player-data/queries"
 
 import type { EntityType } from ".//use-create-goal-form"
 import { isMythicProgression } from "@/features/goal-farming"
+
+/**
+ * Whether the Unlock goal type is offered. A Character needs some way to farm regular shards: a
+ * campaign node or a (non-mythic — unlocking never consumes mythic shards) shop offer, so a
+ * shop-only unit like Kharn or Ragnar still qualifies. A MoW has no `shardLocations` in the
+ * catalog at all, so it is simply offered whenever it isn't already owned (its resource cost just
+ * isn't estimated yet — see `unlockResourceNeed`'s `isMow` short-circuit).
+ */
+export function isUnlockAvailable(params: {
+  entityType: EntityType
+  isOwned: boolean
+  hasEntityId: boolean
+  campaignLocationCount: number
+  shopOffers: readonly ShopShardOffer[] | undefined
+}): boolean {
+  if (!params.hasEntityId || params.isOwned) return false
+  return (
+    params.entityType === "Mow" ||
+    params.campaignLocationCount > 0 ||
+    (params.shopOffers ?? []).some((offer) => !offer.isMythic)
+  )
+}
 
 /**
  * Shard-progress data for the selected-entity info card (below the unit picker in
@@ -18,7 +41,8 @@ export function useEntityShardSummary(
   entityId: UnitId | undefined,
   isOwned: boolean,
   playerEntity: { progressionIndex: Progression } | undefined,
-  charactersById: Map<string, { shardLocations?: unknown[] }> | undefined
+  charactersById: Map<string, { shardLocations?: unknown[] }> | undefined,
+  shopOffers: readonly ShopShardOffer[] | undefined
 ) {
   const lockedShard = useLiveQuery(
     () => (entityId ? getInventoryShard(entityId) : undefined),
@@ -31,15 +55,14 @@ export function useEntityShardSummary(
   const usesMythicShards =
     !!playerEntity && isMythicProgression(playerEntity.progressionIndex)
 
-  // A MoW has no `shardLocations` in the catalog at all (unlike a Character, whose farmability can
-  // be genuinely absent — an unreleased character has no catalog shard locations yet), so Unlock is
-  // simply offered whenever a MoW isn't already owned; its resource cost just isn't estimated yet
-  // (see `unlockResourceNeed`'s `isMow` short-circuit).
-  const unlockAvailable =
-    !!entityId &&
-    !isOwned &&
-    (entityType === "Mow" ||
-      (charactersById?.get(entityId)?.shardLocations?.length ?? 0) > 0)
+  const unlockAvailable = isUnlockAvailable({
+    entityType,
+    isOwned,
+    hasEntityId: !!entityId,
+    campaignLocationCount:
+      (entityId && charactersById?.get(entityId)?.shardLocations?.length) || 0,
+    shopOffers,
+  })
 
   return {
     usesMythicShards,

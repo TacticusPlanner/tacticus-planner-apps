@@ -14,6 +14,7 @@ import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import type { ResourceNeed } from "@/features/goal-farming"
+import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
 
 const EMPTY_AVAILABLE = {
@@ -24,7 +25,7 @@ const EMPTY_AVAILABLE = {
 
 type Chip = {
   key: string
-  icon: string
+  icon: string | undefined
   /** Alliance emblem drawn over the icon (V1's orb: rarity orb with the alliance on top). */
   overlay?: string
   /** Full localized resource name, used in the tooltip and the accessible name. */
@@ -47,6 +48,7 @@ export function GoalResourceChips({
   remaining,
   energy,
   onslaughtTokens,
+  shopSpend,
 }: {
   goalType: GoalKind
   entityType: string
@@ -54,8 +56,11 @@ export function GoalResourceChips({
   energy: number | undefined
   /** Projected Onslaught tokens (runs) from the goal's estimate; absent or 0 shows no chip. */
   onslaughtTokens?: number
+  /** Projected shop currency still to spend, by currency id (`goal-remaining-resources`); absent or
+   *  empty shows no chip. */
+  shopSpend?: ReadonlyMap<string, number>
 }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation(["common", "shops"])
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
   const rarityName = (rarity: Rarity) =>
@@ -63,7 +68,7 @@ export function GoalResourceChips({
   const chips: Chip[] = []
   const add = (
     key: string,
-    icon: string,
+    icon: string | undefined,
     name: string,
     quantity: number | undefined,
     overlay?: string
@@ -131,6 +136,16 @@ export function GoalResourceChips({
       t("goals.resourceChips.onslaughtTokens"),
       onslaughtTokens
     )
+  const addShopCurrency = () => {
+    for (const [currency, amount] of shopSpend ?? []) {
+      add(
+        `shopCurrency-${currency}`,
+        shopCurrencyIcon(currency),
+        t(`shops:currency.${currency}`, { defaultValue: currency }),
+        Math.round(amount)
+      )
+    }
+  }
   // V1 parity (numberToThousandsString): below 1,000 as is, otherwise floor(value / 1000) + "k".
   const addGold = (gold: number | undefined) => {
     if (!gold || gold <= 0) return
@@ -209,6 +224,7 @@ export function GoalResourceChips({
   }
 
   addTokens()
+  addShopCurrency()
 
   if (chips.length === 0) return null
 

@@ -208,6 +208,16 @@
     "dayStats": "{{energy}} / {{available}} énergie · {{raids}} raids",
     "showAll": "Afficher tous les jours",
     "raided": "Attaqués",
+    "shops": "Boutiques",
+    "shop": {
+      "label": "{{shop}}, {{unit}} : environ {{purchases}} achats, {{shards}} fragments, {{spend}} {{currency}}",
+      "expected": "≈{{purchases}}× · {{shards}} fragments"
+    },
+    "onslaught": "Onslaught",
+    "onslaughtRun": {
+      "label": "{{unit}} : environ {{runs}} parties d'Onslaught, {{shards}} fragments",
+      "expected": "≈{{runs}} parties · {{shards}} fragments"
+    },
     "cell": {
       "label": "{{material}}, {{owned}} sur {{target}} possédés",
       "node": "{{campaign}} {{node}} × {{raids}}",
@@ -290,7 +300,7 @@
         },
         "days": {
           "title": "Jours de raid",
-          "content": "Chaque carte de jour liste les améliorations à farmer sous forme de grille. Survolez ou touchez une amélioration pour voir ses unités et ses nœuds ; les améliorations terminées sont sous « Attaqués ». Faites glisser ou balayez pour parcourir les jours."
+          "content": "Chaque carte de jour liste les améliorations à farmer sous forme de grille. Survolez ou touchez une amélioration pour voir ses unités et ses nœuds ; les améliorations terminées sont sous « Attaqués », les achats en boutique prévus sous « Boutiques » et les parties d'Onslaught sous « Onslaught ». Faites glisser ou balayez pour parcourir les jours."
         }
       }
     }

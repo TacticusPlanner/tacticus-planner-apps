@@ -40,10 +40,14 @@ const entry = (goalId: string, resourceId: string, battleId = b1) => ({
 
 const schedule = (
   day: number,
-  entries: RaidDaySchedule["entries"]
+  entries: RaidDaySchedule["entries"],
+  shopEntries: RaidDaySchedule["shopEntries"] = [],
+  onslaughtEntries: RaidDaySchedule["onslaughtEntries"] = []
 ): RaidDaySchedule => ({
   day,
   entries,
+  shopEntries,
+  onslaughtEntries,
   attemptsUsedByBattle: new Map(),
   energyTotal: 0,
   raidsTotal: 0,
@@ -52,11 +56,20 @@ const schedule = (
 const progress = (rows: [string, number, number][]) =>
   new Map(rows.map(([key, owned, target]) => [key, { owned, target }] as const))
 
+// A war-shop offer of 5 shards per purchase at 900 coins — Calgar and Tigurius's shop-only goals.
+const warOffer = {
+  offerId: "war:shards_calgar",
+  shopId: "war",
+  rewardQty: 5,
+  cost: { currency: "guildWarCurrency", amount: 900 },
+} as never
+
 const source = (
   attemptsLeft: [typeof b1, number][] = [],
   byDay: [number, [string, number, number][]][] = []
 ) => ({
   goalsById,
+  shopOffersById: new Map([["war:shards_calgar", warOffer]]),
   resourceProgressByDay: new Map(
     byDay.map(([day, rows]) => [day, progress(rows)] as const)
   ),
@@ -215,5 +228,151 @@ describe("buildPlanUnitRanges", () => {
     expect(
       buildPlanUnitRanges([buildPlanDayCells(schedule(1, []), source())])
     ).toEqual([])
+  })
+})
+
+describe("buildPlanDayCells shop purchases", () => {
+  const shopEntry = (goalId: string, expectedShards: number) => ({
+    goalId,
+    offerId: "war:shards_calgar",
+    expectedShards,
+  })
+
+  it("resolves entries to expected purchases and currency, merged across a unit's goals", () => {
+    const cells = buildPlanDayCells(
+      schedule(3, [], [shopEntry("calgar", 10), shopEntry("calgar2", 5)]),
+      source()
+    )
+
+    expect(cells.actionable).toEqual([])
+    expect(cells.shops).toHaveLength(1)
+    expect(cells.shops[0]).toMatchObject({
+      offerId: "war:shards_calgar",
+      shopId: "war",
+      currency: "guildWarCurrency",
+      purchases: 3,
+      shards: 15,
+      spend: 2700,
+    })
+    expect(cells.shops[0]!.unit.goalId).toBe("calgar")
+  })
+
+  it("adds a shop-only unit to the day's units and the filter ranges, once when it also raids", () => {
+    const withProgress = source(
+      [],
+      [
+        [1, [["tigurius:seal", 0, 1]]],
+        [3, [["calgar:seal", 0, 1]]],
+      ]
+    )
+    const days = [
+      buildPlanDayCells(
+        schedule(1, [entry("tigurius", "seal")], [shopEntry("calgar", 5)]),
+        withProgress
+      ),
+      buildPlanDayCells(schedule(2, [], [shopEntry("calgar", 5)]), source()),
+      buildPlanDayCells(
+        schedule(3, [entry("calgar", "seal")], [shopEntry("calgar2", 5)]),
+        withProgress
+      ),
+    ]
+
+    expect(days[0]!.units.map((unit) => unit.unitId)).toEqual([
+      "calgar",
+      "tigurius",
+    ])
+    expect(days[2]!.units.map((unit) => unit.unitId)).toEqual(["calgar"])
+    expect(
+      buildPlanUnitRanges(days).map(({ unit, firstDay, lastDay }) => [
+        unit.unitId,
+        firstDay,
+        lastDay,
+      ])
+    ).toEqual([
+      ["calgar", 1, 3],
+      ["tigurius", 1, 1],
+    ])
+  })
+
+  it("ignores entries whose offer or goal is unknown", () => {
+    const cells = buildPlanDayCells(
+      schedule(
+        1,
+        [],
+        [
+          { goalId: "calgar", offerId: "gone", expectedShards: 5 },
+          {
+            goalId: "missing",
+            offerId: "war:shards_calgar",
+            expectedShards: 5,
+          },
+        ]
+      ),
+      source()
+    )
+
+    expect(cells.shops).toEqual([])
+    expect(cells.units).toEqual([])
+  })
+})
+
+describe("buildPlanDayCells onslaught runs", () => {
+  const run = (goalId: string, runs: number, expectedShards: number) => ({
+    goalId,
+    runs,
+    expectedShards,
+  })
+
+  it("merges a unit's goals, orders by priority and joins the units and filter ranges", () => {
+    const days = [
+      buildPlanDayCells(
+        schedule(
+          1,
+          [],
+          [],
+          [run("tigurius", 1.5, 6), run("calgar2", 1, 4), run("calgar", 0.5, 2)]
+        ),
+        source()
+      ),
+      buildPlanDayCells(
+        schedule(2, [], [], [run("tigurius", 1.5, 6)]),
+        source()
+      ),
+    ]
+
+    expect(
+      days[0]!.onslaught.map((entry) => [
+        entry.unit.unitId,
+        entry.runs,
+        entry.shards,
+      ])
+    ).toEqual([
+      ["calgar", 1.5, 6],
+      ["tigurius", 1.5, 6],
+    ])
+    expect(days[0]!.units.map((unit) => unit.unitId)).toEqual([
+      "calgar",
+      "tigurius",
+    ])
+    expect(
+      buildPlanUnitRanges(days).map(({ unit, firstDay, lastDay }) => [
+        unit.unitId,
+        firstDay,
+        lastDay,
+      ])
+    ).toEqual([
+      ["calgar", 1, 1],
+      ["tigurius", 1, 2],
+    ])
+  })
+
+  it("ignores runs for an unknown goal and leaves days without runs empty", () => {
+    const cells = buildPlanDayCells(
+      schedule(1, [], [], [run("missing", 1, 4)]),
+      source()
+    )
+
+    expect(cells.onslaught).toEqual([])
+    expect(buildPlanDayCells(schedule(1, []), source()).onslaught).toEqual([])
   })
 })

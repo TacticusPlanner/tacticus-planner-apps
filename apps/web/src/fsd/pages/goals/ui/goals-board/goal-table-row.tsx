@@ -29,6 +29,7 @@ import {
 import {
   estimateEnergy,
   estimateOnslaughtTokens,
+  estimateShopSpend,
   isInFlightStatus,
   isReachedRow,
   goalXpBookFigure,
@@ -91,6 +92,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
   const energy = estimateEnergy(estimates?.get(row.goalId))
   const onslaughtTokens = estimateOnslaughtTokens(estimates?.get(row.goalId))
+  const shopSpend = estimateShopSpend(estimates?.get(row.goalId))
   const reached = isReachedRow(row, reachedByGoalId)
   const xpBooks = reached
     ? undefined
@@ -254,6 +256,7 @@ export const GoalRowCells = memo(function GoalRowCells({
           <div data-testid="goal-remaining-column">
             <GoalResourceChips
               onslaughtTokens={onslaughtTokens}
+              shopSpend={shopSpend}
               energy={energy}
               entityType={row.entityType}
               goalType={row.goalType}

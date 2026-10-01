@@ -5,7 +5,11 @@ import {
   mythicShardResourceId,
   shardResourceId,
 } from "../model/estimate.domain"
-import { projectOnslaughtSupply, projectShopSupply } from "./shop-supply"
+import {
+  projectOnslaughtSupply,
+  projectShopSupply,
+  shopSpendFromSupply,
+} from "./shop-supply"
 
 // 2026-09-01 is a Tuesday (UTC).
 const tuesday = new Date(Date.UTC(2026, 8, 1))
@@ -105,5 +109,49 @@ describe("projectOnslaughtSupply", () => {
 
     expect(supplier.key).toBe("onslaught:mythic")
     expect(supplier.supplyOnDay(0)).toBe(0)
+  })
+})
+
+describe("shopSpendFromSupply", () => {
+  const offer = (offerId: string, currency: string): ShopShardOffer => ({
+    offerId,
+    shopId: "war",
+    unitId: "hero1",
+    rewardType: "shards_hero1",
+    isMythic: false,
+    rewardQty: 5,
+    cost: { currency, amount: 900 },
+    maxPerDay: 2,
+    days: ["TUE"],
+    probabilityByDay: { TUE: 1 },
+  })
+
+  it("prices each shop supplier's supplied shards per currency and ignores Onslaught", () => {
+    const suppliers = [
+      projectShopSupply(offer("war:a", "guildWarCurrency"), tuesday),
+      projectShopSupply(offer("war:b", "guildWarCurrency"), tuesday),
+      projectShopSupply(offer("rt:c", "elderShopCurrency"), tuesday),
+      projectOnslaughtSupply({
+        entityId: "hero1",
+        isMythic: false,
+        avgShardsPerRun: 4,
+      }),
+    ]
+    const spend = shopSpendFromSupply(
+      new Map([
+        ["war:a", 10],
+        ["war:b", 5],
+        ["rt:c", 0],
+        ["onslaught:regular", 40],
+      ]),
+      suppliers
+    )
+
+    // (10 + 5) shards / 5 per purchase * 900 coins; zero-supply and Onslaught add nothing.
+    expect([...spend]).toEqual([["guildWarCurrency", 2700]])
+  })
+
+  it("is empty with no shop supplier", () => {
+    expect(shopSpendFromSupply(new Map(), undefined).size).toBe(0)
   })
 })

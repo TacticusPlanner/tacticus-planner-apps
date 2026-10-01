@@ -208,6 +208,16 @@
     "dayStats": "{{energy}} / {{available}} energía · {{raids}} incursiones",
     "showAll": "Mostrar todos los días",
     "raided": "Completados",
+    "shops": "Tiendas",
+    "shop": {
+      "label": "{{shop}}, {{unit}}: unas {{purchases}} compras, {{shards}} fragmentos, {{spend}} {{currency}}",
+      "expected": "≈{{purchases}}× · {{shards}} fragmentos"
+    },
+    "onslaught": "Onslaught",
+    "onslaughtRun": {
+      "label": "{{unit}}: unas {{runs}} partidas de Onslaught, {{shards}} fragmentos",
+      "expected": "≈{{runs}} partidas · {{shards}} fragmentos"
+    },
     "cell": {
       "label": "{{material}}, {{owned}} de {{target}} en posesión",
       "node": "{{campaign}} {{node}} × {{raids}}",
@@ -290,7 +300,7 @@
         },
         "days": {
           "title": "Días de incursión",
-          "content": "Cada tarjeta de día lista las mejoras a farmear en una cuadrícula. Pasa el ratón o toca una mejora para ver sus unidades y nodos; las mejoras terminadas quedan en «Completados». Arrastra o desliza para recorrer los días."
+          "content": "Cada tarjeta de día lista las mejoras a farmear en una cuadrícula. Pasa el ratón o toca una mejora para ver sus unidades y nodos; las mejoras terminadas quedan en «Completados», las compras de tienda previstas en «Tiendas» y las partidas de Onslaught en «Onslaught». Arrastra o desliza para recorrer los días."
         }
       }
     }

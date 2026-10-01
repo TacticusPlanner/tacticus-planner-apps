@@ -4,6 +4,7 @@ import type {
   GameCatalogShop,
   MowStorageModel,
   OnslaughtRewardStorageModel,
+  ShopShardOffer,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -123,6 +124,7 @@ export function calculateDailyRaids(
   )
   const goals: GoalNeed[] = []
   const goalsById = new Map<string, DailyRaidGoalViewModel>()
+  const shopOffersById = new Map<string, ShopShardOffer>()
   const resourceLabels = new Map<string, string>()
   const resourceVisuals = new Map<string, DailyRaidResourceVisual>()
   const shardProgress = new Map<string, DailyRaidResourceProgress>()
@@ -186,6 +188,7 @@ export function calculateDailyRaids(
       campaignSource,
       campaignShardsEnabled,
       flatSuppliers,
+      shopOffers,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -198,6 +201,7 @@ export function calculateDailyRaids(
       shops: params.shops,
       referenceDate,
     })
+    for (const offer of shopOffers) shopOffersById.set(offer.offerId, offer)
     if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
       needs.push({ id: need.shardId, count: need.shards })
       const character = params.charactersById.get(detail.entityId)
@@ -341,6 +345,7 @@ export function calculateDailyRaids(
     eventFarm,
     dailyEnergy: params.dailyEnergy,
     goalsById,
+    shopOffersById,
     resourceLabels,
     resourceVisuals,
     resourceUrgencyByGoalAndResource: calculateResourceUrgency(

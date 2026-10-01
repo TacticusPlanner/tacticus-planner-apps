@@ -12,7 +12,9 @@ import type {
   GoalNeed,
   RaidBreakdownEntry,
   RaidDaySchedule,
+  OnslaughtScheduleEntry,
   RaidPlanSchedule,
+  ShopScheduleEntry,
   UpgradeNeed,
 } from "../model/estimate.domain"
 import { blocked, partiallyBlocked } from "./estimate-blocked"
@@ -22,6 +24,7 @@ import {
   classifyNeed,
   formatDate,
   inclusiveCompletionDate,
+  shopSpendField,
   spendDay,
 } from "./estimate"
 import { onslaughtTokensFromSupply } from "./shop-supply"
@@ -156,6 +159,8 @@ function runPlanSchedule(
     let energy = dailyEnergy
     const attemptsUsedByBattle = new Map<BattleId, number>()
     const entries: RaidBreakdownEntry[] = []
+    const shopEntries: ShopScheduleEntry[] = []
+    const onslaughtEntries: OnslaughtScheduleEntry[] = []
 
     for (const goal of ordered) {
       if (!pending.has(goal.goalId)) continue
@@ -187,6 +192,33 @@ function runPlanSchedule(
             new Map<string, number>()
           for (const [key, amount] of appliedToday.bySupplier) {
             goalBySupplier.set(key, (goalBySupplier.get(key) ?? 0) + amount)
+            if (amount <= 0) continue
+            // Every flat supplier but Onslaught is a shop offer keyed by its `offerId`.
+            if (!key.startsWith("onslaught:")) {
+              shopEntries.push({
+                goalId: goal.goalId,
+                offerId: key,
+                expectedShards: amount,
+              })
+              continue
+            }
+            const shardsPerRun = flatSuppliersByGoal
+              .get(goal.goalId)
+              ?.find((supplier) => supplier.key === key)?.shardsPerRun
+            if (!shardsPerRun) continue
+            const existing = onslaughtEntries.find(
+              (entry) => entry.goalId === goal.goalId
+            )
+            if (existing) {
+              existing.expectedShards += amount
+              existing.runs += amount / shardsPerRun
+            } else {
+              onslaughtEntries.push({
+                goalId: goal.goalId,
+                expectedShards: amount,
+                runs: amount / shardsPerRun,
+              })
+            }
           }
           flatSupplyBySupplierByGoal.set(goal.goalId, goalBySupplier)
         }
@@ -245,6 +277,10 @@ function runPlanSchedule(
                   flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
                   goal.flatSuppliers
                 ),
+                ...shopSpendField(
+                  flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+                  goal.flatSuppliers
+                ),
               }
         )
         pending.delete(goal.goalId)
@@ -254,6 +290,8 @@ function runPlanSchedule(
     scheduleDays.push({
       day: days,
       entries,
+      shopEntries,
+      onslaughtEntries,
       attemptsUsedByBattle: new Map(attemptsUsedByBattle),
       energyTotal: dailyEnergy - energy,
       raidsTotal: entries.reduce(

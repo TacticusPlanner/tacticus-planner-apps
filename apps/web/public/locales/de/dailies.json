@@ -208,6 +208,16 @@
     "dayStats": "{{energy}} / {{available}} Energie · {{raids}} Raids",
     "showAll": "Alle Tage anzeigen",
     "raided": "Geraidet",
+    "shops": "Shops",
+    "shop": {
+      "label": "{{shop}}, {{unit}}: etwa {{purchases}} Käufe, {{shards}} Splitter, {{spend}} {{currency}}",
+      "expected": "≈{{purchases}}× · {{shards}} Splitter"
+    },
+    "onslaught": "Onslaught",
+    "onslaughtRun": {
+      "label": "{{unit}}: etwa {{runs}} Onslaught-Läufe, {{shards}} Splitter",
+      "expected": "≈{{runs}} Läufe · {{shards}} Splitter"
+    },
     "cell": {
       "label": "{{material}}, {{owned}} von {{target}} vorhanden",
       "node": "{{campaign}} {{node}} × {{raids}}",
@@ -290,7 +300,7 @@
         },
         "days": {
           "title": "Raid-Tage",
-          "content": "Jede Tageskarte listet die zu farmenden Verbesserungen als Raster. Fahre mit der Maus über eine Verbesserung oder tippe darauf, um Einheiten und Knoten zu sehen; erledigte Verbesserungen stehen unter „Geraidet“. Ziehe oder wische, um durch die Tage zu scrollen."
+          "content": "Jede Tageskarte listet die zu farmenden Verbesserungen als Raster. Fahre mit der Maus über eine Verbesserung oder tippe darauf, um Einheiten und Knoten zu sehen; erledigte Verbesserungen stehen unter „Geraidet“, geplante Shop-Käufe unter „Shops“ und Onslaught-Läufe unter „Onslaught“. Ziehe oder wische, um durch die Tage zu scrollen."
         }
       }
     }
