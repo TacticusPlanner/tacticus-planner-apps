@@ -197,12 +197,30 @@ export type EstimateBlockedReason =
   | "InsufficientDailyEnergy"
   | "SimulationLimit"
   | "UnsupportedCost"
+  /** Every preferred node failed the caller's `FarmNodeFilter` (Today/Bonus Raids Filters only). */
+  | "FilteredOut"
 
 /** One residual need (after inventory) with no usable supported source. */
 export interface EstimateBlocker {
   resourceId: EstimateResourceId
   reason: EstimateBlockedReason
   remaining: number
+  /** `FilteredOut` only: the goal pins `farmingLocationIds`, so the pin is what the filter excluded. */
+  pinned?: boolean
+}
+
+/** Whether a battle may be farmed for a resource. Applied after the preferred nodes are picked. */
+export type FarmNodeFilter = (
+  battleId: BattleId,
+  resourceId: EstimateResourceId
+) => boolean
+
+/** A need a `FarmNodeFilter` removed every preferred node of, as reported by a Today run. */
+export interface FilteredOutNeed {
+  goalId: string
+  resourceId: EstimateResourceId
+  remaining: number
+  pinned: boolean
 }
 
 interface EstimateBlocked {

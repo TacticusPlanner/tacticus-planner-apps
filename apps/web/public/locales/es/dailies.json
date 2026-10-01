@@ -11,14 +11,10 @@
   "tabs": {
     "raids": "Incursiones",
     "raidsDescription": "Gasta la energía de hoy en tus objetivos activos por orden de prioridad.",
+    "hse": "EPI",
+    "hseDescription": "Evento de pantalla de inicio: haz incursiones donde el evento actual da puntos",
     "shops": "Tiendas",
     "shopsDescription": "Consulta las rotaciones y compras de la tienda",
-    "onslaught": "Onslaught",
-    "onslaughtDescription": "Recomendaciones de equipo de Onslaught restringidas por alianza y receptor de fragmentos posterior al combate",
-    "salvage-run": "Recuperación",
-    "salvage-runDescription": "Recomendaciones de equipo de Recuperación restringidas por alianza",
-    "arena": "Arena",
-    "arenaDescription": "Consulta las batallas y recompensas de Arena",
     "guild-raids": "Incursiones de gremio",
     "guild-raidsDescription": "Consulta el estado actual de la Incursión de gremio y tus recursos personales de incursión."
   },
@@ -274,6 +270,10 @@
         "todaysAttempts": {
           "title": "Intentos de hoy",
           "content": "Cada incursión real que has hecho hoy en toda tu cuenta, tanto si aún le quedan intentos como si ha alcanzado su límite."
+        },
+        "filters": {
+          "title": "Filtros de incursiones",
+          "content": "Limita Hoy y las incursiones extra a las ubicaciones de campaña que quieras, por ejemplo solo nodos Élite de 5 espacios o una facción enemiga concreta. La insignia muestra cuántos filtros están activos."
         }
       }
     },
@@ -299,5 +299,106 @@
     "partial": "El trabajo alcanzable está planificado; el resto no tiene una fuente compatible, por lo que no hay fecha de finalización.",
     "none": "Todavía no se puede obtener nada, así que no hay nada planificado ni fecha de finalización.",
     "row": "{{material}} ×{{count}}: {{reason}}"
+  },
+  "raidsFilters": {
+    "trigger": "Filtros de incursiones",
+    "triggerActive": "Filtros de incursiones, {{count}} activos",
+    "title": "Filtros de incursiones",
+    "description": "Limita qué ubicaciones de campaña pueden usar Hoy, las incursiones extra y la pestaña EPI. El plan y los objetivos no se ven afectados.",
+    "sections": {
+      "allies": "Aliados",
+      "enemies": "Enemigos",
+      "locations": "Ubicaciones",
+      "upgrades": "Mejoras"
+    },
+    "fields": {
+      "alliances": "Alianzas",
+      "factions": "Facciones",
+      "minEnemies": "Enemigos mín.",
+      "maxEnemies": "Enemigos máx.",
+      "enemyTraits": "Rasgos de enemigo",
+      "enemyTypes": "Tipos de enemigo",
+      "campaignTypes": "Tipos",
+      "slots": "Espacios",
+      "rarity": "Rareza"
+    },
+    "placeholders": {
+      "allAlliances": "Todas las alianzas",
+      "allFactions": "Todas las facciones",
+      "allTraits": "Todos los rasgos",
+      "allEnemyTypes": "Todos los tipos de enemigo",
+      "allCampaignTypes": "Todos los tipos",
+      "allSlots": "Todos los espacios",
+      "allRarities": "Todas las rarezas",
+      "noLimit": "Sin límite",
+      "search": "Buscar",
+      "empty": "No se encontró nada.",
+      "clear": "Borrar"
+    },
+    "campaignTypes": {
+      "Elite": "Élite",
+      "Extremis": "Extremis",
+      "Standard": "Estándar",
+      "Mirror": "Espejo",
+      "Normal": "Normal",
+      "Early": "Inicial"
+    },
+    "slotsOption": "{{count}} espacios",
+    "actions": {
+      "close": "Cerrar",
+      "reset": "Restablecer",
+      "apply": "Aplicar"
+    },
+    "filteredOut": {
+      "title": "Los filtros de incursiones quitaron algunos materiales",
+      "materials_one": "{{count}} material no tiene ninguna ubicación permitida con estos filtros.",
+      "materials_other": "{{count}} materiales no tienen ninguna ubicación permitida con estos filtros.",
+      "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
+      "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
+      "reset": "Restablecer filtros"
+    }
+  },
+  "hse": {
+    "title": "Evento de pantalla de inicio",
+    "status": {
+      "endsIn": "Termina {{when}}",
+      "earnsPoints": "Da puntos de evento en las incursiones de campaña: 3 por enemigo válido, 5 en nodos Élite.",
+      "noRaidPoints": "Este evento no da puntos en las incursiones de campaña.",
+      "noneRunning": "Ahora mismo no hay ningún evento de pantalla de inicio en curso.",
+      "next": "Próximo evento: {{name}}",
+      "startsIn": "Empieza {{when}} ({{date}})",
+      "noneScheduled": "No hay ningún evento de pantalla de inicio programado.",
+      "error": "No se pudieron cargar los datos del evento. El resto de Diarias no se ve afectado."
+    },
+    "preview": {
+      "title": "Vista previa: {{name}} aún no está activo",
+      "body": "Estas listas usan las reglas del próximo evento y la energía que te queda hoy. Aquí no se consiguen puntos de evento hasta que el evento empiece {{when}} ({{date}})."
+    },
+    "raids": {
+      "title": "Lista de farmeo para puntos de evento",
+      "total": "{{points}} puntos de evento",
+      "energy": "{{energy}} de energía",
+      "note": "Ubicaciones que dan puntos de evento y avanzan tus objetivos, elegidas con todo tu plan. Elige ubicaciones con puntos incluso cuando existe otra más barata sin puntos, así que puede costar más energía por objeto que Incursiones de hoy.",
+      "budget": "Energía restante hoy: {{energy}}.",
+      "points": "{{points}} pts",
+      "raidCount_one": "{{count}} incursión",
+      "raidCount_other": "{{count}} incursiones",
+      "empty": {
+        "noGoals": "No tienes objetivos activos, así que no hay nada que farmear.",
+        "noEnergy": "Hoy no queda energía para ninguna de estas ubicaciones.",
+        "nothingContributes": "Ninguna ubicación que da puntos de evento suelta un recurso que tus objetivos aún necesiten. Consulta abajo las mejores ubicaciones para conseguir puntos.",
+        "filtered": "Ninguna ubicación coincide con tus filtros de incursiones."
+      },
+      "goals": "Objetivos: {{goals}}",
+      "moreGoals": "+{{count}}"
+    },
+    "top": {
+      "overallTitle": "Mejores ubicaciones para puntos de evento",
+      "eventTitle": "Mejores ubicaciones de la campaña del evento",
+      "empty": "Ninguna ubicación desbloqueada pendiente de incursión da puntos de evento.",
+      "filteredEmpty": "Ninguna ubicación coincide con tus filtros de incursiones.",
+      "perRaid": "{{points}} pts por incursión",
+      "perEnergy": "{{value}} pts por energía"
+    }
   }
 }

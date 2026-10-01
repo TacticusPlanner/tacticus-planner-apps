@@ -105,7 +105,9 @@ export function ready(
       ])
     ),
     blockedGoals: [],
+    filteredOut: [],
     resourceUrgencyByGoalAndResource: new Map(),
+    resourceTotals: new Map([["U1", { owned: 265, target: 500 }]]),
     resourceProgressByDay: new Map(
       [1, 2, 3, 4, 5].map((n) => [
         n,

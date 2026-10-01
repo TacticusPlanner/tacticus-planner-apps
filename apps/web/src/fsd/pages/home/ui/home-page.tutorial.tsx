@@ -4,7 +4,7 @@ import type { Step } from "react-joyride"
 
 import { useTourPageSteps } from "@/shared/tour"
 
-/** Home's own tour, walking its four dashboard widgets. Reached via the "Tour this page" control
+/** Home's own tour, walking its dashboard widgets. Reached via the "Tour this page" control
  *  (PageTourButton); the app-wide navigation tour stays behind the persistent "Show me around"
  *  control and is unaffected by this registration - see tour-provider.tsx's two tour kinds. */
 export function useHomePageTutorial() {
@@ -13,7 +13,12 @@ export function useHomePageTutorial() {
     const createStep = (
       target: string,
       key:
-        "tokenAvailability" | "projects" | "raids" | "navigation" | "calendar"
+        | "tokenAvailability"
+        | "hseWidget"
+        | "projects"
+        | "raids"
+        | "navigation"
+        | "calendar"
     ): Step => ({
       target,
       title: t(`tour.home.steps.${key}.title`),
@@ -21,6 +26,7 @@ export function useHomePageTutorial() {
     })
     const shared: Step[] = [
       createStep('[data-testid="token-availability"]', "tokenAvailability"),
+      createStep('[data-testid="home-events-widget"]', "hseWidget"),
       createStep('[data-testid="home-projects-widget"]', "projects"),
       createStep('[data-testid="home-raids-widget"]', "raids"),
       createStep('[data-testid="events-calendar-navigation"]', "navigation"),

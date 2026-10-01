@@ -73,20 +73,18 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   return {
     ...actual,
     useDailyRaids: (projectId?: string) => useDailyRaids(projectId),
+    // No event scheduled: the HSE tab renders its empty state.
+    useActiveHomeScreenEvent: () => ({
+      status: "ready",
+      active: null,
+      next: null,
+      nowMs: 0,
+    }),
   }
 })
 vi.mock("../model/use-shop-recommendations", () => ({
   useShopRecommendations: (projectId: string | undefined) =>
     useShopRecommendations(projectId),
-}))
-vi.mock("../model/use-arena-recommendations", () => ({
-  useArenaRecommendations: () => ({ status: "no-characters" }),
-}))
-vi.mock("../model/use-salvage-recommendations", () => ({
-  useSalvageRecommendations: () => ({ status: "loading" }),
-}))
-vi.mock("../model/use-onslaught-recommendations", () => ({
-  useOnslaughtRecommendations: () => ({ status: "loading" }),
 }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 vi.mock("@/features/guild-access", () => ({
@@ -135,6 +133,26 @@ describe("Dailies navigation", () => {
     }
   )
 
+  it.each(["onslaught", "salvage-run", "arena"])(
+    "treats /dailies/%s as an unknown route",
+    async (page) => {
+      renderDailies(`/dailies/${page}`)
+
+      // No child route matches, so the router falls through to its 404 handling.
+      expect(await screen.findByText(/404/)).toBeInTheDocument()
+      expect(screen.queryByTestId(`${page}-page`)).not.toBeInTheDocument()
+      expect(screen.queryByTestId("dailies-layout")).not.toBeInTheDocument()
+    }
+  )
+
+  it("routes /dailies/hse to the HSE tab, which opens its empty state with no active event", async () => {
+    renderDailies("/dailies/hse")
+
+    expect(await findRouteContent("hse-page")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-status-none")).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+  })
+
   it("routes Guild Raids to its access-aware page", async () => {
     renderDailies("/dailies/guild-raids")
 
@@ -146,24 +164,6 @@ describe("Dailies navigation", () => {
       screen.queryByTestId("dailies-placeholder-page")
     ).not.toBeInTheDocument()
   }, 10_000)
-
-  it("routes /dailies/salvage-run to the Salvage Run recommendations page", async () => {
-    renderDailies("/dailies/salvage-run")
-
-    expect(await findRouteContent("salvage-run-page")).toBeInTheDocument()
-    expect(
-      screen.queryByTestId("dailies-placeholder-page")
-    ).not.toBeInTheDocument()
-  })
-
-  it("routes /dailies/onslaught to the Onslaught recommendations page", async () => {
-    renderDailies("/dailies/onslaught")
-
-    expect(await findRouteContent("onslaught-page")).toBeInTheDocument()
-    expect(
-      screen.queryByTestId("dailies-placeholder-page")
-    ).not.toBeInTheDocument()
-  })
 
   it("routes /dailies/shops to the Shops recommendations page", async () => {
     renderDailies("/dailies/shops")
@@ -178,15 +178,6 @@ describe("Dailies navigation", () => {
     expect(useShopRecommendations).toHaveBeenCalledWith(undefined)
     expect(useShopRecommendations).not.toHaveBeenCalledWith("p1")
     expect(useShopRecommendations).not.toHaveBeenCalledWith("p2")
-  })
-
-  it("routes /dailies/arena to the Arena recommendations page, not the placeholder", async () => {
-    renderDailies("/dailies/arena")
-
-    expect(await findRouteContent("arena-page")).toBeInTheDocument()
-    expect(
-      screen.queryByTestId("dailies-placeholder-page")
-    ).not.toBeInTheDocument()
   })
 
   it("plans the whole account on Today, with the project selector defaulting to all goals", async () => {

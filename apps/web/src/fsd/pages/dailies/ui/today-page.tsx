@@ -9,6 +9,8 @@ import { Progress } from "@workspace/ui/components/progress"
 import { Separator } from "@workspace/ui/components/separator"
 
 import {
+  FilteredOutNotice,
+  RaidsFiltersTrigger,
   useDailyRaids,
   RaidSchedule,
   RaidState,
@@ -33,7 +35,8 @@ const BONUS_LIMIT = 3
 /**
  * Dailies > Raids is the Today page itself (the multi-day plan is Plan > Schedule). Above the
  * schedule sits the Dailies-wide project selector (default: all goals) with the shared Planning
- * Settings trigger trailing it (`planning-settings-access`) - the same dialog Plan > Goals opens.
+ * Settings trigger trailing it (`planning-settings-access`) - the same dialog Plan > Goals opens - and
+ * the Raids Filters trigger before it (filters constrain Today and Bonus Raids only).
  */
 export function TodayPage() {
   const context = useOutletContext<DailiesOutletContext>()
@@ -53,6 +56,7 @@ export function TodayPage() {
           projects={context.projects}
           testId="raids-project-select"
         />
+        <RaidsFiltersTrigger />
         <PlanningSettingsTrigger
           onClick={() => setSettingsOpen(true)}
           testId="raids-planning-settings"
@@ -165,6 +169,7 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
           </div>
           <CampaignEventStatusLine className="space-y-2 md:w-1/2" />
         </div>
+        <FilteredOutNotice filteredOut={raids.filteredOut} />
         {raids.today.entries.length > 0 || bonusEntries.length > 0 ? (
           <RaidSchedule
             entries={raids.today.entries}

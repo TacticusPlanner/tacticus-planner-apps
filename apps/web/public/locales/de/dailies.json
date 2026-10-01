@@ -11,14 +11,10 @@
   "tabs": {
     "raids": "Raids",
     "raidsDescription": "Nutze die heutige Energie für deine aktiven Ziele in Prioritätsreihenfolge.",
+    "hse": "SBE",
+    "hseDescription": "Startbildschirm-Event: Raide dort, wo das aktuelle Event Punkte bringt",
     "shops": "Läden",
     "shopsDescription": "Ladenrotationen und Käufe verfolgen",
-    "onslaught": "Ansturm",
-    "onslaughtDescription": "Allianzgebundene Ansturm-Team-Empfehlungen und Splitter-Empfänger nach dem Kampf",
-    "salvage-run": "Bergungslauf",
-    "salvage-runDescription": "Allianzgebundene Bergungslauf-Team-Empfehlungen",
-    "arena": "Arena",
-    "arenaDescription": "Arena-Kämpfe und Belohnungen verfolgen",
     "guild-raids": "Gilden-Raids",
     "guild-raidsDescription": "Sieh dir den aktuellen Gilden-Raid-Status deiner Gilde und deine persönlichen Raid-Ressourcen an."
   },
@@ -274,6 +270,10 @@
         "todaysAttempts": {
           "title": "Heutige Versuche",
           "content": "Jeder echte Raid, den du heute kontoweit gemacht hast — egal ob dort noch Versuche übrig sind oder das Limit erreicht ist."
+        },
+        "filters": {
+          "title": "Raid-Filter",
+          "content": "Beschränke Heute und Bonus-Raids auf die gewünschten Kampagnenorte, z. B. nur Elite-Orte mit 5 Slots oder eine bestimmte Gegnerfraktion. Das Abzeichen zeigt, wie viele Filter aktiv sind."
         }
       }
     },
@@ -299,5 +299,106 @@
     "partial": "Erreichbare Arbeit ist eingeplant; für den Rest gibt es keine unterstützte Quelle, daher gibt es kein Abschlussdatum.",
     "none": "Noch nichts ist erreichbar, daher wird nichts eingeplant und es gibt kein Abschlussdatum.",
     "row": "{{material}} ×{{count}}: {{reason}}"
+  },
+  "raidsFilters": {
+    "trigger": "Raid-Filter",
+    "triggerActive": "Raid-Filter, {{count}} aktiv",
+    "title": "Raid-Filter",
+    "description": "Begrenze, welche Kampagnenorte Heute, Bonus-Raids und der SBE-Tab nutzen dürfen. Plan und Ziele sind nicht betroffen.",
+    "sections": {
+      "allies": "Verbündete",
+      "enemies": "Gegner",
+      "locations": "Orte",
+      "upgrades": "Upgrades"
+    },
+    "fields": {
+      "alliances": "Allianzen",
+      "factions": "Fraktionen",
+      "minEnemies": "Min. Gegner",
+      "maxEnemies": "Max. Gegner",
+      "enemyTraits": "Gegnereigenschaften",
+      "enemyTypes": "Gegnertypen",
+      "campaignTypes": "Typen",
+      "slots": "Slots",
+      "rarity": "Seltenheit"
+    },
+    "placeholders": {
+      "allAlliances": "Alle Allianzen",
+      "allFactions": "Alle Fraktionen",
+      "allTraits": "Alle Eigenschaften",
+      "allEnemyTypes": "Alle Gegnertypen",
+      "allCampaignTypes": "Alle Typen",
+      "allSlots": "Alle Slots",
+      "allRarities": "Alle Seltenheiten",
+      "noLimit": "Keine Grenze",
+      "search": "Suchen",
+      "empty": "Nichts gefunden.",
+      "clear": "Leeren"
+    },
+    "campaignTypes": {
+      "Elite": "Elite",
+      "Extremis": "Extremis",
+      "Standard": "Standard",
+      "Mirror": "Spiegel",
+      "Normal": "Normal",
+      "Early": "Früh"
+    },
+    "slotsOption": "{{count}} Slots",
+    "actions": {
+      "close": "Schließen",
+      "reset": "Zurücksetzen",
+      "apply": "Anwenden"
+    },
+    "filteredOut": {
+      "title": "Raid-Filter haben einige Materialien entfernt",
+      "materials_one": "{{count}} Material hat mit diesen Filtern keinen erlaubten Ort.",
+      "materials_other": "{{count}} Materialien haben mit diesen Filtern keinen erlaubten Ort.",
+      "pinned_one": "{{count}} Ziel ist an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
+      "pinned_other": "{{count}} Ziele sind an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
+      "reset": "Filter zurücksetzen"
+    }
+  },
+  "hse": {
+    "title": "Startbildschirm-Event",
+    "status": {
+      "endsIn": "Endet {{when}}",
+      "earnsPoints": "Bringt Event-Punkte durch Kampagnen-Raids: 3 pro passendem Gegner, 5 auf Elite-Knoten.",
+      "noRaidPoints": "Dieses Event bringt keine Punkte durch Kampagnen-Raids.",
+      "noneRunning": "Aktuell läuft kein Startbildschirm-Event.",
+      "next": "Nächstes Event: {{name}}",
+      "startsIn": "Beginnt {{when}} ({{date}})",
+      "noneScheduled": "Es ist kein Startbildschirm-Event geplant.",
+      "error": "Eventdaten konnten nicht geladen werden. Der Rest der Dailies ist nicht betroffen."
+    },
+    "preview": {
+      "title": "Vorschau: {{name}} läuft noch nicht",
+      "body": "Diese Listen nutzen die Regeln des kommenden Events und die Energie, die dir heute noch bleibt. Hier gibt es erst Event-Punkte, wenn das Event {{when}} ({{date}}) beginnt."
+    },
+    "raids": {
+      "title": "Farmliste für Event-Punkte",
+      "total": "{{points}} Event-Punkte",
+      "energy": "{{energy}} Energie",
+      "note": "Orte, die Event-Punkte bringen und deine Ziele voranbringen, ausgewählt aus deinem gesamten Plan. Es werden auch dann Orte mit Event-Punkten gewählt, wenn ein günstigerer Ort ohne Punkte existiert; pro Item kann das mehr Energie kosten als bei Heutige Raids.",
+      "budget": "Heute verbleibende Energie: {{energy}}.",
+      "points": "{{points}} Pkt.",
+      "raidCount_one": "{{count}} Raid",
+      "raidCount_other": "{{count}} Raids",
+      "empty": {
+        "noGoals": "Du hast keine aktiven Ziele, es gibt also nichts zu farmen.",
+        "noEnergy": "Heute reicht die Energie für keinen dieser Orte mehr.",
+        "nothingContributes": "Kein Ort mit Event-Punkten liefert eine Ressource, die deine Ziele noch brauchen. Die besten Orte für Punkte findest du unten.",
+        "filtered": "Kein Ort entspricht deinen Raid-Filtern."
+      },
+      "goals": "Ziele: {{goals}}",
+      "moreGoals": "+{{count}}"
+    },
+    "top": {
+      "overallTitle": "Beste Orte für Event-Punkte",
+      "eventTitle": "Beste Orte der Event-Kampagne",
+      "empty": "Kein freigeschalteter Ort, der noch zu raiden ist, bringt Event-Punkte.",
+      "filteredEmpty": "Kein Ort entspricht deinen Raid-Filtern.",
+      "perRaid": "{{points}} Pkt. pro Raid",
+      "perEnergy": "{{value}} Pkt. pro Energie"
+    }
   }
 }

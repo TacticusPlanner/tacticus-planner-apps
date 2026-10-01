@@ -23,6 +23,7 @@ import { DesktopSectionHeader } from "./desktop-section-header"
 import { DesktopSectionNavigation } from "./desktop-section-navigation"
 import { DesktopTopBar } from "./desktop-top-bar"
 import { isMacPlatform } from "./is-mac-platform"
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
 
@@ -280,6 +281,7 @@ function NavMenuItem({
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
   const { t } = useTranslation(["common", "dailies", "library"])
   const { pathname } = useLocation()
+  const compact = useSidebar().state === "collapsed"
   const isActive =
     pathname === item.path || pathname.startsWith(item.path + "/")
 
@@ -295,8 +297,14 @@ function NavMenuItem({
           aria-current={pathname === item.path ? "page" : undefined}
           to={getEntryPath(item)}
         >
-          <item.icon />
-          <span>{t(item.labelKey)}</span>
+          <span className="relative flex shrink-0">
+            <item.icon />
+            {compact ? <NavLiveDot corner item={item} /> : null}
+          </span>
+          <span>
+            {t(item.labelKey)}
+            {compact ? null : <NavLiveDot item={item} />}
+          </span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>

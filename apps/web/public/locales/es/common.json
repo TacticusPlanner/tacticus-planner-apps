@@ -196,6 +196,7 @@
     "addGoal": "Añadir objetivo",
     "dailies": "Diarias",
     "dailiesDescription": "Tareas diarias y periódicas del juego",
+    "eventLive": "Evento activo",
     "home": "Inicio",
     "homeDescription": "Resumen de tu cuenta y accesos directos",
     "createGoal": "Crear objetivo",
@@ -316,6 +317,15 @@
       "empty": "No hay nada que asaltar hoy.",
       "error": "No se pudieron cargar las incursiones de hoy.",
       "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones."
+    },
+    "events": {
+      "title": "Eventos de la pantalla de inicio",
+      "live": "EN VIVO",
+      "endsIn": "Termina en {{when}}",
+      "startsIn": "Empieza en {{when}}",
+      "empty": "No hay eventos programados.",
+      "error": "No se pudieron cargar los eventos.",
+      "loading": "Cargando eventos…"
     },
     "calendar": {
       "title": "Calendario de eventos"
@@ -823,7 +833,8 @@
         "FarmingOverrideUnavailable": "Los lugares de farmeo seleccionados no proporcionan todos los recursos necesarios.",
         "InsufficientDailyEnergy": "La energía diaria es inferior al coste del nodo utilizable más barato.",
         "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
-        "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo."
+        "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
+        "FilteredOut": "Todas las ubicaciones preferidas están excluidas por tus filtros de incursiones."
       }
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
@@ -1239,5 +1250,10 @@
         "label": "Seleccion"
       }
     }
+  },
+  "alliances": {
+    "Imperial": "Imperial",
+    "Chaos": "Caos",
+    "Xenos": "Xenos"
   }
 }

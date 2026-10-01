@@ -27,7 +27,7 @@ import {
   estimateBonusRaids,
   estimateGoal,
   estimatePlanSchedule,
-  estimateTodaySchedule,
+  estimateTodayRun,
   type EstimatePlanParams,
   type UnitCoverage,
   type EstimateResourceId,
@@ -40,6 +40,18 @@ import {
 import type { Battle } from "@/shared/lib"
 
 import { blockedGoalsOf } from "./blocked-goals"
+import {
+  goalTargetLabel,
+  projectResourceProgress,
+  resourceProgress,
+  totalResourceProgress,
+} from "./daily-raids-progress"
+import { planEventFarm } from "./home-screen-event-farm"
+import { buildFarmNodeFilter } from "./raids-filters/build-farm-node-filter"
+import type {
+  RaidsFilterBattle,
+  RaidsFilters,
+} from "./raids-filters/raids-filters.domain"
 import type {
   DailyRaidGoalViewModel,
   DailyRaidsCalculationViewModel,
@@ -72,6 +84,18 @@ export type DailyRaidsCalculationInput = {
   getTargetLabel?: (detail: GoalDetail) => string
   labelResource?: DailyRaidResourceLabels
   dailyEnergy: number
+  /** The applied Raids Filters and the catalog battles they are matched against. They constrain
+   *  Today and Bonus Raids only; the Plan, blockers and urgency are always computed unfiltered. */
+  raidsFilters?: RaidsFilters
+  filterBattlesById?: ReadonlyMap<string, RaidsFilterBattle>
+  /** The Dailies > HSE farm list inputs: event points per eligible battle, real attempts left today
+   *  and the energy left today. Without them no `eventFarm` is returned; Today, Bonus and the Plan
+   *  never read them. */
+  eventFarm?: {
+    pointsByBattleId: ReadonlyMap<BattleId, number>
+    attemptsLeftByBattle: ReadonlyMap<BattleId, number>
+    energyBudget: number
+  }
   referenceDate?: Date
   onslaughtProgress?: OnslaughtProgress
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
@@ -268,16 +292,40 @@ export function calculateDailyRaids(
     inventory,
     referenceDate: params.referenceDate,
   }
-  const today = estimateTodaySchedule(calculation)
-  const bonus = estimateBonusRaids(calculation)
+  const nodeFilter =
+    params.raidsFilters && params.filterBattlesById
+      ? buildFarmNodeFilter(
+          params.raidsFilters,
+          params.filterBattlesById,
+          params.upgradesById
+        )
+      : undefined
+  const filteredCalculation: EstimatePlanParams = {
+    ...calculation,
+    nodeFilter,
+  }
+  const { today, filteredOut } = estimateTodayRun(filteredCalculation)
+  const bonus = estimateBonusRaids(filteredCalculation)
   const plan: RaidPlanSchedule = estimatePlanSchedule(calculation)
+  const eventFarm = params.eventFarm
+    ? planEventFarm({
+        goals,
+        inventory,
+        upgradesById,
+        battlesById: params.battlesById,
+        nodeFilter,
+        ...params.eventFarm,
+      })
+    : undefined
   const blockedGoals = blockedGoalsOf(goals, plan.outcomes)
   // Nothing to raid and nothing to explain: no plan. A goal blocked outright still gets a plan view
-  // so its blockers are reported rather than silently dropped.
+  // so its blockers are reported rather than silently dropped, and so does a filter that removed
+  // every node (the filtered-out notice is the only way back to an unfiltered Today).
   if (
     today.entries.length === 0 &&
     bonus.entries.length === 0 &&
-    blockedGoals.length === 0
+    blockedGoals.length === 0 &&
+    filteredOut.length === 0
   ) {
     return null
   }
@@ -289,6 +337,8 @@ export function calculateDailyRaids(
     planDays: plan.days,
     planSummary: plan.summary,
     blockedGoals,
+    filteredOut,
+    eventFarm,
     dailyEnergy: params.dailyEnergy,
     goalsById,
     resourceLabels,
@@ -300,6 +350,11 @@ export function calculateDailyRaids(
       params.battlesById,
       params.dailyEnergy,
       params.referenceDate
+    ),
+    resourceTotals: totalResourceProgress(
+      initialProgress,
+      inventory,
+      new Set(shardCatalog.keys())
     ),
     resourceProgressByDay: projectResourceProgress(plan.days, initialProgress),
     attemptsUsedByBattle: today.attemptsUsedByBattle,
@@ -347,87 +402,4 @@ export function calculateResourceUrgency(
   }
 
   return result
-}
-
-function resourceProgress(
-  goals: GoalNeed[],
-  inventory: { id: EstimateResourceId; count: number }[],
-  shardProgress: ReadonlyMap<string, DailyRaidResourceProgress>
-) {
-  const progress = new Map(shardProgress)
-  const allocations = allocatePlanInventory(goals, inventory)
-
-  for (const goal of goals) {
-    const totals = new Map<EstimateResourceId, DailyRaidResourceProgress>()
-    for (const stage of allocations.get(goal.goalId)?.stages ?? []) {
-      const remaining = new Map(
-        stage.remaining.map((entry) => [entry.id, entry.count])
-      )
-      for (const need of stage.needs) {
-        const current = totals.get(need.id) ?? { owned: 0, target: 0 }
-        current.target += need.count
-        current.owned += need.count - (remaining.get(need.id) ?? 0)
-        totals.set(need.id, current)
-      }
-    }
-    for (const [resourceId, value] of totals) {
-      const key = dailyRaidResourceKey(goal.goalId, resourceId)
-      if (!progress.has(key)) progress.set(key, value)
-    }
-  }
-
-  return progress
-}
-
-function projectResourceProgress(
-  days: DailyRaidsCalculationViewModel["today"][],
-  initial: ReadonlyMap<string, DailyRaidResourceProgress>
-) {
-  const gained = new Map<string, number>()
-  const result = new Map<
-    number,
-    ReadonlyMap<string, DailyRaidResourceProgress>
-  >()
-
-  for (const day of days) {
-    result.set(
-      day.day,
-      new Map(
-        [...initial].map(([key, progress]) => [
-          key,
-          {
-            owned: Math.min(
-              progress.target,
-              Math.floor(progress.owned + (gained.get(key) ?? 0) + 1e-9)
-            ),
-            target: progress.target,
-          },
-        ])
-      )
-    )
-    for (const entry of day.entries) {
-      const key = dailyRaidResourceKey(entry.goalId, entry.resourceId)
-      gained.set(key, (gained.get(key) ?? 0) + entry.itemsFarmed)
-    }
-  }
-
-  return result
-}
-
-function goalTargetLabel(detail: GoalDetail): string {
-  if (detail.goalType === "Rank" && detail.config.rank) {
-    return `Rank ${rankAt(detail.config.rank.end)}`
-  }
-  if (detail.goalType === "Ability" && detail.config.ability) {
-    const target = detail.config.ability
-    return `Ability ${Math.max(target.activeEnd, target.passiveEnd)}`
-  }
-  if (detail.goalType === "Ascension" && detail.config.progression) {
-    return `Ascension ${detail.config.progression.end}`
-  }
-  if (detail.goalType === "Unlock") return "Unlock"
-  if (detail.goalType === "Upgrade" && detail.config.upgrade) {
-    return `Upgrade ${detail.config.upgrade.targets.reduce((sum, item) => sum + item.quantity, 0)}`
-  }
-  return detail.goalType
 }

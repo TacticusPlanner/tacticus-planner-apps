@@ -5,6 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { CommandShortcut } from "@workspace/ui/components/command"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
 
@@ -88,7 +89,7 @@ export function DesktopSectionNavigation({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "block truncate rounded-md px-3 py-2 text-sm transition-colors",
+                    "flex items-center rounded-md px-3 py-2 text-sm transition-colors",
                     isActive
                       ? "bg-accent font-medium text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -97,6 +98,7 @@ export function DesktopSectionNavigation({
                   to={child.path}
                 >
                   <span className="min-w-0 truncate">{t(child.labelKey)}</span>
+                  <NavLiveDot item={child} />
                 </Link>
               </li>
             )

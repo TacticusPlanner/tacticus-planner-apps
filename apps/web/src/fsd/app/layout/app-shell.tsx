@@ -19,6 +19,7 @@ import {
 } from "@/pages/goals"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
+import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
 import { MobileShell } from "./mobile-layout"
@@ -169,7 +170,7 @@ function ShellContent({
     quickActions,
   }
 
-  return (
+  const shell = (
     <CreateGoalLauncherProvider onLaunch={launchCreateGoal}>
       {isMobile ? (
         <MobileShell {...shellProps} />
@@ -199,4 +200,7 @@ function ShellContent({
       ) : null}
     </CreateGoalLauncherProvider>
   )
+
+  // One shared HSE query for the nav indicators; signed-out visitors never read the calendar.
+  return isAuthenticated ? <HseLiveProvider>{shell}</HseLiveProvider> : shell
 }

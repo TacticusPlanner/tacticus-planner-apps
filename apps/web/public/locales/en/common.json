@@ -196,6 +196,7 @@
     "addGoal": "Add Goal",
     "dailies": "Dailies",
     "dailiesDescription": "Daily and periodic in-game tasks",
+    "eventLive": "Event live",
     "home": "Home",
     "homeDescription": "Your account overview and quick links",
     "createGoal": "Create Goal",
@@ -316,6 +317,15 @@
       "empty": "Nothing to raid today.",
       "error": "Couldn't load today's raids.",
       "noGoals": "No active goals yet. Add goals to plan your raids."
+    },
+    "events": {
+      "title": "Home Screen Events",
+      "live": "LIVE",
+      "endsIn": "Ends in {{when}}",
+      "startsIn": "Starts in {{when}}",
+      "empty": "No events scheduled.",
+      "error": "Couldn't load events.",
+      "loading": "Loading events…"
     },
     "calendar": {
       "title": "Events Calendar"
@@ -823,7 +833,8 @@
         "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
         "InsufficientDailyEnergy": "Daily energy is below the cost of the cheapest usable node.",
         "SimulationLimit": "The goal could not complete within the planning horizon.",
-        "UnsupportedCost": "Detailed costing is not supported for this goal."
+        "UnsupportedCost": "Detailed costing is not supported for this goal.",
+        "FilteredOut": "Every preferred location is excluded by your Raids Filters."
       }
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
@@ -1239,5 +1250,10 @@
         "label": "Selection"
       }
     }
+  },
+  "alliances": {
+    "Imperial": "Imperial",
+    "Chaos": "Chaos",
+    "Xenos": "Xenos"
   }
 }

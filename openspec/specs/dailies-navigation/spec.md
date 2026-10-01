@@ -2,23 +2,28 @@
 
 ## Purpose
 
-Gives players a single `/dailies` entry point for day-to-day play activities (raiding, shops, onslaught, salvage, arena, guild raids), with a working Raids section and clearly-marked placeholders for everything not yet built.
+Gives players a single `/dailies` entry point for day-to-day play activities (raids, home screen events, shops, guild raids), each with its own implemented page.
 
 ## Requirements
 
 ### Requirement: Dailies primary navigation
 
-The system SHALL present a `/dailies` section with 6 primary tabs — Raids, Shops, Onslaught, Salvage Run, Arena, Guild Raids — and SHALL land the user on the Raids tab by default.
+The system SHALL present a `/dailies` section with 4 primary tabs — Raids, HSE, Shops, Guild Raids — and SHALL land the user on the Raids tab by default. Onslaught, Salvage Run, and Arena SHALL NOT appear in Dailies navigation (section tabs, desktop section menu, or navigation search).
 
 #### Scenario: Opening Dailies lands on Raids
 
 - **WHEN** a signed-in user navigates to `/dailies`
-- **THEN** all 6 tabs are visible and the Raids tab's content is shown without further navigation
+- **THEN** the 4 tabs are visible and the Raids tab's content is shown without further navigation
 
 #### Scenario: Switching to a tab preserves the tab bar
 
-- **WHEN** the user selects any of the 6 primary tabs
+- **WHEN** the user selects any of the 4 primary tabs
 - **THEN** the tab bar remains visible and the selected tab is highlighted as active
+
+#### Scenario: Hidden pages are not routes
+
+- **WHEN** the user opens `/dailies/onslaught`, `/dailies/salvage-run`, or `/dailies/arena`
+- **THEN** the app treats it as an unknown route, the same as any other path it does not serve
 
 ### Requirement: Every Dailies primary tab opens its implemented page
 
@@ -36,7 +41,7 @@ Every Dailies primary tab SHALL render its implemented page. Guild Raids SHALL r
 
 #### Scenario: Opening another implemented primary tab
 
-- **WHEN** the user opens Raids, Shops, Arena, Salvage Run, or Onslaught
+- **WHEN** the user opens Raids, HSE or Shops
 - **THEN** that tab's existing implemented page is shown
 
 ### Requirement: The Raids tab is the Today page
@@ -80,3 +85,37 @@ Every primary tab SHALL be addressable by its own URL path, not by client-only t
 
 - **WHEN** a user switches tabs one or more times and then uses the browser's back button
 - **THEN** the previously-active tab's URL and content are restored
+
+### Requirement: Dailies has an HSE tab
+
+The `/dailies` section SHALL include an HSE tab (label: the localized abbreviation of Home Screen Event) at `/dailies/hse`, positioned directly after Raids, so the primary tabs are Raids, HSE, Shops, Guild Raids. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not an event is active. This supersedes any statement of the number of Dailies primary tabs in other requirements of this capability.
+
+#### Scenario: Tab order
+
+- **WHEN** a signed-in user opens `/dailies`
+- **THEN** the tabs are Raids, HSE, Shops, Guild Raids and the Raids tab is active by default
+
+#### Scenario: Direct navigation
+
+- **WHEN** a user loads `/dailies/hse` directly
+- **THEN** the Dailies tab bar renders with the HSE tab active and its content shown
+
+#### Scenario: Tab shown without an active event
+
+- **GIVEN** no HSE is active
+- **THEN** the HSE tab is still listed and opens the empty state
+
+### Requirement: The HSE tab shows a live indicator while an event is active
+
+The HSE tab SHALL show the shared live indicator (see `app-navigation` "Navigation shows a live indicator for an active Home Screen Event") while any HSE is active, in the section tab row on mobile and in the desktop section menu, and none otherwise. It does not change the tab's label, route, order or visibility.
+
+#### Scenario: Indicator on the tab while live
+
+- **GIVEN** an HSE is active
+- **WHEN** the user views Dailies on desktop or mobile
+- **THEN** the HSE tab shows the indicator with the accessible text "event live", and the tab remains in its position after Raids
+
+#### Scenario: No indicator while idle
+
+- **GIVEN** no HSE is active
+- **THEN** the HSE tab is shown without an indicator and still opens its empty state

@@ -20,4 +20,17 @@ describe("Events translations", () => {
   ])("keeps the %s namespace aligned with English", (_locale, resource) => {
     expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
   })
+
+  it.each([
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])(
+    "translates the Home Screen Events tour step in %s",
+    (_locale, resource) => {
+      const step = resource.tour.home.steps.hseWidget
+      expect(step.title).not.toBe(en.tour.home.steps.hseWidget.title)
+      expect(step.content).not.toBe(en.tour.home.steps.hseWidget.content)
+    }
+  )
 })

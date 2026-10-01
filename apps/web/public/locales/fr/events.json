@@ -49,6 +49,18 @@
     "hse-arsenal-of-war": "Arsenal de Guerre",
     "hse-machine-hunt": "Chasse aux Machines",
     "hse-terminator-boost": "Bonus Terminator",
+    "hse-purge-order": "Ordre de Purge",
+    "hse-squig-smash": "Écrase-Squigs",
+    "hse-against-the-tide": "Contre la marée",
+    "hse-trait-boost-rapid-assault": "Bonus de trait : Assaut rapide",
+    "hse-trait-boost-flying": "Bonus de trait : Volant",
+    "hse-trait-boost-psyker": "Bonus de trait : Psyker",
+    "hse-for-the-dark-gods": "Pour les Dieux Noirs",
+    "hse-for-the-emperor": "Pour l'Empereur",
+    "hse-defeat-waves": "Vaincre les vagues",
+    "hse-11th-edition-week-1": "11e édition : semaine 1",
+    "hse-11th-edition-week-2": "11e édition : semaine 2",
+    "hse-11th-edition-week-3": "11e édition : semaine 3",
     "ta-faction-war": "Arène des Tournois : Guerre des factions",
     "ta-power-ups": "Arène des Tournois : Bonus",
     "ta-conquest": "Arène des Tournois : Conquête",
@@ -83,6 +95,10 @@
         "tokenAvailability": {
           "title": "Disponibilité des jetons",
           "content": "Consultez en un coup d'œil le statut de vos jetons Arène, Raid de guilde, Assaut et Course au pillage."
+        },
+        "hseWidget": {
+          "title": "Événements de l'écran d'accueil",
+          "content": "Consultez l'événement en cours et le prochain à démarrer. Sélectionnez la carte pour ouvrir l'onglet des événements de l'écran d'accueil."
         },
         "projects": {
           "title": "Vos projets",

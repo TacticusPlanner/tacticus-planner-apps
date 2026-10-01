@@ -2,16 +2,20 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavSubItem } from "./nav-items"
 
 export function NavChildRow({
   child,
   className,
+  hideLive = false,
   isActive,
   onSelect,
 }: {
   child: NavSubItem
   className?: string
+  /** Search results show no live indicator. */
+  hideLive?: boolean
   isActive: boolean
   onSelect?: () => void
 }) {
@@ -32,7 +36,10 @@ export function NavChildRow({
       onClick={onSelect}
       to={child.path}
     >
-      <span className="truncate">{t(child.labelKey)}</span>
+      <span className="flex items-center">
+        <span className="truncate">{t(child.labelKey)}</span>
+        <NavLiveDot hidden={hideLive} item={child} />
+      </span>
       <span className="truncate text-xs font-normal opacity-80">
         {t(child.descriptionKey)}
       </span>

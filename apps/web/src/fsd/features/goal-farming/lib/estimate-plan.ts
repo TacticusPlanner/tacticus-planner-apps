@@ -7,6 +7,8 @@ import type {
   EstimateResourceId,
   EstimateUpgrade,
   FarmNode,
+  FarmNodeFilter,
+  FilteredOutNeed,
   GoalNeed,
   RaidBreakdownEntry,
   RaidDaySchedule,
@@ -34,6 +36,9 @@ export type EstimatePlanParams = {
   dailyEnergy: number
   inventory: UpgradeNeed[]
   referenceDate?: Date
+  /** Restricts the farm nodes picked per material (Raids Filters). Only Today and Bonus Raids pass
+   *  it; every other caller of this engine stays unfiltered. */
+  nodeFilter?: FarmNodeFilter
 }
 
 type StageState = {
@@ -49,14 +54,16 @@ function runPlanSchedule(
     dailyEnergy,
     inventory,
     referenceDate = new Date(),
+    nodeFilter,
   }: EstimatePlanParams,
   maxDays: number
-): RaidPlanSchedule {
+): RaidPlanSchedule & { filteredOut: FilteredOutNeed[] } {
   const ordered = [...goals].sort((a, b) => a.priority - b.priority)
   const allocations = allocatePlanInventory(ordered, inventory)
   const stagesByGoal = new Map<string, StageState[]>()
   const results = new Map<string, EstimateOutcome>()
 
+  const filteredOut: FilteredOutNeed[] = []
   const blockersByGoal = new Map<string, EstimateBlocker[]>()
   const actionableByGoal = new Map<string, EstimateResourceId[]>()
 
@@ -72,20 +79,30 @@ function runPlanSchedule(
       const remaining = new Map<EstimateResourceId, number>()
       const nodesById = new Map<EstimateResourceId, FarmNode[]>()
       for (const need of sourceStage.remaining) {
-        const { nodes, blocker } = classifyNeed(
+        const { nodes, blocker, pinned } = classifyNeed(
           need,
           suppliedResourceIds.has(need.id),
           upgradesById,
           battlesById,
           goal.farmingLocationIds,
-          dailyEnergy
+          dailyEnergy,
+          nodeFilter
         )
         if (blocker) {
           blockers.push({
             resourceId: need.id,
             reason: blocker,
             remaining: need.count,
+            ...(pinned ? { pinned } : {}),
           })
+          if (blocker === "FilteredOut") {
+            filteredOut.push({
+              goalId: goal.goalId,
+              resourceId: need.id,
+              remaining: need.count,
+              pinned: !!pinned,
+            })
+          }
           continue
         }
         remaining.set(need.id, need.count)
@@ -266,6 +283,7 @@ function runPlanSchedule(
     0
   )
   return {
+    filteredOut,
     days: scheduleDays,
     outcomes: results,
     summary: {
@@ -298,18 +316,28 @@ export function estimatePlan(
   return estimatePlanSchedule(params).outcomes
 }
 
-export function estimateTodaySchedule(
-  params: EstimatePlanParams
-): RaidDaySchedule {
-  return (
-    runPlanSchedule(params, 1).days[0] ?? {
+/** Today's schedule plus the needs `params.nodeFilter` removed every preferred node of. */
+export function estimateTodayRun(params: EstimatePlanParams): {
+  today: RaidDaySchedule
+  filteredOut: FilteredOutNeed[]
+} {
+  const run = runPlanSchedule(params, 1)
+  return {
+    today: run.days[0] ?? {
       day: 1,
       entries: [],
       attemptsUsedByBattle: new Map<BattleId, number>(),
       energyTotal: 0,
       raidsTotal: 0,
-    }
-  )
+    },
+    filteredOut: run.filteredOut,
+  }
+}
+
+export function estimateTodaySchedule(
+  params: EstimatePlanParams
+): RaidDaySchedule {
+  return estimateTodayRun(params).today
 }
 
 // Keep this sentinel finite: runPlanSchedule subtracts remaining energy from the daily budget,

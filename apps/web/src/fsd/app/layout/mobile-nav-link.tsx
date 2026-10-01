@@ -2,6 +2,7 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 
 export function MobileNavLink({
@@ -29,7 +30,10 @@ export function MobileNavLink({
       data-testid={`mobile-nav-${item.path.slice(1)}`}
       to={item.path}
     >
-      <item.icon className="size-5" />
+      <span className="relative flex">
+        <item.icon className="size-5" />
+        <NavLiveDot corner item={item} />
+      </span>
       <span>{t(item.labelKey)}</span>
     </Link>
   )

@@ -7,7 +7,7 @@ import {
   eventBarClass,
   resolveEventColorKey,
   type EventColorKey,
-} from "../../model/event-colors"
+} from "@/shared/lib"
 import type { EventsCalendarDay } from "../../model/events-calendar.types"
 
 /** Only the color keys actually present this week — keeps the legend as compact as the reference calendars'. */

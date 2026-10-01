@@ -126,6 +126,17 @@ describe("Schedule page", () => {
     expect(screen.getByTestId("schedule-project-select")).toBeInTheDocument()
   })
 
+  it("has no Raids Filters trigger and shows the unfiltered plan whatever filter Today applied", () => {
+    window.localStorage.setItem(
+      "raids-filters.v1",
+      JSON.stringify({ slots: [5] })
+    )
+    render(<SchedulePage />)
+
+    expect(screen.queryByTestId("raids-filters")).not.toBeInTheDocument()
+    expect(screen.getByTestId("plan-day-1")).toBeInTheDocument()
+  })
+
   it("trails the project selector with the shared Planning Settings trigger and opens the dialog", async () => {
     const user = userEvent.setup()
     render(<SchedulePage />)

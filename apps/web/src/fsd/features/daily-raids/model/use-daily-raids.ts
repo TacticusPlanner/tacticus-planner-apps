@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next"
 import { useQueries, useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
-import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import {
   rankAt,
   unitIdSchema,
@@ -16,6 +15,7 @@ import {
   getCampaignDefinitions,
   getCharactersMap,
   getMowsMap,
+  getNpcsMap,
   getOnslaughtRewards,
   getShops,
   getUnlockShardCostsMap,
@@ -39,6 +39,7 @@ import {
 import { useCampaignDisplay } from "@/shared/lib"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
+import { battleEventPoints } from "./home-screen-event-rules"
 import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
 import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
@@ -47,8 +48,10 @@ import {
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
 } from "./daily-raids-energy"
+import { buildRaidsFilterBattles } from "./raids-filters/campaign-type"
+import { useRaidsFilters } from "./raids-filters/use-raids-filters"
 import { useScopedGoalPlan } from "./use-scoped-goal-plan"
-import { campaignLocationLabels } from "./daily-raids.domain"
+import { buildLocationsByBattleId } from "./daily-raid-locations"
 import type {
   DailyRaidResourceLabels,
   DailyRaidsViewModel,
@@ -59,8 +62,17 @@ import type {
  * (`useGlobalGoalPlan`), sharing inventory, energy and attempt caps once. `projectId` optionally
  * narrows the run to that project's goals (still in global order); without it the run covers the
  * whole account.
+ *
+ * `options.homeScreenEventId` (the Dailies > HSE tab only) additionally returns `eventFarm`: the
+ * schedule-wide, energy-capped list of point-earning locations that feed the goals (see
+ * `planEventFarm`). It changes nothing else in the result; Today, Bonus Raids, Home and the Plan
+ * never pass it.
  */
-export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
+export function useDailyRaids(
+  projectId?: string,
+  options?: { homeScreenEventId?: string }
+): DailyRaidsViewModel {
+  const homeScreenEventId = options?.homeScreenEventId
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const {
     name: campaignDisplayName,
@@ -97,6 +109,8 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
   const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
   const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
   const shops = useLiveQuery(() => getShops(), [])
+  // Resolved once (not per render): the Raids Filters' enemy traits and the event points read it.
+  const npcsById = useLiveQuery(() => getNpcsMap(), [])
   const onslaughtProgressQuery = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
@@ -126,6 +140,27 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
     }
   }, [detailKey])
   const { settings, loading: settingsLoading } = usePlanningSettings()
+  const [raidsFilters] = useRaidsFilters()
+  // Every catalog battle (not only the eligible ones) as the Raids Filters matcher reads it.
+  const filterBattlesById = useMemo(
+    () =>
+      buildRaidsFilterBattles(
+        battles ?? [],
+        campaignDefinitions ?? [],
+        npcsById
+      ),
+    [battles, campaignDefinitions, npcsById]
+  )
+
+  const eventPointsByBattleId = useMemo(() => {
+    if (!homeScreenEventId || !npcsById) return undefined
+    return new Map(
+      (battles ?? []).map((battle) => [
+        battle.id as BattleId,
+        battleEventPoints(homeScreenEventId, battle, npcsById),
+      ])
+    )
+  }, [homeScreenEventId, npcsById, battles])
 
   const upgradesById = useMemo(
     () =>
@@ -164,35 +199,11 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
   )
   const locationsByBattleId = useMemo(
     () =>
-      new Map(
-        [...allBattlesById].map(([battleId, battle]) => {
-          const descriptor = campaignDescriptor(
-            battle.campaignGroupId,
-            battle.type,
-            battle.challenge
-          )
-          const short = descriptor ? campaignShortLabel(descriptor) : null
-          return [
-            battleId,
-            {
-              id: battleId,
-              ...campaignLocationLabels(battleId, battle, descriptor, {
-                name: campaignDisplayName,
-                tierLabel: campaignTierLabel,
-              }),
-              shortLabel: short
-                ? `${short.name} ${short.code} ${battle.nodeNumber}${short.challenge ? "B" : ""}`
-                : battle.campaignGroupId,
-              challenge: battle.challenge,
-              icon: campaignIcon(
-                battle.campaignGroupId,
-                battle.type,
-                battle.challenge
-              ),
-            },
-          ] as const
-        })
-      ),
+      buildLocationsByBattleId(allBattlesById, {
+        name: campaignDisplayName,
+        tierLabel: campaignTierLabel,
+        shortLabel: campaignShortLabel,
+      }),
     [allBattlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
   )
   // Game-data display names resolve through the id-keyed `upgrades`/`characters` namespaces — the
@@ -274,6 +285,7 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
     unlockShardCostsById &&
     onslaughtRewards &&
     shops &&
+    npcsById &&
     onslaughtProgressQuery.isSuccess &&
     inventoryUpgrades &&
     playerState &&
@@ -341,6 +353,15 @@ export function useDailyRaids(projectId?: string): DailyRaidsViewModel {
       return t("dailies:target.other", { value: detail.goalType })
     },
     dailyEnergy: settings.dailyEnergy,
+    raidsFilters,
+    filterBattlesById,
+    eventFarm: eventPointsByBattleId
+      ? {
+          pointsByBattleId: eventPointsByBattleId,
+          attemptsLeftByBattle,
+          energyBudget: Math.max(0, settings.dailyEnergy - realEnergyUsedToday),
+        }
+      : undefined,
   })
   return result
     ? {

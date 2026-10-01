@@ -43,6 +43,8 @@ import {
 import { ApiError } from "@/shared/api"
 import { EntityIcon, ProgressionBadge } from "@/shared/ui"
 
+import { tierAfterSectorChange } from "./tier-after-sector-change"
+
 const allianceKey = (alliance: OnslaughtAlliance) =>
   alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
 
@@ -174,6 +176,11 @@ export function OnslaughtPage() {
                     onValueChange={(sector) =>
                       updateAlliance(alliance, {
                         sector: sector as OnslaughtSector,
+                        tier: tierAfterSectorChange(
+                          value.sector,
+                          sector as OnslaughtSector,
+                          value.tier
+                        ),
                       })
                     }
                   >

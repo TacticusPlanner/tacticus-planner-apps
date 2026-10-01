@@ -58,6 +58,15 @@ describe("resolveEventWikiUrl", () => {
     expect(resolveEventWikiUrl("hse-machine-hunt")).toBe(
       "https://tacticus.wiki.gg/wiki/Machine_Hunt"
     )
+    expect(resolveEventWikiUrl("hse-purge-order")).toBe(
+      "https://tacticus.wiki.gg/wiki/Purge_Order"
+    )
+    expect(resolveEventWikiUrl("hse-squig-smash")).toBe(
+      "https://tacticus.wiki.gg/wiki/Squig_Smash"
+    )
+    expect(resolveEventWikiUrl("hse-against-the-tide")).toBe(
+      "https://tacticus.wiki.gg/wiki/Against_the_Tide"
+    )
     expect(resolveEventWikiUrl("always-double-xp-sunday")).toBe(
       "https://tacticus.wiki.gg/wiki/HDTW_XP"
     )

@@ -53,6 +53,10 @@ export const campaignBattleViewSchema = z.looseObject({
   dailyAttempts: z.number(),
   rewards: campaignRewardsViewSchema,
   enemyPower: z.number(),
+  // The allied side of the campaign group, copied onto every battle by the API (V1's hardcoded
+  // per-campaign allies table lives server-side now).
+  alliesAlliance: z.enum(Alliance),
+  alliesFactions: z.array(factionIdSchema),
   enemiesAlliances: z.array(z.enum(Alliance)),
   enemiesFactions: z.array(factionIdSchema),
   enemiesTotal: z.number(),

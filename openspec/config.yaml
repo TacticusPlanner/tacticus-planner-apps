@@ -133,6 +133,14 @@ rules:
       tour steps. Do not interleave the two forms in one group or cover both
       with a single task. Platform-independent verification (data, business
       rules, empty states) may stay in a shared group.
+    - Never defer or leave the Mobile verification group waiting for the user
+      to resize the window. Emulate the viewport with a same-origin iframe
+      (for example a 420px-wide `<iframe src="/dailies">` injected into a
+      tab on the app origin, which shares the signed-in session and makes
+      media queries and `useIsMobile()` see <768px), confirm the mobile-only
+      UI is actually rendered, and follow the `tp-manual-ui-verification`
+      skill. Mark the task blocked only if the iframe demonstrably fails to
+      render the mobile layout.
     - Manual verification tasks must identify their required data states,
       such as a populated project and an empty project, so verification is
       not blocked at the end of implementation.

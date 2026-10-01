@@ -11,14 +11,10 @@
   "tabs": {
     "raids": "Raids",
     "raidsDescription": "Dépensez l'énergie du jour pour vos objectifs actifs par ordre de priorité.",
+    "hse": "ÉÉA",
+    "hseDescription": "Événement d'écran d'accueil : raidez là où l'événement en cours rapporte des points",
     "shops": "Boutiques",
     "shopsDescription": "Suivez les rotations et achats en boutique",
-    "onslaught": "Assaut",
-    "onslaughtDescription": "Recommandations d'équipe pour l'Assaut limitées par alliance et destinataire des fragments après le combat",
-    "salvage-run": "Récupération",
-    "salvage-runDescription": "Recommandations d'équipe pour Récupération limitées par alliance",
-    "arena": "Arène",
-    "arenaDescription": "Suivez les combats et récompenses de l'Arène",
     "guild-raids": "Raids de guilde",
     "guild-raidsDescription": "Consultez le statut actuel du Raid de guilde et vos ressources personnelles de raid."
   },
@@ -274,6 +270,10 @@
         "todaysAttempts": {
           "title": "Tentatives du jour",
           "content": "Chaque raid réel effectué aujourd'hui sur tout le compte, qu'il reste des tentatives ou que la limite soit atteinte."
+        },
+        "filters": {
+          "title": "Filtres de raids",
+          "content": "Limitez Aujourd'hui et les raids bonus aux lieux de campagne souhaités, par exemple uniquement les nœuds Élite à 5 emplacements ou une faction ennemie précise. Le badge indique le nombre de filtres actifs."
         }
       }
     },
@@ -299,5 +299,106 @@
     "partial": "Le travail réalisable est planifié ; le reste n'a aucune source prise en charge, donc il n'y a pas de date d'achèvement.",
     "none": "Rien n'est encore réalisable : rien n'est planifié et il n'y a pas de date d'achèvement.",
     "row": "{{material}} ×{{count}} : {{reason}}"
+  },
+  "raidsFilters": {
+    "trigger": "Filtres de raids",
+    "triggerActive": "Filtres de raids, {{count}} actifs",
+    "title": "Filtres de raids",
+    "description": "Limitez les lieux de campagne que Aujourd'hui, les raids bonus et l'onglet ÉÉA peuvent utiliser. Le plan et les objectifs ne sont pas affectés.",
+    "sections": {
+      "allies": "Alliés",
+      "enemies": "Ennemis",
+      "locations": "Lieux",
+      "upgrades": "Améliorations"
+    },
+    "fields": {
+      "alliances": "Alliances",
+      "factions": "Factions",
+      "minEnemies": "Ennemis min.",
+      "maxEnemies": "Ennemis max.",
+      "enemyTraits": "Traits des ennemis",
+      "enemyTypes": "Types d'ennemis",
+      "campaignTypes": "Types",
+      "slots": "Emplacements",
+      "rarity": "Rareté"
+    },
+    "placeholders": {
+      "allAlliances": "Toutes les alliances",
+      "allFactions": "Toutes les factions",
+      "allTraits": "Tous les traits",
+      "allEnemyTypes": "Tous les types d'ennemis",
+      "allCampaignTypes": "Tous les types",
+      "allSlots": "Tous les emplacements",
+      "allRarities": "Toutes les raretés",
+      "noLimit": "Sans limite",
+      "search": "Rechercher",
+      "empty": "Aucun résultat.",
+      "clear": "Effacer"
+    },
+    "campaignTypes": {
+      "Elite": "Élite",
+      "Extremis": "Extremis",
+      "Standard": "Standard",
+      "Mirror": "Miroir",
+      "Normal": "Normal",
+      "Early": "Début"
+    },
+    "slotsOption": "{{count}} emplacements",
+    "actions": {
+      "close": "Fermer",
+      "reset": "Réinitialiser",
+      "apply": "Appliquer"
+    },
+    "filteredOut": {
+      "title": "Les filtres de raids ont retiré certains matériaux",
+      "materials_one": "{{count}} matériau n'a aucun lieu autorisé avec ces filtres.",
+      "materials_other": "{{count}} matériaux n'ont aucun lieu autorisé avec ces filtres.",
+      "pinned_one": "{{count}} objectif est épinglé sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
+      "pinned_other": "{{count}} objectifs sont épinglés sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
+      "reset": "Réinitialiser les filtres"
+    }
+  },
+  "hse": {
+    "title": "Événement d'écran d'accueil",
+    "status": {
+      "endsIn": "Se termine {{when}}",
+      "earnsPoints": "Rapporte des points d'événement avec les raids de campagne : 3 par ennemi concerné, 5 sur les nœuds Élite.",
+      "noRaidPoints": "Cet événement ne rapporte pas de points avec les raids de campagne.",
+      "noneRunning": "Aucun événement d'écran d'accueil n'est en cours actuellement.",
+      "next": "Prochain événement : {{name}}",
+      "startsIn": "Commence {{when}} ({{date}})",
+      "noneScheduled": "Aucun événement d'écran d'accueil n'est prévu.",
+      "error": "Les données de l'événement n'ont pas pu être chargées. Le reste des quotidiennes n'est pas affecté."
+    },
+    "preview": {
+      "title": "Aperçu : {{name}} n'est pas encore actif",
+      "body": "Ces listes utilisent les règles de l'événement à venir et l'énergie qu'il vous reste aujourd'hui. Aucun point d'événement ne se gagne ici avant le début de l'événement {{when}} ({{date}})."
+    },
+    "raids": {
+      "title": "Liste de farm pour les points d'événement",
+      "total": "{{points}} points d'événement",
+      "energy": "{{energy}} énergie",
+      "note": "Lieux qui rapportent des points d'événement et font avancer vos objectifs, choisis sur l'ensemble de votre plan. Elle retient des lieux avec points même quand un lieu moins cher sans points existe, ce qui peut coûter plus d'énergie par objet que Raids du jour.",
+      "budget": "Énergie restante aujourd'hui : {{energy}}.",
+      "points": "{{points}} pts",
+      "raidCount_one": "{{count}} raid",
+      "raidCount_other": "{{count}} raids",
+      "empty": {
+        "noGoals": "Vous n'avez aucun objectif actif, il n'y a donc rien à farmer.",
+        "noEnergy": "Il ne reste plus assez d'énergie aujourd'hui pour ces lieux.",
+        "nothingContributes": "Aucun lieu rapportant des points d'événement ne donne une ressource dont vos objectifs ont encore besoin. Consultez les meilleurs lieux ci-dessous pour gagner des points.",
+        "filtered": "Aucun lieu ne correspond à vos filtres de raids."
+      },
+      "goals": "Objectifs : {{goals}}",
+      "moreGoals": "+{{count}}"
+    },
+    "top": {
+      "overallTitle": "Meilleurs lieux pour les points d'événement",
+      "eventTitle": "Meilleurs lieux de la campagne d'événement",
+      "empty": "Aucun lieu débloqué restant à raider ne rapporte de points d'événement.",
+      "filteredEmpty": "Aucun lieu ne correspond à vos filtres de raids.",
+      "perRaid": "{{points}} pts par raid",
+      "perEnergy": "{{value}} pts par énergie"
+    }
   }
 }

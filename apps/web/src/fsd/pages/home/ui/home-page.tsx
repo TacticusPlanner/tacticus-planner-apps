@@ -1,6 +1,7 @@
 import { useAutoStartTourOnce } from "@/shared/tour"
 
 import { useHomePageTutorial } from "./home-page.tutorial"
+import { HomeEventsWidget } from "./events-widget/home-events-widget"
 import { EventsCalendar } from "./events-calendar/events-calendar"
 import { ProjectsWidget } from "./projects/projects-widget"
 import { RaidsWidget } from "./raids/raids-widget"
@@ -15,7 +16,10 @@ export function HomePage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="home-page">
-      <TokenAvailability />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <TokenAvailability />
+        <HomeEventsWidget />
+      </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <ProjectsWidget />
         <RaidsWidget />

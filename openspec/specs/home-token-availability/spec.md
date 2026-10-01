@@ -8,12 +8,12 @@ Shows the player's current game-mode token status (Arena, Guild Raid plus Bomb t
 
 ### Requirement: Home page renders Token Availability as its first section
 
-The authenticated home page SHALL render a Token Availability section, sourced from the player's synced `gameModeTokens` data, as the first section on the page — above Your Projects, Daily Raids, and the events calendar — full width on both desktop and mobile.
+The authenticated home page SHALL render a Token Availability section, sourced from the player's synced `gameModeTokens` data, as the first section on the page — above Your Projects, Daily Raids, and the events calendar — full width on mobile; on desktop it shares its row with the Home Screen Events card (see "Token Availability shares its row with the Home Screen Events card").
 
 #### Scenario: Authenticated user opens home on desktop
 
 - **WHEN** a signed-in user opens `/home` at or above the 768px breakpoint
-- **THEN** the Token Availability section renders first, full width, above the other home sections
+- **THEN** the Token Availability section renders first, above the other home sections
 
 #### Scenario: Authenticated user opens home on mobile
 
@@ -96,3 +96,17 @@ Implementation note: a distinct "failed to load" state is not implemented separa
 
 - **WHEN** the player's synced data has loaded but `gameModeTokens` has no data for any token type
 - **THEN** Token Availability shows an explicit empty state rather than an empty row
+
+### Requirement: Token Availability shares its row with the Home Screen Events card
+
+Token Availability SHALL remain the first section of the home page but, at or above 768px, SHALL occupy half of its row alongside the Home Screen Events card (see `home-events-widget`) instead of the full width; its token entries SHALL wrap so none is clipped. Below 768px it remains full width, with the Home Screen Events card stacked directly after it. This supersedes the "full width on both desktop and mobile" wording of "Home page renders Token Availability as its first section" for desktop.
+
+#### Scenario: Desktop half-width
+
+- **WHEN** a signed-in user opens `/home` at or above 768px
+- **THEN** Token Availability is the first section, side by side with Home Screen Events, and every token entry is visible
+
+#### Scenario: Mobile full width
+
+- **WHEN** a signed-in user opens `/home` below 768px
+- **THEN** Token Availability is full width and first, followed directly by Home Screen Events

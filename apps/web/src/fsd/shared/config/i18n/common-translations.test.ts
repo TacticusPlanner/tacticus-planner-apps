@@ -47,4 +47,25 @@ describe("common namespace locale parity", () => {
       )
     }
   )
+
+  it.each([
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("%s translates the HSE live indicator and Home card copy", (_, locale) => {
+    expect(locale.nav.eventLive).not.toBe(en.nav.eventLive)
+    // "LIVE" is the same word in German; every other card string must differ from English.
+    for (const key of [
+      "title",
+      "endsIn",
+      "startsIn",
+      "empty",
+      "error",
+      "loading",
+    ] as const) {
+      expect(locale.home.events[key], key).not.toBe(en.home.events[key])
+    }
+    expect(locale.home.events.endsIn).toContain("{{when}}")
+    expect(locale.home.events.startsIn).toContain("{{when}}")
+  })
 })
