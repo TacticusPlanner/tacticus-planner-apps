@@ -395,4 +395,51 @@ describe("GoalResourceChips", () => {
         .getAttribute("title")
     ).not.toContain("standalone")
   })
+  describe("shop currency", () => {
+    it("shows the currency still to spend beside the shard chip, grouped per currency", () => {
+      render(
+        <GoalResourceChips
+          energy={undefined}
+          entityType="Character"
+          goalType="Unlock"
+          remaining={need({ shards: 500, shardId: "shards" as never })}
+          shopSpend={
+            new Map([
+              ["guildWarCurrency", 90_000.4],
+              ["elderShopCurrency", 1_200],
+            ])
+          }
+        />
+      )
+
+      expect(chipNames()).toEqual([
+        "goals.resourceChips.shards: 500",
+        "shops:currency.guildWarCurrency: 90,000",
+        "shops:currency.elderShopCurrency: 1,200",
+      ])
+    })
+
+    it("shows no currency chip without a shop spend or when it rounds to zero", () => {
+      const { rerender } = render(
+        <GoalResourceChips
+          energy={undefined}
+          entityType="Character"
+          goalType="Unlock"
+          remaining={need({ shards: 500, shardId: "shards" as never })}
+        />
+      )
+      expect(chipNames()).toEqual(["goals.resourceChips.shards: 500"])
+
+      rerender(
+        <GoalResourceChips
+          energy={undefined}
+          entityType="Character"
+          goalType="Unlock"
+          remaining={need({ shards: 500, shardId: "shards" as never })}
+          shopSpend={new Map([["guildWarCurrency", 0.2]])}
+        />
+      )
+      expect(chipNames()).toEqual(["goals.resourceChips.shards: 500"])
+    })
+  })
 })

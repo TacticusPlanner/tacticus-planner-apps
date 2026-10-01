@@ -638,3 +638,224 @@ describe("Schedule page", () => {
     ).not.toBeInTheDocument()
   })
 })
+
+describe("Schedule page shop purchases", () => {
+  const offer = (unit: string) => ({
+    offerId: `war:shards_${unit}`,
+    shopId: "war",
+    rewardQty: 5,
+    cost: { currency: "guildWarCurrency", amount: 900 },
+  })
+  const shopEntry = (goalId: string, unit: string, expectedShards = 10) => ({
+    goalId,
+    offerId: `war:shards_${unit}`,
+    expectedShards,
+  })
+  const shopOffersById = new Map([
+    ["war:shards_bellator", offer("bellator")],
+    ["war:shards_alephNull", offer("alephNull")],
+  ]) as never
+
+  beforeEach(() => {
+    useDailyRaids.mockReset()
+    useProjects.mockReset()
+    useProjects.mockReturnValue(loadedProjects)
+    useIsMobileMock.mockReturnValue(false)
+  })
+
+  it("lists the day's purchases after the Raided section and only on days that have them", () => {
+    const base = raidedPlan([
+      [battle, 0],
+      [offPlanBattle, 3],
+    ])
+    useDailyRaids.mockReturnValue({
+      ...base,
+      shopOffersById,
+      planDays: [
+        { ...base.planDays[0]!, shopEntries: [shopEntry("g1", "bellator")] },
+        ...base.planDays.slice(1),
+      ],
+    })
+    render(<SchedulePage />)
+
+    const day1 = within(screen.getByTestId("plan-day-1"))
+    expect(day1.getByTestId("plan-day-1-shops-divider")).toHaveTextContent(
+      "plan.shops"
+    )
+    expect(
+      day1
+        .getByTestId("plan-day-1-raided")
+        .compareDocumentPosition(day1.getByTestId("plan-day-1-shops"))
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    const row = day1.getByTestId("plan-shop-1-war:shards_bellator-bellator")
+    // 10 shards at 5 per purchase = 2 purchases; 2 × 900 = 1,800 coins.
+    expect(row).toHaveTextContent('"purchases":2,"shards":10')
+    expect(row).toHaveTextContent("1,800")
+    expect(
+      screen.queryByTestId("plan-day-2-shops-divider")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("plan-day-2-shops")).not.toBeInTheDocument()
+  })
+
+  it("shows a shop-only unit as a Shops section, a day icon and a filter portrait with no raid cells", () => {
+    const base = ready()
+    useDailyRaids.mockReturnValue({
+      ...base,
+      shopOffersById,
+      planDays: [1, 2].map((day) => ({
+        ...base.planDays[0]!,
+        day,
+        entries: [],
+        shopEntries: [shopEntry("g1", "bellator")],
+      })),
+    })
+    render(<SchedulePage />)
+
+    const day1 = within(screen.getByTestId("plan-day-1"))
+    expect(day1.getByTestId("plan-day-1-shops")).toBeInTheDocument()
+    expect(day1.queryByTestId("plan-day-1-raids")).not.toBeInTheDocument()
+    expect(day1.queryByTestId("plan-day-1-raided")).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("plan-day-1-units")).getByRole("img", {
+        name: "Bellator",
+      })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("plan-filter-bellator")).toBeInTheDocument()
+  })
+
+  it("dims other units' purchases when a unit is selected, and offers its first and last day", async () => {
+    const user = userEvent.setup()
+    const base = ready()
+    useDailyRaids.mockReturnValue({
+      ...base,
+      shopOffersById,
+      planDays: [
+        {
+          ...base.planDays[0]!,
+          day: 1,
+          entries: [],
+          shopEntries: [
+            shopEntry("g1", "bellator"),
+            shopEntry("g2", "alephNull"),
+          ],
+        },
+        {
+          ...base.planDays[0]!,
+          day: 2,
+          entries: [],
+          shopEntries: [shopEntry("g1", "bellator")],
+        },
+      ],
+    })
+    render(<SchedulePage />)
+
+    await user.click(screen.getByTestId("plan-filter-bellator"))
+
+    expect(
+      screen.getByTestId("plan-shop-1-war:shards_alephNull-alephNull")
+    ).toHaveAttribute("data-dimmed", "true")
+    expect(
+      screen.getByTestId("plan-shop-1-war:shards_bellator-bellator")
+    ).not.toHaveAttribute("data-dimmed")
+    expect(
+      screen.getByRole("button", { name: /plan\.filter\.last/ })
+    ).toBeInTheDocument()
+  })
+})
+
+describe("Schedule page onslaught runs", () => {
+  const run = (goalId: string, runs = 1.5, expectedShards = 6) => ({
+    goalId,
+    runs,
+    expectedShards,
+  })
+  const warOffer = {
+    offerId: "war:shards_bellator",
+    shopId: "war",
+    rewardQty: 5,
+    cost: { currency: "guildWarCurrency", amount: 900 },
+  }
+
+  beforeEach(() => {
+    useDailyRaids.mockReset()
+    useProjects.mockReset()
+    useProjects.mockReturnValue(loadedProjects)
+    useIsMobileMock.mockReturnValue(false)
+  })
+
+  it("lists the runs after the Shops section and only on days that have them", () => {
+    const base = ready()
+    useDailyRaids.mockReturnValue({
+      ...base,
+      shopOffersById: new Map([["war:shards_bellator", warOffer]]) as never,
+      planDays: [
+        {
+          ...base.planDays[0]!,
+          entries: [],
+          shopEntries: [
+            {
+              goalId: "g1",
+              offerId: "war:shards_bellator",
+              expectedShards: 10,
+            },
+          ],
+          onslaughtEntries: [run("g1")],
+        },
+        { ...base.planDays[1]!, entries: [] },
+      ],
+    })
+    render(<SchedulePage />)
+
+    const day1 = within(screen.getByTestId("plan-day-1"))
+    expect(day1.getByTestId("plan-day-1-onslaught-divider")).toHaveTextContent(
+      "plan.onslaught"
+    )
+    expect(
+      day1
+        .getByTestId("plan-day-1-shops")
+        .compareDocumentPosition(day1.getByTestId("plan-day-1-onslaught"))
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(day1.getByTestId("plan-onslaught-1-bellator")).toHaveTextContent(
+      '"runs":1.5,"shards":6'
+    )
+    expect(
+      screen.queryByTestId("plan-day-2-onslaught-divider")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("plan-day-2-onslaught")).not.toBeInTheDocument()
+  })
+
+  it("shows an Onslaught-only unit with no raid cells, in the day icons and the filter bar, and dims the others", async () => {
+    const user = userEvent.setup()
+    const base = ready()
+    useDailyRaids.mockReturnValue({
+      ...base,
+      planDays: [
+        {
+          ...base.planDays[0]!,
+          entries: [],
+          onslaughtEntries: [run("g1"), run("g2", 1, 4)],
+        },
+      ],
+    })
+    render(<SchedulePage />)
+
+    const day1 = within(screen.getByTestId("plan-day-1"))
+    expect(day1.queryByTestId("plan-day-1-raids")).not.toBeInTheDocument()
+    expect(day1.queryByTestId("plan-day-1-shops")).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("plan-day-1-units")).getByRole("img", {
+        name: "Bellator",
+      })
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("plan-filter-bellator"))
+
+    expect(screen.getByTestId("plan-onslaught-1-alephNull")).toHaveAttribute(
+      "data-dimmed",
+      "true"
+    )
+    expect(screen.getByTestId("plan-onslaught-1-bellator")).not.toHaveAttribute(
+      "data-dimmed"
+    )
+  })
+})

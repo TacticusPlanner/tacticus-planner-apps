@@ -17,22 +17,99 @@ export type PlanCell = {
   nodes: { battleId: BattleId; raidsPerformed: number }[]
 }
 
+/** One unit's projected purchases of one shop offer on one day (spec: day cards list shop purchases
+ *  after the raided materials) — merged across the unit's goals. Expected values, unrounded: the view
+ *  rounds once for display. */
+export type PlanShopPurchase = {
+  offerId: string
+  shopId: string
+  unit: DailyRaidGoalViewModel
+  purchases: number
+  shards: number
+  currency: string
+  spend: number
+}
+
+/** One unit's projected Onslaught runs on one day (spec: day cards list Onslaught runs after the shop
+ *  purchases) — merged across the unit's goals. Expected values, unrounded. */
+export type PlanOnslaughtRun = {
+  unit: DailyRaidGoalViewModel
+  runs: number
+  shards: number
+}
+
 export type PlanDayCells = {
   day: number
   actionable: PlanCell[]
   raided: PlanCell[]
-  // Distinct units of the actionable cells, in goal-priority order.
+  // Shop purchases in goal-priority order of their unit, then by offer id.
+  shops: PlanShopPurchase[]
+  // Onslaught runs in goal-priority order of their unit.
+  onslaught: PlanOnslaughtRun[]
+  // Distinct units of the actionable cells, shop purchases and Onslaught runs, in goal-priority order.
   units: DailyRaidGoalViewModel[]
 }
 
 type PlanSource = Pick<
   DailyRaidsReadyViewModel,
-  "goalsById" | "resourceProgressByDay" | "attemptsLeftByBattle"
+  | "goalsById"
+  | "resourceProgressByDay"
+  | "attemptsLeftByBattle"
+  | "shopOffersById"
 >
+
+function buildShopPurchases(
+  day: RaidDaySchedule,
+  source: PlanSource
+): PlanShopPurchase[] {
+  const byKey = new Map<string, PlanShopPurchase>()
+  for (const entry of day.shopEntries) {
+    const offer = source.shopOffersById.get(entry.offerId)
+    const unit = source.goalsById.get(entry.goalId)
+    if (!offer || !unit) continue
+    const key = `${entry.offerId}|${unit.unitId}`
+    const purchase = byKey.get(key) ?? {
+      offerId: offer.offerId,
+      shopId: offer.shopId,
+      unit,
+      purchases: 0,
+      shards: 0,
+      currency: offer.cost.currency,
+      spend: 0,
+    }
+    const purchases = entry.expectedShards / offer.rewardQty
+    purchase.purchases += purchases
+    purchase.shards += entry.expectedShards
+    purchase.spend += purchases * offer.cost.amount
+    if (unit.priority < purchase.unit.priority) purchase.unit = unit
+    byKey.set(key, purchase)
+  }
+  return [...byKey.values()].sort(
+    (a, b) =>
+      a.unit.priority - b.unit.priority || a.offerId.localeCompare(b.offerId)
+  )
+}
 
 const UNKNOWN_GOAL_PRIORITY = Number.MAX_SAFE_INTEGER
 
 /** Merges a day's per-goal entries into one cell per material and splits them by V1's Raided rule. */
+function buildOnslaughtRuns(
+  day: RaidDaySchedule,
+  source: PlanSource
+): PlanOnslaughtRun[] {
+  const byUnit = new Map<string, PlanOnslaughtRun>()
+  for (const entry of day.onslaughtEntries) {
+    const unit = source.goalsById.get(entry.goalId)
+    if (!unit) continue
+    const run = byUnit.get(unit.unitId) ?? { unit, runs: 0, shards: 0 }
+    run.runs += entry.runs
+    run.shards += entry.expectedShards
+    if (unit.priority < run.unit.priority) run.unit = unit
+    byUnit.set(unit.unitId, run)
+  }
+  return [...byUnit.values()].sort((a, b) => a.unit.priority - b.unit.priority)
+}
+
 export function buildPlanDayCells(
   day: RaidDaySchedule,
   source: PlanSource
@@ -105,17 +182,23 @@ export function buildPlanDayCells(
     ;(cell.owned >= cell.target || exhausted ? raided : actionable).push(cell)
   }
 
+  const shops = buildShopPurchases(day, source)
+  const onslaught = buildOnslaughtRuns(day, source)
   const units = new Map<string, DailyRaidGoalViewModel>()
-  for (const cell of actionable) {
-    for (const unit of cell.units) {
-      if ((units.get(unit.unitId)?.priority ?? Infinity) > unit.priority)
-        units.set(unit.unitId, unit)
-    }
+  for (const unit of [
+    ...actionable.flatMap((cell) => cell.units),
+    ...shops.map((purchase) => purchase.unit),
+    ...onslaught.map((run) => run.unit),
+  ]) {
+    if ((units.get(unit.unitId)?.priority ?? Infinity) > unit.priority)
+      units.set(unit.unitId, unit)
   }
   return {
     day: day.day,
     actionable,
     raided,
+    shops,
+    onslaught,
     units: [...units.values()].sort((a, b) => a.priority - b.priority),
   }
 }

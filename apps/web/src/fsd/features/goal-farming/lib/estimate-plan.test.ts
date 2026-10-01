@@ -458,3 +458,200 @@ describe("partial plans: blocked needs do not discard actionable peers (PLAN-014
     })
   })
 })
+
+describe("shop schedule entries (add-shop-purchases-to-schedule)", () => {
+  const A = upgradeId("A")
+  const B = upgradeId("B")
+  const upgradesById = new Map<ReturnType<typeof upgradeId>, EstimateUpgrade>([
+    [A, { id: A, farmLocations: [location("N1")] }],
+    [B, { id: B, farmLocations: [] }],
+  ])
+  const battlesById = new Map([battle("N1")])
+  const base = { upgradesById, battlesById, dailyEnergy: 100, referenceDate }
+  const goal = (key: string): GoalNeed => ({
+    goalId: "unlock",
+    priority: 1,
+    needs: [{ id: B, count: 5 }],
+    flatSuppliers: [{ key, resourceId: B, supplyOnDay: () => 2 }],
+  })
+
+  it("records each day's expected shards per selected offer, summing to the attribution", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [goal("war:shards_unit")],
+      inventory: [],
+    })
+
+    expect(plan.days.map((day) => day.shopEntries)).toEqual([
+      [{ goalId: "unlock", offerId: "war:shards_unit", expectedShards: 2 }],
+      [{ goalId: "unlock", offerId: "war:shards_unit", expectedShards: 2 }],
+      [{ goalId: "unlock", offerId: "war:shards_unit", expectedShards: 1 }],
+    ])
+    const outcome = plan.outcomes.get("unlock")
+    expect(outcome).toMatchObject({ status: "Estimated", days: 3 })
+    expect(
+      plan.days
+        .flatMap((day) => day.shopEntries)
+        .reduce((total, entry) => total + entry.expectedShards, 0)
+    ).toBe(5)
+  })
+
+  it("leaves campaign-only goals and Onslaught suppliers without shop entries", () => {
+    const campaign = estimatePlanSchedule({
+      ...base,
+      goals: [{ goalId: "rank", priority: 1, needs: [{ id: A, count: 2 }] }],
+      inventory: [],
+    })
+    const onslaught = estimatePlanSchedule({
+      ...base,
+      goals: [goal("onslaught:regular")],
+      inventory: [],
+    })
+
+    expect(campaign.days.every((day) => day.shopEntries.length === 0)).toBe(
+      true
+    )
+    expect(onslaught.days.every((day) => day.shopEntries.length === 0)).toBe(
+      true
+    )
+  })
+
+  it("does not change the estimate: a shop supplier and an Onslaught supplier plan identically", () => {
+    const shop = estimatePlanSchedule({
+      ...base,
+      goals: [goal("war:shards_unit")],
+      inventory: [],
+    })
+    const onslaught = estimatePlanSchedule({
+      ...base,
+      goals: [goal("onslaught:regular")],
+      inventory: [],
+    })
+
+    expect(shop.summary).toEqual(onslaught.summary)
+    expect(shop.days.map((day) => day.entries)).toEqual(
+      onslaught.days.map((day) => day.entries)
+    )
+  })
+
+  describe("shop spend", () => {
+    const shop = {
+      shardsPerPurchase: 5,
+      currency: "guildWarCurrency",
+      cost: 900,
+    }
+    const supplier = {
+      key: "war:shards_unit",
+      resourceId: B,
+      supplyOnDay: () => 2,
+      shop,
+    }
+
+    it("prices only the shards still missing: owned inventory is not bought", () => {
+      const run = (owned: number) =>
+        estimatePlanSchedule({
+          ...base,
+          goals: [
+            {
+              goalId: "unlock",
+              priority: 1,
+              needs: [{ id: B, count: 5 }],
+              flatSuppliers: [supplier],
+            },
+          ],
+          inventory: owned > 0 ? [{ id: B, count: owned }] : [],
+        }).outcomes.get("unlock")
+
+      // 5 shards at 5 per purchase = 1 purchase = 900; with 1 shard owned, 4 shards = 720.
+      expect(run(0)).toMatchObject({
+        shopSpend: new Map([["guildWarCurrency", 900]]),
+      })
+      expect(run(1)).toMatchObject({
+        shopSpend: new Map([["guildWarCurrency", 720]]),
+      })
+    })
+
+    it("prices only the shop share when campaign nodes farm the rest, and omits the field without shops", () => {
+      const outcome = estimatePlanSchedule({
+        ...base,
+        goals: [
+          {
+            goalId: "mixed",
+            priority: 1,
+            needs: [
+              { id: A, count: 3 },
+              { id: B, count: 5 },
+            ],
+            flatSuppliers: [supplier],
+          },
+        ],
+        inventory: [],
+      }).outcomes.get("mixed")
+      const campaignOnly = estimatePlanSchedule({
+        ...base,
+        goals: [{ goalId: "rank", priority: 1, needs: [{ id: A, count: 3 }] }],
+        inventory: [],
+      }).outcomes.get("rank")
+
+      expect(outcome).toMatchObject({
+        shopSpend: new Map([["guildWarCurrency", 900]]),
+      })
+      expect(campaignOnly).not.toHaveProperty("shopSpend")
+    })
+  })
+
+  describe("onslaught schedule entries", () => {
+    const onslaught = {
+      key: "onslaught:regular",
+      resourceId: B,
+      supplyOnDay: () => 6,
+      shardsPerRun: 4,
+    }
+    const goalWith = (flatSuppliers: GoalNeed["flatSuppliers"]): GoalNeed => ({
+      goalId: "ascend",
+      priority: 1,
+      needs: [{ id: B, count: 12 }],
+      flatSuppliers,
+    })
+
+    it("records each day's expected shards and runs, with no shop entries", () => {
+      const plan = estimatePlanSchedule({
+        ...base,
+        goals: [goalWith([onslaught])],
+        inventory: [],
+      })
+
+      expect(plan.days.map((day) => day.onslaughtEntries)).toEqual([
+        [{ goalId: "ascend", expectedShards: 6, runs: 1.5 }],
+        [{ goalId: "ascend", expectedShards: 6, runs: 1.5 }],
+      ])
+      expect(plan.days.every((day) => day.shopEntries.length === 0)).toBe(true)
+    })
+
+    it("has no entries without an Onslaught supplier and leaves the token total and estimate untouched", () => {
+      const withShop = estimatePlanSchedule({
+        ...base,
+        goals: [
+          goalWith([
+            { key: "war:shards_unit", resourceId: B, supplyOnDay: () => 6 },
+          ]),
+        ],
+        inventory: [],
+      })
+      const withOnslaught = estimatePlanSchedule({
+        ...base,
+        goals: [goalWith([onslaught])],
+        inventory: [],
+      })
+
+      expect(
+        withShop.days.every((day) => day.onslaughtEntries.length === 0)
+      ).toBe(true)
+      expect(withOnslaught.outcomes.get("ascend")).toMatchObject({
+        status: "Estimated",
+        days: 2,
+        onslaughtTokens: 3,
+      })
+    })
+  })
+})

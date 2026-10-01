@@ -8,6 +8,8 @@ import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { PlanCell, PlanDayCells } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
 import { PlanMaterialCell } from "./plan-material-cell"
+import { PlanOnslaughtRuns } from "./plan-onslaught-runs"
+import { PlanShopPurchases } from "./plan-shop-purchases"
 
 // V1's threshold for calling a day's energy budget "full".
 const FULL_ENERGY_RATIO = 0.95
@@ -126,6 +128,16 @@ export function PlanDayCard({
               {renderCells(cells.raided, `plan-day-${day.day}-raided`)}
             </>
           ) : null}
+          <PlanShopPurchases
+            day={day.day}
+            purchases={cells.shops}
+            selectedUnitId={selectedUnitId}
+          />
+          <PlanOnslaughtRuns
+            day={day.day}
+            runs={cells.onslaught}
+            selectedUnitId={selectedUnitId}
+          />
         </div>
       ) : null}
     </section>

@@ -17,7 +17,7 @@ import type {
 } from "../model/estimate.domain"
 import { blocked, partiallyBlocked } from "./estimate-blocked"
 import { classifyNeed } from "./select-farm-nodes"
-import { onslaughtTokensFromSupply } from "./shop-supply"
+import { onslaughtTokensFromSupply, shopSpendFromSupply } from "./shop-supply"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
@@ -45,6 +45,16 @@ const MAX_DAYS = 1000
  * farming against one shared remaining requirement (plan: acquisition-source picker,
  * tacticus-planner-apps#103), rather than as a separate estimate combined afterward.
  */
+/** `{ shopSpend }` when a shop offer contributed, else nothing — so outcomes without a shop supplier
+ *  keep their exact shape. */
+export function shopSpendField(
+  bySupplier: ReadonlyMap<string, number>,
+  suppliers: readonly FlatSupplier[] | undefined
+) {
+  const shopSpend = shopSpendFromSupply(bySupplier, suppliers)
+  return shopSpend.size > 0 ? { shopSpend } : {}
+}
+
 export function applyFlatSuppliers(
   remaining: Map<EstimateResourceId, number>,
   suppliers: readonly FlatSupplier[] | undefined,
@@ -332,6 +342,7 @@ export function estimateGoal({
       flatSupplyBySupplier,
       flatSuppliers
     ),
+    ...shopSpendField(flatSupplyBySupplier, flatSuppliers),
   }
 }
 

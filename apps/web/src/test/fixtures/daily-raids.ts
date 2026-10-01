@@ -52,6 +52,8 @@ export function ready(
   const day = (number: number) => ({
     day: number,
     entries: [entry("g1", `U${number}`)],
+    shopEntries: [],
+    onslaughtEntries: [],
     attemptsUsedByBattle: new Map([[battle, 2]]),
     energyTotal: 12,
     raidsTotal: 2,
@@ -61,12 +63,16 @@ export function ready(
     today: {
       day: 1,
       entries: todayEntries,
+      shopEntries: [],
+      onslaughtEntries: [],
       attemptsUsedByBattle: new Map([[battle, 7]]),
       energyTotal: 42,
       raidsTotal: 7,
     },
     bonus: {
       day: 1,
+      shopEntries: [],
+      onslaughtEntries: [],
       entries: [
         entry("g1", "B1"),
         entry("g1", "B2"),
@@ -87,6 +93,7 @@ export function ready(
     },
     dailyEnergy: 288,
     goalsById,
+    shopOffersById: new Map(),
     resourceLabels: new Map([
       ["U1", "Ceramite"],
       ["B1", "Bonus 1"],
@@ -188,6 +195,8 @@ export function raidedPlan(attemptsLeft: [typeof battle, number][]) {
   const planDay = (day: number, entries: ReturnType<typeof planEntry>[]) => ({
     day,
     entries,
+    shopEntries: [],
+    onslaughtEntries: [],
     attemptsUsedByBattle: new Map([[battle, 2]]),
     energyTotal: 12,
     raidsTotal: 2,

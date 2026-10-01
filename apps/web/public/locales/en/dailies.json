@@ -208,6 +208,16 @@
     "dayStats": "{{energy}} / {{available}} energy · {{raids}} raids",
     "showAll": "Show all days",
     "raided": "Raided",
+    "shops": "Shops",
+    "shop": {
+      "label": "{{shop}}, {{unit}}: about {{purchases}} purchases, {{shards}} shards, {{spend}} {{currency}}",
+      "expected": "≈{{purchases}}× · {{shards}} shards"
+    },
+    "onslaught": "Onslaught",
+    "onslaughtRun": {
+      "label": "{{unit}}: about {{runs}} Onslaught runs, {{shards}} shards",
+      "expected": "≈{{runs}} runs · {{shards}} shards"
+    },
     "cell": {
       "label": "{{material}}, {{owned}} of {{target}} owned",
       "node": "{{campaign}} {{node}} × {{raids}}",
@@ -290,7 +300,7 @@
         },
         "days": {
           "title": "Raid days",
-          "content": "Each day card lists the upgrades to farm as a grid. Hover or tap an upgrade for its units and nodes; finished upgrades sit under \"Raided\". Drag or swipe to scroll through the days."
+          "content": "Each day card lists the upgrades to farm as a grid. Hover or tap an upgrade for its units and nodes; finished upgrades sit under \"Raided\", planned shop purchases under \"Shops\" and Onslaught runs under \"Onslaught\". Drag or swipe to scroll through the days."
         }
       }
     }

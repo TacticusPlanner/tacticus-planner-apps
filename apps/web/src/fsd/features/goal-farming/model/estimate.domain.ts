@@ -86,6 +86,9 @@ export interface FlatSupplier {
   /** Set only on an Onslaught source: the average shards one token (run) yields, so a consumer can
    *  turn the shards it supplied into projected tokens (V1's `oTokensTotal`). */
   shardsPerRun?: number
+  /** Set only on a shop offer: what one purchase yields and costs, so a consumer can turn the shards
+   *  it supplied into currency spent (display only — the cost never enters the estimate). */
+  shop?: { shardsPerPurchase: number; currency: string; cost: number }
 }
 
 /** One battle node's farming economics for a single material. */
@@ -112,9 +115,31 @@ export interface RaidBreakdownEntry {
   dailyAttempts: number
 }
 
+/** One selected shop offer's projected contribution to one goal on one plan day (spec: the plan
+ *  schedule records each selected shop offer's per-day purchases). Display-only — it never feeds back
+ *  into the estimate. */
+export interface ShopScheduleEntry {
+  goalId: string
+  /** The `ShopShardOffer.offerId` (`<shopId>:<rewardType>`). */
+  offerId: string
+  /** Expected shards the offer supplied that day. */
+  expectedShards: number
+}
+
+/** One goal's projected Onslaught contribution on one plan day: the expected shards its selected
+ *  Onslaught source supplied and the runs they take (shards over the source's shards per run).
+ *  Display-only — it never feeds back into the estimate and consumes no energy. */
+export interface OnslaughtScheduleEntry {
+  goalId: string
+  expectedShards: number
+  runs: number
+}
+
 export interface RaidDaySchedule {
   day: number
   entries: RaidBreakdownEntry[]
+  shopEntries: ShopScheduleEntry[]
+  onslaughtEntries: OnslaughtScheduleEntry[]
   attemptsUsedByBattle: ReadonlyMap<BattleId, number>
   energyTotal: number
   raidsTotal: number
@@ -189,6 +214,9 @@ interface EstimateResult {
   /** Projected Onslaught tokens (runs) this estimate uses: each Onslaught supplier's supplied shards
    *  over its shards per run, rounded up. Absent when no Onslaught source contributed. */
   onslaughtTokens?: number
+  /** Projected shop currency this estimate spends, by currency id: each shop supplier's supplied
+   *  shards over its shards per purchase, times its cost. Absent when no shop offer contributed. */
+  shopSpend?: ReadonlyMap<string, number>
 }
 
 export type EstimateBlockedReason =

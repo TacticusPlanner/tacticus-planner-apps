@@ -25,6 +25,11 @@ export function projectShopSupply(
   return {
     key: offer.offerId,
     resourceId,
+    shop: {
+      shardsPerPurchase: offer.rewardQty,
+      currency: offer.cost.currency,
+      cost: offer.cost.amount,
+    },
     supplyOnDay: (dayIndex) => {
       const weekday = DOW_MAP[(referenceDate.getUTCDay() + dayIndex) % 7]!
       const probability = offer.probabilityByDay[weekday] ?? 0
@@ -95,4 +100,25 @@ export function onslaughtTokensFromSupply(
     }
   }
   return tokens
+}
+
+/** Projected shop currency spent, by currency id, from what each shop supplier supplied (expected
+ *  purchases = supplied shards over shards per purchase, times the offer's cost); empty when no shop
+ *  offer contributed. Unrounded — consumers round once for display. */
+export function shopSpendFromSupply(
+  bySupplier: ReadonlyMap<string, number>,
+  suppliers: readonly FlatSupplier[] | undefined
+): Map<string, number> {
+  const spend = new Map<string, number>()
+  for (const supplier of suppliers ?? []) {
+    const supplied = bySupplier.get(supplier.key) ?? 0
+    if (!supplier.shop || supplied <= 0) continue
+    const amount =
+      (supplied / supplier.shop.shardsPerPurchase) * supplier.shop.cost
+    spend.set(
+      supplier.shop.currency,
+      (spend.get(supplier.shop.currency) ?? 0) + amount
+    )
+  }
+  return spend
 }
