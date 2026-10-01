@@ -1,0 +1,219 @@
+[
+  {
+    "campaignGroupId": "campaign1",
+    "type": "Standard",
+    "energyCost": 0,
+    "releaseType": "standard",
+    "battles": 5
+  },
+  {
+    "campaignGroupId": "campaign1",
+    "type": "Standard",
+    "energyCost": 3,
+    "releaseType": "standard",
+    "battles": 9
+  },
+  {
+    "campaignGroupId": "campaign1",
+    "type": "Standard",
+    "energyCost": 5,
+    "releaseType": "standard",
+    "battles": 15
+  },
+  {
+    "campaignGroupId": "campaign1",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 46
+  },
+  {
+    "campaignGroupId": "campaign2",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  },
+  {
+    "campaignGroupId": "campaign3",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  },
+  {
+    "campaignGroupId": "campaign4",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  },
+  {
+    "campaignGroupId": "elite1",
+    "type": "Elite",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "elite2",
+    "type": "Elite",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "elite3",
+    "type": "Elite",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "elite4",
+    "type": "Elite",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "eliteMirror1",
+    "type": "EliteMirror",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "eliteMirror2",
+    "type": "EliteMirror",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "eliteMirror3",
+    "type": "EliteMirror",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "eliteMirror4",
+    "type": "EliteMirror",
+    "energyCost": 10,
+    "releaseType": "standard",
+    "battles": 40
+  },
+  {
+    "campaignGroupId": "eventCampaign1",
+    "type": "Extremis",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign1",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign2",
+    "type": "Extremis",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign2",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign3",
+    "type": "Extremis",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign3",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign4",
+    "type": "Extremis",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign4",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign5",
+    "type": "Extremis",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign5",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign6",
+    "type": "Extremis",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "eventCampaign6",
+    "type": "Standard",
+    "energyCost": 6,
+    "releaseType": "event",
+    "battles": 33
+  },
+  {
+    "campaignGroupId": "mirror1",
+    "type": "Mirror",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  },
+  {
+    "campaignGroupId": "mirror2",
+    "type": "Mirror",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  },
+  {
+    "campaignGroupId": "mirror3",
+    "type": "Mirror",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  },
+  {
+    "campaignGroupId": "mirror4",
+    "type": "Mirror",
+    "energyCost": 6,
+    "releaseType": "standard",
+    "battles": 75
+  }
+]

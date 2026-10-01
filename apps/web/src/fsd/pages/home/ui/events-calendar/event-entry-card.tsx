@@ -4,15 +4,16 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EventTypeIcon } from "@/shared/ui"
+
 import {
   eventAccentClass,
   eventBarClass,
   resolveEventColorKey,
-} from "../../model/event-colors"
+} from "@/shared/lib"
 import type { EventEntryViewModel } from "../../model/events-calendar.types"
 import { resolveEventDisplayName } from "../../model/resolve-event-display"
 import { resolveEventWikiUrl } from "../../model/event-wiki-links"
-import { EventTypeIcon } from "./event-type-icon"
 
 export function EventEntryCard({
   entry,

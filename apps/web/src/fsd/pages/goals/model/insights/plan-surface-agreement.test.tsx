@@ -15,6 +15,7 @@ import {
   availableCampaignBattles,
   calculateDailyRaids,
 } from "@/features/daily-raids"
+import type { RaidsFilters } from "@/features/daily-raids"
 import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
 
 vi.mock("react-i18next", () => ({
@@ -138,7 +139,39 @@ function rankGoal(): GoalDetail {
   } as GoalDetail
 }
 
-function surfaces(upgradeIds: (typeof farmable)[]) {
+// Only Today and Bonus Raids read these; the Plan and Goals ignore a Raids Filter by design.
+const noFilters: RaidsFilters = {
+  alliesAlliances: [],
+  alliesFactions: [],
+  enemiesAlliances: [],
+  enemiesFactions: [],
+  enemiesTraits: [],
+  campaignTypes: [],
+  upgradeRarities: [],
+  slots: [],
+  enemiesTypes: [],
+}
+const filterBattlesById = new Map(
+  [standingNode, eventNode].map((id) => [
+    id as string,
+    {
+      slots: 5,
+      alliesAlliance: "Imperial",
+      alliesFactions: [],
+      enemiesAlliances: [],
+      enemiesFactions: [],
+      enemiesTraits: [],
+      enemiesTotal: 5,
+      enemiesTypes: [],
+      campaignType: "Normal" as const,
+    },
+  ])
+)
+
+function surfaces(
+  upgradeIds: (typeof farmable)[],
+  raidsFilters: RaidsFilters = noFilters
+) {
   const detail = rankGoal()
   const character = {
     id: hero,
@@ -165,6 +198,8 @@ function surfaces(upgradeIds: (typeof farmable)[]) {
     ...shared,
     members: [{ goal: detail }] as never,
     referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    raidsFilters,
+    filterBattlesById,
   })
   const insights = computePlanInsights({
     ...shared,
@@ -243,5 +278,31 @@ describe("Goals, Today and Raids Plan agree on a partly blocked goal", () => {
     render(<BlockedIndicator blockers={blockers} />)
     expect(screen.getByTestId("goal-blocked-indicator")).toBeInTheDocument()
     expect(screen.queryByTestId("goal-restricted-indicator")).toBeNull()
+  })
+
+  it("an active Raids Filter changes Today only: Goals, the Plan and the blockers still agree", () => {
+    const unfiltered = surfaces([farmable])
+    const filtered = surfaces([farmable], { ...noFilters, slots: [4] })
+
+    // Today lost its only node and says why; the unfiltered Plan day 1 still raids it.
+    expect(filtered.plan?.status).toBe("ready")
+    expect(filtered.plan?.today.entries).toEqual([])
+    expect(filtered.plan?.filteredOut).toEqual([
+      { goalId: "goal-1", resourceId: farmable, remaining: 1, pinned: false },
+    ])
+    expect(unfiltered.plan?.filteredOut).toEqual([])
+    expect(
+      filtered.plan?.planDays[0]?.entries.map((e) => e.resourceId)
+    ).toEqual([farmable])
+
+    // Plan, blockers and the Goals estimate are identical with and without the filter.
+    expect(filtered.plan?.planDays).toEqual(unfiltered.plan?.planDays)
+    expect(filtered.plan?.planSummary).toEqual(unfiltered.plan?.planSummary)
+    expect(filtered.plan?.blockedGoals).toEqual(unfiltered.plan?.blockedGoals)
+    expect(filtered.plan?.resourceUrgencyByGoalAndResource).toEqual(
+      unfiltered.plan?.resourceUrgencyByGoalAndResource
+    )
+    expect(filtered.estimate).toEqual(unfiltered.estimate)
+    expect(filtered.blockers).toEqual(unfiltered.blockers)
   })
 })

@@ -16,6 +16,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { NavChildRow } from "./nav-child-row"
 import { filterNavigationItems } from "./navigation-filter"
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import {
   filterQuickActions,
@@ -47,6 +48,7 @@ export function DesktopNavigationDialog({
   const [search, setSearch] = useState("")
   const filteredItems = filterNavigationItems(items, search, t)
   const filteredActions = filterQuickActions(quickActions.actions, search)
+  const isSearching = search.trim() !== ""
 
   const handleOpenChange = (nextOpen: boolean) => {
     onOpenChange(nextOpen)
@@ -119,7 +121,10 @@ export function DesktopNavigationDialog({
                       >
                         <item.icon className="size-5 shrink-0" />
                         <span className="flex min-w-0 flex-col">
-                          <span className="truncate">{t(item.labelKey)}</span>
+                          <span className="flex items-center">
+                            <span className="truncate">{t(item.labelKey)}</span>
+                            <NavLiveDot hidden={isSearching} item={item} />
+                          </span>
                           <span
                             className={cn(
                               "truncate text-xs font-normal",
@@ -138,6 +143,7 @@ export function DesktopNavigationDialog({
                             <NavChildRow
                               key={child.path}
                               child={child}
+                              hideLive={isSearching}
                               isActive={pathname === child.path}
                               onSelect={() => handleOpenChange(false)}
                             />

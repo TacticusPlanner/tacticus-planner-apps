@@ -328,6 +328,8 @@ describe("catalog schemas", () => {
         dailyAttempts: 10,
         rewards: { guaranteed: [], potential: [] },
         enemyPower: 34,
+        alliesAlliance: "Imperial",
+        alliesFactions: ["Ultramarines"],
         enemiesAlliances: ["Xenos"],
         enemiesFactions: ["Necrons"],
         enemiesTotal: 5,

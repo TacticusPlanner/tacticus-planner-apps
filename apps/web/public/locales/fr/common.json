@@ -196,6 +196,7 @@
     "addGoal": "Ajouter un objectif",
     "dailies": "Quotidiennes",
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
+    "eventLive": "Événement en cours",
     "home": "Accueil",
     "homeDescription": "Aperçu de votre compte et raccourcis",
     "createGoal": "Créer un objectif",
@@ -316,6 +317,15 @@
       "empty": "Rien à raider aujourd'hui.",
       "error": "Impossible de charger les raids du jour.",
       "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids."
+    },
+    "events": {
+      "title": "Événements de l'écran d'accueil",
+      "live": "EN COURS",
+      "endsIn": "Se termine dans {{when}}",
+      "startsIn": "Commence dans {{when}}",
+      "empty": "Aucun événement programmé.",
+      "error": "Impossible de charger les événements.",
+      "loading": "Chargement des événements…"
     },
     "calendar": {
       "title": "Calendrier des événements"
@@ -823,7 +833,8 @@
         "FarmingOverrideUnavailable": "Les lieux de farming sélectionnés ne fournissent pas toutes les ressources requises.",
         "InsufficientDailyEnergy": "L'énergie quotidienne est inférieure au coût du nœud utilisable le moins cher.",
         "SimulationLimit": "L'objectif n'a pas pu être terminé dans l'horizon de planification.",
-        "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif."
+        "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif.",
+        "FilteredOut": "Tous les lieux préférés sont exclus par vos filtres de raids."
       }
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",
@@ -1239,5 +1250,10 @@
         "label": "Selection"
       }
     }
+  },
+  "alliances": {
+    "Imperial": "Impérial",
+    "Chaos": "Chaos",
+    "Xenos": "Xenos"
   }
 }

@@ -10,11 +10,13 @@ import type {
 import type { GoalKind } from "@/entities/goal"
 import type {
   EstimateBlocker,
+  FilteredOutNeed,
   RaidDaySchedule,
   RaidPlanSummary,
 } from "@/features/goal-farming/@x/daily-raids"
 
 import type { TodaysAttempt } from "./daily-raids-energy"
+import type { EventFarm } from "./home-screen-event-farm"
 
 export type DailyRaidGoalViewModel = {
   goalId: string
@@ -133,6 +135,9 @@ export type DailyRaidsReadyViewModel = {
   planSummary: RaidPlanSummary
   /** Goals whose plan outcome is Blocked, in priority order — same result the schedule came from. */
   blockedGoals: DailyRaidBlockedGoal[]
+  /** Needs the applied Raids Filters left with no allowed node in Today's run. Today only: the Plan
+   *  and `blockedGoals` are unfiltered and never carry these. */
+  filteredOut: FilteredOutNeed[]
   dailyEnergy: number
   goalsById: ReadonlyMap<string, DailyRaidGoalViewModel>
   resourceLabels: ReadonlyMap<string, string>
@@ -141,6 +146,8 @@ export type DailyRaidsReadyViewModel = {
     string,
     DailyRaidResourceUrgency
   >
+  /** Have/need per resource over every goal in the run: total target and what the player holds. */
+  resourceTotals: ReadonlyMap<string, DailyRaidResourceProgress>
   resourceProgressByDay: ReadonlyMap<
     number,
     ReadonlyMap<string, DailyRaidResourceProgress>
@@ -160,6 +167,8 @@ export type DailyRaidsReadyViewModel = {
   // Every standing-campaign node actually raided today, account-wide — backs the "Today's
   // Attempts" section (not scoped to this project's schedule).
   todaysAttempts: TodaysAttempt[]
+  /** The Dailies > HSE farm list; set only when the run was given the event inputs. */
+  eventFarm?: EventFarm
 }
 
 export type DailyRaidsCalculationViewModel = Omit<

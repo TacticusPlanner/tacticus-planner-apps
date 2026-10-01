@@ -4,6 +4,11 @@ export { UpgradeIcon } from "./upgrade-icon"
 export { RankBadge } from "./rank-badge"
 export { RarityIcon } from "./rarity-icon"
 export { UnitCombobox } from "./unit-combobox"
+export {
+  MultiSelect,
+  SearchableSelect,
+  type SelectOption,
+} from "./option-select"
 export { RarityCombobox, type RarityComboboxItem } from "./rarity-combobox"
 export { ProgressionSelect, ProgressionBadge } from "./progression-select"
 export { RankSelect } from "./rank-select"
@@ -24,3 +29,4 @@ export {
   ResponsiveDialogTitle,
 } from "./responsive-dialog"
 export { closestOverlayContent } from "./overlay-content"
+export { EventTypeIcon } from "./event-type-icon"

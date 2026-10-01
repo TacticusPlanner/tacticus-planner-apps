@@ -49,6 +49,18 @@
     "hse-arsenal-of-war": "Arsenal de Guerra",
     "hse-machine-hunt": "Caza de Máquinas",
     "hse-terminator-boost": "Impulso Terminator",
+    "hse-purge-order": "Orden de Purga",
+    "hse-squig-smash": "Aplastasquigs",
+    "hse-against-the-tide": "Contra la marea",
+    "hse-trait-boost-rapid-assault": "Impulso de rasgo: Asalto rápido",
+    "hse-trait-boost-flying": "Impulso de rasgo: Volador",
+    "hse-trait-boost-psyker": "Impulso de rasgo: Psíquico",
+    "hse-for-the-dark-gods": "Por los Dioses Oscuros",
+    "hse-for-the-emperor": "Por el Emperador",
+    "hse-defeat-waves": "Derrotar oleadas",
+    "hse-11th-edition-week-1": "11.ª edición: semana 1",
+    "hse-11th-edition-week-2": "11.ª edición: semana 2",
+    "hse-11th-edition-week-3": "11.ª edición: semana 3",
     "ta-faction-war": "Arena de Torneos: Guerra de facciones",
     "ta-power-ups": "Arena de Torneos: Potenciadores",
     "ta-conquest": "Arena de Torneos: Conquista",
@@ -83,6 +95,10 @@
         "tokenAvailability": {
           "title": "Disponibilidad de fichas",
           "content": "Consulta de un vistazo el estado de tus fichas de Arena, Incursión de Gremio, Asalto y Carrera de Saqueo."
+        },
+        "hseWidget": {
+          "title": "Eventos de la pantalla de inicio",
+          "content": "Mira el evento en curso y el próximo que empezará. Selecciona la tarjeta para abrir la pestaña de eventos de la pantalla de inicio."
         },
         "projects": {
           "title": "Tus proyectos",

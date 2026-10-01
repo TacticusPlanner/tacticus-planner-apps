@@ -128,6 +128,26 @@ describe("OnslaughtPage", () => {
     expect(saveProgress.mock.calls[1]?.[0]).toMatchObject({ revision: 5 })
   }, 10_000)
 
+  it("resets the tier when the sector changes", async () => {
+    const user = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <OnslaughtPage />
+      </MemoryRouter>
+    )
+    await screen.findByTestId("onslaught-page")
+
+    await user.click(screen.getByTestId("imperial-onslaught-sector"))
+    await user.click(screen.getByRole("option", { name: /Diamond tier 2/ }))
+    expect(screen.getByTestId("imperial-onslaught-tier")).toHaveTextContent("1")
+
+    await user.click(screen.getByTestId("imperial-onslaught-sector"))
+    await user.click(screen.getByRole("option", { name: /Gold tier 1/ }))
+    expect(screen.getByTestId("imperial-onslaught-tier")).toHaveTextContent(
+      "onslaught.tierComplete"
+    )
+  })
+
   it("reloads the latest values after a stale-revision conflict", async () => {
     const user = userEvent.setup()
     const refreshed = {

@@ -39,10 +39,8 @@ type NavLabelKey =
   // these resolve correctly in the always-mounted app shell, not just once a Dailies page has
   // been visited.
   | "dailies:tabs.raids"
+  | "dailies:tabs.hse"
   | "dailies:tabs.shops"
-  | "dailies:tabs.onslaught"
-  | "dailies:tabs.salvage-run"
-  | "dailies:tabs.arena"
   | "dailies:tabs.guild-raids"
 
 // Follows the sibling-leaf naming convention: a description key is always the matching label key
@@ -76,6 +74,8 @@ export interface NavSubItem {
   // they did not ask for, so a child added later must declare this deliberately rather than
   // inherit it.
   isLandingPage?: boolean
+  // Names a live signal this entry shows through `NavLiveDot` (absent means none).
+  liveIndicator?: "hse"
 }
 
 export interface NavItem {
@@ -89,6 +89,8 @@ export interface NavItem {
   // tucked inside the bottom-left hamburger menu. Desktop ignores this and
   // always lists every visible item in the sidebar's main nav.
   mobilePlacement: "primary" | "menu"
+  // See `NavSubItem.liveIndicator`; the parent shows it too so it stays visible when collapsed.
+  liveIndicator?: "hse"
 }
 
 export const navItems: NavItem[] = [
@@ -175,6 +177,7 @@ export const navItems: NavItem[] = [
     icon: CalendarCheck,
     anonymousAllowed: false,
     mobilePlacement: "primary",
+    liveIndicator: "hse",
     children: [
       {
         path: "/dailies/raids",
@@ -182,24 +185,15 @@ export const navItems: NavItem[] = [
         descriptionKey: "dailies:tabs.raidsDescription",
       },
       {
+        path: "/dailies/hse",
+        labelKey: "dailies:tabs.hse",
+        descriptionKey: "dailies:tabs.hseDescription",
+        liveIndicator: "hse",
+      },
+      {
         path: "/dailies/shops",
         labelKey: "dailies:tabs.shops",
         descriptionKey: "dailies:tabs.shopsDescription",
-      },
-      {
-        path: "/dailies/onslaught",
-        labelKey: "dailies:tabs.onslaught",
-        descriptionKey: "dailies:tabs.onslaughtDescription",
-      },
-      {
-        path: "/dailies/salvage-run",
-        labelKey: "dailies:tabs.salvage-run",
-        descriptionKey: "dailies:tabs.salvage-runDescription",
-      },
-      {
-        path: "/dailies/arena",
-        labelKey: "dailies:tabs.arena",
-        descriptionKey: "dailies:tabs.arenaDescription",
       },
       {
         path: "/dailies/guild-raids",

@@ -4,11 +4,9 @@ import type {
   Battle,
   CountedResourceNeed,
   EstimateResourceId,
-  EstimateBlockedReason,
   EstimateBlocker,
   EstimateOutcome,
   EstimateUpgrade,
-  FarmLocation,
   FarmNode,
   FlatSupplier,
   GoalInventoryAllocation,
@@ -17,11 +15,8 @@ import type {
   RaidBreakdownEntry,
   UpgradeNeed,
 } from "../model/estimate.domain"
-import {
-  blocked,
-  partiallyBlocked,
-  unavailableReason,
-} from "./estimate-blocked"
+import { blocked, partiallyBlocked } from "./estimate-blocked"
+import { classifyNeed } from "./select-farm-nodes"
 import { onslaughtTokensFromSupply } from "./shop-supply"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
@@ -39,107 +34,6 @@ import { onslaughtTokensFromSupply } from "./shop-supply"
 /** V1's guard against a farm that can never complete (e.g. zero daily energy, or every candidate
  *  node priced out of the daily budget) looping forever. */
 const MAX_DAYS = 1000
-
-/**
- * The chance a single run drops this location's material: 1 for a guaranteed drop, the precomputed
- * `effectiveRate` when present, else the raw `numerator/denominator` fraction, else 0. Duplicated
- * from `@/shared/lib`'s `campaign-insights.ts` rather than imported, per this codebase's cross-file
- * duplication convention for small pure helpers.
- */
-export function dropRate(location: FarmLocation): number {
-  if (location.effectiveRate != null) return location.effectiveRate
-  if (location.guaranteed) return 1
-  if (location.numerator != null && location.denominator) {
-    return location.numerator / location.denominator
-  }
-  return 0
-}
-
-/**
- * The farm node(s) to raid for one material need: every location restricted to `farmingLocationIds`
- * when the goal pins specific nodes, otherwise the least-`energyPerItem` node(s) across all its drop
- * locations, every node tied on two-decimal `energyPerItem`, ordered higher `expectedGold` first (a port of V1
- * `CampaignsService.selectBestLocations`, which sorts `['energyPerItem', 'expectedGold']` ascending
- * then descending — a location with no `expectedGold` sorts lowest for this tie-break, never winning
- * over one that reports a value). Locations with no energy cost or no drop chance are never
- * selectable. Empty when the material can't be farmed at all.
- */
-export function selectFarmNodes(
-  need: UpgradeNeed,
-  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
-  battlesById: ReadonlyMap<BattleId, Battle>,
-  farmingLocationIds?: readonly string[] | null
-): FarmNode[] {
-  const upgrade = upgradesById.get(need.id)
-  if (!upgrade) return []
-
-  const restricted = farmingLocationIds && farmingLocationIds.length > 0
-
-  const candidatesByBattle = new Map<BattleId, FarmNode>()
-  for (const location of upgrade.farmLocations) {
-    const battle = battlesById.get(location.battleId)
-    if (!battle || battle.energyCost <= 0) continue
-
-    const rate = dropRate(location)
-    if (rate <= 0) continue
-
-    if (restricted && !farmingLocationIds.includes(location.battleId)) continue
-
-    const existing = candidatesByBattle.get(location.battleId)
-    if (existing) {
-      existing.dropRate += rate
-    } else {
-      candidatesByBattle.set(location.battleId, {
-        battleId: location.battleId,
-        energyCost: battle.energyCost,
-        dropRate: rate,
-        dailyAttempts: battle.dailyAttempts,
-        expectedGold: location.expectedGold,
-      })
-    }
-  }
-
-  const candidates = [...candidatesByBattle.values()]
-  if (candidates.length === 0 || restricted) return candidates
-
-  // Tie test only: two-decimal efficiency as V1 (`campaigns.service.ts`); nodes keep their real dropRate.
-  const efficiency = (c: FarmNode) =>
-    Number((c.energyCost / c.dropRate).toFixed(2))
-  const minEnergyPerItem = Math.min(...candidates.map(efficiency))
-  return candidates
-    .filter((c) => efficiency(c) === minEnergyPerItem)
-    .sort((a, b) => (b.expectedGold ?? -1) - (a.expectedGold ?? -1))
-}
-
-/**
- * Classifies one residual need: the farm nodes to raid for it, or the reason it has no supported
- * source (a flat supplier makes a campaign-less need actionable). Shared by `estimateGoal` and the
- * plan estimate so both classify every need identically.
- */
-export function classifyNeed(
-  need: UpgradeNeed,
-  hasSupplier: boolean,
-  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
-  battlesById: ReadonlyMap<BattleId, Battle>,
-  farmingLocationIds: readonly string[] | null | undefined,
-  dailyEnergy: number
-): { nodes: FarmNode[]; blocker: EstimateBlockedReason | null } {
-  const unavailable = unavailableReason(
-    need,
-    upgradesById,
-    battlesById,
-    farmingLocationIds,
-    dailyEnergy
-  )
-  if (unavailable && !hasSupplier) return { nodes: [], blocker: unavailable }
-  const nodes = unavailable
-    ? []
-    : selectFarmNodes(need, upgradesById, battlesById, farmingLocationIds)
-  if (nodes.length === 0 && !unavailable && !hasSupplier) {
-    return { nodes, blocker: "NoFarmLocation" }
-  }
-  return { nodes, blocker: null }
-}
 
 /**
  * Applies each supplier's day-`dayIndex` amount against `remaining` (mutated in place), capped at
@@ -490,3 +384,11 @@ export function allocatePlanInventory(
 ): Map<string, GoalInventoryAllocation> {
   return allocateInventory(goals, inventory)
 }
+
+// Node selection lives in `select-farm-nodes.ts`; re-exported so callers keep importing it from here.
+export {
+  classifyNeed,
+  collectFarmNodes,
+  dropRate,
+  selectFarmNodes,
+} from "./select-farm-nodes"

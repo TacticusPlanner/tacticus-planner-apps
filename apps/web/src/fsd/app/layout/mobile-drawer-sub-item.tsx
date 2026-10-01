@@ -2,13 +2,17 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavSubItem } from "./nav-items"
 
 export function MobileDrawerSubItem({
+  hideLive = false,
   item,
   onSelect,
   pathname,
 }: {
+  /** Search results show no live indicator. */
+  hideLive?: boolean
   item: NavSubItem
   onSelect: () => void
   pathname: string
@@ -30,7 +34,10 @@ export function MobileDrawerSubItem({
       onClick={onSelect}
       to={item.path}
     >
-      <span className="truncate">{t(item.labelKey)}</span>
+      <span className="flex items-center">
+        <span className="truncate">{t(item.labelKey)}</span>
+        <NavLiveDot hidden={hideLive} item={item} />
+      </span>
       <span className="truncate text-xs font-normal opacity-80">
         {t(item.descriptionKey)}
       </span>

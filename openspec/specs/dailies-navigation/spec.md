@@ -8,17 +8,22 @@ Gives players a single `/dailies` entry point for day-to-day play activities (ra
 
 ### Requirement: Dailies primary navigation
 
-The system SHALL present a `/dailies` section with 6 primary tabs — Raids, Shops, Onslaught, Salvage Run, Arena, Guild Raids — and SHALL land the user on the Raids tab by default.
+The system SHALL present a `/dailies` section with 3 primary tabs — Raids, Shops, Guild Raids — and SHALL land the user on the Raids tab by default. Onslaught, Salvage Run, and Arena SHALL NOT appear in Dailies navigation (section tabs, desktop section menu, or navigation search).
 
 #### Scenario: Opening Dailies lands on Raids
 
 - **WHEN** a signed-in user navigates to `/dailies`
-- **THEN** all 6 tabs are visible and the Raids tab's content is shown without further navigation
+- **THEN** the 3 tabs are visible and the Raids tab's content is shown without further navigation
 
 #### Scenario: Switching to a tab preserves the tab bar
 
-- **WHEN** the user selects any of the 6 primary tabs
+- **WHEN** the user selects any of the 3 primary tabs
 - **THEN** the tab bar remains visible and the selected tab is highlighted as active
+
+#### Scenario: Hidden pages are not routes
+
+- **WHEN** the user opens `/dailies/onslaught`, `/dailies/salvage-run`, or `/dailies/arena`
+- **THEN** the app treats it as an unknown route, the same as any other path it does not serve
 
 ### Requirement: Every Dailies primary tab opens its implemented page
 
@@ -36,7 +41,7 @@ Every Dailies primary tab SHALL render its implemented page. Guild Raids SHALL r
 
 #### Scenario: Opening another implemented primary tab
 
-- **WHEN** the user opens Raids, Shops, Arena, Salvage Run, or Onslaught
+- **WHEN** the user opens Raids or Shops
 - **THEN** that tab's existing implemented page is shown
 
 ### Requirement: The Raids tab is the Today page

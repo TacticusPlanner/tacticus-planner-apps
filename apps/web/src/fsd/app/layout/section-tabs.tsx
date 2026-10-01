@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 
 /**
@@ -73,6 +74,7 @@ export function SectionTabs({ item }: { item: NavItem }) {
             value={child.path}
           >
             {t(child.labelKey)}
+            <NavLiveDot item={child} />
           </TabsTrigger>
         ))}
       </TabsList>

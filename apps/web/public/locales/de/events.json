@@ -49,6 +49,18 @@
     "hse-arsenal-of-war": "Kriegsarsenal",
     "hse-machine-hunt": "Maschinenjagd",
     "hse-terminator-boost": "Terminator-Boost",
+    "hse-purge-order": "Säuberungsbefehl",
+    "hse-squig-smash": "Squig-Zerschmetterer",
+    "hse-against-the-tide": "Gegen die Flut",
+    "hse-trait-boost-rapid-assault": "Merkmals-Boost: Schnellangriff",
+    "hse-trait-boost-flying": "Merkmals-Boost: Flug",
+    "hse-trait-boost-psyker": "Merkmals-Boost: Psioniker",
+    "hse-for-the-dark-gods": "Für die Dunklen Götter",
+    "hse-for-the-emperor": "Für den Imperator",
+    "hse-defeat-waves": "Wellen besiegen",
+    "hse-11th-edition-week-1": "11. Edition: Woche 1",
+    "hse-11th-edition-week-2": "11. Edition: Woche 2",
+    "hse-11th-edition-week-3": "11. Edition: Woche 3",
     "ta-faction-war": "Turnierarena: Fraktionskrieg",
     "ta-power-ups": "Turnierarena: Power-Ups",
     "ta-conquest": "Turnierarena: Eroberung",
@@ -83,6 +95,10 @@
         "tokenAvailability": {
           "title": "Token-Verfügbarkeit",
           "content": "Sieh auf einen Blick deinen Arena-, Gildenangriffs-, Ansturm- und Plünderungslauf-Token-Status."
+        },
+        "hseWidget": {
+          "title": "Startbildschirm-Events",
+          "content": "Sieh das aktuell laufende Event und das nächste, das startet. Wähle die Karte, um den Tab Startbildschirm-Events zu öffnen."
         },
         "projects": {
           "title": "Deine Projekte",

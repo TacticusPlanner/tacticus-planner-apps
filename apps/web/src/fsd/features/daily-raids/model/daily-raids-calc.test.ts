@@ -42,6 +42,7 @@ import {
   activeProjectMembers,
   calculateResourceUrgency,
   calculateDailyRaids,
+  type DailyRaidsCalculationInput,
 } from "./daily-raids-calc"
 import { playerUnitIds } from "./use-daily-raids"
 
@@ -1253,5 +1254,107 @@ describe("daily raid derivation", () => {
       },
     ])
     expect(result.planSummary.completionDate).toBeNull()
+  })
+
+  it("returns the HSE farm list only when given the event inputs, picking the point-earning node where Today keeps the efficient one, and leaves Today, Bonus and the Plan untouched", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const baseId = upgradeIdSchema.parse("base")
+    const nodeA = battleIdSchema.parse("A")
+    const nodeB = battleIdSchema.parse("B")
+    const location = (battleId: typeof nodeA, expectedGold: number) => ({
+      battleId,
+      guaranteed: true,
+      effectiveRate: null,
+      numerator: null,
+      denominator: null,
+      isMythic: false,
+      expectedGold,
+    })
+    const baseUpgrade = {
+      id: baseId,
+      label: "Base",
+      rarity: "Common",
+      stat: "health",
+      crafted: false,
+      recipe: [],
+      farmLocations: [location(nodeA, 1), location(nodeB, 9)],
+    } as FarmingUpgrade
+    const node = (): Battle => ({
+      campaignGroupId: campaignIdSchema.parse("CG1"),
+      type: "Normal",
+      challenge: false,
+      nodeNumber: 1,
+      battleIndex: 0,
+      energyCost: 10,
+      dailyAttempts: 999,
+    })
+    const detail = goalDetail({
+      goalId: "g1",
+      entityId: heroId,
+      goalType: "Rank",
+      config: {
+        rank: {
+          start: rankIndex(rankOrder[0]),
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: rankIndex(rankOrder[1]),
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+        progression: null,
+        ability: null,
+        farmingStrategy: "TotalUpgrades",
+        acquisitionSources: null,
+        farmingLocationIds: null,
+        upgrade: null,
+      },
+    })
+    const run = (eventFarm?: DailyRaidsCalculationInput["eventFarm"]) =>
+      calculateDailyRaids({
+        members: [{ goal: { ...detail, globalPriority: 1 } }],
+        details: [detail],
+        playerCharacterById: new Map(),
+        playerMowById: new Map(),
+        inventoryShardById: new Map(),
+        inventoryUpgrades: [],
+        upgradesById: new Map([[baseId, baseUpgrade]]),
+        battlesById: new Map([
+          [nodeA, node()],
+          [nodeB, node()],
+        ]),
+        charactersById: new Map(),
+        mowsById: new Map(),
+        ascensionCostsById: new Map(),
+        unlockShardCostsById: new Map(),
+        getCharacter: () => ({
+          id: heroId,
+          name: "Synthetic hero",
+          rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [baseId] }],
+        }),
+        dailyEnergy: 100,
+        referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+        eventFarm,
+      })
+
+    const plain = run()
+    // Only node A earns event points; Today still prefers B (higher expected gold on the tie).
+    const withEvent = run({
+      pointsByBattleId: new Map([[nodeA, 3]]),
+      attemptsLeftByBattle: new Map(),
+      energyBudget: 100,
+    })
+    expect(plain?.status).toBe("ready")
+    expect(withEvent?.status).toBe("ready")
+    if (plain?.status !== "ready" || withEvent?.status !== "ready") return
+    expect(plain.eventFarm).toBeUndefined()
+    expect(withEvent.eventFarm?.rows.map((row) => row.battleId)).toEqual([
+      nodeA,
+    ])
+    expect(withEvent.eventFarm?.totalPoints).toBeGreaterThan(0)
+    expect(withEvent.today.entries.map((entry) => entry.battleId)).toEqual([
+      nodeB,
+    ])
+    // Nothing else in the result moves: the event inputs are a pure add-on.
+    expect({ ...withEvent, eventFarm: undefined }).toEqual(plain)
   })
 })

@@ -32,6 +32,7 @@ import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
 import { filterNavigationItems } from "./navigation-filter"
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import {
   filterQuickActions,
@@ -193,6 +194,7 @@ function MobileBottomNav({
   const dailiesItem = items.find((item) => item.path === "/dailies")
   const filteredItems = filterNavigationItems(items, search, t)
   const filteredActions = filterQuickActions(quickActions.actions, search)
+  const isSearching = search.trim() !== ""
   const isMenuItemActive = items.some(
     (item) =>
       !["/home", "/plan", "/dailies"].includes(item.path) &&
@@ -294,7 +296,12 @@ function MobileBottomNav({
                         >
                           <item.icon className="size-5 shrink-0" />
                           <span className="flex min-w-0 flex-col">
-                            <span className="truncate">{t(item.labelKey)}</span>
+                            <span className="flex items-center">
+                              <span className="truncate">
+                                {t(item.labelKey)}
+                              </span>
+                              <NavLiveDot hidden={isSearching} item={item} />
+                            </span>
                             <span
                               className={cn(
                                 "truncate text-xs font-normal",
@@ -312,6 +319,7 @@ function MobileBottomNav({
                             {item.children.map((child) => (
                               <MobileDrawerSubItem
                                 key={child.path}
+                                hideLive={isSearching}
                                 item={child}
                                 onSelect={() => setMenuOpen(false)}
                                 pathname={pathname}

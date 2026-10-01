@@ -49,6 +49,18 @@
     "hse-arsenal-of-war": "Arsenal of War",
     "hse-machine-hunt": "Machine Hunt",
     "hse-terminator-boost": "Terminator Boost",
+    "hse-purge-order": "Purge Order",
+    "hse-squig-smash": "Squig Smash",
+    "hse-against-the-tide": "Against the Tide",
+    "hse-trait-boost-rapid-assault": "Trait Boost: Rapid Assault",
+    "hse-trait-boost-flying": "Trait Boost: Flying",
+    "hse-trait-boost-psyker": "Trait Boost: Psyker",
+    "hse-for-the-dark-gods": "For the Dark Gods",
+    "hse-for-the-emperor": "For the Emperor",
+    "hse-defeat-waves": "Defeat Waves",
+    "hse-11th-edition-week-1": "11th Edition: Week 1",
+    "hse-11th-edition-week-2": "11th Edition: Week 2",
+    "hse-11th-edition-week-3": "11th Edition: Week 3",
     "ta-faction-war": "Tournament Arena: Faction War",
     "ta-power-ups": "Tournament Arena: Power-Ups",
     "ta-conquest": "Tournament Arena: Conquest",
@@ -83,6 +95,10 @@
         "tokenAvailability": {
           "title": "Token Availability",
           "content": "Check your Arena, Guild Raid, Onslaught, and Salvage Run token status at a glance."
+        },
+        "hseWidget": {
+          "title": "Home Screen Events",
+          "content": "See the event that is live and the next one to start. Select the card to open the Home Screen Events tab."
         },
         "projects": {
           "title": "Your Projects",

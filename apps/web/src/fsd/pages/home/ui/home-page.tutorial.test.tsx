@@ -28,6 +28,7 @@ describe("useHomePageTutorial", () => {
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="token-availability"]',
+      '[data-testid="home-events-widget"]',
       '[data-testid="home-projects-widget"]',
       '[data-testid="home-raids-widget"]',
       '[data-testid="events-calendar-navigation"]',

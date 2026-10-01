@@ -11,14 +11,10 @@
   "tabs": {
     "raids": "Raids",
     "raidsDescription": "Spend today's energy on your active goals in priority order.",
+    "hse": "HSE",
+    "hseDescription": "Home Screen Event: raid where the current event earns points",
     "shops": "Shops",
     "shopsDescription": "Track shop rotations and purchases",
-    "onslaught": "Onslaught",
-    "onslaughtDescription": "Alliance-locked Onslaught team recommendations and post-battle shard recipient",
-    "salvage-run": "Salvage Run",
-    "salvage-runDescription": "Alliance-locked Salvage Run team recommendations",
-    "arena": "Arena",
-    "arenaDescription": "Recommended Arena teams for your goals",
     "guild-raids": "Guild Raids",
     "guild-raidsDescription": "See your guild's current Guild Raid status and your personal raid resources."
   },
@@ -274,6 +270,10 @@
         "todaysAttempts": {
           "title": "Today's attempts",
           "content": "Every real raid you've made today, account-wide — whether it still has attempts left or has hit its cap."
+        },
+        "filters": {
+          "title": "Raids Filters",
+          "content": "Limit Today and Bonus Raids to the campaign locations you want, for example only 5-slot Elite nodes or a specific enemy faction. The badge shows how many filters are active."
         }
       }
     },
@@ -299,5 +299,106 @@
     "partial": "Obtainable work is scheduled; the rest has no supported source, so there is no completion date.",
     "none": "Nothing is obtainable yet, so nothing is scheduled and there is no completion date.",
     "row": "{{material}} ×{{count}}: {{reason}}"
+  },
+  "raidsFilters": {
+    "trigger": "Raids Filters",
+    "triggerActive": "Raids Filters, {{count}} active",
+    "title": "Raids Filters",
+    "description": "Limit which campaign locations Today, Bonus Raids and the HSE tab may use. Plan and Goals are not affected.",
+    "sections": {
+      "allies": "Allies",
+      "enemies": "Enemies",
+      "locations": "Locations",
+      "upgrades": "Upgrades"
+    },
+    "fields": {
+      "alliances": "Alliances",
+      "factions": "Factions",
+      "minEnemies": "Min enemies",
+      "maxEnemies": "Max enemies",
+      "enemyTraits": "Enemy traits",
+      "enemyTypes": "Enemy types",
+      "campaignTypes": "Types",
+      "slots": "Slots",
+      "rarity": "Rarity"
+    },
+    "placeholders": {
+      "allAlliances": "All alliances",
+      "allFactions": "All factions",
+      "allTraits": "All traits",
+      "allEnemyTypes": "All enemy types",
+      "allCampaignTypes": "All types",
+      "allSlots": "All slots",
+      "allRarities": "All rarities",
+      "noLimit": "No limit",
+      "search": "Search",
+      "empty": "Nothing found.",
+      "clear": "Clear"
+    },
+    "campaignTypes": {
+      "Elite": "Elite",
+      "Extremis": "Extremis",
+      "Standard": "Standard",
+      "Mirror": "Mirror",
+      "Normal": "Normal",
+      "Early": "Early"
+    },
+    "slotsOption": "{{count}} slots",
+    "actions": {
+      "close": "Close",
+      "reset": "Reset",
+      "apply": "Apply"
+    },
+    "filteredOut": {
+      "title": "Raids Filters removed some materials",
+      "materials_one": "{{count}} material has no allowed location with these filters.",
+      "materials_other": "{{count}} materials have no allowed location with these filters.",
+      "pinned_one": "{{count}} goal is pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
+      "pinned_other": "{{count}} goals are pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
+      "reset": "Reset filters"
+    }
+  },
+  "hse": {
+    "title": "Home Screen Event",
+    "status": {
+      "endsIn": "Ends {{when}}",
+      "earnsPoints": "Earns event points from campaign raids: 3 per matching enemy, 5 on Elite nodes.",
+      "noRaidPoints": "This event does not earn points from campaign raiding.",
+      "noneRunning": "No Home Screen Event is running right now.",
+      "next": "Next event: {{name}}",
+      "startsIn": "Starts {{when}} ({{date}})",
+      "noneScheduled": "No Home Screen Event is scheduled.",
+      "error": "Event data could not be loaded. The rest of Dailies is unaffected."
+    },
+    "preview": {
+      "title": "Preview: {{name}} is not live yet",
+      "body": "These lists use the rules of this upcoming event and the energy you have left today. Nothing here earns event points until the event starts {{when}} ({{date}})."
+    },
+    "raids": {
+      "title": "Farm list for event points",
+      "total": "{{points}} event points",
+      "energy": "{{energy}} energy",
+      "note": "Locations that earn event points and feed your goals, chosen from your whole plan. It picks point-earning locations even where a cheaper location without points exists, so it can cost more energy per item than Today.",
+      "budget": "Energy left today: {{energy}}.",
+      "points": "{{points}} pts",
+      "raidCount_one": "{{count}} raid",
+      "raidCount_other": "{{count}} raids",
+      "empty": {
+        "noGoals": "You have no active goals, so there is nothing to farm.",
+        "noEnergy": "There is no energy left today for any of these locations.",
+        "nothingContributes": "No location that earns event points drops a resource your goals still need. See the best locations below for where to raid for points.",
+        "filtered": "No location matches your Raids Filters."
+      },
+      "goals": "Goals: {{goals}}",
+      "moreGoals": "+{{count}}"
+    },
+    "top": {
+      "overallTitle": "Best locations for event points",
+      "eventTitle": "Best event-campaign locations",
+      "empty": "No unlocked location left to raid earns event points.",
+      "filteredEmpty": "No location matches your Raids Filters.",
+      "perRaid": "{{points}} pts per raid",
+      "perEnergy": "{{value}} pts per energy"
+    }
   }
 }

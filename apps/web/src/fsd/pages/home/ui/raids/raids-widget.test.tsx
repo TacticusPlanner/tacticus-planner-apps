@@ -109,6 +109,29 @@ describe("RaidsWidget", () => {
     expect(screen.getAllByTestId(/home-raid-location-node-1/)).toHaveLength(1)
   })
 
+  it("lists Today's entries only, so it follows the filtered Today and not Bonus or the Plan", () => {
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: { entries: [entry({ battleId: "node-bonus" as BattleId })] },
+      planDays: [{ entries: [entry({ battleId: "node-plan" as BattleId })] }],
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map(),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />)
+
+    expect(screen.getByTestId("home-raid-location-node-1")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raid-location-node-bonus")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raid-location-node-plan")
+    ).not.toBeInTheDocument()
+  })
+
   it("excludes a location whose real attempts today are exhausted", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",

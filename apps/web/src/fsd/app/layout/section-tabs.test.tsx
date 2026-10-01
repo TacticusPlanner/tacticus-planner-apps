@@ -112,12 +112,27 @@ describe("SectionTabs", () => {
     )
   })
 
+  it("shows the four Dailies tabs in order: Raids, HSE, Shops, Guild Raids", () => {
+    renderTabs(section("/dailies"), "/dailies/raids")
+
+    expect(
+      screen.getAllByRole("tab").map((tab) => tab.getAttribute("data-testid"))
+    ).toEqual([
+      "section-tab-dailies-raids",
+      "section-tab-dailies-hse",
+      "section-tab-dailies-shops",
+      "section-tab-dailies-guild-raids",
+    ])
+    expect(screen.getByTestId("section-tab-dailies-raids")).toHaveAttribute(
+      "data-state",
+      "active"
+    )
+  })
+
   it.each([
     ["raids", "/dailies/raids"],
+    ["hse", "/dailies/hse"],
     ["shops", "/dailies/shops"],
-    ["onslaught", "/dailies/onslaught"],
-    ["salvage-run", "/dailies/salvage-run"],
-    ["arena", "/dailies/arena"],
     ["guild-raids", "/dailies/guild-raids"],
   ])("deep-links to and highlights the Dailies %s tab", (tab, path) => {
     renderTabs(section("/dailies"), path)
