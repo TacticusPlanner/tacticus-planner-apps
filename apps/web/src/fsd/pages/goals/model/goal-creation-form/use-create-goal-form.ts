@@ -158,16 +158,18 @@ export function useCreateGoalForm({
 
   const isOwned = !!playerEntity
 
+  const { offers: shopOffers } = useUnitShopShardSupply(entityId)
+
   const { usesMythicShards, lockedShards, unlockAvailable } =
     useEntityShardSummary(
       entityType,
       entityId,
       isOwned,
       playerEntity,
-      charactersById
+      charactersById,
+      shopOffers
     )
 
-  const { offers: shopOffers } = useUnitShopShardSupply(entityId)
   const acquisitionSourceSelection = useAcquisitionSourceSelection({
     entityType,
     entityId,

@@ -140,6 +140,37 @@ const characters = new Map([
   ],
 ])
 
+// A shop-only unit (like Kharn/Ragnar): no campaign shard-farm nodes, sold as shards in a shop.
+characters.set("hero2", {
+  id: "hero2",
+  name: "Hero Two",
+  faction: "Ultramarines",
+  initialRarity: "Common",
+  shardLocations: [],
+  rankUpUpgrades: [],
+} as never)
+
+const shopOnlyShop = {
+  id: "war",
+  displayLocation: "",
+  refreshWithAdWatch: false,
+  allowedRefreshesPerDay: 0,
+  slots: [
+    {
+      variants: [
+        {
+          reward: { type: "shards_hero2", qty: 5 },
+          unitId: "hero2",
+          cost: { currency: "warCoin", amount: 100 },
+          maxPurchasesPerDay: 1,
+          days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+        },
+      ],
+    },
+  ],
+}
+let shopsFixture: unknown[] = []
+
 const upgrades = [
   {
     id: "h1",
@@ -297,8 +328,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getOnslaughtRewards: () => [],
   getEquipmentMap: () => Promise.resolve(equipmentItems),
   // No shop currently offers any unit's shards by default — the acquisition-source picker's
-  // Shops group stays hidden unless a test overrides this.
-  getShops: () => Promise.resolve([]),
+  // Shops group stays hidden unless a test sets `shopsFixture`.
+  getShops: () => Promise.resolve(shopsFixture),
 }))
 
 const getPlayerCharacter = vi.fn()
@@ -422,6 +453,7 @@ async function selectMow() {
 
 describe("CreateGoalSheet", () => {
   beforeEach(() => {
+    shopsFixture = []
     createCombinedGoals.mockReset()
     listProjects.mockReset()
     listProjects.mockResolvedValue({ projects: [] })
@@ -797,6 +829,68 @@ describe("CreateGoalSheet", () => {
     expect(follows(projectLabel, rankCard)).toBeTruthy()
     expect(follows(rankCard, unlockSuggestion)).toBeTruthy()
     expect(follows(unlockSuggestion, review)).toBeTruthy()
+  })
+
+  it("offers Unlock for a shop-only character, with the Shops group as its source and no Campaigns group", async () => {
+    shopsFixture = [shopOnlyShop]
+    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    await selectCharacter()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+    )
+    fireEvent.click(await screen.findByText("Hero Two"))
+
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).not.toBeDisabled()
+    })
+    expect(
+      screen.queryByText("goals.create.unlockUnavailable")
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
+
+    expect(
+      await screen.findByTestId("create-goal-acquisition-group-shops")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("create-goal-acquisition-group-campaigns")
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByTestId("create-goal-shop-offer-checkbox-war:shards_hero2")
+    )
+    fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+    await vi.waitFor(() => {
+      expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+    })
+    const unlockSpec = createCombinedGoals.mock.calls[0][0].goals.find(
+      (goal: { goalType: string }) => goal.goalType === "Unlock"
+    )
+    expect(unlockSpec.config.acquisitionSources).toContainEqual({
+      kind: "Shop",
+      ids: ["war:shards_hero2"],
+    })
+  })
+
+  it("disables Unlock for a character with neither campaign nodes nor shop offers", async () => {
+    getPlayerCharacter.mockResolvedValue(undefined)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    await selectCharacter()
+
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "goals.create.unitPlaceholder" })
+    )
+    fireEvent.click(await screen.findByText("Hero Two"))
+
+    expect(
+      await screen.findByText("goals.create.unlockUnavailable")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("create-goal-type-toggle-Unlock")).toBeDisabled()
   })
 
   it("shows the character's shard farm locations with an energy-per-shard figure on the Unlock card, defaulting farmingLocationIds to the lowest-energy node", async () => {
