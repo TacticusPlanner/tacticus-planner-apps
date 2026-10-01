@@ -158,6 +158,7 @@
   },
   "today": {
     "title": "Raids du jour",
+    "plan": "Plan du jour",
     "summary": "{{energy}} énergie · {{raids}} tentatives",
     "energyUsage": {
       "label": "Énergie quotidienne utilisée",

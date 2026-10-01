@@ -6,7 +6,6 @@ import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
-import { Separator } from "@workspace/ui/components/separator"
 
 import {
   FilteredOutNotice,
@@ -121,6 +120,18 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
       ? (raids.realEnergyUsedToday / raids.dailyEnergy) * 100
       : 0
 
+  const scheduleProps = {
+    attemptsLeftByBattle: raids.attemptsLeftByBattle,
+    attemptsUsedByBattle: combinedAttemptsUsedByBattle,
+    emphasis: "location" as const,
+    goalsById: raids.goalsById,
+    locationsByBattleId: raids.locationsByBattleId,
+    resourceLabels: raids.resourceLabels,
+    resourceProgress: todayProgress,
+    resourceUrgencyByGoalAndResource: raids.resourceUrgencyByGoalAndResource,
+    resourceVisuals: raids.resourceVisuals,
+  }
+
   return (
     <div className="space-y-5 md:space-y-7" data-testid="today-page">
       <section className="space-y-3" data-testid="today-schedule">
@@ -170,55 +181,69 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
           <CampaignEventStatusLine className="space-y-2 md:w-1/2" />
         </div>
         <FilteredOutNotice filteredOut={raids.filteredOut} />
+      </section>
+      {/* Three lanes (Today / Bonus Raids / Today's attempts) auto-fit side by side wherever the
+          viewport has room for 20rem each, and stack otherwise - no dedicated breakpoint. */}
+      <div
+        className="space-y-5 md:grid md:grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] md:items-start md:gap-6 md:space-y-0"
+        data-testid="today-lanes"
+      >
         {raids.today.entries.length > 0 || bonusEntries.length > 0 ? (
-          <RaidSchedule
-            entries={raids.today.entries}
-            bonusEntries={bonusEntries}
-            bonusFooter={
-              !showAllBonus && visibleBonusEntries.length > BONUS_LIMIT ? (
-                <Button
-                  className="mt-2"
-                  variant="outline"
-                  onClick={() => setShowAllBonus(true)}
+          <>
+            {raids.today.entries.length > 0 ? (
+              <section className="space-y-2" data-testid="today-lane">
+                <h2 className="text-lg font-semibold">{t("today.plan")}</h2>
+                <RaidSchedule
+                  {...scheduleProps}
+                  entries={raids.today.entries}
+                  testId="today-raid-list"
+                />
+              </section>
+            ) : null}
+            {bonusEntries.length > 0 ? (
+              <section className="space-y-2" data-testid="bonus-lane">
+                <h2
+                  className="text-lg font-semibold"
+                  data-testid="bonus-raids-heading"
                 >
-                  {t("bonus.showMore")}
-                </Button>
-              ) : null
-            }
-            bonusLabel={t("bonus.title")}
-            attemptsLeftByBattle={raids.attemptsLeftByBattle}
-            attemptsUsedByBattle={combinedAttemptsUsedByBattle}
-            emphasis="location"
-            goalsById={raids.goalsById}
-            locationsByBattleId={raids.locationsByBattleId}
-            resourceLabels={raids.resourceLabels}
-            resourceProgress={todayProgress}
-            resourceUrgencyByGoalAndResource={
-              raids.resourceUrgencyByGoalAndResource
-            }
-            resourceVisuals={raids.resourceVisuals}
-            testId="today-raid-list"
-          />
+                  {t("bonus.title")}
+                </h2>
+                <RaidSchedule
+                  {...scheduleProps}
+                  entries={bonusEntries}
+                  testId="bonus-raid-list"
+                />
+                {!showAllBonus && visibleBonusEntries.length > BONUS_LIMIT ? (
+                  <Button
+                    className="mt-2"
+                    variant="outline"
+                    onClick={() => setShowAllBonus(true)}
+                  >
+                    {t("bonus.showMore")}
+                  </Button>
+                ) : null}
+              </section>
+            ) : null}
+          </>
         ) : (
           <RaidState state="no-farmable" />
         )}
-      </section>
-      <Separator />
-      <section className="space-y-3" data-testid="todays-attempts">
-        <h2 className="text-lg font-semibold">{t("todaysAttempts.title")}</h2>
-        {raids.todaysAttempts.length > 0 ? (
-          <TodaysAttemptsList
-            attempts={raids.todaysAttempts}
-            locationsByBattleId={raids.locationsByBattleId}
-            planResourceByBattle={planResourceByBattle}
-            catalogResourceByBattle={raids.resourceByBattleId}
-          />
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            {t("todaysAttempts.empty")}
-          </p>
-        )}
-      </section>
+        <section className="space-y-3" data-testid="todays-attempts">
+          <h2 className="text-lg font-semibold">{t("todaysAttempts.title")}</h2>
+          {raids.todaysAttempts.length > 0 ? (
+            <TodaysAttemptsList
+              attempts={raids.todaysAttempts}
+              locationsByBattleId={raids.locationsByBattleId}
+              planResourceByBattle={planResourceByBattle}
+              catalogResourceByBattle={raids.resourceByBattleId}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t("todaysAttempts.empty")}
+            </p>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

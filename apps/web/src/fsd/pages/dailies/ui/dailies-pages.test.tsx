@@ -95,7 +95,7 @@ describe("Dailies raid pages", () => {
     // only, so the grouping is verified via each goal's own resource card existing instead.
     expect(screen.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
     expect(screen.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
-    const todaySchedule = within(screen.getByTestId("today-schedule"))
+    const todaySchedule = within(screen.getByTestId("today-lanes"))
     // Bonus Raids is its own grouping context again (a labeled continuation, not merged data), so
     // a goal with multiple bonus resources (not eligible for the combined-shard-identity merge)
     // gets its own separate goal header there too, in addition to Today's merged card.
@@ -286,7 +286,7 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    const todaySchedule = within(screen.getByTestId("today-schedule"))
+    const todaySchedule = within(screen.getByTestId("today-lanes"))
     expect(todaySchedule.queryByText("Indomitus")).not.toBeInTheDocument()
   })
 
