@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react"
+import { useCallback, useState, type ReactNode } from "react"
 import { useNavigate } from "react-router"
 import { LoaderCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -30,10 +30,9 @@ import {
 } from "@/features/account-management"
 import { useCurrentUser } from "@/entities/account"
 import {
-  isInteractionRequired,
   loginRequest,
-  requestApiAccess,
   signOut,
+  useRequestApiAccessOnce,
   useSilentSignInStatus,
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
@@ -86,7 +85,6 @@ export function AuthControl() {
   const [manageAccountTab, setManageAccountTab] =
     useState<ManageAccountTab>("integration")
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
-  const hasRequestedApiAccess = useRef(false)
   const silentSignInStatus = useSilentSignInStatus()
   const isCheckingSilentSignIn = silentSignInStatus === "checking"
 
@@ -104,23 +102,17 @@ export function AuthControl() {
     })
   }
 
-  useEffect(() => {
-    if (
-      accountState.status === "error" &&
-      isInteractionRequired(accountState.error)
-    ) {
-      if (!hasRequestedApiAccess.current) {
-        hasRequestedApiAccess.current = true
-        void requestApiAccess().catch((error: unknown) => {
-          logAuthenticationError("api-access", error)
-          toast.error(t("auth.error"))
-        })
-      }
-      return
-    }
-
-    hasRequestedApiAccess.current = false
-  }, [accountState, t])
+  const onApiAccessError = useCallback(
+    (error: unknown) => {
+      logAuthenticationError("api-access", error)
+      toast.error(t("auth.error"))
+    },
+    [t]
+  )
+  useRequestApiAccessOnce(
+    accountState.status === "error" ? accountState.error : undefined,
+    onApiAccessError
+  )
 
   if (!isAuthenticated || !account) {
     return (

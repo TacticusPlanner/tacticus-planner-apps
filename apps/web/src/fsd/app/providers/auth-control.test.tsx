@@ -76,13 +76,33 @@ vi.mock("@/features/account-management", () => ({
     ) : null,
 }))
 
-vi.mock("@/shared/auth", () => ({
-  isInteractionRequired: (error: unknown) => isInteractionRequired(error),
-  loginRequest: { scopes: ["api"] },
-  requestApiAccess: (...args: unknown[]) => requestApiAccess(...args),
-  signOut: (...args: unknown[]) => signOut(...args),
-  useSilentSignInStatus: () => silentSignInStatus(),
-}))
+vi.mock("@/shared/auth", async () => {
+  const { useEffect, useRef } = await import("react")
+  return {
+    loginRequest: { scopes: ["api"] },
+    signOut: (...args: unknown[]) => signOut(...args),
+    useSilentSignInStatus: () => silentSignInStatus(),
+    // The real hook, re-expressed over this file's `isInteractionRequired` / `requestApiAccess`
+    // doubles so the existing once-per-error assertions below keep exercising AuthControl.
+    useRequestApiAccessOnce: (
+      error: unknown,
+      onError: (e: unknown) => void
+    ) => {
+      const handling = error !== undefined && isInteractionRequired(error)
+      const requested = useRef(false)
+      useEffect(() => {
+        if (!handling) {
+          requested.current = false
+          return
+        }
+        if (requested.current) return
+        requested.current = true
+        void requestApiAccess().catch(onError)
+      }, [handling, error, onError])
+      return handling
+    },
+  }
+})
 
 // Real switchers need a ThemeProvider/i18n config this test doesn't set up — only their presence
 // inside the menu (mobile vs. desktop) matters here, not their internals.

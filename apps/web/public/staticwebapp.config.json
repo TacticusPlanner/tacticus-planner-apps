@@ -1,5 +1,14 @@
 {
+  "globalHeaders": {
+    "Cache-Control": "no-cache"
+  },
   "routes": [
+    {
+      "route": "/assets/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
     {
       "route": "/redirect.html",
       "headers": {

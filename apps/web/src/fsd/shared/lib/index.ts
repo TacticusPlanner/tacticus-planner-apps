@@ -5,6 +5,7 @@ export { formatEstimateDate } from "./format-estimate-date"
 export { formatRelativeTime } from "./format-relative-time"
 export { useCampaignDisplay } from "./use-campaign-display"
 export { usePersistedSelection } from "./use-persisted-selection"
+export { isStaleBuildError, reloadOnceForStaleBuild } from "./stale-build"
 export {
   EVENT_COLOR_KEYS_IN_LEGEND_ORDER,
   eventAccentClass,

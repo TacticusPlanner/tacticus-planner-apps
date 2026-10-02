@@ -96,9 +96,16 @@
     }
   },
   "accountGate": {
-    "errorTitle": "Couldn't check your account",
-    "errorDescription": "Something went wrong while checking your account status.",
+    "errorTitle": "Couldn't reach the service",
+    "errorDescription": "We couldn't check your account status right now. Your sign-in is fine — try again in a moment.",
     "retry": "Retry"
+  },
+  "appError": {
+    "title": "Something went wrong",
+    "description": "This page hit an unexpected error. Reloading usually fixes it, especially right after an update.",
+    "reload": "Reload",
+    "goHome": "Go to Home",
+    "feedbackHint": "If it keeps happening, tell us with the Feedback button."
   },
   "onboarding": {
     "title": "Connect your account",

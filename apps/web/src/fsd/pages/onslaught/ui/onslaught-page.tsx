@@ -322,6 +322,16 @@ export function OnslaughtPage() {
                           tier,
                           key
                         )
+                        if (!reward) {
+                          return (
+                            <td
+                              key={key}
+                              className="px-3 py-2 text-center text-muted-foreground"
+                            >
+                              —
+                            </td>
+                          )
+                        }
                         return (
                           <td
                             key={key}

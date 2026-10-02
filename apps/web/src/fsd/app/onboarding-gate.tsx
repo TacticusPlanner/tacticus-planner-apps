@@ -6,9 +6,17 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useMsal } from "@azure/msal-react"
 
 import { isAccountSetupComplete, useCurrentUser } from "@/entities/account"
-import { signOut, useActiveAccountId } from "@/shared/auth"
+import {
+  signOut,
+  useActiveAccountId,
+  useRequestApiAccessOnce,
+} from "@/shared/auth"
 
 import { SETUP_STEP_PATHS } from "./account-setup-routes"
+
+function logApiAccessError(error: unknown) {
+  console.error("[MSAL] api-access failed", error)
+}
 
 /**
  * Blocks protected routes until the signed-in user has a configured Tacticus API key and a confirmed
@@ -28,8 +36,18 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   const accountId = useActiveAccountId()
   const { state, refetch } = useCurrentUser()
   const location = useLocation()
+  // An expired/revoked session is not an outage: start the in-app re-authentication redirect
+  // (which returns to this URL) and keep the spinner up instead of offering Retry / Sign out.
+  const reauthenticating = useRequestApiAccessOnce(
+    state.status === "error" ? state.error : undefined,
+    logApiAccessError
+  )
 
-  if (state.status === "idle" || state.status === "loading") {
+  if (
+    state.status === "idle" ||
+    state.status === "loading" ||
+    reauthenticating
+  ) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <Spinner className="size-8 text-primary" />
@@ -59,7 +77,11 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
             {t("accountGate.errorDescription")}
           </p>
           <div className="flex gap-2">
-            <Button data-testid="account-gate-retry" onClick={refetch}>
+            <Button
+              autoFocus
+              data-testid="account-gate-retry"
+              onClick={refetch}
+            >
               {t("accountGate.retry")}
             </Button>
             <Button
@@ -72,7 +94,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
                   })
                 }
               }}
-              variant="outline"
+              variant="ghost"
             >
               {t("auth.signOut")}
             </Button>

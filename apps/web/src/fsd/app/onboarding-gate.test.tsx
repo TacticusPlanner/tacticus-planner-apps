@@ -24,10 +24,20 @@ const signOut = vi.fn<(instance: unknown, accountId: string) => Promise<void>>(
   () => Promise.resolve()
 )
 
+// The gate hands the current error to the shared once-per-error re-auth hook; here the hook is a
+// double that reports whether the error is "interaction required" and records the hand-off.
+const interactionRequired = vi.fn<(error: unknown) => boolean>(() => false)
+const requestApiAccessOnce = vi.fn<(error: unknown) => void>()
+
 vi.mock("@/shared/auth", () => ({
   signOut: (instance: unknown, accountId: string) =>
     signOut(instance, accountId),
   useActiveAccountId: () => "home-account-1",
+  useRequestApiAccessOnce: (error: unknown) => {
+    const handling = error !== undefined && interactionRequired(error)
+    if (handling) requestApiAccessOnce(error)
+    return handling
+  },
 }))
 
 vi.mock("@azure/msal-react", () => ({
@@ -144,6 +154,34 @@ describe("OnboardingGate", () => {
     expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
     expect(screen.queryByTestId("setup-probe")).not.toBeInTheDocument()
     expect(screen.getByTestId("account-gate-retry")).toBeVisible()
+  })
+
+  it("puts Retry first and focused, with Sign out as a secondary action", () => {
+    setState({ status: "error", error: new Error("boom") })
+
+    renderAt("/guild/members")
+
+    const retry = screen.getByTestId("account-gate-retry")
+    const signOutButton = screen.getByTestId("account-gate-sign-out")
+    expect(retry).toHaveFocus()
+    expect(retry.compareDocumentPosition(signOutButton)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(screen.getByText("accountGate.errorTitle")).toBeVisible()
+  })
+
+  it("starts re-authentication and keeps the spinner for an interaction-required error", () => {
+    const error = new Error("interaction_required")
+    interactionRequired.mockImplementation((candidate) => candidate === error)
+    setState({ status: "error", error })
+
+    renderAt("/guild/members")
+
+    expect(requestApiAccessOnce).toHaveBeenCalledWith(error)
+    expect(screen.getByRole("status")).toBeVisible()
+    expect(screen.queryByTestId("account-gate-retry")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
+    interactionRequired.mockImplementation(() => false)
   })
 
   it("retries the current-user fetch from the error state", async () => {

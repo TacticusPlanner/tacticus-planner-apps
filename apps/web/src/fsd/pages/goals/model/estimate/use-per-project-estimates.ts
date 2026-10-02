@@ -93,6 +93,7 @@ export function usePerProjectEstimates({
   const catalogReady =
     !!charactersById &&
     !!mowsById &&
+    !!onslaughtRewards?.length &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
 

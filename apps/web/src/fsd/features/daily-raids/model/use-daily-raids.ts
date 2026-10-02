@@ -283,7 +283,10 @@ export function useDailyRaids(
     campaignProgressResult &&
     ascensionCostsById &&
     unlockShardCostsById &&
+    // `[]` is a catalog still syncing (or evicted), not a loaded dataset — rendering with it would
+    // plan without Onslaught and, before this gate, threw on the first reward lookup.
     onslaughtRewards &&
+    onslaughtRewards.length > 0 &&
     shops &&
     npcsById &&
     onslaughtProgressQuery.isSuccess &&

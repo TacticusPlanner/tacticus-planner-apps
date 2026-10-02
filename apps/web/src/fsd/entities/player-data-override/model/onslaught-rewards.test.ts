@@ -59,6 +59,19 @@ describe("onslaughtReward", () => {
     })
   })
 
+  it("returns undefined instead of throwing when the sector/tier row is missing", () => {
+    // Gold tier 4 reads the Gold tier-3 row; with no Gold row at all the planner must degrade.
+    expect(
+      onslaughtReward(
+        rewards.filter((row) => row.sector !== "Gold"),
+        "Gold",
+        4,
+        "Legendary"
+      )
+    ).toBeUndefined()
+    expect(onslaughtReward([], "Stone", 1, "Common")).toBeUndefined()
+  })
+
   it("matches V1 mythic shard ranges", () => {
     expect(onslaughtReward(rewards, "Diamond", 1, "LegendaryBlue")).toEqual({
       min: 1,

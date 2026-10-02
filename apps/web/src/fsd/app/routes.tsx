@@ -24,6 +24,7 @@ import {
 import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
 import { OnboardingGate } from "./onboarding-gate"
+import { RouteErrorBoundary } from "./route-error-boundary"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
 // hits) is lazy-loaded вЂ” each becomes its own chunk, fetched only when its route is entered
@@ -85,7 +86,10 @@ function NotFoundRedirect() {
 // dedicated /auth/callback route) is now owned by the MSAL redirect bridge (apps/web/redirect.html,
 // see shared/auth's redirectUri) вЂ” it navigates back to wherever the flow was initiated before the
 // SPA even loads, so no in-app callback route is needed.
-export const routes: RouteObject[] = [
+// The whole tree sits under one pathless route whose `errorElement` is the last line of defence
+// (landing, account setup, the shell itself); the AppShell route carries its own so a page failure
+// is contained inside the shell. Both reload once on a stale-build failure (see route-error-boundary).
+const appRoutes: RouteObject[] = [
   { path: "/", element: <LandingRoute /> },
   // Account setup sits outside AppShell on purpose. A user here has no configured API key, so every
   // shell affordance is a trap or noise — nav links bounce straight back here, the catalog init gate
@@ -106,6 +110,7 @@ export const routes: RouteObject[] = [
   },
   {
     element: <AppShell />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         path: "/home",
@@ -174,4 +179,8 @@ export const routes: RouteObject[] = [
       { path: "*", element: <NotFoundRedirect /> },
     ],
   },
+]
+
+export const routes: RouteObject[] = [
+  { errorElement: <RouteErrorBoundary />, children: appRoutes },
 ]

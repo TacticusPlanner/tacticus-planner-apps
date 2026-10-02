@@ -5,9 +5,13 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
+import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
 import { initializeAuthentication } from "@/shared/auth"
 import { ThemeProvider } from "@/shared/theme"
 import { TourProvider } from "@/shared/tour"
+
+// Before anything else: a chunk deleted by a newer deploy must trigger a reload, not a blank page.
+installPreloadErrorRecovery()
 
 async function bootstrap() {
   const msalInstance = await initializeAuthentication()

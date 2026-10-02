@@ -166,8 +166,9 @@ export function useProgressionPreview(params: {
         progress.tier,
         onslaughtRewardKeyForProgression(currentProgression)
       )
-      onslaughtShardsPerRun = (reward.min + reward.max) / 2
-      if (params.plan.onslaught.enabled) {
+      // No row for this sector/tier → Onslaught is unavailable for the preview (0 shards/run).
+      onslaughtShardsPerRun = reward ? (reward.min + reward.max) / 2 : 0
+      if (params.plan.onslaught.enabled && reward) {
         flatSuppliers.push(
           projectOnslaughtSupply({
             entityId: params.entityId,
