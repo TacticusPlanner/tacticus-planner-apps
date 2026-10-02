@@ -24,7 +24,7 @@ describe("useRequestApiAccessOnce", () => {
     const { result, rerender } = renderHook(
       ({ error }: { error: unknown }) =>
         useRequestApiAccessOnce(error, onError),
-      { initialProps: { error: undefined } }
+      { initialProps: { error: undefined as unknown } }
     )
     expect(result.current).toBe(false)
     rerender({ error: new Error("boom") })
