@@ -96,9 +96,16 @@
     }
   },
   "accountGate": {
-    "errorTitle": "Impossible de vérifier votre compte",
-    "errorDescription": "Une erreur s'est produite lors de la vérification de l'état de votre compte.",
+    "errorTitle": "Service injoignable",
+    "errorDescription": "Impossible de vérifier l'état de votre compte pour le moment. Votre connexion est valide : réessayez dans un instant.",
     "retry": "Réessayer"
+  },
+  "appError": {
+    "title": "Une erreur s'est produite",
+    "description": "Cette page a rencontré une erreur inattendue. Recharger règle généralement le problème, surtout juste après une mise à jour.",
+    "reload": "Recharger",
+    "goHome": "Aller à l'accueil",
+    "feedbackHint": "Si cela se reproduit, signalez-le-nous via le bouton Feedback."
   },
   "onboarding": {
     "title": "Connectez votre compte",

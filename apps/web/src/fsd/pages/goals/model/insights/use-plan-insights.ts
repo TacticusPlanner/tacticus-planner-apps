@@ -143,7 +143,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const catalogReady =
     !!charactersById &&
     !!mowsById &&
-    !!onslaughtRewards &&
+    !!onslaughtRewards?.length &&
     !!shops &&
     !!ascensionCostsById &&
     !!unlockShardCostsById

@@ -13,6 +13,19 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * A failure worth retrying automatically: the request never reached the API (fetch rejects with a
+ * TypeError on network/DNS/CORS failure) or the API answered with a rate limit or a server error —
+ * the shape of a rollout or a brief outage. Everything else (4xx, auth errors from the token step,
+ * aborts) is a definitive answer and is not retried.
+ */
+export function isTransientApiError(error: unknown) {
+  if (error instanceof ApiError) {
+    return error.status === 429 || error.status >= 500
+  }
+  return error instanceof TypeError
+}
+
 type ApiRequestOptions = {
   signal?: AbortSignal
 }

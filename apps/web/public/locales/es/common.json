@@ -96,9 +96,16 @@
     }
   },
   "accountGate": {
-    "errorTitle": "No se pudo comprobar tu cuenta",
-    "errorDescription": "Se produjo un error al comprobar el estado de tu cuenta.",
+    "errorTitle": "No se pudo conectar con el servicio",
+    "errorDescription": "No pudimos comprobar el estado de tu cuenta ahora mismo. Tu sesión está bien: inténtalo de nuevo en un momento.",
     "retry": "Reintentar"
+  },
+  "appError": {
+    "title": "Algo salió mal",
+    "description": "Esta página encontró un error inesperado. Recargar suele solucionarlo, sobre todo justo después de una actualización.",
+    "reload": "Recargar",
+    "goHome": "Ir a Inicio",
+    "feedbackHint": "Si sigue ocurriendo, cuéntanoslo con el botón de Feedback."
   },
   "onboarding": {
     "title": "Conecta tu cuenta",

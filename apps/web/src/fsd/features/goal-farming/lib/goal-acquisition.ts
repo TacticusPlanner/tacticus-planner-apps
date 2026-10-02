@@ -85,8 +85,15 @@ export function selectMythicMaterialOffers(
   return offers.filter((offer) => ids.includes(offer.offerId))
 }
 
-function tokensFor(shards: number, reward: { min: number; max: number }) {
-  return shards <= 0 ? 0 : Math.ceil(shards / ((reward.min + reward.max) / 2))
+// No reward row for the player's sector/tier → Onslaught supplies nothing, so it costs no tokens
+// here and contributes no flat supply below (spec: *A selected Onslaught source supplies its per-run
+// shard yield*, missing-row scenario).
+function tokensFor(
+  shards: number,
+  reward: { min: number; max: number } | undefined
+) {
+  if (!reward || shards <= 0) return 0
+  return Math.ceil(shards / ((reward.min + reward.max) / 2))
 }
 
 /**
@@ -184,13 +191,15 @@ export function computeGoalAcquisition(params: {
     // Only the regular-shard resource enters the shared day-loop estimate below (mythic shards stay
     // count-only here, as they always have for this consumer); the aggregate onslaughtTokens figure
     // above still covers both.
-    flatSuppliers.push(
-      projectOnslaughtSupply({
-        entityId: detail.entityId,
-        isMythic: false,
-        avgShardsPerRun: (regularReward.min + regularReward.max) / 2,
-      })
-    )
+    if (regularReward) {
+      flatSuppliers.push(
+        projectOnslaughtSupply({
+          entityId: detail.entityId,
+          isMythic: false,
+          avgShardsPerRun: (regularReward.min + regularReward.max) / 2,
+        })
+      )
+    }
   }
 
   if (shopSource && params.shops?.length) {

@@ -96,9 +96,16 @@
     }
   },
   "accountGate": {
-    "errorTitle": "Konto konnte nicht überprüft werden",
-    "errorDescription": "Beim Überprüfen deines Kontostatus ist ein Fehler aufgetreten.",
+    "errorTitle": "Dienst nicht erreichbar",
+    "errorDescription": "Dein Kontostatus konnte gerade nicht geprüft werden. Deine Anmeldung ist in Ordnung – versuche es gleich noch einmal.",
     "retry": "Erneut versuchen"
+  },
+  "appError": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Auf dieser Seite ist ein unerwarteter Fehler aufgetreten. Neu laden hilft meistens, besonders direkt nach einem Update.",
+    "reload": "Neu laden",
+    "goHome": "Zur Startseite",
+    "feedbackHint": "Wenn es weiterhin passiert, melde es uns über den Feedback-Button."
   },
   "onboarding": {
     "title": "Verbinde dein Konto",

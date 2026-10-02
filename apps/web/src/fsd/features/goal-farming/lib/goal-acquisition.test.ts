@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
-import type { GameCatalogShop } from "@workspace/game-catalog"
+import type {
+  GameCatalogShop,
+  OnslaughtRewardStorageModel,
+} from "@workspace/game-catalog"
 
 import type { GoalDetail } from "@/entities/goal"
+import type { OnslaughtProgress } from "@/entities/player-data-override"
 
 import { computeGoalAcquisition } from "./goal-acquisition"
 
@@ -64,6 +68,66 @@ function acquisition(detail: GoalDetail, upgradeNeedIds = ["upgHpM004"]) {
     referenceDate: monday,
   })
 }
+
+// Only the Gold tier-3 row (Gold tier 4 reads it) — the Onslaught scenarios below either include or
+// omit it to show the missing-row fallback.
+const goldRewards = [
+  {
+    id: "Gold-3",
+    sector: "Gold",
+    tier: 3,
+    regular: [
+      { min: 3, max: 4 },
+      { min: 4, max: 5 },
+      { min: 6, max: 7 },
+      { min: 10, max: 11 },
+      { min: 16, max: 18 },
+    ],
+    mythic: { min: 1, max: 1 },
+  },
+] as unknown as OnslaughtRewardStorageModel[]
+
+function ascensionWithOnslaught(rewards: OnslaughtRewardStorageModel[]) {
+  return computeGoalAcquisition({
+    detail: {
+      ...goal("Ascension", "Character", [{ kind: "Onslaught", ids: [] }]),
+      config: {
+        acquisitionSources: [{ kind: "Onslaught", ids: [] }],
+        progression: { start: "Legendary:0", target: "Legendary:3" },
+      },
+    } as unknown as GoalDetail,
+    need: { shards: 100, mythicShards: 0 },
+    mowsById: new Map(),
+    charactersById: new Map(),
+    playerCharacterById: new Map(),
+    playerMowById: new Map(),
+    onslaughtProgress: {
+      imperial: { sector: "Gold", tier: 4 },
+    } as unknown as OnslaughtProgress,
+    onslaughtRewards: rewards,
+    referenceDate: monday,
+  })
+}
+
+describe("computeGoalAcquisition — Onslaught source (harden-app-against-stale-builds)", () => {
+  it("supplies the per-run yield when the sector/tier row exists", () => {
+    const result = ascensionWithOnslaught(goldRewards)
+
+    // Legendary at Gold 3: avg 17 shards/run → 100 shards is 6 runs.
+    expect(result.onslaughtTokensDelta).toBe(6)
+    expect(result.flatSuppliers.map((s) => s.key)).toEqual([
+      "onslaught:regular",
+    ])
+  })
+
+  it("supplies nothing, without throwing, when the row for the player's sector and tier is missing", () => {
+    const result = ascensionWithOnslaught([])
+
+    expect(result.onslaughtTokensDelta).toBe(0)
+    expect(result.flatSuppliers).toEqual([])
+    expect(result.campaignShardsEnabled).toBe(false)
+  })
+})
 
 describe("computeGoalAcquisition — Mythic materials (add-mythic-material-shop-sources)", () => {
   it("uses every available offer when the goal has no saved selection", () => {
