@@ -356,7 +356,16 @@ vi.mock("@workspace/game-catalog/queries", () => ({
     new Map([["Common", { rarity: "Common", shards: 30 }]]),
   getMowUpgradeCosts: () => [],
   getCharacterAbilityCosts: () => [],
-  getOnslaughtRewards: () => [],
+  // One row: an empty rewards dataset now reads as "catalog still loading" (daily-raids-today spec).
+  getOnslaughtRewards: () => [
+    {
+      id: "Stone-1",
+      sector: "Stone",
+      tier: 1,
+      regular: Array(5).fill({ min: 1, max: 1 }),
+      mythic: { min: 1, max: 1 },
+    },
+  ],
   getEquipmentMap: () => Promise.resolve(equipmentItems),
   // No shop currently offers any unit's shards by default — the acquisition-source picker's
   // Shops group stays hidden unless a test sets `shopsFixture`.
