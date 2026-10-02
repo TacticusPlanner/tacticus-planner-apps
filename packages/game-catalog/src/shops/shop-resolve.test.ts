@@ -4,6 +4,7 @@ import type { GameCatalogShop, GameCatalogShopVariant } from "../record-types"
 import {
   computeShopLockContext,
   resolveEventLockId,
+  resolveMythicMaterialShopOffers,
   resolveShopOffersForToday,
   resolveShopSlotsForDay,
   resolveUnitShardShopOffers,
@@ -305,6 +306,149 @@ describe("todayDow", () => {
   it("maps a UTC timestamp to its day token", () => {
     expect(todayDow(Date.UTC(2026, 8, 6))).toBe("SUN") // 2026-09-06 is a Sunday
     expect(todayDow(Date.UTC(2026, 8, 7))).toBe("MON")
+  })
+})
+
+describe("resolveMythicMaterialShopOffers (add-mythic-material-shop-sources)", () => {
+  // Mirrors the real served Mythic-material slots (tacticus-planner-api shops-guild/-crusade/-rogue-trader).
+  const mythicSlot = (
+    shopId: string,
+    cost: { currency: string; amount: number },
+    maxPurchasesPerDay: number,
+    lockId: string | undefined,
+    daysById: Record<string, GameCatalogShopVariant["days"]>
+  ): GameCatalogShop => ({
+    ...shop([
+      variant({
+        reward: { type: "upgDmgL202", qty: 1 },
+        days: ["MON"],
+        cost,
+        maxPurchasesPerDay,
+      }),
+      ...Object.entries(daysById).map(([id, days]) =>
+        variant({
+          reward: { type: id, qty: 1 },
+          days,
+          cost,
+          maxPurchasesPerDay,
+          ...(lockId ? { lockId } : {}),
+        })
+      ),
+      // Crusade's alternative for rosters without a blue-star unit (mutually exclusive lock).
+      ...(lockId
+        ? [
+            variant({
+              reward: { type: "upgHpL100", qty: 1 },
+              days: ["TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+              cost,
+              maxPurchasesPerDay: 5,
+              lockId: "lock_crusade_shop_does_not_own_unit_at_mythic",
+            }),
+          ]
+        : []),
+    ]),
+    id: shopId,
+  })
+  const weekdaySatSun = (day: GameCatalogShopVariant["days"][number]) =>
+    [day, "SAT", "SUN"] as GameCatalogShopVariant["days"]
+  const mythicDays = {
+    upgHpM001: weekdaySatSun("WED"),
+    upgHpM002: weekdaySatSun("THU"),
+    upgHpM003: weekdaySatSun("FRI"),
+    upgHpM004: weekdaySatSun("TUE"),
+  }
+  const guild = mythicSlot(
+    "guild",
+    { currency: "guildCredits", amount: 900 },
+    2,
+    undefined,
+    mythicDays
+  )
+  const crusade = mythicSlot(
+    "crusade",
+    { currency: "crusadeCurrency", amount: 430 },
+    3,
+    "lock_crusade_shop_owns_unit_at_mythic",
+    mythicDays
+  )
+  const rogueTrader: GameCatalogShop = {
+    ...shop(
+      (
+        [
+          ["upgHpM001", "MON"],
+          ["upgHpM002", "WED"],
+          ["upgHpM003", "FRI"],
+          ["upgHpM004", "SUN"],
+        ] as const
+      ).map(([id, day]) =>
+        variant({
+          reward: { type: id, qty: 1 },
+          days: [day],
+          cost: { currency: "elderShopCurrency", amount: 35 },
+          maxPurchasesPerDay: 1,
+          lockId:
+            "lock_not_during_se_april2026_or_below_max_legendary_thousInfernalMaster",
+        })
+      )
+    ),
+    id: "rogue-trader",
+  }
+  const shops = [guild, crusade, rogueTrader]
+  const blueStarRoster = {
+    lockContext: { starsByUnitId: { ultraCalgar: 99 } },
+  }
+
+  it("lists Venerable Battle Mark's three offers with their real cadence", () => {
+    const offers = resolveMythicMaterialShopOffers(
+      shops,
+      ["upgHpM004"],
+      blueStarRoster
+    )
+    const byShop = Object.fromEntries(
+      offers.map((offer) => [offer.shopId, offer])
+    )
+
+    expect(Object.keys(byShop).sort()).toEqual([
+      "crusade",
+      "guild",
+      "rogue-trader",
+    ])
+    expect(byShop.guild).toMatchObject({
+      offerId: "guild:upgHpM004",
+      rewardType: "upgHpM004",
+      maxPerDay: 2,
+      cost: { currency: "guildCredits", amount: 900 },
+    })
+    expect(byShop.guild!.probabilityByDay).toEqual({
+      TUE: 1,
+      SAT: 0.25,
+      SUN: 0.25,
+    })
+    expect(byShop.crusade!.maxPerDay).toBe(3)
+    expect(byShop.crusade!.probabilityByDay).toEqual({
+      TUE: 1,
+      SAT: 0.25,
+      SUN: 0.25,
+    })
+    expect(byShop["rogue-trader"]!.maxPerDay).toBe(1)
+    expect(byShop["rogue-trader"]!.probabilityByDay).toEqual({ SUN: 1 })
+  })
+
+  it("hides the Crusade offer for a roster with no blue-star unit", () => {
+    const offers = resolveMythicMaterialShopOffers(shops, ["upgHpM004"], {
+      lockContext: { starsByUnitId: { ultraCalgar: 0 } },
+    })
+
+    expect(offers.map((offer) => offer.shopId).sort()).toEqual([
+      "guild",
+      "rogue-trader",
+    ])
+  })
+
+  it("ignores ids that are not one of the four Mythic materials", () => {
+    expect(
+      resolveMythicMaterialShopOffers(shops, ["upgDmgL202"], blueStarRoster)
+    ).toEqual([])
   })
 })
 

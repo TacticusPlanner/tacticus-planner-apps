@@ -30,7 +30,7 @@ import {
   ONSLAUGHT_RUNS_PER_DAY,
   projectOnslaughtSupply,
   projectShopSupply,
-  shopOfferShardsPerDay,
+  shopOfferPerDay,
 } from "@/features/goal-farming"
 import type { FlatSupplier } from "@/features/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
@@ -242,7 +242,7 @@ export function useProgressionPreview(params: {
     )
     const shopShardsPerDaySelected = params.plan.shops.enabled
       ? params.plan.shops.offers.reduce(
-          (total, offer) => total + shopOfferShardsPerDay(offer),
+          (total, offer) => total + shopOfferPerDay(offer),
           0
         )
       : 0

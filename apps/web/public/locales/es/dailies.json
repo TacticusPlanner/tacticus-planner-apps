@@ -211,7 +211,9 @@
     "shops": "Tiendas",
     "shop": {
       "label": "{{shop}}, {{unit}}: unas {{purchases}} compras, {{shards}} fragmentos, {{spend}} {{currency}}",
-      "expected": "≈{{purchases}}× · {{shards}} fragmentos"
+      "expected": "≈{{purchases}}× · {{shards}} fragmentos",
+      "labelItems": "{{shop}}, {{unit}}: unas {{purchases}} compras, {{amount}} × {{item}}, {{spend}} {{currency}}",
+      "expectedItems": "≈{{purchases}}× · {{amount}} × {{item}}"
     },
     "onslaught": "Onslaught",
     "onslaughtRun": {

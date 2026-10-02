@@ -1,6 +1,6 @@
 import type {
   CampaignDescriptor,
-  ShopShardOffer,
+  ShopRewardOffer,
 } from "@workspace/game-catalog"
 import type {
   BattleId,
@@ -145,7 +145,7 @@ export type DailyRaidsReadyViewModel = {
   goalsById: ReadonlyMap<string, DailyRaidGoalViewModel>
   /** Every shop offer a goal in this run selected, by `offerId` — resolves a schedule day's
    *  `shopEntries` into purchases and currency (see `plan-day-cells`). */
-  shopOffersById: ReadonlyMap<string, ShopShardOffer>
+  shopOffersById: ReadonlyMap<string, ShopRewardOffer>
   resourceLabels: ReadonlyMap<string, string>
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
   resourceUrgencyByGoalAndResource: ReadonlyMap<

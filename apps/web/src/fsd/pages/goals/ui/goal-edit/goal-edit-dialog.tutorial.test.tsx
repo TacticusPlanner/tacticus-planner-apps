@@ -27,12 +27,15 @@ describe("useGoalEditDialogTutorial", () => {
         '[data-testid="goal-edit-target"]',
         '[data-testid="goal-edit-priority"]',
         '[data-testid="goal-edit-projects"]',
+        '[data-testid="goal-mythic-material-sources"]',
       ])
       expect(steps.map((step) => [step.title, step.content])).toEqual(
-        ["target", "priority", "projects"].map((name) => [
-          `localized:tour.editGoal.steps.${name}.title`,
-          `localized:tour.editGoal.steps.${name}.content`,
-        ])
+        ["target", "priority", "projects", "mythicMaterialSources"].map(
+          (name) => [
+            `localized:tour.editGoal.steps.${name}.title`,
+            `localized:tour.editGoal.steps.${name}.content`,
+          ]
+        )
       )
     }
   )

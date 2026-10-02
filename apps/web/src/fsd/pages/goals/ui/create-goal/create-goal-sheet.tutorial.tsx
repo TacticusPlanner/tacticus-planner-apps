@@ -25,6 +25,17 @@ export function useCreateGoalSheetTutorial(): TourPageSteps {
     [t]
   )
 
+  // Skipped by Joyride unless a Rank/Upgrade/MoW-Ability range needs a Mythic material
+  // (add-mythic-material-shop-sources).
+  const mythicMaterialSources = useMemo<Step>(
+    () => ({
+      target: '[data-testid="goal-mythic-material-sources"]',
+      title: t("tour.createGoal.steps.mythicMaterialSources.title"),
+      content: t("tour.createGoal.steps.mythicMaterialSources.content"),
+    }),
+    [t]
+  )
+
   const projects = useMemo<Step>(
     () => ({
       target: '[data-testid="create-goal-projects"]',
@@ -36,10 +47,10 @@ export function useCreateGoalSheetTutorial(): TourPageSteps {
 
   return useMemo<TourPageSteps>(
     () => ({
-      desktop: [acquisitionSources, projects],
-      mobile: [acquisitionSources, projects],
+      desktop: [acquisitionSources, mythicMaterialSources, projects],
+      mobile: [acquisitionSources, mythicMaterialSources, projects],
     }),
-    [acquisitionSources, projects]
+    [acquisitionSources, mythicMaterialSources, projects]
   )
 }
 

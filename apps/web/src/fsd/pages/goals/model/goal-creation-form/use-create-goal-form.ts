@@ -16,6 +16,7 @@ import {
 } from "@/features/goal-farming"
 import { useAbilityFields } from ".//use-ability-fields"
 import { useAcquisitionSourceSelection } from ".//use-acquisition-source-selection"
+import { useMythicMaterialSelection } from ".//use-mythic-material-selection"
 import { useAscensionFields } from ".//use-ascension-fields"
 import { useCreationPreview } from ".//use-creation-preview"
 import { useEntityPrefillEffect } from ".//use-entity-prefill-effect"
@@ -262,6 +263,11 @@ export function useCreateGoalForm({
       dailyEnergy: planningSettings.dailyEnergy,
     })
 
+  const mythicMaterialSelection = useMythicMaterialSelection({
+    needs: [...missingUpgrades, ...upgradeFields.state.upgradeGoalNeed],
+    resetKey: entityId,
+  })
+
   const {
     prerequisites,
     includesUnlock,
@@ -333,6 +339,8 @@ export function useCreateGoalForm({
     upgradeTargets,
     upgradeRanges,
     plan: acquisitionPlan,
+    mythicMaterialSources: mythicMaterialSelection.acquisitionSources,
+    isMow: entityType === "Mow",
   }
 
   const submission = useGoalSubmission({
@@ -419,6 +427,7 @@ export function useCreateGoalForm({
     selectedShopOfferIds,
     toggleShopOffer,
     acquisitionPlan,
+    mythicMaterialSelection,
     projects,
     selectedProjectIds,
     selectProjects: projectSelection.selectProjects,

@@ -4,7 +4,7 @@ import type {
   GameCatalogShop,
   MowStorageModel,
   OnslaughtRewardStorageModel,
-  ShopShardOffer,
+  ShopRewardOffer,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -124,7 +124,7 @@ export function calculateDailyRaids(
   )
   const goals: GoalNeed[] = []
   const goalsById = new Map<string, DailyRaidGoalViewModel>()
-  const shopOffersById = new Map<string, ShopShardOffer>()
+  const shopOffersById = new Map<string, ShopRewardOffer>()
   const resourceLabels = new Map<string, string>()
   const resourceVisuals = new Map<string, DailyRaidResourceVisual>()
   const shardProgress = new Map<string, DailyRaidResourceProgress>()

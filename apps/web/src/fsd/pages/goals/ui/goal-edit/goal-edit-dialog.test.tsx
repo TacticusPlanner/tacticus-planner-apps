@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const getGoal = vi.fn()
 const editGoal = vi.fn()
@@ -115,8 +115,10 @@ vi.mock("@/entities/planning-setting", () => ({
   }),
 }))
 
+// Empty unless a test sells a Mythic material (add-mythic-material-shop-sources).
+let shopsFixture: unknown[] = []
 vi.mock("@workspace/game-catalog/queries", () => ({
-  getShops: () => Promise.resolve([]),
+  getShops: () => Promise.resolve(shopsFixture),
 }))
 
 vi.mock("../../model/shared/use-goal-catalog", () => ({
@@ -124,6 +126,10 @@ vi.mock("../../model/shared/use-goal-catalog", () => ({
     getEntityName: (_type: string, id: string) => `Entity ${id}`,
     upgradesById: new Map([
       ["upgHpC014", { farmLocations: [{ battleId: "battle-1" }] }],
+      [
+        "upgHpM004",
+        { id: "upgHpM004", rarity: "Mythic", recipe: [], farmLocations: [] },
+      ],
     ]),
     charactersById: new Map([
       [
@@ -602,6 +608,88 @@ describe("GoalEditDialog", () => {
         "goals.target.issues.upgradeQuantity"
       )
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
+    })
+  })
+
+  describe("Mythic materials (add-mythic-material-shop-sources)", () => {
+    const venerableGoal = (
+      acquisitionSources: GoalDetail["config"]["acquisitionSources"]
+    ) =>
+      ({
+        ...upgradeGoal,
+        config: {
+          ...config,
+          acquisitionSources,
+          farmingLocationIds: ["battle-1"],
+          upgrade: { targets: [{ upgradeId: "upgHpM004", quantity: 6 }] },
+        },
+      }) as unknown as GoalDetail
+    const guildOffer = "create-goal-shop-offer-checkbox-guild:upgHpM004"
+
+    beforeEach(() => {
+      shopsFixture = [
+        {
+          id: "guild",
+          slots: [
+            {
+              variants: [
+                {
+                  reward: { type: "upgHpM004", qty: 1 },
+                  cost: { currency: "guildCredits", amount: 900 },
+                  maxPurchasesPerDay: 2,
+                  days: ["TUE"],
+                },
+              ],
+            },
+          ],
+        },
+      ]
+    })
+    afterEach(() => {
+      shopsFixture = []
+    })
+
+    it("shows every offer checked for a goal with no saved choice, and saves an explicit opt-out", async () => {
+      goalOnScreen(venerableGoal(null))
+      renderDialog()
+      await loaded()
+
+      fireEvent.click(await screen.findByTestId(guildOffer))
+      fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+      await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+      expect(editGoal.mock.calls[0]![1].details).toMatchObject({
+        acquisitionSources: [{ kind: "Shop", ids: [] }],
+        // A Mythic-material choice sits beside the campaign override.
+        farmingLocationIds: ["battle-1"],
+      })
+    })
+
+    it("restores a saved selection", async () => {
+      goalOnScreen(venerableGoal([{ kind: "Shop", ids: [] }]))
+      renderDialog()
+      await loaded()
+
+      expect(await screen.findByTestId(guildOffer)).not.toBeChecked()
+      expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
+    })
+
+    it("hides the control once the edited target needs no Mythic material", async () => {
+      goalOnScreen(venerableGoal(null))
+      renderDialog()
+      await loaded()
+      await screen.findByTestId(guildOffer)
+
+      fireEvent.change(
+        within(screen.getByTestId("goal-target-upgrade-upgHpM004")).getByRole(
+          "spinbutton"
+        ),
+        { target: { value: "" } }
+      )
+
+      expect(
+        screen.queryByTestId("goal-mythic-material-sources")
+      ).not.toBeInTheDocument()
     })
   })
 

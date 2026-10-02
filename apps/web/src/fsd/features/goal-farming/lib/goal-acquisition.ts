@@ -3,9 +3,14 @@ import type {
   GameCatalogShop,
   MowStorageModel,
   OnslaughtRewardStorageModel,
-  ShopShardOffer,
+  ShopRewardOffer,
 } from "@workspace/game-catalog"
-import { resolveUnitShardShopOffers } from "@workspace/game-catalog"
+import {
+  MYTHIC_UNCRAFTABLE_UPGRADE_IDS,
+  resolveMythicMaterialShopOffers,
+  resolveUnitShardShopOffers,
+} from "@workspace/game-catalog"
+import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
@@ -33,6 +38,53 @@ function regularRewardKey(rarity: string) {
   ) as "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
 }
 
+/** Goal kinds whose Mythic upgrade-material needs can draw on shop offers
+ *  (add-mythic-material-shop-sources). */
+function takesMythicMaterialSources(detail: GoalDetail) {
+  return (
+    (detail.goalType === "Rank" && !isMowDetail(detail)) ||
+    detail.goalType === "Upgrade" ||
+    (detail.goalType === "Ability" && isMowDetail(detail))
+  )
+}
+
+/** The needed ids that are one of the four shop-only Mythic upgrade materials. */
+export function neededMythicMaterialIds(needIds: readonly string[]) {
+  return [...new Set(needIds)].filter((id) =>
+    MYTHIC_UNCRAFTABLE_UPGRADE_IDS.includes(id)
+  )
+}
+
+/** The roster's stars by unit id, for shop lock resolution (the Crusade shop's Mythic-material offers
+ *  are gated on owning a blue-star unit). */
+export function rosterStarsByUnitId(
+  units: Iterable<{ unitId: string; progressionIndex: string } | undefined>
+) {
+  const starsByUnitId: Record<string, number> = {}
+  for (const unit of units) {
+    if (unit)
+      starsByUnitId[unit.unitId] = progressionStarsIndex(
+        unit.progressionIndex as Progression
+      )
+  }
+  return starsByUnitId
+}
+
+/**
+ * The Mythic-material shop offers a goal uses: every available offer of each needed material when the
+ * goal has no saved selection (`acquisitionSources` null — the default, never persisted), otherwise only
+ * the offers its `Shop` entry names (an empty entry opts out).
+ */
+export function selectMythicMaterialOffers(
+  acquisitionSources: readonly AcquisitionSource[] | null,
+  offers: readonly ShopRewardOffer[]
+) {
+  if (!acquisitionSources) return [...offers]
+  const ids =
+    acquisitionSources.find((source) => source.kind === "Shop")?.ids ?? []
+  return offers.filter((offer) => ids.includes(offer.offerId))
+}
+
 function tokensFor(shards: number, reward: { min: number; max: number }) {
   return shards <= 0 ? 0 : Math.ceil(shards / ((reward.min + reward.max) / 2))
 }
@@ -49,7 +101,12 @@ function tokensFor(shards: number, reward: { min: number; max: number }) {
  */
 export function computeGoalAcquisition(params: {
   detail: GoalDetail
-  need: { shards: number; mythicShards: number }
+  /** `upgrades` are the goal's farmable base-material needs; only Mythic-material ones matter here. */
+  need: {
+    shards: number
+    mythicShards: number
+    upgrades?: readonly { id: string }[]
+  }
   mowsById: ReadonlyMap<string, MowStorageModel>
   charactersById: ReadonlyMap<string, CharacterStorageModel>
   playerCharacterById: ReadonlyMap<string, PlayerCharacter | undefined>
@@ -65,7 +122,7 @@ export function computeGoalAcquisition(params: {
   flatSuppliers: FlatSupplier[]
   /** The selected shop offers behind `flatSuppliers` (same `offerId` as each supplier's key), so a
    *  consumer can show their cost and shop without re-resolving. */
-  shopOffers: ShopShardOffer[]
+  shopOffers: ShopRewardOffer[]
   onslaughtTokensDelta: number
 } {
   const { detail, need } = params
@@ -88,7 +145,7 @@ export function computeGoalAcquisition(params: {
   )
   const campaignShardsEnabled = acquisitionSources ? !!campaignSource : true
   const flatSuppliers: FlatSupplier[] = []
-  const shopOffers: ShopShardOffer[] = []
+  const shopOffers: ShopRewardOffer[] = []
   let onslaughtTokensDelta = 0
 
   if (
@@ -146,6 +203,34 @@ export function computeGoalAcquisition(params: {
       if (offer.isMythic || !shopSource.ids.includes(offer.offerId)) continue
       flatSuppliers.push(projectShopSupply(offer, params.referenceDate))
       shopOffers.push(offer)
+    }
+  }
+
+  if (takesMythicMaterialSources(detail) && params.shops?.length) {
+    const materialIds = neededMythicMaterialIds(
+      (need.upgrades ?? []).map((upgrade) => upgrade.id)
+    )
+    if (materialIds.length > 0) {
+      const offers = resolveMythicMaterialShopOffers(
+        params.shops,
+        materialIds,
+        {
+          lockContext: {
+            starsByUnitId: rosterStarsByUnitId([
+              ...params.playerCharacterById.values(),
+              ...params.playerMowById.values(),
+            ]),
+          },
+          now: params.referenceDate.getTime(),
+        }
+      )
+      for (const offer of selectMythicMaterialOffers(
+        detail.config.acquisitionSources,
+        offers
+      )) {
+        flatSuppliers.push(projectShopSupply(offer, params.referenceDate))
+        shopOffers.push(offer)
+      }
     }
   }
 

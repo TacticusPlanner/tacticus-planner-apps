@@ -1,4 +1,5 @@
-import { DOW_MAP, type ShopShardOffer } from "@workspace/game-catalog"
+import { DOW_MAP, type ShopRewardOffer } from "@workspace/game-catalog"
+import type { UpgradeId } from "@workspace/game-domain"
 
 import {
   mythicShardResourceId,
@@ -7,26 +8,30 @@ import {
 } from "../model/estimate.domain"
 
 /**
- * A selected shop offer's flat per-day shard supply (spec: *A selected shop source supplies a
- * bounded, expected-value per-day amount*): `shardsPerPurchase * maxPurchasesPerDay *
+ * A selected shop offer's flat per-day supply (spec: *A selected shop source supplies a bounded,
+ * expected-value per-day amount*): `perPurchase * maxPurchasesPerDay *
  * probabilityByDay[weekday]` on each weekday the offer can appear, zero otherwise — the rotating-
  * slot probability already folded in by `resolveUnitShardShopOffers`. `referenceDate` anchors the
  * engine's 0-based day index to a real UTC weekday, the same reference date passed to `estimateGoal`/
  * `estimatePlan`.
  */
 export function projectShopSupply(
-  offer: ShopShardOffer,
+  offer: ShopRewardOffer,
   referenceDate: Date
 ): FlatSupplier {
-  const resourceId = offer.isMythic
-    ? mythicShardResourceId(offer.unitId)
-    : shardResourceId(offer.unitId)
+  // A shard offer feeds the unit's (mythic) shard resource; a Mythic-material offer's reward type is
+  // the upgrade id itself (add-mythic-material-shop-sources).
+  const resourceId = offer.rewardType.startsWith("mythicShards_")
+    ? mythicShardResourceId(offer.rewardType.slice("mythicShards_".length))
+    : offer.rewardType.startsWith("shards_")
+      ? shardResourceId(offer.rewardType.slice("shards_".length))
+      : (offer.rewardType as UpgradeId)
 
   return {
     key: offer.offerId,
     resourceId,
     shop: {
-      shardsPerPurchase: offer.rewardQty,
+      perPurchase: offer.rewardQty,
       currency: offer.cost.currency,
       cost: offer.cost.amount,
     },
@@ -43,13 +48,13 @@ export function projectShopSupply(
  *  assume — matches V1. */
 export const ONSLAUGHT_RUNS_PER_DAY = 1.5
 
-/** A shop offer's expected shard supply averaged to a per-day rate — its expected purchasable
- *  shards on each weekday it can appear (`rewardQty * maxPerDay * probabilityByDay[weekday]`)
+/** A shop offer's expected supply (shards, or items for a Mythic material) averaged to a per-day
+ *  rate — its expected purchasable amount on each weekday it can appear (`rewardQty * maxPerDay * probabilityByDay[weekday]`)
  *  summed over the week and divided by 7. Used to show every source group's yield in one
  *  comparable "shards/day" unit in the goal-creation picker
  *  (align-acquisition-source-yield-estimates); weekday-anchor-independent, unlike
  *  `projectShopSupply`'s per-day function. */
-export function shopOfferShardsPerDay(offer: ShopShardOffer): number {
+export function shopOfferPerDay(offer: ShopRewardOffer): number {
   const weekly = offer.days.reduce((total, weekday) => {
     const probability = offer.probabilityByDay[weekday] ?? 0
     if (probability <= 0) return total
@@ -103,7 +108,7 @@ export function onslaughtTokensFromSupply(
 }
 
 /** Projected shop currency spent, by currency id, from what each shop supplier supplied (expected
- *  purchases = supplied shards over shards per purchase, times the offer's cost); empty when no shop
+ *  purchases = supplied amount over amount per purchase, times the offer's cost); empty when no shop
  *  offer contributed. Unrounded — consumers round once for display. */
 export function shopSpendFromSupply(
   bySupplier: ReadonlyMap<string, number>,
@@ -113,8 +118,7 @@ export function shopSpendFromSupply(
   for (const supplier of suppliers ?? []) {
     const supplied = bySupplier.get(supplier.key) ?? 0
     if (!supplier.shop || supplied <= 0) continue
-    const amount =
-      (supplied / supplier.shop.shardsPerPurchase) * supplier.shop.cost
+    const amount = (supplied / supplier.shop.perPurchase) * supplier.shop.cost
     spend.set(
       supplier.shop.currency,
       (spend.get(supplier.shop.currency) ?? 0) + amount

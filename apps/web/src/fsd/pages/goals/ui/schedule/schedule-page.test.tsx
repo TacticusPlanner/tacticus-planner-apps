@@ -643,13 +643,14 @@ describe("Schedule page shop purchases", () => {
   const offer = (unit: string) => ({
     offerId: `war:shards_${unit}`,
     shopId: "war",
+    rewardType: `shards_${unit}`,
     rewardQty: 5,
     cost: { currency: "guildWarCurrency", amount: 900 },
   })
-  const shopEntry = (goalId: string, unit: string, expectedShards = 10) => ({
+  const shopEntry = (goalId: string, unit: string, expectedAmount = 10) => ({
     goalId,
     offerId: `war:shards_${unit}`,
-    expectedShards,
+    expectedAmount,
   })
   const shopOffersById = new Map([
     ["war:shards_bellator", offer("bellator")],
@@ -772,6 +773,7 @@ describe("Schedule page onslaught runs", () => {
   const warOffer = {
     offerId: "war:shards_bellator",
     shopId: "war",
+    rewardType: "shards_bellator",
     rewardQty: 5,
     cost: { currency: "guildWarCurrency", amount: 900 },
   }
@@ -796,7 +798,7 @@ describe("Schedule page onslaught runs", () => {
             {
               goalId: "g1",
               offerId: "war:shards_bellator",
-              expectedShards: 10,
+              expectedAmount: 10,
             },
           ],
           onslaughtEntries: [run("g1")],

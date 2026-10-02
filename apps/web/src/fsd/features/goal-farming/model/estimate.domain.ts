@@ -86,9 +86,11 @@ export interface FlatSupplier {
   /** Set only on an Onslaught source: the average shards one token (run) yields, so a consumer can
    *  turn the shards it supplied into projected tokens (V1's `oTokensTotal`). */
   shardsPerRun?: number
-  /** Set only on a shop offer: what one purchase yields and costs, so a consumer can turn the shards
-   *  it supplied into currency spent (display only — the cost never enters the estimate). */
-  shop?: { shardsPerPurchase: number; currency: string; cost: number }
+  /** Set only on a shop offer: what one purchase yields and costs, so a consumer can turn the amount
+   *  it supplied into currency spent (display only — the cost never enters the estimate). A supplier
+   *  with `shop` set also draws on the offer's account-wide daily capacity, pooled by `key` across
+   *  every goal in `estimatePlan` (spec: *A shop offer's daily capacity is shared across goals*). */
+  shop?: { perPurchase: number; currency: string; cost: number }
 }
 
 /** One battle node's farming economics for a single material. */
@@ -120,10 +122,10 @@ export interface RaidBreakdownEntry {
  *  into the estimate. */
 export interface ShopScheduleEntry {
   goalId: string
-  /** The `ShopShardOffer.offerId` (`<shopId>:<rewardType>`). */
+  /** The `ShopRewardOffer.offerId` (`<shopId>:<rewardType>`). */
   offerId: string
-  /** Expected shards the offer supplied that day. */
-  expectedShards: number
+  /** Expected amount (shards, or Mythic-material items) the offer supplied that day. */
+  expectedAmount: number
 }
 
 /** One goal's projected Onslaught contribution on one plan day: the expected shards its selected

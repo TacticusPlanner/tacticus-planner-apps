@@ -12,6 +12,7 @@ import {
   type UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
 import type {
+  AcquisitionSource,
   CombinedGoalSpec,
   FarmingStrategy,
   GoalKind,
@@ -307,11 +308,18 @@ export function buildCombinedGoalSpecs(params: {
    * tacticus-planner-apps#103) — the same plan feeds both Unlock and Ascension specs; each is
    * translated to the wire `acquisitionSources` set independently since they're separate goals. */
   plan: GoalAcquisitionPlan
+  /** The Mythic-material shop-offer choice (add-mythic-material-shop-sources), applied to the Rank,
+   *  Upgrade, and Machine-of-War Ability specs. `null`/absent keeps the all-available default. */
+  mythicMaterialSources?: AcquisitionSource[] | null
+  isMow?: boolean
 }): CombinedGoalSpec[] {
   const { enabledTypes, includesUnlock, includesAscension } = params
   const specs: CombinedGoalSpec[] = []
   let unlockIndex: number | null = null
   let ascensionIndex: number | null = null
+  const mythicMaterialSources = params.mythicMaterialSources
+    ? { acquisitionSources: params.mythicMaterialSources }
+    : {}
 
   if (includesUnlock) {
     specs.push({
@@ -346,6 +354,7 @@ export function buildCombinedGoalSpecs(params: {
       goalType: "Rank",
       config: {
         farmingStrategy: params.farmingStrategy,
+        ...mythicMaterialSources,
         rank: {
           start: rankIndex(params.rankStart),
           // The "From" field is always a clean rank boundary (read-only, synced from the unit's
@@ -368,6 +377,7 @@ export function buildCombinedGoalSpecs(params: {
       goalType: "Ability",
       config: {
         farmingStrategy: params.farmingStrategy,
+        ...(params.isMow ? mythicMaterialSources : {}),
         ability: {
           activeStart: params.abilityActiveStart,
           activeEnd: params.abilityActiveEnd,
@@ -390,6 +400,7 @@ export function buildCombinedGoalSpecs(params: {
     specs.push({
       goalType: "Upgrade",
       config: {
+        ...mythicMaterialSources,
         upgrade: { targets: params.upgradeTargets, ...params.upgradeRanges },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],

@@ -135,10 +135,32 @@ const characters = new Map([
       rankUpUpgrades: [
         { rank: "Stone1", upgradeIds: ["h1", "c1"] },
         { rank: "Stone2", upgradeIds: ["h2"] },
+        // Backs the Mythic-material picker tests: only a range past Stone3 needs it.
+        { rank: "Stone3", upgradeIds: ["upgHpM004"] },
       ],
     },
   ],
 ])
+
+// Venerable Battle Mark as the Guild shop sells it (add-mythic-material-shop-sources).
+const mythicMaterialShop = {
+  id: "guild",
+  displayLocation: "",
+  refreshWithAdWatch: false,
+  allowedRefreshesPerDay: 0,
+  slots: [
+    {
+      variants: [
+        {
+          reward: { type: "upgHpM004", qty: 1 },
+          cost: { currency: "guildCredits", amount: 900 },
+          maxPurchasesPerDay: 2,
+          days: ["TUE"],
+        },
+      ],
+    },
+  ],
+}
 
 // A shop-only unit (like Kharn/Ragnar): no campaign shard-farm nodes, sold as shards in a shop.
 characters.set("hero2", {
@@ -195,6 +217,15 @@ const upgrades = [
     id: "h2",
     label: "Health Two",
     rarity: "Common",
+    stat: "Health",
+    craftable: false,
+    recipe: [],
+    farmLocations: [],
+  },
+  {
+    id: "upgHpM004",
+    label: "Venerable Battle Mark",
+    rarity: "Mythic",
     stat: "Health",
     craftable: false,
     recipe: [],
@@ -1201,6 +1232,63 @@ describe("CreateGoalSheet", () => {
       expect(
         screen.getByTestId("create-goal-farming-strategy-preview")
       ).toHaveTextContent("goals.create.farmingStrategy.explanation.Milestones")
+    })
+  })
+
+  describe("Mythic materials (add-mythic-material-shop-sources)", () => {
+    async function rankGoalTo(rank: string) {
+      shopsFixture = [mythicMaterialShop]
+      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+      render(
+        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
+      )
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Rank")
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      expect(
+        screen.queryByTestId("goal-mythic-material-sources")
+      ).not.toBeInTheDocument()
+      fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+      const listbox = await screen.findByRole("listbox")
+      fireEvent.click(within(listbox).getByText(rank))
+    }
+
+    async function submittedRankConfig() {
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      return createCombinedGoals.mock.calls[0][0].goals[0].config
+    }
+
+    it("appears once the range needs one, checked by default, and an untouched form saves no selection", async () => {
+      await rankGoalTo("Iron1")
+
+      expect(
+        await screen.findByTestId(
+          "create-goal-shop-offer-checkbox-guild:upgHpM004"
+        )
+      ).toBeChecked()
+
+      const config = await submittedRankConfig()
+      expect(config).not.toHaveProperty("acquisitionSources")
+    })
+
+    it("saves an explicit empty selection when every offer is unchecked", async () => {
+      await rankGoalTo("Iron1")
+
+      fireEvent.click(
+        await screen.findByTestId(
+          "create-goal-shop-offer-checkbox-guild:upgHpM004"
+        )
+      )
+
+      const config = await submittedRankConfig()
+      expect(config.acquisitionSources).toEqual([{ kind: "Shop", ids: [] }])
     })
   })
 

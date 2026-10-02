@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import type { ShopRewardOffer } from "@workspace/game-catalog"
 import {
   battleIdSchema,
   campaignIdSchema,
@@ -12,6 +13,7 @@ import type {
   GoalNeed,
 } from "../model/estimate.domain"
 import { estimateGoal } from "./estimate"
+import { projectShopSupply } from "./shop-supply"
 import {
   estimateBonusRaids,
   estimatePlanSchedule,
@@ -483,16 +485,16 @@ describe("shop schedule entries (add-shop-purchases-to-schedule)", () => {
     })
 
     expect(plan.days.map((day) => day.shopEntries)).toEqual([
-      [{ goalId: "unlock", offerId: "war:shards_unit", expectedShards: 2 }],
-      [{ goalId: "unlock", offerId: "war:shards_unit", expectedShards: 2 }],
-      [{ goalId: "unlock", offerId: "war:shards_unit", expectedShards: 1 }],
+      [{ goalId: "unlock", offerId: "war:shards_unit", expectedAmount: 2 }],
+      [{ goalId: "unlock", offerId: "war:shards_unit", expectedAmount: 2 }],
+      [{ goalId: "unlock", offerId: "war:shards_unit", expectedAmount: 1 }],
     ])
     const outcome = plan.outcomes.get("unlock")
     expect(outcome).toMatchObject({ status: "Estimated", days: 3 })
     expect(
       plan.days
         .flatMap((day) => day.shopEntries)
-        .reduce((total, entry) => total + entry.expectedShards, 0)
+        .reduce((total, entry) => total + entry.expectedAmount, 0)
     ).toBe(5)
   })
 
@@ -536,7 +538,7 @@ describe("shop schedule entries (add-shop-purchases-to-schedule)", () => {
 
   describe("shop spend", () => {
     const shop = {
-      shardsPerPurchase: 5,
+      perPurchase: 5,
       currency: "guildWarCurrency",
       cost: 900,
     }
@@ -653,5 +655,145 @@ describe("shop schedule entries (add-shop-purchases-to-schedule)", () => {
         onslaughtTokens: 3,
       })
     })
+  })
+})
+
+describe("shop offers shared across goals (add-mythic-material-shop-sources)", () => {
+  // Venerable Battle Mark's real offers for a roster owning a blue-star unit (spec worked examples).
+  const VENERABLE = upgradeId("upgHpM004")
+  const offer = (
+    shopId: string,
+    maxPerDay: number,
+    probabilityByDay: ShopRewardOffer["probabilityByDay"],
+    currency: string,
+    amount: number
+  ): ShopRewardOffer => ({
+    offerId: `${shopId}:upgHpM004`,
+    shopId,
+    rewardType: "upgHpM004",
+    rewardQty: 1,
+    cost: { currency, amount },
+    maxPerDay,
+    days: Object.keys(probabilityByDay) as ShopRewardOffer["days"],
+    probabilityByDay,
+  })
+  const monday = new Date(Date.UTC(2026, 9, 5))
+  const suppliers = [
+    offer("guild", 2, { TUE: 1, SAT: 0.25, SUN: 0.25 }, "guildCredits", 900),
+    offer(
+      "crusade",
+      3,
+      { TUE: 1, SAT: 0.25, SUN: 0.25 },
+      "crusadeCurrency",
+      430
+    ),
+    offer("rogue-trader", 1, { SUN: 1 }, "elderShopCurrency", 35),
+  ].map((venerable) => projectShopSupply(venerable, monday))
+  const venerableGoal = (goalId: string, priority: number, count: number) => ({
+    goalId,
+    priority,
+    needs: [{ id: VENERABLE, count }],
+    flatSuppliers: suppliers,
+  })
+  const plan = (...goals: GoalNeed[]) =>
+    estimatePlanSchedule({
+      goals,
+      inventory: [],
+      upgradesById: new Map(),
+      battlesById: new Map(),
+      dailyEnergy: 100,
+      referenceDate: monday,
+    })
+
+  it("meets Ragnar's 6 Venerable Battle Mark on Day 6 (2026-10-10)", () => {
+    const ragnar = plan(venerableGoal("ragnar", 1, 6)).outcomes.get("ragnar")
+    if (ragnar?.status === "Blocked") throw new Error("blocked")
+
+    expect(ragnar).toMatchObject({
+      status: "Estimated",
+      days: 6,
+      date: "2026-10-10",
+      energyTotal: 0,
+      raidsTotal: 0,
+    })
+    expect(ragnar!.flatSupplyBySupplier?.get("crusade:upgHpM004")).toBeCloseTo(
+      3.75
+    )
+    expect(ragnar!.flatSupplyBySupplier?.get("guild:upgHpM004")).toBeCloseTo(
+      2.25
+    )
+    expect(
+      ragnar!.flatSupplyBySupplier?.get("rogue-trader:upgHpM004") ?? 0
+    ).toBe(0)
+  })
+
+  it("shares each offer's daily cap in priority order: the Dreadnought finishes on Day 9, not Day 2", () => {
+    const result = plan(
+      venerableGoal("ragnar", 1, 6),
+      venerableGoal("dreadnought", 2, 3)
+    )
+
+    expect(result.outcomes.get("ragnar")).toMatchObject({
+      days: 6,
+      date: "2026-10-10",
+    })
+    expect(result.outcomes.get("dreadnought")).toMatchObject({
+      days: 9,
+      date: "2026-10-13",
+    })
+    const tuesday = result.days[1]!.shopEntries
+    expect(tuesday.filter((entry) => entry.goalId === "dreadnought")).toEqual(
+      []
+    )
+    const saturdayGuild = result.days[5]!.shopEntries.filter(
+      (entry) => entry.offerId === "guild:upgHpM004"
+    )
+    expect(saturdayGuild.map((entry) => entry.goalId)).toEqual([
+      "ragnar",
+      "dreadnought",
+    ])
+  })
+
+  it("no longer double-counts one unit's shard offer selected by both its Unlock and Ascension goals", () => {
+    const SHARDS = upgradeId("upgHpM001") // any resource id; the pool is keyed by offer, not resource
+    const warOffer = {
+      key: "war:shards_unit",
+      resourceId: SHARDS,
+      supplyOnDay: () => 2,
+      shop: { perPurchase: 1, currency: "guildWarCurrency", cost: 100 },
+    }
+    const result = plan(
+      {
+        goalId: "unlock",
+        priority: 1,
+        needs: [{ id: SHARDS, count: 5 }],
+        flatSuppliers: [warOffer],
+      },
+      {
+        goalId: "ascension",
+        priority: 2,
+        needs: [{ id: SHARDS, count: 5 }],
+        flatSuppliers: [warOffer],
+      }
+    )
+
+    // 2 shards/day in total: Unlock takes 2, 2, 1 (Day 3); Ascension gets 1 then 2, 2 (Day 5).
+    expect(result.outcomes.get("unlock")).toMatchObject({ days: 3 })
+    expect(result.outcomes.get("ascension")).toMatchObject({ days: 5 })
+  })
+
+  it("leaves two goals that use different offers independent", () => {
+    const onlyGuild = {
+      ...venerableGoal("a", 1, 2),
+      flatSuppliers: [suppliers[0]!],
+    }
+    const onlyCrusade = {
+      ...venerableGoal("b", 2, 3),
+      flatSuppliers: [suppliers[1]!],
+    }
+    const result = plan(onlyGuild, onlyCrusade)
+
+    expect(result.outcomes.get("a")).toMatchObject({ days: 2 })
+    expect(result.outcomes.get("b")).toMatchObject({ days: 2 })
   })
 })
