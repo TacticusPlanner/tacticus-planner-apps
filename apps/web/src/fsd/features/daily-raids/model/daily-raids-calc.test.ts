@@ -1505,4 +1505,118 @@ describe("Upgrade goals in the plan", () => {
     expect(farmedFor(result.today.entries, "up")).toBe(0)
     expect(farmedFor(result.today.entries, "other")).toBe(1)
   })
+
+  describe("Mythic material from shops (add-mythic-material-shop-sources)", () => {
+    const venerable = upgradeIdSchema.parse("upgHpM004")
+    // Venerable Battle Mark as the real Guild shop serves it: guaranteed TUE, 1 of 4 on SAT/SUN.
+    const guild = {
+      id: "guild",
+      displayLocation: "guildMerchant",
+      refreshWithAdWatch: true,
+      allowedRefreshesPerDay: 1,
+      slots: [
+        {
+          variants: (
+            [
+              ["upgHpM001", "WED"],
+              ["upgHpM004", "TUE"],
+            ] as const
+          ).map(([id, day]) => ({
+            reward: { type: id, qty: 1 },
+            days: [day, "SAT", "SUN"],
+            cost: { currency: "guildCredits", amount: 900 },
+            maxPurchasesPerDay: 2,
+            weight: 1,
+          })),
+        },
+      ],
+    } as unknown as GameCatalogShop
+    const runWithShops = (
+      acquisitionSources: GoalDetail["config"]["acquisitionSources"]
+    ) => {
+      // Plus one raidable material, so Today has work and a plan is produced.
+      const base = upgradeGoal("ragnar", venerable, 2, 1)
+      const detail = {
+        ...base,
+        config: {
+          ...base.config,
+          acquisitionSources,
+          upgrade: {
+            targets: [
+              { upgradeId: venerable, quantity: 2 },
+              { upgradeId: baseA, quantity: 1 },
+            ],
+          },
+        },
+      }
+      return calculateDailyRaids({
+        members: [{ goal: detail }],
+        details: [detail],
+        playerCharacterById: new Map(),
+        playerMowById: new Map(),
+        inventoryShardById: new Map(),
+        inventoryUpgrades: [],
+        upgradesById: new Map([
+          [
+            venerable,
+            { ...farmable(venerable), rarity: "Mythic", farmLocations: [] },
+          ],
+          [baseA, farmable(baseA)],
+        ]),
+        battlesById: new Map([
+          [
+            nodeId,
+            {
+              campaignGroupId: campaignIdSchema.parse("CG1"),
+              type: "Normal",
+              challenge: false,
+              nodeNumber: 1,
+              battleIndex: 0,
+              energyCost: 10,
+              dailyAttempts: 999,
+            },
+          ],
+        ]),
+        charactersById: new Map(),
+        mowsById: new Map(),
+        ascensionCostsById: new Map(),
+        unlockShardCostsById: new Map(),
+        getCharacter: () => undefined,
+        dailyEnergy: 100,
+        shops: [guild],
+        // 2026-10-05 is a Monday (UTC).
+        referenceDate: new Date("2026-10-05T00:00:00.000Z"),
+      })
+    }
+
+    it("is scheduled from every available offer by default instead of being blocked", () => {
+      const result = runWithShops(null)
+
+      if (result?.status !== "ready") throw new Error("not ready")
+      expect(result.blockedGoals).toEqual([])
+      expect(result.planDays[1]!.shopEntries).toEqual([
+        { goalId: "ragnar", offerId: "guild:upgHpM004", expectedAmount: 2 },
+      ])
+      expect(result.shopOffersById.get("guild:upgHpM004")?.rewardType).toBe(
+        "upgHpM004"
+      )
+      expect(result.planSummary.completionDate).toBe("2026-10-06")
+    })
+
+    it("stays blocked when the goal opted out of every offer", () => {
+      const result = runWithShops([{ kind: "Shop", ids: [] }])
+
+      if (result?.status !== "ready") throw new Error("not ready")
+      expect(result.blockedGoals).toEqual([
+        {
+          goalId: "ragnar",
+          partial: true,
+          blockers: [
+            { resourceId: venerable, reason: "NoFarmLocation", remaining: 2 },
+          ],
+        },
+      ])
+      expect(result.planSummary.completionDate).toBeNull()
+    })
+  })
 })

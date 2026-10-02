@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { ShopShardOffer } from "@workspace/game-catalog"
+import type { ShopRewardOffer, ShopShardOffer } from "@workspace/game-catalog"
 
 import {
   mythicShardResourceId,
@@ -8,6 +8,7 @@ import {
 import {
   projectOnslaughtSupply,
   projectShopSupply,
+  shopOfferPerDay,
   shopSpendFromSupply,
 } from "./shop-supply"
 
@@ -83,6 +84,66 @@ describe("projectShopSupply", () => {
 
     expect(supplier.key).toBe("rogue-trader:mythicShards_eldarFarseer")
     expect(supplier.resourceId).toBe(mythicShardResourceId("eldarFarseer"))
+  })
+})
+
+describe("Mythic-material shop offers (add-mythic-material-shop-sources)", () => {
+  // Venerable Battle Mark's real offers for a roster owning a blue-star unit.
+  const venerable = (
+    shopId: string,
+    maxPerDay: number,
+    probabilityByDay: ShopRewardOffer["probabilityByDay"],
+    currency: string,
+    amount: number
+  ): ShopRewardOffer => ({
+    offerId: `${shopId}:upgHpM004`,
+    shopId,
+    rewardType: "upgHpM004",
+    rewardQty: 1,
+    cost: { currency, amount },
+    maxPerDay,
+    days: Object.keys(probabilityByDay) as ShopRewardOffer["days"],
+    probabilityByDay,
+  })
+  const guild = venerable(
+    "guild",
+    2,
+    { TUE: 1, SAT: 0.25, SUN: 0.25 },
+    "guildCredits",
+    900
+  )
+  const crusade = venerable(
+    "crusade",
+    3,
+    { TUE: 1, SAT: 0.25, SUN: 0.25 },
+    "crusadeCurrency",
+    430
+  )
+  const rogueTrader = venerable(
+    "rogue-trader",
+    1,
+    { SUN: 1 },
+    "elderShopCurrency",
+    35
+  )
+
+  it("feeds the upgrade id itself as the resource", () => {
+    expect(projectShopSupply(guild, tuesday).resourceId).toBe("upgHpM004")
+  })
+
+  it("projects 3 / 4.5 / 1 Venerable Battle Mark per week", () => {
+    const weekly = (offer: ShopRewardOffer) => {
+      const supplier = projectShopSupply(offer, tuesday)
+      return [0, 1, 2, 3, 4, 5, 6].reduce(
+        (total, day) => total + supplier.supplyOnDay(day),
+        0
+      )
+    }
+
+    expect(weekly(guild)).toBeCloseTo(3)
+    expect(weekly(crusade)).toBeCloseTo(4.5)
+    expect(weekly(rogueTrader)).toBeCloseTo(1)
+    expect(shopOfferPerDay(guild)).toBeCloseTo(3 / 7)
   })
 })
 

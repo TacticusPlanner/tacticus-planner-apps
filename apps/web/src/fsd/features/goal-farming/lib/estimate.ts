@@ -58,7 +58,11 @@ export function shopSpendField(
 export function applyFlatSuppliers(
   remaining: Map<EstimateResourceId, number>,
   suppliers: readonly FlatSupplier[] | undefined,
-  dayIndex: number
+  dayIndex: number,
+  /** Today's shop-offer purchases already taken by higher-priority goals, by supplier `key` (an offer
+   *  id) — mutated in place. A shop offer's daily cap is per account, so `estimatePlan` passes one map
+   *  per day across every goal; a single-goal estimate passes none and owns its offers outright. */
+  shopSupplyUsed?: Map<string, number>
 ): {
   byResource: Map<EstimateResourceId, number>
   bySupplier: Map<string, number>
@@ -78,9 +82,14 @@ export function applyFlatSuppliers(
     const need = remaining.get(supplier.resourceId)
     if (!need || need <= 0) continue
 
-    const supply = Math.max(0, supplier.supplyOnDay(dayIndex))
+    const pooled = shopSupplyUsed && supplier.shop ? shopSupplyUsed : undefined
+    const supply = Math.max(
+      0,
+      supplier.supplyOnDay(dayIndex) - (pooled?.get(supplier.key) ?? 0)
+    )
     const amount = Math.min(supply, need)
     if (amount <= 0) continue
+    pooled?.set(supplier.key, (pooled.get(supplier.key) ?? 0) + amount)
 
     const next = need - amount
     if (next <= 0) {

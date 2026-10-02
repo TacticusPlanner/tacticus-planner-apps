@@ -13,6 +13,7 @@ import { AbilityGoalFields } from ".//ability-goal-fields"
 import { RankGoalFields } from ".//goal-type-fields"
 import { GoalTypeCard } from "../shared/goal-visuals"
 import { LevelRequirementNote } from ".//level-requirement-note"
+import { MythicMaterialSourceField } from ".//mythic-material-source-field"
 import { UnlockRequirementField } from ".//unlock-requirement-field"
 import { UpgradeGoalFields } from ".//upgrade-goal-fields"
 
@@ -33,6 +34,19 @@ export function GoalTypeCards({
   goalKinds: GoalKind[]
 }) {
   const { t } = useTranslation()
+  // One Mythic-material selection serves every enabled Rank/Upgrade/MoW-Ability goal of this unit
+  // (add-mythic-material-shop-sources); render it once, in the first such card.
+  const mythicHost = goalKinds.find(
+    (kind) =>
+      form.enabledTypes.has(kind) &&
+      (kind === "Rank" ||
+        kind === "Upgrade" ||
+        (kind === "Ability" && form.entityType === "Mow"))
+  )
+  const mythicField = (kind: GoalKind) =>
+    kind === mythicHost ? (
+      <MythicMaterialSourceField selection={form.mythicMaterialSelection} />
+    ) : null
 
   return (
     <>
@@ -77,6 +91,7 @@ export function GoalTypeCards({
                       />
                     </div>
                   </div>
+                  {mythicField(kind)}
                 </GoalTypeCard>
               )
             case "Ascension": {
@@ -236,6 +251,7 @@ export function GoalTypeCards({
                       onFarmingStrategyChange={form.setFarmingStrategy}
                     />
                   ) : null}
+                  {mythicField(kind)}
                 </GoalTypeCard>
               )
             case "Upgrade":
@@ -278,6 +294,7 @@ export function GoalTypeCards({
                         : undefined
                     }
                   />
+                  {mythicField(kind)}
                 </GoalTypeCard>
               )
             case "Unlock":

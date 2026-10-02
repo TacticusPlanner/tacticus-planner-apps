@@ -41,12 +41,22 @@ export function useGoalEditDialogTutorial(): TourPageSteps {
     [t]
   )
 
+  // Skipped unless the goal's target needs a Mythic material (add-mythic-material-shop-sources).
+  const mythicMaterialSources = useMemo<Step>(
+    () => ({
+      target: '[data-testid="goal-mythic-material-sources"]',
+      title: t("tour.editGoal.steps.mythicMaterialSources.title"),
+      content: t("tour.editGoal.steps.mythicMaterialSources.content"),
+    }),
+    [t]
+  )
+
   return useMemo<TourPageSteps>(
     () => ({
-      desktop: [target, priority, projects],
-      mobile: [target, priority, projects],
+      desktop: [target, priority, projects, mythicMaterialSources],
+      mobile: [target, priority, projects, mythicMaterialSources],
     }),
-    [target, priority, projects]
+    [target, priority, projects, mythicMaterialSources]
   )
 }
 

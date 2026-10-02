@@ -716,6 +716,14 @@
         "shopOfferDays": "Disponible {{days}}",
         "ascensionOnlyMythicLabel": "Fuentes míticas exclusivas de ascensión"
       },
+      "mythicMaterials": {
+        "title": "Materiales míticos de las tiendas",
+        "description": "Por defecto se usan todas las ofertas de tienda disponibles. Desmarca una oferta para dejar de contar con ella.",
+        "loading": "Cargando ofertas de tienda…",
+        "unavailable": "Las ofertas de tienda no están disponibles ahora. Se conserva tu selección guardada.",
+        "noOffers": "Ninguna tienda te ofrece este material actualmente.",
+        "perDay": "≈ {{amount}} al día"
+      },
       "ability": {
         "activeStart": "Habilidad activa, nivel actual",
         "activeTarget": "Habilidad activa, nivel objetivo",
@@ -1188,6 +1196,10 @@
         "projects": {
           "title": "Proyectos",
           "content": "Busca un nombre de proyecto que aún no exista y elige Crear para añadirlo aquí sin salir de este formulario. Los proyectos que contienen el objetivo nunca cambian su estado ni su prioridad."
+        },
+        "mythicMaterialSources": {
+          "title": "Materiales míticos",
+          "content": "Ofertas de tienda para los materiales míticos que necesita este objetivo. Por defecto se cuentan todas las ofertas disponibles; desmarca las que no vayas a comprar."
         }
       }
     },
@@ -1217,6 +1229,10 @@
         "projects": {
           "title": "Proyectos",
           "content": "Añade este objetivo a un proyecto o crea uno nuevo desde el selector. El proyecto nuevo se guarda de inmediato; el objetivo solo cambia cuando guardas."
+        },
+        "mythicMaterialSources": {
+          "title": "Materiales míticos",
+          "content": "Elige qué ofertas de tienda aportan los materiales míticos de este objetivo. Si desmarcas todas, ya no se cuenta con las tiendas para ellos."
         }
       }
     }

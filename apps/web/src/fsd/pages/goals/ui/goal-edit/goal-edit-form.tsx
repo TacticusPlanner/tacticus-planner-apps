@@ -22,6 +22,8 @@ import {
   type GoalEditDraft,
 } from "../../model/goal-edit/goal-edit-draft"
 import { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
+import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-needs"
+import { useMythicMaterialSelection } from "../../model/goal-creation-form/use-mythic-material-selection"
 import { useGoalEditSave } from "../../model/goal-edit/use-goal-edit-save"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
 import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
@@ -31,6 +33,7 @@ import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalEditError } from "./goal-edit-error"
 import { GoalEditFarmingFields, GoalEditNotesField } from "./goal-edit-fields"
 import { GoalEditPriorityField } from "./goal-edit-priority-field"
+import { MythicMaterialSourceField } from "../create-goal/mythic-material-source-field"
 import { GoalEditTarget } from "./goal-edit-target"
 
 /**
@@ -78,15 +81,30 @@ export function GoalEditForm({
   // No select until the order has loaded, and none for a goal that holds no global position.
   const position = !plan.loading && currentPosition > 0 ? currentPosition : null
 
+  const sourcesBaseline = acquisition.usesAcquisitionSources
+    ? acquisition.baselineSources
+    : (detail.config.acquisitionSources ?? null)
   const baseline = baselineGoalEditDraft(detail, {
-    acquisitionSources: acquisition.baselineSources,
+    acquisitionSources: sourcesBaseline,
     priorityPosition: position,
   })
   const [edits, setEdits] = useState<Partial<GoalEditDraft>>({})
+  const editedTarget =
+    edits.target !== undefined ? edits.target : baseline.target
+  // Rank/Upgrade/MoW-Ability goals' Mythic-material shop offers (add-mythic-material-shop-sources):
+  // listed for the materials the draft target needs; `null` keeps the saved choice (or the default).
+  const mythicMaterials = useMythicMaterialSelection({
+    needs: goalEditMaterialNeeds(detail, editedTarget, catalog),
+    seed: acquisition.usesAcquisitionSources
+      ? null
+      : detail.config.acquisitionSources,
+  })
   const draft: GoalEditDraft = {
     ...baseline,
     ...edits,
-    acquisitionSources: acquisition.sources,
+    acquisitionSources: acquisition.usesAcquisitionSources
+      ? acquisition.sources
+      : (mythicMaterials.acquisitionSources ?? sourcesBaseline),
   }
   const edit = (patch: Partial<GoalEditDraft>) =>
     setEdits((current) => ({ ...current, ...patch }))
@@ -202,6 +220,13 @@ export function GoalEditForm({
             overrideValid={overrideValid}
             selectedLocations={draft.farmingLocationIds}
           />
+
+          <div className="col-span-full">
+            <MythicMaterialSourceField
+              selection={mythicMaterials}
+              showSpend={false}
+            />
+          </div>
         </div>
       </ResponsiveDialogBody>
 

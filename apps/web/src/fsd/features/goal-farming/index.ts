@@ -61,10 +61,16 @@ export {
   ONSLAUGHT_RUNS_PER_DAY,
   projectOnslaughtSupply,
   projectShopSupply,
-  shopOfferShardsPerDay,
+  shopOfferPerDay,
 } from "./lib/shop-supply"
-export { computeGoalAcquisition, isMowDetail } from "./lib/goal-acquisition"
+export {
+  computeGoalAcquisition,
+  isMowDetail,
+  neededMythicMaterialIds,
+  selectMythicMaterialOffers,
+} from "./lib/goal-acquisition"
 export { useUnitShopShardSupply } from "./model/use-unit-shop-shard-supply"
+export { useMythicMaterialShopOffers } from "./model/use-mythic-material-shop-offers"
 export { farmingStageTargets } from "./lib/farming-stages"
 export { createCraftedInventoryPool } from "./lib/upgrade-recipe"
 export {

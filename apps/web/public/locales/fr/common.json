@@ -716,6 +716,14 @@
         "shopOfferDays": "Disponible {{days}}",
         "ascensionOnlyMythicLabel": "Sources mythiques réservées à l'ascension"
       },
+      "mythicMaterials": {
+        "title": "Matériaux mythiques des boutiques",
+        "description": "Toutes les offres de boutique disponibles sont utilisées par défaut. Décochez une offre pour ne plus compter dessus.",
+        "loading": "Chargement des offres de boutique…",
+        "unavailable": "Les offres de boutique sont indisponibles pour le moment. Votre sélection enregistrée est conservée.",
+        "noOffers": "Aucune boutique ne vous propose actuellement ce matériau.",
+        "perDay": "≈ {{amount}} par jour"
+      },
       "ability": {
         "activeStart": "Capacité active, niveau actuel",
         "activeTarget": "Capacité active, niveau cible",
@@ -1188,6 +1196,10 @@
         "projects": {
           "title": "Projets",
           "content": "Recherchez un nom de projet qui n'existe pas encore et choisissez Créer pour l'ajouter ici sans quitter ce formulaire. Les projets qui contiennent l'objectif ne changent jamais son statut ni sa priorité."
+        },
+        "mythicMaterialSources": {
+          "title": "Matériaux mythiques",
+          "content": "Offres de boutique pour les matériaux mythiques dont cet objectif a besoin. Toutes les offres disponibles sont comptées par défaut ; décochez celles que vous n'achèterez pas."
         }
       }
     },
@@ -1217,6 +1229,10 @@
         "projects": {
           "title": "Projets",
           "content": "Ajoutez cet objectif à un projet ou créez-en un nouveau depuis le sélecteur. Le nouveau projet est enregistré immédiatement ; l'objectif ne change que lorsque vous enregistrez."
+        },
+        "mythicMaterialSources": {
+          "title": "Matériaux mythiques",
+          "content": "Choisissez quelles offres de boutique fournissent les matériaux mythiques de cet objectif. Tout décocher arrête de compter sur les boutiques pour eux."
         }
       }
     }

@@ -22,8 +22,8 @@ describe("useCreateGoalSheetTutorial", () => {
     (viewport) => {
       const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
-      expect(result.current[viewport]).toHaveLength(2)
-      const [step, projectStep] = result.current[viewport] ?? []
+      expect(result.current[viewport]).toHaveLength(3)
+      const [step, mythicStep, projectStep] = result.current[viewport] ?? []
       expect(step.target).toBe(
         '[data-testid="create-goal-acquisition-sources"]'
       )
@@ -32,6 +32,15 @@ describe("useCreateGoalSheetTutorial", () => {
       )
       expect(step.content).toBe(
         "localized:tour.createGoal.steps.acquisitionSources.content"
+      )
+      expect(mythicStep.target).toBe(
+        '[data-testid="goal-mythic-material-sources"]'
+      )
+      expect(mythicStep.title).toBe(
+        "localized:tour.createGoal.steps.mythicMaterialSources.title"
+      )
+      expect(mythicStep.content).toBe(
+        "localized:tour.createGoal.steps.mythicMaterialSources.content"
       )
       expect(projectStep.target).toBe('[data-testid="create-goal-projects"]')
       expect(projectStep.title).toBe(

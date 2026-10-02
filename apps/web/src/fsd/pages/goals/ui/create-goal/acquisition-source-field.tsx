@@ -5,13 +5,13 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import type { ShopShardOffer } from "@workspace/game-catalog"
-import type { BattleId } from "@workspace/game-domain"
+import type { ShopRewardOffer, ShopShardOffer } from "@workspace/game-catalog"
+import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import {
-  shopOfferShardsPerDay,
+  shopOfferPerDay,
   type Battle,
   type FarmLocation,
 } from "@/features/goal-farming"
@@ -20,14 +20,15 @@ import { GoalShardLocationsField } from ".//goal-shard-locations-field"
 const ASSET_ROOT = "/game_catalog"
 const SHARD_ICON = `${ASSET_ROOT}/misc/ui_icon_character_shard_empty.png`
 
-/** True when a shop offer's slot can resolve to more than one reward on at least one of its days —
- *  i.e. it shares a rotating slot (spec: *rotating-slot offer row content*). A guaranteed offer has
- *  probability 1 on every day it appears. */
-function isRotatingOffer(offer: ShopShardOffer): boolean {
-  return Object.values(offer.probabilityByDay).some(
-    (probability) => (probability ?? 0) < 1
-  )
+/** The weekdays a shop offer's slot can resolve to another reward (probability below 1) — i.e. where it
+ *  shares a rotating slot (spec: *rotating-slot offer row content*). Empty for a guaranteed offer. A
+ *  Mythic-material offer can be guaranteed on one weekday and rotating on others. */
+function rotatingDays(offer: ShopRewardOffer) {
+  return offer.days.filter((day) => (offer.probabilityByDay[day] ?? 0) < 1)
 }
+
+const isShardOffer = (offer: ShopRewardOffer): offer is ShopShardOffer =>
+  "isMythic" in offer
 
 /**
  * The Unlock/Ascension acquisition-source picker (plan: Campaigns/Onslaught/Shops multi-select,
@@ -276,12 +277,12 @@ export function ShopOfferRow({
   checked,
   onToggle,
 }: {
-  offer: ShopShardOffer
+  offer: ShopRewardOffer
   checked: boolean
   onToggle: (offerId: string, checked: boolean) => void
 }) {
   const { t } = useTranslation(["common", "shops"])
-  const rotating = isRotatingOffer(offer)
+  const rotating = rotatingDays(offer)
   const currencyIcon = shopCurrencyIcon(offer.cost.currency)
   const currencyLabel = t(`shops:currency.${offer.cost.currency}`, {
     defaultValue: offer.cost.currency,
@@ -300,8 +301,16 @@ export function ShopOfferRow({
       />
       <span className="grid gap-0.5">
         <span className="flex items-center gap-1.5">
-          <EntityIcon alt="" className="size-5 shrink-0" src={SHARD_ICON} />
-          {offer.shopId}
+          {isShardOffer(offer) ? (
+            <EntityIcon alt="" className="size-5 shrink-0" src={SHARD_ICON} />
+          ) : (
+            <UpgradeIcon
+              className="size-5 shrink-0"
+              id={offer.rewardType as UpgradeId}
+              rarity="Mythic"
+            />
+          )}
+          {t(`shops:shopName.${offer.shopId}`, { defaultValue: offer.shopId })}
         </span>
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           {currencyIcon ? (
@@ -321,14 +330,18 @@ export function ShopOfferRow({
           className="text-xs text-muted-foreground"
           data-testid={`create-goal-shop-offer-yield-${offer.offerId}`}
         >
-          {t(
-            offer.isMythic
-              ? "goals.create.acquisitionSources.shardsPerDayMythic"
-              : "goals.create.acquisitionSources.shardsPerDay",
-            { shards: shopOfferShardsPerDay(offer).toFixed(1) }
-          )}
+          {isShardOffer(offer)
+            ? t(
+                offer.isMythic
+                  ? "goals.create.acquisitionSources.shardsPerDayMythic"
+                  : "goals.create.acquisitionSources.shardsPerDay",
+                { shards: shopOfferPerDay(offer).toFixed(1) }
+              )
+            : t("goals.create.mythicMaterials.perDay", {
+                amount: shopOfferPerDay(offer).toFixed(2),
+              })}
         </span>
-        {rotating ? (
+        {rotating.length > 0 ? (
           <span
             className="text-xs text-muted-foreground"
             data-testid={`create-goal-shop-offer-possible-${offer.offerId}`}
@@ -337,11 +350,11 @@ export function ShopOfferRow({
             {" — "}
             {t("goals.create.acquisitionSources.shopOfferChance", {
               percent: Math.round(
-                (Math.max(
-                  ...Object.values(offer.probabilityByDay).map((p) => p ?? 0)
-                ) || 0) * 100
+                Math.max(
+                  ...rotating.map((day) => offer.probabilityByDay[day] ?? 0)
+                ) * 100
               ),
-              days,
+              days: rotating.join(", "),
             })}
           </span>
         ) : null}

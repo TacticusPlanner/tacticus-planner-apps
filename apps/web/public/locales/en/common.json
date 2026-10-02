@@ -716,6 +716,14 @@
         "shopOfferDays": "Available {{days}}",
         "ascensionOnlyMythicLabel": "Ascension-only mythic sources"
       },
+      "mythicMaterials": {
+        "title": "Mythic materials from shops",
+        "description": "Every available shop offer is used by default. Uncheck an offer to stop counting on it.",
+        "loading": "Loading shop offers…",
+        "unavailable": "Shop offers are unavailable right now. Your saved selection is kept.",
+        "noOffers": "No shop currently offers this material to you.",
+        "perDay": "≈ {{amount}} per day"
+      },
       "ability": {
         "activeStart": "Active ability, current level",
         "activeTarget": "Active ability, target level",
@@ -1188,6 +1196,10 @@
         "projects": {
           "title": "Projects",
           "content": "Search for a project name that doesn't exist yet and choose Create to add it here without leaving this form. Which projects hold the goal never changes its status or priority."
+        },
+        "mythicMaterialSources": {
+          "title": "Mythic materials",
+          "content": "Shop offers for the Mythic materials this goal needs. Every available offer is counted by default; uncheck any you won't buy."
         }
       }
     },
@@ -1217,6 +1229,10 @@
         "projects": {
           "title": "Projects",
           "content": "Add this goal to a project, or create a new one from the picker. The new project is saved right away; the goal itself only changes when you save."
+        },
+        "mythicMaterialSources": {
+          "title": "Mythic materials",
+          "content": "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them."
         }
       }
     }

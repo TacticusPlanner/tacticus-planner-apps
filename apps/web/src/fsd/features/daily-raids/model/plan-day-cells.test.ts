@@ -60,6 +60,7 @@ const progress = (rows: [string, number, number][]) =>
 const warOffer = {
   offerId: "war:shards_calgar",
   shopId: "war",
+  rewardType: "shards_calgar",
   rewardQty: 5,
   cost: { currency: "guildWarCurrency", amount: 900 },
 } as never
@@ -232,10 +233,10 @@ describe("buildPlanUnitRanges", () => {
 })
 
 describe("buildPlanDayCells shop purchases", () => {
-  const shopEntry = (goalId: string, expectedShards: number) => ({
+  const shopEntry = (goalId: string, expectedAmount: number) => ({
     goalId,
     offerId: "war:shards_calgar",
-    expectedShards,
+    expectedAmount,
   })
 
   it("resolves entries to expected purchases and currency, merged across a unit's goals", () => {
@@ -251,10 +252,88 @@ describe("buildPlanDayCells shop purchases", () => {
       shopId: "war",
       currency: "guildWarCurrency",
       purchases: 3,
-      shards: 15,
+      amount: 15,
       spend: 2700,
     })
     expect(cells.shops[0]!.unit.goalId).toBe("calgar")
+  })
+
+  it("prices Mythic-material purchases per unit (add-mythic-material-shop-sources)", () => {
+    const venerable = (shopId: string, currency: string, amount: number) =>
+      ({
+        offerId: `${shopId}:upgHpM004`,
+        shopId,
+        rewardType: "upgHpM004",
+        rewardQty: 1,
+        cost: { currency, amount },
+      }) as never
+    const mythicSource = {
+      ...source(),
+      goalsById: new Map([
+        ["ragnar", goal("ragnar", 1, "spaceRagnar")],
+        ["dreadnought", goal("dreadnought", 2, "ultraDreadnought")],
+      ]),
+      shopOffersById: new Map([
+        ["crusade:upgHpM004", venerable("crusade", "crusadeCurrency", 430)],
+        ["guild:upgHpM004", venerable("guild", "guildCredits", 900)],
+      ]),
+    }
+    const shopEntry = (
+      goalId: string,
+      offerId: string,
+      expectedAmount: number
+    ) => ({
+      goalId,
+      offerId,
+      expectedAmount,
+    })
+
+    // Day 2 (Tue) of the spec's Ragnar worked example.
+    const tuesday = buildPlanDayCells(
+      schedule(
+        2,
+        [],
+        [
+          shopEntry("ragnar", "crusade:upgHpM004", 3),
+          shopEntry("ragnar", "guild:upgHpM004", 2),
+        ]
+      ),
+      mythicSource
+    )
+    expect(tuesday.shops).toEqual([
+      expect.objectContaining({
+        offerId: "crusade:upgHpM004",
+        rewardType: "upgHpM004",
+        purchases: 3,
+        amount: 3,
+        spend: 1290,
+      }),
+      expect.objectContaining({
+        offerId: "guild:upgHpM004",
+        purchases: 2,
+        amount: 2,
+        spend: 1800,
+      }),
+    ])
+
+    // Day 6 (Sat): the Guild offer's 0.5 expected capacity split across two units.
+    const saturday = buildPlanDayCells(
+      schedule(
+        6,
+        [],
+        [
+          shopEntry("ragnar", "guild:upgHpM004", 0.25),
+          shopEntry("dreadnought", "guild:upgHpM004", 0.25),
+        ]
+      ),
+      mythicSource
+    )
+    expect(
+      saturday.shops.map((purchase) => [purchase.unit.unitId, purchase.amount])
+    ).toEqual([
+      ["spaceRagnar", 0.25],
+      ["ultraDreadnought", 0.25],
+    ])
   })
 
   it("adds a shop-only unit to the day's units and the filter ranges, once when it also raids", () => {
@@ -300,11 +379,11 @@ describe("buildPlanDayCells shop purchases", () => {
         1,
         [],
         [
-          { goalId: "calgar", offerId: "gone", expectedShards: 5 },
+          { goalId: "calgar", offerId: "gone", expectedAmount: 5 },
           {
             goalId: "missing",
             offerId: "war:shards_calgar",
-            expectedShards: 5,
+            expectedAmount: 5,
           },
         ]
       ),

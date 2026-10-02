@@ -716,6 +716,14 @@
         "shopOfferDays": "Verfügbar {{days}}",
         "ascensionOnlyMythicLabel": "Nur beim Aufstieg verfügbare mythische Quellen"
       },
+      "mythicMaterials": {
+        "title": "Mythische Materialien aus Shops",
+        "description": "Standardmäßig wird jedes verfügbare Shop-Angebot genutzt. Entferne den Haken bei einem Angebot, um es nicht mehr einzuplanen.",
+        "loading": "Shop-Angebote werden geladen…",
+        "unavailable": "Shop-Angebote sind gerade nicht verfügbar. Deine gespeicherte Auswahl bleibt erhalten.",
+        "noOffers": "Derzeit bietet dir kein Shop dieses Material an.",
+        "perDay": "≈ {{amount}} pro Tag"
+      },
       "ability": {
         "activeStart": "Aktive Fähigkeit, aktuelle Stufe",
         "activeTarget": "Aktive Fähigkeit, Zielstufe",
@@ -1188,6 +1196,10 @@
         "projects": {
           "title": "Projekte",
           "content": "Suche nach einem Projektnamen, den es noch nicht gibt, und wähle Erstellen, um ihn hier hinzuzufügen, ohne dieses Formular zu verlassen. Welche Projekte das Ziel enthalten, ändert nie seinen Status oder seine Priorität."
+        },
+        "mythicMaterialSources": {
+          "title": "Mythische Materialien",
+          "content": "Shop-Angebote für die mythischen Materialien, die dieses Ziel braucht. Standardmäßig zählt jedes verfügbare Angebot; entferne den Haken bei allem, was du nicht kaufen wirst."
         }
       }
     },
@@ -1217,6 +1229,10 @@
         "projects": {
           "title": "Projekte",
           "content": "Füge dieses Ziel einem Projekt hinzu oder erstelle in der Auswahl ein neues. Das neue Projekt wird sofort gespeichert; das Ziel selbst ändert sich erst, wenn du speicherst."
+        },
+        "mythicMaterialSources": {
+          "title": "Mythische Materialien",
+          "content": "Wähle, welche Shop-Angebote die mythischen Materialien dieses Ziels liefern. Ohne Haken bei allen Angeboten werden Shops dafür nicht mehr eingeplant."
         }
       }
     }

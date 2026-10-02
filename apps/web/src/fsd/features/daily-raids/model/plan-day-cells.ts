@@ -23,9 +23,12 @@ export type PlanCell = {
 export type PlanShopPurchase = {
   offerId: string
   shopId: string
+  /** `shards_<unit>` / `mythicShards_<unit>`, or a Mythic upgrade-material id. */
+  rewardType: string
   unit: DailyRaidGoalViewModel
   purchases: number
-  shards: number
+  /** Expected shards, or Mythic-material items for a material offer. */
+  amount: number
   currency: string
   spend: number
 }
@@ -71,15 +74,16 @@ function buildShopPurchases(
     const purchase = byKey.get(key) ?? {
       offerId: offer.offerId,
       shopId: offer.shopId,
+      rewardType: offer.rewardType,
       unit,
       purchases: 0,
-      shards: 0,
+      amount: 0,
       currency: offer.cost.currency,
       spend: 0,
     }
-    const purchases = entry.expectedShards / offer.rewardQty
+    const purchases = entry.expectedAmount / offer.rewardQty
     purchase.purchases += purchases
-    purchase.shards += entry.expectedShards
+    purchase.amount += entry.expectedAmount
     purchase.spend += purchases * offer.cost.amount
     if (unit.priority < purchase.unit.priority) purchase.unit = unit
     byKey.set(key, purchase)

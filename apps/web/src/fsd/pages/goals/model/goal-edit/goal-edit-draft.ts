@@ -120,8 +120,13 @@ export function buildEditGoalRequest(
     }
   }
   if (changes.details) {
+    // Only the shard pickers replace the location override; a Mythic-material Shop selection on an
+    // Upgrade/Ability goal sits beside it (add-mythic-material-shop-sources).
+    const usesShardSources =
+      detail.goalType === "Unlock" || detail.goalType === "Ascension"
     const clearsLocations =
-      detail.goalType === "Rank" || draft.acquisitionSources !== null
+      detail.goalType === "Rank" ||
+      (usesShardSources && draft.acquisitionSources !== null)
     request.details = {
       notes: draft.notes.trim() || null,
       farmingLocationIds:
