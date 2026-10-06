@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Navigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -6,12 +6,16 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
+  DEFAULT_LEADERBOARD_SORT,
   LEGENDARY_EVENT_LANE_IDS,
+  type LeaderboardSort,
   type LegendaryEventLaneId,
   useLegendaryEvent,
   useLegendaryEventCommon,
   useLegendaryEventProgress,
+  useLegendaryEventRoster,
   useLegendaryEventSyncTimes,
+  useLegendaryEventUnits,
 } from "@/entities/legendary-event"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
@@ -19,15 +23,18 @@ import { useUnitName } from "@/shared/unit-name"
 import { LegendaryEventDesktopPage } from "./legendary-event-desktop-page"
 import { LegendaryEventMobilePage } from "./legendary-event-mobile-page"
 import {
+  buildLeaderboardRows,
+  buildProgressGridViewModel,
   buildRunStatusViewModel,
+  readValue,
   type LegendaryEventPageViewModel,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 
 /** `/events/legendary-events/:eventId`: computes the page's view model once and renders the
  *  desktop or mobile form (design D4). An unknown id replaces the route with the hub. The content
- *  is keyed by the event id, so the mobile lane selection (and every read) starts fresh on each
- *  event instead of carrying over from the previous one. */
+ *  is keyed by the event id, so the mobile lane selection, the leaderboard's sort and "Only
+ *  unlocked" state (and every read) start fresh on each event instead of carrying over. */
 export function LegendaryEventPage() {
   const { eventId = "" } = useParams()
   return <LegendaryEventPageContent eventId={eventId} key={eventId} />
@@ -44,6 +51,29 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   // Mobile-only; defaults to Alpha and lives as long as this event's page does.
   const [selectedLane, setSelectedLane] =
     useState<LegendaryEventLaneId>("alpha")
+  // Shared by the three lanes' leaderboards; discarded when the page unmounts.
+  const [leaderboardSort, setLeaderboardSort] = useState<LeaderboardSort>(
+    DEFAULT_LEADERBOARD_SORT
+  )
+  const [onlyUnlocked, setOnlyUnlocked] = useState(false)
+  const units = readValue(useLegendaryEventUnits())
+  const roster = readValue(useLegendaryEventRoster())
+  const progressValue = readValue(progress)
+  const eventData = event.status === "ready" ? event.data : undefined
+  const leaderboardRows = useMemo(
+    () =>
+      eventData
+        ? buildLeaderboardRows(eventData, units, roster)
+        : ({ kind: "loading" } as const),
+    [eventData, units, roster]
+  )
+  const progressGrid = useMemo(
+    () =>
+      eventData
+        ? buildProgressGridViewModel(eventData, progressValue)
+        : ({ kind: "loading" } as const),
+    [eventData, progressValue]
+  )
   useTourPageSteps(useLegendaryEventTutorial())
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate
@@ -99,6 +129,14 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     laneIds: isMobile ? [selectedLane] : LEGENDARY_EVENT_LANE_IDS,
     selectedLane,
     onSelectLane: setSelectedLane,
+    leaderboard: {
+      ...leaderboardRows,
+      sort: leaderboardSort,
+      onSortChange: setLeaderboardSort,
+      onlyUnlocked,
+      onOnlyUnlockedChange: setOnlyUnlocked,
+    },
+    progressGrid,
   }
 
   return isMobile ? (

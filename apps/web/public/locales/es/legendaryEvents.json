@@ -59,6 +59,58 @@
       "body": "Cada batalla que ganas suma sus puntos por bajas. Cada objetivo que cumple tu equipo en esa batalla añade su puntuación, y derrotar a todos los enemigos añade la bonificación de «derrotar a todos». Una batalla solo cuenta una vez con su mejor resultado: repetirla solo suma los puntos que superen tu mejor puntuación anterior."
     }
   },
+  "leaderboard": {
+    "title": "Clasificación de elegibilidad",
+    "unit": "Unidad",
+    "rarity": "Rareza",
+    "rank": "Rango",
+    "points": "Puntos / batalla",
+    "slots": "Huecos",
+    "pointsValue": "{{points}} puntos por batalla",
+    "slotsValue": "Huecos: {{slots}}",
+    "sortBy": "Ordenar por",
+    "sort": {
+      "points": "Puntos por batalla",
+      "slots": "Huecos",
+      "name": "Nombre"
+    },
+    "direction": {
+      "asc": "Ascendente",
+      "desc": "Descendente",
+      "toggle": "Invertir orden"
+    },
+    "onlyUnlocked": "Solo desbloqueadas",
+    "locked": "Bloqueada",
+    "objectiveMet": "{{objective}}: cumple",
+    "objectiveNotMet": "{{objective}}: no cumple",
+    "noEligible": "Ninguna unidad puede jugar en este carril.",
+    "noUnlocked": "Ninguna de tus unidades desbloqueadas puede jugar en este carril.",
+    "rosterNotSynced": "Tu plantilla aún no se ha sincronizado, así que no se muestran la propiedad, la rareza ni el rango.",
+    "loading": "Cargando unidades…",
+    "error": "No se pudieron cargar las unidades."
+  },
+  "progress": {
+    "title": "Progreso sincronizado",
+    "laneTotal": "{{earned}} / {{max}}",
+    "laneTotalLabel": "{{lane}}: {{earned}} de {{max}} puntos obtenidos",
+    "battle": "Batalla",
+    "battleNumber": "Batalla {{battle}}",
+    "defeatAll": "Derrotar a todos",
+    "columnLabel": "{{objective}}, {{points}} puntos",
+    "points": "Puntos",
+    "battlePoints": "{{earned}} / {{max}}",
+    "highScore": "Mejor puntuación {{score}}",
+    "cellCleared": "{{objective}}: completado",
+    "cellNotCleared": "{{objective}}: no completado",
+    "complete": "Completa",
+    "noLane": "No hay progreso en este carril.",
+    "noEvent": "Todavía no hay progreso sincronizado para este evento.",
+    "unavailable": "Datos sincronizados no disponibles",
+    "howPoints": {
+      "title": "Cómo funcionan los puntos",
+      "body": "Los puntos obtenidos vienen de tu última sincronización, tal como los informa el juego. El máximo de una batalla suma sus puntos por bajas, su mejor puntuación, la bonificación de «derrotar a todos» y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
+    }
+  },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
     "minHits_other": "Mín. {{count}} golpes",
@@ -98,6 +150,14 @@
         "laneOverview": {
           "title": "Resumen de carriles",
           "content": "Las unidades permitidas de cada carril, los puntos por bajas, los cinco objetivos con sus puntuaciones y los puntos que vale cada batalla."
+        },
+        "leaderboard": {
+          "title": "Clasificación de elegibilidad",
+          "content": "Cada unidad que permite cada carril, si la tienes, qué objetivos cumple y los puntos que puede sumar por batalla. Ordena la lista o muestra solo las unidades desbloqueadas."
+        },
+        "progressGrid": {
+          "title": "Progreso sincronizado",
+          "content": "Tus objetivos completados y puntos por batalla de la última sincronización, con los puntos obtenidos de cada carril frente a su máximo."
         }
       }
     }

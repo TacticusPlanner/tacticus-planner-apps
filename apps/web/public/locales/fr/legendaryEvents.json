@@ -59,6 +59,58 @@
       "body": "Chaque combat gagné rapporte ses points d'élimination. Chaque objectif rempli par votre équipe dans ce combat ajoute son score, et vaincre tous les ennemis ajoute le bonus « Tout vaincre ». Un combat ne compte qu'une fois, avec son meilleur résultat : le rejouer ne rapporte que les points au-delà de votre meilleur score précédent."
     }
   },
+  "leaderboard": {
+    "title": "Classement d'éligibilité",
+    "unit": "Unité",
+    "rarity": "Rareté",
+    "rank": "Rang",
+    "points": "Points / combat",
+    "slots": "Emplacements",
+    "pointsValue": "{{points}} points par combat",
+    "slotsValue": "Emplacements : {{slots}}",
+    "sortBy": "Trier par",
+    "sort": {
+      "points": "Points par combat",
+      "slots": "Emplacements",
+      "name": "Nom"
+    },
+    "direction": {
+      "asc": "Croissant",
+      "desc": "Décroissant",
+      "toggle": "Inverser l'ordre"
+    },
+    "onlyUnlocked": "Débloquées uniquement",
+    "locked": "Verrouillée",
+    "objectiveMet": "{{objective}} : rempli",
+    "objectiveNotMet": "{{objective}} : non rempli",
+    "noEligible": "Aucune unité ne peut jouer dans cette voie.",
+    "noUnlocked": "Aucune de vos unités débloquées ne peut jouer dans cette voie.",
+    "rosterNotSynced": "Votre effectif n'est pas encore synchronisé : la possession, la rareté et le rang ne sont pas affichés.",
+    "loading": "Chargement des unités…",
+    "error": "Impossible de charger les unités."
+  },
+  "progress": {
+    "title": "Progression synchronisée",
+    "laneTotal": "{{earned}} / {{max}}",
+    "laneTotalLabel": "{{lane}} : {{earned}} points obtenus sur {{max}}",
+    "battle": "Combat",
+    "battleNumber": "Combat {{battle}}",
+    "defeatAll": "Tout vaincre",
+    "columnLabel": "{{objective}}, {{points}} points",
+    "points": "Points",
+    "battlePoints": "{{earned}} / {{max}}",
+    "highScore": "Meilleur score {{score}}",
+    "cellCleared": "{{objective}} : accompli",
+    "cellNotCleared": "{{objective}} : non accompli",
+    "complete": "Terminé",
+    "noLane": "Aucune progression dans cette voie.",
+    "noEvent": "Aucune progression synchronisée pour cet événement pour l'instant.",
+    "unavailable": "Données synchronisées indisponibles",
+    "howPoints": {
+      "title": "Comment fonctionnent les points",
+      "body": "Les points obtenus proviennent de votre dernière synchronisation, tels que le jeu les indique. Le maximum d'un combat additionne ses points d'élimination, son meilleur score, le bonus « Tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
+    }
+  },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
     "minHits_other": "Min. {{count}} coups",
@@ -98,6 +150,14 @@
         "laneOverview": {
           "title": "Aperçu des voies",
           "content": "Les unités autorisées de chaque voie, les points d'élimination, les cinq objectifs avec leur score et les points que vaut chaque combat."
+        },
+        "leaderboard": {
+          "title": "Classement d'éligibilité",
+          "content": "Chaque unité autorisée par chaque voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut rapporter par combat. Triez la liste ou n'affichez que les unités débloquées."
+        },
+        "progressGrid": {
+          "title": "Progression synchronisée",
+          "content": "Vos objectifs accomplis et vos points par combat issus de la dernière synchronisation, avec les points obtenus de chaque voie face à son maximum."
         }
       }
     }

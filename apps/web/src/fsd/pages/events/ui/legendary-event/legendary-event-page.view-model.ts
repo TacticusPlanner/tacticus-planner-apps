@@ -1,10 +1,19 @@
 import {
+  LEGENDARY_EVENT_LANE_IDS,
+  buildLaneLeaderboard,
+  buildLanePointsModel,
+  buildSyncedLaneProgress,
   nextPointsMilestone,
+  type LaneProgressView,
+  type LeaderboardRow,
+  type LeaderboardSort,
   type LegendaryEvent,
   type LegendaryEventCommon,
   type LegendaryEventLaneId,
   type LegendaryEventLifecycle,
   type LegendaryEventProgress,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventUnit,
   type NextPointsMilestone,
   type ReadState,
 } from "@/entities/legendary-event"
@@ -48,6 +57,90 @@ export interface LegendaryEventPageViewModel {
   laneIds: readonly LegendaryEventLaneId[]
   selectedLane: LegendaryEventLaneId
   onSelectLane: (lane: LegendaryEventLaneId) => void
+  leaderboard: LeaderboardViewModel
+  progressGrid: ProgressGridViewModel
+}
+
+type ByLane<T> = Record<LegendaryEventLaneId, T>
+
+/** The leaderboard rows per lane, in default order, before the user's sort and filter. */
+export type LeaderboardRowsViewModel =
+  | { kind: "loading" }
+  | { kind: "unavailable" }
+  | {
+      kind: "ready"
+      rowsByLane: ByLane<LeaderboardRow[]>
+      /** `false` when the roster chunk is unavailable: ownership is then unknown (design D5). */
+      rosterAvailable: boolean
+    }
+
+/** The Eligibility leaderboard: its rows plus the sort / "Only unlocked" state shared by the three
+ *  lanes, owned by the page orchestrator (design D4). */
+export type LeaderboardViewModel = LeaderboardRowsViewModel & {
+  sort: LeaderboardSort
+  onSortChange: (sort: LeaderboardSort) => void
+  onlyUnlocked: boolean
+  onOnlyUnlockedChange: (onlyUnlocked: boolean) => void
+}
+
+/** The Synced progress section: per-lane progress over the points model, or the read's state. */
+export type ProgressGridViewModel =
+  | { kind: "loading" }
+  | { kind: "unavailable" }
+  | { kind: "ready"; lanes: ByLane<LaneProgressView> }
+
+/** A read's data, or its pending / failed status: a value that stays referentially stable across
+ *  renders, so the builders below can be memoised on it. */
+export type ReadValue<T> = T | "loading" | "error"
+
+export function readValue<T>(state: ReadState<T>): ReadValue<T> {
+  return state.status === "ready" ? state.data : state.status
+}
+
+/**
+ * Per-lane leaderboard rows over the catalog characters and the synced roster. Waits for both
+ * reads; a failed or never-synced roster yields unknown ownership rather than "all locked".
+ */
+export function buildLeaderboardRows(
+  event: LegendaryEvent,
+  units: ReadValue<LegendaryEventUnit[]>,
+  roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
+): LeaderboardRowsViewModel {
+  if (units === "loading" || roster === "loading") return { kind: "loading" }
+  if (units === "error") return { kind: "unavailable" }
+  const rosterData = roster === "error" ? undefined : roster
+  const rowsByLane = Object.fromEntries(
+    LEGENDARY_EVENT_LANE_IDS.map((laneId) => [
+      laneId,
+      buildLaneLeaderboard(event[laneId], units, rosterData),
+    ])
+  ) as ByLane<LeaderboardRow[]>
+  return {
+    kind: "ready",
+    rowsByLane,
+    rosterAvailable: rosterData !== undefined,
+  }
+}
+
+/** Per-lane synced progress: the event's `lre-progress` entry mapped onto each lane's points model
+ *  (an absent entry presents every lane as "no synced progress for this event yet"). */
+export function buildProgressGridViewModel(
+  event: LegendaryEvent,
+  progress: ReadValue<LegendaryEventProgress | undefined>
+): ProgressGridViewModel {
+  if (progress === "loading") return { kind: "loading" }
+  if (progress === "error") return { kind: "unavailable" }
+  const entry = progress
+  const lanes = Object.fromEntries(
+    LEGENDARY_EVENT_LANE_IDS.map((laneId) => [
+      laneId,
+      buildSyncedLaneProgress(
+        buildLanePointsModel(event[laneId]),
+        entry ? entry[laneId] : undefined
+      ),
+    ])
+  ) as ByLane<LaneProgressView>
+  return { kind: "ready", lanes }
 }
 
 /**
