@@ -341,7 +341,7 @@
       "empty": "No events scheduled.",
       "error": "Couldn't load events.",
       "loading": "Loading events…",
-      "run": "Run {{run}} of 3",
+      "run": "Event {{run}} of 3",
       "points": "{{points}} points",
       "sourceFailed": "Couldn't load {{type}}.",
       "openHse": "Home Screen Events",

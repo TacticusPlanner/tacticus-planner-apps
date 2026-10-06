@@ -32,7 +32,7 @@
 ## 6. Legendary Event page
 
 - [x] 6.1 Build `pages/events/ui/legendary-event/legendary-event-page.tsx` (orchestrator: `useLegendaryEvent(eventId)`, `useLegendaryEventProgress`, `useLegendaryEventCommon`, manifest `syncedAt`; unknown id → replace to the hub; mobile lane-selector state keyed by `eventId`; `laneIds` passed to lane-scoped sections) with `legendary-event-page.view-model.ts`, and verify `legendary-event-page.test.tsx` covers known event, unknown id replace, section order, selector default Alpha and reset on event change.
-- [x] 6.2 Build `run-status-card.tsx` (run, tokens + next token, points, currency, chests claimed, shards, next milestone line, run timing, "Synced X ago", no sync button) with the no-entry and synced-unavailable bodies; verify `run-status-card.test.tsx` reproduces the spec's populated example ("Run 1 of 3", "3/12", "1 hr 30 min", "4 chests claimed", "90 points to milestone 14 (+60 currency)"), the advancing next-token countdown, the absent-entry body, and the 25-minute synced age.
+- [x] 6.2 Build `run-status-card.tsx` (run, tokens + next token, points, currency, chests claimed, shards, next milestone line, run timing, "Synced X ago", no sync button) with the no-entry and synced-unavailable bodies; verify `run-status-card.test.tsx` reproduces the spec's populated example ("Event 1 of 3", "3/12", "1 hr 30 min", "4 chests claimed", "90 points to milestone 14 (+60 currency)"), the advancing next-token countdown, the absent-entry body, and the 25-minute synced age.
 - [x] 6.3 Build `lane-overview.tsx` (lane label with allowed-alliance rule, kill points, five objective chips via `useObjectiveLabel`, battle count, `battlesPoints` bar row, collapsed "how points work" disclosure) and verify `lane-overview.test.tsx` renders Lysander Alpha's five chips with scores, the "Alpha · No Xenos" label, the 18-bar ladder, and a German label for `No Resilient`.
 - [x] 6.4 Compose `legendary-event-desktop-page.tsx` (three lane panels) and `legendary-event-mobile-page.tsx` (shared `Tabs` selector, one lane) and verify render tests at 1280px assert three lane panels and no selector, and at 390px assert the selector and a single lane.
 
@@ -48,15 +48,15 @@
 
 ## 9. Desktop verification (viewport ≥ 768px)
 
-- [ ] 9.1 Start the full stack through the workspace Aspire AppHost, wait for `web` and `api` healthy, sign in with an account whose synced `lre-progress` has an entry for an active or recent event (required data states: synced roster with at least one Legendary Event entry, and an event with no entry), and verify at 1280px: the Events sidebar item lands on the hub; the hub groups and orders events; the active card shows run, tokens and points; `/events` redirects; an unknown id returns to the hub. Record browser evidence.
-- [ ] 9.2 On the event page at 1280px verify Run status values match the in-game values for the signed-in account, three lane panels render, objective chips show localized labels and icons in `en` and `de`, and the "how points work" disclosure opens; run the hub and event page tours and verify every step targets a visible element.
-- [ ] 9.3 On Home at 1280px verify the Events card lists live and upcoming rows of both types, each row navigates to its destination, and light and dark themes render the row accents legibly.
+- [x] 9.1 Start the full stack through the workspace Aspire AppHost, wait for `web` and `api` healthy, sign in with an account whose synced `lre-progress` has an entry for an active or recent event (required data states: synced roster with at least one Legendary Event entry, and an event with no entry), and verify at 1280px: the Events sidebar item lands on the hub; the hub groups and orders events; the active card shows run, tokens and points; `/events` redirects; an unknown id returns to the hub. Record browser evidence.
+- [x] 9.2 On the event page at 1280px verify Run status values match the in-game values for the signed-in account, three lane panels render, objective chips show localized labels and icons in `en` and `de`, and the "how points work" disclosure opens; run the hub and event page tours and verify every step targets a visible element.
+- [x] 9.3 On Home at 1280px verify the Events card lists live and upcoming rows of both types, each row navigates to its destination, and light and dark themes render the row accents legibly.
 
 ## 10. Mobile verification (viewport < 768px)
 
-- [ ] 10.1 Using a same-origin 420px iframe on the signed-in app origin (per the `tp-manual-ui-verification` skill), verify the Menu drawer lists Events › Legendary Events, the bottom bar is unchanged, the hub renders stacked cards, and the header tab returns from an event detail to the hub.
-- [ ] 10.2 On the event page at 420px verify the Alpha / Beta / Gamma selector drives the Lane overview, defaults to Alpha, resets when opening another event, and there is no horizontal page scroll; run the event page tour and verify the selector step comes first. Record evidence.
-- [ ] 10.3 Verify the Home Events card at 420px stacks after Token Availability, rows tap through to their destinations, and the countdowns tick.
+- [x] 10.1 Using a same-origin 420px iframe on the signed-in app origin (per the `tp-manual-ui-verification` skill), verify the Menu drawer lists Events › Legendary Events, the bottom bar is unchanged, the hub renders stacked cards, and the header tab returns from an event detail to the hub.
+- [x] 10.2 On the event page at 420px verify the Alpha / Beta / Gamma selector drives the Lane overview, defaults to Alpha, resets when opening another event, and there is no horizontal page scroll; run the event page tour and verify the selector step comes first. Record evidence.
+- [x] 10.3 Verify the Home Events card at 420px stacks after Token Availability, rows tap through to their destinations, and the countdowns tick.
 
 ## 11. Integration and gates
 

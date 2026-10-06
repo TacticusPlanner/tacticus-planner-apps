@@ -14,7 +14,12 @@ export function EventTimingLines({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const timing = eventTiming(lifecycle, nowMs, i18n.language)
-  if (!timing) return null
+  if (!timing)
+    return lifecycle.state === "upcoming" ? (
+      <p className="text-sm text-muted-foreground" data-testid="event-timing">
+        {t("hub.startsTba")}
+      </p>
+    ) : null
   return (
     <div className="text-sm text-muted-foreground" data-testid="event-timing">
       <p data-testid="event-timing-countdown">

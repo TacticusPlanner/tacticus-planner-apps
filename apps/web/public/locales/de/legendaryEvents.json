@@ -14,6 +14,7 @@
     "startsIn": "Beginnt in {{when}}",
     "endsAt": "Endet am {{date}}",
     "startsAt": "Beginnt am {{date}}",
+    "startsTba": "Startdatum folgt",
     "syncedUnavailable": "Synchronisierte Daten nicht verfügbar"
   },
   "lifecycle": {
@@ -21,7 +22,7 @@
     "upcoming": "Demnächst",
     "archived": "Archiviert"
   },
-  "run": "Durchlauf {{run}} von 3",
+  "run": "Event {{run}} von 3",
   "tokens": "{{current}}/{{max}} Tokens",
   "points": "{{points}} Punkte",
   "runStatus": {
@@ -80,7 +81,7 @@
         },
         "upcoming": {
           "title": "Kommende Events",
-          "content": "Events, die als Nächstes beginnen – das früheste zuerst, mit ihrer lokalen Startzeit."
+          "content": "Events, die als Nächstes beginnen – das früheste zuerst, mit ihrer lokalen Startzeit. Events ohne angekündigtes Datum stehen am Ende."
         }
       }
     },

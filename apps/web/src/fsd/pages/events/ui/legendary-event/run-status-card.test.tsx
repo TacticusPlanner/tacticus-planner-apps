@@ -114,7 +114,9 @@ describe("RunStatusCard", () => {
     )
     renderCard(view)
 
-    expect(screen.getByTestId("run-status-run")).toHaveTextContent("Run 1 of 3")
+    expect(screen.getByTestId("run-status-run")).toHaveTextContent(
+      "Event 1 of 3"
+    )
     // Observed now, so the full 5,400 s remain.
     expect(screen.getByTestId("run-status-tokens")).toHaveTextContent(
       "3/12 tokens, next in 1 hr 30 min"

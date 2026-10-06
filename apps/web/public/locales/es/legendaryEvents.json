@@ -14,6 +14,7 @@
     "startsIn": "Empieza en {{when}}",
     "endsAt": "Termina el {{date}}",
     "startsAt": "Empieza el {{date}}",
+    "startsTba": "Fecha de inicio por anunciar",
     "syncedUnavailable": "Datos sincronizados no disponibles"
   },
   "lifecycle": {
@@ -21,7 +22,7 @@
     "upcoming": "Próximo",
     "archived": "Archivado"
   },
-  "run": "Ronda {{run}} de 3",
+  "run": "Evento {{run}} de 3",
   "tokens": "{{current}}/{{max}} fichas",
   "points": "{{points}} puntos",
   "runStatus": {
@@ -80,7 +81,7 @@
         },
         "upcoming": {
           "title": "Próximos eventos",
-          "content": "Los eventos que empiezan a continuación, el más cercano primero, con su hora de inicio local."
+          "content": "Los eventos que empiezan a continuación, el más cercano primero, con su hora de inicio local. Los eventos sin fecha anunciada aparecen al final."
         }
       }
     },

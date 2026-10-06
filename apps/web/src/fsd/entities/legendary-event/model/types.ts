@@ -43,4 +43,9 @@ export type LegendaryEventLifecycleState = "active" | "upcoming" | "archived"
  */
 export type LegendaryEventLifecycle =
   | { state: "active" | "upcoming"; runStartMs: number; runEndMs: number }
-  | { state: "archived"; runStartMs?: undefined; runEndMs?: undefined }
+  // An unfinished event with no future run date yet (the catalog's "TBA").
+  | {
+      state: "upcoming" | "archived"
+      runStartMs?: undefined
+      runEndMs?: undefined
+    }

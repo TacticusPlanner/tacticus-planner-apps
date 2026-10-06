@@ -84,7 +84,7 @@ export function selectHomeEventRows({
 
   for (const event of legendary?.events ?? []) {
     const lifecycle = deriveLegendaryEventLifecycle(event, nowMs)
-    if (lifecycle.state === "archived") continue
+    if (lifecycle.runStartMs === undefined) continue // archived, or upcoming with the date TBA
     const isLive = lifecycle.state === "active"
     const synced = isLive
       ? legendary?.progress.find((entry) => entry.id === event.id)

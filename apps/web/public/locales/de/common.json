@@ -341,7 +341,7 @@
       "empty": "Keine Events geplant.",
       "error": "Events konnten nicht geladen werden.",
       "loading": "Events werden geladen…",
-      "run": "Durchlauf {{run}} von 3",
+      "run": "Event {{run}} von 3",
       "points": "{{points}} Punkte",
       "sourceFailed": "{{type}} konnten nicht geladen werden.",
       "openHse": "Startbildschirm-Events",

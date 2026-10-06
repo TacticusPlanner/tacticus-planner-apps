@@ -341,7 +341,7 @@
       "empty": "No hay eventos programados.",
       "error": "No se pudieron cargar los eventos.",
       "loading": "Cargando eventos…",
-      "run": "Ronda {{run}} de 3",
+      "run": "Evento {{run}} de 3",
       "points": "{{points}} puntos",
       "sourceFailed": "No se pudieron cargar los {{type}}.",
       "openHse": "Eventos de la pantalla de inicio",

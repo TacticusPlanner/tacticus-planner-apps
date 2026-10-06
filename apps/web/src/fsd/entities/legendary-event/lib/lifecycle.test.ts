@@ -65,28 +65,33 @@ describe("deriveLegendaryEventLifecycle", () => {
     ).toEqual({ state: "archived" })
   })
 
-  it("is archived once every run window has passed", () => {
+  it("is upcoming with no window (TBA) when unfinished and no run is in the future", () => {
+    const tba = { name: "Tba", finished: false, eventStageStartDatesUtc: [] }
+    expect(
+      deriveLegendaryEventLifecycle(tba, at("2026-10-06T00:00:00Z"))
+    ).toEqual({ state: "upcoming" })
     const expired = event("Old", ["2026-05-17T00:00:00Z"])
     expect(
-      deriveLegendaryEventLifecycle(expired, at("2026-10-06T00:00:00Z")).state
-    ).toBe("archived")
+      deriveLegendaryEventLifecycle(expired, at("2026-10-06T00:00:00Z"))
+    ).toEqual({ state: "upcoming" })
   })
 
-  it("ignores unparseable run starts", () => {
+  it("treats unparseable run starts as TBA", () => {
     const broken = event("Broken", ["not-a-date"])
     expect(
       deriveLegendaryEventLifecycle(broken, at("2026-10-06T00:00:00Z")).state
-    ).toBe("archived")
+    ).toBe("upcoming")
   })
 })
 
 describe("orderLegendaryEventsForHub", () => {
-  it("groups active, upcoming by start, then archived by name", () => {
+  it("groups active, upcoming by start (TBA last), then archived by name", () => {
     const farsight = event("Farsight", ["2026-10-18T00:00:00Z"])
-    const dante = event("Dante", ["2026-01-01T00:00:00Z"])
+    const dante = event("Dante", []) // TBA
+    const zed = event("Zed", []) // TBA, sorts after Dante by name
     const abaddon = event("Abaddon", ["2026-02-01T00:00:00Z"], true)
     const groups = orderLegendaryEventsForHub(
-      [dante, farsight, uthar, abaddon, lysander],
+      [zed, dante, farsight, uthar, abaddon, lysander],
       at("2026-09-02T12:00:00Z"),
       (entry) => entry.name
     )
@@ -95,10 +100,11 @@ describe("orderLegendaryEventsForHub", () => {
     expect(groups.upcoming.map((entry) => entry.event.name)).toEqual([
       "Uthar",
       "Farsight",
+      "Dante",
+      "Zed",
     ])
     expect(groups.archived.map((entry) => entry.event.name)).toEqual([
       "Abaddon",
-      "Dante",
     ])
   })
 })
