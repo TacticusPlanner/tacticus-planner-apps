@@ -136,7 +136,7 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 ### Requirement: Run status is read from the synced progress chunk
 
-The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Run N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …" from `nextTokenInSeconds` (omitted when the bucket is null); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex + 1`; `currentShards`; and the next points milestone: the first `lre-common` `pointsMilestones` entry whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or `lre-common` is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt`. It SHALL NOT offer its own sync control. When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body and the run timing only.
+The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Run N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …", counted down from the instant the chunk was observed plus `nextTokenInSeconds` and read as "next token ready" once that instant has passed (omitted when the bucket is null or full); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex` (the Tacticus API sends a 1-based count of chests opened, and -1 when it omits the field, which reads as 0); `currentShards`; and the next points milestone: the first `lre-common` `pointsMilestones` entry whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or `lre-common` is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt` (hidden while that read is pending, "Not synced yet" before the first sync). It SHALL NOT offer its own sync control. When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body and the run timing only.
 
 Assumptions:
 
@@ -147,7 +147,14 @@ Assumptions:
 
 - **GIVEN** Lysander's synced entry has `currentEventRun` 1, tokens `{ current: 3, max: 12, nextTokenInSeconds: 5400 }`, `currentPoints` 3410, `currentCurrency` 120, `currentClaimedChestIndex` 4, `currentShards` 125, and the first milestone above 3,410 is `{ milestone: 14, cumulativePoints: 3500, engramPayout: 60 }`
 - **WHEN** the section renders
-- **THEN** it shows "Run 1 of 3", "3/12 tokens, next in 1 hr 30 min", "3,410 points", "120 currency", "5 chests claimed", "125 shards", and "90 points to milestone 14 (+60 currency)"
+- **AND** the chunk was observed at the current instant
+- **THEN** it shows "Run 1 of 3", "3/12 tokens, next in 1 hr 30 min", "3,410 points", "120 currency", "4 chests claimed", "125 shards", and "90 points to milestone 14 (+60 currency)"
+
+#### Scenario: Next-token countdown advances between syncs
+
+- **GIVEN** the same entry, observed 2 hours before the current instant
+- **WHEN** the section renders
+- **THEN** it shows "3/12 tokens, next token ready"
 
 #### Scenario: Event not in the synced chunk
 
@@ -159,7 +166,7 @@ Assumptions:
 
 - **GIVEN** the player-data manifest `syncedAt` is 25 minutes before now
 - **WHEN** the section renders
-- **THEN** it shows "Synced 25 min ago" and no sync button inside the section
+- **THEN** it shows "Synced 25 minutes ago" and no sync button inside the section
 
 ### Requirement: Objective labels and icons are derived from the catalog filter
 

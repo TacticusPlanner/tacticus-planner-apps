@@ -211,6 +211,8 @@
     "goalsDescription": "Sigue tu progreso hacia tus objetivos",
     "progress": "Progreso",
     "progressDescription": "Tu progreso sincronizado de campañas y Onslaught",
+    "events": "Eventos",
+    "eventsDescription": "Eventos Legendarios y otros eventos por tiempo limitado",
     "uiKit": "Kit de interfaz",
     "uiKitDescription": "Vista previa de los componentes del sistema de diseño",
     "guild": "Gremio",
@@ -293,6 +295,12 @@
       "conflict": "El progreso del evento de campaña cambió en otro lugar. Se cargaron los valores más recientes; aplica tu cambio de nuevo."
     }
   },
+  "events": {
+    "tabs": {
+      "legendaryEvents": "Eventos Legendarios",
+      "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado"
+    }
+  },
   "home": {
     "tokens": {
       "title": "Disponibilidad de fichas",
@@ -326,13 +334,18 @@
       "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones."
     },
     "events": {
-      "title": "Eventos de la pantalla de inicio",
+      "title": "Eventos",
       "live": "EN VIVO",
       "endsIn": "Termina en {{when}}",
       "startsIn": "Empieza en {{when}}",
       "empty": "No hay eventos programados.",
       "error": "No se pudieron cargar los eventos.",
-      "loading": "Cargando eventos…"
+      "loading": "Cargando eventos…",
+      "run": "Ronda {{run}} de 3",
+      "points": "{{points}} puntos",
+      "sourceFailed": "No se pudieron cargar los {{type}}.",
+      "openHse": "Eventos de la pantalla de inicio",
+      "openLegendaryEvents": "Eventos Legendarios"
     },
     "calendar": {
       "title": "Calendario de eventos"
@@ -1103,7 +1116,7 @@
       },
       "navigation": {
         "title": "Desplázate con facilidad",
-        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz."
+        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluida Eventos para los Eventos Legendarios."
       },
       "sidebarFooter": {
         "title": "Herramientas de la barra lateral",
@@ -1111,7 +1124,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Tu barra principal",
-        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas."
+        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Progreso y Eventos."
       },
       "mobileHeader": {
         "title": "Encabezado de página",

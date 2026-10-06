@@ -29,7 +29,7 @@ export function EstimateCell({
   // A Blocked estimate has no date; its reasons and materials live in the Blocked badge's tooltip.
   if (estimate.status === "Blocked") return null
   // Shared with the project surfaces, which render the same date from the features layer and so
-  // cannot import it from here — see `shared/lib/format-estimate-date`, which also documents the
+  // cannot import it from here — see `shared/lib/format-time/format-estimate-date`, which also documents the
   // UTC parsing this value needs.
   const formattedDate = formatEstimateDate(
     estimate.date,

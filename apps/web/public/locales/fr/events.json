@@ -96,9 +96,9 @@
           "title": "Disponibilité des jetons",
           "content": "Consultez en un coup d'œil le statut de vos jetons Arène, Raid de guilde, Assaut et Course au pillage."
         },
-        "hseWidget": {
-          "title": "Événements de l'écran d'accueil",
-          "content": "Consultez l'événement en cours et le prochain à démarrer. Sélectionnez la carte pour ouvrir l'onglet des événements de l'écran d'accueil."
+        "eventsWidget": {
+          "title": "Événements",
+          "content": "Consultez l'événement de l'écran d'accueil et l'Événement Légendaire en cours, puis ce qui commence ensuite. Sélectionnez une ligne pour ouvrir cet événement."
         },
         "projects": {
           "title": "Vos projets",

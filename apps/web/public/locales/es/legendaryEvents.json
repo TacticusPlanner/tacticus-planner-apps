@@ -1,0 +1,104 @@
+{
+  "hub": {
+    "groups": {
+      "active": "Activos",
+      "upcoming": "Próximos",
+      "archived": "Archivados"
+    },
+    "noActive": "Ahora mismo no hay ningún Evento Legendario en curso.",
+    "empty": "Todavía no hay Eventos Legendarios disponibles.",
+    "loading": "Cargando Eventos Legendarios…",
+    "error": "No se pudieron cargar los Eventos Legendarios.",
+    "retry": "Reintentar",
+    "endsIn": "Termina en {{when}}",
+    "startsIn": "Empieza en {{when}}",
+    "endsAt": "Termina el {{date}}",
+    "startsAt": "Empieza el {{date}}",
+    "syncedUnavailable": "Datos sincronizados no disponibles"
+  },
+  "lifecycle": {
+    "active": "Activo",
+    "upcoming": "Próximo",
+    "archived": "Archivado"
+  },
+  "run": "Ronda {{run}} de 3",
+  "tokens": "{{current}}/{{max}} fichas",
+  "points": "{{points}} puntos",
+  "runStatus": {
+    "title": "Estado de la ronda",
+    "tokensNext": "{{tokens}}, la siguiente en {{when}}",
+    "tokensDue": "{{tokens}}, la siguiente ficha ya está lista",
+    "currency": "{{value}} de moneda",
+    "chests": "{{value}} cofres reclamados",
+    "shards": "{{value}} fragmentos",
+    "milestone": "{{points}} puntos para el hito {{milestone}} (+{{currency}} de moneda)",
+    "noMilestone": "—",
+    "milestoneLabel": "Siguiente hito",
+    "noEntry": "Todavía no hay progreso sincronizado para este evento.",
+    "syncedUnavailable": "Datos sincronizados no disponibles",
+    "syncedAgo": "Sincronizado {{when}}",
+    "neverSynced": "Aún sin sincronizar"
+  },
+  "lanes": {
+    "alpha": "Alfa",
+    "beta": "Beta",
+    "gamma": "Gamma",
+    "selector": "Carril"
+  },
+  "laneOverview": {
+    "title": "Resumen de carriles",
+    "labelWithRule": "{{lane}} · {{rule}}",
+    "killPoints": "{{points}} puntos por bajas por batalla",
+    "battles": "{{count}} batallas",
+    "objectives": "Objetivos",
+    "ladder": "Puntos por batalla",
+    "battlePoints": "Batalla {{battle}}: {{points}} puntos",
+    "howPoints": {
+      "title": "Cómo funcionan los puntos",
+      "body": "Cada batalla que ganas suma sus puntos por bajas. Cada objetivo que cumple tu equipo en esa batalla añade su puntuación, y derrotar a todos los enemigos añade la bonificación de «derrotar a todos». Una batalla solo cuenta una vez con su mejor resultado: repetirla solo suma los puntos que superen tu mejor puntuación anterior."
+    }
+  },
+  "objective": {
+    "minHits_one": "Mín. {{count}} golpe",
+    "minHits_other": "Mín. {{count}} golpes",
+    "maxHits_one": "Máx. {{count}} golpe",
+    "maxHits_other": "Máx. {{count}} golpes",
+    "ranged": "A distancia",
+    "melee": "Cuerpo a cuerpo",
+    "not": "Sin {{label}}"
+  },
+  "tour": {
+    "hub": {
+      "steps": {
+        "active": {
+          "title": "El evento en curso",
+          "content": "El Evento Legendario que está activo ahora, con su ronda, fichas y puntos de tu última sincronización. Selecciónalo para abrir el evento."
+        },
+        "noActive": {
+          "title": "Nada en curso",
+          "content": "Ahora mismo no hay ningún Evento Legendario activo. Los próximos eventos de abajo muestran cuándo empieza la siguiente ronda."
+        },
+        "upcoming": {
+          "title": "Próximos eventos",
+          "content": "Los eventos que empiezan a continuación, el más cercano primero, con su hora de inicio local."
+        }
+      }
+    },
+    "event": {
+      "steps": {
+        "runStatus": {
+          "title": "Estado de la ronda",
+          "content": "Tu ronda, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
+        },
+        "laneSelector": {
+          "title": "Elige un carril",
+          "content": "Cambia entre los carriles Alfa, Beta y Gamma. Todas las secciones de carril de abajo siguen esta elección."
+        },
+        "laneOverview": {
+          "title": "Resumen de carriles",
+          "content": "Las unidades permitidas de cada carril, los puntos por bajas, los cinco objetivos con sus puntuaciones y los puntos que vale cada batalla."
+        }
+      }
+    }
+  }
+}

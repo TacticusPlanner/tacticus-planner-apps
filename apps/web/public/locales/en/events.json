@@ -96,9 +96,9 @@
           "title": "Token Availability",
           "content": "Check your Arena, Guild Raid, Onslaught, and Salvage Run token status at a glance."
         },
-        "hseWidget": {
-          "title": "Home Screen Events",
-          "content": "See the event that is live and the next one to start. Select the card to open the Home Screen Events tab."
+        "eventsWidget": {
+          "title": "Events",
+          "content": "See the Home Screen Event and Legendary Event that are live, then what starts next. Select a row to open that event."
         },
         "projects": {
           "title": "Your Projects",

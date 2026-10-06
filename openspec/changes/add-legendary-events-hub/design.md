@@ -38,8 +38,8 @@ This change adds:
 - `model/types.ts`: `LegendaryEventLifecycle`, `LegendaryEventLaneId = "alpha" | "beta" | "gamma"`, `LegendaryEventObjective` (the catalog `unitsRestrictions` record under its glossary name). Naming follows the naming-conventions skill: `GameCatalogLreView` (package storage model) → `LegendaryEvent*` domain types → page view-model props.
 - `model/use-legendary-events.ts`, `use-legendary-event.ts`, `use-legendary-events-progress.ts`, `use-legendary-event-progress.ts`, `use-legendary-event-common.ts`: `useLiveQuery` wrappers returning `{ status: "loading" | "error" | "ready", … }` with a minute tick for lifecycle.
 - `model/use-objective-label.ts`: `(objective) → { label, icon }` per D6.
-The next change adds `lib/objective-match.ts`, `lib/unit-potential.ts`, `lib/lane-points-model.ts`, `lib/synced-lane-progress.ts` to the same slice.
-_Alternative:_ page-local helpers under `pages/events`. Rejected: the Home card needs lifecycle and milestones, and later stages need every rule here; FSD forbids importing them from a page.
+  The next change adds `lib/objective-match.ts`, `lib/unit-potential.ts`, `lib/lane-points-model.ts`, `lib/synced-lane-progress.ts` to the same slice.
+  _Alternative:_ page-local helpers under `pages/events`. Rejected: the Home card needs lifecycle and milestones, and later stages need every rule here; FSD forbids importing them from a page.
 
 **D2 — Named queries in the packages, named by the glossary.**
 `@workspace/game-catalog/queries`: `getLegendaryEvents()`, `getLegendaryEvent(id)`, `getLegendaryEventCommon()` (the single record or `null`), reading the existing `lres` / `lre-common` stores. `@workspace/player-data/queries`: `getLegendaryEventsProgress()` and `getLegendaryEventProgress(eventId)` over the `lre-progress` chunk. Query names carry the glossary wording while storage keys keep theirs until the API rename lands; a comment on each query says so.
@@ -48,13 +48,13 @@ _Alternative:_ page-local helpers under `pages/events`. Rejected: the Home card 
 The catalog has no run number and one date per event: active iff `start <= now < start + 7d`; "Run N of 3" only from `currentEventRun`. Inferring the run from the count of past dates is wrong with a one-element array and would drift if the catalog later fills all three. The 7-day constant is V1's; it is isolated so a catalog-served duration can replace it.
 
 **D4 — Event page is an orchestrator with desktop and mobile sub-pages; later sections slot in.**
-`pages/events/ui/legendary-event/legendary-event-page.tsx` computes `LegendaryEventPageViewProps` once and renders `isMobile ? <LegendaryEventMobilePage/> : <LegendaryEventDesktopPage/>`; sub-pages take no `isMobile`. The orchestrator owns the mobile-only lane selector state, keyed by `eventId` so it resets per event. Lane-scoped sections receive `laneIds: LegendaryEventLaneId[]` (three on desktop, one on mobile) so the next change adds its sections by rendering them in the same slot without touching the selector.
+`pages/events/ui/legendary-event/legendary-event-page.tsx` computes `LegendaryEventPageViewModel` once and renders `isMobile ? <LegendaryEventMobilePage/> : <LegendaryEventDesktopPage/>`; sub-pages take no `isMobile`. The orchestrator owns the mobile-only lane selector state, keyed by `eventId` so it resets per event. Lane-scoped sections receive `laneIds: LegendaryEventLaneId[]` (three on desktop, one on mobile) so the next change adds its sections by rendering them in the same slot without touching the selector.
 
-| | Desktop (≥768) | Mobile (<768) |
-| --- | --- | --- |
-| Hub | Card grid (2–3 per row) under Active / Upcoming / Archived headings | Full-width stacked cards |
-| Event page | Run status card, then Lane overview as three adjacent panels | Run status card, one `Tabs` (`line`) Alpha / Beta / Gamma selector, then Lane overview for the selected lane |
-| Tour targets | `legendary-event-run-status`, `legendary-event-lane-overview` | `legendary-event-run-status`, `legendary-event-lane-selector`, `legendary-event-lane-overview` |
+|              | Desktop (≥768)                                                      | Mobile (<768)                                                                                                |
+| ------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Hub          | Card grid (2–3 per row) under Active / Upcoming / Archived headings | Full-width stacked cards                                                                                     |
+| Event page   | Run status card, then Lane overview as three adjacent panels        | Run status card, one `Tabs` (`line`) Alpha / Beta / Gamma selector, then Lane overview for the selected lane |
+| Tour targets | `legendary-event-run-status`, `legendary-event-lane-overview`       | `legendary-event-run-status`, `legendary-event-lane-selector`, `legendary-event-lane-overview`               |
 
 **D5 — Section plumbing follows Progress.**
 `pages/events/index.ts` exports `EventsLayout` (`PageContainer` + `<Outlet/>`) and `routes` (`index` → `<Navigate replace to="/events/legendary-events"/>`, `legendary-events` → hub, `legendary-events/:eventId` → event page, lazy). `app/routes.tsx` adds the `/events` `ProtectedRoute` entry; `nav-items.ts` adds Events after Progress with one child `/events/legendary-events` (`isLandingPage: true`). Nav label keys in `common.json` (`nav.events`, `nav.eventsDescription`, `events.tabs.legendaryEvents`, `events.tabs.legendaryEventsDescription`); page copy in the new `legendaryEvents` namespace.
@@ -63,11 +63,11 @@ The catalog has no run number and one date per event: active iff `start <= now <
 `traits:<id>`, `damageTypes:<id>`, `factions:<id>`, `common:alliances.<id>`, plus `legendaryEvents:objective.minHits` ("Min {{n}} hits"), `maxHits`, `ranged`, `melee`, `not` ("No {{label}}"). Icons: `traitIcon`, `damageTypeIcon`, `factionIcon` from `@workspace/game-catalog`; lucide glyphs for hits and attack type. This removes the dependence on the catalog's English `name` that the import research flagged as drifting; `name` stays as the fallback.
 
 **D7 — The Home card merges two sources into one row model.**
-`home-events-widget.tsx` keeps `useActiveHomeScreenEvent` and adds `useLegendaryEvents` + `useLegendaryEventsProgress`. A page-local `select-home-event-rows.ts` maps both into `HomeEventRow { type: "homeScreen" | "legendaryEvent", id, live, startMs, endMs, labelKey or unitId, destination, runNumber?, points? }`, orders live-first then by start, and caps at three. Each row is a `<button>`; the card loses its `role="button"`. Loading when either source is pending; error only when both fail; a per-source inline note when one fails. `formatEventCountdown` moves to `shared/lib` since `pages/events` needs it too.
+`home-events-widget.tsx` keeps `useActiveHomeScreenEvent` and adds `useLegendaryEvents` + `useLegendaryEventsProgress`. A page-local `select-home-event-rows.ts` maps both into `HomeEventRow { type: "homeScreen" | "legendaryEvent", id, live, startMs, endMs, labelKey or unitId, destination, runNumber?, points? }`, orders live-first then by start, and caps at three. Each row is a router `<Link>` (new-tab and screen-reader link semantics); the card loses its `role="button"`. Loading when either source is pending; error only when both fail; a per-source inline note when one fails. `formatEventCountdown` moves to `shared/lib` since `pages/events` needs it too.
 _Alternative:_ a second Home card for Legendary Events. Rejected by review: one Events card is the product owner's call and keeps Home's first row intact.
 
 **D8 — Stale-sync presentation, no local sync control.**
-Run status shows "Synced X ago" from `getManifestMetadata().syncedAt` via `formatRelativeTime`; refresh is the shell's Sync action. A second sync trigger inside the page would reintroduce V1's "sync spam" the survey complained about.
+Run status shows "Synced X ago" from the player-data manifest metadata (`getManifestMetadata(...).updatedAt`, which stores the manifest `syncedAt`) via `formatRelativeTime` ("Synced 25 minutes ago"), read through the entity's `useLegendaryEventSyncTimes` so a failed metadata read degrades instead of throwing and a pending read hides the line rather than showing "Not synced yet". The next-token countdown is anchored to the `lre-progress` chunk's own `updatedAt` (when its timers were read), as Token Availability does; refresh is the shell's Sync action. A second sync trigger inside the page would reintroduce V1's "sync spam" the survey complained about.
 
 **D9 — V1-parity checklist (this reimplements V1 `plan-lre`'s event navigation, lane header and home section).**
 

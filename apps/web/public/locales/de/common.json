@@ -211,6 +211,8 @@
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
     "progress": "Fortschritt",
     "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
+    "events": "Events",
+    "eventsDescription": "Legendäre Events und weitere zeitlich begrenzte Events",
     "uiKit": "UI-Kit",
     "uiKitDescription": "Vorschau der Design-System-Komponenten",
     "guild": "Gilde",
@@ -293,6 +295,12 @@
       "conflict": "Der Kampagnen-Event-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an."
     }
   },
+  "events": {
+    "tabs": {
+      "legendaryEvents": "Legendäre Events",
+      "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt"
+    }
+  },
   "home": {
     "tokens": {
       "title": "Token-Verfügbarkeit",
@@ -326,13 +334,18 @@
       "noGoals": "Noch keine aktiven Ziele. Füge Ziele hinzu, um deine Raids zu planen."
     },
     "events": {
-      "title": "Startbildschirm-Events",
+      "title": "Events",
       "live": "LIVE",
       "endsIn": "Endet in {{when}}",
       "startsIn": "Beginnt in {{when}}",
       "empty": "Keine Events geplant.",
       "error": "Events konnten nicht geladen werden.",
-      "loading": "Events werden geladen…"
+      "loading": "Events werden geladen…",
+      "run": "Durchlauf {{run}} von 3",
+      "points": "{{points}} Punkte",
+      "sourceFailed": "{{type}} konnten nicht geladen werden.",
+      "openHse": "Startbildschirm-Events",
+      "openLegendaryEvents": "Legendäre Events"
     },
     "calendar": {
       "title": "Ereigniskalender"
@@ -1103,7 +1116,7 @@
       },
       "navigation": {
         "title": "Schnell navigieren",
-        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln."
+        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu Events für Legendäre Events."
       },
       "sidebarFooter": {
         "title": "Seitenleisten-Werkzeuge",
@@ -1111,7 +1124,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Deine Hauptleiste",
-        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen."
+        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Fortschritt und Events zu erreichen."
       },
       "mobileHeader": {
         "title": "Seitenkopf",

@@ -1,0 +1,104 @@
+{
+  "hub": {
+    "groups": {
+      "active": "En cours",
+      "upcoming": "À venir",
+      "archived": "Archivés"
+    },
+    "noActive": "Aucun Événement Légendaire n'est en cours pour le moment.",
+    "empty": "Aucun Événement Légendaire n'est encore disponible.",
+    "loading": "Chargement des Événements Légendaires…",
+    "error": "Impossible de charger les Événements Légendaires.",
+    "retry": "Réessayer",
+    "endsIn": "Se termine dans {{when}}",
+    "startsIn": "Commence dans {{when}}",
+    "endsAt": "Se termine le {{date}}",
+    "startsAt": "Commence le {{date}}",
+    "syncedUnavailable": "Données synchronisées indisponibles"
+  },
+  "lifecycle": {
+    "active": "En cours",
+    "upcoming": "À venir",
+    "archived": "Archivé"
+  },
+  "run": "Manche {{run}} sur 3",
+  "tokens": "{{current}}/{{max}} jetons",
+  "points": "{{points}} points",
+  "runStatus": {
+    "title": "État de la manche",
+    "tokensNext": "{{tokens}}, prochain dans {{when}}",
+    "tokensDue": "{{tokens}}, prochain jeton prêt",
+    "currency": "{{value}} de monnaie",
+    "chests": "{{value}} coffres réclamés",
+    "shards": "{{value}} fragments",
+    "milestone": "{{points}} points avant le palier {{milestone}} (+{{currency}} de monnaie)",
+    "noMilestone": "—",
+    "milestoneLabel": "Prochain palier",
+    "noEntry": "Aucune progression synchronisée pour cet événement pour l'instant.",
+    "syncedUnavailable": "Données synchronisées indisponibles",
+    "syncedAgo": "Synchronisé {{when}}",
+    "neverSynced": "Pas encore synchronisé"
+  },
+  "lanes": {
+    "alpha": "Alpha",
+    "beta": "Bêta",
+    "gamma": "Gamma",
+    "selector": "Voie"
+  },
+  "laneOverview": {
+    "title": "Aperçu des voies",
+    "labelWithRule": "{{lane}} · {{rule}}",
+    "killPoints": "{{points}} points d'élimination par combat",
+    "battles": "{{count}} combats",
+    "objectives": "Objectifs",
+    "ladder": "Points par combat",
+    "battlePoints": "Combat {{battle}} : {{points}} points",
+    "howPoints": {
+      "title": "Comment fonctionnent les points",
+      "body": "Chaque combat gagné rapporte ses points d'élimination. Chaque objectif rempli par votre équipe dans ce combat ajoute son score, et vaincre tous les ennemis ajoute le bonus « Tout vaincre ». Un combat ne compte qu'une fois, avec son meilleur résultat : le rejouer ne rapporte que les points au-delà de votre meilleur score précédent."
+    }
+  },
+  "objective": {
+    "minHits_one": "Min. {{count}} coup",
+    "minHits_other": "Min. {{count}} coups",
+    "maxHits_one": "Max. {{count}} coup",
+    "maxHits_other": "Max. {{count}} coups",
+    "ranged": "À distance",
+    "melee": "Corps à corps",
+    "not": "Sans {{label}}"
+  },
+  "tour": {
+    "hub": {
+      "steps": {
+        "active": {
+          "title": "L'événement en cours",
+          "content": "L'Événement Légendaire actif en ce moment, avec sa manche, ses jetons et vos points issus de votre dernière synchronisation. Sélectionnez-le pour ouvrir l'événement."
+        },
+        "noActive": {
+          "title": "Rien en cours",
+          "content": "Aucun Événement Légendaire n'est actif pour le moment. Les événements à venir ci-dessous indiquent quand commence la prochaine manche."
+        },
+        "upcoming": {
+          "title": "Événements à venir",
+          "content": "Les prochains événements, le plus proche en premier, avec leur heure de début locale."
+        }
+      }
+    },
+    "event": {
+      "steps": {
+        "runStatus": {
+          "title": "État de la manche",
+          "content": "Votre manche, vos jetons, points, monnaie, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
+        },
+        "laneSelector": {
+          "title": "Choisir une voie",
+          "content": "Passez d'une voie à l'autre : Alpha, Bêta et Gamma. Toutes les sections de voie ci-dessous suivent ce choix."
+        },
+        "laneOverview": {
+          "title": "Aperçu des voies",
+          "content": "Les unités autorisées de chaque voie, les points d'élimination, les cinq objectifs avec leur score et les points que vaut chaque combat."
+        }
+      }
+    }
+  }
+}

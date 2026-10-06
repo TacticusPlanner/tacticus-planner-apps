@@ -92,7 +92,7 @@ The Home page tour SHALL include a step targeting the card, on desktop and mobil
 
 ### Requirement: Each row opens its own destination
 
-Each row SHALL be activatable by click, tap, Enter and Space, with button semantics and a focusable target: a Home Screen Event row navigates to `/dailies/hse`; a Legendary Event row navigates to `/events/legendary-events/:eventId`. The card itself SHALL NOT navigate as a whole.
+Each row SHALL be a link (activatable by click, tap and Enter, and openable in a new tab) with a focusable target: a Home Screen Event row navigates to `/dailies/hse`; a Legendary Event row navigates to `/events/legendary-events/:eventId`. The card itself SHALL NOT navigate as a whole.
 
 #### Scenario: HSE row opens the HSE tab
 
@@ -106,7 +106,7 @@ Each row SHALL be activatable by click, tap, Enter and Space, with button semant
 
 #### Scenario: Keyboard activation
 
-- **WHEN** a row has focus and the user presses Enter or Space
+- **WHEN** a row has focus and the user presses Enter
 - **THEN** that row's navigation occurs
 
 ## RENAMED Requirements

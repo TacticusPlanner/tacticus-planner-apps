@@ -115,3 +115,19 @@ export async function getInventoryAbilityMaterials(): Promise<
     }
   )
 }
+
+// The caller's synced progress for every Legendary Event (one entry per event, keyed by the event's
+// catalog id). Reads the `lre-progress` chunk (pending rename to `legendary-events-progress`).
+export function getLegendaryEventsProgress(): Promise<
+  PlayerDataChunkDto<"lre-progress"> | undefined
+> {
+  return getChunkData("lre-progress")
+}
+
+// One Legendary Event's synced progress, or `undefined` when the chunk has no entry for it. Reads the
+// `lre-progress` chunk (pending rename to `legendary-events-progress`).
+export function getLegendaryEventProgress(
+  eventId: string
+): Promise<PlayerDataChunkDto<"lre-progress">[number] | undefined> {
+  return getChunkRecord("lre-progress", eventId)
+}

@@ -211,6 +211,8 @@
     "goalsDescription": "Suivez votre progression vers vos objectifs",
     "progress": "Progression",
     "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
+    "events": "Événements",
+    "eventsDescription": "Événements Légendaires et autres événements à durée limitée",
     "uiKit": "Kit d'interface",
     "uiKitDescription": "Aperçu des composants du système de design",
     "guild": "Guilde",
@@ -293,6 +295,12 @@
       "conflict": "La progression de l'événement de campagne a changé ailleurs. Les dernières valeurs ont été chargées ; réappliquez votre modification."
     }
   },
+  "events": {
+    "tabs": {
+      "legendaryEvents": "Événements Légendaires",
+      "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée"
+    }
+  },
   "home": {
     "tokens": {
       "title": "Disponibilité des jetons",
@@ -326,13 +334,18 @@
       "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids."
     },
     "events": {
-      "title": "Événements de l'écran d'accueil",
+      "title": "Événements",
       "live": "EN COURS",
       "endsIn": "Se termine dans {{when}}",
       "startsIn": "Commence dans {{when}}",
       "empty": "Aucun événement programmé.",
       "error": "Impossible de charger les événements.",
-      "loading": "Chargement des événements…"
+      "loading": "Chargement des événements…",
+      "run": "Manche {{run}} sur 3",
+      "points": "{{points}} points",
+      "sourceFailed": "Impossible de charger les {{type}}.",
+      "openHse": "Événements de l'écran d'accueil",
+      "openLegendaryEvents": "Événements Légendaires"
     },
     "calendar": {
       "title": "Calendrier des événements"
@@ -1103,7 +1116,7 @@
       },
       "navigation": {
         "title": "Naviguez facilement",
-        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface."
+        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont Événements pour les Événements Légendaires."
       },
       "sidebarFooter": {
         "title": "Outils de la barre latérale",
@@ -1111,7 +1124,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Votre barre principale",
-        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides."
+        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Progression et Événements."
       },
       "mobileHeader": {
         "title": "En-tête de page",

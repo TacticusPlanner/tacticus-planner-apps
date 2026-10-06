@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react"
 import {
   CalendarCheck,
+  CalendarDays,
   BookOpen,
   Home,
   LayoutGrid,
@@ -15,6 +16,7 @@ type NavLabelKey =
   | "nav.home"
   | "nav.goals"
   | "nav.progress"
+  | "nav.events"
   | "nav.uiKit"
   | "nav.guild"
   | "nav.dailies"
@@ -31,6 +33,7 @@ type NavLabelKey =
   | "progress.tabs.onslaught"
   | "progress.tabs.campaigns"
   | "progress.tabs.campaign-events"
+  | "events.tabs.legendaryEvents"
   | "guild.tabs.members"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
   // section's tab keys: `dailies` is its own long-standing i18n namespace/file, and duplicating
@@ -224,6 +227,23 @@ export const navItems: NavItem[] = [
         path: "/progress/campaign-events",
         labelKey: "progress.tabs.campaign-events",
         descriptionKey: "progress.tabs.campaign-eventsDescription",
+      },
+    ],
+  },
+  {
+    path: "/events",
+    labelKey: "nav.events",
+    descriptionKey: "nav.eventsDescription",
+    icon: CalendarDays,
+    anonymousAllowed: false,
+    mobilePlacement: "menu",
+    children: [
+      {
+        path: "/events/legendary-events",
+        labelKey: "events.tabs.legendaryEvents",
+        descriptionKey: "events.tabs.legendaryEventsDescription",
+        // The hub is a destination of its own; event pages nest below it.
+        isLandingPage: true,
       },
     ],
   },

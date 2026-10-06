@@ -96,9 +96,9 @@
           "title": "Disponibilidad de fichas",
           "content": "Consulta de un vistazo el estado de tus fichas de Arena, Incursión de Gremio, Asalto y Carrera de Saqueo."
         },
-        "hseWidget": {
-          "title": "Eventos de la pantalla de inicio",
-          "content": "Mira el evento en curso y el próximo que empezará. Selecciona la tarjeta para abrir la pestaña de eventos de la pantalla de inicio."
+        "eventsWidget": {
+          "title": "Eventos",
+          "content": "Mira el evento de la pantalla de inicio y el Evento Legendario en curso, y después lo que empieza a continuación. Selecciona una fila para abrir ese evento."
         },
         "projects": {
           "title": "Tus proyectos",

@@ -977,6 +977,61 @@ describe("DesktopShell", () => {
     )
   })
 
+  it("lists Events after Progress and before Guild, entering through the section root", () => {
+    render(
+      <MemoryRouter initialEntries={["/home"]}>
+        <TooltipProvider>
+          <EntryPathHarness />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    const links = Array.from(
+      screen
+        .getByTestId("primary-nav")
+        .querySelectorAll<HTMLAnchorElement>('[data-testid^="desktop-nav-"]')
+    ).map((link) => link.dataset.testid)
+    expect(links.indexOf("desktop-nav-events")).toBe(
+      links.indexOf("desktop-nav-progress") + 1
+    )
+    expect(links.indexOf("desktop-nav-guild")).toBe(
+      links.indexOf("desktop-nav-events") + 1
+    )
+    // `/events` redirects to its one child, `/events/legendary-events` (see pages/events/route.tsx).
+    expect(screen.getByTestId("desktop-nav-events")).toHaveAttribute(
+      "href",
+      "/events"
+    )
+  })
+
+  it("finds Legendary Events by 'legendary' in navigation search", () => {
+    render(
+      <MemoryRouter initialEntries={["/home"]}>
+        <TooltipProvider>
+          <DesktopShell
+            visibleItems={navItems as NavItem[]}
+            activeSection={homeItem}
+            pageDescription="Home description"
+            sectionTitle="Home"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
+      target: { value: "legendary" },
+    })
+
+    const result = screen.getByRole("link", {
+      name: /^events\.tabs\.legendaryEvents/,
+    })
+    expect(result).toHaveAttribute("href", "/events/legendary-events")
+    expect(result).toHaveTextContent("events.tabs.legendaryEventsDescription")
+  })
+
   it("keeps single-child and no-children sections on their existing default route", () => {
     render(
       <MemoryRouter initialEntries={["/guild/members"]}>

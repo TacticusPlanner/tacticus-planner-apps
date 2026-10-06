@@ -1,0 +1,104 @@
+{
+  "hub": {
+    "groups": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "archived": "Archived"
+    },
+    "noActive": "No Legendary Event is running right now.",
+    "empty": "No Legendary Events are available yet.",
+    "loading": "Loading Legendary Events…",
+    "error": "Couldn't load Legendary Events.",
+    "retry": "Retry",
+    "endsIn": "Ends in {{when}}",
+    "startsIn": "Starts in {{when}}",
+    "endsAt": "Ends {{date}}",
+    "startsAt": "Starts {{date}}",
+    "syncedUnavailable": "Synced data unavailable"
+  },
+  "lifecycle": {
+    "active": "Active",
+    "upcoming": "Upcoming",
+    "archived": "Archived"
+  },
+  "run": "Run {{run}} of 3",
+  "tokens": "{{current}}/{{max}} tokens",
+  "points": "{{points}} points",
+  "runStatus": {
+    "title": "Run status",
+    "tokensNext": "{{tokens}}, next in {{when}}",
+    "tokensDue": "{{tokens}}, next token ready",
+    "currency": "{{value}} currency",
+    "chests": "{{value}} chests claimed",
+    "shards": "{{value}} shards",
+    "milestone": "{{points}} points to milestone {{milestone}} (+{{currency}} currency)",
+    "noMilestone": "—",
+    "milestoneLabel": "Next milestone",
+    "noEntry": "No synced progress for this event yet.",
+    "syncedUnavailable": "Synced data unavailable",
+    "syncedAgo": "Synced {{when}}",
+    "neverSynced": "Not synced yet"
+  },
+  "lanes": {
+    "alpha": "Alpha",
+    "beta": "Beta",
+    "gamma": "Gamma",
+    "selector": "Lane"
+  },
+  "laneOverview": {
+    "title": "Lane overview",
+    "labelWithRule": "{{lane}} · {{rule}}",
+    "killPoints": "{{points}} kill points per battle",
+    "battles": "{{count}} battles",
+    "objectives": "Objectives",
+    "ladder": "Points per battle",
+    "battlePoints": "Battle {{battle}}: {{points}} points",
+    "howPoints": {
+      "title": "How points work",
+      "body": "Each battle you win scores its kill points. Every objective your team meets in that battle adds its score, and clearing all enemies adds the defeat-all bonus. A battle only counts once at its best: replaying it scores only the points above your previous high score."
+    }
+  },
+  "objective": {
+    "minHits_one": "Min {{count}} hit",
+    "minHits_other": "Min {{count}} hits",
+    "maxHits_one": "Max {{count}} hit",
+    "maxHits_other": "Max {{count}} hits",
+    "ranged": "Ranged",
+    "melee": "Melee",
+    "not": "No {{label}}"
+  },
+  "tour": {
+    "hub": {
+      "steps": {
+        "active": {
+          "title": "The running event",
+          "content": "The Legendary Event that is live right now, with its run, tokens and points from your last sync. Select it to open the event."
+        },
+        "noActive": {
+          "title": "Nothing running",
+          "content": "No Legendary Event is live right now. Upcoming events below show when the next run starts."
+        },
+        "upcoming": {
+          "title": "Upcoming events",
+          "content": "Events that start next, soonest first, with their local start time."
+        }
+      }
+    },
+    "event": {
+      "steps": {
+        "runStatus": {
+          "title": "Run status",
+          "content": "Your run, tokens, points, currency, chests and shards from your last sync, plus the next points milestone."
+        },
+        "laneSelector": {
+          "title": "Choose a lane",
+          "content": "Switch between the Alpha, Beta and Gamma lanes. Every lane section below follows this choice."
+        },
+        "laneOverview": {
+          "title": "Lane overview",
+          "content": "Each lane's allowed units, kill points, five objectives with their scores and the points every battle is worth."
+        }
+      }
+    }
+  }
+}
