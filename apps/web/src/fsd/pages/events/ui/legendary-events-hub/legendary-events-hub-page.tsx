@@ -14,9 +14,9 @@ import { useUnitName } from "@/shared/unit-name"
 import { LegendaryEventCard } from "./legendary-event-card"
 import { useLegendaryEventsHubTutorial } from "./legendary-events-hub.tutorial"
 import {
-  buildHubView,
-  type HubCardView,
-  type HubView,
+  buildHubViewModel,
+  type HubCardViewModel,
+  type HubViewModel,
 } from "./legendary-events-hub.view-model"
 
 const GROUPS = ["active", "upcoming", "archived"] as const
@@ -31,9 +31,9 @@ export function LegendaryEventsHubPage() {
   const unitName = useUnitName()
 
   // Cheap to rebuild, and the unit names resolve asynchronously, so no memo.
-  const view: HubView | undefined =
+  const view: HubViewModel | undefined =
     events.status === "ready"
-      ? buildHubView(
+      ? buildHubViewModel(
           events.data,
           progress,
           events.nowMs,
@@ -121,7 +121,7 @@ function HubGroup({
   nowMs,
   title,
 }: {
-  cards: HubCardView[]
+  cards: HubCardViewModel[]
   group: (typeof GROUPS)[number]
   isMobile: boolean
   nowMs: number

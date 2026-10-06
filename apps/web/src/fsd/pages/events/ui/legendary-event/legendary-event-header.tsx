@@ -3,14 +3,14 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 
-import type { LegendaryEventPageViewProps } from "./legendary-event-page.view-model"
+import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
 
 /** The event's portrait, localized unit name and lifecycle badge. */
 export function LegendaryEventHeader({
   event,
   lifecycle,
   name,
-}: Pick<LegendaryEventPageViewProps, "event" | "lifecycle" | "name">) {
+}: Pick<LegendaryEventPageViewModel, "event" | "lifecycle" | "name">) {
   const { t } = useTranslation("legendaryEvents")
   const portrait = characterIcon(event.id as UnitId)
   return (

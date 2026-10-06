@@ -2,7 +2,11 @@
 // `useLiveQuery` (dexie-react-hooks) — one function per thing a caller actually wants, not a generic
 // dataset-key accessor. Components import from here, never from the main package barrel and never
 // touching the Dexie instance itself. Add a new named query here as new business needs arise.
-import { getDatasetRecords } from "./game-catalog-storage"
+import {
+  getDatasetRecord,
+  getDatasetRecords,
+  hasDatasetSynced,
+} from "./game-catalog-storage"
 import type {
   AscensionCostStorageModel,
   CharacterAbilityCostStorageModel,
@@ -281,11 +285,17 @@ export function getLegendaryEvents(): Promise<LegendaryEventStorageModel[]> {
 
 // One Legendary Event by its id (the event unit's snowprint id, e.g. "astarLysander"), or `undefined`
 // when the catalog has no such event. Reads the `lres` store (pending rename to `legendary-events`).
-export async function getLegendaryEvent(
+export function getLegendaryEvent(
   id: string
 ): Promise<LegendaryEventStorageModel | undefined> {
-  const events = await getLegendaryEvents()
-  return events.find((event) => event.id === id)
+  return getDatasetRecord("lres", id)
+}
+
+// Whether the Legendary Event dataset has synced at least once, so a caller can tell "no such event"
+// from "the catalog has not arrived yet" (the init gate renders routes under its overlay). Reads the
+// `lres` store's metadata (pending rename to `legendary-events`).
+export function hasLegendaryEventsSynced(): Promise<boolean> {
+  return hasDatasetSynced("lres")
 }
 
 // The shared Legendary Event reward ladder — a single record — or `null` when it has not synced.

@@ -1,19 +1,16 @@
 import userEvent from "@testing-library/user-event"
-import { MemoryRouter } from "react-router"
+import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, within } from "@/test/render"
 
 import { HomeEventsWidget } from "./home-events-widget"
 
-const { navigateMock, hseMock, legendaryMock, progressMock } = vi.hoisted(
-  () => ({
-    navigateMock: vi.fn(),
-    hseMock: vi.fn(),
-    legendaryMock: vi.fn(),
-    progressMock: vi.fn(),
-  })
-)
+const { hseMock, legendaryMock, progressMock } = vi.hoisted(() => ({
+  hseMock: vi.fn(),
+  legendaryMock: vi.fn(),
+  progressMock: vi.fn(),
+}))
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
@@ -27,10 +24,6 @@ vi.mock("react-i18next", () => ({
       return shown.length > 0 ? `${key}:${shown.join(",")}` : key
     },
   }),
-}))
-vi.mock("react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-router")>()),
-  useNavigate: () => navigateMock,
 }))
 vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
@@ -99,17 +92,27 @@ const progressReady = (entries: unknown[] = []) => ({
   retry,
 })
 
+function LocationProbe() {
+  const { pathname } = useLocation()
+  return <span data-testid="current-path">{pathname}</span>
+}
+
 function renderWidget() {
   return render(
-    <MemoryRouter>
-      <HomeEventsWidget />
+    <MemoryRouter initialEntries={["/home"]}>
+      <LocationProbe />
+      <Routes>
+        <Route element={<HomeEventsWidget />} path="/home" />
+        <Route element={<div data-testid="destination" />} path="*" />
+      </Routes>
     </MemoryRouter>
   )
 }
 
+const currentPath = () => screen.getByTestId("current-path").textContent
+
 describe("HomeEventsWidget", () => {
   beforeEach(() => {
-    navigateMock.mockReset()
     hseMock.mockReturnValue(hseReady(hunt, [rush]))
     legendaryMock.mockReturnValue(legendaryReady([lysander, uthar]))
     progressMock.mockReturnValue(
@@ -145,6 +148,19 @@ describe("HomeEventsWidget", () => {
     expect(rows[2]).toHaveTextContent("common:home.events.startsIn:6 days")
     expect(within(rows[2]!).queryByTestId("home-events-live-badge")).toBeNull()
     expect(screen.queryByText("Uthar")).toBeNull()
+  })
+
+  it("selects and labels rows with one clock when the two sources tick apart", () => {
+    // The catalog hook's tick runs two days ahead of the calendar's; rows and countdowns must both
+    // follow the calendar's instant, the one the Home Screen Event rows were selected at.
+    legendaryMock.mockReturnValue({
+      ...legendaryReady([lysander, uthar]),
+      nowMs: NOW + 2 * 86_400_000,
+    })
+    renderWidget()
+
+    const rows = screen.getAllByTestId("home-events-row")
+    expect(rows[2]).toHaveTextContent("common:home.events.startsIn:6 days")
   })
 
   it("omits run and points for a live Legendary Event without a synced entry", () => {
@@ -246,37 +262,36 @@ describe("HomeEventsWidget", () => {
     expect(card).not.toHaveAttribute("tabindex")
   })
 
-  it("opens each row's own destination on click", async () => {
-    const user = userEvent.setup()
+  it("renders each row as a link to its own destination", () => {
     renderWidget()
     const rows = screen.getAllByTestId("home-events-row")
 
-    await user.click(rows[0]!)
-    expect(navigateMock).toHaveBeenLastCalledWith("/dailies/hse")
-    await user.click(rows[1]!)
-    expect(navigateMock).toHaveBeenLastCalledWith(
+    expect(rows.map((row) => row.tagName)).toEqual(["A", "A", "A"])
+    expect(rows[0]).toHaveAttribute("href", "/dailies/hse")
+    expect(rows[1]).toHaveAttribute(
+      "href",
       "/events/legendary-events/astarLysander"
     )
-    // Clicking the card outside a row navigates nowhere.
-    navigateMock.mockReset()
-    await user.click(screen.getByText("common:home.events.title"))
-    expect(navigateMock).not.toHaveBeenCalled()
   })
 
-  it("activates a focused row with Enter and Space", async () => {
+  it("opens a row's destination on click, and the card itself navigates nowhere", async () => {
     const user = userEvent.setup()
     renderWidget()
-    const lysanderRow = screen.getAllByTestId("home-events-row")[1]!
 
-    expect(lysanderRow.tagName).toBe("BUTTON")
-    lysanderRow.focus()
+    await user.click(screen.getByText("common:home.events.title"))
+    expect(currentPath()).toBe("/home")
+
+    await user.click(screen.getAllByTestId("home-events-row")[1]!)
+    expect(currentPath()).toBe("/events/legendary-events/astarLysander")
+  })
+
+  it("activates a focused row with Enter", async () => {
+    const user = userEvent.setup()
+    renderWidget()
+
+    screen.getAllByTestId("home-events-row")[0]!.focus()
     await user.keyboard("{Enter}")
-    expect(navigateMock).toHaveBeenCalledTimes(1)
-    await user.keyboard(" ")
-    expect(navigateMock).toHaveBeenCalledTimes(2)
-    expect(navigateMock).toHaveBeenLastCalledWith(
-      "/events/legendary-events/astarLysander"
-    )
+    expect(currentPath()).toBe("/dailies/hse")
   })
 
   it("changes only the displayed local start with the device timezone", () => {

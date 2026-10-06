@@ -27,6 +27,7 @@
   "runStatus": {
     "title": "Estado de la ronda",
     "tokensNext": "{{tokens}}, la siguiente en {{when}}",
+    "tokensDue": "{{tokens}}, la siguiente ficha ya está lista",
     "currency": "{{value}} de moneda",
     "chests": "{{value}} cofres reclamados",
     "shards": "{{value}} fragmentos",
@@ -35,7 +36,7 @@
     "milestoneLabel": "Siguiente hito",
     "noEntry": "Todavía no hay progreso sincronizado para este evento.",
     "syncedUnavailable": "Datos sincronizados no disponibles",
-    "syncedAgo": "Sincronizado hace {{when}}",
+    "syncedAgo": "Sincronizado {{when}}",
     "neverSynced": "Aún sin sincronizar"
   },
   "lanes": {

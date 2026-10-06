@@ -1,11 +1,6 @@
 import { useState } from "react"
 import { Navigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
-import {
-  getManifestMetadata,
-  getPlayerDataMetadata,
-} from "@workspace/player-data"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -16,6 +11,7 @@ import {
   useLegendaryEvent,
   useLegendaryEventCommon,
   useLegendaryEventProgress,
+  useLegendaryEventSyncTimes,
 } from "@/entities/legendary-event"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
@@ -23,12 +19,12 @@ import { useUnitName } from "@/shared/unit-name"
 import { LegendaryEventDesktopPage } from "./legendary-event-desktop-page"
 import { LegendaryEventMobilePage } from "./legendary-event-mobile-page"
 import {
-  buildRunStatusView,
-  type LegendaryEventPageViewProps,
+  buildRunStatusViewModel,
+  type LegendaryEventPageViewModel,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 
-/** `/events/legendary-events/:eventId`: computes the page's view props once and renders the
+/** `/events/legendary-events/:eventId`: computes the page's view model once and renders the
  *  desktop or mobile form (design D4). An unknown id replaces the route with the hub. The content
  *  is keyed by the event id, so the mobile lane selection (and every read) starts fresh on each
  *  event instead of carrying over from the previous one. */
@@ -44,19 +40,17 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progress = useLegendaryEventProgress(eventId)
   const common = useLegendaryEventCommon()
   const unitName = useUnitName()
-  // `null` until the first sync: the manifest row carries the sync instant as `updatedAt`.
-  const syncedAt = useLiveQuery(async () => {
-    const updatedAt = getManifestMetadata(
-      await getPlayerDataMetadata()
-    )?.updatedAt
-    return updatedAt ? Date.parse(updatedAt) : null
-  }, [])
+  const syncTimes = useLegendaryEventSyncTimes()
   // Mobile-only; defaults to Alpha and lives as long as this event's page does.
   const [selectedLane, setSelectedLane] =
     useState<LegendaryEventLaneId>("alpha")
   useTourPageSteps(useLegendaryEventTutorial())
 
-  if (event.status === "loading") {
+  // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate
+  // renders routes under its overlay), so keep loading instead of bouncing a deep link to the hub.
+  const awaitingCatalog =
+    event.status === "ready" && !event.data && !event.catalogSynced
+  if (event.status === "loading" || awaitingCatalog) {
     return (
       <div
         className="flex flex-col gap-3"
@@ -86,21 +80,30 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     return <Navigate replace to="/events/legendary-events" />
   }
 
-  const props: LegendaryEventPageViewProps = {
+  const viewModel: LegendaryEventPageViewModel = {
     event: event.data,
     name: unitName("Character", event.data.id),
     lifecycle: event.lifecycle,
     nowMs: event.nowMs,
-    runStatus: buildRunStatusView(progress, common),
-    syncedAtMs: syncedAt ?? null,
+    runStatus: buildRunStatusViewModel({
+      progress,
+      common,
+      progressObservedAtMs:
+        syncTimes.status === "ready"
+          ? syncTimes.data.progressObservedAtMs
+          : null,
+      nowMs: event.nowMs,
+    }),
+    syncedAtMs:
+      syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined,
     laneIds: isMobile ? [selectedLane] : LEGENDARY_EVENT_LANE_IDS,
     selectedLane,
     onSelectLane: setSelectedLane,
   }
 
   return isMobile ? (
-    <LegendaryEventMobilePage {...props} />
+    <LegendaryEventMobilePage {...viewModel} />
   ) : (
-    <LegendaryEventDesktopPage {...props} />
+    <LegendaryEventDesktopPage {...viewModel} />
   )
 }

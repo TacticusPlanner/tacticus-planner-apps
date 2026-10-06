@@ -38,6 +38,10 @@ export { useLegendaryEventsProgress } from "./model/use-legendary-events-progres
 export { useLegendaryEventProgress } from "./model/use-legendary-event-progress"
 export { useLegendaryEventCommon } from "./model/use-legendary-event-common"
 export {
+  useLegendaryEventSyncTimes,
+  type LegendaryEventSyncTimes,
+} from "./model/use-legendary-event-sync-times"
+export {
   useLaneAllowedRule,
   useObjectiveLabel,
   type ObjectiveLabel,

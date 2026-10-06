@@ -40,7 +40,9 @@ vi.mock("dexie-react-hooks", () => ({
 }))
 
 const events = [lysanderEvent, utharEvent]
+const catalog = vi.hoisted(() => ({ synced: true }))
 vi.mock("@workspace/game-catalog/queries", () => ({
+  hasLegendaryEventsSynced: async () => catalog.synced,
   getLegendaryEvent: async (id: string) =>
     events.find((event) => event.id === id),
   getLegendaryEventCommon: async () => legendaryEventCommon,
@@ -122,6 +124,7 @@ describe("LegendaryEventPage", () => {
     i18n = await createTestI18n("en")
   })
   beforeEach(() => {
+    catalog.synced = true
     setViewportWidth(1280)
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
@@ -158,6 +161,19 @@ describe("LegendaryEventPage", () => {
     expect(await screen.findByTestId("hub")).toBeInTheDocument()
     expect(screen.getByTestId("current-path")).toHaveTextContent(
       /^\/events\/legendary-events$/
+    )
+  })
+
+  it("keeps loading a deep link until the catalog has synced", async () => {
+    catalog.synced = false
+    renderPage("/events/legendary-events/notYetSynced")
+
+    // Let every read resolve (only Date is faked), then check nothing redirected.
+    await act(() => new Promise((resolve) => setTimeout(resolve, 20)))
+    expect(screen.getByTestId("legendary-event-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("hub")).toBeNull()
+    expect(screen.getByTestId("current-path")).toHaveTextContent(
+      /^\/events\/legendary-events\/notYetSynced$/
     )
   })
 

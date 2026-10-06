@@ -27,6 +27,7 @@
   "runStatus": {
     "title": "État de la manche",
     "tokensNext": "{{tokens}}, prochain dans {{when}}",
+    "tokensDue": "{{tokens}}, prochain jeton prêt",
     "currency": "{{value}} de monnaie",
     "chests": "{{value}} coffres réclamés",
     "shards": "{{value}} fragments",
@@ -35,7 +36,7 @@
     "milestoneLabel": "Prochain palier",
     "noEntry": "Aucune progression synchronisée pour cet événement pour l'instant.",
     "syncedUnavailable": "Données synchronisées indisponibles",
-    "syncedAgo": "Synchronisé il y a {{when}}",
+    "syncedAgo": "Synchronisé {{when}}",
     "neverSynced": "Pas encore synchronisé"
   },
   "lanes": {

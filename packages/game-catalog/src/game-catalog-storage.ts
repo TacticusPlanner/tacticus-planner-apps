@@ -108,6 +108,22 @@ export async function getDatasetRecords<K extends GameCatalogDatasetKey>(
   return catalogDb.table<StorageModel<K>, string>(datasetKey).toArray()
 }
 
+/** One record of a dataset by its storage id, without reading the rest of the table. */
+export async function getDatasetRecord<K extends GameCatalogDatasetKey>(
+  datasetKey: K,
+  id: string
+): Promise<StorageModel<K> | undefined> {
+  return catalogDb.table<StorageModel<K>, string>(datasetKey).get(id)
+}
+
+/** Whether a dataset has synced into this client at least once (its metadata row exists), which
+ *  tells an empty-because-unsynced store apart from a synced one that lacks a record. */
+export async function hasDatasetSynced(
+  datasetKey: GameCatalogDatasetKey
+): Promise<boolean> {
+  return (await catalogDb.metadata.get(datasetKey)) !== undefined
+}
+
 export async function clearGameCatalogDb() {
   await catalogDb.transaction(
     "rw",

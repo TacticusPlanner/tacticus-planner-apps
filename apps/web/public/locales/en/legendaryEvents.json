@@ -27,6 +27,7 @@
   "runStatus": {
     "title": "Run status",
     "tokensNext": "{{tokens}}, next in {{when}}",
+    "tokensDue": "{{tokens}}, next token ready",
     "currency": "{{value}} currency",
     "chests": "{{value}} chests claimed",
     "shards": "{{value}} shards",
@@ -35,7 +36,7 @@
     "milestoneLabel": "Next milestone",
     "noEntry": "No synced progress for this event yet.",
     "syncedUnavailable": "Synced data unavailable",
-    "syncedAgo": "Synced {{when}} ago",
+    "syncedAgo": "Synced {{when}}",
     "neverSynced": "Not synced yet"
   },
   "lanes": {

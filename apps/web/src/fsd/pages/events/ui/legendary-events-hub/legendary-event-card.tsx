@@ -5,7 +5,7 @@ import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
-import type { HubCardView } from "./legendary-events-hub.view-model"
+import type { HubCardViewModel } from "./legendary-events-hub.view-model"
 
 /** One hub row: portrait, localized name and timing, plus the synced run, tokens and points for
  *  the active event. Activating it opens the event page. */
@@ -14,7 +14,7 @@ export function LegendaryEventCard({
   nowMs,
   testId,
 }: {
-  card: HubCardView
+  card: HubCardViewModel
   nowMs: number
   testId?: string
 }) {

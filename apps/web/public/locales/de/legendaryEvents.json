@@ -27,6 +27,7 @@
   "runStatus": {
     "title": "Durchlaufstatus",
     "tokensNext": "{{tokens}}, nächstes in {{when}}",
+    "tokensDue": "{{tokens}}, nächstes Token bereit",
     "currency": "{{value}} Währung",
     "chests": "{{value}} Truhen beansprucht",
     "shards": "{{value}} Splitter",
@@ -35,7 +36,7 @@
     "milestoneLabel": "Nächster Meilenstein",
     "noEntry": "Für dieses Event gibt es noch keinen synchronisierten Fortschritt.",
     "syncedUnavailable": "Synchronisierte Daten nicht verfügbar",
-    "syncedAgo": "Vor {{when}} synchronisiert",
+    "syncedAgo": "Synchronisiert {{when}}",
     "neverSynced": "Noch nicht synchronisiert"
   },
   "lanes": {

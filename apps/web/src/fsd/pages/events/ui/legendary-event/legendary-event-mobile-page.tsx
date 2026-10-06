@@ -8,12 +8,12 @@ import {
 
 import { LaneOverview } from "./lane-overview"
 import { LegendaryEventHeader } from "./legendary-event-header"
-import type { LegendaryEventPageViewProps } from "./legendary-event-page.view-model"
+import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
 import { RunStatusCard } from "./run-status-card"
 
 /** Mobile form: Run status, one Alpha / Beta / Gamma selector shared by every lane-scoped
  *  section below it, then the selected lane. */
-export function LegendaryEventMobilePage(props: LegendaryEventPageViewProps) {
+export function LegendaryEventMobilePage(props: LegendaryEventPageViewModel) {
   const { t } = useTranslation("legendaryEvents")
   return (
     <div

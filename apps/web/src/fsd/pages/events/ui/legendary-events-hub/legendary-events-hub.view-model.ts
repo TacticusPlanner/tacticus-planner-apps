@@ -17,17 +17,17 @@ type HubCardSynced =
       points: number
     }
 
-export interface HubCardView {
+export interface HubCardViewModel {
   eventId: string
   name: string
   lifecycle: LegendaryEventLifecycle
   synced: HubCardSynced
 }
 
-export interface HubView {
-  active: HubCardView[]
-  upcoming: HubCardView[]
-  archived: HubCardView[]
+export interface HubViewModel {
+  active: HubCardViewModel[]
+  upcoming: HubCardViewModel[]
+  archived: HubCardViewModel[]
 }
 
 function syncedFor(
@@ -49,13 +49,13 @@ function syncedFor(
 
 /** Groups the catalog events for the hub (active, upcoming by start, archived by localized name)
  *  and attaches the synced run, tokens and points to the active ones. */
-export function buildHubView(
+export function buildHubViewModel(
   events: readonly LegendaryEvent[],
   progress: ReadState<LegendaryEventProgress[]>,
   nowMs: number,
   nameOf: (eventId: string) => string,
   locale: string
-): HubView {
+): HubViewModel {
   const groups = orderLegendaryEventsForHub(
     events,
     nowMs,
@@ -70,7 +70,7 @@ export function buildHubView(
     }: {
       event: LegendaryEvent
       lifecycle: LegendaryEventLifecycle
-    }): HubCardView => ({
+    }): HubCardViewModel => ({
       eventId: event.id,
       name: nameOf(event.id),
       lifecycle,

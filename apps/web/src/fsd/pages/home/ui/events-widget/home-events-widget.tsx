@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router"
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -26,7 +26,7 @@ import {
 
 /** Home dashboard's "Events" card: live Home Screen Events and Legendary Events first, then
  *  upcoming ones of both types by start, three rows at most. Distinct from the Events calendar.
- *  Each row opens its own destination; the card itself does not navigate. */
+ *  Each row is a link to its own destination; the card itself does not navigate. */
 export function HomeEventsWidget() {
   const { t } = useTranslation(["common", "events"])
   const homeScreen = useActiveHomeScreenEvent()
@@ -51,6 +51,10 @@ export function HomeEventsWidget() {
       )
     }
 
+    // One instant for both choosing the rows and their countdowns, so a row is never labelled with
+    // a clock it was not selected at.
+    const nowMs =
+      homeScreen.status === "ready" ? homeScreen.nowMs : legendary.nowMs
     const rows = selectHomeEventRows({
       homeScreen: homeScreen.status === "ready" ? homeScreen : null,
       legendary:
@@ -60,9 +64,8 @@ export function HomeEventsWidget() {
               progress: progress.status === "ready" ? progress.data : [],
             }
           : null,
-      nowMs: homeScreen.status === "ready" ? homeScreen.nowMs : legendary.nowMs,
+      nowMs,
     })
-    const nowMs = legendary.nowMs
     const failedType =
       homeScreen.status === "error"
         ? t("common:home.events.openHse")
@@ -86,7 +89,7 @@ export function HomeEventsWidget() {
           <ul className="flex flex-col gap-2" data-testid="home-events-list">
             {rows.map((row) => (
               <li key={row.key}>
-                <HomeEventRowButton nowMs={nowMs} row={row} />
+                <HomeEventRowLink nowMs={nowMs} row={row} />
               </li>
             ))}
           </ul>
@@ -126,7 +129,7 @@ function EmptyBody() {
   )
 }
 
-function HomeEventRowButton({
+function HomeEventRowLink({
   nowMs,
   row,
 }: {
@@ -134,7 +137,6 @@ function HomeEventRowButton({
   row: HomeEventRow
 }) {
   const { t, i18n } = useTranslation(["common", "events"])
-  const navigate = useNavigate()
   const unitName = useUnitName()
   const isLegendary = row.type === "legendaryEvent"
   const name = isLegendary
@@ -149,7 +151,7 @@ function HomeEventRowButton({
   )
 
   return (
-    <button
+    <Link
       className={cn(
         "flex w-full items-start gap-3 rounded-lg border p-2 text-left transition-colors hover:bg-muted/50",
         "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
@@ -157,8 +159,7 @@ function HomeEventRowButton({
       data-live={row.live}
       data-testid="home-events-row"
       data-type={row.type}
-      onClick={() => void navigate(row.destination)}
-      type="button"
+      to={row.destination}
     >
       <span
         aria-hidden="true"
@@ -216,6 +217,6 @@ function HomeEventRowButton({
           </span>
         ) : null}
       </span>
-    </button>
+    </Link>
   )
 }

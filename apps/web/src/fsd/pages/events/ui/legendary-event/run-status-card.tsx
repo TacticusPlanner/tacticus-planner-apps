@@ -9,10 +9,10 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, formatRelativeTime } from "@/shared/lib"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
-import type { RunStatusView } from "./legendary-event-page.view-model"
+import type { RunStatusViewModel } from "./legendary-event-page.view-model"
 
 /** The event's run status from the last sync. Refreshing is the shell's Sync action; there is
  *  deliberately no sync control here (design D8). */
@@ -24,8 +24,9 @@ export function RunStatusCard({
 }: {
   lifecycle: LegendaryEventLifecycle
   nowMs: number
-  runStatus: RunStatusView
-  syncedAtMs: number | null
+  runStatus: RunStatusViewModel
+  /** `null` before the first sync; `undefined` while unknown, which hides the line. */
+  syncedAtMs: number | null | undefined
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -75,16 +76,18 @@ export function RunStatusCard({
         )}
         {tokens && tokensText ? (
           <Value testId="run-status-tokens">
-            {tokens.nextTokenInSeconds === null
+            {tokens.next === null
               ? tokensText
-              : t("runStatus.tokensNext", {
-                  tokens: tokensText,
-                  when: formatEventCountdown(
-                    tokens.nextTokenInSeconds * 1000,
-                    0,
-                    i18n.language
-                  ),
-                })}
+              : tokens.next.kind === "due"
+                ? t("runStatus.tokensDue", { tokens: tokensText })
+                : t("runStatus.tokensNext", {
+                    tokens: tokensText,
+                    when: formatEventCountdown(
+                      tokens.next.targetMs,
+                      nowMs,
+                      i18n.language
+                    ),
+                  })}
           </Value>
         ) : null}
         <Value testId="run-status-points">
@@ -129,16 +132,18 @@ export function RunStatusCard({
       <CardContent className="flex flex-col gap-3">
         <EventTimingLines lifecycle={lifecycle} nowMs={nowMs} />
         {body}
-        <p
-          className="text-xs text-muted-foreground"
-          data-testid="run-status-synced-at"
-        >
-          {syncedAtMs === null
-            ? t("runStatus.neverSynced")
-            : t("runStatus.syncedAgo", {
-                when: formatEventCountdown(nowMs, syncedAtMs, i18n.language),
-              })}
-        </p>
+        {syncedAtMs === undefined ? null : (
+          <p
+            className="text-xs text-muted-foreground"
+            data-testid="run-status-synced-at"
+          >
+            {syncedAtMs === null
+              ? t("runStatus.neverSynced")
+              : t("runStatus.syncedAgo", {
+                  when: formatRelativeTime(syncedAtMs, i18n.language),
+                })}
+          </p>
+        )}
       </CardContent>
     </Card>
   )

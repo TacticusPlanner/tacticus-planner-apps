@@ -9,6 +9,7 @@ import {
   getLegendaryEvent,
   getLegendaryEventCommon,
   getLegendaryEvents,
+  hasLegendaryEventsSynced,
 } from "./queries"
 
 function metadata(key: string) {
@@ -66,11 +67,13 @@ describe("Legendary Event queries", () => {
     ])
     expect(await getLegendaryEvent("votanUthar")).toMatchObject(uthar)
     expect(await getLegendaryEvent("notAnEvent")).toBeUndefined()
+    expect(await hasLegendaryEventsSynced()).toBe(true)
   })
 
   it("returns an empty list before the dataset syncs", async () => {
     expect(await getLegendaryEvents()).toEqual([])
     expect(await getLegendaryEvent("astarLysander")).toBeUndefined()
+    expect(await hasLegendaryEventsSynced()).toBe(false)
   })
 
   it("returns the single shared reward ladder", async () => {
