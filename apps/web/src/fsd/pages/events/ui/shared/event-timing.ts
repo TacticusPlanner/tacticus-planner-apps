@@ -24,7 +24,7 @@ export function eventTiming(
   nowMs: number,
   locale: string
 ): EventTimingText | undefined {
-  if (lifecycle.state === "archived") return undefined
+  if (lifecycle.runStartMs === undefined) return undefined
   const active = lifecycle.state === "active"
   const targetMs = active ? lifecycle.runEndMs : lifecycle.runStartMs
   return {

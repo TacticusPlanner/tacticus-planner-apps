@@ -14,6 +14,7 @@
     "startsIn": "Starts in {{when}}",
     "endsAt": "Ends {{date}}",
     "startsAt": "Starts {{date}}",
+    "startsTba": "Start date to be announced",
     "syncedUnavailable": "Synced data unavailable"
   },
   "lifecycle": {
@@ -21,7 +22,7 @@
     "upcoming": "Upcoming",
     "archived": "Archived"
   },
-  "run": "Run {{run}} of 3",
+  "run": "Event {{run}} of 3",
   "tokens": "{{current}}/{{max}} tokens",
   "points": "{{points}} points",
   "runStatus": {
@@ -80,7 +81,7 @@
         },
         "upcoming": {
           "title": "Upcoming events",
-          "content": "Events that start next, soonest first, with their local start time."
+          "content": "Events that start next, soonest first, with their local start time. Events without an announced date are listed last."
         }
       }
     },

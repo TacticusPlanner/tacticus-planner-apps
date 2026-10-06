@@ -9,7 +9,7 @@ Wording follows the Tacticus player API (`player.progress.legendaryEvents[]`): *
 ## What Changes
 
 - **New top-level Events section** at `/events` (desktop sidebar and mobile menu drawer, authenticated-only), per [ADR 0010](https://github.com/TacticusPlanner/tacticus-planner-docs/blob/main/decisions/adr/0010-events-navigation-section.md). `/events` redirects to `/events/legendary-events`. The general navigation tour and nav translations gain the section.
-- **Legendary Events hub** at `/events/legendary-events`: active events first (a run is in progress), then upcoming (next run start), then archived (`finished`, or every run window passed), each with the event unit's portrait, name, run timing and, for the active event, synced run number, tokens and points.
+- **Legendary Events hub** at `/events/legendary-events`: active events first (a run is in progress), then upcoming (next run start), then archived (`finished` only; an unfinished event with no announced run date is upcoming and reads "to be announced"), each with the event unit's portrait, name, run timing and, for the active event, synced run number, tokens and points.
 - **Legendary Event page** at `/events/legendary-events/:eventId` with two sections in this change, no new API:
   - **Run status** from the synced `lre-progress` chunk: run, tokens and regen, points, currency, claimed chest, shards, next points milestone (from `lre-common`), time to the next run, and when the data was last synced.
   - **Lane overview** per lane (Alpha, Beta, Gamma): lane name and allowed-alliance rule, kill points, the five objectives with icon, localized label and score, and the per-battle points ladder.

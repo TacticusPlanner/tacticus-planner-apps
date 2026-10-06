@@ -45,7 +45,7 @@ This change adds:
 `@workspace/game-catalog/queries`: `getLegendaryEvents()`, `getLegendaryEvent(id)`, `getLegendaryEventCommon()` (the single record or `null`), reading the existing `lres` / `lre-common` stores. `@workspace/player-data/queries`: `getLegendaryEventsProgress()` and `getLegendaryEventProgress(eventId)` over the `lre-progress` chunk. Query names carry the glossary wording while storage keys keep theirs until the API rename lands; a comment on each query says so.
 
 **D3 — Lifecycle from run dates, run number from sync.**
-The catalog has no run number and one date per event: active iff `start <= now < start + 7d`; "Run N of 3" only from `currentEventRun`. Inferring the run from the count of past dates is wrong with a one-element array and would drift if the catalog later fills all three. The 7-day constant is V1's; it is isolated so a catalog-served duration can replace it.
+The catalog has no run number and one date per event: active iff `start <= now < start + 7d`; "Event N of 3" only from `currentEventRun`. Inferring the run from the count of past dates is wrong with a one-element array and would drift if the catalog later fills all three. The 7-day constant is V1's; it is isolated so a catalog-served duration can replace it.
 
 **D4 — Event page is an orchestrator with desktop and mobile sub-pages; later sections slot in.**
 `pages/events/ui/legendary-event/legendary-event-page.tsx` computes `LegendaryEventPageViewModel` once and renders `isMobile ? <LegendaryEventMobilePage/> : <LegendaryEventDesktopPage/>`; sub-pages take no `isMobile`. The orchestrator owns the mobile-only lane selector state, keyed by `eventId` so it resets per event. Lane-scoped sections receive `laneIds: LegendaryEventLaneId[]` (three on desktop, one on mobile) so the next change adds its sections by rendering them in the same slot without touching the selector.
@@ -79,7 +79,7 @@ Run status shows "Synced X ago" from the player-data manifest metadata (`getMani
 
 ## Risks / Trade-offs
 
-- [`eventStageStartDatesUtc` has one element and a stale date hides the active run] → an expired single date reads as archived only after 7 days; the hub still lists the event under Archived rather than dropping it.
+- [`eventStageStartDatesUtc` has one element and a stale date hides the active run] → an unfinished event whose date has passed or is empty (TBA) stays under Upcoming reading "to be announced"; only `finished` archives it.
 - [`lre-common` assumed shared across events] → only `pointsMilestones` is read; the next-milestone line degrades to "—" when `lre-common` is missing.
 - [Glossary names in code over V1-named storage keys] → each query and the entity's catalog adapter carry a one-line comment naming the pending rename, so the API change can grep for them.
 - [Seventh top-level nav item crowds the desktop rail] → accepted by ADR 0010; the compact icon rail already exists.

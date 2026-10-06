@@ -22,6 +22,7 @@ export const factionOrder: readonly FactionId[] = [
   "Custodes",
   "EmperorsChildren",
   "LeaguesOfVotann",
+  "TheLostAndTheDamned",
   "AdeptusAstartes",
 ].map((id) => factionIdSchema.parse(id))
 

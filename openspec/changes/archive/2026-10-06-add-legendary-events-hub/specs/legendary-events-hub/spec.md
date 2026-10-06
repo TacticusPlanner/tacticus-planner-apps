@@ -8,7 +8,7 @@ The Events section's Legendary Events hub and event page: how an event's lifecyc
 
 ### Requirement: Legendary Event lifecycle is derived from catalog run dates and the finished flag
 
-For every Legendary Event in the catalog `lres` dataset the system SHALL derive one lifecycle state from `finished` and `eventStageStartDatesUtc` (the run start dates), evaluated against the current UTC instant: `active` when some run start `s` satisfies `s <= now < s + 7 days`; otherwise `upcoming` when `finished` is false and some run start is later than `now` (the earliest is the next run start); otherwise `archived`. Only parseable run starts SHALL participate; an unparseable entry SHALL be ignored.
+For every Legendary Event in the catalog `lres` dataset the system SHALL derive one lifecycle state from `finished` and `eventStageStartDatesUtc` (the run start dates), evaluated against the current UTC instant: `active` when some run start `s` satisfies `s <= now < s + 7 days`; otherwise `upcoming` when `finished` is false (with the earliest run start later than `now` as the next run start, or no run window when none is announced yet, shown as "to be announced"); otherwise `archived` (only `finished` archives an event). Only parseable run starts SHALL participate; an unparseable entry SHALL be ignored.
 
 Assumptions:
 
@@ -34,11 +34,17 @@ Assumptions:
 - **WHEN** the current instant is 2026-09-20T00:00:00Z
 - **THEN** Uthar is `upcoming` with next run start 2026-10-04T00:00:00Z
 
-#### Scenario: Finished or expired events are archived
+#### Scenario: Finished events are archived
 
-- **GIVEN** an event with `finished` true, and another with `finished` false whose only run start is 2026-05-17T00:00:00Z
-- **WHEN** the current instant is 2026-10-06T00:00:00Z
-- **THEN** both are `archived`
+- **GIVEN** an event with `finished` true
+- **WHEN** the lifecycle is derived
+- **THEN** it is `archived`
+
+#### Scenario: Unfinished event with no future run date is TBA
+
+- **GIVEN** an event with `finished` false and no run start, or only run starts whose windows have passed
+- **WHEN** the lifecycle is derived
+- **THEN** it is `upcoming` with no run window, the hub card reads "Start date to be announced", it sorts after dated upcoming events, and it has no Home Events row
 
 #### Scenario: Lifecycle re-evaluates while the page stays open
 
@@ -49,7 +55,7 @@ Assumptions:
 
 - **GIVEN** an unfinished event whose only run start is `"not-a-date"`
 - **WHEN** the lifecycle is derived
-- **THEN** the event is `archived`, because no valid run start remains
+- **THEN** the event is `upcoming` with no run window (TBA), because no valid run start remains
 
 ### Requirement: The hub lists active, upcoming and archived events
 
@@ -84,13 +90,13 @@ Assumptions:
 
 ### Requirement: A hub row shows the event's identity, timing and synced state
 
-Each row SHALL show the event unit's portrait and localized name and its timing: for an active event "ends in …" with the run end as a local date and time and, when the synced entry carries `currentEventRun`, "Run N of 3"; for an upcoming event the local start date and time and "starts in …"; for an archived event no timing. An active row additionally SHALL show synced tokens as `current/max` and points when the synced `lre-progress` chunk has an entry for the event, and "synced data unavailable" when the player-data read failed.
+Each row SHALL show the event unit's portrait and localized name and its timing: for an active event "ends in …" with the run end as a local date and time and, when the synced entry carries `currentEventRun`, "Event N of 3"; for an upcoming event the local start date and time and "starts in …"; for an upcoming event with no announced date "Start date to be announced"; for an archived event no timing. An active row additionally SHALL show synced tokens as `current/max` and points when the synced `lre-progress` chunk has an entry for the event, and "synced data unavailable" when the player-data read failed.
 
 #### Scenario: Active row with synced state
 
 - **GIVEN** Lysander is active and the synced entry for `astarLysander` has `currentEventRun` 2, tokens `{ current: 5, max: 12 }` and `currentPoints` 3410
 - **WHEN** the hub renders
-- **THEN** Lysander's row shows "Run 2 of 3", "5/12" tokens and "3,410 points"
+- **THEN** Lysander's row shows "Event 2 of 3", "5/12" tokens and "3,410 points"
 
 #### Scenario: Active row without a synced entry
 
@@ -136,7 +142,7 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 ### Requirement: Run status is read from the synced progress chunk
 
-The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Run N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …", counted down from the instant the chunk was observed plus `nextTokenInSeconds` and read as "next token ready" once that instant has passed (omitted when the bucket is null or full); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex` (the Tacticus API sends a 1-based count of chests opened, and -1 when it omits the field, which reads as 0); `currentShards`; and the next points milestone: the first `lre-common` `pointsMilestones` entry whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or `lre-common` is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt` (hidden while that read is pending, "Not synced yet" before the first sync). It SHALL NOT offer its own sync control. When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body and the run timing only.
+The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Event N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …", counted down from the instant the chunk was observed plus `nextTokenInSeconds` and read as "next token ready" once that instant has passed (omitted when the bucket is null or full); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex` (the Tacticus API sends a 1-based count of chests opened, and -1 when it omits the field, which reads as 0); `currentShards`; and the next points milestone: the first `lre-common` `pointsMilestones` entry whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or `lre-common` is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt` (hidden while that read is pending, "Not synced yet" before the first sync). It SHALL NOT offer its own sync control. When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body and the run timing only.
 
 Assumptions:
 
@@ -148,7 +154,7 @@ Assumptions:
 - **GIVEN** Lysander's synced entry has `currentEventRun` 1, tokens `{ current: 3, max: 12, nextTokenInSeconds: 5400 }`, `currentPoints` 3410, `currentCurrency` 120, `currentClaimedChestIndex` 4, `currentShards` 125, and the first milestone above 3,410 is `{ milestone: 14, cumulativePoints: 3500, engramPayout: 60 }`
 - **WHEN** the section renders
 - **AND** the chunk was observed at the current instant
-- **THEN** it shows "Run 1 of 3", "3/12 tokens, next in 1 hr 30 min", "3,410 points", "120 currency", "4 chests claimed", "125 shards", and "90 points to milestone 14 (+60 currency)"
+- **THEN** it shows "Event 1 of 3", "3/12 tokens, next in 1 hr 30 min", "3,410 points", "120 currency", "4 chests claimed", "125 shards", and "90 points to milestone 14 (+60 currency)"
 
 #### Scenario: Next-token countdown advances between syncs
 

@@ -13,7 +13,7 @@ export interface LegendaryEventSchedule {
 /**
  * Derives an event's lifecycle at `nowMs` from its run start dates and `finished` flag: `active`
  * when a run window `[start, start + 7d)` contains now; otherwise `upcoming` (earliest future start)
- * when not finished; otherwise `archived`. Unparseable run starts are ignored. The run number is not
+ * when not finished (`upcoming` with no window when no date is announced yet, i.e. TBA); otherwise `archived`. Unparseable run starts are ignored. The run number is not
  * derived here: the catalog has no run number, so it only ever comes from the synced progress.
  */
 export function deriveLegendaryEventLifecycle(
@@ -47,7 +47,8 @@ export function deriveLegendaryEventLifecycle(
     }
   }
 
-  return { state: "archived" }
+  // Unfinished with no future run date: announced event, date TBA.
+  return { state: event.finished ? "archived" : "upcoming" }
 }
 
 export interface LegendaryEventHubEntry<TEvent> {
@@ -86,9 +87,14 @@ export function orderLegendaryEventsForHub<
   const byStart = (
     a: LegendaryEventHubEntry<TEvent>,
     b: LegendaryEventHubEntry<TEvent>
-  ) => (a.lifecycle.runStartMs ?? 0) - (b.lifecycle.runStartMs ?? 0)
+  ) =>
+    (a.lifecycle.runStartMs ?? Number.MAX_SAFE_INTEGER) -
+    (b.lifecycle.runStartMs ?? Number.MAX_SAFE_INTEGER)
   groups.active.sort(byStart)
-  groups.upcoming.sort(byStart)
+  groups.upcoming.sort(
+    (a, b) =>
+      byStart(a, b) || nameOf(a.event).localeCompare(nameOf(b.event), locale)
+  )
   groups.archived.sort((a, b) =>
     nameOf(a.event).localeCompare(nameOf(b.event), locale)
   )

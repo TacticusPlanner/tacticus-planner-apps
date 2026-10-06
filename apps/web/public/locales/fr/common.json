@@ -341,7 +341,7 @@
       "empty": "Aucun événement programmé.",
       "error": "Impossible de charger les événements.",
       "loading": "Chargement des événements…",
-      "run": "Manche {{run}} sur 3",
+      "run": "Événement {{run}} sur 3",
       "points": "{{points}} points",
       "sourceFailed": "Impossible de charger les {{type}}.",
       "openHse": "Événements de l'écran d'accueil",
