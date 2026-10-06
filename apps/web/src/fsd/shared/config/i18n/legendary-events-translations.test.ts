@@ -67,5 +67,21 @@ describe("Legendary Events translations", () => {
     expect(resource.tour.hub.steps.upcoming.content).not.toBe(
       en.tour.hub.steps.upcoming.content
     )
+    expect(resource.leaderboard.rosterNotSynced).not.toBe(
+      en.leaderboard.rosterNotSynced
+    )
+    expect(resource.leaderboard.onlyUnlocked).not.toBe(
+      en.leaderboard.onlyUnlocked
+    )
+    expect(resource.progress.noLane).not.toBe(en.progress.noLane)
+    expect(resource.progress.howPoints.body).not.toBe(
+      en.progress.howPoints.body
+    )
+    expect(resource.tour.event.steps.leaderboard.content).not.toBe(
+      en.tour.event.steps.leaderboard.content
+    )
+    expect(resource.tour.event.steps.progressGrid.content).not.toBe(
+      en.tour.event.steps.progressGrid.content
+    )
   })
 })

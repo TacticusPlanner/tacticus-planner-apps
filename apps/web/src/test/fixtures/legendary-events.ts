@@ -1,7 +1,8 @@
 // Legendary Event fixtures shaped like the served `lres` view, built from the real catalog source
 // (tacticus-planner-api GameCatalog Data/lres). Run start dates are pinned for tests: Lysander's is
 // its real 2026-08-30 start; Uthar's and Farsight's are moved into the future so the three events
-// cover the active and upcoming lifecycle states.
+// cover the active and upcoming lifecycle states. Each lane's `availableUnitIds` is the server's
+// evaluation over `legendary-event-characters.json`.
 import type {
   LegendaryEventCommonStorageModel,
   LegendaryEventStorageModel,

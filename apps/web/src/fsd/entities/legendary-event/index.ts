@@ -1,15 +1,19 @@
-// Public API of the Legendary Event entity: lifecycle, the next-milestone lookup, objective labels
-// and the read hooks. Pages consume it only through this file.
+// Public API of the Legendary Event entity: lifecycle, the next-milestone lookup, objective labels,
+// objective matching, the points model, synced progress and the read hooks. Pages consume it only
+// through this file.
 export {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEvent,
   type LegendaryEventCommon,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
+  type LegendaryEventLaneRecord,
   type LegendaryEventLifecycle,
   type LegendaryEventLifecycleState,
   type LegendaryEventObjective,
   type LegendaryEventProgress,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventUnit,
   type LegendaryEventUnitFilter,
 } from "./model/types"
 export {
@@ -24,6 +28,32 @@ export {
   type NextPointsMilestone,
 } from "./lib/next-points-milestone"
 export type { ObjectiveIcon as ObjectiveIconModel } from "./lib/objective-label"
+export {
+  isUnitAllowedOnLane,
+  matchesObjectiveFilter,
+  objectivesSatisfied,
+} from "./lib/objective-match"
+export {
+  DEFAULT_LEADERBOARD_SORT,
+  buildLaneLeaderboard,
+  sortLeaderboard,
+  unitLanePotential,
+  type LaneUnitPotential,
+  type LeaderboardOwnership,
+  type LeaderboardRow,
+  type LeaderboardSort,
+  type LeaderboardSortKey,
+} from "./lib/unit-potential"
+export {
+  buildLanePointsModel,
+  type LaneBattlePoints,
+  type LanePointsModel,
+} from "./lib/lane-points-model"
+export {
+  buildSyncedLaneProgress,
+  type BattleProgressView,
+  type LaneProgressView,
+} from "./lib/synced-lane-progress"
 export { type ReadState } from "./model/use-read-state"
 export { useMinuteNow } from "./model/use-minute-now"
 export {
@@ -37,6 +67,10 @@ export {
 export { useLegendaryEventsProgress } from "./model/use-legendary-events-progress"
 export { useLegendaryEventProgress } from "./model/use-legendary-event-progress"
 export { useLegendaryEventCommon } from "./model/use-legendary-event-common"
+export {
+  useLegendaryEventRoster,
+  useLegendaryEventUnits,
+} from "./model/use-legendary-event-units"
 export {
   useLegendaryEventSyncTimes,
   type LegendaryEventSyncTimes,

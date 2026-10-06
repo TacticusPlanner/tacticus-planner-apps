@@ -59,6 +59,58 @@
       "body": "Jeder gewonnene Kampf bringt seine Kill-Punkte. Jedes Ziel, das dein Team in diesem Kampf erfüllt, fügt seine Punktzahl hinzu, und wer alle Gegner besiegt, erhält den Bonus für „Alle besiegen“. Ein Kampf zählt nur einmal mit seinem besten Ergebnis: Eine Wiederholung bringt nur die Punkte über deinem bisherigen Highscore."
     }
   },
+  "leaderboard": {
+    "title": "Eignungsrangliste",
+    "unit": "Einheit",
+    "rarity": "Seltenheit",
+    "rank": "Rang",
+    "points": "Punkte / Kampf",
+    "slots": "Slots",
+    "pointsValue": "{{points}} Punkte pro Kampf",
+    "slotsValue": "Slots: {{slots}}",
+    "sortBy": "Sortieren nach",
+    "sort": {
+      "points": "Punkte pro Kampf",
+      "slots": "Slots",
+      "name": "Name"
+    },
+    "direction": {
+      "asc": "Aufsteigend",
+      "desc": "Absteigend",
+      "toggle": "Reihenfolge umkehren"
+    },
+    "onlyUnlocked": "Nur freigeschaltete",
+    "locked": "Gesperrt",
+    "objectiveMet": "{{objective}}: erfüllt",
+    "objectiveNotMet": "{{objective}}: nicht erfüllt",
+    "noEligible": "Keine Einheit kann auf dieser Bahn spielen.",
+    "noUnlocked": "Keine deiner freigeschalteten Einheiten kann auf dieser Bahn spielen.",
+    "rosterNotSynced": "Deine Einheiten sind noch nicht synchronisiert, daher werden Besitz, Seltenheit und Rang nicht angezeigt.",
+    "loading": "Einheiten werden geladen…",
+    "error": "Die Einheiten konnten nicht geladen werden."
+  },
+  "progress": {
+    "title": "Synchronisierter Fortschritt",
+    "laneTotal": "{{earned}} / {{max}}",
+    "laneTotalLabel": "{{lane}}: {{earned}} von {{max}} Punkten erreicht",
+    "battle": "Kampf",
+    "battleNumber": "Kampf {{battle}}",
+    "defeatAll": "Alle besiegen",
+    "columnLabel": "{{objective}}, {{points}} Punkte",
+    "points": "Punkte",
+    "battlePoints": "{{earned}} / {{max}}",
+    "highScore": "Highscore {{score}}",
+    "cellCleared": "{{objective}}: erledigt",
+    "cellNotCleared": "{{objective}}: nicht erledigt",
+    "complete": "Abgeschlossen",
+    "noLane": "Kein Fortschritt auf dieser Bahn.",
+    "noEvent": "Für dieses Event gibt es noch keinen synchronisierten Fortschritt.",
+    "unavailable": "Synchronisierte Daten nicht verfügbar",
+    "howPoints": {
+      "title": "So funktionieren Punkte",
+      "body": "Die erreichten Punkte stammen aus deiner letzten Synchronisierung, genau wie das Spiel sie meldet. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und die Punktzahl jedes Ziels; das Bahnmaximum addiert alle Kämpfe."
+    }
+  },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
     "minHits_other": "Mind. {{count}} Treffer",
@@ -98,6 +150,14 @@
         "laneOverview": {
           "title": "Bahnübersicht",
           "content": "Die erlaubten Einheiten jeder Bahn, Kill-Punkte, die fünf Ziele mit ihren Punktzahlen und die Punkte, die jeder Kampf wert ist."
+        },
+        "leaderboard": {
+          "title": "Eignungsrangliste",
+          "content": "Jede Einheit, die eine Bahn erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und wie viele Punkte sie pro Kampf holen kann. Sortiere die Liste oder zeige nur freigeschaltete Einheiten."
+        },
+        "progressGrid": {
+          "title": "Synchronisierter Fortschritt",
+          "content": "Deine erledigten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, dazu die erreichten Punkte jeder Bahn im Vergleich zum Maximum."
         }
       }
     }

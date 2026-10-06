@@ -7,8 +7,10 @@ import {
 } from "@/entities/legendary-event"
 
 import { LaneOverview } from "./lane-overview"
+import { LeaderboardSection } from "./leaderboard/leaderboard-section"
 import { LegendaryEventHeader } from "./legendary-event-header"
 import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
+import { ProgressSection } from "./progress/progress-section"
 import { RunStatusCard } from "./run-status-card"
 
 /** Mobile form: Run status, one Alpha / Beta / Gamma selector shared by every lane-scoped
@@ -46,6 +48,18 @@ export function LegendaryEventMobilePage(props: LegendaryEventPageViewModel) {
         </TabsList>
       </Tabs>
       <LaneOverview event={props.event} laneIds={props.laneIds} />
+      <LeaderboardSection
+        event={props.event}
+        laneIds={props.laneIds}
+        layout="list"
+        leaderboard={props.leaderboard}
+      />
+      <ProgressSection
+        event={props.event}
+        laneIds={props.laneIds}
+        layout="rows"
+        progressGrid={props.progressGrid}
+      />
     </div>
   )
 }

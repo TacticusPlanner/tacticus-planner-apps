@@ -1,4 +1,5 @@
 import type {
+  GameCatalogCharacterView,
   GameCatalogLreTrackView,
   LegendaryEventCommonStorageModel,
   LegendaryEventStorageModel,
@@ -34,6 +35,35 @@ export type LegendaryEventUnitFilter = LegendaryEventObjective["filter"]
 
 /** The caller's synced progress for one event (an `lre-progress` entry). */
 export type LegendaryEventProgress = PlayerDataChunkDto<"lre-progress">[number]
+
+/** One lane's synced record (`alpha` / `beta` / `gamma` of an `lre-progress` entry). */
+export type LegendaryEventLaneRecord = NonNullable<
+  LegendaryEventProgress[LegendaryEventLaneId]
+>
+
+/** The catalog character fields objective matching reads. Ability damage arrays are optional
+ *  because rows cached before the schema default may lack them (see `characterDamageTypes`). */
+export type LegendaryEventUnit = Pick<
+  GameCatalogCharacterView,
+  | "id"
+  | "name"
+  | "faction"
+  | "alliance"
+  | "meleeDamage"
+  | "meleeHits"
+  | "rangedDamage"
+  | "rangedHits"
+  | "traits"
+> & {
+  activeAbilityDamage?: readonly string[]
+  passiveAbilityDamage?: readonly string[]
+}
+
+/** The roster fields the leaderboard reads (one synced `characters` record). */
+export type LegendaryEventRosterUnit = Pick<
+  PlayerDataChunkDto<"characters">[number],
+  "unitId" | "rank" | "progressionIndex"
+>
 
 export type LegendaryEventLifecycleState = "active" | "upcoming" | "archived"
 

@@ -59,6 +59,58 @@
       "body": "Each battle you win scores its kill points. Every objective your team meets in that battle adds its score, and clearing all enemies adds the defeat-all bonus. A battle only counts once at its best: replaying it scores only the points above your previous high score."
     }
   },
+  "leaderboard": {
+    "title": "Eligibility leaderboard",
+    "unit": "Unit",
+    "rarity": "Rarity",
+    "rank": "Rank",
+    "points": "Points / battle",
+    "slots": "Slots",
+    "pointsValue": "{{points}} points per battle",
+    "slotsValue": "Slots: {{slots}}",
+    "sortBy": "Sort by",
+    "sort": {
+      "points": "Points per battle",
+      "slots": "Slots",
+      "name": "Name"
+    },
+    "direction": {
+      "asc": "Ascending",
+      "desc": "Descending",
+      "toggle": "Reverse order"
+    },
+    "onlyUnlocked": "Only unlocked",
+    "locked": "Locked",
+    "objectiveMet": "{{objective}}: met",
+    "objectiveNotMet": "{{objective}}: not met",
+    "noEligible": "No unit can play in this lane.",
+    "noUnlocked": "None of your unlocked units can play in this lane.",
+    "rosterNotSynced": "Your roster hasn't synced yet, so ownership, rarity and rank aren't shown.",
+    "loading": "Loading units…",
+    "error": "Couldn't load the units."
+  },
+  "progress": {
+    "title": "Synced progress",
+    "laneTotal": "{{earned}} / {{max}}",
+    "laneTotalLabel": "{{lane}}: {{earned}} of {{max}} points earned",
+    "battle": "Battle",
+    "battleNumber": "Battle {{battle}}",
+    "defeatAll": "Defeat all",
+    "columnLabel": "{{objective}}, {{points}} points",
+    "points": "Points",
+    "battlePoints": "{{earned}} / {{max}}",
+    "highScore": "High score {{score}}",
+    "cellCleared": "{{objective}}: cleared",
+    "cellNotCleared": "{{objective}}: not cleared",
+    "complete": "Complete",
+    "noLane": "No progress in this lane.",
+    "noEvent": "No synced progress for this event yet.",
+    "unavailable": "Synced data unavailable",
+    "howPoints": {
+      "title": "How points work",
+      "body": "Points earned come from your last sync, exactly as the game reports them. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
+    }
+  },
   "objective": {
     "minHits_one": "Min {{count}} hit",
     "minHits_other": "Min {{count}} hits",
@@ -98,6 +150,14 @@
         "laneOverview": {
           "title": "Lane overview",
           "content": "Each lane's allowed units, kill points, five objectives with their scores and the points every battle is worth."
+        },
+        "leaderboard": {
+          "title": "Eligibility leaderboard",
+          "content": "Every unit each lane allows, whether you own it, which objectives it meets and the points it can score per battle. Sort the list or show only unlocked units."
+        },
+        "progressGrid": {
+          "title": "Synced progress",
+          "content": "Your cleared objectives and points per battle from your last sync, with each lane's points earned against its maximum."
         }
       }
     }
