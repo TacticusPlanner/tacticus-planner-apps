@@ -27,7 +27,7 @@ Relevant current state beyond that:
 
 ## Decisions
 
-**D1 — Four new pure libraries in `entities/legendary-event/lib`, exported from the slice index.**
+**D1 — Four new pure libraries in `entities/legendary-event/lib`, exported from the slice index, plus the internal `damage-profile-exclusions.ts` helper (consumed by `objective-match.ts`, not exported).**
 
 - `objective-match.ts`: `matchesObjectiveFilter(unit, filter) → boolean` (spec table; unknown kind → `false`), `isUnitAllowedOnLane(unit, lane)`, `objectivesSatisfied(unit, lane) → number[]` (objective indices).
 - `damage-profile-exclusions.ts`: `{ votanChampion: ["Psychic", "Direct", "DirectDamage"], thousSekhetar: ["Psychic"] }` and `unitDealtDamageTypes(unit)` = `characterDamageTypes(unit)` minus exclusions. `shared/lib`'s helper stays generic; the Legendary-Event-specific correction lives here, as V1's placement note intended.

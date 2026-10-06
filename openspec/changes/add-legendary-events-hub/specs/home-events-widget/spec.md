@@ -21,7 +21,7 @@ The authenticated home page SHALL render a card titled "Events" (localized), dis
 - **WHEN** the home page renders
 - **THEN** both the "Events" card and the "Events calendar" are present and separately titled
 
-### Requirement: The card lists the live event first, then upcoming events, up to two
+### Requirement: The card lists live events first, then upcoming events, up to three rows
 
 The card SHALL show at most three rows drawn from two sources: Home Screen Events from the game-events calendar (the same selection as the HSE tab) and Legendary Events from the catalog `lres` dataset with the lifecycle defined by `legendary-events-hub`. Live rows come first (a live Home Screen Event, then a live Legendary Event), each marked LIVE (visible text, not colour alone) with an "ends in …" relative countdown. Remaining slots are filled by upcoming events of both types in ascending start order, each with its start as a local date and time and a relative "starts in …" countdown. Each row shows its event type icon and accent colour; a live Legendary Event row also shows "Run N of 3" and synced points when the synced entry exists. Activity and ordering are decided by UTC instants (start inclusive, end exclusive); the device timezone only affects the displayed start text.
 
@@ -40,7 +40,7 @@ Assumptions:
 
 - **GIVEN** one live Home Screen Event, one live Legendary Event and three upcoming events
 - **WHEN** the card renders
-- **THEN** only the two live rows and the earliest upcoming event are shown (the cap is now three)
+- **THEN** only the two live rows and the earliest upcoming event are shown
 
 #### Scenario: Only upcoming events
 
@@ -108,6 +108,11 @@ Each row SHALL be activatable by click, tap, Enter and Space, with button semant
 
 - **WHEN** a row has focus and the user presses Enter or Space
 - **THEN** that row's navigation occurs
+
+## RENAMED Requirements
+
+- FROM: `### Requirement: The card lists the live event first, then upcoming events, up to two`
+- TO: `### Requirement: The card lists live events first, then upcoming events, up to three rows`
 
 ## REMOVED Requirements
 

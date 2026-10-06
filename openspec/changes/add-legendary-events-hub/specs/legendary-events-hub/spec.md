@@ -8,7 +8,7 @@ The Events section's Legendary Events hub and event page: how an event's lifecyc
 
 ### Requirement: Legendary Event lifecycle is derived from catalog run dates and the finished flag
 
-For every Legendary Event in the catalog `lres` dataset the system SHALL derive one lifecycle state from `finished` and `eventStageStartDatesUtc` (the run start dates), evaluated against the current UTC instant: `active` when some run start `s` satisfies `s <= now < s + 7 days`; otherwise `upcoming` when `finished` is false and some run start is later than `now` (the earliest is the next run start); otherwise `archived`.
+For every Legendary Event in the catalog `lres` dataset the system SHALL derive one lifecycle state from `finished` and `eventStageStartDatesUtc` (the run start dates), evaluated against the current UTC instant: `active` when some run start `s` satisfies `s <= now < s + 7 days`; otherwise `upcoming` when `finished` is false and some run start is later than `now` (the earliest is the next run start); otherwise `archived`. Only parseable run starts SHALL participate; an unparseable entry SHALL be ignored.
 
 Assumptions:
 
@@ -44,6 +44,12 @@ Assumptions:
 
 - **WHEN** an event's run window ends while the hub or event page is open
 - **THEN** within one minute the event's lifecycle and the displayed countdown update without a reload
+
+#### Scenario: No valid run starts
+
+- **GIVEN** an unfinished event whose only run start is `"not-a-date"`
+- **WHEN** the lifecycle is derived
+- **THEN** the event is `archived`, because no valid run start remains
 
 ### Requirement: The hub lists active, upcoming and archived events
 
@@ -130,7 +136,7 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 ### Requirement: Run status is read from the synced progress chunk
 
-The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Run N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …" from `nextTokenInSeconds` (omitted when the bucket is null); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex + 1`; `currentShards`; and the next points milestone: the first `lre-common` `pointsMilestones` entry whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)". It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt`. It SHALL NOT offer its own sync control. When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body and the run timing only.
+The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Run N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …" from `nextTokenInSeconds` (omitted when the bucket is null); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex + 1`; `currentShards`; and the next points milestone: the first `lre-common` `pointsMilestones` entry whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or `lre-common` is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt`. It SHALL NOT offer its own sync control. When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body and the run timing only.
 
 Assumptions:
 

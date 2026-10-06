@@ -30,7 +30,7 @@ Assumptions:
 
 ### Requirement: Synced lane data maps onto battles and objectives
 
-The synced `lre-progress` entry for the event SHALL be read per lane from its `alpha` / `beta` / `gamma` record. `encounters[i]` SHALL be battle `i`. In `objectivesCleared`, index 0 SHALL mean the defeat-all objective and index `k` in 1..5 SHALL mean the objective whose catalog `index` is `k − 1`. `encounterPoints` SHALL be the battle's points earned; `highScore` its recorded high score. A battle with no encounter entry has nothing cleared and 0 points. A null lane SHALL present as "no progress in this lane". Points earned per lane SHALL be Σ `encounterPoints`; per event Σ over lanes. A battle is "complete" when `objectivesCleared` has six entries.
+The synced `lre-progress` entry for the event SHALL be read per lane from its `alpha` / `beta` / `gamma` record. `encounters[i]` SHALL be battle `i`. In `objectivesCleared`, index 0 SHALL mean the defeat-all objective and index `k` in 1..5 SHALL mean the objective whose catalog `index` is `k − 1`. `encounterPoints` SHALL be the battle's points earned; `highScore` its recorded high score. A battle with no encounter entry has nothing cleared and 0 points. A null lane SHALL present as "no progress in this lane". Points earned per lane SHALL be Σ `encounterPoints`; per event Σ over lanes. A battle is "complete" when `objectivesCleared` contains every expected ID from 0 through 5; ids outside 0..5 SHALL be ignored.
 
 Assumptions:
 
