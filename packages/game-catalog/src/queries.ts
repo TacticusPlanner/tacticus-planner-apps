@@ -14,6 +14,8 @@ import type {
   EventDefinitionStorageModel,
   GuildRaidMetaStorageModel,
   EventsCalendarStorageModel,
+  LegendaryEventCommonStorageModel,
+  LegendaryEventStorageModel,
   MowStorageModel,
   NpcStorageModel,
   OnslaughtRewardStorageModel,
@@ -270,4 +272,25 @@ export async function getUpcomingEvents(
   )
 
   return dedupeCalendarEntries(inRange)
+}
+
+// Every Legendary Event in the catalog. Reads the `lres` store (pending rename to `legendary-events`).
+export function getLegendaryEvents(): Promise<LegendaryEventStorageModel[]> {
+  return getDatasetRecords("lres")
+}
+
+// One Legendary Event by its id (the event unit's snowprint id, e.g. "astarLysander"), or `undefined`
+// when the catalog has no such event. Reads the `lres` store (pending rename to `legendary-events`).
+export async function getLegendaryEvent(
+  id: string
+): Promise<LegendaryEventStorageModel | undefined> {
+  const events = await getLegendaryEvents()
+  return events.find((event) => event.id === id)
+}
+
+// The shared Legendary Event reward ladder — a single record — or `null` when it has not synced.
+// Reads the `lre-common` store (pending rename alongside `lres`).
+export async function getLegendaryEventCommon(): Promise<LegendaryEventCommonStorageModel | null> {
+  const rows = await getDatasetRecords("lre-common")
+  return rows[0] ?? null
 }

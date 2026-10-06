@@ -12,10 +12,7 @@ export {
 export { useRaidsFilters } from "./model/raids-filters/use-raids-filters"
 // Dailies > HSE: the active event, its raid-point rules and the tab's sections.
 export { useActiveHomeScreenEvent } from "./model/use-active-home-screen-event"
-export {
-  selectHomeScreenEventListTarget,
-  selectHomeScreenEventPreview,
-} from "./model/select-active-home-screen-event"
+export { selectHomeScreenEventListTarget } from "./model/select-active-home-screen-event"
 export { EventPreviewBanner } from "./ui/home-screen-event/event-preview-banner"
 export { EventStatusLine } from "./ui/home-screen-event/event-status-line"
 export { EventFarmSection } from "./ui/home-screen-event/event-farm-section"

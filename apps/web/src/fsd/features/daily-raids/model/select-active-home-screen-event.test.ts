@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import {
   selectActiveHomeScreenEvent,
   selectHomeScreenEventListTarget,
-  selectHomeScreenEventPreview,
 } from "./select-active-home-screen-event"
 
 const definitions = new Map(
@@ -160,64 +159,6 @@ describe("selectActiveHomeScreenEvent", () => {
     expect(selection.upcoming).toEqual([training, warp])
     expect(selection.next).toBe(selection.upcoming[0])
   })
-})
-
-describe("selectHomeScreenEventPreview", () => {
-  const training = entry(
-    "hse-training-rush",
-    "2026-10-09T08:00:00Z",
-    "2026-10-12T08:00:00Z"
-  )
-  const warp = entry(
-    "hse-warp-surge",
-    "2026-10-20T00:00:00Z",
-    "2026-10-23T00:00:00Z"
-  )
-  const previewAt = (entries: ReturnType<typeof entry>[], now: string) =>
-    selectHomeScreenEventPreview(
-      selectActiveHomeScreenEvent(entries, definitions, at(now))
-    )
-
-  it("puts the live event first, then the earliest upcoming one", () => {
-    expect(
-      previewAt([warp, training, machineHunt], "2026-10-03T00:00:00Z")
-    ).toEqual([
-      { entry: machineHunt, live: true },
-      { entry: training, live: false },
-    ])
-  })
-
-  it("caps at two with only upcoming events", () => {
-    expect(
-      previewAt([warp, training, machineHunt], "2026-10-01T00:00:00Z")
-    ).toEqual([
-      { entry: machineHunt, live: false },
-      { entry: training, live: false },
-    ])
-  })
-
-  it("is empty with nothing active or upcoming", () => {
-    expect(previewAt([machineHunt], "2026-11-01T00:00:00Z")).toEqual([])
-  })
-
-  it("treats start as inclusive and end as exclusive", () => {
-    expect(previewAt([machineHunt], "2026-10-02T08:00:00Z")[0]?.live).toBe(true)
-    expect(previewAt([machineHunt], "2026-10-06T08:00:00Z")).toEqual([])
-  })
-
-  it.each(["UTC", "Pacific/Honolulu"])(
-    "gives the same result in %s",
-    (timeZone) => {
-      vi.stubEnv("TZ", timeZone)
-      expect(
-        previewAt([training, machineHunt], "2026-10-03T00:00:00Z")
-      ).toEqual([
-        { entry: machineHunt, live: true },
-        { entry: training, live: false },
-      ])
-      vi.unstubAllEnvs()
-    }
-  )
 })
 
 describe("selectHomeScreenEventListTarget", () => {

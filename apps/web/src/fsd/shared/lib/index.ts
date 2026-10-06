@@ -1,8 +1,11 @@
 export { type Battle, type FarmLocation } from "./battle.domain"
 export { characterDamageTypes } from "./character-damage-types"
 export { filterUnlockedBattles } from "./unlocked-battles"
-export { formatEstimateDate } from "./format-estimate-date"
-export { formatRelativeTime } from "./format-relative-time"
+export {
+  formatEstimateDate,
+  formatEventCountdown,
+  formatRelativeTime,
+} from "./format-time"
 export { useCampaignDisplay } from "./use-campaign-display"
 export { usePersistedSelection } from "./use-persisted-selection"
 export { isStaleBuildError, reloadOnceForStaleBuild } from "./stale-build"

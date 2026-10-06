@@ -126,6 +126,8 @@ export {
   type ShopStorageModel,
   type RaidBossesStorageModel,
   type GuildRaidMetaStorageModel,
+  type LegendaryEventStorageModel,
+  type LegendaryEventCommonStorageModel,
 } from "./game-catalog.storage"
 
 export {

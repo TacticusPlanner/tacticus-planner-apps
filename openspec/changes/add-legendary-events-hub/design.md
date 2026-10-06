@@ -38,8 +38,8 @@ This change adds:
 - `model/types.ts`: `LegendaryEventLifecycle`, `LegendaryEventLaneId = "alpha" | "beta" | "gamma"`, `LegendaryEventObjective` (the catalog `unitsRestrictions` record under its glossary name). Naming follows the naming-conventions skill: `GameCatalogLreView` (package storage model) → `LegendaryEvent*` domain types → page view-model props.
 - `model/use-legendary-events.ts`, `use-legendary-event.ts`, `use-legendary-events-progress.ts`, `use-legendary-event-progress.ts`, `use-legendary-event-common.ts`: `useLiveQuery` wrappers returning `{ status: "loading" | "error" | "ready", … }` with a minute tick for lifecycle.
 - `model/use-objective-label.ts`: `(objective) → { label, icon }` per D6.
-The next change adds `lib/objective-match.ts`, `lib/unit-potential.ts`, `lib/lane-points-model.ts`, `lib/synced-lane-progress.ts` to the same slice.
-_Alternative:_ page-local helpers under `pages/events`. Rejected: the Home card needs lifecycle and milestones, and later stages need every rule here; FSD forbids importing them from a page.
+  The next change adds `lib/objective-match.ts`, `lib/unit-potential.ts`, `lib/lane-points-model.ts`, `lib/synced-lane-progress.ts` to the same slice.
+  _Alternative:_ page-local helpers under `pages/events`. Rejected: the Home card needs lifecycle and milestones, and later stages need every rule here; FSD forbids importing them from a page.
 
 **D2 — Named queries in the packages, named by the glossary.**
 `@workspace/game-catalog/queries`: `getLegendaryEvents()`, `getLegendaryEvent(id)`, `getLegendaryEventCommon()` (the single record or `null`), reading the existing `lres` / `lre-common` stores. `@workspace/player-data/queries`: `getLegendaryEventsProgress()` and `getLegendaryEventProgress(eventId)` over the `lre-progress` chunk. Query names carry the glossary wording while storage keys keep theirs until the API rename lands; a comment on each query says so.
@@ -50,11 +50,11 @@ The catalog has no run number and one date per event: active iff `start <= now <
 **D4 — Event page is an orchestrator with desktop and mobile sub-pages; later sections slot in.**
 `pages/events/ui/legendary-event/legendary-event-page.tsx` computes `LegendaryEventPageViewProps` once and renders `isMobile ? <LegendaryEventMobilePage/> : <LegendaryEventDesktopPage/>`; sub-pages take no `isMobile`. The orchestrator owns the mobile-only lane selector state, keyed by `eventId` so it resets per event. Lane-scoped sections receive `laneIds: LegendaryEventLaneId[]` (three on desktop, one on mobile) so the next change adds its sections by rendering them in the same slot without touching the selector.
 
-| | Desktop (≥768) | Mobile (<768) |
-| --- | --- | --- |
-| Hub | Card grid (2–3 per row) under Active / Upcoming / Archived headings | Full-width stacked cards |
-| Event page | Run status card, then Lane overview as three adjacent panels | Run status card, one `Tabs` (`line`) Alpha / Beta / Gamma selector, then Lane overview for the selected lane |
-| Tour targets | `legendary-event-run-status`, `legendary-event-lane-overview` | `legendary-event-run-status`, `legendary-event-lane-selector`, `legendary-event-lane-overview` |
+|              | Desktop (≥768)                                                      | Mobile (<768)                                                                                                |
+| ------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Hub          | Card grid (2–3 per row) under Active / Upcoming / Archived headings | Full-width stacked cards                                                                                     |
+| Event page   | Run status card, then Lane overview as three adjacent panels        | Run status card, one `Tabs` (`line`) Alpha / Beta / Gamma selector, then Lane overview for the selected lane |
+| Tour targets | `legendary-event-run-status`, `legendary-event-lane-overview`       | `legendary-event-run-status`, `legendary-event-lane-selector`, `legendary-event-lane-overview`               |
 
 **D5 — Section plumbing follows Progress.**
 `pages/events/index.ts` exports `EventsLayout` (`PageContainer` + `<Outlet/>`) and `routes` (`index` → `<Navigate replace to="/events/legendary-events"/>`, `legendary-events` → hub, `legendary-events/:eventId` → event page, lazy). `app/routes.tsx` adds the `/events` `ProtectedRoute` entry; `nav-items.ts` adds Events after Progress with one child `/events/legendary-events` (`isLandingPage: true`). Nav label keys in `common.json` (`nav.events`, `nav.eventsDescription`, `events.tabs.legendaryEvents`, `events.tabs.legendaryEventsDescription`); page copy in the new `legendaryEvents` namespace.
@@ -67,7 +67,7 @@ The catalog has no run number and one date per event: active iff `start <= now <
 _Alternative:_ a second Home card for Legendary Events. Rejected by review: one Events card is the product owner's call and keeps Home's first row intact.
 
 **D8 — Stale-sync presentation, no local sync control.**
-Run status shows "Synced X ago" from `getManifestMetadata().syncedAt` via `formatRelativeTime`; refresh is the shell's Sync action. A second sync trigger inside the page would reintroduce V1's "sync spam" the survey complained about.
+Run status shows "Synced X ago" from the player-data manifest metadata (`getManifestMetadata(...).updatedAt`, which stores the manifest `syncedAt`) via `formatEventCountdown`, so the span reads "25 min" as the spec scenario requires (`formatRelativeTime` would read "25 minutes ago"); refresh is the shell's Sync action. A second sync trigger inside the page would reintroduce V1's "sync spam" the survey complained about.
 
 **D9 — V1-parity checklist (this reimplements V1 `plan-lre`'s event navigation, lane header and home section).**
 

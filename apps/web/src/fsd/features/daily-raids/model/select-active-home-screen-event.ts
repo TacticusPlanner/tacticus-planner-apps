@@ -58,25 +58,6 @@ export function selectActiveHomeScreenEvent<
   return { active: active ?? null, next: upcoming[0] ?? null, upcoming }
 }
 
-export type HomeScreenEventPreviewEntry<TEntry> = {
-  entry: TEntry
-  /** True for the running event, false for an upcoming one. */
-  live: boolean
-}
-
-/** The Home card's rows: the running event first, then upcoming ones by start, at most `limit`. */
-export function selectHomeScreenEventPreview<
-  TEntry extends HomeScreenEventEntry,
->(
-  selection: Pick<HomeScreenEventSelection<TEntry>, "active" | "upcoming">,
-  limit = 2
-): HomeScreenEventPreviewEntry<TEntry>[] {
-  return [
-    ...(selection.active ? [{ entry: selection.active, live: true }] : []),
-    ...selection.upcoming.map((entry) => ({ entry, live: false })),
-  ].slice(0, limit)
-}
-
 export type HomeScreenEventListTarget<TEntry> = {
   entry: TEntry
   /** True when the event is running; false when the lists are a preview of an upcoming one. */

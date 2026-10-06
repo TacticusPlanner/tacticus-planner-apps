@@ -52,20 +52,48 @@ describe("common namespace locale parity", () => {
     ["de", de],
     ["es", es],
     ["fr", fr],
-  ])("%s translates the HSE live indicator and Home card copy", (_, locale) => {
-    expect(locale.nav.eventLive).not.toBe(en.nav.eventLive)
-    // "LIVE" is the same word in German; every other card string must differ from English.
-    for (const key of [
-      "title",
-      "endsIn",
-      "startsIn",
-      "empty",
-      "error",
-      "loading",
-    ] as const) {
-      expect(locale.home.events[key], key).not.toBe(en.home.events[key])
+  ])(
+    "%s translates the HSE live indicator and Home card copy",
+    (lng, locale) => {
+      expect(locale.nav.eventLive).not.toBe(en.nav.eventLive)
+      // "LIVE" is the same word in German, and German keeps the loanword "Events" for the card
+      // title (as in "Startbildschirm-Events"); every other card string must differ from English.
+      if (lng !== "de") {
+        expect(locale.home.events.title).not.toBe(en.home.events.title)
+      }
+      for (const key of [
+        "run",
+        "sourceFailed",
+        "openHse",
+        "openLegendaryEvents",
+        "endsIn",
+        "startsIn",
+        "empty",
+        "error",
+        "loading",
+      ] as const) {
+        expect(locale.home.events[key], key).not.toBe(en.home.events[key])
+      }
+      expect(locale.home.events.endsIn).toContain("{{when}}")
+      expect(locale.home.events.startsIn).toContain("{{when}}")
+      expect(locale.home.events.sourceFailed).toContain("{{type}}")
+      // "points" is also the French word, so only the placeholder is checked.
+      expect(locale.home.events.points).toContain("{{points}}")
     }
-    expect(locale.home.events.endsIn).toContain("{{when}}")
-    expect(locale.home.events.startsIn).toContain("{{when}}")
+  )
+
+  it.each([
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("%s translates the Events section navigation copy", (lng, locale) => {
+    if (lng !== "de") expect(locale.nav.events).not.toBe(en.nav.events)
+    expect(locale.nav.eventsDescription).not.toBe(en.nav.eventsDescription)
+    expect(locale.events.tabs.legendaryEvents).not.toBe(
+      en.events.tabs.legendaryEvents
+    )
+    expect(locale.events.tabs.legendaryEventsDescription).not.toBe(
+      en.events.tabs.legendaryEventsDescription
+    )
   })
 })

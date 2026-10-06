@@ -28,6 +28,17 @@ describe("resolveActiveNavigation", () => {
     expect(activeChild).toBeUndefined()
   })
 
+  it("keeps Legendary Events active on an event detail route", () => {
+    const { activeChild, activeItem } = resolveActiveNavigation(
+      navItems,
+      "/events/legendary-events/astarLysander"
+    )
+
+    expect(activeItem?.path).toBe("/events")
+    expect(activeChild?.path).toBe("/events/legendary-events")
+    expect(activeChild?.labelKey).toBe("events.tabs.legendaryEvents")
+  })
+
   it("resolves the active child when the route matches a child page", () => {
     const { activeChild, activeItem } = resolveActiveNavigation(
       navItems,

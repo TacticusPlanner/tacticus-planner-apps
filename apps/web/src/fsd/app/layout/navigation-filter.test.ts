@@ -57,4 +57,41 @@ describe("filterNavigationItems", () => {
       ])
     }
   )
+
+  it("finds the Legendary Events child, with its section, by 'legendary'", () => {
+    const localized: Record<string, string> = {
+      "nav.events": "Events",
+      "events.tabs.legendaryEvents": "Legendary Events",
+    }
+    const results = filterNavigationItems(
+      navItems,
+      "legendary",
+      (key) => localized[key] ?? key
+    )
+
+    const events = results.find((item) => item.path === "/events")
+    expect(events?.children?.map((child) => child.path)).toEqual([
+      "/events/legendary-events",
+    ])
+    expect(events?.children?.[0]?.descriptionKey).toBe(
+      "events.tabs.legendaryEventsDescription"
+    )
+  })
+})
+
+describe("navItems", () => {
+  it("places Events after Progress and before Guild", () => {
+    const paths = navItems.map((item) => item.path)
+    expect(paths.indexOf("/events")).toBe(paths.indexOf("/progress") + 1)
+    expect(paths.indexOf("/guild")).toBe(paths.indexOf("/events") + 1)
+  })
+
+  it("hides Events from anonymous users, like Plan, Progress and Guild", () => {
+    const anonymous = navItems
+      .filter((item) => item.anonymousAllowed)
+      .map((item) => item.path)
+    for (const path of ["/events", "/plan", "/progress", "/guild"]) {
+      expect(anonymous).not.toContain(path)
+    }
+  })
 })

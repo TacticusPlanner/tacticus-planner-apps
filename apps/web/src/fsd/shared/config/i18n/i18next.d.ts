@@ -11,6 +11,7 @@ import type enArena from "../../../../../public/locales/en/arena.json"
 import type enTeamRecs from "../../../../../public/locales/en/teamRecs.json"
 import type enSalvageRun from "../../../../../public/locales/en/salvageRun.json"
 import type enOnslaught from "../../../../../public/locales/en/onslaught.json"
+import type enLegendaryEvents from "../../../../../public/locales/en/legendaryEvents.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -30,6 +31,7 @@ declare module "i18next" {
       teamRecs: typeof enTeamRecs
       salvageRun: typeof enSalvageRun
       onslaught: typeof enOnslaught
+      legendaryEvents: typeof enLegendaryEvents
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>

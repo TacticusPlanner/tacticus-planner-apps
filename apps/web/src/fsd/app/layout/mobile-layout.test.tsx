@@ -205,6 +205,26 @@ describe("MobileBottomNav actions", () => {
     )
   })
 
+  it("lists Events and its Legendary Events child, with descriptions, in the drawer only", () => {
+    renderShell()
+
+    const bar = screen.getByTestId("primary-nav")
+    expect(within(bar).queryByText("nav.events")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(drawer.getByText("nav.events")).toBeVisible()
+    expect(drawer.getByText("nav.eventsDescription")).toBeVisible()
+    expect(drawer.getByText("events.tabs.legendaryEvents")).toBeVisible()
+    expect(
+      drawer.getByText("events.tabs.legendaryEventsDescription")
+    ).toBeVisible()
+    expect(
+      drawer.getByText("events.tabs.legendaryEvents").closest("a")
+    ).toHaveAttribute("href", "/events/legendary-events")
+  })
+
   it("shows each item's description beneath its label, for top-level and child items", () => {
     renderShell()
 

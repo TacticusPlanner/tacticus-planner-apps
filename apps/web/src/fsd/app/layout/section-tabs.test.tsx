@@ -62,7 +62,7 @@ function expectPath(pathname: string) {
 }
 
 describe("navItems landing pages", () => {
-  it("declares exactly the child page that has a nested route and renders a screen of its own", () => {
+  it("declares exactly the child pages that have a nested route and render a screen of their own", () => {
     const flagged = navItems.flatMap(
       (item) =>
         item.children
@@ -70,7 +70,10 @@ describe("navItems landing pages", () => {
           .map((child) => child.path) ?? []
     )
 
-    expect(flagged).toEqual(["/library/raid-bosses"])
+    expect(flagged).toEqual([
+      "/library/raid-bosses",
+      "/events/legendary-events",
+    ])
   })
 })
 
@@ -150,6 +153,17 @@ describe("SectionTabs", () => {
     await user.click(screen.getByTestId("section-tab-library-raid-bosses"))
 
     expectPath("/library/raid-bosses")
+  })
+
+  it("returns to the Legendary Events hub when its tab is activated from an event page", async () => {
+    const user = userEvent.setup()
+    renderTabs(section("/events"), "/events/legendary-events/astarLysander")
+
+    const tab = screen.getByTestId("section-tab-events-legendary-events")
+    expect(tab).toHaveAttribute("data-state", "active")
+    await user.click(tab)
+
+    expectPath("/events/legendary-events")
   })
 
   it("keeps the parent tab active on a route nested below it", () => {

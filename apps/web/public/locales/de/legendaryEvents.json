@@ -1,0 +1,103 @@
+{
+  "hub": {
+    "groups": {
+      "active": "Aktiv",
+      "upcoming": "Demnächst",
+      "archived": "Archiviert"
+    },
+    "noActive": "Gerade läuft kein Legendäres Event.",
+    "empty": "Noch keine Legendären Events verfügbar.",
+    "loading": "Legendäre Events werden geladen…",
+    "error": "Legendäre Events konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "endsIn": "Endet in {{when}}",
+    "startsIn": "Beginnt in {{when}}",
+    "endsAt": "Endet am {{date}}",
+    "startsAt": "Beginnt am {{date}}",
+    "syncedUnavailable": "Synchronisierte Daten nicht verfügbar"
+  },
+  "lifecycle": {
+    "active": "Aktiv",
+    "upcoming": "Demnächst",
+    "archived": "Archiviert"
+  },
+  "run": "Durchlauf {{run}} von 3",
+  "tokens": "{{current}}/{{max}} Tokens",
+  "points": "{{points}} Punkte",
+  "runStatus": {
+    "title": "Durchlaufstatus",
+    "tokensNext": "{{tokens}}, nächstes in {{when}}",
+    "currency": "{{value}} Währung",
+    "chests": "{{value}} Truhen beansprucht",
+    "shards": "{{value}} Splitter",
+    "milestone": "Noch {{points}} Punkte bis Meilenstein {{milestone}} (+{{currency}} Währung)",
+    "noMilestone": "—",
+    "milestoneLabel": "Nächster Meilenstein",
+    "noEntry": "Für dieses Event gibt es noch keinen synchronisierten Fortschritt.",
+    "syncedUnavailable": "Synchronisierte Daten nicht verfügbar",
+    "syncedAgo": "Vor {{when}} synchronisiert",
+    "neverSynced": "Noch nicht synchronisiert"
+  },
+  "lanes": {
+    "alpha": "Alpha",
+    "beta": "Beta",
+    "gamma": "Gamma",
+    "selector": "Bahn"
+  },
+  "laneOverview": {
+    "title": "Bahnübersicht",
+    "labelWithRule": "{{lane}} · {{rule}}",
+    "killPoints": "{{points}} Kill-Punkte pro Kampf",
+    "battles": "{{count}} Kämpfe",
+    "objectives": "Ziele",
+    "ladder": "Punkte pro Kampf",
+    "battlePoints": "Kampf {{battle}}: {{points}} Punkte",
+    "howPoints": {
+      "title": "So funktionieren Punkte",
+      "body": "Jeder gewonnene Kampf bringt seine Kill-Punkte. Jedes Ziel, das dein Team in diesem Kampf erfüllt, fügt seine Punktzahl hinzu, und wer alle Gegner besiegt, erhält den Bonus für „Alle besiegen“. Ein Kampf zählt nur einmal mit seinem besten Ergebnis: Eine Wiederholung bringt nur die Punkte über deinem bisherigen Highscore."
+    }
+  },
+  "objective": {
+    "minHits_one": "Mind. {{count}} Treffer",
+    "minHits_other": "Mind. {{count}} Treffer",
+    "maxHits_one": "Max. {{count}} Treffer",
+    "maxHits_other": "Max. {{count}} Treffer",
+    "ranged": "Fernkampf",
+    "melee": "Nahkampf",
+    "not": "Ohne {{label}}"
+  },
+  "tour": {
+    "hub": {
+      "steps": {
+        "active": {
+          "title": "Das laufende Event",
+          "content": "Das Legendäre Event, das gerade läuft, mit Durchlauf, Tokens und Punkten aus deiner letzten Synchronisierung. Wähle es aus, um das Event zu öffnen."
+        },
+        "noActive": {
+          "title": "Nichts aktiv",
+          "content": "Gerade läuft kein Legendäres Event. Die kommenden Events unten zeigen, wann der nächste Durchlauf beginnt."
+        },
+        "upcoming": {
+          "title": "Kommende Events",
+          "content": "Events, die als Nächstes beginnen – das früheste zuerst, mit ihrer lokalen Startzeit."
+        }
+      }
+    },
+    "event": {
+      "steps": {
+        "runStatus": {
+          "title": "Durchlaufstatus",
+          "content": "Dein Durchlauf, Tokens, Punkte, Währung, Truhen und Splitter aus deiner letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
+        },
+        "laneSelector": {
+          "title": "Bahn wählen",
+          "content": "Wechsle zwischen den Bahnen Alpha, Beta und Gamma. Alle Bahnabschnitte darunter folgen dieser Auswahl."
+        },
+        "laneOverview": {
+          "title": "Bahnübersicht",
+          "content": "Die erlaubten Einheiten jeder Bahn, Kill-Punkte, die fünf Ziele mit ihren Punktzahlen und die Punkte, die jeder Kampf wert ist."
+        }
+      }
+    }
+  }
+}
