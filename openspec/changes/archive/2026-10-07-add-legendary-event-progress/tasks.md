@@ -45,3 +45,7 @@
 - Open the apps PR, wait for CI and CodeRabbit, triage comments, then `/opsx:sync` and `/opsx:archive` this change inside `tacticus-planner-apps`.
 - Bump the `tacticus-planner-apps` submodule pin in `tacticus-planner-dev` after merge.
 - Record the D3 verification result in `tacticus-planner-docs` (Legendary Event plan, Stage 1) and whether the API must carry an objective map before Stage 3.
+
+## Archive note (2026-10-07)
+
+Tasks 6.1–6.3 and 7.1 were not run on the Aspire stack. The product owner used the shipped views on a real account during Uthar run 2 instead: task 6.2's assertion **failed** (a battle with defeat-all and two objectives cleared showed `encounterPoints` equal to its `highScore`, not the sum of cleared scores). The resulting changes — earned points derived from `objectivesCleared` + `highScore`, an Overview tab, sticky lane tabs, progress above the leaderboard, V1 objective icons and leaderboard changes — are recorded in tacticus-planner-docs PR #10 (plan §5, "Stage 1 follow-up") and belong to the next change, not this one.
