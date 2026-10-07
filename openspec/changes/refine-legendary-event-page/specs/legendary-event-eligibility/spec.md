@@ -4,12 +4,12 @@
 
 ### Requirement: Unit potential points and slots per lane
 
-For an allowed unit on a lane, points per battle SHALL equal the lane's `killPoints` plus the `score` of every objective the unit satisfies; the **objectives count** SHALL equal the number of objectives it satisfies (the UI never says "slots"). A unit not allowed on the lane has 0 points and objectives count 0. Points compared across lanes are all "points per battle" and SHALL be labelled as such.
+For an allowed unit on a lane, points per battle SHALL equal the lane's `killPoints` plus the `points` of every objective the unit satisfies; the **objectives count** SHALL equal the number of objectives it satisfies (the UI never says "slots"). A unit not allowed on the lane has 0 points and objectives count 0. Points compared across lanes are all "points per battle" and SHALL be labelled as such.
 
 Assumptions:
 
 - `killPoints` is awarded once per battle to any team that clears it, independent of objectives.
-- An objective's `score` is per battle and constant across the lane's battles.
+- An objective's `points` is per battle and constant across the lane's battles.
 
 #### Scenario: Worked example on Lysander Alpha
 
