@@ -1,0 +1,53 @@
+# Tasks
+
+## 1. Entity libraries
+
+- [ ] 1.1 In `entities/legendary-event/lib/synced-lane-progress.ts`, compute `pointsEarned` as `highScore` + `defeatAllPoints` when id 0 is cleared + Σ cleared objective scores (design D4), add `clearedCount` per battle and `completeBattles` per lane, stop reading `encounterPoints`; update `synced-lane-progress.test.ts` with the spec's 238 / 444 examples, the seven-encounter lane total and the null / absent cases, and verify `pnpm --filter web test:run synced-lane-progress` passes.
+- [ ] 1.2 In `lib/unit-potential.ts`, rename `points` / `slots` to `pointsPerBattle` / `objectivesCount` on `LaneUnitPotential` and `LeaderboardRow`, add `remainingLanePoints(potential, laneProgress, lane)` and give `buildLaneLeaderboard` a `laneProgress | undefined` parameter filling `remainingPoints`; add `buildCrossLaneLeaderboard` and `filterLeaderboard({ onlyUnlocked, objectiveIndices })`; replace `sortLeaderboard`'s key / direction API with `figure: "remaining" | "perBattle"` and delete `LeaderboardSortKey`, `DEFAULT_LEADERBOARD_SORT`; verify `unit-potential.test.ts` covers the three remaining-points worked examples (2,736 / 1,976 / 2,624), the cross-lane sum with a "—" lane, the two-objective filter and the empty result.
+- [ ] 1.3 Copy V1's `ui_icon_stat_hit_01.png`, `ui_icon_stat_melee_01.png`, `ui_icon_stat_rangedattack_01.png`, `lre-defeat-all.png`, `lre-score.png` into `entities/legendary-event/assets/`; change `describeUnitFilter` to return `{ src, badge?: "not" | "min" | "max" }` (design D6) and `ObjectiveIcon` to render the badge overlay and a `muted` prop, deleting the lucide glyph path; export a `defeatAllIcon` for the grid; verify `objective-label.test.ts` / `use-objective-label.test.tsx` cover negated trait, Min / Max hits badges, ranged and melee assets, and a muted render, and `lres-catalog-guard.test.ts` still resolves every real objective to an asset.
+- [ ] 1.4 Update `entities/legendary-event/index.ts` exports for the renamed and new functions, run `pnpm lint:fsd`, and verify no page still imports the removed sort symbols (`rg "LeaderboardSortKey|DEFAULT_LEADERBOARD_SORT|nextLeaderboardSort" apps/web/src` returns nothing).
+
+## 2. Navigation and routes
+
+- [ ] 2.1 Add `dynamicChildren?: "legendaryEvents"` to `NavItem`, make `NavSubItem` a union with a `{ path, label, iconSrc? }` shape, add `subItemLabel(t, child)` and `app/layout/use-nav-items.ts` resolving active events (hub order) through `useLegendaryEvents()` plus the static All events child (design D1); replace the Events entry in `nav-items.ts` with the Legendary Events section at `/legendary-events` (same position, `CalendarDays`, `anonymousAllowed: false`, `mobilePlacement: "menu"`); verify a new `use-nav-items.test.tsx` covers two active events, none, pending and failed reads.
+- [ ] 2.2 Switch `app-shell.tsx`, `section-tabs.tsx` (render `iconSrc` as a 20px portrait before the label), `desktop-section-navigation.tsx`, navigation search, `resolve-active-navigation.ts` and `use-section-entry-path.ts` to the hook and the label helper; verify `desktop-layout.test.tsx`, `mobile-layout.test.tsx`, `navigation-filter.test.ts`, `resolve-active-navigation.test.ts`, `section-tabs.test.tsx` and `use-section-entry-path.test.ts` cover: section order, anonymous filtering, search finding "uthar" and "legendary", an active event's child active on its detail route and All events active on an archived event's route.
+- [ ] 2.3 Rename `pages/events` to `pages/legendary-events` (`LegendaryEventsLayout`, routes `index` → hub, `:eventId` → page), mount it at `/legendary-events` in `app/routes.tsx` under `ProtectedRoute`, add the three `/events*` `Navigate replace` redirects, and update Home's `select-home-event-rows.ts` and `home-events-widget.tsx` links; verify `route.test.tsx` covers the hub, the detail route, all three redirects (replace, not push) and the anonymous bounce, and the Home widget tests assert the new hrefs.
+- [ ] 2.4 Replace `nav.events*` and `events.tabs.legendaryEvents*` with `nav.legendaryEvents*` and `legendaryEvents.tabs.allEvents*` in `common.json` for en/de/es/fr with real translations, extend `NavLabelKey` / `NavDescriptionKey`, update `general.tutorial.tsx`'s sections step copy and `common:tour.steps.*` keys, and verify `common-translations.test.ts` and `general.tutorial.test.tsx` pass.
+
+## 3. Event page structure
+
+- [ ] 3.1 Add `selectedTab` (`"overview" | lane`, default overview, keyed by event) and `selectTab` / `onJumpToLane` to `legendary-event-page.tsx`, build `legendary-event-tabs.tsx` (Radix `Tabs` line variant, four triggers, sticky wrapper on mobile reading the header height variable) and merge the desktop and mobile pages into `legendary-event-page-view.tsx` taking `isMobile` (design D3); verify `legendary-event-page.test.tsx` covers default Overview, tab reset per event, lane tab section order (overview → grid → leaderboard, only that lane), and a 390px render asserting the strip is `position: sticky`.
+- [ ] 3.2 Build `overview/lane-summary.tsx` (three rows: earned of max text + bar, "N / 18 battles", activatable) from `LaneProgressView`, wire activation to `onJumpToLane` and the scroll effect targeting `#legendary-event-progress-<lane>` with the sticky offset; verify `lane-summary.test.tsx` covers the 3,410 / 7-of-18 example, the "synced data unavailable" and no-entry bodies, and that activating Beta selects the Beta tab and calls `scrollIntoView` on the Beta grid heading.
+- [ ] 3.3 Reorder the lane tab so `ProgressSection` precedes `LeaderboardSection`, give the progress heading the stable id, use the defeat-all asset in `progress-columns.ts`, and update the "how points work" copy to the new earned-points rule; verify `progress-grid.test.tsx` renders the defeat-all asset and the 238 / 471 row.
+
+## 4. Leaderboard
+
+- [ ] 4.1 Rework `leaderboard-controls.tsx` into the shared bar: "Only unlocked", "Deduct scored points" (default on) and the objective `ToggleGroup type="multiple"` chips with `ObjectiveIcon` + label; remove the sort group and direction button; lift `deductScored` and `selectedObjectives` into the page orchestrator next to `onlyUnlocked`; verify `leaderboard.test.tsx` covers the default-on toggle, turning it off relabelling figures and re-ordering, chip selection narrowing rows, the empty-result body with its clear action, and the "synced progress unavailable" note.
+- [ ] 4.2 Update `leaderboard-table.tsx` (no sortable headers; objective columns headed by icons; "Objectives" column; figure column labelled remaining / per battle) and `leaderboard-list.tsx` (icon indicators muted when not met, "Objectives: N", figure label) to the renamed row fields; verify the test asserts no check / minus glyphs render, met / not-met accessible text, and the C, B, A order by remaining points.
+- [ ] 4.3 Build `overview/cross-lane-leaderboard.tsx` over `buildCrossLaneLeaderboard` (table on desktop with Alpha / Beta / Gamma columns; row cards on mobile with the three figures on one line; "—" for a disallowed lane), sharing the controls and state; verify `cross-lane-leaderboard.test.tsx` covers Dante's 2,736 / 1,200 / "—" row sorting by 3,936, both layouts and the union chip list.
+- [ ] 4.4 Add or change `legendaryEvents.json` keys in en/de/es/fr with real translations: tabs (`tabs.overview`, lane tabs reuse `lanes.*`), lane summary copy, `leaderboard.objectives`, `leaderboard.objectivesValue`, `leaderboard.remaining`, `leaderboard.perBattle`, `leaderboard.deductScored`, `leaderboard.objectiveFilter`, `leaderboard.noneMatch`, `leaderboard.clearFilter`, `leaderboard.progressUnavailable`, cross-lane labels, `progress.howPoints.body`; remove the `leaderboard.sort*`, `direction*` and `slots*` keys; verify `legendary-events-translations.test.ts` key parity and no empty values.
+
+## 5. Tutorial
+
+- [ ] 5.1 Rewrite `legendary-event.tutorial.tsx` to the spec's step order (strip, run status, lane summary, overview leaderboard, then Alpha's lane overview, grid and leaderboard) with the tab-switch callback before the lane steps, the same steps for desktop and mobile, and add or update `tour.event.steps.*` keys in en/de/es/fr; verify the tutorial test asserts every target exists on both forms after the switch and the hub tutorial still passes.
+
+## 6. Shared verification (data and rules)
+
+- [ ] 6.1 On the Aspire stack with a signed-in account whose synced `lre-progress` has partial clears (required data states: an active event with at least three partially cleared battles and one fully cleared battle, plus an event with no entry), compare three battles' earned points and the lane total with the in-game lane screen; record the comparison in the change notes and, if a fully cleared battle reads below the game's figure by exactly `battlesPoints[i]`, apply design D4's one-line fix and update the spec assumption.
+- [ ] 6.2 Verify the Deduct scored points figure for one unit by hand against the grid (points per battle × uncleared battles, minus cleared objectives in partial battles) and that `/events/legendary-events/<id>` redirects to `/legendary-events/<id>`.
+
+## 7. Desktop verification (viewport ≥ 768px)
+
+- [ ] 7.1 At 1280px verify the Legendary Events section column lists active events with portraits then All events, the event page opens on Overview with run status, lane summary and the cross-lane table, activating a lane row switches tabs and scrolls to the grid, a lane tab shows overview → grid → leaderboard, the leaderboard has no sort headers and the objective chips and toggles work, objective icons show V1 badges; run the tour and verify every step targets a visible element. Record browser evidence.
+
+## 8. Mobile verification (viewport < 768px)
+
+- [ ] 8.1 Using a same-origin 420px iframe on the signed-in app origin, verify the section tabs list active events with portraits then All events, the tab strip stays visible under the header after scrolling to the bottom of a lane's leaderboard and switching lanes works from there, the lane summary jump lands on the grid below the strip, the grid's icon header sits directly under the strip, row cards show icon indicators and "Objectives: N", there is no horizontal page scroll; run the tour and verify every step. Record evidence.
+
+## 9. Gates
+
+- [ ] 9.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` and verify all pass.
+
+## Workflow follow-up
+
+- Sync the four delta specs into the main specs and archive this change; then open the paired `tacticus-planner-api` → `tacticus-planner-apps` change for the per-unit clear estimate and the efficiency-coefficient dataset.
