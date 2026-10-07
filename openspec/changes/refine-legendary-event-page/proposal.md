@@ -8,7 +8,7 @@ This change is the **Stage 1 follow-up** recorded in the docs plan (`tacticus-pl
 
 ## What Changes
 
-- **Navigation**: the generic Events section becomes a dedicated **Legendary Events** top-level section at `/legendary-events`. Its secondary nav is data-driven: one item per **active** event (character name and portrait) linking to `/legendary-events/:eventId`, plus **All events** (the hub). `/events/*` routes redirect to their new paths. **BREAKING** for bookmarks only (V2 is pre-production; the redirects keep deep links working).
+- **Navigation**: the generic Events section becomes a dedicated **Legendary Events** top-level section at `/legendary-events`. Its secondary nav is data-driven: one item per **active** event (character name and portrait) linking to `/legendary-events/:eventId`, plus **All events** (the hub). The old `/events/*` routes are removed without redirects (V2 is pre-production, `tp-destructive-changes-policy`); they fall through to the app's existing not-found handling.
 - **Event page tabs**: one tab strip, **Overview** first, then Alpha / Beta / Gamma, on both UI forms. The strip is sticky under the page header on mobile. Overview holds the Run status card, a per-lane summary (earned of maximum, battles fully cleared) that jumps to that lane's progress grid, and a cross-lane eligibility leaderboard. A lane tab shows, in order, lane overview → synced progress grid → eligibility leaderboard. Desktop no longer renders the three lanes side by side; it uses the same tab strip.
 - **Earned points**: per battle = high score + Σ catalog scores of the cleared bonus objectives from `objectivesCleared`; lane and event totals derive from that. `encounterPoints` is no longer displayed.
 - **Objective icons**: the V1 icon set. Negated objectives get the red-X overlay; hits objectives use the game's hit stat icon with a ≥ / ≤ badge; ranged / melee use the game's attack stat icons; defeat-all uses V1's defeat-all icon. Leaderboard cards show these icons (muted when not satisfied) instead of check marks.
@@ -24,7 +24,7 @@ None.
 
 ### Modified Capabilities
 
-- `app-navigation`: the Events section is replaced by a Legendary Events section at `/legendary-events` whose secondary nav lists active events dynamically plus All events; redirects from the old paths.
+- `app-navigation`: the Events section is replaced by a Legendary Events section at `/legendary-events` whose secondary nav lists active events dynamically plus All events; the old `/events*` paths are removed.
 - `legendary-events-hub`: hub and event routes move under `/legendary-events`; the event page becomes a tab strip (Overview + lanes) with a sticky mobile strip and an Overview tab; Home links follow; tours follow the new structure.
 - `legendary-event-eligibility`: "slots" becomes objectives count; remaining points per unit given synced progress; leaderboard section rules (points-only order, objective filter, Deduct scored points toggle, icon indicators, placement after the progress grid, cross-lane variant on Overview).
 - `legendary-event-synced-progress`: earned points derive from high score + cleared objective scores, not `encounterPoints`; grid placement before the leaderboard; V1 icon set in the header; per-lane summary on Overview.
@@ -32,7 +32,7 @@ None.
 ## Impact
 
 - `apps/web/src/fsd/app/layout/nav-items.ts`, `resolve-active-navigation.ts`, `section-tabs.tsx`, `desktop-section-navigation.tsx`, `general.tutorial.tsx` and their tests: a section whose children are resolved at runtime.
-- `apps/web/src/fsd/app/routes.tsx`, `pages/events/*` → `pages/legendary-events/*` (rename), redirect routes for `/events/*`; `pages/home/ui/events-widget` links.
+- `apps/web/src/fsd/app/routes.tsx`, `pages/events/*` → `pages/legendary-events/*` (rename), no `/events/*` routes remain; `pages/home/ui/events-widget` links.
 - `apps/web/src/fsd/entities/legendary-event/lib/*`: `unit-potential` (objectives count, remaining points, objective filter), `synced-lane-progress` (earned points), `objective-label` / `ui/objective-icon` (V1 icons, negation, defeat-all); new icon assets.
 - `apps/web/public/locales/{en,de,es,fr}/legendaryEvents.json` and `common.json`.
 - No API change. Companion `tacticus-planner-api` change: none for this change; the coefficient dataset is its own later pair.

@@ -4,7 +4,7 @@
 
 ### Requirement: The hub lists active, upcoming and archived events
 
-`/legendary-events` (All events) SHALL list every catalog Legendary Event in three groups in this order: Active, Upcoming (ascending next run start), Archived (alphabetical by localized unit name). A group with no events is omitted; when no event is active an explicit "no Legendary Event is running" line heads the page. Activating a row opens `/legendary-events/:eventId`. `/events` and `/events/legendary-events` SHALL redirect to `/legendary-events`.
+`/legendary-events` (All events) SHALL list every catalog Legendary Event in three groups in this order: Active, Upcoming (ascending next run start), Archived (alphabetical by localized unit name). A group with no events is omitted; when no event is active an explicit "no Legendary Event is running" line heads the page. Activating a row opens `/legendary-events/:eventId`. The old `/events` and `/events/legendary-events` routes SHALL NOT exist and SHALL NOT redirect.
 
 #### Scenario: Hub ordering
 
@@ -20,8 +20,8 @@
 
 #### Scenario: Section root redirects
 
-- **WHEN** a signed-in user opens `/events` or `/events/legendary-events`
-- **THEN** they land on `/legendary-events` with the history entry replaced, not added
+- **WHEN** a signed-in user opens `/legendary-events`
+- **THEN** the hub renders in place, with no redirect; opening the old `/events` or `/events/legendary-events` falls through to the app's not-found handling instead of the hub
 
 #### Scenario: Desktop hub layout
 
@@ -35,7 +35,7 @@
 
 ### Requirement: The event page shows one event with in-page sections
 
-`/legendary-events/:eventId` SHALL render the event named by `:eventId` (the catalog `lres` id, a unit snowprint id such as `astarLysander`) as one page with a tab strip of four tabs in this order: **Overview**, Alpha, Beta, Gamma, on desktop and mobile alike. The page title is the event unit's localized name; the header shows the lifecycle badge. An unknown `:eventId` SHALL replace the route with `/legendary-events`; `/events/legendary-events/:eventId` SHALL redirect to `/legendary-events/:eventId`. The selected tab defaults to Overview, persists while on the page and resets on navigation to another event; it is in-page state, not a route. A lane tab SHALL show, in order, that lane's Lane overview, Synced progress grid and Eligibility leaderboard. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a lane can be switched from any scroll position. On desktop the strip scrolls with the page.
+`/legendary-events/:eventId` SHALL render the event named by `:eventId` (the catalog `lres` id, a unit snowprint id such as `astarLysander`) as one page with a tab strip of four tabs in this order: **Overview**, Alpha, Beta, Gamma, on desktop and mobile alike. The page title is the event unit's localized name; the header shows the lifecycle badge. An unknown `:eventId` SHALL replace the route with `/legendary-events`. The old `/events/legendary-events/:eventId` route SHALL NOT exist and SHALL NOT redirect. The selected tab defaults to Overview, persists while on the page and resets on navigation to another event; it is in-page state, not a route. A lane tab SHALL show, in order, that lane's Lane overview, Synced progress grid and Eligibility leaderboard. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a lane can be switched from any scroll position. On desktop the strip scrolls with the page.
 
 #### Scenario: Known event renders
 
@@ -46,11 +46,6 @@
 
 - **WHEN** a user opens `/legendary-events/notAnEvent`
 - **THEN** the route is replaced with `/legendary-events` and the hub renders
-
-#### Scenario: Old event route redirects
-
-- **WHEN** a user opens `/events/legendary-events/astarLysander`
-- **THEN** they land on `/legendary-events/astarLysander` with the history entry replaced
 
 #### Scenario: Lane tab order
 

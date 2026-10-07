@@ -35,7 +35,7 @@ Current state that shapes the approach:
 *Alternative*: a function-valued `children`. Rejected: hooks cannot run inside a data array, and tests snapshot `navItems`.
 
 **D2 — Rename the section, keep the slice name's shape: `pages/events` → `pages/legendary-events`, route root `/legendary-events`.**
-`app/routes.tsx` mounts `LegendaryEventsLayout` at `/legendary-events` with children `index` (hub) and `:eventId`; a second top-level entry for `/events` carries three `Navigate replace` redirects (`/events`, `/events/legendary-events`, `/events/legendary-events/:eventId`). Redirects are kept for one release, then dropped (pre-production; `tp-destructive-changes-policy`). i18n keys `nav.events*` and `events.tabs.legendaryEvents*` are replaced by `nav.legendaryEvents*` and `legendaryEvents.tabs.allEvents*` in `common.json`.
+`app/routes.tsx` mounts `LegendaryEventsLayout` at `/legendary-events` with children `index` (hub) and `:eventId`. No `/events*` routes or redirects remain (product owner decision 2026-10-07; pre-production per `tp-destructive-changes-policy`): an old `/events/...` link falls through to the existing `*` `NotFoundRedirect` (home when signed in, landing otherwise). i18n keys `nav.events*` and `events.tabs.legendaryEvents*` are replaced by `nav.legendaryEvents*` and `legendaryEvents.tabs.allEvents*` in `common.json`.
 
 **D3 — The event page is a tab strip on both forms; tab state lives in the page orchestrator.**
 `legendary-event-page.tsx` owns `selectedTab: "overview" | LegendaryEventLaneId` (default `overview`, keyed by `eventId` as today) and `scrollTarget` (set by the Overview lane summary). One `LegendaryEventTabs` component (Radix `Tabs`, `variant="line"`) renders the strip; `LegendaryEventOverviewTab` and `LegendaryEventLaneTab` render the bodies. Desktop and mobile share these; the forms differ only in (a) the strip wrapper, `sticky top-[var(--mobile-header-height)] z-20 bg-background` on mobile, static on desktop; (b) `layout="table" | "list"` and `"grid" | "rows"` passed to the sections. `LegendaryEventDesktopPage` / `LegendaryEventMobilePage` collapse into one `LegendaryEventPageView` taking `isMobile`.
@@ -85,7 +85,7 @@ The tutorial switches tabs with Joyride's step callback (the page exposes `selec
 
 ## Migration Plan
 
-- Apps-only; ship behind nothing. `/events/*` redirects keep existing links alive for one release.
+- Apps-only; ship behind nothing. Old `/events/*` links stop working; none are published outside the app.
 - Rollback: revert the PR; no persisted state changes (tab, filters and toggle are in-memory).
 
 ## Open Questions
