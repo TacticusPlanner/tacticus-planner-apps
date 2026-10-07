@@ -1,12 +1,22 @@
 import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
 
+import defeatAllSrc from "../assets/defeat-all.png"
+import scoreSrc from "../assets/score.png"
+import statHitSrc from "../assets/stat-hit.png"
+import statMeleeSrc from "../assets/stat-melee.png"
+import statRangedSrc from "../assets/stat-ranged.png"
 import type { LegendaryEventUnitFilter } from "../model/types"
 
-/** A glyph drawn with an app icon rather than a game asset. */
-export type ObjectiveGlyph = "hits" | "ranged" | "melee"
+/** The V1 icon set shipped with the entity (design D6). */
+export const defeatAllIcon = defeatAllSrc
+export const scoreIcon = scoreSrc
 
-export type ObjectiveIcon =
-  { type: "image"; src: string } | { type: "glyph"; glyph: ObjectiveGlyph }
+/** An objective's icon: a game asset plus an optional badge (red X for a negated filter, "≥" / "≤"
+ *  for a hits bound). */
+export interface ObjectiveIcon {
+  src: string
+  badge?: "not" | "min" | "max"
+}
 
 /**
  * How to label a unit filter, before translation: a game-data entry (`traits:Flying`), a
@@ -24,6 +34,10 @@ export interface ObjectiveDescription {
   icon: ObjectiveIcon | undefined
 }
 
+function badged(src: string, exclude: boolean): ObjectiveIcon {
+  return exclude ? { src, badge: "not" } : { src }
+}
+
 /**
  * Describes a catalog unit filter `{ kind, target, exclude }` as a label recipe and an icon,
  * independently of the catalog's English `name` (which drifts from the game's wording).
@@ -36,20 +50,20 @@ export function describeUnitFilter(
     case "Trait": {
       return {
         label: { type: "entry", key: `traits:${target}`, negate: exclude },
-        icon: { type: "image", src: traitIcon(target) },
+        icon: badged(traitIcon(target), exclude),
       }
     }
     case "DamageType": {
       return {
         label: { type: "entry", key: `damageTypes:${target}`, negate: exclude },
-        icon: { type: "image", src: damageTypeIcon(target) },
+        icon: badged(damageTypeIcon(target), exclude),
       }
     }
     case "Faction": {
       const src = factionIcon(target)
       return {
         label: { type: "entry", key: `factions:${target}`, negate: exclude },
-        icon: src ? { type: "image", src } : undefined,
+        icon: src ? badged(src, exclude) : undefined,
       }
     }
     case "Alliance": {
@@ -65,6 +79,10 @@ export function describeUnitFilter(
     case "MinHits":
     case "MaxHits": {
       const count = Number(target)
+      const icon: ObjectiveIcon = {
+        src: statHitSrc,
+        badge: kind === "MinHits" ? "min" : "max",
+      }
       return Number.isFinite(count)
         ? {
             label: {
@@ -72,17 +90,16 @@ export function describeUnitFilter(
               template: kind === "MinHits" ? "minHits" : "maxHits",
               count,
             },
-            icon: { type: "glyph", glyph: "hits" },
+            icon,
           }
-        : { label: { type: "name" }, icon: { type: "glyph", glyph: "hits" } }
+        : { label: { type: "name" }, icon }
     }
     case "AttackType": {
       // The catalog encodes "Melee" as "not Ranged".
       const melee = target === "Ranged" ? exclude : !exclude
-      const template = melee ? "melee" : "ranged"
       return {
-        label: { type: "attackType", template },
-        icon: { type: "glyph", glyph: template },
+        label: { type: "attackType", template: melee ? "melee" : "ranged" },
+        icon: { src: melee ? statMeleeSrc : statRangedSrc },
       }
     }
     default: {

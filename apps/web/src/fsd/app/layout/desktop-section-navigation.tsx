@@ -6,7 +6,7 @@ import { CommandShortcut } from "@workspace/ui/components/command"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NavLiveDot } from "./nav-live-dot"
-import type { NavItem } from "./nav-items"
+import { subItemLabel, type NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
 
 const LIST_ID = "desktop-section-navigation-list"
@@ -94,10 +94,20 @@ export function DesktopSectionNavigation({
                       ? "bg-accent font-medium text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
-                  title={t(child.labelKey)}
+                  title={subItemLabel(t, child)}
                   to={child.path}
                 >
-                  <span className="min-w-0 truncate">{t(child.labelKey)}</span>
+                  {"iconSrc" in child && child.iconSrc ? (
+                    <img
+                      alt=""
+                      aria-hidden="true"
+                      className="mr-2 size-5 shrink-0 rounded-full object-cover"
+                      src={child.iconSrc}
+                    />
+                  ) : null}
+                  <span className="min-w-0 truncate">
+                    {subItemLabel(t, child)}
+                  </span>
                   <NavLiveDot item={child} />
                 </Link>
               </li>

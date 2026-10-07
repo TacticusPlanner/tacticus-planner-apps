@@ -46,6 +46,17 @@
     "gamma": "Gamma",
     "selector": "Lane"
   },
+  "tabs": {
+    "label": "Event sections",
+    "overview": "Overview"
+  },
+  "laneSummary": {
+    "title": "Lane summary",
+    "battles": "{{cleared}} / {{total}} battles",
+    "open": "Open the {{lane}} progress grid",
+    "noLane": "No progress in this lane",
+    "unavailable": "Synced data unavailable"
+  },
   "laneOverview": {
     "title": "Lane overview",
     "labelWithRule": "{{lane}} · {{rule}}",
@@ -64,30 +75,31 @@
     "unit": "Unit",
     "rarity": "Rarity",
     "rank": "Rank",
-    "points": "Points / battle",
-    "slots": "Slots",
-    "pointsValue": "{{points}} points per battle",
-    "slotsValue": "Slots: {{slots}}",
-    "sortBy": "Sort by",
-    "sort": {
-      "points": "Points per battle",
-      "slots": "Slots",
-      "name": "Name"
-    },
-    "direction": {
-      "asc": "Ascending",
-      "desc": "Descending",
-      "toggle": "Reverse order"
-    },
+    "objectives": "Objectives",
+    "objectivesValue": "Objectives: {{count}}",
+    "remaining": "Remaining",
+    "perBattle": "Per battle",
+    "remainingValue": "{{points}} remaining",
+    "perBattleValue": "{{points}} per battle",
+    "deductScored": "Deduct scored points",
+    "objectiveFilter": "Filter by objective",
     "onlyUnlocked": "Only unlocked",
     "locked": "Locked",
     "objectiveMet": "{{objective}}: met",
     "objectiveNotMet": "{{objective}}: not met",
     "noEligible": "No unit can play in this lane.",
     "noUnlocked": "None of your unlocked units can play in this lane.",
+    "noneMatch": "No unit satisfies these objectives.",
+    "clearFilter": "Clear filter",
     "rosterNotSynced": "Your roster hasn't synced yet, so ownership, rarity and rank aren't shown.",
+    "progressUnavailable": "Synced progress unavailable, so nothing counts as scored.",
     "loading": "Loading units…",
-    "error": "Couldn't load the units."
+    "error": "Couldn't load the units.",
+    "crossLane": {
+      "notAllowed": "—",
+      "notAllowedLabel": "{{lane}}: not allowed",
+      "laneFigure": "{{lane}}: {{points}}"
+    }
   },
   "progress": {
     "title": "Synced progress",
@@ -108,7 +120,7 @@
     "unavailable": "Synced data unavailable",
     "howPoints": {
       "title": "How points work",
-      "body": "Points earned come from your last sync, exactly as the game reports them. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
+      "body": "Each battle's earned points are its high score plus the score of every objective you cleared in it, including the defeat-all bonus. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
     }
   },
   "objective": {
@@ -139,25 +151,33 @@
     },
     "event": {
       "steps": {
+        "tabs": {
+          "title": "Overview and lanes",
+          "content": "Overview sums up the event; Alpha, Beta and Gamma open one lane each. On a phone the strip stays under the header while you scroll."
+        },
         "runStatus": {
           "title": "Run status",
           "content": "Your run, tokens, points, currency, chests and shards from your last sync, plus the next points milestone."
         },
-        "laneSelector": {
-          "title": "Choose a lane",
-          "content": "Switch between the Alpha, Beta and Gamma lanes. Every lane section below follows this choice."
+        "laneSummary": {
+          "title": "Lane summary",
+          "content": "Each lane's points earned against its maximum and how many battles you have fully cleared. Pick a lane to jump to its progress grid."
+        },
+        "overviewLeaderboard": {
+          "title": "Eligibility across lanes",
+          "content": "Every unit that can play, with the points it can still score in each lane. Filter by objective, show only unlocked units, or switch to points per battle."
         },
         "laneOverview": {
           "title": "Lane overview",
-          "content": "Each lane's allowed units, kill points, five objectives with their scores and the points every battle is worth."
-        },
-        "leaderboard": {
-          "title": "Eligibility leaderboard",
-          "content": "Every unit each lane allows, whether you own it, which objectives it meets and the points it can score per battle. Sort the list or show only unlocked units."
+          "content": "The lane's allowed units, kill points, five objectives with their scores and the points every battle is worth."
         },
         "progressGrid": {
           "title": "Synced progress",
-          "content": "Your cleared objectives and points per battle from your last sync, with each lane's points earned against its maximum."
+          "content": "Your cleared objectives and points per battle from your last sync, with the lane's points earned against its maximum."
+        },
+        "leaderboard": {
+          "title": "Lane leaderboard",
+          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here."
         }
       }
     }

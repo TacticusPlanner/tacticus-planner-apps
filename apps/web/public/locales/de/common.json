@@ -211,8 +211,8 @@
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
     "progress": "Fortschritt",
     "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
-    "events": "Events",
-    "eventsDescription": "Legendäre Events und weitere zeitlich begrenzte Events",
+    "legendaryEvents": "Legendäre Events",
+    "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt",
     "uiKit": "UI-Kit",
     "uiKitDescription": "Vorschau der Design-System-Komponenten",
     "guild": "Gilde",
@@ -295,10 +295,11 @@
       "conflict": "Der Kampagnen-Event-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an."
     }
   },
-  "events": {
+  "legendaryEvents": {
     "tabs": {
-      "legendaryEvents": "Legendäre Events",
-      "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt"
+      "allEvents": "Alle Events",
+      "allEventsDescription": "Jedes Legendäre Event: aktiv, kommend und archiviert",
+      "activeEventDescription": "Aktives Legendäres Event mit deinem synchronisierten Fortschritt"
     }
   },
   "home": {
@@ -1116,7 +1117,7 @@
       },
       "navigation": {
         "title": "Schnell navigieren",
-        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu Events für Legendäre Events."
+        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu den Legendären Events."
       },
       "sidebarFooter": {
         "title": "Seitenleisten-Werkzeuge",
@@ -1124,7 +1125,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Deine Hauptleiste",
-        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Fortschritt und Events zu erreichen."
+        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Fortschritt und Legendäre Events zu erreichen."
       },
       "mobileHeader": {
         "title": "Seitenkopf",

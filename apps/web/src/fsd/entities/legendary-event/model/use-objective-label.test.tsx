@@ -94,7 +94,7 @@ describe("useObjectiveLabel", () => {
     )
     expect(label(objective("Melee", "AttackType", "Ranged", true))).toEqual({
       label: "Melee",
-      icon: { type: "glyph", glyph: "melee" },
+      icon: { src: expect.stringContaining("stat-melee") },
     })
     expect(label(objective("Max 1 Hit", "MaxHits", "1")).label).toBe(
       "Max 1 hit"
@@ -116,8 +116,8 @@ describe("useObjectiveLabel", () => {
     )
     expect(noResilient.label).toBe("Ohne Widerstandsfähig")
     expect(noResilient.icon).toEqual({
-      type: "image",
       src: expect.stringContaining("ui_icon_trait_resilient_01.png"),
+      badge: "not",
     })
     expect(label(objective("Min 5 Hits", "MinHits", "5")).label).toBe(
       "Mind. 5 Treffer"

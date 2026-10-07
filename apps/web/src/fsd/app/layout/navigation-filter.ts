@@ -1,22 +1,33 @@
-import type { NavItem, NavSubItem } from "./nav-items"
-
-type LabelOrDescriptionKey = NavItem["labelKey"] | NavItem["descriptionKey"]
+import {
+  subItemDescription,
+  subItemLabel,
+  type NavItem,
+  type NavSubItem,
+  type NavTranslate,
+} from "./nav-items"
 
 function matches(
   item: NavItem | NavSubItem,
   normalizedQuery: string,
-  getLabel: (key: LabelOrDescriptionKey) => string
+  getLabel: NavTranslate
 ): boolean {
+  // A section always carries keys; a child may be data-driven (see nav-items.ts).
+  const label =
+    "icon" in item ? getLabel(item.labelKey) : subItemLabel(getLabel, item)
+  const description =
+    "icon" in item
+      ? getLabel(item.descriptionKey)
+      : subItemDescription(getLabel, item)
   return (
-    getLabel(item.labelKey).toLocaleLowerCase().includes(normalizedQuery) ||
-    getLabel(item.descriptionKey).toLocaleLowerCase().includes(normalizedQuery)
+    label.toLocaleLowerCase().includes(normalizedQuery) ||
+    description.toLocaleLowerCase().includes(normalizedQuery)
   )
 }
 
 export function filterNavigationItems(
   items: NavItem[],
   query: string,
-  getLabel: (key: LabelOrDescriptionKey) => string
+  getLabel: NavTranslate
 ): NavItem[] {
   const normalizedQuery = query.trim().toLocaleLowerCase()
 

@@ -59,7 +59,7 @@ describe("selectHomeEventRows", () => {
       ["hse-training-rush", false],
     ])
     expect(rows[1]).toMatchObject({
-      destination: "/events/legendary-events/astarLysander",
+      destination: "/legendary-events/astarLysander",
       runNumber: 2,
       points: 3410,
       endMs: Date.parse("2026-10-06T00:00:00Z"),

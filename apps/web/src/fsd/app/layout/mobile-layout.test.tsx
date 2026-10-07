@@ -205,24 +205,26 @@ describe("MobileBottomNav actions", () => {
     )
   })
 
-  it("lists Events and its Legendary Events child, with descriptions, in the drawer only", () => {
+  it("lists Legendary Events and its All events child, with descriptions, in the drawer only", () => {
     renderShell()
 
     const bar = screen.getByTestId("primary-nav")
-    expect(within(bar).queryByText("nav.events")).not.toBeInTheDocument()
+    expect(
+      within(bar).queryByText("nav.legendaryEvents")
+    ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
 
-    expect(drawer.getByText("nav.events")).toBeVisible()
-    expect(drawer.getByText("nav.eventsDescription")).toBeVisible()
-    expect(drawer.getByText("events.tabs.legendaryEvents")).toBeVisible()
+    expect(drawer.getByText("nav.legendaryEvents")).toBeVisible()
+    expect(drawer.getByText("nav.legendaryEventsDescription")).toBeVisible()
+    expect(drawer.getByText("legendaryEvents.tabs.allEvents")).toBeVisible()
     expect(
-      drawer.getByText("events.tabs.legendaryEventsDescription")
+      drawer.getByText("legendaryEvents.tabs.allEventsDescription")
     ).toBeVisible()
     expect(
-      drawer.getByText("events.tabs.legendaryEvents").closest("a")
-    ).toHaveAttribute("href", "/events/legendary-events")
+      drawer.getByText("legendaryEvents.tabs.allEvents").closest("a")
+    ).toHaveAttribute("href", "/legendary-events")
   })
 
   it("shows each item's description beneath its label, for top-level and child items", () => {

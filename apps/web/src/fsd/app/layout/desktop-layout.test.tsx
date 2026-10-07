@@ -991,16 +991,16 @@ describe("DesktopShell", () => {
         .getByTestId("primary-nav")
         .querySelectorAll<HTMLAnchorElement>('[data-testid^="desktop-nav-"]')
     ).map((link) => link.dataset.testid)
-    expect(links.indexOf("desktop-nav-events")).toBe(
+    expect(links.indexOf("desktop-nav-legendary-events")).toBe(
       links.indexOf("desktop-nav-progress") + 1
     )
     expect(links.indexOf("desktop-nav-guild")).toBe(
-      links.indexOf("desktop-nav-events") + 1
+      links.indexOf("desktop-nav-legendary-events") + 1
     )
-    // `/events` redirects to its one child, `/events/legendary-events` (see pages/events/route.tsx).
-    expect(screen.getByTestId("desktop-nav-events")).toHaveAttribute(
+    // The section root is the hub (see pages/legendary-events/route.tsx).
+    expect(screen.getByTestId("desktop-nav-legendary-events")).toHaveAttribute(
       "href",
-      "/events"
+      "/legendary-events"
     )
   })
 
@@ -1026,10 +1026,12 @@ describe("DesktopShell", () => {
     })
 
     const result = screen.getByRole("link", {
-      name: /^events\.tabs\.legendaryEvents/,
+      name: /^legendaryEvents\.tabs\.allEvents/,
     })
-    expect(result).toHaveAttribute("href", "/events/legendary-events")
-    expect(result).toHaveTextContent("events.tabs.legendaryEventsDescription")
+    expect(result).toHaveAttribute("href", "/legendary-events")
+    expect(result).toHaveTextContent(
+      "legendaryEvents.tabs.allEventsDescription"
+    )
   })
 
   it("keeps single-child and no-children sections on their existing default route", () => {

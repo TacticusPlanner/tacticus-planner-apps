@@ -23,11 +23,11 @@ import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
 import { MobileShell } from "./mobile-layout"
-import type { NavItem } from "./nav-items"
-import { navItems } from "./nav-items"
+import { subItemDescription, subItemLabel, type NavItem } from "./nav-items"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { createGoalScopeProjectId } from "./create-goal-scope"
 import { useDesktopMenuState } from "./use-desktop-menu-state"
+import { useNavItems } from "./use-nav-items"
 import { useQuickActions } from "./use-quick-actions"
 import { useSectionEntryPath } from "./use-section-entry-path"
 
@@ -52,6 +52,7 @@ export function AppShell() {
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
   const { pathname } = useLocation()
+  const navItems = useNavItems()
 
   const visibleItems = navItems.filter(
     (item) => isAuthenticated || item.anonymousAllowed
@@ -62,12 +63,12 @@ export function AppShell() {
     pathname
   )
   const pageTitle = activeChild
-    ? t(activeChild.labelKey)
+    ? subItemLabel(t, activeChild)
     : activeItem
       ? t(activeItem.labelKey)
       : undefined
   const pageDescription = activeChild
-    ? t(activeChild.descriptionKey)
+    ? subItemDescription(t, activeChild)
     : activeItem
       ? t(activeItem.descriptionKey)
       : undefined
@@ -119,7 +120,7 @@ function ShellContent({
   pageDescription: string | undefined
   pageTitle: string | undefined
   sectionTitle: string | undefined
-  visibleItems: typeof navItems
+  visibleItems: NavItem[]
 }) {
   const [createOpen, setCreateOpen] = useState(false)
   const [createPrefill, setCreatePrefill] = useState<CreateGoalPrefill>()

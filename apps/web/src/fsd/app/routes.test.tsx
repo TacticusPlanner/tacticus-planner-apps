@@ -45,18 +45,18 @@ function renderSection(path: string, element: ReactNode, entry: string) {
 }
 
 describe("app routes", () => {
-  it("registers /events with the Events section routes as children", () => {
-    const events = findRoute(routes, "/events")
-    expect(events?.children?.map((child) => child.path ?? "index")).toEqual([
+  it("registers /legendary-events with the hub and the event page as children", () => {
+    const section = findRoute(routes, "/legendary-events")
+    expect(section?.children?.map((child) => child.path ?? "index")).toEqual([
       "index",
-      "legendary-events",
-      "legendary-events/:eventId",
+      ":eventId",
     ])
+    expect(findRoute(routes, "/events")).toBeUndefined()
   })
 
   it.each([
     ["/plan", "/plan/goals"],
-    ["/events", "/events/legendary-events/astarLysander"],
+    ["/legendary-events", "/legendary-events/astarLysander"],
   ])("bounces an anonymous visitor from %s to sign-in", (path, entry) => {
     renderSection(path, findRoute(routes, path)?.element, entry)
 

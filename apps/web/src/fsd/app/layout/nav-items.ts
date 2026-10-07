@@ -16,7 +16,7 @@ type NavLabelKey =
   | "nav.home"
   | "nav.goals"
   | "nav.progress"
-  | "nav.events"
+  | "nav.legendaryEvents"
   | "nav.uiKit"
   | "nav.guild"
   | "nav.dailies"
@@ -33,7 +33,7 @@ type NavLabelKey =
   | "progress.tabs.onslaught"
   | "progress.tabs.campaigns"
   | "progress.tabs.campaign-events"
-  | "events.tabs.legendaryEvents"
+  | "legendaryEvents.tabs.allEvents"
   | "guild.tabs.members"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
   // section's tab keys: `dailies` is its own long-standing i18n namespace/file, and duplicating
@@ -66,10 +66,10 @@ type NavDescriptionKey =
   | "library:collections.raidBosses.description"
   | "library:collections.shops.description"
 
-export interface NavSubItem {
+export type NavTranslate = (key: NavLabelKey | NavDescriptionKey) => string
+
+interface NavSubItemBase {
   path: string
-  labelKey: NavLabelKey
-  descriptionKey: NavDescriptionKey
   // This child's own path renders a screen a user can land on, so its header tab returns there from
   // a route nested below it (see `section-tabs.tsx`). Opt-in, because for most children the path is
   // not a destination: `use-library-route-selection` canonicalizes a Library collection path,
@@ -81,6 +81,30 @@ export interface NavSubItem {
   liveIndicator?: "hse"
 }
 
+/** A static child, labelled through i18n keys like its section. */
+interface StaticNavSubItem extends NavSubItemBase {
+  labelKey: NavLabelKey
+  descriptionKey: NavDescriptionKey
+}
+
+/** A child resolved from data by `use-nav-items.ts` (design D1): already-localized text and an
+ *  optional portrait rendered before the label. */
+export interface DynamicNavSubItem extends NavSubItemBase {
+  label: string
+  description: string
+  iconSrc?: string
+}
+
+export type NavSubItem = StaticNavSubItem | DynamicNavSubItem
+
+export function subItemLabel(t: NavTranslate, child: NavSubItem): string {
+  return "labelKey" in child ? t(child.labelKey) : child.label
+}
+
+export function subItemDescription(t: NavTranslate, child: NavSubItem): string {
+  return "descriptionKey" in child ? t(child.descriptionKey) : child.description
+}
+
 export interface NavItem {
   path: string
   labelKey: NavLabelKey
@@ -88,6 +112,10 @@ export interface NavItem {
   icon: LucideIcon
   anonymousAllowed: boolean
   children?: NavSubItem[]
+  // Names a resolver `use-nav-items.ts` runs to prepend data-driven children (the active Legendary
+  // Events) to the static `children` above. A key rather than a function so this module stays a
+  // plain data module.
+  dynamicChildren?: "legendaryEvents"
   // Where this item surfaces on mobile: a direct bottom-nav destination, or
   // tucked inside the bottom-left hamburger menu. Desktop ignores this and
   // always lists every visible item in the sidebar's main nav.
@@ -231,18 +259,20 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    path: "/events",
-    labelKey: "nav.events",
-    descriptionKey: "nav.eventsDescription",
+    path: "/legendary-events",
+    labelKey: "nav.legendaryEvents",
+    descriptionKey: "nav.legendaryEventsDescription",
     icon: CalendarDays,
     anonymousAllowed: false,
     mobilePlacement: "menu",
+    // The active events come first (see use-nav-items.ts); All events stays last.
+    dynamicChildren: "legendaryEvents",
     children: [
       {
-        path: "/events/legendary-events",
-        labelKey: "events.tabs.legendaryEvents",
-        descriptionKey: "events.tabs.legendaryEventsDescription",
-        // The hub is a destination of its own; event pages nest below it.
+        path: "/legendary-events",
+        labelKey: "legendaryEvents.tabs.allEvents",
+        descriptionKey: "legendaryEvents.tabs.allEventsDescription",
+        // The hub is a destination of its own; archived and upcoming event pages nest below it.
         isLandingPage: true,
       },
     ],

@@ -3,7 +3,7 @@ import { PanelLeftOpen } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import type { NavItem } from "./nav-items"
+import { subItemLabel, type NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
 
 /**
@@ -48,7 +48,7 @@ export function DesktopSectionHeader({
       (child) =>
         pathname === child.path || pathname.startsWith(child.path + "/")
     ) ?? children[0]
-  const childLabel = t(activeChild.labelKey)
+  const childLabel = subItemLabel(t, activeChild)
   const heading = (
     <h1
       className="truncate text-2xl font-semibold tracking-tight"
