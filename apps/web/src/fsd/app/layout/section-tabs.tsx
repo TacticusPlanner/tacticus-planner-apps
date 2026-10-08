@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import { NavLiveDot } from "./nav-live-dot"
-import type { NavItem } from "./nav-items"
+import { subItemLabel, type NavItem } from "./nav-items"
 
 /**
  * Renders the active top-level section's child pages as a routed tab row. Rendered by the mobile
@@ -73,7 +73,15 @@ export function SectionTabs({ item }: { item: NavItem }) {
             }}
             value={child.path}
           >
-            {t(child.labelKey)}
+            {"iconSrc" in child && child.iconSrc ? (
+              <img
+                alt=""
+                aria-hidden="true"
+                className="size-5 shrink-0 rounded-full object-cover"
+                src={child.iconSrc}
+              />
+            ) : null}
+            {subItemLabel(t, child)}
             <NavLiveDot item={child} />
           </TabsTrigger>
         ))}

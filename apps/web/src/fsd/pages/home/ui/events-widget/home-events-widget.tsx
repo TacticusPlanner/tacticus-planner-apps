@@ -121,7 +121,7 @@ function EmptyBody() {
         <Link className={link} to="/dailies/hse">
           {t("common:home.events.openHse")}
         </Link>
-        <Link className={link} to="/events/legendary-events">
+        <Link className={link} to="/legendary-events">
           {t("common:home.events.openLegendaryEvents")}
         </Link>
       </p>

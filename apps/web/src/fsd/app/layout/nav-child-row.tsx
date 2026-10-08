@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NavLiveDot } from "./nav-live-dot"
-import type { NavSubItem } from "./nav-items"
+import { subItemDescription, subItemLabel, type NavSubItem } from "./nav-items"
 
 export function NavChildRow({
   child,
@@ -37,11 +37,11 @@ export function NavChildRow({
       to={child.path}
     >
       <span className="flex items-center">
-        <span className="truncate">{t(child.labelKey)}</span>
+        <span className="truncate">{subItemLabel(t, child)}</span>
         <NavLiveDot hidden={hideLive} item={child} />
       </span>
       <span className="truncate text-xs font-normal opacity-80">
-        {t(child.descriptionKey)}
+        {subItemDescription(t, child)}
       </span>
     </Link>
   )

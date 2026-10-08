@@ -249,7 +249,7 @@ describe("HomeEventsWidget", () => {
       within(empty).getByRole("link", {
         name: "common:home.events.openLegendaryEvents",
       })
-    ).toHaveAttribute("href", "/events/legendary-events")
+    ).toHaveAttribute("href", "/legendary-events")
   })
 
   it("is titled Events, not the calendar, and the card itself is not a button", () => {
@@ -268,10 +268,7 @@ describe("HomeEventsWidget", () => {
 
     expect(rows.map((row) => row.tagName)).toEqual(["A", "A", "A"])
     expect(rows[0]).toHaveAttribute("href", "/dailies/hse")
-    expect(rows[1]).toHaveAttribute(
-      "href",
-      "/events/legendary-events/astarLysander"
-    )
+    expect(rows[1]).toHaveAttribute("href", "/legendary-events/astarLysander")
   })
 
   it("opens a row's destination on click, and the card itself navigates nowhere", async () => {
@@ -282,7 +279,7 @@ describe("HomeEventsWidget", () => {
     expect(currentPath()).toBe("/home")
 
     await user.click(screen.getAllByTestId("home-events-row")[1]!)
-    expect(currentPath()).toBe("/events/legendary-events/astarLysander")
+    expect(currentPath()).toBe("/legendary-events/astarLysander")
   })
 
   it("activates a focused row with Enter", async () => {

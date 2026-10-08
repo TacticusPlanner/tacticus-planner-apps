@@ -28,15 +28,44 @@ describe("resolveActiveNavigation", () => {
     expect(activeChild).toBeUndefined()
   })
 
-  it("keeps Legendary Events active on an event detail route", () => {
+  it("keeps All events active on an archived event's detail route", () => {
     const { activeChild, activeItem } = resolveActiveNavigation(
       navItems,
-      "/events/legendary-events/astarLysander"
+      "/legendary-events/astarLysander"
     )
 
-    expect(activeItem?.path).toBe("/events")
-    expect(activeChild?.path).toBe("/events/legendary-events")
-    expect(activeChild?.labelKey).toBe("events.tabs.legendaryEvents")
+    expect(activeItem?.path).toBe("/legendary-events")
+    expect(activeChild?.path).toBe("/legendary-events")
+    expect(
+      activeChild && "labelKey" in activeChild && activeChild.labelKey
+    ).toBe("legendaryEvents.tabs.allEvents")
+  })
+
+  it("resolves an active event's own child on its detail route", () => {
+    const items = navItems.map((item) =>
+      item.path === "/legendary-events"
+        ? {
+            ...item,
+            children: [
+              {
+                path: "/legendary-events/votanUthar",
+                label: "Uthar",
+                description: "Active",
+              },
+              ...(item.children ?? []),
+            ],
+          }
+        : item
+    )
+    const { activeChild } = resolveActiveNavigation(
+      items,
+      "/legendary-events/votanUthar"
+    )
+
+    expect(activeChild?.path).toBe("/legendary-events/votanUthar")
+    expect(
+      resolveActiveNavigation(items, "/legendary-events").activeChild?.path
+    ).toBe("/legendary-events")
   })
 
   it("resolves the active child when the route matches a child page", () => {

@@ -6,7 +6,12 @@ export interface BattleProgressView {
   index: number
   /** Defeat-all first, then one flag per objective in catalog `index` order. */
   cleared: boolean[]
-  /** The synced `encounterPoints`, never recomputed from the cleared flags. */
+  /** How many of `cleared` are true (defeat-all included). */
+  clearedCount: number
+  /**
+   * `highScore` + the defeat-all score when cleared + Σ cleared objective scores (design D4). The
+   * synced `encounterPoints` is never read.
+   */
   pointsEarned: number
   maxPoints: number
   highScore: number
@@ -21,9 +26,11 @@ export interface LaneProgressView {
    */
   status: "synced" | "noLane" | "noEvent"
   battles: BattleProgressView[]
-  /** Σ `encounterPoints` over the lane's battles. */
+  /** Σ battle earned points. */
   pointsEarned: number
   maxPoints: number
+  /** How many battles are complete. */
+  completeBattles: number
 }
 
 /**
@@ -45,12 +52,24 @@ export function buildSyncedLaneProgress(
     const cleared = Array.from({ length: columns }, (_, id) =>
       clearedIds.has(id)
     )
+    const highScore = encounter?.highScore ?? 0
+    const clearedScores = cleared.reduce(
+      (sum, isCleared, id) =>
+        isCleared
+          ? sum +
+            (id === 0
+              ? battle.defeatAllPoints
+              : (battle.objectiveScores[id - 1] ?? 0))
+          : sum,
+      0
+    )
     return {
       index: battle.index,
       cleared,
-      pointsEarned: encounter?.encounterPoints ?? 0,
+      clearedCount: cleared.filter(Boolean).length,
+      pointsEarned: highScore + clearedScores,
       maxPoints: battle.maxPoints,
-      highScore: encounter?.highScore ?? 0,
+      highScore,
       complete: cleared.every(Boolean),
     }
   })
@@ -65,5 +84,6 @@ export function buildSyncedLaneProgress(
     battles,
     pointsEarned: battles.reduce((sum, battle) => sum + battle.pointsEarned, 0),
     maxPoints: model.maxPoints,
+    completeBattles: battles.filter((battle) => battle.complete).length,
   }
 }

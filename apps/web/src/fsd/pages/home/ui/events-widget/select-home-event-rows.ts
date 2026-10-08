@@ -96,7 +96,7 @@ export function selectHomeEventRows({
       live: isLive,
       startMs: lifecycle.runStartMs,
       endMs: lifecycle.runEndMs,
-      destination: `/events/legendary-events/${event.id}`,
+      destination: `/legendary-events/${event.id}`,
       ...(synced
         ? { runNumber: synced.currentEventRun, points: synced.currentPoints }
         : {}),

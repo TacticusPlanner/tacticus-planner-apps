@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NavLiveDot } from "./nav-live-dot"
-import type { NavSubItem } from "./nav-items"
+import { subItemDescription, subItemLabel, type NavSubItem } from "./nav-items"
 
 export function MobileDrawerSubItem({
   hideLive = false,
@@ -35,11 +35,11 @@ export function MobileDrawerSubItem({
       to={item.path}
     >
       <span className="flex items-center">
-        <span className="truncate">{t(item.labelKey)}</span>
+        <span className="truncate">{subItemLabel(t, item)}</span>
         <NavLiveDot hidden={hideLive} item={item} />
       </span>
       <span className="truncate text-xs font-normal opacity-80">
-        {t(item.descriptionKey)}
+        {subItemDescription(t, item)}
       </span>
     </Link>
   )

@@ -86,14 +86,26 @@ describe("common namespace locale parity", () => {
     ["de", de],
     ["es", es],
     ["fr", fr],
-  ])("%s translates the Events section navigation copy", (lng, locale) => {
-    if (lng !== "de") expect(locale.nav.events).not.toBe(en.nav.events)
-    expect(locale.nav.eventsDescription).not.toBe(en.nav.eventsDescription)
-    expect(locale.events.tabs.legendaryEvents).not.toBe(
-      en.events.tabs.legendaryEvents
-    )
-    expect(locale.events.tabs.legendaryEventsDescription).not.toBe(
-      en.events.tabs.legendaryEventsDescription
-    )
-  })
+  ])(
+    "%s translates the Legendary Events section navigation copy",
+    (lng, locale) => {
+      // German keeps "Events" (as in "Legendäre Events"); the label must still be translated.
+      expect(locale.nav.legendaryEvents, lng).not.toBe(en.nav.legendaryEvents)
+      expect(locale.nav.legendaryEventsDescription).not.toBe(
+        en.nav.legendaryEventsDescription
+      )
+      for (const key of [
+        "allEvents",
+        "allEventsDescription",
+        "activeEventDescription",
+      ] as const) {
+        expect(locale.legendaryEvents.tabs[key], key).not.toBe(
+          en.legendaryEvents.tabs[key]
+        )
+      }
+      expect(locale.tour.steps.navigation.content).not.toContain(
+        "Events for Legendary Events"
+      )
+    }
+  )
 })

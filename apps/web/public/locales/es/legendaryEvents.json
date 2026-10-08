@@ -46,6 +46,17 @@
     "gamma": "Gamma",
     "selector": "Carril"
   },
+  "tabs": {
+    "label": "Secciones del evento",
+    "overview": "Resumen"
+  },
+  "laneSummary": {
+    "title": "Resumen de carriles",
+    "battles": "{{cleared}} / {{total}} batallas",
+    "open": "Abrir la cuadrícula de progreso de {{lane}}",
+    "noLane": "Sin progreso en este carril",
+    "unavailable": "Datos sincronizados no disponibles"
+  },
   "laneOverview": {
     "title": "Resumen de carriles",
     "labelWithRule": "{{lane}} · {{rule}}",
@@ -64,30 +75,31 @@
     "unit": "Unidad",
     "rarity": "Rareza",
     "rank": "Rango",
-    "points": "Puntos / batalla",
-    "slots": "Huecos",
-    "pointsValue": "{{points}} puntos por batalla",
-    "slotsValue": "Huecos: {{slots}}",
-    "sortBy": "Ordenar por",
-    "sort": {
-      "points": "Puntos por batalla",
-      "slots": "Huecos",
-      "name": "Nombre"
-    },
-    "direction": {
-      "asc": "Ascendente",
-      "desc": "Descendente",
-      "toggle": "Invertir orden"
-    },
+    "objectives": "Objetivos",
+    "objectivesValue": "Objetivos: {{count}}",
+    "remaining": "Restantes",
+    "perBattle": "Por batalla",
+    "remainingValue": "{{points}} restantes",
+    "perBattleValue": "{{points}} por batalla",
+    "deductScored": "Descontar puntos conseguidos",
+    "objectiveFilter": "Filtrar por objetivo",
     "onlyUnlocked": "Solo desbloqueadas",
     "locked": "Bloqueada",
     "objectiveMet": "{{objective}}: cumple",
     "objectiveNotMet": "{{objective}}: no cumple",
     "noEligible": "Ninguna unidad puede jugar en este carril.",
     "noUnlocked": "Ninguna de tus unidades desbloqueadas puede jugar en este carril.",
+    "noneMatch": "Ninguna unidad cumple estos objetivos.",
+    "clearFilter": "Quitar filtro",
     "rosterNotSynced": "Tu plantilla aún no se ha sincronizado, así que no se muestran la propiedad, la rareza ni el rango.",
+    "progressUnavailable": "Progreso sincronizado no disponible, así que nada cuenta como conseguido.",
     "loading": "Cargando unidades…",
-    "error": "No se pudieron cargar las unidades."
+    "error": "No se pudieron cargar las unidades.",
+    "crossLane": {
+      "notAllowed": "—",
+      "notAllowedLabel": "{{lane}}: no permitido",
+      "laneFigure": "{{lane}}: {{points}}"
+    }
   },
   "progress": {
     "title": "Progreso sincronizado",
@@ -108,7 +120,7 @@
     "unavailable": "Datos sincronizados no disponibles",
     "howPoints": {
       "title": "Cómo funcionan los puntos",
-      "body": "Los puntos obtenidos vienen de tu última sincronización, tal como los informa el juego. El máximo de una batalla suma sus puntos por bajas, su mejor puntuación, la bonificación de «derrotar a todos» y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
+      "body": "Los puntos conseguidos en una batalla son su puntuación máxima más la puntuación de cada objetivo que superaste en ella, incluida la bonificación por derrotar a todos. El máximo de una batalla suma su puntuación de bajas, su puntuación máxima, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
     }
   },
   "objective": {
@@ -139,25 +151,33 @@
     },
     "event": {
       "steps": {
-        "runStatus": {
-          "title": "Estado de la ronda",
-          "content": "Tu ronda, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
+        "tabs": {
+          "title": "Resumen y carriles",
+          "content": "El Resumen condensa el evento; Alfa, Beta y Gamma abren un carril cada uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
         },
-        "laneSelector": {
-          "title": "Elige un carril",
-          "content": "Cambia entre los carriles Alfa, Beta y Gamma. Todas las secciones de carril de abajo siguen esta elección."
+        "runStatus": {
+          "title": "Estado de la tirada",
+          "content": "Tu tirada, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
+        },
+        "laneSummary": {
+          "title": "Resumen de carriles",
+          "content": "Los puntos conseguidos en cada carril frente a su máximo y cuántas batallas has superado por completo. Elige un carril para saltar a su cuadrícula de progreso."
+        },
+        "overviewLeaderboard": {
+          "title": "Elegibilidad entre carriles",
+          "content": "Cada unidad que puede jugar, con los puntos que aún puede conseguir en cada carril. Filtra por objetivo, muestra solo las unidades desbloqueadas o cambia a puntos por batalla."
         },
         "laneOverview": {
-          "title": "Resumen de carriles",
-          "content": "Las unidades permitidas de cada carril, los puntos por bajas, los cinco objetivos con sus puntuaciones y los puntos que vale cada batalla."
-        },
-        "leaderboard": {
-          "title": "Clasificación de elegibilidad",
-          "content": "Cada unidad que permite cada carril, si la tienes, qué objetivos cumple y los puntos que puede sumar por batalla. Ordena la lista o muestra solo las unidades desbloqueadas."
+          "title": "Resumen del carril",
+          "content": "Las unidades permitidas del carril, los puntos por bajas, los cinco objetivos con sus puntuaciones y lo que vale cada batalla."
         },
         "progressGrid": {
           "title": "Progreso sincronizado",
-          "content": "Tus objetivos completados y puntos por batalla de la última sincronización, con los puntos obtenidos de cada carril frente a su máximo."
+          "content": "Tus objetivos superados y puntos por batalla de tu última sincronización, con los puntos conseguidos en el carril frente a su máximo."
+        },
+        "leaderboard": {
+          "title": "Clasificación del carril",
+          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí."
         }
       }
     }

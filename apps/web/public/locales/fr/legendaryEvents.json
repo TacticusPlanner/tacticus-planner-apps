@@ -46,6 +46,17 @@
     "gamma": "Gamma",
     "selector": "Voie"
   },
+  "tabs": {
+    "label": "Sections de l'événement",
+    "overview": "Aperçu"
+  },
+  "laneSummary": {
+    "title": "Résumé des voies",
+    "battles": "{{cleared}} / {{total}} combats",
+    "open": "Ouvrir la grille de progression de {{lane}}",
+    "noLane": "Aucune progression dans cette voie",
+    "unavailable": "Données synchronisées indisponibles"
+  },
   "laneOverview": {
     "title": "Aperçu des voies",
     "labelWithRule": "{{lane}} · {{rule}}",
@@ -64,30 +75,31 @@
     "unit": "Unité",
     "rarity": "Rareté",
     "rank": "Rang",
-    "points": "Points / combat",
-    "slots": "Emplacements",
-    "pointsValue": "{{points}} points par combat",
-    "slotsValue": "Emplacements : {{slots}}",
-    "sortBy": "Trier par",
-    "sort": {
-      "points": "Points par combat",
-      "slots": "Emplacements",
-      "name": "Nom"
-    },
-    "direction": {
-      "asc": "Croissant",
-      "desc": "Décroissant",
-      "toggle": "Inverser l'ordre"
-    },
+    "objectives": "Objectifs",
+    "objectivesValue": "Objectifs : {{count}}",
+    "remaining": "Restants",
+    "perBattle": "Par combat",
+    "remainingValue": "{{points}} restants",
+    "perBattleValue": "{{points}} par combat",
+    "deductScored": "Déduire les points marqués",
+    "objectiveFilter": "Filtrer par objectif",
     "onlyUnlocked": "Débloquées uniquement",
     "locked": "Verrouillée",
     "objectiveMet": "{{objective}} : rempli",
     "objectiveNotMet": "{{objective}} : non rempli",
     "noEligible": "Aucune unité ne peut jouer dans cette voie.",
     "noUnlocked": "Aucune de vos unités débloquées ne peut jouer dans cette voie.",
+    "noneMatch": "Aucune unité ne remplit ces objectifs.",
+    "clearFilter": "Effacer le filtre",
     "rosterNotSynced": "Votre effectif n'est pas encore synchronisé : la possession, la rareté et le rang ne sont pas affichés.",
+    "progressUnavailable": "Progression synchronisée indisponible : rien n'est compté comme marqué.",
     "loading": "Chargement des unités…",
-    "error": "Impossible de charger les unités."
+    "error": "Impossible de charger les unités.",
+    "crossLane": {
+      "notAllowed": "—",
+      "notAllowedLabel": "{{lane}} : non autorisé",
+      "laneFigure": "{{lane}} : {{points}}"
+    }
   },
   "progress": {
     "title": "Progression synchronisée",
@@ -108,7 +120,7 @@
     "unavailable": "Données synchronisées indisponibles",
     "howPoints": {
       "title": "Comment fonctionnent les points",
-      "body": "Les points obtenus proviennent de votre dernière synchronisation, tels que le jeu les indique. Le maximum d'un combat additionne ses points d'élimination, son meilleur score, le bonus « Tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
+      "body": "Les points gagnés d'un combat sont son meilleur score plus le score de chaque objectif que vous y avez rempli, bonus « tout vaincre » compris. Le maximum d'un combat additionne son score d'éliminations, son meilleur score, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
     }
   },
   "objective": {
@@ -139,25 +151,33 @@
     },
     "event": {
       "steps": {
+        "tabs": {
+          "title": "Aperçu et voies",
+          "content": "L'Aperçu résume l'événement ; Alpha, Bêta et Gamma ouvrent chacune une voie. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
+        },
         "runStatus": {
           "title": "État de la manche",
           "content": "Votre manche, vos jetons, points, monnaie, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
         },
-        "laneSelector": {
-          "title": "Choisir une voie",
-          "content": "Passez d'une voie à l'autre : Alpha, Bêta et Gamma. Toutes les sections de voie ci-dessous suivent ce choix."
+        "laneSummary": {
+          "title": "Résumé des voies",
+          "content": "Les points gagnés de chaque voie par rapport à son maximum et le nombre de combats entièrement terminés. Choisissez une voie pour aller à sa grille de progression."
+        },
+        "overviewLeaderboard": {
+          "title": "Éligibilité toutes voies",
+          "content": "Chaque unité pouvant jouer, avec les points qu'elle peut encore marquer dans chaque voie. Filtrez par objectif, n'affichez que les unités débloquées ou passez aux points par combat."
         },
         "laneOverview": {
-          "title": "Aperçu des voies",
-          "content": "Les unités autorisées de chaque voie, les points d'élimination, les cinq objectifs avec leur score et les points que vaut chaque combat."
-        },
-        "leaderboard": {
-          "title": "Classement d'éligibilité",
-          "content": "Chaque unité autorisée par chaque voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut rapporter par combat. Triez la liste ou n'affichez que les unités débloquées."
+          "title": "Aperçu de la voie",
+          "content": "Les unités autorisées de la voie, les points d'éliminations, les cinq objectifs avec leurs scores et la valeur de chaque combat."
         },
         "progressGrid": {
           "title": "Progression synchronisée",
-          "content": "Vos objectifs accomplis et vos points par combat issus de la dernière synchronisation, avec les points obtenus de chaque voie face à son maximum."
+          "content": "Vos objectifs remplis et vos points par combat issus de votre dernière synchronisation, avec les points gagnés de la voie par rapport à son maximum."
+        },
+        "leaderboard": {
+          "title": "Classement de la voie",
+          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici."
         }
       }
     }

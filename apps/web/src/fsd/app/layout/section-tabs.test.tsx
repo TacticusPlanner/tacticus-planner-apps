@@ -12,7 +12,7 @@ vi.mock("react-i18next", () => ({
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-import { navItems } from "./nav-items"
+import { navItems, type NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
 
 /** Reports the current pathname, and offers a Back control so a test can tell one pushed history
@@ -70,10 +70,7 @@ describe("navItems landing pages", () => {
           .map((child) => child.path) ?? []
     )
 
-    expect(flagged).toEqual([
-      "/library/raid-bosses",
-      "/events/legendary-events",
-    ])
+    expect(flagged).toEqual(["/library/raid-bosses", "/legendary-events"])
   })
 })
 
@@ -155,15 +152,44 @@ describe("SectionTabs", () => {
     expectPath("/library/raid-bosses")
   })
 
-  it("returns to the Legendary Events hub when its tab is activated from an event page", async () => {
+  it("returns to the Legendary Events hub when All events is activated from an archived event page", async () => {
     const user = userEvent.setup()
-    renderTabs(section("/events"), "/events/legendary-events/astarLysander")
+    renderTabs(section("/legendary-events"), "/legendary-events/astarLysander")
 
-    const tab = screen.getByTestId("section-tab-events-legendary-events")
+    const tab = screen.getByTestId("section-tab-legendary-events")
     expect(tab).toHaveAttribute("data-state", "active")
     await user.click(tab)
 
-    expectPath("/events/legendary-events")
+    expectPath("/legendary-events")
+  })
+
+  it("lists active events with their portraits before All events and marks the open one", () => {
+    const item: NavItem = {
+      ...section("/legendary-events"),
+      children: [
+        {
+          path: "/legendary-events/votanUthar",
+          label: "Uthar the Destined",
+          description: "Active Legendary Event",
+          iconSrc: "/uthar.png",
+        },
+        ...(section("/legendary-events").children ?? []),
+      ],
+    }
+    renderTabs(item, "/legendary-events/votanUthar")
+
+    const tabs = screen.getAllByRole("tab")
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      "Uthar the Destined",
+      "legendaryEvents.tabs.allEvents",
+    ])
+    const uthar = screen.getByTestId("section-tab-legendary-events-votanUthar")
+    expect(uthar).toHaveAttribute("data-state", "active")
+    expect(uthar.querySelector("img")).toHaveAttribute("src", "/uthar.png")
+    expect(screen.getByTestId("section-tab-legendary-events")).toHaveAttribute(
+      "data-state",
+      "inactive"
+    )
   })
 
   it("keeps the parent tab active on a route nested below it", () => {

@@ -13,6 +13,7 @@ import {
   type LegendaryEventUnitFilter,
 } from "../model/types"
 import { unitDealtDamageTypes } from "./damage-profile-exclusions"
+import { describeUnitFilter } from "./objective-label"
 import {
   isSupportedUnitFilterKind,
   isUnitAllowedOnLane,
@@ -105,6 +106,17 @@ describe("served lres against the objective matcher", () => {
       .filter(({ filter }) => !targetResolves(filter))
       .map(({ where, filter }) => `${where}: ${filter.kind} ${filter.target}`)
     expect(unresolved).toEqual([])
+  })
+
+  it("resolves every served objective to an icon asset", () => {
+    const missing = servedEvents
+      .flatMap(lanesOf)
+      .flatMap(({ where, lane }) =>
+        lane.unitsRestrictions
+          .filter((objective) => !describeUnitFilter(objective.filter).icon)
+          .map((objective) => `${where}.objective[${objective.index}]`)
+      )
+    expect(missing).toEqual([])
   })
 
   it("agrees with the served availableUnitIds on every lane", () => {

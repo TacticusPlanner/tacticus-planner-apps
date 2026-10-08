@@ -12,7 +12,7 @@ import { routes as guildRoutes } from "@/pages/guild"
 import { routes as libraryRoutes } from "@/pages/library"
 import { routes as progressRoutes } from "@/pages/progress"
 import { routes as dailiesRoutes } from "@/pages/dailies"
-import { routes as eventsRoutes } from "@/pages/events"
+import { routes as legendaryEventsRoutes } from "@/pages/legendary-events"
 import { isUiKitEnabled } from "@/shared/config"
 
 import { AccountSetupRoute } from "./account-setup-route"
@@ -54,8 +54,10 @@ const GoalsLayout = lazy(() =>
 const ProgressLayout = lazy(() =>
   import("@/pages/progress").then((m) => ({ default: m.ProgressLayout }))
 )
-const EventsLayout = lazy(() =>
-  import("@/pages/events").then((m) => ({ default: m.EventsLayout }))
+const LegendaryEventsLayout = lazy(() =>
+  import("@/pages/legendary-events").then((m) => ({
+    default: m.LegendaryEventsLayout,
+  }))
 )
 const V1ImportPage = lazy(() =>
   import("@/pages/v1-import").then((m) => ({ default: m.V1ImportPage }))
@@ -168,13 +170,13 @@ const appRoutes: RouteObject[] = [
         ],
       },
       {
-        path: "/events",
+        path: "/legendary-events",
         element: (
           <ProtectedRoute>
-            <EventsLayout />
+            <LegendaryEventsLayout />
           </ProtectedRoute>
         ),
-        children: eventsRoutes,
+        children: legendaryEventsRoutes,
       },
       {
         path: "/guild",

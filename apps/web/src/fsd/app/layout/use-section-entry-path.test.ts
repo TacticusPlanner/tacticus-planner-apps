@@ -70,15 +70,15 @@ describe("useSectionEntryPath", () => {
     expect(result.current.getEntryPath(home)).toBe("/home")
   })
 
-  it("enters Events through its own path, whatever event page was last open", () => {
+  it("enters Legendary Events through the hub while only All events is listed", () => {
     const { rerender, result } = renderHook(
       ({ pathname }) => useSectionEntryPath(navItems, pathname),
-      { initialProps: { pathname: "/events/legendary-events/astarLysander" } }
+      { initialProps: { pathname: "/legendary-events/astarLysander" } }
     )
     rerender({ pathname: "/home" })
 
-    const events = navItems.find((item) => item.path === "/events")!
-    expect(result.current.getEntryPath(events)).toBe("/events")
+    const section = navItems.find((item) => item.path === "/legendary-events")!
+    expect(result.current.getEntryPath(section)).toBe("/legendary-events")
   })
 
   it("honors a value persisted to sessionStorage on a fresh mount", () => {

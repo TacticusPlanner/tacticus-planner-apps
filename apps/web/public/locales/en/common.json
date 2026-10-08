@@ -211,8 +211,8 @@
     "goalsDescription": "Track progress toward your targets",
     "progress": "Progress",
     "progressDescription": "Your synced campaign and Onslaught progress",
-    "events": "Events",
-    "eventsDescription": "Legendary Events and other limited-time events",
+    "legendaryEvents": "Legendary Events",
+    "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress",
     "uiKit": "UI Kit",
     "uiKitDescription": "Design system component showcase",
     "guild": "Guild",
@@ -295,10 +295,11 @@
       "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
     }
   },
-  "events": {
+  "legendaryEvents": {
     "tabs": {
-      "legendaryEvents": "Legendary Events",
-      "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress"
+      "allEvents": "All events",
+      "allEventsDescription": "Every Legendary Event: active, upcoming and archived",
+      "activeEventDescription": "Active Legendary Event with your synced progress"
     }
   },
   "home": {
@@ -1116,7 +1117,7 @@
       },
       "navigation": {
         "title": "Find your way around",
-        "content": "This menu groups the app's sections, including Events for Legendary Events — use it to navigate between them at any time."
+        "content": "This menu groups the app's sections, including Legendary Events — use it to navigate between them at any time."
       },
       "sidebarFooter": {
         "title": "Sidebar tools",
@@ -1124,7 +1125,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",
-        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach Progress and Events."
+        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach Progress and Legendary Events."
       },
       "mobileHeader": {
         "title": "Page header",

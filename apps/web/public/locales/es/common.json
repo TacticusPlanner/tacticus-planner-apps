@@ -211,8 +211,8 @@
     "goalsDescription": "Sigue tu progreso hacia tus objetivos",
     "progress": "Progreso",
     "progressDescription": "Tu progreso sincronizado de campañas y Onslaught",
-    "events": "Eventos",
-    "eventsDescription": "Eventos Legendarios y otros eventos por tiempo limitado",
+    "legendaryEvents": "Eventos Legendarios",
+    "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado",
     "uiKit": "Kit de interfaz",
     "uiKitDescription": "Vista previa de los componentes del sistema de diseño",
     "guild": "Gremio",
@@ -295,10 +295,11 @@
       "conflict": "El progreso del evento de campaña cambió en otro lugar. Se cargaron los valores más recientes; aplica tu cambio de nuevo."
     }
   },
-  "events": {
+  "legendaryEvents": {
     "tabs": {
-      "legendaryEvents": "Eventos Legendarios",
-      "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado"
+      "allEvents": "Todos los eventos",
+      "allEventsDescription": "Todos los Eventos Legendarios: activos, próximos y archivados",
+      "activeEventDescription": "Evento Legendario activo con tu progreso sincronizado"
     }
   },
   "home": {
@@ -1116,7 +1117,7 @@
       },
       "navigation": {
         "title": "Desplázate con facilidad",
-        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluida Eventos para los Eventos Legendarios."
+        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluidos los Eventos Legendarios."
       },
       "sidebarFooter": {
         "title": "Herramientas de la barra lateral",
@@ -1124,7 +1125,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Tu barra principal",
-        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Progreso y Eventos."
+        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Progreso y Eventos Legendarios."
       },
       "mobileHeader": {
         "title": "Encabezado de página",

@@ -1,44 +1,59 @@
-import { Crosshair, Sword, Target } from "lucide-react"
+import { X } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type {
-  ObjectiveGlyph,
-  ObjectiveIcon as Icon,
-} from "../lib/objective-label"
+import type { ObjectiveIcon as Icon } from "../lib/objective-label"
 
-const GLYPHS = {
-  hits: Target,
-  ranged: Crosshair,
-  melee: Sword,
-} satisfies Record<ObjectiveGlyph, unknown>
+const BADGES = {
+  not: { className: "bg-red-600 text-white", glyph: <X className="size-2" /> },
+  min: {
+    className: "bg-background text-foreground ring-1 ring-border",
+    glyph: "≥",
+  },
+  max: {
+    className: "bg-background text-foreground ring-1 ring-border",
+    glyph: "≤",
+  },
+} as const
 
-/** An objective's icon: the trait / damage-type / faction asset, or an app glyph for hits and
- *  attack type. Decorative: the label beside it carries the meaning. */
+/**
+ * An objective's icon (design D6): the game asset with a red-X badge for a negated filter or a
+ * "≥" / "≤" badge for a hits bound. `muted` fades it for a not-satisfied state. Decorative: the
+ * label or accessible text beside it carries the meaning.
+ */
 export function ObjectiveIcon({
   icon,
   className,
+  muted = false,
 }: {
   icon: Icon | undefined
   className?: string
+  muted?: boolean
 }) {
   if (!icon) return null
-  if (icon.type === "image") {
-    return (
-      <img
-        alt=""
-        aria-hidden="true"
-        className={cn("size-5 shrink-0 object-contain", className)}
-        data-testid="objective-icon"
-        src={icon.src}
-      />
-    )
-  }
-  const Glyph = GLYPHS[icon.glyph]
+  const badge = icon.badge ? BADGES[icon.badge] : undefined
   return (
-    <Glyph
+    <span
       aria-hidden="true"
-      className={cn("size-5 shrink-0", className)}
+      className={cn(
+        "relative inline-flex size-5 shrink-0",
+        muted && "opacity-35 grayscale",
+        className
+      )}
+      data-muted={muted ? "true" : undefined}
       data-testid="objective-icon"
-    />
+    >
+      <img alt="" className="size-full object-contain" src={icon.src} />
+      {badge ? (
+        <span
+          className={cn(
+            "absolute -right-1 -bottom-1 flex size-3 items-center justify-center rounded-full text-[8px] leading-none font-bold",
+            badge.className
+          )}
+          data-testid={`objective-icon-badge-${icon.badge}`}
+        >
+          {badge.glyph}
+        </span>
+      ) : null}
+    </span>
   )
 }

@@ -27,22 +27,35 @@ export {
   nextPointsMilestone,
   type NextPointsMilestone,
 } from "./lib/next-points-milestone"
-export type { ObjectiveIcon as ObjectiveIconModel } from "./lib/objective-label"
+export {
+  defeatAllIcon,
+  scoreIcon,
+  type ObjectiveIcon as ObjectiveIconModel,
+} from "./lib/objective-label"
 export {
   isUnitAllowedOnLane,
   matchesObjectiveFilter,
   objectivesSatisfied,
 } from "./lib/objective-match"
 export {
-  DEFAULT_LEADERBOARD_SORT,
+  buildCrossLaneLeaderboard,
   buildLaneLeaderboard,
+  crossLaneFigure,
+  crossLaneTotal,
+  filterLeaderboard,
+  objectiveFilterKey,
+  remainingLanePoints,
+  sortCrossLaneLeaderboard,
   sortLeaderboard,
   unitLanePotential,
+  type CrossLaneFigures,
+  type CrossLaneLeaderboardRow,
   type LaneUnitPotential,
+  type LeaderboardFigure,
+  type LeaderboardFilter,
   type LeaderboardOwnership,
   type LeaderboardRow,
-  type LeaderboardSort,
-  type LeaderboardSortKey,
+  type LeaderboardUnitRow,
 } from "./lib/unit-potential"
 export {
   buildLanePointsModel,

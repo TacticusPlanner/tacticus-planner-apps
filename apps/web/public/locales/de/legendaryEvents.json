@@ -46,6 +46,17 @@
     "gamma": "Gamma",
     "selector": "Bahn"
   },
+  "tabs": {
+    "label": "Bereiche des Events",
+    "overview": "Übersicht"
+  },
+  "laneSummary": {
+    "title": "Lane-Zusammenfassung",
+    "battles": "{{cleared}} / {{total}} Kämpfe",
+    "open": "Fortschrittsraster der Lane {{lane}} öffnen",
+    "noLane": "Kein Fortschritt in dieser Lane",
+    "unavailable": "Synchronisierte Daten nicht verfügbar"
+  },
   "laneOverview": {
     "title": "Bahnübersicht",
     "labelWithRule": "{{lane}} · {{rule}}",
@@ -64,30 +75,31 @@
     "unit": "Einheit",
     "rarity": "Seltenheit",
     "rank": "Rang",
-    "points": "Punkte / Kampf",
-    "slots": "Slots",
-    "pointsValue": "{{points}} Punkte pro Kampf",
-    "slotsValue": "Slots: {{slots}}",
-    "sortBy": "Sortieren nach",
-    "sort": {
-      "points": "Punkte pro Kampf",
-      "slots": "Slots",
-      "name": "Name"
-    },
-    "direction": {
-      "asc": "Aufsteigend",
-      "desc": "Absteigend",
-      "toggle": "Reihenfolge umkehren"
-    },
+    "objectives": "Ziele",
+    "objectivesValue": "Ziele: {{count}}",
+    "remaining": "Verbleibend",
+    "perBattle": "Pro Kampf",
+    "remainingValue": "{{points}} verbleibend",
+    "perBattleValue": "{{points}} pro Kampf",
+    "deductScored": "Erzielte Punkte abziehen",
+    "objectiveFilter": "Nach Ziel filtern",
     "onlyUnlocked": "Nur freigeschaltete",
     "locked": "Gesperrt",
     "objectiveMet": "{{objective}}: erfüllt",
     "objectiveNotMet": "{{objective}}: nicht erfüllt",
     "noEligible": "Keine Einheit kann auf dieser Bahn spielen.",
     "noUnlocked": "Keine deiner freigeschalteten Einheiten kann auf dieser Bahn spielen.",
+    "noneMatch": "Keine Einheit erfüllt diese Ziele.",
+    "clearFilter": "Filter zurücksetzen",
     "rosterNotSynced": "Deine Einheiten sind noch nicht synchronisiert, daher werden Besitz, Seltenheit und Rang nicht angezeigt.",
+    "progressUnavailable": "Synchronisierter Fortschritt nicht verfügbar, daher gilt nichts als erzielt.",
     "loading": "Einheiten werden geladen…",
-    "error": "Die Einheiten konnten nicht geladen werden."
+    "error": "Die Einheiten konnten nicht geladen werden.",
+    "crossLane": {
+      "notAllowed": "—",
+      "notAllowedLabel": "{{lane}}: nicht erlaubt",
+      "laneFigure": "{{lane}}: {{points}}"
+    }
   },
   "progress": {
     "title": "Synchronisierter Fortschritt",
@@ -108,7 +120,7 @@
     "unavailable": "Synchronisierte Daten nicht verfügbar",
     "howPoints": {
       "title": "So funktionieren Punkte",
-      "body": "Die erreichten Punkte stammen aus deiner letzten Synchronisierung, genau wie das Spiel sie meldet. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und die Punktzahl jedes Ziels; das Bahnmaximum addiert alle Kämpfe."
+      "body": "Die erzielten Punkte eines Kampfes sind sein Highscore plus die Punkte jedes Ziels, das du darin erfüllt hast, einschließlich des Bonus für „Alle besiegen“. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
     }
   },
   "objective": {
@@ -139,25 +151,33 @@
     },
     "event": {
       "steps": {
+        "tabs": {
+          "title": "Übersicht und Lanes",
+          "content": "Die Übersicht fasst das Event zusammen; Alpha, Beta und Gamma öffnen je eine Lane. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
+        },
         "runStatus": {
           "title": "Durchlaufstatus",
-          "content": "Dein Durchlauf, Tokens, Punkte, Währung, Truhen und Splitter aus deiner letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
+          "content": "Dein Durchlauf, deine Token, Punkte, Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
         },
-        "laneSelector": {
-          "title": "Bahn wählen",
-          "content": "Wechsle zwischen den Bahnen Alpha, Beta und Gamma. Alle Bahnabschnitte darunter folgen dieser Auswahl."
+        "laneSummary": {
+          "title": "Lane-Zusammenfassung",
+          "content": "Die erzielten Punkte jeder Lane im Verhältnis zum Maximum und wie viele Kämpfe du vollständig abgeschlossen hast. Wähle eine Lane, um zu ihrem Fortschrittsraster zu springen."
+        },
+        "overviewLeaderboard": {
+          "title": "Eignung über alle Lanes",
+          "content": "Jede spielbare Einheit mit den Punkten, die sie in jeder Lane noch erzielen kann. Filtere nach Ziel, zeige nur freigeschaltete Einheiten oder wechsle zu Punkten pro Kampf."
         },
         "laneOverview": {
-          "title": "Bahnübersicht",
-          "content": "Die erlaubten Einheiten jeder Bahn, Kill-Punkte, die fünf Ziele mit ihren Punktzahlen und die Punkte, die jeder Kampf wert ist."
-        },
-        "leaderboard": {
-          "title": "Eignungsrangliste",
-          "content": "Jede Einheit, die eine Bahn erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und wie viele Punkte sie pro Kampf holen kann. Sortiere die Liste oder zeige nur freigeschaltete Einheiten."
+          "title": "Lane-Übersicht",
+          "content": "Die erlaubten Einheiten der Lane, Kill-Punkte, fünf Ziele mit ihren Punkten und der Wert jedes Kampfes."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",
-          "content": "Deine erledigten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, dazu die erreichten Punkte jeder Bahn im Vergleich zum Maximum."
+          "content": "Deine erfüllten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, mit den erzielten Punkten der Lane im Verhältnis zum Maximum."
+        },
+        "leaderboard": {
+          "title": "Lane-Rangliste",
+          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann."
         }
       }
     }
