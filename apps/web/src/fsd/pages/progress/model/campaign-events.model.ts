@@ -5,20 +5,27 @@ import {
 } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import type { CampaignEventProgressOverride } from "@/entities/player-data-override"
+import {
+  campaignEventTrackKey,
+  resolveCampaignEventProgress,
+  type CampaignEventProgressOverride,
+  type EffectiveCampaignEventProgress,
+} from "@/entities/player-data-override"
 
-export type EventType = "Standard" | "Extremis"
+export const eventTypes = ["Standard", "Extremis"] as const
+export type EventType = (typeof eventTypes)[number]
+
+type TrackBattles = {
+  regular: CampaignBattleStorageModel[]
+  /** Sorted by node number, so "Challenge N" is the Nth challenge along the track. */
+  challenges: CampaignBattleStorageModel[]
+}
+
 export type EventModel = {
   definition: CampaignDefinitionStorageModel
   nameKey: string
-  coreCharacters: string[]
-  tracks: Record<
-    EventType,
-    {
-      regular: CampaignBattleStorageModel[]
-      challenges: CampaignBattleStorageModel[]
-    }
-  >
+  coreCharacters: { id: string; owned: boolean }[]
+  tracks: Record<EventType, TrackBattles>
 }
 
 export function buildEvents(data: {
@@ -36,15 +43,15 @@ export function buildEvents(data: {
         (battle) => battle.campaignGroupId === definition.groupId
       )
       const tracks = Object.fromEntries(
-        (["Standard", "Extremis"] as const).map((type) => [
+        eventTypes.map((type) => [
           type,
           {
             regular: groupBattles.filter(
               (battle) => battle.type === type && !battle.challenge
             ),
-            challenges: groupBattles.filter(
-              (battle) => battle.type === type && battle.challenge
-            ),
+            challenges: groupBattles
+              .filter((battle) => battle.type === type && battle.challenge)
+              .sort((a, b) => a.nodeNumber - b.nodeNumber),
           },
         ])
       ) as EventModel["tracks"]
@@ -52,18 +59,195 @@ export function buildEvents(data: {
       return {
         definition,
         nameKey: descriptor?.nameKey ?? definition.groupId,
-        coreCharacters: definition.coreCharacters.filter((id) => owned.has(id)),
+        coreCharacters: definition.coreCharacters.map((id) => ({
+          id,
+          owned: owned.has(id),
+        })),
         tracks,
       }
     })
 }
 
-export const keyOf = (groupId: string, type: string) => `${groupId}|${type}`
+// ---------------------------------------------------------------------------------------------
+// Draft overrides
+// ---------------------------------------------------------------------------------------------
 
-export const cloneOverrides = (items: CampaignEventProgressOverride[]) =>
-  items.map((item) => ({
-    ...item,
-    completedChallengeBattlesIds: item.completedChallengeBattlesIds
-      ? [...item.completedChallengeBattlesIds]
-      : null,
-  }))
+/**
+ * Canonical form of the override list: cloned, entries with nothing set dropped, sorted by track
+ * key, and challenge ids sorted — so two drafts that mean the same thing compare equal.
+ */
+export function normalizeOverrides(
+  items: readonly CampaignEventProgressOverride[]
+): CampaignEventProgressOverride[] {
+  return items
+    .filter(
+      (item) =>
+        item.completedBattleCount !== null ||
+        item.completedChallengeBattlesIds !== null
+    )
+    .map((item) => ({
+      ...item,
+      completedChallengeBattlesIds: item.completedChallengeBattlesIds
+        ? [...item.completedChallengeBattlesIds].sort()
+        : null,
+    }))
+    .sort((a, b) =>
+      campaignEventTrackKey(a.campaignGroupId, a.type).localeCompare(
+        campaignEventTrackKey(b.campaignGroupId, b.type)
+      )
+    )
+}
+
+export type OverridePatch = Partial<
+  Pick<
+    CampaignEventProgressOverride,
+    "completedBattleCount" | "completedChallengeBattlesIds"
+  >
+>
+
+/** Sets or clears (`null`) one track's override values, returning a new normalized draft. */
+export function applyOverridePatch(
+  draft: readonly CampaignEventProgressOverride[],
+  groupId: string,
+  type: EventType,
+  patch: OverridePatch
+): CampaignEventProgressOverride[] {
+  const existing = draft.find(
+    (entry) => entry.campaignGroupId === groupId && entry.type === type
+  ) ?? {
+    campaignGroupId: groupId,
+    type,
+    completedBattleCount: null,
+    completedChallengeBattlesIds: null,
+  }
+  return normalizeOverrides([
+    ...draft.filter((entry) => entry !== existing),
+    { ...existing, ...patch },
+  ])
+}
+
+// ---------------------------------------------------------------------------------------------
+// Effective view of events
+// ---------------------------------------------------------------------------------------------
+
+export type TrackView = {
+  battles: TrackBattles
+  progress: EffectiveCampaignEventProgress
+  /** Completed challenges of this track (ids outside the track's catalog are ignored). */
+  completedChallenges: number
+}
+
+export type EventView = {
+  event: EventModel
+  tracks: Record<EventType, TrackView>
+  completed: boolean
+  summary: {
+    standard: { done: number; total: number }
+    extremis: { done: number; total: number }
+    challenges: { done: number; total: number }
+    /** Any value in the event is a manual override. */
+    hasManual: boolean
+    /** Any track that has battles has a value with neither synced data nor an override. */
+    hasNoData: boolean
+  }
+}
+
+const NO_PROGRESS = resolveCampaignEventProgress(undefined, undefined)
+
+function trackView(
+  battles: TrackBattles,
+  progress: EffectiveCampaignEventProgress
+): TrackView {
+  const challengeIds = new Set<string>(
+    battles.challenges.map((battle) => battle.id)
+  )
+  return {
+    battles,
+    progress,
+    completedChallenges: progress.completedChallengeBattlesIds.filter((id) =>
+      challengeIds.has(id)
+    ).length,
+  }
+}
+
+const isTrackCompleted = (track: TrackView) =>
+  track.progress.completedBattleCount >= track.battles.regular.length &&
+  track.completedChallenges >= track.battles.challenges.length
+
+export function toEventView(
+  event: EventModel,
+  effective: ReadonlyMap<string, EffectiveCampaignEventProgress>
+): EventView {
+  const tracks = Object.fromEntries(
+    eventTypes.map((type) => [
+      type,
+      trackView(
+        event.tracks[type],
+        effective.get(campaignEventTrackKey(event.definition.groupId, type)) ??
+          NO_PROGRESS
+      ),
+    ])
+  ) as Record<EventType, TrackView>
+  const withBattles = eventTypes
+    .map((type) => tracks[type])
+    .filter(
+      (track) =>
+        track.battles.regular.length > 0 || track.battles.challenges.length > 0
+    )
+  return {
+    event,
+    tracks,
+    completed: eventTypes.every((type) => isTrackCompleted(tracks[type])),
+    summary: {
+      standard: {
+        done: tracks.Standard.progress.completedBattleCount,
+        total: tracks.Standard.battles.regular.length,
+      },
+      extremis: {
+        done: tracks.Extremis.progress.completedBattleCount,
+        total: tracks.Extremis.battles.regular.length,
+      },
+      challenges: {
+        done:
+          tracks.Standard.completedChallenges +
+          tracks.Extremis.completedChallenges,
+        total:
+          tracks.Standard.battles.challenges.length +
+          tracks.Extremis.battles.challenges.length,
+      },
+      hasManual: withBattles.some(
+        (track) =>
+          track.progress.battleSource === "manual" ||
+          track.progress.challengeSource === "manual"
+      ),
+      hasNoData: withBattles.some(
+        (track) =>
+          track.progress.battleSource === "none" ||
+          track.progress.challengeSource === "none"
+      ),
+    },
+  }
+}
+
+/**
+ * Splits out the active event (when the catalog has it) and orders the rest unfinished first,
+ * keeping catalog order within each group.
+ */
+export function buildEventViews(
+  events: readonly EventModel[],
+  effective: ReadonlyMap<string, EffectiveCampaignEventProgress>,
+  activeCampaignEventId: string | null | undefined
+): { current: EventView | undefined; list: EventView[] } {
+  const views = events.map((event) => toEventView(event, effective))
+  const current = views.find(
+    (view) => view.event.definition.groupId === activeCampaignEventId
+  )
+  const rest = views.filter((view) => view !== current)
+  return {
+    current,
+    list: [
+      ...rest.filter((view) => !view.completed),
+      ...rest.filter((view) => view.completed),
+    ],
+  }
+}

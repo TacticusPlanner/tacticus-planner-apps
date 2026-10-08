@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import {
   getCampaignBattles,
@@ -9,188 +8,246 @@ import {
 } from "@workspace/game-catalog/queries"
 import {
   getCampaignEventProgress,
+  getLiveProgress,
   getPlayerCharacters,
 } from "@workspace/player-data/queries"
+import { Accordion } from "@workspace/ui/components/accordion"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
+import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { Switch } from "@workspace/ui/components/switch"
 
 import {
+  buildEffectiveCampaignEventProgress,
   campaignEventProgressQueries,
   updateCampaignEventProgressOverrides,
   type CampaignEventProgressOverride,
+  type CampaignEventProgressOverrides,
 } from "@/entities/player-data-override"
-import { ApiError } from "@/shared/api"
+import { useRevisionedDraft } from "@/shared/api"
+import { usePersistedSelection } from "@/shared/lib"
+import { UnsavedChangesBar, UnsavedChangesGuard } from "@/shared/ui"
 
 import {
+  applyOverridePatch,
+  buildEventViews,
   buildEvents,
-  cloneOverrides,
-  keyOf,
-  type EventType,
+  normalizeOverrides,
 } from "../model/campaign-events.model"
-import { EventCard } from "./event-card"
+import { useCampaignEventsTutorial } from "./campaign-events-page.tutorial"
+import { CurrentEventCard, EventListItem } from "./event-card"
+import type { PatchTrack } from "./event-track-editor"
+
+type Message = { tone: "success" | "info" | "error"; key: MessageKey }
+type MessageKey =
+  | "progress.events.saved"
+  | "progress.events.conflict"
+  | "progress.events.saveError"
+
+const HIDE_COMPLETED_KEY = "progress.campaign-events.hide-completed"
+const isOnOff = (value: unknown): value is "on" | "off" =>
+  value === "on" || value === "off"
+
+const toDraft = (saved: CampaignEventProgressOverrides) =>
+  normalizeOverrides(saved.progress)
+const toPayload = (
+  draft: CampaignEventProgressOverride[],
+  saved: CampaignEventProgressOverrides
+): CampaignEventProgressOverrides => ({
+  progress: draft,
+  revision: saved.revision,
+})
 
 export function CampaignEventsPage() {
-  const { t } = useTranslation(["common", "campaigns"])
+  const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
-  const queryClient = useQueryClient()
   const catalogData = useLiveQuery(async () => {
-    const [definitions, battles, synced, characters] = await Promise.all([
-      getCampaignDefinitions(),
-      getCampaignBattles(),
-      getCampaignEventProgress(),
-      getPlayerCharacters(),
-    ])
-    return { definitions, battles, synced, characters }
+    const [definitions, battles, synced, characters, liveProgress] =
+      await Promise.all([
+        getCampaignDefinitions(),
+        getCampaignBattles(),
+        getCampaignEventProgress(),
+        getPlayerCharacters(),
+        getLiveProgress(),
+      ])
+    return { definitions, battles, synced, characters, liveProgress }
   }, [])
-  const overrideQuery = useQuery({
-    ...campaignEventProgressQueries.current(),
+  const overrides = useRevisionedDraft({
+    query: campaignEventProgressQueries.current(),
     enabled: isAuthenticated,
+    toDraft,
+    toPayload,
+    save: updateCampaignEventProgressOverrides,
   })
-  const saveMutation = useMutation({
-    mutationFn: updateCampaignEventProgressOverrides,
-  })
-  const [draftOverride, setDraftOverride] = useState<
-    CampaignEventProgressOverride[] | null
-  >(null)
-  const [message, setMessage] = useState<string | null>(null)
-  const draft =
-    draftOverride ??
-    (overrideQuery.data ? cloneOverrides(overrideQuery.data.progress) : null)
-  const dirty = draftOverride !== null
+  const [message, setMessage] = useState<Message | null>(null)
+  const [hideCompleted, setHideCompleted] = usePersistedSelection(
+    HIDE_COMPLETED_KEY,
+    isOnOff,
+    "off"
+  )
 
   const events = useMemo(
     () => (catalogData ? buildEvents(catalogData) : []),
     [catalogData]
   )
-  if (!catalogData || overrideQuery.isPending || draft === null)
-    return <Loading />
-  if (!catalogData.synced || overrideQuery.isError) {
-    return (
-      <Alert variant="destructive">
-        <AlertDescription>{t("progress.loadError")}</AlertDescription>
-      </Alert>
-    )
-  }
-
-  const syncedByKey = new Map(
-    catalogData.synced.map((entry) => [
-      keyOf(entry.tacticusCampaignId, entry.type),
-      entry,
-    ])
+  const views = useMemo(
+    () =>
+      buildEventViews(
+        events,
+        buildEffectiveCampaignEventProgress(
+          // No synced chunk means the player has never synced — not a failure; every track then
+          // shows "No synced data" and can still be set manually.
+          catalogData?.synced ?? [],
+          overrides.draft ?? []
+        ),
+        catalogData?.liveProgress?.activeCampaignEventId
+      ),
+    [events, catalogData, overrides.draft]
   )
-  const draftByKey = new Map(
-    draft.map((entry) => [keyOf(entry.campaignGroupId, entry.type), entry])
-  )
+  const listed =
+    hideCompleted === "on"
+      ? views.list.filter((view) => !view.completed)
+      : views.list
 
-  const update = (
-    groupId: string,
-    type: EventType,
-    patch: Partial<
-      Pick<
-        CampaignEventProgressOverride,
-        "completedBattleCount" | "completedChallengeBattlesIds"
-      >
-    >
-  ) => {
-    setDraftOverride((current) => {
-      const source =
-        current ??
-        (overrideQuery.data
-          ? cloneOverrides(overrideQuery.data.progress)
-          : null)
-      if (!source) return current
-      const index = source.findIndex(
-        (entry) => entry.campaignGroupId === groupId && entry.type === type
-      )
-      const existing =
-        index >= 0
-          ? source[index]
-          : {
-              campaignGroupId: groupId,
-              type,
-              completedBattleCount: null,
-              completedChallengeBattlesIds: null,
-            }
-      const next = { ...existing, ...patch }
-      const result = [...source]
-      if (
-        next.completedBattleCount === null &&
-        next.completedChallengeBattlesIds === null
-      ) {
-        return index >= 0
-          ? result.filter((_, itemIndex) => itemIndex !== index)
-          : result
-      }
-      if (index >= 0) result[index] = next
-      else result.push(next)
-      return result
-    })
+  useCampaignEventsTutorial({
+    hasCurrentEvent: Boolean(views.current),
+    firstListEventId: listed[0]?.event.definition.groupId,
+  })
+
+  if (overrides.query.isError) return <LoadError />
+  if (!catalogData || overrides.draft === undefined) return <Loading />
+
+  const patch: PatchTrack = (groupId, type, value) => {
+    overrides.update((draft) => applyOverridePatch(draft, groupId, type, value))
     setMessage(null)
   }
 
   const save = async () => {
-    if (!overrideQuery.data || !draft) return
     setMessage(null)
-    try {
-      const saved = await saveMutation.mutateAsync({
-        progress: draft,
-        revision: overrideQuery.data.revision,
-      })
-      queryClient.setQueryData(
-        campaignEventProgressQueries.current().queryKey,
-        saved
-      )
-      setDraftOverride(null)
-      setMessage(t("progress.events.saved"))
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 409) {
-        try {
-          await queryClient.fetchQuery(campaignEventProgressQueries.current())
-          setDraftOverride(null)
-          saveMutation.reset()
-          setMessage(t("progress.events.conflict"))
-          return
-        } catch {
-          /* use general failure below */
-        }
-      }
-      setMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("progress.events.saveError")
-      )
-    }
+    const outcome = await overrides.save()
+    setMessage(
+      outcome === "saved"
+        ? { tone: "success", key: "progress.events.saved" }
+        : outcome === "conflict"
+          ? { tone: "info", key: "progress.events.conflict" }
+          : { tone: "error", key: "progress.events.saveError" }
+    )
   }
 
   return (
-    <div className="space-y-8" data-testid="campaign-events-page">
-      <header className="flex flex-wrap items-start justify-end gap-4">
-        <Button
-          disabled={!dirty || saveMutation.isPending}
-          onClick={() => void save()}
-        >
-          {saveMutation.isPending ? <Spinner /> : null}
-          {t("progress.events.save")}
-        </Button>
-      </header>
+    <div className="flex flex-col gap-6" data-testid="campaign-events-page">
       {message ? (
-        <Alert>
-          <AlertDescription>{message}</AlertDescription>
+        <Alert
+          variant={message.tone === "error" ? "destructive" : "default"}
+          data-testid="campaign-events-message"
+        >
+          <AlertDescription>{t(message.key)}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="space-y-5">
-        {events.map((event) => (
-          <EventCard
-            key={event.definition.groupId}
-            event={event}
-            syncedByKey={syncedByKey}
-            draftByKey={draftByKey}
-            update={update}
-          />
-        ))}
-      </div>
+
+      {events.length === 0 ? (
+        <p
+          className="text-muted-foreground"
+          data-testid="campaign-events-empty"
+        >
+          {t("progress.events.noEvents")}
+        </p>
+      ) : null}
+
+      {views.current ? (
+        <CurrentEventCard view={views.current} onPatch={patch} />
+      ) : null}
+
+      {views.list.length > 0 ? (
+        <section className="space-y-3" data-testid="campaign-events-list">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <div className="space-y-0.5">
+              <h2 className="font-semibold">
+                {t("progress.events.allEvents")}
+              </h2>
+              <p
+                className="text-xs text-muted-foreground"
+                data-testid="campaign-events-save-hint"
+              >
+                {t("progress.events.saveHint")}
+              </p>
+            </div>
+            <div
+              className="flex items-center gap-2"
+              data-testid="hide-completed-toggle"
+            >
+              <Switch
+                id="hide-completed-events"
+                checked={hideCompleted === "on"}
+                onCheckedChange={(checked) =>
+                  setHideCompleted(checked ? "on" : "off")
+                }
+              />
+              <Label htmlFor="hide-completed-events">
+                {t("progress.events.hideCompleted")}
+              </Label>
+            </div>
+          </div>
+          {listed.length > 0 ? (
+            <Accordion type="multiple">
+              {listed.map((view) => (
+                <EventListItem
+                  key={view.event.definition.groupId}
+                  view={view}
+                  onPatch={patch}
+                />
+              ))}
+            </Accordion>
+          ) : (
+            <div
+              className="flex flex-wrap items-center gap-3 rounded-xl border p-4 text-sm"
+              data-testid="campaign-events-all-completed"
+            >
+              <span className="flex-1">
+                {t("progress.events.allCompleted")}
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setHideCompleted("off")}
+              >
+                {t("progress.events.showCompleted")}
+              </Button>
+            </div>
+          )}
+        </section>
+      ) : null}
+
+      <UnsavedChangesBar
+        open={overrides.isDirty}
+        isSaving={overrides.isSaving}
+        message={t("progress.events.unsaved.message")}
+        saveLabel={t("progress.events.unsaved.save")}
+        discardLabel={t("progress.events.unsaved.discard")}
+        onSave={() => void save()}
+        onDiscard={() => {
+          overrides.discard()
+          setMessage(null)
+        }}
+      />
+      <UnsavedChangesGuard
+        when={overrides.isDirty}
+        title={t("progress.events.leave.title")}
+        description={t("progress.events.leave.description")}
+        stayLabel={t("progress.events.leave.stay")}
+        leaveLabel={t("progress.events.leave.leave")}
+      />
     </div>
+  )
+}
+
+function LoadError() {
+  const { t } = useTranslation()
+  return (
+    <Alert variant="destructive" data-testid="campaign-events-load-error">
+      <AlertDescription>{t("progress.loadError")}</AlertDescription>
+    </Alert>
   )
 }
 

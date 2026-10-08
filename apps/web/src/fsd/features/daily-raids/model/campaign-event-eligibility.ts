@@ -1,5 +1,8 @@
-// Split out of daily-raids-calc.ts (and, for the two builders below, use-daily-raids.ts) to keep
-// those files under this repo's max-lines rule.
+// Split out of daily-raids-calc.ts (and, for the builder below, use-daily-raids.ts) to keep
+// those files under this repo's max-lines rule. Event-campaign progress maps come from
+// `buildEffectiveCampaignEventProgress` (entities/player-data-override), which merges manual
+// overrides over synced progress and uses the same `campaignGroupId:type` key as
+// `campaignEventProgressKey`.
 
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
@@ -13,20 +16,6 @@ export function campaignEventProgressKey(
   type: string
 ) {
   return `${campaignGroupId}:${type}`
-}
-
-export function buildCampaignEventProgressByKey(
-  entries: readonly PlayerDataChunkDto<"campaign-events-progress">[number][]
-): ReadonlyMap<string, CampaignEventProgressEntry> {
-  return new Map(
-    entries.map((progress) => [
-      campaignEventProgressKey(progress.tacticusCampaignId, progress.type),
-      {
-        completedBattleCount: progress.completedBattleCount,
-        completedChallengeBattlesIds: progress.completedChallengeBattlesIds,
-      },
-    ])
-  )
 }
 
 export type CampaignProgressEntry = {

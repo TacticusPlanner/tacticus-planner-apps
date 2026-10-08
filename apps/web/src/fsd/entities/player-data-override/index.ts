@@ -22,6 +22,14 @@ export {
   type CampaignEventProgressOverrides,
 } from "./model/types"
 export {
+  buildEffectiveCampaignEventProgress,
+  campaignEventTrackKey,
+  resolveCampaignEventProgress,
+  type CampaignEventProgressSource,
+  type EffectiveCampaignEventProgress,
+  type SyncedCampaignEventProgress,
+} from "./model/campaign-event-progress"
+export {
   onslaughtReward,
   rewardKeys,
   type OnslaughtRewardKey,

@@ -281,18 +281,49 @@
     },
     "events": {
       "regular": "Reguläre Kämpfe",
-      "challenges": "Optionale Herausforderungen",
-      "regularProgress": "{{type}} regulärer Fortschritt",
-      "decrease": "Fortschritt verringern",
-      "increase": "Fortschritt erhöhen",
+      "challenges": "Herausforderungen",
+      "decrease": "{{type}}-Fortschritt verringern",
+      "increase": "{{type}}-Fortschritt erhöhen",
+      "slider": "Abgeschlossene reguläre {{type}}-Kämpfe",
       "max": "Max",
-      "useSynced": "Synchronisierten Wert verwenden",
-      "manual": "Manuell",
-      "synced": "Synchronisiert",
-      "save": "Speichern",
+      "maxFor": "{{type}} auf Maximum setzen",
+      "resetToSynced": "Auf synchronisiert zurücksetzen",
+      "source": {
+        "manual": "Manuell",
+        "synced": "Synchronisiert",
+        "none": "Keine synchronisierten Daten"
+      },
+      "challengeN": "Herausforderung {{n}}",
+      "challengeNode": "Knoten {{id}}",
+      "noBattles": "Keine Kämpfe in diesem Pfad.",
+      "coreCharacters": "Kerncharaktere",
+      "notOwned": "{{name}} (nicht im Besitz)",
+      "currentEvent": "Aktuelles Event",
+      "allEvents": "Alle Events",
+      "saveHint": "Ungespeicherte Änderungen erscheinen in einer Leiste am unteren Seitenrand.",
+      "hideCompleted": "Abgeschlossene Events ausblenden",
+      "allCompleted": "Alle Kampagnen-Events sind abgeschlossen.",
+      "showCompleted": "Abgeschlossene Events anzeigen",
+      "noEvents": "Es gibt noch keine Kampagnen-Events zum Verfolgen.",
+      "completed": "Abgeschlossen",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Herausforderungen"
+      },
+      "unsaved": {
+        "message": "Du hast ungespeicherte Änderungen",
+        "save": "Speichern",
+        "discard": "Verwerfen"
+      },
+      "leave": {
+        "title": "Ohne Speichern verlassen?",
+        "description": "Deine Änderungen am Kampagnen-Event wurden nicht gespeichert und gehen verloren.",
+        "stay": "Bleiben",
+        "leave": "Verlassen"
+      },
       "saved": "Kampagnen-Event-Fortschritt gespeichert.",
-      "saveError": "Kampagnen-Event-Fortschritt konnte nicht gespeichert werden.",
-      "conflict": "Der Kampagnen-Event-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an."
+      "saveError": "Kampagnen-Event-Fortschritt konnte nicht gespeichert werden. Deine Änderungen sind noch da; versuche es erneut.",
+      "conflict": "Der Kampagnen-Event-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen und deine Änderungen nicht gespeichert."
     }
   },
   "legendaryEvents": {
@@ -1290,6 +1321,34 @@
         "mythicMaterialSources": {
           "title": "Mythische Materialien",
           "content": "Wähle, welche Shop-Angebote die mythischen Materialien dieses Ziels liefern. Ohne Haken bei allen Angeboten werden Shops dafür nicht mehr eingeplant."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Kampagnen-Event-Fortschritt",
+          "content": "Korrigiere deinen Fortschritt in jedem Kampagnen-Event. Die täglichen Raids bestimmen damit, welche Event-Knoten du farmen kannst."
+        },
+        "current": {
+          "title": "Aktuelles Event",
+          "content": "Das gerade laufende Event ist hier angeheftet und bereits aufgeklappt. Nur dafür planen die täglichen Raids."
+        },
+        "editor": {
+          "title": "Einen Pfad bearbeiten",
+          "content": "Ändere die Anzahl regulärer Kämpfe schrittweise, ziehe den Balken oder nutze Max. Schalte Herausforderungen einzeln um. „Auf synchronisiert zurücksetzen“ macht einen manuellen Wert rückgängig."
+        },
+        "summary": {
+          "title": "Event-Übersichten",
+          "content": "Jedes Event zeigt seinen Fortschritt auf einen Blick und ob Werte manuell sind oder keine synchronisierten Daten haben. Klappe es zum Bearbeiten auf."
+        },
+        "hideCompleted": {
+          "title": "Abgeschlossene Events ausblenden",
+          "content": "Unfertige Events stehen oben. Schalte dies ein, um abgeschlossene auszublenden; die Auswahl wird in diesem Browser gespeichert."
+        },
+        "save": {
+          "title": "Änderungen speichern",
+          "content": "Sobald du etwas änderst, erscheint unten eine Leiste mit Speichern und Verwerfen. Vor dem Verlassen mit ungespeicherten Änderungen wirst du gefragt."
         }
       }
     }
