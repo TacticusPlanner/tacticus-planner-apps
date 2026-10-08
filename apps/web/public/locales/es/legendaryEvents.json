@@ -55,7 +55,9 @@
     "battles": "{{cleared}} / {{total}} batallas",
     "open": "Abrir la cuadrícula de progreso de {{lane}}",
     "noLane": "Sin progreso en este carril",
-    "unavailable": "Datos sincronizados no disponibles"
+    "unavailable": "Datos sincronizados no disponibles",
+    "objectives": "Objetivos cumplidos",
+    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} cumplidos"
   },
   "laneOverview": {
     "title": "Resumen de carriles",
@@ -83,6 +85,9 @@
     "perBattleValue": "{{points}} por batalla",
     "deductScored": "Descontar puntos conseguidos",
     "objectiveFilter": "Filtrar por objetivo",
+    "objectiveCount": "{{cleared}} / {{total}}",
+    "laneObjectives": "Objetivos de {{lane}}",
+    "laneObjectiveFilter": "Filtrar por objetivo de {{lane}}",
     "onlyUnlocked": "Solo desbloqueadas",
     "locked": "Bloqueada",
     "objectiveMet": "{{objective}}: cumple",

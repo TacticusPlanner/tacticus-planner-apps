@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import {
   filterLeaderboard,
+  objectiveClearedCounts,
   objectiveFilterKey,
   sortCrossLaneLeaderboard,
   sortLeaderboard,
@@ -11,12 +12,15 @@ import {
   type LeaderboardFigure,
   type LeaderboardRow,
   type LegendaryEvent,
-  type LegendaryEventLane,
+  type LegendaryEventLaneId,
   type LegendaryEventUnit,
   type ObjectiveIconModel,
 } from "@/entities/legendary-event"
 
-import type { LeaderboardControlsState } from "../legendary-event-page.view-model"
+import type {
+  LeaderboardControlsState,
+  ProgressGridViewModel,
+} from "../legendary-event-page.view-model"
 
 /** What a leaderboard body shows after the shared filters. */
 export type LeaderboardBody<Row> =
@@ -95,43 +99,58 @@ export function leaderboardFigure(
   return state.deductScored ? "remaining" : "perBattle"
 }
 
-/** One objective chip of the filter: keyed by its filter identity so equal objectives across
- *  lanes merge on Overview (design D7). */
+/** One objective chip of the filter: keyed by its filter identity, so the same objective in two
+ *  lanes is one filter entry (design D2). `count` is how many of the lane's battles have the
+ *  objective cleared, absent while the progress read failed. */
 export interface ObjectiveChip {
   key: string
   label: string
   icon: ObjectiveIconModel | undefined
+  count?: { cleared: number; total: number }
 }
 
-/** The chips of one lane (catalog order), or of every lane's objectives merged by key. */
+/** One lane's chips, in catalog `index` order. */
+export interface ObjectiveChipGroup {
+  laneId: LegendaryEventLaneId
+  chips: ObjectiveChip[]
+}
+
+/** One chip group per listed lane, with cleared counts when the progress grid is ready. */
 export function useObjectiveChips(): (
-  lanes: readonly Pick<LegendaryEventLane, "unitsRestrictions">[]
-) => ObjectiveChip[] {
+  event: LegendaryEvent,
+  laneIds: readonly LegendaryEventLaneId[],
+  progressGrid: ProgressGridViewModel
+) => ObjectiveChipGroup[] {
   const objectiveLabel = useObjectiveLabel()
   return useCallback(
-    (lanes) => {
-      const chips = new Map<string, ObjectiveChip>()
-      for (const lane of lanes) {
-        const objectives = [...lane.unitsRestrictions].sort(
+    (event, laneIds, progressGrid) =>
+      laneIds.map((laneId) => {
+        const objectives = [...event[laneId].unitsRestrictions].sort(
           (a, b) => a.index - b.index
         )
-        for (const objective of objectives) {
-          const key = objectiveFilterKey(objective.filter)
-          if (chips.has(key)) continue
-          chips.set(key, { key, ...objectiveLabel(objective) })
+        const progress =
+          progressGrid.kind === "ready" ? progressGrid.lanes[laneId] : undefined
+        const counts = progress
+          ? objectiveClearedCounts(progress, objectives.length)
+          : undefined
+        return {
+          laneId,
+          chips: objectives.map((objective, index) => ({
+            key: objectiveFilterKey(objective.filter),
+            ...objectiveLabel(objective),
+            ...(progress && counts
+              ? {
+                  count: {
+                    cleared: counts[index] ?? 0,
+                    total: progress.battles.length,
+                  },
+                }
+              : {}),
+          })),
         }
-      }
-      return [...chips.values()]
-    },
+      }),
     [objectiveLabel]
   )
-}
-
-/** The lanes of an event, for the Overview chip union. */
-export function eventLanes(
-  event: LegendaryEvent
-): Pick<LegendaryEventLane, "unitsRestrictions">[] {
-  return [event.alpha, event.beta, event.gamma]
 }
 
 /** The localized display name of a catalog unit, falling back to its catalog name. */

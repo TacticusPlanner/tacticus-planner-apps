@@ -16,6 +16,7 @@ import {
   type CrossLaneLeaderboardRow,
   type LeaderboardFigure,
   type LegendaryEvent,
+  type LegendaryEventLaneId,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
@@ -25,29 +26,35 @@ import {
   LeaderboardRank,
   LeaderboardRarity,
   LeaderboardUnit,
+  ObjectiveIndicator,
 } from "../leaderboard/leaderboard-parts"
 import {
   crossLaneLeaderboardBody,
-  eventLanes,
   leaderboardFigure,
   useLeaderboardUnitName,
   useObjectiveChips,
+  type ObjectiveChipGroup,
 } from "../leaderboard/leaderboard.view-model"
-import type { LeaderboardViewModel } from "../legendary-event-page.view-model"
+import type {
+  LeaderboardViewModel,
+  ProgressGridViewModel,
+} from "../legendary-event-page.view-model"
 
 /**
  * The Overview Eligibility leaderboard (spec: cross-lane eligibility leaderboard on Overview):
  * one row per unit allowed on at least one lane with its Alpha / Beta / Gamma figures ("—" where
- * a lane disallows it), ordered by their sum. Shares the controls bar and its state with the lane
- * leaderboards; the chips are the union of the three lanes' objectives.
+ * a lane disallows it), each under that lane's objective indicators, ordered by their sum. Shares
+ * the controls bar and its state with the lane leaderboards; the chips are grouped per lane.
  */
 export function CrossLaneLeaderboard({
   event,
   leaderboard,
+  progressGrid,
   layout,
 }: {
   event: LegendaryEvent
   leaderboard: LeaderboardViewModel
+  progressGrid: ProgressGridViewModel
   layout: "table" | "list"
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
@@ -56,6 +63,7 @@ export function CrossLaneLeaderboard({
   const ready = leaderboard.kind === "ready"
   const rosterAvailable = ready && leaderboard.rosterAvailable
   const figure = leaderboardFigure(leaderboard)
+  const groups = objectiveChips(event, LEGENDARY_EVENT_LANE_IDS, progressGrid)
   const clearFilter = () => leaderboard.onSelectedObjectivesChange(new Set())
 
   let body: ReactNode
@@ -86,9 +94,19 @@ export function CrossLaneLeaderboard({
     body =
       result.kind === "rows" ? (
         layout === "table" ? (
-          <CrossLaneTable figure={figure} nameOf={nameOf} rows={result.rows} />
+          <CrossLaneTable
+            figure={figure}
+            groups={groups}
+            nameOf={nameOf}
+            rows={result.rows}
+          />
         ) : (
-          <CrossLaneList figure={figure} nameOf={nameOf} rows={result.rows} />
+          <CrossLaneList
+            figure={figure}
+            groups={groups}
+            nameOf={nameOf}
+            rows={result.rows}
+          />
         )
       ) : (
         <LeaderboardEmptyBody body={result} onClearFilter={clearFilter} />
@@ -108,13 +126,45 @@ export function CrossLaneLeaderboard({
         {t("leaderboard.title")}
       </h2>
       <LeaderboardControls
-        objectives={objectiveChips(eventLanes(event))}
+        groups={groups}
         progressAvailable={!ready || leaderboard.progressAvailable}
         rosterAvailable={!ready || rosterAvailable}
         state={leaderboard}
       />
       {body}
     </section>
+  )
+}
+
+/** The lane's objective indicators for one row: met when the unit satisfies the objective (an
+ *  objective's satisfaction is a unit property, so `satisfiedKeys` is exact per lane); nothing for
+ *  a lane that disallows the unit. */
+function LaneObjectives({
+  row,
+  laneId,
+  groups,
+}: {
+  row: CrossLaneLeaderboardRow
+  laneId: LegendaryEventLaneId
+  groups: readonly ObjectiveChipGroup[]
+}) {
+  if (!row.lanes[laneId]) return null
+  const chips = groups.find((group) => group.laneId === laneId)?.chips ?? []
+  return (
+    <span
+      className="inline-flex items-center"
+      data-testid="leaderboard-lane-objectives"
+    >
+      {chips.map((chip) => (
+        <ObjectiveIndicator
+          icon={chip.icon}
+          key={chip.key}
+          label={chip.label}
+          met={row.satisfiedKeys.includes(chip.key)}
+          size="sm"
+        />
+      ))}
+    </span>
   )
 }
 
@@ -145,10 +195,12 @@ function useLaneFigure(figure: LeaderboardFigure) {
 
 function CrossLaneTable({
   rows,
+  groups,
   figure,
   nameOf,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
+  groups: readonly ObjectiveChipGroup[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
 }) {
@@ -206,13 +258,26 @@ function CrossLaneTable({
                 const { text, label } = laneFigure(row, laneId)
                 return (
                   <TableCell
-                    aria-label={label}
-                    className="text-right font-semibold tabular-nums"
+                    className="text-right"
                     data-lane={laneId}
-                    data-testid="leaderboard-lane-points"
+                    data-testid="leaderboard-lane-cell"
                     key={laneId}
                   >
-                    {text}
+                    <span className="flex flex-col items-end gap-0.5">
+                      <LaneObjectives
+                        groups={groups}
+                        laneId={laneId}
+                        row={row}
+                      />
+                      <span
+                        aria-label={label}
+                        className="font-semibold tabular-nums"
+                        data-lane={laneId}
+                        data-testid="leaderboard-lane-points"
+                      >
+                        {text}
+                      </span>
+                    </span>
                   </TableCell>
                 )
               })}
@@ -226,10 +291,12 @@ function CrossLaneTable({
 
 function CrossLaneList({
   rows,
+  groups,
   figure,
   nameOf,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
+  groups: readonly ObjectiveChipGroup[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
 }) {
@@ -252,32 +319,37 @@ function CrossLaneList({
               <LeaderboardRank row={row} />
             </span>
           </div>
-          <div className="flex min-w-0 items-baseline justify-between gap-2 text-sm">
+          <div className="flex min-w-0 flex-col gap-1 text-sm">
             <span className="text-xs text-muted-foreground">
               {t(`leaderboard.${figure}`)}
             </span>
-            <span className="flex items-baseline gap-3">
-              {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
-                const { text, label } = laneFigure(row, laneId)
-                return (
+            {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
+              const { text, label } = laneFigure(row, laneId)
+              return (
+                <span
+                  className="flex min-w-0 items-center justify-between gap-2"
+                  data-lane={laneId}
+                  data-testid="leaderboard-lane-cell"
+                  key={laneId}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="w-12 shrink-0 text-xs text-muted-foreground"
+                  >
+                    {t(`lanes.${laneId}`)}
+                  </span>
+                  <LaneObjectives groups={groups} laneId={laneId} row={row} />
                   <span
                     aria-label={label}
-                    className="flex items-baseline gap-1"
+                    className="ml-auto font-semibold tabular-nums"
                     data-lane={laneId}
                     data-testid="leaderboard-lane-points"
-                    key={laneId}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="text-xs text-muted-foreground"
-                    >
-                      {t(`lanes.${laneId}`)}
-                    </span>
-                    <span className="font-semibold tabular-nums">{text}</span>
+                    {text}
                   </span>
-                )
-              })}
-            </span>
+                </span>
+              )
+            })}
           </div>
         </li>
       ))}

@@ -72,10 +72,12 @@ function Harness({
   rows,
   layout,
   laneId = "alpha",
+  progressGrid = fiveCleared,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
   laneId?: LegendaryEventLaneId
+  progressGrid?: ProgressGridViewModel
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -96,6 +98,7 @@ function Harness({
         selectedObjectives,
         onSelectedObjectivesChange: setSelectedObjectives,
       }}
+      progressGrid={progressGrid}
     />
   )
 }
@@ -113,6 +116,7 @@ function renderLeaderboard(
         owned,
         progress
       )}
+      progressGrid={progress}
       {...props}
     />,
     { wrapper: i18nWrapper(i18n) }
@@ -341,18 +345,39 @@ describe("LeaderboardSection", () => {
   })
 
   it("deducts nothing and says so when the progress read failed", () => {
-    renderLeaderboard({
-      rows: buildLeaderboardRows(
-        lysanderEvent,
-        legendaryEventCharacters,
-        owned,
-        { kind: "unavailable" }
-      ),
-    })
+    renderLeaderboard({}, { kind: "unavailable" })
     expect(
       screen.getByTestId("leaderboard-progress-unavailable")
     ).toHaveTextContent("Synced progress unavailable")
     expect(figure(row("bloodDante"))).toBe(2736)
+    expect(screen.queryAllByTestId("leaderboard-objective-count")).toEqual([])
+  })
+
+  it("lists one unlabeled chip row for the lane, each chip with its cleared count", () => {
+    renderLeaderboard()
+    expect(screen.getAllByTestId("leaderboard-objective-group")).toHaveLength(1)
+    expect(screen.queryByTestId("leaderboard-objective-group-label")).toBeNull()
+    expect(
+      screen
+        .getAllByTestId("leaderboard-objective-count")
+        .map((count) => count.textContent)
+    ).toEqual(["5 / 18", "5 / 18", "5 / 18", "5 / 18", "5 / 18"])
+    expect(chip(flyingKey)).toHaveTextContent("Flying5 / 18")
+  })
+
+  it("marks Healer and Mechanic units with the trait icon after the name", () => {
+    renderLeaderboard()
+    const mechanic = within(row("admecDominus")).getByTestId(
+      "leaderboard-trait"
+    )
+    expect(mechanic.dataset.trait).toBe("Mechanic")
+    expect(mechanic).toHaveTextContent("Mechanic")
+    expect(mechanic.querySelector("img")?.getAttribute("src")).toContain(
+      "ui_icon_trait_mechanic_01"
+    )
+    expect(
+      within(row("bloodDante")).queryByTestId("leaderboard-trait")
+    ).toBeNull()
   })
 
   it("shows the no-eligible body for a lane that allows nobody", () => {

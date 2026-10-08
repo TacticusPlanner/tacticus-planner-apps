@@ -43,7 +43,7 @@ describe("useNavItems", () => {
     events.state = { status: "loading", retry: vi.fn(), nowMs: NOW }
   })
 
-  it("lists two active events, by run start, before All events", async () => {
+  it("lists All events, then two active events by run start", async () => {
     events.state = {
       status: "ready",
       data: [uthar, lysanderEvent],
@@ -53,33 +53,44 @@ describe("useNavItems", () => {
     const children = legendaryEventsChildren(await renderNavItems())
 
     expect(children?.map((child) => child.path)).toEqual([
+      "/legendary-events",
       "/legendary-events/astarLysander",
       "/legendary-events/votanUthar",
-      "/legendary-events",
     ])
     expect(children?.[0]).toMatchObject({
+      labelKey: "legendaryEvents.tabs.allEvents",
+      isLandingPage: true,
+    })
+    expect(children?.[1]).toMatchObject({
       label: "Lysander",
       description: "Active Legendary Event with your synced progress",
       iconSrc: expect.stringContaining("astar_lysander"),
     })
-    expect(children?.at(-1)).toMatchObject({
-      labelKey: "legendaryEvents.tabs.allEvents",
-      isLandingPage: true,
-    })
   })
 
-  it("keeps only All events when no event is active", async () => {
+  it("lists upcoming and archived events after the active ones, each with its lifecycle", async () => {
+    // Uthar archived (finished), Lysander upcoming before its 2026-08-30 start.
     events.state = {
       status: "ready",
-      data: [lysanderEvent],
+      data: [lysanderEvent, { ...utharEvent, finished: true }],
       retry: vi.fn(),
-      nowMs: Date.parse("2026-12-01T00:00:00Z"),
+      nowMs: Date.parse("2026-08-01T00:00:00Z"),
     }
-    expect(
-      legendaryEventsChildren(await renderNavItems())?.map(
-        (child) => child.path
-      )
-    ).toEqual(["/legendary-events"])
+    const children = legendaryEventsChildren(await renderNavItems())
+
+    expect(children?.map((child) => child.path)).toEqual([
+      "/legendary-events",
+      "/legendary-events/astarLysander",
+      "/legendary-events/votanUthar",
+    ])
+    expect(children?.[1]).toMatchObject({
+      label: "Lysander",
+      description: "Upcoming Legendary Event",
+    })
+    expect(children?.[2]).toMatchObject({
+      label: "Uthar",
+      description: "Past Legendary Event with your synced progress",
+    })
   })
 
   it("keeps only All events while the read is pending or failed", async () => {

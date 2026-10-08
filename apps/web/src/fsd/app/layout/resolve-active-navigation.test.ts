@@ -28,7 +28,7 @@ describe("resolveActiveNavigation", () => {
     expect(activeChild).toBeUndefined()
   })
 
-  it("keeps All events active on an archived event's detail route", () => {
+  it("keeps All events active on an unlisted event's detail route", () => {
     const { activeChild, activeItem } = resolveActiveNavigation(
       navItems,
       "/legendary-events/astarLysander"
@@ -41,18 +41,18 @@ describe("resolveActiveNavigation", () => {
     ).toBe("legendaryEvents.tabs.allEvents")
   })
 
-  it("resolves an active event's own child on its detail route", () => {
+  it("resolves an event's own child on its detail route although All events is listed first", () => {
     const items = navItems.map((item) =>
       item.path === "/legendary-events"
         ? {
             ...item,
             children: [
+              ...(item.children ?? []),
               {
                 path: "/legendary-events/votanUthar",
                 label: "Uthar",
-                description: "Active",
+                description: "Archived",
               },
-              ...(item.children ?? []),
             ],
           }
         : item

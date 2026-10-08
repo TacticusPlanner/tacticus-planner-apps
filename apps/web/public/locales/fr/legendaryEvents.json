@@ -55,7 +55,9 @@
     "battles": "{{cleared}} / {{total}} combats",
     "open": "Ouvrir la grille de progression de {{lane}}",
     "noLane": "Aucune progression dans cette voie",
-    "unavailable": "Données synchronisées indisponibles"
+    "unavailable": "Données synchronisées indisponibles",
+    "objectives": "Objectifs remplis",
+    "objectiveCleared": "{{objective}} : {{cleared}} / {{total}} remplis"
   },
   "laneOverview": {
     "title": "Aperçu des voies",
@@ -83,6 +85,9 @@
     "perBattleValue": "{{points}} par combat",
     "deductScored": "Déduire les points marqués",
     "objectiveFilter": "Filtrer par objectif",
+    "objectiveCount": "{{cleared}} / {{total}}",
+    "laneObjectives": "Objectifs {{lane}}",
+    "laneObjectiveFilter": "Filtrer par objectif {{lane}}",
     "onlyUnlocked": "Débloquées uniquement",
     "locked": "Verrouillée",
     "objectiveMet": "{{objective}} : rempli",

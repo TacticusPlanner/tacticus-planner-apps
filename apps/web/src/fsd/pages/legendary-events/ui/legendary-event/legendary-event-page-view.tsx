@@ -37,6 +37,7 @@ export function LegendaryEventPageView({
         >
           <RunStatusCard {...props} />
           <LaneSummary
+            event={props.event}
             onJumpToLane={props.onJumpToLane}
             progressGrid={props.progressGrid}
           />
@@ -44,6 +45,7 @@ export function LegendaryEventPageView({
             event={props.event}
             layout={isMobile ? "list" : "table"}
             leaderboard={props.leaderboard}
+            progressGrid={props.progressGrid}
           />
         </div>
       ) : (
@@ -64,6 +66,7 @@ export function LegendaryEventPageView({
             laneId={selectedTab}
             layout={isMobile ? "list" : "table"}
             leaderboard={props.leaderboard}
+            progressGrid={props.progressGrid}
           />
         </div>
       )}

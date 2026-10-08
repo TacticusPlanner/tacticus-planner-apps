@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
+import { findActiveChild } from "./find-active-child"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemLabel, type NavItem } from "./nav-items"
 
@@ -32,11 +33,7 @@ export function SectionTabs({ item }: { item: NavItem }) {
 
   if (!children?.length) return null
 
-  const active =
-    children.find(
-      (child) =>
-        pathname === child.path || pathname.startsWith(child.path + "/")
-    )?.path ?? children[0].path
+  const active = findActiveChild(children, pathname)?.path ?? children[0].path
 
   return (
     <Tabs

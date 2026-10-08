@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Lock } from "lucide-react"
-import { characterIcon } from "@workspace/game-catalog"
+import { characterIcon, traitIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -13,7 +13,11 @@ import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import type { LeaderboardBody } from "./leaderboard.view-model"
 
-/** Portrait, localized name and, for a unit the roster lacks, the locked marker. */
+/** The traits a leaderboard marks after the unit's name (spec: trait markers). */
+const LEADERBOARD_TRAIT_MARKERS = ["Healer", "Mechanic"] as const
+
+/** Portrait, localized name, the Healer / Mechanic markers and, for a unit the roster lacks, the
+ *  locked marker. */
 export function LeaderboardUnit({
   row,
   name,
@@ -21,7 +25,10 @@ export function LeaderboardUnit({
   row: LeaderboardUnitRow
   name: string
 }) {
-  const { t } = useTranslation("legendaryEvents")
+  const { t } = useTranslation(["legendaryEvents", "traits"])
+  const markers = LEADERBOARD_TRAIT_MARKERS.filter((trait) =>
+    row.unit.traits.includes(trait)
+  )
   return (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
@@ -38,6 +45,21 @@ export function LeaderboardUnit({
       >
         {name}
       </span>
+      {markers.map((trait) => {
+        const label = t(`traits:${trait}`, { defaultValue: trait })
+        return (
+          <span
+            className="inline-flex shrink-0"
+            data-testid="leaderboard-trait"
+            data-trait={trait}
+            key={trait}
+            title={label}
+          >
+            <EntityIcon alt="" className="size-4" src={traitIcon(trait)} />
+            <span className="sr-only">{label}</span>
+          </span>
+        )
+      })}
       {row.ownership === "locked" ? (
         <span
           className="inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs text-muted-foreground"
@@ -83,10 +105,13 @@ export function ObjectiveIndicator({
   met,
   label,
   icon,
+  size = "md",
 }: {
   met: boolean
   label: string
   icon: ObjectiveIconModel | undefined
+  /** `sm` for the Overview lane cells, where five indicators sit above each figure. */
+  size?: "sm" | "md"
 }) {
   const { t } = useTranslation("legendaryEvents")
   const text = t(
@@ -95,13 +120,20 @@ export function ObjectiveIndicator({
   )
   return (
     <span
-      className="inline-flex size-6 items-center justify-center"
+      className={cn(
+        "inline-flex items-center justify-center",
+        size === "sm" ? "size-5" : "size-6"
+      )}
       data-met={met}
       data-testid="leaderboard-objective"
       title={text}
     >
       {icon ? (
-        <ObjectiveIcon className="size-5" icon={icon} muted={!met} />
+        <ObjectiveIcon
+          className={size === "sm" ? "size-4" : "size-5"}
+          icon={icon}
+          muted={!met}
+        />
       ) : (
         <span
           aria-hidden="true"

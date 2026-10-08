@@ -299,7 +299,9 @@
     "tabs": {
       "allEvents": "Alle Events",
       "allEventsDescription": "Jedes Legendäre Event: aktiv, kommend und archiviert",
-      "activeEventDescription": "Aktives Legendäres Event mit deinem synchronisierten Fortschritt"
+      "activeEventDescription": "Aktives Legendäres Event mit deinem synchronisierten Fortschritt",
+      "upcomingEventDescription": "Bevorstehendes Legendäres Event",
+      "archivedEventDescription": "Vergangenes Legendäres Event mit deinem synchronisierten Fortschritt"
     }
   },
   "home": {

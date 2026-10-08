@@ -7,7 +7,10 @@ import type {
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
-import type { LeaderboardViewModel } from "../legendary-event-page.view-model"
+import type {
+  LeaderboardViewModel,
+  ProgressGridViewModel,
+} from "../legendary-event-page.view-model"
 import { LeaderboardControls } from "./leaderboard-controls"
 import { LeaderboardList } from "./leaderboard-list"
 import { LeaderboardEmptyBody } from "./leaderboard-parts"
@@ -29,11 +32,13 @@ export function LeaderboardSection({
   event,
   laneId,
   leaderboard,
+  progressGrid,
   layout,
 }: {
   event: LegendaryEvent
   laneId: LegendaryEventLaneId
   leaderboard: LeaderboardViewModel
+  progressGrid: ProgressGridViewModel
   layout: "table" | "list"
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
@@ -41,7 +46,8 @@ export function LeaderboardSection({
   const objectiveChips = useObjectiveChips()
   const ready = leaderboard.kind === "ready"
   const rosterAvailable = ready && leaderboard.rosterAvailable
-  const objectives = objectiveChips([event[laneId]])
+  const groups = objectiveChips(event, [laneId], progressGrid)
+  const objectives = groups[0]?.chips ?? []
   const figure = leaderboardFigure(leaderboard)
   const clearFilter = () => leaderboard.onSelectedObjectivesChange(new Set())
 
@@ -106,7 +112,7 @@ export function LeaderboardSection({
         {t("leaderboard.title")}
       </h2>
       <LeaderboardControls
-        objectives={objectives}
+        groups={groups}
         progressAvailable={!ready || leaderboard.progressAvailable}
         rosterAvailable={!ready || rosterAvailable}
         state={leaderboard}
