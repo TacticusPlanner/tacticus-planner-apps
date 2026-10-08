@@ -604,7 +604,13 @@ The navigation model SHALL include a top-level **Legendary Events** section at `
 #### Scenario: Desktop sidebar lists Events
 
 - **WHEN** a signed-in user views the desktop sidebar
-- **THEN** Legendary Events appears after Progress and before Guild, and activating it lands on `/legendary-events`
+- **THEN** Legendary Events appears after Progress and before Guild, and activating it for the first time in the session lands on `/legendary-events`
+
+#### Scenario: Sidebar returns to the last-visited event
+
+- **GIVEN** the user last visited `/legendary-events/astarLysander` in this section
+- **WHEN** they activate Legendary Events in the desktop sidebar again
+- **THEN** they land on `/legendary-events/astarLysander`, per the last-visited-child rule
 
 #### Scenario: Secondary nav lists active events then All events
 

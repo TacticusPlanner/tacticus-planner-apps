@@ -30,7 +30,7 @@ A lane tab SHALL show a Teams section, between the lane overview and the synced 
 
 ### Requirement: Team editor derives covered objectives from members
 
-The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog on desktop and a bottom sheet on mobile. It SHALL offer only the lane's allowed units in a picker where each unit shows its name, portrait, the objective icons it satisfies (muted when not), its points per battle and locked styling when not owned; the picker SHALL be searchable by name and SHALL have an "only unlocked" filter defaulting to the page's shared value. The user SHALL select up to five members and may mark one further unit as reserve. The covered objectives SHALL be derived as the objectives every non-reserve member satisfies, shown as checked chips the user can untick; a derived objective SHALL be re-added when the members change so that it derives again, and an objective that no longer derives SHALL be removed from the set. A team MAY be saved with zero covered objectives. The name SHALL default to the covered objective labels joined by " · " (or "Team N") and be editable, 1–60 characters. Save SHALL be unavailable with zero members.
+The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog on desktop and a bottom sheet on mobile. It SHALL offer only the lane's allowed units in a picker where each unit shows its name, portrait, the objective icons it satisfies (muted when not), its points per battle and locked styling when not owned; the picker SHALL be searchable by name and SHALL have an "only unlocked" filter defaulting to the page's shared value. The user SHALL select up to five members and may mark one further unit as reserve. The covered objectives SHALL be derived as the objectives every non-reserve member satisfies, shown as checked chips the user can untick. On every member change the set SHALL be reconciled against the previous derivation: an objective that still derives keeps the user's tick or untick, an objective that newly derives (it did not derive from the previous members) is ticked, and an objective that no longer derives is removed. On opening a saved team the previous derivation is that of the stored members, so an objective that derives but is not stored stays unticked. A team MAY be saved with zero covered objectives. The name SHALL default to the covered objective labels joined by " · " (or "Team N") and be editable, 1–60 characters. Save SHALL be unavailable with zero members.
 
 #### Scenario: Coverage follows the members
 
@@ -43,6 +43,12 @@ The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog
 - **GIVEN** the user unticks Min 5 Hits and saves
 - **WHEN** the team is edited again with the same members
 - **THEN** Melee is checked and Min 5 Hits is shown unchecked
+
+#### Scenario: Newly derived objective is ticked again
+
+- **GIVEN** units A and B both satisfy Min 5 Hits and only A satisfies No Resilient, the user selected A then B (so No Resilient dropped) and unticked Min 5 Hits
+- **WHEN** the user removes B
+- **THEN** No Resilient is ticked again because it newly derives, and Min 5 Hits stays unticked because it still derives and the user's untick is kept
 
 #### Scenario: Sixth member is refused
 
