@@ -82,6 +82,20 @@ const lysanderProgress = {
   beta: { encounters: [] },
   gamma: null,
 }
+// Signed in, with an empty plan per event (the Teams section's own states are covered in
+// teams-section.test.tsx).
+vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
+vi.mock("@/shared/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/api")>()),
+  apiGet: async (path: string) => ({
+    eventId: path.split("/").at(-1),
+    revision: 0,
+    catalogVersion: "1",
+    notes: null,
+    showPaidOptions: false,
+    teams: [],
+  }),
+}))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => {
     tour.steps = steps
@@ -232,7 +246,7 @@ describe("LegendaryEventPage", () => {
     )
   })
 
-  it("shows one lane per tab in the order overview, progress grid, leaderboard", async () => {
+  it("shows one lane per tab in the order overview, teams, progress grid, leaderboard", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")
 
@@ -240,9 +254,15 @@ describe("LegendaryEventPage", () => {
     expect(selectedTab()).toHaveTextContent("Beta")
     expect(laneLabels()).toEqual(["beta"])
     const overview = screen.getByTestId("legendary-event-lane-overview")
+    const teams = screen.getByTestId("legendary-event-teams")
     const grid = screen.getByTestId("legendary-event-progress-grid")
     const leaderboard = await screen.findByTestId("legendary-event-leaderboard")
-    expect(follows(overview, grid)).toBe(true)
+    expect(teams).toHaveAttribute("data-lane", "beta")
+    expect(
+      await screen.findByTestId("legendary-event-teams-empty")
+    ).toHaveTextContent("No teams on Beta yet.")
+    expect(follows(overview, teams)).toBe(true)
+    expect(follows(teams, grid)).toBe(true)
     expect(follows(grid, leaderboard)).toBe(true)
     expect(lanesOf("progress-lane")).toEqual(["beta"])
     expect(lanesOf("leaderboard-lane")).toEqual(["beta"])
@@ -345,6 +365,7 @@ describe("LegendaryEventPage", () => {
       '[data-testid="legendary-event-lane-summary"]',
       '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-lane-overview"]',
+      '[data-testid="legendary-event-teams"]',
       '[data-testid="legendary-event-progress-grid"]',
       '[data-testid="legendary-event-leaderboard"]',
     ])

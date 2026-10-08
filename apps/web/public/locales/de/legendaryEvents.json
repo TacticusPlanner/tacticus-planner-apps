@@ -128,6 +128,75 @@
       "body": "Die erzielten Punkte eines Kampfes sind sein Highscore plus die Punkte jedes Ziels, das du darin erfüllt hast, einschließlich des Bonus für „Alle besiegen“. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
     }
   },
+  "teams": {
+    "title": "Teams",
+    "add": "Team hinzufügen",
+    "empty": "Noch keine Teams auf {{lane}}.",
+    "loading": "Teams werden geladen …",
+    "loadError": "Deine Teams konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "partialBadge": "{{members}}/{{max}}",
+    "reserve": "Reserve",
+    "members": "Mitglieder",
+    "pointsPerBattle": "{{points}} Punkte pro Kampf",
+    "notCovered": "Von den aktuellen Mitgliedern nicht abgedeckt",
+    "dragHandle": "{{name}} zum Umsortieren ziehen",
+    "depth": {
+      "label": "Kampftiefe",
+      "set": "Tiefe festlegen",
+      "clear": "Tiefe löschen",
+      "decrease": "Ein Kampf weniger",
+      "increase": "Ein Kampf mehr"
+    },
+    "menu": {
+      "label": "Aktionen für {{name}}",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten"
+    },
+    "editor": {
+      "createTitle": "Team zu {{lane}} hinzufügen",
+      "editTitle": "{{name}} bearbeiten",
+      "name": "Name",
+      "nameTooLong": "Höchstens {{max}} Zeichen.",
+      "defaultName": "Team {{number}}",
+      "members": "Mitglieder",
+      "coverage": "Abgedeckte Ziele",
+      "coverageHint": "Ziele, die jedes Mitglied erfüllt. Entferne das Häkchen bei einem Ziel, auf das dieses Team nicht spielt.",
+      "noCoverage": "Diese Mitglieder teilen kein Ziel. Das Team erzielt trotzdem Abschusspunkte.",
+      "noMembers": "Wähle Einheiten, um zu sehen, welche Ziele sie gemeinsam abdecken.",
+      "depth": "Kampftiefe für Durchlauf {{run}}",
+      "save": "Team speichern",
+      "saving": "Wird gespeichert …",
+      "cancel": "Abbrechen"
+    },
+    "picker": {
+      "count": "{{members}}/5",
+      "search": "Einheiten suchen",
+      "searchPlaceholder": "Nach Namen suchen",
+      "onlyUnlocked": "Nur freigeschaltete",
+      "empty": "Keine Einheit passt.",
+      "locked": "Gesperrt",
+      "add": "{{name}} hinzufügen",
+      "remove": "{{name}} entfernen",
+      "setReserve": "{{name}} als Reserve festlegen",
+      "unsetReserve": "{{name}} als Reserve entfernen",
+      "full": "Ein Team hat höchstens fünf Mitglieder. Entferne eines, um ein anderes hinzuzufügen.",
+      "points": "{{points}} Pkt."
+    },
+    "toasts": {
+      "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",
+      "deleted": "{{name}} gelöscht.",
+      "error": "Deine Teams konnten nicht gespeichert werden."
+    },
+    "deleteConfirm": {
+      "title": "{{name}} löschen?",
+      "description": "Das Team und seine Kampftiefen werden aus dem Plan dieses Events entfernt.",
+      "confirm": "Löschen",
+      "cancel": "Abbrechen"
+    }
+  },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
     "minHits_other": "Mind. {{count}} Treffer",
@@ -175,6 +244,10 @@
         "laneOverview": {
           "title": "Lane-Übersicht",
           "content": "Die erlaubten Einheiten der Lane, Kill-Punkte, fünf Ziele mit ihren Punkten und der Wert jedes Kampfes."
+        },
+        "teams": {
+          "title": "Teams",
+          "content": "Stelle die Teams zusammen, die du auf dieser Bahn spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team voraussichtlich kommt. Mit „Team hinzufügen“ legst du eines an."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",

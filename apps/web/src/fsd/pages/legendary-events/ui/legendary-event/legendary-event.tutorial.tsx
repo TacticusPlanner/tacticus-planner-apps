@@ -12,6 +12,7 @@ const EVENT_TOUR_TARGETS = {
   laneSummary: '[data-testid="legendary-event-lane-summary"]',
   overviewLeaderboard: '[data-testid="legendary-event-overview-leaderboard"]',
   laneOverview: '[data-testid="legendary-event-lane-overview"]',
+  teams: '[data-testid="legendary-event-teams"]',
   progressGrid: '[data-testid="legendary-event-progress-grid"]',
   leaderboard: '[data-testid="legendary-event-leaderboard"]',
 } as const
@@ -34,8 +35,8 @@ function waitForElement(selector: string, timeoutMs: number): Promise<void> {
 /**
  * The event page tour (spec: the Events pages have Joyride tours): the tab strip, Run status, the
  * Overview lane summary and cross-lane leaderboard, then, after switching to Alpha through
- * `selectTab`, Alpha's lane overview, progress grid and leaderboard. Desktop and mobile share the
- * steps.
+ * `selectTab`, Alpha's lane overview, Teams section (with its Add team button), progress grid and
+ * leaderboard. Desktop and mobile share the steps.
  */
 export function useLegendaryEventTutorial(
   selectTab: (tab: LegendaryEventTab) => void
@@ -63,6 +64,7 @@ export function useLegendaryEventTutorial(
           await waitForElement(EVENT_TOUR_TARGETS.laneOverview, 1000)
         },
       },
+      step("teams", "top"),
       step("progressGrid", "top"),
       step("leaderboard", "top"),
     ]

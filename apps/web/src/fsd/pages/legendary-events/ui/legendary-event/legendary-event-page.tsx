@@ -6,6 +6,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
+  currentLegendaryEventRun,
   type LegendaryEventLaneId,
   useLegendaryEvent,
   useLegendaryEventCommon,
@@ -14,6 +15,7 @@ import {
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
 } from "@/entities/legendary-event"
+import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -28,6 +30,7 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { progressHeadingId } from "./progress/progress-heading"
+import { buildTeamsSectionState } from "./teams/teams.view-model"
 
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
  *  page (design D3). An unknown id replaces the route with the hub. The content is keyed by the
@@ -59,6 +62,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const units = readValue(useLegendaryEventUnits())
   const roster = readValue(useLegendaryEventRoster())
   const progressValue = readValue(progress)
+  // Depth writes target the synced run, or run 1 without a synced entry (design D8).
+  const run = currentLegendaryEventRun(
+    typeof progressValue === "object" ? progressValue : undefined
+  )
+  const plan = useLegendaryEventPlan({ eventId, run })
   const eventData = event.status === "ready" ? event.data : undefined
   const progressGrid = useMemo(
     () =>
@@ -155,6 +163,16 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       onSelectedObjectivesChange: setSelectedObjectives,
     },
     progressGrid,
+    teams: {
+      state: buildTeamsSectionState({
+        enabled: plan.enabled,
+        query: plan.query,
+        units,
+        roster,
+      }),
+      run,
+      actions: plan,
+    },
   }
 
   return <LegendaryEventPageView {...viewModel} isMobile={isMobile} />

@@ -7,11 +7,12 @@ import { CrossLaneLeaderboard } from "./overview/cross-lane-leaderboard"
 import { LaneSummary } from "./overview/lane-summary"
 import { ProgressSection } from "./progress/progress-section"
 import { RunStatusCard } from "./run-status-card"
+import { TeamsSection } from "./teams/teams-section"
 
 /**
  * The event page on both forms (design D3): header, the tab strip, then the Overview tab (Run
- * status, lane summary, cross-lane leaderboard) or a lane tab (lane overview, synced progress,
- * then the lane's leaderboard). The forms differ only in the strip's stickiness and in the
+ * status, lane summary, cross-lane leaderboard) or a lane tab (lane overview, Teams, synced
+ * progress, then the lane's leaderboard). The forms differ only in the strip's stickiness and in the
  * table-versus-cards rendering of the leaderboard and grid.
  */
 export function LegendaryEventPageView({
@@ -55,6 +56,13 @@ export function LegendaryEventPageView({
           data-testid="legendary-event-lane"
         >
           <LaneOverview event={props.event} laneIds={[selectedTab]} />
+          <TeamsSection
+            isMobile={isMobile}
+            lane={props.event[selectedTab]}
+            laneId={selectedTab}
+            onlyUnlocked={props.leaderboard.onlyUnlocked}
+            teams={props.teams}
+          />
           <ProgressSection
             event={props.event}
             laneId={selectedTab}

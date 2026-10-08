@@ -168,4 +168,33 @@ describe("useAnalyticsActions", () => {
       view_mode: "mobile",
     })
   })
+
+  it("captures the Legendary Event team events with only the declared properties", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_team_created",
+      eventId: "astarLysander",
+      laneId: "alpha",
+      memberCount: 3,
+      objectiveCount: 2,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_depth_set",
+      laneId: "beta",
+      depth: 4,
+    })
+
+    expect(capture).toHaveBeenCalledWith("legendary_event_team_created", {
+      event_id: "astarLysander",
+      lane_id: "alpha",
+      member_count: 3,
+      objective_count: 2,
+    })
+    expect(capture).toHaveBeenCalledWith("legendary_event_depth_set", {
+      lane_id: "beta",
+      depth: 4,
+    })
+  })
 })
