@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the per-lane Teams section of a Legendary Event page: the team card, the team editor and how covered objectives are derived, the clear-depth input, ordering, copying teams from another event, and how the client persists the plan through the API with its single-revision conflict contract.
+Defines the per-lane Teams section of a Legendary Event page: the team card, the team editor and how covered objectives are derived, the clear-depth input, ordering, and how the client persists the plan through the API with its single-revision conflict contract.
 
 ## ADDED Requirements
 
@@ -104,22 +104,6 @@ On desktop the user SHALL reorder a lane's teams by dragging a card's handle (an
 - **WHEN** the user picks Move down on A below 768px
 - **THEN** the list shows B, A, C and Move up is hidden for the first card and Move down for the last
 
-### Requirement: Copy teams from another event
-
-The Teams section SHALL offer **Copy from event** when any other catalog event has a plan with at least one team. The copy dialog SHALL list the source events, then each source team (any lane) with a preview against the current lane: the members kept, the members dropped because the current lane does not allow them, and the number of objectives the kept members cover. Confirming SHALL create the selected teams on the current lane with their names, coverage derived from the kept members and no clear depth, and SHALL report in one toast how many teams were copied and how many units were dropped. A source team with no kept member SHALL be listed disabled.
-
-#### Scenario: Copy with a dropped unit
-
-- **GIVEN** Uthar's Alpha team "Melee" has units A, B, C and C is not allowed on Lysander's Alpha
-- **WHEN** the user copies it onto Lysander's Alpha
-- **THEN** a team "Melee" with members A, B is created, its coverage is derived from A and B, and the toast reports 1 team copied and 1 unit dropped
-
-#### Scenario: No source events
-
-- **GIVEN** no other event has teams
-- **WHEN** the Teams section renders
-- **THEN** Copy from event is not shown
-
 ### Requirement: The plan is persisted through the API with one revision
 
 The client SHALL read the plan for the current event once per page through a query and SHALL send `expectedRevision` (the cached plan's revision) with every mutation, adopting the plan the server returns. When the server answers 409 with `issueCode` `legendaryEventPlanStale` or `legendaryEventOrderSetMismatch`, the client SHALL adopt the plan from the response body, show one message saying the plan was reloaded, keep any open editor draft, and make no retry on its own. Any other failure SHALL roll back optimistic state and show the error. A team SHALL survive a page reload and a Tacticus sync.
@@ -138,7 +122,7 @@ The client SHALL read the plan for the current event once per page through a que
 
 ### Requirement: Teams section states are distinct
 
-While the plan query is pending the section SHALL show a skeleton card. When the query fails the section SHALL show an inline error with a Retry action while the rest of the lane tab renders normally. When the plan loads with no team on the lane the section SHALL show an empty line naming the lane plus Add team (and Copy from event when available).
+While the plan query is pending the section SHALL show a skeleton card. When the query fails the section SHALL show an inline error with a Retry action while the rest of the lane tab renders normally. When the plan loads with no team on the lane the section SHALL show an empty line naming the lane plus Add team.
 
 #### Scenario: Plan load failure
 
