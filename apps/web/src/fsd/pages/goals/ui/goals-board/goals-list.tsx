@@ -11,7 +11,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { SortableList } from "../shared/sortable-list"
+import { SortableList } from "@/shared/ui"
 import { GoalRowCells } from "./goal-table-row"
 import {
   isReachedRow,

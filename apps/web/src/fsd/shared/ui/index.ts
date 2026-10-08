@@ -30,3 +30,5 @@ export {
 } from "./responsive-dialog"
 export { closestOverlayContent } from "./overlay-content"
 export { EventTypeIcon } from "./event-type-icon"
+export { SortableList, type SortableRenderProps } from "./sortable-list"
+export { NumberStepper } from "./number-stepper"
