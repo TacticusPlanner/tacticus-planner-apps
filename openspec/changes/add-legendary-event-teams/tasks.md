@@ -36,7 +36,7 @@ Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event
 ## 6. i18n
 
 - [ ] 6.1 Add to `legendaryEvents.json` (en/de/es/fr): `teams.*` (section title, add, empty, loadError, retry, partialBadge, reserve, pointsPerBattle, depth.set/clear/label, menu.edit/delete/moveUp/moveDown, editor._, picker._, toasts.reloaded/deleted/error, deleteConfirm._) and `tour.legendaryEvent.steps.teams.*`, with real German, Spanish and French copy; verify `legendary-events-translations.test.ts` passes.
-- [ ] 6.2 Add to `common.json` (en/de/es/fr): `goals.v1Import.parts.legendaryEventPlans`, `goals.v1Import.legendaryEvents.{title,teams_one,teams_other,v1Event}`, `goals.v1Import.legendaryEvents.reasons.{imported,plan_already_exists,event_not_in_catalog,no_legendary_event_imported,missing_legendary_event_plans,invalid_legendary_event_plans,legendary_event_import_failed}` and `.issues.{unknown_unit,unit_not_allowed_on_lane,unknown_objective,unknown_lane,empty_team,team_truncated,duplicate_team_merged}`; verify `common-translations.test.ts` passes.
+- [ ] 6.2 Add to `common.json` (en/de/es/fr): `goals.v1Import.parts.legendaryEventPlans`, `goals.v1Import.legendaryEvents.{title,teams_one,teams_other,v1Event}`, `goals.v1Import.legendaryEvents.reasons.{imported,plan_already_exists,event_not_in_catalog,no_legendary_event_imported,missing_legendary_event_plans,invalid_legendary_event_plans,legendary_event_import_failed}` and `.issues.{unknown_unit,unit_not_allowed_on_lane,duplicate_unit,unknown_objective,unknown_lane,empty_team,team_truncated,duplicate_team_merged,conflicting_depth_discarded}`; verify `common-translations.test.ts` passes.
 
 ## 7. Desktop verification (≥768px, Aspire stack, provisioned account with synced progress)
 
