@@ -104,6 +104,11 @@ describe("LaneSummary", () => {
     ).toEqual(
       expect.arrayContaining([expect.stringMatching(/: 0 \/ 18 cleared/)])
     )
+    // The row's label names the action; its figures are read as the description.
+    expect(row("alpha")).toHaveAccessibleName("Open the Alpha progress grid")
+    expect(row("alpha")).toHaveAccessibleDescription(
+      expect.stringContaining("Eviscerate: 11 / 18 cleared")
+    )
   })
 
   it("shows 0 of the maximum for every lane without a synced entry", () => {

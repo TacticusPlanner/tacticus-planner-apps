@@ -81,6 +81,41 @@ describe("useSectionEntryPath", () => {
     expect(result.current.getEntryPath(section)).toBe("/legendary-events")
   })
 
+  it("records an event child that appears after the route, once the catalog is ready", () => {
+    const section = navItems.find((item) => item.path === "/legendary-events")!
+    const withUthar = navItems.map((item) =>
+      item === section
+        ? {
+            ...item,
+            children: [
+              ...(item.children ?? []),
+              {
+                path: "/legendary-events/votanUthar",
+                label: "Uthar",
+                description: "Active",
+              },
+            ],
+          }
+        : item
+    )
+    const { rerender, result } = renderHook(
+      ({ items, pathname }) => useSectionEntryPath(items, pathname),
+      {
+        initialProps: {
+          items: navItems,
+          pathname: "/legendary-events/votanUthar",
+        },
+      }
+    )
+    // The catalog read resolves without a route change.
+    rerender({ items: withUthar, pathname: "/legendary-events/votanUthar" })
+    rerender({ items: withUthar, pathname: "/home" })
+
+    expect(
+      result.current.getEntryPath(withUthar[navItems.indexOf(section)]!)
+    ).toBe("/legendary-events/votanUthar")
+  })
+
   it("honors a value persisted to sessionStorage on a fresh mount", () => {
     sessionStorage.setItem(
       STORAGE_KEY,

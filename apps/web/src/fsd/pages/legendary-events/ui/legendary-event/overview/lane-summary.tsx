@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronRight } from "lucide-react"
 import { Card, CardContent } from "@workspace/ui/components/card"
@@ -87,6 +88,7 @@ function LaneSummaryRow({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const figuresId = useId()
   const lane = t(`lanes.${laneId}`)
   const percent =
     progress && progress.maxPoints > 0
@@ -94,6 +96,9 @@ function LaneSummaryRow({
       : 0
   return (
     <button
+      // The label names the action; the figures beneath (points, battles, objectives) are the
+      // button's accessible description, so assistive technology reads them too.
+      aria-describedby={figuresId}
       aria-label={t("laneSummary.open", { lane })}
       className="flex min-w-0 items-center gap-3 rounded-md px-2 py-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
       data-lane={laneId}
@@ -102,7 +107,7 @@ function LaneSummaryRow({
       type="button"
     >
       <span className="w-14 shrink-0 font-semibold">{lane}</span>
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
+      <span className="flex min-w-0 flex-1 flex-col gap-1" id={figuresId}>
         {progress ? (
           <>
             <span className="flex items-baseline justify-between gap-2 text-sm">

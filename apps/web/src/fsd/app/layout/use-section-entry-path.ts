@@ -41,15 +41,21 @@ export function useSectionEntryPath(navItems: NavItem[], pathname: string) {
   const [lastVisitedChild, setLastVisitedChild] = useState<
     Record<string, string>
   >(() => readStoredEntries())
-  // Tracks the pathname this state was last updated for, so a route change - including the very
-  // first render - can be detected and reacted to during render (React's "adjusting state"
-  // pattern) instead of in a separate Effect pass, which would trigger a second, cascading render.
-  const [trackedPathname, setTrackedPathname] = useState<string | null>(null)
+  // Tracks the route this state was last updated for, so a change - including the very first
+  // render - can be detected and reacted to during render (React's "adjusting state" pattern)
+  // instead of in a separate Effect pass, which would trigger a second, cascading render. The
+  // section's child paths are part of the key: a dynamic child (an event in Legendary Events)
+  // can appear after the route did, once its catalog read is ready, and must be recorded then.
+  const section = findActiveSection(navItems, pathname)
+  const routeKey = JSON.stringify([
+    pathname,
+    section?.children?.map((child) => child.path) ?? null,
+  ])
+  const [trackedRouteKey, setTrackedRouteKey] = useState<string | null>(null)
 
-  if (pathname !== trackedPathname) {
-    setTrackedPathname(pathname)
+  if (routeKey !== trackedRouteKey) {
+    setTrackedRouteKey(routeKey)
 
-    const section = findActiveSection(navItems, pathname)
     const child = findActiveChild(section?.children, pathname)
 
     if (
