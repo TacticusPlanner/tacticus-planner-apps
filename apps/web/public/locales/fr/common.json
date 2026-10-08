@@ -459,7 +459,11 @@
         "guildKey": "Jeton API de guilde",
         "goals": "Objectifs",
         "onslaughtProgress": "Progression de l'Onslaught",
-        "campaignEventProgress": "Progression des événements de campagne"
+        "campaignEventProgress": "Progression des événements de campagne",
+        "legendaryEventPlans": "Équipes des Événements Légendaires"
+      },
+      "partDescriptions": {
+        "legendaryEventPlans": "Les équipes composées à la main et les notes des événements que le planificateur connaît. La progression des événements n'est pas importée."
       },
       "submit": "Importer la sélection",
       "submitting": "Importation en cours…",
@@ -499,6 +503,32 @@
         "projectSlotConflict": "Un autre objectif pour cette unité et ce type a été créé simultanément.",
         "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
         "generic": "Cet objectif n'a pas pu être importé."
+      },
+      "legendaryEvents": {
+        "title": "Équipes des Événements Légendaires",
+        "teams_one": "{{count}} équipe",
+        "teams_other": "{{count}} équipes",
+        "v1Event": "Événement V1 {{id}}",
+        "reasons": {
+          "imported": "Équipes importées.",
+          "plan_already_exists": "Cet événement a déjà des équipes dans le planificateur, rien n'a donc été modifié.",
+          "event_not_in_catalog": "Le planificateur ne connaît pas encore cet événement.",
+          "no_legendary_event_imported": "Aucune équipe d'événement n'a pu être importée.",
+          "missing_legendary_event_plans": "Le profil V1 ne contient aucune équipe d'Événement Légendaire.",
+          "invalid_legendary_event_plans": "Les équipes V1 des Événements Légendaires n'ont pas pu être lues.",
+          "legendary_event_import_failed": "Les équipes de cet événement n'ont pas pu être enregistrées."
+        },
+        "issues": {
+          "unknown_unit": "Une unité n'a pas été reconnue et a été écartée.",
+          "unit_not_allowed_on_lane": "Une unité n'est pas autorisée sur cette voie et a été écartée.",
+          "duplicate_unit": "Une unité figurait deux fois et n'a été gardée qu'une fois.",
+          "unknown_objective": "Un objectif n'a pas été reconnu et a été écarté.",
+          "unknown_lane": "La voie de l'équipe n'a pas été reconnue, l'équipe a donc été ignorée.",
+          "empty_team": "Aucune unité de l'équipe n'a pu être importée, l'équipe a donc été ignorée.",
+          "team_truncated": "L'équipe comptait plus de cinq unités ; les cinq premières ont été gardées.",
+          "duplicate_team_merged": "Deux équipes avaient les mêmes unités et ont été fusionnées.",
+          "conflicting_depth_discarded": "La profondeur différente d'une équipe fusionnée a été écartée."
+        }
       }
     },
     "empty": {

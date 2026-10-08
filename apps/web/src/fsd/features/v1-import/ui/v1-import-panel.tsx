@@ -26,18 +26,12 @@ import {
   onslaughtProgressQueries,
 } from "@/entities/player-data-override"
 
+import { legendaryEventPlanQueries } from "@/entities/legendary-event"
+
+import { V1_IMPORT_PARTS, type V1ImportPartKey } from "../model/parts"
 import { ImportResult } from "./import-v1-result"
 
-const parts = [
-  ["personalTacticusApiKey", "goals.v1Import.parts.personalKey"],
-  ["tacticusUserId", "goals.v1Import.parts.userId"],
-  ["guildApiToken", "goals.v1Import.parts.guildKey"],
-  ["goals", "goals.v1Import.parts.goals"],
-  ["onslaughtProgress", "goals.v1Import.parts.onslaughtProgress"],
-  ["campaignEventProgress", "goals.v1Import.parts.campaignEventProgress"],
-] as const
-
-export type V1ImportSelection = Record<(typeof parts)[number][0], boolean>
+export type V1ImportSelection = Record<V1ImportPartKey, boolean>
 
 /**
  * The whole V1-import experience — credentials, part selection, submit, and the bucketed outcome
@@ -129,6 +123,11 @@ export function V1ImportPanel({
           queryKey: campaignEventProgressQueries.all(),
         })
       }
+      if (selection.legendaryEventPlans) {
+        await queryClient.invalidateQueries({
+          queryKey: legendaryEventPlanQueries.all(),
+        })
+      }
       // Unconditional: the import creates goals itself now (rewrite-v1-goal-import removed the
       // client-side creation path), so this no longer depends on this panel's own knowledge of
       // whether the goals part was selected or produced anything.
@@ -188,11 +187,13 @@ export function V1ImportPanel({
         <legend className="px-1 text-sm font-medium">
           {t("goals.v1Import.selectParts")}
         </legend>
-        {parts.map(([key, label]) => {
+        {V1_IMPORT_PARTS.map((part) => {
+          const { key } = part
           const locked = lockedParts?.includes(key) ?? false
           return (
-            <label className="flex items-center gap-3 text-sm" key={key}>
+            <label className="flex items-start gap-3 text-sm" key={key}>
               <Checkbox
+                className="mt-0.5"
                 data-testid={`v1-import-${key}`}
                 checked={selection[key]}
                 disabled={locked}
@@ -203,7 +204,17 @@ export function V1ImportPanel({
                   }))
                 }
               />
-              {t(label)}
+              <span className="flex flex-col gap-0.5">
+                {t(part.label)}
+                {"description" in part ? (
+                  <span
+                    className="text-xs text-muted-foreground"
+                    data-testid={`v1-import-${key}-description`}
+                  >
+                    {t(part.description)}
+                  </span>
+                ) : null}
+              </span>
             </label>
           )
         })}

@@ -459,7 +459,11 @@
         "guildKey": "Guild API token",
         "goals": "Goals",
         "onslaughtProgress": "Onslaught progress",
-        "campaignEventProgress": "Campaign event progress"
+        "campaignEventProgress": "Campaign event progress",
+        "legendaryEventPlans": "Legendary Event teams"
+      },
+      "partDescriptions": {
+        "legendaryEventPlans": "Hand-built teams and notes for the events the planner knows. Event progress is not imported."
       },
       "submit": "Import selected",
       "submitting": "Importing…",
@@ -499,6 +503,32 @@
         "projectSlotConflict": "Another goal for this unit and type was created concurrently.",
         "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
         "generic": "This goal could not be imported."
+      },
+      "legendaryEvents": {
+        "title": "Legendary Event teams",
+        "teams_one": "{{count}} team",
+        "teams_other": "{{count}} teams",
+        "v1Event": "V1 event {{id}}",
+        "reasons": {
+          "imported": "Teams imported.",
+          "plan_already_exists": "This event already has teams in the planner, so nothing was changed.",
+          "event_not_in_catalog": "The planner does not have this event yet.",
+          "no_legendary_event_imported": "No event's teams could be imported.",
+          "missing_legendary_event_plans": "The V1 profile has no Legendary Event teams.",
+          "invalid_legendary_event_plans": "The V1 Legendary Event teams could not be read.",
+          "legendary_event_import_failed": "This event's teams could not be saved."
+        },
+        "issues": {
+          "unknown_unit": "A unit was not recognised and was left out.",
+          "unit_not_allowed_on_lane": "A unit is not allowed on this lane and was left out.",
+          "duplicate_unit": "A unit was listed twice and was kept once.",
+          "unknown_objective": "An objective was not recognised and was left out.",
+          "unknown_lane": "The team's lane was not recognised, so the team was skipped.",
+          "empty_team": "None of the team's units could be imported, so the team was skipped.",
+          "team_truncated": "The team had more than five units; the first five were kept.",
+          "duplicate_team_merged": "Two teams had the same units and were merged into one.",
+          "conflicting_depth_discarded": "A merged team's different clear depth was discarded."
+        }
       }
     },
     "empty": {

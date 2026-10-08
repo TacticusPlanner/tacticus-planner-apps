@@ -15,6 +15,7 @@ const NOTHING_SELECTED = {
   goals: false,
   onslaughtProgress: false,
   campaignEventProgress: false,
+  legendaryEventPlans: false,
 }
 
 /**

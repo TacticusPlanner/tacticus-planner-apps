@@ -9,6 +9,8 @@ export type {
   ImportV1ProfileRequest,
   ImportV1ProfileResult,
   V1GoalOutcome,
+  V1LegendaryEventIssue,
+  V1LegendaryEventOutcome,
 } from "./api/account.api"
 export { useCurrentUser, type CurrentUserState } from "./model/use-current-user"
 export { isAccountSetupComplete, type CurrentUser } from "./model/current-user"

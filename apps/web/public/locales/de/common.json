@@ -459,7 +459,11 @@
         "guildKey": "Gilden-API-Token",
         "goals": "Ziele",
         "onslaughtProgress": "Onslaught-Fortschritt",
-        "campaignEventProgress": "Kampagnen-Event-Fortschritt"
+        "campaignEventProgress": "Kampagnen-Event-Fortschritt",
+        "legendaryEventPlans": "Teams für Legendäre Events"
+      },
+      "partDescriptions": {
+        "legendaryEventPlans": "Selbst erstellte Teams und Notizen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert."
       },
       "submit": "Ausgewählte importieren",
       "submitting": "Wird importiert …",
@@ -499,6 +503,32 @@
         "projectSlotConflict": "Ein weiteres Ziel für diese Einheit und diesen Typ wurde gleichzeitig erstellt.",
         "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
         "generic": "Dieses Ziel konnte nicht importiert werden."
+      },
+      "legendaryEvents": {
+        "title": "Teams für Legendäre Events",
+        "teams_one": "{{count}} Team",
+        "teams_other": "{{count}} Teams",
+        "v1Event": "V1-Event {{id}}",
+        "reasons": {
+          "imported": "Teams importiert.",
+          "plan_already_exists": "Für dieses Event gibt es im Planer bereits Teams, daher wurde nichts geändert.",
+          "event_not_in_catalog": "Der Planer kennt dieses Event noch nicht.",
+          "no_legendary_event_imported": "Für kein Event konnten Teams importiert werden.",
+          "missing_legendary_event_plans": "Das V1-Profil enthält keine Teams für Legendäre Events.",
+          "invalid_legendary_event_plans": "Die V1-Teams für Legendäre Events konnten nicht gelesen werden.",
+          "legendary_event_import_failed": "Die Teams dieses Events konnten nicht gespeichert werden."
+        },
+        "issues": {
+          "unknown_unit": "Eine Einheit wurde nicht erkannt und weggelassen.",
+          "unit_not_allowed_on_lane": "Eine Einheit ist auf dieser Bahn nicht erlaubt und wurde weggelassen.",
+          "duplicate_unit": "Eine Einheit war doppelt aufgeführt und wurde einmal übernommen.",
+          "unknown_objective": "Ein Ziel wurde nicht erkannt und weggelassen.",
+          "unknown_lane": "Die Bahn des Teams wurde nicht erkannt, daher wurde das Team übersprungen.",
+          "empty_team": "Keine Einheit des Teams konnte importiert werden, daher wurde das Team übersprungen.",
+          "team_truncated": "Das Team hatte mehr als fünf Einheiten; die ersten fünf wurden übernommen.",
+          "duplicate_team_merged": "Zwei Teams hatten dieselben Einheiten und wurden zusammengeführt.",
+          "conflicting_depth_discarded": "Die abweichende Kampftiefe eines zusammengeführten Teams wurde verworfen."
+        }
       }
     },
     "empty": {
