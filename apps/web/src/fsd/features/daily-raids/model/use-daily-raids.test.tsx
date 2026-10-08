@@ -29,13 +29,8 @@ vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => ({ settings: {}, loading: false }),
 }))
 
-vi.mock("@/entities/project", () => ({
-  projectQueries: {
-    goals: (projectId: string) => ({
-      queryKey: ["project-goals", projectId],
-      queryFn: async () => ({ goals: [] }),
-    }),
-  },
+vi.mock("./use-scoped-goal-plan", () => ({
+  useScopedGoalPlan: () => ({ entries: [], loading: false, isError: false }),
 }))
 
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({

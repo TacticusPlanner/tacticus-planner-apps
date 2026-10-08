@@ -55,6 +55,13 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
+  campaignEventProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "campaign-events"],
+      queryFn: () => Promise.resolve({ progress: [], revision: 1 }),
+    }),
+  },
+  buildEffectiveCampaignEventProgress: () => new Map(),
   onslaughtProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "onslaught"],
