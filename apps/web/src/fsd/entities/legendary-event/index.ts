@@ -64,6 +64,7 @@ export {
 } from "./lib/lane-points-model"
 export {
   buildSyncedLaneProgress,
+  objectiveClearedCounts,
   type BattleProgressView,
   type LaneProgressView,
 } from "./lib/synced-lane-progress"

@@ -37,6 +37,7 @@ function renderSummary(
 ) {
   render(
     <LaneSummary
+      event={lysanderEvent}
       onJumpToLane={onJumpToLane}
       progressGrid={buildProgressGridViewModel(lysanderEvent, progress)}
     />,
@@ -80,6 +81,31 @@ describe("LaneSummary", () => {
     ).toHaveTextContent("No progress in this lane")
   })
 
+  it("shows one cleared count per lane objective", () => {
+    renderSummary(entry)
+    const alpha = within(row("alpha")).getAllByTestId("lane-summary-objective")
+    expect(alpha).toHaveLength(5)
+    expect(alpha.map((item) => item.textContent)).toEqual([
+      "Eviscerate: 11 / 18 cleared11 / 18",
+      "Suppressive Fire: 11 / 18 cleared11 / 18",
+      "Flying: 10 / 18 cleared10 / 18",
+      "≥Min 5 hits: 7 / 18 cleared7 / 18",
+      "No Resilient: 8 / 18 cleared8 / 18",
+    ])
+    expect(
+      within(alpha[0]!)
+        .getByTestId("lane-summary-objective-bar")
+        .querySelector('[data-slot="progress-indicator"]')
+    ).toHaveStyle({ transform: `translateX(-${100 - (11 / 18) * 100}%)` })
+    expect(
+      within(row("gamma"))
+        .getAllByTestId("lane-summary-objective")
+        .map((item) => item.textContent)
+    ).toEqual(
+      expect.arrayContaining([expect.stringMatching(/: 0 \/ 18 cleared/)])
+    )
+  })
+
   it("shows 0 of the maximum for every lane without a synced entry", () => {
     renderSummary(undefined)
     for (const lane of ["alpha", "beta", "gamma"]) {
@@ -94,6 +120,9 @@ describe("LaneSummary", () => {
     expect(
       within(row("alpha")).getByTestId("lane-summary-unavailable")
     ).toHaveTextContent("Synced data unavailable")
+    expect(
+      within(row("alpha")).queryByTestId("lane-summary-objectives")
+    ).toBeNull()
     fireEvent.click(row("alpha"))
     expect(onJumpToLane).toHaveBeenCalledWith("alpha")
   })

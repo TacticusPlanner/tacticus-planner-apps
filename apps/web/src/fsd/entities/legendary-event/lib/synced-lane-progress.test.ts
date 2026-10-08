@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 
 import { buildLanePointsModel } from "./lane-points-model"
-import { buildSyncedLaneProgress } from "./synced-lane-progress"
+import {
+  buildSyncedLaneProgress,
+  objectiveClearedCounts,
+} from "./synced-lane-progress"
 
 const model = buildLanePointsModel(lysanderEvent.alpha)
 // `encounterPoints` mirrors the synced shape but is never read (spec: earned points are the high
@@ -94,5 +97,29 @@ describe("buildSyncedLaneProgress", () => {
     expect(view.pointsEarned).toBe(0)
     expect(view.maxPoints).toBe(9000)
     expect(view.completeBattles).toBe(0)
+  })
+})
+
+describe("objectiveClearedCounts", () => {
+  it("counts the battles with each objective cleared, in catalog order", () => {
+    const complete = encounter([0, 1, 2, 3, 4, 5], 37)
+    const view = buildSyncedLaneProgress(model, {
+      encounters: [
+        encounter([0, 2, 3], 31),
+        encounter([0], 268),
+        encounter([0, 1], 303),
+        complete,
+        encounter([0, 1, 2], 318),
+        encounter([0, 1, 2, 3], 418),
+        encounter([0, 1, 2, 3, 5], 476),
+        ...Array.from({ length: 6 }, () => complete),
+      ],
+    })
+    expect(objectiveClearedCounts(view, 5)).toEqual([11, 11, 10, 7, 8])
+  })
+
+  it("yields zeros for a lane without progress", () => {
+    const view = buildSyncedLaneProgress(model, null)
+    expect(objectiveClearedCounts(view, 5)).toEqual([0, 0, 0, 0, 0])
   })
 })

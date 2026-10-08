@@ -55,7 +55,9 @@
     "battles": "{{cleared}} / {{total}} battles",
     "open": "Open the {{lane}} progress grid",
     "noLane": "No progress in this lane",
-    "unavailable": "Synced data unavailable"
+    "unavailable": "Synced data unavailable",
+    "objectives": "Objectives cleared",
+    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} cleared"
   },
   "laneOverview": {
     "title": "Lane overview",
@@ -83,6 +85,9 @@
     "perBattleValue": "{{points}} per battle",
     "deductScored": "Deduct scored points",
     "objectiveFilter": "Filter by objective",
+    "objectiveCount": "{{cleared}} / {{total}}",
+    "laneObjectives": "{{lane}} objectives",
+    "laneObjectiveFilter": "Filter by {{lane}} objective",
     "onlyUnlocked": "Only unlocked",
     "locked": "Locked",
     "objectiveMet": "{{objective}}: met",

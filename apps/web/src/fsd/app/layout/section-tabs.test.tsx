@@ -163,25 +163,25 @@ describe("SectionTabs", () => {
     expectPath("/legendary-events")
   })
 
-  it("lists active events with their portraits before All events and marks the open one", () => {
+  it("lists All events then the events with their portraits and marks the open one", () => {
     const item: NavItem = {
       ...section("/legendary-events"),
       children: [
+        ...(section("/legendary-events").children ?? []),
         {
           path: "/legendary-events/votanUthar",
           label: "Uthar the Destined",
           description: "Active Legendary Event",
           iconSrc: "/uthar.png",
         },
-        ...(section("/legendary-events").children ?? []),
       ],
     }
     renderTabs(item, "/legendary-events/votanUthar")
 
     const tabs = screen.getAllByRole("tab")
     expect(tabs.map((tab) => tab.textContent)).toEqual([
-      "Uthar the Destined",
       "legendaryEvents.tabs.allEvents",
+      "Uthar the Destined",
     ])
     const uthar = screen.getByTestId("section-tab-legendary-events-votanUthar")
     expect(uthar).toHaveAttribute("data-state", "active")

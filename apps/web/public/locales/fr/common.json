@@ -299,7 +299,9 @@
     "tabs": {
       "allEvents": "Tous les événements",
       "allEventsDescription": "Tous les Événements Légendaires : en cours, à venir et archivés",
-      "activeEventDescription": "Événement Légendaire en cours avec votre progression synchronisée"
+      "activeEventDescription": "Événement Légendaire en cours avec votre progression synchronisée",
+      "upcomingEventDescription": "Événement Légendaire à venir",
+      "archivedEventDescription": "Événement Légendaire passé avec votre progression synchronisée"
     }
   },
   "home": {

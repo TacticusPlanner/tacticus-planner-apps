@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 
+import { findActiveChild } from "./find-active-child"
 import type { NavItem } from "./nav-items"
 
 const STORAGE_KEY = "nav.lastVisitedChild"
@@ -49,10 +50,7 @@ export function useSectionEntryPath(navItems: NavItem[], pathname: string) {
     setTrackedPathname(pathname)
 
     const section = findActiveSection(navItems, pathname)
-    const child = section?.children?.find(
-      (candidate) =>
-        pathname === candidate.path || pathname.startsWith(candidate.path + "/")
-    )
+    const child = findActiveChild(section?.children, pathname)
 
     if (
       section &&

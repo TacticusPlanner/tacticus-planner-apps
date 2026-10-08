@@ -87,3 +87,20 @@ export function buildSyncedLaneProgress(
     completeBattles: battles.filter((battle) => battle.complete).length,
   }
 }
+
+/**
+ * How many of the lane's battles have each objective cleared, in catalog `index` order (spec: the
+ * Overview lane summary objectives line and the objective chips' counts). `objectiveCount` is the
+ * lane's objective count; a `noLane` or `noEvent` lane yields zeros.
+ */
+export function objectiveClearedCounts(
+  progress: Pick<LaneProgressView, "battles">,
+  objectiveCount: number
+): number[] {
+  return Array.from({ length: objectiveCount }, (_, objective) =>
+    progress.battles.reduce(
+      (count, battle) => count + (battle.cleared[objective + 1] ? 1 : 0),
+      0
+    )
+  )
+}

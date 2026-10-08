@@ -55,7 +55,9 @@
     "battles": "{{cleared}} / {{total}} Kämpfe",
     "open": "Fortschrittsraster der Lane {{lane}} öffnen",
     "noLane": "Kein Fortschritt in dieser Lane",
-    "unavailable": "Synchronisierte Daten nicht verfügbar"
+    "unavailable": "Synchronisierte Daten nicht verfügbar",
+    "objectives": "Erfüllte Ziele",
+    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} erfüllt"
   },
   "laneOverview": {
     "title": "Bahnübersicht",
@@ -83,6 +85,9 @@
     "perBattleValue": "{{points}} pro Kampf",
     "deductScored": "Erzielte Punkte abziehen",
     "objectiveFilter": "Nach Ziel filtern",
+    "objectiveCount": "{{cleared}} / {{total}}",
+    "laneObjectives": "{{lane}}-Ziele",
+    "laneObjectiveFilter": "Nach {{lane}}-Ziel filtern",
     "onlyUnlocked": "Nur freigeschaltete",
     "locked": "Gesperrt",
     "objectiveMet": "{{objective}}: erfüllt",

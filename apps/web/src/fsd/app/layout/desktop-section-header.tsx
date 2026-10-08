@@ -3,6 +3,7 @@ import { PanelLeftOpen } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
+import { findActiveChild } from "./find-active-child"
 import { subItemLabel, type NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
 
@@ -43,11 +44,7 @@ export function DesktopSectionHeader({
     )
   }
 
-  const activeChild =
-    children.find(
-      (child) =>
-        pathname === child.path || pathname.startsWith(child.path + "/")
-    ) ?? children[0]
+  const activeChild = findActiveChild(children, pathname) ?? children[0]
   const childLabel = subItemLabel(t, activeChild)
   const heading = (
     <h1
