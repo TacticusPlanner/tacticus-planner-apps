@@ -67,20 +67,26 @@ The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog
 - **WHEN** the editor opens on Beta
 - **THEN** only units allowed on Beta are listed and the objective icons shown are Beta's
 
-### Requirement: Clear depth is a manual stepper
+### Requirement: Clear depth is a manual stepper per run
 
-Each card and the editor SHALL expose the clear depth as a stepper bounded 1..(lane battle count) with a clear control that sets it to null. Any value set by the user SHALL be stored with source `manual`. No estimate SHALL be shown or stored by this capability.
+Each card and the editor SHALL expose the clear depth of the current run as a stepper bounded 1..(lane battle count) with a clear control that sets it to null. The current run SHALL be the synced `currentEventRun` for the event, or 1 when the account has no synced entry for it. Every depth write SHALL carry that run, so a depth set during another run is kept. Any value set by the user SHALL be stored with source `manual`. No estimate SHALL be shown or stored by this capability.
 
 #### Scenario: Depth set from the card
 
 - **GIVEN** a team with no depth on an 18-battle lane
 - **WHEN** the user presses + three times
-- **THEN** the card shows 3 and the team is saved with `expectedBattleClears` 3 and source `manual`
+- **THEN** the card shows 3 and the team is saved with `run` 1, `expectedBattleClears` 3 and source `manual`
+
+#### Scenario: Depth is per run
+
+- **GIVEN** a team with a run-1 depth of 7 and the synced progress says the event is in run 2
+- **WHEN** the card renders
+- **THEN** it shows "Set depth", and setting 9 saves `run` 2 while the run-1 depth of 7 is still in the plan
 
 #### Scenario: Depth cleared
 
 - **WHEN** the user clears the depth
-- **THEN** the card shows "Set depth" and the team is saved with a null depth and null source
+- **THEN** the card shows "Set depth" and the team is saved with a null depth and null source for the current run
 
 ### Requirement: Teams are reordered within their lane
 
