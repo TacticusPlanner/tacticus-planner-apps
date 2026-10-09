@@ -329,15 +329,18 @@ Standing campaign battles SHALL be eligible for raid calculations only once the 
 A battle belonging to an event campaign SHALL be eligible only when both:
 
 1. its campaign group id equals `live-progress.activeCampaignEventId`, and
-2. its node has been reached by the player, per `campaign-events-progress`: for a non-challenge node, its `nodeNumber` SHALL be at most one greater than that campaign-group-and-type's `completedBattleCount`; for a challenge node, its battle id SHALL appear in that campaign-group-and-type's `completedChallengeBattlesIds`.
+2. its node has been reached by the player, per that campaign-group-and-type's **effective event progress**: for a non-challenge node, its `nodeNumber` SHALL be at most one greater than the effective completed battle count; for a challenge node, its battle id SHALL appear in the effective completed challenge ids.
 
-When no campaign event is active, all event-campaign battles SHALL be excluded. When `campaign-events-progress` has no entry for a battle's campaign group and type, that battle's node-reached condition SHALL be treated as not met (excluded), since an entry only exists once the player has started that tier.
+Effective event progress SHALL be resolved per `{campaignGroupId, type}`, separately for the completed battle count and the completed challenge ids, as the player's saved campaign-event manual override value when it is not null, else the `campaign-events-progress` synced value, else no progress. This is the same resolution the Campaign Events progress page displays (see `campaign-event-progress-editing`).
+
+When no campaign event is active, all event-campaign battles SHALL be excluded. When a battle's campaign group and type has neither a synced `campaign-events-progress` entry nor a manual override value, that battle's node-reached condition SHALL be treated as not met (excluded), since a synced entry only exists once the player has started that tier. Today SHALL wait for the saved overrides to load before calculating, and SHALL show its existing error state if they fail to load, the same way it treats saved Onslaught progress.
 
 Assumptions this requirement depends on:
 
-- An event campaign's non-challenge nodes are numbered sequentially starting at 1 within each `{campaignGroupId, type}` track, and `completedBattleCount` counts consecutively from that start — reaching node N requires having completed nodes 1..N-1.
+- An event campaign's non-challenge nodes are numbered sequentially starting at 1 within each `{campaignGroupId, type}` track, and `completedBattleCount` counts consecutively from that start — reaching node N requires having completed nodes 1..N-1. A manual override's `completedBattleCount` is interpreted the same way.
 - A standing campaign's `battleIndex` is assigned sequentially starting at 0 within each `{campaignGroupId, type}` track (covering both challenge and non-challenge battles), and `highestCompletedBattleIndex` counts consecutively from that start the same way `campaign-progress` already reports to the Progress page.
 - `campaign-events-progress` and `live-progress.battleAttempts` are independent signals: the former reliably distinguishes Standard from Extremis (unlike the latter, which is deliberately not used for this eligibility check — see "Today's raid schedule" and "Today shows real daily energy usage" for why). The same independence holds between `campaign-progress` and `live-progress.battleAttempts` for standing campaigns — this eligibility check SHALL NOT be used as the signal for whether a real synced attempt exists at a battle; "Today's Attempts section" and "Today shows real daily energy usage" are governed only by `live-progress.battleAttempts`, independent of whether this requirement currently judges that battle reached.
+- A manual override is the player's own statement of progress and is trusted over synced data even when it is lower than the synced value (for example after a sync that is known to be stale).
 
 #### Scenario: One campaign event is active
 
@@ -357,6 +360,7 @@ Assumptions this requirement depends on:
 
 - **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
 - **AND** `campaign-events-progress` for `{eventCampaign1, Extremis}` shows `completedBattleCount: 0` (or no entry at all)
+- **AND** there is no manual override value for that track's completed battle count
 - **AND** the catalog's only farm location for a needed material is node 12 of the Extremis track (`AME12`)
 - **WHEN** Today calculates the schedule
 - **THEN** `AME12` is excluded from eligible battles, and that material has no farmable location today (it does not appear in the schedule or Bonus Raids as farmable at `AME12`)
@@ -365,14 +369,47 @@ Assumptions this requirement depends on:
 
 - **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
 - **AND** `campaign-events-progress` for `{eventCampaign1, Standard}` shows `completedBattleCount: 15`
+- **AND** there is no manual override value for that track's completed battle count
 - **AND** a needed material's farm location is node 12 of the Standard track (`AMS12`)
 - **WHEN** Today calculates the schedule
 - **THEN** `AMS12` remains eligible, since `12 <= 15 + 1`
 
+#### Scenario: A manual override makes a node without synced data eligible
+
+- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
+- **AND** `campaign-events-progress` has no entry for `{eventCampaign1, Extremis}`
+- **AND** the player's saved override for `{eventCampaign1, Extremis}` has `completedBattleCount: 11`
+- **AND** the catalog's only farm location for a needed material is node 12 of the Extremis track (`AME12`)
+- **WHEN** Today calculates the schedule
+- **THEN** `AME12` is eligible, since `12 <= 11 + 1`
+
+#### Scenario: A manual override lower than synced progress wins
+
+- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
+- **AND** `campaign-events-progress` for `{eventCampaign1, Standard}` shows `completedBattleCount: 15`
+- **AND** the player's saved override for `{eventCampaign1, Standard}` has `completedBattleCount: 5`
+- **AND** a needed material's only farm location is node 12 of the Standard track (`AMS12`)
+- **WHEN** Today calculates the schedule
+- **THEN** `AMS12` is excluded, since `12 > 5 + 1`
+
+#### Scenario: Challenge override and synced count resolve independently
+
+- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
+- **AND** `campaign-events-progress` for `{eventCampaign1, Standard}` shows `completedBattleCount: 15` and `completedChallengeBattlesIds: []`
+- **AND** the player's saved override for that track has `completedBattleCount: null` and `completedChallengeBattlesIds: ["AMS7B"]`
+- **WHEN** Today calculates the schedule
+- **THEN** non-challenge nodes use the synced count 15 and challenge node `AMS7B` is eligible
+
+#### Scenario: Overrides fail to load
+
+- **GIVEN** the saved campaign-event overrides request fails
+- **WHEN** Today loads
+- **THEN** Today shows its existing error state rather than calculating a schedule from synced data alone
+
 #### Scenario: A goal-pinned farm location that hasn't been reached is excluded the same way
 
 - **GIVEN** a goal's configuration pins a specific event-campaign node as its farm location (via `farmingLocationIds`)
-- **AND** that node has not been reached per `campaign-events-progress`, exactly as in the "unreached Extremis node" scenario above
+- **AND** that node has not been reached per the effective event progress, exactly as in the "unreached Extremis node" scenario above
 - **WHEN** Today calculates the schedule
 - **THEN** that node is excluded from eligible battles regardless of being explicitly pinned, and the goal shows no farmable candidates for that resource today — the same outcome as an auto-selected unreached location, not a special case or a different failure mode
 

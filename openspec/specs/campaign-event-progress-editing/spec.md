@@ -1,8 +1,10 @@
+# campaign-event-progress-editing Specification
+
 ## Purpose
 
 Lets a signed-in player see where they are in every campaign event and quickly correct their per-track progress, so that daily raid planning uses accurate event nodes.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Effective track progress and its source
 
