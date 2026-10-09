@@ -63,6 +63,7 @@ type CatalogData = {
 }
 
 let catalogData: CatalogData
+let catalogReadFails = false
 
 // eventCampaign1 (AM): the active event — Standard 5 with challenges at nodes 7 then 3 (catalog
 // order deliberately unsorted), Extremis 5. eventCampaign2 (DG): fully completed via synced data.
@@ -129,7 +130,12 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
 }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
-vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => catalogData }))
+vi.mock("dexie-react-hooks", () => ({
+  useLiveQuery: () =>
+    catalogReadFails
+      ? { status: "error" }
+      : { status: "ready", data: catalogData },
+}))
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignBattles: vi.fn(),
   getCampaignDefinitions: vi.fn(),
@@ -179,6 +185,7 @@ const count = (prefix: string, type: string) =>
 describe("CampaignEventsPage", () => {
   beforeEach(() => {
     catalogData = defaultCatalog()
+    catalogReadFails = false
     mobile.value = false
     getOverrides.mockReset().mockResolvedValue({ progress: [], revision: 4 })
     saveOverrides
@@ -667,6 +674,14 @@ describe("CampaignEventsPage", () => {
 
     it("shows the translated load error when the overrides fail", async () => {
       getOverrides.mockRejectedValue(new Error("offline"))
+      renderPage()
+      expect(
+        await screen.findByTestId("campaign-events-load-error")
+      ).toHaveTextContent("progress.loadError")
+    })
+
+    it("shows the translated load error when the local data read fails", async () => {
+      catalogReadFails = true
       renderPage()
       expect(
         await screen.findByTestId("campaign-events-load-error")

@@ -2,15 +2,6 @@ import { useMemo, useState } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useTranslation } from "react-i18next"
-import {
-  getCampaignBattles,
-  getCampaignDefinitions,
-} from "@workspace/game-catalog/queries"
-import {
-  getCampaignEventProgress,
-  getLiveProgress,
-  getPlayerCharacters,
-} from "@workspace/player-data/queries"
 import { Accordion } from "@workspace/ui/components/accordion"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
@@ -35,6 +26,7 @@ import {
   buildEvents,
   normalizeOverrides,
 } from "../model/campaign-events.model"
+import { loadCampaignEventsData } from "../model/load-campaign-events-data"
 import { useCampaignEventsTutorial } from "./campaign-events-page.tutorial"
 import { CurrentEventCard, EventListItem } from "./event-card"
 import type { PatchTrack } from "./event-track-editor"
@@ -62,17 +54,8 @@ const toPayload = (
 export function CampaignEventsPage() {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
-  const catalogData = useLiveQuery(async () => {
-    const [definitions, battles, synced, characters, liveProgress] =
-      await Promise.all([
-        getCampaignDefinitions(),
-        getCampaignBattles(),
-        getCampaignEventProgress(),
-        getPlayerCharacters(),
-        getLiveProgress(),
-      ])
-    return { definitions, battles, synced, characters, liveProgress }
-  }, [])
+  const loaded = useLiveQuery(loadCampaignEventsData, [])
+  const catalogData = loaded?.status === "ready" ? loaded.data : undefined
   const overrides = useRevisionedDraft({
     query: campaignEventProgressQueries.current(),
     enabled: isAuthenticated,
@@ -115,7 +98,8 @@ export function CampaignEventsPage() {
     firstListEventId: listed[0]?.event.definition.groupId,
   })
 
-  if (overrides.query.isError) return <LoadError />
+  if (overrides.query.isError || loaded?.status === "error")
+    return <LoadError />
   if (!catalogData || overrides.draft === undefined) return <Loading />
 
   const patch: PatchTrack = (groupId, type, value) => {
