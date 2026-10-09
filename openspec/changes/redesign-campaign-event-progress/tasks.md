@@ -34,23 +34,23 @@
 Required data states: a signed-in profile with synced player data where live progress reports an active event; at least one event track with no synced entry; one track with a manual override; one fully completed event. Run on the full local stack through the workspace Aspire AppHost.
 
 - [ ] 6.1 Set a manual Extremis count on the active event for a track with no synced data, save, open Dailies → Today and confirm that event's Extremis nodes up to count + 1 now appear as farmable; then "Reset to synced", save, and confirm they disappear
-- [ ] 6.2 Save from a second tab, then save in the first tab, and confirm the conflict message and reloaded values
-- [ ] 6.3 With the API stopped or a request blocked, confirm the page and Today each show their translated error state and no raw API text
+- [x] 6.2 Save from a second tab, then save in the first tab, and confirm the conflict message and reloaded values
+- [x] 6.3 With the API stopped or a request blocked, confirm the page and Today each show their translated error state and no raw API text
 - [ ] 6.4 With the 6.1 override saved, confirm the newly reachable Extremis node also appears on the Home event tab's active-event list and in a goal's farm locations on Goals (a material that drops only there is no longer reported unavailable); then "Reset to synced", save, and confirm both revert
 
 ## 7. Desktop verification (viewport at or above 768px)
 
-- [ ] 7.1 Confirm the current-event section, collapsed cards with summaries, side-by-side tracks when expanded, and the "Hide completed events" option persisting across reload
-- [ ] 7.2 Edit via stepper, Max, slider drag and keyboard arrows; confirm the unsaved-changes bar appears within the content area, does not cover the last card, disappears when edited back, and Discard restores values
-- [ ] 7.3 With unsaved edits, switch Progress tabs (confirm Stay/Leave dialog) and reload the tab (confirm browser prompt)
-- [ ] 7.4 Run the page tour and confirm every step highlights a visible element
+- [x] 7.1 Confirm the current-event section, collapsed cards with summaries, side-by-side tracks when expanded, and the "Hide completed events" option persisting across reload
+- [x] 7.2 Edit via stepper, Max, slider drag and keyboard arrows; confirm the unsaved-changes bar appears within the content area, does not cover the last card, disappears when edited back, and Discard restores values
+- [x] 7.3 With unsaved edits, switch Progress tabs (confirm Stay/Leave dialog) and reload the tab (confirm browser prompt)
+- [x] 7.4 Run the page tour and confirm every step highlights a visible element
 
 ## 8. Mobile verification (viewport below 768px)
 
-- [ ] 8.1 Confirm the current-event section, collapsed summaries wrapping without breaking a track's figure, stacked tracks, and no horizontal scroll
-- [ ] 8.2 Edit via stepper, Max and slider drag; confirm the unsaved-changes bar sits directly above the bottom navigation without overlapping it and does not cover the last card
-- [ ] 8.3 With unsaved edits, navigate via the bottom navigation and confirm the Stay/Leave dialog
-- [ ] 8.4 Run the page tour and confirm every step highlights a visible element
+- [x] 8.1 Confirm the current-event section, collapsed summaries wrapping without breaking a track's figure, stacked tracks, and no horizontal scroll
+- [x] 8.2 Edit via stepper, Max and slider drag; confirm the unsaved-changes bar sits directly above the bottom navigation without overlapping it and does not cover the last card
+- [x] 8.3 With unsaved edits, navigate via the bottom navigation and confirm the Stay/Leave dialog
+- [x] 8.4 Run the page tour and confirm every step highlights a visible element
 
 ## 9. Gates
 
