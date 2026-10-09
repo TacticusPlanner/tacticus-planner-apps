@@ -511,9 +511,11 @@
         "v1Event": "Événement V1 {{id}}",
         "reasons": {
           "imported": "Équipes importées.",
+          "imported_without_teams": "Importé, mais aucune de ses équipes n'a pu être conservée.",
           "plan_already_exists": "Cet événement a déjà des équipes dans le planificateur, rien n'a donc été modifié.",
           "event_not_in_catalog": "Le planificateur ne connaît pas encore cet événement.",
           "no_legendary_event_imported": "Aucune équipe d'événement n'a pu être importée.",
+          "legendary_events_skipped": "Aucune équipe d'événement n'a été importée : chaque événement a déjà des équipes dans le planificateur, n'y est pas encore disponible ou n'avait aucune équipe.",
           "missing_legendary_event_plans": "Le profil V1 ne contient aucune équipe d'Événement Légendaire.",
           "invalid_legendary_event_plans": "Les équipes V1 des Événements Légendaires n'ont pas pu être lues.",
           "legendary_event_import_failed": "Les équipes de cet événement n'ont pas pu être enregistrées."
@@ -527,7 +529,9 @@
           "empty_team": "Aucune unité de l'équipe n'a pu être importée, l'équipe a donc été ignorée.",
           "team_truncated": "L'équipe comptait plus de cinq unités ; les cinq premières ont été gardées.",
           "duplicate_team_merged": "Deux équipes avaient les mêmes unités et ont été fusionnées.",
-          "conflicting_depth_discarded": "La profondeur différente d'une équipe fusionnée a été écartée."
+          "conflicting_depth_discarded": "La profondeur différente d'une équipe fusionnée a été écartée.",
+          "existing_notes_kept": "Le planificateur avait déjà des notes pour cet événement, les notes V1 n'ont donc pas été importées.",
+          "notes_truncated": "Les notes V1 étaient trop longues et ont été raccourcies. Longueur d'origine en caractères :"
         }
       }
     },

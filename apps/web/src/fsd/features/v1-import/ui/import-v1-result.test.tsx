@@ -117,6 +117,28 @@ describe("ImportResult — Legendary Event teams", () => {
     )
   })
 
+  it("reads an event imported without any team as such, with no team count", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            teamsImported: 0,
+            issues: [{ code: "empty_team", teamName: "Melee", value: null }],
+          }),
+        ])}
+      />
+    )
+
+    const bucket = screen.getByTestId("v1-import-le-bucket-imported")
+    expect(bucket).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.reasons.imported_without_teams"
+    )
+    expect(bucket).not.toHaveTextContent(
+      /goals\.v1Import\.legendaryEvents\.reasons\.imported($|\s)/
+    )
+    expect(bucket).not.toHaveTextContent("teams count")
+  })
+
   it("lists an event the catalog does not carry by its V1 number in the not-imported bucket", () => {
     render(
       <ImportResult
@@ -183,6 +205,60 @@ describe("ImportResult — Legendary Event teams", () => {
     )
     expect(report).not.toHaveTextContent("The V1 profile has no")
     expect(screen.queryByTestId("v1-import-legendary-events")).toBeNull()
+  })
+
+  it("translates the legendary_events_skipped part code", () => {
+    render(
+      <ImportResult
+        result={result(
+          [
+            event({
+              status: "Skipped",
+              code: "plan_already_exists",
+              teamsImported: 0,
+            }),
+          ],
+          {
+            status: "Skipped",
+            code: "legendary_events_skipped",
+            message: "No Legendary Event plan was imported.",
+          }
+        )}
+      />
+    )
+
+    const report = screen.getByTestId("v1-import-result")
+    expect(report).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.reasons.legendary_events_skipped"
+    )
+    expect(report).not.toHaveTextContent("No Legendary Event plan was")
+  })
+
+  it("translates the plan-level notes issues, which name no team", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            issues: [
+              { code: "existing_notes_kept", teamName: null, value: null },
+              { code: "notes_truncated", teamName: null, value: "2400" },
+            ],
+          }),
+        ])}
+      />
+    )
+
+    const issues = screen.getAllByTestId("v1-import-le-issue")
+    expect(issues[0]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.existing_notes_kept"
+    )
+    expect(issues[1]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.notes_truncated"
+    )
+    expect(issues[1]).toHaveTextContent("2400")
+    expect(
+      screen.getByTestId("v1-import-legendary-events")
+    ).not.toHaveTextContent("goals.v1Import.reasons.generic")
   })
 
   it("copies event problems and issues with the goal diagnostics", async () => {

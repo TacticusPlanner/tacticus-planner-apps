@@ -31,8 +31,9 @@ import {
 } from "./plan-patches"
 
 /** How a plan mutation ended: `saved` (the returned plan is adopted), `conflict` (the plan changed
- *  elsewhere and was reloaded from the 409 body), `error` (rolled back) or `skipped` (nothing sent:
- *  no plan loaded, nothing changed, or an earlier conflict discarded it). */
+ *  elsewhere and was reloaded — from this write's 409 body, or from an earlier queued write's,
+ *  which discarded this one unsent), `error` (rolled back) or `skipped` (nothing sent: no plan
+ *  loaded or nothing changed). */
 export type PlanMutationOutcome = "saved" | "conflict" | "error" | "skipped"
 
 type Patch = (plan: LegendaryEventPlan) => LegendaryEventPlan
@@ -52,8 +53,10 @@ type Operation = {
  * plan the previous one returned, and the returned plan is adopted. Reorder, delete and a card's
  * depth change apply optimistically and roll back on failure. A 409 carrying the plan
  * (`legendaryEventPlanStale` / `legendaryEventOrderSetMismatch`) adopts that plan, shows one
- * "reloaded" toast, discards queued writes and never retries on its own; the caller (the editor)
- * keeps its draft.
+ * "reloaded" toast, discards queued writes (they report `conflict` too) and never retries on its
+ * own; the caller (the editor) keeps its draft. Before a write the plan query's in-flight refetch is
+ * cancelled, and a refetch older than the cache never replaces it (see `legendaryEventPlanQueries`),
+ * so the next write never carries a stale revision.
  */
 export function useLegendaryEventPlan({
   eventId,
@@ -90,6 +93,8 @@ export function useLegendaryEventPlan({
   const enqueue = (operation: Operation): Promise<PlanMutationOutcome> => {
     const cached = queryClient.getQueryData<LegendaryEventPlan>(queryKey)
     if (!isAuthenticated || !cached) return Promise.resolve("skipped")
+    // A refetch landing after this point would overwrite the optimistic (or confirmed) plan.
+    void queryClient.cancelQueries({ queryKey })
     if (outstanding.current === 0) confirmed.current = cached
     const patchId = nextPatchId.current++
     if (operation.patch) {
@@ -109,9 +114,9 @@ export function useLegendaryEventPlan({
     const outcome = queue.current.then(
       async (): Promise<PlanMutationOutcome> => {
         try {
-          if (queuedIn !== generation.current || !confirmed.current) {
-            return "skipped"
-          }
+          // An earlier write's conflict reloaded the plan and discarded this one unsent.
+          if (queuedIn !== generation.current) return "conflict"
+          if (!confirmed.current) return "skipped"
           const plan = await operation.send(confirmed.current)
           confirmed.current = plan
           dropPatch()
@@ -133,9 +138,8 @@ export function useLegendaryEventPlan({
             return "conflict"
           }
           if (confirmed.current) show(confirmed.current)
-          toast.error(
-            error instanceof ApiError ? error.message : t("teams.toasts.error")
-          )
+          // The server's message is English and technical: the toast stays translated.
+          toast.error(t("teams.toasts.error"))
           return "error"
         } finally {
           outstanding.current -= 1
@@ -238,6 +242,7 @@ export function useLegendaryEventPlan({
       onSaved: () =>
         captureEvent({
           type: "legendary_event_depth_set",
+          eventId,
           laneId: team.laneId,
           depth,
         }),

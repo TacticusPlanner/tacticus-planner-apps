@@ -182,6 +182,7 @@ describe("useAnalyticsActions", () => {
     })
     result.current.captureEvent({
       type: "legendary_event_depth_set",
+      eventId: "astarLysander",
       laneId: "beta",
       depth: 4,
     })
@@ -193,6 +194,7 @@ describe("useAnalyticsActions", () => {
       objective_count: 2,
     })
     expect(capture).toHaveBeenCalledWith("legendary_event_depth_set", {
+      event_id: "astarLysander",
       lane_id: "beta",
       depth: 4,
     })

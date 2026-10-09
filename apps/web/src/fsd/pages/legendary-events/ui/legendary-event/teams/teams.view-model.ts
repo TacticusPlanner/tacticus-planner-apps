@@ -20,10 +20,9 @@ export interface TeamCardMember {
 
 interface TeamCardCoverage {
   index: number
-  /** Whether the current members still derive the objective (false after a catalog change). */
+  /** Whether the current members still derive the stored objective (false after a catalog
+   *  change): a derived one counts in points, one no longer derived shows muted. */
   derived: boolean
-  /** Stored and derived: counted in points; a stored but no longer derived one shows muted. */
-  covered: boolean
   points: number
 }
 
@@ -75,7 +74,6 @@ export function buildTeamCardViewModel(
     .map((objective) => ({
       index: objective.index,
       derived: derived.has(objective.index),
-      covered: derived.has(objective.index),
       points: objective.points,
     }))
   return {
@@ -88,7 +86,7 @@ export function buildTeamCardViewModel(
     coverage,
     pointsPerBattle: teamPointsPerBattle(
       lane,
-      coverage.filter((entry) => entry.covered).map((entry) => entry.index)
+      coverage.filter((entry) => entry.derived).map((entry) => entry.index)
     ),
     expectedBattleClears:
       teamDepthForRun(team, currentRun)?.expectedBattleClears ?? null,
@@ -96,8 +94,10 @@ export function buildTeamCardViewModel(
   }
 }
 
-/** The Teams section body (design D5): hidden when signed out, a skeleton while the plan or the
- *  catalog units load, an inline error with Retry, or the plan. */
+/** The Teams section body (design D5): hidden when signed out, a skeleton while the plan, the
+ *  catalog units or the synced progress (which picks the current run) load, an inline error whose
+ *  Retry re-reads whichever failed, or the plan. Waiting on the progress keeps depth edits and the
+ *  editor from capturing the run-1 default before the synced run is known. */
 export type TeamsSectionState =
   | { kind: "hidden" }
   | { kind: "loading" }
@@ -113,7 +113,9 @@ export function buildTeamsSectionState({
   enabled,
   query,
   units,
+  retryUnits,
   roster,
+  runPending,
 }: {
   enabled: boolean
   query: {
@@ -122,14 +124,27 @@ export function buildTeamsSectionState({
     refetch: () => unknown
   }
   units: ReadValue<LegendaryEventUnit[]>
+  retryUnits: () => void
   roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
+  /** The synced progress (hence the current run) is still loading. */
+  runPending: boolean
 }): TeamsSectionState {
   if (!enabled) return { kind: "hidden" }
-  const retry = () => void query.refetch()
-  if (query.status === "error" || units === "error") {
+  const planFailed = query.status === "error"
+  const unitsFailed = units === "error"
+  if (planFailed || unitsFailed) {
+    const retry = () => {
+      if (planFailed) void query.refetch()
+      if (unitsFailed) retryUnits()
+    }
     return { kind: "error", retry }
   }
-  if (!query.data || units === "loading" || roster === "loading") {
+  if (
+    !query.data ||
+    units === "loading" ||
+    roster === "loading" ||
+    runPending
+  ) {
     return { kind: "loading" }
   }
   return {

@@ -18,6 +18,7 @@ import {
   type LegendaryEventLane,
 } from "@/entities/legendary-event"
 import { ClearDepthStepper } from "@/features/legendary-event-teams"
+import { useDebouncedCommit } from "@/shared/lib"
 import { EntityIcon, type SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -28,6 +29,7 @@ const FULL_TEAM = 5
 export interface TeamCardActions {
   onEdit: () => void
   onDelete: () => void
+  /** Called once a run of stepper edits settles, with the final depth. */
   onDepthChange: (depth: number | null) => void
   /** Mobile only; null hides the item (first / last card). */
   onMoveUp?: (() => void) | null
@@ -38,7 +40,8 @@ export interface TeamCardActions {
  * One team on a lane (design D4): name with the "N/5" badge for a partial team, member portraits
  * in position order and the reserve, the covered objectives as chips (muted when the members no
  * longer derive one), points per battle, the current run's depth stepper ("Set depth" when none)
- * and the actions menu. On desktop the grip is the drag handle.
+ * and the actions menu. On desktop the grip is the drag handle. Stepper clicks show at once and
+ * are sent as one write once they settle.
  */
 export function TeamCard({
   card,
@@ -59,6 +62,10 @@ export function TeamCard({
   const objectiveOf = (index: number) =>
     lane.unitsRestrictions.find((objective) => objective.index === index)
   const style: CSSProperties | undefined = sortable?.style
+  const [depth, setDepth] = useDebouncedCommit(
+    card.expectedBattleClears,
+    actions.onDepthChange
+  )
 
   return (
     <li
@@ -171,7 +178,7 @@ export function TeamCard({
             const objective = objectiveOf(entry.index)
             if (!objective) return null
             const { label, icon } = objectiveLabel(objective)
-            const muted = !entry.covered
+            const muted = !entry.derived
             return (
               <li
                 className={cn(
@@ -210,21 +217,19 @@ export function TeamCard({
           <span
             className={cn(
               "text-xs",
-              card.expectedBattleClears === null
+              depth === null
                 ? "font-medium text-primary"
                 : "text-muted-foreground"
             )}
             data-testid="team-card-depth-label"
           >
-            {card.expectedBattleClears === null
-              ? t("teams.depth.set")
-              : t("teams.depth.label")}
+            {depth === null ? t("teams.depth.set") : t("teams.depth.label")}
           </span>
           <ClearDepthStepper
             battleCount={lane.battleIds.length}
             data-testid="team-card-depth"
-            onChange={actions.onDepthChange}
-            value={card.expectedBattleClears}
+            onChange={setDepth}
+            value={depth}
           />
         </div>
       </div>

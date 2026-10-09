@@ -107,6 +107,7 @@ export function useAnalyticsActions() {
           break
         case "legendary_event_depth_set":
           client.capture(event.type, {
+            event_id: event.eventId,
             lane_id: event.laneId,
             depth: event.depth,
           })

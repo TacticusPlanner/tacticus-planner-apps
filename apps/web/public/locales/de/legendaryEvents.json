@@ -169,6 +169,7 @@
       "depth": "Kampftiefe für Durchlauf {{run}}",
       "save": "Team speichern",
       "saving": "Wird gespeichert …",
+      "notSaved": "Dein Plan wurde neu geladen, daher wurde dieses Team nicht gespeichert. Prüfe es und speichere erneut.",
       "cancel": "Abbrechen"
     },
     "picker": {
@@ -247,7 +248,7 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Stelle die Teams zusammen, die du auf dieser Bahn spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team voraussichtlich kommt. Mit „Team hinzufügen“ legst du eines an."
+          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team voraussichtlich kommt. Mit „Team hinzufügen“ legst du eines an."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",

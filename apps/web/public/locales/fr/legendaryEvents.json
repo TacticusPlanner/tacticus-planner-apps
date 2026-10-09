@@ -169,6 +169,7 @@
       "depth": "Profondeur pour la manche {{run}}",
       "save": "Enregistrer l'équipe",
       "saving": "Enregistrement…",
+      "notSaved": "Ton plan a été rechargé, cette équipe n'a donc pas été enregistrée. Vérifie-la et enregistre à nouveau.",
       "cancel": "Annuler"
     },
     "picker": {
@@ -247,7 +248,7 @@
         },
         "teams": {
           "title": "Équipes",
-          "content": "Compose les équipes que tu comptes jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et la profondeur que tu espères atteindre. Utilise Ajouter une équipe pour en créer une."
+          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et la profondeur que vous espérez atteindre. Utilisez Ajouter une équipe pour en créer une."
         },
         "progressGrid": {
           "title": "Progression synchronisée",

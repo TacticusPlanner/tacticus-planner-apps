@@ -44,9 +44,11 @@ export function groupLegendaryEventOutcomes(
 // Literal key unions, so `t()` can verify every key exists (see outcome-buckets.ts' ReasonKey).
 type ReasonKey =
   | "goals.v1Import.legendaryEvents.reasons.imported"
+  | "goals.v1Import.legendaryEvents.reasons.imported_without_teams"
   | "goals.v1Import.legendaryEvents.reasons.plan_already_exists"
   | "goals.v1Import.legendaryEvents.reasons.event_not_in_catalog"
   | "goals.v1Import.legendaryEvents.reasons.no_legendary_event_imported"
+  | "goals.v1Import.legendaryEvents.reasons.legendary_events_skipped"
   | "goals.v1Import.legendaryEvents.reasons.missing_legendary_event_plans"
   | "goals.v1Import.legendaryEvents.reasons.invalid_legendary_event_plans"
   | "goals.v1Import.legendaryEvents.reasons.legendary_event_import_failed"
@@ -57,6 +59,7 @@ const REASON_CODES = [
   "plan_already_exists",
   "event_not_in_catalog",
   "no_legendary_event_imported",
+  "legendary_events_skipped",
   "missing_legendary_event_plans",
   "invalid_legendary_event_plans",
   "legendary_event_import_failed",
@@ -69,6 +72,16 @@ export function reasonKeyForLegendaryEventCode(code: string): ReasonKey {
     : "goals.v1Import.reasons.generic"
 }
 
+/** The translated reason for one event's outcome: an event imported without a single team (every
+ *  team was dropped) reads as such instead of "Teams imported". */
+export function reasonKeyForLegendaryEventOutcome(
+  outcome: Pick<V1LegendaryEventOutcome, "code" | "teamsImported">
+): ReasonKey {
+  return outcome.code === "imported" && outcome.teamsImported === 0
+    ? "goals.v1Import.legendaryEvents.reasons.imported_without_teams"
+    : reasonKeyForLegendaryEventCode(outcome.code)
+}
+
 type IssueKey =
   | "goals.v1Import.legendaryEvents.issues.unknown_unit"
   | "goals.v1Import.legendaryEvents.issues.unit_not_allowed_on_lane"
@@ -79,6 +92,8 @@ type IssueKey =
   | "goals.v1Import.legendaryEvents.issues.team_truncated"
   | "goals.v1Import.legendaryEvents.issues.duplicate_team_merged"
   | "goals.v1Import.legendaryEvents.issues.conflicting_depth_discarded"
+  | "goals.v1Import.legendaryEvents.issues.existing_notes_kept"
+  | "goals.v1Import.legendaryEvents.issues.notes_truncated"
   | "goals.v1Import.reasons.generic"
 
 const ISSUE_CODES = [
@@ -91,6 +106,8 @@ const ISSUE_CODES = [
   "team_truncated",
   "duplicate_team_merged",
   "conflicting_depth_discarded",
+  "existing_notes_kept",
+  "notes_truncated",
 ] as const
 
 export function issueKeyForLegendaryEventCode(code: string): IssueKey {

@@ -1,11 +1,11 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
 
 import type {
-  CreateTeamRequest,
+  CreateTeamRequestDto,
   LegendaryEventPlan,
-  UpdatePlanRequest,
-  UpdateTeamOrderRequest,
-  UpdateTeamRequest,
+  UpdatePlanRequestDto,
+  UpdateTeamOrderRequestDto,
+  UpdateTeamRequestDto,
 } from "../model/plan.types"
 
 const planPath = (eventId: string) =>
@@ -25,14 +25,14 @@ export function getLegendaryEventPlan(eventId: string, signal?: AbortSignal) {
 
 export function updateLegendaryEventPlan(
   eventId: string,
-  request: UpdatePlanRequest
+  request: UpdatePlanRequestDto
 ) {
   return apiPut<LegendaryEventPlan>(planPath(eventId), { body: request })
 }
 
 export function createLegendaryEventTeam(
   eventId: string,
-  request: CreateTeamRequest
+  request: CreateTeamRequestDto
 ) {
   return apiPost<LegendaryEventPlan>(`${planPath(eventId)}/teams`, {
     body: request,
@@ -42,7 +42,7 @@ export function createLegendaryEventTeam(
 export function updateLegendaryEventTeam(
   eventId: string,
   teamId: string,
-  request: UpdateTeamRequest
+  request: UpdateTeamRequestDto
 ) {
   return apiPut<LegendaryEventPlan>(teamPath(eventId, teamId), {
     body: request,
@@ -62,7 +62,7 @@ export function deleteLegendaryEventTeam(
 
 export function updateLegendaryEventTeamOrder(
   eventId: string,
-  request: UpdateTeamOrderRequest
+  request: UpdateTeamOrderRequestDto
 ) {
   return apiPut<LegendaryEventPlan>(`${planPath(eventId)}/teams/order`, {
     body: request,

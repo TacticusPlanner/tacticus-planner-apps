@@ -1,3 +1,4 @@
+import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const api = vi.hoisted(() => ({
@@ -14,7 +15,11 @@ vi.mock("@/shared/api", () => ({
   apiPut: api.put,
 }))
 
-import type { CreateTeamRequest, UpdateTeamRequest } from "../model/plan.types"
+import type {
+  CreateTeamRequestDto,
+  LegendaryEventPlan,
+  UpdateTeamRequestDto,
+} from "../model/plan.types"
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
@@ -27,7 +32,7 @@ import { legendaryEventPlanQueries } from "./legendary-event-plan.queries"
 
 const BASE = "/api/v1/me/legendary-event-plans/astarLysander"
 
-const team: UpdateTeamRequest = {
+const team: UpdateTeamRequestDto = {
   expectedRevision: 2,
   name: "Melee",
   memberUnitIds: ["u1", "u2"],
@@ -58,7 +63,7 @@ describe("legendary event plan API", () => {
   })
 
   it("creates a team with its lane and run", () => {
-    const body: CreateTeamRequest = { ...team, laneId: "alpha" }
+    const body: CreateTeamRequestDto = { ...team, laneId: "alpha" }
     createLegendaryEventTeam("astarLysander", body)
     expect(api.post).toHaveBeenCalledWith(`${BASE}/teams`, { body })
   })
@@ -94,5 +99,27 @@ describe("legendary event plan API", () => {
       ...legendaryEventPlanQueries.all(),
       "astarLysander",
     ])
+  })
+
+  it("keeps a cached plan newer than a refetched one, and adopts a newer refetch", async () => {
+    const plan = (revision: number): LegendaryEventPlan => ({
+      eventId: "astarLysander",
+      revision,
+      catalogVersion: "1",
+      notes: null,
+      showPaidOptions: false,
+      teams: [],
+    })
+    const client = new QueryClient()
+    const options = legendaryEventPlanQueries.detail("astarLysander")
+    client.setQueryData(options.queryKey, plan(5))
+
+    api.get.mockResolvedValueOnce(plan(4))
+    await client.fetchQuery({ ...options, staleTime: 0 })
+    expect(client.getQueryData(options.queryKey)?.revision).toBe(5)
+
+    api.get.mockResolvedValueOnce(plan(6))
+    await client.fetchQuery({ ...options, staleTime: 0 })
+    expect(client.getQueryData(options.queryKey)?.revision).toBe(6)
   })
 })

@@ -59,10 +59,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const [selectedObjectives, setSelectedObjectives] = useState<
     ReadonlySet<string>
   >(() => new Set())
-  const units = readValue(useLegendaryEventUnits())
+  const unitsRead = useLegendaryEventUnits()
+  const units = readValue(unitsRead)
   const roster = readValue(useLegendaryEventRoster())
   const progressValue = readValue(progress)
-  // Depth writes target the synced run, or run 1 without a synced entry (design D8).
+  // Depth writes target the synced run, or run 1 without a synced entry (design D8). The Teams
+  // section stays loading until the progress resolves, so nothing captures the default meanwhile.
   const run = currentLegendaryEventRun(
     typeof progressValue === "object" ? progressValue : undefined
   )
@@ -168,7 +170,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         enabled: plan.enabled,
         query: plan.query,
         units,
+        retryUnits: unitsRead.retry,
         roster,
+        runPending: progressValue === "loading",
       }),
       run,
       actions: plan,

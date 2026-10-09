@@ -47,7 +47,7 @@
 
 **D10. V1 import part.** `ImportV1ProfileRequest.import.legendaryEventPlans` and `ImportV1ProfileResult.legendaryEventPlans` + `legendaryEventOutcomes: V1LegendaryEventOutcome[]` ({ eventId, v1EventId, status, code, message, teamsImported, issues[{code, teamName, value}] }). The part tuple moves to `features/v1-import/model/parts.ts` and both files read it. Outcomes bucket by code: `imported` → imported (label: event name from `useUnitName(eventId)` with "N teams"); `plan_already_exists` → needed no import; `event_not_in_catalog` → not imported; `legendary_event_import_failed` → failed; issues render under their event as one line each with translated reason (`goals.v1Import.legendaryEvents.issues.<code>`) and the value. After an import with the part selected, `legendaryEventPlanQueries.all()` is invalidated. Both hosts (`/account/v1-import` and onboarding) get the part; onboarding checks it by default like the others.
 
-**D11. Analytics.** Emit `legendary_event_team_created`, `legendary_event_team_edited`, `legendary_event_team_deleted` (properties: eventId, laneId, memberCount, objectiveCount), and `legendary_event_depth_set` (laneId, depth) through the existing analytics entry point.
+**D11. Analytics.** Emit `legendary_event_team_created`, `legendary_event_team_edited`, `legendary_event_team_deleted` (properties: eventId, laneId, memberCount, objectiveCount), and `legendary_event_depth_set` (eventId, laneId, depth) through the existing analytics entry point.
 
 ## Risks / Trade-offs
 

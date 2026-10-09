@@ -163,7 +163,7 @@ describe("TeamEditorDialog", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it("stays open with the draft after a conflict", async () => {
+  it("stays open with the draft after a conflict and says the save was not applied", async () => {
     const onSubmit = vi.fn(async (): Promise<PlanMutationOutcome> => "conflict")
     const { onOpenChange } = renderEditor({ team: saved, onSubmit })
     fireEvent.change(nameInput(), { target: { value: "Renamed" } })
@@ -176,5 +176,8 @@ describe("TeamEditorDialog", () => {
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(nameInput()).toHaveValue("Renamed")
     expect(screen.getByTestId("team-editor-save")).toBeEnabled()
+    expect(screen.getByTestId("team-editor-not-saved")).toHaveTextContent(
+      "this team was not saved"
+    )
   })
 })

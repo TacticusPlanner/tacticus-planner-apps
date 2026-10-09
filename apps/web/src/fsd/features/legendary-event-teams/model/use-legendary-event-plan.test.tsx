@@ -111,7 +111,7 @@ function setup(initial: LegendaryEventPlan, run: 1 | 2 | 3 = 1) {
     queryClient.getQueryData<LegendaryEventPlan>(
       legendaryEventPlanQueries.detail(EVENT).queryKey
     )!
-  return { ...hook, cached }
+  return { ...hook, cached, queryClient }
 }
 
 const order = (current: LegendaryEventPlan) =>
@@ -185,7 +185,7 @@ describe("useLegendaryEventPlan", () => {
       expect(await pending).toBe("error")
     })
     expect(order(cached())).toEqual(["a", "b", "c"])
-    expect(toast.error).toHaveBeenCalledWith("Server error")
+    expect(toast.error).toHaveBeenCalledWith("teams.toasts.error")
   })
 
   it("sends a second write with the revision the first one returned", async () => {
@@ -228,7 +228,7 @@ describe("useLegendaryEventPlan", () => {
     }
   )
 
-  it("drops writes queued behind a conflict instead of replaying them", async () => {
+  it("drops writes queued behind a conflict instead of replaying them, reporting them as conflicts", async () => {
     const current = plan(9, [team("a", 0)])
     api.order.mockRejectedValue(conflict("legendaryEventPlanStale", current))
     const { result, cached } = setup(plan(3, [team("a", 0), team("b", 1)]))
@@ -237,7 +237,7 @@ describe("useLegendaryEventPlan", () => {
     await act(async () => {
       void result.current.reorderLane("alpha", ["b", "a"])
       second = result.current.deleteTeam(team("b", 1))
-      expect(await second).toBe("skipped")
+      expect(await second).toBe("conflict")
     })
 
     expect(api.remove).not.toHaveBeenCalled()
@@ -283,9 +283,42 @@ describe("useLegendaryEventPlan", () => {
     ])
     expect(api.capture).toHaveBeenCalledWith({
       type: "legendary_event_depth_set",
+      eventId: EVENT,
       laneId: "alpha",
       depth: 9,
     })
+  })
+
+  it("cancels an in-flight refetch so its older plan cannot overwrite the optimistic one", async () => {
+    let resolveFetch!: (value: LegendaryEventPlan) => void
+    api.order.mockResolvedValue(plan(5, [team("b", 0), team("a", 1)]))
+    const { result, cached, queryClient } = setup(
+      plan(4, [team("a", 0), team("b", 1)])
+    )
+    const refetch = queryClient
+      .fetchQuery({
+        queryKey: legendaryEventPlanQueries.detail(EVENT).queryKey,
+        queryFn: () =>
+          new Promise<LegendaryEventPlan>((resolve) => {
+            resolveFetch = resolve
+          }),
+        staleTime: 0,
+      })
+      .catch(() => undefined)
+
+    let pending!: Promise<string>
+    act(() => {
+      pending = result.current.reorderLane("alpha", ["b", "a"])
+    })
+    expect(order(cached())).toEqual(["b", "a"])
+
+    await act(async () => {
+      resolveFetch(plan(3, [team("a", 0), team("b", 1)]))
+      await refetch
+      expect(await pending).toBe("saved")
+    })
+    expect(cached().revision).toBe(5)
+    expect(order(cached())).toEqual(["b", "a"])
   })
 
   it("does not send a reorder that changes nothing", async () => {

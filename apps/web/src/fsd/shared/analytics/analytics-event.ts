@@ -30,6 +30,7 @@ type LegendaryEventTeamEvent = {
 /** A team's clear depth for the current run was set by hand (null when cleared). */
 type LegendaryEventDepthSetEvent = {
   type: "legendary_event_depth_set"
+  eventId: string
   laneId: string
   depth: number | null
 }

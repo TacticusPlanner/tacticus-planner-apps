@@ -45,7 +45,8 @@ import { TeamUnitPicker } from "./team-unit-picker"
  * empty from Add team or prefilled from Edit; mount it with a fresh `key` per opening so the draft
  * starts from the team. Covered objectives follow the members live and can be unticked; the depth
  * is the current run's. The dialog closes only once the save succeeded — after a conflict or an
- * error the draft stays for another try.
+ * error the draft stays for another try; after a conflict (the plan was reloaded, this save was
+ * not applied) the dialog says so.
  */
 export function TeamEditorDialog({
   open,
@@ -82,6 +83,7 @@ export function TeamEditorDialog({
     initialEditorDraft(team, run, context)
   )
   const [saving, setSaving] = useState(false)
+  const [reloaded, setReloaded] = useState(false)
   const number = new Intl.NumberFormat(i18n.language)
   const objectives = [...lane.unitsRestrictions].sort(
     (a, b) => a.index - b.index
@@ -107,8 +109,10 @@ export function TeamEditorDialog({
     event.preventDefault()
     if (!canSave) return
     setSaving(true)
+    setReloaded(false)
     const outcome = await onSubmit(toTeamDraft(draft, name))
     setSaving(false)
+    setReloaded(outcome === "conflict")
     if (outcome === "saved") onOpenChange(false)
   }
 
@@ -242,6 +246,15 @@ export function TeamEditorDialog({
             />
           </section>
         </ResponsiveDialogBody>
+        {reloaded ? (
+          <p
+            className="px-6 pt-2 text-sm text-destructive"
+            data-testid="team-editor-not-saved"
+            role="alert"
+          >
+            {t("teams.editor.notSaved")}
+          </p>
+        ) : null}
         <ResponsiveDialogFooter>
           <Button
             disabled={saving}

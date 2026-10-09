@@ -169,6 +169,7 @@
       "depth": "Clear depth for run {{run}}",
       "save": "Save team",
       "saving": "Saving…",
+      "notSaved": "Your plan was reloaded, so this team was not saved. Check it and save again.",
       "cancel": "Cancel"
     },
     "picker": {

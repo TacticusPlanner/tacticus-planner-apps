@@ -98,7 +98,7 @@ export {
 export { ObjectiveIcon } from "./ui/objective-icon"
 export {
   legendaryEventPlanConflictDetails,
-  type CreateTeamRequest,
+  type CreateTeamRequestDto,
   type LegendaryEventDepthSource,
   type LegendaryEventPlan,
   type LegendaryEventPlanConflictCode,
@@ -106,9 +106,9 @@ export {
   type LegendaryEventRun,
   type LegendaryEventTeam,
   type LegendaryEventTeamRunDepth,
-  type UpdatePlanRequest,
-  type UpdateTeamOrderRequest,
-  type UpdateTeamRequest,
+  type UpdatePlanRequestDto,
+  type UpdateTeamOrderRequestDto,
+  type UpdateTeamRequestDto,
 } from "./model/plan.types"
 export {
   createLegendaryEventTeam,

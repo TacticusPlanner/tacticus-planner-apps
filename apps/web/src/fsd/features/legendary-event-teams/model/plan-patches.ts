@@ -1,11 +1,11 @@
 import {
   teamDepthForRun,
-  type CreateTeamRequest,
+  type CreateTeamRequestDto,
   type LegendaryEventLaneId,
   type LegendaryEventPlan,
   type LegendaryEventRun,
   type LegendaryEventTeam,
-  type UpdateTeamRequest,
+  type UpdateTeamRequestDto,
 } from "@/entities/legendary-event"
 
 /** What the team editor submits: everything a team carries except its lane, order and id. The
@@ -152,7 +152,7 @@ export function teamUpdateRequest(
   run: LegendaryEventRun,
   expectedRevision: number,
   stored?: LegendaryEventTeam
-): UpdateTeamRequest {
+): UpdateTeamRequestDto {
   const storedDepth = stored ? teamDepthForRun(stored, run) : null
   const depth = draft.expectedBattleClears
   const source =
@@ -178,6 +178,6 @@ export function teamCreateRequest(
   draft: TeamDraft,
   run: LegendaryEventRun,
   expectedRevision: number
-): CreateTeamRequest {
+): CreateTeamRequestDto {
   return { ...teamUpdateRequest(draft, run, expectedRevision), laneId }
 }

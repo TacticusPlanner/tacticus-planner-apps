@@ -1,7 +1,9 @@
 import type { LegendaryEventLaneId } from "./types"
 
-// Hand-written DTOs for `/api/v1/me/legendary-event-plans/{eventId}` (companion API change
-// add-legendary-event-teams, design D8). Every endpoint answers with the whole plan.
+// Hand-written types for `/api/v1/me/legendary-event-plans/{eventId}` (companion API change
+// add-legendary-event-teams, design D8). Every endpoint answers with the whole plan. The request
+// and 409 bodies exist only on the wire, so they carry the `Dto` suffix; the plan, team and run
+// depth are read and written as-is by the feature, so they are the (unsuffixed) domain shape too.
 
 /** How a run's clear depth was set. This client only ever writes `manual` (Stage 2). */
 export type LegendaryEventDepthSource = "estimate" | "manual"
@@ -44,14 +46,14 @@ export interface LegendaryEventPlan {
   teams: LegendaryEventTeam[]
 }
 
-export interface UpdatePlanRequest {
+export interface UpdatePlanRequestDto {
   expectedRevision: number
   notes: string | null
   showPaidOptions: boolean
 }
 
 /** The team fields a create and an update share; the depth applies to `run` only. */
-interface TeamFields {
+interface TeamFieldsDto {
   expectedRevision: number
   name: string
   memberUnitIds: string[]
@@ -62,12 +64,14 @@ interface TeamFields {
   expectedBattleClearsSource: LegendaryEventDepthSource | null
 }
 
-export type CreateTeamRequest = TeamFields & { laneId: LegendaryEventLaneId }
+export type CreateTeamRequestDto = TeamFieldsDto & {
+  laneId: LegendaryEventLaneId
+}
 
 /** A team never changes lane: the update body carries no `laneId`. */
-export type UpdateTeamRequest = TeamFields
+export type UpdateTeamRequestDto = TeamFieldsDto
 
-export interface UpdateTeamOrderRequest {
+export interface UpdateTeamOrderRequestDto {
   expectedRevision: number
   laneId: LegendaryEventLaneId
   /** The lane's complete team id set in the new order. */

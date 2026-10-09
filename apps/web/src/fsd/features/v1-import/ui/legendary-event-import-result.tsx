@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import {
   issueKeyForLegendaryEventCode,
-  reasonKeyForLegendaryEventCode,
+  reasonKeyForLegendaryEventOutcome,
   type LegendaryEventBuckets,
 } from "../model/legendary-event-outcome-buckets"
 import type { OutcomeBucketKey } from "../model/outcome-buckets"
@@ -17,9 +17,9 @@ const BUCKET_ORDER: readonly OutcomeBucketKey[] = [
 
 /**
  * The Legendary Event teams part's per-event report (v1-profile-import spec): one row per V1
- * event in the goal buckets, each with its translated reason (imported ones with the team count)
- * and its issues beneath it as one translated line each, naming the team and the V1 value. Empty
- * buckets are omitted.
+ * event in the goal buckets, each with its translated reason (imported ones with the team count,
+ * or a no-teams reason when none was kept) and its issues beneath it as one translated line each,
+ * naming the team and the V1 value. Empty buckets are omitted.
  */
 export function LegendaryEventImportResult({
   buckets,
@@ -51,7 +51,7 @@ export function LegendaryEventImportResult({
                 >
                   <div className="flex flex-wrap items-baseline gap-x-2">
                     <span className="font-medium">{eventName(outcome)}</span>
-                    {bucket === "imported" ? (
+                    {bucket === "imported" && outcome.teamsImported > 0 ? (
                       <span className="text-muted-foreground">
                         {t("goals.v1Import.legendaryEvents.teams", {
                           count: outcome.teamsImported,
@@ -60,7 +60,7 @@ export function LegendaryEventImportResult({
                     ) : null}
                   </div>
                   <p className="mt-0.5 text-muted-foreground">
-                    {t(reasonKeyForLegendaryEventCode(outcome.code))}
+                    {t(reasonKeyForLegendaryEventOutcome(outcome))}
                   </p>
                   {outcome.issues.length > 0 ? (
                     <ul className="mt-1 grid gap-0.5 border-l pl-2">

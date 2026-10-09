@@ -9,7 +9,7 @@ import {
   teamUnits,
 } from "@/test/fixtures/legendary-event-teams"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { act, fireEvent, render, screen, within } from "@/test/render"
 
 import { TeamCard } from "./team-card"
 import { buildTeamCardViewModel, moveTargets } from "./teams.view-model"
@@ -104,8 +104,8 @@ describe("buildTeamCardViewModel", () => {
       1
     )
     expect(card.coverage).toEqual([
-      { index: 0, derived: true, covered: true, points: 20 },
-      { index: 2, derived: false, covered: false, points: 15 },
+      { index: 0, derived: true, points: 20 },
+      { index: 2, derived: false, points: 15 },
     ])
     expect(card.pointsPerBattle).toBe(50)
   })
@@ -186,16 +186,44 @@ describe("TeamCard", () => {
   })
 
   it("prompts Set depth for a run without a depth and steps from 1", () => {
-    const cardActions = renderCard(team(), 2)
-    expect(screen.getByTestId("team-card-depth-label")).toHaveTextContent(
-      "Set depth"
-    )
-    fireEvent.click(
-      within(screen.getByTestId("team-card-depth")).getByTestId(
-        "number-stepper-increase"
+    vi.useFakeTimers()
+    try {
+      const cardActions = renderCard(team(), 2)
+      expect(screen.getByTestId("team-card-depth-label")).toHaveTextContent(
+        "Set depth"
       )
-    )
-    expect(cardActions.onDepthChange).toHaveBeenCalledWith(1)
+      fireEvent.click(
+        within(screen.getByTestId("team-card-depth")).getByTestId(
+          "number-stepper-increase"
+        )
+      )
+      act(() => vi.advanceTimersByTime(400))
+      expect(cardActions.onDepthChange).toHaveBeenCalledWith(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("sends a run of stepper clicks as one depth change with the final value", () => {
+    vi.useFakeTimers()
+    try {
+      const cardActions = renderCard(team(), 1)
+      const stepper = screen.getByTestId("team-card-depth")
+      const increase = within(stepper).getByTestId("number-stepper-increase")
+      fireEvent.click(increase)
+      fireEvent.click(increase)
+      fireEvent.click(increase)
+      expect(within(stepper).getByTestId("number-stepper-input")).toHaveValue(
+        10
+      )
+      act(() => vi.advanceTimersByTime(399))
+      expect(cardActions.onDepthChange).not.toHaveBeenCalled()
+      act(() => vi.advanceTimersByTime(1))
+      expect(cardActions.onDepthChange).toHaveBeenCalledTimes(1)
+      expect(cardActions.onDepthChange).toHaveBeenCalledWith(10)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it("mutes a chip the members no longer derive", () => {

@@ -511,9 +511,11 @@
         "v1Event": "V1-Event {{id}}",
         "reasons": {
           "imported": "Teams importiert.",
+          "imported_without_teams": "Importiert, aber keines seiner Teams konnte übernommen werden.",
           "plan_already_exists": "Für dieses Event gibt es im Planer bereits Teams, daher wurde nichts geändert.",
           "event_not_in_catalog": "Der Planer kennt dieses Event noch nicht.",
           "no_legendary_event_imported": "Für kein Event konnten Teams importiert werden.",
+          "legendary_events_skipped": "Für kein Event wurden Teams importiert: Jedes Event hat im Planer bereits Teams, ist im Planer noch nicht verfügbar oder hatte keine Teams.",
           "missing_legendary_event_plans": "Das V1-Profil enthält keine Teams für Legendäre Events.",
           "invalid_legendary_event_plans": "Die V1-Teams für Legendäre Events konnten nicht gelesen werden.",
           "legendary_event_import_failed": "Die Teams dieses Events konnten nicht gespeichert werden."
@@ -527,7 +529,9 @@
           "empty_team": "Keine Einheit des Teams konnte importiert werden, daher wurde das Team übersprungen.",
           "team_truncated": "Das Team hatte mehr als fünf Einheiten; die ersten fünf wurden übernommen.",
           "duplicate_team_merged": "Zwei Teams hatten dieselben Einheiten und wurden zusammengeführt.",
-          "conflicting_depth_discarded": "Die abweichende Kampftiefe eines zusammengeführten Teams wurde verworfen."
+          "conflicting_depth_discarded": "Die abweichende Kampftiefe eines zusammengeführten Teams wurde verworfen.",
+          "existing_notes_kept": "Der Planer hatte für dieses Event bereits Notizen, daher wurden die V1-Notizen nicht importiert.",
+          "notes_truncated": "Die V1-Notizen waren zu lang und wurden gekürzt. Ursprüngliche Länge in Zeichen:"
         }
       }
     },

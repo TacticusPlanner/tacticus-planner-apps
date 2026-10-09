@@ -169,6 +169,7 @@
       "depth": "Profundidad para la ronda {{run}}",
       "save": "Guardar equipo",
       "saving": "Guardando…",
+      "notSaved": "Tu plan se ha recargado, así que este equipo no se guardó. Revísalo y vuelve a guardarlo.",
       "cancel": "Cancelar"
     },
     "picker": {
@@ -247,7 +248,7 @@
         },
         "teams": {
           "title": "Equipos",
-          "content": "Crea los equipos que piensas jugar en esta línea. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde esperas que llegue. Usa Añadir equipo para empezar uno."
+          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde esperas que llegue. Usa Añadir equipo para empezar uno."
         },
         "progressGrid": {
           "title": "Progreso sincronizado",
