@@ -4,7 +4,7 @@ The Campaign Events progress page (`/progress/campaign-events`) exists so player
 
 ## What Changes
 
-- Daily raids SHALL resolve each event track's progress as the manual override when one exists, else the synced entry, else no progress — the same resolution the progress page displays. Only the active campaign event is affected, since eligibility already excludes every other event.
+- Campaign node eligibility SHALL resolve each event track's progress as the manual override when one exists, else the synced entry, else no progress — the same resolution the progress page displays. Because eligibility is shared, this reaches every surface that picks farm nodes: Today, Raids Plan, the Home raids widget and event tab, Goals, Insights and per-project estimates. Only the active campaign event is affected, since eligibility already excludes every other event.
 - A **Current event** section at the top of the page shows the event identified by `live-progress.activeCampaignEventId`, when one is active.
 - Every other event is a collapsible card whose collapsed row summarises each track (for example `Standard 12/30 · Extremis 0/30 · Challenges 2/5`) with its synced/manual/no-data source.
 - The event list is ordered unfinished first, with an option to hide completed events that is remembered per browser.
@@ -25,12 +25,15 @@ The Campaign Events progress page (`/progress/campaign-events`) exists so player
 ### Modified Capabilities
 
 - `daily-raids-today`: "Only the active campaign event is farmable" changes its event node-reached source from the synced `campaign-events-progress` chunk alone to the effective progress (manual override, else synced, else none). Raids Plan inherits this through its existing "shares Today's campaign eligibility" requirement, so `daily-raids-plan` needs no delta.
+- `partial-goal-planning`: "Every estimate surface uses one campaign node-eligibility rule" names _synced_ event progress as the reached-node source; it changes to the same effective progress, so Goals, Insights and per-project estimates keep agreeing with Today and Raids Plan.
+- `daily-raids-home-screen-event` needs no delta: it already defers to "the existing `availableCampaignBattles` eligibility", which now receives effective progress.
 
 ## Impact
 
 - `apps/web/src/fsd/pages/progress` (campaign events page, event card, model, tests, new tutorial).
 - `apps/web/src/fsd/entities/player-data-override` (effective-progress resolver exported through its public API).
-- `apps/web/src/fsd/features/daily-raids` (`use-daily-raids.ts` loads overrides and feeds the resolver into eligibility; loading/error states follow the existing Onslaught override precedent).
+- `apps/web/src/fsd/features/daily-raids`: a new `use-effective-campaign-event-progress.ts` loads the overrides and merges them over synced progress. `use-eligible-campaign-battles.ts` uses it for eligibility and exposes ready/error flags. `use-daily-raids.ts` and `use-home-screen-event-locations.ts` gate on those flags, with Daily Raids following the existing Onslaught override precedent for loading and errors.
+- `apps/web/src/fsd/pages/goals`: no source change. The Goals catalog picks up effective progress through `useEligibleCampaignBattles`. Its tests' entity mocks gain the overrides query.
 - `apps/web/src/fsd/shared` (generic revisioned-draft hook in `shared/api`, unsaved-changes bar, leave-page guard).
 - Locale files under `apps/web/public/locales/*/common.json` (new and removed `progress.events.*` keys, tour copy).
 - No API change: the campaign-event override endpoints and their revision/409 contract already exist, so there is no `tacticus-planner-api` companion change.

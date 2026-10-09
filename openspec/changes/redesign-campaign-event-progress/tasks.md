@@ -1,8 +1,9 @@
-## 1. Effective event progress (shared by page and daily raids)
+## 1. Effective event progress (shared by page and campaign eligibility)
 
 - [x] 1.1 Add `resolveCampaignEventProgress` and its keyed map builder to `entities/player-data-override` and export them from the entity's `index.ts`; verify with unit tests covering manual-over-synced, synced-only, neither (source `none`), a lower manual value winning, and battle count vs challenge ids resolving independently
-- [x] 1.2 Load `campaignEventProgressQueries.current()` in `features/daily-raids/model/use-daily-raids.ts` (enabled when authenticated), add it to the existing error and ready gates, and build `campaignEventProgressByKey` from the resolver; verify with hook tests that an override makes a node without synced data eligible, a lower override excludes a synced-reached node, and an override load failure returns `{ status: "error" }`
+- [x] 1.2 Add `useEffectiveCampaignEventProgress(isAuthenticated)` in `features/daily-raids/model`. It loads `campaignEventProgressQueries.current()` (enabled when authenticated), merges overrides over synced progress with the resolver, and returns `{ byKey, ready, isError }`. `ready` waits for synced data and, when signed in, for the override request to settle. Use it inside `useEligibleCampaignBattles` in place of the synced-only read, and expose `campaignEventProgressReady` and `campaignEventProgressError` instead of the raw result. Gate `useDailyRaids` on both flags (error, then ready) and `useHomeScreenEventLocations` on ready. Verify with hook tests that an override makes a node without synced data eligible, a lower override excludes a synced-reached node, and an override load failure returns `{ status: "error" }` from `useDailyRaids`
 - [x] 1.3 Add regression tests for existing consumers: Today, Raids Plan and the Home raids widget still render schedules unchanged when no overrides exist; verify `pnpm --filter web test:run` passes for `features/daily-raids`, `pages/dailies` and `pages/home`
+- [x] 1.4 Keep the Goals catalog consumers green: extend the `@/entities/player-data-override` mocks in the create-goal sheet, goals page and insights page tests with `campaignEventProgressQueries` and `buildEffectiveCampaignEventProgress`; verify `pnpm --filter web test:run` passes for `pages/goals`
 
 ## 2. Shared draft-save hook and unsaved-changes UI
 
@@ -35,6 +36,7 @@ Required data states: a signed-in profile with synced player data where live pro
 - [ ] 6.1 Set a manual Extremis count on the active event for a track with no synced data, save, open Dailies → Today and confirm that event's Extremis nodes up to count + 1 now appear as farmable; then "Reset to synced", save, and confirm they disappear
 - [ ] 6.2 Save from a second tab, then save in the first tab, and confirm the conflict message and reloaded values
 - [ ] 6.3 With the API stopped or a request blocked, confirm the page and Today each show their translated error state and no raw API text
+- [ ] 6.4 With the 6.1 override saved, confirm the newly reachable Extremis node also appears on the Home event tab's active-event list and in a goal's farm locations on Goals (a material that drops only there is no longer reported unavailable); then "Reset to synced", save, and confirm both revert
 
 ## 7. Desktop verification (viewport at or above 768px)
 

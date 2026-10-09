@@ -1,11 +1,12 @@
 ## Context
 
-See proposal.md (Why) and the two delta specs for required behavior.
+See proposal.md (Why) and the three delta specs for required behavior.
 
 Current state:
 
 - `pages/progress/ui/campaign-events-page.tsx` owns the draft (`draftOverride`), the revisioned save and the 409 refetch inline; `event-card.tsx` resolves values as `manual ?? synced ?? 0` and labels anything non-manual "Synced".
-- `features/daily-raids/model/use-daily-raids.ts` builds `campaignEventProgressByKey` from the synced Dexie chunk only (`buildCampaignEventProgressByKey` in `campaign-event-eligibility.ts`). It already loads one override, Onslaught progress, via `onslaughtProgressQueries` with `enabled: isAuthenticated`, requires `isSuccess` before calculating and returns `{ status: "error" }` on failure. Today, Raids Plan and the Home raids widget all consume `useDailyRaids`.
+- `features/daily-raids/model/use-eligible-campaign-battles.ts` (`useEligibleCampaignBattles`) is the single place that reads the live-progress, `campaign-events-progress` and `campaign-progress` chunks and applies `availableCampaignBattles`. It builds `campaignEventProgressByKey` from the synced Dexie chunk only (`buildCampaignEventProgressByKey` in `campaign-event-eligibility.ts`) and returns the raw chunk results so callers can gate on hydration. Three consumers use it: `useDailyRaids` (Today, Raids Plan, Home raids widget), `useHomeScreenEventLocations` (Home event tab) and `pages/goals/model/shared/use-goal-catalog.ts` (Goals, Insights, per-project estimates), which is how `partial-goal-planning`'s "one campaign node-eligibility rule" holds.
+- `features/daily-raids/model/use-daily-raids.ts` already loads one override, Onslaught progress, via `onslaughtProgressQueries` with `enabled: isAuthenticated`, requires `isSuccess` before calculating and returns `{ status: "error" }` on failure.
 - `pages/onslaught/ui/onslaught-page.tsx` has a second, slightly different copy of the draft/save/409 logic (it keeps `setDraft(saved)` after success, so its draft never returns to "clean").
 - The app uses a data router (`createBrowserRouter`), so `useBlocker` is available.
 - On mobile, `app/layout/mobile-layout.tsx` fixes a bottom nav of height `--mobile-nav-height`.
@@ -15,7 +16,7 @@ Current state:
 
 **Goals:**
 
-- One resolver for effective event progress, used by both the page and daily-raids eligibility.
+- One resolver for effective event progress, used by both the page and the shared campaign eligibility, so every surface that picks farm nodes (Today, Raids Plan, Home, Goals, Insights) agrees with what the page shows.
 - A generic, tested draft-save hook and unsaved-changes bar with no campaign-event knowledge.
 
 **Non-Goals:**
@@ -32,11 +33,21 @@ Add `resolveCampaignEventProgress(synced, override)` returning, per track, `{ co
 
 - Both `pages/progress` and `features/daily-raids` may import an entity, so this is the lowest slice both can reach without a feature-to-feature or page-to-feature import.
 - Alternative: keep it in `features/daily-raids` and re-export — rejected, pages consuming a feature's internals for a display concern couples the progress page to raid planning.
-- `campaign-event-eligibility.ts` keeps its `CampaignEventProgressEntry` shape; `use-daily-raids.ts` builds it from the resolver's output instead of from the synced chunk directly, so `daily-raids-calc` and its tests are untouched apart from new fixtures.
+- `campaign-event-eligibility.ts` keeps its `CampaignEventProgressEntry` shape; the eligibility hook builds it from the resolver's output instead of from the synced chunk directly, so `daily-raids-calc` and its tests are untouched apart from new fixtures. The synced-only `buildCampaignEventProgressByKey` is removed.
 
-### 2. Daily raids loads overrides like Onslaught
+### 2. Overrides merge inside the shared eligibility hook
 
-`use-daily-raids.ts` adds `useQuery({ ...campaignEventProgressQueries.current(), enabled: isAuthenticated })`, includes it in the existing error and ready gates, and memoises the merged map on both inputs. Following the precedent keeps loading/error behavior uniform across the three consumers; the query key is shared with the progress page, so a save there (`setQueryData`) immediately updates Today, Raids Plan and the Home widget without a refetch.
+A small hook, `useEffectiveCampaignEventProgress(isAuthenticated)` in `features/daily-raids/model`, reads the synced chunk, runs `useQuery({ ...campaignEventProgressQueries.current(), enabled: isAuthenticated })`, and memoises the merged map on both inputs. It returns `{ byKey, ready, isError }`.
+
+`useEligibleCampaignBattles` calls it in place of its synced-only read and passes `byKey` to `availableCampaignBattles`. Instead of the raw `campaignEventProgressResult` it now returns two flags: `campaignEventProgressReady` and `campaignEventProgressError`.
+
+- **Why here and not in `useDailyRaids`:** the eligibility hook exists so that every surface chooses farm nodes from the same set (`partial-goal-planning`). Merging overrides only in `useDailyRaids` would make Today and Raids Plan schedule a node that Goals and Insights call unavailable, breaking that requirement.
+- **When `ready` becomes true:** once synced progress has loaded and, when signed in, the override request has settled (success or failure). Signed-out callers (Home, Goals previews) never wait for a request that is disabled.
+- **What each consumer does with the flags:**
+  - `useDailyRaids` (Today, Raids Plan, Home raids widget) adds `campaignEventProgressError` to its error gate and `campaignEventProgressReady` to its ready gate. This follows the Onslaught precedent: a failed override load shows the explicit error state, not a schedule silently built from synced data.
+  - `useHomeScreenEventLocations` gates only on `campaignEventProgressReady`. It has no error state, so on a failed load it keeps the synced-only view.
+  - The Goals catalog consumes only `availableBattles` and has no gate. It shows synced-only eligibility until overrides arrive, then recomputes.
+- **Shared query key:** the key is shared with the progress page, so a save there (`setQueryData`) immediately updates every consumer without a refetch.
 
 ### 3. Generic `useRevisionedDraft` in `shared/api`
 
@@ -96,6 +107,7 @@ Add `campaign-events-page.tutorial.tsx` with `desktop` and `mobile` step arrays 
 ## Risks / Trade-offs
 
 - [Daily raids now waits for one more request; an override outage blocks Today] → Same trade-off already accepted for Onslaught; the error state is explicit, not a silently wrong schedule.
+- [During an override outage, or while the request is in flight, Home and Goals/Insights use synced-only eligibility while Today shows an error] → The surfaces never disagree on a _computed_ schedule: Today computes nothing in that state. Making Goals block on the override request too would add a loading gate to every goal estimate for a rarely-used override; revisit if mismatches are reported.
 - [A stale manual override lower than real progress now hides nodes that synced data would allow] → Intended (spec assumption); the page shows Manual with "Reset to synced", and the collapsed summary flags manual values so they are easy to spot.
 - [Structural `isEqual` on every render over ~a few dozen small entries] → Negligible at this size; memoise on draft and query data.
 - [`useBlocker` also fires on same-page search-param changes] → The page has no URL state; the guard only compares pathname changes.
