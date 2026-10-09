@@ -58,7 +58,7 @@ type CatalogData = {
         completedChallengeBattlesIds: string[]
       }[]
     | undefined
-  characters: { id: string }[]
+  characters: { unitId: string }[]
   liveProgress: { activeCampaignEventId: string | null } | undefined
 }
 
@@ -102,7 +102,7 @@ function defaultCatalog(): CatalogData {
         completedChallengeBattlesIds: [],
       },
     ],
-    characters: [{ id: "unitA" }],
+    characters: [{ unitId: "unitA" }],
     liveProgress: { activeCampaignEventId: "eventCampaign1" },
   }
 }

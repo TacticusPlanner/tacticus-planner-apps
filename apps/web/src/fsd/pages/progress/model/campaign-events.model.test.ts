@@ -85,7 +85,7 @@ describe("buildEvents", () => {
     const [event] = buildEvents({
       definitions: [definition("eventCampaign1", ["unitA", "unitB"])],
       battles: [],
-      characters: [{ id: "unitA" }] as never,
+      characters: [{ unitId: "unitA" }] as never,
     })
     expect(event?.coreCharacters).toEqual([
       { id: "unitA", owned: true },

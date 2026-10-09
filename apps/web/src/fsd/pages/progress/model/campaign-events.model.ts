@@ -34,7 +34,7 @@ export function buildEvents(data: {
   characters: PlayerDataChunkDto<"characters"> | undefined
 }): EventModel[] {
   const owned = new Set(
-    (data.characters ?? []).map((character) => character.id)
+    (data.characters ?? []).map((character) => character.unitId)
   )
   return data.definitions
     .filter((definition) => definition.releaseType === "event")
