@@ -128,6 +128,76 @@
       "body": "Les points gagnés d'un combat sont son meilleur score plus le score de chaque objectif que vous y avez rempli, bonus « tout vaincre » compris. Le maximum d'un combat additionne son score d'éliminations, son meilleur score, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
     }
   },
+  "teams": {
+    "title": "Équipes",
+    "add": "Ajouter une équipe",
+    "empty": "Aucune équipe sur {{lane}} pour l'instant.",
+    "loading": "Chargement des équipes…",
+    "loadError": "Impossible de charger tes équipes.",
+    "retry": "Réessayer",
+    "partialBadge": "{{members}}/{{max}}",
+    "reserve": "Réserve",
+    "members": "Membres",
+    "pointsPerBattle": "{{points}} points par combat",
+    "notCovered": "Non couvert par les membres actuels",
+    "dragHandle": "Faire glisser pour réordonner {{name}}",
+    "depth": {
+      "label": "Profondeur",
+      "set": "Définir la profondeur",
+      "clear": "Effacer la profondeur",
+      "decrease": "Un combat de moins",
+      "increase": "Un combat de plus"
+    },
+    "menu": {
+      "label": "Actions pour {{name}}",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "moveUp": "Monter",
+      "moveDown": "Descendre"
+    },
+    "editor": {
+      "createTitle": "Ajouter une équipe à {{lane}}",
+      "editTitle": "Modifier {{name}}",
+      "name": "Nom",
+      "nameTooLong": "{{max}} caractères au maximum.",
+      "defaultName": "Équipe {{number}}",
+      "members": "Membres",
+      "coverage": "Objectifs couverts",
+      "coverageHint": "Les objectifs que remplit chaque membre. Décoche ceux que cette équipe ne visera pas.",
+      "noCoverage": "Ces membres n'ont aucun objectif en commun. L'équipe marque quand même les points d'élimination.",
+      "noMembers": "Choisis des unités pour voir les objectifs qu'elles couvrent ensemble.",
+      "depth": "Profondeur pour la manche {{run}}",
+      "save": "Enregistrer l'équipe",
+      "saving": "Enregistrement…",
+      "notSaved": "Ton plan a été rechargé, cette équipe n'a donc pas été enregistrée. Vérifie-la et enregistre à nouveau.",
+      "cancel": "Annuler"
+    },
+    "picker": {
+      "count": "{{members}}/5",
+      "search": "Rechercher des unités",
+      "searchPlaceholder": "Rechercher par nom",
+      "onlyUnlocked": "Uniquement débloquées",
+      "empty": "Aucune unité ne correspond.",
+      "locked": "Verrouillée",
+      "add": "Ajouter {{name}}",
+      "remove": "Retirer {{name}}",
+      "setReserve": "Mettre {{name}} en réserve",
+      "unsetReserve": "Retirer {{name}} de la réserve",
+      "full": "Une équipe compte au plus cinq membres. Retires-en un pour en ajouter un autre.",
+      "points": "{{points}} pts"
+    },
+    "toasts": {
+      "reloaded": "Ton plan a été modifié sur un autre appareil et a été rechargé. Réessaie.",
+      "deleted": "{{name}} supprimée.",
+      "error": "Impossible d'enregistrer tes équipes."
+    },
+    "deleteConfirm": {
+      "title": "Supprimer {{name}} ?",
+      "description": "L'équipe et ses profondeurs sont retirées du plan de cet événement.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    }
+  },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
     "minHits_other": "Min. {{count}} coups",
@@ -175,6 +245,10 @@
         "laneOverview": {
           "title": "Aperçu de la voie",
           "content": "Les unités autorisées de la voie, les points d'éliminations, les cinq objectifs avec leurs scores et la valeur de chaque combat."
+        },
+        "teams": {
+          "title": "Équipes",
+          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et la profondeur que vous espérez atteindre. Utilisez Ajouter une équipe pour en créer une."
         },
         "progressGrid": {
           "title": "Progression synchronisée",

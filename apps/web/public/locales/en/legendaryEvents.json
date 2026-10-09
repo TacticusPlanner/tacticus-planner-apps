@@ -128,6 +128,76 @@
       "body": "Each battle's earned points are its high score plus the score of every objective you cleared in it, including the defeat-all bonus. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
     }
   },
+  "teams": {
+    "title": "Teams",
+    "add": "Add team",
+    "empty": "No teams on {{lane}} yet.",
+    "loading": "Loading teams…",
+    "loadError": "Your teams could not be loaded.",
+    "retry": "Retry",
+    "partialBadge": "{{members}}/{{max}}",
+    "reserve": "Reserve",
+    "members": "Members",
+    "pointsPerBattle": "{{points}} points per battle",
+    "notCovered": "Not covered by the current members",
+    "dragHandle": "Drag to reorder {{name}}",
+    "depth": {
+      "label": "Clear depth",
+      "set": "Set depth",
+      "clear": "Clear depth",
+      "decrease": "One battle fewer",
+      "increase": "One battle more"
+    },
+    "menu": {
+      "label": "Actions for {{name}}",
+      "edit": "Edit",
+      "delete": "Delete",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "editor": {
+      "createTitle": "Add a team to {{lane}}",
+      "editTitle": "Edit {{name}}",
+      "name": "Name",
+      "nameTooLong": "Use at most {{max}} characters.",
+      "defaultName": "Team {{number}}",
+      "members": "Members",
+      "coverage": "Covered objectives",
+      "coverageHint": "Objectives every member meets. Untick one this team will not play for.",
+      "noCoverage": "These members share no objective. The team still scores kill points.",
+      "noMembers": "Pick units to see the objectives they cover together.",
+      "depth": "Clear depth for run {{run}}",
+      "save": "Save team",
+      "saving": "Saving…",
+      "notSaved": "Your plan was reloaded, so this team was not saved. Check it and save again.",
+      "cancel": "Cancel"
+    },
+    "picker": {
+      "count": "{{members}}/5",
+      "search": "Search units",
+      "searchPlaceholder": "Search by name",
+      "onlyUnlocked": "Only unlocked",
+      "empty": "No unit matches.",
+      "locked": "Locked",
+      "add": "Add {{name}}",
+      "remove": "Remove {{name}}",
+      "setReserve": "Set {{name}} as reserve",
+      "unsetReserve": "Remove {{name}} as reserve",
+      "full": "A team has at most five members. Remove one to add another.",
+      "points": "{{points}} pts"
+    },
+    "toasts": {
+      "reloaded": "Your plan changed on another device and was reloaded. Try again.",
+      "deleted": "{{name}} deleted.",
+      "error": "Your teams could not be saved."
+    },
+    "deleteConfirm": {
+      "title": "Delete {{name}}?",
+      "description": "The team and its clear depths are removed from this event's plan.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
   "objective": {
     "minHits_one": "Min {{count}} hit",
     "minHits_other": "Min {{count}} hits",
@@ -175,6 +245,10 @@
         "laneOverview": {
           "title": "Lane overview",
           "content": "The lane's allowed units, kill points, five objectives with their scores and the points every battle is worth."
+        },
+        "teams": {
+          "title": "Teams",
+          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, its points per battle and how deep you expect it to clear. Use Add team to start one."
         },
         "progressGrid": {
           "title": "Synced progress",

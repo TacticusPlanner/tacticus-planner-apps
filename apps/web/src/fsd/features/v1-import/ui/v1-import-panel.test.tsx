@@ -51,6 +51,10 @@ vi.mock("@/entities/player-data-override", () => ({
   },
 }))
 
+vi.mock("@/entities/legendary-event", () => ({
+  legendaryEventPlanQueries: { all: () => ["legendary-event-plans"] },
+}))
+
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},
 }))
@@ -87,6 +91,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getMowsMap: () => new Map([["mow1", { id: "mow1", name: "Stormbird" }]]),
 }))
 
+import { V1_IMPORT_PARTS } from "../model/parts"
 import { V1ImportPanel } from "./v1-import-panel"
 
 const ALL_SELECTED: V1ImportSelection = {
@@ -96,6 +101,7 @@ const ALL_SELECTED: V1ImportSelection = {
   goals: true,
   onslaughtProgress: true,
   campaignEventProgress: true,
+  legendaryEventPlans: true,
 }
 
 const imported: ImportPartResult = {
@@ -132,6 +138,8 @@ function response(overrides: Record<string, unknown> = {}) {
     campaignEventProgress: notSelected,
     goals: imported,
     outcomes: [],
+    legendaryEventPlans: notSelected,
+    legendaryEventOutcomes: [],
     ...overrides,
   }
 }
@@ -177,6 +185,7 @@ describe("V1ImportPanel", () => {
             goals: true,
             onslaughtProgress: true,
             campaignEventProgress: true,
+            legendaryEventPlans: true,
             automaticPrerequisites: true,
           },
         },
@@ -193,6 +202,7 @@ describe("V1ImportPanel", () => {
       goals: false,
       onslaughtProgress: false,
       campaignEventProgress: false,
+      legendaryEventPlans: false,
     })
 
     for (const key of [
@@ -202,12 +212,57 @@ describe("V1ImportPanel", () => {
       "goals",
       "onslaughtProgress",
       "campaignEventProgress",
+      "legendaryEventPlans",
     ] as const) {
       expect(screen.getByTestId(`v1-import-${key}`)).toHaveAttribute(
         "data-state",
         "unchecked"
       )
     }
+  })
+
+  it("lists every part from the single parts source, Legendary Event teams with its description", () => {
+    renderPanel()
+
+    for (const { key, label } of V1_IMPORT_PARTS) {
+      expect(screen.getByTestId(`v1-import-${key}`)).toBeInTheDocument()
+      expect(screen.getByText(label)).toBeInTheDocument()
+    }
+    expect(screen.getByTestId("v1-import-legendaryEventPlans")).toHaveAttribute(
+      "data-state",
+      "checked"
+    )
+    expect(
+      screen.getByTestId("v1-import-legendaryEventPlans-description")
+    ).toHaveTextContent("goals.v1Import.partDescriptions.legendaryEventPlans")
+  })
+
+  it("refreshes the Legendary Event plans only when that part was selected", async () => {
+    const invalidateQueries = vi.spyOn(
+      QueryClient.prototype,
+      "invalidateQueries"
+    )
+    renderPanel()
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    await screen.findByTestId("v1-import-result")
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["legendary-event-plans"],
+    })
+    invalidateQueries.mockClear()
+
+    fireEvent.change(screen.getByTestId("v1-import-password"), {
+      target: { value: "secret" },
+    })
+    fireEvent.click(screen.getByTestId("v1-import-legendaryEventPlans"))
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+    await waitFor(() => expect(importV1Profile).toHaveBeenCalledTimes(2))
+    await screen.findByTestId("v1-import-rerun-hint")
+    expect(invalidateQueries).not.toHaveBeenCalledWith({
+      queryKey: ["legendary-event-plans"],
+    })
+    invalidateQueries.mockRestore()
   })
 
   it("disables a locked part's checkbox so it cannot be unchecked", () => {
@@ -768,6 +823,7 @@ describe("V1ImportPanel", () => {
         "goals",
         "onslaughtProgress",
         "campaignEventProgress",
+        "legendaryEventPlans",
       ] as const) {
         fireEvent.click(screen.getByTestId(`v1-import-${key}`))
       }

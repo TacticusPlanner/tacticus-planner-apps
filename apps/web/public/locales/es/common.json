@@ -459,7 +459,11 @@
         "guildKey": "Token de API del gremio",
         "goals": "Objetivos",
         "onslaughtProgress": "Progreso de Onslaught",
-        "campaignEventProgress": "Progreso de eventos de campaña"
+        "campaignEventProgress": "Progreso de eventos de campaña",
+        "legendaryEventPlans": "Equipos de Eventos Legendarios"
+      },
+      "partDescriptions": {
+        "legendaryEventPlans": "Equipos creados a mano y notas de los eventos que conoce el planificador. El progreso del evento no se importa."
       },
       "submit": "Importar selección",
       "submitting": "Importando…",
@@ -499,6 +503,36 @@
         "projectSlotConflict": "Se creó simultáneamente otro objetivo para esta unidad y tipo.",
         "prerequisiteRejected": "Este requisito añadido automáticamente no es válido para este objetivo.",
         "generic": "No se pudo importar este objetivo."
+      },
+      "legendaryEvents": {
+        "title": "Equipos de Eventos Legendarios",
+        "teams_one": "{{count}} equipo",
+        "teams_other": "{{count}} equipos",
+        "v1Event": "Evento V1 {{id}}",
+        "reasons": {
+          "imported": "Equipos importados.",
+          "imported_without_teams": "Importado, pero no se pudo conservar ninguno de sus equipos.",
+          "plan_already_exists": "Este evento ya tiene equipos en el planificador, así que no se cambió nada.",
+          "event_not_in_catalog": "El planificador aún no tiene este evento.",
+          "no_legendary_event_imported": "No se pudieron importar los equipos de ningún evento.",
+          "legendary_events_skipped": "No se importaron los equipos de ningún evento: cada evento ya tiene equipos en el planificador, aún no está en el planificador o no tenía equipos.",
+          "missing_legendary_event_plans": "El perfil de V1 no tiene equipos de Eventos Legendarios.",
+          "invalid_legendary_event_plans": "No se pudieron leer los equipos de Eventos Legendarios de V1.",
+          "legendary_event_import_failed": "No se pudieron guardar los equipos de este evento."
+        },
+        "issues": {
+          "unknown_unit": "No se reconoció una unidad y se omitió.",
+          "unit_not_allowed_on_lane": "Una unidad no está permitida en esta línea y se omitió.",
+          "duplicate_unit": "Una unidad aparecía dos veces y se mantuvo una sola vez.",
+          "unknown_objective": "No se reconoció un objetivo y se omitió.",
+          "unknown_lane": "No se reconoció la línea del equipo, así que el equipo se omitió.",
+          "empty_team": "No se pudo importar ninguna unidad del equipo, así que el equipo se omitió.",
+          "team_truncated": "El equipo tenía más de cinco unidades; se mantuvieron las cinco primeras.",
+          "duplicate_team_merged": "Dos equipos tenían las mismas unidades y se fusionaron en uno.",
+          "conflicting_depth_discarded": "Se descartó la profundidad distinta de un equipo fusionado.",
+          "existing_notes_kept": "El planificador ya tenía notas para este evento, así que no se importaron las notas de V1.",
+          "notes_truncated": "Las notas de V1 eran demasiado largas y se acortaron. Longitud original en caracteres:"
+        }
       }
     },
     "empty": {

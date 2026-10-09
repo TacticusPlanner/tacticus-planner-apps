@@ -19,6 +19,8 @@ import {
   type ReadState,
 } from "@/entities/legendary-event"
 
+import type { TeamsViewModel } from "./teams/teams-section"
+
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
 type NextTokenViewModel =
   { kind: "pending"; targetMs: number } | { kind: "due" }
@@ -63,6 +65,8 @@ export interface LegendaryEventPageViewModel {
   onJumpToLane: (lane: LegendaryEventLaneId) => void
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
+  /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
+  teams: TeamsViewModel
 }
 
 type ByLane<T> = Record<LegendaryEventLaneId, T>

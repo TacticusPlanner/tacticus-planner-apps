@@ -18,7 +18,7 @@ import {
 } from "../shared/goal-progress-visuals"
 import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
-import { SortableList, type SortableRenderProps } from "../shared/sortable-list"
+import { SortableList, type SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   EstimateCell,

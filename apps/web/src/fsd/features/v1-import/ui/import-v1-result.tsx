@@ -28,18 +28,16 @@ import {
   isAutomaticallyAdded,
   reasonKeyForCode,
 } from "../model/outcome-buckets"
-
-// Kept in step with `V1ImportPanel`'s own `parts` tuple in v1-import-panel.tsx (split into this
-// file purely for the repository's max-lines rule, same as goal-spec-builder.ts's split out of
-// use-create-goal-form.ts).
-const parts = [
-  ["personalTacticusApiKey", "goals.v1Import.parts.personalKey"],
-  ["tacticusUserId", "goals.v1Import.parts.userId"],
-  ["guildApiToken", "goals.v1Import.parts.guildKey"],
-  ["goals", "goals.v1Import.parts.goals"],
-  ["onslaughtProgress", "goals.v1Import.parts.onslaughtProgress"],
-  ["campaignEventProgress", "goals.v1Import.parts.campaignEventProgress"],
-] as const
+import {
+  buildLegendaryEventDiagnosticText,
+  groupLegendaryEventOutcomes,
+  issueKeyForLegendaryEventCode,
+  legendaryEventsNeedAttention,
+  reasonKeyForLegendaryEventCode,
+} from "../model/legendary-event-outcome-buckets"
+import { V1_IMPORT_PARTS } from "../model/parts"
+import { useLegendaryEventName } from "../model/use-legendary-event-name"
+import { LegendaryEventImportResult } from "./legendary-event-import-result"
 
 // i18next's `t` only accepts keys it can statically verify exist in the locale resources, so a
 // status-derived key is built through this small literal-keyed lookup rather than a template
@@ -67,25 +65,38 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { goals: importedGoalCount, units: importedUnitCount } = importedCounts(
     buckets.imported
   )
+  // Absent from a response of an API that predates the part.
+  const legendaryEventBuckets = useMemo(
+    () => groupLegendaryEventOutcomes(result.legendaryEventOutcomes ?? []),
+    [result.legendaryEventOutcomes]
+  )
+  const legendaryEventName = useLegendaryEventName()
   const hasDiagnostics =
-    buckets.notImported.length > 0 || buckets.failed.length > 0
+    buckets.notImported.length > 0 ||
+    buckets.failed.length > 0 ||
+    legendaryEventsNeedAttention(legendaryEventBuckets)
 
   const goalTypeLabel = (goalType: string | null) =>
     goalType ? t(`goals.create.goalTypes.${goalType as GoalKind}`) : null
 
   // "not_selected" (ImportPartResult.NotSelected — API contract) hides a part the user didn't ask
   // for, so a cleared part can't be mistaken for one that was attempted and skipped.
-  const rows = parts
-    .filter(([key]) => result[key].code !== "not_selected")
-    .filter(([key]) => !(key === "goals" && syncRequired))
-    .map(([key, label]) => ({
-      key,
-      label,
-      part:
-        key === "goals"
-          ? { ...result.goals, status: goalsStatus }
-          : result[key],
-    }))
+  // The Legendary Event part's own code is translated; the other parts keep the server's message.
+  const rows = V1_IMPORT_PARTS.filter(({ key }) => result[key])
+    .filter(({ key }) => result[key].code !== "not_selected")
+    .filter(({ key }) => !(key === "goals" && syncRequired))
+    .map(({ key, label }) => {
+      const part =
+        key === "goals" ? { ...result.goals, status: goalsStatus } : result[key]
+      return {
+        key,
+        label,
+        part:
+          key === "legendaryEventPlans" && part.code
+            ? { ...part, message: t(reasonKeyForLegendaryEventCode(part.code)) }
+            : part,
+      }
+    })
 
   const copyDetails = () => {
     const text = buildDiagnosticText({
@@ -97,7 +108,16 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
       noUnitLabel: t("goals.v1Import.report.noUnit"),
       reasonFor: (code) => t(reasonKeyForCode(code)),
     })
-    void navigator.clipboard.writeText(text)
+    const legendaryEventText = buildLegendaryEventDiagnosticText({
+      buckets: legendaryEventBuckets,
+      title: t("goals.v1Import.legendaryEvents.title"),
+      eventName: legendaryEventName,
+      reasonFor: (code) => t(reasonKeyForLegendaryEventCode(code)),
+      issueFor: (code) => t(issueKeyForLegendaryEventCode(code)),
+    })
+    void navigator.clipboard.writeText(
+      [text, legendaryEventText].filter(Boolean).join("\n\n")
+    )
   }
 
   return (
@@ -203,6 +223,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
             )}
           </div>
         </ScrollArea>
+      ) : null}
+
+      {(result.legendaryEventOutcomes?.length ?? 0) > 0 ? (
+        <LegendaryEventImportResult buckets={legendaryEventBuckets} />
       ) : null}
 
       {hasDiagnostics ? (

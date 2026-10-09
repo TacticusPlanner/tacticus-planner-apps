@@ -128,6 +128,76 @@
       "body": "Los puntos conseguidos en una batalla son su puntuación máxima más la puntuación de cada objetivo que superaste en ella, incluida la bonificación por derrotar a todos. El máximo de una batalla suma su puntuación de bajas, su puntuación máxima, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
     }
   },
+  "teams": {
+    "title": "Equipos",
+    "add": "Añadir equipo",
+    "empty": "Aún no hay equipos en {{lane}}.",
+    "loading": "Cargando equipos…",
+    "loadError": "No se pudieron cargar tus equipos.",
+    "retry": "Reintentar",
+    "partialBadge": "{{members}}/{{max}}",
+    "reserve": "Reserva",
+    "members": "Miembros",
+    "pointsPerBattle": "{{points}} puntos por batalla",
+    "notCovered": "Los miembros actuales no lo cubren",
+    "dragHandle": "Arrastra para reordenar {{name}}",
+    "depth": {
+      "label": "Profundidad",
+      "set": "Fijar profundidad",
+      "clear": "Borrar profundidad",
+      "decrease": "Una batalla menos",
+      "increase": "Una batalla más"
+    },
+    "menu": {
+      "label": "Acciones de {{name}}",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "moveUp": "Subir",
+      "moveDown": "Bajar"
+    },
+    "editor": {
+      "createTitle": "Añadir un equipo a {{lane}}",
+      "editTitle": "Editar {{name}}",
+      "name": "Nombre",
+      "nameTooLong": "Usa como máximo {{max}} caracteres.",
+      "defaultName": "Equipo {{number}}",
+      "members": "Miembros",
+      "coverage": "Objetivos cubiertos",
+      "coverageHint": "Objetivos que cumplen todos los miembros. Desmarca los que este equipo no vaya a buscar.",
+      "noCoverage": "Estos miembros no comparten ningún objetivo. El equipo sigue sumando puntos por baja.",
+      "noMembers": "Elige unidades para ver qué objetivos cubren juntas.",
+      "depth": "Profundidad para la ronda {{run}}",
+      "save": "Guardar equipo",
+      "saving": "Guardando…",
+      "notSaved": "Tu plan se ha recargado, así que este equipo no se guardó. Revísalo y vuelve a guardarlo.",
+      "cancel": "Cancelar"
+    },
+    "picker": {
+      "count": "{{members}}/5",
+      "search": "Buscar unidades",
+      "searchPlaceholder": "Buscar por nombre",
+      "onlyUnlocked": "Solo desbloqueadas",
+      "empty": "Ninguna unidad coincide.",
+      "locked": "Bloqueada",
+      "add": "Añadir a {{name}}",
+      "remove": "Quitar a {{name}}",
+      "setReserve": "Poner a {{name}} como reserva",
+      "unsetReserve": "Quitar a {{name}} como reserva",
+      "full": "Un equipo tiene como máximo cinco miembros. Quita uno para añadir otro.",
+      "points": "{{points}} pts"
+    },
+    "toasts": {
+      "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
+      "deleted": "{{name}} eliminado.",
+      "error": "No se pudieron guardar tus equipos."
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar {{name}}?",
+      "description": "El equipo y sus profundidades se quitan del plan de este evento.",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    }
+  },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
     "minHits_other": "Mín. {{count}} golpes",
@@ -175,6 +245,10 @@
         "laneOverview": {
           "title": "Resumen del carril",
           "content": "Las unidades permitidas del carril, los puntos por bajas, los cinco objetivos con sus puntuaciones y lo que vale cada batalla."
+        },
+        "teams": {
+          "title": "Equipos",
+          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde esperas que llegue. Usa Añadir equipo para empezar uno."
         },
         "progressGrid": {
           "title": "Progreso sincronizado",

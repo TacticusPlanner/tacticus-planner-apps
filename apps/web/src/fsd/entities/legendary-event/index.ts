@@ -1,6 +1,7 @@
 // Public API of the Legendary Event entity: lifecycle, the next-milestone lookup, objective labels,
-// objective matching, the points model, synced progress and the read hooks. Pages consume it only
-// through this file.
+// objective matching, the points model, synced progress, the read hooks, and the persisted plan
+// (teams per lane: DTOs, API, query options, coverage, points and run helpers). Pages and features
+// consume it only through this file.
 export {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEvent,
@@ -95,3 +96,29 @@ export {
   type ObjectiveLabel,
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
+export {
+  legendaryEventPlanConflictDetails,
+  type CreateTeamRequestDto,
+  type LegendaryEventDepthSource,
+  type LegendaryEventPlan,
+  type LegendaryEventPlanConflictCode,
+  type LegendaryEventPlanConflictDto,
+  type LegendaryEventRun,
+  type LegendaryEventTeam,
+  type LegendaryEventTeamRunDepth,
+  type UpdatePlanRequestDto,
+  type UpdateTeamOrderRequestDto,
+  type UpdateTeamRequestDto,
+} from "./model/plan.types"
+export {
+  createLegendaryEventTeam,
+  deleteLegendaryEventTeam,
+  getLegendaryEventPlan,
+  updateLegendaryEventPlan,
+  updateLegendaryEventTeam,
+  updateLegendaryEventTeamOrder,
+} from "./api/legendary-event-plan.api"
+export { legendaryEventPlanQueries } from "./api/legendary-event-plan.queries"
+export { currentLegendaryEventRun, teamDepthForRun } from "./lib/current-run"
+export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
+export { teamPointsPerBattle } from "./lib/team-points"

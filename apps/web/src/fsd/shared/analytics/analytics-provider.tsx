@@ -95,6 +95,23 @@ export function useAnalyticsActions() {
             view_mode: event.viewMode,
           })
           break
+        case "legendary_event_team_created":
+        case "legendary_event_team_edited":
+        case "legendary_event_team_deleted":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            member_count: event.memberCount,
+            objective_count: event.objectiveCount,
+          })
+          break
+        case "legendary_event_depth_set":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            depth: event.depth,
+          })
+          break
       }
     },
     [client]

@@ -85,6 +85,8 @@ function fullResult(
     campaignEventProgress: okPart,
     goals: okPart,
     outcomes: [],
+    legendaryEventPlans: okPart,
+    legendaryEventOutcomes: [],
   }
 }
 
@@ -114,6 +116,7 @@ describe("SetupV1Import", () => {
       goals: true,
       onslaughtProgress: true,
       campaignEventProgress: true,
+      legendaryEventPlans: true,
     })
   })
 

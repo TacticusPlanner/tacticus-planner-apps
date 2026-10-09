@@ -57,6 +57,7 @@ describe("V1ImportPage", () => {
       goals: false,
       onslaughtProgress: false,
       campaignEventProgress: false,
+      legendaryEventPlans: false,
     })
   })
 
