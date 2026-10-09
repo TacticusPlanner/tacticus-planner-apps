@@ -81,10 +81,13 @@ export function useRevisionedDraft<
 
   const save = async (): Promise<RevisionedDraftSaveOutcome> => {
     if (!query.data || draft === undefined) return "error"
+    // Edits made while the request is in flight replace `edited` with a new object; only drop the
+    // draft if it is still the one this save sent, so those newer edits stay pending.
+    const submitted = edited
     try {
       const saved = await mutation.mutateAsync(toPayload(draft, query.data))
       queryClient.setQueryData<TSaved>(queryOptions.queryKey, saved)
-      setEdited(null)
+      setEdited((current) => (current === submitted ? null : current))
       return "saved"
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {

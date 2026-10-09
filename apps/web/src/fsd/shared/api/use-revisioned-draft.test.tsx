@@ -91,6 +91,28 @@ describe("useRevisionedDraft", () => {
     expect(result.current.isDirty).toBe(false)
   })
 
+  it("keeps edits made while a save is in flight", async () => {
+    let resolveSave: (saved: Saved) => void = () => {}
+    save.mockImplementation(
+      () => new Promise<Saved>((resolve) => (resolveSave = resolve))
+    )
+    const { result, client } = await loaded()
+    act(() => result.current.update(() => ({ value: 5 })))
+    let pending: Promise<string> | undefined
+    act(() => {
+      pending = result.current.save()
+    })
+    await waitFor(() => expect(save).toHaveBeenCalled())
+    act(() => result.current.update(() => ({ value: 7 })))
+    await act(async () => {
+      resolveSave({ value: 5, revision: 4 })
+      await pending
+    })
+    expect(client.getQueryData(queryKey)).toEqual({ value: 5, revision: 4 })
+    expect(result.current.draft).toEqual({ value: 7 })
+    expect(result.current.isDirty).toBe(true)
+  })
+
   it("reloads and drops the draft on a 409 conflict", async () => {
     const { result } = await loaded()
     act(() => result.current.update(() => ({ value: 5 })))
