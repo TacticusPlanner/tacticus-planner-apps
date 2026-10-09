@@ -8,7 +8,7 @@ const data = {
       groupId: "campaign1",
       releaseType: "standard",
       types: ["Standard"],
-      coreCharacters: [],
+      coreCharacters: ["unitA", "unitB"],
       battleIds: [],
     },
     {
@@ -60,7 +60,7 @@ const data = {
       highestCompletedBattleIndex: 0,
     },
   ],
-  characters: [],
+  characters: [{ unitId: "unitA" }],
 }
 
 vi.mock("react-i18next", () => ({
@@ -87,5 +87,12 @@ describe("CampaignsPage", () => {
     expect(screen.getAllByText("1/2").length).toBeGreaterThan(0)
     expect(screen.queryByRole("slider")).not.toBeInTheDocument()
     expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument()
+  })
+
+  it("shows the core characters the player owns, matched by roster unitId", () => {
+    render(<CampaignsPage />)
+
+    expect(screen.getByAltText("unitA")).toBeInTheDocument()
+    expect(screen.queryByAltText("unitB")).not.toBeInTheDocument()
   })
 })
