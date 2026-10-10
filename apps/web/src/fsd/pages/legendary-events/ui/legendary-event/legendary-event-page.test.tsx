@@ -270,6 +270,7 @@ describe("LegendaryEventPage", () => {
     expect(screen.queryByTestId("legendary-event-lane-summary")).toBeNull()
   })
 
+  // Three full page renders; under coverage instrumentation this exceeds the 5s default.
   it("resets the tab to Overview on another event", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-page")
@@ -286,7 +287,7 @@ describe("LegendaryEventPage", () => {
     fireEvent.click(screen.getByTestId("open-lysander"))
     await screen.findByText("Lysander", { selector: "h1" })
     expect(selectedTab()).toHaveTextContent("Overview")
-  })
+  }, 10_000)
 
   it("jumps from a lane summary row to that lane's progress grid heading", async () => {
     // The setup file stubs scrollIntoView on HTMLElement.prototype, which shadows Element's.
