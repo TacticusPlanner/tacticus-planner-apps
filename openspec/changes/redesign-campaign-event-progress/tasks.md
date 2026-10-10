@@ -33,10 +33,8 @@
 
 Required data states: a signed-in profile with synced player data where live progress reports an active event; at least one event track with no synced entry; one track with a manual override; one fully completed event. Run on the full local stack through the workspace Aspire AppHost.
 
-- [ ] 6.1 Set a manual Extremis count on the active event for a track with no synced data, save, open Dailies → Today and confirm that event's Extremis nodes up to count + 1 now appear as farmable; then "Reset to synced", save, and confirm they disappear
 - [x] 6.2 Save from a second tab, then save in the first tab, and confirm the conflict message and reloaded values
 - [x] 6.3 With the API stopped or a request blocked, confirm the page and Today each show their translated error state and no raw API text
-- [ ] 6.4 With the 6.1 override saved, confirm the newly reachable Extremis node also appears on the Home event tab's active-event list and in a goal's farm locations on Goals (a material that drops only there is no longer reported unavailable); then "Reset to synced", save, and confirm both revert
 
 ## 7. Desktop verification (viewport at or above 768px)
 
@@ -55,3 +53,10 @@ Required data states: a signed-in profile with synced player data where live pro
 ## 9. Gates
 
 - [x] 9.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, and confirm all pass
+
+## 10. Deferred / out-of-session
+
+- [ ] 10.1 (was 6.1) Set a manual Extremis count on the active event for a track with no synced data, save, open Dailies → Today and confirm that event's Extremis nodes up to count + 1 now appear as farmable; then "Reset to synced", save, and confirm they disappear
+      **NOT DONE — deferred.** Needs a live campaign event; none was running during verification, and the game API reports event progress only while an event is live. Tracked in TacticusPlanner/tacticus-planner-apps#194.
+- [ ] 10.2 (was 6.4) With the 10.1 override saved, confirm the newly reachable Extremis node also appears on the Home event tab's active-event list and in a goal's farm locations on Goals (a material that drops only there is no longer reported unavailable); then "Reset to synced", save, and confirm both revert
+      **NOT DONE — deferred.** Needs a live campaign event; none was running during verification, and the game API reports event progress only while an event is live. Tracked in TacticusPlanner/tacticus-planner-apps#194.
