@@ -110,3 +110,13 @@ export function planProjectRemoval({
     destination,
   }
 }
+
+/** Whether `projectId` is the row's only project — removing it from there needs a destination. A row
+ *  whose memberships are not known yet counts as not, so it is never relocated on a guess. */
+export function isOnlyMemberOf(
+  row: { projects?: readonly { projectId: string }[] },
+  projectId: string
+): boolean {
+  const projects = row.projects ?? []
+  return projects.length > 0 && projects.every((p) => p.projectId === projectId)
+}

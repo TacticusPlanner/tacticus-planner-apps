@@ -10,6 +10,7 @@ import {
 import type { XpBookFigure } from "../shared/level-requirement-display"
 import type { GoalRow } from "../../model/shared/types"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
+import type { ProjectRemoval } from "./project-removal-flow"
 
 /** The data a prerequisite pause/resume cascade needs about every goal currently in view, not just
  *  the row being acted on — built once per page render from its full row set (`buildCascadeContext`),
@@ -129,6 +130,8 @@ export type GoalsListProps = {
   /** Built once per page render (`buildCascadeContext`) from this list's full, unfiltered row set —
    *  not `rows`, which may be a filtered/grouped subset. Absent disables the cascade entirely. */
   cascadeContext?: CascadeContext
+  /** Present while the Goals page is scoped to a project; each row menu then offers removal from it. */
+  projectRemoval?: ProjectRemoval
 }
 
 /** Whether a row renders as a completed (Reached) row/card — a display state derived from computed

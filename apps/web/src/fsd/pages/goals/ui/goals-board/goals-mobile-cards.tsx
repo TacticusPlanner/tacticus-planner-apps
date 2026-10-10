@@ -106,6 +106,7 @@ export function GoalsMobileCards({
   xpBookRarity,
   reachedByGoalId,
   cascadeContext,
+  projectRemoval,
   selection,
   onToggleSelected,
   selectActive = false,
@@ -246,6 +247,7 @@ export function GoalsMobileCards({
                       actions={actions}
                       onEdit={onEdit}
                       cascadeContext={cascadeContext}
+                      projectRemoval={projectRemoval}
                       reached={reached}
                       row={row}
                     />

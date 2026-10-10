@@ -36,6 +36,7 @@ import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalsList } from ".//goals-list"
 import { GoalsBulkControls } from "./goals-bulk-controls"
+import { useProjectRemovalFlow } from "./project-removal-flow"
 import { GoalsCreateButton } from "./goals-create-button"
 import { GoalsToolbar } from "./goals-toolbar"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
@@ -123,6 +124,16 @@ export function GoalsPage() {
   )
 
   const goalActions = useGoalActions()
+  // Removal from a project is offered only while the list is scoped to that project.
+  const { removal: projectRemoval, dialogs: projectRemovalDialogs } =
+    useProjectRemovalFlow({
+      actions: goalActions,
+      projects: projects.projects,
+      project: projects.projects.find(
+        (project) => project.projectId === scopeId
+      ),
+      available: projects.fetchState.status === "success",
+    })
 
   const nonArchivedRows = useMemo(
     () =>
@@ -284,6 +295,7 @@ export function GoalsPage() {
       actions={goalActions}
       clearSelection={clearSelection}
       compact={compact}
+      projectRemoval={projectRemoval}
       projects={projects.projects}
       reachedByGoalId={reachedByGoalId}
       selectedRows={selectedRows}
@@ -400,6 +412,7 @@ export function GoalsPage() {
                 onSelectAllVisible={selectAllVisible}
                 onToggleSelected={onToggleSelected}
                 potentialProgress={insights.potentialProgressByGoalId}
+                projectRemoval={projectRemoval}
                 reachedByGoalId={reachedByGoalId}
                 reorderEnabled={reorderAvailable}
                 reorderPending={orderActions.pending}
@@ -424,6 +437,7 @@ export function GoalsPage() {
         </MobileSelectBar>
       ) : null}
 
+      {projectRemovalDialogs}
       <GoalEditDialog
         goalId={editGoalId}
         onOpenChange={(open) => !open && setEditGoalId(null)}

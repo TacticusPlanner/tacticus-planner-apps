@@ -1,6 +1,10 @@
 import type { TFunction } from "i18next"
 
 import { describeRankTargetKey, type GoalKind } from "@/entities/goal"
+import { projectLastMembershipDetails } from "@/entities/project"
+import { ApiError } from "@/shared/api"
+
+import { projectGoalSlotConflictDetails } from "./project-membership"
 
 /** "Silver3" or "Silver3 (3/6)" — the Rank end target a normalized target key stands for, or null when the
  * key is malformed. */
@@ -40,4 +44,28 @@ export function projectConflictText(
           .map((goalType) => t(`goals.create.goalTypes.${goalType}`))
           .join(", "),
       })
+}
+
+/**
+ * The one-line report for a rejected project-membership change (`changeProjectMembership`): an occupied
+ * slot names the project and what holds it, a removal that would leave a goal in no project says so, and
+ * anything else falls back to the server's message or the generic action error.
+ */
+export function membershipErrorText(t: TFunction, error: unknown): string {
+  const details = error instanceof ApiError ? error.details : undefined
+  const slot = projectGoalSlotConflictDetails(details)
+  if (slot) {
+    return projectConflictText(
+      t,
+      slot.projectName,
+      [slot.goalType as GoalKind],
+      slot.normalizedTarget
+    )
+  }
+  if (projectLastMembershipDetails(details)) {
+    return t("goals.project.removeLastMembership")
+  }
+  return error instanceof ApiError
+    ? error.message
+    : t("goals.toasts.actionError")
 }

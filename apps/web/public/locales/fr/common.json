@@ -613,7 +613,9 @@
       "selectAll": "Sélectionner tous les objectifs",
       "selectRow": "Sélectionner {{entity}}",
       "selectMode": "Sélectionner des objectifs",
-      "selectDone": "Terminé"
+      "selectDone": "Terminé",
+      "removeFromProject": "Retirer du projet",
+      "removeFromProjectCount": "Retirer du projet ({{count}})"
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -622,7 +624,9 @@
       "description_other": "Cette action supprime définitivement ces {{count}} objectifs de votre compte, dans tous les projets auxquels ils appartiennent. Elle est irréversible.",
       "confirm_one": "Supprimer l'objectif",
       "confirm_other": "Supprimer {{count}} objectifs",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "projectAlternative_one": "Pour le retirer uniquement de {{project}}, annulez et utilisez plutôt « Retirer de ce projet ».",
+      "projectAlternative_other": "Pour les retirer uniquement de {{project}}, annulez et utilisez plutôt « Retirer du projet »."
     },
     "project": {
       "noProjectTitle": "Aucun projet pour le moment",
@@ -701,7 +705,13 @@
       "assemblyLastMembershipTitle": "Rien n'a été enregistré : ces objectifs ne seraient plus dans aucun projet",
       "assemblyLastMembership": "C'est le seul projet de cet objectif. Ajoutez-le d'abord à un autre projet (le projet par défaut est toujours disponible), puis retirez-le ici.",
       "assemblySlotConflictTitle": "Rien n'a été enregistré : ces objectifs se disputent le même emplacement",
-      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau."
+      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau.",
+      "removeFromProject": "Retirer de ce projet",
+      "moveToProject": "Déplacer vers un projet",
+      "moveToProjectTitle": "Déplacer vers un projet",
+      "moveToProjectDescription": "C'est le seul projet de cet objectif. Choisissez un projet où le déplacer, ou créez-en un nouveau.",
+      "moveSelectionDescription_one": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où le déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}.",
+      "moveSelectionDescription_other": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où les déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
@@ -712,7 +722,13 @@
       "projectMembershipSaved": "{{project}} mis à jour : {{added}} ajouté(s), {{removed}} retiré(s).",
       "goalsAddedToProject_one": "{{count}} objectif ajouté à {{project}}.",
       "goalsAddedToProject_other": "{{count}} objectifs ajoutés à {{project}}.",
-      "bulkPartial": "Seuls {{succeeded}} objectifs sur {{total}} ont été traités."
+      "bulkPartial": "Seuls {{succeeded}} objectifs sur {{total}} ont été traités.",
+      "goalRemovedFromProject": "{{goal}} retiré de {{project}}.",
+      "goalRelocated": "{{goal}} déplacé vers {{project}}.",
+      "goalsRemovedFromProject_one": "{{count}} objectif retiré de {{project}}.",
+      "goalsRemovedFromProject_other": "{{count}} objectifs retirés de {{project}}.",
+      "goalsRemovedAndMoved_one": "{{count}} objectif retiré de {{project}} ; {{moved}} déplacé vers {{destination}}.",
+      "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}."
     },
     "create": {
       "title": "Créer un objectif",

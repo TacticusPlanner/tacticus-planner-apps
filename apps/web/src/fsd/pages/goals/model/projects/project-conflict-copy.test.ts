@@ -6,7 +6,10 @@ import en from "../../../../../../public/locales/en/common.json"
 import es from "../../../../../../public/locales/es/common.json"
 import fr from "../../../../../../public/locales/fr/common.json"
 
+import { ApiError } from "@/shared/api"
+
 import {
+  membershipErrorText,
   projectConflictText,
   rankTargetKeyLabel,
 } from "./project-conflict-copy"
@@ -75,5 +78,41 @@ describe("Rank milestone copy in every locale", () => {
   it("names the target in the English conflict copy", () => {
     expect(en.goals.project.assemblyRankTargetTaken).toContain("{{target}}")
     expect(en.tour.overview.steps.list.content).toMatch(/Rank goals/)
+  })
+})
+
+describe("membershipErrorText", () => {
+  it("names the project and goal type for an occupied slot", () => {
+    const error = new ApiError(409, "Occupied", {
+      issueCode: "projectGoalSlotOccupied",
+      message: "Occupied",
+      projectId: "p1",
+      projectName: "Event Prep",
+      entityType: "Character",
+      entityId: "hero1",
+      goalType: "Ascension",
+      existingGoalId: "goal-9",
+    })
+    expect(membershipErrorText(t, error)).toBe(
+      'goals.project.membershipConflict:{"project":"Event Prep","types":"goals.create.goalTypes.Ascension"}'
+    )
+  })
+
+  it("explains a removal that would leave a goal in no project", () => {
+    const error = new ApiError(400, "Only project", {
+      issueCode: "lastProjectMembership",
+      message: "Only project",
+      blockedGoalIds: ["goal-1"],
+    })
+    expect(membershipErrorText(t, error)).toBe(
+      "goals.project.removeLastMembership"
+    )
+  })
+
+  it("falls back to the server message, then the generic error", () => {
+    expect(membershipErrorText(t, new ApiError(500, "Boom"))).toBe("Boom")
+    expect(membershipErrorText(t, new Error("network"))).toBe(
+      "goals.toasts.actionError"
+    )
   })
 })

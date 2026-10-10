@@ -190,6 +190,22 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   createProject: (...args: unknown[]) => createProject(...args),
   listProjectGoals: (...args: unknown[]) => listProjectGoals(...args),
   updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
+  // Calls the API module directly in the real code, so route it through the mocks above.
+  changeProjectMembership: async (
+    projectId: string,
+    change: (current: readonly string[]) => string[]
+  ) => {
+    const { goals } = await listProjectGoals(projectId)
+    const before = (goals as { goal: { goalId: string } }[]).map(
+      (entry) => entry.goal.goalId
+    )
+    const after = [...new Set(change(before))]
+    await updateProjectGoals(projectId, {
+      goals: after.map((goalId) => ({ goalId })),
+      expectedGoalIds: before,
+    })
+    return { before, after }
+  },
   updateProjectGoalsStatus: (...args: unknown[]) =>
     updateProjectGoalsStatus(...args),
   projectQueries: {
@@ -1194,11 +1210,152 @@ describe("GoalsPage bulk actions", () => {
     await user.click(await screen.findByTestId("project-picker-option-proj-2"))
 
     await vi.waitFor(() =>
-      expect(updateGoalProjects).toHaveBeenCalledExactlyOnceWith("goal-1", [
-        "proj-1",
-        "proj-2",
-      ])
+      expect(updateProjectGoals).toHaveBeenCalledExactlyOnceWith("proj-2", {
+        goals: [{ goalId: "goal-1" }],
+        expectedGoalIds: [],
+      })
     )
+    expect(updateGoalProjects).not.toHaveBeenCalled()
+  })
+
+  describe("scoped to a project", () => {
+    /** proj-1 holds goal-1 (its only project) and goal-b, which is also in proj-2. */
+    function scopedMemberships() {
+      listProjects.mockResolvedValue({
+        projects: [overviewProject, otherProject],
+      })
+      listProjectGoals.mockImplementation((projectId: string) =>
+        Promise.resolve({
+          goals:
+            projectId === "proj-1"
+              ? [
+                  { goal: activeGoal, priority: 0 },
+                  { goal: goalB, priority: 1 },
+                ]
+              : [{ goal: goalB, priority: 0 }],
+        })
+      )
+      updateProjectGoals.mockReset().mockResolvedValue({ goals: [] })
+    }
+
+    it("offers no project removal when the page is not scoped", async () => {
+      scopedMemberships()
+      const user = userEvent.setup()
+      renderPage()
+      await screen.findByTestId("goals-list-table")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(3)
+      )
+
+      expect(screen.queryByTestId("goals-bulk-removeFromProject")).toBeNull()
+      await user.click(screen.getByTestId("goal-row-actions-trigger-goal-b"))
+      await screen.findByTestId("goal-row-delete-goal-b")
+      expect(
+        screen.queryByTestId("goal-row-remove-from-project-goal-b")
+      ).toBeNull()
+    })
+
+    it("removes a row with another project straight from its menu", async () => {
+      scopedMemberships()
+      const user = userEvent.setup()
+      renderPage("/plan/goals?project=proj-1")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+
+      await user.click(screen.getByTestId("goal-row-actions-trigger-goal-b"))
+      const item = await screen.findByTestId(
+        "goal-row-remove-from-project-goal-b"
+      )
+      expect(item).toHaveTextContent("goals.project.removeFromProject")
+      await user.click(item)
+
+      await vi.waitFor(() =>
+        expect(updateProjectGoals).toHaveBeenCalledExactlyOnceWith("proj-1", {
+          goals: [{ goalId: "goal-1" }],
+          expectedGoalIds: ["goal-1", "goal-b"],
+        })
+      )
+      expect(screen.queryByTestId("project-picker-dialog")).toBeNull()
+    })
+
+    it("asks where to move a row whose only project is the scoped one", async () => {
+      scopedMemberships()
+      const user = userEvent.setup()
+      renderPage("/plan/goals?project=proj-1")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+
+      await user.click(screen.getByTestId("goal-row-actions-trigger-goal-1"))
+      const item = await screen.findByTestId(
+        "goal-row-remove-from-project-goal-1"
+      )
+      expect(item).toHaveTextContent("goals.project.moveToProject")
+      await user.click(item)
+      await user.click(
+        await screen.findByTestId("project-picker-option-proj-2")
+      )
+
+      await vi.waitFor(() =>
+        expect(updateProjectGoals).toHaveBeenCalledTimes(2)
+      )
+      expect(updateProjectGoals).toHaveBeenNthCalledWith(1, "proj-2", {
+        goals: [{ goalId: "goal-b" }, { goalId: "goal-1" }],
+        expectedGoalIds: ["goal-b"],
+      })
+      expect(updateProjectGoals).toHaveBeenNthCalledWith(2, "proj-1", {
+        goals: [{ goalId: "goal-b" }],
+        expectedGoalIds: ["goal-1", "goal-b"],
+      })
+    })
+
+    it("bulk-removes the selection, moving only the goals with no other project", async () => {
+      scopedMemberships()
+      const user = userEvent.setup()
+      renderPage("/plan/goals?project=proj-1")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+      await select(user, "goal-1")
+      await select(user, "goal-b")
+
+      await user.click(screen.getByTestId("goals-bulk-removeFromProject"))
+      await user.click(
+        await screen.findByTestId("project-picker-option-proj-2")
+      )
+
+      await vi.waitFor(() =>
+        expect(updateProjectGoals).toHaveBeenCalledTimes(2)
+      )
+      expect(updateProjectGoals).toHaveBeenNthCalledWith(1, "proj-2", {
+        goals: [{ goalId: "goal-b" }, { goalId: "goal-1" }],
+        expectedGoalIds: ["goal-b"],
+      })
+      expect(updateProjectGoals).toHaveBeenNthCalledWith(2, "proj-1", {
+        goals: [],
+        expectedGoalIds: ["goal-1", "goal-b"],
+      })
+      await vi.waitFor(() =>
+        expect(screen.getByTestId("goal-row-select-goal-b")).not.toBeChecked()
+      )
+    })
+
+    it("names removal as the alternative in the delete confirmation", async () => {
+      scopedMemberships()
+      const user = userEvent.setup()
+      renderPage("/plan/goals?project=proj-1")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+
+      await user.click(screen.getByTestId("goal-row-actions-trigger-goal-b"))
+      await user.click(await screen.findByTestId("goal-row-delete-goal-b"))
+
+      expect(
+        await screen.findByTestId("delete-goal-project-alternative")
+      ).toHaveTextContent("goals.delete.projectAlternative")
+    })
   })
 
   it("opens project creation instead of a picker when there is no project", async () => {
