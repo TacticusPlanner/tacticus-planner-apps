@@ -60,7 +60,7 @@ When `live-progress.activeCampaignEventId` identifies an event campaign present 
 
 ### Requirement: Collapsible event cards with a summary
 
-Every event in the event list SHALL be a card that is collapsed by default and can be expanded and collapsed again. The collapsed card SHALL show the event's icon and localized name and a one-line summary of its effective progress: Standard regular count over total, Extremis regular count over total, and completed challenges over total challenges across both tracks (for example `Standard 12/30 · Extremis 0/30 · Challenges 2/5`), plus an indication of whether any value in the event is Manual or has No synced data. Expanding a card SHALL reveal the per-track editors. Collapsing a card SHALL NOT discard unsaved edits made in it.
+Every event in the event list SHALL be a card that is collapsed by default and can be expanded and collapsed again. The collapsed card SHALL show the event's icon and localized name and a one-line summary of its effective progress: Standard regular count over total, Extremis regular count over total, and completed challenges over total challenges across both tracks (for example `Standard 12/30 · Extremis 0/30 · Challenges 2/5`), plus an indication of whether any value in the event is Manual or has No synced data. Each count SHALL be capped at its total, the same value the editor shows. Only values that exist count toward the Manual / No synced data indication: a track's challenge source is ignored when the track has no challenge nodes, and its regular-battle source when it has no regular battles. Expanding a card SHALL reveal the per-track editors. Collapsing a card SHALL NOT discard unsaved edits made in it.
 
 #### Scenario: Collapsed summary
 
@@ -68,6 +68,19 @@ Every event in the event list SHALL be a card that is collapsed by default and c
 - **AND** effective progress is Standard 12, Extremis 0, and 2 challenges completed
 - **WHEN** its card is collapsed
 - **THEN** the card shows `Standard 12/30 · Extremis 0/30 · Challenges 2/5`
+
+#### Scenario: A track without challenges reports no missing challenge data
+
+- **GIVEN** an event whose tracks have regular battles but no challenge nodes
+- **AND** there is no synced data, and both regular counts are set manually
+- **WHEN** its card is collapsed
+- **THEN** the summary indicates Manual values and does not indicate No synced data
+
+#### Scenario: Counts beyond the total are capped
+
+- **GIVEN** a Standard track with 30 regular battles whose effective count is 31
+- **WHEN** its card is collapsed
+- **THEN** the summary shows `Standard 30/30`, matching the editor
 
 #### Scenario: Collapsing keeps edits
 
@@ -190,13 +203,20 @@ While the draft differs from the saved progress, the page SHALL show an unsaved-
 
 ### Requirement: Save conflicts and errors are translated
 
-If the save is rejected because the progress was changed elsewhere (revision conflict), the page SHALL reload the saved progress, drop the draft, and show a translated message explaining that the progress was updated elsewhere and the edits were not saved. If the save fails for any other reason, the page SHALL keep the draft and the unsaved-changes bar and show a translated general save-error message. Raw API error text SHALL NOT be shown.
+A save SHALL carry the revision of the saved progress the draft was built on, even if newer saved progress has been loaded in the background since the first edit, so a change made elsewhere in the meantime produces a revision conflict rather than being overwritten. If the save is rejected because the progress was changed elsewhere (revision conflict), the page SHALL reload the saved progress, drop the draft, and show a translated message explaining that the progress was updated elsewhere and the edits were not saved. If the save fails for any other reason, the page SHALL keep the draft and the unsaved-changes bar and show a translated general save-error message. Raw API error text SHALL NOT be shown.
 
 #### Scenario: Revision conflict
 
 - **GIVEN** the progress was saved from another tab after this page loaded
 - **WHEN** the player saves
 - **THEN** the page shows the other tab's saved values, the bar is hidden, and the translated conflict message is shown
+
+#### Scenario: Progress refreshed in the background while editing
+
+- **GIVEN** the player started editing progress saved at revision 3
+- **AND** another device then saved revision 4, which this page loaded in the background
+- **WHEN** the player saves
+- **THEN** the save is sent for revision 3, is rejected as a conflict, and the translated conflict message is shown; the other device's change is not overwritten
 
 #### Scenario: Other API error
 
@@ -222,13 +242,19 @@ While there are unsaved changes, navigating to another route inside the app SHAL
 
 ### Requirement: Loading, failure and empty states
 
-The page SHALL show a loading indicator until the catalog, synced progress and saved overrides are all available. If the locally stored catalog or player data cannot be read, or the saved overrides fail to load, it SHALL show a translated load-error message instead of editors, never the app's generic error page. A profile that has never synced is not a failure: its tracks show "No synced data". If the catalog contains no event campaigns, it SHALL show a translated empty-state message.
+The page SHALL show a loading indicator until the catalog, synced progress and saved overrides are all available. If the locally stored catalog or player data cannot be read, or the saved overrides fail to load and no saved overrides were loaded before, it SHALL show a translated load-error message instead of editors, never the app's generic error page. Once saved overrides have loaded, a later failure to reload them (for example after a revision conflict) SHALL keep the editors, the draft and the unsaved-changes bar, and SHALL be reported as a translated save error. A profile that has never synced is not a failure: its tracks show "No synced data". If the catalog contains no event campaigns, it SHALL show a translated empty-state message.
 
 #### Scenario: Override load failure
 
 - **GIVEN** the saved overrides request fails
 - **WHEN** the page loads
 - **THEN** a translated load-error message is shown and no editors are rendered
+
+#### Scenario: Reload failure after loading keeps the edits
+
+- **GIVEN** the saved overrides loaded and the player has unsaved edits
+- **WHEN** a save is rejected as a conflict and reloading the saved overrides then fails
+- **THEN** the editors, the edits and the unsaved-changes bar remain, and the translated save-error message is shown instead of the load error
 
 #### Scenario: Local data read failure
 

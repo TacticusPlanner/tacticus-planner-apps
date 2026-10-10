@@ -333,7 +333,7 @@ A battle belonging to an event campaign SHALL be eligible only when both:
 
 Effective event progress SHALL be resolved per `{campaignGroupId, type}`, separately for the completed battle count and the completed challenge ids, as the player's saved campaign-event manual override value when it is not null, else the `campaign-events-progress` synced value, else no progress. This is the same resolution the Campaign Events progress page displays (see `campaign-event-progress-editing`).
 
-When no campaign event is active, all event-campaign battles SHALL be excluded. When a battle's campaign group and type has neither a synced `campaign-events-progress` entry nor a manual override value, that battle's node-reached condition SHALL be treated as not met (excluded), since a synced entry only exists once the player has started that tier. Today SHALL wait for the saved overrides to load before calculating, and SHALL show its existing error state if they fail to load, the same way it treats saved Onslaught progress.
+When no campaign event is active, all event-campaign battles SHALL be excluded. When a battle's campaign group and type has neither a synced `campaign-events-progress` entry nor a manual override value, that battle's node-reached condition SHALL be treated as not met (excluded), since a synced entry only exists once the player has started that tier. The same holds for each value on its own: a non-challenge node SHALL be treated as not reached when the track has neither a synced completed battle count nor a manual one, even if a manual challenge value exists for that track. Today SHALL wait for the saved overrides to load before calculating, and SHALL show its existing error state if they fail to load, the same way it treats saved Onslaught progress.
 
 Assumptions this requirement depends on:
 
@@ -399,6 +399,14 @@ Assumptions this requirement depends on:
 - **AND** the player's saved override for that track has `completedBattleCount: null` and `completedChallengeBattlesIds: ["AMS7B"]`
 - **WHEN** Today calculates the schedule
 - **THEN** non-challenge nodes use the synced count 15 and challenge node `AMS7B` is eligible
+
+#### Scenario: A challenge-only override does not make regular nodes reachable
+
+- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
+- **AND** `campaign-events-progress` has no entry for `{eventCampaign1, Extremis}`
+- **AND** the player's saved override for that track has `completedBattleCount: null` and `completedChallengeBattlesIds: ["AME3B"]`
+- **WHEN** Today calculates the schedule
+- **THEN** challenge node `AME3B` is eligible and no regular Extremis node is, not even node 1
 
 #### Scenario: Overrides fail to load
 
