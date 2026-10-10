@@ -90,7 +90,7 @@ Every event in the event list SHALL be a card that is collapsed by default and c
 
 ### Requirement: Unfinished events first, with completed events optionally hidden
 
-An event SHALL count as completed when, for each of its Standard and Extremis tracks, the effective regular count equals the track's number of regular battles and every challenge in the track is completed. A track with no battles in the catalog counts as completed. The event list SHALL show unfinished events before completed ones, keeping catalog order within each group. The page SHALL offer a "Hide completed events" option, off by default, that removes completed events from the list. The option SHALL be remembered in this browser across visits. Completion SHALL be evaluated on the current draft, so an event moves between groups as the player edits it. The current event SHALL be shown in its section even when completed and the option is on.
+An event SHALL count as completed when, for each of its Standard and Extremis tracks, the effective regular count is at least the track's number of regular battles and every challenge in the track is completed. A track with no battles in the catalog counts as completed. The event list SHALL show unfinished events before completed ones, keeping catalog order within each group. The page SHALL offer a "Hide completed events" option, off by default, that removes completed events from the list. The option SHALL be remembered in this browser across visits. Completion SHALL be evaluated on the current draft, so an event moves between groups as the player edits it. The current event SHALL be shown in its section even when completed and the option is on.
 
 #### Scenario: Ordering
 
@@ -114,7 +114,7 @@ An event SHALL count as completed when, for each of its Standard and Extremis tr
 
 Each expanded track SHALL edit its regular-battle count with a single compact control: decrease and increase steps, a Max action that sets the count to the track's number of regular battles, and a progress bar that also works as a slider (pointer drag and keyboard arrows). The count SHALL be shown as `count/total`. Values SHALL stay within 0 and the total; the decrease step is disabled at 0 and the increase step and Max at the total. There SHALL be no separate number input, slider, or progress bar for the same value. Any change creates or updates the manual override for that value.
 
-A "Reset to synced" action SHALL appear for a value only while it is Manual, and SHALL clear that override value so the value falls back to synced data (or No synced data).
+A "Reset to synced" action SHALL appear for a value only while it is Manual, and SHALL clear that override value so the value falls back to synced data (or No synced data). When that clears a track's last non-null override value, the track's override entry SHALL be removed from the draft before saving; if the track's other value is still overridden, the entry SHALL be kept with the cleared value set to null.
 
 Challenges SHALL be toggled individually. Toggling any challenge makes the track's challenge list Manual.
 
