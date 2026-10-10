@@ -14,8 +14,8 @@ The planner SHALL compute one reward projection per event with these figures, al
 - **Future runs**: runs after the current run when a synced entry exists; all three runs when none exists. Only future runs' inputs count. With Show paid options off, premium missions, bundle and Oh So Close shards count as 0.
 - **Future mission currency**: per future run, (regular + premium missions) × (25, plus 15 when that run has premium missions > 0). **Future bundle currency**: per future run with the bundle bought, 300, plus 15 when that run has premium missions > 0.
 - **Goal**: the first cumulative ascension threshold (`unlock`, then + `fourStars`, + `fiveStars`, + `blueStar`, + `mythic`, + `twoBlueStars`) above S + future Oh So Close shards; "every step reached" when none.
-- **Chests to go** = max(0, ⌈(goal threshold − S − future Oh So Close shards) ÷ `shardsPerChest`⌉); **chests required** = K + chests to go. When required exceeds the event's chest count the goal is "not reachable this event".
-- **Currency required** = sum of `engramCost` of chests 1..required; **collected** = sum of costs of chests 1..K + C; **currency from points** = required − collected − future mission currency − future bundle currency.
+- **Chests to go** = max(0, ⌈(goal threshold − S − future Oh So Close shards) ÷ `shardsPerChest`⌉); **chests required** = K + chests to go. When required exceeds the event's chest count the goal is "not reachable this event", and no currency, points or battles-per-lane figures are produced (the ladder has no cost for chests beyond its last). When every step is reached, no chest, currency or points figures are produced.
+- For a reachable goal, **currency required** = sum of `engramCost` of chests 1..required; **collected** = sum of costs of chests 1..K + C; **currency from points** = required − collected − future mission currency − future bundle currency.
 - **Per-payout bonus** = synced `extraCurrencyPerPayout` when greater than 0; else 15 when the current run's stored premium missions > 0 and paid options are on; else 0.
 - **Points target**: when currency from points ≤ 0, "enough currency now"; otherwise the first `pointsMilestones` entry above P at which the running total of (`engramPayout` + bonus) over the milestones above P reaches currency from points. When the ladder ends first, "points alone can't cover it" with the currency still missing. **Points to go** = target `cumulativePoints` − P.
 - **Average battles per lane** = target `cumulativePoints` ÷ 3 ÷ 500, to one decimal.
@@ -75,7 +75,7 @@ Assumptions:
 
 - **GIVEN** an event with 54 chests and shards such that the next goal needs 55 chests
 - **WHEN** the projection is computed
-- **THEN** the goal is reported as not reachable this event, naming 55 required of 54
+- **THEN** the goal is reported as not reachable this event, naming 55 required of 54, and no currency, points or battles-per-lane figure is produced
 
 #### Scenario: V1 parity without run inputs
 
