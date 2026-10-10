@@ -591,6 +591,26 @@ describe("CampaignEventsPage", () => {
       expect(getOverrides).toHaveBeenCalledTimes(2)
     })
 
+    it("keeps the editors and edits when the reload after a conflict fails", async () => {
+      const user = userEvent.setup()
+      getOverrides
+        .mockReset()
+        .mockResolvedValueOnce({ progress: [], revision: 4 })
+        .mockRejectedValueOnce(new Error("offline"))
+      saveOverrides.mockRejectedValueOnce(new ApiError(409, "stale"))
+      renderPage()
+      await screen.findByTestId("current-event")
+      await increaseStandard(user)
+      await user.click(screen.getByTestId("unsaved-changes-save"))
+
+      expect(
+        await screen.findByText("progress.events.saveError")
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("campaign-events-load-error")).toBeNull()
+      expect(count("current-event", "Standard")).toHaveTextContent("3/5")
+      expect(screen.getByTestId("unsaved-changes-bar")).toBeInTheDocument()
+    })
+
     it("shows the translated error, never the API text, and keeps the edits", async () => {
       const user = userEvent.setup()
       saveOverrides.mockRejectedValueOnce(

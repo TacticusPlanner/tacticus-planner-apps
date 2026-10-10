@@ -98,8 +98,11 @@ export function CampaignEventsPage() {
     firstListEventId: listed[0]?.event.definition.groupId,
   })
 
-  if (overrides.query.isError || loaded?.status === "error")
-    return <LoadError />
+  // Only a first load with nothing saved replaces the page. A later query error (e.g. the reload
+  // after a 409 failing) keeps the editors and any unsaved draft; save() reports it inline.
+  const overridesUnavailable =
+    overrides.query.isError && overrides.query.data === undefined
+  if (overridesUnavailable || loaded?.status === "error") return <LoadError />
   if (!catalogData || overrides.draft === undefined) return <Loading />
 
   const patch: PatchTrack = (groupId, type, value) => {
