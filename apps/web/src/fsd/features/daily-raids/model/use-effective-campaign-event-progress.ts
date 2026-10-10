@@ -14,8 +14,10 @@ import {
  * Event-campaign progress for raid eligibility: the player's manual overrides from the Progress
  * page merged over synced `campaign-events-progress` (daily-raids-today, "Only the active campaign
  * event is farmable"). `ready` waits for synced progress and, when signed in, for the override load
- * to settle; a failed load falls back to synced-only and is reported through `isError`, which
- * Daily Raids treats as an error while lighter consumers (Home) keep the synced view.
+ * to settle; a failed load falls back to synced-only and is reported through `isError`.
+ * `useDailyRaids` treats it as an error, so Today, Raids Plan and the Home raids widget and
+ * event-farm section show their error state; only the Home event tab
+ * (`useHomeScreenEventLocations`), which has no error state, keeps the synced-only view.
  */
 export function useEffectiveCampaignEventProgress(isAuthenticated: boolean) {
   const synced = useLiveQuery(

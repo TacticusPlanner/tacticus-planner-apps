@@ -107,7 +107,7 @@ Add `campaign-events-page.tutorial.tsx` with `desktop` and `mobile` step arrays 
 ## Risks / Trade-offs
 
 - [Daily raids now waits for one more request; an override outage blocks Today] → Same trade-off already accepted for Onslaught; the error state is explicit, not a silently wrong schedule.
-- [During an override outage, or while the request is in flight, Home and Goals/Insights use synced-only eligibility while Today shows an error] → The surfaces never disagree on a _computed_ schedule: Today computes nothing in that state. Making Goals block on the override request too would add a loading gate to every goal estimate for a rarely-used override; revisit if mismatches are reported.
+- [During an override outage, or while the request is in flight, the Home event tab and Goals/Insights use synced-only eligibility while Today, Raids Plan and the Home raids widget show an error] → The surfaces never disagree on a _computed_ schedule: Today computes nothing in that state. Making Goals block on the override request too would add a loading gate to every goal estimate for a rarely-used override; revisit if mismatches are reported.
 - [A stale manual override lower than real progress now hides nodes that synced data would allow] → Intended (spec assumption); the page shows Manual with "Reset to synced", and the collapsed summary flags manual values so they are easy to spot.
 - [Structural `isEqual` on every render over ~a few dozen small entries] → Negligible at this size; memoise on draft and query data.
 - [`useBlocker` also fires on same-page search-param changes] → The page has no URL state; the guard only compares pathname changes.
