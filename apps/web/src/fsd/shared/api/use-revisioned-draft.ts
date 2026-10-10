@@ -57,37 +57,51 @@ export function useRevisionedDraft<
   const mutation = useMutation({
     mutationFn: (payload: TSaved) => saveFn(payload),
   })
-  const [edited, setEdited] = useState<TDraft | null>(null)
+  // The draft keeps the saved state it was built on: a background refetch can replace `query.data`
+  // mid-edit, and saving with that newer revision would overwrite another device's change instead
+  // of getting the 409 the revision exists for.
+  const [edited, setEdited] = useState<{ draft: TDraft; base: TSaved } | null>(
+    null
+  )
 
   const savedDraft = useMemo(
     () => (query.data ? toDraft(query.data) : undefined),
     [query.data, toDraft]
   )
-  const draft = edited ?? savedDraft
+  const draft = edited?.draft ?? savedDraft
   const isDirty =
-    edited !== null && savedDraft !== undefined && !isEqual(edited, savedDraft)
+    edited !== null &&
+    savedDraft !== undefined &&
+    !isEqual(edited.draft, savedDraft)
 
   const update = useCallback(
     (updater: (current: TDraft) => TDraft) => {
       setEdited((current) => {
-        const base = current ?? savedDraft
-        return base === undefined ? current : updater(base)
+        if (current) return { ...current, draft: updater(current.draft) }
+        if (!query.data || savedDraft === undefined) return current
+        return { draft: updater(savedDraft), base: query.data }
       })
     },
-    [savedDraft]
+    [query.data, savedDraft]
   )
 
   const discard = useCallback(() => setEdited(null), [])
 
   const save = async (): Promise<RevisionedDraftSaveOutcome> => {
-    if (!query.data || draft === undefined) return "error"
+    const base = edited?.base ?? query.data
+    if (!base || draft === undefined) return "error"
     // Edits made while the request is in flight replace `edited` with a new object; only drop the
-    // draft if it is still the one this save sent, so those newer edits stay pending.
+    // draft if it is still the one this save sent. Newer edits stay pending, rebased onto the
+    // state this save produced (they were made on top of it).
     const submitted = edited
     try {
-      const saved = await mutation.mutateAsync(toPayload(draft, query.data))
+      const saved = await mutation.mutateAsync(toPayload(draft, base))
       queryClient.setQueryData<TSaved>(queryOptions.queryKey, saved)
-      setEdited((current) => (current === submitted ? null : current))
+      setEdited((current) =>
+        current === submitted || current === null
+          ? null
+          : { ...current, base: saved }
+      )
       return "saved"
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {

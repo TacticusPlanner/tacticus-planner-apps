@@ -91,6 +91,25 @@ describe("useRevisionedDraft", () => {
     expect(result.current.isDirty).toBe(false)
   })
 
+  it("saves against the revision the draft was built on, even after a refetch", async () => {
+    save.mockRejectedValue(new ApiError(409, "conflict"))
+    const { result, client } = await loaded()
+    act(() => result.current.update(() => ({ value: 5 })))
+    // Another device saves meanwhile, and a background refetch brings revision 4 in.
+    server = { value: 9, revision: 4 }
+    await act(async () => {
+      await client.refetchQueries({ queryKey })
+    })
+    await waitFor(() =>
+      expect(result.current.query.data).toEqual({ value: 9, revision: 4 })
+    )
+    expect(result.current.draft).toEqual({ value: 5 })
+    await act(async () => {
+      await result.current.save()
+    })
+    expect(save).toHaveBeenCalledWith({ value: 5, revision: 3 })
+  })
+
   it("keeps edits made while a save is in flight", async () => {
     let resolveSave: (saved: Saved) => void = () => {}
     save.mockImplementation(
@@ -111,6 +130,12 @@ describe("useRevisionedDraft", () => {
     expect(client.getQueryData(queryKey)).toEqual({ value: 5, revision: 4 })
     expect(result.current.draft).toEqual({ value: 7 })
     expect(result.current.isDirty).toBe(true)
+    // The kept edits were made on top of revision 4, so saving them must not trip a 409.
+    save.mockResolvedValue({ value: 7, revision: 5 })
+    await act(async () => {
+      await result.current.save()
+    })
+    expect(save).toHaveBeenLastCalledWith({ value: 7, revision: 4 })
   })
 
   it("reloads and drops the draft on a 409 conflict", async () => {
