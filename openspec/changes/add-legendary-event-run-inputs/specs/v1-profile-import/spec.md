@@ -7,8 +7,9 @@
 The dialog SHALL accept a V1 username and password and SHALL let the user
 choose which parts of the V1 profile to import. The selectable parts SHALL
 include **Legendary Event teams** (the API's `legendaryEventPlans` part),
-described as importing hand-built teams, notes and per-run mission and pack
-inputs for events the planner currently knows, and not progress. V1
+described as importing hand-built teams, notes, per-run mission and pack
+inputs, and Maybe clear / Stop here marks for events the planner currently
+knows, and not progress. V1
 credentials SHALL be used for the import only and SHALL NOT be retained after
 the dialog closes.
 
@@ -26,21 +27,23 @@ the dialog closes.
 #### Scenario: Legendary Event teams is a selectable part
 
 - **WHEN** the dialog opens from the account page or from onboarding
-- **THEN** a "Legendary Event teams" part is listed with the other parts, unchecked on the account page and checked in onboarding, and its description mentions run inputs
+- **THEN** a "Legendary Event teams" part is listed with the other parts, unchecked on the account page and checked in onboarding, and its description mentions run inputs and marks
 
 ### Requirement: Legendary Event import outcomes are reported per event
 
 When the Legendary Event teams part was selected, the result SHALL list one
 outcome per V1 event in the same four buckets as goals: **imported** (event name
-with the number of teams and, when any, the number of runs of inputs; an event
-with code `inputs_imported` shows only the runs of inputs), **needed no import**
-(the plan already had the teams, inputs and notes), **not imported** (the event
+with the number of teams and, when any, the number of runs of inputs and the
+number of marks; an event with code `inputs_imported` shows only the runs of
+inputs and marks), **needed no import**
+(the plan already had the teams, inputs, marks and notes), **not imported** (the event
 is not in the planner's catalog), **failed**. An event imported without a single
-kept team and without run inputs SHALL say so instead of reporting teams
+kept team, run inputs or marks SHALL say so instead of reporting teams
 imported, and SHALL show no team count. Each event's issues (a dropped unit, a
 dropped objective, a skipped or merged team, existing planner notes kept over
 the V1 notes, V1 notes shortened, a run input reduced to the event's bound, an
-unrecognised run, existing planner run inputs kept) SHALL be listed under that
+unrecognised run, existing planner run inputs kept, a mark on an unknown lane,
+battle or objective skipped, existing planner marks kept) SHALL be listed under that
 event with a translated reason and the value concerned, and never as raw codes.
 The event name SHALL be the event unit's localized name when the catalog knows
 it, otherwise the V1 event number. The part's own row SHALL carry a translated
@@ -66,6 +69,12 @@ the part selected, the Legendary Event plan views SHALL refresh.
 - **WHEN** the result is shown
 - **THEN** a line under Uthar says run 2 regular missions were reduced from 12 to the event's 10
 
+#### Scenario: Marks imported and one skipped
+
+- **GIVEN** Lysander's import wrote 3 marks and skipped one on the unrecognised objective "Psyker" in Alpha
+- **WHEN** the result is shown
+- **THEN** Lysander's line includes "3 marks" and a line beneath it says a mark on the unrecognised objective "Psyker" in Alpha was skipped
+
 #### Scenario: Finished event is not imported
 
 - **GIVEN** the V1 profile had teams for an event the catalog does not carry
@@ -76,11 +85,11 @@ the part selected, the Legendary Event plan views SHALL refresh.
 
 - **GIVEN** the user had Lysander's page open in another tab
 - **WHEN** the import completes with the part selected
-- **THEN** the Teams section and the run inputs drawer on that page show the imported values after its plan query refreshes
+- **THEN** the Teams section, the run inputs drawer and the progress grid marks on that page show the imported values after its plan query refreshes
 
 #### Scenario: Event imported without any team
 
-- **GIVEN** every V1 team of Lysander was dropped as unknown units and the V1 profile has no run inputs for it
+- **GIVEN** every V1 team of Lysander was dropped as unknown units and the V1 profile has no run inputs or marks for it
 - **WHEN** the result is shown
 - **THEN** the imported bucket lists Lysander with no team count, a reason saying none of its teams could be kept, and issue lines for the dropped units and teams
 
@@ -92,6 +101,6 @@ the part selected, the Legendary Event plan views SHALL refresh.
 
 #### Scenario: Nothing imported because every event was skipped
 
-- **GIVEN** each V1 event already has its teams, inputs and notes in the planner or is not in the catalog
+- **GIVEN** each V1 event already has its teams, inputs, marks and notes in the planner or is not in the catalog
 - **WHEN** the result is shown
 - **THEN** the Legendary Event teams part row explains, in translated copy, that nothing was imported and why
