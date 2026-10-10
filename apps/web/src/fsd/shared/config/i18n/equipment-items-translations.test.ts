@@ -7,12 +7,12 @@ import fr from "../../../../../public/locales/fr/equipmentItems.json"
 
 const locales = { de, en, es, fr }
 
-// Catalog coverage was verified against tacticus-planner-api's equipment dataset (214 ids) when the
+// Catalog coverage was verified against tacticus-planner-api's equipment dataset (217 ids, 1.43) when the
 // names were ported from V1; a catalog change that adds ids falls back to the catalog English name.
 describe("equipment item name translations", () => {
   it("covers the same equipment ids in every locale with no empty names", () => {
     const enKeys = Object.keys(en).sort()
-    expect(enKeys).toHaveLength(214)
+    expect(enKeys).toHaveLength(217)
 
     for (const [code, locale] of Object.entries(locales)) {
       expect(Object.keys(locale).sort(), code).toEqual(enKeys)
