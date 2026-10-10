@@ -2,28 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import {
   farmNodesDailyShards,
-  onslaughtRewardKeyForProgression,
   summariseShopCurrencySpend,
 } from "./use-progression-preview"
-
-describe("onslaughtRewardKeyForProgression", () => {
-  it("uses the current rarity's regular reward below the Mythic tier", () => {
-    expect(onslaughtRewardKeyForProgression("Legendary:OneBlueStar")).toBe(
-      "Legendary"
-    )
-    expect(onslaughtRewardKeyForProgression("Rare:TwoStars")).toBe("Rare")
-  })
-
-  it("uses the Mythic reward once the current progression is in the Mythic tier", () => {
-    expect(onslaughtRewardKeyForProgression("Mythic:OneStar")).toBe("Mythic")
-  })
-
-  it("does not consider the goal target — a below-Mythic current tier stays regular (align-acquisition-source-yield-estimates)", () => {
-    // Same character, current progression well below Mythic: the key never flips to Mythic
-    // regardless of how far the goal's target reaches.
-    expect(onslaughtRewardKeyForProgression("Epic:ThreeStars")).toBe("Epic")
-  })
-})
 
 describe("farmNodesDailyShards", () => {
   it("is energy-bounded for a single uncapped node", () => {

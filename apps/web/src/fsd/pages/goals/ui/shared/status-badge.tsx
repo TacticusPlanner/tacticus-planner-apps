@@ -134,8 +134,13 @@ export function BlockedIndicator({
     ...new Set(blockers.reasons.map((reason) => blockerReasonText(t, reason))),
   ]
   const ceilingLabel = progress ? reachableCeilingLabel(t, progress) : null
-  const tooltip = (
+  const tooltip = (explanation?: string) => (
     <div className="grid gap-1">
+      {explanation ? (
+        <div className="font-medium" data-testid="goal-restricted-explanation">
+          {explanation}
+        </div>
+      ) : null}
       {reasonLines.map((line) => (
         <div key={line}>{line}</div>
       ))}
@@ -171,7 +176,7 @@ export function BlockedIndicator({
           </Badge>
         </TooltipTrigger>
         <TooltipContent data-testid="goal-restricted-tooltip">
-          {tooltip}
+          {tooltip(t("goals.blocked.restrictedExplanation"))}
         </TooltipContent>
       </Tooltip>
     )
@@ -196,7 +201,7 @@ export function BlockedIndicator({
         </Badge>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-blocked-tooltip">
-        {tooltip}
+        {tooltip()}
       </TooltipContent>
     </Tooltip>
   )
