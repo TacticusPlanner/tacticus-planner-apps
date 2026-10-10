@@ -215,7 +215,7 @@ function surfaces(
     estimatePartial:
       estimate?.status === "Blocked" &&
       (estimate.actionableResourceIds?.length ?? 0) > 0,
-    unreachedPrerequisiteGoalIds: [],
+    unreachedPrerequisites: [],
     playerDataUnavailable: false,
     catalogDataUnavailable: false,
   })

@@ -579,8 +579,10 @@
     "blocked": {
       "label": "Blockiert",
       "restrictedLabel": "Eingeschränkt",
+      "restrictedExplanation": "Eingeschränkt: Dieses Ziel kann nur teilweise vorankommen, bis Folgendes erledigt ist.",
       "reasons": {
         "PrerequisiteNotReached": "Wartet darauf, dass zuerst ein Voraussetzungsziel erreicht wird.",
+        "PrerequisiteNotReachedNamed": "Wartet darauf, dass zuerst das {{goalType}}-Ziel für {{unit}} erreicht wird.",
         "PlayerDataUnavailable": "Spielerdaten für dieses Ziel wurden noch nicht synchronisiert.",
         "CatalogDataUnavailable": "Spieldaten wurden noch nicht vollständig geladen.",
         "MissingAscensionPrerequisite": "Ein Aufstiegs-Ziel, das {{progression}} erreicht, ist erforderlich.",

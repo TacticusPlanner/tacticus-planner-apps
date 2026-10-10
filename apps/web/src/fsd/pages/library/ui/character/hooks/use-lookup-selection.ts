@@ -254,18 +254,20 @@ export function useLookupSelection(characterId?: string) {
       // Exactly one side changes per call in every caller today (the mobile "From"/"To" selects
       // each pass the other side unchanged; the desktop slider's two thumbs can't cross, per
       // `minStepsBetweenThumbs`, so a single-thumb drag only moves one side). `start < end` is a
-      // hard invariant elsewhere (`hasCompleteValidRange`'s URL round-trip), so both directions
-      // auto-adjust the *other* side to preserve it — never leaving it wherever it was, and never
-      // colliding into equality at either end of the ladder.
+      // hard invariant elsewhere (`hasCompleteValidRange`'s URL round-trip), so when the moved side
+      // reaches or crosses the other one, the *other* side auto-adjusts to preserve it — never
+      // colliding into equality at either end of the ladder. A move that keeps the range valid
+      // leaves the other side where it was, so the range can widen beyond one rank.
       const onlyStartChanged =
         clampedStart !== prev.rankStart && clampedEnd === prev.rankEnd
       const onlyEndChanged =
         clampedEnd !== prev.rankEnd && clampedStart === prev.rankStart
+      const startCrossesEnd = rankIndex(clampedStart) >= rankIndex(clampedEnd)
 
       let nextStart = clampedStart
       let nextEnd = clampedEnd
 
-      if (onlyStartChanged) {
+      if (onlyStartChanged && startCrossesEnd) {
         // Auto-advance "to" to "from" + 1. At the ceiling there's no rank above "from" left to
         // advance "to" into, so pull "from" back one step instead — "to" stays at the ceiling,
         // keeping the range valid rather than collapsing to a single rank.
@@ -275,7 +277,7 @@ export function useLookupSelection(characterId?: string) {
         } else {
           nextEnd = rankAt(rankIndex(clampedStart) + 1)
         }
-      } else if (onlyEndChanged) {
+      } else if (onlyEndChanged && startCrossesEnd) {
         // Mirror of the above: auto-retreat "from" to "to" − 1, or at the floor, push "to"
         // forward one step instead of collapsing "from"/"to" together at rank 0.
         if (rankIndex(clampedEnd) <= rankIndex(firstRank)) {

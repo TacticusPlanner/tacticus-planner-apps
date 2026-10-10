@@ -126,15 +126,60 @@ describe("useLookupSelection's rank range", () => {
     expect(result.current.draft.rankEnd).toBe("Gold1")
   })
 
-  it("auto-retreats 'from' to 'to' - 1 when only 'to' changes", () => {
+  it("auto-retreats 'from' to 'to' - 1 when only 'to' moves to or below 'from'", () => {
     const { result } = renderSelection()
-
     act(() => {
-      result.current.setDraftRange(result.current.draft.rankStart, "Gold2")
+      result.current.setDraftRange("Gold1", "Gold3")
     })
 
-    expect(result.current.draft.rankEnd).toBe("Gold2")
-    expect(result.current.draft.rankStart).toBe("Gold1")
+    act(() => {
+      result.current.setDraftRange(result.current.draft.rankStart, "Silver2")
+    })
+
+    expect(result.current.draft.rankEnd).toBe("Silver2")
+    expect(result.current.draft.rankStart).toBe("Silver1")
+  })
+
+  it("widens the range when only 'to' moves further up", () => {
+    const { result } = renderSelection()
+    act(() => {
+      result.current.setDraftRange("Iron1", "Iron2")
+    })
+
+    act(() => {
+      result.current.setDraftRange(result.current.draft.rankStart, "Bronze1")
+    })
+
+    expect(result.current.draft.rankStart).toBe("Iron1")
+    expect(result.current.draft.rankEnd).toBe("Bronze1")
+  })
+
+  it("keeps 'to' when only 'from' moves and stays below it", () => {
+    const { result } = renderSelection()
+    act(() => {
+      result.current.setDraftRange("Stone1", "Gold1")
+    })
+
+    act(() => {
+      result.current.setDraftRange("Iron1", result.current.draft.rankEnd)
+    })
+
+    expect(result.current.draft.rankStart).toBe("Iron1")
+    expect(result.current.draft.rankEnd).toBe("Gold1")
+  })
+
+  it("keeps 'from' when only 'to' moves down and stays above it", () => {
+    const { result } = renderSelection()
+    act(() => {
+      result.current.setDraftRange("Iron1", "Gold1")
+    })
+
+    act(() => {
+      result.current.setDraftRange(result.current.draft.rankStart, "Bronze2")
+    })
+
+    expect(result.current.draft.rankStart).toBe("Iron1")
+    expect(result.current.draft.rankEnd).toBe("Bronze2")
   })
 
   it("pulls 'from' back one step instead of colliding with 'to' at the ladder's maximum rank", () => {

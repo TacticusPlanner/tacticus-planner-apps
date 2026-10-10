@@ -100,8 +100,10 @@ export function GoalEditFarmingFields({
           onShopsEnabledChange={selection.setShopsEnabled}
           onToggleShardLocation={selection.toggleShardLocation}
           onToggleShopOffer={selection.toggleShopOffer}
+          onslaughtCurrentIsMythic={acquisition.onslaught.currentIsMythic}
           onslaughtEnabled={selection.onslaughtEnabled}
-          onslaughtProgressSaved={false}
+          onslaughtProgressSaved={acquisition.onslaught.progressSaved}
+          onslaughtShardsPerDay={acquisition.onslaught.shardsPerDay}
           regularShardLocations={selection.regularShardLocations}
           selectedShardLocationIds={selection.shardLocationIds}
           selectedShopOfferIds={selection.selectedShopOfferIds}

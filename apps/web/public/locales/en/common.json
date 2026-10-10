@@ -579,8 +579,10 @@
     "blocked": {
       "label": "Blocked",
       "restrictedLabel": "Restricted",
+      "restrictedExplanation": "Restricted: this goal can only partly progress until the following is resolved.",
       "reasons": {
         "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
+        "PrerequisiteNotReachedNamed": "Waiting on the {{unit}} {{goalType}} goal to be reached first.",
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
         "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
         "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required.",
