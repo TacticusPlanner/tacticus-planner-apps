@@ -39,7 +39,7 @@
 
 ### Requirement: The Events pages have Joyride tours
 
-The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Run status card, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section with its Add team button, the progress grid and the leaderboard; the same steps on desktop and mobile. Step titles and content SHALL be localized in en/de/es/fr.
+The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Run status card, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section (which holds its Add team button), the progress grid and the leaderboard; the same steps on desktop and mobile. Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Event page tour on desktop
 
