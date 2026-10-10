@@ -21,6 +21,7 @@ export const characterIconOverrides = new Map([
   [unitIdSchema.parse("orksNob"), "orkss_nob"],
   [unitIdSchema.parse("orksRuntherd"), "orkss_runtherd"],
   [unitIdSchema.parse("orksWarboss"), "orkss_warboss"],
+  [unitIdSchema.parse("orksWeirdboy"), "orkss_weirdboy"],
   [unitIdSchema.parse("spaceBlackmane"), "space_ragnar"],
   [unitIdSchema.parse("spaceRockfist"), "space_arjac"],
   [unitIdSchema.parse("spaceWolfPriest"), "space_wolfpriest"],

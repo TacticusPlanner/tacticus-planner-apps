@@ -62,7 +62,6 @@ export {
   shardRewardEligible,
   lockIsActive,
   resolveEventLockId,
-  bpSeasonStartMs,
   todayDow,
   DOW_MAP,
   PL_MEDIUM,
@@ -78,6 +77,7 @@ export {
   type ResolveShopSlotsForDayOptions,
   type ResolveUnitShardShopOffersOptions,
 } from "./shops/shop-resolve"
+export { bpSeasonStartMs } from "./shops/season-locks"
 
 export {
   manifestSchema,

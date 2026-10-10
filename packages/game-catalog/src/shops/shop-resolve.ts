@@ -2,12 +2,17 @@ import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
 
 import type { GameCatalogShop, GameCatalogShopVariant } from "../record-types"
 import type { ShopDayOfWeek } from "../schemas/shops"
+import {
+  bpSeasonStartMs,
+  crusadeSlotHeroShardReward,
+  seasonLock,
+} from "./season-locks"
 
 export type { ShopDayOfWeek } from "../schemas/shops"
 
 /**
  * Ported from V1 `tacticusplanner/src/fsd/4-entities/shops/shop-resolve.ts` + `mythic-tier.ts`
- * (develop @ 2026-09, the `1.42`-era datamine). Kept deliberately close to the V1 source: the lockId
+ * (develop @ 2026-10, the `1.43`-era datamine). Kept deliberately close to the V1 source: the lockId
  * branch lists in `lockIsActive` / `resolveEventLockId` and their unrecognized-lock fallbacks are
  * copied verbatim. The one shape change: the served catalog already reduces each variant's Quartz
  * `cronSchedule` to an explicit `days: DayOfWeek[]` list and parses `reward`/`freeOffer`/`cost`, so
@@ -100,14 +105,19 @@ export function computeShopLockContext(
 
 // --- lockId resolution (V1 shop-resolve.ts, branch lists copied verbatim) -------------------------
 
-const BP_SEASON_40_START_MS = Date.UTC(2026, 7, 2) // 2026-08-02T00:00:00Z
-const BP_SEASON_DURATION_MS = 35 * 86_400_000 // exactly 5 weeks
-
 /** Rogue Trader's featured-legendary rotation boundary: Trajann is featured until this date, then Lucius. */
 const ELDER_SHOP_FEATURED_ROTATION_MS = Date.UTC(2026, 8, 6) // 2026-09-06T00:00:00Z
 
-export function bpSeasonStartMs(season: number): number {
-  return BP_SEASON_40_START_MS + (season - 40) * BP_SEASON_DURATION_MS
+/** Crusade shop slots 1-3 hero locks: the slot's season hero, gated by roster shard eligibility. */
+function crusadeSlotHeroLock(
+  lockId: string,
+  context: ShopLockContext,
+  nowMs: number
+): boolean | undefined {
+  const reward = crusadeSlotHeroShardReward(lockId, nowMs)
+  return typeof reward === "string"
+    ? shardRewardEligible(reward, context)
+    : reward
 }
 
 /**
@@ -125,6 +135,8 @@ export function lockIsActive(
   if (until) return nowMs < bpSeasonStartMs(Number(until[1]))
   const after = /^lock_valid_after_bp_season_(\d+)_start$/.exec(lockId)
   if (after) return nowMs >= bpSeasonStartMs(Number(after[1]))
+  const season = seasonLock(lockId, nowMs)
+  if (season !== undefined) return season
   if (lockId === "lock_crusade_shop_owns_unit_at_mythic")
     return ownsBlueStarUnit
   if (lockId === "lock_crusade_shop_does_not_own_unit_at_mythic")
@@ -149,6 +161,10 @@ export function resolveEventLockId(
   if (until) return nowMs < bpSeasonStartMs(Number(until[1]))
   const after = /^lock_valid_after_bp_season_(\d+)_start$/.exec(lockId)
   if (after) return nowMs >= bpSeasonStartMs(Number(after[1]))
+
+  const season =
+    seasonLock(lockId, nowMs) ?? crusadeSlotHeroLock(lockId, context, nowMs)
+  if (season !== undefined) return season
 
   if (lockId === "lock_mythic_shop_tier_high") return context.tier === "high"
   if (lockId === "lock_mythic_shop_tier_medium")
