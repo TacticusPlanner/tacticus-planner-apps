@@ -14,7 +14,7 @@ The planner SHALL compute one reward projection per event with these figures, al
 - **Future runs**: runs after the current run when a synced entry exists; all three runs when none exists. Only future runs' inputs count. With Show paid options off, premium missions, bundle and Oh So Close shards count as 0.
 - **Future mission currency**: per future run, (regular + premium missions) × (25, plus 15 when that run has premium missions > 0). **Future bundle currency**: per future run with the bundle bought, 300, plus 15 when that run has premium missions > 0.
 - **Goal**: the first cumulative ascension threshold (`unlock`, then + `fourStars`, + `fiveStars`, + `blueStar`, + `mythic`, + `twoBlueStars`) above S + future Oh So Close shards; "every step reached" when none.
-- **Chests required** = ⌈(goal threshold − N) ÷ `shardsPerChest`⌉, where N = max(0, S − K × `shardsPerChest`) + future Oh So Close shards; **chests to go** = required − K. When required exceeds the event's chest count the goal is "not reachable this event".
+- **Chests to go** = max(0, ⌈(goal threshold − S − future Oh So Close shards) ÷ `shardsPerChest`⌉); **chests required** = K + chests to go. When required exceeds the event's chest count the goal is "not reachable this event".
 - **Currency required** = sum of `engramCost` of chests 1..required; **collected** = sum of costs of chests 1..K + C; **currency from points** = required − collected − future mission currency − future bundle currency.
 - **Per-payout bonus** = synced `extraCurrencyPerPayout` when greater than 0; else 15 when the current run's stored premium missions > 0 and paid options are on; else 0.
 - **Points target**: when currency from points ≤ 0, "enough currency now"; otherwise the first `pointsMilestones` entry above P at which the running total of (`engramPayout` + bonus) over the milestones above P reaches currency from points. When the ladder ends first, "points alone can't cover it" with the currency still missing. **Points to go** = target `cumulativePoints` − P.
@@ -36,7 +36,7 @@ Assumptions:
 - **GIVEN** `votanUthar`'s ladder (chests 1–16 cost 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 350; milestones 13–22 at 5,500…10,000 points paying 85, 90, 95, 100, 110, 120, 140, 160, 180, 200; `shardsPerChest` 25; unlock 400), a synced entry in run 2 with P 5,000, C 120, K 10, S 250 and no `extraCurrencyPerPayout`, run inputs run 1 `10, 0, off, 0`, run 2 `6, 0, off, 0`, run 3 `10, 0, bundle on, 0`, and Show paid options on
 - **WHEN** the projection is computed
 - **THEN** the future run is run 3 only: mission currency 10 × 25 = 250, bundle 300
-- **AND** the goal is unlock (400 > 250 shards), N = 250 − 10 × 25 = 0, chests required = ⌈400 ÷ 25⌉ = 16, chests to go = 6
+- **AND** the goal is unlock (400 > 250 shards), chests to go = ⌈(400 − 250) ÷ 25⌉ = 6, chests required = 10 + 6 = 16
 - **AND** currency required = 3,350, collected = 1,500 + 120 = 1,620, currency from points = 3,350 − 1,620 − 250 − 300 = 1,180
 - **AND** the running payouts from milestone 13 are 85, 175, 270, 370, 480, 600, 740, 900, 1,080, 1,280, so the target is milestone 22 at 10,000 points, points to go 5,000, and average battles per lane 10,000 ÷ 3 ÷ 500 = 6.7
 
@@ -64,6 +64,12 @@ Assumptions:
 - **GIVEN** collected currency plus future missions and bundles already covers the chests for the goal
 - **WHEN** the projection is computed
 - **THEN** the points target is "enough currency now" with 0 points to go
+
+#### Scenario: Fewer shards held than chests claimed
+
+- **GIVEN** `votanUthar`'s ladder, a synced entry with K 20 and S 100, and no future close shards
+- **WHEN** the projection is computed
+- **THEN** the goal is unlock, chests to go = ⌈(400 − 100) ÷ 25⌉ = 12 and chests required = 20 + 12 = 32; chests to go is never negative
 
 #### Scenario: Goal beyond the chest ladder
 

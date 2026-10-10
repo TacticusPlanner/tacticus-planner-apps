@@ -1,6 +1,6 @@
 # Tasks
 
-Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event-clear-estimates` (apply it first; the `lre-clear-estimate` dataset must exist in the Aspire stack). Independent of `add-legendary-event-run-inputs`.
+Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event-clear-estimates` (apply it first; no calculation endpoint is added, but the catalog route `GET /api/v1/game-catalog/lre-clear-estimate` and its dataset must be served by the Aspire stack before client work starts). Independent of `add-legendary-event-run-inputs`.
 
 ## 1. Catalog package
 

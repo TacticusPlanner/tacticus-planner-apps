@@ -31,5 +31,5 @@ Out of scope: the anonymised community aggregate (plan's later separate change),
 
 - Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event-clear-estimates`; apply API first. Shared contract: the `lre-clear-estimate` dataset.
 - `packages/game-catalog` (schema, dataset key, storage, mapper, query for `lre-clear-estimate`; tests), `apps/web/src/fsd/entities/legendary-event/` (`lib/clear-estimate.ts`, `lib/calibrate-power-ratio.ts`, `lib/unit-combat-power.ts`, `model/use-legendary-event-battles.ts`, `model/use-clear-estimate-config.ts`, roster type gains ability levels and applied upgrades), `features/legendary-event-teams/ui/clear-depth-stepper.tsx` and `team-editor-dialog.tsx`, `pages/legendary-events/ui/legendary-event/teams/*`, `leaderboard/*`, `legendary-event.tutorial.tsx`, locales `legendaryEvents.json` in four languages.
-- No API endpoint or plan-shape change: the existing `estimate` depth source stays unused by this client (design D2).
+- Requires the companion API's catalog route `GET /api/v1/game-catalog/lre-clear-estimate` (the dataset). No calculation endpoint and no plan-shape change: the existing `estimate` depth source stays unused by this client (design D2).
 - Independent of `add-legendary-event-run-inputs` (Stage 3).
