@@ -47,6 +47,15 @@ vi.mock("@/entities/planning-setting", () => ({
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
+  campaignEventProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "campaign-events"],
+      queryFn: () => Promise.resolve({ progress: [], revision: 1 }),
+    }),
+  },
+  buildEffectiveCampaignEventProgress: () => new Map(),
+  campaignEventTrackKey: (groupId: string, type: string) =>
+    `${groupId}:${type}`,
   onslaughtProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "onslaught"],

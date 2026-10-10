@@ -105,7 +105,7 @@ function buildModel(data: {
     ])
   )
   const owned = new Set(
-    (data.characters ?? []).map((character) => character.id)
+    (data.characters ?? []).map((character) => character.unitId)
   )
   const grouped = new Map<string, Story>()
   for (const definition of data.definitions) {

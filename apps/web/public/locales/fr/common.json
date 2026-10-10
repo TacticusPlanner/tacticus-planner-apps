@@ -281,18 +281,49 @@
     },
     "events": {
       "regular": "Combats réguliers",
-      "challenges": "Défis optionnels",
-      "regularProgress": "Progression régulière de {{type}}",
-      "decrease": "Diminuer la progression",
-      "increase": "Augmenter la progression",
+      "challenges": "Défis",
+      "decrease": "Diminuer la progression {{type}}",
+      "increase": "Augmenter la progression {{type}}",
+      "slider": "Combats réguliers {{type}} terminés",
       "max": "Max",
-      "useSynced": "Utiliser la valeur synchronisée",
-      "manual": "Manuel",
-      "synced": "Synchronisé",
-      "save": "Enregistrer",
+      "maxFor": "Mettre {{type}} au maximum",
+      "resetToSynced": "Rétablir la valeur synchronisée",
+      "source": {
+        "manual": "Manuel",
+        "synced": "Synchronisé",
+        "none": "Aucune donnée synchronisée"
+      },
+      "challengeN": "Défi {{n}}",
+      "challengeNode": "Nœud {{id}}",
+      "noBattles": "Aucun combat dans ce parcours.",
+      "coreCharacters": "Personnages clés",
+      "notOwned": "{{name}} (non possédé)",
+      "currentEvent": "Événement en cours",
+      "allEvents": "Tous les événements",
+      "saveHint": "Les modifications non enregistrées apparaissent dans une barre en bas de la page.",
+      "hideCompleted": "Masquer les événements terminés",
+      "allCompleted": "Tous les événements de campagne sont terminés.",
+      "showCompleted": "Afficher les événements terminés",
+      "noEvents": "Il n'y a encore aucun événement de campagne à suivre.",
+      "completed": "Terminé",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Défis"
+      },
+      "unsaved": {
+        "message": "Vous avez des modifications non enregistrées",
+        "save": "Enregistrer",
+        "discard": "Annuler"
+      },
+      "leave": {
+        "title": "Quitter sans enregistrer ?",
+        "description": "Vos modifications des événements de campagne n'ont pas été enregistrées et seront perdues.",
+        "stay": "Rester",
+        "leave": "Quitter"
+      },
       "saved": "Progression de l'événement de campagne enregistrée.",
-      "saveError": "Impossible d'enregistrer la progression de l'événement de campagne.",
-      "conflict": "La progression de l'événement de campagne a changé ailleurs. Les dernières valeurs ont été chargées ; réappliquez votre modification."
+      "saveError": "Impossible d'enregistrer la progression de l'événement de campagne. Vos modifications sont conservées ; réessayez.",
+      "conflict": "La progression de l'événement de campagne a été modifiée ailleurs. Les dernières valeurs sont chargées et vos modifications n'ont pas été enregistrées."
     }
   },
   "legendaryEvents": {
@@ -1290,6 +1321,34 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Choisissez quelles offres de boutique fournissent les matériaux mythiques de cet objectif. Tout décocher arrête de compter sur les boutiques pour eux."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Progression des événements de campagne",
+          "content": "Corrigez votre progression dans chaque événement de campagne. Les raids quotidiens s'en servent pour déterminer quels nœuds d'événement vous pouvez farmer."
+        },
+        "current": {
+          "title": "Événement en cours",
+          "content": "L'événement en cours est épinglé ici, déjà déplié. C'est le seul événement pris en compte par les raids quotidiens."
+        },
+        "editor": {
+          "title": "Modifier un parcours",
+          "content": "Ajustez le nombre de combats réguliers pas à pas, faites glisser la barre ou utilisez Max. Cochez les défis un par un. « Rétablir la valeur synchronisée » annule une valeur manuelle."
+        },
+        "summary": {
+          "title": "Résumés des événements",
+          "content": "Chaque événement affiche sa progression d'un coup d'œil et indique si des valeurs sont manuelles ou sans données synchronisées. Dépliez-le pour le modifier."
+        },
+        "hideCompleted": {
+          "title": "Masquer les événements terminés",
+          "content": "Les événements inachevés apparaissent en premier. Activez cette option pour masquer ceux qui sont terminés ; le choix est mémorisé dans ce navigateur."
+        },
+        "save": {
+          "title": "Enregistrer vos modifications",
+          "content": "Dès que vous modifiez quelque chose, une barre avec Enregistrer et Annuler apparaît en bas. Une confirmation vous est demandée avant de quitter avec des modifications non enregistrées."
         }
       }
     }

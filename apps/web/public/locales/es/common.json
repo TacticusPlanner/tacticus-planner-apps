@@ -281,18 +281,49 @@
     },
     "events": {
       "regular": "Combates regulares",
-      "challenges": "Desafíos opcionales",
-      "regularProgress": "Progreso regular de {{type}}",
-      "decrease": "Reducir progreso",
-      "increase": "Aumentar progreso",
+      "challenges": "Desafíos",
+      "decrease": "Reducir el progreso de {{type}}",
+      "increase": "Aumentar el progreso de {{type}}",
+      "slider": "Combates regulares de {{type}} completados",
       "max": "Máx.",
-      "useSynced": "Usar valor sincronizado",
-      "manual": "Manual",
-      "synced": "Sincronizado",
-      "save": "Guardar",
+      "maxFor": "Poner {{type}} al máximo",
+      "resetToSynced": "Restablecer a sincronizado",
+      "source": {
+        "manual": "Manual",
+        "synced": "Sincronizado",
+        "none": "Sin datos sincronizados"
+      },
+      "challengeN": "Desafío {{n}}",
+      "challengeNode": "Nodo {{id}}",
+      "noBattles": "No hay combates en esta ruta.",
+      "coreCharacters": "Personajes clave",
+      "notOwned": "{{name}} (no lo tienes)",
+      "currentEvent": "Evento actual",
+      "allEvents": "Todos los eventos",
+      "saveHint": "Los cambios sin guardar aparecen en una barra en la parte inferior de la página.",
+      "hideCompleted": "Ocultar eventos completados",
+      "allCompleted": "Todos los eventos de campaña están completados.",
+      "showCompleted": "Mostrar eventos completados",
+      "noEvents": "Todavía no hay eventos de campaña que seguir.",
+      "completed": "Completado",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Desafíos"
+      },
+      "unsaved": {
+        "message": "Tienes cambios sin guardar",
+        "save": "Guardar",
+        "discard": "Descartar"
+      },
+      "leave": {
+        "title": "¿Salir sin guardar?",
+        "description": "Tus cambios en los eventos de campaña no se han guardado y se perderán.",
+        "stay": "Quedarme",
+        "leave": "Salir"
+      },
       "saved": "Progreso del evento de campaña guardado.",
-      "saveError": "No se pudo guardar el progreso del evento de campaña.",
-      "conflict": "El progreso del evento de campaña cambió en otro lugar. Se cargaron los valores más recientes; aplica tu cambio de nuevo."
+      "saveError": "No se pudo guardar el progreso del evento de campaña. Tus cambios siguen aquí; inténtalo de nuevo.",
+      "conflict": "El progreso del evento de campaña se cambió en otro lugar. Se cargaron los valores más recientes y tus cambios no se guardaron."
     }
   },
   "legendaryEvents": {
@@ -1290,6 +1321,34 @@
         "mythicMaterialSources": {
           "title": "Materiales míticos",
           "content": "Elige qué ofertas de tienda aportan los materiales míticos de este objetivo. Si desmarcas todas, ya no se cuenta con las tiendas para ellos."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Progreso de eventos de campaña",
+          "content": "Corrige tu progreso en cada evento de campaña. Las incursiones diarias usan estos valores para decidir qué nodos del evento puedes farmear."
+        },
+        "current": {
+          "title": "Evento actual",
+          "content": "El evento en curso está fijado aquí y ya desplegado. Es el único evento para el que planifican las incursiones diarias."
+        },
+        "editor": {
+          "title": "Editar una ruta",
+          "content": "Ajusta el número de combates regulares paso a paso, arrastra la barra o usa Máx. Marca los desafíos uno a uno. «Restablecer a sincronizado» deshace un valor manual."
+        },
+        "summary": {
+          "title": "Resúmenes de eventos",
+          "content": "Cada evento muestra su progreso de un vistazo y si hay valores manuales o sin datos sincronizados. Despliégalo para editarlo."
+        },
+        "hideCompleted": {
+          "title": "Ocultar eventos completados",
+          "content": "Los eventos sin terminar aparecen primero. Actívalo para ocultar los completados; la opción se recuerda en este navegador."
+        },
+        "save": {
+          "title": "Guardar tus cambios",
+          "content": "En cuanto edites algo, aparece abajo una barra con Guardar y Descartar. Se te preguntará antes de salir con cambios sin guardar."
         }
       }
     }

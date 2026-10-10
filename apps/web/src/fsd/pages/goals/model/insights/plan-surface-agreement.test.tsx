@@ -94,7 +94,12 @@ function eligibleBattles(activeCampaignEventId: string | null) {
       new Map([
         [
           "EV1:Normal",
-          { completedBattleCount: 0, completedChallengeBattlesIds: [] },
+          {
+            completedBattleCount: 0,
+            completedChallengeBattlesIds: [],
+            battleSource: "synced" as const,
+            challengeSource: "synced" as const,
+          },
         ],
       ])
     ).map((b) => [
