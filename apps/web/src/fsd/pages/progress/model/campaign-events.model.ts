@@ -188,23 +188,32 @@ export function toEventView(
       ),
     ])
   ) as Record<EventType, TrackView>
-  const withBattles = eventTypes
-    .map((type) => tracks[type])
-    .filter(
-      (track) =>
-        track.battles.regular.length > 0 || track.battles.challenges.length > 0
-    )
+  // Each track's sources, but only for the kinds of nodes it has: a track without challenge nodes
+  // has no challenge value to be manual or missing.
+  const sources = eventTypes.flatMap((type) => {
+    const track = tracks[type]
+    return [
+      ...(track.battles.regular.length > 0
+        ? [track.progress.battleSource]
+        : []),
+      ...(track.battles.challenges.length > 0
+        ? [track.progress.challengeSource]
+        : []),
+    ]
+  })
+  const done = (track: TrackView) =>
+    Math.min(track.progress.completedBattleCount, track.battles.regular.length)
   return {
     event,
     tracks,
     completed: eventTypes.every((type) => isTrackCompleted(tracks[type])),
     summary: {
       standard: {
-        done: tracks.Standard.progress.completedBattleCount,
+        done: done(tracks.Standard),
         total: tracks.Standard.battles.regular.length,
       },
       extremis: {
-        done: tracks.Extremis.progress.completedBattleCount,
+        done: done(tracks.Extremis),
         total: tracks.Extremis.battles.regular.length,
       },
       challenges: {
@@ -215,16 +224,8 @@ export function toEventView(
           tracks.Standard.battles.challenges.length +
           tracks.Extremis.battles.challenges.length,
       },
-      hasManual: withBattles.some(
-        (track) =>
-          track.progress.battleSource === "manual" ||
-          track.progress.challengeSource === "manual"
-      ),
-      hasNoData: withBattles.some(
-        (track) =>
-          track.progress.battleSource === "none" ||
-          track.progress.challengeSource === "none"
-      ),
+      hasManual: sources.includes("manual"),
+      hasNoData: sources.includes("none"),
     },
   }
 }

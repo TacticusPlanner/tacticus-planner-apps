@@ -267,6 +267,51 @@ describe("event views", () => {
     expect(toEventView(event!, missingChallenge).completed).toBe(false)
   })
 
+  it("judges each source only for the kinds of nodes the track has", () => {
+    // Regular battles only, no challenge nodes, no synced data, a manual count: the challenge
+    // source is "none" but there are no challenges, so nothing is missing.
+    const [regularOnly] = buildEvents({
+      definitions: [definition("eventCampaign8")],
+      battles: eventBattles("eventCampaign8", 30, {
+        Standard: [],
+        Extremis: [],
+      }),
+      characters: [],
+    })
+    const view = toEventView(
+      regularOnly!,
+      buildEffectiveCampaignEventProgress(
+        [],
+        [
+          override({
+            campaignGroupId: "eventCampaign8",
+            type: "Standard",
+            completedBattleCount: 30,
+          }),
+          override({
+            campaignGroupId: "eventCampaign8",
+            type: "Extremis",
+            completedBattleCount: 30,
+          }),
+        ]
+      )
+    )
+    expect(view.summary.hasManual).toBe(true)
+    expect(view.summary.hasNoData).toBe(false)
+    expect(view.completed).toBe(true)
+  })
+
+  it("clamps the summary to the track's battle count, like the editor", () => {
+    const view = toEventView(
+      event!,
+      buildEffectiveCampaignEventProgress(
+        [synced("eventCampaign1", "Standard", 31)],
+        []
+      )
+    )
+    expect(view.summary.standard).toEqual({ done: 30, total: 30 })
+  })
+
   it("treats a track with no battles as completed", () => {
     const [standardOnly] = buildEvents({
       definitions: [definition("eventCampaign9")],
