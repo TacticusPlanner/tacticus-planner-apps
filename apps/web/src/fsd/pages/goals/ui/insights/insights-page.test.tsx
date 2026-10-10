@@ -54,6 +54,8 @@ vi.mock("@/entities/player-data-override", () => ({
     }),
   },
   buildEffectiveCampaignEventProgress: () => new Map(),
+  campaignEventTrackKey: (groupId: string, type: string) =>
+    `${groupId}:${type}`,
   onslaughtProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "onslaught"],

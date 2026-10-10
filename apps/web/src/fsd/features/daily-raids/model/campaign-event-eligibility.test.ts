@@ -83,6 +83,28 @@ describe("event node eligibility from effective progress", () => {
     expect(eligibleIds([battle("AME12", "Extremis", 12)], [], [])).toEqual([])
   })
 
+  it("keeps a track without a battle count unreached when an override sets only challenges", () => {
+    // No synced entry and no manual count: the regular nodes have no progress source at all, so
+    // even node 1 stays unreached; only the manually completed challenge is eligible.
+    expect(
+      eligibleIds(
+        [battle("AME1", "Extremis", 1), battle("AME3B", "Extremis", 3, true)],
+        [],
+        [override("Extremis", { completedChallengeBattlesIds: ["AME3B"] })]
+      )
+    ).toEqual(["AME3B"])
+  })
+
+  it("keeps a track unreached for a legacy override with both values unset", () => {
+    expect(
+      eligibleIds(
+        [battle("AME1", "Extremis", 1)],
+        [],
+        [override("Extremis", {})]
+      )
+    ).toEqual([])
+  })
+
   it("admits a node without synced data once a manual override reaches it", () => {
     expect(
       eligibleIds(

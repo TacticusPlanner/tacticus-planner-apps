@@ -82,13 +82,17 @@ function progressMap(
   entries: [
     campaignGroupId: string,
     type: string,
-    entry: CampaignEventProgressEntry,
+    entry: Pick<
+      CampaignEventProgressEntry,
+      "completedBattleCount" | "completedChallengeBattlesIds"
+    >,
   ][]
 ): ReadonlyMap<string, CampaignEventProgressEntry> {
+  // Fixtures stand for synced progress unless a test says otherwise.
   return new Map(
     entries.map(([campaignGroupId, type, entry]) => [
       campaignEventProgressKey(campaignGroupId, type),
-      entry,
+      { ...entry, battleSource: "synced", challengeSource: "synced" },
     ])
   )
 }

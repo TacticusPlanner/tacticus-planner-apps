@@ -1,22 +1,17 @@
 // Split out of daily-raids-calc.ts (and, for the builder below, use-daily-raids.ts) to keep
 // those files under this repo's max-lines rule. Event-campaign progress maps come from
 // `buildEffectiveCampaignEventProgress` (entities/player-data-override), which merges manual
-// overrides over synced progress and uses the same `campaignGroupId:type` key as
-// `campaignEventProgressKey`.
+// overrides over synced progress; the key builder is the entity's own, so the two cannot drift.
 
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-export type CampaignEventProgressEntry = {
-  completedBattleCount: number
-  completedChallengeBattlesIds: readonly string[]
-}
+import {
+  campaignEventTrackKey,
+  type EffectiveCampaignEventProgress,
+} from "@/entities/player-data-override"
 
-export function campaignEventProgressKey(
-  campaignGroupId: string,
-  type: string
-) {
-  return `${campaignGroupId}:${type}`
-}
+export type CampaignEventProgressEntry = EffectiveCampaignEventProgress
+export const campaignEventProgressKey = campaignEventTrackKey
 
 export type CampaignProgressEntry = {
   highestCompletedBattleIndex: number
@@ -87,9 +82,14 @@ function isEventNodeReached<
     campaignEventProgressKey(battle.campaignGroupId, battle.type)
   )
   if (!progress) return false
-  return battle.challenge
-    ? progress.completedChallengeBattlesIds.includes(battle.id)
-    : battle.nodeNumber <= progress.completedBattleCount + 1
+  if (battle.challenge)
+    return progress.completedChallengeBattlesIds.includes(battle.id)
+  // A track can have an entry only because of a challenge override (or a legacy all-null one);
+  // with neither a synced nor a manual battle count its regular nodes are not reached, not node 1.
+  return (
+    progress.battleSource !== "none" &&
+    battle.nodeNumber <= progress.completedBattleCount + 1
+  )
 }
 
 export function availableCampaignBattles<
