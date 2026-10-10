@@ -95,6 +95,7 @@ export function CampaignEventsPage() {
 
   useCampaignEventsTutorial({
     hasCurrentEvent: Boolean(views.current),
+    hasList: views.list.length > 0,
     firstListEventId: listed[0]?.event.definition.groupId,
   })
 

@@ -25,6 +25,7 @@ describe("useCampaignEventsTutorial", () => {
     renderHook(() =>
       useCampaignEventsTutorial({
         hasCurrentEvent: true,
+        hasList: true,
         firstListEventId: "eventCampaign3",
       })
     )
@@ -45,9 +46,25 @@ describe("useCampaignEventsTutorial", () => {
   })
 
   it("skips the current-event and list steps when their targets cannot exist", () => {
+    // Only the current event in the catalog (or none at all): the list section, with the
+    // hide-completed toggle and the save hint, is not rendered.
     renderHook(() =>
       useCampaignEventsTutorial({
         hasCurrentEvent: false,
+        hasList: false,
+        firstListEventId: undefined,
+      })
+    )
+    expect(lastSteps().desktop.map((step) => step.target)).toEqual([
+      '[data-testid="campaign-events-page"]',
+    ])
+  })
+
+  it("keeps the toggle and save steps when every listed event is hidden", () => {
+    renderHook(() =>
+      useCampaignEventsTutorial({
+        hasCurrentEvent: false,
+        hasList: true,
         firstListEventId: undefined,
       })
     )

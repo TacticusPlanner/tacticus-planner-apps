@@ -16,9 +16,13 @@ type StepKey =
  */
 export function useCampaignEventsTutorial({
   hasCurrentEvent,
+  hasList,
   firstListEventId,
 }: {
   hasCurrentEvent: boolean
+  /** Whether the event list section (with its toggle and save hint) renders at all. */
+  hasList: boolean
+  /** First visible list card; undefined when the list is empty or all of it is hidden. */
   firstListEventId: string | undefined
 }) {
   const { t } = useTranslation()
@@ -41,12 +45,16 @@ export function useCampaignEventsTutorial({
       ...(firstListEventId
         ? [step(`campaign-event-${firstListEventId}-trigger`, "summary")]
         : []),
-      step("hide-completed-toggle", "hideCompleted"),
-      step("campaign-events-save-hint", "save"),
+      ...(hasList
+        ? [
+            step("hide-completed-toggle", "hideCompleted"),
+            step("campaign-events-save-hint", "save"),
+          ]
+        : []),
     ]
 
     return { desktop: shared, mobile: shared }
-  }, [t, hasCurrentEvent, firstListEventId])
+  }, [t, hasCurrentEvent, hasList, firstListEventId])
 
   useTourPageSteps(steps)
 }
