@@ -89,8 +89,10 @@ export type V1GoalOutcome = {
   sourceGoalId: string | null
 }
 
-// One dropped unit, objective or team, or a merge, under the V1 event it happened in. `value` is
-// the V1 value concerned (the unknown unit id, the discarded depth, ...).
+// One dropped unit, objective or team, or a merge, or a run input or mark issue, under the V1 event
+// it happened in. `value` is the V1 value concerned (the unknown unit id, the discarded depth, a
+// clamped run input as `run:field:original`, a skipped mark as `lane:battleIndex` or
+// `lane:objective`, a kept count, ...); run input and mark issues carry no `teamName`.
 export type V1LegendaryEventIssue = {
   code: string
   teamName: string | null
@@ -99,8 +101,9 @@ export type V1LegendaryEventIssue = {
 
 // One outcome per V1 event of the `legendaryEventPlans` part. `eventId` is the catalog event id
 // (null when the planner does not know the event); `v1EventId` the V1 numeric event key. `code` is
-// the bucketing discriminator ("imported", "plan_already_exists", "event_not_in_catalog",
-// "legendary_event_import_failed"); `message` is server English, never rendered.
+// the bucketing discriminator ("imported", "inputs_imported", "plan_already_exists",
+// "event_not_in_catalog", "legendary_event_import_failed"); `message` is server English, never
+// rendered. `runInputsImported` / `annotationsImported` count the run rows and marks written.
 export type V1LegendaryEventOutcome = {
   eventId: string | null
   v1EventId: number
@@ -108,6 +111,8 @@ export type V1LegendaryEventOutcome = {
   code: string
   message: string
   teamsImported: number
+  runInputsImported: number
+  annotationsImported: number
   issues: V1LegendaryEventIssue[]
 }
 
