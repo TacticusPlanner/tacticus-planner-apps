@@ -53,7 +53,7 @@ const lreChestsMilestoneSchema = z.looseObject({
   engramCost: z.number(),
 })
 
-// Points awarded for reaching each character progression tier during the event.
+// Shards needed for each step of the event unit's ascension (incremental, not cumulative).
 const lreProgressionSchema = z.looseObject({
   unlock: z.number(),
   fourStars: z.number(),
@@ -61,6 +61,15 @@ const lreProgressionSchema = z.looseObject({
   blueStar: z.number(),
   mythic: z.number(),
   twoBlueStars: z.number(),
+})
+
+// The event's own reward ladder: points milestones, chest costs, the unit's ascension steps and the
+// shards each chest awards. Ladders differ between events, so each `lres` record carries its own.
+export const lreRewardsSchema = z.looseObject({
+  pointsMilestones: z.array(lrePointsMilestoneSchema),
+  chestsMilestones: z.array(lreChestsMilestoneSchema),
+  progression: lreProgressionSchema,
+  shardsPerChest: z.number(),
 })
 
 export const lreTrackViewSchema = z.looseObject({
@@ -87,6 +96,7 @@ export const lreViewSchema = z.looseObject({
   constraintsCount: z.number(),
   regularMissions: z.array(z.string()),
   premiumMissions: z.array(z.string()),
+  rewards: lreRewardsSchema,
   alpha: lreTrackViewSchema,
   beta: lreTrackViewSchema,
   gamma: lreTrackViewSchema,
@@ -105,13 +115,4 @@ export const lreBattleViewSchema = z.looseObject({
   tier: z.number(),
   disallowedFactions: z.array(factionIdSchema),
   waves: z.array(lreWaveSchema),
-})
-
-// The shared, event-independent LRE reward ladder (lre-common dataset): a single record.
-export const lreCommonSchema = z.looseObject({
-  id: z.string(),
-  pointsMilestones: z.array(lrePointsMilestoneSchema),
-  chestsMilestones: z.array(lreChestsMilestoneSchema),
-  progression: lreProgressionSchema,
-  shardsPerChest: z.number(),
 })

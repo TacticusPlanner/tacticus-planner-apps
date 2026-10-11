@@ -17,7 +17,9 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v7: add the `guild-raid-meta` store (one complete guidance object). Purely additive — the store
 // list below is derived from `servedDatasetKeys`, so Dexie's version cascade preserves all earlier
 // catalog rows while creating the new store for clients currently on v6 or lower.
-export const catalogDbVersion = 8
+// v9: drop the `lre-common` store (each `lres` record now carries its own `rewards` ladder) and its
+// stale metadata row.
+export const catalogDbVersion = 9
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
@@ -43,10 +45,14 @@ type GameCatalogDb = Dexie &
  */
 const catalogDb = new Dexie(catalogDbName) as GameCatalogDb
 
-catalogDb.version(catalogDbVersion).stores({
-  metadata: "key",
-  ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
-})
+catalogDb
+  .version(catalogDbVersion)
+  .stores({
+    metadata: "key",
+    ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
+    "lre-common": null,
+  })
+  .upgrade((tx) => tx.table("metadata").delete("lre-common"))
 
 export async function getGameCatalogMetadata() {
   const values = await catalogDb.metadata.toArray()

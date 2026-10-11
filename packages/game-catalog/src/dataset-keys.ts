@@ -15,7 +15,6 @@ export const servedDatasetKeys = [
   "campaign-definitions",
   "lres",
   "lre-battles",
-  "lre-common",
   "event-definitions",
   "events-calendar",
   "shops",

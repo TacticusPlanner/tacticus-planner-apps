@@ -78,7 +78,6 @@ export const datasetToStorageModels: Record<
   "campaign-definitions": groupsWithId,
   lres: asArray,
   "lre-battles": asArray,
-  "lre-common": asArray,
   "event-definitions": asArray,
   "events-calendar": byCalendarDate,
   // Plain-array passthrough — each shop record already carries its `id` (guild / war / ...).
