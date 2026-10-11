@@ -163,7 +163,9 @@ const follows = (first: HTMLElement, second: HTMLElement) =>
     first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
   )
 
-describe("LegendaryEventPage", () => {
+// Whole-page renders (three lanes of progress grid, each not-cleared cell a mark menu) run close to
+// the 5s default under coverage instrumentation in CI.
+describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
