@@ -1338,7 +1338,7 @@
         },
         "owned": {
           "title": "Eine Einheit in deinem Besitz",
-          "content": "Der Ring zeigt die Seltenheit, oben die Sterne, auf dem Porträt Rang und Scherben, darunter die Fähigkeitsstufen links und rechts der EP-Stufe. Wähle eine Einheit, um ihre Bibliotheksseite zu öffnen."
+          "content": "Der Ring zeigt die Seltenheit, oben die Sterne, auf dem Porträt Rang und Scherben, darunter die Fähigkeitsstufen links und rechts der EP-Stufe."
         },
         "unowned": {
           "title": "Noch nicht freigeschaltet",

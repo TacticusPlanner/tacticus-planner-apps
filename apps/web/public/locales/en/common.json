@@ -1338,7 +1338,7 @@
         },
         "owned": {
           "title": "An owned unit",
-          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below. Select a unit to open its Library page."
+          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below."
         },
         "unowned": {
           "title": "Not unlocked yet",
