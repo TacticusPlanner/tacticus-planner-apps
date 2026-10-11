@@ -2,16 +2,17 @@ import { render, screen } from "@/test/render"
 import { MemoryRouter, Route, Routes } from "react-router"
 import { describe, expect, it } from "vitest"
 
-import { ProgressLayout } from "./progress-layout"
+import { MyGameLayout } from "./my-game-layout"
 
-// Tab navigation between Onslaught/Campaigns/Campaign Events/XP Income now lives in the shared
-// app-shell header's section-tabs row, not in ProgressLayout - see section-tabs.test.tsx. This only
-// confirms the layout still renders whichever child route is active.
-function renderProgress(initialEntry: string) {
+// Tab navigation between the My Game pages lives in the shared app-shell header's section-tabs
+// row, not in MyGameLayout - see section-tabs.test.tsx. This only confirms the layout still
+// renders whichever child route is active.
+function renderMyGame(initialEntry: string) {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
-        <Route path="/progress" element={<ProgressLayout />}>
+        <Route path="/my-game" element={<MyGameLayout />}>
+          <Route path="collection" element={<div>Collection route</div>} />
           <Route path="onslaught" element={<div>Onslaught route</div>} />
           <Route path="campaigns" element={<div>Campaigns route</div>} />
           <Route
@@ -24,13 +25,14 @@ function renderProgress(initialEntry: string) {
   )
 }
 
-describe("ProgressLayout", () => {
+describe("MyGameLayout", () => {
   it.each([
-    ["/progress/onslaught", "Onslaught route"],
-    ["/progress/campaigns", "Campaigns route"],
-    ["/progress/campaign-events", "Campaign events route"],
+    ["/my-game/collection", "Collection route"],
+    ["/my-game/onslaught", "Onslaught route"],
+    ["/my-game/campaigns", "Campaigns route"],
+    ["/my-game/campaign-events", "Campaign events route"],
   ])("renders the active child route at %s", (path, expectedText) => {
-    renderProgress(path)
+    renderMyGame(path)
 
     expect(screen.getByText(expectedText)).toBeInTheDocument()
   })

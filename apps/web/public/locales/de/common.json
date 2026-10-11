@@ -209,8 +209,8 @@
     "createGoal": "Ziel erstellen",
     "goals": "Plan",
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
-    "progress": "Fortschritt",
-    "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
+    "myGame": "Mein Spiel",
+    "myGameDescription": "Deine Sammlung und dein synchronisierter Spielfortschritt",
     "legendaryEvents": "Legendäre Events",
     "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt",
     "uiKit": "UI-Kit",
@@ -265,15 +265,19 @@
       "Mythic": "Mythisch"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Sammlung",
+      "collectionDescription": "Alle Charaktere und Kriegsmaschinen – was du besitzt und wie weit jede Einheit ist.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Gib den aktuellen Sektor und die Stufe für jede Allianz ein. Aufstiegsschätzungen verwenden diese Werte sowie synchronisierte Onslaught-Token.",
       "campaigns": "Kampagnen",
       "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
       "campaign-events": "Kampagnen-Events",
       "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
-    },
+    }
+  },
+  "progress": {
     "loadError": "Fortschrittsdaten sind unerwartet nicht verfügbar. Aktualisiere und versuche es erneut.",
     "campaigns": {
       "normal": "Normale Kampagnen",
@@ -1153,7 +1157,7 @@
       },
       "navigation": {
         "title": "Schnell navigieren",
-        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu den Legendären Events."
+        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu Mein Spiel und den Legendären Events."
       },
       "sidebarFooter": {
         "title": "Seitenleisten-Werkzeuge",
@@ -1161,7 +1165,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Deine Hauptleiste",
-        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Fortschritt und Legendäre Events zu erreichen."
+        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Mein Spiel und Legendäre Events zu erreichen."
       },
       "mobileHeader": {
         "title": "Seitenkopf",

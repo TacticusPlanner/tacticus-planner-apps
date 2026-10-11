@@ -209,8 +209,8 @@
     "createGoal": "Crear objetivo",
     "goals": "Plan",
     "goalsDescription": "Sigue tu progreso hacia tus objetivos",
-    "progress": "Progreso",
-    "progressDescription": "Tu progreso sincronizado de campañas y Onslaught",
+    "myGame": "Mi juego",
+    "myGameDescription": "Tu colección y tu progreso sincronizado del juego",
     "legendaryEvents": "Eventos Legendarios",
     "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado",
     "uiKit": "Kit de interfaz",
@@ -265,15 +265,19 @@
       "Mythic": "Mítico"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Colección",
+      "collectionDescription": "Todos los personajes y Máquinas de Guerra: lo que tienes y cuánto ha progresado cada unidad.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Introduce el sector y el nivel actuales de cada alianza. Las estimaciones de ascensión usan estos valores junto con las fichas de Onslaught sincronizadas.",
       "campaigns": "Campañas",
       "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
       "campaign-events": "Eventos de campaña",
       "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia."
-    },
+    }
+  },
+  "progress": {
     "loadError": "Los datos de progreso no están disponibles inesperadamente. Actualiza e inténtalo de nuevo.",
     "campaigns": {
       "normal": "Campañas normales",
@@ -1153,7 +1157,7 @@
       },
       "navigation": {
         "title": "Desplázate con facilidad",
-        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluidos los Eventos Legendarios."
+        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluidos Mi juego y los Eventos Legendarios."
       },
       "sidebarFooter": {
         "title": "Herramientas de la barra lateral",
@@ -1161,7 +1165,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Tu barra principal",
-        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Progreso y Eventos Legendarios."
+        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Mi juego y Eventos Legendarios."
       },
       "mobileHeader": {
         "title": "Encabezado de página",

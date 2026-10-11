@@ -209,8 +209,8 @@
     "createGoal": "Créer un objectif",
     "goals": "Plan",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
-    "progress": "Progression",
-    "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
+    "myGame": "Mon jeu",
+    "myGameDescription": "Votre collection et votre progression de jeu synchronisée",
     "legendaryEvents": "Événements Légendaires",
     "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée",
     "uiKit": "Kit d'interface",
@@ -265,15 +265,19 @@
       "Mythic": "Mythique"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Tous les personnages et Machines de guerre : ce que vous possédez et la progression de chaque unité.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Indiquez le secteur et le palier actuels de chaque alliance. Les estimations d'ascension utilisent ces valeurs ainsi que les jetons Onslaught synchronisés.",
       "campaigns": "Campagnes",
       "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
       "campaign-events": "Événements de campagne",
       "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
-    },
+    }
+  },
+  "progress": {
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
     "campaigns": {
       "normal": "Campagnes normales",
@@ -1153,7 +1157,7 @@
       },
       "navigation": {
         "title": "Naviguez facilement",
-        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont les Événements Légendaires."
+        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont Mon jeu et les Événements Légendaires."
       },
       "sidebarFooter": {
         "title": "Outils de la barre latérale",
@@ -1161,7 +1165,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Votre barre principale",
-        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Progression et aux Événements Légendaires."
+        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Mon jeu et aux Événements Légendaires."
       },
       "mobileHeader": {
         "title": "En-tête de page",

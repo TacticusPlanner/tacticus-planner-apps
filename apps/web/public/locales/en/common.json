@@ -209,8 +209,8 @@
     "createGoal": "Create Goal",
     "goals": "Plan",
     "goalsDescription": "Track progress toward your targets",
-    "progress": "Progress",
-    "progressDescription": "Your synced campaign and Onslaught progress",
+    "myGame": "My Game",
+    "myGameDescription": "Your collection and synced game progress",
     "legendaryEvents": "Legendary Events",
     "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress",
     "uiKit": "UI Kit",
@@ -265,15 +265,19 @@
       "Mythic": "Mythic"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Every character and Machine of War, with what you own and how far each unit has progressed.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
       "campaigns": "Campaigns",
       "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "campaign-events": "Campaign Events",
       "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
-    },
+    }
+  },
+  "progress": {
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
       "normal": "Normal campaigns",
@@ -1153,7 +1157,7 @@
       },
       "navigation": {
         "title": "Find your way around",
-        "content": "This menu groups the app's sections, including Legendary Events — use it to navigate between them at any time."
+        "content": "This menu groups the app's sections, including My Game and Legendary Events — use it to navigate between them at any time."
       },
       "sidebarFooter": {
         "title": "Sidebar tools",
@@ -1161,7 +1165,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",
-        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach Progress and Legendary Events."
+        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach My Game and Legendary Events."
       },
       "mobileHeader": {
         "title": "Page header",
