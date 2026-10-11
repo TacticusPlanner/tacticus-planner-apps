@@ -275,6 +275,20 @@
       "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
       "campaign-events": "Eventos de campaña",
       "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia."
+    },
+    "collection": {
+      "loading": "Cargando tu colección…",
+      "summary": "{{owned}} de {{total}} unidades en tu poder",
+      "signInTitle": "Inicia sesión para ver tu colección",
+      "signInBody": "Todas las unidades se muestran en gris. Inicia sesión y sincroniza con Tacticus para ver qué unidades tienes y cuánto ha progresado cada una.",
+      "signIn": "Iniciar sesión",
+      "syncTitle": "Sincroniza para ver tu colección",
+      "syncBody": "Tu plantilla aún no se ha sincronizado, así que todas las unidades se muestran en gris. Sincroniza con Tacticus para ver qué unidades tienes.",
+      "rosterErrorTitle": "No se pudo cargar tu plantilla",
+      "rosterErrorBody": "Todas las unidades se muestran en gris hasta que se cargue. Inténtalo de nuevo.",
+      "catalogErrorTitle": "No se pudo cargar el catálogo de unidades",
+      "catalogErrorBody": "Sin él no se puede mostrar la colección. Inténtalo de nuevo.",
+      "retry": "Reintentar"
     }
   },
   "unitTile": {
@@ -1304,6 +1318,26 @@
         "mythicMaterialSources": {
           "title": "Materiales míticos",
           "content": "Elige qué ofertas de tienda aportan los materiales míticos de este objetivo. Si desmarcas todas, ya no se cuenta con las tiendas para ellos."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Tu colección de un vistazo",
+          "content": "Cuántos de los personajes y Máquinas de Guerra del juego tienes."
+        },
+        "faction": {
+          "title": "Agrupadas por facción",
+          "content": "Cada tarjeta reúne los personajes y Máquinas de Guerra de una facción; las unidades que tienes van primero."
+        },
+        "owned": {
+          "title": "Una unidad que tienes",
+          "content": "El marco muestra su rareza, junto con sus estrellas, rango, nivel de PX, niveles de habilidad, equipo y fragmentos, todo sincronizado desde Tacticus."
+        },
+        "unowned": {
+          "title": "Aún no desbloqueada",
+          "content": "Las unidades en gris no están en tu plantilla. Sus fragmentos muestran lo cerca que estás de desbloquearlas."
         }
       }
     }

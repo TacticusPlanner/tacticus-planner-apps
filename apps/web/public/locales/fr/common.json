@@ -275,6 +275,20 @@
       "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
       "campaign-events": "Événements de campagne",
       "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
+    },
+    "collection": {
+      "loading": "Chargement de votre collection…",
+      "summary": "{{owned}} unités possédées sur {{total}}",
+      "signInTitle": "Connectez-vous pour voir votre collection",
+      "signInBody": "Toutes les unités sont affichées en grisé. Connectez-vous et synchronisez avec Tacticus pour voir quelles unités vous possédez et la progression de chacune.",
+      "signIn": "Se connecter",
+      "syncTitle": "Synchronisez pour voir votre collection",
+      "syncBody": "Votre effectif n'a pas encore été synchronisé, toutes les unités sont donc affichées en grisé. Synchronisez avec Tacticus pour voir quelles unités vous possédez.",
+      "rosterErrorTitle": "Votre effectif n'a pas pu être chargé",
+      "rosterErrorBody": "Toutes les unités restent en grisé jusqu'à son chargement. Réessayez.",
+      "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
+      "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
+      "retry": "Réessayer"
     }
   },
   "unitTile": {
@@ -1304,6 +1318,26 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Choisissez quelles offres de boutique fournissent les matériaux mythiques de cet objectif. Tout décocher arrête de compter sur les boutiques pour eux."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Votre collection en un coup d'œil",
+          "content": "Combien de personnages et de Machines de guerre du jeu vous possédez."
+        },
+        "faction": {
+          "title": "Regroupées par faction",
+          "content": "Chaque carte réunit les personnages et Machines de guerre d'une faction, vos unités en premier."
+        },
+        "owned": {
+          "title": "Une unité possédée",
+          "content": "Le cadre indique sa rareté, avec ses étoiles, son rang, son niveau d'XP, ses niveaux de capacité, son équipement et ses éclats, tous synchronisés depuis Tacticus."
+        },
+        "unowned": {
+          "title": "Pas encore débloquée",
+          "content": "Les unités en grisé ne font pas partie de votre effectif. Leurs éclats montrent à quel point vous êtes proche de les débloquer."
         }
       }
     }

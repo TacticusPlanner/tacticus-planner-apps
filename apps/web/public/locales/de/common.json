@@ -275,6 +275,20 @@
       "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
       "campaign-events": "Kampagnen-Events",
       "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
+    },
+    "collection": {
+      "loading": "Deine Sammlung wird geladen …",
+      "summary": "{{owned}} von {{total}} Einheiten im Besitz",
+      "signInTitle": "Melde dich an, um deine Sammlung zu sehen",
+      "signInBody": "Alle Einheiten werden ausgegraut angezeigt. Melde dich an und synchronisiere mit Tacticus, um zu sehen, welche Einheiten du besitzt und wie weit jede ist.",
+      "signIn": "Anmelden",
+      "syncTitle": "Synchronisiere, um deine Sammlung zu sehen",
+      "syncBody": "Dein Kader wurde noch nicht synchronisiert, daher werden alle Einheiten ausgegraut angezeigt. Synchronisiere mit Tacticus, um zu sehen, welche Einheiten du besitzt.",
+      "rosterErrorTitle": "Dein Kader konnte nicht geladen werden",
+      "rosterErrorBody": "Bis er geladen ist, werden alle Einheiten ausgegraut angezeigt. Versuche es erneut.",
+      "catalogErrorTitle": "Der Einheitenkatalog konnte nicht geladen werden",
+      "catalogErrorBody": "Ohne ihn kann die Sammlung nicht angezeigt werden. Versuche es erneut.",
+      "retry": "Erneut versuchen"
     }
   },
   "unitTile": {
@@ -1304,6 +1318,26 @@
         "mythicMaterialSources": {
           "title": "Mythische Materialien",
           "content": "Wähle, welche Shop-Angebote die mythischen Materialien dieses Ziels liefern. Ohne Haken bei allen Angeboten werden Shops dafür nicht mehr eingeplant."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Deine Sammlung auf einen Blick",
+          "content": "Wie viele der Charaktere und Kriegsmaschinen des Spiels du besitzt."
+        },
+        "faction": {
+          "title": "Nach Fraktion gruppiert",
+          "content": "Jede Karte enthält die Charaktere und Kriegsmaschinen einer Fraktion – deine eigenen Einheiten zuerst."
+        },
+        "owned": {
+          "title": "Eine Einheit in deinem Besitz",
+          "content": "Der Rahmen zeigt ihre Seltenheit, dazu Sterne, Rang, EP-Stufe, Fähigkeitsstufen, Ausrüstung und Scherben – alles aus Tacticus synchronisiert."
+        },
+        "unowned": {
+          "title": "Noch nicht freigeschaltet",
+          "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Ihre Scherben zeigen, wie nah du an der Freischaltung bist."
         }
       }
     }

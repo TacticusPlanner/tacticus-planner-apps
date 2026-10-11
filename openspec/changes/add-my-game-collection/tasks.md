@@ -25,10 +25,11 @@
 
 ## 5. Collection page
 
-- [ ] 5.1 Build the Collection page (`pages/my-game/ui/collection/`): summary, faction group cards (icon + localized name), tile grid, multi-column desktop and single-column mobile; verify with page tests for owned and unowned rendering at both breakpoints
-- [ ] 5.2 Add the no-roster prompts (anonymous → sign in; signed-in not synced → sync prompt with the existing Sync with Tacticus action), the loading state, catalog error with retry and roster error with retry; verify with page tests for each state
-- [ ] 5.3 Add `myGame.collection.*` copy in en/de/es/fr with real translations; verify by checking that every key exists in all four locales
-- [ ] 5.4 Add `collection.tutorial.tsx` with desktop and mobile steps (summary, first faction group, first owned tile, first unowned tile), registered via `useTourPageSteps`, plus `tour.collection.steps.*` copy in en/de/es/fr; verify with tutorial tests that every step target exists in each layout and the summary step is skipped without a roster
+- [x] 5.1 Build the Collection page (`pages/my-game/ui/collection/`): summary, faction group cards (icon + localized name), tile grid, multi-column desktop and single-column mobile; verify with page tests for owned and unowned rendering at both breakpoints
+- [x] 5.2 Move the player-data status context and `usePlayerDataStatus` from `app/providers` to `shared/player-data-status`, and `usePlayerDataSyncStatus` to a new `features/player-data-sync`, repointing the sidebar button, mobile shell and quick actions; verify the existing sync-button, mobile-layout, quick-actions and nav-live-indicator tests pass unchanged in behaviour and `pnpm lint:fsd` is clean
+- [x] 5.3 Add the no-roster prompts (anonymous → sign in; signed-in not synced → sync prompt with the existing Sync with Tacticus action), the loading state, catalog error with retry and roster error with retry; verify with page tests for each state
+- [x] 5.4 Add `myGame.collection.*` copy in en/de/es/fr with real translations; verify by checking that every key exists in all four locales
+- [x] 5.5 Add `collection.tutorial.tsx` with desktop and mobile steps (summary, first faction group, first owned tile, first unowned tile), registered via `useTourPageSteps`, plus `tour.collection.steps.*` copy in en/de/es/fr; verify with tutorial tests that every step target exists in each layout and the summary step is skipped without a roster
 
 ## 6. Desktop verification (viewport ≥768px)
 

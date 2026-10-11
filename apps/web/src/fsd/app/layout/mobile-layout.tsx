@@ -26,7 +26,7 @@ import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { usePlayerDataSyncStatus } from "../providers/player-data-sync-button"
+import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
 import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"

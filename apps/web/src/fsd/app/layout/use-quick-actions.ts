@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next"
 
 import { useTour } from "@/shared/tour"
 
-import { usePlayerDataSyncStatus } from "../providers/player-data-sync-button"
+import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useUserJot } from "../providers/userjot-provider"
 import type {
   QuickAction,

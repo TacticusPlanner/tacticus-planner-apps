@@ -81,6 +81,14 @@ Joyride targets are the same `data-testid`s on both (`collection-summary`, `coll
 
 `nav.progress` / `nav.progressDescription` become `nav.myGame` / `nav.myGameDescription`, and the `progress.tabs.*` group becomes `myGame.tabs.*` (plus `collection` / `collectionDescription`). New page copy goes under `myGame.collection.*`. Unit, faction and ability names reuse the existing `characters` / factions game-data namespaces. Tour copy goes under `tour.collection.steps.*`.
 
+### D7. The sync prompt reuses the shell's sync hook via a feature slice
+
+The not-synced prompt offers the same Sync with Tacticus action as the shell, but that hook lived in `app/providers`, which pages may not import. The player-data status context and `usePlayerDataStatus` move to `shared/player-data-status` (the provider stays in `app` and provides it). `usePlayerDataSyncStatus` moves to a new `features/player-data-sync`. The sidebar button, mobile shell, quick action and the Collection prompt all call that one hook, so status text, the goal-cache refresh after sync, and the disabled-while-syncing guard cannot drift.
+
+_Alternative:_ move only the context and let the page call `syncNow` itself. Rejected: it duplicates the goal refresh and syncing guard.
+
+_Alternative:_ no button, just text pointing at the sidebar. Rejected: the spec asks for the action itself.
+
 ### V1 parity checklist (Who You Own, default view)
 
 | V1 element                                                                                               | Decision                                                                                                                                                |

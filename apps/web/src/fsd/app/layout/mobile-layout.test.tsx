@@ -47,7 +47,7 @@ const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
   })),
 }))
 
-vi.mock("../providers/player-data-sync-button", () => ({
+vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => usePlayerDataSyncStatusMock(),
 }))
 

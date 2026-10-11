@@ -275,6 +275,20 @@
       "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "campaign-events": "Campaign Events",
       "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
+    },
+    "collection": {
+      "loading": "Loading your collection…",
+      "summary": "{{owned}} of {{total}} units owned",
+      "signInTitle": "Sign in to see your collection",
+      "signInBody": "Every unit is shown greyed out. Sign in and sync with Tacticus to see which units you own and how far each has progressed.",
+      "signIn": "Sign in",
+      "syncTitle": "Sync to see your collection",
+      "syncBody": "Your roster hasn't been synced yet, so every unit is shown greyed out. Sync with Tacticus to see which units you own.",
+      "rosterErrorTitle": "Your roster couldn't be loaded",
+      "rosterErrorBody": "Every unit is shown greyed out until it loads. Try again.",
+      "catalogErrorTitle": "The unit catalog couldn't be loaded",
+      "catalogErrorBody": "The collection can't be shown without it. Try again.",
+      "retry": "Try again"
     }
   },
   "unitTile": {
@@ -1304,6 +1318,26 @@
         "mythicMaterialSources": {
           "title": "Mythic materials",
           "content": "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Your collection at a glance",
+          "content": "How many of the game's characters and Machines of War you own."
+        },
+        "faction": {
+          "title": "Grouped by faction",
+          "content": "Each card holds one faction's characters and Machines of War — the units you own come first."
+        },
+        "owned": {
+          "title": "An owned unit",
+          "content": "The frame shows its rarity, with its stars, rank, XP level, ability levels, equipment and shards — all synced from Tacticus."
+        },
+        "unowned": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out units aren't in your roster. Their shard count shows how close you are to unlocking them."
         }
       }
     }
