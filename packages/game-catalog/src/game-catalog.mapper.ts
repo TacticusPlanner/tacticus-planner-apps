@@ -79,6 +79,7 @@ export const datasetToStorageModels: Record<
   lres: asArray,
   "lre-battles": asArray,
   "lre-common": asArray,
+  "lre-clear-estimate": asArray,
   "event-definitions": asArray,
   "events-calendar": byCalendarDate,
   // Plain-array passthrough — each shop record already carries its `id` (guild / war / ...).

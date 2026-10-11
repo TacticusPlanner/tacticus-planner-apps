@@ -9,7 +9,12 @@ import {
   eventsCalendarPayloadSchema,
   eventsCalendarRowSchema,
 } from "./events"
-import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
+import {
+  lreBattleViewSchema,
+  lreClearEstimateSchema,
+  lreCommonSchema,
+  lreViewSchema,
+} from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { characterAbilityCostSchema } from "./character-ability-costs"
@@ -39,6 +44,7 @@ export const datasetPayloadSchemas = {
   lres: z.array(lreViewSchema),
   "lre-battles": z.array(lreBattleViewSchema),
   "lre-common": z.array(lreCommonSchema),
+  "lre-clear-estimate": z.array(lreClearEstimateSchema),
   "event-definitions": z.array(eventDefinitionSchema),
   // The one exception to "every payload is a plain array" — see events.ts.
   "events-calendar": eventsCalendarPayloadSchema,
@@ -67,6 +73,7 @@ export type GameCatalogRecordByKey = {
   lres: z.infer<typeof lreViewSchema>
   "lre-battles": z.infer<typeof lreBattleViewSchema>
   "lre-common": z.infer<typeof lreCommonSchema>
+  "lre-clear-estimate": z.infer<typeof lreClearEstimateSchema>
   "event-definitions": z.infer<typeof eventDefinitionSchema>
   // The flattened storage-row shape (entry + injected `date`), not the raw date-keyed payload — see
   // events.ts and game-catalog.mapper.ts's `byCalendarDate`.

@@ -4,11 +4,17 @@ import {
   buildLaneLeaderboard,
   buildLanePointsModel,
   buildSyncedLaneProgress,
+  laneBattlePowers,
   nextPointsMilestone,
+  teamClearEstimate,
+  unitClearEstimate,
+  type ClearEstimate,
+  type ClearEstimateConfigState,
   type CrossLaneLeaderboardRow,
   type LaneProgressView,
   type LeaderboardRow,
   type LegendaryEvent,
+  type LegendaryEventBattle,
   type LegendaryEventCommon,
   type LegendaryEventLaneId,
   type LegendaryEventLifecycle,
@@ -98,7 +104,10 @@ export interface LeaderboardControlsState {
 }
 
 export type LeaderboardViewModel = LeaderboardRowsViewModel &
-  LeaderboardControlsState
+  LeaderboardControlsState & {
+    /** The lane leaderboards' Clears figure (not shown on the Overview leaderboard). */
+    clears: ClearEstimatesViewModel
+  }
 
 /** The Synced progress section: per-lane progress over the points model, or the read's state. */
 export type ProgressGridViewModel =
@@ -228,4 +237,70 @@ export function buildRunStatusViewModel({
       entry.currentPoints
     ),
   }
+}
+
+/** One lane's estimators over the synced roster (design D3): null when there is nothing to
+ *  estimate (no owned member, or the unit is not owned). */
+interface LaneClearEstimator {
+  team: (memberUnitIds: readonly string[]) => ClearEstimate | null
+  unit: (unitId: string) => ClearEstimate | null
+}
+
+/**
+ * Clear estimates by data state (design D6): `hidden` when the `lre-clear-estimate` dataset is
+ * absent or failed (or the battles could not be read), `pending` while the dataset, the battles or
+ * the roster load, `ready` otherwise. A roster that could not be read yields estimators that
+ * return null (ownership unknown).
+ */
+export type ClearEstimatesViewModel =
+  | { kind: "hidden" }
+  | { kind: "pending" }
+  | { kind: "ready"; byLane: ByLane<LaneClearEstimator> }
+
+const NO_ESTIMATOR: LaneClearEstimator = { team: () => null, unit: () => null }
+
+export function buildClearEstimates({
+  event,
+  config,
+  battles,
+  roster,
+}: {
+  event: LegendaryEvent
+  config: ClearEstimateConfigState
+  battles: ReadValue<LegendaryEventBattle[]>
+  roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
+}): ClearEstimatesViewModel {
+  if (config.status === "absent" || config.status === "failed") {
+    return { kind: "hidden" }
+  }
+  if (battles === "error") return { kind: "hidden" }
+  if (
+    config.status === "loading" ||
+    battles === "loading" ||
+    roster === "loading"
+  ) {
+    return { kind: "pending" }
+  }
+  const rosterById =
+    roster === "error" || roster === undefined
+      ? undefined
+      : new Map(roster.map((unit) => [unit.unitId as string, unit]))
+  const byLane = Object.fromEntries(
+    LEGENDARY_EVENT_LANE_IDS.map((laneId): [string, LaneClearEstimator] => {
+      const powers = laneBattlePowers(event[laneId].battleIds, battles)
+      if (!rosterById || !powers || powers.length === 0) {
+        return [laneId, NO_ESTIMATOR]
+      }
+      return [
+        laneId,
+        {
+          team: (memberUnitIds) =>
+            teamClearEstimate(memberUnitIds, powers, rosterById, config.config),
+          unit: (unitId) =>
+            unitClearEstimate(unitId, powers, rosterById, config.config),
+        },
+      ]
+    })
+  ) as ByLane<LaneClearEstimator>
+  return { kind: "ready", byLane }
 }

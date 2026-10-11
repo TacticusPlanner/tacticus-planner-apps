@@ -286,7 +286,68 @@ describe("useLegendaryEventPlan", () => {
       eventId: EVENT,
       laneId: "alpha",
       depth: 9,
+      estimate: null,
+      fromEstimate: false,
     })
+  })
+
+  it("logs the estimate shown with a depth edit that started from it", async () => {
+    const stored = team("a", 0)
+    api.update.mockResolvedValue(plan(4, [stored]))
+    const { result } = setup(plan(3, [stored]), 2)
+
+    await act(async () => {
+      await result.current.setDepth(stored, 7, {
+        estimate: 6,
+        fromEstimate: true,
+      })
+    })
+
+    expect(api.update).toHaveBeenCalledWith(
+      EVENT,
+      "a",
+      expect.objectContaining({
+        expectedBattleClears: 7,
+        expectedBattleClearsSource: "manual",
+      })
+    )
+    expect(api.capture).toHaveBeenCalledWith({
+      type: "legendary_event_depth_set",
+      eventId: EVENT,
+      laneId: "alpha",
+      depth: 7,
+      estimate: 6,
+      fromEstimate: true,
+    })
+  })
+
+  it("restores the estimate by clearing the run's manual depth", async () => {
+    const stored = team("a", 0)
+    api.update.mockResolvedValue(plan(4, [stored]))
+    const { result } = setup(plan(3, [stored]), 1)
+
+    await act(async () => {
+      await result.current.restoreEstimate(stored, 6)
+    })
+
+    expect(api.update).toHaveBeenCalledWith(
+      EVENT,
+      "a",
+      expect.objectContaining({
+        run: 1,
+        expectedBattleClears: null,
+        expectedBattleClearsSource: null,
+      })
+    )
+    expect(api.capture).toHaveBeenCalledWith({
+      type: "legendary_event_depth_estimate_restored",
+      eventId: EVENT,
+      laneId: "alpha",
+      estimate: 6,
+    })
+    expect(api.capture).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: "legendary_event_depth_set" })
+    )
   })
 
   it("cancels an in-flight refetch so its older plan cannot overwrite the optimistic one", async () => {

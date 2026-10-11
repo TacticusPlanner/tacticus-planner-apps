@@ -301,6 +301,36 @@ describe("catalog schemas", () => {
     ).toBe(true)
   })
 
+  it("validates the lre-clear-estimate record and rejects a non-positive ratio or coefficient", () => {
+    const record = {
+      id: "lre-clear-estimate",
+      powerRatio: 0.5,
+      calibration: { sampleCount: 12, calibratedOn: "2026-10-12" },
+      unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 1.2 }],
+    }
+    const schema = datasetPayloadSchemas["lre-clear-estimate"]
+
+    expect(schema.safeParse([record]).success).toBe(true)
+    expect(
+      schema.safeParse([
+        {
+          ...record,
+          calibration: { sampleCount: 0, calibratedOn: null },
+          unitCoefficients: [],
+        },
+      ]).success
+    ).toBe(true)
+    expect(schema.safeParse([{ ...record, powerRatio: 0 }]).success).toBe(false)
+    expect(
+      schema.safeParse([
+        {
+          ...record,
+          unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 0 }],
+        },
+      ]).success
+    ).toBe(false)
+  })
+
   it("rejects an lre-common points milestone of the wrong type", () => {
     const result = datasetPayloadSchemas["lre-common"].safeParse([
       {

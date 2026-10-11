@@ -7,6 +7,8 @@ import {
 } from "./game-catalog-storage"
 import {
   getLegendaryEvent,
+  getLegendaryEventBattles,
+  getLegendaryEventClearEstimate,
   getLegendaryEventCommon,
   getLegendaryEvents,
   hasLegendaryEventsSynced,
@@ -88,5 +90,41 @@ describe("Legendary Event queries", () => {
 
   it("returns null for the reward ladder on an empty store", async () => {
     expect(await getLegendaryEventCommon()).toBeNull()
+  })
+
+  it("returns one event's battles across its lanes", async () => {
+    await replaceGameCatalogDataset(
+      "lre-battles",
+      [
+        { id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 },
+        { id: "votanUthar-beta-1", lreId: "votanUthar", power: 1200 },
+        { id: "astarLysander-alpha-1", lreId: "astarLysander", power: 900 },
+      ],
+      metadata("lre-battles")
+    )
+
+    const battles = await getLegendaryEventBattles("votanUthar")
+    expect(battles.map((battle) => battle.id).sort()).toEqual([
+      "votanUthar-alpha-1",
+      "votanUthar-beta-1",
+    ])
+  })
+
+  it("returns the clear-estimate record, or null when the dataset is absent", async () => {
+    expect(await getLegendaryEventClearEstimate()).toBeNull()
+
+    const record = {
+      id: "lre-clear-estimate",
+      powerRatio: 0.5,
+      calibration: { sampleCount: 0, calibratedOn: null },
+      unitCoefficients: [],
+    }
+    await replaceGameCatalogDataset(
+      "lre-clear-estimate",
+      [record],
+      metadata("lre-clear-estimate")
+    )
+
+    expect(await getLegendaryEventClearEstimate()).toMatchObject(record)
   })
 })

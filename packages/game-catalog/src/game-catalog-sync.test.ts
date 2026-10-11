@@ -69,6 +69,14 @@ const datasetData: Record<string, unknown> = {
     { id: "emperLucius-alpha-1", lreId: "emperLucius", track: "alpha" },
   ],
   "lre-common": [{ id: "lre-common", shardsPerChest: 1 }],
+  "lre-clear-estimate": [
+    {
+      id: "lre-clear-estimate",
+      powerRatio: 1,
+      calibration: { sampleCount: 0, calibratedOn: null },
+      unitCoefficients: [],
+    },
+  ],
   shops: [
     { id: "guild", slots: [] },
     { id: "war", slots: [] },
@@ -266,6 +274,33 @@ describe("syncGameCatalog", () => {
     expect(client.downloaded).toEqual(["lre-common"])
     expect(result.status).toBe("ready")
     expect(result.downloaded).toEqual(["lre-common"])
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+  })
+
+  it("syncs lre-clear-estimate as its single record", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+
+    expect(await getDatasetRecords("lre-clear-estimate")).toEqual([
+      expect.objectContaining({ id: "lre-clear-estimate", powerRatio: 1 }),
+    ])
+  })
+
+  it("is ready when the manifest does not list the optional lre-clear-estimate", async () => {
+    const manifest = createManifest()
+    const withoutEstimate = {
+      ...manifest,
+      datasets: manifest.datasets.filter(
+        (dataset) => dataset.key !== "lre-clear-estimate"
+      ),
+    }
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(withoutEstimate)
+    )
+
+    expect(result.status).toBe("ready")
+    expect(result.downloaded).not.toContain("lre-clear-estimate")
+    expect(await getDatasetRecords("lre-clear-estimate")).toEqual([])
     expect(await hasCompleteGameCatalogCache()).toBe(true)
   })
 

@@ -221,8 +221,12 @@ export function useLegendaryEventPlan({
     })
   }
 
-  /** Sets (or clears, with null) the team's depth for the current run, as a manual value. */
-  const setDepth = (team: LegendaryEventTeam, depth: number | null) =>
+  /** Writes the team's depth for the current run (null clears it). */
+  const writeDepth = (
+    team: LegendaryEventTeam,
+    depth: number | null,
+    onSaved: () => void
+  ) =>
     enqueue({
       patch: (plan) =>
         withTeamDepth(plan, team.id, run, depth, new Date().toISOString()),
@@ -239,14 +243,40 @@ export function useLegendaryEventPlan({
           )
         )
       },
-      onSaved: () =>
-        captureEvent({
-          type: "legendary_event_depth_set",
-          eventId,
-          laneId: team.laneId,
-          depth,
-        }),
+      onSaved,
     })
+
+  /**
+   * Sets (or clears, with null) the team's depth for the current run, as a manual value. The
+   * analytics event carries the estimate shown at the time and whether the edit started from it
+   * (the override log, design D8).
+   */
+  const setDepth = (
+    team: LegendaryEventTeam,
+    depth: number | null,
+    shown: DepthEstimateContext = { estimate: null, fromEstimate: false }
+  ) =>
+    writeDepth(team, depth, () =>
+      captureEvent({
+        type: "legendary_event_depth_set",
+        eventId,
+        laneId: team.laneId,
+        depth,
+        estimate: shown.estimate,
+        fromEstimate: shown.fromEstimate,
+      })
+    )
+
+  /** Use estimate: clears the current run's manual depth so the estimate shows again. */
+  const restoreEstimate = (team: LegendaryEventTeam, estimate: number) =>
+    writeDepth(team, null, () =>
+      captureEvent({
+        type: "legendary_event_depth_estimate_restored",
+        eventId,
+        laneId: team.laneId,
+        estimate,
+      })
+    )
 
   return {
     query,
@@ -257,7 +287,14 @@ export function useLegendaryEventPlan({
     deleteTeam,
     reorderLane,
     setDepth,
+    restoreEstimate,
   }
+}
+
+/** The estimate shown when a depth was edited (null when none was shown). */
+export interface DepthEstimateContext {
+  estimate: number | null
+  fromEstimate: boolean
 }
 
 export type LegendaryEventPlanActions = ReturnType<typeof useLegendaryEventPlan>

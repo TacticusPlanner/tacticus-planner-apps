@@ -248,7 +248,7 @@
         },
         "teams": {
           "title": "Équipes",
-          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et la profondeur que vous espérez atteindre. Utilisez Ajouter une équipe pour en créer une."
+          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et jusqu'où elle devrait aller : une estimation tirée de votre effectif synchronisé, jusqu'à ce que vous définissiez vous-même une profondeur. Utilisez Ajouter une équipe pour en créer une."
         },
         "progressGrid": {
           "title": "Progression synchronisée",
@@ -260,5 +260,24 @@
         }
       }
     }
+  },
+  "estimates": {
+    "estimated": "estimé",
+    "uncalibrated": "Non calibré : le rapport de puissance de l'estimation n'a pas encore été ajusté sur de vrais résultats, considérez-la comme une indication approximative.",
+    "howItWorks": "Estimé à partir de la puissance de combat de votre effectif synchronisé comparée à la puissance de chaque combat. L'équipement, les synergies et les objectifs difficiles ne sont pas pris en compte ; définissez une profondeur pour la remplacer.",
+    "marginAbove": "{{percent}} % au-dessus du combat {{battle}}",
+    "shortfallNext": "{{percent}} % en dessous du combat {{battle}}",
+    "notEnough": "Pas encore assez pour le combat 1",
+    "useEstimate": "Utiliser l'estimation",
+    "estimateHint": "estimation ~{{depth}}",
+    "lockedNotCounted_one": "{{count}} membre verrouillé non compté",
+    "lockedNotCounted_other": "{{count}} membres verrouillés non comptés",
+    "clears": "Combats",
+    "clearsLabel": "Combats estimés",
+    "clearsValue": "Combats : {{value}}",
+    "clearsEstimate": "~{{depth}}",
+    "clearsNone": "—",
+    "clearsPending": "–",
+    "clearsLoading": "Estimation des combats…"
   }
 }

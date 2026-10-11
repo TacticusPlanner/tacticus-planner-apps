@@ -33,3 +33,6 @@ export type GuildRaidMetaStorageModel = StorageModel<"guild-raid-meta">
 // their V1 names (`lres`, `lre-common`) until the pending API rename to `legendary-events` lands.
 export type LegendaryEventStorageModel = StorageModel<"lres">
 export type LegendaryEventCommonStorageModel = StorageModel<"lre-common">
+export type LegendaryEventBattleStorageModel = StorageModel<"lre-battles">
+export type LegendaryEventClearEstimateStorageModel =
+  StorageModel<"lre-clear-estimate">

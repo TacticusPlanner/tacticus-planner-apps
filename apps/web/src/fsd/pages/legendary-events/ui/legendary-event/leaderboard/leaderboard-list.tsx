@@ -12,23 +12,30 @@ import {
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import type { ObjectiveChip } from "./leaderboard.view-model"
+import {
+  useClearsText,
+  type LeaderboardClears,
+  type ObjectiveChip,
+} from "./leaderboard.view-model"
 
 /** Mobile: one lane's leaderboard as row cards (portrait, name, rarity and rank, the objective
- *  icon indicators, the shown points figure and "Objectives: N"). */
+ *  icon indicators, the shown points figure and "Objectives: N · Clears: ~n"). */
 export function LeaderboardList({
   rows,
   objectives,
   figure,
   nameOf,
+  clearsOf,
 }: {
   rows: readonly LeaderboardRow[]
   objectives: readonly ObjectiveChip[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
+  clearsOf?: (unitId: string) => LeaderboardClears
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const clearsText = useClearsText()
 
   return (
     <ul className="flex min-w-0 flex-col gap-2" data-testid="leaderboard-list">
@@ -71,13 +78,25 @@ export function LeaderboardList({
                   ),
                 })}
               </span>
-              <span
-                className="text-xs text-muted-foreground tabular-nums"
-                data-testid="leaderboard-objectives"
-              >
-                {t("leaderboard.objectivesValue", {
-                  count: number.format(row.objectivesCount),
-                })}
+              <span className="text-xs text-muted-foreground tabular-nums">
+                <span data-testid="leaderboard-objectives">
+                  {t("leaderboard.objectivesValue", {
+                    count: number.format(row.objectivesCount),
+                  })}
+                </span>
+                {clearsOf ? (
+                  <>
+                    <span aria-hidden="true">{" · "}</span>
+                    <span
+                      data-clears={clearsOf(row.unit.id).kind}
+                      data-testid="leaderboard-clears"
+                    >
+                      {t("estimates.clearsValue", {
+                        value: clearsText(clearsOf(row.unit.id)),
+                      })}
+                    </span>
+                  </>
+                ) : null}
               </span>
             </span>
           </div>

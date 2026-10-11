@@ -107,6 +107,23 @@ export const lreBattleViewSchema = z.looseObject({
   waves: z.array(lreWaveSchema),
 })
 
+// The curated clear-estimate parameters (lre-clear-estimate dataset): a single record. A unit absent
+// from `unitCoefficients` has coefficient 1.0; `calibration.sampleCount` 0 means uncalibrated.
+export const lreClearEstimateSchema = z.looseObject({
+  id: z.string(),
+  powerRatio: z.number().positive(),
+  calibration: z.looseObject({
+    sampleCount: z.number().int().nonnegative(),
+    calibratedOn: z.string().nullable(),
+  }),
+  unitCoefficients: z.array(
+    z.looseObject({
+      unitId: z.string(),
+      coefficient: z.number().positive(),
+    })
+  ),
+})
+
 // The shared, event-independent LRE reward ladder (lre-common dataset): a single record.
 export const lreCommonSchema = z.looseObject({
   id: z.string(),

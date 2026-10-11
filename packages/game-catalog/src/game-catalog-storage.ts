@@ -2,6 +2,7 @@ import Dexie, { type EntityTable } from "dexie"
 
 import {
   catalogManifestMetadataKey,
+  optionalDatasetKeys,
   servedDatasetKeys,
   type GameCatalogDatasetKey,
   type GameCatalogDatasetMetadata,
@@ -17,7 +18,8 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v7: add the `guild-raid-meta` store (one complete guidance object). Purely additive — the store
 // list below is derived from `servedDatasetKeys`, so Dexie's version cascade preserves all earlier
 // catalog rows while creating the new store for clients currently on v6 or lower.
-export const catalogDbVersion = 8
+// v9: add the `lre-clear-estimate` store (same additive cascade).
+export const catalogDbVersion = 9
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
@@ -63,7 +65,10 @@ export function getManifestMetadata(
 export async function hasCompleteGameCatalogCache() {
   const metadata = await getGameCatalogMetadata()
 
-  return servedDatasetKeys.every((datasetKey) => metadata.has(datasetKey))
+  return servedDatasetKeys.every(
+    (datasetKey) =>
+      metadata.has(datasetKey) || optionalDatasetKeys.includes(datasetKey)
+  )
 }
 
 /**

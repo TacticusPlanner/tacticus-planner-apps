@@ -2,7 +2,9 @@ import { useEffect, useState } from "react"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { useClearEstimateConfig } from "./use-clear-estimate-config"
 import { useLegendaryEvent } from "./use-legendary-event"
+import { useLegendaryEventBattles } from "./use-legendary-event-battles"
 import { useLegendaryEventCommon } from "./use-legendary-event-common"
 import { useLegendaryEventProgress } from "./use-legendary-event-progress"
 import { useLegendaryEventSyncTimes } from "./use-legendary-event-sync-times"
@@ -26,6 +28,7 @@ const store = vi.hoisted(() => ({
   calls: 0,
   catalogSynced: true,
   metadata: new Map<string, { updatedAt: string }>(),
+  clearEstimate: null as null | Record<string, unknown>,
 }))
 const lysander = {
   id: "astarLysander",
@@ -46,6 +49,13 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getLegendaryEvent: (id: string) =>
     read(id === lysander.id ? lysander : undefined),
   getLegendaryEventCommon: () => read(null),
+  getLegendaryEventBattles: (id: string) =>
+    read(
+      id === "votanUthar"
+        ? [{ id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 }]
+        : []
+    ),
+  getLegendaryEventClearEstimate: () => read(store.clearEstimate),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
 vi.mock("@workspace/player-data/queries", () => ({
@@ -66,6 +76,7 @@ describe("Legendary Event read hooks", () => {
     store.calls = 0
     store.catalogSynced = true
     store.metadata = new Map()
+    store.clearEstimate = null
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
   })
@@ -125,6 +136,42 @@ describe("Legendary Event read hooks", () => {
     const { result } = renderHook(() => useLegendaryEventCommon())
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(result.current).toMatchObject({ data: null })
+  })
+
+  it("reads one event's battles", async () => {
+    const { result } = renderHook(() => useLegendaryEventBattles("votanUthar"))
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(result.current).toMatchObject({
+      data: [{ id: "votanUthar-alpha-1", power: 1018 }],
+    })
+  })
+
+  it("reads the clear-estimate config as loading, absent, ready or failed", async () => {
+    store.pending = true
+    const loading = renderHook(() => useClearEstimateConfig())
+    expect(loading.result.current.status).toBe("loading")
+    store.pending = false
+
+    const absent = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(absent.result.current.status).toBe("absent"))
+
+    store.clearEstimate = {
+      id: "lre-clear-estimate",
+      powerRatio: 0.5,
+      calibration: { sampleCount: 0, calibratedOn: null },
+      unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 1.2 }],
+    }
+    const ready = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(ready.result.current.status).toBe("ready"))
+    const state = ready.result.current
+    if (state.status !== "ready") throw new Error("not ready")
+    expect(state.config.powerRatio).toBe(0.5)
+    expect(state.config.calibrated).toBe(false)
+    expect(state.config.coefficients.get("ultraTigurius")).toBe(1.2)
+
+    store.fail = true
+    const failed = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(failed.result.current.status).toBe("failed"))
   })
 
   it("reports a progress read failure", async () => {
