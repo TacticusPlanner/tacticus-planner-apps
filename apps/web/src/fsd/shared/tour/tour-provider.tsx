@@ -151,11 +151,15 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const options = React.useMemo<Partial<Options>>(
     () => ({
       ...tourOptions,
+      // Joyride scrolls a target to 20px below the viewport top by default, which leaves it under
+      // the sticky shell header: 48px on desktop, ~125px on mobile (title plus section tabs). Clear
+      // the header plus the spotlight padding instead.
+      scrollOffset: isMobile ? 140 : 64,
       arrowColor: surface.arrowColor,
       backgroundColor: surface.backgroundColor,
       overlayColor: surface.overlayColor,
     }),
-    [surface]
+    [surface, isMobile]
   )
 
   const styles = React.useMemo<Partial<Styles>>(

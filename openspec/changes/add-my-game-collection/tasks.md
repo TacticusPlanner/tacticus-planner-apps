@@ -59,6 +59,7 @@ Data states needed: an anonymous session, a signed-in account with a synced rost
 - [x] 9.5 Rebuild the faction grid and card: equal-width auto-fill grid with stretched rows, faction-coloured header bar with icon, upper-cased name and owned/total (omitted without a roster), seven slots per row on desktop and five on mobile; verify with page tests at both breakpoints
 - [x] 9.6 Replace the loading spinner with skeleton faction cards (`aria-busy`, no pulse under reduced motion); verify with a page test
 - [x] 9.7 Update `unitTile.*`, `myGame.collection.*` and tour copy for the new tile in en/de/es/fr with real translations; verify the translation test and that the tour targets still exist
-- [ ] 9.8 Verify on desktop (>=768px): synced roster shows each faction on one row, cards align, the 1440px window shows at least 60 units within about one and a half screens, clicking a tile does nothing, light and dark themes render the overlays readably; anonymous shows "Starts <Rarity>" tiles
-- [ ] 9.9 Verify on mobile (<768px, same-origin iframe): five slots per row, no horizontal scroll at 420px, tapping a tile does nothing
-- [ ] 9.10 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing
+- [x] 9.8 Verify on desktop (>=768px): synced roster shows each faction on one row, cards align, the 1440px window shows at least 60 units within about one and a half screens, clicking a tile does nothing, light and dark themes render the overlays readably; anonymous shows "Starts <Rarity>" tiles
+- [x] 9.9 Verify on mobile (<768px, same-origin iframe): five slots per row, no horizontal scroll at 420px, tapping a tile does nothing
+- [x] 9.11 Make page tours scroll each target clear of the sticky shell header (found in 9.8/9.9: Joyride's default 20px offset left targets under the 48px desktop top bar and the ~125px mobile header); verify with a tour-provider test per form factor and by re-running the Collection tour on desktop and mobile
+- [x] 9.10 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing
