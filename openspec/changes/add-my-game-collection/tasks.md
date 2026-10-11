@@ -35,17 +35,17 @@
 
 Data states needed: an anonymous session, a signed-in account with a synced roster that has owned and unowned characters and MoWs, and (where feasible) a signed-in account before its first sync.
 
-- [ ] 6.1 Signed in and synced: open My Game from the sidebar → lands on Collection; the section menu lists four children; faction cards show owned tiles with all indicators and greyed unowned tiles with shard progress; the tooltip shows the name; clicking does nothing
-- [ ] 6.2 Anonymous: My Game shows only Collection; all units greyed; the sign-in prompt is shown; search for "onslaught" finds nothing under My Game; `/my-game/onslaught` triggers sign-in handling
-- [ ] 6.3 Run the Collection page tour and the general tour; each step highlights a visible element
+- [x] 6.1 Signed in and synced: open My Game from the sidebar → lands on Collection; the section menu lists four children; faction cards show owned tiles with all indicators and greyed unowned tiles with shard progress; the tooltip shows the name; clicking does nothing
+- [x] 6.2 Anonymous: My Game shows only Collection; all units greyed; the sign-in prompt is shown; search for "onslaught" finds nothing under My Game; `/my-game/onslaught` triggers sign-in handling
+- [x] 6.3 Run the Collection page tour and the general tour; each step highlights a visible element
 
 ## 7. Mobile verification (viewport <768px, same-origin iframe per `tp-manual-ui-verification`)
 
-- [ ] 7.1 Signed in and synced: the drawer lists My Game with four children; the header tab row shows four tabs; faction cards are single-column with smaller tiles and no tooltip
-- [ ] 7.2 Anonymous: the drawer and tab row show only Collection; the greyed catalog and sign-in prompt render
-- [ ] 7.3 Run the Collection page tour on mobile; each step highlights a visible element
+- [x] 7.1 Signed in and synced: the drawer lists My Game with four children; the header tab row shows four tabs; faction cards are single-column with smaller tiles and no tooltip
+- [x] 7.2 Anonymous: the drawer and tab row show only Collection; the greyed catalog and sign-in prompt render
+- [x] 7.3 Run the Collection page tour on mobile; each step highlights a visible element
 
 ## 8. Gates and spec housekeeping
 
-- [ ] 8.1 Update the Purpose line of `openspec/specs/onslaught-progress-entry/spec.md` from `/progress/onslaught` to `/my-game/onslaught` at sync time; verify `openspec validate --specs`
-- [ ] 8.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing
+- [x] 8.1 Update the Purpose line of `openspec/specs/onslaught-progress-entry/spec.md` from `/progress/onslaught` to `/my-game/onslaught` (done directly on the branch, since a delta cannot change a Purpose); verify `openspec validate --specs`
+- [x] 8.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing

@@ -209,7 +209,7 @@ describe.each([
     renderPage(width)
 
     expectTourTargetsExist(form)
-    expect(tour.steps?.[form].map((step) => step.target)).toEqual([
+    expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
       '[data-testid="collection-summary"]',
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-owned-tile"]',
@@ -235,7 +235,7 @@ describe.each([
 
     // Without a roster the summary and owned-tile steps are left out.
     expectTourTargetsExist(form)
-    expect(tour.steps?.[form].map((step) => step.target)).toEqual([
+    expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-unowned-tile"]',
     ])
