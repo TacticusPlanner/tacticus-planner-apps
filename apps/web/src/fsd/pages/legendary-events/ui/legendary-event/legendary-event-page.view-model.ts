@@ -5,20 +5,25 @@ import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
   nextPointsMilestone,
+  projectRewards,
   type CrossLaneLeaderboardRow,
   type LaneProgressView,
   type LeaderboardRow,
   type LegendaryEvent,
-  type LegendaryEventCommon,
   type LegendaryEventLaneId,
   type LegendaryEventLifecycle,
+  type LegendaryEventPlan,
   type LegendaryEventProgress,
+  type LegendaryEventRewards,
   type LegendaryEventRosterUnit,
+  type LegendaryEventRun,
   type LegendaryEventUnit,
   type NextPointsMilestone,
   type ReadState,
+  type RewardProjection,
 } from "@/entities/legendary-event"
 
+import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamsViewModel } from "./teams/teams-section"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
@@ -43,9 +48,22 @@ export type RunStatusViewModel =
       currency: number
       chestsClaimed: number
       shards: number
-      /** `undefined` past the last milestone or without `lre-common`. */
+      /** `undefined` past the last milestone or without the event's reward ladder. */
       milestone: NextPointsMilestone | undefined
     }
+
+/** The Run status card's Reward outlook (design D6): a skeleton while the synced entry or the plan
+ *  loads, hidden when the synced data or the event's ladder is unavailable, else the projection. */
+export type RewardOutlookViewModel =
+  | { kind: "loading" }
+  | { kind: "unavailable" }
+  | { kind: "ready"; projection: RewardProjection }
+
+/** The Run status card's Inputs drawer: shown for signed-in users only. */
+export interface RunInputsViewModel {
+  enabled: boolean
+  currentRun: LegendaryEventRun
+}
 
 /** The page's tab strip: Overview, then one tab per lane (design D3). */
 export type LegendaryEventTab = "overview" | LegendaryEventLaneId
@@ -56,6 +74,8 @@ export interface LegendaryEventPageViewModel {
   lifecycle: LegendaryEventLifecycle
   nowMs: number
   runStatus: RunStatusViewModel
+  outlook: RewardOutlookViewModel
+  runInputs: RunInputsViewModel
   /** When player data last synced (manifest `syncedAt`): `null` before the first sync, `undefined`
    *  while that read is pending or failed (the line is then hidden rather than misreported). */
   syncedAtMs: number | null | undefined
@@ -65,6 +85,8 @@ export interface LegendaryEventPageViewModel {
   onJumpToLane: (lane: LegendaryEventLaneId) => void
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
+  /** Maybe clear / Stop here marks on the progress grid's not-cleared cells. */
+  marks: ProgressMarksViewModel
   /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
 }
@@ -183,18 +205,19 @@ export function buildProgressGridViewModel(
 }
 
 /**
- * Run status from the synced `lre-progress` entry and the shared reward ladder. Tokens and
+ * Run status from the synced `lre-progress` entry and the event's own reward ladder. Tokens and
  * regeneration are read from the sync, never computed locally: the next-token timer is anchored to
  * the instant the chunk was observed (`progressObservedAtMs`), so it counts down between syncs.
  */
 export function buildRunStatusViewModel({
   progress,
-  common,
+  rewards,
   progressObservedAtMs,
   nowMs,
 }: {
   progress: ReadState<LegendaryEventProgress | undefined>
-  common: ReadState<LegendaryEventCommon | null>
+  /** `undefined` for a catalog record cached before rewards were served. */
+  rewards: LegendaryEventRewards | undefined
   progressObservedAtMs: number | null
   nowMs: number
 }): RunStatusViewModel {
@@ -223,9 +246,37 @@ export function buildRunStatusViewModel({
     // omits the field (V1 token-estimation-service documents the same), so clamp at zero.
     chestsClaimed: Math.max(0, entry.currentClaimedChestIndex),
     shards: entry.currentShards,
-    milestone: nextPointsMilestone(
-      common.status === "ready" ? common.data : null,
-      entry.currentPoints
-    ),
+    milestone: nextPointsMilestone(rewards, entry.currentPoints),
+  }
+}
+
+/**
+ * The Reward outlook over the event's ladder, the synced entry and the plan's run inputs (design
+ * D2, D6). Signed out (`planEnabled` false) or with a plan that failed to load, the projection runs
+ * without inputs; without a synced entry it starts from zero.
+ */
+export function buildRewardOutlookViewModel({
+  rewards,
+  progress,
+  plan,
+  planEnabled,
+}: {
+  rewards: LegendaryEventRewards | undefined
+  progress: ReadValue<LegendaryEventProgress | undefined>
+  plan: { isPending: boolean; data: LegendaryEventPlan | undefined }
+  planEnabled: boolean
+}): RewardOutlookViewModel {
+  if (progress === "loading" || (planEnabled && plan.isPending)) {
+    return { kind: "loading" }
+  }
+  if (progress === "error" || !rewards) return { kind: "unavailable" }
+  return {
+    kind: "ready",
+    projection: projectRewards({
+      rewards,
+      progress,
+      runs: plan.data?.runs,
+      showPaidOptions: plan.data?.showPaidOptions ?? false,
+    }),
   }
 }

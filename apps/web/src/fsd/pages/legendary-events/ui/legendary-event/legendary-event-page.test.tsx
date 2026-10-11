@@ -18,11 +18,7 @@ import {
 } from "vitest"
 
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
-import {
-  legendaryEventCommon,
-  lysanderEvent,
-  utharEvent,
-} from "@/test/fixtures/legendary-events"
+import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
@@ -46,7 +42,6 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   hasLegendaryEventsSynced: async () => catalog.synced,
   getLegendaryEvent: async (id: string) =>
     events.find((event) => event.id === id),
-  getLegendaryEventCommon: async () => legendaryEventCommon,
   getCharactersMap: async () => new Map(),
   getMowsMap: async () => new Map(),
   getCharacters: async () => legendaryEventCharacters,
@@ -363,6 +358,7 @@ describe("LegendaryEventPage", () => {
     expect(desktop.map((step) => step.target)).toEqual([
       '[data-testid="legendary-event-tabs"]',
       '[data-testid="legendary-event-run-status"]',
+      '[data-testid="legendary-event-run-inputs"]',
       '[data-testid="legendary-event-lane-summary"]',
       '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-lane-overview"]',
@@ -370,7 +366,7 @@ describe("LegendaryEventPage", () => {
       '[data-testid="legendary-event-progress-grid"]',
       '[data-testid="legendary-event-leaderboard"]',
     ])
-    for (const step of desktop.slice(0, 4)) {
+    for (const step of desktop.slice(0, 5)) {
       expect(document.querySelector(step.target)).not.toBeNull()
     }
     // `before` resolves only once the lane section is in the document, which an `act` scope
@@ -379,12 +375,12 @@ describe("LegendaryEventPage", () => {
     const actEnvironment = actGlobal.IS_REACT_ACT_ENVIRONMENT
     actGlobal.IS_REACT_ACT_ENVIRONMENT = false
     try {
-      await desktop[4]!.before!()
+      await desktop[5]!.before!()
     } finally {
       actGlobal.IS_REACT_ACT_ENVIRONMENT = actEnvironment
     }
     expect(selectedTab()).toHaveTextContent("Alpha")
-    for (const step of desktop.slice(4)) {
+    for (const step of desktop.slice(5)) {
       expect(document.querySelector(step.target)).not.toBeNull()
     }
   })

@@ -36,7 +36,7 @@ export function LegendaryEventPageView({
           className="flex min-w-0 flex-col gap-6"
           data-testid="legendary-event-overview"
         >
-          <RunStatusCard {...props} />
+          <RunStatusCard {...props} isMobile={isMobile} />
           <LaneSummary
             event={props.event}
             onJumpToLane={props.onJumpToLane}
@@ -67,6 +67,7 @@ export function LegendaryEventPageView({
             event={props.event}
             laneId={selectedTab}
             layout={isMobile ? "rows" : "grid"}
+            marks={props.marks}
             progressGrid={props.progressGrid}
           />
           <LeaderboardSection
