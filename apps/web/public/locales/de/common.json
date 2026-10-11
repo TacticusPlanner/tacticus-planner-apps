@@ -277,6 +277,16 @@
       "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
     }
   },
+  "unitTile": {
+    "characterAbilities": "Aktive Fähigkeit Stufe {{first}}, passive Fähigkeit Stufe {{second}}",
+    "mowAbilities": "Primäre Fähigkeit Stufe {{first}}, sekundäre Fähigkeit Stufe {{second}}",
+    "shards_one": "{{count}} Scherbe",
+    "shards_other": "{{count}} Scherben",
+    "shardsToUnlock_one": "{{count}} von {{required}} Scherben zum Freischalten",
+    "shardsToUnlock_other": "{{count}} von {{required}} Scherben zum Freischalten",
+    "mythicShards_one": "{{count}} mythische Scherbe",
+    "mythicShards_other": "{{count}} mythische Scherben"
+  },
   "progress": {
     "loadError": "Fortschrittsdaten sind unerwartet nicht verfügbar. Aktualisiere und versuche es erneut.",
     "campaigns": {

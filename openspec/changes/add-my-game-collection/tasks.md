@@ -14,14 +14,14 @@
 
 ## 3. Unit tile entity
 
-- [ ] 3.1 Create `entities/unit` with a public `UnitTile` (owned character, owned MoW, unowned character with unlock target, unowned MoW with count only, unknown-shards state), reusing `shared/ui` rank badge / rarity icon and the game-catalog icon helpers; verify with component tests per state asserting which indicators render and that power is never rendered
-- [ ] 3.2 Give the tile its accessible name and a desktop-only tooltip (none on mobile) and make it non-interactive; verify with tests that clicking does nothing, `aria-label` equals the unit name, and the tooltip appears only at ≥768px
-- [ ] 3.3 Run `pnpm lint:fsd` to confirm `entities/unit` imports nothing from features or pages
+- [x] 3.1 Create `entities/unit` with a public `UnitTile` (owned character, owned MoW, unowned character with unlock target, unowned MoW with count only, unknown-shards state), reusing `shared/ui` rank badge / rarity icon and the game-catalog icon helpers; verify with component tests per state asserting which indicators render and that power is never rendered
+- [x] 3.2 Give the tile its accessible name and a desktop-only tooltip (none on mobile) and make it non-interactive; verify with tests that clicking does nothing, `aria-label` equals the unit name, and the tooltip appears only at ≥768px
+- [x] 3.3 Run `pnpm lint:fsd` to confirm `entities/unit` imports nothing from features or pages
 
 ## 4. Collection view-model
 
-- [ ] 4.1 Implement `buildCollectionView` in `pages/my-game/model/collection-view.ts` (roster state, faction grouping and ordering, owned/unowned ordering, progression → rarity/stars, `abilities[0|1]` mapping, unlock cost by initial rarity, summary derived from groups); verify with unit tests using real catalog ids: the spec's Titus, Calgar 75/400 and MoW scenarios, the 84-of-131 summary, alliance order, `mows` chunk unsynced → MoWs unowned, `inventory-shards` missing → no shard counts
-- [ ] 4.2 Add a `useCollectionView` hook that reads the catalog, roster and shard inventory, re-reads after sync completes, and exposes loading / catalog-error / roster-error states; verify with hook tests for each state, including the roster appearing after a simulated sync without remount
+- [x] 4.1 Implement `buildCollectionView` in `pages/my-game/model/collection-view.ts` (roster state, faction grouping and ordering, owned/unowned ordering, progression → rarity/stars, `abilities[0|1]` mapping, unlock cost by initial rarity, summary derived from groups); verify with unit tests using real catalog ids: the spec's Titus, Calgar 75/400 and MoW scenarios, the 84-of-131 summary, alliance order, `mows` chunk unsynced → MoWs unowned, `inventory-shards` missing → no shard counts
+- [x] 4.2 Add a `useCollectionView` hook that reads the catalog, roster and shard inventory, re-reads after sync completes, and exposes loading / catalog-error / roster-error states; verify with hook tests for each state, including the roster appearing after a simulated sync without remount
 
 ## 5. Collection page
 

@@ -277,6 +277,16 @@
       "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia."
     }
   },
+  "unitTile": {
+    "characterAbilities": "Habilidad activa nivel {{first}}, habilidad pasiva nivel {{second}}",
+    "mowAbilities": "Habilidad primaria nivel {{first}}, habilidad secundaria nivel {{second}}",
+    "shards_one": "{{count}} fragmento",
+    "shards_other": "{{count}} fragmentos",
+    "shardsToUnlock_one": "{{count}} de {{required}} fragmentos para desbloquear",
+    "shardsToUnlock_other": "{{count}} de {{required}} fragmentos para desbloquear",
+    "mythicShards_one": "{{count}} fragmento mítico",
+    "mythicShards_other": "{{count}} fragmentos míticos"
+  },
   "progress": {
     "loadError": "Los datos de progreso no están disponibles inesperadamente. Actualiza e inténtalo de nuevo.",
     "campaigns": {

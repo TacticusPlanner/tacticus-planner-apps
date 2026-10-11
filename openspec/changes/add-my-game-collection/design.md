@@ -45,9 +45,9 @@ _Alternative:_ hard-code My Game in `app-shell.tsx`. Rejected: Stage 4 and Inven
 
 ### D3. Unit tile is a new `entities/unit` slice with presentational components
 
-`entities/unit` exports `UnitTile` (props: `kind: "character" | "mow"`, `unitId`, `name`, `state: "owned" | "unowned" | "unknown"`, and an optional progression object: rarity, stars, rank, xpLevel, ability levels, equipped items, shards, mythicShards, unlockShards). The tile receives display data and does not fetch, so it stays reusable by Legendary Events and dailies.
+`entities/unit` exports `UnitTile`, which takes one `UnitTileUnit` (`kind: "character" | "mow"`, `unitId`, localized `name`, and `data`). `data` is either an owned record (progression, rank, XP level, ability levels, equipment with resolved rarity, shards, mythic shards) or an unowned one (frame rarity, shards, mythic shards, unlock cost). Unknown ownership (no roster) or unknown shard data is an unowned record without shard counts, not a third state. The tile receives display data and does not fetch, so it stays reusable by Legendary Events and dailies.
 
-The tile renders as a non-interactive element (`role="img"` with `aria-label` = name, desktop tooltip via the shared `Tooltip`). Stage 3/4 will add an optional `onActivate`/`selected` without breaking callers.
+The tile renders as a non-interactive `role="group"` named by the unit (so assistive technology still reaches the ability and shard labels inside it), focusable on desktop only so the shared `Tooltip` can show the name on keyboard focus. The rarity frame is a ring in the existing `--rarity-*` colour tokens, since V2 has no portrait-frame artwork. Tile copy lives under `unitTile.*` in `common`. Stage 3/4 will add an optional `onActivate`/`selected` without breaking callers.
 
 _Alternative:_ put the tile in `shared/ui`. Rejected: it encodes game-domain meaning (rank, rarity, equipment), which belongs in an entity.
 
@@ -66,7 +66,7 @@ Roster state:
 
 A missing `inventory-shards` chunk gives unowned tiles `state: "unknown"`-style shard display (no count).
 
-Faction order follows the alliance enum order Imperial → Xenos → Chaos, then localized faction name via the existing faction i18n keys.
+Faction order follows the domain's `allianceRank` (Imperial → Chaos → Xenos → Neutral), then localized faction name via the existing `factions` i18n namespace.
 
 ### D5. Desktop vs mobile
 

@@ -6,7 +6,7 @@ Shows the player's whole unit collection on the My Game Collection page: every c
 
 ### Requirement: Collection lists every catalog unit in one list grouped by faction
 
-The Collection page at `/my-game/collection` SHALL list every character and every Machine of War in the game catalog in one list, grouped by faction. Each faction group SHALL have a header showing the faction's icon and localized name, and SHALL contain that faction's characters and Machines of War together. Faction groups SHALL be ordered by alliance (Imperial, Xenos, Chaos), then by localized faction name. Within a group, owned units SHALL come before unowned units; owned units SHALL be ordered by progression (rarity and stars) descending, then rank descending, then localized name; unowned units SHALL be ordered by localized name. A unit SHALL appear exactly once. The page SHALL show a summary of how many catalog units are owned out of the total (for example "84 of 131 units owned"); while no roster is available the summary SHALL NOT be shown.
+The Collection page at `/my-game/collection` SHALL list every character and every Machine of War in the game catalog in one list, grouped by faction. Each faction group SHALL have a header showing the faction's icon and localized name, and SHALL contain that faction's characters and Machines of War together. Faction groups SHALL be ordered by alliance in the game's canonical order (Imperial, Chaos, Xenos, then any other alliance), then by localized faction name. Within a group, owned units SHALL come before unowned units; owned units SHALL be ordered by progression (rarity and stars) descending, then rank descending, then localized name; unowned units SHALL be ordered by localized name. A unit SHALL appear exactly once. The page SHALL show a summary of how many catalog units are owned out of the total (for example "84 of 131 units owned"); while no roster is available the summary SHALL NOT be shown.
 
 Assumption: a unit is owned exactly when it has a record in the synced `characters` or `mows` player data; the game API never returns a roster record for an unowned unit.
 
@@ -25,7 +25,7 @@ Assumption: a unit is owned exactly when it has a record in the synced `characte
 #### Scenario: Group order
 
 - **WHEN** the page renders
-- **THEN** every Imperial faction group appears before every Xenos group, every Xenos group before every Chaos group, and groups within one alliance are ordered by their localized names
+- **THEN** every Imperial faction group appears before every Chaos group, every Chaos group before every Xenos group, and groups within one alliance are ordered by their localized names
 
 ### Requirement: An owned unit tile shows its synced progression
 
@@ -33,9 +33,9 @@ Each owned unit SHALL be shown as a tile with its portrait, a frame matching its
 
 #### Scenario: Owned character tile
 
-- **GIVEN** the synced roster has Titus at Legendary 2 stars, rank Gold 1, XP level 45, active ability 40, passive ability 38, three equipped items, 120 shards and 4 mythic shards
+- **GIVEN** the synced roster has Titus at Legendary with four red stars, rank Gold 1, XP level 45, active ability 40, passive ability 38, three equipped items, 120 shards and 4 mythic shards
 - **WHEN** the Collection page renders
-- **THEN** Titus's tile shows a Legendary frame with 2 stars, the Gold 1 rank, XP level 45, ability levels 40 and 38, the three equipped items, 120 shards and 4 mythic shards, and shows no power value
+- **THEN** Titus's tile shows a Legendary frame with four red stars, the Gold 1 rank, XP level 45, ability levels 40 and 38, the three equipped items, 120 shards and 4 mythic shards, and shows no power value
 
 #### Scenario: Owned Machine of War tile
 

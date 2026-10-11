@@ -277,6 +277,16 @@
       "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
     }
   },
+  "unitTile": {
+    "characterAbilities": "Active ability level {{first}}, passive ability level {{second}}",
+    "mowAbilities": "Primary ability level {{first}}, secondary ability level {{second}}",
+    "shards_one": "{{count}} shard",
+    "shards_other": "{{count}} shards",
+    "shardsToUnlock_one": "{{count}} of {{required}} shards to unlock",
+    "shardsToUnlock_other": "{{count}} of {{required}} shards to unlock",
+    "mythicShards_one": "{{count}} mythic shard",
+    "mythicShards_other": "{{count}} mythic shards"
+  },
   "progress": {
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {

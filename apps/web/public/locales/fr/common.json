@@ -277,6 +277,16 @@
       "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
     }
   },
+  "unitTile": {
+    "characterAbilities": "Capacité active niveau {{first}}, capacité passive niveau {{second}}",
+    "mowAbilities": "Capacité principale niveau {{first}}, capacité secondaire niveau {{second}}",
+    "shards_one": "{{count}} éclat",
+    "shards_other": "{{count}} éclats",
+    "shardsToUnlock_one": "{{count}} éclat sur {{required}} pour débloquer",
+    "shardsToUnlock_other": "{{count}} éclats sur {{required}} pour débloquer",
+    "mythicShards_one": "{{count}} éclat mythique",
+    "mythicShards_other": "{{count}} éclats mythiques"
+  },
   "progress": {
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
     "campaigns": {
