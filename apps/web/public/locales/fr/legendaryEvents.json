@@ -40,6 +40,61 @@
     "syncedAgo": "Synchronisé {{when}}",
     "neverSynced": "Pas encore synchronisé"
   },
+  "runInputs": {
+    "button": "Saisies",
+    "title": "Saisies par manche",
+    "description": "Les missions et packs que le jeu ne communique pas. Ils alimentent les prévisions de récompenses de la carte État de la manche.",
+    "run": "Manche {{run}}",
+    "phase": {
+      "done": "Terminée",
+      "now": "En cours",
+      "planned": "Prévue"
+    },
+    "regularMissions": "Missions normales",
+    "premiumMissions": "Missions premium",
+    "bundle": "Pack de 300 de monnaie acheté",
+    "closeShards": "Fragments « Oh So Close »",
+    "showPaidOptions": "Afficher les options payantes",
+    "fieldLabel": "{{field}}, manche {{run}}",
+    "decrease": "Diminuer {{field}}, manche {{run}}",
+    "increase": "Augmenter {{field}}, manche {{run}}",
+    "unavailable": "Impossible de charger ton plan.",
+    "toasts": {
+      "error": "Impossible d'enregistrer tes saisies par manche."
+    }
+  },
+  "outlook": {
+    "title": "Prévisions de récompenses",
+    "steps": {
+      "unlock": "Déblocage",
+      "fourStars": "4 étoiles",
+      "fiveStars": "5 étoiles",
+      "blueStar": "Étoile bleue",
+      "mythic": "Mythique",
+      "twoBlueStars": "Deux étoiles bleues"
+    },
+    "next": "Prochaine étape : {{step}} · {{shards}} / {{threshold}} fragments",
+    "chests_one": "Encore {{chests}} coffre ({{currency}} de monnaie au total)",
+    "chests_other": "Encore {{chests}} coffres ({{currency}} de monnaie au total)",
+    "points": "{{points}} points pour atteindre {{target}} · environ {{battles}} combats par voie",
+    "fullyAscended": "Toutes les étapes de récompense atteintes",
+    "beyondChests": "Hors de portée pour cet événement ({{required}} coffres nécessaires, l'événement en compte {{ladder}})",
+    "affordableNow": "Assez de monnaie pour les coffres dès maintenant",
+    "beyondPoints": "Les points seuls ne suffisent pas : il manque {{currency}} de monnaie",
+    "noEntry": "Aucune progression synchronisée pour l'instant",
+    "explain": {
+      "title": "Comment c'est calculé",
+      "base": "D'après votre dernière synchronisation : {{currency}} de monnaie en main, {{chests}} coffres réclamés, {{shards}} fragments, {{points}} points",
+      "noBase": "Aucune progression synchronisée pour l'instant, le calcul part donc de zéro",
+      "missions": "{{currency}} de monnaie des missions de la manche {{run}}",
+      "bundle": "{{currency}} de monnaie du pack de la manche {{run}}",
+      "closeShards": "{{shards}} fragments « Oh So Close » de la manche {{run}}",
+      "noFutureInputs": "Aucune saisie pour les manches suivantes",
+      "bonus": "+{{currency}} de monnaie à chaque palier de points (passe premium)",
+      "noBonus": "Aucun bonus sur les paliers de points",
+      "startedRuns": "Compte ce que vous avez déjà gagné d'après la synchronisation, plus vos saisies pour les manches suivantes ; les manches déjà commencées ne sont pas ajoutées une seconde fois."
+    }
+  },
   "lanes": {
     "alpha": "Alpha",
     "beta": "Bêta",
@@ -126,6 +181,29 @@
     "howPoints": {
       "title": "Comment fonctionnent les points",
       "body": "Les points gagnés d'un combat sont son meilleur score plus le score de chaque objectif que vous y avez rempli, bonus « tout vaincre » compris. Le maximum d'un combat additionne son score d'éliminations, son meilleur score, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
+    }
+  },
+  "annotations": {
+    "maybeClear": "Peut-être faisable",
+    "stopHere": "S'arrêter ici",
+    "notMarked": "Non marqué",
+    "clearMarks": "Effacer les marques",
+    "cell": {
+      "maybeClear": "{{objective}} : non accompli, marqué « Peut-être faisable »",
+      "stopHere": "{{objective}} : non accompli, marqué « S'arrêter ici »"
+    },
+    "menuLabel": "{{objective}}, combat {{battle}}",
+    "battleMenuLabel": "Combat {{battle}} : tous les objectifs non accomplis",
+    "rowAction": "Marquer le combat {{battle}}",
+    "rowActionHeader": "Marques",
+    "legend": {
+      "title": "Marques",
+      "maybeClear": "Peut-être faisable : à tenter si l'équipe va jusque-là.",
+      "stopHere": "S'arrêter ici : ne vaut pas vos jetons.",
+      "note": "Les marques ne sont que des rappels : elles ne changent jamais les points et disparaissent dès que la synchronisation montre l'objectif accompli."
+    },
+    "toasts": {
+      "error": "Impossible d'enregistrer tes marques."
     }
   },
   "teams": {
@@ -234,6 +312,10 @@
           "title": "État de la manche",
           "content": "Votre manche, vos jetons, points, monnaie, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
         },
+        "runInputs": {
+          "title": "Saisies par manche",
+          "content": "Indiquez pour chaque manche les missions et packs que le jeu ne communique pas. Ils alimentent les prévisions de récompenses de cette carte."
+        },
         "laneSummary": {
           "title": "Résumé des voies",
           "content": "Les points gagnés de chaque voie par rapport à son maximum et le nombre de combats entièrement terminés. Choisissez une voie pour aller à sa grille de progression."
@@ -252,7 +334,7 @@
         },
         "progressGrid": {
           "title": "Progression synchronisée",
-          "content": "Vos objectifs remplis et vos points par combat issus de votre dernière synchronisation, avec les points gagnés de la voie par rapport à son maximum."
+          "content": "Vos objectifs remplis et vos points par combat issus de votre dernière synchronisation, avec les points gagnés de la voie par rapport à son maximum. Marquez un objectif non accompli « Peut-être faisable » ou « S'arrêter ici », ou un combat entier depuis l'action de sa ligne."
         },
         "leaderboard": {
           "title": "Classement de la voie",

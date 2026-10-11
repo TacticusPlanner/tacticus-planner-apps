@@ -40,6 +40,61 @@
     "syncedAgo": "Synced {{when}}",
     "neverSynced": "Not synced yet"
   },
+  "runInputs": {
+    "button": "Inputs",
+    "title": "Run inputs",
+    "description": "Missions and packs the game does not report. They feed the reward outlook on the Run status card.",
+    "run": "Run {{run}}",
+    "phase": {
+      "done": "Done",
+      "now": "Now",
+      "planned": "Planned"
+    },
+    "regularMissions": "Regular missions",
+    "premiumMissions": "Premium missions",
+    "bundle": "Bought the 300 currency bundle",
+    "closeShards": "Oh So Close shards",
+    "showPaidOptions": "Show paid options",
+    "fieldLabel": "{{field}}, run {{run}}",
+    "decrease": "Decrease {{field}}, run {{run}}",
+    "increase": "Increase {{field}}, run {{run}}",
+    "unavailable": "Your plan could not be loaded.",
+    "toasts": {
+      "error": "Your run inputs could not be saved."
+    }
+  },
+  "outlook": {
+    "title": "Reward outlook",
+    "steps": {
+      "unlock": "Unlock",
+      "fourStars": "4 stars",
+      "fiveStars": "5 stars",
+      "blueStar": "Blue star",
+      "mythic": "Mythic",
+      "twoBlueStars": "Two blue stars"
+    },
+    "next": "Next: {{step}} · {{shards}} / {{threshold}} shards",
+    "chests_one": "{{chests}} more chest ({{currency}} currency in total)",
+    "chests_other": "{{chests}} more chests ({{currency}} currency in total)",
+    "points": "{{points}} points to reach {{target}} · about {{battles}} battles per lane",
+    "fullyAscended": "Every reward step reached",
+    "beyondChests": "Not reachable this event (needs {{required}} chests, the event has {{ladder}})",
+    "affordableNow": "Enough currency for the chests now",
+    "beyondPoints": "Points alone can't cover it: {{currency}} currency short",
+    "noEntry": "No synced progress yet",
+    "explain": {
+      "title": "How this is worked out",
+      "base": "From your last sync: {{currency}} currency in hand, {{chests}} chests claimed, {{shards}} shards, {{points}} points",
+      "noBase": "No synced progress yet, so it starts from zero",
+      "missions": "{{currency}} currency from run {{run}} missions",
+      "bundle": "{{currency}} currency from the run {{run}} bundle",
+      "closeShards": "{{shards}} Oh So Close shards from run {{run}}",
+      "noFutureInputs": "No inputs for later runs",
+      "bonus": "+{{currency}} currency on every points milestone (premium track)",
+      "noBonus": "No payout bonus on points milestones",
+      "startedRuns": "Counts what you have already earned through sync plus your inputs for later runs; runs already started are not added again."
+    }
+  },
   "lanes": {
     "alpha": "Alpha",
     "beta": "Beta",
@@ -126,6 +181,29 @@
     "howPoints": {
       "title": "How points work",
       "body": "Each battle's earned points are its high score plus the score of every objective you cleared in it, including the defeat-all bonus. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
+    }
+  },
+  "annotations": {
+    "maybeClear": "Maybe clear",
+    "stopHere": "Stop here",
+    "notMarked": "Not marked",
+    "clearMarks": "Clear marks",
+    "cell": {
+      "maybeClear": "{{objective}}: not cleared, marked Maybe clear",
+      "stopHere": "{{objective}}: not cleared, marked Stop here"
+    },
+    "menuLabel": "{{objective}}, battle {{battle}}",
+    "battleMenuLabel": "Battle {{battle}}: every objective not cleared",
+    "rowAction": "Mark battle {{battle}}",
+    "rowActionHeader": "Marks",
+    "legend": {
+      "title": "Marks",
+      "maybeClear": "Maybe clear: worth a try if the team gets that far.",
+      "stopHere": "Stop here: not worth your tokens.",
+      "note": "Marks are reminders only: they never change points and disappear once sync shows the objective cleared."
+    },
+    "toasts": {
+      "error": "Your marks could not be saved."
     }
   },
   "teams": {
@@ -234,6 +312,10 @@
           "title": "Run status",
           "content": "Your run, tokens, points, currency, chests and shards from your last sync, plus the next points milestone."
         },
+        "runInputs": {
+          "title": "Run inputs",
+          "content": "Enter the missions and packs the game does not report for each run. They feed the reward outlook on this card."
+        },
         "laneSummary": {
           "title": "Lane summary",
           "content": "Each lane's points earned against its maximum and how many battles you have fully cleared. Pick a lane to jump to its progress grid."
@@ -252,7 +334,7 @@
         },
         "progressGrid": {
           "title": "Synced progress",
-          "content": "Your cleared objectives and points per battle from your last sync, with the lane's points earned against its maximum."
+          "content": "Your cleared objectives and points per battle from your last sync, with the lane's points earned against its maximum. Mark an objective you have not cleared as Maybe clear or Stop here, or a whole battle from its row action."
         },
         "leaderboard": {
           "title": "Lane leaderboard",

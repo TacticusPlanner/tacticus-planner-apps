@@ -463,7 +463,7 @@
         "legendaryEventPlans": "Legendary Event teams"
       },
       "partDescriptions": {
-        "legendaryEventPlans": "Hand-built teams and notes for the events the planner knows. Event progress is not imported."
+        "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported."
       },
       "submit": "Import selected",
       "submitting": "Importing…",
@@ -508,10 +508,25 @@
         "title": "Legendary Event teams",
         "teams_one": "{{count}} team",
         "teams_other": "{{count}} teams",
+        "runs_one": "inputs for {{count}} run",
+        "runs_other": "inputs for {{count}} runs",
+        "marks_one": "{{count}} mark",
+        "marks_other": "{{count}} marks",
         "v1Event": "V1 event {{id}}",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "fields": {
+          "regularMissions": "regular missions",
+          "premiumMissions": "premium missions",
+          "closeShards": "Oh So Close shards"
+        },
         "reasons": {
           "imported": "Teams imported.",
           "imported_without_teams": "Imported, but none of its teams could be kept.",
+          "inputs_imported": "Run inputs, marks or notes imported; no teams were added.",
           "plan_already_exists": "This event already has teams in the planner, so nothing was changed.",
           "event_not_in_catalog": "The planner does not have this event yet.",
           "no_legendary_event_imported": "No event's teams could be imported.",
@@ -531,7 +546,17 @@
           "duplicate_team_merged": "Two teams had the same units and were merged into one.",
           "conflicting_depth_discarded": "A merged team's different clear depth was discarded.",
           "existing_notes_kept": "The planner already had notes for this event, so the V1 notes were not imported.",
-          "notes_truncated": "The V1 notes were too long and were shortened. Original length in characters:"
+          "notes_truncated": "The V1 notes were too long and were shortened. Original length in characters:",
+          "run_input_clamped": "Run {{run}} {{field}} reduced from {{original}} to the event's {{bound}}.",
+          "run_input_clamped_unbounded": "Run {{run}} {{field}} reduced from {{original}} to the event's maximum.",
+          "unknown_run": "Inputs for an unrecognised run were skipped:",
+          "existing_run_inputs_kept": "Run {{run}} already had inputs in the planner, so they were kept and the V1 inputs were not imported.",
+          "unknown_battle": "A mark on {{lane}} battle {{battle}} was skipped: the lane has {{count}} battles.",
+          "unknown_battle_unbounded": "A mark on {{lane}} battle {{battle}} was skipped: the lane has no such battle.",
+          "existing_annotations_kept_one": "{{count}} mark already in the planner was kept.",
+          "existing_annotations_kept_other": "{{count}} marks already in the planner were kept.",
+          "unknown_objective_mark": "A mark on an unrecognised objective \"{{objective}}\" in {{lane}} was skipped.",
+          "unknown_lane_mark": "A mark on an unrecognised lane \"{{lane}}\" was skipped."
         }
       }
     },
