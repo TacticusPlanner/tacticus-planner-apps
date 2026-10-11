@@ -1,7 +1,6 @@
 import type {
   GameCatalogCharacterView,
   GameCatalogLreTrackView,
-  LegendaryEventCommonStorageModel,
   LegendaryEventStorageModel,
 } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -12,8 +11,9 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 /** One catalog Legendary Event; `id` is the event unit's snowprint id (e.g. "astarLysander"). */
 export type LegendaryEvent = LegendaryEventStorageModel
 
-/** The shared reward ladder (`lre-common`), assumed the same for every event. */
-export type LegendaryEventCommon = LegendaryEventCommonStorageModel
+/** The event's own reward ladder: points milestones, chest costs, the unit's ascension steps
+ *  (incremental shards) and the shards per chest. Ladders differ between events. */
+export type LegendaryEventRewards = LegendaryEvent["rewards"]
 
 export type LegendaryEventLaneId = "alpha" | "beta" | "gamma"
 

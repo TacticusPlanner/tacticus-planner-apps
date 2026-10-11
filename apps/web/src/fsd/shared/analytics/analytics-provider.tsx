@@ -112,6 +112,29 @@ export function useAnalyticsActions() {
             depth: event.depth,
           })
           break
+        case "legendary_event_run_inputs_saved":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            run: event.run,
+            regular_missions: event.regularMissions,
+            premium_missions: event.premiumMissions,
+            bundle_purchased: event.bundlePurchased,
+            close_shards: event.closeShards,
+          })
+          break
+        case "legendary_event_paid_options_toggled":
+          client.capture(event.type, { event_id: event.eventId, on: event.on })
+          break
+        case "legendary_event_annotation_set":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            battle_index: event.battleIndex,
+            cell_count: event.cellCount,
+            status: event.status,
+            scope: event.scope,
+          })
+          break
       }
     },
     [client]

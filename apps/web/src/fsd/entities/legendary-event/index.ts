@@ -1,11 +1,11 @@
 // Public API of the Legendary Event entity: lifecycle, the next-milestone lookup, objective labels,
-// objective matching, the points model, synced progress, the read hooks, and the persisted plan
-// (teams per lane: DTOs, API, query options, coverage, points and run helpers). Pages and features
+// objective matching, the points model, synced progress, the read hooks, the persisted plan
+// (teams per lane, run inputs and marks: DTOs, API, query options, the shared write queue,
+// coverage, points and run helpers) and the reward projection. Pages and features
 // consume it only through this file.
 export {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEvent,
-  type LegendaryEventCommon,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventLaneRecord,
@@ -13,6 +13,7 @@ export {
   type LegendaryEventLifecycleState,
   type LegendaryEventObjective,
   type LegendaryEventProgress,
+  type LegendaryEventRewards,
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
   type LegendaryEventUnitFilter,
@@ -81,7 +82,6 @@ export {
 } from "./model/use-legendary-event"
 export { useLegendaryEventsProgress } from "./model/use-legendary-events-progress"
 export { useLegendaryEventProgress } from "./model/use-legendary-event-progress"
-export { useLegendaryEventCommon } from "./model/use-legendary-event-common"
 export {
   useLegendaryEventRoster,
   useLegendaryEventUnits,
@@ -99,14 +99,20 @@ export { ObjectiveIcon } from "./ui/objective-icon"
 export {
   legendaryEventPlanConflictDetails,
   type CreateTeamRequestDto,
+  type LegendaryEventAnnotation,
+  type LegendaryEventAnnotationStatus,
   type LegendaryEventDepthSource,
   type LegendaryEventPlan,
   type LegendaryEventPlanConflictCode,
   type LegendaryEventPlanConflictDto,
   type LegendaryEventRun,
+  type LegendaryEventRunInputs,
+  type LegendaryEventRunInputValues,
   type LegendaryEventTeam,
   type LegendaryEventTeamRunDepth,
+  type UpdateAnnotationsRequestDto,
   type UpdatePlanRequestDto,
+  type UpdateRunInputsRequestDto,
   type UpdateTeamOrderRequestDto,
   type UpdateTeamRequestDto,
 } from "./model/plan.types"
@@ -114,11 +120,40 @@ export {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   getLegendaryEventPlan,
+  updateLegendaryEventAnnotations,
   updateLegendaryEventPlan,
+  updateLegendaryEventRunInputs,
   updateLegendaryEventTeam,
   updateLegendaryEventTeamOrder,
 } from "./api/legendary-event-plan.api"
 export { legendaryEventPlanQueries } from "./api/legendary-event-plan.queries"
+export {
+  usePlanWriteQueue,
+  type PlanMutationOutcome,
+  type PlanPatch,
+  type PlanWriteOperation,
+  type PlanWriteQueue,
+} from "./model/use-plan-write-queue"
+export {
+  EMPTY_RUN_INPUT_VALUES,
+  MAX_CLOSE_SHARDS,
+  runInputValues,
+} from "./lib/run-inputs"
+export {
+  ASCENSION_STEPS,
+  BATTLE_POINTS_AVERAGE,
+  BUNDLE_CURRENCY,
+  MISSION_CURRENCY,
+  PREMIUM_BONUS_CURRENCY,
+  projectRewards,
+  type AscensionStep,
+  type RewardProjection,
+  type RewardProjectionInput,
+} from "./lib/reward-projection"
+export {
+  applicableAnnotations,
+  annotationCellKey,
+} from "./lib/applicable-annotations"
 export { currentLegendaryEventRun, teamDepthForRun } from "./lib/current-run"
 export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
 export { teamPointsPerBattle } from "./lib/team-points"

@@ -1,4 +1,4 @@
-import type { LegendaryEventCommon } from "../model/types"
+import type { LegendaryEventRewards } from "../model/types"
 
 export interface NextPointsMilestone {
   milestone: number
@@ -11,13 +11,14 @@ export interface NextPointsMilestone {
 
 /**
  * The first points milestone above `points` (the ladder is ordered by `cumulativePoints`
- * ascending), or `undefined` past the last milestone or without a reward ladder.
+ * ascending) of the event's own ladder, or `undefined` past the last milestone or without a
+ * reward ladder (a catalog record cached before rewards were served).
  */
 export function nextPointsMilestone(
-  common: Pick<LegendaryEventCommon, "pointsMilestones"> | null | undefined,
+  rewards: Pick<LegendaryEventRewards, "pointsMilestones"> | null | undefined,
   points: number
 ): NextPointsMilestone | undefined {
-  const next = common?.pointsMilestones.find(
+  const next = rewards?.pointsMilestones.find(
     (milestone) => milestone.cumulativePoints > points
   )
   return next

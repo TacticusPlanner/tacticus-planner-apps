@@ -3,7 +3,10 @@ import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
 import type {
   CreateTeamRequestDto,
   LegendaryEventPlan,
+  LegendaryEventRun,
+  UpdateAnnotationsRequestDto,
   UpdatePlanRequestDto,
+  UpdateRunInputsRequestDto,
   UpdateTeamOrderRequestDto,
   UpdateTeamRequestDto,
 } from "../model/plan.types"
@@ -65,6 +68,27 @@ export function updateLegendaryEventTeamOrder(
   request: UpdateTeamOrderRequestDto
 ) {
   return apiPut<LegendaryEventPlan>(`${planPath(eventId)}/teams/order`, {
+    body: request,
+  })
+}
+
+/** Upserts one run's inputs (missions, premium missions, bundle, Oh So Close shards). */
+export function updateLegendaryEventRunInputs(
+  eventId: string,
+  run: LegendaryEventRun,
+  request: UpdateRunInputsRequestDto
+) {
+  return apiPut<LegendaryEventPlan>(`${planPath(eventId)}/runs/${run}`, {
+    body: request,
+  })
+}
+
+/** Sets or clears the Maybe clear / Stop here mark of the listed cells of one battle. */
+export function updateLegendaryEventAnnotations(
+  eventId: string,
+  request: UpdateAnnotationsRequestDto
+) {
+  return apiPut<LegendaryEventPlan>(`${planPath(eventId)}/annotations`, {
     body: request,
   })
 }

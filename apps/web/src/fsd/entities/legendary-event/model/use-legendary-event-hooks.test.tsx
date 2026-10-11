@@ -3,7 +3,6 @@ import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { useLegendaryEvent } from "./use-legendary-event"
-import { useLegendaryEventCommon } from "./use-legendary-event-common"
 import { useLegendaryEventProgress } from "./use-legendary-event-progress"
 import { useLegendaryEventSyncTimes } from "./use-legendary-event-sync-times"
 import { useLegendaryEvents } from "./use-legendary-events"
@@ -45,7 +44,6 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getLegendaryEvents: () => read([lysander]),
   getLegendaryEvent: (id: string) =>
     read(id === lysander.id ? lysander : undefined),
-  getLegendaryEventCommon: () => read(null),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
 vi.mock("@workspace/player-data/queries", () => ({
@@ -119,12 +117,6 @@ describe("Legendary Event read hooks", () => {
     const one = renderHook(() => useLegendaryEventProgress("astarLysander"))
     await waitFor(() => expect(one.result.current.status).toBe("ready"))
     expect(one.result.current).toMatchObject({ data: progress })
-  })
-
-  it("reads the reward ladder as null before it syncs", async () => {
-    const { result } = renderHook(() => useLegendaryEventCommon())
-    await waitFor(() => expect(result.current.status).toBe("ready"))
-    expect(result.current).toMatchObject({ data: null })
   })
 
   it("reports a progress read failure", async () => {

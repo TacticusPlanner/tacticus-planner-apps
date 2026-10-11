@@ -78,4 +78,24 @@ describe("NumberStepper", () => {
     fireEvent.keyDown(input(), { key: "Enter" })
     expect(onChange).toHaveBeenLastCalledWith(null)
   })
+
+  it("steps by `step`, clamped to the bounds, with touch-sized controls", () => {
+    const onChange = vi.fn()
+    render(
+      <NumberStepper
+        labels={labels}
+        max={75}
+        min={0}
+        onChange={onChange}
+        step={25}
+        touch
+        value={60}
+      />
+    )
+    fireEvent.click(screen.getByTestId("number-stepper-increase"))
+    expect(onChange).toHaveBeenLastCalledWith(75)
+    fireEvent.click(screen.getByTestId("number-stepper-decrease"))
+    expect(onChange).toHaveBeenLastCalledWith(35)
+    expect(screen.getByTestId("number-stepper-increase")).toHaveClass("size-10")
+  })
 })
