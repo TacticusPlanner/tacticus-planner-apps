@@ -63,6 +63,8 @@ export interface CollectionFactionGroup {
   factionName: string
   alliance: Alliance
   units: UnitTileUnit[]
+  /** Owned units in this faction; the header shows it against `units.length`. */
+  owned: number
 }
 
 /** The one structure the page renders and the owned summary is derived from. */
@@ -77,9 +79,11 @@ interface CollectionRow {
   unit: UnitTileUnit
   factionId: string
   alliance: Alliance
-  /** Owned rows sort by these, descending; unowned rows by name only. */
+  /** Owned rows sort by these, descending. */
   progression: number
   rank: number
+  /** Unowned rows sort by this, descending: the share of the unlock cost already held, or -1. */
+  unlock: number
 }
 
 export function buildCollectionView(
@@ -131,6 +135,7 @@ export function buildCollectionView(
         factionName: labels.factionName(row.factionId),
         alliance: row.alliance,
         units: [],
+        owned: 0,
       })
       rowsByFaction.set(row.factionId, [])
     }
@@ -145,19 +150,19 @@ export function buildCollectionView(
         allianceRank(a.alliance) - allianceRank(b.alliance) ||
         compareNames(a.factionName, b.factionName)
     )
-    .map((group) => ({
-      ...group,
-      units: rowsByFaction
+    .map((group) => {
+      const units = rowsByFaction
         .get(group.factionId)!
         .sort((a, b) => compareRows(a, b, compareNames))
-        .map((row) => row.unit),
-    }))
+        .map((row) => row.unit)
+      return {
+        ...group,
+        units,
+        owned: units.filter((unit) => unit.data.state === "owned").length,
+      }
+    })
 
-  const ownedCount = groups.reduce(
-    (count, group) =>
-      count + group.units.filter((unit) => unit.data.state === "owned").length,
-    0
-  )
+  const ownedCount = groups.reduce((count, group) => count + group.owned, 0)
   const total = groups.reduce((count, group) => count + group.units.length, 0)
 
   return { rosterState, groups, owned: ownedCount, total }
@@ -171,10 +176,10 @@ function compareRows(
   const aOwned = a.unit.data.state === "owned"
   const bOwned = b.unit.data.state === "owned"
   if (aOwned !== bOwned) return aOwned ? -1 : 1
-  if (aOwned) {
-    const byProgress = b.progression - a.progression || b.rank - a.rank
-    if (byProgress !== 0) return byProgress
-  }
+  const byProgress = aOwned
+    ? b.progression - a.progression || b.rank - a.rank
+    : b.unlock - a.unlock
+  if (byProgress !== 0) return byProgress
   return compareNames(a.unit.name, b.unit.name)
 }
 
@@ -195,6 +200,7 @@ function ownedCharacterRow(
     alliance: character.alliance,
     progression: progressionIndex(record.progressionIndex),
     rank: rankIndex(record.rank),
+    unlock: -1,
     unit: {
       kind: "character",
       unitId: character.id,
@@ -232,6 +238,7 @@ function ownedMowRow(
     progression: progressionIndex(record.progressionIndex),
     // Machines of War have no rank; they tie on it and fall through to name.
     rank: -1,
+    unlock: -1,
     unit: {
       kind: "mow",
       unitId: mow.id,
@@ -266,11 +273,14 @@ function unownedRow(
   }
 ): CollectionRow {
   const inventory = shards?.get(unit.id)
+  const held = inventory?.amount ?? 0
   return {
     factionId: unit.faction,
     alliance: unit.alliance,
     progression: -1,
     rank: -1,
+    // Nearest to unlock first; units with no unlock cost or no shard data go after those with one.
+    unlock: shards && unlockShards ? Math.min(1, held / unlockShards) : -1,
     unit: {
       kind,
       unitId: unit.id,
@@ -281,7 +291,7 @@ function unownedRow(
         unlockShards,
         // A unit missing from a synced shard inventory has none; no inventory at all means the
         // count is unknown and the tile shows none.
-        shards: shards ? (inventory?.amount ?? 0) : undefined,
+        shards: shards ? held : undefined,
         mythicShards: shards ? (inventory?.mythicAmount ?? 0) : undefined,
       },
     },

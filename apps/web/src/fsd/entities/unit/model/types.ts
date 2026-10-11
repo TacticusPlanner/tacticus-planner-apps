@@ -48,7 +48,7 @@ export type UnitTileData = OwnedUnitTileData | UnownedUnitTileData
 export interface UnitTileUnit {
   kind: UnitKind
   unitId: UnitId
-  /** Localized display name; the tile's accessible name and desktop tooltip. */
+  /** Localized display name, shown on the tile and leading its accessible name. */
   name: string
   data: UnitTileData
 }

@@ -237,6 +237,52 @@ describe("buildCollectionView", () => {
     expect(new Set(all).size).toBe(all.length)
   })
 
+  it("orders unowned units nearest to unlock first, then units without a target", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [character("ultraTitus")],
+        mows: [],
+        shards: [
+          // Calgar (Legendary, 400): 19%; Tigurius (Epic, 250): 80%; Galatian has no target.
+          { unitId: "ultraCalgar" as UnitId, amount: 75, mythicAmount: 0 },
+          { unitId: "ultraTigurius" as UnitId, amount: 200, mythicAmount: 0 },
+          { unitId: "ultraDreadnought" as UnitId, amount: 90, mythicAmount: 0 },
+        ],
+      }),
+      labels
+    )
+
+    const ids = view.groups
+      .find((group) => group.factionId === "Ultramarines")!
+      .units.map((unit) => unit.unitId)
+    expect(ids[0]).toBe("ultraTitus")
+    expect(ids.indexOf("ultraTigurius" as UnitId)).toBeLessThan(
+      ids.indexOf("ultraCalgar" as UnitId)
+    )
+    expect(ids.at(-1)).toBe("ultraDreadnought")
+  })
+
+  it("counts owned units per faction for the card header", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [character("ultraTitus"), character("ultraCalgar")],
+        mows: [],
+        shards: [],
+      }),
+      labels
+    )
+
+    const ultramarines = view.groups.find(
+      (group) => group.factionId === "Ultramarines"
+    )!
+    expect(ultramarines.owned).toBe(2)
+    expect(view.groups.reduce((sum, group) => sum + group.owned, 0)).toBe(
+      view.owned
+    )
+  })
+
   it("derives the owned summary from the groups", () => {
     const owned = characters.slice(0, 84).map((c) => character(c.id))
     const view = buildCollectionView(

@@ -288,7 +288,8 @@
       "rosterErrorBody": "Toutes les unités restent en grisé jusqu'à son chargement. Réessayez.",
       "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
       "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "factionOwned": "{{owned}} possédées sur {{total}}"
     }
   },
   "unitTile": {
@@ -299,7 +300,11 @@
     "shardsToUnlock_one": "{{count}} éclat sur {{required}} pour débloquer",
     "shardsToUnlock_other": "{{count}} éclats sur {{required}} pour débloquer",
     "mythicShards_one": "{{count}} éclat mythique",
-    "mythicShards_other": "{{count}} éclats mythiques"
+    "mythicShards_other": "{{count}} éclats mythiques",
+    "level": "niveau {{level}}",
+    "notOwned": "non débloquée",
+    "startsAt": "Commence en {{rarity}}",
+    "unlockProgress": "Progression du déblocage"
   },
   "progress": {
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
@@ -1333,11 +1338,11 @@
         },
         "owned": {
           "title": "Une unité possédée",
-          "content": "Le cadre indique sa rareté, avec ses étoiles, son rang, son niveau d'XP, ses niveaux de capacité, son équipement et ses éclats, tous synchronisés depuis Tacticus."
+          "content": "L'anneau indique sa rareté, avec les étoiles en haut, le rang et les éclats sur le portrait, et en dessous les niveaux de capacité de part et d'autre de son niveau d'XP. Sélectionnez une unité pour ouvrir sa page de la Bibliothèque."
         },
         "unowned": {
           "title": "Pas encore débloquée",
-          "content": "Les unités en grisé ne font pas partie de votre effectif. Leurs éclats montrent à quel point vous êtes proche de les débloquer."
+          "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer."
         }
       }
     }

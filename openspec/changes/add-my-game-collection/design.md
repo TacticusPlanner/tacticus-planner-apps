@@ -20,8 +20,8 @@ See proposal.md for motivation and the stage plan. The current state that shapes
 
 **Non-Goals:**
 
-- No filters, search, selection or click handling. The tile API leaves room for them (see D3) but none is wired.
-- No view switching, sort control or overlay toggles (tracked as a separate issue).
+- No filters, search, selection or click handling. The tile API leaves room for them (see D3) but none is wired. Click-through to the unit's Library page is Stage 4 work (see the proposal's stage table).
+- No view switching, sort control, unowned toggle or overlay toggles. The handoff's Roster, Table and Showcase views and its Unowned toggle are tracked on the view-switching issue; filters and Sort are Stage 2.
 - No power, Blackstone value or rank-up target indicator.
 - No change to the Onslaught, Campaigns or Campaign Events pages beyond their route prefix.
 
@@ -47,11 +47,13 @@ _Alternative:_ hard-code My Game in `app-shell.tsx`. Rejected: Stage 4 and Inven
 
 `entities/unit` exports `UnitTile`, which takes one `UnitTileUnit` (`kind: "character" | "mow"`, `unitId`, localized `name`, and `data`). `data` is either an owned record (progression, rank, XP level, ability levels, equipment with resolved rarity, shards, mythic shards) or an unowned one (frame rarity, shards, mythic shards, unlock cost). Unknown ownership (no roster) or unknown shard data is an unowned record without shard counts, not a third state. The tile receives display data and does not fetch, so it stays reusable by Legendary Events and dailies.
 
-The tile renders as a non-interactive `role="group"` named by the unit (so assistive technology still reaches the ability and shard labels inside it), focusable on desktop only so the shared `Tooltip` can show the name on keyboard focus. The rarity frame is a ring in the existing `--rarity-*` colour tokens, since V2 has no portrait-frame artwork. Tile copy lives under `unitTile.*` in `common`. Stage 3/4 will add an optional `onActivate`/`selected` without breaking callers.
+The tile follows the Cards view in the design handoff (`tacticus-planner-docs/ux/wireframes/collection-handoff.md`, see D8): a round `RoundPortrait` image ringed in the `--rarity-*` token, overlays for stars, rank badge and shard crystal, then a one-line name, a row of number boxes and an equipment row. It renders as a non-interactive `role="group"`; Stage 4 turns it into a link to the unit's Library page (`/library/characters/:id`, `/library/machines-of-war/:id`) once those pages carry the V1 unit details. Its `aria-label` spells out the progression (localized rarity, stars and rank from the `progression` namespace) and every image inside is `alt=""`. With the name visible, the desktop tooltip is dropped. Tile copy lives under `unitTile.*` in `common`. Stage 3 can add an optional `selected` state and Stage 4 an optional link target without breaking callers.
+
+The tile takes its width from its grid slot: the portrait is a square capped at 72px that shrinks to fit the slot, and every variant (owned, unowned, character, MoW, no-roster) reserves the same rows so tiles in a card share one height.
 
 _Alternative:_ put the tile in `shared/ui`. Rejected: it encodes game-domain meaning (rank, rarity, equipment), which belongs in an entity.
 
-_Alternative:_ port V1's SVG-composited portrait. Rejected: V1 positions overlays absolutely on fixed 96×126 px art. V2 builds a compact CSS grid tile from the same icon assets so it scales with the layout.
+_Alternative:_ port V1's composited rectangular portrait. Rejected in the design review: the round portrait was chosen and V1's look was called visually overloaded. V2 keeps V1's density by overlaying stars, rank and shards on the portrait instead of stacking rows under it.
 
 ### D4. One canonical view-model: `buildCollectionView(catalog, roster, shardInventory)`
 
@@ -70,12 +72,12 @@ Faction order follows the domain's `allianceRank` (Imperial → Chaos → Xenos 
 
 ### D5. Desktop vs mobile
 
-The layout structure is the same on both: faction groups as cards, tiles in a wrapping grid inside each card. The differences:
+The layout structure is the same on both: faction cards in a grid, units in fixed slots inside each card. The differences:
 
-- **Desktop:** faction cards in a responsive multi-column grid (V1-like), tooltip on hover/focus.
-- **Mobile:** single-column faction cards, a smaller tile size, no tooltip.
+- **Desktop (>=768px):** faction cards in `repeat(auto-fill, minmax(min(30rem, 100%), 1fr))` with `align-items: stretch`, so cards share a width and a row height; seven unit slots per card row.
+- **Mobile (<768px):** the same grid collapses to one column; five unit slots per row and smaller page padding.
 
-Joyride targets are the same `data-testid`s on both (`collection-summary`, `collection-faction-group` (first), `collection-owned-tile` (first owned), `collection-unowned-tile` (first unowned)). Only the step placement differs, so the tutorial exports `desktop` and `mobile` step arrays that share targets. The summary target is absent without a roster, so the tour skips that step via its existing missing-target handling.
+Neither form has a tooltip. Joyride targets are the same `data-testid`s on both (`collection-summary`, `collection-faction-group` (first), `collection-owned-tile` (first owned), `collection-unowned-tile` (first unowned)). Only the step placement differs, so the tutorial exports `desktop` and `mobile` step arrays that share targets. The summary target is absent without a roster, so the tour skips that step via its existing missing-target handling.
 
 ### D6. i18n: rename `progress.*` to `myGame.*` in `common`, no new namespace
 
@@ -89,31 +91,55 @@ _Alternative:_ move only the context and let the page call `syncNow` itself. Rej
 
 _Alternative:_ no button, just text pointing at the sidebar. Rejected: the spec asks for the action itself.
 
+### D8. Cards view from the design handoff, with these deviations
+
+`tacticus-planner-docs/ux/wireframes/collection-handoff.md` is the visual source for the Cards view. This change implements its Cards view, page width, faction header, unit tile, unowned and no-roster tiles, loading skeleton and tokens. It deviates where the handoff conflicts with code or earlier decisions:
+
+| Handoff                                   | This change                                                                  | Why                                                                                                                        |
+| ----------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 5 unit slots per card row                 | 7 on desktop, 5 on mobile                                                    | 14 of 23 factions have 6 or 7 units; 5 slots would wrap most cards and miss the density target                             |
+| Default order by an "investment" score    | Alliance, then name (unchanged)                                              | The score is a stand-in for power, which is out of scope; investment order comes with Sort                                 |
+| Equipment as level-only squares           | Item icon in a rarity-coloured frame plus level                              | Keeps V1 parity ("everything V1 shows")                                                                                    |
+| Tile is a link to a `/units/:id` stub     | Tile is not interactive yet                                                  | Click-through goes to the existing Library pages in Stage 4, together with the unit details they still lack                |
+| One error state with "Browse the catalog" | Separate catalog and roster errors (D4)                                      | A catalog error has nothing to fall back to                                                                                |
+| "Sync now"                                | Existing "Sync with Tacticus"                                                | One label for one action                                                                                                   |
+| Mythic shards: open question              | One crystal: regular shards below the first blue star, mythic shards from it | Only one currency matters at a time; decided in review                                                                     |
+| Shard crystal 34x30px, 12px count         | 22x20px with a 10px count                                                    | The larger crystal crowded the portrait (review). The count is the one text under 12px; the accessible name carries it too |
+| Number boxes level, active, passive       | Active, level, passive; the level is a filled dark box                       | Matches the in-game layout so the level stands apart (review)                                                              |
+| Unearned gold stars at 25% opacity        | Earned stars only                                                            | Matches the existing `progressionVisual` used across V2                                                                    |
+
+### D9. Collection opts out of the page width cap; new tokens
+
+`PageContainer` caps every page at 1600px. `MyGameLayout` passes `max-w-none` while the Collection route is active, so only Collection uses the full width; the other My Game pages keep the cap.
+
+New theme tokens in `packages/ui/src/styles/globals.css` (both themes, registered with `@theme inline`): `--overlay` / `--overlay-foreground` (star pill, lock badge, text on faction bars and shard crystals), `--portrait` (portrait background while loading), `--progress` (unlock bar), `--info-bg` (sign-in/sync banner) and one `--faction-<id>` per catalog faction. Faction colours start from V1's `factions.json`, with the ones under 4.5:1 against white (Orks, Black Templars, Tau, Genestealers) darkened and duplicates separated; a unit test checks every faction token against white. Factions without a token fall back to `--muted-foreground`.
+
 ### V1 parity checklist (Who You Own, default view)
 
-| V1 element                                                                                               | Decision                                                                                                                                                |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Faction tiles (`FactionsGrid` / `FactionsTile`): faction icon, upper-cased name, colored gradient header | **Keep, redesign:** faction icon + localized name in a card header; the faction color accent is kept if a faction color token exists, otherwise neutral |
-| MoWs inside their faction tile                                                                           | **Keep**                                                                                                                                                |
-| Faction header power / Blackstone pills                                                                  | **Drop** (out of scope)                                                                                                                                 |
-| Roster header: total power, total Blackstone value                                                       | **Drop**; replaced by the owned summary                                                                                                                 |
-| Roster header: Quick Filter text box                                                                     | **Defer** to Stage 2                                                                                                                                    |
-| "Available (n)" / "Locked (n)" split (characters view)                                                   | **Redesign:** owned before unowned within each faction + one owned summary                                                                              |
-| Portrait: rarity frame, stars, rank icon                                                                 | **Keep** (`rarityIcon`/frame, `starsVisual`, `rankIcon`)                                                                                                |
-| Portrait: XP level, ability badges, equipment, shards, mythic shards                                     | **Keep** (`abilityIcon`, `EquipmentIcons`, `shardIcon`)                                                                                                 |
-| Locked: grayscale, shards + mythic shards                                                                | **Keep**, plus unlock target for characters                                                                                                             |
-| Rank-up target indicator                                                                                 | **Drop** (not shown on WYO by default; candidate for Stage 2 "Ready to Rank Up")                                                                        |
-| Hover title / tooltip                                                                                    | **Keep** on desktop (unit name only, no power)                                                                                                          |
-| Click → edit dialog / unit details                                                                       | **Drop** in Stage 1; Stage 4 redirects to Library                                                                                                       |
-| View controls, order-by, show-overlay toggles                                                            | **Defer** (view switching issue)                                                                                                                        |
-| Share roster                                                                                             | **Drop** (not requested)                                                                                                                                |
-| Mobile `zoom: 0.8`                                                                                       | **Redesign** as a smaller mobile tile size                                                                                                              |
+| V1 element                                                                                               | Decision                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Faction tiles (`FactionsGrid` / `FactionsTile`): faction icon, upper-cased name, colored gradient header | **Keep:** a header bar in a `--faction-*` colour token with the faction icon, upper-cased localized name and owned/total |
+| MoWs inside their faction tile                                                                           | **Keep**                                                                                                                 |
+| Faction header power / Blackstone pills                                                                  | **Drop** (out of scope)                                                                                                  |
+| Roster header: total power, total Blackstone value                                                       | **Drop**; replaced by the owned summary                                                                                  |
+| Roster header: Quick Filter text box                                                                     | **Defer** to Stage 2                                                                                                     |
+| "Available (n)" / "Locked (n)" split (characters view)                                                   | **Redesign:** owned before unowned within each faction + one owned summary                                               |
+| Portrait: rarity frame, stars, rank icon                                                                 | **Keep:** rarity ring on a round portrait, star pill and rank badge overlaid on it                                       |
+| Portrait: XP level, ability badges, equipment, shards, mythic shards                                     | **Keep:** number boxes for XP and abilities, equipment row, shard and mythic crystals on the portrait                    |
+| Locked: grayscale, shards + mythic shards                                                                | **Keep**, plus unlock target for characters                                                                              |
+| Rank-up target indicator                                                                                 | **Drop** (not shown on WYO by default; candidate for Stage 2 "Ready to Rank Up")                                         |
+| Hover title / tooltip                                                                                    | **Redesign:** the name is shown on the tile, so no tooltip                                                               |
+| Click → edit dialog / unit details                                                                       | **Defer** to Stage 4: tiles will open the unit's Library page once it has the V1 details                                 |
+| View controls, order-by, show-overlay toggles                                                            | **Defer** (view switching issue)                                                                                         |
+| Share roster                                                                                             | **Drop** (not requested)                                                                                                 |
+| Mobile `zoom: 0.8`                                                                                       | **Redesign:** five slots per row on mobile, the portrait shrinks to its slot                                             |
 
 ## Risks / Trade-offs
 
 - [Breaking `/progress/*` URLs] → V2 is pre-production. The one in-app link is updated, and the old routes fall through to not-found as the spec requires.
 - [Per-child visibility touches every nav consumer] → Filtering in one hook (D2) and adding tests per consumer (desktop menu, mobile tabs, drawer, search, last-visited resolution) keep the blast radius visible.
-- [Tile density with all overlays on mobile] → The smaller mobile tile shows the same data, and ability levels and equipment collapse to compact badges. Overlay toggles are the follow-up issue.
+- [Tile density with all overlays on mobile] → Five slots per row keep the portrait readable at 420px. Overlay toggles and the Roster view are on the view-switching issue.
+- [A faction grows past seven units] → Its card wraps to a second row; nothing breaks, that faction just loses the one-row layout.
 - [MoWs show weaker unowned info than characters] → The catalog has no MoW rarity or unlock cost. Showing a shard count only is honest; adding the data would be an API change, out of scope.
 - [~130 tiles render at once] → Tiles are lightweight images. Virtualization is not planned; revisit if profiling shows a problem.
 

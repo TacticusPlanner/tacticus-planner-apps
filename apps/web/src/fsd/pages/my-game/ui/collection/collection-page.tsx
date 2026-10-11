@@ -10,13 +10,7 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import { Spinner } from "@workspace/ui/components/spinner"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { UnitTile } from "@/entities/unit"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
@@ -31,10 +25,19 @@ import type {
 import { useCollectionView } from "../../model/use-collection-view"
 import { useCollectionTutorial } from "./collection.tutorial"
 
+// Equal-width faction cards that add a column as the window widens; rows stretch so cards in a row
+// share one height. Inside a card, fixed unit slots (5 on mobile, 7 on desktop) line portraits up
+// across cards - no current faction has more than seven units, so each fits one desktop row.
+const factionGrid =
+  "grid items-stretch gap-2.5 sm:gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(30rem,100%),1fr))]"
+const unitSlots =
+  "grid grid-cols-5 gap-x-1.5 gap-y-3 px-2 pt-3 pb-2.5 md:grid-cols-7"
+
 /**
  * My Game's Collection: every catalog unit grouped by faction, owned units with their synced
  * progression and the rest greyed out. Without a roster (signed out, not synced yet, or unreadable)
- * the whole catalog shows greyed out under a prompt explaining how to see it.
+ * the whole catalog shows greyed out under a prompt explaining how to see it. Laid out per the
+ * Cards view of the design handoff (tacticus-planner-docs/ux/wireframes/collection-handoff.md).
  */
 export function CollectionPage() {
   const { t } = useTranslation("common")
@@ -45,15 +48,7 @@ export function CollectionPage() {
   useTourPageSteps(useCollectionTutorial({ hasSummary, hasOwned }))
 
   if (state.status === "loading") {
-    return (
-      <div
-        className="flex items-center justify-center gap-2 py-16 text-muted-foreground"
-        data-testid="collection-loading"
-      >
-        <Spinner />
-        {t("myGame.collection.loading")}
-      </div>
-    )
+    return <CollectionSkeleton />
   }
 
   if (state.status === "catalogError") {
@@ -88,46 +83,111 @@ export function CollectionPage() {
       ) : (
         <RosterPrompt rosterState={view.rosterState} onRetry={retry} />
       )}
-      <div className="grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-3">
+      <div className={factionGrid}>
         {view.groups.map((group) => (
-          <FactionGroupCard key={group.factionId} group={group} />
+          <FactionGroupCard
+            key={group.factionId}
+            group={group}
+            showOwned={view.rosterState === "available"}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-function FactionGroupCard({ group }: { group: CollectionFactionGroup }) {
+function FactionGroupCard({
+  group,
+  showOwned,
+}: {
+  group: CollectionFactionGroup
+  showOwned: boolean
+}) {
+  const { t } = useTranslation("common")
+  const total = group.units.length
+
   return (
-    <Card
-      className="gap-3 py-4"
+    <section
+      aria-label={group.factionName}
+      className="flex flex-col overflow-hidden rounded-[10px] border bg-card"
       data-testid="collection-faction-group"
       data-faction={group.factionId}
     >
-      <CardHeader className="px-4">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <EntityIcon
-            src={factionIcon(group.factionId)}
-            alt=""
-            className="size-6"
-          />
-          <h2>{group.factionName}</h2>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-wrap gap-1 px-3">
+      <header
+        className="flex h-[30px] shrink-0 items-center gap-2 px-2.5 text-overlay-foreground"
+        style={{
+          background: `var(--faction-${group.factionId}, var(--muted-foreground))`,
+        }}
+        data-testid="collection-faction-header"
+      >
+        <EntityIcon
+          src={factionIcon(group.factionId)}
+          alt=""
+          className="size-[22px] shrink-0"
+        />
+        <h2 className="min-w-0 flex-1 truncate text-[13px] font-bold tracking-[0.06em] uppercase">
+          {group.factionName}
+        </h2>
+        {showOwned ? (
+          <span
+            className="shrink-0 text-[13px] font-semibold tabular-nums"
+            aria-label={t("myGame.collection.factionOwned", {
+              owned: group.owned,
+              total,
+            })}
+            data-testid="collection-faction-owned"
+          >
+            {group.owned}/{total}
+          </span>
+        ) : null}
+      </header>
+      <ul className={unitSlots}>
         {group.units.map((unit) => (
-          <UnitTile
-            key={unit.unitId}
-            unit={unit}
-            testId={
-              unit.data.state === "owned"
-                ? "collection-owned-tile"
-                : "collection-unowned-tile"
-            }
-          />
+          <li key={unit.unitId} className="min-w-0">
+            <UnitTile
+              unit={unit}
+              testId={
+                unit.data.state === "owned"
+                  ? "collection-owned-tile"
+                  : "collection-unowned-tile"
+              }
+            />
+          </li>
         ))}
-      </CardContent>
-    </Card>
+      </ul>
+    </section>
+  )
+}
+
+/** Placeholder faction cards while the catalog loads; static under reduced motion. */
+function CollectionSkeleton() {
+  const { t } = useTranslation("common")
+
+  return (
+    <div className="space-y-6" data-testid="collection-loading">
+      <p className="sr-only" role="status">
+        {t("myGame.collection.loading")}
+      </p>
+      <div className={factionGrid} aria-busy="true">
+        {Array.from({ length: 6 }, (_, card) => (
+          <div
+            key={card}
+            className="overflow-hidden rounded-[10px] border bg-card"
+          >
+            <Skeleton className="h-[30px] rounded-none motion-reduce:animate-none" />
+            <div className={unitSlots}>
+              {Array.from({ length: 5 }, (_, slot) => (
+                <div key={slot} className="flex flex-col items-center gap-2">
+                  <Skeleton className="aspect-square w-full max-w-18 rounded-full motion-reduce:animate-none" />
+                  <Skeleton className="h-3 w-4/5 rounded motion-reduce:animate-none" />
+                  <Skeleton className="h-5 w-full rounded motion-reduce:animate-none" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -142,7 +202,10 @@ function RosterPrompt({
 
   if (rosterState === "anonymous") {
     return (
-      <Alert data-testid="collection-sign-in-prompt">
+      <Alert
+        className="border-ring bg-info-bg"
+        data-testid="collection-sign-in-prompt"
+      >
         <LogIn />
         <AlertTitle>{t("myGame.collection.signInTitle")}</AlertTitle>
         <AlertDescription>
@@ -155,7 +218,10 @@ function RosterPrompt({
 
   if (rosterState === "notSynced") {
     return (
-      <Alert data-testid="collection-sync-prompt">
+      <Alert
+        className="border-ring bg-info-bg"
+        data-testid="collection-sync-prompt"
+      >
         <RefreshCw />
         <AlertTitle>{t("myGame.collection.syncTitle")}</AlertTitle>
         <AlertDescription>

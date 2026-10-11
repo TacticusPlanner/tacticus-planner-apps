@@ -288,7 +288,8 @@
       "rosterErrorBody": "Every unit is shown greyed out until it loads. Try again.",
       "catalogErrorTitle": "The unit catalog couldn't be loaded",
       "catalogErrorBody": "The collection can't be shown without it. Try again.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "factionOwned": "{{owned}} of {{total}} owned"
     }
   },
   "unitTile": {
@@ -299,7 +300,11 @@
     "shardsToUnlock_one": "{{count}} of {{required}} shards to unlock",
     "shardsToUnlock_other": "{{count}} of {{required}} shards to unlock",
     "mythicShards_one": "{{count}} mythic shard",
-    "mythicShards_other": "{{count}} mythic shards"
+    "mythicShards_other": "{{count}} mythic shards",
+    "level": "level {{level}}",
+    "notOwned": "not unlocked",
+    "startsAt": "Starts {{rarity}}",
+    "unlockProgress": "Unlock progress"
   },
   "progress": {
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
@@ -1333,11 +1338,11 @@
         },
         "owned": {
           "title": "An owned unit",
-          "content": "The frame shows its rarity, with its stars, rank, XP level, ability levels, equipment and shards — all synced from Tacticus."
+          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below. Select a unit to open its Library page."
         },
         "unowned": {
           "title": "Not unlocked yet",
-          "content": "Greyed-out units aren't in your roster. Their shard count shows how close you are to unlocking them."
+          "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them."
         }
       }
     }

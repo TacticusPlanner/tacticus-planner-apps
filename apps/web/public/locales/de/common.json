@@ -288,7 +288,8 @@
       "rosterErrorBody": "Bis er geladen ist, werden alle Einheiten ausgegraut angezeigt. Versuche es erneut.",
       "catalogErrorTitle": "Der Einheitenkatalog konnte nicht geladen werden",
       "catalogErrorBody": "Ohne ihn kann die Sammlung nicht angezeigt werden. Versuche es erneut.",
-      "retry": "Erneut versuchen"
+      "retry": "Erneut versuchen",
+      "factionOwned": "{{owned}} von {{total}} im Besitz"
     }
   },
   "unitTile": {
@@ -299,7 +300,11 @@
     "shardsToUnlock_one": "{{count}} von {{required}} Scherben zum Freischalten",
     "shardsToUnlock_other": "{{count}} von {{required}} Scherben zum Freischalten",
     "mythicShards_one": "{{count}} mythische Scherbe",
-    "mythicShards_other": "{{count}} mythische Scherben"
+    "mythicShards_other": "{{count}} mythische Scherben",
+    "level": "Stufe {{level}}",
+    "notOwned": "nicht freigeschaltet",
+    "startsAt": "Startet als {{rarity}}",
+    "unlockProgress": "Fortschritt zur Freischaltung"
   },
   "progress": {
     "loadError": "Fortschrittsdaten sind unerwartet nicht verfügbar. Aktualisiere und versuche es erneut.",
@@ -1333,11 +1338,11 @@
         },
         "owned": {
           "title": "Eine Einheit in deinem Besitz",
-          "content": "Der Rahmen zeigt ihre Seltenheit, dazu Sterne, Rang, EP-Stufe, Fähigkeitsstufen, Ausrüstung und Scherben – alles aus Tacticus synchronisiert."
+          "content": "Der Ring zeigt die Seltenheit, oben die Sterne, auf dem Porträt Rang und Scherben, darunter die Fähigkeitsstufen links und rechts der EP-Stufe. Wähle eine Einheit, um ihre Bibliotheksseite zu öffnen."
         },
         "unowned": {
           "title": "Noch nicht freigeschaltet",
-          "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Ihre Scherben zeigen, wie nah du an der Freischaltung bist."
+          "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist."
         }
       }
     }

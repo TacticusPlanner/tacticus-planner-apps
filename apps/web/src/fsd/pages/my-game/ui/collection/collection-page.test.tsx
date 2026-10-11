@@ -9,6 +9,7 @@ import {
 } from "vitest"
 import type { i18n as I18n } from "i18next"
 import { I18nextProvider } from "react-i18next"
+import { MemoryRouter } from "react-router"
 import type { Rarity, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
@@ -151,7 +152,9 @@ function renderPage(width: number) {
   setViewportWidth(width)
   return render(
     <I18nextProvider i18n={i18n}>
-      <CollectionPage />
+      <MemoryRouter>
+        <CollectionPage />
+      </MemoryRouter>
     </I18nextProvider>
   )
 }
@@ -188,16 +191,20 @@ describe.each([
       ultramarines.getByRole("heading", { name: "Ultramarines" })
     ).toBeVisible()
     expect(
+      within(groups[0]!).getByTestId("collection-faction-owned")
+    ).toHaveTextContent("1/3")
+    expect(
       ultramarines
         .getAllByRole("group")
-        .map((tile) => [tile.getAttribute("aria-label"), tile.dataset.state])
+        .map((tile) => [tile.getAttribute("title"), tile.dataset.state])
     ).toEqual([
       ["Titus", "owned"],
-      ["Galatian", "unowned"],
+      // Nearest to unlock first: Calgar has a target, the Machine of War has none.
       ["Marneus Calgar", "unowned"],
+      ["Galatian", "unowned"],
     ])
     expect(
-      ultramarines.getByRole("group", { name: "Marneus Calgar" })
+      ultramarines.getByRole("group", { name: /^Marneus Calgar,/ })
     ).toHaveTextContent("75/400")
     expect(
       screen.queryByTestId("collection-sync-prompt")
@@ -229,6 +236,9 @@ describe.each([
     expect(tiles).toHaveLength(4)
     expect(tiles.every((tile) => tile.dataset.state === "unowned")).toBe(true)
     expect(screen.queryByTestId("unit-tile-shards")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-faction-owned")
+    ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("collection-sign-in"))
     expect(msal.loginRedirect).toHaveBeenCalledTimes(1)
@@ -287,6 +297,11 @@ describe("CollectionPage states", () => {
       "Loading your collection"
     )
     expect(screen.queryByRole("group")).not.toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId("collection-loading")
+        .querySelector("[aria-busy='true']")
+    ).not.toBeNull()
     expect(
       screen.queryByTestId("collection-sign-in-prompt")
     ).not.toBeInTheDocument()

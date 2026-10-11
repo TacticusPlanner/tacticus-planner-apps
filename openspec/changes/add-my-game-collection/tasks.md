@@ -49,3 +49,16 @@ Data states needed: an anonymous session, a signed-in account with a synced rost
 
 - [x] 8.1 Update the Purpose line of `openspec/specs/onslaught-progress-entry/spec.md` from `/progress/onslaught` to `/my-game/onslaught` (done directly on the branch, since a delta cannot change a Purpose); verify `openspec validate --specs`
 - [x] 8.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing
+
+## 9. Cards view redesign (design handoff)
+
+- [x] 9.1 Add the `--overlay`, `--overlay-foreground`, `--portrait`, `--progress`, `--info-bg` and `--faction-<id>` tokens to both themes in `packages/ui/src/styles/globals.css`; verify with a unit test that every faction token gives at least 4.5:1 against `--overlay-foreground`
+- [x] 9.2 Let Collection opt out of the 1600px `PageContainer` cap from `MyGameLayout` while the other My Game pages keep it; verify with a layout test for both routes
+- [x] 9.3 Rebuild `UnitTile` (still non-interactive; click-through is Stage 4): round portrait with rarity ring, star pill, rank badge, shard crystal (and mythic crystal when > 0), one-line name, number boxes, equipment row with item icons; unowned variant with lock badge and `have/need` progress bar (character) or count (MoW); no-roster variant with "Starts <Rarity>"; equal heights; spelled-out `aria-label`; no tooltip; verify with component tests per variant, including that a click does nothing and the progressbar
+- [x] 9.4 Order unowned units nearest to unlock first in `buildCollectionView` and expose each group's owned count; verify with view-model tests
+- [x] 9.5 Rebuild the faction grid and card: equal-width auto-fill grid with stretched rows, faction-coloured header bar with icon, upper-cased name and owned/total (omitted without a roster), seven slots per row on desktop and five on mobile; verify with page tests at both breakpoints
+- [x] 9.6 Replace the loading spinner with skeleton faction cards (`aria-busy`, no pulse under reduced motion); verify with a page test
+- [x] 9.7 Update `unitTile.*`, `myGame.collection.*` and tour copy for the new tile in en/de/es/fr with real translations; verify the translation test and that the tour targets still exist
+- [ ] 9.8 Verify on desktop (>=768px): synced roster shows each faction on one row, cards align, the 1440px window shows at least 60 units within about one and a half screens, clicking a tile does nothing, light and dark themes render the overlays readably; anonymous shows "Starts <Rarity>" tiles
+- [ ] 9.9 Verify on mobile (<768px, same-origin iframe): five slots per row, no horizontal scroll at 420px, tapping a tile does nothing
+- [ ] 9.10 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing

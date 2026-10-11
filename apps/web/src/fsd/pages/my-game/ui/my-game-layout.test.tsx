@@ -36,4 +36,13 @@ describe("MyGameLayout", () => {
 
     expect(screen.getByText(expectedText)).toBeInTheDocument()
   })
+
+  it("lets only Collection use the full window width", () => {
+    const { unmount } = renderMyGame("/my-game/collection")
+    expect(screen.getByTestId("my-game-layout")).toHaveClass("max-w-none")
+    unmount()
+
+    renderMyGame("/my-game/campaigns")
+    expect(screen.getByTestId("my-game-layout")).not.toHaveClass("max-w-none")
+  })
 })

@@ -4,13 +4,13 @@ V1 spreads the player's roster across several pages (Who You Own, bulk goals, un
 
 The feature request is deliberately staged; this change is Stage 1 only:
 
-| Stage | Change (planned)                | Scope                                                                                                                                   |
-| ----- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | `add-my-game-collection` (this) | My Game section, read-only units list                                                                                                   |
-| 2     | follow-up                       | Standalone filters (alliance, faction, rarity, rank, ...) and V1 predefined filters (Ready to Rank Up, Need to Ascend, Can Ascend, ...) |
-| 3     | follow-up                       | Unit selection and bulk goal creation                                                                                                   |
-| 4     | follow-up                       | Clickable units opening the Library character page, extended with V1 unit details (mythic quest, traits, abilities)                     |
-| -     | tracked as a separate issue     | View switching (flat grid, sort options, overlay toggles)                                                                               |
+| Stage | Change (planned)                | Scope                                                                                                                                                                                                                                                                          |
+| ----- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1     | `add-my-game-collection` (this) | My Game section, read-only units list                                                                                                                                                                                                                                          |
+| 2     | follow-up                       | Standalone filters (alliance, faction, rarity, rank, ...) and V1 predefined filters (Ready to Rank Up, Need to Ascend, Can Ascend, ...)                                                                                                                                        |
+| 3     | follow-up                       | Unit selection and bulk goal creation                                                                                                                                                                                                                                          |
+| 4     | follow-up                       | Library unit pages extended with V1 unit details (mythic quest, traits, abilities), and Collection tiles made clickable to open them (characters `/library/characters/:id`, Machines of War `/library/machines-of-war/:id`, whose page shows no details yet - feedback LIB-04) |
+| -     | tracked as a separate issue     | View switching: Roster, Table and Showcase views from the design handoff, sort options, Unowned and overlay toggles                                                                                                                                                            |
 
 ## What Changes
 
@@ -21,9 +21,10 @@ The feature request is deliberately staged; this change is Stage 1 only:
   - owned units with everything V1 Who You Own shows by default except power and Blackstone value: rarity frame and stars, rank (characters), XP level, ability levels, equipment (characters), shards and mythic shards;
   - unowned units greyed out with their shard and mythic-shard progress;
   - when no roster is available (signed out, or signed in but not yet synced), every unit greyed out with a prompt to sign in or sync.
-- The page is read-only. It does not edit units (V2's roster comes only from Tacticus sync), and units are not clickable in this stage.
+- The page follows the Cards view of the design handoff (`tacticus-planner-docs/ux/wireframes/collection-handoff.md`): full width, equal-width faction cards with a faction-coloured header bar and owned/total, and game-style unit tiles (round portrait with stars, rank and shard overlays, visible name, number boxes, equipment).
+- The page is read-only. It does not edit units (V2's roster comes only from Tacticus sync). Units are not clickable in this stage; opening a unit's Library page from its tile is Stage 4.
 
-Out of scope for this change: filters and name search (Stage 2), selection and bulk goals (Stage 3), unit details and click-through (Stage 4), view switching and sort options (separate issue), power and Blackstone value.
+Out of scope for this change: filters and name search (Stage 2), selection and bulk goals (Stage 3), new unit details on the Library pages and tile click-through (Stage 4), view switching, sort options and the Unowned toggle (separate issue), power and Blackstone value.
 
 ## Capabilities
 
@@ -41,6 +42,7 @@ Out of scope for this change: filters and name search (Stage 2), selection and b
 - `apps/web/src/fsd/app/layout/nav-items.ts`, `app-shell.tsx`, the desktop section menu, mobile tab row/drawer and navigation search (per-child visibility); `apps/web/src/fsd/app/routes.tsx` (route move, per-child `ProtectedRoute`).
 - `apps/web/src/fsd/pages/progress` is renamed/moved to a My Game page slice; internal links to `/progress/*` are updated.
 - New reusable unit tile in an entity slice, which Legendary Events, dailies team lists and later Collection stages can reuse.
+- `packages/ui` theme tokens: overlay, portrait, progress, info banner and one colour per faction.
 - i18n: `progress.*` / `nav.progress*` copy is renamed to My Game in every locale; new Collection and tour copy in en/de/es/fr.
 - Tours: new Collection page tour; the general navigation tour mentions My Game instead of Progress.
 - `onslaught-progress-entry` spec's Purpose names `/progress/onslaught`; it is updated directly at sync time (a delta cannot change a Purpose).

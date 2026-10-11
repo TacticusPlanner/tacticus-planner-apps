@@ -288,7 +288,8 @@
       "rosterErrorBody": "Todas las unidades se muestran en gris hasta que se cargue. Inténtalo de nuevo.",
       "catalogErrorTitle": "No se pudo cargar el catálogo de unidades",
       "catalogErrorBody": "Sin él no se puede mostrar la colección. Inténtalo de nuevo.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "factionOwned": "{{owned}} de {{total}} en tu poder"
     }
   },
   "unitTile": {
@@ -299,7 +300,11 @@
     "shardsToUnlock_one": "{{count}} de {{required}} fragmentos para desbloquear",
     "shardsToUnlock_other": "{{count}} de {{required}} fragmentos para desbloquear",
     "mythicShards_one": "{{count}} fragmento mítico",
-    "mythicShards_other": "{{count}} fragmentos míticos"
+    "mythicShards_other": "{{count}} fragmentos míticos",
+    "level": "nivel {{level}}",
+    "notOwned": "no desbloqueada",
+    "startsAt": "Empieza en {{rarity}}",
+    "unlockProgress": "Progreso de desbloqueo"
   },
   "progress": {
     "loadError": "Los datos de progreso no están disponibles inesperadamente. Actualiza e inténtalo de nuevo.",
@@ -1333,11 +1338,11 @@
         },
         "owned": {
           "title": "Una unidad que tienes",
-          "content": "El marco muestra su rareza, junto con sus estrellas, rango, nivel de PX, niveles de habilidad, equipo y fragmentos, todo sincronizado desde Tacticus."
+          "content": "El anillo muestra su rareza, con las estrellas arriba, el rango y los fragmentos sobre el retrato, y debajo los niveles de habilidad a ambos lados de su nivel de PX. Selecciona una unidad para abrir su página de la Biblioteca."
         },
         "unowned": {
           "title": "Aún no desbloqueada",
-          "content": "Las unidades en gris no están en tu plantilla. Sus fragmentos muestran lo cerca que estás de desbloquearlas."
+          "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas."
         }
       }
     }
