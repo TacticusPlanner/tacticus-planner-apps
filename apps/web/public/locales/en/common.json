@@ -281,18 +281,49 @@
     },
     "events": {
       "regular": "Regular battles",
-      "challenges": "Optional challenges",
-      "regularProgress": "{{type}} regular progress",
-      "decrease": "Decrease progress",
-      "increase": "Increase progress",
+      "challenges": "Challenges",
+      "decrease": "Decrease {{type}} progress",
+      "increase": "Increase {{type}} progress",
+      "slider": "{{type}} regular battles completed",
       "max": "Max",
-      "useSynced": "Use synced value",
-      "manual": "Manual",
-      "synced": "Synced",
-      "save": "Save",
+      "maxFor": "Set {{type}} to max",
+      "resetToSynced": "Reset to synced",
+      "source": {
+        "manual": "Manual",
+        "synced": "Synced",
+        "none": "No synced data"
+      },
+      "challengeN": "Challenge {{n}}",
+      "challengeNode": "Node {{id}}",
+      "noBattles": "No battles in this track.",
+      "coreCharacters": "Core characters",
+      "notOwned": "{{name}} (not owned)",
+      "currentEvent": "Current event",
+      "allEvents": "All events",
+      "saveHint": "Unsaved changes appear in a bar at the bottom of the page.",
+      "hideCompleted": "Hide completed events",
+      "allCompleted": "All campaign events are completed.",
+      "showCompleted": "Show completed events",
+      "noEvents": "There are no campaign events to track yet.",
+      "completed": "Completed",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Challenges"
+      },
+      "unsaved": {
+        "message": "You have unsaved changes",
+        "save": "Save",
+        "discard": "Discard"
+      },
+      "leave": {
+        "title": "Leave without saving?",
+        "description": "Your campaign event changes haven't been saved and will be lost.",
+        "stay": "Stay",
+        "leave": "Leave"
+      },
       "saved": "Campaign event progress saved.",
-      "saveError": "Couldn't save campaign event progress.",
-      "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
+      "saveError": "Couldn't save campaign event progress. Your changes are still here; try again.",
+      "conflict": "Campaign event progress was changed elsewhere. The latest values are loaded and your edits were not saved."
     }
   },
   "legendaryEvents": {
@@ -1290,6 +1321,34 @@
         "mythicMaterialSources": {
           "title": "Mythic materials",
           "content": "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Campaign event progress",
+          "content": "Correct your progress in each campaign event. Daily raids use these values to decide which event nodes you can farm."
+        },
+        "current": {
+          "title": "Current event",
+          "content": "The event running right now is pinned here, already expanded. It's the only event daily raids plan for."
+        },
+        "editor": {
+          "title": "Edit a track",
+          "content": "Step the regular-battle count, drag the bar, or use Max. Toggle challenges one by one. \"Reset to synced\" undoes a manual value."
+        },
+        "summary": {
+          "title": "Event summaries",
+          "content": "Each event shows its progress at a glance and whether values are manual or have no synced data. Open it to edit."
+        },
+        "hideCompleted": {
+          "title": "Hide completed events",
+          "content": "Unfinished events are listed first. Turn this on to hide completed ones; the choice is remembered in this browser."
+        },
+        "save": {
+          "title": "Save your changes",
+          "content": "Once you edit something, a bar with Save and Discard appears at the bottom. You'll be asked before leaving with unsaved changes."
         }
       }
     }
