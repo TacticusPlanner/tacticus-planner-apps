@@ -11,7 +11,7 @@ import { subItemLabel, type NavItem } from "./nav-items"
  * Renders the active top-level section's child pages as a routed tab row. Rendered by the mobile
  * header only - the desktop header shows a static breadcrumb and no picker, and desktop reaches
  * child pages through the sidebar flyout instead. Replaces each page's own previously-separate
- * `Tabs` block (`GoalsLayout`, `ProgressLayout`, `LibraryPage`, `GuildRegisteredView`,
+ * `Tabs` block (`GoalsLayout`, `MyGameLayout`, `LibraryPage`, `GuildRegisteredView`,
  * `DailiesLayout`). Renders nothing for a section with no children (e.g. Home).
  */
 export function SectionTabs({ item }: { item: NavItem }) {

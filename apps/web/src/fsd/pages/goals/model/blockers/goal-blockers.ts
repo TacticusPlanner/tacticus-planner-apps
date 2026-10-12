@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next"
 
+import type { GoalKind } from "@/entities/goal"
 import type { EstimateBlockedReason } from "@/features/goal-farming"
 import type { Progression } from "@workspace/game-domain"
 
@@ -22,8 +23,13 @@ export type BlockerReason =
        *  Restricted rather than Blocked — presentation only, same blocked state. */
       partial?: boolean
     }
-  /** A goal this one `dependsOn` hasn't reached its own target yet. */
-  | { kind: "PrerequisiteNotReached"; goalId: string }
+  /** A goal this one `dependsOn` hasn't reached its own target yet. `prerequisite` names it once
+   *  its detail has loaded; until then the reason reads generically. */
+  | {
+      kind: "PrerequisiteNotReached"
+      goalId: string
+      prerequisite?: PrerequisiteGoalLabel
+    }
   /** The synced player record this goal's kind needs (character/MoW/inventory) hasn't loaded yet. */
   | { kind: "PlayerDataUnavailable" }
   /** The static game catalog (characters, upgrades, costs) this goal needs hasn't loaded yet. */
@@ -46,6 +52,9 @@ export type BlockerReason =
       existingGoalId: undefined
     }
 
+/** What the tooltip names an unreached prerequisite goal by: its unit and its goal kind. */
+export type PrerequisiteGoalLabel = { unitName: string; goalType: GoalKind }
+
 export type GoalBlockers = {
   reasons: BlockerReason[]
   isBlocked: boolean
@@ -54,7 +63,10 @@ export type GoalBlockers = {
 export function computeGoalBlockers(params: {
   estimateReason: EstimateBlockedReason | undefined
   estimatePartial?: boolean
-  unreachedPrerequisiteGoalIds: readonly string[]
+  unreachedPrerequisites: readonly {
+    goalId: string
+    prerequisite?: PrerequisiteGoalLabel
+  }[]
   playerDataUnavailable: boolean
   catalogDataUnavailable: boolean
   implicitReasons?: readonly BlockerReason[]
@@ -67,8 +79,8 @@ export function computeGoalBlockers(params: {
   if (params.playerDataUnavailable) {
     reasons.push({ kind: "PlayerDataUnavailable" })
   }
-  for (const goalId of params.unreachedPrerequisiteGoalIds) {
-    reasons.push({ kind: "PrerequisiteNotReached", goalId })
+  for (const { goalId, prerequisite } of params.unreachedPrerequisites) {
+    reasons.push({ kind: "PrerequisiteNotReached", goalId, prerequisite })
   }
   if (params.estimateReason) {
     reasons.push({
@@ -91,7 +103,14 @@ export function blockerReasonText(t: TFunction, reason: BlockerReason): string {
     case "EstimateBlocked":
       return t(`goals.estimate.blocked.${reason.reason}`)
     case "PrerequisiteNotReached":
-      return t("goals.blocked.reasons.PrerequisiteNotReached")
+      return reason.prerequisite
+        ? t("goals.blocked.reasons.PrerequisiteNotReachedNamed", {
+            unit: reason.prerequisite.unitName,
+            goalType: t(
+              `goals.create.goalTypes.${reason.prerequisite.goalType}`
+            ),
+          })
+        : t("goals.blocked.reasons.PrerequisiteNotReached")
     case "PlayerDataUnavailable":
       return t("goals.blocked.reasons.PlayerDataUnavailable")
     case "CatalogDataUnavailable":

@@ -18,6 +18,7 @@ import { goalQueries } from "@/entities/goal"
 import {
   computeGoalBlockers,
   type GoalBlockers,
+  type PrerequisiteGoalLabel,
 } from "../blockers/goal-blockers"
 import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
 import type {
@@ -207,12 +208,20 @@ function useComputedGoalsOverviewMetrics(
     !!(mowsById && ascensionCostsById && unlockShardCostsById)
 
   const dependencyReachedById = new Map<string, boolean>()
+  const dependencyLabelById = new Map<string, PrerequisiteGoalLabel>()
   dependencyQueries.forEach((query, index) => {
     const dependencyGoalId = dependencyGoalIds[index]
     if (!dependencyGoalId) return
     const dependencyDetail = query.data
     if (!dependencyDetail) return
     const dependencyUnitId = dependencyDetail.entityId as UnitId
+    dependencyLabelById.set(dependencyGoalId, {
+      unitName: getEntityName(
+        dependencyDetail.entityType,
+        dependencyDetail.entityId
+      ),
+      goalType: dependencyDetail.goalType,
+    })
     dependencyReachedById.set(
       dependencyGoalId,
       computeGoalAttainment({
@@ -331,10 +340,15 @@ function useComputedGoalsOverviewMetrics(
         estimateOutcome?.status === "Blocked"
           ? estimateOutcome.reason
           : undefined,
-      unreachedPrerequisiteGoalIds: detail.dependsOn.filter(
-        (dependencyGoalId) =>
-          dependencyReachedById.get(dependencyGoalId) === false
-      ),
+      unreachedPrerequisites: detail.dependsOn
+        .filter(
+          (dependencyGoalId) =>
+            dependencyReachedById.get(dependencyGoalId) === false
+        )
+        .map((dependencyGoalId) => ({
+          goalId: dependencyGoalId,
+          prerequisite: dependencyLabelById.get(dependencyGoalId),
+        })),
       playerDataUnavailable:
         catalogReady &&
         isPlayerDataUnavailable({ attainment, rosterLoaded, playerUnit }),
