@@ -4,7 +4,10 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) =>
+      options ? `${key}:${JSON.stringify(options)}` : key,
+  }),
 }))
 
 vi.mock("../../model/shared/use-goal-catalog", () => ({
@@ -196,10 +199,71 @@ describe("BlockedIndicator", () => {
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     const occurrences = (
       tooltip.textContent?.match(
-        /goals\.blocked\.reasons\.PrerequisiteNotReached/g
+        /goals\.blocked\.reasons\.PrerequisiteNotReached\b/g
       ) ?? []
     ).length
     expect(occurrences).toBe(1)
+  })
+
+  it("opens the Restricted tooltip with an explanation of what Restricted means", async () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [{ kind: "PrerequisiteNotReached", goalId: "goal-2" }],
+          isBlocked: true,
+        }}
+      />
+    )
+    await userEvent.hover(screen.getByTestId("goal-restricted-indicator"))
+    const tooltip = await screen.findByTestId("goal-restricted-tooltip")
+    expect(tooltip.textContent).toMatch(
+      /^goals\.blocked\.restrictedExplanation/
+    )
+  })
+
+  it("names each unreached prerequisite goal on its own line", async () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [
+            {
+              kind: "PrerequisiteNotReached",
+              goalId: "goal-2",
+              prerequisite: { unitName: "Bellator", goalType: "Unlock" },
+            },
+            {
+              kind: "PrerequisiteNotReached",
+              goalId: "goal-3",
+              prerequisite: { unitName: "Calgar", goalType: "Ascension" },
+            },
+          ],
+          isBlocked: true,
+        }}
+      />
+    )
+    await userEvent.hover(screen.getByTestId("goal-restricted-indicator"))
+    const tooltip = await screen.findByTestId("goal-restricted-tooltip")
+    expect(tooltip).toHaveTextContent(
+      'goals.blocked.reasons.PrerequisiteNotReachedNamed:{"unit":"Bellator","goalType":"goals.create.goalTypes.Unlock"}'
+    )
+    expect(tooltip).toHaveTextContent(
+      'goals.blocked.reasons.PrerequisiteNotReachedNamed:{"unit":"Calgar","goalType":"goals.create.goalTypes.Ascension"}'
+    )
+  })
+
+  it("does not add the explanation to the Blocked tooltip", async () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [{ kind: "PlayerDataUnavailable" }],
+          isBlocked: true,
+        }}
+      />
+    )
+    await userEvent.hover(screen.getByTestId("goal-blocked-indicator"))
+    expect(await screen.findByRole("tooltip")).not.toHaveTextContent(
+      "goals.blocked.restrictedExplanation"
+    )
   })
 
   it("folds the reachable-ceiling line into the Restricted tooltip when progress is passed", async () => {
