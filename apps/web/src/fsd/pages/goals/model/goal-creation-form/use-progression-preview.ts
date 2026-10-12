@@ -12,11 +12,7 @@ import type { Progression, UnitId } from "@workspace/game-domain"
 import { getInventoryShard } from "@workspace/player-data/queries"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import {
-  onslaughtReward,
-  onslaughtProgressQueries,
-  progressForAlliance,
-} from "@/entities/player-data-override"
+import { onslaughtProgressQueries } from "@/entities/player-data-override"
 
 import { estimateGoal, selectFarmNodes } from "@/features/goal-farming"
 import { mythicShardResourceId, shardResourceId } from "@/features/goal-farming"
@@ -34,6 +30,7 @@ import {
 } from "@/features/goal-farming"
 import type { FlatSupplier } from "@/features/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
+import { onslaughtShardsPerRun as onslaughtShardsPerRunFor } from "./onslaught-yield"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]
@@ -156,19 +153,15 @@ export function useProgressionPreview(params: {
       onslaughtProgress &&
       rewards?.length
     ) {
-      const progress = progressForAlliance(
-        onslaughtProgress,
-        params.character?.alliance ?? "Imperial"
-      )
-      const reward = onslaughtReward(
-        rewards,
-        progress.sector,
-        progress.tier,
-        onslaughtRewardKeyForProgression(currentProgression)
-      )
       // No row for this sector/tier → Onslaught is unavailable for the preview (0 shards/run).
-      onslaughtShardsPerRun = reward ? (reward.min + reward.max) / 2 : 0
-      if (params.plan.onslaught.enabled && reward) {
+      const yieldPerRun = onslaughtShardsPerRunFor({
+        progress: onslaughtProgress,
+        rewards,
+        alliance: params.character?.alliance ?? "Imperial",
+        currentProgression,
+      })
+      onslaughtShardsPerRun = yieldPerRun.shardsPerRun
+      if (params.plan.onslaught.enabled && yieldPerRun.available) {
         flatSuppliers.push(
           projectOnslaughtSupply({
             entityId: params.entityId,
@@ -328,16 +321,6 @@ export function useProgressionPreview(params: {
   }, [params, inventoryShard?.amount, onslaughtProgress, rewards])
 }
 
-/** The Onslaught reward tier that applies to a character at `currentProgression` — Mythic once the
- *  character's *current* progression is in the Mythic tier, otherwise its current rarity's regular
- *  reward. Keyed only on current progression, never the goal target
- *  (align-acquisition-source-yield-estimates). */
-export function onslaughtRewardKeyForProgression(currentProgression: string) {
-  return isMythicProgression(currentProgression as Progression)
-    ? ("Mythic" as const)
-    : regularRewardKey(currentProgression.split(":")[0] ?? "")
-}
-
 /** One day's expected shard yield from a set of farm nodes at `dailyEnergy` — cheapest node first,
  *  each capped by its daily-attempts limit and then by what the day's energy affords. Mirrors the
  *  day-loop's `spendDay` without a "remaining need" cap: this is daily capacity, not demand. */
@@ -389,12 +372,4 @@ export function summariseShopCurrencySpend(
     currency,
     amount,
   }))
-}
-
-function regularRewardKey(rarity: string) {
-  return (
-    ["Common", "Uncommon", "Rare", "Epic", "Legendary"].includes(rarity)
-      ? rarity
-      : "Legendary"
-  ) as "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
 }
