@@ -324,7 +324,8 @@ export function useGoalActions(_onChanged?: () => void) {
    * `project` needs `destination`: it joins that project first (one request), and only then are all the
    * rows removed from `project` (a second one), so an occupied slot in the destination stops the move
    * before anything is removed. Without a destination such a row is rejected by the server
-   * (`lastProjectMembership`) and nothing is removed. One toast reports the outcome.
+   * (`lastProjectMembership`) and nothing is removed. One toast reports the outcome, including when the
+   * move succeeded but the removal then failed and the goals are in both projects.
    */
   const removeFromProject = async (
     rows: readonly GoalRow[],
@@ -339,12 +340,14 @@ export function useGoalActions(_onChanged?: () => void) {
           .map((row) => row.goalId)
       : []
     goalIds.forEach(addPending)
+    let movedToDestination = false
     try {
       if (destination && relocating.length > 0) {
         await changeProjectMembership(destination.projectId, (current) => [
           ...current,
           ...relocating,
         ])
+        movedToDestination = true
       }
       const { before, after } = await changeProjectMembership(
         project.projectId,
@@ -385,7 +388,18 @@ export function useGoalActions(_onChanged?: () => void) {
       }
       return true
     } catch (error) {
-      toast.error(membershipErrorText(t, error))
+      // The two requests are separate, so a failed removal can leave the moved goals in both projects;
+      // say so rather than report only the error.
+      toast.error(
+        movedToDestination && destination
+          ? t("goals.toasts.movedButNotRemoved", {
+              count: relocating.length,
+              project: project.name,
+              destination: destination.name,
+              error: membershipErrorText(t, error),
+            })
+          : membershipErrorText(t, error)
+      )
       return false
     } finally {
       void invalidateAll()

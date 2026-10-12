@@ -132,7 +132,13 @@ export function GoalsPage() {
       project: projects.projects.find(
         (project) => project.projectId === scopeId
       ),
-      available: projects.fetchState.status === "success",
+      // A goal's memberships are only complete once every project's member list has loaded; before
+      // that, a goal in two projects would look like it is only in the scoped one.
+      available:
+        projects.fetchState.status === "success" &&
+        projects.projects.every((project) =>
+          loadedProjectIds.has(project.projectId)
+        ),
     })
 
   const nonArchivedRows = useMemo(

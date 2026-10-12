@@ -20,3 +20,10 @@
 
 - [x] 4.1 `pnpm lint`, `pnpm lint:fsd`, `pnpm typecheck`, `pnpm test:run`, `git diff --check`.
 - [x] 4.2 Manual check on the local Aspire stack: bulk Add to project with several goals is one request; scoped row Remove and Move; scoped bulk Remove with a last-project goal; desktop and mobile.
+
+## 5. Review follow-up (PR #196)
+
+- [x] 5.1 Treat memberships as known only once every project's member list has loaded: `goals-page.tsx` passes `available` only then, and `request` does nothing until it is. Verify in `goals-page.test.tsx`: with one project's members still loading, the row's removal item is disabled and sends nothing.
+- [x] 5.2 When the destination add succeeds but the removal from the scoped project fails, toast `goals.toasts.movedButNotRemoved` (en/de/es/fr) naming the destination, the scoped project and the reason. Verify in `use-goal-actions.test.tsx`.
+- [x] 5.3 Clear the pending removal when the picker or the create sheet is dismissed.
+- [x] 5.4 Remove `updateGoalProjects` from `@/entities/goal`, which has no callers left.

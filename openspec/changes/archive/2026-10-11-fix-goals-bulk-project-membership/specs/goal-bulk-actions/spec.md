@@ -59,7 +59,7 @@ Activating Add to project SHALL open a destination picker listing the account's 
 
 ### Requirement: Remove from project takes the selection out of the scoped project
 
-While the Goals page is scoped to a project, activating Remove from project SHALL remove the applicable selected goals from that project only, leaving their other memberships, status, target and priority unchanged. Selected goals that belong to another project SHALL be removed without asking anything. When at least one selected goal has the scoped project as its only project, one destination picker SHALL first ask where to move those goals, listing the account's other non-archived projects and offering to create a new project; when no other project exists, project creation SHALL open directly. Choosing a destination SHALL add those goals to it before anything is removed, and the whole selection SHALL then be removed from the scoped project, with one membership request per project. When the destination rejects the goals (for example an occupied slot), nothing SHALL be removed and the reason SHALL be reported once. Dismissing the picker SHALL change nothing and leave the selection intact. On success one toast SHALL report how many goals were removed and, when some were moved, how many went to which project; the selection SHALL then be cleared and the removed goals SHALL leave the scoped list.
+While the Goals page is scoped to a project, activating Remove from project SHALL remove the applicable selected goals from that project only, leaving their other memberships, status, target and priority unchanged. Selected goals that belong to another project SHALL be removed without asking anything. When at least one selected goal has the scoped project as its only project, one destination picker SHALL first ask where to move those goals, listing the account's other non-archived projects and offering to create a new project; when no other project exists, project creation SHALL open directly. Choosing a destination SHALL add those goals to it before anything is removed, and the whole selection SHALL then be removed from the scoped project, with one membership request per project. When the destination rejects the goals (for example an occupied slot), nothing SHALL be removed and the reason SHALL be reported once. When the goals were added to the destination but the removal from the scoped project then fails, the error SHALL say that they were added to the destination and could not be removed from the scoped project. Dismissing the picker SHALL change nothing and leave the selection intact. On success one toast SHALL report how many goals were removed and, when some were moved, how many went to which project; the selection SHALL then be cleared and the removed goals SHALL leave the scoped list.
 
 #### Scenario: Goals with another project are just removed
 
@@ -78,3 +78,9 @@ While the Goals page is scoped to a project, activating Remove from project SHAL
 - **GIVEN** a selected goal's only project is A and project C already holds an Active goal in the same slot
 - **WHEN** the user chooses C as the destination
 - **THEN** no goal is removed from A and one error names C and the occupied slot
+
+#### Scenario: A failed removal after the move says where the goals are
+
+- **GIVEN** a selected goal's only project is A and the user chose C as the destination
+- **WHEN** the goal is added to C but removing it from A fails
+- **THEN** one error says the goal was added to C but could not be removed from A, with the reason

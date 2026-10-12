@@ -728,7 +728,9 @@
       "goalsRemovedFromProject_one": "Se quitó {{count}} objetivo de {{project}}.",
       "goalsRemovedFromProject_other": "Se quitaron {{count}} objetivos de {{project}}.",
       "goalsRemovedAndMoved_one": "Se quitó {{count}} objetivo de {{project}}; {{moved}} movido a {{destination}}.",
-      "goalsRemovedAndMoved_other": "Se quitaron {{count}} objetivos de {{project}}; {{moved}} movidos a {{destination}}."
+      "goalsRemovedAndMoved_other": "Se quitaron {{count}} objetivos de {{project}}; {{moved}} movidos a {{destination}}.",
+      "movedButNotRemoved_one": "Se añadió {{count}} objetivo a {{destination}}, pero no se pudo quitar de {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Se añadieron {{count}} objetivos a {{destination}}, pero no se pudieron quitar de {{project}}: {{error}}"
     },
     "create": {
       "title": "Crear un objetivo",

@@ -155,7 +155,6 @@ const createProject = vi.fn()
 const createGoal = vi.fn()
 const updateGoalStatus = vi.fn()
 const deleteGoal = vi.fn()
-const updateGoalProjects = vi.fn()
 const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>(() =>
   Promise.resolve(undefined)
 )
@@ -166,7 +165,6 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   createGoal: (...args: unknown[]) => createGoal(...args),
   updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
-  updateGoalProjects: (...args: unknown[]) => updateGoalProjects(...args),
   goalQueries: {
     all: () => ["goals"],
     list: (archived: boolean) => ({
@@ -1081,7 +1079,6 @@ describe("GoalsPage bulk actions", () => {
     getPlayerCharacters.mockReset().mockReturnValue([])
     updateGoalStatus.mockReset().mockResolvedValue({})
     deleteGoal.mockReset().mockResolvedValue({})
-    updateGoalProjects.mockReset().mockResolvedValue({})
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
@@ -1215,7 +1212,6 @@ describe("GoalsPage bulk actions", () => {
         expectedGoalIds: [],
       })
     )
-    expect(updateGoalProjects).not.toHaveBeenCalled()
   })
 
   describe("scoped to a project", () => {
@@ -1277,6 +1273,35 @@ describe("GoalsPage bulk actions", () => {
         })
       )
       expect(screen.queryByTestId("project-picker-dialog")).toBeNull()
+    })
+
+    it("holds removal back until every project's members have loaded", async () => {
+      scopedMemberships()
+      // proj-2 is still loading, so goal-b looks like it is only in proj-1.
+      listProjectGoals.mockImplementation((projectId: string) =>
+        projectId === "proj-1"
+          ? Promise.resolve({
+              goals: [
+                { goal: activeGoal, priority: 0 },
+                { goal: goalB, priority: 1 },
+              ],
+            })
+          : new Promise(() => {})
+      )
+      const user = userEvent.setup()
+      renderPage("/plan/goals?project=proj-1")
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+
+      await user.click(screen.getByTestId("goal-row-actions-trigger-goal-b"))
+      const item = await screen.findByTestId(
+        "goal-row-remove-from-project-goal-b"
+      )
+      expect(item).toHaveAttribute("aria-disabled", "true")
+      await user.click(item)
+      expect(screen.queryByTestId("project-picker-dialog")).toBeNull()
+      expect(updateProjectGoals).not.toHaveBeenCalled()
     })
 
     it("asks where to move a row whose only project is the scoped one", async () => {

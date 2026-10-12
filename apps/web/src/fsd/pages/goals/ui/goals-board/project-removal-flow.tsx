@@ -16,7 +16,8 @@ import { ProjectPickerDialog } from "./project-picker-dialog"
  *  scoped to `project`. Absent when the page is not scoped, which is what hides the action. */
 export type ProjectRemoval = {
   project: ProjectSummary
-  /** False while the account's projects (the possible destinations) are not loaded. */
+  /** False until the account's projects (the possible destinations) and every project's member list
+   *  have loaded, so each row's memberships are complete. */
   available: boolean
   /** Removes `rows` from `project`, first asking for a destination when any of them has no other
    *  project. `onDone` runs once the removal has finished; it does not run if the picker is dismissed. */
@@ -90,7 +91,7 @@ export function useProjectRemovalFlow({
   }
 
   const request = (rows: readonly GoalRow[], onDone?: () => void) => {
-    if (!project || rows.length === 0) return
+    if (!project || !available || rows.length === 0) return
     const relocating = rows.filter((row) =>
       isOnlyMemberOf(row, project.projectId)
     ).length
@@ -131,7 +132,10 @@ export function useProjectRemovalFlow({
           setPickerOpen(false)
           setCreateOpen(true)
         }}
-        onOpenChange={setPickerOpen}
+        onOpenChange={(open) => {
+          setPickerOpen(open)
+          if (!open) setPending(null)
+        }}
         onSelect={moveTo}
         open={pickerOpen}
         pending={false}
@@ -141,7 +145,10 @@ export function useProjectRemovalFlow({
       <ManageProjectsSheet
         actions={projectActions}
         onCreated={moveTo}
-        onOpenChange={setCreateOpen}
+        onOpenChange={(open) => {
+          setCreateOpen(open)
+          if (!open) setPending(null)
+        }}
         open={createOpen}
         project={undefined}
       />

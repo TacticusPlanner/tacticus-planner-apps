@@ -202,4 +202,28 @@ describe("useGoalActions bulk", () => {
     expect(members.get("p1")).toEqual(["a"])
     expect(toast.error).toHaveBeenCalledExactlyOnceWith("membership-error")
   })
+
+  it("removeFromProject: says the goals were moved when only the removal fails", async () => {
+    members.set("p1", ["a"])
+    const apply = changeProjectMembership.getMockImplementation()!
+    changeProjectMembership
+      .mockImplementationOnce(apply)
+      .mockRejectedValueOnce(new Error("network"))
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    let ok = true
+    await act(async () => {
+      ok = await result.current.removeFromProject(
+        [row("a", ["p1"])],
+        project,
+        destination
+      )
+    })
+    expect(ok).toBe(false)
+    expect(members.get("p3")).toEqual(["a"])
+    expect(members.get("p1")).toEqual(["a"])
+    expect(toast.success).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledExactlyOnceWith(
+      'goals.toasts.movedButNotRemoved:{"count":1,"project":"Proj","destination":"Dest","error":"membership-error"}'
+    )
+  })
 })

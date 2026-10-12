@@ -728,7 +728,9 @@
       "goalsRemovedFromProject_one": "{{count}} objectif retiré de {{project}}.",
       "goalsRemovedFromProject_other": "{{count}} objectifs retirés de {{project}}.",
       "goalsRemovedAndMoved_one": "{{count}} objectif retiré de {{project}} ; {{moved}} déplacé vers {{destination}}.",
-      "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}."
+      "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}.",
+      "movedButNotRemoved_one": "{{count}} objectif a été ajouté à {{destination}}, mais n'a pas pu être retiré de {{project}} : {{error}}",
+      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}"
     },
     "create": {
       "title": "Créer un objectif",

@@ -728,7 +728,9 @@
       "goalsRemovedFromProject_one": "Removed {{count}} goal from {{project}}.",
       "goalsRemovedFromProject_other": "Removed {{count}} goals from {{project}}.",
       "goalsRemovedAndMoved_one": "Removed {{count}} goal from {{project}}; {{moved}} moved to {{destination}}.",
-      "goalsRemovedAndMoved_other": "Removed {{count}} goals from {{project}}; {{moved}} moved to {{destination}}."
+      "goalsRemovedAndMoved_other": "Removed {{count}} goals from {{project}}; {{moved}} moved to {{destination}}.",
+      "movedButNotRemoved_one": "Added {{count}} goal to {{destination}}, but couldn't remove it from {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Added {{count}} goals to {{destination}}, but couldn't remove them from {{project}}: {{error}}"
     },
     "create": {
       "title": "Create a goal",
