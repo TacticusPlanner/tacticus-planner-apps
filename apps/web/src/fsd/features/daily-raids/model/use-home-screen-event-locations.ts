@@ -63,7 +63,7 @@ export function useHomeScreenEventLocations(
   const {
     availableBattles,
     liveProgressResult,
-    campaignEventProgressResult,
+    campaignEventProgressReady,
     campaignProgressResult,
   } = useEligibleCampaignBattles(battles, campaignDefinitions)
   const [filters] = useRaidsFilters()
@@ -155,7 +155,7 @@ export function useHomeScreenEventLocations(
     !campaignDefinitions ||
     !npcsById ||
     !liveProgressResult ||
-    !campaignEventProgressResult ||
+    !campaignEventProgressReady ||
     !campaignProgressResult
   ) {
     return { status: "loading" }
