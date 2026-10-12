@@ -45,7 +45,9 @@ export function CollectionPage() {
   const hasSummary =
     state.status === "ready" && state.view.rosterState === "available"
   const hasOwned = state.status === "ready" && state.view.owned > 0
-  useTourPageSteps(useCollectionTutorial({ hasSummary, hasOwned }))
+  const hasUnowned =
+    state.status === "ready" && state.view.owned < state.view.total
+  useTourPageSteps(useCollectionTutorial({ hasSummary, hasOwned, hasUnowned }))
 
   if (state.status === "loading") {
     return <CollectionSkeleton />

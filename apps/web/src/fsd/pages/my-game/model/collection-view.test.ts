@@ -313,20 +313,27 @@ describe("buildCollectionView", () => {
     )
   })
 
-  it("treats Machines of War as unowned while only the characters chunk has synced", () => {
-    const view = buildCollectionView(
-      catalog,
-      signedIn({
-        characters: [character("ultraTitus")],
-        mows: undefined,
-        shards: [],
-      }),
-      labels
-    )
+  it.each([
+    ["characters", { characters: [character("ultraTitus")], mows: undefined }],
+    ["Machines of War", { characters: undefined, mows: [] }],
+  ])(
+    "treats the roster as not synced while only the %s chunk has synced",
+    (_label, chunks) => {
+      const view = buildCollectionView(
+        catalog,
+        signedIn({ ...chunks, shards: [] }),
+        labels
+      )
 
-    expect(view.rosterState).toBe("available")
-    expect(findUnit(view, "ultraDreadnought")?.data.state).toBe("unowned")
-  })
+      // Counting a lone chunk would show every unit of the other kind as unowned.
+      expect(view.rosterState).toBe("notSynced")
+      expect(view.owned).toBe(0)
+      expect(findUnit(view, "ultraTitus")?.data).toMatchObject({
+        state: "unowned",
+        shards: undefined,
+      })
+    }
+  )
 
   it("shows no shard counts while the shard inventory has not synced", () => {
     const view = buildCollectionView(

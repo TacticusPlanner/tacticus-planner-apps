@@ -14,8 +14,6 @@ import {
   getPlayerMows,
 } from "@workspace/player-data/queries"
 
-import { useUnitName } from "@/shared/unit-name"
-
 import {
   buildCollectionView,
   type CollectionCatalog,
@@ -70,9 +68,8 @@ async function readRoster(): Promise<CollectionRoster> {
  * still lists the catalog (`rosterState: "error"`). `retry` re-issues both reads.
  */
 export function useCollectionView(): CollectionViewState {
-  const { t, i18n } = useTranslation(["factions"])
+  const { t, i18n } = useTranslation(["factions", "characters", "mows"])
   const isAuthenticated = useIsAuthenticated()
-  const unitName = useUnitName()
   const [attempt, setAttempt] = useState(0)
   const retry = useCallback(() => setAttempt((value) => value + 1), [])
 
@@ -86,13 +83,15 @@ export function useCollectionView(): CollectionViewState {
   const view = useMemo(() => {
     if (!catalog || catalog === LIVE_QUERY_ERROR || !roster) return undefined
     return buildCollectionView(catalog, roster, {
-      unitName: (kind, id) =>
-        unitName(kind === "character" ? "Character" : "Mow", id),
+      // Falls back to the catalog name read with this catalog, so an untranslated unit never
+      // shows (or sorts by) its raw id.
+      unitName: (kind, id, fallback) =>
+        t(`${kind === "character" ? "characters" : "mows"}:${id}`, {
+          defaultValue: fallback,
+        }),
       factionName: (id) => t(`factions:${id}`, { defaultValue: id }),
       locale: i18n.language,
     })
-    // `unitName` is a new function every render; its catalog-backed names settle with `catalog`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [catalog, roster, t, i18n.language])
 
   if (catalog === LIVE_QUERY_ERROR) return { status: "catalogError", retry }

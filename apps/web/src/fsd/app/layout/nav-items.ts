@@ -82,6 +82,8 @@ interface NavSubItemBase {
   liveIndicator?: "hse"
   // Overrides the section's `anonymousAllowed` for this child, so one section can mix public and
   // sign-in-only pages (My Game: Collection is public, the rest are not). Absent means inherit.
+  // It can only narrow: `filterVisibleNavItems` drops a sign-in-only section before looking at its
+  // children, so `true` under such a section does nothing.
   anonymousAllowed?: boolean
 }
 

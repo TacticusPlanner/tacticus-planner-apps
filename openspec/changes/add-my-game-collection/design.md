@@ -62,9 +62,9 @@ A pure function in `pages/my-game/model/collection-view.ts` returns `{ rosterSta
 Roster state:
 
 - **anonymous:** not authenticated.
-- **notSynced:** authenticated and both `getPlayerCharacters()` and `getPlayerMows()` return `undefined`.
+- **notSynced:** authenticated and `getPlayerCharacters()` or `getPlayerMows()` returns `undefined`. Sync writes chunks one at a time, so a lone chunk is treated as not synced: counting it would list every unit of the other kind as unowned and undercount the summary with no hint that data is missing.
 - **error:** the read throws.
-- **available:** otherwise. A synced `characters` chunk with an unsynced `mows` chunk treats MoWs as unowned.
+- **available:** both chunks have synced.
 
 A missing `inventory-shards` chunk gives unowned tiles `state: "unknown"`-style shard display (no count).
 
@@ -77,7 +77,7 @@ The layout structure is the same on both: faction cards in a grid, units in fixe
 - **Desktop (>=768px):** faction cards in `repeat(auto-fill, minmax(min(30rem, 100%), 1fr))` with `align-items: stretch`, so cards share a width and a row height; seven unit slots per card row.
 - **Mobile (<768px):** the same grid collapses to one column; five unit slots per row and smaller page padding.
 
-Neither form has a tooltip. Joyride targets are the same `data-testid`s on both (`collection-summary`, `collection-faction-group` (first), `collection-owned-tile` (first owned), `collection-unowned-tile` (first unowned)). Only the step placement differs, so the tutorial exports `desktop` and `mobile` step arrays that share targets. The summary target is absent without a roster, so the tour skips that step via its existing missing-target handling.
+Neither form has a tooltip. Joyride targets are the same `data-testid`s on both (`collection-summary`, `collection-faction-group` (first), `collection-owned-tile` (first owned), `collection-unowned-tile` (first unowned)). Only the step placement differs, so the tutorial exports `desktop` and `mobile` step arrays that share targets. Steps whose target is absent are left out of the arrays rather than pointing at nothing: the summary without a roster, the owned tile when the player owns no unit, and the unowned tile when they own every unit.
 
 ### D6. i18n: rename `progress.*` to `myGame.*` in `common`, no new namespace
 

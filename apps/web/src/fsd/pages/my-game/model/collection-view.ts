@@ -18,17 +18,18 @@ import type { UnitKind, UnitTileUnit } from "@/entities/unit"
 
 type CatalogCharacter = Pick<
   CharacterStorageModel,
-  "id" | "faction" | "alliance" | "initialRarity"
+  "id" | "name" | "faction" | "alliance" | "initialRarity"
 >
-type CatalogMow = Pick<MowStorageModel, "id" | "faction" | "alliance">
+type CatalogMow = Pick<MowStorageModel, "id" | "name" | "faction" | "alliance">
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
 /**
- * Where the player's roster stands: `available` once at least one roster chunk has synced,
- * `notSynced` for a signed-in user with neither the `characters` nor the `mows` chunk, `anonymous`
- * for a signed-out visitor, and `error` when reading the roster failed.
+ * Where the player's roster stands: `available` once both the `characters` and `mows` chunks have
+ * synced, `notSynced` for a signed-in user missing either (sync writes chunks one at a time, so
+ * counting a lone chunk would show every unit of the other kind as unowned and undercount the
+ * summary), `anonymous` for a signed-out visitor, and `error` when reading the roster failed.
  */
 export type CollectionRosterState =
   "available" | "notSynced" | "anonymous" | "error"
@@ -53,7 +54,8 @@ export interface CollectionCatalog {
 }
 
 export interface CollectionLabels {
-  unitName: (kind: UnitKind, unitId: string) => string
+  /** The localized unit name; `fallback` is the catalog's English name. */
+  unitName: (kind: UnitKind, unitId: string, fallback: string) => string
   factionName: (factionId: string) => string
   locale: string
 }
@@ -93,11 +95,14 @@ export function buildCollectionView(
 ): CollectionView {
   const rosterState: CollectionRosterState =
     roster.state === "signedIn"
-      ? roster.characters === undefined && roster.mows === undefined
+      ? roster.characters === undefined || roster.mows === undefined
         ? "notSynced"
         : "available"
       : roster.state
-  const owned = roster.state === "signedIn" ? roster : undefined
+  const owned =
+    roster.state === "signedIn" && rosterState === "available"
+      ? roster
+      : undefined
   const ownedCharacters = byUnitId(owned?.characters)
   const ownedMows = byUnitId(owned?.mows)
   const shards = owned?.shards ? byUnitId(owned.shards) : undefined
@@ -108,7 +113,7 @@ export function buildCollectionView(
   const rows: CollectionRow[] = [
     ...catalog.characters.map((character) => {
       const record = ownedCharacters.get(character.id)
-      const name = labels.unitName("character", character.id)
+      const name = labels.unitName("character", character.id, character.name)
       return record
         ? ownedCharacterRow(character, record, name, catalog)
         : unownedRow("character", character, name, {
@@ -119,7 +124,7 @@ export function buildCollectionView(
     }),
     ...catalog.mows.map((mow) => {
       const record = ownedMows.get(mow.id)
-      const name = labels.unitName("mow", mow.id)
+      const name = labels.unitName("mow", mow.id, mow.name)
       return record
         ? ownedMowRow(mow, record, name)
         : unownedRow("mow", mow, name, { shards })

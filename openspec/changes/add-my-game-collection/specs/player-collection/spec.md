@@ -119,7 +119,7 @@ Assumptions:
 
 ### Requirement: Without a roster every unit is shown greyed out with a prompt
 
-When no synced roster is available, the page SHALL still list every catalog unit grouped and ordered as for unowned units, all greyed out with no shard counts, together with a prompt explaining why. In place of shard progress, a character's tile SHALL show the rarity it starts at (for example "Starts Epic"); a Machine of War's tile SHALL show nothing there. For an anonymous user the prompt SHALL invite them to sign in. For a signed-in user whose roster has not been synced yet, the prompt SHALL invite them to sync with Tacticus and offer the existing Sync with Tacticus action. Once a sync delivers the roster, the page SHALL show owned and unowned tiles without a reload.
+A synced roster is available only once both the characters and the Machines of War data have synced; while either is missing the page SHALL treat the roster as not synced. When no synced roster is available, the page SHALL still list every catalog unit grouped and ordered as for unowned units, all greyed out with no shard counts, together with a prompt explaining why. In place of shard progress, a character's tile SHALL show the rarity it starts at (for example "Starts Epic"); a Machine of War's tile SHALL show nothing there. For an anonymous user the prompt SHALL invite them to sign in. For a signed-in user whose roster has not been synced yet, the prompt SHALL invite them to sync with Tacticus and offer the existing Sync with Tacticus action. Once a sync delivers the roster, the page SHALL show owned and unowned tiles without a reload.
 
 #### Scenario: Anonymous user
 
@@ -132,6 +132,12 @@ When no synced roster is available, the page SHALL still list every catalog unit
 - **GIVEN** the user is signed in and their roster has not been synced
 - **WHEN** they open the page
 - **THEN** every unit is listed greyed out and a prompt invites them to sync with Tacticus, offering the Sync with Tacticus action
+
+#### Scenario: Only part of the roster has synced
+
+- **GIVEN** a signed-in user whose characters data has synced but whose Machines of War data has not
+- **WHEN** they open the page
+- **THEN** every unit is listed greyed out with the sync prompt, and no owned summary is shown
 
 #### Scenario: Sync completes while the page is open
 
@@ -162,7 +168,7 @@ While the game catalog is loading, the page SHALL show placeholder faction cards
 
 ### Requirement: Collection has a page tour
 
-The Collection page SHALL register a page tour, startable from the page's tour control, that explains the faction groups, an owned tile's progression indicators, and greyed-out unowned units, on both desktop and mobile. Tour steps SHALL target elements that exist in the rendered layout of each form.
+The Collection page SHALL register a page tour, startable from the page's tour control, that explains the faction groups, an owned tile's progression indicators, and greyed-out unowned units, on both desktop and mobile. Tour steps SHALL target elements that exist in the rendered layout of each form; a step whose element is absent (the summary without a roster, an owned tile when the player owns no unit, an unowned tile when they own every unit) SHALL be left out.
 
 #### Scenario: Desktop tour
 

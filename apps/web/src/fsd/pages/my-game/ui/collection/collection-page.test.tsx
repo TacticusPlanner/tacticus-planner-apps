@@ -224,6 +224,33 @@ describe.each([
     ])
   })
 
+  it("leaves out the unowned tour step when the player owns every unit", () => {
+    ready({
+      ...synced,
+      characters: ["ultraTitus", "ultraCalgar", "blackHaarken"].map(
+        (unitId) => ({ ...titus, unitId: unitId as UnitId })
+      ),
+      mows: [
+        {
+          unitId: "ultraDreadnought",
+          progressionIndex: "Epic:RedTwoStars",
+          shards: 0,
+          mythicShards: 0,
+          abilities: [],
+        } as unknown as PlayerDataChunkDto<"mows">[number],
+      ],
+    })
+    renderPage(width)
+
+    expect(screen.queryByTestId("collection-unowned-tile")).toBeNull()
+    expectTourTargetsExist(form)
+    expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
+      '[data-testid="collection-summary"]',
+      '[data-testid="collection-faction-group"]',
+      '[data-testid="collection-owned-tile"]',
+    ])
+  })
+
   it("greys out every unit and asks an anonymous visitor to sign in", () => {
     ready({ state: "anonymous" })
     renderPage(width)

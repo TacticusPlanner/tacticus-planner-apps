@@ -9,15 +9,18 @@ type CollectionStepKey = "summary" | "faction" | "owned" | "unowned"
 /**
  * Walks the summary, the first faction group, an owned tile and a greyed-out unowned tile. Both
  * layouts share the same targets (the page only reflows); only placement differs. The summary is
- * shown only once a roster has synced and an owned tile only when the player owns a unit, so those
- * steps are left out otherwise rather than pointing at nothing.
+ * shown only once a roster has synced, an owned tile only when the player owns a unit and an unowned
+ * tile only while some unit is not owned, so those steps are left out otherwise rather than pointing
+ * at nothing.
  */
 export function useCollectionTutorial({
   hasSummary,
   hasOwned,
+  hasUnowned,
 }: {
   hasSummary: boolean
   hasOwned: boolean
+  hasUnowned: boolean
 }): TourPageSteps {
   const { t } = useTranslation("common")
 
@@ -38,20 +41,22 @@ export function useCollectionTutorial({
       : []
     const owned = (placement: Step["placement"]) =>
       hasOwned ? [step("owned", "collection-owned-tile", placement)] : []
+    const unowned = (placement: Step["placement"]) =>
+      hasUnowned ? [step("unowned", "collection-unowned-tile", placement)] : []
 
     return {
       desktop: [
         ...summary,
         step("faction", "collection-faction-group", "right"),
         ...owned("bottom"),
-        step("unowned", "collection-unowned-tile", "bottom"),
+        ...unowned("bottom"),
       ],
       mobile: [
         ...summary,
         step("faction", "collection-faction-group", "bottom"),
         ...owned("bottom"),
-        step("unowned", "collection-unowned-tile", "top"),
+        ...unowned("top"),
       ],
     }
-  }, [t, hasSummary, hasOwned])
+  }, [t, hasSummary, hasOwned, hasUnowned])
 }

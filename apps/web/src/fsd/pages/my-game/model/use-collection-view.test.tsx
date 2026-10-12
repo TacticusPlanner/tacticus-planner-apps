@@ -47,6 +47,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
     return [
       {
         id: "ultraTitus",
+        name: "Titus",
         faction: "Ultramarines",
         alliance: "Imperial",
         initialRarity: "Epic",
@@ -69,11 +70,6 @@ vi.mock("@workspace/player-data/queries", () => ({
   },
   getPlayerMows: async () => (roster.characters ? [] : undefined),
   getInventoryShards: async () => (roster.characters ? [] : undefined),
-}))
-
-vi.mock("@/shared/unit-name", () => ({
-  useUnitName: () => (_type: string, id: string) =>
-    ({ ultraTitus: "Titus" })[id] ?? id,
 }))
 
 import { useCollectionView } from "./use-collection-view"
@@ -143,6 +139,15 @@ describe("useCollectionView", () => {
       result.current.status === "ready" ? result.current.view : undefined
     expect(view?.rosterState).toBe("error")
     expect(view?.total).toBe(1)
+  })
+
+  it("names a unit without a translation by its catalog name, not its id", async () => {
+    const { result } = await renderCollectionView()
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    const view =
+      result.current.status === "ready" ? result.current.view : undefined
+    expect(view?.groups[0]?.units[0]?.name).toBe("Titus")
   })
 
   it("shows the roster once a sync lands, without remounting", async () => {
