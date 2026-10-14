@@ -1,7 +1,7 @@
 ## 0. Preconditions
 
 - [ ] 0.1 Confirm #205 and #206 are merged to `main`, and `add-mow-library-details` and `add-character-unit-details` are archived (their capabilities exist in `openspec/specs/`); verify `openspec validate complete-library-unit-pages --strict` reports no "archive would refuse" notice.
-- [ ] 0.2 Confirm `complete-library-unit-data` (apps and API) is on `main`; verify `npcAbilityText` has 429 entries and `getMythicQuestsByUnitId` is exported from `@workspace/game-catalog`.
+- [ ] 0.2 Confirm `complete-library-unit-data` (apps and API) is on `main`; verify `npcAbilityText` has 425 entries and `getMythicQuestsByUnitId` is exported from `@workspace/game-catalog`.
 
 ## 1. Relic and MoW panels
 
@@ -12,7 +12,7 @@
 ## 2. Mythic quests from the catalog
 
 - [ ] 2.1 Switch `use-mythic-quests.ts` to the catalog query (undefined when the dataset or record is absent), rename `taskParameters` → `parameters` in `mythic-quests.ts`, replace `parseMythicQuestReward` with a mapping from the served reward record, and update `mythic-quests.test.ts`; verify the Abaddon scenario (5 quests, quest 1 text and three reward chips), the Weirdboy no-card case and the dataset-absent case in `character-unit-page.test.tsx`.
-- [ ] 2.2 Remove `public/locales/en/mythicQuests.json` and its entry in `shared/config/i18n/i18next.d.ts` (and any preload list); verify `pnpm typecheck` passes and `grep -r mythicQuests apps/web/src apps/web/public` finds only `mythicQuestTasks`.
+- [ ] 2.2 Remove `public/locales/en/mythicQuests.json` and its entry in `shared/config/i18n/i18next.d.ts` (and any preload list); verify `pnpm typecheck` passes and `rg -n "mythicQuests\b" apps/web/src apps/web/public` finds no reference, while `rg -n mythicQuestTasks` still does.
 - [ ] 2.3 Fix the two English templates in `public/locales/en/mythicQuestTasks.json` per design D3; verify page tests for Calgar quest 4 ("Defeat 1 enemy that has the Immune trait with Calgar in one battle") and Lucius quest 1 (names Lucius once, the effect once, ends "in one battle"), and a German-language test showing the English task text with German card labels.
 - [ ] 2.4 i18n: confirm the change adds no new UI copy (the quest card, panels and notes reuse existing `library` keys); if implementation adds any key, add it to en/de/es/fr with real translations in the same task. `mythicQuestTasks` stays English-only by explicit user decision (proposal: Deliberate exception). Add the `KNOWN_ISSUES.md` entry for it.
 
