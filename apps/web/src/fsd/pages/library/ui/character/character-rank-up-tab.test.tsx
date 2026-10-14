@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen, within } from "@testing-library/react"
-import { MemoryRouter, Route, Routes } from "react-router"
+import { Link, MemoryRouter, Route, Routes, useParams } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 // The page must work for unauthenticated users with no user data — it reads only the public catalog
@@ -9,10 +9,6 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 // (see "prefills from synced player data" below); every other test exercises the unauthenticated /
 // no-data default path via these mocks' default return values.
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
-
-// The page registers its own tour steps on mount - irrelevant to these tests, which don't render
-// a TourProvider.
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 
 // A minimal stand-in for dexie-react-hooks' real `useLiveQuery`: runs `querier()` on mount/deps
 // change, returns `defaultResult` until it settles, and re-renders once it does — same contract as
@@ -324,25 +320,37 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCampaignDefinitions: () => records["campaign-definitions"] ?? [],
 }))
 
-import { CharacterLookupPage } from "./character-lookup-page"
+import type { UnitId } from "@workspace/game-domain"
 
-function renderPage(initialEntries = ["/"]) {
+import { CharacterRankUpTab } from "./character-rank-up-tab"
+
+// The unit page remounts the tab per character (keyed by the route id); this stands in for it.
+function TabForRoute() {
+  const { entityId } = useParams()
+  return (
+    <>
+      <Link to="/library/characters/hero2">Go to Hero Two</Link>
+      <CharacterRankUpTab key={entityId} characterId={entityId as UnitId} />
+    </>
+  )
+}
+
+function renderPage(initialEntries = ["/library/characters/hero1"]) {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <TooltipProvider>
         <Routes>
           <Route
-            path="/library/characters/:entityId?"
-            element={<CharacterLookupPage />}
+            path="/library/characters/:entityId"
+            element={<TabForRoute />}
           />
-          <Route path="*" element={<CharacterLookupPage />} />
         </Routes>
       </TooltipProvider>
     </MemoryRouter>
   )
 }
 
-describe("CharacterLookupPage", () => {
+describe("CharacterRankUpTab", () => {
   beforeEach(() => {
     useIsAuthenticatedMock.mockReturnValue(false)
     playerChunkMocks.characters.mockResolvedValue(undefined)
@@ -352,7 +360,7 @@ describe("CharacterLookupPage", () => {
   it("renders publicly and lists the required base upgrades for the default range", () => {
     renderPage()
 
-    expect(screen.getByTestId("character-lookup-page")).toBeInTheDocument()
+    expect(screen.getByTestId("character-rank-up-tab")).toBeInTheDocument()
     // Default character + the Stone1 → Stone2 range surfaces that rank's upgrades as base
     // materials. Scoped to the table since the same labels may also appear in the Insights
     // top-upgrade-by-rarity chips above it.
@@ -361,12 +369,17 @@ describe("CharacterLookupPage", () => {
     expect(table.getByText("Armour Base")).toBeInTheDocument()
   })
 
-  it("takes character identity from a direct Library entity path", () => {
-    renderPage(["/library/characters/hero1?rankStart=Bronze1"])
+  it("takes its character from the unit page and offers no character picker", () => {
+    renderPage(["/library/characters/hero2?rankStart=Bronze1"])
 
     expect(
-      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
-    ).toHaveTextContent("Hero One")
+      within(screen.getByTestId("unit-profile")).getByText("Hero Two")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole("combobox", {
+        name: "unitLookup.characterPlaceholder",
+      })
+    ).not.toBeInTheDocument()
   })
 
   it("renders the unit profile with movement, melee hits, and current/target Health for the default character", () => {
@@ -382,7 +395,9 @@ describe("CharacterLookupPage", () => {
   })
 
   it("computes current/target Health from independent from/to progression values", () => {
-    renderPage(["/?progressionStart=Common:None&progressionEnd=Common:OneStar"])
+    renderPage([
+      "/library/characters/hero1?progressionStart=Common:None&progressionEnd=Common:OneStar",
+    ])
 
     const profile = within(screen.getByTestId("unit-profile"))
     // Current: Stone1 at "None" progression → 100 (unchanged).
@@ -397,12 +412,12 @@ describe("CharacterLookupPage", () => {
     // Diamond1 needs at least Legendary rarity; Mythic:MythicWings covers it, so it loads as-is
     // (selectionFromParams doesn't itself clamp — only the interactive setters do).
     renderPage([
-      "/?rankStart=Stone1&rankEnd=Diamond1&progressionStart=Common:None&progressionEnd=Mythic:MythicWings",
+      "/library/characters/hero1?rankStart=Stone1&rankEnd=Diamond1&progressionStart=Common:None&progressionEnd=Mythic:MythicWings",
     ])
     expect(screen.getByText("Diamond1")).toBeInTheDocument()
 
-    // Selects, in DOM order: character combobox, progression "From", progression "To".
-    const [, , progressionToTrigger] = screen.getAllByRole("combobox")
+    // Selects, in DOM order: progression "From", progression "To".
+    const [, progressionToTrigger] = screen.getAllByRole("combobox")
     fireEvent.click(progressionToTrigger)
     fireEvent.click(screen.getByRole("option", { name: /None/ }))
 
@@ -410,28 +425,6 @@ describe("CharacterLookupPage", () => {
     // back down to it rather than staying at an unreachable Diamond1.
     expect(screen.queryByText("Diamond1")).not.toBeInTheDocument()
     expect(screen.getByText("Iron1")).toBeInTheDocument()
-  })
-
-  it("auto-applies immediately when a new character is selected, without needing Apply", () => {
-    renderPage()
-
-    const applyButton = screen.getByRole("button", { name: "unitLookup.apply" })
-    expect(applyButton).toBeDisabled()
-    expect(
-      within(screen.getByTestId("unit-profile")).getByText("Hero One")
-    ).toBeInTheDocument()
-
-    fireEvent.click(
-      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
-    )
-    fireEvent.click(screen.getByText("Hero Two"))
-
-    // Results update immediately for the newly selected character...
-    expect(
-      within(screen.getByTestId("unit-profile")).getByText("Hero Two")
-    ).toBeInTheDocument()
-    // ...and Apply stays disabled since nothing else is dirty.
-    expect(applyButton).toBeDisabled()
   })
 
   it("prefills an advancing range from synced player data when authenticated", async () => {
@@ -448,13 +441,7 @@ describe("CharacterLookupPage", () => {
       )
     )
 
-    renderPage()
-    await act(async () => {})
-
-    fireEvent.click(
-      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
-    )
-    fireEvent.click(screen.getByText("Hero Two"))
+    renderPage(["/library/characters/hero2"])
     await act(async () => {})
 
     // "Iron3" is the synced unit's rank, not the firstRank ("Stone1") default. Its target now
@@ -465,7 +452,7 @@ describe("CharacterLookupPage", () => {
     expect(screen.queryByText("Stone2")).not.toBeInTheDocument()
   })
 
-  it("ignores a stale player prefill after switching characters", async () => {
+  it("ignores a stale player prefill after moving to another character", async () => {
     useIsAuthenticatedMock.mockReturnValue(true)
     let resolveHeroOne: (value: PlayerUnitFixture | undefined) => void
     const heroOne = new Promise<PlayerUnitFixture | undefined>((resolve) => {
@@ -483,10 +470,7 @@ describe("CharacterLookupPage", () => {
 
     renderPage(["/library/characters/hero1"])
 
-    fireEvent.click(
-      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
-    )
-    fireEvent.click(screen.getByText("Hero Two"))
+    fireEvent.click(screen.getByRole("link", { name: "Go to Hero Two" }))
     await act(async () => {})
 
     expect(screen.getAllByText("Bronze1").length).toBeGreaterThan(0)
@@ -509,13 +493,7 @@ describe("CharacterLookupPage", () => {
     // "not found" outcome (`undefined`), the same shape the default mock already returns.
     playerChunkMocks.characters.mockResolvedValue(undefined)
 
-    renderPage()
-    await act(async () => {})
-
-    fireEvent.click(
-      screen.getByRole("combobox", { name: "unitLookup.characterPlaceholder" })
-    )
-    fireEvent.click(screen.getByText("Hero Two"))
+    renderPage(["/library/characters/hero2"])
     await act(async () => {})
 
     expect(screen.getByText("Stone1")).toBeInTheDocument()

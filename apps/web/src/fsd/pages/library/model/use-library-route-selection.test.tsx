@@ -29,7 +29,7 @@ function renderSelection({
     () => {
       const location = useLocation()
       const selection = useLibraryRouteSelection({
-        collectionPath: "/library/characters",
+        collectionPath: "/library/npcs",
         entityId: location.pathname.split("/").at(-1),
         entityIds,
         loading,
@@ -51,7 +51,7 @@ function renderSelection({
 describe("useLibraryRouteSelection", () => {
   it("keeps a valid entity URL and its secondary state", async () => {
     const { result } = renderSelection({
-      entry: "/library/characters/bellator?tab=abilities",
+      entry: "/library/npcs/bellator?tab=abilities",
       entityIds: ["bellator", "calgar"],
     })
 
@@ -61,39 +61,37 @@ describe("useLibraryRouteSelection", () => {
 
   it("replaces a missing or invalid selection with the first record", async () => {
     const { result } = renderSelection({
-      entry: "/library/characters/not-real?tab=abilities",
+      entry: "/library/npcs/not-real?tab=abilities",
       entityIds: ["bellator", "calgar"],
     })
 
     await waitFor(() =>
-      expect(result.current.location.pathname).toBe(
-        "/library/characters/bellator"
-      )
+      expect(result.current.location.pathname).toBe("/library/npcs/bellator")
     )
     expect(result.current.location.search).toBe("?tab=abilities")
   })
 
   it("waits for loading and leaves an empty collection URL intact", async () => {
     const loading = renderSelection({
-      entry: "/library/characters",
+      entry: "/library/npcs",
       entityIds: undefined,
       loading: true,
     })
-    expect(loading.result.current.location.pathname).toBe("/library/characters")
+    expect(loading.result.current.location.pathname).toBe("/library/npcs")
 
     const empty = renderSelection({
-      entry: "/library/characters?tab=abilities",
+      entry: "/library/npcs?tab=abilities",
       entityIds: [],
     })
     await waitFor(() =>
-      expect(empty.result.current.location.pathname).toBe("/library/characters")
+      expect(empty.result.current.location.pathname).toBe("/library/npcs")
     )
     expect(empty.result.current.location.search).toBe("?tab=abilities")
   })
 
   it("removes legacy character state while preserving all other parameters", async () => {
     const { result } = renderSelection({
-      entry: "/library/characters/bellator?character=calgar&tab=abilities",
+      entry: "/library/npcs/bellator?character=calgar&tab=abilities",
       entityIds: ["bellator"],
     })
 
@@ -107,7 +105,7 @@ describe("useLibraryRouteSelection", () => {
       const location = useLocation()
       const navigate = useNavigate()
       const selection = useLibraryRouteSelection({
-        collectionPath: "/library/characters",
+        collectionPath: "/library/npcs",
         entityId: location.pathname.split("/").at(-1),
         entityIds: ["bellator", "calgar"],
         loading: false,
@@ -123,7 +121,7 @@ describe("useLibraryRouteSelection", () => {
     }
 
     render(
-      <MemoryRouter initialEntries={["/library/characters/bellator?tab=stats"]}>
+      <MemoryRouter initialEntries={["/library/npcs/bellator?tab=stats"]}>
         <Routes>
           <Route path="*" element={<HistoryHarness />} />
         </Routes>

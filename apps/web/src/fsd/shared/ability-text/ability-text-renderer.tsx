@@ -19,10 +19,15 @@ import {
 // that icon set). Styled tokens keep their color / underline / italic so stat and damage terms still
 // read as distinct from the prose.
 
+// Level-dependent values, highlighted on request (unit pages): emphasis only, the number is the
+// content.
+const HIGHLIGHT_CLASS = "rounded-sm bg-hl px-1 font-semibold tabular-nums"
+
 function renderVariable(
   node: VariableNode,
   context: AbilityContext,
-  inheritStyle: boolean
+  inheritStyle: boolean,
+  highlight: boolean
 ): ReactNode {
   if (node.isUnitName) {
     if (inheritStyle) return context.unitName
@@ -31,6 +36,8 @@ function renderVariable(
   }
   const value = resolveVariable(node, context)
   if (value === undefined) return undefined
+  if (highlight && node.name in context.variables)
+    return <strong className={HIGHLIGHT_CLASS}>{value}</strong>
   if (inheritStyle) return value
   return <span style={{ color: ABILITY_COLORS.stat }}>{value}</span>
 }
@@ -38,13 +45,20 @@ function renderVariable(
 function renderStyled(
   node: StyledNode,
   context: AbilityContext,
-  keyPrefix: string
+  keyPrefix: string,
+  highlight: boolean
 ): ReactNode {
   const styleName = node.isDynamic
     ? resolveDynamicStyle(node.styleName, context.constants)
     : node.styleName
   const spec = getStyleSpec(styleName)
-  const children = renderNodes(node.children, context, keyPrefix, true)
+  const children = renderNodes(
+    node.children,
+    context,
+    keyPrefix,
+    true,
+    highlight
+  )
 
   if (!spec) return <span key={keyPrefix}>{children}</span>
 
@@ -83,16 +97,19 @@ function renderNodes(
   nodes: AstNode[],
   context: AbilityContext,
   keyPrefix: string,
-  inheritStyle = false
+  inheritStyle = false,
+  highlight = false
 ): ReactNode[] {
   return nodes.map((node, index) => {
     const key = `${keyPrefix}-${index}`
     if (node.type === "text") return <span key={key}>{node.value}</span>
     if (node.type === "var")
       return (
-        <span key={key}>{renderVariable(node, context, inheritStyle)}</span>
+        <span key={key}>
+          {renderVariable(node, context, inheritStyle, highlight)}
+        </span>
       )
-    return renderStyled(node, context, key)
+    return renderStyled(node, context, key, highlight)
   })
 }
 
@@ -105,6 +122,8 @@ export interface AbilityTextProps {
   rarity: Rarity
   unitName?: string
   factionId?: string
+  /** Highlight values that depend on the ability level. */
+  highlightValues?: boolean
   className?: string
 }
 
@@ -118,6 +137,7 @@ export function AbilityText({
   rarity,
   unitName = "",
   factionId = "",
+  highlightValues = false,
   className = "text-xs leading-relaxed text-muted-foreground",
 }: AbilityTextProps) {
   const ast = useMemo(
@@ -137,5 +157,9 @@ export function AbilityText({
     unitName,
     factionId,
   }
-  return <p className={className}>{renderNodes(ast, context, "root")}</p>
+  return (
+    <p className={className}>
+      {renderNodes(ast, context, "root", false, highlightValues)}
+    </p>
+  )
 }

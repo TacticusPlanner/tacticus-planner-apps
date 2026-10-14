@@ -149,10 +149,7 @@
     "confirmRetry": "Erneut versuchen"
   },
   "unitLookup": {
-    "subtitle": "Wähle einen Charakter und einen Rangbereich, um die nötigen Verbesserungen und Farm-Orte zu sehen.",
-    "character": "Charakter",
-    "characterPlaceholder": "Charakter auswählen",
-    "noCharacter": "Kein Charakter gefunden.",
+    "subtitle": "Wähle einen Rangbereich, um die nötigen Verbesserungen und Farm-Orte zu sehen.",
     "rankRange": "Rangbereich",
     "start": "Von",
     "end": "Bis",
@@ -1211,26 +1208,6 @@
       "feedback": {
         "title": "Feedback senden",
         "content": "Teile Feedback oder Ideen über die Schaltfläche neben deinem Konto. Der Link zum öffentlichen Board bleibt in der Seitenkopfzeile."
-      }
-    },
-    "lookup": {
-      "steps": {
-        "character": {
-          "title": "Charakter auswählen",
-          "content": "Wähle, für welchen Charakter du Verbesserungen nachschlagen möchtest."
-        },
-        "apply": {
-          "title": "Änderungen anwenden",
-          "content": "Passe den Rangbereich oder Fortschritt an und wende sie an, um die Ergebnisse unten zu aktualisieren."
-        },
-        "results": {
-          "title": "Verbesserungen und Fundorte",
-          "content": "Sieh die für diesen Rangbereich benötigten Verbesserungen und wo du sie farmen kannst."
-        },
-        "share": {
-          "title": "Diese Suche teilen",
-          "content": "Teile oder kopiere einen Link zu genau diesem Charakter und Rangbereich."
-        }
       }
     },
     "overview": {

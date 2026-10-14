@@ -321,5 +321,199 @@
     "meleeOnly": "Melee only",
     "hasRanged": "Has ranged",
     "clearOne": "Clear {{name}}"
+  },
+  "unit": {
+    "nav": {
+      "label": "Unit navigation",
+      "backTo": "Back to {{label}}",
+      "previous": "Previous",
+      "next": "Next",
+      "previousUnit": "Previous unit: {{name}}",
+      "nextUnit": "Next unit: {{name}}",
+      "position": "{{index}} of {{total}}"
+    },
+    "tabs": {
+      "label": "Unit page sections",
+      "details": "Details",
+      "rankup": "Rank-up materials"
+    },
+    "values": {
+      "label": "Show values at",
+      "yourUnit": "Your unit",
+      "starting": "Starting",
+      "custom": "Custom",
+      "stars": "Rarity and stars",
+      "rank": "Rank"
+    },
+    "ability": {
+      "level": "{{name}} level",
+      "levelShort": "Lv {{level}}",
+      "lower": "Lower level",
+      "raise": "Raise level",
+      "yours": "Yours: level {{level}}",
+      "nextLevel": "Next level ({{level}}):",
+      "chartTitle": "{{label}} by level",
+      "chartCaption": "{{label}} goes from {{from}} at level 1 to {{to}} at level {{maxLevel}}.",
+      "constant": "{{label}} stays at {{value}} at every level, so it isn't charted.",
+      "missingText": "Rules text isn't in the planner yet."
+    },
+    "notFound": "This unit isn't in the Library.",
+    "loadFailed": "Character data could not be loaded.",
+    "retry": "Retry"
+  },
+  "charactersList": {
+    "title": "Characters",
+    "search": "Search characters",
+    "searchPlaceholder": "Search by name…",
+    "noMatching": "No characters match your search.",
+    "clearSearch": "Clear search",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Find a character",
+          "content": "Type part of a name to narrow the list."
+        },
+        "list": {
+          "title": "Open a character",
+          "content": "Select a character to see its stats, traits, abilities and rank-up materials."
+        }
+      }
+    }
+  },
+  "characterUnit": {
+    "breadcrumbLibrary": "Library",
+    "header": {
+      "yourUnit": "Your unit:",
+      "abilities": "abilities {{active}} / {{passive}}",
+      "relic": "relic level {{level}}",
+      "notUnlocked": "Not unlocked. Values start at {{rarity}}, {{stars}}, {{rank}}.",
+      "showing": "Showing {{rarity}}, {{stars}}, {{rank}}, abilities level 1.",
+      "shards": "{{owned}} / {{needed}} shards",
+      "shardProgress": "Shards towards unlocking",
+      "signInBanner": "Sign in and sync to open this page at your own levels.",
+      "signIn": "Sign in",
+      "syncBanner": "Sync with Tacticus (in the header) to open this page at your own levels."
+    },
+    "glance": {
+      "title": "At a glance",
+      "health": "Health",
+      "damage": "Damage",
+      "armour": "Armour",
+      "movement": "Movement",
+      "melee": "Melee",
+      "ranged": "Ranged",
+      "hits_one": "{{count}} hit",
+      "hits_other": "{{count}} hits",
+      "range": "Range {{range}}",
+      "equipment": "Equipment slots",
+      "footnote": "Percentile among all characters at Mythic Wings, Adamantine II. Full comparison below.",
+      "percentile_ordinal_one": "{{count}}st percentile",
+      "percentile_ordinal_two": "{{count}}nd percentile",
+      "percentile_ordinal_few": "{{count}}rd percentile",
+      "percentile_ordinal_other": "{{count}}th percentile",
+      "pierce": "{{value}}% pierce ratio",
+      "pierceHint": "Pierce ratio: each hit deals the higher of its damage minus the target's armour, or {{value}}% of its damage. Against heavy armour, the {{value}}% is what lands.",
+      "relicSlot": "Relic: {{name}}",
+      "itemCount_one": "{{count}} item",
+      "itemCount_other": "{{count}} items",
+      "itemsTitle": "Items for the {{slot}} slot",
+      "itemLevels": "Level 1 → {{max}}",
+      "itemStats": {
+        "critChance": "Crit chance",
+        "critDamage": "Crit damage",
+        "critChanceBonus": "Crit chance",
+        "critDamageBonus": "Crit damage",
+        "blockChance": "Block chance",
+        "blockDamage": "Block damage",
+        "blockChanceBonus": "Block chance",
+        "blockDamageBonus": "Block damage",
+        "armor": "Armour",
+        "hp": "Health"
+      }
+    },
+    "traits": {
+      "title": "Traits"
+    },
+    "abilities": {
+      "title": "Abilities",
+      "active": "Active",
+      "passive": "Passive"
+    },
+    "compare": {
+      "title": "Compared with other characters",
+      "subtitle": "Percentile at Mythic Wings · Adamantine II",
+      "axes": {
+        "health": "Health",
+        "armour": "Armour",
+        "meleeVsInfiniteArmour": "Melee damage vs infinite armour",
+        "meleeVsZeroArmour": "Melee damage vs 0 armour",
+        "rangedVsInfiniteArmour": "Ranged damage vs infinite armour",
+        "rangedVsZeroArmour": "Ranged damage vs 0 armour"
+      },
+      "axesShort": {
+        "health": "Health",
+        "armour": "Armour",
+        "meleeVsInfiniteArmour": "Melee ∞",
+        "meleeVsZeroArmour": "Melee 0",
+        "rangedVsInfiniteArmour": "Ranged ∞",
+        "rangedVsZeroArmour": "Ranged 0"
+      },
+      "percent": "{{value}}%",
+      "caption": "Percentiles: {{values}}.",
+      "footnote": "Dashed = median character. {{value}}% armour means {{name}} has more armour than {{value}}% of characters at Mythic Wings, Adamantine II.",
+      "damageLink": "How damage works (Tacticus wiki)"
+    },
+    "statsByRank": {
+      "title": "Stats by rank",
+      "footnote": "Dashed line = the rank shown ({{rank}}). Hover a chart to read any rank.",
+      "yours": " (yours)",
+      "caption": "{{stat}} goes from {{from}} at {{firstRank}} to {{to}} at {{lastRank}}.",
+      "rank": "Rank"
+    },
+    "relic": {
+      "kind": "Relic",
+      "none": "{{name}} has no relic.",
+      "noneShort": "None",
+      "unique": "Unique relic",
+      "shared": "Shared relic",
+      "sharedWith": "Also equippable by {{names}}"
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "The unit",
+          "content": "Its portrait, faction and the values the page shows. Signed in and synced, they start at your own unit; choose Custom to try other values."
+        },
+        "tabs": {
+          "title": "Details and rank-up",
+          "content": "Switch between the unit's details and the rank-up materials calculator."
+        },
+        "ability": {
+          "title": "Abilities",
+          "content": "Change the level to read the rules text at that level; the chart shows how each value grows."
+        },
+        "compare": {
+          "title": "Compared with other characters",
+          "content": "How this character's stats rank among all characters, at Mythic Wings, Adamantine II."
+        },
+        "rankup": {
+          "title": "Rank-up materials",
+          "content": "Pick a rank range to see the upgrades needed and where to farm them."
+        }
+      }
+    },
+    "mythic": {
+      "kind": "Mythic",
+      "title": "Mythic quests",
+      "count_one": "{{count}} quest",
+      "count_other": "{{count}} quests",
+      "rewards": {
+        "mythicShards": "{{name}} mythic shards",
+        "ascensionOrb": "Mythic {{alliance}} ascension orb",
+        "abilityBadge": "Mythic {{alliance}} badge",
+        "xp": "Mythic XP book",
+        "gold": "Gold"
+      }
+    }
   }
 }

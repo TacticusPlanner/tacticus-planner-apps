@@ -4,5 +4,6 @@ export {
   LibraryCollectionPage,
   LibraryNoRecordsPage,
 } from "./ui/library-collection-page"
-export { CharacterLookupPage } from "./ui/character/character-lookup-page"
+export { CharactersListPage } from "./ui/characters/characters-list-page"
+export { CharacterUnitPage } from "./ui/character-unit/character-unit-page"
 export { ShopsBrowsePage } from "./ui/shops/shops-browse-page"

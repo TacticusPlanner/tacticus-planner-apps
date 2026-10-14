@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 
-import { unitIdSchema, type FactionGroup } from "@workspace/game-domain"
+import { unitIdSchema } from "@workspace/game-domain"
 
 vi.mock("../character-lookup-controls", () => ({
   CharacterLookupControls: ({ onApply }: { onApply: () => void }) => (
@@ -19,12 +19,8 @@ vi.mock("../unit-profile", () => ({
 
 import { CharacterLookupMobilePage } from "./character-lookup-mobile-page"
 
-const characterGroups: FactionGroup[] = []
-
 function baseProps() {
   return {
-    characterGroups,
-    characterId: unitIdSchema.parse("cato"),
     rankStart: "Stone1" as const,
     rankEnd: "Iron1" as const,
     progressionStart: "Common:None" as const,
@@ -39,7 +35,6 @@ function baseProps() {
     groups: [],
     campaignInsights: [],
     eventInsights: [],
-    onCharacterChange: vi.fn(),
     onRangeChange: vi.fn(),
     onProgressionRangeChange: vi.fn(),
     onPointFiveChange: vi.fn(),
