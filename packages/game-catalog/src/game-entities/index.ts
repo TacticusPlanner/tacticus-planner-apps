@@ -15,6 +15,7 @@ export {
   energyIcon,
   onslaughtTokenIcon,
   goldIcon,
+  salvageIcon,
   xpBookIcon,
   characterIcon,
   mowIcon,

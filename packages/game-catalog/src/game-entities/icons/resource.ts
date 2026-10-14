@@ -45,6 +45,10 @@ export function goldIcon(): string {
   return `${ASSET_BASE_PATH}/misc/ui_icon_resource_coin.png`
 }
 
+export function salvageIcon(): string {
+  return `${ASSET_BASE_PATH}/resources/ui_icon_resource_salvage.png`
+}
+
 const XP_BOOK_INDEX: Record<Rarity, number> = {
   Common: 0,
   Uncommon: 1,

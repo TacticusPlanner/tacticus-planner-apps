@@ -10,7 +10,7 @@
     },
     "machinesOfWar": {
       "label": "Machines of War",
-      "description": "Browse Machine of War details and stats"
+      "description": "Browse Machine of War abilities and upgrade costs"
     },
     "npcs": {
       "label": "NPCs",
@@ -21,8 +21,6 @@
       "description": "Browse Guild Raid Boss information"
     },
     "noRecords": "No selectable entities are available.",
-    "raidBossesNoRecords": "Guild Raid Bosses are not available in the catalog yet.",
-    "detailUnavailable": "Detailed {{name}} pages aren't available yet — check back soon.",
     "shops": {
       "label": "Daily Shops",
       "description": "Browse what each daily shop can offer on any day of the week"
@@ -380,6 +378,23 @@
       }
     }
   },
+  "mowsList": {
+    "title": "Machines of War",
+    "search": "Search Machines of War",
+    "noMatching": "No Machines of War match your search.",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Find a Machine of War",
+          "content": "Type part of a name to narrow the list."
+        },
+        "list": {
+          "title": "Open a Machine of War",
+          "content": "Select a Machine of War to see its abilities and what upgrading them costs."
+        }
+      }
+    }
+  },
   "characterUnit": {
     "breadcrumbLibrary": "Library",
     "header": {
@@ -513,6 +528,84 @@
         "abilityBadge": "Mythic {{alliance}} badge",
         "xp": "Mythic XP book",
         "gold": "Gold"
+      }
+    }
+  },
+  "mowUnit": {
+    "header": {
+      "kind": "{{alliance}} · Machine of War",
+      "yourUnit": "Your Machine of War:",
+      "levels": "primary {{primary}} · secondary {{secondary}}",
+      "notUnlocked": "Not unlocked. Values start at {{rarity}}.",
+      "showing": "Showing {{rarity}}, abilities level 1."
+    },
+    "tabs": {
+      "upgrades": "Ability upgrades"
+    },
+    "abilities": {
+      "title": "Abilities",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "mythic": "Mythic"
+    },
+    "mythic": {
+      "unnamed": "Mythic ability",
+      "unlocks": "Unlocks at Mythic",
+      "level": "Level {{level}} · from blue stars"
+    },
+    "upgrades": {
+      "from": "From level",
+      "to": "To level",
+      "includeOwned": "Include owned materials",
+      "includeOwnedOn": "Totals subtract what is in your inventory.",
+      "includeOwnedOff": "Totals ignore your inventory.",
+      "totalTitle": "Total needed",
+      "gold": "Gold",
+      "salvage": "Salvage",
+      "components": "{{alliance}} components",
+      "badges": "{{rarity}} {{alliance}} badges",
+      "forgeBadges": "{{rarity}} forge badges",
+      "materialsTitle": "Upgrade materials",
+      "covered": "Covered",
+      "nothing": "Nothing to upgrade: raise a To level above its From level.",
+      "perLevelTitle": "Per level",
+      "step": "{{from}} → {{to}}",
+      "columns": {
+        "level": "Level",
+        "gold": "Gold",
+        "salvage": "Salvage",
+        "badges": "Badges",
+        "forgeBadges": "Forge badges",
+        "components": "Components",
+        "materials": "Materials"
+      }
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Machine of War",
+          "content": "Your Machine of War's rarity and ability levels. Switch to Custom to look at other rarities."
+        },
+        "tabs": {
+          "title": "Details and upgrades",
+          "content": "Details shows the abilities; Ability upgrades totals what raising them costs."
+        },
+        "ability": {
+          "title": "Abilities",
+          "content": "Each ability's rules text and how it grows with level, once the game text is in the planner."
+        },
+        "upgrades": {
+          "title": "Ability upgrades",
+          "content": "Open this tab to total the gold, badges, components and materials an upgrade needs."
+        },
+        "ranges": {
+          "title": "Choose the levels",
+          "content": "Pick a From and To level for each ability. Totals update as you change them."
+        },
+        "totals": {
+          "title": "What you need",
+          "content": "Gold, salvage, components and badges for the chosen levels, by rarity."
+        }
       }
     }
   }

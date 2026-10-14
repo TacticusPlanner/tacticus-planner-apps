@@ -19,19 +19,7 @@ export type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 /** The rarity/stars step and rank the page's stats are shown at. */
 export type ShownValues = { progression: Progression; rank: Rank }
 
-/**
- * Which header state applies: the player owns the unit (a), is signed in and synced without it
- * (b), or has no roster to compare with — signed out, or signed in before characters synced (c).
- */
-export type UnitOwnership = "owned" | "notOwned" | "noRoster"
-
-export function unitOwnership(
-  rosterSynced: boolean,
-  playerCharacter: PlayerCharacter | undefined
-): UnitOwnership {
-  if (!rosterSynced) return "noRoster"
-  return playerCharacter ? "owned" : "notOwned"
-}
+export { unitOwnership, type UnitOwnership } from "../unit/unit-ownership"
 
 /** Where a unit nobody owns starts: its starting rarity's first star step, Stone I. */
 export function startingValues(character: CharacterStorageModel): ShownValues {

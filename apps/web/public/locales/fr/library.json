@@ -10,7 +10,7 @@
     },
     "machinesOfWar": {
       "label": "Machines de guerre",
-      "description": "Parcourez les détails et statistiques des Machines de guerre"
+      "description": "Parcourez les capacités et les coûts d’amélioration des Machines de guerre"
     },
     "npcs": {
       "label": "PNJ",
@@ -21,8 +21,6 @@
       "description": "Parcourez les informations des boss de raid de guilde"
     },
     "noRecords": "Aucune entité sélectionnable n’est disponible.",
-    "raidBossesNoRecords": "Les boss de raid de guilde ne sont pas encore disponibles dans le catalogue.",
-    "detailUnavailable": "Les pages détaillées de {{name}} ne sont pas encore disponibles. Revenez bientôt.",
     "shops": {
       "label": "Boutiques quotidiennes",
       "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
@@ -380,6 +378,23 @@
       }
     }
   },
+  "mowsList": {
+    "title": "Machines de guerre",
+    "search": "Rechercher des Machines de guerre",
+    "noMatching": "Aucune Machine de guerre ne correspond à votre recherche.",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Trouver une Machine de guerre",
+          "content": "Tapez une partie d’un nom pour réduire la liste."
+        },
+        "list": {
+          "title": "Ouvrir une Machine de guerre",
+          "content": "Sélectionnez une Machine de guerre pour voir ses capacités et le coût de leur amélioration."
+        }
+      }
+    }
+  },
   "characterUnit": {
     "breadcrumbLibrary": "Bibliothèque",
     "header": {
@@ -513,6 +528,84 @@
         "abilityBadge": "Insigne mythique {{alliance}}",
         "xp": "Livre d'XP mythique",
         "gold": "Or"
+      }
+    }
+  },
+  "mowUnit": {
+    "header": {
+      "kind": "{{alliance}} · Machine de guerre",
+      "yourUnit": "Votre Machine de guerre :",
+      "levels": "principale {{primary}} · secondaire {{secondary}}",
+      "notUnlocked": "Non débloquée. Les valeurs commencent à {{rarity}}.",
+      "showing": "Affichage : {{rarity}}, capacités au niveau 1."
+    },
+    "tabs": {
+      "upgrades": "Améliorations des capacités"
+    },
+    "abilities": {
+      "title": "Capacités",
+      "primary": "Principale",
+      "secondary": "Secondaire",
+      "mythic": "Mythique"
+    },
+    "mythic": {
+      "unnamed": "Capacité mythique",
+      "unlocks": "Débloquée au rang Mythique",
+      "level": "Niveau {{level}} · selon les étoiles bleues"
+    },
+    "upgrades": {
+      "from": "Du niveau",
+      "to": "Au niveau",
+      "includeOwned": "Inclure les matériaux possédés",
+      "includeOwnedOn": "Les totaux déduisent le contenu de votre inventaire.",
+      "includeOwnedOff": "Les totaux ignorent votre inventaire.",
+      "totalTitle": "Total requis",
+      "gold": "Or",
+      "salvage": "Récupération",
+      "components": "Composants ({{alliance}})",
+      "badges": "Insignes {{rarity}} ({{alliance}})",
+      "forgeBadges": "Insignes de forge {{rarity}}",
+      "materialsTitle": "Matériaux d’amélioration",
+      "covered": "Couvert",
+      "nothing": "Rien à améliorer : choisissez un niveau d’arrivée au-dessus du niveau de départ.",
+      "perLevelTitle": "Par niveau",
+      "step": "{{from}} → {{to}}",
+      "columns": {
+        "level": "Niveau",
+        "gold": "Or",
+        "salvage": "Récupération",
+        "badges": "Insignes",
+        "forgeBadges": "Insignes de forge",
+        "components": "Composants",
+        "materials": "Matériaux"
+      }
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Machine de guerre",
+          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés."
+        },
+        "tabs": {
+          "title": "Détails et améliorations",
+          "content": "Détails montre les capacités ; Améliorations des capacités totalise le coût de leur montée."
+        },
+        "ability": {
+          "title": "Capacités",
+          "content": "Le texte de règles de chaque capacité et sa progression par niveau, dès que le texte du jeu est dans le planificateur."
+        },
+        "upgrades": {
+          "title": "Améliorations des capacités",
+          "content": "Ouvrez cet onglet pour totaliser l’or, les insignes, les composants et les matériaux d’une amélioration."
+        },
+        "ranges": {
+          "title": "Choisir les niveaux",
+          "content": "Choisissez un niveau de départ et d’arrivée pour chaque capacité. Les totaux se mettent à jour aussitôt."
+        },
+        "totals": {
+          "title": "Ce qu’il vous faut",
+          "content": "Or, récupération, composants et insignes pour les niveaux choisis, par rareté."
+        }
       }
     }
   }

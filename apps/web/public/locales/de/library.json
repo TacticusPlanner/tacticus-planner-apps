@@ -10,7 +10,7 @@
     },
     "machinesOfWar": {
       "label": "Kriegsmaschinen",
-      "description": "Details und Werte von Kriegsmaschinen durchsuchen"
+      "description": "Fähigkeiten und Upgrade-Kosten von Kriegsmaschinen durchsuchen"
     },
     "npcs": {
       "label": "NPCs",
@@ -21,8 +21,6 @@
       "description": "Informationen zu Gildenraid-Bossen durchsuchen"
     },
     "noRecords": "Keine auswählbaren Einheiten verfügbar.",
-    "raidBossesNoRecords": "Gildenraid-Bosse sind noch nicht im Katalog verfügbar.",
-    "detailUnavailable": "Detaillierte Seiten zu {{name}} sind noch nicht verfügbar – schau bald wieder vorbei.",
     "shops": {
       "label": "Tages-Shops",
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
@@ -380,6 +378,23 @@
       }
     }
   },
+  "mowsList": {
+    "title": "Kriegsmaschinen",
+    "search": "Kriegsmaschinen suchen",
+    "noMatching": "Keine Kriegsmaschinen passen zu deiner Suche.",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Kriegsmaschine finden",
+          "content": "Gib einen Teil des Namens ein, um die Liste einzugrenzen."
+        },
+        "list": {
+          "title": "Kriegsmaschine öffnen",
+          "content": "Wähle eine Kriegsmaschine, um ihre Fähigkeiten und die Kosten ihrer Verbesserung zu sehen."
+        }
+      }
+    }
+  },
   "characterUnit": {
     "breadcrumbLibrary": "Bibliothek",
     "header": {
@@ -510,6 +525,84 @@
         "abilityBadge": "Mythisches {{alliance}}-Abzeichen",
         "xp": "Mythisches EP-Buch",
         "gold": "Gold"
+      }
+    }
+  },
+  "mowUnit": {
+    "header": {
+      "kind": "{{alliance}} · Kriegsmaschine",
+      "yourUnit": "Deine Kriegsmaschine:",
+      "levels": "primär {{primary}} · sekundär {{secondary}}",
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{rarity}}.",
+      "showing": "Angezeigt: {{rarity}}, Fähigkeiten auf Stufe 1."
+    },
+    "tabs": {
+      "upgrades": "Fähigkeits-Upgrades"
+    },
+    "abilities": {
+      "title": "Fähigkeiten",
+      "primary": "Primär",
+      "secondary": "Sekundär",
+      "mythic": "Mythisch"
+    },
+    "mythic": {
+      "unnamed": "Mythische Fähigkeit",
+      "unlocks": "Ab Mythisch freigeschaltet",
+      "level": "Stufe {{level}} · nach blauen Sternen"
+    },
+    "upgrades": {
+      "from": "Von Stufe",
+      "to": "Bis Stufe",
+      "includeOwned": "Eigene Materialien einbeziehen",
+      "includeOwnedOn": "Die Summen ziehen ab, was in deinem Inventar ist.",
+      "includeOwnedOff": "Die Summen ignorieren dein Inventar.",
+      "totalTitle": "Insgesamt benötigt",
+      "gold": "Goldmünzen",
+      "salvage": "Bergungsgut",
+      "components": "Komponenten ({{alliance}})",
+      "badges": "{{rarity}}-Abzeichen ({{alliance}})",
+      "forgeBadges": "{{rarity}}-Schmiedeabzeichen",
+      "materialsTitle": "Upgrade-Materialien",
+      "covered": "Abgedeckt",
+      "nothing": "Nichts zu verbessern: Setze eine Bis-Stufe über ihre Von-Stufe.",
+      "perLevelTitle": "Pro Stufe",
+      "step": "{{from}} → {{to}}",
+      "columns": {
+        "level": "Stufe",
+        "gold": "Goldmünzen",
+        "salvage": "Bergungsgut",
+        "badges": "Abzeichen",
+        "forgeBadges": "Schmiedeabzeichen",
+        "components": "Komponenten",
+        "materials": "Materialien"
+      }
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Kriegsmaschine",
+          "content": "Seltenheit und Fähigkeitsstufen deiner Kriegsmaschine. Wechsle zu Eigene, um andere Seltenheiten anzusehen."
+        },
+        "tabs": {
+          "title": "Details und Upgrades",
+          "content": "Details zeigt die Fähigkeiten; Fähigkeits-Upgrades summiert, was ihre Verbesserung kostet."
+        },
+        "ability": {
+          "title": "Fähigkeiten",
+          "content": "Regeltext jeder Fähigkeit und wie sie mit der Stufe wächst, sobald der Spieltext im Planer ist."
+        },
+        "upgrades": {
+          "title": "Fähigkeits-Upgrades",
+          "content": "Öffne diesen Tab, um Gold, Abzeichen, Komponenten und Materialien für ein Upgrade zu summieren."
+        },
+        "ranges": {
+          "title": "Stufen wählen",
+          "content": "Wähle für jede Fähigkeit eine Von- und Bis-Stufe. Die Summen aktualisieren sich sofort."
+        },
+        "totals": {
+          "title": "Was du brauchst",
+          "content": "Gold, Bergungsgut, Komponenten und Abzeichen für die gewählten Stufen, nach Seltenheit."
+        }
       }
     }
   }
