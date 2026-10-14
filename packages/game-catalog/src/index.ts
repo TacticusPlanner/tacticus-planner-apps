@@ -36,6 +36,8 @@ export type {
   GameCatalogUpgradeRecipeIngredient,
   GameCatalogMowUpgradeCost,
   GameCatalogCharacterAbilityCost,
+  GameCatalogMythicQuest,
+  GameCatalogMythicQuestReward,
   GameCatalogEquipmentUpgradeCost,
   GameCatalogShop,
   GameCatalogShopSlot,
@@ -126,6 +128,7 @@ export {
   type ShopStorageModel,
   type RaidBossesStorageModel,
   type GuildRaidMetaStorageModel,
+  type MythicQuestsStorageModel,
   type LegendaryEventStorageModel,
   type LegendaryEventCommonStorageModel,
 } from "./game-catalog.storage"

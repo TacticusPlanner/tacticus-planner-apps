@@ -49,6 +49,11 @@ function byCalendarDate(data: unknown): Record<string, unknown>[] {
   )
 }
 
+// mythic-quests has one record per character with quests, so the character id doubles as the store id.
+function byUnitId(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.unitId, ...row }))
+}
+
 // raid-bosses is the second non-array payload (after events-calendar): a single object
 // ({ seasonConfigRotation, bosses[], primes[], seasons{} }) the Library always reads whole. Stored as
 // one row under a fixed id rather than flattened, since nothing queries it by sub-key.
@@ -85,6 +90,7 @@ export const datasetToStorageModels: Record<
   shops: asArray,
   "raid-bosses": (data) => asSingleRow("raid-bosses", data),
   "guild-raid-meta": (data) => asSingleRow("guild-raid-meta", data),
+  "mythic-quests": byUnitId,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

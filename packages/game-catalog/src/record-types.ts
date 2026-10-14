@@ -19,6 +19,8 @@ import type {
   lreWaveSchema,
   mowSchema,
   mowUpgradeCostSchema,
+  mythicQuestRewardSchema,
+  mythicQuestSchema,
   characterAbilityCostSchema,
   npcSchema,
   onslaughtRewardSchema,
@@ -63,6 +65,10 @@ export type GameCatalogFarmLocation = z.infer<typeof farmLocationSchema>
 export type GameCatalogMowUpgradeCost = z.infer<typeof mowUpgradeCostSchema>
 export type GameCatalogCharacterAbilityCost = z.infer<
   typeof characterAbilityCostSchema
+>
+export type GameCatalogMythicQuest = z.infer<typeof mythicQuestSchema>
+export type GameCatalogMythicQuestReward = z.infer<
+  typeof mythicQuestRewardSchema
 >
 export type GameCatalogAscensionCost = z.infer<typeof ascensionCostSchema>
 export type GameCatalogUnlockShardCost = z.infer<typeof unlockShardCostSchema>

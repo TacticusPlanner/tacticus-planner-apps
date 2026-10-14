@@ -21,6 +21,7 @@ export const servedDatasetKeys = [
   "shops",
   "raid-bosses",
   "guild-raid-meta",
+  "mythic-quests",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]

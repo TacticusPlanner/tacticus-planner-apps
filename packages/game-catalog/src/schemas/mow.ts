@@ -21,6 +21,9 @@ export const mowSchema = z.looseObject({
   alliance: z.enum(Alliance),
   primaryAbility: mowAbilitySchema,
   secondaryAbility: mowAbilitySchema,
+  // The MoW's mythic ability, unlocked at Mythic and levelled by blue stars (not by upgrade materials, so
+  // no recipes). Omitted by a server that predates it.
+  mythicAbility: z.looseObject({ name: z.string() }).optional(),
 })
 
 export const mowUpgradeCostSchema = z.looseObject({
