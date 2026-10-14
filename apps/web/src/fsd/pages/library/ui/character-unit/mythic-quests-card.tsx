@@ -26,7 +26,11 @@ function RewardChip({
   reward: MythicQuestReward
   equipment: readonly EquipmentStorageModel[]
 }) {
-  const { t } = useTranslation(["library", "characters", "equipmentItems"])
+  const { t, i18n } = useTranslation([
+    "library",
+    "characters",
+    "equipmentItems",
+  ])
   let icon: string | undefined
   let label: string
   switch (reward.kind) {
@@ -71,7 +75,7 @@ function RewardChip({
     default:
       label = reward.raw
   }
-  const format = new Intl.NumberFormat()
+  const format = new Intl.NumberFormat(i18n.language)
   return (
     <li className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold">
       {icon ? <EntityIcon src={icon} alt="" className="size-4" /> : null}
