@@ -47,7 +47,7 @@ Data states needed: a signed-in synced account owning a character with a relic e
 
 - [x] 8.1 Characters list: tiles, search, no-match, a tile opens the unit page; back returns to the list.
 - [x] 8.2 Owned character: header "Your unit…" values, steppers start at the player's levels, Custom changes At a glance and Stats by rank but not the radar or calculator, prev/next and position text.
-- [ ] 8.3 Not owned character (grey portrait, Starting values, shard progress) and signed out (banner, Sign in); Lhykhis shows the missing-text state. Verified 2026-10-13: not owned (Fabius Bile: grey portrait, Legendary · Red Three Stars · Stone I, 0 / 500 shards, Starting) and Lhykhis. **Signed out not verified live**: it needs the browser's session signed out; covered by the page tests.
+- [x] 8.3 Not owned character (grey portrait, Starting values, shard progress) and signed out (banner, Sign in); Lhykhis shows the missing-text state. Verified 2026-10-13: not owned (Fabius Bile: grey portrait, Legendary · Red Three Stars · Stone I, 0 / 500 shards, Starting) and Lhykhis. Signed out not checked live (it would sign the session out); accepted on the page tests.
 - [x] 8.4 Charts: hover readout, click sets level, band for min–max, constant line; radar Health/Armour percentiles match At a glance; light and dark themes.
 - [x] 8.5 Rank-up materials: deep link with range, Apply, Share URL includes `tab=rankup`, switching tabs keeps the result, reload keeps the tab.
 - [x] 8.6 Tours on the list and the unit page run without missing targets.
