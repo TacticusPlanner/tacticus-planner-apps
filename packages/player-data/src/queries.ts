@@ -56,6 +56,13 @@ export function getInventoryShard(
   return getChunkRecord("inventory-shards", unitId)
 }
 
+// Every unowned unit's shard progress at once, e.g. for a whole-catalog collection view.
+export function getInventoryShards(): Promise<
+  PlayerDataChunkDto<"inventory-shards"> | undefined
+> {
+  return getChunkData("inventory-shards")
+}
+
 export function getLiveProgress(): Promise<
   PlayerDataChunkDto<"live-progress"> | undefined
 > {

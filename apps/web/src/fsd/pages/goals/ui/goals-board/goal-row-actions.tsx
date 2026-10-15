@@ -16,6 +16,11 @@ import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import type { GoalRow } from "../../model/shared/types"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
+import {
+  canRemoveFromProject,
+  removalMovesRow,
+  type ProjectRemoval,
+} from "./project-removal-flow"
 
 type Props = {
   row: GoalRow
@@ -32,10 +37,14 @@ type Props = {
   reached?: boolean
   /** Enables the menu's Pause/Resume prerequisite cascade. Absent pauses/resumes this goal alone. */
   cascadeContext?: CascadeContext
+  /** Present while the Goals page is scoped to a project: adds "Remove from this project" (or "Move to
+   *  project" when it is the goal's only one) and names the project in the delete confirmation. */
+  projectRemoval?: ProjectRemoval
 }
 
-/** A goal row's single "…" menu, on both platforms: Edit, Pause or Resume, then a destructive Delete
- * gated behind `DeleteGoalDialog`. Reaching a goal's target is computed automatically (see
+/** A goal row's single "…" menu, on both platforms: Edit, Pause or Resume, the scoped project's
+ * removal (only while the page is scoped to a project), then a destructive Delete gated behind
+ * `DeleteGoalDialog`. Removal is an ordinary item that acts at once; Delete is account-wide and confirmed. Reaching a goal's target is computed automatically (see
  * `model/attainment/`), never a manual action here. */
 export function GoalRowActions({
   row,
@@ -44,6 +53,7 @@ export function GoalRowActions({
   onOpenChange,
   reached = false,
   cascadeContext,
+  projectRemoval,
 }: Props) {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -100,6 +110,18 @@ export function GoalRowActions({
               {t("goals.actions.resume")}
             </DropdownMenuItem>
           ) : null}
+          {projectRemoval ? (
+            <DropdownMenuItem
+              className="whitespace-nowrap"
+              data-testid={`goal-row-remove-from-project-${goalId}`}
+              disabled={pending || !canRemoveFromProject(projectRemoval, row)}
+              onSelect={() => projectRemoval.request([row])}
+            >
+              {removalMovesRow(projectRemoval, row)
+                ? t("goals.project.moveToProject")
+                : t("goals.project.removeFromProject")}
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             data-testid={`goal-row-delete-${goalId}`}
@@ -124,6 +146,7 @@ export function GoalRowActions({
         onOpenChange={setConfirmOpen}
         open={confirmOpen}
         pending={pending}
+        projectName={projectRemoval?.project.name}
       />
     </>
   )

@@ -3,10 +3,10 @@ import {
   CalendarCheck,
   CalendarDays,
   BookOpen,
+  Gamepad2,
   Home,
   LayoutGrid,
   ListTodo,
-  TrendingUp,
   Users,
 } from "lucide-react"
 
@@ -15,7 +15,7 @@ import { isUiKitEnabled } from "@/shared/config"
 type NavLabelKey =
   | "nav.home"
   | "nav.goals"
-  | "nav.progress"
+  | "nav.myGame"
   | "nav.legendaryEvents"
   | "nav.uiKit"
   | "nav.guild"
@@ -30,9 +30,10 @@ type NavLabelKey =
   | "goals.tabs.projects"
   | "goals.tabs.insights"
   | "goals.tabs.schedule"
-  | "progress.tabs.onslaught"
-  | "progress.tabs.campaigns"
-  | "progress.tabs.campaign-events"
+  | "myGame.tabs.collection"
+  | "myGame.tabs.onslaught"
+  | "myGame.tabs.campaigns"
+  | "myGame.tabs.campaign-events"
   | "legendaryEvents.tabs.allEvents"
   | "guild.tabs.members"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
@@ -79,6 +80,11 @@ interface NavSubItemBase {
   isLandingPage?: boolean
   // Names a live signal this entry shows through `NavLiveDot` (absent means none).
   liveIndicator?: "hse"
+  // Overrides the section's `anonymousAllowed` for this child, so one section can mix public and
+  // sign-in-only pages (My Game: Collection is public, the rest are not). Absent means inherit.
+  // It can only narrow: `filterVisibleNavItems` drops a sign-in-only section before looking at its
+  // children, so `true` under such a section does nothing.
+  anonymousAllowed?: boolean
 }
 
 /** A static child, labelled through i18n keys like its section. */
@@ -234,27 +240,37 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    path: "/progress",
-    labelKey: "nav.progress",
-    descriptionKey: "nav.progressDescription",
-    icon: TrendingUp,
-    anonymousAllowed: false,
+    path: "/my-game",
+    labelKey: "nav.myGame",
+    descriptionKey: "nav.myGameDescription",
+    icon: Gamepad2,
+    // Visible to everyone for its public Collection child; the other children require sign-in
+    // and are filtered out for anonymous users (see filterVisibleNavItems).
+    anonymousAllowed: true,
     mobilePlacement: "menu",
     children: [
       {
-        path: "/progress/onslaught",
-        labelKey: "progress.tabs.onslaught",
-        descriptionKey: "progress.tabs.onslaughtDescription",
+        path: "/my-game/collection",
+        labelKey: "myGame.tabs.collection",
+        descriptionKey: "myGame.tabs.collectionDescription",
       },
       {
-        path: "/progress/campaigns",
-        labelKey: "progress.tabs.campaigns",
-        descriptionKey: "progress.tabs.campaignsDescription",
+        path: "/my-game/onslaught",
+        labelKey: "myGame.tabs.onslaught",
+        descriptionKey: "myGame.tabs.onslaughtDescription",
+        anonymousAllowed: false,
       },
       {
-        path: "/progress/campaign-events",
-        labelKey: "progress.tabs.campaign-events",
-        descriptionKey: "progress.tabs.campaign-eventsDescription",
+        path: "/my-game/campaigns",
+        labelKey: "myGame.tabs.campaigns",
+        descriptionKey: "myGame.tabs.campaignsDescription",
+        anonymousAllowed: false,
+      },
+      {
+        path: "/my-game/campaign-events",
+        labelKey: "myGame.tabs.campaign-events",
+        descriptionKey: "myGame.tabs.campaign-eventsDescription",
+        anonymousAllowed: false,
       },
     ],
   },
@@ -307,3 +323,28 @@ export const navItems: NavItem[] = [
       ]
     : []),
 ]
+
+/**
+ * The navigation tree a user may see: sections they may open, each with only the children they
+ * may open (a child inherits its section's `anonymousAllowed` unless it sets its own). A section
+ * left with no visible children is dropped, so it never renders as an empty menu. Every nav
+ * surface (sidebar, section menu, mobile tabs and drawer, search, entry-path resolution) consumes
+ * this one filtered tree.
+ */
+export function filterVisibleNavItems(
+  items: NavItem[],
+  isAuthenticated: boolean
+): NavItem[] {
+  if (isAuthenticated) return items
+  return items.flatMap((item) => {
+    if (!item.anonymousAllowed) return []
+    if (!item.children) return [item]
+    const children = item.children.filter(
+      (child) => child.anonymousAllowed ?? item.anonymousAllowed
+    )
+    if (children.length === 0) return []
+    return children.length === item.children.length
+      ? [item]
+      : [{ ...item, children }]
+  })
+}
