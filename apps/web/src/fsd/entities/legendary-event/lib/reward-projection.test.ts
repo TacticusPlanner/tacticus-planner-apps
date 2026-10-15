@@ -7,7 +7,11 @@ import type {
   LegendaryEventRunInputs,
 } from "../model/plan.types"
 import type { LegendaryEventRewards } from "../model/types"
-import { projectRewards, type RewardProjectionInput } from "./reward-projection"
+import {
+  nextAscensionStep,
+  projectRewards,
+  type RewardProjectionInput,
+} from "./reward-projection"
 
 const uthar = utharEvent.rewards
 
@@ -386,6 +390,35 @@ describe("projectRewards", () => {
     expect(projection.points).toMatchObject({
       state: "milestone",
       cumulativePoints: 12_500,
+    })
+  })
+})
+
+describe("nextAscensionStep", () => {
+  // Uthar: unlock 400, four stars +120, five stars +180, blue star +200, mythic +250, two blue +150.
+  it.each([
+    [0, "unlock", 400, 0, 400],
+    [399, "unlock", 400, 399, 400],
+    [400, "fourStars", 520, 0, 120],
+    [600, "fiveStars", 700, 80, 180],
+    [700, "blueStar", 900, 0, 200],
+    [1000, "mythic", 1150, 100, 250],
+    [1299, "twoBlueStars", 1300, 149, 150],
+  ])(
+    "names the step above %i shards",
+    (shards, step, threshold, shardsTowardStep, stepSize) => {
+      expect(nextAscensionStep(shards, uthar.progression)).toEqual({
+        step,
+        threshold,
+        shardsTowardStep,
+        stepSize,
+      })
+    }
+  )
+
+  it("reports every step reached at the last threshold", () => {
+    expect(nextAscensionStep(1300, uthar.progression)).toEqual({
+      step: "fullyAscended",
     })
   })
 })
