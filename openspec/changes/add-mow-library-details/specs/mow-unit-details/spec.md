@@ -256,8 +256,10 @@ Assumptions:
 
 ### Requirement: Include owned materials on Ability upgrades
 
-Signed in with synced inventory, the Ability upgrades tab SHALL offer an **Include owned materials** toggle,
-on by default, with a line saying whether totals subtract the inventory. On, the totals SHALL subtract the
+Signed in with synced inventory, the Ability upgrades tab SHALL offer an **Include owned materials**
+switch, the same labelled switch as the character calculator's, on by default, with a line saying what
+the totals subtract (badges, components and materials, not gold or salvage) or that they ignore the
+inventory. On, the totals SHALL subtract the
 inventory's badges of the MoW's alliance per rarity, forge badges per rarity and components of the MoW's
 alliance, and the Upgrade materials counts SHALL show what is still needed after inventory (crafted
 materials in the inventory count towards their base materials); a fully covered material SHALL stay listed,

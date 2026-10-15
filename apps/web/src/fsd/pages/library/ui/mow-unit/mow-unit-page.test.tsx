@@ -566,14 +566,16 @@ describe("MowUnitPage", () => {
         "38"
       )
       // 20 steps × 1 Common badge, less the 2 owned; 20 components less 5 owned.
-      const toggle = screen.getByTestId("mow-include-owned")
-      expect(toggle).toHaveAttribute("aria-pressed", "true")
+      const toggle = screen.getByRole("switch", {
+        name: "Include owned materials",
+      })
+      expect(toggle).toBeChecked()
       expect(total("badges-Common")).toBe("18")
       expect(total("components")).toBe("15")
       expect(total("gold")).toBe("2,000")
 
       fireEvent.click(toggle)
-      expect(toggle).toHaveAttribute("aria-pressed", "false")
+      expect(toggle).not.toBeChecked()
       expect(total("badges-Common")).toBe("20")
       expect(total("components")).toBe("20")
       expect(total("gold")).toBe("2,000")

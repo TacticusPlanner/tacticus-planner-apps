@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useId, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   abilityBadgeIcon,
@@ -12,7 +12,8 @@ import {
   type Rarity,
   type UpgradeId,
 } from "@workspace/game-domain"
-import { Button } from "@workspace/ui/components/button"
+import { Label } from "@workspace/ui/components/label"
+import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
@@ -58,6 +59,7 @@ export function MowUpgradesTab({
   isMobile: boolean
 }) {
   const { t, i18n } = useTranslation(["library", "progression", "upgrades"])
+  const includeOwnedId = useId()
   const format = new Intl.NumberFormat(i18n.language)
   const allianceName = t(`npcs.alliances.${alliance}`, {
     defaultValue: alliance,
@@ -155,16 +157,18 @@ export function MowUpgradesTab({
 
       {includeOwned !== undefined ? (
         <div className="flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            variant={includeOwned ? "default" : "outline"}
-            size="sm"
-            aria-pressed={includeOwned}
-            onClick={() => onIncludeOwnedChange(!includeOwned)}
-            data-testid="mow-include-owned"
-          >
-            {t("mowUnit.upgrades.includeOwned")}
-          </Button>
+          {/* The same switch as the character calculator's Include owned control. */}
+          <div className="flex items-center gap-2">
+            <Switch
+              id={includeOwnedId}
+              checked={includeOwned}
+              onCheckedChange={onIncludeOwnedChange}
+              data-testid="mow-include-owned"
+            />
+            <Label htmlFor={includeOwnedId}>
+              {t("mowUnit.upgrades.includeOwned")}
+            </Label>
+          </div>
           <p className="text-sm text-muted-foreground">
             {includeOwned
               ? t("mowUnit.upgrades.includeOwnedOn")
