@@ -50,6 +50,7 @@
       "now": "Aktuell",
       "planned": "Geplant"
     },
+    "nowHint": "Die Belohnungsaussicht liest diesen Durchlauf aus deinem synchronisierten Fortschritt, daher zählen diese Eingaben erst ab dem nächsten Durchlauf.",
     "regularMissions": "Normale Missionen",
     "premiumMissions": "Premium-Missionen",
     "bundle": "Paket mit 300 Währung gekauft",

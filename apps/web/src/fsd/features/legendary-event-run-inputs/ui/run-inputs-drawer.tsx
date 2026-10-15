@@ -182,6 +182,14 @@ function RunInputsBody({
                 {t(`runInputs.phase.${phase}`)}
               </Badge>
             </div>
+            {phase === "now" ? (
+              <p
+                className="text-xs text-muted-foreground"
+                data-testid="run-inputs-now-hint"
+              >
+                {t("runInputs.nowHint")}
+              </p>
+            ) : null}
             <Field label={t("runInputs.regularMissions")}>
               <NumberStepper
                 data-testid="run-inputs-regular"

@@ -50,6 +50,7 @@
       "now": "Now",
       "planned": "Planned"
     },
+    "nowHint": "The reward outlook reads this run from your synced progress, so these inputs count from the next run on.",
     "regularMissions": "Regular missions",
     "premiumMissions": "Premium missions",
     "bundle": "Bought the 300 currency bundle",

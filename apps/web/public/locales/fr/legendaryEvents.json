@@ -50,6 +50,7 @@
       "now": "En cours",
       "planned": "Prévue"
     },
+    "nowHint": "Les prévisions de récompenses lisent cette manche depuis ta progression synchronisée : ces saisies comptent à partir de la manche suivante.",
     "regularMissions": "Missions normales",
     "premiumMissions": "Missions premium",
     "bundle": "Pack de 300 de monnaie acheté",

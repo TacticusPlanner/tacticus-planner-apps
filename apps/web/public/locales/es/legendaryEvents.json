@@ -50,6 +50,7 @@
       "now": "Ahora",
       "planned": "Prevista"
     },
+    "nowHint": "La previsión de recompensas lee esta ronda de tu progreso sincronizado, así que estos datos cuentan a partir de la siguiente ronda.",
     "regularMissions": "Misiones normales",
     "premiumMissions": "Misiones prémium",
     "bundle": "Compré el pack de 300 de moneda",

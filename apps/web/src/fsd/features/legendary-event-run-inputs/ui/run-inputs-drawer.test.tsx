@@ -94,6 +94,13 @@ describe("RunInputsDrawer", () => {
       (run) => within(runBlock(run)).getByTestId("run-inputs-phase").textContent
     )
     expect(phases).toEqual(["Done", "Now", "Planned"])
+    // Only the current run says its inputs wait for the next run in the outlook.
+    expect(
+      [1, 2, 3].map(
+        (run) =>
+          within(runBlock(run)).queryByTestId("run-inputs-now-hint") !== null
+      )
+    ).toEqual([false, true, false])
     const regular = [1, 2, 3].map((run) =>
       stepperIn(runBlock(run), "run-inputs-regular")
         .getByTestId("number-stepper-input")
