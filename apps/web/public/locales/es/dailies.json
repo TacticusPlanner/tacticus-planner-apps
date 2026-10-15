@@ -185,7 +185,9 @@
   },
   "bonus": {
     "title": "Incursiones extra",
-    "showMore": "Mostrar más"
+    "showMore": "Mostrar más",
+    "limitReached": "Límite diario de energía alcanzado: estas incursiones extra son las que aún merecen la pena.",
+    "limitReachedEmpty": "Límite diario de energía alcanzado. No quedan incursiones extra hoy."
   },
   "todaysAttempts": {
     "title": "Intentos de hoy",

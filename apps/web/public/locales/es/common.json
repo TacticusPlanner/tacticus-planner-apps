@@ -417,7 +417,8 @@
       "title": "Incursiones diarias",
       "empty": "No hay nada que asaltar hoy.",
       "error": "No se pudieron cargar las incursiones de hoy.",
-      "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones."
+      "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones.",
+      "limitReached": "Límite diario de energía alcanzado: incursiones extra:"
     },
     "events": {
       "title": "Eventos",

@@ -95,6 +95,7 @@ describe("RaidsWidget", () => {
           }),
         ],
       },
+      bonus: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
@@ -109,7 +110,7 @@ describe("RaidsWidget", () => {
     expect(screen.getAllByTestId(/home-raid-location-node-1/)).toHaveLength(1)
   })
 
-  it("lists Today's entries only, so it follows the filtered Today and not Bonus or the Plan", () => {
+  it("lists Today's entries only below the energy limit, so it follows the filtered Today and not Bonus or the Plan", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" as BattleId })] },
@@ -136,6 +137,7 @@ describe("RaidsWidget", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: { entries: [] },
       attemptsLeftByBattle: new Map([["node-1" as BattleId, 0]]),
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
@@ -147,10 +149,93 @@ describe("RaidsWidget", () => {
     expect(screen.getByTestId("home-raids-empty")).toBeInTheDocument()
   })
 
+  it("lists Bonus Raids with a limit caption once today's energy spend reaches the daily limit", () => {
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: {
+        entries: [
+          entry({ battleId: "node-bonus" as BattleId }),
+          entry({ battleId: "node-spent" as BattleId }),
+        ],
+      },
+      dailyEnergy: 288,
+      realEnergyUsedToday: 300,
+      attemptsLeftByBattle: new Map([["node-spent" as BattleId, 0]]),
+      locationsByBattleId: new Map(),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />)
+
+    expect(
+      screen.getByTestId("home-raids-energy-limit-reached")
+    ).toHaveTextContent("home.raids.limitReached")
+    expect(
+      screen.getByTestId("home-raid-location-node-bonus")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raid-location-node-1")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raid-location-node-spent")
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows the limit caption and the empty message when no bonus raid is left", () => {
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: { entries: [] },
+      dailyEnergy: 288,
+      realEnergyUsedToday: 288,
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map(),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />)
+
+    expect(
+      screen.getByTestId("home-raids-energy-limit-reached")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("home-raids-empty")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raid-location-node-1")
+    ).not.toBeInTheDocument()
+  })
+
+  it("keeps the plan with no limit caption below the daily limit", () => {
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: { entries: [entry({ battleId: "node-bonus" as BattleId })] },
+      dailyEnergy: 288,
+      realEnergyUsedToday: 120,
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map(),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />)
+
+    expect(
+      screen.queryByTestId("home-raids-energy-limit-reached")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("home-raid-location-node-1")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("home-raid-location-node-bonus")
+    ).not.toBeInTheDocument()
+  })
+
   it("reads a location exactly as Today does — campaign name, then tier and node", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map([
         [
@@ -181,6 +266,7 @@ describe("RaidsWidget", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      bonus: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map([
         [

@@ -14,6 +14,7 @@ import {
   RaidSchedule,
   RaidState,
   ResourceIconWithTooltip,
+  selectTodayRaids,
   type DailyRaidBattleResource,
   type DailyRaidLocationViewModel,
   type DailyRaidsReadyViewModel,
@@ -80,14 +81,21 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
   const { t } = useTranslation("dailies")
   const [showAllBonus, setShowAllBonus] = useState(false)
 
-  // Filter out exhausted locations before slicing to BONUS_LIMIT — otherwise an actionable entry
-  // past the limit can become unreachable if the first few entries all happen to be exhausted.
-  const visibleBonusEntries = raids.bonus.entries.filter(
-    (entry) => raids.attemptsLeftByBattle.get(entry.battleId) !== 0
-  )
+  // Exhausted bonus locations are dropped before slicing to BONUS_LIMIT — otherwise an actionable
+  // entry past the limit can become unreachable if the first few entries all happen to be exhausted.
+  // Once today's real energy spend reaches the daily limit, the plan lane is dropped and Bonus
+  // Raids is the only raids list.
+  const selection = selectTodayRaids({
+    todayEntries: raids.today.entries,
+    bonusEntries: raids.bonus.entries,
+    attemptsLeftByBattle: raids.attemptsLeftByBattle,
+    dailyEnergy: raids.dailyEnergy,
+    realEnergyUsedToday: raids.realEnergyUsedToday,
+  })
+  const planEntries = selection.planEntries
   const bonusEntries = showAllBonus
-    ? visibleBonusEntries
-    : visibleBonusEntries.slice(0, BONUS_LIMIT)
+    ? selection.bonusEntries
+    : selection.bonusEntries.slice(0, BONUS_LIMIT)
   // Passed as one combined map alongside the combined entries below — only Raids Plan's own
   // (unaffected) material-emphasis rendering ever reads this for its per-node fully-raided chip;
   // the "location" emphasis path used here relies on `attemptsLeftByBattle` instead.
@@ -183,24 +191,27 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
         <FilteredOutNotice filteredOut={raids.filteredOut} />
       </section>
       {/* Three lanes (Today / Bonus Raids / Today's attempts) auto-fit side by side wherever the
-          viewport has room for 20rem each, and stack otherwise - no dedicated breakpoint. */}
+          viewport has room for 20rem each, and stack otherwise - no dedicated breakpoint. Once the
+          daily energy limit is spent, the Today lane is dropped and Bonus Raids is the only list. */}
       <div
         className="space-y-5 md:grid md:grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] md:items-start md:gap-6 md:space-y-0"
         data-testid="today-lanes"
       >
-        {raids.today.entries.length > 0 || bonusEntries.length > 0 ? (
+        {selection.energyLimitReached ||
+        planEntries.length > 0 ||
+        bonusEntries.length > 0 ? (
           <>
-            {raids.today.entries.length > 0 ? (
+            {planEntries.length > 0 ? (
               <section className="space-y-2" data-testid="today-lane">
                 <h2 className="text-lg font-semibold">{t("today.plan")}</h2>
                 <RaidSchedule
                   {...scheduleProps}
-                  entries={raids.today.entries}
+                  entries={planEntries}
                   testId="today-raid-list"
                 />
               </section>
             ) : null}
-            {bonusEntries.length > 0 ? (
+            {selection.energyLimitReached || bonusEntries.length > 0 ? (
               <section className="space-y-2" data-testid="bonus-lane">
                 <h2
                   className="text-lg font-semibold"
@@ -208,12 +219,27 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
                 >
                   {t("bonus.title")}
                 </h2>
-                <RaidSchedule
-                  {...scheduleProps}
-                  entries={bonusEntries}
-                  testId="bonus-raid-list"
-                />
-                {!showAllBonus && visibleBonusEntries.length > BONUS_LIMIT ? (
+                {selection.energyLimitReached ? (
+                  <p
+                    className="text-sm text-muted-foreground"
+                    data-testid="bonus-energy-limit-reached"
+                  >
+                    {t(
+                      bonusEntries.length > 0
+                        ? "bonus.limitReached"
+                        : "bonus.limitReachedEmpty"
+                    )}
+                  </p>
+                ) : null}
+                {bonusEntries.length > 0 ? (
+                  <RaidSchedule
+                    {...scheduleProps}
+                    entries={bonusEntries}
+                    testId="bonus-raid-list"
+                  />
+                ) : null}
+                {!showAllBonus &&
+                selection.bonusEntries.length > BONUS_LIMIT ? (
                   <Button
                     className="mt-2"
                     variant="outline"

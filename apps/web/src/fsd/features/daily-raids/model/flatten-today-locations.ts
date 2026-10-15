@@ -16,8 +16,8 @@ export type FlattenedRaidLocation = {
  * per row, no relation to character" requirement (home-raids-widget spec). Entries sharing a
  * `battleId` are merged by summing `raidsPerformed`; a location whose real synced attempts today
  * are exhausted (`isLocationVisible` false) is dropped entirely, and a zero-raid entry is skipped.
- * Only pass `today.entries` (never `bonus.entries` or `todaysAttempts`) — Bonus Raids and Today's
- * Attempts are out of scope for this widget by construction, not by filtering here.
+ * Pass the list `selectTodayRaids` picks (today's plan, or Bonus Raids once the daily energy limit
+ * is spent) — never `todaysAttempts`, which is out of scope for this widget.
  */
 export function flattenTodayLocations(
   entries: readonly RaidBreakdownEntry[],
