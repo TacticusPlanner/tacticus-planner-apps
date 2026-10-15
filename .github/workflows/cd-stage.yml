@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+    paths-ignore:
+      - "**/*.md"
+      - "openspec/**"
+      - ".claude/**"
+      - ".agents/**"
+      - ".design-sync/**"
+      - LICENSE
 permissions:
   contents: read
 
