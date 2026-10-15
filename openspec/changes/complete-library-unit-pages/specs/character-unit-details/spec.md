@@ -15,8 +15,8 @@ collapsed with the summary "None".
 
 Assumptions:
 
-- 32 of the 35 catalog relics have rules text (see the `ability-rules-text` capability); `Fidelity`,
-  `LionHelmRelic` and `Thrydderghyre` have none in any source.
+- All 35 catalog relics have rules text (see the `ability-rules-text` capability); the missing-text state
+  stays for a relic a later catalog adds before its text exists.
 - Relic rules-text values are not scaled by rarity unless V1 marks them as rarity-affected.
 
 #### Scenario: Relic slot is marked
@@ -63,8 +63,9 @@ Assumptions:
 
 #### Scenario: Relic with no source text
 
-- **WHEN** a visitor opens Aun'Shi, whose relic Fidelity has no rules text in any source
-- **THEN** the Relic panel shows Fidelity's icon and name with the missing-text note, no stepper and no chart
+- **GIVEN** a relic whose ability has no entry in the rules-text namespace
+- **WHEN** a visitor opens a character that can equip it
+- **THEN** the Relic panel shows the relic's icon and name with the missing-text note, no stepper and no chart
 
 ### Requirement: Mythic quests
 

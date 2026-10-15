@@ -33,18 +33,7 @@ const LOCALES = ["en", "de", "es", "fr"]
 // Referenced ids with no complete V1 rules text, checked against what this run finds uncovered. Update it
 // deliberately when a refresh adds or fixes one.
 const KNOWN_GAPS = new Set([
-  // Relic abilities with no V1 entry.
-  "Fidelity",
-  "LionHelmRelic",
-  "Thrydderghyre",
-  // Character abilities with no V1 entry.
-  "DiabolicRegeneration",
-  "MasterfulTactician",
-  "PowerVomit",
-  "PrimeTestSubject",
-  "WaaaghEnergy",
-  // NPC-only: no V1 entry, or V1's "Coming soon!" placeholder.
-  "BloodSurge",
+  // NPC-only: V1's "Coming soon!" placeholder.
   "BossEndFightUndefeated",
   "RepairEnthusiast",
   "RunsAround",
@@ -167,7 +156,7 @@ for (const id of [...referenced].sort()) {
     (key) => tokens.has(key) || key.startsWith("damageProfile")
   )
   const scaled = (ability.variablesAffectedByRarityBonus ?? []).filter(
-    (name) => name in variables
+    (name) => hasKey(variables, name.trim())
   )
   for (const locale of LOCALES) {
     const description =

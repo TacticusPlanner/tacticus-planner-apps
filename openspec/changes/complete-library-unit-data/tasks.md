@@ -5,8 +5,8 @@
 ## 1. Ability rules-text generator
 
 - [x] 1.1 Add `apps/web/scripts/generate-ability-text-i18n.mjs` per design D1/D2 (inputs, id set, entry rule with `trim()` and referenced-token pruning, sorted keys, uncovered-id report, `KNOWN_GAPS`, relic ability icon check, non-zero exit on gap drift), with a header comment matching the raid-boss generator's style; verify 299 of the 301 still-referenced entries come out byte-identical in all four files, `Loki_SwoopingHawk` and `SlashingDive` only gain their split-index `dmg` variable, and only `LionHelm` is removed among the existing ids.
-- [x] 1.2 Run the generator on the current inputs and commit the four `npcAbilityText.json` files; verify 425 entries per locale, the counts by group in `specs/ability-rules-text/spec.md`, exit code 0, and that a second run leaves `git diff` empty.
-- [x] 1.3 Extend `shared/config/i18n/npc-ability-text-translations.test.ts` per design D5 (key-set and table parity across locales, 425 entries, every token resolvable by its own tables, spot-checks `AmuletOfTheVoidwyrm`, `WisdomOfTheAncients`, `ReanimationBeam`, German `DutyEternal`); verify it fails on a hand-deleted German entry and passes on the generated files.
+- [x] 1.2 Run the generator on the current inputs and commit the four `npcAbilityText.json` files; verify 434 entries per locale (425 at first; re-run on V1 `develop` 02b7166 after review), the counts by group in `specs/ability-rules-text/spec.md`, exit code 0, and that a second run leaves `git diff` empty.
+- [x] 1.3 Extend `shared/config/i18n/npc-ability-text-translations.test.ts` per design D5 (key-set and table parity across locales, 434 entries, every token resolvable by its own tables, spot-checks `AmuletOfTheVoidwyrm`, `WisdomOfTheAncients`, `ReanimationBeam`, German `DutyEternal`); verify it fails on a hand-deleted German entry and passes on the generated files.
 
 ## 2. Catalog client support
 
@@ -17,7 +17,7 @@
 
 - [x] 3.1 Grep for the old filenames, then rename and copy the six icon files per design D4 (two-step `git mv` for case-only renames); verify `git status` shows the renames and the folders list the exact-case names.
 - [x] 3.2 Add the equipment icon coverage test (design D4) with the known-gap set `I_Block_E005`, `I_Block_L005`; verify it passes, and fails when one renamed file is temporarily reverted.
-- [x] 3.3 Add `KNOWN_ISSUES.md` entries for the two Power Field icons and for the 8 abilities without rules text (from the generator's `KNOWN_GAPS`).
+- [x] 3.3 Add `KNOWN_ISSUES.md` entries for the two Power Field icons and for the abilities without rules text (from the generator's `KNOWN_GAPS`: after the re-run, the 4 NPC placeholders).
 
 ## 4. Gates
 

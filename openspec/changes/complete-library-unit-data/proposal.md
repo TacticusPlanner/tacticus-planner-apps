@@ -4,7 +4,7 @@ Issue [#204](https://github.com/TacticusPlanner/tacticus-planner-apps/issues/204
 (#205, #206) show "Rules text isn't in the planner yet." for almost every relic (34 of 35) and every Machine of
 War ability (22 of 22), the MoW Mythic panel has no ability to show, mythic quests come from a static English
 copy, and four named items have no icon on a case-sensitive host. Exploration showed the text is not missing at
-the source: V1's ability table holds complete, localized rules text for 32 of the 35 relics, all 22 MoW
+the source: V1's ability table holds complete, localized rules text for all 35 relics, all 22 MoW
 abilities and all 11 MoW mythic abilities. V2 only ported the abilities NPCs use, with a one-off port nobody can
 re-run.
 
@@ -16,10 +16,10 @@ data, the catalog client support and the icons. The page changes that consume th
 
 - Add a committed, re-runnable generator for the `npcAbilityText` namespace (en, de, es, fr) that covers every
   ability id the catalog references (NPC, character, relic, MoW primary/secondary/mythic) from V1's ability
-  table and localized descriptions. Regenerating adds 31 relics (Maugetar is already there), 22 MoW and 11 MoW
-  mythic abilities, 32 character abilities that the NPC-only port also missed (for example Lucius's
-  `ArmourOfShriekingSouls`), and 28 abilities of NPC records outside the NPC Library's list; 299 of the 302
-  existing entries stay byte-identical, two the earlier port broke (split-index `dmg`) are fixed, and the orphan `LionHelm` drops out.
+  table and localized descriptions. Regenerating adds 34 relics (Maugetar is already there), 22 MoW and 11 MoW
+  mythic abilities, 37 character abilities that the NPC-only port also missed (for example Lucius's
+  `ArmourOfShriekingSouls`), and 29 abilities of NPC records outside the NPC Library's list; 297 of the 302
+  existing entries stay byte-identical (`DarkTalonStrike` and `Foehammer` take V1 `develop`'s newer values), two the earlier port broke (split-index `dmg`) are fixed, and the orphan `LionHelm` drops out.
 - `@workspace/game-catalog`: sync and store the new served dataset `mythic-quests`, add `mythicAbility` to the
   MoW schema, and expose both through queries.
 - Item icons: rename four assets whose filename case differs from the catalog id, copy two relic ability icons

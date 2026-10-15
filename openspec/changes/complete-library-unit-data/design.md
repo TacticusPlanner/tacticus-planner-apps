@@ -48,9 +48,9 @@ and `tacticusplanner/src/fsd/4-entities/abilities/data/new-ability-data.json` pl
 keys sorted, 2-space indent, trailing newline. The entry rule is the one in Context, applied to every
 referenced id whose English description resolves completely (spec `ability-rules-text`). It also checks
 relic ability icons (spec `equipment-item-icons`), prints uncovered ids with reasons, and exits non-zero when
-the uncovered set differs from its `KNOWN_GAPS` list (`Fidelity`, `LionHelmRelic`, `Thrydderghyre`,
-`MasterfulTactician`, `PowerVomit`, `WaaaghEnergy`, `PrimeTestSubject`, `DiabolicRegeneration`, and the
-NPC-only `BloodSurge`, `BossEndFightUndefeated`, `RepairEnthusiast`, `RunsAround`, `RunsAway`). Token names are
+the uncovered set differs from its `KNOWN_GAPS` list (the NPC-only placeholders `BossEndFightUndefeated`,
+`RepairEnthusiast`, `RunsAround`, `RunsAway`; V1 `develop` at 02b7166 covers the nine other ids an earlier
+run lacked). Token names are
 read with split indices stripped (`{[dmg[0]]}` → `dmg`) — the earlier port missed these and broke two entries —
 and V1's "Coming soon!" placeholder is not rules text. Output goes through Prettier with the repo config, which
 reproduces the committed files byte-for-byte.
@@ -84,7 +84,7 @@ placeholder names and the known gaps, and checks `readdirSync` of `public/game_c
 names.
 
 **D5: Tests for the namespace (apps CI).** Extend `npc-ability-text-translations.test.ts`: identical key sets
-across the four locales, identical `variables`/`constants`/`scaled` per id across locales, 425 entries, every
+across the four locales, identical `variables`/`constants`/`scaled` per id across locales, 434 entries, every
 description's tokens resolvable by the entry's own tables (the same rule the generator uses), and
 spot-checks: `AmuletOfTheVoidwyrm` (10 levels), `WisdomOfTheAncients`, `ReanimationBeam`'s trailing-space
 constants, German `DutyEternal` is German.

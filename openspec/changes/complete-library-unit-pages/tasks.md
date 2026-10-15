@@ -1,11 +1,11 @@
 ## 0. Preconditions
 
 - [ ] 0.1 Confirm #205 and #206 are merged to `main`, and `add-mow-library-details` and `add-character-unit-details` are archived (their capabilities exist in `openspec/specs/`); verify `openspec validate complete-library-unit-pages --strict` reports no "archive would refuse" notice.
-- [ ] 0.2 Confirm `complete-library-unit-data` (apps and API) is on `main`; verify `npcAbilityText` has 425 entries and `getMythicQuestsByUnitId` is exported from `@workspace/game-catalog`.
+- [ ] 0.2 Confirm `complete-library-unit-data` (apps and API) is on `main`; verify `npcAbilityText` has 434 entries and `getMythicQuestsByUnitId` is exported from `@workspace/game-catalog`.
 
 ## 1. Relic and MoW panels
 
-- [ ] 1.1 Character Relic panel: no code change expected; add a page test for Hollan's Amulet of the Voidwyrm at levels 1 and 2 (-390, next 411; -411, next 432) and for Aun'Shi's Fidelity missing-text state; verify both pass.
+- [ ] 1.1 Character Relic panel: no code change expected; add a page test for Hollan's Amulet of the Voidwyrm at levels 1 and 2 (-390, next 411; -411, next 432) and for the missing-text state of a relic with no rules-text entry (fixture); verify both pass.
 - [ ] 1.2 MoW ability panels: update the page tests that asserted the missing-text note for every MoW ability to the new text state (Galatian primary/secondary show stepper, text, next-level line, chart); add the Reanimator "Initial cooldown: 1 round" / "Cost: 1 munition" assertion; verify they pass.
 - [ ] 1.3 MoW Mythic panel: pass the text entry with `scaled: []` (design D1) and drop the "Not served yet (#204)" comment if still present; verify page tests for Galatian at 2 blue stars (title "Wisdom of the Ancients", "-13% Damage"), Mythic Wings ("-20% Damage"), Legendary ("Unlocks at Mythic"), and a record without `mythicAbility` ("Mythic ability" + missing-text note).
 
@@ -24,7 +24,7 @@
 
 Data states needed: the API from `complete-library-unit-data` running; signed out is enough for every check.
 
-- [ ] 4.1 Hollan: Relic panel shows Amulet of the Voidwyrm text, next-level line and chart; stepping changes the value. Aun'Shi: Fidelity missing-text state.
+- [ ] 4.1 Hollan: Relic panel shows Amulet of the Voidwyrm text, next-level line and chart; stepping changes the value. Aun'Shi: Fidelity shows its rules text.
 - [ ] 4.2 Galatian at Mythic: Primary and Secondary panels with text and charts; Mythic panel "Wisdom of the Ancients" with level from blue stars, -13% at 2 blue stars, -20% at Mythic Wings via Custom; Legendary shows "Unlocks at Mythic".
 - [ ] 4.3 Abaddon, Calgar and Lucius: Mythic quests card from the catalog with the fixed texts and reward icons; Weirdboy has no card.
 - [ ] 4.4 Rules text in German and French on Galatian's Primary panel and Hollan's Relic panel (localized description, same values as English).
