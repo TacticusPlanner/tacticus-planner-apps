@@ -138,7 +138,7 @@ export {
   teamEffectiveDepth,
   teamEffectivePower,
   unitClearEstimate,
-  unitCoefficient,
+  unitHordeMultiplier,
   unitEffectivePower,
   type ClearEstimate,
   type ClearEstimateConfig,

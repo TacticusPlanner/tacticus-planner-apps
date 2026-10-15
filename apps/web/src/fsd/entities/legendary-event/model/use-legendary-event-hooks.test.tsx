@@ -29,6 +29,7 @@ const store = vi.hoisted(() => ({
   catalogSynced: true,
   metadata: new Map<string, { updatedAt: string }>(),
   clearEstimate: null as null | Record<string, unknown>,
+  hordeModeTiers: null as null | Record<string, unknown>,
 }))
 const lysander = {
   id: "astarLysander",
@@ -56,6 +57,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
         : []
     ),
   getLegendaryEventClearEstimate: () => read(store.clearEstimate),
+  getHordeModeTiers: () => read(store.hordeModeTiers),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
 vi.mock("@workspace/player-data/queries", () => ({
@@ -77,6 +79,7 @@ describe("Legendary Event read hooks", () => {
     store.catalogSynced = true
     store.metadata = new Map()
     store.clearEstimate = null
+    store.hordeModeTiers = null
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
   })
@@ -156,10 +159,14 @@ describe("Legendary Event read hooks", () => {
     await waitFor(() => expect(absent.result.current.status).toBe("absent"))
 
     store.clearEstimate = {
-      id: "lre-clear-estimate",
+      id: "legendary-event-clear-estimate",
       powerRatio: 0.5,
       calibration: { sampleCount: 0, calibratedOn: null },
-      unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 1.2 }],
+    }
+    store.hordeModeTiers = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "A", multiplier: 1.2 }],
+      characters: [{ unitId: "ultraTigurius", tier: "A" }],
     }
     const ready = renderHook(() => useClearEstimateConfig())
     await waitFor(() => expect(ready.result.current.status).toBe("ready"))
@@ -167,7 +174,7 @@ describe("Legendary Event read hooks", () => {
     if (state.status !== "ready") throw new Error("not ready")
     expect(state.config.powerRatio).toBe(0.5)
     expect(state.config.calibrated).toBe(false)
-    expect(state.config.coefficients.get("ultraTigurius")).toBe(1.2)
+    expect(state.config.hordeMultipliers.get("ultraTigurius")).toBe(1.2)
 
     store.fail = true
     const failed = renderHook(() => useClearEstimateConfig())

@@ -1,16 +1,16 @@
 # Tasks
 
-Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event-clear-estimates` (apply it first; no calculation endpoint is added, but the catalog route `GET /api/v1/game-catalog/lre-clear-estimate` and its dataset must be served by the Aspire stack before client work starts). Independent of `add-legendary-event-run-inputs`.
+Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event-clear-estimates` (apply it first; no calculation endpoint is added, but the catalog route `GET /api/v1/game-catalog/legendary-event-clear-estimate` and `GET /api/v1/game-catalog/horde-mode-tiers` and their datasets must be served by the Aspire stack before client work starts). Independent of `add-legendary-event-run-inputs`.
 
 ## 1. Catalog package
 
-- [x] 1.1 Add `lreClearEstimateSchema` (`powerRatio`, `calibration { sampleCount, calibratedOn }`, `unitCoefficients[{ unitId, coefficient }]`) and the `lre-clear-estimate` key to `packages/game-catalog` (`schemas/lre.ts`, `dataset-keys.ts`, `dataset-payloads.ts`, `record-types.ts`, storage, mapper, `queries.ts`, `index.ts`); confirm `lre-battles` has a query the web app can use; verify `schemas.test.ts` and `game-catalog-sync.test.ts` cover the new dataset and its absence.
+- [x] 1.1 Add `legendaryEventClearEstimateSchema` (`powerRatio`, `calibration { sampleCount, calibratedOn }`) and `hordeModeTiersSchema` (`tiers[{ tier, multiplier }]`, `characters[{ unitId, tier }]`) with the `legendary-event-clear-estimate` and `horde-mode-tiers` keys (both in `optionalDatasetKeys`) to `packages/game-catalog` (`schemas/legendary-event-clear-estimate.ts`, `schemas/horde-mode-tiers.ts`, `dataset-keys.ts`, `dataset-payloads.ts`, `record-types.ts`, storage, mapper, `queries.ts`, `index.ts`); confirm `lre-battles` has a query the web app can use; verify `schemas.test.ts` and `game-catalog-sync.test.ts` cover the new datasets and their absence.
 
 ## 2. Entity: calculation and data hooks
 
 - [x] 2.1 Extend the roster type the entity reads with applied upgrade count and active/passive ability levels, and add `lib/unit-combat-power.ts` mapping a synced character + catalog unit to `CharacterCombatPowerInput`; verify a test reproduces 8,792 for Gold1 / Epic:RedOneStar / 3 / 20 / 15 and 0 for a unit not owned (design D1).
 - [x] 2.2 Add `model/use-legendary-event-battles.ts` (ordered battle powers per lane from `lre-battles`) and `model/use-clear-estimate-config.ts` (`ready | absent | failed | loading`); verify tests for each state (design D6).
-- [x] 2.3 Add `lib/clear-estimate.ts` (`unitEffectivePower`, `teamEffectivePower`, `estimateClearDepth`, `unitClearEstimate`, `teamEffectiveDepth`) returning `ClearEstimate`; verify `clear-estimate.test.ts` covers every scenario in `specs/legendary-event-clear-estimates/spec.md` with the intermediate values (E 45,718.4, thresholds, depth 6, 21% / 32%; partial team 5; locked member 5; unit 6; depth 0; last battle with no shortfall; coefficient default 1.0) (design D3).
+- [x] 2.3 Add `lib/clear-estimate.ts` (`unitEffectivePower`, `teamEffectivePower`, `estimateClearDepth`, `unitClearEstimate`, `teamEffectiveDepth`) returning `ClearEstimate`; verify `clear-estimate.test.ts` covers every scenario in `specs/legendary-event-clear-estimates/spec.md` with the intermediate values (E 45,718.4, thresholds, depth 6, 21% / 32%; partial team 5; locked member 5; unit 6; depth 0; last battle with no shortfall; untiered multiplier default 1.0, an absent tier list) (design D3).
 - [x] 2.4 Add `lib/calibrate-power-ratio.ts`; verify the two-sample example returns 0.4641 with count 2, skips d = 0 and locked-member samples, and uses the upper bound at the last battle (design D4).
 - [x] 2.5 Export the new libs, hooks and types from `entities/legendary-event/index.ts`; verify `pnpm lint:fsd`.
 
@@ -35,7 +35,7 @@ Companion API change: `tacticus-planner-api/openspec/changes/add-legendary-event
 
 ## 7. Platform-independent verification
 
-Data states: a profile with a synced roster and an Uthar plan holding one team with a manual depth and one without; a profile whose roster chunk is missing; a catalog without `lre-clear-estimate` (fixture or local API override).
+Data states: a profile with a synced roster and an Uthar plan holding one team with a manual depth and one without; a profile whose roster chunk is missing; a catalog without `legendary-event-clear-estimate` (fixture or local API override).
 
 - [ ] 7.1 With the Aspire stack, confirm a team without a manual depth shows an estimate, a + press stores a manual depth, Use estimate restores the estimate, and a reload keeps the manual value.
 - [ ] 7.2 Compare estimates for the maintainer's teams against their real cleared depth on the in-game lane and note the gap in the calibration PR.

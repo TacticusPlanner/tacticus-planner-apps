@@ -247,7 +247,7 @@ interface LaneClearEstimator {
 }
 
 /**
- * Clear estimates by data state (design D6): `hidden` when the `lre-clear-estimate` dataset is
+ * Clear estimates by data state (design D6): `hidden` when the `legendary-event-clear-estimate` dataset is
  * absent or failed (or the battles could not be read), `pending` while the dataset, the battles or
  * the roster load, `ready` otherwise. A roster that could not be read yields estimators that
  * return null (ownership unknown).

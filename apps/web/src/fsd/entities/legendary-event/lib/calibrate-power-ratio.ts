@@ -22,10 +22,10 @@ export interface PowerRatioCalibration {
   interquartileRange: { q1: number; q3: number } | null
 }
 
-const NO_COEFFICIENTS = { coefficients: new Map<string, number>() }
+const NO_MULTIPLIERS = { hordeMultipliers: new Map<string, number>() }
 
 /**
- * Fits the power ratio from manual depths (design D4). With every coefficient at 1.0, a team with
+ * Fits the power ratio from manual depths (design D4). With every multiplier at 1.0, a team with
  * effective power E that clears battle d and not d + 1 has a ratio in
  * (E ÷ power[d + 1], E ÷ power[d]]; the sample's point value is the geometric mean of the two
  * bounds (the upper bound alone when d is the last battle). Samples with d < 1, a depth past the
@@ -40,7 +40,7 @@ export function calibratePowerRatio(
       if (memberUnitIds.length === 0) return []
       if (lockedMemberCount(memberUnitIds, roster) > 0) return []
       const point = calibrationPoint(
-        teamEffectivePower(memberUnitIds, roster, NO_COEFFICIENTS),
+        teamEffectivePower(memberUnitIds, roster, NO_MULTIPLIERS),
         battlePowers,
         depth
       )

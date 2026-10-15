@@ -37,5 +37,5 @@ export const WORKED_TEAM = [
 export const WORKED_CONFIG: ClearEstimateConfig = {
   powerRatio: 0.5,
   calibrated: true,
-  coefficients: new Map([["ultraTigurius", 1.2]]),
+  hordeMultipliers: new Map([["ultraTigurius", 1.2]]),
 }

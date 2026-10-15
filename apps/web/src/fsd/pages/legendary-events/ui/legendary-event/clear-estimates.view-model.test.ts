@@ -11,7 +11,7 @@ import { buildClearEstimates } from "./legendary-event-page.view-model"
 
 const config: ClearEstimateConfigState = {
   status: "ready",
-  config: { powerRatio: 0.5, calibrated: true, coefficients: new Map() },
+  config: { powerRatio: 0.5, calibrated: true, hordeMultipliers: new Map() },
 }
 // Every lane battle at power 1,000: a 0.5 ratio makes each threshold 500.
 const battles = (["alpha", "beta", "gamma"] as const).flatMap((laneId) =>

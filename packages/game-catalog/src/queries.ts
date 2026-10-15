@@ -20,6 +20,7 @@ import type {
   EventsCalendarStorageModel,
   LegendaryEventBattleStorageModel,
   LegendaryEventClearEstimateStorageModel,
+  HordeModeTiersStorageModel,
   LegendaryEventCommonStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
@@ -319,6 +320,13 @@ export async function getLegendaryEventBattles(
 // The curated clear-estimate parameters — a single record — or `null` when the dataset is absent
 // (not served by the API, or not synced yet).
 export async function getLegendaryEventClearEstimate(): Promise<LegendaryEventClearEstimateStorageModel | null> {
-  const rows = await getDatasetRecords("lre-clear-estimate")
+  const rows = await getDatasetRecords("legendary-event-clear-estimate")
+  return rows[0] ?? null
+}
+
+// The curated horde-mode tier list — a single record — or `null` when the dataset is absent (not
+// served by the API, or not synced yet).
+export async function getHordeModeTiers(): Promise<HordeModeTiersStorageModel | null> {
+  const rows = await getDatasetRecords("horde-mode-tiers")
   return rows[0] ?? null
 }

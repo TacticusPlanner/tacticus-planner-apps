@@ -9,7 +9,7 @@ import {
   teamEffectiveDepth,
   teamEffectivePower,
   unitClearEstimate,
-  unitCoefficient,
+  unitHordeMultiplier,
   unitEffectivePower,
 } from "./clear-estimate"
 import {
@@ -110,9 +110,9 @@ describe("clear estimate (spec worked examples)", () => {
     expect(estimate.shortfallToNextPct).toBeNull()
   })
 
-  it("defaults a unit not listed to coefficient 1.0", () => {
-    expect(unitCoefficient(WORKED_CONFIG, "ultraCalgar")).toBe(1)
-    expect(unitCoefficient(WORKED_CONFIG, "ultraTigurius")).toBe(1.2)
+  it("defaults an untiered unit to multiplier 1.0", () => {
+    expect(unitHordeMultiplier(WORKED_CONFIG, "ultraCalgar")).toBe(1)
+    expect(unitHordeMultiplier(WORKED_CONFIG, "ultraTigurius")).toBe(1.2)
   })
 
   it("has no team estimate when no member is owned", () => {
@@ -126,15 +126,34 @@ describe("clear estimate (spec worked examples)", () => {
     ).toBeNull()
   })
 
-  it("reads the catalog record, uncalibrated while sampleCount is 0", () => {
-    const config = clearEstimateConfig({
-      powerRatio: 1,
-      calibration: { sampleCount: 0 },
-      unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 1.2 }],
-    })
+  it("reads the catalog records, uncalibrated while sampleCount is 0", () => {
+    const config = clearEstimateConfig(
+      { powerRatio: 1, calibration: { sampleCount: 0 } },
+      {
+        tiers: [
+          { tier: "S", multiplier: 1.3 },
+          { tier: "A", multiplier: 1.2 },
+        ],
+        characters: [
+          { unitId: "ultraTigurius", tier: "A" },
+          { unitId: "ultraCalgar", tier: "D" },
+        ],
+      }
+    )
     expect(config.calibrated).toBe(false)
-    expect(config.coefficients.get("ultraTigurius")).toBe(1.2)
+    expect(config.hordeMultipliers.get("ultraTigurius")).toBe(1.2)
+    // A tier the list does not define leaves the character untiered.
+    expect(unitHordeMultiplier(config, "ultraCalgar")).toBe(1)
     expect(estimateClearDepth(5000, [1000], config).calibrated).toBe(false)
+  })
+
+  it("treats every unit as untiered without a horde-mode tier list", () => {
+    const config = clearEstimateConfig(
+      { powerRatio: 1, calibration: { sampleCount: 3 } },
+      null
+    )
+    expect(config.calibrated).toBe(true)
+    expect(config.hordeMultipliers.size).toBe(0)
   })
 
   it("prefers the manual depth over the estimate", () => {

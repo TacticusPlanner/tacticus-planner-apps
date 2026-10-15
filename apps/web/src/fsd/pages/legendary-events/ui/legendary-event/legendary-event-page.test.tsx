@@ -52,6 +52,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharacters: async () => legendaryEventCharacters,
   getLegendaryEventBattles: async () => [],
   getLegendaryEventClearEstimate: async () => null,
+  getHordeModeTiers: async () => null,
 }))
 // Dante owned, everyone else locked; no synced entry for any event unless a test sets one.
 const player = vi.hoisted(() => ({

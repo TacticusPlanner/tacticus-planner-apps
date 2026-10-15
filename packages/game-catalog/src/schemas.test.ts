@@ -301,33 +301,39 @@ describe("catalog schemas", () => {
     ).toBe(true)
   })
 
-  it("validates the lre-clear-estimate record and rejects a non-positive ratio or coefficient", () => {
+  it("validates the legendary-event-clear-estimate record and rejects a non-positive ratio", () => {
     const record = {
-      id: "lre-clear-estimate",
+      id: "legendary-event-clear-estimate",
       powerRatio: 0.5,
       calibration: { sampleCount: 12, calibratedOn: "2026-10-12" },
-      unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 1.2 }],
     }
-    const schema = datasetPayloadSchemas["lre-clear-estimate"]
+    const schema = datasetPayloadSchemas["legendary-event-clear-estimate"]
 
     expect(schema.safeParse([record]).success).toBe(true)
     expect(
       schema.safeParse([
-        {
-          ...record,
-          calibration: { sampleCount: 0, calibratedOn: null },
-          unitCoefficients: [],
-        },
+        { ...record, calibration: { sampleCount: 0, calibratedOn: null } },
       ]).success
     ).toBe(true)
     expect(schema.safeParse([{ ...record, powerRatio: 0 }]).success).toBe(false)
+  })
+
+  it("validates the horde-mode-tiers record and rejects a non-positive multiplier", () => {
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.3 },
+        { tier: "C", multiplier: 0.9 },
+      ],
+      characters: [{ unitId: "ultraTigurius", tier: "S" }],
+    }
+    const schema = datasetPayloadSchemas["horde-mode-tiers"]
+
+    expect(schema.safeParse([record]).success).toBe(true)
+    expect(schema.safeParse([{ ...record, characters: [] }]).success).toBe(true)
     expect(
-      schema.safeParse([
-        {
-          ...record,
-          unitCoefficients: [{ unitId: "ultraTigurius", coefficient: 0 }],
-        },
-      ]).success
+      schema.safeParse([{ ...record, tiers: [{ tier: "S", multiplier: 0 }] }])
+        .success
     ).toBe(false)
   })
 

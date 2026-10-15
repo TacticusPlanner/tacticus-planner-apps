@@ -31,7 +31,6 @@ export type {
   GameCatalogLreBattle,
   GameCatalogLreBattleView,
   GameCatalogLreCommon,
-  GameCatalogLreClearEstimate,
   GameCatalogLreWave,
   GameCatalogLreEnemy,
   GameCatalogFarmLocation,
@@ -132,6 +131,7 @@ export {
   type LegendaryEventCommonStorageModel,
   type LegendaryEventBattleStorageModel,
   type LegendaryEventClearEstimateStorageModel,
+  type HordeModeTiersStorageModel,
 } from "./game-catalog.storage"
 
 export {

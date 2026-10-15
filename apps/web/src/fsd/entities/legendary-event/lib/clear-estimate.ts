@@ -1,14 +1,15 @@
 import type { LegendaryEventRosterUnit } from "../model/types"
 import { unitCombatPower } from "./unit-combat-power"
 
-/** The curated `lre-clear-estimate` record in the shape the calculation reads. */
+/** The curated `legendary-event-clear-estimate` and `horde-mode-tiers` records in the shape the
+ *  calculation reads. */
 export interface ClearEstimateConfig {
   /** A battle is cleared when effective power ≥ `powerRatio` × its catalog power. */
   powerRatio: number
   /** False while the dataset's `calibration.sampleCount` is 0 ("uncalibrated"). */
   calibrated: boolean
-  /** Curated per-unit coefficients; a unit not listed has 1.0. */
-  coefficients: ReadonlyMap<string, number>
+  /** Each tiered character's horde-mode tier multiplier; an untiered character has 1.0. */
+  hordeMultipliers: ReadonlyMap<string, number>
 }
 
 /** How far a team (or a single unit) is estimated to clear on a lane (design D3). */
@@ -26,44 +27,58 @@ export interface ClearEstimate {
 /** The roster by unit id, as the estimate reads it. */
 export type ClearEstimateRoster = ReadonlyMap<string, LegendaryEventRosterUnit>
 
-/** The config from a catalog `lre-clear-estimate` record. */
-export function clearEstimateConfig(record: {
-  powerRatio: number
-  calibration: { sampleCount: number }
-  unitCoefficients: readonly { unitId: string; coefficient: number }[]
-}): ClearEstimateConfig {
+/** The catalog horde-mode tier list, as the config reads it. */
+export interface HordeModeTierList {
+  tiers: readonly { tier: string; multiplier: number }[]
+  characters: readonly { unitId: string; tier: string }[]
+}
+
+/**
+ * The config from the catalog `legendary-event-clear-estimate` record and the `horde-mode-tiers`
+ * list (null when that dataset is absent: every character is then untiered).
+ */
+export function clearEstimateConfig(
+  estimate: { powerRatio: number; calibration: { sampleCount: number } },
+  hordeModeTiers: HordeModeTierList | null
+): ClearEstimateConfig {
+  const multiplierByTier = new Map(
+    (hordeModeTiers?.tiers ?? []).map((entry) => [entry.tier, entry.multiplier])
+  )
   return {
-    powerRatio: record.powerRatio,
-    calibrated: record.calibration.sampleCount > 0,
-    coefficients: new Map(
-      record.unitCoefficients.map((entry) => [entry.unitId, entry.coefficient])
+    powerRatio: estimate.powerRatio,
+    calibrated: estimate.calibration.sampleCount > 0,
+    hordeMultipliers: new Map(
+      (hordeModeTiers?.characters ?? []).flatMap(({ unitId, tier }) => {
+        const multiplier = multiplierByTier.get(tier)
+        return multiplier === undefined ? [] : [[unitId, multiplier] as const]
+      })
     ),
   }
 }
 
-/** A unit's curated coefficient, 1.0 when it is not listed. */
-export function unitCoefficient(
-  config: Pick<ClearEstimateConfig, "coefficients">,
+/** A unit's horde-mode tier multiplier, 1.0 when it is untiered. */
+export function unitHordeMultiplier(
+  config: Pick<ClearEstimateConfig, "hordeMultipliers">,
   unitId: string
 ): number {
-  return config.coefficients.get(unitId) ?? 1
+  return config.hordeMultipliers.get(unitId) ?? 1
 }
 
-/** Combat power × the unit's coefficient; 0 when the roster does not hold it. */
+/** Combat power × the unit's horde-mode tier multiplier; 0 when the roster does not hold it. */
 export function unitEffectivePower(
   unitId: string,
   roster: ClearEstimateRoster,
-  config: Pick<ClearEstimateConfig, "coefficients">
+  config: Pick<ClearEstimateConfig, "hordeMultipliers">
 ): number {
   const power = unitCombatPower(roster.get(unitId))
-  return power === 0 ? 0 : power * unitCoefficient(config, unitId)
+  return power === 0 ? 0 : power * unitHordeMultiplier(config, unitId)
 }
 
 /** The sum of the non-reserve members' effective power (a locked member adds 0). */
 export function teamEffectivePower(
   memberUnitIds: readonly string[],
   roster: ClearEstimateRoster,
-  config: Pick<ClearEstimateConfig, "coefficients">
+  config: Pick<ClearEstimateConfig, "hordeMultipliers">
 ): number {
   return memberUnitIds.reduce(
     (sum, unitId) => sum + unitEffectivePower(unitId, roster, config),

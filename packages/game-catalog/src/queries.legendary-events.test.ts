@@ -8,6 +8,7 @@ import {
 import {
   getLegendaryEvent,
   getLegendaryEventBattles,
+  getHordeModeTiers,
   getLegendaryEventClearEstimate,
   getLegendaryEventCommon,
   getLegendaryEvents,
@@ -114,17 +115,33 @@ describe("Legendary Event queries", () => {
     expect(await getLegendaryEventClearEstimate()).toBeNull()
 
     const record = {
-      id: "lre-clear-estimate",
+      id: "legendary-event-clear-estimate",
       powerRatio: 0.5,
       calibration: { sampleCount: 0, calibratedOn: null },
-      unitCoefficients: [],
     }
     await replaceGameCatalogDataset(
-      "lre-clear-estimate",
+      "legendary-event-clear-estimate",
       [record],
-      metadata("lre-clear-estimate")
+      metadata("legendary-event-clear-estimate")
     )
 
     expect(await getLegendaryEventClearEstimate()).toMatchObject(record)
+  })
+
+  it("returns the horde-mode tier list, or null when the dataset is absent", async () => {
+    expect(await getHordeModeTiers()).toBeNull()
+
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "S", multiplier: 1.3 }],
+      characters: [{ unitId: "ultraCalgar", tier: "S" }],
+    }
+    await replaceGameCatalogDataset(
+      "horde-mode-tiers",
+      [record],
+      metadata("horde-mode-tiers")
+    )
+
+    expect(await getHordeModeTiers()).toMatchObject(record)
   })
 })
