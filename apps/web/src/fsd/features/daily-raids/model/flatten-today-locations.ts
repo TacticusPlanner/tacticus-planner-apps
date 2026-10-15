@@ -2,6 +2,7 @@ import type { BattleId } from "@workspace/game-domain"
 import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
 import { isLocationVisible } from "./location-visibility"
+import { entryDropRate } from "./planned-raid-need"
 
 export type FlattenedRaidLocation = {
   battleId: BattleId
@@ -10,6 +11,8 @@ export type FlattenedRaidLocation = {
   dailyAttempts: number
   /** Summed over the merged entries that farm the row's `resourceId` (see `plannedRaidNeed`). */
   remainingBefore: number
+  /** Expected drops of `resourceId` per raid at this node. */
+  dropRate: number
 }
 
 /**
@@ -42,6 +45,7 @@ export function flattenTodayLocations(
         raidsToPerform: entry.raidsPerformed,
         dailyAttempts: entry.dailyAttempts,
         remainingBefore: entry.remainingBefore,
+        dropRate: entryDropRate(entry),
       })
     }
   }

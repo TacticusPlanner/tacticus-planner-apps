@@ -13,6 +13,7 @@ function entry(overrides: Partial<RaidBreakdownEntry>): RaidBreakdownEntry {
     itemsFarmed: 2,
     energySpent: 12,
     dailyAttempts: 5,
+    remainingBefore: 2,
     ...overrides,
   }
 }

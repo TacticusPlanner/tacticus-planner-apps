@@ -2,7 +2,7 @@
 
 ### Requirement: The widget shows the real (energy-budget) schedule only, one row per location
 
-The widget SHALL show only the locations included in today's real energy-budget schedule (the same schedule Today's main list computes) — it SHALL NOT include Bonus Raids or Today's Attempts. Each row SHALL represent one battle location, not one goal or one character: the location, the same "upgrades left" label Today shows for it (see `daily-raids-today` — "Today's raid schedule"; none when the node is planned up to its daily cap), and its primary reward, with no unit portrait, goal-type icon, or character/goal label.
+The widget SHALL show only the locations included in today's real energy-budget schedule (the same schedule Today's main list computes) — it SHALL NOT include Bonus Raids or Today's Attempts. Each row SHALL represent one battle location, not one goal or one character: the location, the same "upgrades left" label Today shows for it (see `daily-raids-today` — "Today's raid schedule"; none when the node is planned up to its daily cap or a full day of its attempts would not cover the need), and its primary reward, with no unit portrait, goal-type icon, or character/goal label.
 
 Each row SHALL present its location exactly as Today's own rows do (see `daily-raids-today` — "Campaign locations use the Character Lookup presentation"): the campaign icon, the campaign's own display name on the first line, and the node's tier-and-number label — including a challenge node's "B" suffix — on the second. The widget SHALL NOT use a differently-formatted or compact location label, so that a location reads identically on Home and on Today.
 
@@ -39,7 +39,7 @@ Assumptions:
 
 ### Requirement: Locations shared by more than one goal are combined into a single row
 
-When two or more in-scope goals each plan a raid at the same battle location today, the widget SHALL show that location once, with its "upgrades left" count equal to the sum of what those goals still need of the row's primary reward there (no label once their combined planned raids reach the node's daily cap) — rather than once per contributing goal, as Today's own goal-grouped view does.
+When two or more in-scope goals each plan a raid at the same battle location today, the widget SHALL show that location once, with its "upgrades left" count equal to the sum of what those goals still need of the row's primary reward there (no label once their combined planned raids reach the node's daily cap, or when a full day of its attempts would not be expected to drop that sum) — rather than once per contributing goal, as Today's own goal-grouped view does.
 
 #### Scenario: Two goals share a node
 

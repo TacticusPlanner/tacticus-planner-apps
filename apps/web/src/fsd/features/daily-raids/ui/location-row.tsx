@@ -47,6 +47,7 @@ export function LocationRow({
           raidsPerformed: entry.raidsToPerform,
           dailyAttempts: entry.dailyAttempts,
           remainingBefore: entry.remainingBefore,
+          dropRate: entry.dropRate,
         })}
       />
       <ResourceIconWithTooltip

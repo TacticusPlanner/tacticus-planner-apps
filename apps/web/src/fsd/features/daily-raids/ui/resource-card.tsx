@@ -13,7 +13,7 @@ import type {
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import { isLocationVisible } from "../model/location-visibility"
-import { plannedRaidNeed } from "../model/planned-raid-need"
+import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
 import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
@@ -139,7 +139,9 @@ export function ResourceCard({
                         </div>
                       ) : null}
                     </div>
-                    <PlannedRaidNeedBadge need={plannedRaidNeed(entry)} />
+                    <PlannedRaidNeedBadge
+                      need={plannedRaidNeedForEntry(entry)}
+                    />
                   </div>
                 )
               })}
@@ -180,7 +182,7 @@ export function ResourceCard({
             </div>
             {resourceEntries[0] ? (
               <PlannedRaidNeedBadge
-                need={plannedRaidNeed(resourceEntries[0])}
+                need={plannedRaidNeedForEntry(resourceEntries[0])}
               />
             ) : null}
           </div>
