@@ -2,7 +2,6 @@ import { useId, useState } from "react"
 import { Link, useLocation, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { abilityIcon, mowIcon } from "@workspace/game-catalog"
 import { getMowUpgradeCosts } from "@workspace/game-catalog/queries"
 import {
@@ -29,6 +28,7 @@ import {
   unitOriginState,
 } from "../unit/unit-origin"
 import { UnitTabs } from "../unit/unit-tabs"
+import { useCatalogDataset } from "../unit/use-catalog-dataset"
 import { useUnitTab } from "../unit/use-unit-tab"
 import { MowMythicPanel } from "./mow-mythic-panel"
 import { MowUnitDetails } from "./mow-unit-details"
@@ -57,24 +57,32 @@ const TABS = ["details", "upgrades"] as const
 export function MowUnitPage() {
   const { entityId } = useParams()
   const catalog = useMowsCatalog()
-  const costs = useLiveQuery(() => getMowUpgradeCosts(), [])
+  // The ladder sets every level cap, so the page waits for it as for `mows`: datasets sync one at a
+  // time, and an unsynced ladder reads as empty, which would cap every level at 1.
+  const costs = useCatalogDataset("mow-upgrade-costs", getMowUpgradeCosts)
   const { t } = useTranslation("library")
 
-  if (catalog.status === "loading" || (catalog.status === "ready" && !costs)) {
+  if (catalog.status === "failed" || costs.status === "failed") {
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <p data-testid="mow-unit-load-failed">{t("unit.loadFailed")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            catalog.retry()
+            costs.retry()
+          }}
+        >
+          {t("unit.retry")}
+        </Button>
+      </div>
+    )
+  }
+  if (catalog.status === "loading" || costs.status === "loading") {
     return (
       <p className="text-muted-foreground" data-testid="mow-unit-loading">
         {t("loading")}
       </p>
-    )
-  }
-  if (catalog.status === "failed") {
-    return (
-      <div className="flex flex-col items-start gap-3">
-        <p data-testid="mow-unit-load-failed">{t("unit.loadFailed")}</p>
-        <Button variant="outline" onClick={catalog.retry}>
-          {t("unit.retry")}
-        </Button>
-      </div>
     )
   }
   const mow = entityId ? catalog.byId.get(entityId) : undefined
@@ -97,7 +105,7 @@ export function MowUnitPage() {
       key={mow.id}
       catalog={catalog}
       unitId={mow.id}
-      costs={costs as MowCostRung[]}
+      costs={costs.records}
     />
   )
 }

@@ -557,7 +557,7 @@
       "from": "Du niveau",
       "to": "Au niveau",
       "includeOwned": "Inclure les matériaux possédés",
-      "includeOwnedOn": "Les totaux déduisent le contenu de votre inventaire.",
+      "includeOwnedOn": "Les badges, composants et matériaux déduisent le contenu de votre inventaire ; l'or et la récupération non.",
       "includeOwnedOff": "Les totaux ignorent votre inventaire.",
       "totalTitle": "Total requis",
       "gold": "Or",

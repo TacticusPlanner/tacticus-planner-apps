@@ -554,7 +554,7 @@
       "from": "Desde el nivel",
       "to": "Hasta el nivel",
       "includeOwned": "Incluir materiales propios",
-      "includeOwnedOn": "Los totales restan lo que hay en tu inventario.",
+      "includeOwnedOn": "Las insignias, los componentes y los materiales restan lo que hay en tu inventario; el oro y la chatarra no.",
       "includeOwnedOff": "Los totales ignoran tu inventario.",
       "totalTitle": "Total necesario",
       "gold": "Oro",

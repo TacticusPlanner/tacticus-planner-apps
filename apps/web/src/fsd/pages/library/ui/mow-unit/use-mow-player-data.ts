@@ -64,7 +64,8 @@ export function useMowPlayerData(unitId: UnitId, isAuthenticated: boolean) {
     player,
     ownership: unitOwnership(
       roster !== LOADING && roster !== undefined,
-      player
+      player,
+      isAuthenticated && (roster === LOADING || playerMow === LOADING)
     ),
     shardRecord,
     unlockCosts,

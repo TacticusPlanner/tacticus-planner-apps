@@ -557,7 +557,7 @@
       "from": "From level",
       "to": "To level",
       "includeOwned": "Include owned materials",
-      "includeOwnedOn": "Totals subtract what is in your inventory.",
+      "includeOwnedOn": "Badges, components and materials subtract what is in your inventory; gold and salvage don't.",
       "includeOwnedOff": "Totals ignore your inventory.",
       "totalTitle": "Total needed",
       "gold": "Gold",

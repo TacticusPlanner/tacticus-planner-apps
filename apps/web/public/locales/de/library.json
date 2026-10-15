@@ -554,7 +554,7 @@
       "from": "Von Stufe",
       "to": "Bis Stufe",
       "includeOwned": "Eigene Materialien einbeziehen",
-      "includeOwnedOn": "Die Summen ziehen ab, was in deinem Inventar ist.",
+      "includeOwnedOn": "Abzeichen, Komponenten und Materialien ziehen ab, was in deinem Inventar ist; Gold und Bergungsgut nicht.",
       "includeOwnedOff": "Die Summen ignorieren dein Inventar.",
       "totalTitle": "Insgesamt benötigt",
       "gold": "Goldmünzen",

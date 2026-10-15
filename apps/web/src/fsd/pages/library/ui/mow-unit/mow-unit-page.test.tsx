@@ -29,6 +29,8 @@ const env = vi.hoisted(() => ({
   isMobile: false,
   authenticated: false,
   roster: undefined as unknown[] | undefined,
+  rosterPending: false,
+  costsSynced: true,
   shards: undefined as { amount: number } | undefined,
   inventory: undefined as unknown,
   inventoryUpgrades: undefined as unknown[] | undefined,
@@ -158,10 +160,19 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 }))
 vi.mock("@workspace/game-catalog", async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  getGameCatalogMetadata: () => Promise.resolve(new Map([["mows", {}]])),
+  getGameCatalogMetadata: () =>
+    Promise.resolve(
+      new Map([
+        ["mows", {}],
+        ...(env.costsSynced ? [["mow-upgrade-costs", {}] as const] : []),
+      ])
+    ),
 }))
 vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerMows: () => Promise.resolve(env.roster),
+  getPlayerMows: () =>
+    env.rosterPending
+      ? new Promise<never>(() => {})
+      : Promise.resolve(env.roster),
   getPlayerMow: (id: string) =>
     Promise.resolve(
       env.roster?.find((unit) => (unit as { unitId: string }).unitId === id)
@@ -267,6 +278,8 @@ describe("MowUnitPage", () => {
     env.isMobile = false
     env.authenticated = false
     env.roster = undefined
+    env.rosterPending = false
+    env.costsSynced = true
     env.shards = undefined
     env.inventory = undefined
     env.inventoryUpgrades = undefined
@@ -286,6 +299,13 @@ describe("MowUnitPage", () => {
     expect(screen.getByTestId("unit-header")).toHaveTextContent(
       "Imperial · Machine of War"
     )
+  })
+
+  it("waits for the upgrade cost ladder before showing the page", async () => {
+    env.costsSynced = false
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    expect(screen.getByTestId("mow-unit-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("unit-header")).not.toBeInTheDocument()
   })
 
   it("shows the not-found state for an id that isn't a MoW", async () => {
@@ -405,6 +425,18 @@ describe("MowUnitPage", () => {
       "Showing Common, abilities level 1."
     )
     expect(screen.getByTestId("unit-sign-in-banner")).toBeInTheDocument()
+  })
+
+  it("holds the banner and state lines while a signed-in player's roster is still read", async () => {
+    env.authenticated = true
+    env.rosterPending = true
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    expect(screen.getByTestId("unit-header")).toBeInTheDocument()
+    expect(screen.queryByTestId("unit-sign-in-banner")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("unit-showing-starting")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("unit-not-unlocked")).not.toBeInTheDocument()
   })
 
   it("on mobile, shows Primary expanded and Secondary collapsed with their levels", async () => {
