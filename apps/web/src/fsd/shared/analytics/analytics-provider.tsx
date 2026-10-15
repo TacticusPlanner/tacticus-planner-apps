@@ -110,6 +110,15 @@ export function useAnalyticsActions() {
             event_id: event.eventId,
             lane_id: event.laneId,
             depth: event.depth,
+            estimate: event.estimate,
+            from_estimate: event.fromEstimate,
+          })
+          break
+        case "legendary_event_depth_estimate_restored":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            estimate: event.estimate,
           })
           break
       }
