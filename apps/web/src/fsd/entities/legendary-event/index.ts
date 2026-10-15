@@ -70,7 +70,6 @@ export {
   type LaneProgressView,
 } from "./lib/synced-lane-progress"
 export { type ReadState } from "./model/use-read-state"
-export { useMinuteNow } from "./model/use-minute-now"
 export {
   useLegendaryEvents,
   type LegendaryEventsState,

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import {
@@ -6,10 +5,11 @@ import {
   getUpcomingEvents,
 } from "@workspace/game-catalog/queries"
 
+import { useMinuteNow } from "@/shared/lib"
+
 import { selectActiveHomeScreenEvent } from "./select-active-home-screen-event"
 
 const HORIZON_DAYS = 400
-const TICK_MS = 60_000
 
 type Ready = {
   status: "ready"
@@ -49,11 +49,7 @@ async function load(nowMs: number): Promise<Ready | { status: "error" }> {
 /** The single active Home Screen Event (and the next one) from the game-events calendar. */
 export function useActiveHomeScreenEvent(): ActiveHomeScreenEventState {
   // A coarse tick re-selects across an event boundary without a reload.
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const timer = setInterval(() => setTick((value) => value + 1), TICK_MS)
-    return () => clearInterval(timer)
-  }, [])
-  const result = useLiveQuery(() => load(Date.now()), [tick])
+  const nowMs = useMinuteNow()
+  const result = useLiveQuery(() => load(nowMs), [nowMs])
   return result ?? { status: "loading" }
 }

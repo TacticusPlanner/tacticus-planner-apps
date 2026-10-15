@@ -9,6 +9,8 @@ import {
   getUpcomingEvents,
 } from "@workspace/game-catalog/queries"
 
+import { useMinuteNow } from "@/shared/lib"
+
 import {
   addLocalDays,
   buildEventsCalendarDays,
@@ -51,9 +53,14 @@ export function useEventsCalendar(): EventsCalendarViewModel {
   const [weekOffset, setWeekOffset] = useState(0)
   const [retryToken, setRetryToken] = useState(0)
 
+  // A minute tick keeps "now" honest while the page stays open: the week window rolls over at local
+  // midnight and `isActiveNow` flips the moment an event starts or ends, without a reload.
+  const nowMs = useMinuteNow()
+  const todayStartMs = startOfDay(new Date(nowMs)).getTime()
+
   const rangeStart = useMemo(
-    () => addLocalDays(startOfDay(new Date()), weekOffset * WEEK_DAYS),
-    [weekOffset]
+    () => addLocalDays(new Date(todayStartMs), weekOffset * WEEK_DAYS),
+    [todayStartMs, weekOffset]
   )
   const rangeEnd = useMemo(
     () => addLocalDays(rangeStart, WEEK_DAYS),
@@ -87,10 +94,10 @@ export function useEventsCalendar(): EventsCalendarViewModel {
             definitionsById,
             rangeStart,
             rangeEnd,
-            new Date()
+            new Date(nowMs)
           )
         : [],
-    [entriesResult, definitionsById, rangeStart, rangeEnd]
+    [entriesResult, definitionsById, rangeStart, rangeEnd, nowMs]
   )
 
   const lanes = useMemo(
@@ -101,10 +108,10 @@ export function useEventsCalendar(): EventsCalendarViewModel {
             definitionsById,
             rangeStart,
             rangeEnd,
-            new Date()
+            new Date(nowMs)
           )
         : [],
-    [entriesResult, definitionsById, rangeStart, rangeEnd]
+    [entriesResult, definitionsById, rangeStart, rangeEnd, nowMs]
   )
 
   const status = useMemo(() => {

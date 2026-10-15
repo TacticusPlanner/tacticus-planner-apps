@@ -4,7 +4,7 @@ import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import { getEventsActiveAt } from "@workspace/game-catalog/queries"
 import { getLiveProgress } from "@workspace/player-data/queries"
 
-import { useCampaignDisplay } from "@/shared/lib"
+import { useCampaignDisplay, useMinuteNow } from "@/shared/lib"
 
 import { seasonEndCountdown } from "./guild-raids/guild-raid-countdowns"
 
@@ -86,18 +86,17 @@ export function buildCampaignEventStatus({
   }
 }
 
-async function readCampaignEventInputs() {
+async function readCampaignEventInputs(nowMs: number) {
   const [liveProgress, activeEvents] = await Promise.all([
     getLiveProgress(),
-    getEventsActiveAt(new Date()),
+    getEventsActiveAt(new Date(nowMs)),
   ])
   const campaignEvent = activeEvents.find(
     (event) => event.definitionId === CAMPAIGN_EVENT_DEFINITION_ID
   )
   return {
-    // Read here rather than during render: the countdown is coarse ("in 3 days"), so recomputing
-    // it whenever the underlying Dexie tables change is frequent enough, and render stays pure.
-    nowMs: Date.now(),
+    // The instant the window was selected at, for the end countdown (render never reads the clock).
+    nowMs,
     activeCampaignEventId: liveProgress?.activeCampaignEventId ?? null,
     campaignEventWindow: campaignEvent
       ? { endUtc: campaignEvent.endUtc, confirmed: campaignEvent.confirmed }
@@ -108,7 +107,10 @@ async function readCampaignEventInputs() {
 /** Page-local: only Today shows this, and `useDailyRaids` is shared with the Home widget. */
 export function useCampaignEventStatus(): CampaignEventStatus {
   const { name } = useCampaignDisplay()
-  const inputs = useLiveQuery(readCampaignEventInputs, [])
+  // The minute tick re-reads the active window, so an event that ends (or a new one that starts)
+  // while Today stays open is picked up without a reload or a data change.
+  const nowMs = useMinuteNow()
+  const inputs = useLiveQuery(() => readCampaignEventInputs(nowMs), [nowMs])
 
   return buildCampaignEventStatus({
     activeCampaignEventId: inputs?.activeCampaignEventId,
