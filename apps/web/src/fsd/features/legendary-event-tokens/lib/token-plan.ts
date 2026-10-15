@@ -55,7 +55,7 @@ export interface PlannedToken {
   playableNow: boolean
 }
 
-export interface TokenPlanLaneResult {
+interface TokenPlanLaneResult {
   laneId: LegendaryEventLaneId
   /** Lane maximum minus earned points once every planned token is played. */
   pointsLeftAfterPlan: number
@@ -287,7 +287,7 @@ export function planTokens({
   }
 }
 
-export type NextTokenReason = "mostPoints" | "mostPointsPlayableNow"
+type NextTokenReason = "mostPoints" | "mostPointsPlayableNow"
 
 export interface NextTokenChoice {
   token: PlannedToken

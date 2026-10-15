@@ -309,6 +309,10 @@
           "title": "Overview and lanes",
           "content": "Overview sums up the event; Alpha, Beta and Gamma open one lane each. On a phone the strip stays under the header while you scroll."
         },
+        "nextToken": {
+          "title": "Next token",
+          "content": "The battle to play with your next token: the team, lane and battle worth the most points now, from your sync, teams, depths and marks. If it didn't go to plan, mark it Partly cleared or Couldn't clear and the plan updates."
+        },
         "runStatus": {
           "title": "Run status",
           "content": "Your run, tokens, points, currency, chests and shards from your last sync, plus the next points milestone."
@@ -316,6 +320,10 @@
         "runInputs": {
           "title": "Run inputs",
           "content": "Enter the missions and packs the game does not report for each run. They feed the reward outlook on this card."
+        },
+        "tokenPlan": {
+          "title": "Token plan",
+          "content": "Every token the plan expects to play in order, with running points and the milestones it crosses. The run forecast below spreads it across the remaining runs."
         },
         "laneSummary": {
           "title": "Lane summary",
@@ -362,5 +370,73 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Estimating clears…"
+  },
+  "tokenPlan": {
+    "nextToken": {
+      "title": "Next token",
+      "battle": "{{lane}} · Battle {{battle}}",
+      "points": "+{{points}} points",
+      "reasons": {
+        "mostPoints": "Most points available now",
+        "mostPointsPlayableNow": "Most points among battles you can play now"
+      },
+      "sameTeam": "{{reason}} · same team, next battle",
+      "upcoming": "{{reason}} for when run {{run}} starts",
+      "maybe": "Maybe clear",
+      "members": "Members",
+      "objectives": "Clears",
+      "actions": {
+        "partly": "Partly cleared",
+        "couldNot": "Couldn't clear",
+        "partlyLabel": "Partly cleared: mark {{team}} on {{lane}} battle {{battle}} as Maybe clear",
+        "couldNotLabel": "Couldn't clear: mark {{team}} on {{lane}} battle {{battle}} as Stop here"
+      },
+      "loading": "Loading the token plan…",
+      "unavailable": "Synced progress is unavailable, so there is no token plan",
+      "allCleared": "Every battle is cleared",
+      "noTeams": "Add a team on {{lane}} to get a plan",
+      "noDepth": "Set how far {{team}} clears",
+      "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}"
+    },
+    "plan": {
+      "title": "Token plan",
+      "summary_one": "{{count}} token · +{{points}} points",
+      "summary_other": "{{count}} tokens · +{{points}} points",
+      "battle": "Battle {{battle}}",
+      "points": "+{{points}}",
+      "running": "{{points}} total",
+      "maybe": "Maybe clear",
+      "milestone": "Milestone {{milestone}} · +{{currency}} currency",
+      "step": "{{step}} reached",
+      "fullClear_one": "{{lane}}: a full clear takes {{count}} token a battle",
+      "fullClear_other": "{{lane}}: a full clear takes {{count}} tokens a battle",
+      "uncovered": "{{lane}}: no team covers {{objectives}}"
+    },
+    "forecast": {
+      "title": "Run forecast",
+      "header": "By the end of run {{run}}: {{points}} points · {{step}} {{shards}} shards short",
+      "headerAllSteps": "By the end of run {{run}}: {{points}} points · every reward step reached",
+      "run": "Run {{run}}",
+      "states": {
+        "done": "Done",
+        "now": "Now",
+        "next": "Next",
+        "planned": "Planned"
+      },
+      "finished": "Finished",
+      "supply": "{{total}} tokens: {{free}} free + {{ad}} ad + {{bonus}} bonus delivery",
+      "uses": "Uses {{used}} · {{left}} left over",
+      "points": "{{points}} points (+{{earned}})",
+      "currency": "{{currency}} currency in hand (+{{earned}} earned)",
+      "chests": "{{claimed}} chests claimed (+{{opened}})",
+      "shards": "{{shards}} shards",
+      "reached": "Reached: {{steps}}",
+      "next": "Next: {{step}} · {{shards}} shards short",
+      "allSteps": "Every reward step reached",
+      "ohSoClose": "Oh So Close: {{shards}} shards for {{blackstone}} blackstone",
+      "leftover_one": "{{count}} token with nothing to play: add a team or raise a depth to use it",
+      "leftover_other": "{{count}} tokens with nothing to play: add a team or raise a depth to use them",
+      "editInputs": "Edit inputs"
+    }
   }
 }

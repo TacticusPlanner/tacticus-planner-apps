@@ -22,9 +22,9 @@ import type { RunSupply, RunSupplyState } from "./token-supply"
 // own ladder and Stage 3's input semantics (design D3 f, g).
 
 /** "Oh So Close" price: 500 blackstone plus 100 per shard for Unlock, 50 for later steps (V1). */
-export const OH_SO_CLOSE_BASE_COST = 500
-export const OH_SO_CLOSE_UNLOCK_COST_PER_SHARD = 100
-export const OH_SO_CLOSE_PROMOTION_COST_PER_SHARD = 50
+const OH_SO_CLOSE_BASE_COST = 500
+const OH_SO_CLOSE_UNLOCK_COST_PER_SHARD = 100
+const OH_SO_CLOSE_PROMOTION_COST_PER_SHARD = 50
 
 export interface ForecastInput {
   rewards: LegendaryEventRewards

@@ -92,7 +92,7 @@ export function TeamCard({
   return (
     <li
       className={cn(
-        "flex min-w-0 flex-col gap-3 rounded-xl border bg-card p-3",
+        "flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+3rem)] flex-col gap-3 rounded-xl border bg-card p-3 md:scroll-mt-4",
         sortable?.isDragging && "relative z-10 shadow-lg"
       )}
       data-team={card.id}

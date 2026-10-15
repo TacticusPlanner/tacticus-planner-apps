@@ -55,6 +55,31 @@ describe("Legendary Events translations", () => {
   )
 
   it.each(translated)(
+    "translates the token plan copy in %s",
+    (_locale, resource) => {
+      expect(resource.tokenPlan.nextToken.title).not.toBe(
+        en.tokenPlan.nextToken.title
+      )
+      expect(resource.tokenPlan.nextToken.reasons.mostPoints).not.toBe(
+        en.tokenPlan.nextToken.reasons.mostPoints
+      )
+      expect(resource.tokenPlan.nextToken.actions.couldNot).not.toBe(
+        en.tokenPlan.nextToken.actions.couldNot
+      )
+      expect(resource.tokenPlan.plan.title).not.toBe(en.tokenPlan.plan.title)
+      expect(resource.tokenPlan.forecast.header).not.toBe(
+        en.tokenPlan.forecast.header
+      )
+      expect(resource.tour.event.steps.nextToken.content).not.toBe(
+        en.tour.event.steps.nextToken.content
+      )
+      expect(resource.tour.event.steps.tokenPlan.content).not.toBe(
+        en.tour.event.steps.tokenPlan.content
+      )
+    }
+  )
+
+  it.each(translated)(
     "translates the run inputs, outlook and marks copy in %s",
     (_locale, resource) => {
       expect(resource.runInputs.description).not.toBe(en.runInputs.description)

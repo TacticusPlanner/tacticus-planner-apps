@@ -171,6 +171,60 @@ describe("useAnnotations", () => {
     expect(cached().annotations).toEqual([])
   })
 
+  it("marks a planned token's cells in one write with scope token", async () => {
+    api.write.mockResolvedValue(plan(3))
+    const { result, cached } = setup(plan(2))
+
+    await act(async () => {
+      await result.current.markToken("alpha", 2, [0, 1, 4], "stopHere")
+    })
+
+    expect(api.write).toHaveBeenCalledTimes(1)
+    expect(api.write).toHaveBeenCalledWith(EVENT, {
+      expectedRevision: 2,
+      laneId: "alpha",
+      battleIndex: 2,
+      objectiveIds: [0, 1, 4],
+      status: "stopHere",
+    })
+    expect(api.capture).toHaveBeenCalledWith(
+      expect.objectContaining({ cellCount: 3, scope: "token" })
+    )
+    expect(cached().revision).toBe(3)
+  })
+
+  it("adopts the returned plan when a token mark conflicts", async () => {
+    const theirs = plan(7, [mark(2, 4, "maybeClear")])
+    api.write.mockRejectedValue(
+      new ApiError(409, "Stale.", {
+        issueCode: "legendaryEventPlanStale",
+        message: "Stale.",
+        plan: theirs,
+      })
+    )
+    const { result, cached } = setup(plan(2))
+
+    let outcome!: string
+    await act(async () => {
+      outcome = await result.current.markToken("alpha", 2, [4], "maybeClear")
+    })
+
+    expect(outcome).toBe("conflict")
+    expect(cached()).toEqual(theirs)
+  })
+
+  it("rolls back a token mark on another error", async () => {
+    api.write.mockRejectedValue(new ApiError(500, "Boom."))
+    const { result, cached } = setup(plan(2))
+
+    await act(async () => {
+      await result.current.markToken("alpha", 2, [0, 1, 4], "stopHere")
+    })
+
+    expect(cached().annotations).toEqual([])
+    expect(toast.error).toHaveBeenCalledWith("annotations.toasts.error")
+  })
+
   it("adopts the returned plan on a conflict", async () => {
     const theirs = plan(7, [mark(6, 3, "maybeClear")])
     api.write.mockRejectedValue(

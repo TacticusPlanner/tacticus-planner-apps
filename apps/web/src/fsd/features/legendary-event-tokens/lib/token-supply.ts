@@ -13,13 +13,13 @@ import {
 const HOUR_MS = 60 * 60 * 1000
 const DAY_MS = 24 * HOUR_MS
 /** A full run regenerates one token every 3 hours for 7 days (7 × 8 − 1) plus 6 extra. */
-export const FULL_RUN_FREE_TOKENS = 7 * 8 - 1 + 6
+const FULL_RUN_FREE_TOKENS = 7 * 8 - 1 + 6
 /** One ad token a day. */
-export const FULL_RUN_AD_TOKENS = 7
+const FULL_RUN_AD_TOKENS = 7
 /** Buying the premium track (bonus delivery) for a run grants 6 tokens in that run. */
-export const BONUS_DELIVERY_TOKENS = 6
+const BONUS_DELIVERY_TOKENS = 6
 /** V1's regeneration delay when the bucket is unknown. */
-export const DEFAULT_REGEN_DELAY_SECONDS = 3 * 60 * 60
+const DEFAULT_REGEN_DELAY_SECONDS = 3 * 60 * 60
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
 
