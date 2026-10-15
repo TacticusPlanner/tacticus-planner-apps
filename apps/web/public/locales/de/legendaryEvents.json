@@ -335,7 +335,7 @@
         },
         "upgradeImpact": {
           "title": "Wirkung von Verbesserungen",
-          "content": "Welche einzelne Verbesserung dir auf dieser Spur Punkte bringt: Jede Zeile nennt den Kampf, den ein Team dadurch erreicht, und die zusätzlichen Punkte. Erstelle mit einem Tipp ein Ziel dafür."
+          "content": "Welche einzelne Verbesserung dir auf dieser Lane Punkte bringt: Jede Zeile nennt den Kampf, den ein Team dadurch erreicht, und die zusätzlichen Punkte. Erstelle mit einem Tipp ein Ziel dafür."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",
@@ -394,7 +394,7 @@
     "title": "Wirkung von Verbesserungen",
     "summary_one": "{{count}} Verbesserung bringt Punkte · beste +{{best}}",
     "summary_other": "{{count}} Verbesserungen bringen Punkte · beste +{{best}}",
-    "hint": "Was ein einzelner nächster Schritt eines Teammitglieds auf dieser Spur bringt, über die Kämpfe, die ein Team dadurch erreicht. Grundlage ist dein synchronisierter Kader.",
+    "hint": "Was ein einzelner nächster Schritt eines Teammitglieds auf dieser Lane bringt, über die Kämpfe, die ein Team dadurch erreicht. Grundlage ist dein synchronisierter Kader.",
     "unit": "Einheit",
     "step": "Schritt",
     "teams": "Teams",
@@ -409,7 +409,7 @@
     "inGoals": "In Zielen",
     "needsEstimates": "Benötigt Abschluss-Schätzungen",
     "noTeams": "Füge ein Team hinzu, um zu sehen, welche Verbesserungen Punkte bringen",
-    "noRows": "Kein einzelner nächster Schritt bringt auf dieser Spur Punkte",
+    "noRows": "Kein einzelner nächster Schritt bringt auf dieser Lane Punkte",
     "loading": "Wirkung wird geladen…",
     "toggle": "Wirkung von Verbesserungen ein- oder ausblenden"
   },

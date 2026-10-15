@@ -18,7 +18,7 @@ For a lane, the planner SHALL build proposals, client side and never stored, as 
 - **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it. Proposals with a gain of 0 are dropped.
 - **Ranking.** Gain descending, then depth descending, then member count descending, then the lowest catalog index among its covered objectives.
 
-**Only unlocked** SHALL default to on and **Prefer units with goals** to off. Both SHALL be kept while the dialog is open and reset when it closes. Suggestions read the synced roster, never Goals Preview. Gains are event points anchored to the current roster and progress.
+**Only unlocked** SHALL default to on and **Prefer units with goals** to off. Both SHALL be kept while the dialog is open, including while it is hidden behind the team editor opened by Use this team (cancelling the editor returns to the same proposals and toggles), and reset when the dialog closes. Suggestions read the synced roster, never Goals Preview. Gains are event points anchored to the current roster and progress.
 
 Assumptions:
 

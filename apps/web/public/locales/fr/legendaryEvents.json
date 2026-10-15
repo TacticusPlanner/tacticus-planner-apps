@@ -335,7 +335,7 @@
         },
         "upgradeImpact": {
           "title": "Impact des améliorations",
-          "content": "Quelle amélioration seule vous rapporte des points sur ce couloir : chaque ligne indique le combat qu'elle permet à une équipe d'atteindre et les points ajoutés. Créez-en un objectif d'un geste."
+          "content": "Quelle amélioration seule vous rapporte des points sur cette voie : chaque ligne indique le combat qu'elle permet à une équipe d'atteindre et les points ajoutés. Créez-en un objectif d'un geste."
         },
         "progressGrid": {
           "title": "Progression synchronisée",
@@ -394,7 +394,7 @@
     "title": "Impact des améliorations",
     "summary_one": "{{count}} amélioration rapporte des points · meilleure +{{best}}",
     "summary_other": "{{count}} améliorations rapportent des points · meilleure +{{best}}",
-    "hint": "Ce qu'une seule étape suivante d'un membre d'équipe rapporte sur ce couloir, par les combats qu'elle permet d'atteindre. D'après votre effectif synchronisé.",
+    "hint": "Ce qu'une seule étape suivante d'un membre d'équipe rapporte sur cette voie, par les combats qu'elle permet d'atteindre. D'après votre effectif synchronisé.",
     "unit": "Unité",
     "step": "Étape",
     "teams": "Équipes",
@@ -409,7 +409,7 @@
     "inGoals": "Dans les objectifs",
     "needsEstimates": "Nécessite des estimations de progression",
     "noTeams": "Ajoutez une équipe pour voir quelles améliorations rapportent des points",
-    "noRows": "Aucune étape suivante seule ne rapporte de points sur ce couloir",
+    "noRows": "Aucune étape suivante seule ne rapporte de points sur cette voie",
     "loading": "Chargement de l'impact des améliorations…",
     "toggle": "Afficher ou masquer l'impact des améliorations"
   },

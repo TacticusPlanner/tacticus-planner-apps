@@ -96,7 +96,7 @@ A unit whose preview differs from its synced state SHALL carry a "preview" marke
 
 ### Requirement: Unit tiles carry a goal badge
 
-A leaderboard row (lane and Overview), a team picker tile, an upgrade impact row and a suggestion member SHALL show a goal badge when the unit has at least one Active goal of any kind. The badge's accessible text and tooltip SHALL list each such goal by kind and target (for example "Rank to Gold II", "Ascension to Legendary 3 red stars", "Unlock"). The badge SHALL NOT depend on the Goals Preview switch. After a goal is created from the event page the badge SHALL appear without a page reload.
+A leaderboard row (lane and Overview), a team picker tile, an upgrade impact row and a suggestion member SHALL show a goal badge when the unit has at least one Active Unlock, Ascension, Rank or Ability goal (the goals Goals Preview reads, so their targets are known). The badge's accessible text and tooltip SHALL list each such goal by kind and target (for example "Rank to Gold II", "Ascension to Legendary 3 red stars", "Unlock"). The badge SHALL NOT depend on the Goals Preview switch. After a goal is created from the event page the badge SHALL appear without a page reload.
 
 #### Scenario: Badge lists the goals
 
