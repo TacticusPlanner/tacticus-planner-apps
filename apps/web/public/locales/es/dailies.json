@@ -178,9 +178,11 @@
   "schedule": {
     "raids_one": "{{count}} intento usado",
     "raids_other": "{{count}} intentos usados",
+    "upgradesLeft_one": "Falta {{count}} mejora",
+    "upgradesLeft_other": "Faltan {{count}} mejoras",
+    "shardsLeft_one": "Falta {{count}} fragmento",
+    "shardsLeft_other": "Faltan {{count}} fragmentos",
     "progress": "{{owned}} de {{target}} en posesión",
-    "node": "{{node}} · {{raids}} intentos usados",
-    "maxRaids": "Máximo alcanzado",
     "fullyRaided": "Completado"
   },
   "bonus": {

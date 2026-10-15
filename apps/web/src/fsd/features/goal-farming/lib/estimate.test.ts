@@ -930,6 +930,16 @@ describe("spendDay ordering (align-raid-spend-order-with-v1)", () => {
     expect(breakdown[1]?.resourceId).toBe(upgradeId("B"))
   })
 
+  it("records how much of the material was still needed at each node", () => {
+    const { breakdown } = spendDay(
+      new Map([[upgradeId("A"), 6]]),
+      new Map([[upgradeId("A"), [node("A1", 5, 4), node("A2", 5, 4)]]]),
+      100,
+      100
+    )
+    expect(breakdown.map((entry) => entry.remainingBefore)).toEqual([6, 2])
+  })
+
   it("keeps the existing order when times to finish are equal", () => {
     // A: 5 / 10 per day = 0.5 days; B: 10 / 20 per day = 0.5 days. Cheapest-first would put B first.
     const { breakdown } = run(

@@ -178,9 +178,11 @@
   "schedule": {
     "raids_one": "{{count}} Versuch verbraucht",
     "raids_other": "{{count}} Versuche verbraucht",
+    "upgradesLeft_one": "Noch {{count}} Upgrade",
+    "upgradesLeft_other": "Noch {{count}} Upgrades",
+    "shardsLeft_one": "Noch {{count}} Scherbe",
+    "shardsLeft_other": "Noch {{count}} Scherben",
     "progress": "{{owned}} von {{target}} im Besitz",
-    "node": "{{node}} · {{raids}} Versuche verbraucht",
-    "maxRaids": "Maximal geraidet",
     "fullyRaided": "Vollständig geraidet"
   },
   "bonus": {

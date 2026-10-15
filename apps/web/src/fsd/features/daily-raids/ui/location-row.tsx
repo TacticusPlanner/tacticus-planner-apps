@@ -1,6 +1,3 @@
-import { useTranslation } from "react-i18next"
-import { Badge } from "@workspace/ui/components/badge"
-
 import { EntityIcon } from "@/shared/ui"
 
 import type {
@@ -8,6 +5,8 @@ import type {
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import type { FlattenedRaidLocation } from "../model/flatten-today-locations"
+import { plannedRaidNeed } from "../model/planned-raid-need"
+import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { ResourceIconWithTooltip } from "./resource-icon"
 
 /** One flattened battle location: compact location chip, planned raid count, and its primary
@@ -24,8 +23,6 @@ export function LocationRow({
   resourceLabel: string
   resourceVisual: DailyRaidResourceVisual | undefined
 }) {
-  const { t } = useTranslation("dailies")
-
   return (
     <div
       className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
@@ -44,11 +41,14 @@ export function LocationRow({
           </div>
         ) : null}
       </div>
-      <Badge className="shrink-0 tabular-nums" variant="outline">
-        {entry.raidsToPerform === entry.dailyAttempts
-          ? t("schedule.maxRaids")
-          : t("schedule.raids", { count: entry.raidsToPerform })}
-      </Badge>
+      <PlannedRaidNeedBadge
+        need={plannedRaidNeed({
+          resourceId: entry.resourceId,
+          raidsPerformed: entry.raidsToPerform,
+          dailyAttempts: entry.dailyAttempts,
+          remainingBefore: entry.remainingBefore,
+        })}
+      />
       <ResourceIconWithTooltip
         className="size-6"
         label={resourceLabel}
