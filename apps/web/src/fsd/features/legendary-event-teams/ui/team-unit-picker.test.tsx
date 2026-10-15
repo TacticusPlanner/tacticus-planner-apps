@@ -15,6 +15,7 @@ import {
   toggleMember,
   toggleReserve,
 } from "../model/team-editor-draft"
+import type { PickerGoalsPreview } from "../model/team-picker"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 vi.mock("dexie-react-hooks", () => ({
@@ -36,12 +37,22 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 let i18n: I18n
 const context = { lane: teamLane, units: teamUnitList }
 
-function Harness({ roster }: { roster?: { unitId: string }[] }) {
+function Harness({
+  roster,
+  goalsPreview,
+  goalLines,
+}: {
+  roster?: { unitId: string }[]
+  goalsPreview?: PickerGoalsPreview
+  goalLines?: (unitId: string) => readonly string[]
+}) {
   const [draft, setDraft] = useState(() =>
     initialEditorDraft(undefined, 1, context)
   )
   return (
     <TeamUnitPicker
+      goalLines={goalLines}
+      goalsPreview={goalsPreview}
       lane={teamLane}
       memberUnitIds={draft.memberUnitIds}
       onToggleMember={(unitId) => {
@@ -140,5 +151,52 @@ describe("TeamUnitPicker", () => {
     expect(
       screen.getAllByTestId("team-picker-tile").map((el) => el.dataset.unit)
     ).toEqual([teamUnits.a.id])
+  })
+
+  it("starts from the page's Goals Preview and can be turned off in the picker", async () => {
+    const onToggle = vi.fn()
+    render(
+      <Harness
+        goalLines={(unitId) => (unitId === teamUnits.b.id ? ["Unlock"] : [])}
+        goalsPreview={{
+          enabled: true,
+          available: true,
+          roster: [
+            {
+              unitId: teamUnits.a.id,
+              rank: "Gold1",
+              progressionIndex: "Epic:RedOneStar",
+            },
+            {
+              unitId: teamUnits.b.id,
+              rank: "Stone1",
+              progressionIndex: "Common:None",
+            },
+          ] as never,
+          previewed: new Set([teamUnits.b.id]),
+          clearsOf: (unitId) => (unitId === teamUnits.b.id ? 2 : 6),
+          onToggle,
+        }}
+        roster={[{ unitId: teamUnits.a.id }]}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    await screen.findByText("Beth")
+    expect(screen.getByTestId("team-picker-goals-preview")).toBeChecked()
+    expect(tile(teamUnits.b.id)).not.toHaveAttribute("data-locked")
+    expect(tile(teamUnits.b.id)).toHaveAttribute("data-preview", "true")
+    expect(
+      within(tile(teamUnits.b.id)).getByTestId("team-picker-preview-state")
+    ).toHaveTextContent("~2")
+    expect(
+      within(tile(teamUnits.b.id)).getByTestId("unit-goal-badge")
+    ).toHaveAttribute("title", "Goals: Unlock")
+
+    fireEvent.click(screen.getByTestId("team-picker-goals-preview"))
+    expect(onToggle).toHaveBeenCalledWith(false)
+    expect(tile(teamUnits.b.id)).toHaveAttribute("data-locked", "true")
+    expect(
+      screen.queryByTestId("team-picker-preview-state")
+    ).not.toBeInTheDocument()
   })
 })

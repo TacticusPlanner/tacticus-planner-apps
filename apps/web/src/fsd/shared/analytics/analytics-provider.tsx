@@ -96,6 +96,15 @@ export function useAnalyticsActions() {
           })
           break
         case "legendary_event_team_created":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            member_count: event.memberCount,
+            objective_count: event.objectiveCount,
+            source: event.source,
+            suggestion_rank: event.suggestionRank,
+          })
+          break
         case "legendary_event_team_edited":
         case "legendary_event_team_deleted":
           client.capture(event.type, {
@@ -142,6 +151,35 @@ export function useAnalyticsActions() {
             cell_count: event.cellCount,
             status: event.status,
             scope: event.scope,
+          })
+          break
+        case "legendary_event_goals_preview_toggled":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            enabled: event.enabled,
+            surface: event.surface,
+          })
+          break
+        case "legendary_event_create_goal_opened":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            source: event.source,
+            goal_type: event.goalType,
+          })
+          break
+        case "legendary_event_upgrade_impact_expanded":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            row_count: event.rowCount,
+          })
+          break
+        case "legendary_event_team_suggestions_opened":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            suggestion_count: event.suggestionCount,
           })
           break
       }

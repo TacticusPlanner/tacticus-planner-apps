@@ -51,10 +51,7 @@ export function useLegendaryEventPlan({
   const { query, enabled, pending, enqueue } = usePlanWriteQueue(eventId)
 
   const teamAnalytics = (
-    type:
-      | "legendary_event_team_created"
-      | "legendary_event_team_edited"
-      | "legendary_event_team_deleted",
+    type: "legendary_event_team_edited" | "legendary_event_team_deleted",
     laneId: LegendaryEventLaneId,
     team: Pick<TeamDraft, "memberUnitIds" | "objectiveIndexes">
   ) =>
@@ -99,7 +96,8 @@ export function useLegendaryEventPlan({
   const createTeam = (
     laneId: LegendaryEventLaneId,
     draft: TeamDraft,
-    shown: DepthEstimateContext = noEstimateShown
+    shown: DepthEstimateContext = noEstimateShown,
+    origin: TeamOrigin = manualOrigin
   ) =>
     enqueue({
       send: (base) =>
@@ -108,7 +106,15 @@ export function useLegendaryEventPlan({
           teamCreateRequest(laneId, draft, run, base.revision)
         ),
       onSaved: () => {
-        teamAnalytics("legendary_event_team_created", laneId, draft)
+        captureEvent({
+          type: "legendary_event_team_created",
+          eventId,
+          laneId,
+          memberCount: draft.memberUnitIds.length,
+          objectiveCount: draft.objectiveIndexes.length,
+          source: origin.source,
+          suggestionRank: origin.suggestionRank,
+        })
         editorDepthAnalytics(laneId, null, draft.expectedBattleClears, shown)
       },
     })
@@ -242,6 +248,13 @@ export interface DepthEstimateContext {
   estimate: number | null
   fromEstimate: boolean
 }
+
+/** Where a new team came from: the editor from scratch, or a team suggestion (1-based rank). */
+export type TeamOrigin =
+  | { source: "manual"; suggestionRank: null }
+  | { source: "suggestion"; suggestionRank: number }
+
+const manualOrigin: TeamOrigin = { source: "manual", suggestionRank: null }
 
 const noEstimateShown: DepthEstimateContext = {
   estimate: null,

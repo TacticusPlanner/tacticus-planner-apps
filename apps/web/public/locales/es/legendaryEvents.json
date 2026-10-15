@@ -331,7 +331,11 @@
         },
         "teams": {
           "title": "Equipos",
-          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde debería llegar: una estimación a partir de tu plantilla sincronizada hasta que fijes tú una profundidad. Usa Añadir equipo para empezar uno."
+          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde debería llegar: una estimación a partir de tu plantilla sincronizada hasta que fijes tú una profundidad. Usa Añadir equipo para empezar uno. Sugerir equipos propone equipos de tu plantilla, ordenados por los puntos que suman."
+        },
+        "upgradeImpact": {
+          "title": "Impacto de las mejoras",
+          "content": "Qué mejora por sí sola te da puntos en este carril: cada fila indica la batalla que permite alcanzar a un equipo y los puntos que suma. Crea un objetivo para ella con un toque."
         },
         "progressGrid": {
           "title": "Progreso sincronizado",
@@ -339,7 +343,7 @@
         },
         "leaderboard": {
           "title": "Clasificación del carril",
-          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí."
+          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para crear un objetivo."
         }
       }
     }
@@ -362,5 +366,64 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Estimando batallas…"
+  },
+  "goalsPreview": {
+    "switch": "Vista de objetivos",
+    "marker": "Mostrado con los objetivos alcanzados",
+    "hint": "Muestra las unidades como si hubieras alcanzado tus objetivos activos. Los puntos y los equipos no cambian.",
+    "loading": "Cargando objetivos…",
+    "unavailable": "Objetivos no disponibles",
+    "noGoals": "No hay objetivos activos para las unidades de este evento"
+  },
+  "goalBadge": {
+    "label": "Objetivos",
+    "unlock": "Desbloquear",
+    "ascension": "Ascender a {{target}}",
+    "rank": "Rango {{target}}",
+    "rankWithUpgrades": "Rango {{target}} con {{count}} mejoras",
+    "ability": "Habilidades a {{active}} / {{passive}}",
+    "progression": "{{rarity}} {{stars}}"
+  },
+  "leaderboardActions": {
+    "header": "Acciones",
+    "menu": "Acciones para {{name}}",
+    "createGoal": "Crear objetivo"
+  },
+  "upgradeImpact": {
+    "title": "Impacto de las mejoras",
+    "summary_one": "{{count}} mejora suma puntos · mejor +{{best}}",
+    "summary_other": "{{count}} mejoras suman puntos · mejor +{{best}}",
+    "hint": "Lo que aporta en este carril un único paso siguiente de un miembro del equipo, por las batallas que permite alcanzar. Basado en tu plantilla sincronizada.",
+    "unit": "Unidad",
+    "step": "Paso",
+    "teams": "Equipos",
+    "points": "Puntos",
+    "unlock": "Desbloquear",
+    "rank": "Rango {{target}}",
+    "ascension": "Ascender a {{target}}",
+    "teamChange": "{{team}}: batalla {{from}} → {{to}}",
+    "gain": "+{{points}} puntos",
+    "createGoal": "Crear objetivo",
+    "createGoalFor": "Crear objetivo para {{name}}",
+    "inGoals": "En objetivos",
+    "needsEstimates": "Necesita estimaciones de superación",
+    "noTeams": "Añade un equipo para ver qué mejoras suman puntos",
+    "noRows": "Ningún paso siguiente por sí solo suma puntos en este carril",
+    "loading": "Cargando el impacto de las mejoras…",
+    "toggle": "Mostrar u ocultar el impacto de las mejoras"
+  },
+  "suggestions": {
+    "button": "Sugerir equipos",
+    "title": "Equipos sugeridos para {{lane}}",
+    "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales. No se guarda nada hasta que guardes el equipo.",
+    "onlyUnlocked": "Solo desbloqueadas",
+    "preferGoals": "Preferir unidades con objetivos",
+    "reason": "Cubre {{objectives}} · supera ~{{depth}} · +{{points}} puntos sobre tus equipos",
+    "use": "Usar este equipo",
+    "showMore": "Mostrar más",
+    "empty": "Ningún equipo suma puntos a tus equipos actuales",
+    "needsEstimates": "Necesita estimaciones de superación",
+    "loading": "Cargando sugerencias…",
+    "rank": "Sugerencia {{rank}}"
   }
 }

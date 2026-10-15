@@ -57,7 +57,9 @@ function renderEditor({
   onSubmit = vi.fn(async (): Promise<PlanMutationOutcome> => "saved"),
   onOpenChange = vi.fn(),
   estimateTeam,
+  initialMemberUnitIds,
 }: {
+  initialMemberUnitIds?: readonly string[]
   team?: LegendaryEventTeam
   onSubmit?: (
     draft: TeamDraft,
@@ -69,6 +71,7 @@ function renderEditor({
   render(
     <TeamEditorDialog
       estimateTeam={estimateTeam}
+      initialMemberUnitIds={initialMemberUnitIds}
       lane={teamLane}
       laneId="alpha"
       onOpenChange={onOpenChange}
@@ -129,6 +132,39 @@ describe("TeamEditorDialog", () => {
     tap(teamUnits.a.id)
     tap(teamUnits.b.id)
     expect(nameInput()).toHaveValue("Melee · Min 5 hits")
+  })
+
+  it("opens a suggestion as a new team: members in order, coverage ticked, default name", async () => {
+    const { onSubmit } = renderEditor({
+      initialMemberUnitIds: [teamUnits.b.id, teamUnits.a.id],
+    })
+    expect(nameInput()).toHaveValue("Melee · Min 5 hits")
+    expect(chips()).toEqual([
+      { label: "Melee", checked: true },
+      { label: "Min 5 hits", checked: true },
+    ])
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("team-editor-save"))
+    })
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        memberUnitIds: [teamUnits.b.id, teamUnits.a.id],
+        objectiveIndexes: [0, 1],
+        name: "Melee · Min 5 hits",
+      }),
+      { estimate: null, fromEstimate: false }
+    )
+  })
+
+  it("saves nothing when a suggestion's editor is cancelled", () => {
+    const { onSubmit, onOpenChange } = renderEditor({
+      initialMemberUnitIds: [teamUnits.a.id],
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
   it("reopens a saved team with its untick kept", () => {
