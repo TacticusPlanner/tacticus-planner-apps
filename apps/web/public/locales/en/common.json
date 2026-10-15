@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Loading your account…",
+    "reauthenticating": "Your sign-in needs refreshing — taking you to sign in…",
+    "slow": "This is taking longer than usual. Please wait — refreshing or signing in again won't make it faster.",
     "errorTitle": "Couldn't reach the service",
     "errorDescription": "We couldn't check your account status right now. Your sign-in is fine — try again in a moment.",
     "retry": "Retry"

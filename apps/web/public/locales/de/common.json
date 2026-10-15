@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Dein Konto wird geladen…",
+    "reauthenticating": "Deine Anmeldung muss erneuert werden – du wirst zur Anmeldung weitergeleitet…",
+    "slow": "Das dauert länger als üblich. Bitte warte – Neuladen oder erneutes Anmelden beschleunigt es nicht.",
     "errorTitle": "Dienst nicht erreichbar",
     "errorDescription": "Dein Kontostatus konnte gerade nicht geprüft werden. Deine Anmeldung ist in Ordnung – versuche es gleich noch einmal.",
     "retry": "Erneut versuchen"
