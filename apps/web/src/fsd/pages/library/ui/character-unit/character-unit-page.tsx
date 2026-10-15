@@ -8,7 +8,11 @@ import {
   getEquipment,
   getUnlockShardCostsMap,
 } from "@workspace/game-catalog/queries"
-import { progressionRarity, type UnitId } from "@workspace/game-domain"
+import {
+  maxAbilityLevel,
+  progressionRarity,
+  type UnitId,
+} from "@workspace/game-domain"
 import {
   getInventoryShard,
   getPlayerCharacter,
@@ -53,7 +57,6 @@ import {
 
 const COLLECTION_PATH = "/library/characters"
 const TABS = ["details", "rankup"] as const
-const ABILITY_MAX_LEVEL = 60
 
 // Distinguishes "still reading" from a resolved `undefined` (no record), as Dexie's useLiveQuery
 // returns its default until the first resolution.
@@ -145,10 +148,11 @@ function CharacterUnit({
 
   const player =
     playerCharacter === LOADING ? undefined : (playerCharacter ?? undefined)
-  const ownership = unitOwnership(
-    roster !== LOADING && roster !== undefined,
-    player
-  )
+  // Until both reads resolve, a synced player would otherwise see the "no roster" banner first.
+  const ownership =
+    isAuthenticated && (roster === LOADING || playerCharacter === LOADING)
+      ? "loading"
+      : unitOwnership(roster !== LOADING && roster !== undefined, player)
   const baseValues = player ? playerValues(player) : startingValues(character)
   const [mode, setMode] = useState<ValuesMode>("base")
   const [custom, setCustom] = useState<ShownValues | undefined>()
@@ -185,10 +189,17 @@ function CharacterUnit({
   const neighbours = unitNeighbours(origin.ids, unitId)
   const nameOf = (id: string) =>
     listItems.find((item) => item.id === id)?.name ?? id
+  // Only the tab carries over: the calculator's range belongs to the unit it was set for.
+  const tabParam = new URLSearchParams(location.search).get("tab")
   const navTarget = (id: string | undefined) =>
     id
       ? {
-          to: { pathname: `${COLLECTION_PATH}/${id}`, search: location.search },
+          to: {
+            pathname: `${COLLECTION_PATH}/${id}`,
+            search: tabParam
+              ? `?${new URLSearchParams({ tab: tabParam })}`
+              : "",
+          },
           name: nameOf(id),
           state: unitOriginState(origin),
         }
@@ -235,7 +246,7 @@ function CharacterUnit({
         factionId={character.faction}
         level={levelOf(id)}
         onLevelChange={setLevel(id)}
-        maxLevel={ABILITY_MAX_LEVEL}
+        maxLevel={maxAbilityLevel}
         playerLevel={levels.get(id)}
         data-testid={`unit-ability-${kind}`}
       />

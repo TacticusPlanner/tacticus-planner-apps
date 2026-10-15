@@ -31,6 +31,7 @@ const env = vi.hoisted(() => ({
   isMobile: false,
   authenticated: false,
   roster: undefined as unknown[] | undefined,
+  rosterPending: false,
   shards: undefined as { amount: number } | undefined,
 }))
 
@@ -218,7 +219,10 @@ vi.mock("@workspace/game-catalog", async (importOriginal) => ({
   getGameCatalogMetadata: () => Promise.resolve(new Map([["characters", {}]])),
 }))
 vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () => Promise.resolve(env.roster),
+  getPlayerCharacters: () =>
+    env.rosterPending
+      ? new Promise<never>(() => {})
+      : Promise.resolve(env.roster),
   getPlayerCharacter: (id: string) =>
     Promise.resolve(
       env.roster?.find((unit) => (unit as { unitId: string }).unitId === id)
@@ -303,6 +307,7 @@ describe("CharacterUnitPage", () => {
     env.isMobile = false
     env.authenticated = false
     env.roster = undefined
+    env.rosterPending = false
     env.shards = undefined
   })
 
@@ -409,6 +414,19 @@ describe("CharacterUnitPage", () => {
     expect(screen.getByTestId("unit-sign-in-banner")).toHaveTextContent(
       "Sync with Tacticus"
     )
+  })
+
+  it("holds the banner and state lines while a signed-in player's roster is still read", async () => {
+    env.authenticated = true
+    env.roster = [ownedTigurius]
+    env.rosterPending = true
+    await renderUnit("/library/characters/ultraTigurius")
+    expect(screen.getByTestId("unit-header")).toBeInTheDocument()
+    expect(screen.queryByTestId("unit-sign-in-banner")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("unit-showing-starting")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("unit-not-unlocked")).not.toBeInTheDocument()
   })
 
   it("shows the missing-text state for both abilities of a character without rules text", async () => {
@@ -626,6 +644,18 @@ describe("CharacterUnitPage", () => {
       "href",
       "/library/characters"
     )
+  })
+
+  it("drops the calculator's range on prev/next and keeps only the tab", async () => {
+    await renderUnit(
+      "/library/characters/ultraTigurius?tab=rankup&rankStart=Gold1&rankEnd=Diamond3"
+    )
+    expect(
+      screen.getByRole("link", { name: "Next unit: Lhykhis" })
+    ).toHaveAttribute("href", "/library/characters/eldarLhykhis?tab=rankup")
+    expect(
+      screen.getByRole("link", { name: "Previous unit: Calgar" })
+    ).toHaveAttribute("href", "/library/characters/ultraCalgar?tab=rankup")
   })
 
   it.each([

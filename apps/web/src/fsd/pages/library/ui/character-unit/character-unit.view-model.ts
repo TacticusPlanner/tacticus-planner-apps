@@ -22,8 +22,9 @@ export type ShownValues = { progression: Progression; rank: Rank }
 /**
  * Which header state applies: the player owns the unit (a), is signed in and synced without it
  * (b), or has no roster to compare with — signed out, or signed in before characters synced (c).
+ * `loading` holds every state's line and banner while a signed-in player's data is still read.
  */
-export type UnitOwnership = "owned" | "notOwned" | "noRoster"
+export type UnitOwnership = "owned" | "notOwned" | "noRoster" | "loading"
 
 export function unitOwnership(
   rosterSynced: boolean,
