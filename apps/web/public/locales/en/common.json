@@ -679,7 +679,9 @@
       "selectAll": "Select all goals",
       "selectRow": "Select {{entity}}",
       "selectMode": "Select goals",
-      "selectDone": "Done"
+      "selectDone": "Done",
+      "removeFromProject": "Remove from project",
+      "removeFromProjectCount": "Remove from project ({{count}})"
     },
     "delete": {
       "title_one": "Delete this goal?",
@@ -688,7 +690,9 @@
       "description_other": "This permanently deletes these {{count}} goals from your account, including every project they belong to. This can't be undone.",
       "confirm_one": "Delete goal",
       "confirm_other": "Delete {{count}} goals",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "projectAlternative_one": "To take it out of {{project}} only, cancel and use “Remove from this project” instead.",
+      "projectAlternative_other": "To take them out of {{project}} only, cancel and use “Remove from project” instead."
     },
     "project": {
       "noProjectTitle": "No projects yet",
@@ -767,7 +771,13 @@
       "assemblyLastMembershipTitle": "Nothing was saved: these goals would be left in no project",
       "assemblyLastMembership": "This is the goal's only project. Add it to another project first (the Default project is always available), then remove it here.",
       "assemblySlotConflictTitle": "Nothing was saved: these goals compete for the same slot",
-      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again."
+      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again.",
+      "removeFromProject": "Remove from this project",
+      "moveToProject": "Move to project",
+      "moveToProjectTitle": "Move to project",
+      "moveToProjectDescription": "This is the goal's only project. Choose a project to move it into, or create a new one.",
+      "moveSelectionDescription_one": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move it into, or create a new one. The other selected goals are just removed from {{project}}.",
+      "moveSelectionDescription_other": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move them into, or create a new one. The other selected goals are just removed from {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
@@ -778,7 +788,15 @@
       "projectMembershipSaved": "{{project}} updated: {{added}} added, {{removed}} removed.",
       "goalsAddedToProject_one": "Added {{count}} goal to {{project}}.",
       "goalsAddedToProject_other": "Added {{count}} goals to {{project}}.",
-      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed."
+      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed.",
+      "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
+      "goalRelocated": "{{goal}} moved to {{project}}.",
+      "goalsRemovedFromProject_one": "Removed {{count}} goal from {{project}}.",
+      "goalsRemovedFromProject_other": "Removed {{count}} goals from {{project}}.",
+      "goalsRemovedAndMoved_one": "Removed {{count}} goal from {{project}}; {{moved}} moved to {{destination}}.",
+      "goalsRemovedAndMoved_other": "Removed {{count}} goals from {{project}}; {{moved}} moved to {{destination}}.",
+      "movedButNotRemoved_one": "Added {{count}} goal to {{destination}}, but couldn't remove it from {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Added {{count}} goals to {{destination}}, but couldn't remove them from {{project}}: {{error}}"
     },
     "create": {
       "title": "Create a goal",

@@ -679,7 +679,9 @@
       "selectAll": "Seleccionar todos los objetivos",
       "selectRow": "Seleccionar {{entity}}",
       "selectMode": "Seleccionar objetivos",
-      "selectDone": "Listo"
+      "selectDone": "Listo",
+      "removeFromProject": "Quitar del proyecto",
+      "removeFromProjectCount": "Quitar del proyecto ({{count}})"
     },
     "delete": {
       "title_one": "¿Eliminar este objetivo?",
@@ -688,7 +690,9 @@
       "description_other": "Esto elimina de forma permanente estos {{count}} objetivos de tu cuenta, incluidos todos los proyectos a los que pertenecen. Esta acción no se puede deshacer.",
       "confirm_one": "Eliminar objetivo",
       "confirm_other": "Eliminar {{count}} objetivos",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "projectAlternative_one": "Para sacarlo solo de {{project}}, cancela y usa «Quitar de este proyecto».",
+      "projectAlternative_other": "Para sacarlos solo de {{project}}, cancela y usa «Quitar del proyecto»."
     },
     "project": {
       "noProjectTitle": "Aún no hay proyectos",
@@ -767,7 +771,13 @@
       "assemblyLastMembershipTitle": "No se guardó nada: estos objetivos se quedarían sin proyecto",
       "assemblyLastMembership": "Este es el único proyecto del objetivo. Añádelo antes a otro proyecto (el proyecto predeterminado siempre está disponible) y luego quítalo aquí.",
       "assemblySlotConflictTitle": "No se guardó nada: estos objetivos compiten por el mismo hueco",
-      "assemblySlotConflict": "{{project}} solo puede contener un objetivo activo o pausado para este hueco. Conserva solo uno de los objetivos en conflicto y guarda de nuevo."
+      "assemblySlotConflict": "{{project}} solo puede contener un objetivo activo o pausado para este hueco. Conserva solo uno de los objetivos en conflicto y guarda de nuevo.",
+      "removeFromProject": "Quitar de este proyecto",
+      "moveToProject": "Mover a proyecto",
+      "moveToProjectTitle": "Mover a proyecto",
+      "moveToProjectDescription": "Este es el único proyecto del objetivo. Elige un proyecto al que moverlo o crea uno nuevo.",
+      "moveSelectionDescription_one": "{{project}} es el único proyecto de {{count}} de los objetivos seleccionados. Elige un proyecto al que moverlo o crea uno nuevo. Los demás objetivos seleccionados solo se quitan de {{project}}.",
+      "moveSelectionDescription_other": "{{project}} es el único proyecto de {{count}} de los objetivos seleccionados. Elige un proyecto al que moverlos o crea uno nuevo. Los demás objetivos seleccionados solo se quitan de {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "Se actualizaron {{succeeded}} de {{total}} objetivos.",
@@ -778,7 +788,15 @@
       "projectMembershipSaved": "{{project}} actualizado: {{added}} añadidos, {{removed}} quitados.",
       "goalsAddedToProject_one": "{{count}} objetivo añadido a {{project}}.",
       "goalsAddedToProject_other": "{{count}} objetivos añadidos a {{project}}.",
-      "bulkPartial": "Solo se procesaron {{succeeded}} de {{total}} objetivos."
+      "bulkPartial": "Solo se procesaron {{succeeded}} de {{total}} objetivos.",
+      "goalRemovedFromProject": "{{goal}} quitado de {{project}}.",
+      "goalRelocated": "{{goal}} movido a {{project}}.",
+      "goalsRemovedFromProject_one": "Se quitó {{count}} objetivo de {{project}}.",
+      "goalsRemovedFromProject_other": "Se quitaron {{count}} objetivos de {{project}}.",
+      "goalsRemovedAndMoved_one": "Se quitó {{count}} objetivo de {{project}}; {{moved}} movido a {{destination}}.",
+      "goalsRemovedAndMoved_other": "Se quitaron {{count}} objetivos de {{project}}; {{moved}} movidos a {{destination}}.",
+      "movedButNotRemoved_one": "Se añadió {{count}} objetivo a {{destination}}, pero no se pudo quitar de {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Se añadieron {{count}} objetivos a {{destination}}, pero no se pudieron quitar de {{project}}: {{error}}"
     },
     "create": {
       "title": "Crear un objetivo",
