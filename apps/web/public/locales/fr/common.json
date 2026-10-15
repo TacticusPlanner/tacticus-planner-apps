@@ -398,7 +398,8 @@
       "title": "Raids quotidiens",
       "empty": "Rien à raider aujourd'hui.",
       "error": "Impossible de charger les raids du jour.",
-      "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids."
+      "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids.",
+      "limitReached": "Limite d'énergie quotidienne atteinte — raids bonus :"
     },
     "events": {
       "title": "Événements",

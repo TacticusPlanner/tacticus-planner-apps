@@ -398,7 +398,8 @@
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
       "error": "Couldn't load today's raids.",
-      "noGoals": "No active goals yet. Add goals to plan your raids."
+      "noGoals": "No active goals yet. Add goals to plan your raids.",
+      "limitReached": "Daily energy limit reached — bonus raids:"
     },
     "events": {
       "title": "Events",
