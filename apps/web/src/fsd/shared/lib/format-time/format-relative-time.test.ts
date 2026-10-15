@@ -64,4 +64,9 @@ describe("formatRelativeTime", () => {
   it("treats 59 seconds as still 'now'", () => {
     expect(formatRelativeTime(NOW - 59_000, "en")).toBe("now")
   })
+
+  it("measures from an explicit `nowMs` instead of the wall clock when given one", () => {
+    const tickNow = NOW - 2 * 3_600_000
+    expect(formatRelativeTime(NOW, "en", tickNow)).toBe("in 2 hours")
+  })
 })

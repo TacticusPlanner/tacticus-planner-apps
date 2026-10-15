@@ -1,7 +1,8 @@
 import { getLegendaryEvents } from "@workspace/game-catalog/queries"
 
+import { useMinuteNow } from "@/shared/lib"
+
 import type { LegendaryEvent } from "./types"
-import { useMinuteNow } from "./use-minute-now"
 import { useReadState, type ReadState } from "./use-read-state"
 
 export type LegendaryEventsState = ReadState<LegendaryEvent[]> & {

@@ -63,8 +63,8 @@ export function HsePage() {
           </div>
         ) : null}
       </div>
-      {target && !target.live ? (
-        <EventPreviewBanner entry={target.entry} />
+      {target && !target.live && state.status === "ready" ? (
+        <EventPreviewBanner entry={target.entry} nowMs={state.nowMs} />
       ) : null}
       {ruleEventId ? (
         <div

@@ -10,18 +10,20 @@ const UNITS: { unit: Intl.RelativeTimeFormatUnit; seconds: number }[] = [
 /**
  * Formats an instant (epoch milliseconds) as a locale-aware relative string ("3 hours ago", or "in 3
  * hours" for a future instant). Returns null for a null or invalid input so callers can provide their
- * own fallback copy.
+ * own fallback copy. Pass `nowMs` from a ticking clock (`useMinuteNow`) so the text stays current
+ * while a page stays open; it defaults to `Date.now()`.
  */
 export function formatRelativeTime(
   epochMs: number | null,
-  locale: string
+  locale: string,
+  nowMs: number = Date.now()
 ): string | null {
   if (epochMs === null || Number.isNaN(epochMs)) {
     return null
   }
 
   const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" })
-  const diffSeconds = Math.round((Date.now() - epochMs) / 1000)
+  const diffSeconds = Math.round((nowMs - epochMs) / 1000)
   const absDiffSeconds = Math.abs(diffSeconds)
 
   if (absDiffSeconds < 60) {

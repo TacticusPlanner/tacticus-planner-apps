@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
@@ -47,6 +48,9 @@ function runSharedSync(
   return promise
 }
 
+/** How old the last sync may be before a tab coming back into view re-checks the catalog. */
+const CATALOG_RESYNC_AFTER_MS = 60 * 60 * 1000
+
 export type GameCatalogStatus = "idle" | "syncing" | "ready" | "stale" | "error"
 
 export type GameCatalogContextValue = {
@@ -77,6 +81,9 @@ export function GameCatalogProvider({
   const [firstTime, setFirstTime] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
+  // When the last sync settled with a usable catalog (ready or stale); null until then, so a
+  // background re-check never races the initial sync or a failed one the init gate is showing.
+  const lastSyncedAtRef = useRef<number | null>(null)
 
   useEffect(() => {
     // Each run owns its own `active` flag; a superseded run (StrictMode remount, baseUrl/attempt change)
@@ -101,6 +108,7 @@ export function GameCatalogProvider({
           return
         }
 
+        lastSyncedAtRef.current = Date.now()
         setGameVersion(result.gameVersion || null)
         setFirstTime(result.firstTime)
         setStatus(result.status)
@@ -111,6 +119,9 @@ export function GameCatalogProvider({
           return
         }
 
+        if (canUseStaleCache) {
+          lastSyncedAtRef.current = Date.now()
+        }
         setError(caught instanceof Error ? caught.message : String(caught))
         setStatus(canUseStaleCache ? "stale" : "error")
       }
@@ -122,6 +133,46 @@ export function GameCatalogProvider({
       active = false
     }
   }, [baseUrl, attempt])
+
+  // A tab left open for hours would otherwise never see corrected catalog data (e.g. a fixed event
+  // schedule). When it becomes visible again and the last sync is older than the threshold, re-check
+  // in the background: status and progress are left alone so the init gate never re-blocks the app,
+  // and a failed re-check keeps the cached catalog. Downloaded datasets reach pages through Dexie.
+  useEffect(() => {
+    let active = true
+
+    function handleVisibilityChange() {
+      const lastSyncedAt = lastSyncedAtRef.current
+      if (
+        document.visibilityState !== "visible" ||
+        lastSyncedAt === null ||
+        Date.now() - lastSyncedAt < CATALOG_RESYNC_AFTER_MS
+      ) {
+        return
+      }
+      // Claim the slot now so rapid tab switches don't stack re-checks.
+      lastSyncedAtRef.current = Date.now()
+      runSharedSync(baseUrl, () => {}).then(
+        (result) => {
+          if (!active) {
+            return
+          }
+          setGameVersion(result.gameVersion || null)
+          setError(null)
+          setStatus(result.status)
+        },
+        (caught: unknown) => {
+          console.warn("Background game catalog re-check failed:", caught)
+        }
+      )
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      active = false
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [baseUrl])
 
   const retry = useCallback(() => {
     setAttempt((value) => value + 1)

@@ -3,9 +3,10 @@ import {
   hasLegendaryEventsSynced,
 } from "@workspace/game-catalog/queries"
 
+import { useMinuteNow } from "@/shared/lib"
+
 import { deriveLegendaryEventLifecycle } from "../lib/lifecycle"
 import type { LegendaryEvent, LegendaryEventLifecycle } from "./types"
-import { useMinuteNow } from "./use-minute-now"
 import { useReadState, type ReadState } from "./use-read-state"
 
 export type LegendaryEventState = ReadState<LegendaryEvent | undefined> & {

@@ -45,7 +45,8 @@ export function EventStatusLine({
   if (state.active) {
     const when = formatRelativeTime(
       Date.parse(state.active.endUtc),
-      i18n.language
+      i18n.language,
+      state.nowMs
     )
     return (
       <StatusFrame testId="hse-status-active">
@@ -76,7 +77,7 @@ export function EventStatusLine({
         </p>
         <p className="text-sm text-muted-foreground">
           {t("dailies:hse.status.startsIn", {
-            when: formatRelativeTime(startMs, i18n.language),
+            when: formatRelativeTime(startMs, i18n.language, state.nowMs),
             date: new Date(startMs).toLocaleString(i18n.language, {
               dateStyle: "medium",
               timeStyle: "short",

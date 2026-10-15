@@ -268,6 +268,28 @@ describe("HSE tab states", () => {
     ).toBeInTheDocument()
   })
 
+  it("words the status and preview countdowns from the hook's ticking instant, not the render-time clock", () => {
+    const tickNow = Date.now() - 25 * HOUR
+    mocks.event = {
+      status: "ready",
+      active: null,
+      // Five hours from the wall clock, but 30 hours from the hook's instant: only the latter
+      // reads "tomorrow".
+      next: entryOf(
+        "hse-warp-surge",
+        Date.now() + 5 * HOUR,
+        Date.now() + 80 * HOUR
+      ),
+      nowMs: tickNow,
+    }
+    renderHse()
+
+    expect(screen.getByTestId("hse-status-next")).toHaveTextContent("tomorrow")
+    expect(screen.getByTestId("hse-preview-banner")).toHaveTextContent(
+      "tomorrow"
+    )
+  })
+
   it("previews the next event: countdown status, a not-live banner, the lists and every control", () => {
     mocks.event = {
       status: "ready",
