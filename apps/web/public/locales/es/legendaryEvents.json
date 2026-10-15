@@ -248,7 +248,7 @@
         },
         "teams": {
           "title": "Equipos",
-          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde esperas que llegue. Usa Añadir equipo para empezar uno."
+          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde debería llegar: una estimación a partir de tu plantilla sincronizada hasta que fijes tú una profundidad. Usa Añadir equipo para empezar uno."
         },
         "progressGrid": {
           "title": "Progreso sincronizado",
@@ -260,5 +260,24 @@
         }
       }
     }
+  },
+  "estimates": {
+    "estimated": "estimado",
+    "uncalibrated": "Sin calibrar: la proporción de poder de la estimación aún no se ha ajustado con resultados reales, así que tómala como una guía aproximada.",
+    "howItWorks": "Estimado a partir del poder de combate de tu plantilla sincronizada frente al poder de cada batalla. No se tienen en cuenta el equipo, las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
+    "marginAbove": "{{percent}} % por encima de la batalla {{battle}}",
+    "shortfallNext": "{{percent}} % por debajo de la batalla {{battle}}",
+    "notEnough": "Aún no basta para la batalla 1",
+    "useEstimate": "Usar estimación",
+    "estimateHint": "estimación ~{{depth}}",
+    "lockedNotCounted_one": "{{count}} miembro bloqueado no contado",
+    "lockedNotCounted_other": "{{count}} miembros bloqueados no contados",
+    "clears": "Batallas",
+    "clearsLabel": "Batallas estimadas",
+    "clearsValue": "Batallas: {{value}}",
+    "clearsEstimate": "~{{depth}}",
+    "clearsNone": "—",
+    "clearsPending": "–",
+    "clearsLoading": "Estimando batallas…"
   }
 }

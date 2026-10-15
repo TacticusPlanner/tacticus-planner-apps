@@ -16,6 +16,7 @@ import { LeaderboardList } from "./leaderboard-list"
 import { LeaderboardEmptyBody } from "./leaderboard-parts"
 import { LeaderboardTable } from "./leaderboard-table"
 import {
+  laneClearsOf,
   laneLeaderboardBody,
   leaderboardFigure,
   useLeaderboardUnitName,
@@ -24,7 +25,8 @@ import {
 
 /**
  * The Eligibility leaderboard of one lane tab, after the Synced progress grid: every unit the lane
- * allows with ownership, objective indicators, the shown points figure and the objectives count.
+ * allows with ownership, objective indicators, the shown points figure, the objectives count and
+ * the unit's estimated clears (hidden when clear estimates are unavailable).
  * `layout` picks the desktop table or the mobile row cards; the filters and toggles come from the
  * page orchestrator and are shared with the Overview leaderboard.
  */
@@ -50,6 +52,7 @@ export function LeaderboardSection({
   const objectives = groups[0]?.chips ?? []
   const figure = leaderboardFigure(leaderboard)
   const clearFilter = () => leaderboard.onSelectedObjectivesChange(new Set())
+  const clearsOf = laneClearsOf(leaderboard.clears, laneId)
 
   let body: ReactNode
   if (leaderboard.kind === "loading") {
@@ -80,6 +83,7 @@ export function LeaderboardSection({
       result.kind === "rows" ? (
         layout === "table" ? (
           <LeaderboardTable
+            clearsOf={clearsOf}
             figure={figure}
             nameOf={nameOf}
             objectives={objectives}
@@ -87,6 +91,7 @@ export function LeaderboardSection({
           />
         ) : (
           <LeaderboardList
+            clearsOf={clearsOf}
             figure={figure}
             nameOf={nameOf}
             objectives={objectives}

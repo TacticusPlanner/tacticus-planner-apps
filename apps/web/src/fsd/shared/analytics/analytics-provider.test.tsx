@@ -185,6 +185,14 @@ describe("useAnalyticsActions", () => {
       eventId: "astarLysander",
       laneId: "beta",
       depth: 4,
+      estimate: 6,
+      fromEstimate: true,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_depth_estimate_restored",
+      eventId: "astarLysander",
+      laneId: "beta",
+      estimate: 6,
     })
 
     expect(capture).toHaveBeenCalledWith("legendary_event_team_created", {
@@ -197,6 +205,12 @@ describe("useAnalyticsActions", () => {
       event_id: "astarLysander",
       lane_id: "beta",
       depth: 4,
+      estimate: 6,
+      from_estimate: true,
     })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_depth_estimate_restored",
+      { event_id: "astarLysander", lane_id: "beta", estimate: 6 }
+    )
   })
 })

@@ -17,7 +17,11 @@ import {
   useObjectiveLabel,
   type LegendaryEventLane,
 } from "@/entities/legendary-event"
-import { ClearDepthStepper } from "@/features/legendary-event-teams"
+import {
+  ClearDepthField,
+  editStartsFromEstimate,
+  type DepthEstimateContext,
+} from "@/features/legendary-event-teams"
 import { useDebouncedCommit } from "@/shared/lib"
 import { EntityIcon, type SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
@@ -29,8 +33,11 @@ const FULL_TEAM = 5
 export interface TeamCardActions {
   onEdit: () => void
   onDelete: () => void
-  /** Called once a run of stepper edits settles, with the final depth. */
-  onDepthChange: (depth: number | null) => void
+  /** Called once a run of stepper edits settles, with the final manual depth and the estimate
+   *  shown when the run started. */
+  onDepthChange: (depth: number | null, shown: DepthEstimateContext) => void
+  /** Use estimate: the manual depth is cleared so the estimate (`estimate`) shows again. */
+  onUseEstimate: (estimate: number) => void
   /** Mobile only; null hides the item (first / last card). */
   onMoveUp?: (() => void) | null
   onMoveDown?: (() => void) | null
@@ -39,9 +46,9 @@ export interface TeamCardActions {
 /**
  * One team on a lane (design D4): name with the "N/5" badge for a partial team, member portraits
  * in position order and the reserve, the covered objectives as chips (muted when the members no
- * longer derive one), points per battle, the current run's depth stepper ("Set depth" when none)
- * and the actions menu. On desktop the grip is the drag handle. Stepper clicks show at once and
- * are sent as one write once they settle.
+ * longer derive one), points per battle, the current run's depth stepper with its estimate
+ * (manual depth wins; "Set depth" when there is neither) and the actions menu. On desktop the grip
+ * is the drag handle. Stepper clicks show at once and are sent as one write once they settle.
  */
 export function TeamCard({
   card,
@@ -62,10 +69,25 @@ export function TeamCard({
   const objectiveOf = (index: number) =>
     lane.unitsRestrictions.find((objective) => objective.index === index)
   const style: CSSProperties | undefined = sortable?.style
+  // The settled write: clearing the manual depth while an estimate exists is Use estimate.
+  const commitDepth = (next: number | null) => {
+    if (next === null && card.estimate) {
+      actions.onUseEstimate(card.estimate.depth)
+      return
+    }
+    actions.onDepthChange(next, {
+      estimate: card.estimate?.depth ?? null,
+      fromEstimate: editStartsFromEstimate(
+        card.expectedBattleClears,
+        card.estimate
+      ),
+    })
+  }
   const [depth, setDepth] = useDebouncedCommit(
     card.expectedBattleClears,
-    actions.onDepthChange
+    commitDepth
   )
+  const needsDepth = depth === null && !card.estimate
 
   return (
     <li
@@ -213,21 +235,21 @@ export function TeamCard({
             points: number.format(card.pointsPerBattle),
           })}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-start justify-end gap-2">
           <span
             className={cn(
-              "text-xs",
-              depth === null
-                ? "font-medium text-primary"
-                : "text-muted-foreground"
+              "pt-1.5 text-xs",
+              needsDepth ? "font-medium text-primary" : "text-muted-foreground"
             )}
             data-testid="team-card-depth-label"
           >
-            {depth === null ? t("teams.depth.set") : t("teams.depth.label")}
+            {needsDepth ? t("teams.depth.set") : t("teams.depth.label")}
           </span>
-          <ClearDepthStepper
+          <ClearDepthField
             battleCount={lane.battleIds.length}
             data-testid="team-card-depth"
+            estimate={card.estimate}
+            lockedMemberCount={card.lockedMemberCount}
             onChange={setDepth}
             value={depth}
           />
