@@ -317,7 +317,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(screen.queryByTestId("legendary-event-lane-summary")).toBeNull()
   })
 
-  // Three full page renders; under coverage instrumentation this exceeds the 5s default.
+  // Three full page renders, each with the Stage 6 goal reads; under coverage instrumentation in CI
+  // this exceeds the suite's 15s.
   it("resets the tab to Overview on another event", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-page")
@@ -334,7 +335,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     fireEvent.click(screen.getByTestId("open-lysander"))
     await screen.findByText("Lysander", { selector: "h1" })
     expect(selectedTab()).toHaveTextContent("Overview")
-  }, 10_000)
+  }, 30_000)
 
   it("jumps from a lane summary row to that lane's progress grid heading", async () => {
     // The setup file stubs scrollIntoView on HTMLElement.prototype, which shadows Element's.
@@ -398,6 +399,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(lockedRows().length).toBeGreaterThan(0)
   })
 
+  // Two full page renders with goal reads; slow under coverage instrumentation in CI.
   it("previews goal targets on the leaderboards, shared across tabs and reset on leaving", async () => {
     giveCyrusUnlockGoal()
     renderPage("/legendary-events/astarLysander")
@@ -428,7 +430,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       "aria-checked",
       "false"
     )
-  })
+  }, 30_000)
 
   it("launches goal creation from a leaderboard row with the unit prefilled", async () => {
     renderPage("/legendary-events/astarLysander")
