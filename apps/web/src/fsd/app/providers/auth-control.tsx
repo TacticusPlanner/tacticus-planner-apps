@@ -109,10 +109,14 @@ export function AuthControl() {
     },
     [t]
   )
-  useRequestApiAccessOnce(
+  const reauthenticating = useRequestApiAccessOnce(
     accountState.status === "error" ? accountState.error : undefined,
     onApiAccessError
   )
+  // Until /me answers (or while the re-authentication redirect it triggered is starting) the
+  // planner identity is unknown: show a loading identity, not the neutral label plus the provider
+  // email, which reads like a different (wrong) account during a slow sign-in.
+  const identityPending = accountState.status === "loading" || reauthenticating
 
   if (!isAuthenticated || !account) {
     return (
@@ -156,6 +160,7 @@ export function AuthControl() {
   const accountCard = (tourRow?: ReactNode) => (
     <AccountCard
       accountEmail={accountEmail}
+      identityPending={identityPending}
       accountName={accountName}
       applicationAccountId={applicationAccountId}
       canEditName={currentUser !== null}
@@ -181,6 +186,7 @@ export function AuthControl() {
           <DrawerTrigger asChild>
             <button
               type="button"
+              aria-busy={identityPending || undefined}
               aria-label={t("auth.userMenu")}
               className="rounded-full outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
               data-testid="auth-account-trigger"
@@ -189,6 +195,7 @@ export function AuthControl() {
                 applicationAccountId={applicationAccountId}
                 className="size-10"
                 displayName={accountName}
+                pending={identityPending}
               />
             </button>
           </DrawerTrigger>
@@ -196,9 +203,11 @@ export function AuthControl() {
             className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"
             data-testid="auth-account-drawer"
           >
-            <DrawerTitle className="sr-only">{accountName}</DrawerTitle>
+            <DrawerTitle className="sr-only">
+              {identityPending ? t("auth.accountLoading") : accountName}
+            </DrawerTitle>
             <DrawerDescription className="sr-only">
-              {accountEmail}
+              {identityPending ? t("auth.accountLoading") : accountEmail}
             </DrawerDescription>
             <div className="flex-1 overflow-y-auto px-4 py-4">
               {accountCard(
@@ -229,6 +238,7 @@ export function AuthControl() {
         <PopoverTrigger asChild>
           <button
             type="button"
+            aria-busy={identityPending || undefined}
             aria-label={t("auth.userMenu")}
             className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
             data-testid="auth-account-trigger"
@@ -237,19 +247,13 @@ export function AuthControl() {
               applicationAccountId={applicationAccountId}
               className="size-6 shrink-0 text-xs"
               displayName={accountName}
+              pending={identityPending}
             />
             <div
               className="hidden min-w-0 text-left leading-tight lg:block"
               data-testid="auth-account-panel"
             >
-              <div
-                className="truncate"
-                data-testid="auth-account-name"
-                title={accountName}
-              >
-                {accountName}
-              </div>
-              {accountState.status === "loading" ? (
+              {identityPending ? (
                 <div
                   className="flex items-center gap-1 text-xs"
                   data-testid="auth-account-loading"
@@ -260,7 +264,15 @@ export function AuthControl() {
                   />
                   {t("auth.accountLoading")}
                 </div>
-              ) : null}
+              ) : (
+                <div
+                  className="truncate"
+                  data-testid="auth-account-name"
+                  title={accountName}
+                >
+                  {accountName}
+                </div>
+              )}
             </div>
           </button>
         </PopoverTrigger>
