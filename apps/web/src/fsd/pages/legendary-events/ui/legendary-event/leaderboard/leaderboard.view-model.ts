@@ -166,7 +166,7 @@ export type LeaderboardClears =
   { kind: "pending" } | { kind: "none" } | { kind: "estimate"; depth: number }
 
 /** The lane's Clears figure per unit, or `undefined` when the column is hidden (the
- *  clear-estimate dataset is absent or failed). */
+ *  clear estimates are hidden). */
 export function laneClearsOf(
   clears: ClearEstimatesViewModel,
   laneId: LegendaryEventLaneId

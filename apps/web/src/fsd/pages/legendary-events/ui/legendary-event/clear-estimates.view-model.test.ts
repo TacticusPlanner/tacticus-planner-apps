@@ -56,8 +56,7 @@ describe("buildClearEstimates", () => {
     expect(alpha.team(["ultraCalgar"])).toBeNull()
   })
 
-  it("is hidden when the dataset is absent or failed, or the battles failed", () => {
-    expect(build({ config: { status: "absent" } }).kind).toBe("hidden")
+  it("is hidden when the tier-list read or the battles failed", () => {
     expect(build({ config: { status: "failed", retry: () => {} } }).kind).toBe(
       "hidden"
     )

@@ -19,7 +19,6 @@ import type {
   GuildRaidMetaStorageModel,
   EventsCalendarStorageModel,
   LegendaryEventBattleStorageModel,
-  LegendaryEventClearEstimateStorageModel,
   HordeModeTiersStorageModel,
   LegendaryEventCommonStorageModel,
   LegendaryEventStorageModel,
@@ -315,13 +314,6 @@ export async function getLegendaryEventBattles(
 ): Promise<LegendaryEventBattleStorageModel[]> {
   const rows = await getDatasetRecords("lre-battles")
   return rows.filter((row) => row.lreId === lreId)
-}
-
-// The curated clear-estimate parameters — a single record — or `null` when the dataset is absent
-// (not served by the API, or not synced yet).
-export async function getLegendaryEventClearEstimate(): Promise<LegendaryEventClearEstimateStorageModel | null> {
-  const rows = await getDatasetRecords("legendary-event-clear-estimate")
-  return rows[0] ?? null
 }
 
 // The curated horde-mode tier list — a single record — or `null` when the dataset is absent (not

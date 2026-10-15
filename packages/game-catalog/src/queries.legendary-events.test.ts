@@ -9,7 +9,6 @@ import {
   getLegendaryEvent,
   getLegendaryEventBattles,
   getHordeModeTiers,
-  getLegendaryEventClearEstimate,
   getLegendaryEventCommon,
   getLegendaryEvents,
   hasLegendaryEventsSynced,
@@ -109,23 +108,6 @@ describe("Legendary Event queries", () => {
       "votanUthar-alpha-1",
       "votanUthar-beta-1",
     ])
-  })
-
-  it("returns the clear-estimate record, or null when the dataset is absent", async () => {
-    expect(await getLegendaryEventClearEstimate()).toBeNull()
-
-    const record = {
-      id: "legendary-event-clear-estimate",
-      powerRatio: 0.5,
-      calibration: { sampleCount: 0, calibratedOn: null },
-    }
-    await replaceGameCatalogDataset(
-      "legendary-event-clear-estimate",
-      [record],
-      metadata("legendary-event-clear-estimate")
-    )
-
-    expect(await getLegendaryEventClearEstimate()).toMatchObject(record)
   })
 
   it("returns the horde-mode tier list, or null when the dataset is absent", async () => {

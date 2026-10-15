@@ -70,23 +70,16 @@ const datasetData: Record<string, unknown> = {
     { id: "emperLucius-alpha-1", lreId: "emperLucius", track: "alpha" },
   ],
   "lre-common": [{ id: "lre-common", shardsPerChest: 1 }],
-  "legendary-event-clear-estimate": [
-    {
-      id: "legendary-event-clear-estimate",
-      powerRatio: 1,
-      calibration: { sampleCount: 0, calibratedOn: null },
-    },
-  ],
   "horde-mode-tiers": [
     {
       id: "horde-mode-tiers",
       tiers: [
-        { tier: "S", multiplier: 1.3 },
-        { tier: "A", multiplier: 1.2 },
-        { tier: "B", multiplier: 1.1 },
-        { tier: "C", multiplier: 0.9 },
+        { tier: "S", multiplier: 1.85 },
+        { tier: "A", multiplier: 1.55 },
+        { tier: "B", multiplier: 1.25 },
+        { tier: "C", multiplier: 1.05 },
       ],
-      characters: [{ unitId: "ultraCalgar", tier: "A" }],
+      characters: [{ unitId: "ultraCalgar", tier: "A", multiplier: 1.65 }],
     },
   ],
   shops: [
@@ -331,28 +324,20 @@ describe("syncGameCatalog", () => {
     expect(await hasCompleteGameCatalogCache()).toBe(true)
   })
 
-  it("syncs legendary-event-clear-estimate and horde-mode-tiers as their single records", async () => {
+  it("syncs horde-mode-tiers as its single record", async () => {
     await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
 
-    expect(await getDatasetRecords("legendary-event-clear-estimate")).toEqual([
-      expect.objectContaining({
-        id: "legendary-event-clear-estimate",
-        powerRatio: 1,
-      }),
-    ])
     expect(await getDatasetRecords("horde-mode-tiers")).toEqual([
       expect.objectContaining({ id: "horde-mode-tiers" }),
     ])
   })
 
-  it("is ready when the manifest does not list the optional estimate datasets", async () => {
+  it("is ready when the manifest does not list the optional horde-mode-tiers dataset", async () => {
     const manifest = createManifest()
     const withoutEstimate = {
       ...manifest,
       datasets: manifest.datasets.filter(
-        (dataset) =>
-          dataset.key !== "legendary-event-clear-estimate" &&
-          dataset.key !== "horde-mode-tiers"
+        (dataset) => dataset.key !== "horde-mode-tiers"
       ),
     }
 
@@ -361,11 +346,7 @@ describe("syncGameCatalog", () => {
     )
 
     expect(result.status).toBe("ready")
-    expect(result.downloaded).not.toContain("legendary-event-clear-estimate")
     expect(result.downloaded).not.toContain("horde-mode-tiers")
-    expect(await getDatasetRecords("legendary-event-clear-estimate")).toEqual(
-      []
-    )
     expect(await getDatasetRecords("horde-mode-tiers")).toEqual([])
     expect(await hasCompleteGameCatalogCache()).toBe(true)
   })
@@ -386,16 +367,14 @@ describe("syncGameCatalog", () => {
 
     expect(result.status).toBe("ready")
     expect(await getDatasetRecords("horde-mode-tiers")).toEqual([])
-    expect(
-      await getDatasetRecords("legendary-event-clear-estimate")
-    ).toHaveLength(1)
+    expect(await getDatasetRecords("lre-common")).toHaveLength(1)
     expect(await hasCompleteGameCatalogCache()).toBe(true)
   })
 
   it("refetches the manifest after an upgrade so a dataset the previous build skipped downloads", async () => {
     const manifest = createManifest()
     await seedSyncedDbBeforeStores(
-      ["legendary-event-clear-estimate", "horde-mode-tiers"],
+      ["horde-mode-tiers"],
       `"${manifest.sourceHash}"`
     )
 
@@ -403,15 +382,9 @@ describe("syncGameCatalog", () => {
     const result = await syncGameCatalog(client)
 
     expect(client.manifestRequests).toEqual([undefined])
-    expect(client.downloaded).toEqual([
-      "legendary-event-clear-estimate",
-      "horde-mode-tiers",
-    ])
+    expect(client.downloaded).toEqual(["horde-mode-tiers"])
     expect(result.status).toBe("ready")
     expect(result.firstTime).toBe(false)
-    expect(
-      await getDatasetRecords("legendary-event-clear-estimate")
-    ).toHaveLength(1)
     expect(await getDatasetRecords("horde-mode-tiers")).toHaveLength(1)
   })
 

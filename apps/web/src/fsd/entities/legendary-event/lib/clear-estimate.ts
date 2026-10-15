@@ -1,14 +1,22 @@
 import type { LegendaryEventRosterUnit } from "../model/types"
 import { unitCombatPower } from "./unit-combat-power"
 
-/** The curated `legendary-event-clear-estimate` and `horde-mode-tiers` records in the shape the
- *  calculation reads. */
+/**
+ * Effective power ≥ this × a battle's catalog power clears it. A web constant, not catalog data:
+ * re-derive it with `calibratePowerRatio` from observed clears and ship the change as a release.
+ */
+export const CLEAR_ESTIMATE_POWER_RATIO = 1
+
+/** False until `CLEAR_ESTIMATE_POWER_RATIO` is calibrated from observed clears ("uncalibrated"). */
+export const CLEAR_ESTIMATE_CALIBRATED = false
+
+/** The power ratio and the catalog `horde-mode-tiers` list in the shape the calculation reads. */
 export interface ClearEstimateConfig {
   /** A battle is cleared when effective power ≥ `powerRatio` × its catalog power. */
   powerRatio: number
-  /** False while the dataset's `calibration.sampleCount` is 0 ("uncalibrated"). */
+  /** False while the power ratio is uncalibrated. */
   calibrated: boolean
-  /** Each tiered character's horde-mode tier multiplier; an untiered character has 1.0. */
+  /** Each tiered character's horde-mode multiplier; an untiered character has 1.0. */
   hordeMultipliers: ReadonlyMap<string, number>
 }
 
@@ -30,33 +38,35 @@ export type ClearEstimateRoster = ReadonlyMap<string, LegendaryEventRosterUnit>
 /** The catalog horde-mode tier list, as the config reads it. */
 export interface HordeModeTierList {
   tiers: readonly { tier: string; multiplier: number }[]
-  characters: readonly { unitId: string; tier: string }[]
+  characters: readonly { unitId: string; tier: string; multiplier?: number }[]
 }
 
 /**
- * The config from the catalog `legendary-event-clear-estimate` record and the `horde-mode-tiers`
- * list (null when that dataset is absent: every character is then untiered).
+ * The config from the power-ratio constants and the catalog `horde-mode-tiers` list (null when that
+ * dataset is absent: every character is then untiered). A character's own `multiplier` overrides its
+ * tier's.
  */
 export function clearEstimateConfig(
-  estimate: { powerRatio: number; calibration: { sampleCount: number } },
   hordeModeTiers: HordeModeTierList | null
 ): ClearEstimateConfig {
   const multiplierByTier = new Map(
     (hordeModeTiers?.tiers ?? []).map((entry) => [entry.tier, entry.multiplier])
   )
   return {
-    powerRatio: estimate.powerRatio,
-    calibrated: estimate.calibration.sampleCount > 0,
+    powerRatio: CLEAR_ESTIMATE_POWER_RATIO,
+    calibrated: CLEAR_ESTIMATE_CALIBRATED,
     hordeMultipliers: new Map(
-      (hordeModeTiers?.characters ?? []).flatMap(({ unitId, tier }) => {
-        const multiplier = multiplierByTier.get(tier)
-        return multiplier === undefined ? [] : [[unitId, multiplier] as const]
-      })
+      (hordeModeTiers?.characters ?? []).flatMap(
+        ({ unitId, tier, multiplier }) => {
+          const effective = multiplier ?? multiplierByTier.get(tier)
+          return effective === undefined ? [] : [[unitId, effective] as const]
+        }
+      )
     ),
   }
 }
 
-/** A unit's horde-mode tier multiplier, 1.0 when it is untiered. */
+/** A unit's horde-mode multiplier, 1.0 when it is untiered. */
 export function unitHordeMultiplier(
   config: Pick<ClearEstimateConfig, "hordeMultipliers">,
   unitId: string
@@ -64,7 +74,7 @@ export function unitHordeMultiplier(
   return config.hordeMultipliers.get(unitId) ?? 1
 }
 
-/** Combat power × the unit's horde-mode tier multiplier; 0 when the roster does not hold it. */
+/** Combat power × the unit's horde-mode multiplier; 0 when the roster does not hold it. */
 export function unitEffectivePower(
   unitId: string,
   roster: ClearEstimateRoster,

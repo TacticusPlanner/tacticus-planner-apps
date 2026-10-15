@@ -301,23 +301,6 @@ describe("catalog schemas", () => {
     ).toBe(true)
   })
 
-  it("validates the legendary-event-clear-estimate record and rejects a non-positive ratio", () => {
-    const record = {
-      id: "legendary-event-clear-estimate",
-      powerRatio: 0.5,
-      calibration: { sampleCount: 12, calibratedOn: "2026-10-12" },
-    }
-    const schema = datasetPayloadSchemas["legendary-event-clear-estimate"]
-
-    expect(schema.safeParse([record]).success).toBe(true)
-    expect(
-      schema.safeParse([
-        { ...record, calibration: { sampleCount: 0, calibratedOn: null } },
-      ]).success
-    ).toBe(true)
-    expect(schema.safeParse([{ ...record, powerRatio: 0 }]).success).toBe(false)
-  })
-
   it("validates the horde-mode-tiers record and rejects a non-positive multiplier", () => {
     const record = {
       id: "horde-mode-tiers",

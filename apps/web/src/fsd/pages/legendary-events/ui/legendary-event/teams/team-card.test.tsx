@@ -175,7 +175,7 @@ describe("buildTeamCardViewModel", () => {
     expect(card.displayedDepth).toBe(6)
   })
 
-  it("has no estimate when the dataset is absent (no estimator)", () => {
+  it("has no estimate when estimates are unavailable (no estimator)", () => {
     const card = buildTeamCardViewModel(
       team(),
       teamLane,

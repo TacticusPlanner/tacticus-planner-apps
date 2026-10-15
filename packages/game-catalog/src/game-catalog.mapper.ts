@@ -79,7 +79,6 @@ export const datasetToStorageModels: Record<
   lres: asArray,
   "lre-battles": asArray,
   "lre-common": asArray,
-  "legendary-event-clear-estimate": asArray,
   "horde-mode-tiers": asArray,
   "event-definitions": asArray,
   "events-calendar": byCalendarDate,

@@ -34,6 +34,4 @@ export type GuildRaidMetaStorageModel = StorageModel<"guild-raid-meta">
 export type LegendaryEventStorageModel = StorageModel<"lres">
 export type LegendaryEventCommonStorageModel = StorageModel<"lre-common">
 export type LegendaryEventBattleStorageModel = StorageModel<"lre-battles">
-export type LegendaryEventClearEstimateStorageModel =
-  StorageModel<"legendary-event-clear-estimate">
 export type HordeModeTiersStorageModel = StorageModel<"horde-mode-tiers">

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  CLEAR_ESTIMATE_CALIBRATED,
+  CLEAR_ESTIMATE_POWER_RATIO,
   clearEstimateConfig,
   estimateClearDepth,
   laneBattlePowers,
@@ -126,33 +128,33 @@ describe("clear estimate (spec worked examples)", () => {
     ).toBeNull()
   })
 
-  it("reads the catalog records, uncalibrated while sampleCount is 0", () => {
-    const config = clearEstimateConfig(
-      { powerRatio: 1, calibration: { sampleCount: 0 } },
-      {
-        tiers: [
-          { tier: "S", multiplier: 1.3 },
-          { tier: "A", multiplier: 1.2 },
-        ],
-        characters: [
-          { unitId: "ultraTigurius", tier: "A" },
-          { unitId: "ultraCalgar", tier: "D" },
-        ],
-      }
-    )
-    expect(config.calibrated).toBe(false)
-    expect(config.hordeMultipliers.get("ultraTigurius")).toBe(1.2)
-    // A tier the list does not define leaves the character untiered.
+  it("reads the tier list, a character's own multiplier overriding its tier's", () => {
+    const config = clearEstimateConfig({
+      tiers: [
+        { tier: "S", multiplier: 1.85 },
+        { tier: "A", multiplier: 1.55 },
+      ],
+      characters: [
+        { unitId: "ultraTigurius", tier: "A" },
+        { unitId: "custoBladeChampion", tier: "S", multiplier: 2 },
+        { unitId: "ultraCalgar", tier: "D" },
+        { unitId: "bloodDante", tier: "D", multiplier: 1.4 },
+      ],
+    })
+    expect(config.powerRatio).toBe(CLEAR_ESTIMATE_POWER_RATIO)
+    expect(config.calibrated).toBe(CLEAR_ESTIMATE_CALIBRATED)
+    expect(unitHordeMultiplier(config, "ultraTigurius")).toBe(1.55)
+    expect(unitHordeMultiplier(config, "custoBladeChampion")).toBe(2)
+    // A tier the list does not define leaves the character untiered, unless it has its own value.
     expect(unitHordeMultiplier(config, "ultraCalgar")).toBe(1)
-    expect(estimateClearDepth(5000, [1000], config).calibrated).toBe(false)
+    expect(unitHordeMultiplier(config, "bloodDante")).toBe(1.4)
+    expect(estimateClearDepth(5000, [1000], config).calibrated).toBe(
+      CLEAR_ESTIMATE_CALIBRATED
+    )
   })
 
   it("treats every unit as untiered without a horde-mode tier list", () => {
-    const config = clearEstimateConfig(
-      { powerRatio: 1, calibration: { sampleCount: 3 } },
-      null
-    )
-    expect(config.calibrated).toBe(true)
+    const config = clearEstimateConfig(null)
     expect(config.hordeMultipliers.size).toBe(0)
   })
 

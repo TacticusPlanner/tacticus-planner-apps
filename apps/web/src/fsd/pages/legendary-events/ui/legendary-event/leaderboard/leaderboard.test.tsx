@@ -238,7 +238,7 @@ describe("LeaderboardSection clears", () => {
     }
   )
 
-  it("hides the Clears figure when the clear-estimate dataset is unavailable", () => {
+  it("hides the Clears figure when clear estimates are unavailable", () => {
     renderLeaderboard({ clears: { kind: "hidden" } })
     expect(screen.queryByTestId("leaderboard-clears-head")).toBeNull()
     expect(screen.queryAllByTestId("leaderboard-clears")).toHaveLength(0)

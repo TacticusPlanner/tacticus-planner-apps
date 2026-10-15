@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { CLEAR_ESTIMATE_POWER_RATIO } from "../lib/clear-estimate"
 import { useClearEstimateConfig } from "./use-clear-estimate-config"
 import { useLegendaryEvent } from "./use-legendary-event"
 import { useLegendaryEventBattles } from "./use-legendary-event-battles"
@@ -28,7 +29,6 @@ const store = vi.hoisted(() => ({
   calls: 0,
   catalogSynced: true,
   metadata: new Map<string, { updatedAt: string }>(),
-  clearEstimate: null as null | Record<string, unknown>,
   hordeModeTiers: null as null | Record<string, unknown>,
 }))
 const lysander = {
@@ -56,7 +56,6 @@ vi.mock("@workspace/game-catalog/queries", () => ({
         ? [{ id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 }]
         : []
     ),
-  getLegendaryEventClearEstimate: () => read(store.clearEstimate),
   getHordeModeTiers: () => read(store.hordeModeTiers),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
@@ -78,7 +77,6 @@ describe("Legendary Event read hooks", () => {
     store.calls = 0
     store.catalogSynced = true
     store.metadata = new Map()
-    store.clearEstimate = null
     store.hordeModeTiers = null
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
@@ -149,32 +147,35 @@ describe("Legendary Event read hooks", () => {
     })
   })
 
-  it("reads the clear-estimate config as loading, absent, ready or failed", async () => {
+  it("reads the clear-estimate config as loading, ready or failed", async () => {
     store.pending = true
     const loading = renderHook(() => useClearEstimateConfig())
     expect(loading.result.current.status).toBe("loading")
     store.pending = false
 
-    const absent = renderHook(() => useClearEstimateConfig())
-    await waitFor(() => expect(absent.result.current.status).toBe("absent"))
+    // No tier list synced: estimates still show, every character untiered.
+    const untiered = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(untiered.result.current.status).toBe("ready"))
+    const untieredState = untiered.result.current
+    if (untieredState.status !== "ready") throw new Error("not ready")
+    expect(untieredState.config.hordeMultipliers.size).toBe(0)
 
-    store.clearEstimate = {
-      id: "legendary-event-clear-estimate",
-      powerRatio: 0.5,
-      calibration: { sampleCount: 0, calibratedOn: null },
-    }
     store.hordeModeTiers = {
       id: "horde-mode-tiers",
-      tiers: [{ tier: "A", multiplier: 1.2 }],
-      characters: [{ unitId: "ultraTigurius", tier: "A" }],
+      tiers: [{ tier: "A", multiplier: 1.55 }],
+      characters: [
+        { unitId: "ultraTigurius", tier: "A" },
+        { unitId: "ultraCalgar", tier: "A", multiplier: 1.65 },
+      ],
     }
     const ready = renderHook(() => useClearEstimateConfig())
     await waitFor(() => expect(ready.result.current.status).toBe("ready"))
     const state = ready.result.current
     if (state.status !== "ready") throw new Error("not ready")
-    expect(state.config.powerRatio).toBe(0.5)
+    expect(state.config.powerRatio).toBe(CLEAR_ESTIMATE_POWER_RATIO)
     expect(state.config.calibrated).toBe(false)
-    expect(state.config.hordeMultipliers.get("ultraTigurius")).toBe(1.2)
+    expect(state.config.hordeMultipliers.get("ultraTigurius")).toBe(1.55)
+    expect(state.config.hordeMultipliers.get("ultraCalgar")).toBe(1.65)
 
     store.fail = true
     const failed = renderHook(() => useClearEstimateConfig())

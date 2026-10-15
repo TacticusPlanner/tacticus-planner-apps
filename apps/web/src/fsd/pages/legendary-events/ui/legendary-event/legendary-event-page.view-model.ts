@@ -247,9 +247,8 @@ interface LaneClearEstimator {
 }
 
 /**
- * Clear estimates by data state (design D6): `hidden` when the `legendary-event-clear-estimate` dataset is
- * absent or failed (or the battles could not be read), `pending` while the dataset, the battles or
- * the roster load, `ready` otherwise. A roster that could not be read yields estimators that
+ * Clear estimates by data state (design D6): `hidden` when the horde-mode tier list or the battles
+ * could not be read, `pending` while the tier list, the battles or the roster load, `ready` otherwise. A roster that could not be read yields estimators that
  * return null (ownership unknown).
  */
 export type ClearEstimatesViewModel =
@@ -270,7 +269,7 @@ export function buildClearEstimates({
   battles: ReadValue<LegendaryEventBattle[]>
   roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
 }): ClearEstimatesViewModel {
-  if (config.status === "absent" || config.status === "failed") {
+  if (config.status === "failed") {
     return { kind: "hidden" }
   }
   if (battles === "error") return { kind: "hidden" }

@@ -12,7 +12,6 @@ import {
 import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { hordeModeTiersSchema } from "./horde-mode-tiers"
-import { legendaryEventClearEstimateSchema } from "./legendary-event-clear-estimate"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { characterAbilityCostSchema } from "./character-ability-costs"
 import { npcSchema } from "./npc"
@@ -41,7 +40,6 @@ export const datasetPayloadSchemas = {
   lres: z.array(lreViewSchema),
   "lre-battles": z.array(lreBattleViewSchema),
   "lre-common": z.array(lreCommonSchema),
-  "legendary-event-clear-estimate": z.array(legendaryEventClearEstimateSchema),
   "horde-mode-tiers": z.array(hordeModeTiersSchema),
   "event-definitions": z.array(eventDefinitionSchema),
   // The one exception to "every payload is a plain array" — see events.ts.
@@ -71,9 +69,6 @@ export type GameCatalogRecordByKey = {
   lres: z.infer<typeof lreViewSchema>
   "lre-battles": z.infer<typeof lreBattleViewSchema>
   "lre-common": z.infer<typeof lreCommonSchema>
-  "legendary-event-clear-estimate": z.infer<
-    typeof legendaryEventClearEstimateSchema
-  >
   "horde-mode-tiers": z.infer<typeof hordeModeTiersSchema>
   "event-definitions": z.infer<typeof eventDefinitionSchema>
   // The flattened storage-row shape (entry + injected `date`), not the raw date-keyed payload — see

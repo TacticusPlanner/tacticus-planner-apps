@@ -18,7 +18,7 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v7: add the `guild-raid-meta` store (one complete guidance object). Purely additive — the store
 // list below is derived from `servedDatasetKeys`, so Dexie's version cascade preserves all earlier
 // catalog rows while creating the new store for clients currently on v6 or lower.
-// v9: add the `legendary-event-clear-estimate` and `horde-mode-tiers` stores (same additive cascade).
+// v9: add the `horde-mode-tiers` store (same additive cascade).
 export const catalogDbVersion = 9
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
