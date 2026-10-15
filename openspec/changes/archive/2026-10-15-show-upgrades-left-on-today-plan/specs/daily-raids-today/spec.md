@@ -6,7 +6,7 @@ Given a project with in-scope goals that have farmable upgrade or shard needs, T
 
 A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`, matched by campaign group, type, and battle index — standing or event-campaign alike) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
 
-A node that remains listed (real attempts not exhausted) SHALL NOT show a raid count, since drops are random and a planned count is only an estimate. When its planned raids stop below its daily attempt cap, it SHALL instead show how many of the resource the goal still needs when it reaches that node, rounded up, as "N upgrades left" (or "N shards left" for a shard resource). A node whose planned raids reach its daily attempt cap SHALL show no count or label at all. Real raid counts appear only in Today's Attempts.
+A node that remains listed (real attempts not exhausted) SHALL NOT show a raid count, since drops are random and a planned count is only an estimate. When its planned raids stop below its daily attempt cap and the expected drops of a full day of attempts at that node (daily attempt cap × drop rate) cover what the goal still needs when it reaches that node, it SHALL instead show that need, rounded up, as "N upgrades left" (or "N shards left" for a shard resource), so the player knows they can stop early. A node whose planned raids reach its daily attempt cap, or whose full day of attempts would not be expected to drop what is still needed (for example when the plan stops below the cap only because the day's energy runs out), SHALL show no count or label at all: the player raids it out. A node without a daily attempt cap always shows the label. Real raid counts appear only in Today's Attempts.
 
 The schedule SHALL respect, in this order of application:
 
@@ -82,19 +82,25 @@ The schedule SHALL respect, in this order of application:
 
 #### Scenario: A node planned below its daily cap shows the upgrades left
 
-- **GIVEN** a goal still needs 3 of an upgrade when the plan reaches a node, the plan raids that node fewer times than its daily attempt cap, and the node's real synced attempts today have not reached zero remaining
+- **GIVEN** a goal still needs 3 of an upgrade when the plan reaches a node, the plan raids that node fewer times than its daily attempt cap, a full day of attempts there is expected to drop at least 3, and the node's real synced attempts today have not reached zero remaining
 - **WHEN** Today loads
 - **THEN** that node's listing shows "3 upgrades left" and no raid count
 
+#### Scenario: A node whose full day of attempts cannot cover the need shows no label
+
+- **GIVEN** a goal still needs 15 of an upgrade when the plan reaches a node with a daily attempt cap of 10 and an expected 0.6 drops per raid, and the plan raids it below the cap because the day's energy runs out
+- **WHEN** Today loads
+- **THEN** that node's listing shows no raid count and no "upgrades left" label
+
 #### Scenario: Upgrades left count what earlier nodes are expected to drop
 
-- **GIVEN** a goal needs 6 of an upgrade, the plan raids its first node up to that node's daily cap with an expected 4 drops, and then raids a second node below its cap
+- **GIVEN** a goal needs 6 of an upgrade, the plan raids its first node up to that node's daily cap with an expected 4 drops, and then raids a second node below its cap whose full day of attempts is expected to drop at least 2
 - **WHEN** Today loads
 - **THEN** the first node shows no label and the second node shows "2 upgrades left"
 
 #### Scenario: A shard resource says shards left
 
-- **GIVEN** a goal still needs 7 shards of a unit when the plan reaches a node, planned below that node's daily cap
+- **GIVEN** a goal still needs 7 shards of a unit when the plan reaches a node, planned below that node's daily cap, and a full day of attempts there is expected to drop at least 7 shards
 - **WHEN** Today loads
 - **THEN** that node's listing shows "7 shards left"
 

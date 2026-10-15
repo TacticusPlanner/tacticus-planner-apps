@@ -42,6 +42,7 @@ describe("flattenTodayLocations", () => {
         raidsToPerform: 5,
         dailyAttempts: 5,
         remainingBefore: 2,
+        dropRate: 0.5,
       },
     ])
   })
@@ -60,6 +61,7 @@ describe("flattenTodayLocations", () => {
         raidsToPerform: 4,
         dailyAttempts: 5,
         remainingBefore: 1,
+        dropRate: 0.25,
       },
     ])
   })
