@@ -43,12 +43,12 @@ The Overview tab SHALL show, in order: the **Next token** card (see `legendary-e
 
 ### Requirement: The Events pages have Joyride tours
 
-The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Next token card, the Run status card, the Token plan header, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section (which holds its Add team button), the progress grid and the leaderboard; the same steps on desktop and mobile. The Next token step SHALL target the card in whichever state it renders (token or empty state). Step titles and content SHALL be localized in en/de/es/fr.
+The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Next token card, the Run status card, its Run inputs button, the Token plan header, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section (which holds its Add team button), the progress grid and the leaderboard; the same steps on desktop and mobile. The Next token step SHALL target the card in whichever state it renders (token or empty state). Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Event page tour on desktop
 
 - **WHEN** the page tour starts on `/legendary-events/astarLysander` at or above 768px
-- **THEN** steps highlight the tab strip, the Next token card, Run status, the Token plan header, the lane summary and the cross-lane leaderboard, then Alpha's lane overview, Teams section, progress grid and leaderboard, each target visible when its step shows
+- **THEN** steps highlight the tab strip, the Next token card, Run status, Run inputs, the Token plan header, the lane summary and the cross-lane leaderboard, then Alpha's lane overview, Teams section, progress grid and leaderboard, each target visible when its step shows
 
 #### Scenario: Event page tour on mobile
 
