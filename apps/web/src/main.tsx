@@ -6,7 +6,7 @@ import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
 import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
-import { initializeAuthentication } from "@/shared/auth"
+import { initializeAuthentication, startSilentSignInOnce } from "@/shared/auth"
 import { ThemeProvider } from "@/shared/theme"
 import { TourProvider } from "@/shared/tour"
 
@@ -15,6 +15,9 @@ installPreloadErrorRecovery()
 
 async function bootstrap() {
   const msalInstance = await initializeAuthentication()
+  // Before the first render, so the first API call (GET /me) finds the restore already in flight
+  // and waits on it instead of racing a second hidden sign-in frame against it.
+  startSilentSignInOnce(msalInstance)
 
   createRoot(document.getElementById("root")!).render(
     <StrictMode>

@@ -9,11 +9,28 @@ export function AccountAvatar({
   applicationAccountId,
   className,
   displayName,
+  pending = false,
 }: {
   applicationAccountId: string | null
   className?: string
   displayName: string
+  /** The planner identity is still loading: a pulsing placeholder, never initials of a fallback label. */
+  pending?: boolean
 }) {
+  if (pending) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cn(
+          "inline-flex shrink-0 animate-pulse rounded-full bg-muted",
+          className
+        )}
+        data-pending="true"
+        data-testid="auth-account-avatar"
+      />
+    )
+  }
+
   return (
     <span
       aria-hidden="true"

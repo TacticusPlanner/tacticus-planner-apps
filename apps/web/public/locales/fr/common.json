@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Chargement de votre compte…",
+    "reauthenticating": "Votre connexion doit être renouvelée — redirection vers la connexion…",
+    "slow": "Cela prend plus de temps que d'habitude. Patientez — recharger la page ou vous reconnecter ne l'accélérera pas.",
     "errorTitle": "Service injoignable",
     "errorDescription": "Impossible de vérifier l'état de votre compte pour le moment. Votre connexion est valide : réessayez dans un instant.",
     "retry": "Réessayer"

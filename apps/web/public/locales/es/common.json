@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Cargando tu cuenta…",
+    "reauthenticating": "Hay que renovar tu sesión: te llevamos a iniciar sesión…",
+    "slow": "Esto está tardando más de lo habitual. Espera, por favor: recargar o volver a iniciar sesión no lo acelerará.",
     "errorTitle": "No se pudo conectar con el servicio",
     "errorDescription": "No pudimos comprobar el estado de tu cuenta ahora mismo. Tu sesión está bien: inténtalo de nuevo en un momento.",
     "retry": "Reintentar"
