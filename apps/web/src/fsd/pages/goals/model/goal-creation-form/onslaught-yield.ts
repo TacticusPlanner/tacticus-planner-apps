@@ -20,16 +20,19 @@ export function onslaughtRewardKeyForProgression(currentProgression: string) {
 }
 
 /** The average shards one Onslaught run yields for a character of `alliance` at
- *  `currentProgression`, from the player's saved Onslaught position. `available` is false when the
- *  saved sector/tier has no reward row for that progression (0 shards/run) — shared by the create
- *  form's preview and the Edit goal dialog so both show the same yield. */
+ *  `currentProgression`, from the player's saved Onslaught position. `progressSet` is false when the
+ *  player never saved that alliance (0 shards/run, the UI prompts to set it); `available` is false
+ *  when there is no position or the saved sector/tier has no reward row for that progression —
+ *  shared by the create form's preview and the Edit goal dialog so both show the same yield. */
 export function onslaughtShardsPerRun(params: {
   progress: OnslaughtProgress
   rewards: readonly OnslaughtRewardStorageModel[]
   alliance: string
   currentProgression: Progression
-}): { shardsPerRun: number; available: boolean } {
+}): { shardsPerRun: number; available: boolean; progressSet: boolean } {
   const position = progressForAlliance(params.progress, params.alliance)
+  if (!position)
+    return { shardsPerRun: 0, available: false, progressSet: false }
   const reward = onslaughtReward(
     params.rewards,
     position.sector,
@@ -37,8 +40,22 @@ export function onslaughtShardsPerRun(params: {
     onslaughtRewardKeyForProgression(params.currentProgression)
   )
   return reward
-    ? { shardsPerRun: (reward.min + reward.max) / 2, available: true }
-    : { shardsPerRun: 0, available: false }
+    ? {
+        shardsPerRun: (reward.min + reward.max) / 2,
+        available: true,
+        progressSet: true,
+      }
+    : { shardsPerRun: 0, available: false, progressSet: true }
+}
+
+/** Whether the player saved an Onslaught position for `alliance` — drives the create form's and the
+ *  Edit goal dialog's "Set your Onslaught progress" prompt. An alliance the API reports as unset
+ *  (its Stone 1 placeholder) counts as not saved. */
+export function isOnslaughtProgressSaved(
+  progress: OnslaughtProgress | undefined,
+  alliance: string | undefined
+): boolean {
+  return !!progress && !!progressForAlliance(progress, alliance ?? "Imperial")
 }
 
 function regularRewardKey(rarity: string) {
