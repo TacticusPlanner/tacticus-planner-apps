@@ -1,5 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import {
   AlertTriangle,
   CheckCircle2,
@@ -9,19 +8,14 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useQueryClient } from "@tanstack/react-query"
 import { CommandShortcut } from "@workspace/ui/components/command"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { isMacPlatform } from "@/app/layout/is-mac-platform"
-import { formatRelativeTime } from "@/shared/lib"
-import { goalQueries } from "@/entities/goal"
 
-import {
-  usePlayerDataStatus,
-  type PlayerDataStatus,
-} from "./player-data-provider"
+import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import type { PlayerDataStatus } from "@/shared/player-data-status"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   idle: CircleDashed,
@@ -29,87 +23,6 @@ const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
   ready: CheckCircle2,
   stale: Clock,
   error: AlertTriangle,
-}
-
-// Reuses the existing manageAccount.playerData.* labels (idle/syncing/ready/stale/error) instead of
-// introducing a duplicate i18n group — those keys already read fine standalone ("Up to date", "Sync
-// failed", etc.), the same wording the old standalone status badge showed.
-const statusLabelKeys = {
-  idle: "manageAccount.playerData.statusIdle",
-  syncing: "manageAccount.playerData.statusSyncing",
-  ready: "manageAccount.playerData.statusReady",
-  stale: "manageAccount.playerData.statusStale",
-  error: "manageAccount.playerData.statusError",
-} as const satisfies Record<PlayerDataStatus, string>
-
-const relativeTimeRefreshMs = 30 * 1000
-
-/**
- * The status text/disabled-state logic shared by every "Sync with Tacticus" control (the desktop
- * sidebar button below, and the mobile bottom-nav action button) — one source of truth for "what does
- * the current status say, and should the control be disabled right now" so the two presentations
- * can't drift out of sync with each other.
- */
-export function usePlayerDataSyncStatus() {
-  const { i18n, t } = useTranslation()
-  const { error, lastSyncedAt, progress, requiresReauth, status, syncNow } =
-    usePlayerDataStatus()
-  const queryClient = useQueryClient()
-  const syncAndRefreshGoals = async () => {
-    await syncNow()
-    await queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-  }
-  const [, setRelativeTimeTick] = useState(() => Date.now())
-  const isSyncing = status === "syncing"
-  const statusLabel = t(statusLabelKeys[status])
-  const relativeLastSync = lastSyncedAt
-    ? formatRelativeTime(Date.parse(lastSyncedAt), i18n.language)
-    : null
-  const lastSyncText = relativeLastSync
-    ? t("manageAccount.playerData.lastSynced", { time: relativeLastSync })
-    : t("manageAccount.playerData.neverSynced")
-  const progressText = progress
-    ? t("manageAccount.playerData.syncProgress", {
-        downloaded: progress.downloaded,
-        total: progress.total,
-      })
-    : statusLabel
-  const statusText =
-    status === "syncing"
-      ? progressText
-      : status === "error"
-        ? requiresReauth
-          ? t("manageAccount.playerData.reauthRequired")
-          : (error ?? t("manageAccount.playerData.retrySync"))
-        : status === "stale"
-          ? t("manageAccount.playerData.refreshRequired", {
-              lastSync: lastSyncText,
-            })
-          : lastSyncText
-
-  useEffect(() => {
-    if (!lastSyncedAt) {
-      return
-    }
-
-    const interval = window.setInterval(
-      () => setRelativeTimeTick(Date.now()),
-      relativeTimeRefreshMs
-    )
-
-    return () => window.clearInterval(interval)
-  }, [lastSyncedAt])
-
-  return {
-    status,
-    isSyncing,
-    lastSyncedAt,
-    lastSyncText,
-    statusText,
-    errorText: error,
-    requiresReauth,
-    syncNow: syncAndRefreshGoals,
-  }
 }
 
 const statusClasses: Record<PlayerDataStatus, string> = {

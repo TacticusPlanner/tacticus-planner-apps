@@ -180,7 +180,7 @@ export function AcquisitionSourceField({
             <Link
               className="font-medium text-primary underline"
               onClick={() => onNavigateAway?.()}
-              to="/progress/onslaught"
+              to="/my-game/onslaught"
             >
               {t("goals.create.acquisitionSources.editOnslaughtProgress")}
             </Link>

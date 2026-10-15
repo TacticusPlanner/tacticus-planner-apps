@@ -209,8 +209,8 @@
     "createGoal": "Créer un objectif",
     "goals": "Plan",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
-    "progress": "Progression",
-    "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
+    "myGame": "Mon jeu",
+    "myGameDescription": "Votre collection et votre progression de jeu synchronisée",
     "legendaryEvents": "Événements Légendaires",
     "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée",
     "uiKit": "Kit d'interface",
@@ -265,8 +265,10 @@
       "Mythic": "Mythique"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Tous les personnages et Machines de guerre : ce que vous possédez et la progression de chaque unité.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Indiquez le secteur et le palier actuels de chaque alliance. Les estimations d'ascension utilisent ces valeurs ainsi que les jetons Onslaught synchronisés.",
       "campaigns": "Campagnes",
@@ -274,6 +276,37 @@
       "campaign-events": "Événements de campagne",
       "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
     },
+    "collection": {
+      "loading": "Chargement de votre collection…",
+      "summary": "{{owned}} unités possédées sur {{total}}",
+      "signInTitle": "Connectez-vous pour voir votre collection",
+      "signInBody": "Toutes les unités sont affichées en grisé. Connectez-vous et synchronisez avec Tacticus pour voir quelles unités vous possédez et la progression de chacune.",
+      "signIn": "Se connecter",
+      "syncTitle": "Synchronisez pour voir votre collection",
+      "syncBody": "Votre effectif n'a pas encore été synchronisé, toutes les unités sont donc affichées en grisé. Synchronisez avec Tacticus pour voir quelles unités vous possédez.",
+      "rosterErrorTitle": "Votre effectif n'a pas pu être chargé",
+      "rosterErrorBody": "Toutes les unités restent en grisé jusqu'à son chargement. Réessayez.",
+      "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
+      "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
+      "retry": "Réessayer",
+      "factionOwned": "{{owned}} possédées sur {{total}}"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Capacité active niveau {{first}}, capacité passive niveau {{second}}",
+    "mowAbilities": "Capacité principale niveau {{first}}, capacité secondaire niveau {{second}}",
+    "shards_one": "{{count}} éclat",
+    "shards_other": "{{count}} éclats",
+    "shardsToUnlock_one": "{{count}} éclat sur {{required}} pour débloquer",
+    "shardsToUnlock_other": "{{count}} éclats sur {{required}} pour débloquer",
+    "mythicShards_one": "{{count}} éclat mythique",
+    "mythicShards_other": "{{count}} éclats mythiques",
+    "level": "niveau {{level}}",
+    "notOwned": "non débloquée",
+    "startsAt": "Commence en {{rarity}}",
+    "unlockProgress": "Progression du déblocage"
+  },
+  "progress": {
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
     "campaigns": {
       "normal": "Campagnes normales",
@@ -1204,7 +1237,7 @@
       },
       "navigation": {
         "title": "Naviguez facilement",
-        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont les Événements Légendaires."
+        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont Mon jeu et les Événements Légendaires."
       },
       "sidebarFooter": {
         "title": "Outils de la barre latérale",
@@ -1212,7 +1245,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Votre barre principale",
-        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Progression et aux Événements Légendaires."
+        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Mon jeu et aux Événements Légendaires."
       },
       "mobileHeader": {
         "title": "En-tête de page",
@@ -1341,6 +1374,26 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Choisissez quelles offres de boutique fournissent les matériaux mythiques de cet objectif. Tout décocher arrête de compter sur les boutiques pour eux."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Votre collection en un coup d'œil",
+          "content": "Combien de personnages et de Machines de guerre du jeu vous possédez."
+        },
+        "faction": {
+          "title": "Regroupées par faction",
+          "content": "Chaque carte réunit les personnages et Machines de guerre d'une faction, vos unités en premier."
+        },
+        "owned": {
+          "title": "Une unité possédée",
+          "content": "L'anneau indique sa rareté, avec les étoiles en haut, le rang et les éclats sur le portrait, et en dessous les niveaux de capacité de part et d'autre de son niveau d'XP."
+        },
+        "unowned": {
+          "title": "Pas encore débloquée",
+          "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer."
         }
       }
     },

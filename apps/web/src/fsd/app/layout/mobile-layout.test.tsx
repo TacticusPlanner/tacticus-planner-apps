@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) =>
-      key === "progress.tabs.campaign-events" ? "Campaign Events" : key,
+      key === "myGame.tabs.campaign-events" ? "Campaign Events" : key,
   }),
 }))
 
@@ -47,13 +47,13 @@ const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
   })),
 }))
 
-vi.mock("../providers/player-data-sync-button", () => ({
+vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => usePlayerDataSyncStatusMock(),
 }))
 
 import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
-import { navItems } from "./nav-items"
+import { filterVisibleNavItems, navItems } from "./nav-items"
 import type { QuickAction, QuickActionsController } from "./quick-actions"
 
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
@@ -192,16 +192,14 @@ describe("MobileBottomNav actions", () => {
       target: { value: "events" },
     })
 
-    expect(drawer.getByText("nav.progress")).toBeVisible()
+    expect(drawer.getByText("nav.myGame")).toBeVisible()
     expect(drawer.getByText("Campaign Events")).toBeVisible()
-    expect(
-      drawer.queryByText("progress.tabs.campaigns")
-    ).not.toBeInTheDocument()
+    expect(drawer.queryByText("myGame.tabs.campaigns")).not.toBeInTheDocument()
     expect(drawer.queryByText("library:section.label")).not.toBeInTheDocument()
     // Clicking the filtered result links directly to that child page's own route.
     expect(drawer.getByText("Campaign Events").closest("a")).toHaveAttribute(
       "href",
-      "/progress/campaign-events"
+      "/my-game/campaign-events"
     )
   })
 
@@ -257,7 +255,7 @@ describe("MobileBottomNav actions", () => {
   })
 
   it("marks only the exact nested destination as the current page", () => {
-    renderShell(vi.fn(), true, "/progress/campaign-events")
+    renderShell(vi.fn(), true, "/my-game/campaign-events")
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
@@ -266,9 +264,40 @@ describe("MobileBottomNav actions", () => {
       "aria-current",
       "page"
     )
-    expect(drawer.getByText("nav.progress").closest("a")).not.toHaveAttribute(
+    expect(drawer.getByText("nav.myGame").closest("a")).not.toHaveAttribute(
       "aria-current"
     )
+  })
+
+  it("lists only Collection under My Game for an anonymous user, in the drawer and tab row", () => {
+    const visible = filterVisibleNavItems(navItems, false)
+    const myGame = visible.find((item) => item.path === "/my-game")
+    render(
+      <MemoryRouter initialEntries={["/my-game/collection"]}>
+        <MobileShell
+          activeSection={myGame}
+          isAuthenticated={false}
+          visibleItems={visible}
+          pageDescription="Collection description"
+          pageTitle="Collection"
+          onCreateGoal={vi.fn()}
+          quickActions={noQuickActions}
+        />
+      </MemoryRouter>
+    )
+
+    const tabs = within(screen.getByTestId("section-tabs"))
+    expect(tabs.getByText("myGame.tabs.collection")).toBeVisible()
+    expect(tabs.queryByText("myGame.tabs.onslaught")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+    expect(drawer.getByText("nav.myGame")).toBeVisible()
+    expect(
+      drawer.getAllByText("myGame.tabs.collection").length
+    ).toBeGreaterThan(0)
+    expect(drawer.queryByText("myGame.tabs.onslaught")).not.toBeInTheDocument()
+    expect(drawer.queryByText("Campaign Events")).not.toBeInTheDocument()
   })
 
   it("triggers the global Create Goal action", () => {

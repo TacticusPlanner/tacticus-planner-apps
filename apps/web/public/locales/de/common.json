@@ -209,8 +209,8 @@
     "createGoal": "Ziel erstellen",
     "goals": "Plan",
     "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
-    "progress": "Fortschritt",
-    "progressDescription": "Dein synchronisierter Kampagnen- und Onslaught-Fortschritt",
+    "myGame": "Mein Spiel",
+    "myGameDescription": "Deine Sammlung und dein synchronisierter Spielfortschritt",
     "legendaryEvents": "Legendäre Events",
     "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt",
     "uiKit": "UI-Kit",
@@ -265,8 +265,10 @@
       "Mythic": "Mythisch"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Sammlung",
+      "collectionDescription": "Alle Charaktere und Kriegsmaschinen – was du besitzt und wie weit jede Einheit ist.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Gib den aktuellen Sektor und die Stufe für jede Allianz ein. Aufstiegsschätzungen verwenden diese Werte sowie synchronisierte Onslaught-Token.",
       "campaigns": "Kampagnen",
@@ -274,6 +276,37 @@
       "campaign-events": "Kampagnen-Events",
       "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
     },
+    "collection": {
+      "loading": "Deine Sammlung wird geladen …",
+      "summary": "{{owned}} von {{total}} Einheiten im Besitz",
+      "signInTitle": "Melde dich an, um deine Sammlung zu sehen",
+      "signInBody": "Alle Einheiten werden ausgegraut angezeigt. Melde dich an und synchronisiere mit Tacticus, um zu sehen, welche Einheiten du besitzt und wie weit jede ist.",
+      "signIn": "Anmelden",
+      "syncTitle": "Synchronisiere, um deine Sammlung zu sehen",
+      "syncBody": "Dein Kader wurde noch nicht synchronisiert, daher werden alle Einheiten ausgegraut angezeigt. Synchronisiere mit Tacticus, um zu sehen, welche Einheiten du besitzt.",
+      "rosterErrorTitle": "Dein Kader konnte nicht geladen werden",
+      "rosterErrorBody": "Bis er geladen ist, werden alle Einheiten ausgegraut angezeigt. Versuche es erneut.",
+      "catalogErrorTitle": "Der Einheitenkatalog konnte nicht geladen werden",
+      "catalogErrorBody": "Ohne ihn kann die Sammlung nicht angezeigt werden. Versuche es erneut.",
+      "retry": "Erneut versuchen",
+      "factionOwned": "{{owned}} von {{total}} im Besitz"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Aktive Fähigkeit Stufe {{first}}, passive Fähigkeit Stufe {{second}}",
+    "mowAbilities": "Primäre Fähigkeit Stufe {{first}}, sekundäre Fähigkeit Stufe {{second}}",
+    "shards_one": "{{count}} Scherbe",
+    "shards_other": "{{count}} Scherben",
+    "shardsToUnlock_one": "{{count}} von {{required}} Scherben zum Freischalten",
+    "shardsToUnlock_other": "{{count}} von {{required}} Scherben zum Freischalten",
+    "mythicShards_one": "{{count}} mythische Scherbe",
+    "mythicShards_other": "{{count}} mythische Scherben",
+    "level": "Stufe {{level}}",
+    "notOwned": "nicht freigeschaltet",
+    "startsAt": "Startet als {{rarity}}",
+    "unlockProgress": "Fortschritt zur Freischaltung"
+  },
+  "progress": {
     "loadError": "Fortschrittsdaten sind unerwartet nicht verfügbar. Aktualisiere und versuche es erneut.",
     "campaigns": {
       "normal": "Normale Kampagnen",
@@ -1204,7 +1237,7 @@
       },
       "navigation": {
         "title": "Schnell navigieren",
-        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu den Legendären Events."
+        "content": "Nutze diese Navigationsleiste, um zwischen den Bereichen der Oberfläche zu wechseln – auch zu Mein Spiel und den Legendären Events."
       },
       "sidebarFooter": {
         "title": "Seitenleisten-Werkzeuge",
@@ -1212,7 +1245,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Deine Hauptleiste",
-        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Fortschritt und Legendäre Events zu erreichen."
+        "content": "Wechsle Bereiche, füge ein Ziel hinzu oder synchronisiere von hier. Öffne das Menü, um Seiten und Schnellaktionen zu durchsuchen und Mein Spiel und Legendäre Events zu erreichen."
       },
       "mobileHeader": {
         "title": "Seitenkopf",
@@ -1341,6 +1374,26 @@
         "mythicMaterialSources": {
           "title": "Mythische Materialien",
           "content": "Wähle, welche Shop-Angebote die mythischen Materialien dieses Ziels liefern. Ohne Haken bei allen Angeboten werden Shops dafür nicht mehr eingeplant."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Deine Sammlung auf einen Blick",
+          "content": "Wie viele der Charaktere und Kriegsmaschinen des Spiels du besitzt."
+        },
+        "faction": {
+          "title": "Nach Fraktion gruppiert",
+          "content": "Jede Karte enthält die Charaktere und Kriegsmaschinen einer Fraktion – deine eigenen Einheiten zuerst."
+        },
+        "owned": {
+          "title": "Eine Einheit in deinem Besitz",
+          "content": "Der Ring zeigt die Seltenheit, oben die Sterne, auf dem Porträt Rang und Scherben, darunter die Fähigkeitsstufen links und rechts der EP-Stufe."
+        },
+        "unowned": {
+          "title": "Noch nicht freigeschaltet",
+          "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist."
         }
       }
     },

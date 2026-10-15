@@ -209,8 +209,8 @@
     "createGoal": "Create Goal",
     "goals": "Plan",
     "goalsDescription": "Track progress toward your targets",
-    "progress": "Progress",
-    "progressDescription": "Your synced campaign and Onslaught progress",
+    "myGame": "My Game",
+    "myGameDescription": "Your collection and synced game progress",
     "legendaryEvents": "Legendary Events",
     "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress",
     "uiKit": "UI Kit",
@@ -265,8 +265,10 @@
       "Mythic": "Mythic"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Every character and Machine of War, with what you own and how far each unit has progressed.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
       "campaigns": "Campaigns",
@@ -274,6 +276,37 @@
       "campaign-events": "Campaign Events",
       "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
     },
+    "collection": {
+      "loading": "Loading your collection…",
+      "summary": "{{owned}} of {{total}} units owned",
+      "signInTitle": "Sign in to see your collection",
+      "signInBody": "Every unit is shown greyed out. Sign in and sync with Tacticus to see which units you own and how far each has progressed.",
+      "signIn": "Sign in",
+      "syncTitle": "Sync to see your collection",
+      "syncBody": "Your roster hasn't been synced yet, so every unit is shown greyed out. Sync with Tacticus to see which units you own.",
+      "rosterErrorTitle": "Your roster couldn't be loaded",
+      "rosterErrorBody": "Every unit is shown greyed out until it loads. Try again.",
+      "catalogErrorTitle": "The unit catalog couldn't be loaded",
+      "catalogErrorBody": "The collection can't be shown without it. Try again.",
+      "retry": "Try again",
+      "factionOwned": "{{owned}} of {{total}} owned"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Active ability level {{first}}, passive ability level {{second}}",
+    "mowAbilities": "Primary ability level {{first}}, secondary ability level {{second}}",
+    "shards_one": "{{count}} shard",
+    "shards_other": "{{count}} shards",
+    "shardsToUnlock_one": "{{count}} of {{required}} shards to unlock",
+    "shardsToUnlock_other": "{{count}} of {{required}} shards to unlock",
+    "mythicShards_one": "{{count}} mythic shard",
+    "mythicShards_other": "{{count}} mythic shards",
+    "level": "level {{level}}",
+    "notOwned": "not unlocked",
+    "startsAt": "Starts {{rarity}}",
+    "unlockProgress": "Unlock progress"
+  },
+  "progress": {
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
       "normal": "Normal campaigns",
@@ -1204,7 +1237,7 @@
       },
       "navigation": {
         "title": "Find your way around",
-        "content": "This menu groups the app's sections, including Legendary Events — use it to navigate between them at any time."
+        "content": "This menu groups the app's sections, including My Game and Legendary Events — use it to navigate between them at any time."
       },
       "sidebarFooter": {
         "title": "Sidebar tools",
@@ -1212,7 +1245,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",
-        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach Progress and Legendary Events."
+        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach My Game and Legendary Events."
       },
       "mobileHeader": {
         "title": "Page header",
@@ -1341,6 +1374,26 @@
         "mythicMaterialSources": {
           "title": "Mythic materials",
           "content": "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Your collection at a glance",
+          "content": "How many of the game's characters and Machines of War you own."
+        },
+        "faction": {
+          "title": "Grouped by faction",
+          "content": "Each card holds one faction's characters and Machines of War — the units you own come first."
+        },
+        "owned": {
+          "title": "An owned unit",
+          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below."
+        },
+        "unowned": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them."
         }
       }
     },
