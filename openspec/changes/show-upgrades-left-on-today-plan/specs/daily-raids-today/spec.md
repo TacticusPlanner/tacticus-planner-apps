@@ -2,7 +2,7 @@
 
 ### Requirement: Today's raid schedule shows what is left to farm
 
-Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid and the number of raids at each node, for today only (not a multi-day plan).
+Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid, for today only (not a multi-day plan).
 
 A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`, matched by campaign group, type, and battle index — standing or event-campaign alike) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
 
