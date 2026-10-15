@@ -421,8 +421,6 @@
       "hits_other": "{{count}} Treffer",
       "range": "Reichweite {{range}}",
       "equipment": "Ausrüstungsplätze",
-      "footnote": "Perzentil unter allen Charakteren bei Mythic Wings, Adamant II. Vollständiger Vergleich unten.",
-      "percentile_ordinal_other": "{{count}}. Perzentil",
       "pierce": "{{value}} % Durchschlagsrate",
       "pierceHint": "Durchschlagsrate: Jeder Treffer verursacht den höheren Wert aus seinem Schaden minus der Rüstung des Ziels oder {{value}} % seines Schadens. Gegen schwere Rüstung kommen diese {{value}} % an.",
       "relicSlot": "Relikt: {{name}}",
@@ -479,6 +477,8 @@
       "title": "Werte nach Rang",
       "footnote": "Gestrichelte Linie = angezeigter Rang ({{rank}}). Fahre über ein Diagramm, um jeden Rang abzulesen.",
       "yours": " (deine)",
+      "aboveCap": " (über der Obergrenze für diese Sterne)",
+      "capFootnote": "Blasse Ränge liegen über {{rank}}, der Obergrenze für diese Sterne.",
       "caption": "{{stat}} steigt von {{from}} bei {{firstRank}} auf {{to}} bei {{lastRank}}.",
       "rank": "Rang"
     },

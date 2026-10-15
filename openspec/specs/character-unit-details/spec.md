@@ -65,7 +65,8 @@ state with a way back to the characters list.
 The unit page SHALL show a navigation bar with a back button, a breadcrumb
 `Library / Characters / <name>`, Previous and Next buttons, the unit's position, and the page tour
 button. Back, prev/next and the position SHALL follow the page the user came from: the characters
-list (its current order and search) by default. Prev/next SHALL keep the active tab. The first unit
+list (its current order and search) by default. Prev/next SHALL keep the active tab and drop every
+other query parameter, so the Rank-up materials range doesn't carry over to another unit. The first unit
 SHALL have Previous disabled and the last unit Next disabled.
 
 #### Scenario: Prev/next from the list
@@ -166,7 +167,8 @@ keyboard-operable (arrow keys move between them).
 ### Requirement: At a glance and traits
 
 The Details tab SHALL show an At a glance card with Health, Damage, Armour and Movement at the shown
-values, the comparison percentile under Health and Armour, the melee attack and, when the unit has
+values (with no percentile line: the comparison's percentiles are at its fixed reference, not at the
+shown values), the melee attack and, when the unit has
 one, the ranged attack (hits; damage type with its pierce ratio, the percentage of each hit that gets
 through any armour, explained on hover or focus with the rule that a hit deals the higher of its
 damage minus the target's armour or that percentage of its damage; range for ranged), and its equipment slots, marking the slot the character's relic goes in (the relic's equipment type)
@@ -252,7 +254,16 @@ itself SHALL be hidden from it. Charts SHALL not animate when reduced motion is 
 ### Requirement: Stats by rank
 
 The Details tab SHALL show Health, Damage and Armour for every rank from Stone I to the highest rank in
-the game's ladder, at the shown rarity and stars, marking the shown rank.
+the game's ladder, at the shown rarity and stars, marking the shown rank. Ranks above the highest rank
+the shown rarity allows SHALL stay on the axis but be faded and marked as above the cap.
+
+#### Scenario: Ranks above the cap are faded
+
+- **GIVEN** the page shows Uncommon stars, whose rank cap is Bronze I
+- **WHEN** Stats by rank is shown
+- **THEN** Bronze II to the top rank are faded (on desktop the charts' readout adds "(above the cap for
+  these stars)"; on mobile those table rows are muted and say so to screen readers), and the
+  footnote reads "Faded ranks are above Bronze I, the cap for these stars."
 
 #### Scenario: On desktop, three charts
 
@@ -298,7 +309,7 @@ Assumptions:
 - **WHEN** the comparison is computed
 - **THEN** Tigurius's Health at the reference is round(65 × 133.5178) = round(8,678.66) = 8,679,
   6 characters have a lower reference Health, so the percentile is 6 / 119 × 100 =
-  5.04, shown as **5%**, and At a glance shows "5th percentile" under Health
+  5.04, shown as **5%** in the percentile list
 
 #### Scenario: Link to the wiki's damage explanation
 

@@ -422,9 +422,6 @@
       "hits_other": "{{count}} coups",
       "range": "Portée {{range}}",
       "equipment": "Emplacements d'équipement",
-      "footnote": "Centile parmi tous les personnages à Mythic Wings, Adamantium II. Comparaison complète ci-dessous.",
-      "percentile_ordinal_one": "{{count}}er centile",
-      "percentile_ordinal_other": "{{count}}e centile",
       "pierce": "{{value}} % de taux de perforation",
       "pierceHint": "Taux de perforation : chaque coup inflige la plus grande valeur entre ses dégâts moins l'armure de la cible, ou {{value}} % de ses dégâts. Contre une armure lourde, ce sont ces {{value}} % qui passent.",
       "relicSlot": "Relique : {{name}}",
@@ -481,6 +478,8 @@
       "title": "Statistiques par rang",
       "footnote": "Ligne pointillée = rang affiché ({{rank}}). Survolez un graphique pour lire n'importe quel rang.",
       "yours": " (le vôtre)",
+      "aboveCap": " (au-delà du plafond pour ces étoiles)",
+      "capFootnote": "Les rangs estompés dépassent {{rank}}, le plafond pour ces étoiles.",
       "caption": "{{stat}} passe de {{from}} à {{firstRank}} à {{to}} à {{lastRank}}.",
       "rank": "Rang"
     },

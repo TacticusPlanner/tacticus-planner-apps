@@ -43,6 +43,46 @@ describe("level chart scale", () => {
 })
 
 describe("LevelChart", () => {
+  it("fades the columns from dimFrom on and marks their readout", () => {
+    render(
+      <LevelChart
+        title="Health"
+        points={rising}
+        xLabels={levels}
+        xTicks={[0]}
+        markerIndex={8}
+        dimFrom={6}
+        dimmedSuffix=" (above the cap)"
+        caption="Health by level"
+        data-testid="chart"
+      />
+    )
+    expect(screen.getByTestId("chart-dimmed")).toHaveAttribute("data-from", "6")
+    expect(screen.getByTestId("chart-readout")).toHaveTextContent(
+      "Lv 9: 900 (above the cap)"
+    )
+    fireEvent.mouseEnter(screen.getByTestId("chart-column-2"))
+    expect(screen.getByTestId("chart-readout")).toHaveTextContent("Lv 3: 300")
+    expect(screen.getByTestId("chart-readout")).not.toHaveTextContent(
+      "above the cap"
+    )
+  })
+
+  it("draws no fade when dimFrom is past the last column", () => {
+    render(
+      <LevelChart
+        title="Health"
+        points={rising}
+        xLabels={levels}
+        xTicks={[0]}
+        dimFrom={10}
+        caption="Health by level"
+        data-testid="chart"
+      />
+    )
+    expect(screen.queryByTestId("chart-dimmed")).not.toBeInTheDocument()
+  })
+
   it("draws a band as a filled area between two lines", () => {
     const { container } = render(
       <LevelChart
