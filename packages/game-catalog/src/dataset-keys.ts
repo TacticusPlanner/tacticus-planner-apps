@@ -15,6 +15,7 @@ export const servedDatasetKeys = [
   "campaign-definitions",
   "lres",
   "lre-battles",
+  "horde-mode-tiers",
   "event-definitions",
   "events-calendar",
   "shops",
@@ -23,6 +24,12 @@ export const servedDatasetKeys = [
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
+
+// Served datasets the cache counts as complete without: an API that does not serve one yet (or no
+// longer does) leaves the client ready, and the features reading it treat it as absent.
+export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
+  "horde-mode-tiers",
+]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.
 export const catalogManifestMetadataKey = "__manifest"

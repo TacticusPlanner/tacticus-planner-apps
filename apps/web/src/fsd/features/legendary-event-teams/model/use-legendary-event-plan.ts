@@ -66,18 +66,58 @@ export function useLegendaryEventPlan({
       objectiveCount: team.objectiveIndexes.length,
     })
 
-  const createTeam = (laneId: LegendaryEventLaneId, draft: TeamDraft) =>
+  /**
+   * Logs a depth the editor saved as the card's depth events would (the override log, design D8):
+   * clearing the depth while an estimate shows is Use estimate, any other change is a depth set.
+   */
+  const editorDepthAnalytics = (
+    laneId: LegendaryEventLaneId,
+    previous: number | null,
+    depth: number | null,
+    shown: DepthEstimateContext
+  ) => {
+    if (depth === previous) return
+    if (depth === null && shown.estimate !== null) {
+      captureEvent({
+        type: "legendary_event_depth_estimate_restored",
+        eventId,
+        laneId,
+        estimate: shown.estimate,
+      })
+      return
+    }
+    captureEvent({
+      type: "legendary_event_depth_set",
+      eventId,
+      laneId,
+      depth,
+      estimate: shown.estimate,
+      fromEstimate: shown.fromEstimate,
+    })
+  }
+
+  const createTeam = (
+    laneId: LegendaryEventLaneId,
+    draft: TeamDraft,
+    shown: DepthEstimateContext = noEstimateShown
+  ) =>
     enqueue({
       send: (base) =>
         createLegendaryEventTeam(
           eventId,
           teamCreateRequest(laneId, draft, run, base.revision)
         ),
-      onSaved: () =>
-        teamAnalytics("legendary_event_team_created", laneId, draft),
+      onSaved: () => {
+        teamAnalytics("legendary_event_team_created", laneId, draft)
+        editorDepthAnalytics(laneId, null, draft.expectedBattleClears, shown)
+      },
     })
 
-  const updateTeam = (team: LegendaryEventTeam, draft: TeamDraft) =>
+  const updateTeam = (
+    team: LegendaryEventTeam,
+    draft: TeamDraft,
+    shown: DepthEstimateContext = noEstimateShown
+  ) =>
     enqueue({
       send: (base) =>
         updateLegendaryEventTeam(
@@ -90,8 +130,15 @@ export function useLegendaryEventPlan({
             base.teams.find((entry) => entry.id === team.id) ?? team
           )
         ),
-      onSaved: () =>
-        teamAnalytics("legendary_event_team_edited", team.laneId, draft),
+      onSaved: () => {
+        teamAnalytics("legendary_event_team_edited", team.laneId, draft)
+        editorDepthAnalytics(
+          team.laneId,
+          draftOfTeam(team, run).expectedBattleClears,
+          draft.expectedBattleClears,
+          shown
+        )
+      },
     })
 
   const deleteTeam = (team: LegendaryEventTeam) =>
@@ -120,8 +167,12 @@ export function useLegendaryEventPlan({
     })
   }
 
-  /** Sets (or clears, with null) the team's depth for the current run, as a manual value. */
-  const setDepth = (team: LegendaryEventTeam, depth: number | null) =>
+  /** Writes the team's depth for the current run (null clears it). */
+  const writeDepth = (
+    team: LegendaryEventTeam,
+    depth: number | null,
+    onSaved: () => void
+  ) =>
     enqueue({
       patch: (plan) =>
         withTeamDepth(plan, team.id, run, depth, new Date().toISOString()),
@@ -138,14 +189,40 @@ export function useLegendaryEventPlan({
           )
         )
       },
-      onSaved: () =>
-        captureEvent({
-          type: "legendary_event_depth_set",
-          eventId,
-          laneId: team.laneId,
-          depth,
-        }),
+      onSaved,
     })
+
+  /**
+   * Sets (or clears, with null) the team's depth for the current run, as a manual value. The
+   * analytics event carries the estimate shown at the time and whether the edit started from it
+   * (the override log, design D8).
+   */
+  const setDepth = (
+    team: LegendaryEventTeam,
+    depth: number | null,
+    shown: DepthEstimateContext = noEstimateShown
+  ) =>
+    writeDepth(team, depth, () =>
+      captureEvent({
+        type: "legendary_event_depth_set",
+        eventId,
+        laneId: team.laneId,
+        depth,
+        estimate: shown.estimate,
+        fromEstimate: shown.fromEstimate,
+      })
+    )
+
+  /** Use estimate: clears the current run's manual depth so the estimate shows again. */
+  const restoreEstimate = (team: LegendaryEventTeam, estimate: number) =>
+    writeDepth(team, null, () =>
+      captureEvent({
+        type: "legendary_event_depth_estimate_restored",
+        eventId,
+        laneId: team.laneId,
+        estimate,
+      })
+    )
 
   return {
     query,
@@ -156,7 +233,19 @@ export function useLegendaryEventPlan({
     deleteTeam,
     reorderLane,
     setDepth,
+    restoreEstimate,
   }
+}
+
+/** The estimate shown when a depth was edited (null when none was shown). */
+export interface DepthEstimateContext {
+  estimate: number | null
+  fromEstimate: boolean
+}
+
+const noEstimateShown: DepthEstimateContext = {
+  estimate: null,
+  fromEstimate: false,
 }
 
 export type LegendaryEventPlanActions = ReturnType<typeof useLegendaryEventPlan>

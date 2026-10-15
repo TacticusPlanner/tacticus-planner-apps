@@ -9,7 +9,9 @@ import {
   currentLegendaryEventRun,
   type LegendaryEvent,
   type LegendaryEventLaneId,
+  useClearEstimateConfig,
   useLegendaryEvent,
+  useLegendaryEventBattles,
   useLegendaryEventProgress,
   useLegendaryEventRoster,
   useLegendaryEventSyncTimes,
@@ -22,6 +24,7 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
+  buildClearEstimates,
   buildLeaderboardRows,
   buildProgressGridViewModel,
   buildRewardOutlookViewModel,
@@ -65,6 +68,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const units = readValue(unitsRead)
   const roster = readValue(useLegendaryEventRoster())
   const progressValue = readValue(progress)
+  const clearEstimateConfig = useClearEstimateConfig()
+  const battles = readValue(useLegendaryEventBattles(eventId))
   // Depth writes target the synced run, or run 1 without a synced entry (design D8). The Teams
   // section stays loading until the progress resolves, so nothing captures the default meanwhile.
   const run = currentLegendaryEventRun(
@@ -92,6 +97,18 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         ? buildLeaderboardRows(eventData, units, roster, progressGrid)
         : ({ kind: "loading" } as const),
     [eventData, units, roster, progressGrid]
+  )
+  const clearEstimates = useMemo(
+    () =>
+      eventData
+        ? buildClearEstimates({
+            event: eventData,
+            config: clearEstimateConfig,
+            battles,
+            roster,
+          })
+        : ({ kind: "pending" } as const),
+    [eventData, clearEstimateConfig, battles, roster]
   )
   const selectTab = useCallback((tab: LegendaryEventTab) => {
     setSelectedTab(tab)
@@ -180,6 +197,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       onDeductScoredChange: setDeductScored,
       selectedObjectives,
       onSelectedObjectivesChange: setSelectedObjectives,
+      clears: clearEstimates,
     },
     progressGrid,
     marks: {
@@ -201,6 +219,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       }),
       run,
       actions: plan,
+      estimates: clearEstimates,
     },
   }
 

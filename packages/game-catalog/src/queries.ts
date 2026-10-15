@@ -18,6 +18,8 @@ import type {
   EventDefinitionStorageModel,
   GuildRaidMetaStorageModel,
   EventsCalendarStorageModel,
+  LegendaryEventBattleStorageModel,
+  HordeModeTiersStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
   NpcStorageModel,
@@ -295,4 +297,20 @@ export function getLegendaryEvent(
 // `lres` store's metadata (pending rename to `legendary-events`).
 export function hasLegendaryEventsSynced(): Promise<boolean> {
   return hasDatasetSynced("lres")
+}
+
+// One Legendary Event's battles (every lane), keyed "{lreId}-{track}-{number}". A lane orders them
+// by its own `battleIds`. Reads the `lre-battles` store (pending rename alongside `lres`).
+export async function getLegendaryEventBattles(
+  lreId: string
+): Promise<LegendaryEventBattleStorageModel[]> {
+  const rows = await getDatasetRecords("lre-battles")
+  return rows.filter((row) => row.lreId === lreId)
+}
+
+// The curated horde-mode tier list — a single record — or `null` when the dataset is absent (not
+// served by the API, or not synced yet).
+export async function getHordeModeTiers(): Promise<HordeModeTiersStorageModel | null> {
+  const rows = await getDatasetRecords("horde-mode-tiers")
+  return rows[0] ?? null
 }

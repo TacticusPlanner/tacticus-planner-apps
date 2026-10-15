@@ -32,3 +32,5 @@ export type GuildRaidMetaStorageModel = StorageModel<"guild-raid-meta">
 // Legendary Event datasets. Named by the glossary ("Legendary Event"), while the storage keys keep
 // their V1 name (`lres`) until the pending API rename to `legendary-events` lands.
 export type LegendaryEventStorageModel = StorageModel<"lres">
+export type LegendaryEventBattleStorageModel = StorageModel<"lre-battles">
+export type HordeModeTiersStorageModel = StorageModel<"horde-mode-tiers">

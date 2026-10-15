@@ -1,11 +1,13 @@
 // Public API of the Legendary Event entity: lifecycle, the next-milestone lookup, objective labels,
 // objective matching, the points model, synced progress, the read hooks, the persisted plan
 // (teams per lane, run inputs and marks: DTOs, API, query options, the shared write queue,
-// coverage, points and run helpers) and the reward projection. Pages and features
-// consume it only through this file.
+// coverage, points and run helpers), the reward projection, and clear-depth estimates (combat
+// power, the estimate calculation, calibration). Pages and features consume it only through
+// this file.
 export {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEvent,
+  type LegendaryEventBattle,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventLaneRecord,
@@ -82,6 +84,11 @@ export {
 } from "./model/use-legendary-event"
 export { useLegendaryEventsProgress } from "./model/use-legendary-events-progress"
 export { useLegendaryEventProgress } from "./model/use-legendary-event-progress"
+export { useLegendaryEventBattles } from "./model/use-legendary-event-battles"
+export {
+  useClearEstimateConfig,
+  type ClearEstimateConfigState,
+} from "./model/use-clear-estimate-config"
 export {
   useLegendaryEventRoster,
   useLegendaryEventUnits,
@@ -157,3 +164,26 @@ export {
 export { currentLegendaryEventRun, teamDepthForRun } from "./lib/current-run"
 export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
 export { teamPointsPerBattle } from "./lib/team-points"
+export {
+  clearEstimateConfig,
+  estimateClearDepth,
+  laneBattlePowers,
+  lockedMemberCount,
+  teamClearEstimate,
+  teamEffectiveDepth,
+  teamEffectivePower,
+  unitClearEstimate,
+  unitHordeMultiplier,
+  unitEffectivePower,
+  type ClearEstimate,
+  type ClearEstimateConfig,
+  type ClearEstimateRoster,
+} from "./lib/clear-estimate"
+export {
+  calibratePowerRatio,
+  calibrationPoint,
+  summarizeCalibration,
+  type CalibrationSample,
+  type PowerRatioCalibration,
+} from "./lib/calibrate-power-ratio"
+export { unitCombatPower, unitCombatPowerInput } from "./lib/unit-combat-power"

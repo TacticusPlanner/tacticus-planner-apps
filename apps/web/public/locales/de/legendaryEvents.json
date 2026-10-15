@@ -331,7 +331,7 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team voraussichtlich kommt. Mit „Team hinzufügen“ legst du eines an."
+          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team kommen sollte: eine Schätzung aus deinem synchronisierten Kader, bis du selbst eine Tiefe festlegst. Mit „Team hinzufügen“ legst du eines an."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",
@@ -343,5 +343,24 @@
         }
       }
     }
+  },
+  "estimates": {
+    "estimated": "geschätzt",
+    "uncalibrated": "Unkalibriert: Das Leistungsverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
+    "howItWorks": "Geschätzt aus der Kampfkraft deines synchronisierten Kaders im Vergleich zur Stärke jedes Kampfes. Ausrüstung, Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
+    "marginAbove": "{{percent}} % über Kampf {{battle}}",
+    "shortfallNext": "{{percent}} % unter Kampf {{battle}}",
+    "notEnough": "Reicht noch nicht für Kampf 1",
+    "useEstimate": "Schätzung verwenden",
+    "estimateHint": "Schätzung ~{{depth}}",
+    "lockedNotCounted_one": "{{count}} gesperrtes Mitglied nicht gezählt",
+    "lockedNotCounted_other": "{{count}} gesperrte Mitglieder nicht gezählt",
+    "clears": "Kämpfe",
+    "clearsLabel": "Geschätzte Kämpfe",
+    "clearsValue": "Kämpfe: {{value}}",
+    "clearsEstimate": "~{{depth}}",
+    "clearsNone": "—",
+    "clearsPending": "–",
+    "clearsLoading": "Kämpfe werden geschätzt…"
   }
 }

@@ -331,7 +331,7 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, its points per battle and how deep you expect it to clear. Use Add team to start one."
+          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, its points per battle and how deep it should clear: an estimate from your synced roster until you set a depth yourself. Use Add team to start one."
         },
         "progressGrid": {
           "title": "Synced progress",
@@ -343,5 +343,24 @@
         }
       }
     }
+  },
+  "estimates": {
+    "estimated": "estimated",
+    "uncalibrated": "Uncalibrated: the estimate's power ratio has not been fitted to real clears yet, so treat it as a rough guide.",
+    "howItWorks": "Estimated from your synced roster's combat power against each battle's power. Equipment, synergy and hard objectives aren't modelled; set a depth to override it.",
+    "marginAbove": "{{percent}}% above battle {{battle}}",
+    "shortfallNext": "{{percent}}% short of battle {{battle}}",
+    "notEnough": "Not enough for battle 1 yet",
+    "useEstimate": "Use estimate",
+    "estimateHint": "estimate ~{{depth}}",
+    "lockedNotCounted_one": "{{count}} locked member not counted",
+    "lockedNotCounted_other": "{{count}} locked members not counted",
+    "clears": "Clears",
+    "clearsLabel": "Estimated clears",
+    "clearsValue": "Clears: {{value}}",
+    "clearsEstimate": "~{{depth}}",
+    "clearsNone": "—",
+    "clearsPending": "–",
+    "clearsLoading": "Estimating clears…"
   }
 }
