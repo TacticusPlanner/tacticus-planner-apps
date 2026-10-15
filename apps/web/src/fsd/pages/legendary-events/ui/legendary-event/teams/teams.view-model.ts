@@ -1,7 +1,9 @@
 import {
   derivedTeamCoverage,
   teamDepthForRun,
+  teamEffectiveDepth,
   teamPointsPerBattle,
+  type ClearEstimate,
   type LegendaryEventLane,
   type LegendaryEventPlan,
   type LegendaryEventRosterUnit,
@@ -36,10 +38,22 @@ export interface TeamCardViewModel {
   memberCount: number
   coverage: TeamCardCoverage[]
   pointsPerBattle: number
-  /** The current run's depth; null when that run has none ("Set depth"). */
+  /** The current run's manual depth; null when that run has none. */
   expectedBattleClears: number | null
+  /** The team's clear estimate on the lane; null when estimates are unavailable or no member is
+   *  owned (design D3, D6). */
+  estimate: ClearEstimate | null
+  /** What the card shows (design D2): the manual depth, else the estimate; null shows "Set depth". */
+  displayedDepth: number | null
+  /** Members (reserve excluded) the roster does not hold; 0 when ownership is unknown. */
+  lockedMemberCount: number
   sortOrder: number
 }
+
+/** A lane's team estimator: the estimate for a set of non-reserve members. */
+export type TeamEstimator = (
+  memberUnitIds: readonly string[]
+) => ClearEstimate | null
 
 type CardLane = Pick<
   LegendaryEventLane,
@@ -49,15 +63,16 @@ type CardLane = Pick<
 /**
  * A team's card (design D3, D4): members in position order with ownership, its stored objectives
  * reconciled against the current catalog (an objective the members no longer derive stays visible
- * but muted and out of the points), points per battle over the covered objectives, and the
- * current run's depth only.
+ * but muted and out of the points), points per battle over the covered objectives, the current
+ * run's manual depth only, and its clear estimate (calculated, never stored).
  */
 export function buildTeamCardViewModel(
   team: LegendaryEventTeam,
   lane: CardLane,
   units: readonly LegendaryEventUnit[],
   roster: readonly LegendaryEventRosterUnit[] | undefined,
-  currentRun: LegendaryEventRun
+  currentRun: LegendaryEventRun,
+  estimateTeam?: TeamEstimator
 ): TeamCardViewModel {
   const owned = roster
     ? new Set(roster.map((entry) => entry.unitId as string))
@@ -76,11 +91,15 @@ export function buildTeamCardViewModel(
       derived: derived.has(objective.index),
       points: objective.points,
     }))
+  const members = team.memberUnitIds.map(member)
+  const expectedBattleClears =
+    teamDepthForRun(team, currentRun)?.expectedBattleClears ?? null
+  const estimate = estimateTeam?.(team.memberUnitIds) ?? null
   return {
     id: team.id,
     name: team.name,
     team,
-    members: team.memberUnitIds.map(member),
+    members,
     reserve: team.reserveUnitId ? member(team.reserveUnitId) : null,
     memberCount: team.memberUnitIds.length,
     coverage,
@@ -88,8 +107,10 @@ export function buildTeamCardViewModel(
       lane,
       coverage.filter((entry) => entry.derived).map((entry) => entry.index)
     ),
-    expectedBattleClears:
-      teamDepthForRun(team, currentRun)?.expectedBattleClears ?? null,
+    expectedBattleClears,
+    estimate,
+    displayedDepth: teamEffectiveDepth(expectedBattleClears, estimate),
+    lockedMemberCount: members.filter((entry) => entry.owned === false).length,
     sortOrder: team.sortOrder,
   }
 }

@@ -4,25 +4,28 @@ import { NumberStepper } from "@/shared/ui"
 
 /**
  * A team's clear depth for the current run (design D8): "− number +" bounded 1..`battleCount`
- * with a clear control that sets null. Every edit is a manual value; there is no estimate.
+ * with a clear control that sets null (hidden with `clearable` false, when Use estimate takes its
+ * place). Every edit is a manual value; `ClearDepthField` adds the estimate around it.
  */
 export function ClearDepthStepper({
   value,
   battleCount,
   onChange,
+  clearable = true,
   disabled = false,
   "data-testid": testId = "clear-depth-stepper",
 }: {
   value: number | null
   battleCount: number
   onChange: (depth: number | null) => void
+  clearable?: boolean
   disabled?: boolean
   "data-testid"?: string
 }) {
   const { t } = useTranslation("legendaryEvents")
   return (
     <NumberStepper
-      clearable
+      clearable={clearable}
       data-testid={testId}
       disabled={disabled}
       labels={{
