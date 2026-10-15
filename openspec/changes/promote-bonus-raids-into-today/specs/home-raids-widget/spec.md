@@ -32,7 +32,7 @@ Assumptions:
 - **WHEN** the widget renders
 - **THEN** that location does not appear in the widget
 
-#### Scenario: Bonus Raids and Today's Attempts are excluded below the energy limit
+#### Scenario: Bonus Raids and Today's Attempts are excluded
 
 - **GIVEN** today's data includes Bonus Raids entries and Today's Attempts entries, and today's real energy spend is below the daily energy limit
 - **WHEN** the widget renders
