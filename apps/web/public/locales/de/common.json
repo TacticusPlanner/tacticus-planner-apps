@@ -417,7 +417,8 @@
       "title": "Tägliche Raids",
       "empty": "Heute gibt es nichts zu erobern.",
       "error": "Die heutigen Raids konnten nicht geladen werden.",
-      "noGoals": "Noch keine aktiven Ziele. Füge Ziele hinzu, um deine Raids zu planen."
+      "noGoals": "Noch keine aktiven Ziele. Füge Ziele hinzu, um deine Raids zu planen.",
+      "limitReached": "Tägliches Energielimit erreicht – Bonus-Raids:"
     },
     "events": {
       "title": "Events",

@@ -187,7 +187,9 @@
   },
   "bonus": {
     "title": "Raids bonus",
-    "showMore": "Afficher plus"
+    "showMore": "Afficher plus",
+    "limitReached": "Limite d'énergie quotidienne atteinte — ces raids bonus valent encore la peine.",
+    "limitReachedEmpty": "Limite d'énergie quotidienne atteinte. Plus de raids bonus aujourd'hui."
   },
   "todaysAttempts": {
     "title": "Tentatives du jour",

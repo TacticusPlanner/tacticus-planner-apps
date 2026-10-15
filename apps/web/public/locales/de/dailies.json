@@ -187,7 +187,9 @@
   },
   "bonus": {
     "title": "Bonus-Raids",
-    "showMore": "Mehr anzeigen"
+    "showMore": "Mehr anzeigen",
+    "limitReached": "Tägliches Energielimit erreicht – diese Bonus-Raids lohnen sich noch.",
+    "limitReachedEmpty": "Tägliches Energielimit erreicht. Heute keine Bonus-Raids mehr."
   },
   "todaysAttempts": {
     "title": "Heutige Versuche",

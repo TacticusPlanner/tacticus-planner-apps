@@ -118,6 +118,10 @@ describe("Dailies raid pages", () => {
       "md:columns-[20rem]"
     )
     expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(screen.getByTestId("bonus-lane")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("bonus-energy-limit-reached")
+    ).not.toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "bonus.showMore" }))
     expect(screen.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
     expect(registeredTours.at(-1)).toMatchObject({
@@ -288,6 +292,57 @@ describe("Dailies raid pages", () => {
 
     const todaySchedule = within(screen.getByTestId("today-lanes"))
     expect(todaySchedule.queryByText("Indomitus")).not.toBeInTheDocument()
+  })
+
+  it("makes Bonus Raids the only raids list once today's energy spend reaches the daily limit", async () => {
+    const user = userEvent.setup()
+    useDailyRaids.mockReturnValue(
+      ready({ dailyEnergy: 288, realEnergyUsedToday: 288 })
+    )
+    renderPage(<TodayPage />)
+
+    expect(screen.queryByTestId("today-lane")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("raid-card-g1-U1")).not.toBeInTheDocument()
+    const bonusLane = within(screen.getByTestId("bonus-lane"))
+    expect(bonusLane.getByText("bonus.title")).toBeInTheDocument()
+    expect(
+      bonusLane.getByTestId("bonus-energy-limit-reached")
+    ).toHaveTextContent("bonus.limitReached")
+    expect(bonusLane.getByTestId("raid-card-g1-B1")).toBeInTheDocument()
+    // Still capped at three until "Show more".
+    expect(bonusLane.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    await user.click(bonusLane.getByRole("button", { name: "bonus.showMore" }))
+    expect(bonusLane.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+  })
+
+  it("keeps Today's plan one energy short of the daily limit", () => {
+    useDailyRaids.mockReturnValue(
+      ready({ dailyEnergy: 288, realEnergyUsedToday: 287 })
+    )
+    renderPage(<TodayPage />)
+
+    expect(screen.getByTestId("today-lane")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("bonus-energy-limit-reached")
+    ).not.toBeInTheDocument()
+  })
+
+  it("says the limit is reached with no bonus raids left instead of a plan", () => {
+    const base = ready()
+    useDailyRaids.mockReturnValue(
+      ready({
+        dailyEnergy: 100,
+        realEnergyUsedToday: 150,
+        bonus: { ...base.bonus, entries: [] },
+      })
+    )
+    renderPage(<TodayPage />)
+
+    expect(screen.queryByTestId("today-lane")).not.toBeInTheDocument()
+    expect(screen.getByTestId("bonus-energy-limit-reached")).toHaveTextContent(
+      "bonus.limitReachedEmpty"
+    )
+    expect(screen.queryByTestId("bonus-raid-list")).not.toBeInTheDocument()
   })
 
   it.each(["no-goals", "no-farmable", "error"] as const)(
