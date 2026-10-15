@@ -47,6 +47,37 @@ type LegendaryEventDepthEstimateRestoredEvent = {
   estimate: number
 }
 
+/** One run's inputs (missions, premium missions, bundle, Oh So Close shards) were saved from the
+ *  run inputs drawer; once per saved write. */
+type LegendaryEventRunInputsSavedEvent = {
+  type: "legendary_event_run_inputs_saved"
+  eventId: string
+  run: number
+  regularMissions: number
+  premiumMissions: number
+  bundlePurchased: boolean
+  closeShards: number
+}
+
+/** The plan's Show paid options switch was turned on or off. */
+type LegendaryEventPaidOptionsToggledEvent = {
+  type: "legendary_event_paid_options_toggled"
+  eventId: string
+  on: boolean
+}
+
+/** A Maybe clear / Stop here mark was set (or cleared, status null) on one cell or a whole battle
+ *  of the Synced progress grid. */
+type LegendaryEventAnnotationSetEvent = {
+  type: "legendary_event_annotation_set"
+  eventId: string
+  laneId: string
+  battleIndex: number
+  cellCount: number
+  status: "maybeClear" | "stopHere" | null
+  scope: "cell" | "battle"
+}
+
 /**
  * Every event the product may report to the analytics destination. A discriminated union rather
  * than a free-form property bag, so declaring a new event is a type change here rather than an
@@ -56,4 +87,7 @@ export type AnalyticsEvent =
   | PageViewEvent
   | LegendaryEventTeamEvent
   | LegendaryEventDepthSetEvent
+  | LegendaryEventRunInputsSavedEvent
+  | LegendaryEventPaidOptionsToggledEvent
+  | LegendaryEventAnnotationSetEvent
   | LegendaryEventDepthEstimateRestoredEvent

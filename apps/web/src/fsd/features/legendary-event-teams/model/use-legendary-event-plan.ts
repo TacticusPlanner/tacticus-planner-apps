@@ -1,23 +1,21 @@
-import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useIsAuthenticated } from "@azure/msal-react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
-  legendaryEventPlanConflictDetails,
   legendaryEventPlanQueries,
   updateLegendaryEventTeam,
   updateLegendaryEventTeamOrder,
+  usePlanWriteQueue,
   type LegendaryEventLaneId,
   type LegendaryEventPlan,
   type LegendaryEventRun,
   type LegendaryEventTeam,
+  type PlanMutationOutcome,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { ApiError } from "@/shared/api"
 
 import {
   draftOfTeam,
@@ -30,33 +28,14 @@ import {
   type TeamDraft,
 } from "./plan-patches"
 
-/** How a plan mutation ended: `saved` (the returned plan is adopted), `conflict` (the plan changed
- *  elsewhere and was reloaded — from this write's 409 body, or from an earlier queued write's,
- *  which discarded this one unsent), `error` (rolled back) or `skipped` (nothing sent: no plan
- *  loaded or nothing changed). */
-export type PlanMutationOutcome = "saved" | "conflict" | "error" | "skipped"
-
-type Patch = (plan: LegendaryEventPlan) => LegendaryEventPlan
-
-type Operation = {
-  /** Applied to the cache at once (optimistic); none for create/update, which wait for the server
-   *  because it assigns ids and validates. */
-  patch?: Patch
-  /** Sends the request against the last server-confirmed plan. */
-  send: (base: LegendaryEventPlan) => Promise<LegendaryEventPlan>
-  onSaved?: (plan: LegendaryEventPlan) => void
-}
+export type { PlanMutationOutcome }
 
 /**
- * The plan of one event and its mutations (design D2). One query per event, enabled when signed
- * in. Every mutation is queued so requests go out one at a time, each with the revision of the
- * plan the previous one returned, and the returned plan is adopted. Reorder, delete and a card's
- * depth change apply optimistically and roll back on failure. A 409 carrying the plan
- * (`legendaryEventPlanStale` / `legendaryEventOrderSetMismatch`) adopts that plan, shows one
- * "reloaded" toast, discards queued writes (they report `conflict` too) and never retries on its
- * own; the caller (the editor) keeps its draft. Before a write the plan query's in-flight refetch is
- * cancelled, and a refetch older than the cache never replaces it (see `legendaryEventPlanQueries`),
- * so the next write never carries a stale revision.
+ * The plan of one event and its team mutations (design D2). The query, the serialised write queue,
+ * optimistic patches and conflict adoption live in the entity's shared `usePlanWriteQueue`, so team
+ * writes share one queue with the run inputs and mark writes of the same event. Reorder, delete and
+ * a card's depth change apply optimistically and roll back on failure; create and update wait for
+ * the server. On a conflict the caller (the editor) keeps its draft.
  */
 export function useLegendaryEventPlan({
   eventId,
@@ -66,90 +45,10 @@ export function useLegendaryEventPlan({
   run: LegendaryEventRun
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const { captureEvent } = useAnalyticsActions()
   const queryKey = legendaryEventPlanQueries.detail(eventId).queryKey
-  const query = useQuery({
-    ...legendaryEventPlanQueries.detail(eventId),
-    enabled: isAuthenticated,
-  })
-  const queue = useRef<Promise<unknown>>(Promise.resolve())
-  // The last plan the server returned; requests are built on it, never on optimistic state.
-  const confirmed = useRef<LegendaryEventPlan | null>(null)
-  const patches = useRef<{ id: number; patch: Patch }[]>([])
-  const nextPatchId = useRef(0)
-  const outstanding = useRef(0)
-  // Bumped by a conflict: operations queued before it are dropped rather than replayed.
-  const generation = useRef(0)
-  const [pendingCount, setPendingCount] = useState(0)
-
-  const show = (plan: LegendaryEventPlan) =>
-    queryClient.setQueryData<LegendaryEventPlan>(
-      queryKey,
-      patches.current.reduce((current, entry) => entry.patch(current), plan)
-    )
-
-  const enqueue = (operation: Operation): Promise<PlanMutationOutcome> => {
-    const cached = queryClient.getQueryData<LegendaryEventPlan>(queryKey)
-    if (!isAuthenticated || !cached) return Promise.resolve("skipped")
-    // A refetch landing after this point would overwrite the optimistic (or confirmed) plan.
-    void queryClient.cancelQueries({ queryKey })
-    if (outstanding.current === 0) confirmed.current = cached
-    const patchId = nextPatchId.current++
-    if (operation.patch) {
-      patches.current = [
-        ...patches.current,
-        { id: patchId, patch: operation.patch },
-      ]
-      queryClient.setQueryData(queryKey, operation.patch(cached))
-    }
-    const dropPatch = () => {
-      patches.current = patches.current.filter((entry) => entry.id !== patchId)
-    }
-    const queuedIn = generation.current
-    outstanding.current += 1
-    setPendingCount((count) => count + 1)
-
-    const outcome = queue.current.then(
-      async (): Promise<PlanMutationOutcome> => {
-        try {
-          // An earlier write's conflict reloaded the plan and discarded this one unsent.
-          if (queuedIn !== generation.current) return "conflict"
-          if (!confirmed.current) return "skipped"
-          const plan = await operation.send(confirmed.current)
-          confirmed.current = plan
-          dropPatch()
-          show(plan)
-          operation.onSaved?.(plan)
-          return "saved"
-        } catch (error) {
-          dropPatch()
-          const conflict =
-            error instanceof ApiError
-              ? legendaryEventPlanConflictDetails(error.details)
-              : null
-          if (conflict) {
-            generation.current += 1
-            patches.current = []
-            confirmed.current = conflict.plan
-            show(conflict.plan)
-            toast(t("teams.toasts.reloaded"))
-            return "conflict"
-          }
-          if (confirmed.current) show(confirmed.current)
-          // The server's message is English and technical: the toast stays translated.
-          toast.error(t("teams.toasts.error"))
-          return "error"
-        } finally {
-          outstanding.current -= 1
-          setPendingCount((count) => Math.max(0, count - 1))
-        }
-      }
-    )
-    queue.current = outcome
-    return outcome
-  }
+  const { query, enabled, pending, enqueue } = usePlanWriteQueue(eventId)
 
   const teamAnalytics = (
     type:
@@ -327,8 +226,8 @@ export function useLegendaryEventPlan({
 
   return {
     query,
-    enabled: isAuthenticated,
-    pending: pendingCount > 0,
+    enabled,
+    pending,
     createTeam,
     updateTeam,
     deleteTeam,

@@ -7,16 +7,17 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   currentLegendaryEventRun,
+  type LegendaryEvent,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
   useLegendaryEventBattles,
-  useLegendaryEventCommon,
   useLegendaryEventProgress,
   useLegendaryEventRoster,
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
 } from "@/entities/legendary-event"
+import { useAnnotations } from "@/features/legendary-event-annotations"
 import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
@@ -26,6 +27,7 @@ import {
   buildClearEstimates,
   buildLeaderboardRows,
   buildProgressGridViewModel,
+  buildRewardOutlookViewModel,
   buildRunStatusViewModel,
   readValue,
   type LegendaryEventPageViewModel,
@@ -33,6 +35,7 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { progressHeadingId } from "./progress/progress-heading"
+import { buildMarksByLane } from "./progress/progress-marks"
 import { buildTeamsSectionState } from "./teams/teams.view-model"
 
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
@@ -49,7 +52,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const isMobile = useIsMobile()
   const event = useLegendaryEvent(eventId)
   const progress = useLegendaryEventProgress(eventId)
-  const common = useLegendaryEventCommon()
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
   const [selectedTab, setSelectedTab] = useState<LegendaryEventTab>("overview")
@@ -74,6 +76,13 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     typeof progressValue === "object" ? progressValue : undefined
   )
   const plan = useLegendaryEventPlan({ eventId, run })
+  const annotations = useAnnotations(eventId)
+  const syncedEntry =
+    typeof progressValue === "object" ? progressValue : undefined
+  const marksByLane = useMemo(
+    () => buildMarksByLane(annotations.annotations, syncedEntry),
+    [annotations.annotations, syncedEntry]
+  )
   const eventData = event.status === "ready" ? event.data : undefined
   const progressGrid = useMemo(
     () =>
@@ -160,13 +169,21 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     nowMs: event.nowMs,
     runStatus: buildRunStatusViewModel({
       progress,
-      common,
+      // A record cached before rewards were served lacks them until the next catalog sync.
+      rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
       progressObservedAtMs:
         syncTimes.status === "ready"
           ? syncTimes.data.progressObservedAtMs
           : null,
       nowMs: event.nowMs,
     }),
+    outlook: buildRewardOutlookViewModel({
+      rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
+      progress: progressValue,
+      plan: plan.query,
+      planEnabled: plan.enabled,
+    }),
+    runInputs: { enabled: plan.enabled, currentRun: run },
     syncedAtMs:
       syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined,
     selectedTab,
@@ -183,6 +200,14 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       clears: clearEstimates,
     },
     progressGrid,
+    marks: {
+      editable: annotations.enabled && plan.query.data !== undefined,
+      byLane: marksByLane,
+      onMarkCell: (laneId, battleIndex, objectiveId, status) =>
+        void annotations.markCell(laneId, battleIndex, objectiveId, status),
+      onMarkBattle: (laneId, battle, status) =>
+        void annotations.markBattle(laneId, battle, status),
+    },
     teams: {
       state: buildTeamsSectionState({
         enabled: plan.enabled,

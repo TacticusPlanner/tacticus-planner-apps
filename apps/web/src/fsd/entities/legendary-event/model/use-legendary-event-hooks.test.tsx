@@ -6,7 +6,6 @@ import { CLEAR_ESTIMATE_POWER_RATIO } from "../lib/clear-estimate"
 import { useClearEstimateConfig } from "./use-clear-estimate-config"
 import { useLegendaryEvent } from "./use-legendary-event"
 import { useLegendaryEventBattles } from "./use-legendary-event-battles"
-import { useLegendaryEventCommon } from "./use-legendary-event-common"
 import { useLegendaryEventProgress } from "./use-legendary-event-progress"
 import { useLegendaryEventSyncTimes } from "./use-legendary-event-sync-times"
 import { useLegendaryEvents } from "./use-legendary-events"
@@ -49,7 +48,6 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getLegendaryEvents: () => read([lysander]),
   getLegendaryEvent: (id: string) =>
     read(id === lysander.id ? lysander : undefined),
-  getLegendaryEventCommon: () => read(null),
   getLegendaryEventBattles: (id: string) =>
     read(
       id === "votanUthar"
@@ -131,12 +129,6 @@ describe("Legendary Event read hooks", () => {
     const one = renderHook(() => useLegendaryEventProgress("astarLysander"))
     await waitFor(() => expect(one.result.current.status).toBe("ready"))
     expect(one.result.current).toMatchObject({ data: progress })
-  })
-
-  it("reads the reward ladder as null before it syncs", async () => {
-    const { result } = renderHook(() => useLegendaryEventCommon())
-    await waitFor(() => expect(result.current.status).toBe("ready"))
-    expect(result.current).toMatchObject({ data: null })
   })
 
   it("reads one event's battles", async () => {

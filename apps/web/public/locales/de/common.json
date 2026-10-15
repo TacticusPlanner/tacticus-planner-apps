@@ -527,7 +527,7 @@
         "legendaryEventPlans": "Teams für Legendäre Events"
       },
       "partDescriptions": {
-        "legendaryEventPlans": "Selbst erstellte Teams und Notizen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert."
+        "legendaryEventPlans": "Selbst erstellte Teams, Notizen, Missions- und Paketeingaben pro Durchlauf sowie „Vielleicht schaffbar“-/„Hier aufhören“-Markierungen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert."
       },
       "submit": "Ausgewählte importieren",
       "submitting": "Wird importiert …",
@@ -572,10 +572,25 @@
         "title": "Teams für Legendäre Events",
         "teams_one": "{{count}} Team",
         "teams_other": "{{count}} Teams",
+        "runs_one": "Eingaben für {{count}} Durchlauf",
+        "runs_other": "Eingaben für {{count}} Durchläufe",
+        "marks_one": "{{count}} Markierung",
+        "marks_other": "{{count}} Markierungen",
         "v1Event": "V1-Event {{id}}",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "fields": {
+          "regularMissions": "normale Missionen",
+          "premiumMissions": "Premium-Missionen",
+          "closeShards": "„Oh So Close“-Splitter"
+        },
         "reasons": {
           "imported": "Teams importiert.",
           "imported_without_teams": "Importiert, aber keines seiner Teams konnte übernommen werden.",
+          "inputs_imported": "Eingaben pro Durchlauf, Markierungen oder Notizen importiert; es wurden keine Teams hinzugefügt.",
           "plan_already_exists": "Für dieses Event gibt es im Planer bereits Teams, daher wurde nichts geändert.",
           "event_not_in_catalog": "Der Planer kennt dieses Event noch nicht.",
           "no_legendary_event_imported": "Für kein Event konnten Teams importiert werden.",
@@ -595,7 +610,17 @@
           "duplicate_team_merged": "Zwei Teams hatten dieselben Einheiten und wurden zusammengeführt.",
           "conflicting_depth_discarded": "Die abweichende Kampftiefe eines zusammengeführten Teams wurde verworfen.",
           "existing_notes_kept": "Der Planer hatte für dieses Event bereits Notizen, daher wurden die V1-Notizen nicht importiert.",
-          "notes_truncated": "Die V1-Notizen waren zu lang und wurden gekürzt. Ursprüngliche Länge in Zeichen:"
+          "notes_truncated": "Die V1-Notizen waren zu lang und wurden gekürzt. Ursprüngliche Länge in Zeichen:",
+          "run_input_clamped": "Durchlauf {{run}}: {{field}} von {{original}} auf das Event-Maximum von {{bound}} reduziert.",
+          "run_input_clamped_unbounded": "Durchlauf {{run}}: {{field}} von {{original}} auf das Event-Maximum reduziert.",
+          "unknown_run": "Eingaben für einen unbekannten Durchlauf wurden übersprungen:",
+          "existing_run_inputs_kept": "Durchlauf {{run}} hatte im Planer bereits Eingaben; sie wurden behalten und die V1-Eingaben nicht importiert.",
+          "unknown_battle": "Eine Markierung auf {{lane}} Kampf {{battle}} wurde übersprungen: Die Bahn hat {{count}} Kämpfe.",
+          "unknown_battle_unbounded": "Eine Markierung auf {{lane}} Kampf {{battle}} wurde übersprungen: Diesen Kampf gibt es auf der Bahn nicht.",
+          "existing_annotations_kept_one": "{{count}} Markierung, die bereits im Planer war, wurde behalten.",
+          "existing_annotations_kept_other": "{{count}} Markierungen, die bereits im Planer waren, wurden behalten.",
+          "unknown_objective_mark": "Eine Markierung auf dem unbekannten Ziel „{{objective}}“ in {{lane}} wurde übersprungen.",
+          "unknown_lane_mark": "Eine Markierung auf der unbekannten Bahn „{{lane}}“ wurde übersprungen."
         }
       }
     },

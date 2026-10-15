@@ -19,7 +19,9 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // list below is derived from `servedDatasetKeys`, so Dexie's version cascade preserves all earlier
 // catalog rows while creating the new store for clients currently on v6 or lower.
 // v9: add the `horde-mode-tiers` store (same additive cascade).
-export const catalogDbVersion = 9
+// v10: drop the `lre-common` store (each `lres` record now carries its own `rewards` ladder) and its
+// stale metadata row.
+export const catalogDbVersion = 10
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
@@ -50,16 +52,20 @@ catalogDb
   .stores({
     metadata: "key",
     ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
+    "lre-common": null,
   })
   // Every version bump adds a store, and an older client may already hold the manifest ETag that lists
   // its dataset (it skipped the key it didn't know yet). Drop the stored ETag so the next sync fetches the
   // manifest unconditionally: with an optional dataset the cache would otherwise read as complete on the
   // 304 and the new dataset would wait for the next manifest change.
-  .upgrade((transaction) =>
-    transaction
-      .table<GameCatalogDatasetMetadata, string>("metadata")
-      .update(catalogManifestMetadataKey, { etag: null })
-  )
+  // v10 also drops the removed `lre-common` dataset's metadata row.
+  .upgrade(async (transaction) => {
+    const metadata = transaction.table<GameCatalogDatasetMetadata, string>(
+      "metadata"
+    )
+    await metadata.update(catalogManifestMetadataKey, { etag: null })
+    await metadata.delete("lre-common")
+  })
 
 export async function getGameCatalogMetadata() {
   const values = await catalogDb.metadata.toArray()

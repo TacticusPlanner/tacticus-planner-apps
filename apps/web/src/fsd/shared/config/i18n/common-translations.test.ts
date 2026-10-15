@@ -114,6 +114,41 @@ describe("common namespace locale parity", () => {
     ["es", es],
     ["fr", fr],
   ])(
+    "%s translates the Legendary Event run inputs and marks import copy",
+    (_, locale) => {
+      const le = locale.goals.v1Import.legendaryEvents
+      const enLe = en.goals.v1Import.legendaryEvents
+      expect(
+        locale.goals.v1Import.partDescriptions.legendaryEventPlans
+      ).not.toBe(en.goals.v1Import.partDescriptions.legendaryEventPlans)
+      expect(le.runs_other).not.toBe(enLe.runs_other)
+      expect(le.reasons.inputs_imported).not.toBe(enLe.reasons.inputs_imported)
+      for (const key of [
+        "run_input_clamped",
+        "unknown_run",
+        "existing_run_inputs_kept",
+        "unknown_battle",
+        "existing_annotations_kept_other",
+        "unknown_objective_mark",
+        "unknown_lane_mark",
+      ] as const) {
+        expect(le.issues[key], key).not.toBe(enLe.issues[key])
+      }
+    }
+  )
+
+  it("describes run inputs and marks in the Legendary Event part", () => {
+    const description = en.goals.v1Import.partDescriptions.legendaryEventPlans
+    expect(description).toMatch(/inputs/)
+    expect(description).toMatch(/Maybe clear/)
+    expect(description).toMatch(/not imported/)
+  })
+
+  it.each([
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])(
     "%s translates My Game, the Collection page, unit tiles and the Collection tour",
     (_, locale) => {
       expect(locale.nav.myGame).not.toBe(en.nav.myGame)

@@ -20,7 +20,6 @@ import type {
   EventsCalendarStorageModel,
   LegendaryEventBattleStorageModel,
   HordeModeTiersStorageModel,
-  LegendaryEventCommonStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
   NpcStorageModel,
@@ -298,13 +297,6 @@ export function getLegendaryEvent(
 // `lres` store's metadata (pending rename to `legendary-events`).
 export function hasLegendaryEventsSynced(): Promise<boolean> {
   return hasDatasetSynced("lres")
-}
-
-// The shared Legendary Event reward ladder — a single record — or `null` when it has not synced.
-// Reads the `lre-common` store (pending rename alongside `lres`).
-export async function getLegendaryEventCommon(): Promise<LegendaryEventCommonStorageModel | null> {
-  const rows = await getDatasetRecords("lre-common")
-  return rows[0] ?? null
 }
 
 // One Legendary Event's battles (every lane), keyed "{lreId}-{track}-{number}". A lane orders them

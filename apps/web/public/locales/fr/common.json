@@ -527,7 +527,7 @@
         "legendaryEventPlans": "Équipes des Événements Légendaires"
       },
       "partDescriptions": {
-        "legendaryEventPlans": "Les équipes composées à la main et les notes des événements que le planificateur connaît. La progression des événements n'est pas importée."
+        "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée."
       },
       "submit": "Importer la sélection",
       "submitting": "Importation en cours…",
@@ -572,10 +572,25 @@
         "title": "Équipes des Événements Légendaires",
         "teams_one": "{{count}} équipe",
         "teams_other": "{{count}} équipes",
+        "runs_one": "saisies pour {{count}} manche",
+        "runs_other": "saisies pour {{count}} manches",
+        "marks_one": "{{count}} marque",
+        "marks_other": "{{count}} marques",
         "v1Event": "Événement V1 {{id}}",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Bêta",
+          "gamma": "Gamma"
+        },
+        "fields": {
+          "regularMissions": "missions normales",
+          "premiumMissions": "missions premium",
+          "closeShards": "fragments « Oh So Close »"
+        },
         "reasons": {
           "imported": "Équipes importées.",
           "imported_without_teams": "Importé, mais aucune de ses équipes n'a pu être conservée.",
+          "inputs_imported": "Saisies par manche, marques ou notes importées ; aucune équipe n'a été ajoutée.",
           "plan_already_exists": "Cet événement a déjà des équipes dans le planificateur, rien n'a donc été modifié.",
           "event_not_in_catalog": "Le planificateur ne connaît pas encore cet événement.",
           "no_legendary_event_imported": "Aucune équipe d'événement n'a pu être importée.",
@@ -595,7 +610,17 @@
           "duplicate_team_merged": "Deux équipes avaient les mêmes unités et ont été fusionnées.",
           "conflicting_depth_discarded": "La profondeur différente d'une équipe fusionnée a été écartée.",
           "existing_notes_kept": "Le planificateur avait déjà des notes pour cet événement, les notes V1 n'ont donc pas été importées.",
-          "notes_truncated": "Les notes V1 étaient trop longues et ont été raccourcies. Longueur d'origine en caractères :"
+          "notes_truncated": "Les notes V1 étaient trop longues et ont été raccourcies. Longueur d'origine en caractères :",
+          "run_input_clamped": "Manche {{run}} : {{field}} ramenées de {{original}} au maximum de l'événement, {{bound}}.",
+          "run_input_clamped_unbounded": "Manche {{run}} : {{field}} ramenées de {{original}} au maximum de l'événement.",
+          "unknown_run": "Les saisies d'une manche non reconnue ont été ignorées :",
+          "existing_run_inputs_kept": "La manche {{run}} avait déjà des saisies dans le planificateur ; elles ont été conservées et les saisies V1 n'ont pas été importées.",
+          "unknown_battle": "Une marque sur le combat {{battle}} de {{lane}} a été ignorée : la voie compte {{count}} combats.",
+          "unknown_battle_unbounded": "Une marque sur le combat {{battle}} de {{lane}} a été ignorée : ce combat n'existe pas sur la voie.",
+          "existing_annotations_kept_one": "{{count}} marque déjà présente dans le planificateur a été conservée.",
+          "existing_annotations_kept_other": "{{count}} marques déjà présentes dans le planificateur ont été conservées.",
+          "unknown_objective_mark": "Une marque sur l'objectif non reconnu « {{objective}} » de {{lane}} a été ignorée.",
+          "unknown_lane_mark": "Une marque sur la voie non reconnue « {{lane}} » a été ignorée."
         }
       }
     },
