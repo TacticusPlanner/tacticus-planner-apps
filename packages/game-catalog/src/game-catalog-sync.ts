@@ -3,9 +3,11 @@ import {
   getGameCatalogMetadata,
   getManifestMetadata,
   hasCompleteGameCatalogCache,
+  removeGameCatalogDataset,
   replaceGameCatalogDataset,
   saveManifestMetadata,
 } from "./game-catalog-storage"
+import { optionalDatasetKeys } from "./dataset-keys"
 import {
   catalogManifestMetadataKey,
   isServedDatasetKey,
@@ -142,6 +144,15 @@ export async function syncGameCatalog(
     throw new Error(
       `Failed to sync ${failures.length} catalog dataset(s) — ${detail}`
     )
+  }
+
+  // An optional dataset the API stopped serving is withdrawn: drop its stored copy so readers see it
+  // as absent rather than serving the last synced records.
+  const listedKeys = new Set(manifest.datasets.map((dataset) => dataset.key))
+  for (const datasetKey of optionalDatasetKeys) {
+    if (!listedKeys.has(datasetKey) && metadata.has(datasetKey)) {
+      await removeGameCatalogDataset(datasetKey)
+    }
   }
 
   await saveManifestMetadata({

@@ -18,6 +18,7 @@ import {
 } from "@/entities/legendary-event"
 
 import type {
+  ClearEstimatesViewModel,
   LeaderboardControlsState,
   ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
@@ -157,4 +158,39 @@ export function useObjectiveChips(): (
 export function useLeaderboardUnitName(): (unit: LegendaryEventUnit) => string {
   const { t } = useTranslation("characters")
   return useCallback((unit) => t(unit.id, { defaultValue: unit.name }), [t])
+}
+
+/** One row's Clears figure (design D5, D6): `~n` for an owned unit, "—" without an estimate
+ *  (locked unit, unknown ownership), a placeholder dash while the inputs load. */
+export type LeaderboardClears =
+  { kind: "pending" } | { kind: "none" } | { kind: "estimate"; depth: number }
+
+/** The lane's Clears figure per unit, or `undefined` when the column is hidden (the
+ *  clear estimates are hidden). */
+export function laneClearsOf(
+  clears: ClearEstimatesViewModel,
+  laneId: LegendaryEventLaneId
+): ((unitId: string) => LeaderboardClears) | undefined {
+  if (clears.kind === "hidden") return undefined
+  if (clears.kind === "pending") return () => ({ kind: "pending" })
+  const estimator = clears.byLane[laneId]
+  return (unitId) => {
+    const estimate = estimator.unit(unitId)
+    return estimate
+      ? { kind: "estimate", depth: estimate.depth }
+      : { kind: "none" }
+  }
+}
+
+/** The figure's text: "~6", "—" or the placeholder dash. */
+export function useClearsText(): (clears: LeaderboardClears) => string {
+  const { t } = useTranslation("legendaryEvents")
+  return useCallback(
+    (clears) => {
+      if (clears.kind === "pending") return t("estimates.clearsPending")
+      if (clears.kind === "none") return t("estimates.clearsNone")
+      return t("estimates.clearsEstimate", { depth: clears.depth })
+    },
+    [t]
+  )
 }

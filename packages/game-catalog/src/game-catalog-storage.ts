@@ -2,6 +2,7 @@ import Dexie, { type EntityTable } from "dexie"
 
 import {
   catalogManifestMetadataKey,
+  optionalDatasetKeys,
   servedDatasetKeys,
   type GameCatalogDatasetKey,
   type GameCatalogDatasetMetadata,
@@ -17,7 +18,8 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v7: add the `guild-raid-meta` store (one complete guidance object). Purely additive — the store
 // list below is derived from `servedDatasetKeys`, so Dexie's version cascade preserves all earlier
 // catalog rows while creating the new store for clients currently on v6 or lower.
-export const catalogDbVersion = 8
+// v9: add the `horde-mode-tiers` store (same additive cascade).
+export const catalogDbVersion = 9
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
@@ -43,10 +45,21 @@ type GameCatalogDb = Dexie &
  */
 const catalogDb = new Dexie(catalogDbName) as GameCatalogDb
 
-catalogDb.version(catalogDbVersion).stores({
-  metadata: "key",
-  ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
-})
+catalogDb
+  .version(catalogDbVersion)
+  .stores({
+    metadata: "key",
+    ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
+  })
+  // Every version bump adds a store, and an older client may already hold the manifest ETag that lists
+  // its dataset (it skipped the key it didn't know yet). Drop the stored ETag so the next sync fetches the
+  // manifest unconditionally: with an optional dataset the cache would otherwise read as complete on the
+  // 304 and the new dataset would wait for the next manifest change.
+  .upgrade((transaction) =>
+    transaction
+      .table<GameCatalogDatasetMetadata, string>("metadata")
+      .update(catalogManifestMetadataKey, { etag: null })
+  )
 
 export async function getGameCatalogMetadata() {
   const values = await catalogDb.metadata.toArray()
@@ -63,7 +76,10 @@ export function getManifestMetadata(
 export async function hasCompleteGameCatalogCache() {
   const metadata = await getGameCatalogMetadata()
 
-  return servedDatasetKeys.every((datasetKey) => metadata.has(datasetKey))
+  return servedDatasetKeys.every(
+    (datasetKey) =>
+      metadata.has(datasetKey) || optionalDatasetKeys.includes(datasetKey)
+  )
 }
 
 /**
@@ -93,6 +109,18 @@ export async function replaceGameCatalogDataset<
     await table.clear()
     await table.bulkPut(records)
     await catalogDb.metadata.put(metadata)
+  })
+}
+
+/** Empties a dataset the manifest no longer lists and drops its metadata, in one transaction. */
+export async function removeGameCatalogDataset(
+  datasetKey: GameCatalogDatasetKey
+) {
+  const table = catalogDb.table(datasetKey)
+
+  await catalogDb.transaction("rw", table, catalogDb.metadata, async () => {
+    await table.clear()
+    await catalogDb.metadata.delete(datasetKey)
   })
 }
 

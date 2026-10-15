@@ -76,8 +76,14 @@ function renderSection(
     deleteTeam: vi.fn(),
     reorderLane: vi.fn().mockResolvedValue("saved"),
     setDepth: vi.fn(),
+    restoreEstimate: vi.fn(),
   }
-  const teams: TeamsViewModel = { state, run: 1, actions }
+  const teams: TeamsViewModel = {
+    state,
+    run: 1,
+    actions,
+    estimates: { kind: "hidden" },
+  }
   render(
     <TeamsSection
       isMobile={isMobile}

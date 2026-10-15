@@ -301,6 +301,25 @@ describe("catalog schemas", () => {
     ).toBe(true)
   })
 
+  it("validates the horde-mode-tiers record and rejects a non-positive multiplier", () => {
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.3 },
+        { tier: "C", multiplier: 0.9 },
+      ],
+      characters: [{ unitId: "ultraTigurius", tier: "S" }],
+    }
+    const schema = datasetPayloadSchemas["horde-mode-tiers"]
+
+    expect(schema.safeParse([record]).success).toBe(true)
+    expect(schema.safeParse([{ ...record, characters: [] }]).success).toBe(true)
+    expect(
+      schema.safeParse([{ ...record, tiers: [{ tier: "S", multiplier: 0 }] }])
+        .success
+    ).toBe(false)
+  })
+
   it("rejects an lre-common points milestone of the wrong type", () => {
     const result = datasetPayloadSchemas["lre-common"].safeParse([
       {
