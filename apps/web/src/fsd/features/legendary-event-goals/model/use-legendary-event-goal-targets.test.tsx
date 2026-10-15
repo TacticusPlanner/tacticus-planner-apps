@@ -132,6 +132,25 @@ describe("useLegendaryEventGoalTargets", () => {
     expect(ready.byUnit.get("ultraTigurius")).toBe(ready.targets[0])
   })
 
+  it("keeps the previous targets while a newly created goal's detail loads", async () => {
+    plan.active = [summary("Unlock-1", "ultraEliminatorSgt", "Unlock")]
+    getGoal.mockImplementation((goalId: string) =>
+      goalId === "Unlock-1"
+        ? Promise.resolve(detail(goalId, "ultraEliminatorSgt", {}))
+        : new Promise(() => {})
+    )
+    const { result, rerender } = setup()
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    const first = result.current
+
+    plan.active = [
+      ...plan.active,
+      summary("Unlock-2", "ultraTigurius", "Unlock"),
+    ]
+    rerender()
+    expect(result.current).toBe(first)
+  })
+
   it("is ready with no targets when no Active goal targets the event's units", () => {
     plan.active = [summary("Unlock-4", "ultraCalgar", "Unlock")]
     const { result } = setup()

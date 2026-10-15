@@ -139,8 +139,9 @@ export interface LeaderboardControlsState {
 }
 
 /** Goals Preview availability (design D8): goals loading, failed, none for the event's units. */
+/** `noRoster`: goals are known but there is no synced roster to preview them over. */
 export type GoalsPreviewAvailability =
-  "loading" | "failed" | "noGoals" | "ready"
+  "loading" | "failed" | "noGoals" | "noRoster" | "ready"
 
 /** The leaderboards' goal integration (Stage 6): the Goals Preview switch, badges, Create goal. */
 export interface LeaderboardGoalsViewModel {

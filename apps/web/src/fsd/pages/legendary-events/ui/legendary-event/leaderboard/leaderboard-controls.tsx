@@ -106,6 +106,9 @@ export function LeaderboardControls({
             {goals.availability === "failed"
               ? t("goalsPreview.unavailable")
               : null}
+            {goals.availability === "noRoster"
+              ? t("goalsPreview.noRoster")
+              : null}
             {goals.availability === "noGoals"
               ? t("goalsPreview.noGoals")
               : null}

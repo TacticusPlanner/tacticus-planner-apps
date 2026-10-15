@@ -225,6 +225,21 @@ describe("UpgradeImpactSection", () => {
     )
   })
 
+  it("reads an empty state in the open body and logs no row count", () => {
+    renderSection({ kind: "needsEstimates" })
+    expand()
+    expect(screen.getByTestId("upgrade-impact-empty")).toHaveTextContent(
+      "Needs clear estimates"
+    )
+    expect(screen.queryByTestId("upgrade-impact-summary")).toBeNull()
+    expect(capture).toHaveBeenCalledWith({
+      type: "legendary_event_upgrade_impact_expanded",
+      eventId: "votanUthar",
+      laneId: "alpha",
+      rowCount: null,
+    })
+  })
+
   it("renders two-line cards with icon buttons on mobile", () => {
     renderSection(WORKED, { layout: "list" })
     expand()

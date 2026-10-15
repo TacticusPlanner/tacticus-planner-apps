@@ -100,7 +100,8 @@ export function UpgradeImpactSection({
         type: "legendary_event_upgrade_impact_expanded",
         eventId,
         laneId,
-        rowCount: rows.length,
+        // null while there are no rows to count yet (loading, no teams, no estimates).
+        rowCount: state.kind === "ready" ? rows.length : null,
       })
     }
   }
@@ -178,10 +179,20 @@ export function UpgradeImpactSection({
     </span>
   )
 
+  const emptyState = state.kind === "noTeams" || state.kind === "needsEstimates"
   let body = null
   if (open) {
     if (state.kind === "loading") {
       body = <Skeleton className="h-24 w-full rounded-xl" />
+    } else if (emptyState) {
+      body = (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="upgrade-impact-empty"
+        >
+          {summary}
+        </p>
+      )
     } else if (state.kind === "ready" && rows.length > 0) {
       body =
         layout === "table" ? (
@@ -319,12 +330,15 @@ export function UpgradeImpactSection({
             />
           </button>
         </h2>
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="upgrade-impact-summary"
-        >
-          {summary}
-        </p>
+        {/* An open empty state reads its copy in the body instead. */}
+        {open && emptyState ? null : (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="upgrade-impact-summary"
+          >
+            {summary}
+          </p>
+        )}
       </div>
       <div hidden={!open} id={bodyId}>
         {open ? (

@@ -61,11 +61,11 @@ Only a team's stored covered objectives that its current members still derive co
 - **rank** to the next rank with 0 applied upgrades, only when that rank is within `maxRankForProgression` and exists in the ladder;
 - **ascension** to the next `progressionOrder` step.
 
-For a step, every team of the lane holding that unit is re-estimated with the stepped roster unit. A team's depth after the step is `min(battleCount, depthBefore + (estimateAfter.depth − estimateBefore.depth))`, with a missing estimate read as 0. The estimate delta moves a manual depth too, so a team the user set lower than its estimate isn't credited with the gap between them. The gain is `laneReachablePoints(after) − laneReachablePoints(before)`. Rows with a gain of 0 are dropped. Rows are ordered by gain descending, then the most battles newly reached, then localized unit name. The section renders on lane tabs only, after Teams and before the progress grid. It is collapsed by default, and its header carries the derived summary ("4 upgrades add points · best +148"). The open state is per device in `localStorage` (`legendaryEvents.upgradeImpact.open`, wrapped in try/catch). A row whose unit already has an active goal at or beyond the step shows "In goals" instead of Create goal.
+For a step, every team of the lane holding that unit is re-estimated with the stepped roster unit. A team's depth after the step is `min(battleCount, depthBefore + (estimateAfter.depth − estimateBefore.depth))`, with a missing estimate read as 0. The estimate delta moves a manual depth too, so a team the user set lower than its estimate isn't credited with the gap between them. The gain is `laneReachablePoints(after) − laneReachablePoints(before)`. Rows with a gain of 0 are dropped. Rows are ordered by gain descending, then the most battles newly reached (the lane's deepest team depth after the step minus before it), then localized unit name. The section renders on lane tabs only, after Teams and before the progress grid. It is collapsed by default, and its header carries the derived summary ("4 upgrades add points · best +148"). The open state is per device in `localStorage` (`legendaryEvents.upgradeImpact.open`, wrapped in try/catch). A row whose unit already has an active goal at or beyond the step shows "In goals" instead of Create goal.
 
 **D6. Suggestions.** For each objective subset of size 1 and 2 of the lane's objectives, the candidates are the allowed units that satisfy every objective in the subset, excluding locked units while Only unlocked is on (default on). Candidates are ordered by:
 
-1. units with an active goal first, while Prefer units with goals is on (default off);
+1. units with an active Unlock, Ascension, Rank or Ability goal first (the goals Goals Preview reads), while Prefer units with goals is on (default off);
 2. effective power on the synced roster, descending;
 3. points per battle, descending;
 4. localized name.
@@ -85,7 +85,9 @@ The first five candidates form the proposal. Its covered objectives are derived 
 - Goals still loading: no badges, and the preview switch is disabled with a spinner.
 - Goals read failed: no badges, and the switch is disabled with "Goals unavailable".
 - No active goals for the event's units: the switch is disabled with "No active goals for this event's units".
-- Estimates unavailable (tier read failed, battles or tier list loading, roster unknown): the Upgrade impact body reads "Needs clear estimates", and Suggest teams is disabled with that reason. Preview still changes ownership, rarity and rank, but shows no Clears figure.
+- No synced roster to preview over: the switch is disabled with "Sync your roster to preview goals" (busy while the roster loads), so it is never on while showing nothing.
+- Estimates loading (battles or tier list loading): the Upgrade impact body and Suggest teams show a loading state.
+- Estimates unavailable (tier read failed, roster unknown): the Upgrade impact body reads "Needs clear estimates", and Suggest teams is disabled with that reason. Preview still changes ownership, rarity and rank, but shows no Clears figure.
 - No teams on the lane: the Upgrade impact body reads "Add a team to see which upgrades add points".
 - No positive rows: "No single next step adds points on this lane".
 - No proposals: "No team adds points over your current teams".

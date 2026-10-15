@@ -23,10 +23,13 @@ export function useEventGoals({
   eventData,
   units,
   roster,
+  rosterPending,
 }: {
   eventData: LegendaryEvent | undefined
   units: readonly LegendaryEventUnit[] | undefined
+  /** The synced roster; absent while it loads or when it never synced. */
   roster: readonly LegendaryEventRosterUnit[] | undefined
+  rosterPending: boolean
 }) {
   const goalLabels = useGoalLabels()
   const allowedUnitIds = useMemo(
@@ -42,12 +45,6 @@ export function useEventGoals({
   )
   const goalTargets = useLegendaryEventGoalTargets(allowedUnitIds)
   const byUnit = goalTargets.status === "ready" ? goalTargets.byUnit : undefined
-  const availability: GoalsPreviewAvailability =
-    goalTargets.status === "ready"
-      ? goalTargets.targets.length > 0
-        ? "ready"
-        : "noGoals"
-      : goalTargets.status
   const initialRarityOf = useMemo(() => {
     const byId = new Map(
       units ? units.map((unit) => [unit.id as string, unit.initialRarity]) : []
@@ -61,6 +58,17 @@ export function useEventGoals({
         : undefined,
     [goalTargets, roster, initialRarityOf]
   )
+  // The switch is "ready" only when a preview exists, so it can never be on while showing nothing.
+  const availability: GoalsPreviewAvailability =
+    goalTargets.status !== "ready"
+      ? goalTargets.status
+      : goalTargets.targets.length === 0
+        ? "noGoals"
+        : preview
+          ? "ready"
+          : rosterPending
+            ? "loading"
+            : "noRoster"
   const goalUnitIds = useMemo(
     () => new Set(byUnit ? byUnit.keys() : []),
     [byUnit]

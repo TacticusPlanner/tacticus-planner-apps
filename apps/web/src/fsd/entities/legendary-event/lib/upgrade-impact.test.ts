@@ -151,6 +151,54 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
     ])
   })
 
+  it("lists rank steps: four Legendary:RedFiveStars Silver3 members, Silver3 → Gold1, 5 → 6", () => {
+    const roster = new Map(
+      FOUR_MEMBERS.map((unitId) => [
+        unitId,
+        { ...rosterUnit(unitId, "Legendary:RedFiveStars"), rank: "Silver3" },
+      ])
+    )
+    const result = impact({ roster: roster as UpgradeImpactInput["roster"] })
+    expect(result.rows).toHaveLength(4)
+    for (const row of result.rows) {
+      expect(row.step).toMatchObject({ kind: "rank", rank: "Gold1" })
+      expect(row.gainPoints).toBe(148)
+      expect(row.teams).toEqual([
+        { teamId: "four", depthBefore: 5, depthAfter: 6 },
+      ])
+    }
+  })
+
+  it("caps the moved depth at the lane's battle count", () => {
+    // Legendary:RedFourStars Gold3: estimated 6, and a rank step reaches battle 7.
+    const roster = new Map(
+      FOUR_MEMBERS.map((unitId) => [
+        unitId,
+        { ...rosterUnit(unitId, "Legendary:RedFourStars"), rank: "Gold3" },
+      ])
+    ) as UpgradeImpactInput["roster"]
+    expect(impact({ roster }).rows.length).toBeGreaterThan(0)
+    const atLastBattle = impact({
+      roster,
+      teams: [{ ...four, manualDepth: UTHAR_ALPHA_POWERS.length }],
+    })
+    expect(atLastBattle.rows).toEqual([])
+  })
+
+  it("moves a stored depth from a null estimate when an unlock makes the team estimable", () => {
+    // Every member locked: no estimate; the stored depth 2 moves by the unlocked estimate.
+    const result = impact({
+      roster: new Map(),
+      teams: [{ ...four, manualDepth: 2 }],
+    })
+    const calgar = result.rows.find((row) => row.unitId === "ultraCalgar")
+    expect(calgar?.step.kind).toBe("unlock")
+    expect(calgar?.gainPoints).toBe(140)
+    expect(calgar?.teams).toEqual([
+      { teamId: "four", depthBefore: 2, depthAfter: 3 },
+    ])
+  })
+
   it("reads a missing estimate as depth 0", () => {
     const result = impact({ battlePowers: [] })
     expect(result.baselinePoints).toBe(0)

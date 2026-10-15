@@ -62,6 +62,7 @@ export function TeamSuggestionsDialog({
   const [showMore, setShowMore] = useState(false)
   const unlockedId = useId()
   const goalsId = useId()
+  const reasonIdPrefix = useId()
   const number = new Intl.NumberFormat(i18n.language)
   const list = new Intl.ListFormat(i18n.language, { type: "conjunction" })
   const objectives = new Map(
@@ -234,6 +235,7 @@ export function TeamSuggestionsDialog({
                   <p
                     className="text-sm text-muted-foreground"
                     data-testid="team-suggestion-reason"
+                    id={`${reasonIdPrefix}-${index}`}
                   >
                     {t("suggestions.reason", {
                       objectives: list.format(
@@ -244,6 +246,7 @@ export function TeamSuggestionsDialog({
                     })}
                   </p>
                   <Button
+                    aria-describedby={`${reasonIdPrefix}-${index}`}
                     className="min-h-11 w-full md:min-h-0 md:w-auto md:self-end"
                     data-testid="team-suggestion-use"
                     onClick={() => onUseSuggestion(suggestion, index + 1)}

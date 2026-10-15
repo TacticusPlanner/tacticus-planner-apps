@@ -128,8 +128,10 @@ export function laneUpgradeImpact(input: UpgradeImpactInput): UpgradeImpact {
       })
     }
   }
+  // Battles the lane newly reaches: past the deepest team before the step, not one team's gain.
+  const laneDepth = Math.max(0, ...before.map((entry) => entry.depth))
   const battlesGained = (row: UpgradeImpactRow) =>
-    Math.max(0, ...row.teams.map((team) => team.depthAfter - team.depthBefore))
+    Math.max(laneDepth, ...row.teams.map((team) => team.depthAfter)) - laneDepth
   rows.sort(
     (a, b) =>
       b.gainPoints - a.gainPoints ||

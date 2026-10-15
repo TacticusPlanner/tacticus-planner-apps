@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useQueries, type UseQueryResult } from "@tanstack/react-query"
 
 import {
@@ -51,7 +51,7 @@ export function useLegendaryEventGoalTargets(
     queries: summaries.map((goal) => goalQueries.detail(goal.goalId)),
     combine: combineDetails,
   })
-  return useMemo((): LegendaryEventGoalTargets => {
+  const current = useMemo((): LegendaryEventGoalTargets => {
     if (plan.isError || details.status === "failed") return { status: "failed" }
     if (plan.loading || details.status !== "ready") return { status: "loading" }
     const targets = goalTargetsFromDetails(details.details)
@@ -61,4 +61,9 @@ export function useLegendaryEventGoalTargets(
       byUnit: new Map(targets.map((target) => [target.unitId, target])),
     }
   }, [plan.isError, plan.loading, details])
+  // Only the first load reads as loading: after a goal is created its detail loads while the
+  // previous targets stay shown, so badges and the preview don't blink out.
+  const [lastReady, setLastReady] = useState<LegendaryEventGoalTargets>()
+  if (current.status === "ready" && current !== lastReady) setLastReady(current)
+  return current.status === "loading" && lastReady ? lastReady : current
 }

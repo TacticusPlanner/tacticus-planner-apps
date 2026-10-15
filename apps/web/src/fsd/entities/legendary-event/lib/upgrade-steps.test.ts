@@ -50,6 +50,10 @@ describe("nextUpgradeSteps", () => {
       nextUpgradeSteps(undefined, "ultraCalgar", "Legendary")[0]?.unit
         .progressionIndex
     ).toBe("Legendary:RedThreeStars")
+    expect(
+      nextUpgradeSteps(undefined, "ultraTitus", "Rare")[0]?.unit
+        .progressionIndex
+    ).toBe("Rare:FourStars")
   })
 
   it("offers no Ascension at the last progression step", () => {

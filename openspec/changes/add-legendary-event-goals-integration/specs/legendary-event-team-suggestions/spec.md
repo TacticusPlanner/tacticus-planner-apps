@@ -12,7 +12,7 @@ For a lane, the planner SHALL build proposals, client side and never stored, as 
 
 - **Subsets.** Every set of one or two of the lane's objectives.
 - **Candidates.** For a subset, the units the lane allows that satisfy every objective in it. Units the synced roster lacks are excluded while **Only unlocked** is on.
-- **Order.** Candidates are ordered: units with an Active goal first, only while **Prefer units with goals** is on; then effective power on the synced roster (Stage 5), descending; then points per battle, descending; then localized name.
+- **Order.** Candidates are ordered: units with an Active Unlock, Ascension, Rank or Ability goal first, only while **Prefer units with goals** is on; then effective power on the synced roster (Stage 5), descending; then points per battle, descending; then localized name.
 - **Proposal.** The first five candidates, in that order, with no reserve. Its covered objectives are derived from its members (every objective all of them satisfy), and its depth is its Stage 5 team estimate.
 - **Merging.** Proposals with the same member set are one proposal. A proposal whose member set equals an existing team's on the lane is dropped.
 - **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it. Proposals with a gain of 0 are dropped.

@@ -141,6 +141,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     eventData,
     units: Array.isArray(units) ? units : undefined,
     roster: syncedRoster,
+    rosterPending: roster === "loading",
   })
   const previewOn =
     goalsPreview && previewAvailability === "ready" && preview !== undefined

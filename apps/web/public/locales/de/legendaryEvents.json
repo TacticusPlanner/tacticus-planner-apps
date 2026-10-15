@@ -373,7 +373,8 @@
     "hint": "Zeigt Einheiten, als hättest du deine aktiven Ziele erreicht. Punkte und Teams ändern sich nicht.",
     "loading": "Ziele werden geladen…",
     "unavailable": "Ziele nicht verfügbar",
-    "noGoals": "Keine aktiven Ziele für die Einheiten dieses Events"
+    "noGoals": "Keine aktiven Ziele für die Einheiten dieses Events",
+    "noRoster": "Synchronisiere deinen Kader, um Ziele in der Vorschau zu sehen"
   },
   "goalBadge": {
     "label": "Ziele",

@@ -373,7 +373,8 @@
     "hint": "Muestra las unidades como si hubieras alcanzado tus objetivos activos. Los puntos y los equipos no cambian.",
     "loading": "Cargando objetivos…",
     "unavailable": "Objetivos no disponibles",
-    "noGoals": "No hay objetivos activos para las unidades de este evento"
+    "noGoals": "No hay objetivos activos para las unidades de este evento",
+    "noRoster": "Sincroniza tu plantilla para previsualizar los objetivos"
   },
   "goalBadge": {
     "label": "Objetivos",

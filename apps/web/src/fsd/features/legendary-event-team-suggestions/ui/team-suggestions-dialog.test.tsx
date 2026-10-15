@@ -145,7 +145,11 @@ describe("TeamSuggestionsDialog", () => {
   it("hands a proposal and its rank to Use this team", async () => {
     const { onUseSuggestion } = renderDialog()
     await screen.findAllByText("Incisus")
-    fireEvent.click(within(cards()[0]!).getByTestId("team-suggestion-use"))
+    const use = within(cards()[0]!).getByTestId("team-suggestion-use")
+    expect(use).toHaveAccessibleDescription(
+      within(cards()[0]!).getByTestId("team-suggestion-reason").textContent!
+    )
+    fireEvent.click(use)
     expect(onUseSuggestion).toHaveBeenCalledWith(
       expect.objectContaining({
         memberUnitIds: ["ultraApothecary", "ultraCalgar", "ultraTitus"],

@@ -591,6 +591,12 @@ describe("LeaderboardSection", () => {
       expect(
         screen.getByTestId("leaderboard-goals-preview-hint")
       ).toHaveTextContent("No active goals for this event's units")
+      cleanupRender()
+      renderLeaderboard({ goals: { ...noGoals, availability: "noRoster" } })
+      expect(screen.getByTestId("leaderboard-goals-preview")).toBeDisabled()
+      expect(
+        screen.getByTestId("leaderboard-goals-preview-hint")
+      ).toHaveTextContent("Sync your roster to preview goals")
     })
 
     it("turns Goals Preview on through the page", () => {

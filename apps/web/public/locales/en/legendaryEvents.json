@@ -373,7 +373,8 @@
     "hint": "Shows units as if your active goals were reached. Points and teams don't change.",
     "loading": "Loading goals…",
     "unavailable": "Goals unavailable",
-    "noGoals": "No active goals for this event's units"
+    "noGoals": "No active goals for this event's units",
+    "noRoster": "Sync your roster to preview goals"
   },
   "goalBadge": {
     "label": "Goals",

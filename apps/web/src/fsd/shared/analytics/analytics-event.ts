@@ -54,7 +54,8 @@ type LegendaryEventUpgradeImpactExpandedEvent = {
   type: "legendary_event_upgrade_impact_expanded"
   eventId: string
   laneId: string
-  rowCount: number
+  /** null when the section had no rows to count (loading, no teams, no estimates). */
+  rowCount: number | null
 }
 
 /** The Suggest teams dialog was opened on a lane. */
