@@ -73,6 +73,20 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerInventoryItems: () => [],
   getInventoryAbilityMaterials: () => Promise.resolve(undefined),
   getInventoryShard: () => Promise.resolve(undefined),
+  getPlayerCharacter: () => Promise.resolve(undefined),
+}))
+
+// The saved Onslaught position the Edit dialog's yield note reads; `null` means none saved.
+let onslaughtProgressFixture: unknown = null
+vi.mock("@/entities/player-data-override", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
+  onslaughtProgressQueries: {
+    all: () => ["player-data-overrides"],
+    current: () => ({
+      queryFn: () => Promise.resolve(onslaughtProgressFixture),
+      queryKey: ["player-data-overrides", "onslaught"],
+    }),
+  },
 }))
 
 vi.mock("@/entities/goal", async (importOriginal) => {
@@ -119,6 +133,16 @@ vi.mock("@/entities/planning-setting", () => ({
 let shopsFixture: unknown[] = []
 vi.mock("@workspace/game-catalog/queries", () => ({
   getShops: () => Promise.resolve(shopsFixture),
+  getOnslaughtRewards: () =>
+    Promise.resolve([
+      {
+        id: "Gold-3",
+        sector: "Gold",
+        tier: 3,
+        regular: Array(5).fill({ min: 2, max: 4 }),
+        mythic: { min: 1, max: 1 },
+      },
+    ]),
 }))
 
 vi.mock("../../model/shared/use-goal-catalog", () => ({
@@ -135,6 +159,7 @@ vi.mock("../../model/shared/use-goal-catalog", () => ({
       [
         "hero-1",
         {
+          alliance: "Imperial",
           shardLocations: [
             { battleId: "shard-battle-1" },
             { battleId: "shard-battle-2" },
@@ -309,6 +334,7 @@ describe("GoalEditDialog", () => {
       ],
     })
     plan.inFlight[0] = { goalId: "goal-1", status: "Active" }
+    onslaughtProgressFixture = null
   })
 
   describe("contents", () => {
@@ -861,6 +887,38 @@ describe("GoalEditDialog", () => {
         farmingLocationIds: null,
         acquisitionSources: [{ kind: "Campaign", ids: ["shard-battle-1"] }],
       })
+    })
+
+    it("shows the Onslaught yield from the saved Onslaught progress", async () => {
+      onslaughtProgressFixture = {
+        imperial: { sector: "Gold", tier: 3 },
+        xenos: { sector: "Stone", tier: 1 },
+        chaos: { sector: "Stone", tier: 1 },
+        revision: 1,
+      }
+      goalOnScreen(ascensionGoal)
+      renderDialog()
+      await loaded()
+
+      const note = screen.getByTestId("create-goal-acquisition-yield-onslaught")
+      await vi.waitFor(() =>
+        expect(note).toHaveTextContent(
+          "goals.create.acquisitionSources.shardsPerDay"
+        )
+      )
+      expect(note).not.toHaveTextContent(
+        "goals.create.acquisitionSources.onslaughtNoProgress"
+      )
+    })
+
+    it("asks for Onslaught progress when none is saved", async () => {
+      goalOnScreen(ascensionGoal)
+      renderDialog()
+      await loaded()
+
+      expect(
+        screen.getByTestId("create-goal-acquisition-yield-onslaught")
+      ).toHaveTextContent("goals.create.acquisitionSources.onslaughtNoProgress")
     })
 
     it("keeps Save disabled when nothing changed", async () => {

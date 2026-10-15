@@ -64,14 +64,6 @@ export function updateGoalTarget(
   })
 }
 
-/** Replaces which projects a goal belongs to. A goal must always belong to at least one project — the
- * backend rejects an empty list. */
-export function updateGoalProjects(goalId: string, projectIds: string[]) {
-  return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}/projects`, {
-    body: { projectIds },
-  })
-}
-
 export function updateGoalStatus(goalId: string, status: GoalStatus) {
   return apiPost<GoalDetail>(`/api/v1/me/goals/${goalId}/status`, {
     body: { status },

@@ -6,7 +6,7 @@ describe("resolveNextPath", () => {
   it.each([
     ["/guild/members", "/guild/members"],
     ["/library?tab=shops", "/library?tab=shops"],
-    ["/progress/onslaught#top", "/progress/onslaught#top"],
+    ["/my-game/onslaught#top", "/my-game/onslaught#top"],
   ])("keeps the relative path %s", (next, expected) => {
     expect(resolveNextPath(next)).toBe(expected)
   })

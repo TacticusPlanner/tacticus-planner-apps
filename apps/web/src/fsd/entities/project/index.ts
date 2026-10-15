@@ -8,6 +8,10 @@ export {
 } from "./api/project.api"
 export { projectQueries } from "./api/project.queries"
 export {
+  changeProjectMembership,
+  type ProjectMembershipChange,
+} from "./model/change-project-membership"
+export {
   projectLastMembershipDetails,
   projectMembershipStaleDetails,
   projectSlotConflictGoalIds,

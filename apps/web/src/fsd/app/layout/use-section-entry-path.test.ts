@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-import { navItems } from "./nav-items"
+import { filterVisibleNavItems, navItems } from "./nav-items"
 import { useSectionEntryPath } from "./use-section-entry-path"
 
 const STORAGE_KEY = "nav.lastVisitedChild"
@@ -39,7 +39,7 @@ describe("useSectionEntryPath", () => {
       ({ pathname }) => useSectionEntryPath(navItems, pathname),
       { initialProps: { pathname: "/library/npcs" } }
     )
-    rerender({ pathname: "/progress" })
+    rerender({ pathname: "/my-game" })
     rerender({ pathname: "/library" })
 
     const lookup = navItems.find((item) => item.path === "/library")!
@@ -164,5 +164,29 @@ describe("useSectionEntryPath", () => {
 
     getItemSpy.mockRestore()
     setItemSpy.mockRestore()
+  })
+
+  it("falls back to the section path when the remembered child is hidden after sign-out", () => {
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ "/my-game": "/my-game/campaigns" })
+    )
+    const anonymous = filterVisibleNavItems(navItems, false)
+    const { result } = renderHook(() => useSectionEntryPath(anonymous, "/home"))
+
+    const myGame = anonymous.find((item) => item.path === "/my-game")!
+    // "/my-game" itself redirects to its default child, Collection (see pages/my-game/route.tsx).
+    expect(result.current.getEntryPath(myGame)).toBe("/my-game")
+  })
+
+  it("returns the remembered My Game child for a signed-in user", () => {
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ "/my-game": "/my-game/campaigns" })
+    )
+    const { result } = renderHook(() => useSectionEntryPath(navItems, "/home"))
+
+    const myGame = navItems.find((item) => item.path === "/my-game")!
+    expect(result.current.getEntryPath(myGame)).toBe("/my-game/campaigns")
   })
 })

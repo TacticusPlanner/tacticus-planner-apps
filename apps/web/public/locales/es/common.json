@@ -209,8 +209,8 @@
     "createGoal": "Crear objetivo",
     "goals": "Plan",
     "goalsDescription": "Sigue tu progreso hacia tus objetivos",
-    "progress": "Progreso",
-    "progressDescription": "Tu progreso sincronizado de campañas y Onslaught",
+    "myGame": "Mi juego",
+    "myGameDescription": "Tu colección y tu progreso sincronizado del juego",
     "legendaryEvents": "Eventos Legendarios",
     "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado",
     "uiKit": "Kit de interfaz",
@@ -265,8 +265,10 @@
       "Mythic": "Mítico"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Colección",
+      "collectionDescription": "Todos los personajes y Máquinas de Guerra: lo que tienes y cuánto ha progresado cada unidad.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Introduce el sector y el nivel actuales de cada alianza. Las estimaciones de ascensión usan estos valores junto con las fichas de Onslaught sincronizadas.",
       "campaigns": "Campañas",
@@ -274,6 +276,37 @@
       "campaign-events": "Eventos de campaña",
       "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia."
     },
+    "collection": {
+      "loading": "Cargando tu colección…",
+      "summary": "{{owned}} de {{total}} unidades en tu poder",
+      "signInTitle": "Inicia sesión para ver tu colección",
+      "signInBody": "Todas las unidades se muestran en gris. Inicia sesión y sincroniza con Tacticus para ver qué unidades tienes y cuánto ha progresado cada una.",
+      "signIn": "Iniciar sesión",
+      "syncTitle": "Sincroniza para ver tu colección",
+      "syncBody": "Tu plantilla aún no se ha sincronizado, así que todas las unidades se muestran en gris. Sincroniza con Tacticus para ver qué unidades tienes.",
+      "rosterErrorTitle": "No se pudo cargar tu plantilla",
+      "rosterErrorBody": "Todas las unidades se muestran en gris hasta que se cargue. Inténtalo de nuevo.",
+      "catalogErrorTitle": "No se pudo cargar el catálogo de unidades",
+      "catalogErrorBody": "Sin él no se puede mostrar la colección. Inténtalo de nuevo.",
+      "retry": "Reintentar",
+      "factionOwned": "{{owned}} de {{total}} en tu poder"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Habilidad activa nivel {{first}}, habilidad pasiva nivel {{second}}",
+    "mowAbilities": "Habilidad primaria nivel {{first}}, habilidad secundaria nivel {{second}}",
+    "shards_one": "{{count}} fragmento",
+    "shards_other": "{{count}} fragmentos",
+    "shardsToUnlock_one": "{{count}} de {{required}} fragmentos para desbloquear",
+    "shardsToUnlock_other": "{{count}} de {{required}} fragmentos para desbloquear",
+    "mythicShards_one": "{{count}} fragmento mítico",
+    "mythicShards_other": "{{count}} fragmentos míticos",
+    "level": "nivel {{level}}",
+    "notOwned": "no desbloqueada",
+    "startsAt": "Empieza en {{rarity}}",
+    "unlockProgress": "Progreso de desbloqueo"
+  },
+  "progress": {
     "loadError": "Los datos de progreso no están disponibles inesperadamente. Actualiza e inténtalo de nuevo.",
     "campaigns": {
       "normal": "Campañas normales",
@@ -281,18 +314,49 @@
     },
     "events": {
       "regular": "Combates regulares",
-      "challenges": "Desafíos opcionales",
-      "regularProgress": "Progreso regular de {{type}}",
-      "decrease": "Reducir progreso",
-      "increase": "Aumentar progreso",
+      "challenges": "Desafíos",
+      "decrease": "Reducir el progreso de {{type}}",
+      "increase": "Aumentar el progreso de {{type}}",
+      "slider": "Combates regulares de {{type}} completados",
       "max": "Máx.",
-      "useSynced": "Usar valor sincronizado",
-      "manual": "Manual",
-      "synced": "Sincronizado",
-      "save": "Guardar",
+      "maxFor": "Poner {{type}} al máximo",
+      "resetToSynced": "Restablecer a sincronizado",
+      "source": {
+        "manual": "Manual",
+        "synced": "Sincronizado",
+        "none": "Sin datos sincronizados"
+      },
+      "challengeN": "Desafío {{n}}",
+      "challengeNode": "Nodo {{id}}",
+      "noBattles": "No hay combates en esta ruta.",
+      "coreCharacters": "Personajes clave",
+      "notOwned": "{{name}} (no lo tienes)",
+      "currentEvent": "Evento actual",
+      "allEvents": "Todos los eventos",
+      "saveHint": "Los cambios sin guardar aparecen en una barra en la parte inferior de la página.",
+      "hideCompleted": "Ocultar eventos completados",
+      "allCompleted": "Todos los eventos de campaña están completados.",
+      "showCompleted": "Mostrar eventos completados",
+      "noEvents": "Todavía no hay eventos de campaña que seguir.",
+      "completed": "Completado",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Desafíos"
+      },
+      "unsaved": {
+        "message": "Tienes cambios sin guardar",
+        "save": "Guardar",
+        "discard": "Descartar"
+      },
+      "leave": {
+        "title": "¿Salir sin guardar?",
+        "description": "Tus cambios en los eventos de campaña no se han guardado y se perderán.",
+        "stay": "Quedarme",
+        "leave": "Salir"
+      },
       "saved": "Progreso del evento de campaña guardado.",
-      "saveError": "No se pudo guardar el progreso del evento de campaña.",
-      "conflict": "El progreso del evento de campaña cambió en otro lugar. Se cargaron los valores más recientes; aplica tu cambio de nuevo."
+      "saveError": "No se pudo guardar el progreso del evento de campaña. Tus cambios siguen aquí; inténtalo de nuevo.",
+      "conflict": "El progreso del evento de campaña se cambió en otro lugar. Se cargaron los valores más recientes y tus cambios no se guardaron."
     }
   },
   "legendaryEvents": {
@@ -579,8 +643,10 @@
     "blocked": {
       "label": "Bloqueado",
       "restrictedLabel": "Restringido",
+      "restrictedExplanation": "Restringido: este objetivo solo puede avanzar en parte hasta que se resuelva lo siguiente.",
       "reasons": {
         "PrerequisiteNotReached": "Esperando a que se alcance primero un objetivo previo.",
+        "PrerequisiteNotReachedNamed": "Esperando a que se alcance primero el objetivo de {{goalType}} de {{unit}}.",
         "PlayerDataUnavailable": "Los datos del jugador para este objetivo aún no se han sincronizado.",
         "CatalogDataUnavailable": "Los datos del juego aún no han terminado de cargarse.",
         "MissingAscensionPrerequisite": "Se requiere un objetivo de Ascensión que alcance {{progression}}.",
@@ -613,7 +679,9 @@
       "selectAll": "Seleccionar todos los objetivos",
       "selectRow": "Seleccionar {{entity}}",
       "selectMode": "Seleccionar objetivos",
-      "selectDone": "Listo"
+      "selectDone": "Listo",
+      "removeFromProject": "Quitar del proyecto",
+      "removeFromProjectCount": "Quitar del proyecto ({{count}})"
     },
     "delete": {
       "title_one": "¿Eliminar este objetivo?",
@@ -622,7 +690,9 @@
       "description_other": "Esto elimina de forma permanente estos {{count}} objetivos de tu cuenta, incluidos todos los proyectos a los que pertenecen. Esta acción no se puede deshacer.",
       "confirm_one": "Eliminar objetivo",
       "confirm_other": "Eliminar {{count}} objetivos",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "projectAlternative_one": "Para sacarlo solo de {{project}}, cancela y usa «Quitar de este proyecto».",
+      "projectAlternative_other": "Para sacarlos solo de {{project}}, cancela y usa «Quitar del proyecto»."
     },
     "project": {
       "noProjectTitle": "Aún no hay proyectos",
@@ -701,7 +771,13 @@
       "assemblyLastMembershipTitle": "No se guardó nada: estos objetivos se quedarían sin proyecto",
       "assemblyLastMembership": "Este es el único proyecto del objetivo. Añádelo antes a otro proyecto (el proyecto predeterminado siempre está disponible) y luego quítalo aquí.",
       "assemblySlotConflictTitle": "No se guardó nada: estos objetivos compiten por el mismo hueco",
-      "assemblySlotConflict": "{{project}} solo puede contener un objetivo activo o pausado para este hueco. Conserva solo uno de los objetivos en conflicto y guarda de nuevo."
+      "assemblySlotConflict": "{{project}} solo puede contener un objetivo activo o pausado para este hueco. Conserva solo uno de los objetivos en conflicto y guarda de nuevo.",
+      "removeFromProject": "Quitar de este proyecto",
+      "moveToProject": "Mover a proyecto",
+      "moveToProjectTitle": "Mover a proyecto",
+      "moveToProjectDescription": "Este es el único proyecto del objetivo. Elige un proyecto al que moverlo o crea uno nuevo.",
+      "moveSelectionDescription_one": "{{project}} es el único proyecto de {{count}} de los objetivos seleccionados. Elige un proyecto al que moverlo o crea uno nuevo. Los demás objetivos seleccionados solo se quitan de {{project}}.",
+      "moveSelectionDescription_other": "{{project}} es el único proyecto de {{count}} de los objetivos seleccionados. Elige un proyecto al que moverlos o crea uno nuevo. Los demás objetivos seleccionados solo se quitan de {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "Se actualizaron {{succeeded}} de {{total}} objetivos.",
@@ -712,7 +788,15 @@
       "projectMembershipSaved": "{{project}} actualizado: {{added}} añadidos, {{removed}} quitados.",
       "goalsAddedToProject_one": "{{count}} objetivo añadido a {{project}}.",
       "goalsAddedToProject_other": "{{count}} objetivos añadidos a {{project}}.",
-      "bulkPartial": "Solo se procesaron {{succeeded}} de {{total}} objetivos."
+      "bulkPartial": "Solo se procesaron {{succeeded}} de {{total}} objetivos.",
+      "goalRemovedFromProject": "{{goal}} quitado de {{project}}.",
+      "goalRelocated": "{{goal}} movido a {{project}}.",
+      "goalsRemovedFromProject_one": "Se quitó {{count}} objetivo de {{project}}.",
+      "goalsRemovedFromProject_other": "Se quitaron {{count}} objetivos de {{project}}.",
+      "goalsRemovedAndMoved_one": "Se quitó {{count}} objetivo de {{project}}; {{moved}} movido a {{destination}}.",
+      "goalsRemovedAndMoved_other": "Se quitaron {{count}} objetivos de {{project}}; {{moved}} movidos a {{destination}}.",
+      "movedButNotRemoved_one": "Se añadió {{count}} objetivo a {{destination}}, pero no se pudo quitar de {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Se añadieron {{count}} objetivos a {{destination}}, pero no se pudieron quitar de {{project}}: {{error}}"
     },
     "create": {
       "title": "Crear un objetivo",
@@ -1153,7 +1237,7 @@
       },
       "navigation": {
         "title": "Desplázate con facilidad",
-        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluidos los Eventos Legendarios."
+        "content": "Usa esta barra de navegación para moverte entre las secciones de la interfaz, incluidos Mi juego y los Eventos Legendarios."
       },
       "sidebarFooter": {
         "title": "Herramientas de la barra lateral",
@@ -1161,7 +1245,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Tu barra principal",
-        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Progreso y Eventos Legendarios."
+        "content": "Cambia de sección, añade un objetivo o sincroniza desde aquí. Abre el menú para buscar páginas y acciones rápidas, y para llegar a Mi juego y Eventos Legendarios."
       },
       "mobileHeader": {
         "title": "Encabezado de página",
@@ -1290,6 +1374,54 @@
         "mythicMaterialSources": {
           "title": "Materiales míticos",
           "content": "Elige qué ofertas de tienda aportan los materiales míticos de este objetivo. Si desmarcas todas, ya no se cuenta con las tiendas para ellos."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Tu colección de un vistazo",
+          "content": "Cuántos de los personajes y Máquinas de Guerra del juego tienes."
+        },
+        "faction": {
+          "title": "Agrupadas por facción",
+          "content": "Cada tarjeta reúne los personajes y Máquinas de Guerra de una facción; las unidades que tienes van primero."
+        },
+        "owned": {
+          "title": "Una unidad que tienes",
+          "content": "El anillo muestra su rareza, con las estrellas arriba, el rango y los fragmentos sobre el retrato, y debajo los niveles de habilidad a ambos lados de su nivel de PX."
+        },
+        "unowned": {
+          "title": "Aún no desbloqueada",
+          "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Progreso de eventos de campaña",
+          "content": "Corrige tu progreso en cada evento de campaña. Las incursiones diarias usan estos valores para decidir qué nodos del evento puedes farmear."
+        },
+        "current": {
+          "title": "Evento actual",
+          "content": "El evento en curso está fijado aquí y ya desplegado. Es el único evento para el que planifican las incursiones diarias."
+        },
+        "editor": {
+          "title": "Editar una ruta",
+          "content": "Ajusta el número de combates regulares paso a paso, arrastra la barra o usa Máx. Marca los desafíos uno a uno. «Restablecer a sincronizado» deshace un valor manual."
+        },
+        "summary": {
+          "title": "Resúmenes de eventos",
+          "content": "Cada evento muestra su progreso de un vistazo y si hay valores manuales o sin datos sincronizados. Despliégalo para editarlo."
+        },
+        "hideCompleted": {
+          "title": "Ocultar eventos completados",
+          "content": "Los eventos sin terminar aparecen primero. Actívalo para ocultar los completados; la opción se recuerda en este navegador."
+        },
+        "save": {
+          "title": "Guardar tus cambios",
+          "content": "En cuanto edites algo, aparece abajo una barra con Guardar y Descartar. Se te preguntará antes de salir con cambios sin guardar."
         }
       }
     }
